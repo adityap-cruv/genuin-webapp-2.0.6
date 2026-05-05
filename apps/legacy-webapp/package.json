@@ -10,6 +10,7 @@
     "dev:turbo": "NEXT_TURBO=true next dev --turbo -p 4005",
     "build": "next build",
     "start": "next start -p 4000",
+    "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "format": "prettier --write .",
     "lint:fix": "lint . --fix",

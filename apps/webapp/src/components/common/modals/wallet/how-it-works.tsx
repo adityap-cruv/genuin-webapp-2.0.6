@@ -1,13 +1,16 @@
 import { useState } from 'react'
+import { useShallow } from 'zustand/react/shallow'
+
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { ModalShell } from '../authentication/modal-shell'
+import { useGenuinOptions } from '@/lib/stores/genuin-options'
 import { DiscountCouponIcon } from '@icons/wallet/discount-coupon-icon'
-import { TrophyIcon } from '@icons/wallet/trophy-icon'
+import { MoneyAtmIcon } from '@icons/wallet/money-atm-icon'
 import { PlayIconRound } from '@icons/wallet/play-icon'
 import { RubricIcon } from '@icons/wallet/rubric-icon'
-import { MoneyAtmIcon } from '@icons/wallet/money-atm-icon'
-import { useGenuinOptions } from '@/lib/stores/genuin-options'
-import { useShallow } from 'zustand/react/shallow'
+import { TrophyIcon } from '@icons/wallet/trophy-icon'
+
+import { ModalShell } from '../authentication/modal-shell'
+
 
 const HOW_IT_WORKS = (reactionTitle: string) => ({
   rewards: [

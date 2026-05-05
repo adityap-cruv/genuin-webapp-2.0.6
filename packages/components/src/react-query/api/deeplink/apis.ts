@@ -1,6 +1,7 @@
-import { API_PATHS } from "@genuin/components/react-query/paths";
-import { NEXT_PUBLIC_HOST_URL } from "@genuin/components/lib/utils/env";
 import type { AxiosInstance } from "axios";
+
+import { NEXT_PUBLIC_HOST_URL } from "@genuin/components/lib/utils/env";
+import { API_PATHS } from "@genuin/components/react-query/paths";
 
 /**
  * Generates a deep link URL with the provided parameters
@@ -22,10 +23,7 @@ interface DeepLinkPayload {
   searchParams?: Record<string, any>;
 }
 
-export const generateDeepLink = async (
-  payload: DeepLinkPayload,
-  axiosInstance: AxiosInstance
-): Promise<string> => {
+export const generateDeepLink = async (payload: DeepLinkPayload, axiosInstance: AxiosInstance): Promise<string> => {
   const queryParams: Record<string, any> = {};
 
   if (payload.utmCampaign) queryParams.utm_campaign = payload.utmCampaign;
@@ -46,12 +44,9 @@ export const generateDeepLink = async (
   };
 
   try {
-    const res = await axiosInstance.post(
-      API_PATHS.GENERATE_DYNAMIC_LINK,
-      finalPayload
-    );
+    const res = await axiosInstance.post(API_PATHS.GENERATE_DYNAMIC_LINK, finalPayload);
     return res?.data?.data?.shortLink || NEXT_PUBLIC_HOST_URL || "";
-  } catch (e) {
+  } catch (_e) {
     return NEXT_PUBLIC_HOST_URL || "";
   }
 };

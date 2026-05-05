@@ -1,9 +1,10 @@
 // Import necessary libraries and modules
-import React from 'react'
-import { GenuinIcon } from '@icons/genuin-icon'
 import { cva } from 'class-variance-authority'
 import type { VariantProps } from 'class-variance-authority'
 import cn from 'classnames'
+import React from 'react'
+
+import { GenuinIcon } from '@icons/genuin-icon'
 
 // Define the class variance authority (cva) for the badge variants
 const badgeVariants = cva('', {

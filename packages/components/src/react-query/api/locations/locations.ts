@@ -1,8 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
+import type { AxiosInstance } from "axios";
+
 import { useAxiosInstance } from "@genuin/components/context/axios";
 import { getQueryKeyForLocations } from "@genuin/components/react-query/keys/locations";
 import { API_PATHS } from "@genuin/components/react-query/paths";
-import type { AxiosInstance } from "axios";
 
 type fetchLocationParams = {
   query: string;
@@ -28,7 +29,7 @@ export function useLocations(params: fetchLocationParams) {
 
   return useQuery({
     queryKey: getQueryKeyForLocations(params.query),
-    queryFn: (context) => fetchLocations(params, axiosInstance),
+    queryFn: (_context) => fetchLocations(params, axiosInstance),
     enabled: params.query.trim().length >= 3,
   });
 }

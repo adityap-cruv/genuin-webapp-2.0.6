@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+
 import { UsernameCreation } from "./username-creation";
 
 /**
@@ -12,8 +13,7 @@ const meta: Meta<typeof UsernameCreation> = {
     layout: "centered",
     docs: {
       description: {
-        component:
-          "Username creation form with character limit and validation.",
+        component: "Username creation form with character limit and validation.",
       },
     },
   },

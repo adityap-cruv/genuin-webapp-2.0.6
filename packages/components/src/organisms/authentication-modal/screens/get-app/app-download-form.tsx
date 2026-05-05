@@ -1,25 +1,22 @@
-import { Input } from "@genuin/ui/input";
-import { PhoneInput } from "@genuin/ui/phone-input";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@genuin/ui/components/form";
-import { ComponentProps, useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { isValidPhoneNumber } from "react-phone-number-input";
-import { useBaseContext } from "@genuin/components/context/base";
-import { Link } from "@genuin/components/molecules/link";
-import { SubmitButton } from "../../submit-button";
-import { cn } from "@genuin/ui/lib/utils";
-import { useSendGetAppLinkMutation } from "@genuin/components/react-query/api/get-app";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@genuin/ui/components/form";
 import { Toast } from "@genuin/ui/components/toaster";
-import { useSearchParams } from "@genuin/components/hooks/use-search-params";
+import { Input } from "@genuin/ui/input";
+import { cn } from "@genuin/ui/lib/utils";
+import { PhoneInput } from "@genuin/ui/phone-input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { ComponentProps } from "react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import * as z from "zod";
+
 import { useAnalytics } from "@genuin/components/context/analytics";
+import { useBaseContext } from "@genuin/components/context/base";
+import { useSearchParams } from "@genuin/components/hooks/use-search-params";
+import { Link } from "@genuin/components/molecules/link";
+import { useSendGetAppLinkMutation } from "@genuin/components/react-query/api/get-app";
+
+import { SubmitButton } from "../../submit-button";
 
 // Form validation schema
 const formSchema = z
@@ -31,11 +28,7 @@ const formSchema = z
       .refine((val) => val === "" || isValidPhoneNumber(val ?? ""), {
         message: "Enter a valid phone number",
       }),
-    email: z
-      .string()
-      .email("Please enter a valid email address")
-      .or(z.literal(""))
-      .optional(),
+    email: z.string().email("Please enter a valid email address").or(z.literal("")).optional(),
     _form: z.string().optional(),
   })
   .refine((data) => !!data.email || !!data.phoneNumber, {
@@ -47,11 +40,7 @@ type FormData = z.infer<typeof formSchema>;
 
 export type AppDownloadFormProps = ComponentProps<"div">;
 
-export function AppDownloadForm({
-  onSubmit,
-  className,
-  ...props
-}: AppDownloadFormProps) {
+export function AppDownloadForm({ onSubmit, className, ...props }: AppDownloadFormProps) {
   const { brandDetails } = useBaseContext();
   const { searchParams, getSearchParams } = useSearchParams();
   const [error, setError] = useState("");
@@ -97,10 +86,7 @@ export function AppDownloadForm({
   return (
     <div className={cn("gencl:space-y-6", className)} {...props}>
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(handleSubmit)}
-          className="gencl:space-y-2"
-        >
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="gencl:space-y-2">
           <FormField
             control={form.control}
             name="phoneNumber"
@@ -159,17 +145,11 @@ export function AppDownloadForm({
       </Form>
       <p className="gencl:text-center gencl:text-secondary-300 gencl:text-body-2-medium">
         By clicking Send Link, I acknowledge that I have read the{" "}
-        <Link
-          href={brandDetails?.privacy_policy ?? ""}
-          className="gencl:underline"
-        >
+        <Link href={brandDetails?.privacy_policy ?? ""} className="gencl:underline">
           Privacy Policy
         </Link>{" "}
         and agree to the{" "}
-        <Link
-          href={brandDetails?.terms_and_condition ?? ""}
-          className="gencl:underline"
-        >
+        <Link href={brandDetails?.terms_and_condition ?? ""} className="gencl:underline">
           Terms of Service
         </Link>
       </p>

@@ -1,11 +1,13 @@
+import { Toaster } from "@genuin/ui";
+import type { ComponentProps } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
+import { Route, Router, Switch } from "wouter";
+
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { useRouter } from "@genuin/components/hooks/use-router";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { BaseLayout } from "@genuin/components/templates/base-layout";
 import { Feed } from "@genuin/components/templates/feed";
-import { Route, Router, Switch } from "wouter";
-import { ComponentProps, useEffect, useState, lazy, Suspense } from "react";
-import { useRouter } from "@genuin/components/hooks/use-router";
-import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
-import { Toaster } from "@genuin/ui";
 
 type StandardWallProps = {
   /**
@@ -17,31 +19,27 @@ type StandardWallProps = {
 } & ComponentProps<"div">;
 
 const ProfileDetails = lazy(() =>
-  import("../profile-details/index.js").then((m) => ({
+  import("../profile-details").then((m) => ({
     default: m.ProfileDetails,
-  })),
+  }))
 );
 const GroupDetailsPage = lazy(() =>
-  import("../group-details/group-details.js").then((m) => ({
+  import("../group-details/group-details").then((m) => ({
     default: m.GroupDetailsPage,
-  })),
+  }))
 );
 const CommunityDetails = lazy(() =>
-  import("../community-details/index.js").then((m) => ({
+  import("../community-details").then((m) => ({
     default: m.CommunityDetails,
-  })),
+  }))
 );
-const VideoPage = lazy(() =>
-  import("../video/index.js").then((m) => ({ default: m.VideoPage })),
-);
+const VideoPage = lazy(() => import("../video").then((m) => ({ default: m.VideoPage })));
 const SettingsPage = lazy(() =>
-  import("@genuin/components/organisms/settings/index.js").then((m) => ({
+  import("@genuin/components/organisms/settings").then((m) => ({
     default: m.SettingsPage,
-  })),
+  }))
 );
-const Explore = lazy(() =>
-  import("../explore/index.js").then((m) => ({ default: m.Explore })),
-);
+const Explore = lazy(() => import("../explore").then((m) => ({ default: m.Explore })));
 // const MyVideos = lazy(() => import("@genuin/components/organisms/my-videos"));
 // const CreatePost = lazy(
 //   () => import("@genuin/components/organisms/create-post")
@@ -52,12 +50,7 @@ const Explore = lazy(() =>
  * It sets up the routing for various pages such as home, latest, popular feeds, profile details, group details, community details, video page, and settings page.
  * It uses the `embedRouter` to handle routing and `BaseLayout` for consistent layout across the application.
  */
-export function StandardWall({
-  startingPath,
-  defaultComponent,
-  baseLayoutVariant,
-  ...restProps
-}: StandardWallProps) {
+export function StandardWall({ startingPath, defaultComponent, baseLayoutVariant, ...restProps }: StandardWallProps) {
   const router = useRouter();
   const embedRouter = useSafeEmbedContext()?.embedRouter;
   const [shouldRender, setShouldRender] = useState(false);
@@ -75,7 +68,9 @@ export function StandardWall({
         <Router hook={embedRouter?.hook}>
           <Switch>
             <Route path={buildPageUrl({ type: "home" })}>
-              <Feed feedType="HOME" />
+              <BaseLayout>
+                <Feed feedType="HOME" />
+              </BaseLayout>
             </Route>
             <Route path="/default-comp">{defaultComponent}</Route>
             <Route>
@@ -91,36 +86,25 @@ export function StandardWall({
                     path={buildPageUrl({
                       type: "profile",
                       asRoutePattern: true,
-                    })}
-                  >
+                    })}>
                     {(params) => {
                       return (
                         <Suspense fallback={null}>
-                          <ProfileDetails
-                            userName={(params as any).slug}
-                            forBrand={false}
-                          />
+                          <ProfileDetails userName={(params as any).slug} forBrand={false} />
                         </Suspense>
                       );
                     }}
                   </Route>
-                  <Route
-                    path={buildPageUrl({ type: "brand", asRoutePattern: true })}
-                  >
+                  <Route path={buildPageUrl({ type: "brand", asRoutePattern: true })}>
                     {(params) => {
                       return (
                         <Suspense fallback={null}>
-                          <ProfileDetails
-                            userName={(params as any).slug}
-                            forBrand={true}
-                          />
+                          <ProfileDetails userName={(params as any).slug} forBrand={true} />
                         </Suspense>
                       );
                     }}
                   </Route>
-                  <Route
-                    path={buildPageUrl({ type: "group", asRoutePattern: true })}
-                  >
+                  <Route path={buildPageUrl({ type: "group", asRoutePattern: true })}>
                     {(params) => {
                       return (
                         <Suspense fallback={null}>
@@ -133,8 +117,7 @@ export function StandardWall({
                     path={buildPageUrl({
                       type: "community",
                       asRoutePattern: true,
-                    })}
-                  >
+                    })}>
                     {(params) => {
                       return (
                         <Suspense fallback={null}>
@@ -143,9 +126,7 @@ export function StandardWall({
                       );
                     }}
                   </Route>
-                  <Route
-                    path={buildPageUrl({ type: "video", asRoutePattern: true })}
-                  >
+                  <Route path={buildPageUrl({ type: "video", asRoutePattern: true })}>
                     {(params) => {
                       return (
                         <Suspense fallback={null}>
@@ -206,6 +187,5 @@ export function StandardWall({
         </Router>
         <Toaster className="gencl:fixed gencl:bottom-0 gencl:right-0 gencl:z-50" />
       </div>
-      
     );
 }

@@ -14,6 +14,7 @@ RUN corepack enable && corepack prepare pnpm@8.15.3 --activate
 COPY pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY package.json ./
 COPY apps/webapp/package.json ./apps/webapp/
+COPY scripts ./scripts
 
 # Copy the entire ui and components packages
 COPY packages/ui/ ./packages/ui/
@@ -51,6 +52,7 @@ ARG NEXT_PUBLIC_BCC_URL
 ARG NEXT_PUBLIC_GO_API_URL
 ARG NEXT_PUBLIC_REDIRECT_URI
 ARG NEXT_PUBLIC_MEDIA_BASE_URL
+ARG NEXT_PUBLIC_OG_CDN_URL
 
 ENV HOST_NAME=$HOST_NAME
 ENV NEXT_PUBLIC_AES_IV=$NEXT_PUBLIC_AES_IV
@@ -70,6 +72,10 @@ ENV NEXT_PUBLIC_BCC_URL=$NEXT_PUBLIC_BCC_URL
 ENV NEXT_PUBLIC_GO_API_URL=$NEXT_PUBLIC_GO_API_URL
 ENV NEXT_PUBLIC_REDIRECT_URI=$NEXT_PUBLIC_REDIRECT_URI
 ENV NEXT_PUBLIC_MEDIA_BASE_URL=$NEXT_PUBLIC_MEDIA_BASE_URL
+ENV NEXT_PUBLIC_OG_CDN_URL=$NEXT_PUBLIC_OG_CDN_URL
+# Build shared packages first — tsconfig paths point to dist/types which .dockerignore excludes from context
+RUN pnpm --filter @genuin/ui run build
+RUN pnpm --filter @genuin/components run build
 
 # Build the application
 # The output: 'standalone' option in next.config.js will create a .next/standalone directory

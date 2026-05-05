@@ -1,9 +1,10 @@
+import { useState } from 'react';
+import { toast } from 'sonner';
+
 import { Add } from '@/assets/SvgIcons/icons';
 import Spinner from '@/components/ui/spinner';
 import { useAgentsContext } from '@/context/app/context';
 import { insertSocialHandle, updateAgentMessage, validateSocialHandle } from '@/lib/api';
-import { useState } from 'react';
-import { toast } from 'sonner';
 
 type SocialHandle = {
     platform: string;
@@ -118,6 +119,7 @@ const BrandSocialHandleFetcher = ({ jsonData, messageId }: BrandSocialHandleFetc
             } else {
                 toast.error(response.data.message);
             }
+             
         } catch (error) {
             toast.error('Failed to insert social handle');
         } finally {
@@ -147,65 +149,67 @@ const BrandSocialHandleFetcher = ({ jsonData, messageId }: BrandSocialHandleFetc
                 </div>
 
                 {/* Rows */}
-                {social_handles.filter(handle => handle.handle !==null && handle.handle !=='' && handle.handle !==undefined).map((handle, index) => {
-                    const key = `${handle.platform}-${handle.handle}`;
-                    const isChecked = selectedHandles.has(key);
-                    const isLoading = loadingHandles.has(key);
-                    const iconUrl = getSocialIconUrl(handle.platform);
+                {social_handles
+                    .filter(handle => handle.handle !== null && handle.handle !== '' && handle.handle !== undefined)
+                    .map((handle, index) => {
+                        const key = `${handle.platform}-${handle.handle}`;
+                        const isChecked = selectedHandles.has(key);
+                        const isLoading = loadingHandles.has(key);
+                        const iconUrl = getSocialIconUrl(handle.platform);
 
-                    return (
-                        <div
-                            key={`handle-${index}`}
-                            className='last:gai:border-b-0 gai:flex gai:h-[60px] gai:items-center gai:border-b gai:border-[#E6ECFF] gai:bg-white gai:px-4 gai:py-3'
-                        >
-                            {/* Checkbox */}
-                            <div className='gai:flex gai:w-12 gai:items-center gai:justify-center'>
-                                <input
-                                    type='checkbox'
-                                    checked={isChecked}
-                                    onChange={() => handleCheckboxChange(handle.platform, handle.handle)}
-                                    disabled={!handle.inserted}
-                                    className='gai:focus:ring-2 gai:focus:ring-[#0645FF] gai:focus:ring-offset-0 gai:disabled:cursor-not-allowed gai:disabled:opacity-50 gai:h-4 gai:w-4 gai:cursor-pointer gai:rounded gai:border-[#CBD5E0] gai:text-[#0645FF]'
-                                />
-                            </div>
+                        return (
+                            <div
+                                key={`handle-${index}`}
+                                className='last:gai:border-b-0 gai:flex gai:h-[60px] gai:items-center gai:border-b gai:border-[#E6ECFF] gai:bg-white gai:px-4 gai:py-3'
+                            >
+                                {/* Checkbox */}
+                                <div className='gai:flex gai:w-12 gai:items-center gai:justify-center'>
+                                    <input
+                                        type='checkbox'
+                                        checked={isChecked}
+                                        onChange={() => handleCheckboxChange(handle.platform, handle.handle)}
+                                        disabled={!handle.inserted}
+                                        className='gai:h-4 gai:w-4 gai:cursor-pointer gai:rounded gai:border-[#CBD5E0] gai:text-[#0645FF] gai:focus:ring-2 gai:focus:ring-[#0645FF] gai:focus:ring-offset-0 gai:disabled:cursor-not-allowed gai:disabled:opacity-50'
+                                    />
+                                </div>
 
-                            {/* Social Handle (Platform + Handle merged) */}
-                            <div className='gai:flex gai:flex-1 gai:items-center gai:justify-center gai:gap-2'>
-                                {iconUrl && <img src={iconUrl} alt={handle.platform} className='gai:h-5 gai:w-5' />}
-                                <span className='gai:text-sm gai:font-semibold gai:text-[#1D1F20]'>
-                                    @{handle.handle}
-                                </span>
-                            </div>
-
-                            {/* Action */}
-                            <div className='gai:flex gai:w-24 gai:items-center gai:justify-center'>
-                                {!handle.inserted ? (
-                                    <button
-                                        onClick={() => handleInsert(handle.platform, handle.handle)}
-                                        disabled={isLoading}
-                                        className='gai:hover:bg-[#0539DD] gai:disabled:cursor-not-allowed gai:disabled:opacity-50 gai:gai:disabled:hover:bg-[#0645FF] gai:flex gai:items-center gai:gap-1.5 gai:rounded-lg gai:bg-[#0645FF] gai:px-3 gai:py-1.5 gai:text-white gai:transition-colors'
-                                    >
-                                        {isLoading ? (
-                                            <>
-                                                <Spinner size='sm' color='secondary' />
-                                                Inserting...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Add width='12' height='12' stroke='white' />
-                                                Insert
-                                            </>
-                                        )}
-                                    </button>
-                                ) : (
-                                    <span className='gai:text-center gai:text-sm gai:font-medium gai:text-[#1D1F20]'>
-                                        Inserted
+                                {/* Social Handle (Platform + Handle merged) */}
+                                <div className='gai:flex gai:flex-1 gai:items-center gai:justify-center gai:gap-2'>
+                                    {iconUrl && <img src={iconUrl} alt={handle.platform} className='gai:h-5 gai:w-5' />}
+                                    <span className='gai:text-sm gai:font-semibold gai:text-[#1D1F20]'>
+                                        @{handle.handle}
                                     </span>
-                                )}
+                                </div>
+
+                                {/* Action */}
+                                <div className='gai:flex gai:w-24 gai:items-center gai:justify-center'>
+                                    {!handle.inserted ? (
+                                        <button
+                                            onClick={() => handleInsert(handle.platform, handle.handle)}
+                                            disabled={isLoading}
+                                            className='gai:gai:disabled:hover:bg-[#0645FF] gai:flex gai:items-center gai:gap-1.5 gai:rounded-lg gai:bg-[#0645FF] gai:px-3 gai:py-1.5 gai:text-white gai:transition-colors gai:hover:bg-[#0539DD] gai:disabled:cursor-not-allowed gai:disabled:opacity-50'
+                                        >
+                                            {isLoading ? (
+                                                <>
+                                                    <Spinner size='sm' color='secondary' />
+                                                    Inserting...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Add width='12' height='12' stroke='white' />
+                                                    Insert
+                                                </>
+                                            )}
+                                        </button>
+                                    ) : (
+                                        <span className='gai:text-center gai:text-sm gai:font-medium gai:text-[#1D1F20]'>
+                                            Inserted
+                                        </span>
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                    );
-                })}
+                        );
+                    })}
             </div>
 
             {/* Import Button */}

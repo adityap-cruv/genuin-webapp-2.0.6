@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+
 import { RedirectClientPage } from './client-page'
 
 export default async function WebCatchAllPage(props: any) {

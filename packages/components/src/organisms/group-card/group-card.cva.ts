@@ -1,10 +1,10 @@
-import { cva, VariantProps } from "class-variance-authority";
+import type { VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 
 export const groupCardVariants = cva("gencl:cursor-pointer", {
   variants: {
     variant: {
-      explore:
-        "gencl:border gencl:rounded-lg gencl:border-secondary-150 gencl:p-4 gencl:space-y-4",
+      explore: "gencl:border gencl:rounded-lg gencl:border-secondary-150 gencl:p-4 gencl:space-y-4",
       search:
         "gencl:border gencl:rounded-lg gencl:border-secondary-150 gencl:p-4 gencl:flex gencl:items-center gencl:gap-3 gencl:w-full",
       suggestion:
@@ -22,12 +22,9 @@ export const groupCardContentVariants = cva("", {
   variants: {
     variant: {
       explore: "gencl:space-y-4",
-      search:
-        "gencl:flex gencl:justify-between gencl:items-start gencl:gap-2 gencl:w-full",
-      suggestion:
-        "gencl:flex gencl:justify-between gencl:items-start gencl:gap-2 gencl:w-full",
-      recent:
-        "gencl:flex gencl:justify-between gencl:items-start gencl:gap-2 gencl:w-full",
+      search: "gencl:flex gencl:justify-between gencl:items-start gencl:gap-2 gencl:w-full",
+      suggestion: "gencl:flex gencl:justify-between gencl:items-start gencl:gap-2 gencl:w-full",
+      recent: "gencl:flex gencl:justify-between gencl:items-start gencl:gap-2 gencl:w-full",
     },
   },
   defaultVariants: {
@@ -35,6 +32,4 @@ export const groupCardContentVariants = cva("", {
   },
 });
 
-export type GroupCardVariant = VariantProps<
-  typeof groupCardVariants
->["variant"];
+export type GroupCardVariant = VariantProps<typeof groupCardVariants>["variant"];

@@ -1,4 +1,5 @@
-import { Meta, StoryObj } from "@storybook/react-vite";
+import type { Meta, StoryObj } from "@storybook/react-vite";
+
 import FileSelectDropzone from "./file-select-dropzone";
 
 const meta: Meta<typeof FileSelectDropzone> = {
@@ -22,13 +23,14 @@ export const Default: Story = {
   ),
   args: {
     onFileChange: (file) => alert(`File uploaded: ${file.name}`),
+    config: { validation: { video: {} } },
   },
 };
 
 export const MultipleFiles: Story = {
   render: Default.render,
   args: {
-    multiple: true,
+    config: { multiple: true, validation: { video: {} } },
     onFileChange: (file) => alert(`File uploaded: ${file.name}`),
   },
 };
@@ -37,6 +39,7 @@ export const Disabled: Story = {
   render: Default.render,
   args: {
     disabled: true,
+    config: { validation: { video: {} } },
     onFileChange: (file) => alert(`File uploaded: ${file.name}`),
   },
 };
@@ -44,7 +47,7 @@ export const Disabled: Story = {
 export const CustomFileTypes: Story = {
   render: Default.render,
   args: {
-    allowedFileTypes: ["PNG"],
+    config: { allowedFileTypes: ["PNG"], validation: { video: {} } },
     onError: (error) => alert(`Error: ${error}`),
     onFileChange: (file) => alert(`File uploaded: ${file.name}`),
   },

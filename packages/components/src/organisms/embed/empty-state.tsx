@@ -2,6 +2,7 @@
 
 import { PlayIcon } from "@genuin/ui/icons";
 import { useEffect } from "react";
+
 import { SDKEventEmitter, SDKEventName } from "@genuin/components/lib/sdk-event-emitter";
 
 interface EmptyStateProps {
@@ -10,12 +11,7 @@ interface EmptyStateProps {
   message?: string;
 }
 
-export function SdkEmptyState({
-  containerHeight,
-  containerWidth,
-  message = "No content available",
-}: EmptyStateProps) {
-
+export function SdkEmptyState({ containerHeight, containerWidth, message = "No content available" }: EmptyStateProps) {
   useEffect(() => {
     SDKEventEmitter.emit(SDKEventName.NO_CONTENT, {
       isError: false,
@@ -29,12 +25,9 @@ export function SdkEmptyState({
       style={{
         height: containerHeight,
         width: containerWidth,
-      }}
-    >
+      }}>
       <PlayIcon size="xl" />
-      <p className="gencl:text-body-1-medium gencl:text-secondary-600 gencl:text-center">
-        {message}
-      </p>
+      <p className="gencl:text-body-1-medium gencl:text-secondary-600 gencl:text-center">{message}</p>
     </div>
   );
 }

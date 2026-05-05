@@ -1,3 +1,6 @@
+import React, { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
+
 import {
     ChevronLeft,
     ChevronRight,
@@ -10,17 +13,17 @@ import {
     LikeFilled,
     Regenerate,
 } from '@/assets/SvgIcons/icons';
-import type { Agent, Artifact, ChatHistoryEvent, ThinkingStep } from '@/types';
 import type { HandleSendMessageParams } from '@/context/app/provider';
-import React, { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
-import { toast } from 'sonner';
-import { Button } from '../ui/button';
-import CarousalEmbed from './CarousalEmbed';
+import type { Agent, Artifact, ChatHistoryEvent, ThinkingStep } from '@/types';
+
 import AttachmentCard from '../Attachments/AttachmentCard';
-import { EditUserMessage } from './EditUserMessage';
+import { Button } from '../ui/button';
+
 import AgentTextContent from './AgentTextContent';
-import ThinkingStatusList from './ThinkingStatusList';
+import CarousalEmbed from './CarousalEmbed';
+import { EditUserMessage } from './EditUserMessage';
 import ThinkingIndicator from './ThinkingIndicator';
+import ThinkingStatusList from './ThinkingStatusList';
 
 // Lazy load widgets - chunks only loaded when included in contentOrder
 const InventoryWidget = lazy(() => import('./InventoryWidget'));
@@ -291,7 +294,6 @@ const ItemComponent: React.FC<ItemProps> = ({
     messageType,
     currentSessionId,
     currentAgent,
-    agents: _agents,
     onBoardingAgents,
     isLastMessage,
     sessionThinking,

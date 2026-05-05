@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
-import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 type UseIheartUrlManagerProps = {
   isIheartLayout: boolean;
@@ -32,7 +33,7 @@ export function useIheartUrlManager({
 
   const getVideoPathSegment = (index: number): string => {
     const video = videos[index];
-    if (!video || video.video?.type !== "video") return "";
+    if (!video || !video.video || video.video.type !== "video") return "";
     return `${video.video.slug}_${video.video.id}`;
   };
 
@@ -91,13 +92,11 @@ export function useIheartUrlManager({
     if (activePlayerType === "expand-view") {
       // const currentUrl = new URL(window.location.href);
       // const pathSegments = currentUrl.pathname.split("/").filter(Boolean);
-
       // removeVideoPath(pathSegments);
       // const baseUrl = new URL(window.location.href);
       // baseUrl.pathname = "/" + pathSegments.join("/");
       // baseUrl.search = "";
       // baseUrlRef.current = baseUrl.toString();
-
       // const videoPath = getVideoPathSegment(activeIndex);
       // if (videoPath) {
       //   setVideoPath(pathSegments, videoPath);
@@ -111,16 +110,13 @@ export function useIheartUrlManager({
 
   useEffect(() => {
     // if (!isIheartLayout || activePlayerType !== "expand-view") return;
-
     // const pathSegments = window.location.pathname.split("/").filter(Boolean);
     // const videoPath = getVideoPathSegment(activeIndex);
-
     // if (!videoPath) {
     //   removeVideoPath(pathSegments);
     // } else {
     //   setVideoPath(pathSegments, videoPath);
     // }
-
     // updateUrl(pathSegments, true);
   }, [activeIndex, activePlayerType, isIheartLayout, websiteType, videos]);
 }

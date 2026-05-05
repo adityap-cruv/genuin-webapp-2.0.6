@@ -1,16 +1,14 @@
 "use client";
-import React, {
-  useContext,
-  ReactNode,
-  ComponentType,
-  useCallback,
-} from "react";
-import { LinkContextValue } from "./type";
-import { LinkContext } from "./context";
-import { usePathnameFromEmbedRouter } from "./use-pathname";
-import { useRouter } from "next/navigation";
-import { useSafeEmbedContext } from "../embed/context";
+import type { useRouter } from "next/navigation";
+import type { ReactNode, ComponentType } from "react";
+import React, { useContext, useCallback } from "react";
+
 import { useBaseContext } from "../base";
+import { useSafeEmbedContext } from "../embed/context";
+
+import { LinkContext } from "./context";
+import type { LinkContextValue } from "./type";
+import { usePathnameFromEmbedRouter } from "./use-pathname";
 
 export interface LinkProviderProps {
   children: ReactNode;
@@ -25,13 +23,7 @@ export interface LinkProviderProps {
   useRouter?: typeof useRouter;
 }
 
-export function LinkProvider({
-  children,
-  LinkComponent,
-  isNextJS = false,
-  usePathname,
-  useRouter,
-}: LinkProviderProps) {
+export function LinkProvider({ children, LinkComponent, isNextJS = false, usePathname, useRouter }: LinkProviderProps) {
   const embedDetails = useSafeEmbedContext();
   const { brandDetails } = useBaseContext();
   // if embed then custom routing.
@@ -57,9 +49,7 @@ export function LinkProvider({
     createExternalLink,
   };
 
-  return (
-    <LinkContext.Provider value={contextValue}>{children}</LinkContext.Provider>
-  );
+  return <LinkContext.Provider value={contextValue}>{children}</LinkContext.Provider>;
 }
 
 export const useLinkContext = () => {

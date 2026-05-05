@@ -1,8 +1,10 @@
+import Link from 'next/link'
+
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
-import { ModalShell } from '../modal-shell'
 import { Button } from '@components/ui/button'
 import { ClaimBrandProfileIcon } from '@icons/claim-brand-profile-icon'
-import Link from 'next/link'
+
+import { ModalShell } from '../modal-shell'
 
 export function ClaimBrandProfile() {
   const { brandUrl, brandId } = useGenuinOptions((state) => ({

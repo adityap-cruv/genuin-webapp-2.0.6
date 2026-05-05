@@ -1,36 +1,27 @@
 "use client";
 import { useId, useEffect } from "react";
-import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+
+import { useAuthContext, useLinkContext } from "@genuin/components/context";
+import { useBaseContext } from "@genuin/components/context/base";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { useRouter } from "@genuin/components/hooks/use-router";
 import { NOT_FOUND_ERROR_CODES } from "@genuin/components/lib/constants/errors";
+import { getSocialLinks } from "@genuin/components/lib/utils";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { BecomeCreatorButton } from "@genuin/components/molecules/become-creator-button";
 import { ErrorState } from "@genuin/components/molecules/error-state";
 import { ShareButton } from "@genuin/components/molecules/share-button";
+import { DetailsPageTopbar } from "@genuin/components/organisms/details-page-topbar";
 import { GenericDetails } from "@genuin/components/organisms/generic-details";
 import { GenericDetailsMetadata } from "@genuin/components/organisms/generic-details/generic-details-metadata";
+import { SideInfo } from "@genuin/components/organisms/side-info";
 import { useGetProfileDetails } from "@genuin/components/react-query/api/profile/details";
 import { ProfileDetailsTabs } from "@genuin/components/templates/profile-details-tabs";
-import { DetailsPageTopbar } from "@genuin/components/organisms/details-page-topbar";
-import { useBaseContext } from "@genuin/components/context/base";
-import { ProfileDetailsSkeleton } from "./skeleton";
-import { SideInfo } from "@genuin/components/organisms/side-info";
-import { useRouter } from "@genuin/components/hooks/use-router";
-import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-import { getSocialLinks } from "@genuin/components/lib/utils";
-import { useAuthContext, useLinkContext } from "@genuin/components/context";
 
-export function ProfileDetails({
-  userName,
-  forBrand,
-}: {
-  userName: string;
-  forBrand: boolean;
-}) {
-  const {
-    isLoading,
-    isError,
-    error,
-    data: profileData,
-  } = useGetProfileDetails(userName, forBrand);
+import { ProfileDetailsSkeleton } from "./skeleton";
+
+export function ProfileDetails({ userName, forBrand }: { userName: string; forBrand: boolean }) {
+  const { isLoading, isError, error, data: profileData } = useGetProfileDetails(userName, forBrand);
   const { isMobile } = useDeviceDetectMediaQuery();
   const detailsId = useId();
   const { brandDetails } = useBaseContext();
@@ -71,17 +62,16 @@ export function ProfileDetails({
 
   const shareUrl = createExternalLink(
     buildPageUrl({
-      type: !!profileData.brand ? "brand" : "profile",
-      slug: !!profileData.brand
-        ? profileData.brand.brand_slug
-        : profileData.nickname,
+      type: profileData.brand ? "brand" : "profile",
+      slug: profileData.brand ? profileData.brand.brand_slug : profileData.nickname,
     })
   );
 
   const ctas = (
     <div className="gencl:flex gencl:gap-2">
       {(forBrand || (!forBrand && profileData && profileData.brand)) &&
-        user?.ksCbRequestStatus !== "Accepted" && user?.ksCbRequestStatus !== "Success" && (
+        user?.ksCbRequestStatus !== "Accepted" &&
+        user?.ksCbRequestStatus !== "Success" && (
           <BecomeCreatorButton
             size={isMobile ? "sm" : "md"}
             theme="primary"
@@ -100,8 +90,7 @@ export function ProfileDetails({
         className="gencl:pl-4 gencl:pr-6 gencl:py-3"
         title={profileData?.name ?? ""}
         profileImageDetails={{
-          imageUrl:
-            profileData?.profile_image_m ?? profileData?.profile_image ?? "",
+          imageUrl: profileData?.profile_image_m ?? profileData?.profile_image ?? "",
           isAvatar: profileData.is_avatar,
           alt: profileData.name ?? "",
         }}
@@ -123,11 +112,7 @@ export function ProfileDetails({
           }}
           title={profileData?.name ?? ""}
           profileImageDetails={{
-            imageUrl:
-              profileData?.profile_image_l ??
-              profileData.profile_image_m ??
-              profileData?.profile_image ??
-              "",
+            imageUrl: profileData?.profile_image_l ?? profileData.profile_image_m ?? profileData?.profile_image ?? "",
             isAvatar: profileData.is_avatar,
             alt: profileData.name ?? "",
           }}
@@ -147,29 +132,17 @@ export function ProfileDetails({
           }
           description={profileData.bio}
           links={{
-            linkedin: profileData.linkedin_id
-              ? profileData.linkedin_url + profileData.linkedin_id
-              : undefined,
-            instagram: profileData.insta_id
-              ? profileData.insta_url + profileData.insta_id
-              : undefined,
-            x: profileData.twitter_id
-              ? profileData.twitter_url + profileData.twitter_id
-              : undefined,
-            tiktok: profileData.tiktok_id
-              ? profileData.tiktok_url + profileData.tiktok_id
-              : undefined,
+            linkedin: profileData.linkedin_id ? profileData.linkedin_url + profileData.linkedin_id : undefined,
+            instagram: profileData.insta_id ? profileData.insta_url + profileData.insta_id : undefined,
+            x: profileData.twitter_id ? profileData.twitter_url + profileData.twitter_id : undefined,
+            tiktok: profileData.tiktok_id ? profileData.tiktok_url + profileData.tiktok_id : undefined,
             custom: profileData.brand?.website,
           }}
           ctas={ctas}
         />
         <ProfileDetailsTabs
           className="gencl:sm:pt-6!"
-          userId={
-            forBrand && profileData.brand
-              ? profileData.brand?.brand_id.toString()
-              : profileData.user_id
-          }
+          userId={forBrand && profileData.brand ? profileData.brand?.brand_id.toString() : profileData.user_id}
           forBrand={forBrand}
           aboutComponent={<About profileDetails={profileData} />}
         />
@@ -178,11 +151,7 @@ export function ProfileDetails({
   );
 }
 
-function About({
-  profileDetails,
-}: {
-  profileDetails: ReturnType<typeof useGetProfileDetails>["data"];
-}) {
+function About({ profileDetails }: { profileDetails: ReturnType<typeof useGetProfileDetails>["data"] }) {
   if (!profileDetails) return;
 
   // Prepare links object
@@ -217,9 +186,7 @@ function About({
   if (!hasDescription && !hasLinks) {
     return (
       <div className="gencl:p-4 gencl:h-60 gencl:flex gencl:items-center gencl:justify-center gencl:text-center gencl:bg-secondary-50 gencl:rounded-lg">
-        <p className="gencl:text-body-1-medium gencl:text-secondary-600">
-          No additional information available
-        </p>
+        <p className="gencl:text-body-1-medium gencl:text-secondary-600">No additional information available</p>
       </div>
     );
   }

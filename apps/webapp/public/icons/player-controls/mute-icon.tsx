@@ -1,6 +1,7 @@
-import { cn } from '@/lib/utils'
-import { type ComponentProps } from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
+import { type ComponentProps } from 'react'
+
+import { cn } from '@/lib/utils'
 
 // Define the muteVariant function using cva to handle different styles based on props
 const muteVariant = cva('', {

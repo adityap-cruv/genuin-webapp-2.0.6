@@ -44,10 +44,10 @@ export type GenAdConfig = {
   /** Unique element ID for the ad slot container div. */
   adSlotId: string;
   brandId?: string;
-  banner?: GenAdBannerConfig;
+  banner?: GenAdBannerConfig | GenAdBannerConfig[];
   aniview?: GenAdAniviewConfig;
-  native?: GenAdNativeConfig;
-  video?: GenAdVideoConfig;
+  native?: GenAdNativeConfig | GenAdNativeConfig[];
+  video?: GenAdVideoConfig | GenAdVideoConfig[];
   waterfallOrder?: string[];
   debug?: boolean;
 };
@@ -63,7 +63,7 @@ export type GenAdContainerProps = {
   videoId?: string;
   /** Video Type for analytics event payloads. */
   videoType?: string;
-  /** Called immediately after GenAd.init() is invoked — before waterfall resolves. */
+  /** Called when GenAd initialises (before waterfall resolves). */
   onAdInit?: () => void;
   /** Called when the waterfall finds an ad (provider name is passed). */
   onAdFilled?: (provider: string) => void;

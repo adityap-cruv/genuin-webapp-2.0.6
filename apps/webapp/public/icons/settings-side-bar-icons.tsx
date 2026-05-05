@@ -1,5 +1,6 @@
-import { cn } from '@lib/utils'
 import { type ComponentProps } from 'react'
+
+import { cn } from '@lib/utils'
 type Props = { variant?: string; isActive?: boolean; className?: string } & ComponentProps<'svg'>
 
 export function EditIcon({ isActive, className, ...props }: Props) {

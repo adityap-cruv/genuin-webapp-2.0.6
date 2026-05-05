@@ -1,14 +1,17 @@
+import { useEffect, useRef, useState } from 'react';
+
 import Stop from '@/assets/SvgIcons/Stop';
 import { useAgentsContext } from '@/context/app/context';
 import { useInputContext } from '@/context/input/context';
-import { useEffect, useRef, useState } from 'react';
+
 import ArrowUpward from '../../assets/SvgIcons/ArrowUpward';
 import { Button } from '../ui/button';
 import Spinner from '../ui/spinner';
-import { useFileUpload } from './hooks/useFileUpload';
+
 import { LeftButtons } from './LeftButtons';
 import PresetPrompts from './PresetPrompts';
 import { UploadedFilesList } from './UploadedFilesList';
+import { useFileUpload } from './hooks/useFileUpload';
 
 const MessageInput = () => {
     const {

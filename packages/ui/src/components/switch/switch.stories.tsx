@@ -1,5 +1,6 @@
-import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { useState } from "react";
+
 import { Switch } from "./switch";
 
 const meta: Meta<typeof Switch> = {
@@ -19,7 +20,7 @@ type Story = StoryObj<typeof Switch>;
 
 export const Default: Story = {
   render: function DefaultSwitch(args) {
-    const [checked, setChecked] = React.useState(args.checked ?? false);
+    const [checked, setChecked] = useState(args.checked ?? false);
 
     return <Switch {...args} checked={checked} onCheckedChange={setChecked} />;
   },
@@ -47,9 +48,8 @@ export const CheckedDisabled: Story = {
 };
 
 export const WithLabel: Story = {
-  render: (args) => {
-    // Ensure the Switch is controlled for Storybook
-    const [checked, setChecked] = React.useState(args.checked ?? false);
+  render: function WithLabelSwitch(args) {
+    const [checked, setChecked] = useState(args.checked ?? false);
     return (
       <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <Switch {...args} checked={checked} onCheckedChange={setChecked} />

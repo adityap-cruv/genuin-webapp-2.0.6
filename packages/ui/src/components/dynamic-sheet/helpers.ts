@@ -1,8 +1,4 @@
-import {
-  DYNAMIC_SHEET_STATES,
-  type DynamicSheetState,
-  type HeightValue,
-} from "./types";
+import { DYNAMIC_SHEET_STATES, type DynamicSheetState, type HeightValue } from "./types";
 
 /**
  * Convert a HeightValue to pixels relative to a container height.
@@ -13,10 +9,7 @@ import {
  * - `"200px"` → absolute pixels
  * - `"2rem"`  → rem × 16
  */
-export function normalizeHeightToPx(
-  value: HeightValue,
-  containerHeight: number,
-): number {
+export function normalizeHeightToPx(value: HeightValue, containerHeight: number): number {
   if (typeof value === "number") {
     return (value / 100) * containerHeight;
   }
@@ -45,12 +38,8 @@ export function clamp(value: number, min: number, max: number): number {
 }
 
 /** Return only the states that appear in DYNAMIC_SHEET_STATES order */
-export function filterEnabledStates(
-  enabled: DynamicSheetState[],
-): DynamicSheetState[] {
-  return DYNAMIC_SHEET_STATES.filter((s) =>
-    enabled.includes(s),
-  ) as DynamicSheetState[];
+export function filterEnabledStates(enabled: DynamicSheetState[]): DynamicSheetState[] {
+  return DYNAMIC_SHEET_STATES.filter((s) => enabled.includes(s)) as DynamicSheetState[];
 }
 
 /**
@@ -61,7 +50,7 @@ export function findNearestSnapState(
   currentPx: number,
   velocity: number,
   enabledStates: DynamicSheetState[],
-  stateToPx: (state: DynamicSheetState) => number,
+  stateToPx: (state: DynamicSheetState) => number
 ): DynamicSheetState {
   const VELOCITY_THRESHOLD = 500;
 
@@ -75,9 +64,7 @@ export function findNearestSnapState(
   // If the user flicked hard, bias toward the next snap in that direction
   if (Math.abs(velocity) > VELOCITY_THRESHOLD) {
     const isSwipingUp = velocity > 0;
-    const candidates = snapPoints.filter((snap) =>
-      isSwipingUp ? snap.px > currentPx + 5 : snap.px < currentPx - 5,
-    );
+    const candidates = snapPoints.filter((snap) => (isSwipingUp ? snap.px > currentPx + 5 : snap.px < currentPx - 5));
     if (candidates.length > 0) {
       return closestSnap(candidates, currentPx).state;
     }
@@ -87,13 +74,8 @@ export function findNearestSnapState(
 }
 
 /** Pick the snap point whose pixel value is closest to `targetPx` */
-function closestSnap<T extends { px: number }>(
-  snapPoints: T[],
-  targetPx: number,
-): T {
+function closestSnap<T extends { px: number }>(snapPoints: T[], targetPx: number): T {
   return snapPoints.reduce((closest, current) =>
-    Math.abs(closest.px - targetPx) < Math.abs(current.px - targetPx)
-      ? closest
-      : current,
+    Math.abs(closest.px - targetPx) < Math.abs(current.px - targetPx) ? closest : current
   );
 }

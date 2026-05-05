@@ -1,28 +1,25 @@
 "use client";
 
+import { Form, FormField, FormItem, FormControl, FormMessage } from "@genuin/ui/components/form";
 import { Input } from "@genuin/ui/input";
-import { PhoneInput } from "@genuin/ui/phone-input";
-import { useCallback } from "react";
-import type * as RPNInput from "react-phone-number-input";
-import { Footer } from "./footer";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { isValidPhoneNumber } from "react-phone-number-input";
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormControl,
-  FormMessage,
-} from "@genuin/ui/components/form";
-import { useSendOtpMutation } from "@genuin/components/react-query/api/authentication";
-import { getActionText } from "@genuin/components/lib/utils";
 import { sanitizeInput } from "@genuin/ui/lib/sanitize";
-import { useAuthenticationModalContext } from "../../context";
-import { useAuthContext } from "@genuin/components/context/auth";
-import { SubmitButton } from "../../submit-button";
+import { PhoneInput } from "@genuin/ui/phone-input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useCallback } from "react";
+import { useForm } from "react-hook-form";
+import type * as RPNInput from "react-phone-number-input";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import { z } from "zod";
+
 import { useBaseContext } from "@genuin/components/context";
+import { useAuthContext } from "@genuin/components/context/auth";
+import { getActionText } from "@genuin/components/lib/utils";
+import { useSendOtpMutation } from "@genuin/components/react-query/api/authentication";
+
+import { useAuthenticationModalContext } from "../../context";
+import { SubmitButton } from "../../submit-button";
+
+import { Footer } from "./footer";
 
 type SignInProps = React.ComponentProps<"div"> & {
   onSubmit?: (value: string, type: "email" | "phone") => void;
@@ -41,12 +38,7 @@ const phoneFormSchema = z.object({
   }),
 });
 
-export function SignIn({
-  onSubmit,
-  onNext = () => {},
-  email = false,
-  ...props
-}: SignInProps) {
+export function SignIn({ onSubmit, onNext = () => {}, email = false, ...props }: SignInProps) {
   const { user } = useAuthContext();
   const { isInIframe } = useBaseContext();
   const {
@@ -127,9 +119,7 @@ export function SignIn({
   return (
     <div className="gencl:text-center" {...props}>
       <div className="gencl:flex gencl:flex-col gencl:gap-3">
-        <h2 className="gencl:text-headline-3-semi-bold gencl:sm:!text-headline-2-semi-bold">
-          Sign in
-        </h2>
+        <h2 className="gencl:text-headline-3-semi-bold gencl:sm:!text-headline-2-semi-bold">Sign in</h2>
         <p className="gencl:text-body-1-medium gencl:text-secondary-600">
           {getActionText(
             "We`ll send you a code to sign in or create an account.",
@@ -143,8 +133,7 @@ export function SignIn({
           <Form {...emailForm} key="email">
             <form
               onSubmit={emailForm.handleSubmit(handleEmailSubmit)}
-              className="gencl:flex gencl:flex-col gencl:gap-4"
-            >
+              className="gencl:flex gencl:flex-col gencl:gap-4">
               <FormField
                 control={emailForm.control}
                 name="email"
@@ -169,8 +158,7 @@ export function SignIn({
           <Form {...phoneForm} key="phone">
             <form
               onSubmit={phoneForm.handleSubmit(handlePhoneSubmit)}
-              className="gencl:flex gencl:flex-col gencl:gap-4"
-            >
+              className="gencl:flex gencl:flex-col gencl:gap-4">
               <FormField
                 control={phoneForm.control}
                 name="phone"

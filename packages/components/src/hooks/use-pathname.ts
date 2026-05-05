@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useLayoutEffect } from "react";
+
 import { useLinkContext } from "../context/link";
 
 export function usePathname() {
   const { usePathname: customPathname } = useLinkContext();
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   return customPathname ? customPathname() : useWindowPathname();
 }
 

@@ -1,5 +1,7 @@
 import type { Meta, StoryFn } from "@storybook/react-vite";
+
 import { BaseLayout } from "@genuin/components/templates/base-layout";
+
 import { Explore } from "./explore";
 
 /**
@@ -28,7 +30,7 @@ export default {
 
 const Template: StoryFn = (args) => <Explore {...args} />;
 
-export const Default = Template.bind({});
+export const Default: StoryFn = Template.bind({});
 Default.args = {};
 Default.parameters = {
   docs: {

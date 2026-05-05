@@ -1,9 +1,11 @@
 import { IHeartTickIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
 import { type ComponentProps } from "react";
-import { OverLayButton } from "./overlay-buttons";
-import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+
 import { useBaseContext } from "@genuin/components/context";
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+
+import { OverLayButton } from "./overlay-buttons";
 
 interface IHeartCaughtUpOverlayProps extends ComponentProps<"div"> {
   variant: "overlay" | "complete";
@@ -45,23 +47,17 @@ export function IHeartCaughtUpOverlay({
           ? "gencl:bg-black gencl:text-white"
           : "gencl:bg-transparent gencl:text-black",
         className
-      )}
-    >
+      )}>
       <div className="gencl:flex gencl:flex-col gencl:gap-4 gencl:pointer-events-auto">
         <div className="gencl:flex gencl:flex-col gencl:gap-2 gencl:text-center gencl:text-white">
-          {variant === "complete" && (
-            <IHeartTickIcon className="gencl:self-center" />
-          )}
+          {variant === "complete" && <IHeartTickIcon className="gencl:self-center" />}
           <p
             id="caught-up-title"
             tabIndex={0}
             className={cn(
               "gencl:text-body-1-semi-bold gencl:text-[18px] gencl:leading-[24px] gencl:tracking-[-0.5px]",
-              theme === "dark" || variant === "complete"
-                ? "gencl:text-white"
-                : "gencl:text-black"
-            )}
-          >
+              theme === "dark" || variant === "complete" ? "gencl:text-white" : "gencl:text-black"
+            )}>
             {title}
           </p>
           <p
@@ -69,11 +65,8 @@ export function IHeartCaughtUpOverlay({
             tabIndex={0}
             className={cn(
               "gencl:text-body-2-normal gencl:text-[14px] gencl:leading-4",
-              theme === "dark" || variant === "complete"
-                ? "gencl:text-white"
-                : "gencl:text-black"
-            )}
-          >
+              theme === "dark" || variant === "complete" ? "gencl:text-white" : "gencl:text-black"
+            )}>
             {subtitle}
           </p>
         </div>

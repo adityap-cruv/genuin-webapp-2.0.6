@@ -1,31 +1,19 @@
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-  Form,
-  FormLabel,
-} from "@genuin/ui/components/form";
-import { ComponentProps } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { useAuthContext } from "@genuin/components/context/auth";
-import { cn } from "@genuin/ui/lib/utils";
-import { sanitizeInput } from "@genuin/ui/lib/sanitize";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  InstagramIcon,
-  LinkedInIcon,
-  TiktokIcon,
-  TwitterIcon,
-  YouTubeIcon,
-} from "@genuin/ui/icons";
-import { useAuthenticationModalContext } from "../../context";
-
-import { SubmitButton } from "../../submit-button";
+import { FormControl, FormField, FormItem, FormMessage, Form, FormLabel } from "@genuin/ui/components/form";
 import { Input } from "@genuin/ui/components/input";
 import { Toast } from "@genuin/ui/components/toaster";
+import { InstagramIcon, LinkedInIcon, TiktokIcon, TwitterIcon, YouTubeIcon } from "@genuin/ui/icons";
+import { sanitizeInput } from "@genuin/ui/lib/sanitize";
+import { cn } from "@genuin/ui/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { ComponentProps } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+import { useAuthContext } from "@genuin/components/context/auth";
 import { useUpdateUserMutation } from "@genuin/components/react-query/api/authentication";
+
+import { useAuthenticationModalContext } from "../../context";
+import { SubmitButton } from "../../submit-button";
 
 const generalUsernamePattern = /^[a-zA-Z0-9._-]+$/;
 // const youtubeUrlPattern =
@@ -70,37 +58,32 @@ const socialProfilesSchema = z.object({
     .or(z.literal("")),
 });
 
-export function EditSocialProfiles({
-  className,
-  ...restProps
-}: ComponentProps<"div">) {
+export function EditSocialProfiles({ className, ...restProps }: ComponentProps<"div">) {
   const { user, updateUser } = useAuthContext();
   const { closeModal } = useAuthenticationModalContext();
 
-  const { mutate: updateUserDetails, isPending: isPendingUpdateUser } =
-    useUpdateUserMutation({
-      onSuccess: ({ status }) => {
-        if (status) {
-          const { instagram, youtube, linkedin, tiktok, x } = form.getValues();
-          updateUser({
-            ...user,
-            instaId: sanitizeInput(instagram),
-            youtubeId: sanitizeInput(youtube),
-            linkedinId: sanitizeInput(linkedin?.split("?")[0] || ""),
-            tiktokId: sanitizeInput(tiktok),
-            xId: sanitizeInput(x),
-          });
-          Toast.Success({ message: "Your social profiles has been updated" });
-        }
-        closeModal();
-      },
-      onError: () => {
-        form.setError("root", {
-          message:
-            "Something went wrong while updating social links. Please try again!",
+  const { mutate: updateUserDetails, isPending: isPendingUpdateUser } = useUpdateUserMutation({
+    onSuccess: ({ status }) => {
+      if (status) {
+        const { instagram, youtube, linkedin, tiktok, x } = form.getValues();
+        updateUser({
+          ...user,
+          instaId: sanitizeInput(instagram),
+          youtubeId: sanitizeInput(youtube),
+          linkedinId: sanitizeInput(linkedin?.split("?")[0] || ""),
+          tiktokId: sanitizeInput(tiktok),
+          xId: sanitizeInput(x),
         });
-      },
-    });
+        Toast.Success({ message: "Your social profiles has been updated" });
+      }
+      closeModal();
+    },
+    onError: () => {
+      form.setError("root", {
+        message: "Something went wrong while updating social links. Please try again!",
+      });
+    },
+  });
 
   const form = useForm({
     resolver: zodResolver(socialProfilesSchema),
@@ -121,8 +104,7 @@ export function EditSocialProfiles({
 
     if (instagram) payload.insta_id = sanitizeInput(instagram);
     if (youtube) payload.youtube_id = sanitizeInput(youtube);
-    if (linkedin)
-      payload.linkedin_id = sanitizeInput(linkedin?.split("?")[0] || "");
+    if (linkedin) payload.linkedin_id = sanitizeInput(linkedin?.split("?")[0] || "");
     if (tiktok) payload.tiktok_id = sanitizeInput(tiktok);
     if (x) payload.twitter_id = sanitizeInput(x);
 
@@ -132,35 +114,25 @@ export function EditSocialProfiles({
   return (
     <div className={cn("gencl:space-y-6", className)} {...restProps}>
       <div className="gencl:space-y-2">
-        <h3 className="gencl:text-center gencl:text-headline-2-semi-bold">
-          Edit Social Profiles
-        </h3>
+        <h3 className="gencl:text-center gencl:text-headline-2-semi-bold">Edit Social Profiles</h3>
         <p className="gencl:text-center gencl:text-body-1-medium gencl:text-secondary-600">
           These links will show on your profile
         </p>
       </div>
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="gencl:space-y-6"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="gencl:space-y-6">
           <FormField
             control={form.control}
             name="instagram"
             render={({ field }) => {
               return (
                 <FormItem className="gencl:sm:w-full">
-                  <FormLabel
-                    htmlFor="instagram-profile-input"
-                    className="gencl:flex gencl:justify-between"
-                  >
+                  <FormLabel htmlFor="instagram-profile-input" className="gencl:flex gencl:justify-between">
                     <span>Instagram profile</span>
                   </FormLabel>
                   <FormControl>
                     <Input
-                      icon={
-                        <InstagramIcon className="gencl:w-5 gencl:h-5 gencl:fill-secondary-900" />
-                      }
+                      icon={<InstagramIcon className="gencl:w-5 gencl:h-5 gencl:fill-secondary-900" />}
                       id="instagram-profile-input"
                       type="text"
                       autoComplete="off"
@@ -179,17 +151,12 @@ export function EditSocialProfiles({
             render={({ field }) => {
               return (
                 <FormItem className="gencl:sm:w-full">
-                  <FormLabel
-                    htmlFor="youtube-profile-input"
-                    className="gencl:flex gencl:justify-between"
-                  >
+                  <FormLabel htmlFor="youtube-profile-input" className="gencl:flex gencl:justify-between">
                     <span>Youtube profile</span>
                   </FormLabel>
                   <FormControl>
                     <Input
-                      icon={
-                        <YouTubeIcon className="gencl:w-5 gencl:h-5 gencl:fill-secondary-900" />
-                      }
+                      icon={<YouTubeIcon className="gencl:w-5 gencl:h-5 gencl:fill-secondary-900" />}
                       id="youtube-profile-input"
                       type="text"
                       autoComplete="off"
@@ -208,17 +175,12 @@ export function EditSocialProfiles({
             render={({ field }) => {
               return (
                 <FormItem className="gencl:sm:w-full">
-                  <FormLabel
-                    htmlFor="linkedin-profile-input"
-                    className="gencl:flex gencl:justify-between"
-                  >
+                  <FormLabel htmlFor="linkedin-profile-input" className="gencl:flex gencl:justify-between">
                     <span>Linkedin profile</span>
                   </FormLabel>
                   <FormControl>
                     <Input
-                      icon={
-                        <LinkedInIcon className="gencl:w-5 gencl:h-5 gencl:fill-secondary-900" />
-                      }
+                      icon={<LinkedInIcon className="gencl:w-5 gencl:h-5 gencl:fill-secondary-900" />}
                       id="linkedin-profile-input"
                       type="text"
                       autoComplete="off"
@@ -237,17 +199,12 @@ export function EditSocialProfiles({
             render={({ field }) => {
               return (
                 <FormItem className="gencl:sm:w-full">
-                  <FormLabel
-                    htmlFor="tiktok-profile-input"
-                    className="gencl:flex gencl:justify-between"
-                  >
+                  <FormLabel htmlFor="tiktok-profile-input" className="gencl:flex gencl:justify-between">
                     <span>Tiktok profile</span>
                   </FormLabel>
                   <FormControl>
                     <Input
-                      icon={
-                        <TiktokIcon className="gencl:w-5 gencl:h-5 gencl:fill-secondary-900" />
-                      }
+                      icon={<TiktokIcon className="gencl:w-5 gencl:h-5 gencl:fill-secondary-900" />}
                       id="tiktok-profile-input"
                       type="text"
                       autoComplete="off"
@@ -266,17 +223,12 @@ export function EditSocialProfiles({
             render={({ field }) => {
               return (
                 <FormItem className="gencl:sm:w-full">
-                  <FormLabel
-                    htmlFor="x-profile-input"
-                    className="gencl:flex gencl:justify-between"
-                  >
+                  <FormLabel htmlFor="x-profile-input" className="gencl:flex gencl:justify-between">
                     <span>X profile</span>
                   </FormLabel>
                   <FormControl>
                     <Input
-                      icon={
-                        <TwitterIcon className="gencl:w-5 gencl:h-5 gencl:fill-secondary-900" />
-                      }
+                      icon={<TwitterIcon className="gencl:w-5 gencl:h-5 gencl:fill-secondary-900" />}
                       id="x-profile-input"
                       type="text"
                       autoComplete="off"

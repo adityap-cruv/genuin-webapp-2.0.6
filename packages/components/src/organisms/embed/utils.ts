@@ -1,4 +1,4 @@
-import { Swiper as SwiperType } from "swiper/types";
+import type { Swiper as SwiperType } from "swiper/types";
 
 /**
  * Utility functions for managing embed navigation
@@ -10,16 +10,11 @@ import { Swiper as SwiperType } from "swiper/types";
  * @param targetIndex - The slide index to check
  * @returns boolean indicating if the slide is visible
  */
-export function isSlideVisible(
-  swiper: SwiperType,
-  targetIndex: number
-): boolean {
+export function isSlideVisible(swiper: SwiperType, targetIndex: number): boolean {
   if (!swiper || !swiper.params) return false;
 
   // Default to 1 if slidesPerView is undefined
-  const slidesPerView = Math.floor(
-    (swiper.params.slidesPerView as number) || 1
-  );
+  const slidesPerView = Math.floor((swiper.params.slidesPerView as number) || 1);
 
   // Check if virtualization is enabled
   const isVirtualEnabled = swiper.params.virtual && swiper.virtual;
@@ -66,15 +61,12 @@ export function getNavigationAction(
   const isVirtualEnabled = swiper.params.virtual && swiper.virtual;
 
   // When virtualization is enabled, use virtual.slides.length for total count
-  const totalSlides = isVirtualEnabled
-    ? (swiper.virtual?.slides?.length ?? 0)
-    : (swiper.slides?.length ?? 0);
+  const totalSlides = isVirtualEnabled ? (swiper.virtual?.slides?.length ?? 0) : (swiper.slides?.length ?? 0);
 
   if (totalSlides === 0) {
     return { shouldSlide: false, targetIndex: currentActiveIndex };
   }
-  const targetIndex =
-    direction === "next" ? currentActiveIndex + 1 : currentActiveIndex - 1;
+  const targetIndex = direction === "next" ? currentActiveIndex + 1 : currentActiveIndex - 1;
 
   // in case of zero no need to check if we should swiper or not,
   // if swiper is already at 0 it won't swipe. So we just send true for should swipe as it will swipe to top even if small out of bounds issue.
@@ -121,19 +113,14 @@ export function getVisibleSlideRange(swiper: SwiperType): {
 
   // When virtualization is enabled, swiper.slides only contains rendered DOM elements
   // Use virtual.slides.length for the total count
-  const totalSlides = isVirtualEnabled
-    ? (swiper.virtual?.slides?.length ?? 0)
-    : (swiper.slides?.length ?? 0);
+  const totalSlides = isVirtualEnabled ? (swiper.virtual?.slides?.length ?? 0) : (swiper.slides?.length ?? 0);
 
   if (totalSlides === 0) return { first: 0, last: 0 };
 
   // Default to 1 if slidesPerView is undefined
   const slidesPerView = (swiper.params.slidesPerView as number) || 1;
   const first = swiper.activeIndex;
-  const last = Math.min(
-    Math.floor(first + slidesPerView - 1),
-    totalSlides - 1
-  );
+  const last = Math.min(Math.floor(first + slidesPerView - 1), totalSlides - 1);
 
   return { first, last };
 }
@@ -157,9 +144,7 @@ export function getNewActiveIndexOnSlideChange(
 
   // When virtualization is enabled, swiper.slides only contains rendered DOM elements
   // We need to check virtual.slides for the full list
-  const hasSlides = isVirtualEnabled
-    ? (swiper.virtual?.slides?.length ?? 0) > 0
-    : (swiper.slides?.length ?? 0) > 0;
+  const hasSlides = isVirtualEnabled ? (swiper.virtual?.slides?.length ?? 0) > 0 : (swiper.slides?.length ?? 0) > 0;
 
   if (!hasSlides) return 0;
 

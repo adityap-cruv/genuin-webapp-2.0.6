@@ -1,9 +1,10 @@
-import React from "react";
 import { Image } from "@genuin/ui/components/image";
 import { ImageIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
-import { MediaModal } from "./link-thumbnail-modal";
+import React from "react";
 import { useState } from "react";
+
+import { MediaModal } from "./link-thumbnail-modal";
 
 type LinkThumbnailProps = {
   className?: string;
@@ -34,18 +35,12 @@ export function LinkThumbnail({
     <>
       <div
         className={cn(
-          "gencl:relative gencl:overflow-hidden gencl:mb-2 gencl:border gencl:border-secondary-150 ",
+          "gencl:relative gencl:overflow-hidden gencl:mb-2 gencl:border gencl:border-secondary-150",
           className
         )}
-        style={{ width, height }}
-      >
+        style={{ width, height }}>
         {image ? (
-          <Image
-            alt={title}
-            className="gencl:h-full gencl:w-full"
-            scale={scale}
-            src={image}
-          />
+          <Image alt={title} className="gencl:h-full gencl:w-full" scale={scale} src={image} useWebp={false} />
         ) : (
           <MediaModal
             type="media-upload"
@@ -56,12 +51,10 @@ export function LinkThumbnail({
             roundCrop={false}
             onImageChange={({ file, url }) => {
               onImageChange?.({ file, url });
-            }}
-          >
+            }}>
             <div
               style={{ width, height }}
-              className="gencl:flex-center gencl:hover:bg-secondary-50 gencl:cursor-pointer"
-            >
+              className="gencl:flex-center gencl:hover:bg-secondary-50 gencl:cursor-pointer">
               <ImageIcon />
             </div>
           </MediaModal>
@@ -71,8 +64,7 @@ export function LinkThumbnail({
             style={{ width, height }}
             className={cn(
               "gencl:absolute gencl:flex gencl:flex-col gencl:items-center gencl:justify-center gencl:gap-2 gencl:bg-black/50 gencl:top-0 gencl:left-0 gencl:w-full gencl:h-full gencl:hover:opacity-100 gencl:opacity-0"
-            )}
-          >
+            )}>
             <MediaModal
               type="media-upload"
               title="Media Upload"
@@ -82,28 +74,17 @@ export function LinkThumbnail({
               roundCrop={false}
               onImageChange={({ file }) => {
                 onImageChange?.({ file });
-              }}
-            >
-              <p className="gencl:text-white gencl:text-body-2-bold gencl:cursor-pointer">
-                Edit
-              </p>
+              }}>
+              <p className="gencl:text-white gencl:text-body-2-bold gencl:cursor-pointer">Edit</p>
             </MediaModal>
-            <p
-              className="gencl:text-white gencl:text-body-2-bold gencl:cursor-pointer"
-              onClick={handelRemove}
-            >
+            <p className="gencl:text-white gencl:text-body-2-bold gencl:cursor-pointer" onClick={handelRemove}>
               Remove
             </p>
-
           </div>
         )}
       </div>
-      <p className="gencl:text-body-2-medium gencl:text-secondary-600">
-        File type: {fileTypes}
-      </p>
-      <p className="gencl:text-body-2-medium gencl:text-secondary-600">
-        Image dimension: {fileDimension}
-      </p>
+      <p className="gencl:text-body-2-medium gencl:text-secondary-600">File type: {fileTypes}</p>
+      <p className="gencl:text-body-2-medium gencl:text-secondary-600">Image dimension: {fileDimension}</p>
     </>
   );
 }

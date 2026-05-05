@@ -1,10 +1,14 @@
-import type { Agent, AgentPreset } from '@/types';
-import { Button } from '../ui/button';
+import { useEffect } from 'react';
+
 import { useAgentsContext } from '@/context/app/context';
 import { useInputContext } from '@/context/input/context';
-import { Select, SelectContent, SelectItem, SelectTrigger } from '../ui/select';
-import { useEffect } from 'react';
 import { useRudderEvents } from '@/services/analytics/useRudderAnalytics';
+import type { Agent, AgentPreset } from '@/types';
+
+import { Button } from '../ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger } from '../ui/select';
+
+
 
 const Objectives = () => {
     const {

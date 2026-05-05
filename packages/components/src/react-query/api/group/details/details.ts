@@ -1,26 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
-import { useAxiosInstance } from "@genuin/components/context/axios";
-
-import { NOT_FOUND_ERROR_CODES } from "@genuin/components/lib/constants/errors";
-import { getQueryKeyForLoopDetails } from "@genuin/components/react-query/keys/group";
-import { API_PATHS } from "@genuin/components/react-query/paths";
-
-import { parseGroupDetails } from "./parser";
-import { queryClient } from "@genuin/components/react-query/client";
-import { GroupUserStatusType } from "@genuin/components/types/roles";
 import type { AxiosInstance } from "axios";
 
-export async function fetchLoopDetails(
-  axiosInstance: AxiosInstance,
-  slug?: string,
-  chat_id?: string
-) {
+import { useAxiosInstance } from "@genuin/components/context/axios";
+import { NOT_FOUND_ERROR_CODES } from "@genuin/components/lib/constants/errors";
+import { queryClient } from "@genuin/components/react-query/client";
+import { getQueryKeyForLoopDetails } from "@genuin/components/react-query/keys/group";
+import { API_PATHS } from "@genuin/components/react-query/paths";
+import type { GroupUserStatusType } from "@genuin/components/types/roles";
+
+import { parseGroupDetails } from "./parser";
+
+export async function fetchLoopDetails(axiosInstance: AxiosInstance, slug?: string, chat_id?: string) {
   try {
     const response = await axiosInstance.get(API_PATHS.GROUP_DETAILS, {
       params: { slug, chat_id },
     });
     return parseGroupDetails(response?.data?.data);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.response?.data?.code === NOT_FOUND_ERROR_CODES.group) {
       throw new Error(NOT_FOUND_ERROR_CODES.group);
@@ -48,24 +43,18 @@ export function useGetGroupDetails(slug: string) {
  * @param slug - The unique identifier for the group.
  * @param role
  */
-export function setQueryDataForJoinGroupInGroupDetails(
-  slug: string,
-  role: GroupUserStatusType
-) {
+export function setQueryDataForJoinGroupInGroupDetails(slug: string, role: GroupUserStatusType) {
   type QueryData = ReturnType<typeof useGetGroupDetails>["data"];
 
-  queryClient.setQueryData(
-    getQueryKeyForLoopDetails(slug),
-    (oldData: QueryData): QueryData => {
-      if (!oldData) return oldData;
+  queryClient.setQueryData(getQueryKeyForLoopDetails(slug), (oldData: QueryData): QueryData => {
+    if (!oldData) return oldData;
 
-      return {
-        ...oldData,
-        isSubscriber: role === "JOINED" ? true : oldData.isSubscriber,
-        role,
-      };
-    }
-  );
+    return {
+      ...oldData,
+      isSubscriber: role === "JOINED" ? true : oldData.isSubscriber,
+      role,
+    };
+  });
 }
 
 /**
@@ -73,21 +62,15 @@ export function setQueryDataForJoinGroupInGroupDetails(
  * @param slug - The unique identifier for the group.
  * @param isSubscriber - Whether the user is a subscriber or not.
  */
-export function setQueryDataForSubscribeGroupInGroupDetails(
-  slug: string,
-  isSubscriber: boolean
-) {
+export function setQueryDataForSubscribeGroupInGroupDetails(slug: string, isSubscriber: boolean) {
   type QueryData = ReturnType<typeof useGetGroupDetails>["data"];
 
-  queryClient.setQueryData(
-    getQueryKeyForLoopDetails(slug),
-    (oldData: QueryData): QueryData => {
-      if (!oldData) return oldData;
+  queryClient.setQueryData(getQueryKeyForLoopDetails(slug), (oldData: QueryData): QueryData => {
+    if (!oldData) return oldData;
 
-      return {
-        ...oldData,
-        isSubscriber,
-      };
-    }
-  );
+    return {
+      ...oldData,
+      isSubscriber,
+    };
+  });
 }

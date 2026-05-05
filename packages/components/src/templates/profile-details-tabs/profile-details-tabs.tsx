@@ -2,10 +2,11 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@genuin/ui/tabs";
 import { cn } from "@genuin/ui/utils";
+import { useCallback, useEffect, useState } from "react";
+
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
 import { CommunityList } from "./community-list";
-import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-import { useCallback, useEffect, useState } from "react";
 
 type ProfileDetailsTabsPropsType = Omit<
   {
@@ -42,8 +43,7 @@ export function ProfileDetailsTabs({
       value={value}
       onValueChange={handleValueChange}
       className={cn("gencl:w-full gencl:h-full", className)}
-      {...restProps}
-    >
+      {...restProps}>
       <TabsList>
         <TabsTrigger value="communities">Communities</TabsTrigger>
         {!isDesktop && <TabsTrigger value="about">About</TabsTrigger>}

@@ -2,9 +2,12 @@
 import { PauseIcon } from "@genuin/ui/icons";
 import { PlayIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/utils";
-import { ComponentProps, memo, useState } from "react";
-import { AnimatedText } from "./animated-text";
+import type { ComponentProps } from "react";
+import { memo, useState } from "react";
+
 import { usePlayerContext } from "../../../context";
+
+import { AnimatedText } from "./animated-text";
 
 type PlayButtonProps = {
   shouldAnimate: boolean;
@@ -28,21 +31,15 @@ export const AnimatedPlayButton = memo(function PlayButton({
         "gencl:group gencl:cursor-pointer gencl:flex gencl:justify-center gencl:items-center gencl:rounded-full gencl:bg-black/40 gencl:transition-all gencl:duration-300 gencl:ease-in-out gencl:hover:bg-black/50",
         className
       )}
-      {...restProps}
-    >
+      {...restProps}>
       <div className="gencl:flex gencl:size-9 gencl:sm:size-12! gencl:flex-shrink-0 gencl:items-center gencl:justify-center">
         {playingState === "PLAYING" ? (
           <PauseIcon theme="dark" className="gencl:size-5 gencl:sm:size-6!" />
         ) : (
-          <PlayIcon
-            theme="fill-dark"
-            className="gencl:size-5 gencl:sm:size-6!"
-          />
+          <PlayIcon theme="fill-dark" className="gencl:size-5 gencl:sm:size-6!" />
         )}
       </div>
-      {playingState === "PAUSED" && (
-        <AnimatedText text="Tap to play" width={110} stop={stopAnimating} />
-      )}
+      {playingState === "PAUSED" && <AnimatedText text="Tap to play" width={110} stop={stopAnimating} />}
     </div>
   );
 });

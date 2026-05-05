@@ -1,25 +1,39 @@
-import js from '@eslint/js';
-import globals from 'globals';
-import reactHooks from 'eslint-plugin-react-hooks';
-import reactRefresh from 'eslint-plugin-react-refresh';
-import tseslint from 'typescript-eslint';
+// ESLint config for the genai package — environment setup only.
+// All rules are defined in packages/eslint-config.
 
-export default tseslint.config(
-    { ignores: ['dist'] },
-    {
-        extends: [js.configs.recommended, ...tseslint.configs.recommended],
-        files: ['**/*.{ts,tsx}'],
-        languageOptions: {
-            ecmaVersion: 2020,
-            globals: globals.browser,
+import globals from 'globals';
+
+import sharedConfig from '../eslint-config/library.js';
+
+export default [
+  ...sharedConfig,
+  {
+    files: ['**/*.cjs'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+        ...globals.commonjs,
+      },
+    },
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
+    },
+  },
+  {
+    settings: {
+      'import/resolver': {
+        typescript: {
+          project: './tsconfig.app.json',
         },
-        plugins: {
-            'react-hooks': reactHooks,
-            'react-refresh': reactRefresh,
+        node: {
+          extensions: ['.js', '.jsx', '.ts', '.tsx'],
         },
-        rules: {
-            ...reactHooks.configs.recommended.rules,
-            'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
-        },
-    }
-);
+      },
+    },
+    rules: {
+      // TODO(eslint-migration): Re-enable after migrating legacy code to proper types.
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+    },
+  },
+];

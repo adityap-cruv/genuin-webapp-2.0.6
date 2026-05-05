@@ -1,21 +1,18 @@
-import {
-  BagIcon,
-  CreatedProfileIcon,
-  PencilWithLineIcon,
-} from "@genuin/ui/icons";
+import { BagIcon, CreatedProfileIcon, PencilWithLineIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/utils";
+import type { VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 import { type ComponentProps, type ReactNode } from "react";
 
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { formateDateToLocaleString } from "@genuin/components/lib/utils";
+import { ReadMore } from "@genuin/components/molecules/read-more";
+import type { ReadMoreTextType } from "@genuin/components/molecules/read-more/read-more.types";
+import { SocialLinks } from "@genuin/components/molecules/social-links";
 import { Stats } from "@genuin/components/molecules/stats";
 import { Tag } from "@genuin/components/molecules/tag";
 
 import { Guidelines } from "./guide-lines";
-import { cva, VariantProps } from "class-variance-authority";
-import { ReadMore } from "@genuin/components/molecules/read-more";
-import { ReadMoreTextType } from "@genuin/components/molecules/read-more/read-more.types";
-import { SocialLinks } from "@genuin/components/molecules/social-links";
-import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
 const sideInfoVariant = cva(
   "gencl:bg-secondary-50 gencl:overflow-auto gencl:p-4 gencl:rounded-lg gencl:gap-2 gencl:space-y-4",
@@ -43,15 +40,7 @@ type SideInfoProps = {
   VariantProps<typeof sideInfoVariant>;
 
 export function SideInfo({
-  sideInfoData: {
-    createdAt,
-    createdBy,
-    createdIn,
-    stats,
-    guidelines,
-    description,
-    links,
-  },
+  sideInfoData: { createdAt, createdBy, createdIn, stats, guidelines, description, links },
   others,
   variant,
   className,
@@ -82,21 +71,13 @@ export function SideInfo({
   }
 
   // Links section
-  if (
-    links &&
-    Object.keys(links).length > 0 &&
-    variant === "mobile" &&
-    isMobile
-  ) {
+  if (links && Object.keys(links).length > 0 && variant === "mobile" && isMobile) {
     sections.push({
       id: "links",
       content: (
         <div className="gencl:space-y-4">
           <p className="gencl:text-body-1-semi-bold">Links</p>
-          <SocialLinks
-            links={links}
-            variant={variant === "mobile" ? "detailed" : "default"}
-          />
+          <SocialLinks links={links} variant={variant === "mobile" ? "detailed" : "default"} />
         </div>
       ),
     });
@@ -125,15 +106,10 @@ export function SideInfo({
       id: "creation-info",
       content: (
         <div className="gencl:space-y-2">
-          {variant === "mobile" && (
-            <p className="gencl:text-body-1-semi-bold gencl:pb-2">More info</p>
-          )}
+          {variant === "mobile" && <p className="gencl:text-body-1-semi-bold gencl:pb-2">More info</p>}
           {createdAt && (
             <div className="gencl:flex gencl:gap-2 gencl:items-center">
-              <PencilWithLineIcon
-                theme="secondary"
-                size={variant === "default" ? "md" : "sm"}
-              />
+              <PencilWithLineIcon theme="secondary" size={variant === "default" ? "md" : "sm"} />
               <p className="gencl:text-body-1-medium gencl:text-secondary-600">
                 Created on {formateDateToLocaleString(createdAt)}
               </p>
@@ -141,12 +117,7 @@ export function SideInfo({
           )}
           {createdBy && (
             <EntityInfo
-              icon={
-                <CreatedProfileIcon
-                  theme="secondary"
-                  size={variant === "default" ? "md" : "sm"}
-                />
-              }
+              icon={<CreatedProfileIcon theme="secondary" size={variant === "default" ? "md" : "sm"} />}
               title="Created by"
               entity={createdBy}
               size={"sm"}
@@ -154,12 +125,7 @@ export function SideInfo({
           )}
           {createdIn && (
             <EntityInfo
-              icon={
-                <BagIcon
-                  theme="secondary"
-                  size={variant === "default" ? "md" : "sm"}
-                />
-              }
+              icon={<BagIcon theme="secondary" size={variant === "default" ? "md" : "sm"} />}
               title="Created in&nbsp;"
               entity={createdIn}
               size={"sm"}
@@ -203,9 +169,7 @@ export function SideInfo({
       {sections.map((section, index) => (
         <div key={section.id}>
           {section.content}
-          {index < sections.length - 1 && (
-            <div className="gencl:border-b gencl:border-secondary-150 gencl:my-4" />
-          )}
+          {index < sections.length - 1 && <div className="gencl:border-b gencl:border-secondary-150 gencl:my-4" />}
         </div>
       ))}
     </div>
@@ -253,9 +217,7 @@ function EntityInfo({ title, icon, entity, size }: EntityInfoProps) {
   return (
     <div className="gencl:flex gencl:gap-2 gencl:items-center">
       {icon}
-      <p className="gencl:text-body-1-medium gencl:text-secondary-600 gencl:whitespace-nowrap">
-        {title}
-      </p>
+      <p className="gencl:text-body-1-medium gencl:text-secondary-600 gencl:whitespace-nowrap">{title}</p>
       <Tag
         alt={entity.name || entity.userName}
         profileImage={entity.profileImage}

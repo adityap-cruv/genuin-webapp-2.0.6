@@ -1,7 +1,7 @@
-'use client'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { useState } from 'react'
+"use client";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { useState } from "react";
 
 // Create a global queryClient for use outside the React component tree
 export const queryClient = new QueryClient({
@@ -11,7 +11,7 @@ export const queryClient = new QueryClient({
       staleTime: 60 * 1000,
     },
   },
-})
+});
 
 // For React 19 and TanStack Query 5, create a client per-request
 export const ReactQueryProvider = ({ children }: { children: React.ReactNode }) => {
@@ -21,5 +21,5 @@ export const ReactQueryProvider = ({ children }: { children: React.ReactNode }) 
       {children}
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
-  )
-}
+  );
+};

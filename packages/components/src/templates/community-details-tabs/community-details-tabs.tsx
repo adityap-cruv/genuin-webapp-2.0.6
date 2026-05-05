@@ -1,17 +1,21 @@
 "use client";
-import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@genuin/ui/tabs";
 import { cn } from "@genuin/ui/utils";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { GroupSubscriptionButton } from "@genuin/components/molecules/group-subscription-button";
 import { JoinGroupButton } from "@genuin/components/molecules/join-group-button";
 import { ShareButton } from "@genuin/components/molecules/share-button";
+import { ComponentErrorState } from "@genuin/components/organisms/error-state-component";
 import { GenericDetails } from "@genuin/components/organisms/generic-details";
 import { GenericDetailsMetadata } from "@genuin/components/organisms/generic-details/generic-details-metadata";
-import { MemberList } from "@genuin/components/organisms/member-list";
 import { GroupCardSkeleton } from "@genuin/components/organisms/group-card";
+import { GroupPosts } from "@genuin/components/organisms/group-posts";
+import { MemberList } from "@genuin/components/organisms/member-list";
 import { PostsGridSkeleton } from "@genuin/components/organisms/posts-grid";
+import { setQueryDataForCommunityRoleChange } from "@genuin/components/react-query/api/community/details/details";
 import {
   setQueryDataForJoinGroupStatusInCommunityGroups,
   setQueryDataForSubscriptionStatusInCommunityGroups,
@@ -19,11 +23,7 @@ import {
 } from "@genuin/components/react-query/api/community/groups";
 import { useGetCommunityMembers } from "@genuin/components/react-query/api/community/members";
 import type { MembersSchemaType } from "@genuin/components/react-query/api/community/members/schema";
-import { ComponentErrorState } from "@genuin/components/organisms/error-state-component";
-import { GroupPosts } from "@genuin/components/organisms/group-posts";
-import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-import { setQueryDataForCommunityRoleChange } from "@genuin/components/react-query/api/community/details/details";
-import { CommunityUserRole } from "@genuin/components/types/post";
+import type { CommunityUserRole } from "@genuin/components/types/post";
 
 type CommunityDetailsTabsPropsType = Omit<
   {
@@ -81,19 +81,14 @@ export function CommunityDetailsTabs({
       value={value}
       onValueChange={onValueChange}
       className={cn("gencl:w-full gencl:h-full", className)}
-      {...restProps}
-    >
+      {...restProps}>
       <TabsList className="groups">
         <TabsTrigger value="groups">Groups</TabsTrigger>
         <TabsTrigger value="members">Members</TabsTrigger>
         {!isDesktop && <TabsTrigger value="about">About</TabsTrigger>}
       </TabsList>
       <TabsContent value="groups" className={contentClassName}>
-        <CommunityGroups
-          slug={slug}
-          ownerInfo={ownerInfo}
-          communityUserRole={communityUserRole}
-        />
+        <CommunityGroups slug={slug} ownerInfo={ownerInfo} communityUserRole={communityUserRole} />
       </TabsContent>
       <TabsContent value="members" className={contentClassName}>
         <CommunityMembers slug={slug} communityOwnerId={communityOwnerId} />
@@ -117,11 +112,7 @@ function CommunityGroups({
   };
   communityUserRole: CommunityUserRole;
 }) {
-  const {
-    data: communityGroups,
-    isLoading,
-    isError,
-  } = useGetCommunityGroups(slug);
+  const { data: communityGroups, isLoading, isError } = useGetCommunityGroups(slug);
   const { isMobile } = useDeviceDetectMediaQuery();
 
   if (isLoading) {
@@ -139,8 +130,7 @@ function CommunityGroups({
   const groups = communityGroups.groups;
 
   return groups.map((group) => {
-    const showPrivateGroupAccess =
-      !group.is_view_allowed && group.logged_in_user_status !== "JOINED";
+    const showPrivateGroupAccess = !group.is_view_allowed && group.logged_in_user_status !== "JOINED";
 
     return (
       <GenericDetails
@@ -174,26 +164,17 @@ function CommunityGroups({
               groupSlug={group.slug}
               groupName={group.group.group_name ?? ""}
               groupDescription={`${
-                group.group.group_description
-                  ? group.group.group_description + " | "
-                  : ""
+                group.group.group_description ? group.group.group_description + " | " : ""
               } • Join ${group.group.group_name} to talk about it`}
               shareUrl={group.share_url ?? ""}
               isPrivate={group.is_view_allowed}
               role={group.logged_in_user_status}
               onGroupJoinStatusChange={(newRole) => {
                 // Handle group join status change if needed
-                setQueryDataForJoinGroupStatusInCommunityGroups(
-                  group.chat_id,
-                  slug,
-                  newRole
-                );
+                setQueryDataForJoinGroupStatusInCommunityGroups(group.chat_id, slug, newRole);
 
                 // If joining a group and community is not joined, join the community as well
-                if (
-                  newRole !== "UNJOINED" &&
-                  communityUserRole === "UNJOINED"
-                ) {
+                if (newRole !== "UNJOINED" && communityUserRole === "UNJOINED") {
                   setQueryDataForCommunityRoleChange(slug, "MEMBER");
                 }
               }}
@@ -204,29 +185,18 @@ function CommunityGroups({
               groupSlug={group.slug}
               groupName={group.group.group_name ?? ""}
               groupDescription={`${
-                group.group.group_description
-                  ? group.group.group_description + " | "
-                  : ""
+                group.group.group_description ? group.group.group_description + " | " : ""
               } • Join ${group.group.group_name} to talk about it`}
               shareUrl={group.share_url ?? ""}
               isSubscriber={group.is_subscriber ?? false}
               showText={false}
               onSubscriptionChange={(isSubscribed) => {
-                setQueryDataForSubscriptionStatusInCommunityGroups(
-                  group.chat_id,
-                  slug,
-                  isSubscribed
-                );
+                setQueryDataForSubscriptionStatusInCommunityGroups(group.chat_id, slug, isSubscribed);
               }}
             />
-            <ShareButton
-              size="sm"
-              showText={false}
-              pathName={buildPageUrl({ type: "group", slug: group.slug })}
-            />
+            <ShareButton size="sm" showText={false} pathName={buildPageUrl({ type: "group", slug: group.slug })} />
           </div>
-        }
-      >
+        }>
         {showPrivateGroupAccess ? (
           <ComponentErrorState forList type="PRIVATE_GROUP" />
         ) : (
@@ -243,18 +213,8 @@ function CommunityGroups({
   });
 }
 
-function CommunityMembers({
-  slug,
-  communityOwnerId,
-}: {
-  slug: string;
-  communityOwnerId: string;
-}) {
-  const {
-    data: communityMembers,
-    isError,
-    isLoading,
-  } = useGetCommunityMembers(slug);
+function CommunityMembers({ slug, communityOwnerId }: { slug: string; communityOwnerId: string }) {
+  const { data: communityMembers, isError, isLoading } = useGetCommunityMembers(slug);
 
   // If the API returns { members: [...] }, extract the array
   const membersData =
@@ -270,14 +230,11 @@ function CommunityMembers({
     name: member.name ?? "",
     profileImage: {
       isAvatar: member.is_avatar,
-      url:
-        member.profile_image_s ??
-        member.profile_image_m ??
-        member.profile_image,
+      url: member.profile_image_s ?? member.profile_image_m ?? member.profile_image,
     },
     url: buildPageUrl({
-      type: !!member.brand ? "brand" : "profile",
-      slug: !!member.brand ? member.brand.brand_slug : member.nickname,
+      type: member.brand ? "brand" : "profile",
+      slug: member.brand ? member.brand.brand_slug : member.nickname,
     }),
     userName: member.nickname,
     brand: {
@@ -288,9 +245,7 @@ function CommunityMembers({
   });
 
   // Filter admins (role 1: leader, role 3: moderator)
-  const admins =
-    membersData?.filter((member) => member.role === 1 || member.role === 3) ??
-    [];
+  const admins = membersData?.filter((member) => member.role === 1 || member.role === 3) ?? [];
 
   // Filter members (role 2: member)
   const members = membersData?.filter((member) => member.role === 2) ?? [];
@@ -299,20 +254,12 @@ function CommunityMembers({
     <div>
       <div>
         <p className="gencl:text-body-1-semi-bold gencl:mb-3">Admins</p>
-        <MemberList
-          isError={isError}
-          isLoading={isLoading}
-          members={admins.map(transformMember)}
-        />
+        <MemberList isError={isError} isLoading={isLoading} members={admins.map(transformMember)} />
       </div>
       <hr className="gencl:my-6 gencl:mt-2 gencl:border-secondary-150" />
       <div>
         <p className="gencl:text-body-1-semi-bold gencl:mb-3">Members</p>
-        <MemberList
-          isError={isError}
-          isLoading={isLoading}
-          members={members.map(transformMember)}
-        />
+        <MemberList isError={isError} isLoading={isLoading} members={members.map(transformMember)} />
       </div>
     </div>
   );

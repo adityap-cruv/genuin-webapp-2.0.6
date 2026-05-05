@@ -1,19 +1,6 @@
 "use client";
-import { useAuthContext } from "@genuin/components/context/auth";
-import { SettingRow } from "@genuin/components/molecules/setting-row";
-import SideMenu from "@genuin/components/molecules/side-menus/side-menu";
-import { MenuItem } from "@genuin/components/molecules/side-menus/side-menu.types";
-import { AccountSettings } from "@genuin/components/organisms/settings/screen/account-settings";
-import { EditProfileSettings } from "@genuin/components/organisms/settings/screen/edit-profile-settings";
-import { NotificationSettings } from "@genuin/components/organisms/settings/screen/notifications-settings";
-import { ContactUs } from "@genuin/components/organisms/settings/screen/contact-us";
-import { useState, useMemo } from "react";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@genuin/ui/components/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@genuin/ui/components/tabs";
+import { Toast } from "@genuin/ui/components/toaster";
 import {
   CreatedProfileIcon,
   EditIcon,
@@ -22,10 +9,20 @@ import {
   InfoIcon,
   SignOutIcon,
 } from "@genuin/ui/icons";
+import { useState, useMemo } from "react";
+
+import { useAuthContext } from "@genuin/components/context/auth";
+import { useAxiosInstance } from "@genuin/components/context/axios";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-import { notificationsSettings } from "@genuin/components/react-query/api/authentication/notifications";
-import { Toast } from "@genuin/ui/components/toaster";
+import { SettingRow } from "@genuin/components/molecules/setting-row";
+import SideMenu from "@genuin/components/molecules/side-menus/side-menu";
+import type { MenuItem } from "@genuin/components/molecules/side-menus/side-menu.types";
+import { AccountSettings } from "@genuin/components/organisms/settings/screen/account-settings";
+import { ContactUs } from "@genuin/components/organisms/settings/screen/contact-us";
+import { EditProfileSettings } from "@genuin/components/organisms/settings/screen/edit-profile-settings";
+import { NotificationSettings } from "@genuin/components/organisms/settings/screen/notifications-settings";
 import { useGetCategoriesQuery } from "@genuin/components/react-query/api/authentication/categories";
+import { notificationsSettings } from "@genuin/components/react-query/api/authentication/notifications";
 
 const menu: MenuItem[] = [
   {
@@ -68,6 +65,7 @@ const menu: MenuItem[] = [
 
 export function SettingsPage() {
   const { user } = useAuthContext();
+  const axiosInstance = useAxiosInstance();
   const [activeTab, setActiveTab] = useState("account");
   const { isDesktop } = useDeviceDetectMediaQuery();
   const [groupNotify, setGroupNotify] = useState(false);
@@ -77,9 +75,7 @@ export function SettingsPage() {
     if (!categories) return "Loading...";
     const { selectedCount, totalTopics } = categories.reduce(
       (acc, category) => {
-        acc.selectedCount += category.topics.filter(
-          (topic) => topic.is_selected
-        ).length;
+        acc.selectedCount += category.topics.filter((topic) => topic.is_selected).length;
         acc.totalTopics += category.topics.length;
         return acc;
       },
@@ -103,14 +99,8 @@ export function SettingsPage() {
         label: "Preferences",
         content: (
           <>
-            <h4 className="gencl:text-headline-4-medium gencl:mb-4">
-              Interests
-            </h4>
-            <SettingRow
-              label="Categories"
-              value={textToShow || "Loading..."}
-              modalType="CATEGORY_SELECTION"
-            />
+            <h4 className="gencl:text-headline-4-medium gencl:mb-4">Interests</h4>
+            <SettingRow label="Categories" value={textToShow || "Loading..."} modalType="CATEGORY_SELECTION" />
           </>
         ),
       },
@@ -122,7 +112,7 @@ export function SettingsPage() {
             group={groupNotify}
             onToggleGroup={(val) => {
               setGroupNotify(val);
-              notificationsSettings({ roundtable_notification: val })
+              notificationsSettings({ roundtable_notification: val }, axiosInstance)
                 .then((res) => {
                   if (res) setGroupNotify(val);
                   Toast.Success({
@@ -162,46 +152,32 @@ export function SettingsPage() {
           isMobileOrTablet
             ? "gencl:w-full gencl:h-full gencl:flex gencl:flex-col"
             : "gencl:flex gencl:max-w-[90%] gencl:h-full"
-        }
-      >
+        }>
         {/* Desktop sidebar */}
         {!isMobileOrTablet && (
           <aside className="gencl:border-r gencl:border-secondary-150 gencl:pl-6 gencl:py-4 gencl:pr-3 gencl:min-w-3xs">
             <div className="gencl:m-3">
               <span className="gencl:text-headline-4-medium">Settings</span>
             </div>
-            <SideMenu
-              items={menu}
-              activeId={activeTab}
-              onSelect={handleSelect}
-            />
+            <SideMenu items={menu} activeId={activeTab} onSelect={handleSelect} />
           </aside>
         )}
         {/* Tabs and content */}
-        <main
-          className={
-            isMobileOrTablet ? "gencl:flex-1" : "gencl:p-6 gencl:w-full"
-          }
-        >
-          <Tabs
-            value={activeTab}
-            onValueChange={setActiveTab}
-            className="gencl:flex gencl:flex-col gencl:h-full"
-          >
+        <main className={isMobileOrTablet ? "gencl:flex-1" : "gencl:p-6 gencl:w-full"}>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="gencl:flex gencl:flex-col gencl:h-full">
             {/* Tabs header only for mobile/tablet */}
             {isMobileOrTablet && (
               <div className="gencl:sticky gencl:top-0 gencl:z-10 gencl:bg-white gencl:border-b gencl:border-secondary-200">
                 <div className="gencl:m-4">
                   <span className="gencl:text-headline-4-medium">Settings</span>
                 </div>
-                <div className="gencl:overflow-x-auto gencl:overflow-y-hidden gencl:px-4  gencl:scrollbar-none [&::-webkit-scrollbar]:gencl:hidden [scrollbar-width:none] [-ms-overflow-style:none]">
+                <div className="gencl:overflow-x-auto gencl:overflow-y-hidden gencl:px-4 gencl:scrollbar-none [&::-webkit-scrollbar]:gencl:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                   <TabsList className="gencl:w-auto gencl:inline-flex gencl:bg-transparent gencl:border-none gencl:rounded-none gencl:h-10 gencl:p-0">
                     {tabs.map((tab) => (
                       <TabsTrigger
                         key={tab.value}
                         value={tab.value}
-                        className="gencl:relative gencl:data-[state=active]:gencl:bg-transparent gencl:data-[state=active]:gencl:text-secondary-900 gencl:data-[state=active]:gencl:border-b-2 gencl:data-[state=active]:gencl:border-primary gencl:rounded-none gencl:px-2 gencl:py-1 gencl:text-sm gencl:font-medium gencl:whitespace-nowrap gencl:flex-shrink-0 gencl:translate-y-0!"
-                      >
+                        className="gencl:relative gencl:data-[state=active]:gencl:bg-transparent gencl:data-[state=active]:gencl:text-secondary-900 gencl:data-[state=active]:gencl:border-b-2 gencl:data-[state=active]:gencl:border-primary gencl:rounded-none gencl:px-2 gencl:py-1 gencl:text-sm gencl:font-medium gencl:whitespace-nowrap gencl:flex-shrink-0 gencl:translate-y-0!">
                         {tab.label}
                       </TabsTrigger>
                     ))}
@@ -215,8 +191,7 @@ export function SettingsPage() {
                 isMobileOrTablet
                   ? "gencl:flex-1 gencl:overflow-y-auto gencl:w-full"
                   : "gencl:w-full gencl:!border-none py-1"
-              }
-            >
+              }>
               {tabs.map((tab) => (
                 <TabsContent
                   key={tab.value}
@@ -225,8 +200,7 @@ export function SettingsPage() {
                     isMobileOrTablet
                       ? "gencl:p-4 gencl:m-0 gencl:w-full"
                       : "gencl:p-0 gencl:m-0 gencl:w-full gencl:!border-none"
-                  }
-                >
+                  }>
                   {activeTab === tab.value ? tab.content : null}
                 </TabsContent>
               ))}

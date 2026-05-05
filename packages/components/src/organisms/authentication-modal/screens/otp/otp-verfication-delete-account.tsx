@@ -1,26 +1,24 @@
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@genuin/ui/components/form";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@genuin/ui/components/form";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@genuin/ui/input-otp";
-import { TimerMessage } from "./timer";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, type ComponentProps } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useAuthenticationModalContext } from "../../context";
+
+import { useBaseContext } from "@genuin/components/context";
+import { useAuthContext } from "@genuin/components/context/auth";
+import { useAxiosInstance } from "@genuin/components/context/axios";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import {
   deleteUserAccount,
   useConsumeOtpMutation,
   useSendOtpMutation,
 } from "@genuin/components/react-query/api/authentication";
-import { useAuthContext } from "@genuin/components/context/auth";
-import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+
+import { useAuthenticationModalContext } from "../../context";
 import { SubmitButton } from "../../submit-button";
-import { useBaseContext } from "@genuin/components/context";
+
+import { TimerMessage } from "./timer";
 
 const OTPSchema = z.object({
   otp: z.string().min(6, { message: "OTP must be 6 digits." }),
@@ -35,11 +33,7 @@ type OtpVerificationDeleteAccountProps = ComponentProps<"div"> & {
   onNext?: (step?: string) => void;
 };
 
-export function OtpVerificationDeleteAccount({
-  title,
-  className,
-  ...props
-}: OtpVerificationDeleteAccountProps) {
+export function OtpVerificationDeleteAccount({ title, className, ...props }: OtpVerificationDeleteAccountProps) {
   const {
     formData: { email, phone, preAuthSessionId, responseDeviceId },
     // setStep,
@@ -48,6 +42,7 @@ export function OtpVerificationDeleteAccount({
   const { isInIframe } = useBaseContext();
   const { user } = useAuthContext();
   const { signOut } = useAuthContext();
+  const axiosInstance = useAxiosInstance();
 
   const [error, setError] = useState("");
 
@@ -122,7 +117,7 @@ export function OtpVerificationDeleteAccount({
   }
 
   async function onDelete() {
-    await deleteUserAccount().then(async (res) => {
+    await deleteUserAccount(axiosInstance).then(async (res) => {
       if (res?.code === 200) {
         signOut(buildPageUrl({ type: "home" }));
         closeModal();
@@ -141,10 +136,7 @@ export function OtpVerificationDeleteAccount({
         Please Enter the 6-digit code sent to your email address : {user?.email}
       </p>
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="gencl:space-y-6 gencl:text-center"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="gencl:space-y-6 gencl:text-center">
           <FormField
             control={form.control}
             name="otp"
@@ -158,8 +150,7 @@ export function OtpVerificationDeleteAccount({
                     value={field.value} // Ensure value is controlled by react-hook-form
                     onChange={(value) => {
                       field.onChange(value); // Update react-hook-form field value
-                    }}
-                  >
+                    }}>
                     <InputOTPGroup className="gencl:w-full gencl:flex gencl:gap-4">
                       {[...Array(6)].map((_, idx) => (
                         <InputOTPSlot

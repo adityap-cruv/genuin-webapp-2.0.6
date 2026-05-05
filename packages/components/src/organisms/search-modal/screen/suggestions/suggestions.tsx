@@ -1,13 +1,15 @@
+import { DialogClose } from "@genuin/ui/components/dialog";
 import { cn } from "@genuin/ui/lib/utils";
-import { ComponentProps, useMemo } from "react";
-import { SuggestionItemType } from "@genuin/components/react-query/api/search";
+import type { ComponentProps } from "react";
+import { useMemo } from "react";
+
+import { useAxiosInstance } from "@genuin/components/context/axios";
+import { MemberItem, MemberItemSkeleton } from "@genuin/components/molecules/member-item";
 import { CommunityCard } from "@genuin/components/organisms/community-card";
 import { GroupCard } from "@genuin/components/organisms/group-card";
-import {
-  MemberItem,
-  MemberItemSkeleton,
-} from "@genuin/components/molecules/member-item";
-import { DialogClose } from "@genuin/ui/components/dialog";
+import type { SuggestionItemType } from "@genuin/components/react-query/api/search";
+
+import { SEARCH_CONFIG } from "../../constants";
 import {
   SearchEmptyState,
   SearchLoadingState,
@@ -16,7 +18,6 @@ import {
   searchAnalytics,
   keyGenerators,
 } from "../../shared";
-import { SEARCH_CONFIG } from "../../constants";
 
 type SuggestionsProps = {
   suggestions: SuggestionItemType[];
@@ -31,6 +32,7 @@ export function Suggestions({
   className,
   ...restProps
 }: SuggestionsProps) {
+  const axiosInstance = useAxiosInstance();
   // Memoize processed suggestions to avoid re-processing on every render
   const processedSuggestions = useMemo(() => {
     return suggestions.map((suggestion, index) => ({
@@ -55,11 +57,7 @@ export function Suggestions({
   if (suggestions.length === 0) {
     return (
       <SearchEmptyState
-        title={
-          searchQuery.trim()
-            ? `No results for "${searchQuery}"`
-            : "No suggestions found"
-        }
+        title={searchQuery.trim() ? `No results for "${searchQuery}"` : "No suggestions found"}
         subtitle="Try searching for something else"
         icon={
           <span className="gencl:text-[250px]! gencl:text-secondary-50 gencl:absolute gencl:inset-0 gencl:m-auto gencl:flex gencl:items-center gencl:justify-center pointer-events-none select-none">
@@ -79,9 +77,7 @@ export function Suggestions({
         switch (suggestion.type) {
           case "community": {
             if (!suggestion.community) return null;
-            const communityData = searchDataTransformers.community(
-              suggestion.community
-            );
+            const communityData = searchDataTransformers.community(suggestion.community);
             const url = urlGenerators.community(suggestion.community.slug);
 
             return (
@@ -91,10 +87,7 @@ export function Suggestions({
                   variant="suggestion"
                   url={url}
                   onClick={() => {
-                    searchAnalytics.trackRecentClick(
-                      "community",
-                      suggestion.community?.community_id
-                    );
+                    searchAnalytics.trackRecentClick(axiosInstance, "community", suggestion.community?.community_id);
                   }}
                 />
               </DialogClose>
@@ -117,10 +110,7 @@ export function Suggestions({
                   variant="suggestion"
                   url={url}
                   onClick={() => {
-                    searchAnalytics.trackRecentClick(
-                      "loop",
-                      suggestion.loop?.chat_id
-                    );
+                    searchAnalytics.trackRecentClick(axiosInstance, "loop", suggestion.loop?.chat_id);
                   }}
                   shouldCloseModal={true} // Ensure modal closes on click
                 />
@@ -139,10 +129,7 @@ export function Suggestions({
                   memberData={userData}
                   variant="suggestion"
                   onClick={() => {
-                    searchAnalytics.trackRecentClick(
-                      "user",
-                      suggestion.user?.user_id
-                    );
+                    searchAnalytics.trackRecentClick(axiosInstance, "user", suggestion.user?.user_id);
                   }}
                 />
               </DialogClose>

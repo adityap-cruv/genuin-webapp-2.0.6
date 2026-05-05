@@ -1,8 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-interface IntersectionObserverOptions extends IntersectionObserverInit {
-  // No custom options needed for now, but can be extended
-}
+type IntersectionObserverOptions = IntersectionObserverInit;
 
 // Example Usage (can be removed or kept for documentation):
 /*

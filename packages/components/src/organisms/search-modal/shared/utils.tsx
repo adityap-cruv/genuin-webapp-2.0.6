@@ -1,10 +1,9 @@
+import type { AxiosInstance } from "axios";
+
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
-import {
-  postRecents,
-  RECENT_SEARCH_CONTENT_TYPE,
-} from "@genuin/components/react-query/api/search/recents";
-import type { CommunityInfoType } from "@genuin/components/organisms/community-card/community-card.types";
 import type { MemberDataType } from "@genuin/components/molecules/member-item/member-item.types";
+import type { CommunityInfoType } from "@genuin/components/organisms/community-card/community-card.types";
+import { postRecents, RECENT_SEARCH_CONTENT_TYPE } from "@genuin/components/react-query/api/search/recents";
 
 // Common transformation utilities
 export const searchDataTransformers = {
@@ -99,10 +98,7 @@ export const urlGenerators = {
 
 // Analytics utilities
 export const searchAnalytics = {
-  trackRecentClick: async (
-    type: "community" | "user" | "loop",
-    id?: string
-  ) => {
+  trackRecentClick: async (axiosInstance: AxiosInstance, type: "community" | "user" | "loop", id?: string) => {
     if (!id) return;
 
     const contentType = {
@@ -112,7 +108,7 @@ export const searchAnalytics = {
     }[type];
 
     try {
-      await postRecents(contentType, id);
+      await postRecents(axiosInstance, contentType, id);
     } catch (error) {
       console.error(`Failed to track ${type} click:`, error);
     }

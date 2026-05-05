@@ -1,26 +1,9 @@
 "use client";
 
-import {
-  useState,
-  useRef,
-  useEffect,
-  useCallback,
-  useMemo,
-  type PointerEvent as ReactPointerEvent,
-} from "react";
+import { useState, useRef, useEffect, useCallback, useMemo, type PointerEvent as ReactPointerEvent } from "react";
 
-import {
-  normalizeHeightToPx,
-  clamp,
-  filterEnabledStates,
-  findNearestSnapState,
-} from "./helpers";
-import {
-  DEFAULT_HEIGHTS,
-  type DynamicSheetState,
-  type UseDynamicSheetOptions,
-  type DragTrackingState,
-} from "./types";
+import { normalizeHeightToPx, clamp, filterEnabledStates, findNearestSnapState } from "./helpers";
+import { DEFAULT_HEIGHTS, type DynamicSheetState, type UseDynamicSheetOptions, type DragTrackingState } from "./types";
 
 const DRAG_THRESHOLD_PX = 8;
 const DRAG_TIME_THRESHOLD_MS = 150;
@@ -39,41 +22,27 @@ export function useDynamicSheet({
   onRequestClose,
   autoAdvance,
 }: UseDynamicSheetOptions) {
-  const enabledStates = useMemo(
-    () => filterEnabledStates(enabledStatesProp),
-    [enabledStatesProp],
-  );
+  const enabledStates = useMemo(() => filterEnabledStates(enabledStatesProp), [enabledStatesProp]);
 
   const stateToPx = useCallback(
     (state: DynamicSheetState): number =>
-      normalizeHeightToPx(
-        heights[state] ?? DEFAULT_HEIGHTS[state] ?? 15,
-        containerHeight,
-      ),
-    [heights, containerHeight],
+      normalizeHeightToPx(heights[state] ?? DEFAULT_HEIGHTS[state] ?? 15, containerHeight),
+    [heights, containerHeight]
   );
 
   const validInitialState = useMemo(
-    () =>
-      enabledStates.includes(initialState)
-    ? initialState
-        : enabledStates[0] || "default",
-    [enabledStates, initialState],
+    () => (enabledStates.includes(initialState) ? initialState : enabledStates[0] || "default"),
+    [enabledStates, initialState]
   );
 
-  const [currentState, setCurrentState] =
-    useState<DynamicSheetState>(validInitialState);
+  const [currentState, setCurrentState] = useState<DynamicSheetState>(validInitialState);
   const [isDragging, setIsDragging] = useState(false);
-  const [transientHeightPx, setTransientHeightPx] = useState<number | null>(
-    null,
-  );
+  const [transientHeightPx, setTransientHeightPx] = useState<number | null>(null);
 
   const currentStateRef = useRef<DynamicSheetState>(validInitialState);
   const isPendingTransitionRef = useRef(false);
   const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const autoAdvanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
+  const autoAdvanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pointerDownTimestampRef = useRef(0);
   const holdActivatedRef = useRef(false);
   const dragTracking = useRef<DragTrackingState>({
@@ -114,12 +83,7 @@ export function useDynamicSheet({
 
   const transitionTo = useCallback(
     (next: DynamicSheetState) => {
-      if (
-        !enabledStates.includes(next) ||
-        isPendingTransitionRef.current ||
-        currentStateRef.current === next
-      )
-        return;
+      if (!enabledStates.includes(next) || isPendingTransitionRef.current || currentStateRef.current === next) return;
 
       isPendingTransitionRef.current = true;
       setTransientHeightPx(null);
@@ -130,16 +94,13 @@ export function useDynamicSheet({
         isPendingTransitionRef.current = false;
       }, 100);
     },
-    [enabledStates, onStateChange],
+    [enabledStates, onStateChange]
   );
 
   useEffect(() => {
     if (!autoAdvance?.length) return;
 
-    const rule = autoAdvance.find(
-      (r) =>
-        r.from === currentState && enabledStates.includes(r.to),
-    );
+    const rule = autoAdvance.find((r) => r.from === currentState && enabledStates.includes(r.to));
     if (!rule) return;
 
     const { from, to, delayMs = 3000 } = rule;
@@ -173,10 +134,7 @@ export function useDynamicSheet({
         !isPendingTransitionRef.current
       ) {
         holdTimerRef.current = setTimeout(() => {
-          if (
-            currentStateRef.current === "default" &&
-            !dragTracking.current.hasMoved
-          ) {
+          if (currentStateRef.current === "default" && !dragTracking.current.hasMoved) {
             clearAutoAdvanceTimer();
             transitionTo("default-active");
             holdActivatedRef.current = true;
@@ -189,7 +147,7 @@ export function useDynamicSheet({
       setIsDragging(true);
       (e.target as HTMLElement).setPointerCapture(e.pointerId);
     },
-    [disableDragAndSwipe, stateToPx, enabledStates, transitionTo, clearAutoAdvanceTimer],
+    [disableDragAndSwipe, stateToPx, enabledStates, transitionTo, clearAutoAdvanceTimer]
   );
 
   useEffect(() => {
@@ -199,16 +157,12 @@ export function useDynamicSheet({
     const onPointerMove = (e: PointerEvent) => {
       const now = Date.now();
       const elapsed = now - dt.lastTimestamp;
-      if (elapsed > 0)
-        dt.flickVelocity = ((dt.lastY - e.clientY) / elapsed) * 1000;
+      if (elapsed > 0) dt.flickVelocity = ((dt.lastY - e.clientY) / elapsed) * 1000;
       dt.lastY = e.clientY;
       dt.lastTimestamp = now;
 
       const delta = dt.initialY - e.clientY;
-      if (
-        Math.abs(delta) > DRAG_THRESHOLD_PX ||
-        now - pointerDownTimestampRef.current > DRAG_TIME_THRESHOLD_MS
-      ) {
+      if (Math.abs(delta) > DRAG_THRESHOLD_PX || now - pointerDownTimestampRef.current > DRAG_TIME_THRESHOLD_MS) {
         if (!holdActivatedRef.current) {
           dt.hasMoved = true;
           clearHoldTimer();
@@ -218,24 +172,12 @@ export function useDynamicSheet({
         }
       }
 
-      const newHeightPx = clamp(
-        dt.initialHeightPx + delta,
-        heightBounds.min,
-        heightBounds.max,
-      );
+      const newHeightPx = clamp(dt.initialHeightPx + delta, heightBounds.min, heightBounds.max);
       setTransientHeightPx(newHeightPx);
 
-      const nearestState = findNearestSnapState(
-        newHeightPx,
-        0,
-        enabledStates,
-        stateToPx,
-      );
+      const nearestState = findNearestSnapState(newHeightPx, 0, enabledStates, stateToPx);
       const nearestPx = stateToPx(nearestState);
-      if (
-        Math.abs(newHeightPx - nearestPx) < SNAP_PROXIMITY_PX &&
-        nearestState !== currentStateRef.current
-      ) {
+      if (Math.abs(newHeightPx - nearestPx) < SNAP_PROXIMITY_PX && nearestState !== currentStateRef.current) {
         currentStateRef.current = nearestState;
         setCurrentState(nearestState);
         onStateChange?.(nearestState);
@@ -245,8 +187,7 @@ export function useDynamicSheet({
     };
 
     const onPointerEnd = () => {
-      const isClick =
-        Date.now() - pointerDownTimestampRef.current < CLICK_MAX_DURATION_MS;
+      const isClick = Date.now() - pointerDownTimestampRef.current < CLICK_MAX_DURATION_MS;
       clearHoldTimer();
       setIsDragging(false);
 
@@ -254,9 +195,7 @@ export function useDynamicSheet({
         clearAutoAdvanceTimer();
         const state = currentStateRef.current;
         if (
-          (state === "default" ||
-            state === "default-active" ||
-            state === "expand-view") &&
+          (state === "default" || state === "default-active" || state === "expand-view") &&
           enabledStates.includes("panel-view")
         ) {
           isPendingTransitionRef.current = false;
@@ -276,25 +215,22 @@ export function useDynamicSheet({
             onRequestClose?.();
             return;
           }
-          const target = stepByStepSwipeDown
-            ? enabledStates[stateIndex - 1]
-            : enabledStates[0];
+          const target = stepByStepSwipeDown ? enabledStates[stateIndex - 1] : enabledStates[0];
           isPendingTransitionRef.current = false;
-          target && target !== currentStateRef.current
-            ? transitionTo(target)
-            : setTransientHeightPx(null);
+          if (target && target !== currentStateRef.current) {
+            transitionTo(target);
+          } else {
+            setTransientHeightPx(null);
+          }
         } else {
           const finalPx = dt.initialHeightPx + (dt.initialY - dt.lastY);
-          const target = findNearestSnapState(
-            finalPx,
-            dt.flickVelocity,
-            enabledStates,
-            stateToPx,
-          );
+          const target = findNearestSnapState(finalPx, dt.flickVelocity, enabledStates, stateToPx);
           isPendingTransitionRef.current = false;
-          target === currentStateRef.current
-            ? setTransientHeightPx(null)
-            : transitionTo(target);
+          if (target === currentStateRef.current) {
+            setTransientHeightPx(null);
+          } else {
+            transitionTo(target);
+          }
         }
       } else {
         setTransientHeightPx(null);

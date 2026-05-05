@@ -1,7 +1,7 @@
-
-import { SearchIcon, XIcon, XIconProps } from "@genuin/ui/icons";
 import { Button } from "@genuin/ui/components/button";
 import { Input } from "@genuin/ui/components/input";
+import type { XIconProps } from "@genuin/ui/icons";
+import { SearchIcon, XIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
 
 type SearchInputProps = React.ComponentProps<"input"> & {
@@ -21,25 +21,16 @@ export function SearchInput({
   const { className: buttonClassName, ...restButtonProps } = buttonProps;
   return (
     <div className="gencl:relative gencl:flex gencl:items-center gencl:w-full">
-      <Input
-        icon={<SearchIcon />}
-        className={cn("gencl:pr-10", className)}
-        disabled={disabled}
-        {...restProps}
-      />
+      <Input icon={<SearchIcon />} className={cn("gencl:pr-10", className)} disabled={disabled} {...restProps} />
       {restProps?.value && (
         <Button
           theme="text"
-          className={cn(
-            "gencl:absolute gencl:right-3 gencl:p-0 gencl:w-6 gencl:h-6",
-            buttonClassName
-          )}
+          className={cn("gencl:absolute gencl:right-3 gencl:p-0 gencl:w-6 gencl:h-6", buttonClassName)}
           aria-label="Clear search"
           type="button"
           onClick={onClear}
           disabled={disabled}
-          {...restButtonProps}
-        >
+          {...restButtonProps}>
           <XIcon size="sm" {...iconProps} />
         </Button>
       )}

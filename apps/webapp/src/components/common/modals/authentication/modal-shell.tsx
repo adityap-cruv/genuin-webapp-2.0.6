@@ -1,5 +1,6 @@
-import { cn } from '@lib/utils'
 import { ChevronLeft } from 'lucide-react'
+
+import { cn } from '@lib/utils'
 
 type ModalShellProps = { onBack?: () => void } & React.DetailedHTMLProps<
   React.HTMLAttributes<HTMLDivElement>,

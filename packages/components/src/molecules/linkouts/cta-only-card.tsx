@@ -1,10 +1,13 @@
 import { Button } from "@genuin/ui/components/button";
-import { checkAndAppendHttps, cn } from "@genuin/ui/lib/utils";
-import { useAnalytics } from "@genuin/components/context/analytics/context";
-import { useBaseContext } from "@genuin/components/context/base";
-import { useState } from "react";
-import { getRedirectUrl } from "./utils";
 import { IHeartPlayIcon } from "@genuin/ui/icons";
+import { checkAndAppendHttps, cn } from "@genuin/ui/lib/utils";
+import { useState } from "react";
+
+import { useAnalytics } from "@genuin/components/context/analytics/context";
+import { useAxiosInstance } from "@genuin/components/context/axios";
+import { useBaseContext } from "@genuin/components/context/base";
+
+import { getRedirectUrl } from "./utils";
 
 interface CTAOnlyCardProps {
   isEmbed: boolean;
@@ -26,6 +29,7 @@ export const CTAOnlyCard = ({
   handleCTAClick,
 }: CTAOnlyCardProps) => {
   const { brandDetails } = useBaseContext();
+  const axiosInstance = useAxiosInstance();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleInternalCTAClick = async (e: React.MouseEvent) => {
@@ -33,7 +37,7 @@ export const CTAOnlyCard = ({
     setIsLoading(true);
     try {
       const url = checkAndAppendHttps(ctaLink);
-      const finalUrl = await getRedirectUrl(url);
+      const finalUrl = await getRedirectUrl(url, axiosInstance);
 
       window.open(finalUrl, "_blank");
     } finally {
@@ -50,8 +54,7 @@ export const CTAOnlyCard = ({
       size={isEmbed ? "sm" : "md"}
       className={cn(
         "gencl:w-full gencl:h-9! gencl:text-body-1-semi-bold! gencl:font-semibold gencl:text-center gencl:justify-center gencl:transition-all gencl:text-white gencl:flex gencl:items-center gencl:px-3 gencl:rounded-full! gencl:bg-primary gencl:hover:bg-primary-700",
-        isDisabled &&
-          "gencl:bg-[#3F4447]! gencl:text-[#A9AFB2]! gencl:cursor-not-allowed"
+        isDisabled && "gencl:bg-[#3F4447]! gencl:text-[#A9AFB2]! gencl:cursor-not-allowed"
       )}
       style={{
         borderRadius: brandDetails.cta_config?.button_radius ?? "",
@@ -63,22 +66,14 @@ export const CTAOnlyCard = ({
       aria-label={buttonText}
       aria-disabled={isDisabled}
       role="button"
-      tabIndex={0}
-    >
+      tabIndex={0}>
       <div className="gencl:flex gencl:items-center gencl:gap-1">
-        {showIcon && (
-          <IHeartPlayIcon
-            size="lg"
-            theme="dark"
-            className={cn(isDisabled && "gencl:fill-[#A9AFB2]!")}
-          />
-        )}
+        {showIcon && <IHeartPlayIcon size="lg" theme="dark" className={cn(isDisabled && "gencl:fill-[#A9AFB2]!")} />}
         <p
           className={cn(
             "gencl:line-clamp-1 gencl:truncate gencl:w-fit gencl:text-body-1-semi-bold!",
             isDisabled && "gencl:text-[#A9AFB2]!"
-          )}
-        >
+          )}>
           {buttonText}
         </p>
       </div>

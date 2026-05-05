@@ -1,45 +1,40 @@
-import { useEmbedContext } from "@genuin/components/context/embed";
-import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
-import { useEffect, useState, useMemo, lazy, Suspense, useRef } from "react";
-import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import { QueryKey, type InfiniteData } from "@tanstack/react-query";
-import { RootPortal } from "@genuin/components/molecules/root-portal";
-import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { cn } from "@genuin/ui/lib/utils";
-import { useBaseContext } from "@genuin/components/context/base";
-import { usePrevious } from "@genuin/components/hooks/use-previous";
+import type { QueryKey } from "@tanstack/react-query";
+import { useEffect, useState, lazy, Suspense, useMemo, useCallback } from "react";
 import { RemoveScroll } from "react-remove-scroll";
-import {
-  SDKEventEmitter,
-  SDKEventName,
-  SDKListenerEventName,
-} from "@genuin/components/lib/sdk-event-emitter";
-import { FeedSkeleton } from "@genuin/components/templates/feed/feed-skeleton.js";
+
+import { useAnalytics } from "@genuin/components/context";
+import { useBaseContext } from "@genuin/components/context/base";
+import { useEmbedContext } from "@genuin/components/context/embed";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { usePrevious } from "@genuin/components/hooks/use-previous";
 import useViewportHeight from "@genuin/components/hooks/use-screen-height";
-import { useAnalytics } from "@genuin/components/context/index.js";
+import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
+import { SDKEventEmitter, SDKEventName } from "@genuin/components/lib/sdk-event-emitter";
 import { isMiddlewareOverlayEnabled } from "@genuin/components/lib/utils";
-import { fetchVideoDetails } from "@genuin/components/react-query/api/video";
-import { queryClient } from "@genuin/components/react-query/client";
-import type { FeedPage } from "@genuin/components/react-query/api/feed/feed";
+import { RootPortal } from "@genuin/components/molecules/root-portal";
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+import { FeedSkeleton } from "@genuin/components/templates/feed/feed-skeleton";
+
+import { useUpdateStartVideoSlug } from "./use-update-start-video-slug";
 
 const FeedView = lazy(() =>
-  import("../../../templates/feed/index.js").then((module) => ({
+  import("@genuin/components/templates/feed").then((module) => ({
     default: module.FeedView,
-  })),
+  }))
 );
 
 const StandardWall = lazy(() =>
-  import("../../../page/standard-wall/standard-wall.js").then((module) => ({
+  import("@genuin/components/page/standard-wall/standard-wall").then((module) => ({
     default: module.StandardWall,
-  })),
+  }))
 );
 
 const IheartFullscreenContainer = lazy(() =>
-  import("../../../molecules/iheart-full-screen-contaner/index.js").then(
-    (module) => ({
-      default: module.IheartFullscreenContainer,
-    }),
-  ),
+  import("@genuin/components/molecules/iheart-full-screen-contaner").then((module) => ({
+    default: module.IheartFullscreenContainer,
+  }))
 );
 type EmbedExpandViewProps = {
   videos: PostDetailsType[];
@@ -96,28 +91,17 @@ export function EmbedExpandView({
   fetchNextPage,
 }: EmbedExpandViewProps) {
   const [startIndex, setStartIndex] = useState(0);
-  const {
-    changeActiveIndex,
-    embedEventBus,
-    goBackToPreviousPlayerType,
-    embedData,
-  } = useEmbedContext();
-  const lastProcessedVideoRef = useRef<{
-    slug: string;
-    timestamp: number;
-  } | null>(null);
+  const { changeActiveIndex, embedEventBus, goBackToPreviousPlayerType, embedData } = useEmbedContext();
 
-  const {
-    setMuted,
-    muted,
-    setPlaybackSpeed,
-    isInIframe,
-    baseEventBus,
-    brandDetails,
-  } = useBaseContext();
+  const { setMuted, muted, setPlaybackSpeed, isInIframe, baseEventBus, brandDetails } = useBaseContext();
   const {
     brand: { isIndianExpress },
-    view: { isPlacementView },
+    engagement: {
+      engagementTools: { comment, share, repost, spark },
+      redirectionTools: { community, group, user },
+    },
+    view: { brandLayoutType, websiteType, isPlacementView },
+    responsive: { effectiveVideoWidth },
     expandViewConfig: { defaultAudioUnmute },
   } = useEmbedConfigs();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
@@ -125,13 +109,7 @@ export function EmbedExpandView({
   const { updateScreen } = useAnalytics();
   const previousMuteState = usePrevious(muted);
   const isSectioned = embedEventBus.getContext().isSectioned;
-  const {
-    engagement: {
-      engagementTools: { comment, share, repost, spark },
-      redirectionTools: { community, group, user },
-    },
-    view: { brandLayoutType, websiteType },
-  } = useEmbedConfigs();
+  const { openContentType, setContentTypeState } = useSheetState();
   const isIHeart = brandLayoutType === "iheart";
   const shouldShowMiddlewareOverlay = isMiddlewareOverlayEnabled({
     videoLayoutId: embedData?.placement_video_layout_id,
@@ -144,8 +122,17 @@ export function EmbedExpandView({
     }));
   }, [embedData?.brand_context]);
 
+  // Derive the linkout sheet state from the embed container width.
+  const linkoutSheetState = effectiveVideoWidth < 300 ? "default" : "expand-view";
+
+  // Resets linkout placement to inside and restores width-based sheet state.
+  const resetLinkoutState = () => {
+    openContentType("linkouts", "inside");
+    setContentTypeState("linkouts", linkoutSheetState as "default" | "expand-view");
+  };
+
   // Function to handle closing expand view - restores mute state and goes back
-  const handleCloseExpandView = (isEscapeKey?: boolean) => {
+  const handleCloseExpandView = useCallback((isEscapeKey?: boolean) => {
     // Update the screen type based on the current view
     updateScreen(isPlacementView ? "view_placement" : "view_embed");
 
@@ -169,6 +156,7 @@ export function EmbedExpandView({
     if (isEndOfFeed) {
       changeActiveIndex(Math.max(activeIndex - 1, 0));
       embedEventBus.emit("centerActiveSlide", {});
+      resetLinkoutState();
       goBackToPreviousPlayerType();
       return;
     }
@@ -179,27 +167,26 @@ export function EmbedExpandView({
     const isBeforeEndOfFeed = nextVideo?.video?.type === "complete";
     if (isClosedViaBackButton || isBeforeEndOfFeed) {
       embedEventBus.emit("centerActiveSlide", {});
+      resetLinkoutState();
       goBackToPreviousPlayerType();
       return;
     }
 
     // Case 3: Closed via Escape key - sync indices if overlay card was skipped
     // Overlay card exists in embed view but not in expand view
-    const overlayIndex = videos.findIndex(
-      (post) => post.video?.type === "overlay",
-    );
+    const overlayIndex = videos.findIndex((post) => post.video?.type === "overlay");
     const hasPassedOverlay = activeIndex > overlayIndex && overlayIndex !== -1;
     if (
       hasPassedOverlay ||
-      (activeIndex === overlayIndex &&
-        (websiteType === "legacy" || (websiteType === "polaris" && !isDesktop)))
+      (activeIndex === overlayIndex && (websiteType === "legacy" || (websiteType === "polaris" && !isDesktop)))
     ) {
       // Increment by 1 to account for the skipped overlay card in expand view
       changeActiveIndex(activeIndex + 1);
     }
     embedEventBus.emit("centerActiveSlide", {});
+    resetLinkoutState();
     goBackToPreviousPlayerType();
-  };
+  }, []);
 
   useEffect(() => {
     // Update the screen type based on the current view
@@ -219,201 +206,31 @@ export function EmbedExpandView({
     const context = embedEventBus.getContext();
     // Store current mute state when entering expand view
     const currentActiveIndex = context.isSectioned ? 0 : context.activeIndex;
-    const overlayIndex = videos.findIndex(
-      (post) => post.video?.type === "overlay",
-    );
+    const overlayIndex = videos.findIndex((post) => post.video?.type === "overlay");
     setStartIndex(
       overlayIndex === -1
         ? currentActiveIndex
         : currentActiveIndex >= overlayIndex
           ? currentActiveIndex - 1
-          : currentActiveIndex,
+          : currentActiveIndex
     );
 
-    // Reset to index 0 whenever the host page requests a slug change.
-    const handleUpdateStartVideoSlug = (props: any) => {
-      const payload = props?.payload;
-      const newVideoSlug = payload?.startVideoSlug;
-
-      if (!newVideoSlug) {
-        return;
-      }
-
-      // Guard against infinite loops: Check if we recently processed this same video
-      const now = Date.now();
-      const lastProcessed = lastProcessedVideoRef.current;
-      if (
-        lastProcessed &&
-        lastProcessed.slug === newVideoSlug &&
-        now - lastProcessed.timestamp < 3000
-      ) {
-        return;
-      }
-
-      // Check if this video is already active
-      const context = embedEventBus.getContext();
-      const currentVideo = videos[context.activeIndex];
-      if (
-        currentVideo &&
-        (currentVideo.video?.slug === newVideoSlug ||
-          currentVideo.video?.id === newVideoSlug)
-      ) {
-        return;
-      }
-
-      const sourceInstanceId =
-        typeof payload?.sourceInstanceId === "string"
-          ? payload.sourceInstanceId
-          : payload.instanceId;
-
-      const isNestedOctoUpdate =
-        typeof sourceInstanceId === "string" &&
-        sourceInstanceId.startsWith("octo-panel-");
-
-      if (isNestedOctoUpdate) {
-        if (!context.autoInteractionActionDone) {
-          embedEventBus.updateContext({
-            ...context,
-            autoInteractionActionDone: true,
-          });
-        }
-      }
-
-      const videoIndex = videos.findIndex(
-        (video) =>
-          video.video?.slug === newVideoSlug ||
-          video.video?.id === newVideoSlug,
-      );
-
-      if (videoIndex !== -1) {
-        lastProcessedVideoRef.current = {
-          slug: newVideoSlug,
-          timestamp: Date.now(),
-        };
-        changeActiveIndex(videoIndex);
-        setStartIndex(videoIndex);
-        return;
-      }
-
-      const targetIndex = context.activeIndex;
-
-      void (async () => {
-        try {
-          const videoDetails = await fetchVideoDetails(
-            newVideoSlug,
-            embedData?.embed_id,
-            embedData?.placement_id,
-            shouldShowMiddlewareOverlay,
-            brandContext,
-          );
-
-          if (!videoDetails || videoDetails.length === 0) {
-            return;
-          }
-
-          const videoToInsert = videoDetails[0];
-
-          if (!videoToInsert) {
-            return;
-          }
-
-          let didInsert = false;
-
-          queryClient.setQueryData<InfiniteData<FeedPage>>(
-            queryKey,
-            (oldData) => {
-              if (!oldData) return oldData;
-
-              let remainingIndex = Math.max(targetIndex, 0);
-
-              const updatedPages = oldData.pages.map((page) => {
-                const feed = [...page.feed];
-                let insertedOnThisPage = false;
-                if (!didInsert) {
-                  if (remainingIndex <= feed.length) {
-                    // Avoid duplicate insertions if the video already exists in this page
-                    const alreadyExists = feed.some(
-                      (item) =>
-                        item.video?.slug === newVideoSlug ||
-                        item.video?.id === newVideoSlug,
-                    );
-
-                    if (!alreadyExists) {
-                      feed.splice(remainingIndex, 0, videoToInsert);
-                      insertedOnThisPage = true;
-                      didInsert = true;
-                    }
-                  }
-                  remainingIndex = Math.max(remainingIndex - feed.length, 0);
-                }
-                return {
-                  ...page,
-                  feed,
-                  totalVideos:
-                    typeof page.totalVideos === "number"
-                      ? page.totalVideos + (insertedOnThisPage ? 1 : 0)
-                      : page.totalVideos,
-                };
-              });
-
-              if (!didInsert && updatedPages.length > 0) {
-                const lastPageIndex = updatedPages.length - 1;
-                const lastPage = updatedPages[lastPageIndex];
-
-                if (lastPage) {
-                  const alreadyExists = lastPage.feed.some(
-                    (item) =>
-                      item.video?.slug === newVideoSlug ||
-                      item.video?.id === newVideoSlug,
-                  );
-                  if (!alreadyExists) {
-                    updatedPages[lastPageIndex] = {
-                      ...lastPage,
-                      feed: [...lastPage.feed, videoToInsert],
-                      totalVideos:
-                        typeof lastPage.totalVideos === "number"
-                          ? lastPage.totalVideos + 1
-                          : lastPage.totalVideos,
-                    } as FeedPage;
-                    didInsert = true;
-                  }
-                }
-              }
-
-              return {
-                ...oldData,
-                pages: updatedPages,
-              };
-            },
-          );
-
-          if (didInsert) {
-            lastProcessedVideoRef.current = {
-              slug: newVideoSlug,
-              timestamp: Date.now(),
-            };
-            changeActiveIndex(targetIndex);
-            setStartIndex(targetIndex);
-          }
-        } catch (error) {
-          console.error("Failed to fetch/append video:", error);
-        }
-      })();
-    };
-
-    SDKEventEmitter.on(
-      SDKListenerEventName.UPDATE_START_VIDEO_SLUG,
-      handleUpdateStartVideoSlug,
-    );
-
-    return () => {
-      SDKEventEmitter.off(
-        SDKListenerEventName.UPDATE_START_VIDEO_SLUG,
-        handleUpdateStartVideoSlug,
-      );
-    };
+    // When expand view mounts, set comment placement to 'outside' and apply width-based state.
+    if (isDesktop) {
+      openContentType("comments", "outside", "full-view");
+    }
   }, []);
 
+  useUpdateStartVideoSlug({
+    videos,
+    queryKey,
+    embedData,
+    shouldShowMiddlewareOverlay,
+    brandContext,
+    changeActiveIndex,
+    setStartIndex,
+    embedEventBus,
+  });
   // Handle mute state and global playing state when entering expand view
   useEffect(() => {
     if (defaultAudioUnmute) {
@@ -426,15 +243,11 @@ export function EmbedExpandView({
           setMuted(false);
         }, 300);
       }
-      if (
-        websiteType === "legacy" &&
-        !baseEventBus.getContext().globalPlayingState
-      ) {
-        baseEventBus.emit(
-          "globalPlayingStateChange",
-          undefined,
-          (oldContext) => ({ ...oldContext, globalPlayingState: true }),
-        );
+      if (websiteType === "legacy" && !baseEventBus.getContext().globalPlayingState) {
+        baseEventBus.emit("globalPlayingStateChange", undefined, (oldContext) => ({
+          ...oldContext,
+          globalPlayingState: true,
+        }));
       }
     } else if (brandLayoutType === "ted") {
       setTimeout(() => {
@@ -462,9 +275,7 @@ export function EmbedExpandView({
     if (!isInIframe) return;
     // Helpers with WebKit fallbacks for Safari
     const isFullscreen = (): boolean => {
-      return !!(
-        document.fullscreenElement || (document as any).webkitFullscreenElement
-      );
+      return !!(document.fullscreenElement || (document as any).webkitFullscreenElement);
     };
 
     const requestFullscreen = async () => {
@@ -527,10 +338,7 @@ export function EmbedExpandView({
 
     return () => {
       document.removeEventListener("fullscreenchange", handleFsChange);
-      document.removeEventListener(
-        "webkitfullscreenchange",
-        handleFsChange as any,
-      );
+      document.removeEventListener("webkitfullscreenchange", handleFsChange as any);
       // On cleanup, ensure we leave fullscreen if we were in expand-view
       if (isFullscreen()) {
         void exitFullscreen();
@@ -616,6 +424,7 @@ export function EmbedExpandView({
         defaultExpandView
         onCloseExpandView={handleCloseExpandView}
         variant="expand"
+        platform="sdk"
         isSectioned={isSectioned}
         feedData={{
           videos,
@@ -649,33 +458,18 @@ export function EmbedExpandView({
           isMobile && "gencl:flex-col",
           // Apply fixed positioning with full screen dimensions for non-iHeart layouts
           !isIHeart && "gencl:fixed gencl:h-screen gencl:w-screen",
-          isIHeart &&
-            websiteType === "legacy" && [
-              "gencl:fixed",
-              isDesktop ? "gencl:z-[115]!" : "gencl:z-[112]!",
-            ],
+          isIHeart && websiteType === "legacy" && ["gencl:fixed", isDesktop ? "gencl:z-[115]!" : "gencl:z-[112]!"]
         )}
         style={{ height: !isIHeart ? `${viewportHeight}px` : "100%" }}
-        enabledToaster={!(community || group || user)}
-      >
+        enabledToaster={!(community || group || user)}>
         {isIHeart ? (
           <Suspense fallback={<FeedSkeleton variant="fullscreen" />}>
             <IheartFullscreenContainer>
-              <ExpandViewContent
-                defaultComponent={defaultComponent}
-                community={community}
-                group={group}
-                user={user}
-              />
+              <ExpandViewContent defaultComponent={defaultComponent} community={community} group={group} user={user} />
             </IheartFullscreenContainer>
           </Suspense>
         ) : (
-          <ExpandViewContent
-            defaultComponent={defaultComponent}
-            community={community}
-            group={group}
-            user={user}
-          />
+          <ExpandViewContent defaultComponent={defaultComponent} community={community} group={group} user={user} />
         )}
       </RootPortal>
     </RemoveScroll>

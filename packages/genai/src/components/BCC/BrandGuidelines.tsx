@@ -1,5 +1,6 @@
-import type { BrandGuidelinesData } from '@/types';
 import React from 'react';
+
+import type { BrandGuidelinesData } from '@/types';
 
 interface BrandGuidelinesProps {
     jsonData?: BrandGuidelinesData;

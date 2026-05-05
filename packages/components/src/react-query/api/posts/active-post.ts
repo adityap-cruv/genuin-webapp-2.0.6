@@ -1,13 +1,14 @@
 import { useMutation } from "@tanstack/react-query";
-import { useAxiosInstance } from "@genuin/components/context/axios";
-import { API_PATHS } from "@genuin/components/react-query/paths";
-import { PayloadDraftPost } from "./video-draft";
 import type { AxiosInstance } from "axios";
 
+import { useAxiosInstance } from "@genuin/components/context/axios";
+import { API_PATHS } from "@genuin/components/react-query/paths";
+
+import type { PayloadDraftPost } from "./video-draft";
 
 //------------------------Move draft to active video------------------------
 
-export async function videoPost(payload: PayloadDraftPost, axiosInstance: AxiosInstance) {
+export async function videoPost(payload: Omit<PayloadDraftPost, "platform">, axiosInstance: AxiosInstance) {
   return await axiosInstance
     .post(API_PATHS.DRAFT_TO_ACTIVE_POST, payload)
     .then((res) => ({ res }))
@@ -29,16 +30,15 @@ export function usePostVideoMutation({
   const axiosInstance = useAxiosInstance();
 
   return useMutation({
-    mutationFn: (payload: PayloadDraftPost) => videoPost(payload, axiosInstance),
+    mutationFn: (payload: Omit<PayloadDraftPost, "platform">) => videoPost(payload, axiosInstance),
     onError,
     onSuccess,
   });
 }
 
-
 //------------------------Get active video------------------------
 
-export async function getActiveVideo(payload: PayloadDraftPost, axiosInstance: AxiosInstance) {
+export async function getActiveVideo(payload: Omit<PayloadDraftPost, "platform">, axiosInstance: AxiosInstance) {
   return await axiosInstance
     .get(`${API_PATHS.ACTIVE_POST}/${payload.uuid}`)
     .then((res) => ({ res }))
@@ -60,7 +60,7 @@ export function useGetActiveVideoMutation({
   const axiosInstance = useAxiosInstance();
 
   return useMutation({
-    mutationFn: (payload: PayloadDraftPost) => getActiveVideo(payload, axiosInstance),
+    mutationFn: (payload: Omit<PayloadDraftPost, "platform">) => getActiveVideo(payload, axiosInstance),
     onError,
     onSuccess,
   });

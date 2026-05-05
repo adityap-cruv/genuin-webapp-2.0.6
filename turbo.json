@@ -1,33 +1,21 @@
 {
-  "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": [
-    "tsconfig.json",
-    ".env.*local"
-  ],
-  "globalEnv": [
-    "NODE_ENV",
-    "NEXT_PUBLIC_\\*"
-  ],
+  "$schema": "https://v2-9-6.turborepo.dev/schema.json",
+  "globalDependencies": ["tsconfig.json", ".env.*local"],
+  "globalEnv": ["NODE_ENV", "NEXT_PUBLIC_*", "INTERNAL_API_URL"],
   "tasks": {
     "build": {
-      "dependsOn": [
-        "^build"
-      ],
-      "outputs": [
-        "dist/**",
-        ".next/**",
-        "!.next/cache/**"
-      ],
-      "env": [
-        "NEXT_PUBLIC_\\*"
-      ]
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
+      "env": ["NEXT_PUBLIC_*"]
     },
     "dev": {
       "cache": false,
       "persistent": true,
-      "outputs": [
-        ".next/**"
-      ]
+      "outputs": [".next/**"]
+    },
+    "typecheck": {
+      "dependsOn": ["^build"],
+      "outputs": []
     },
     "lint": {
       "outputs": []
@@ -36,12 +24,8 @@
       "outputs": []
     },
     "start": {
-      "dependsOn": [
-        "build"
-      ],
-      "outputs": [
-        ".next/**"
-      ]
+      "dependsOn": ["build"],
+      "outputs": [".next/**"]
     }
   }
 }

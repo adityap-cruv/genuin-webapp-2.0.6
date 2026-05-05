@@ -1,8 +1,9 @@
 // Import necessary libraries and modules
-import React from 'react'
-import { TickIcon } from '@icons/tick-icon' // Import the TickIcon component using the path alias
 import { cva } from 'class-variance-authority' // Import the class variance authority (cva) function
 import cn from 'classnames' // Import the classnames utility for conditional class names
+import React from 'react'
+
+import { TickIcon } from '@icons/tick-icon' // Import the TickIcon component using the path alias
 
 // Define the properties for the VerifiedBadge component
 interface VerifiedBadgeProps {

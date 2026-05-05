@@ -1,29 +1,21 @@
-import { ComponentProps, useMemo } from "react";
 import { cn } from "@genuin/ui/lib/utils";
-import { CommunityCard } from "@genuin/components/organisms/community-card";
-import {
-  CommunityTopResultType,
-  updateCommunityJoinStatusInSearchResults,
-} from "@genuin/components/react-query/api/search";
-import {
-  SearchEmptyState,
-  searchDataTransformers,
-  urlGenerators,
-} from "../../../shared";
-import { CommunityUserRole } from "@genuin/components/types/post";
+import type { ComponentProps } from "react";
+import { useMemo } from "react";
+
 import { usePathname } from "@genuin/components/hooks/use-pathname";
+import { CommunityCard } from "@genuin/components/organisms/community-card";
+import type { CommunityTopResultType } from "@genuin/components/react-query/api/search";
+import { updateCommunityJoinStatusInSearchResults } from "@genuin/components/react-query/api/search";
+import type { CommunityUserRole } from "@genuin/components/types/post";
+
+import { SearchEmptyState, searchDataTransformers, urlGenerators } from "../../../shared";
 
 type CommunitiesTabProps = {
   communities: CommunityTopResultType[];
   query: string;
 } & ComponentProps<"div">;
 
-export function CommunitiesTab({
-  communities,
-  query,
-  className,
-  ...restProps
-}: CommunitiesTabProps) {
+export function CommunitiesTab({ communities, query, className, ...restProps }: CommunitiesTabProps) {
   const pathname = usePathname();
 
   // Memoize processed communities to avoid re-processing on every render

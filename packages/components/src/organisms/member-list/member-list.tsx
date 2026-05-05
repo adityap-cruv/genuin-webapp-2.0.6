@@ -1,13 +1,10 @@
 import { InfiniteScroll } from "@genuin/ui/infinite-scroll";
+import { cn } from "@genuin/ui/lib/utils";
 import type { ComponentProps } from "react";
 
-import {
-  MemberItem,
-  MemberItemSkeleton,
-  type MemberDataType,
-} from "@genuin/components/molecules/member-item";
+import { MemberItem, MemberItemSkeleton, type MemberDataType } from "@genuin/components/molecules/member-item";
+
 import { ComponentErrorState } from "../error-state-component";
-import { cn } from "@genuin/ui/lib/utils";
 
 type MemberListProps = {
   title?: string;
@@ -35,12 +32,7 @@ export function MemberList({
   }
 
   if (isError) {
-    return (
-      <ComponentErrorState
-        type="WARNING"
-        subtitle="We're unable to load members."
-      />
-    );
+    return <ComponentErrorState type="WARNING" subtitle="We're unable to load members." />;
   }
 
   if (!members || members.length === 0) {
@@ -48,17 +40,13 @@ export function MemberList({
   }
 
   return (
-    <div
-      className={cn("gencl:flex gencl:w-full gencl:flex-col", className)}
-      {...restProps}
-    >
+    <div className={cn("gencl:flex gencl:w-full gencl:flex-col", className)} {...restProps}>
       {title && <p className="gencl:pb-4 gencl:text-body-1-medium">{title}</p>}
       <InfiniteScroll
         hasNextPage={hasNextPage}
         getNextPage={fetchNextPage}
         isLoadingNextPage={isFetchingNextPage}
-        loader={<MemberListSkeleton />}
-      >
+        loader={<MemberListSkeleton />}>
         {members.map((member, idx) => (
           <MemberItem
             key={member.memberId}
@@ -77,8 +65,8 @@ export function MemberList({
 export function MemberListSkeleton() {
   return (
     <div className="gencl:flex gencl:flex-col gencl:gap-4 gencl:overflow-clip">
-      {Array.from({ length: 10 }).map(() => (
-        <MemberItemSkeleton />
+      {Array.from({ length: 10 }).map((_, idx) => (
+        <MemberItemSkeleton key={idx} />
       ))}
     </div>
   );

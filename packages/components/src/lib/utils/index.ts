@@ -1,10 +1,11 @@
+import type { DeepLinkActionType } from "@genuin/components/react-query/api/deeplink";
 import type { CommunityUserRole } from "@genuin/components/types/post";
+import type { GroupUserStatusType } from "@genuin/components/types/roles";
 
 import { PROTECTED_ROUTES } from "../constants";
-import { GroupUserStatusType } from "@genuin/components/types/roles";
-import { MEDIA_BASE_URL } from "./env";
-import { DeepLinkActionType } from "@genuin/components/react-query/api/deeplink";
+
 import { getBrandType } from "./brand-layout";
+import { MEDIA_BASE_URL } from "./env";
 
 /**
  * This function will check if the url includes any of the protected routes.
@@ -40,8 +41,7 @@ export function formateDateToLocaleString(isoString: string): string {
  * @returns Formatted relative time string
  */
 export function formatRelativeTime(dateString: string | Date): string {
-  const date =
-    typeof dateString === "string" ? new Date(dateString) : dateString;
+  const date = typeof dateString === "string" ? new Date(dateString) : dateString;
   const now = new Date();
   const diffInMs = now.getTime() - date.getTime();
   const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
@@ -76,10 +76,7 @@ export function formatRelativeTime(dateString: string | Date): string {
  * @param role - Role of the user in the community.
  * @param isRequested - If the user has requested to join the community.
  */
-export function mapCommunityUserRole(
-  role?: number | null,
-  isRequested?: boolean | null
-): CommunityUserRole {
+export function mapCommunityUserRole(role?: number | null, isRequested?: boolean | null): CommunityUserRole {
   // If isRequested is true, return 'REQUESTED'.
   if (isRequested) return "REQUESTED";
 
@@ -129,11 +126,7 @@ export function mapGroupJoinStatus(role?: number | null): GroupUserStatusType {
  * @param isReacted if user have already reacted.
  * @returns
  */
-export function getUrlForReaction(
-  reaction: string,
-  isReacted: boolean,
-  forComment: boolean = false
-) {
+export function getUrlForReaction(reaction: string, isReacted: boolean, forComment: boolean = false) {
   return `https://media.begenuin.com/webapp_assets/reactions/${reaction}/${forComment ? "comment_" : "feed_"}${
     isReacted ? "selected" : "unselected"
   }.svg`;
@@ -213,17 +206,14 @@ export function getGifLink(name: string) {
   return `${MEDIA_BASE_URL}/web-sdk/v1/icons/${name}.gif`;
 }
 
-export function getActionText(
-  defaultText: string,
-  action: DeepLinkActionType | undefined,
-  preText: string
-) {
+export function getActionText(defaultText: string, action: DeepLinkActionType | undefined, preText: string) {
   if (!action) return defaultText;
 
   const actionObjectMap: Record<DeepLinkActionType, string> = {
     subscribe: `${preText} to subscribe a group.`,
     join_as_collaborator: `${preText} to become a member.`,
     join_community: `${preText} join a community`,
+    join_group: `${preText} to join a group.`,
     comment: `${preText} to add a comment to a post.`,
     repost: `${preText} to repost the post.`,
     spark: `${preText} to react to the post.`,
@@ -311,9 +301,7 @@ export function isMiddlewareOverlayEnabled({
  * @returns True if the string matches UUID v4 format, false otherwise
  */
 export function isUuid(value: string): boolean {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-    value
-  );
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 }
 
 /**

@@ -1,14 +1,9 @@
+import { CreatedProfileIcon, EditIcon, NotificationIcon, PreferencesIcon } from "@genuin/ui/icons";
 import type { Meta, StoryObj } from "@storybook/react";
-
 import { useState } from "react";
-import {
-  CreatedProfileIcon,
-  EditIcon,
-  NotificationIcon,
-  PreferencesIcon,
-} from "@genuin/ui/icons";
+
 import SideMenu from "./side-menu";
-import { MenuItem } from "./side-menu.types";
+import type { MenuItem } from "./side-menu.types";
 
 const meta: Meta<typeof SideMenu> = {
   title: "Molecules/SideMenu",
@@ -54,13 +49,15 @@ const menu: MenuItem[] = [
 ];
 
 export const Default: Story = {
-  render: () => {
-    const [activeId, setActiveId] = useState("account");
-
-    return (
-      <div className="w-64 h-[400px] border">
-        <SideMenu items={menu} activeId={activeId} onSelect={setActiveId} />
-      </div>
-    );
-  },
+  render: () => <DefaultStory />,
 };
+
+function DefaultStory() {
+  const [activeId, setActiveId] = useState("account");
+
+  return (
+    <div className="h-[400px] w-64 border">
+      <SideMenu items={menu} activeId={activeId} onSelect={setActiveId} />
+    </div>
+  );
+}

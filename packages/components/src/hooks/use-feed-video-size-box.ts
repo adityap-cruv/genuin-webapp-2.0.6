@@ -1,10 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
+
 import type { SizeBoxType } from "@genuin/components/types/base";
-import { useEmbedConfigs } from "./embed/use-embed-config";
+
 import { useBaseContext } from "../context/base";
 import { useEmbedContext } from "../context/embed";
 import { useSafeEmbedContext } from "../context/embed/context";
+
+import { useEmbedConfigs } from "./embed/use-embed-config";
 
 /**
  * A custom hook that returns the size of the feed video container.
@@ -26,13 +29,9 @@ export function useFeedVideoSizeBox() {
 
   useEffect(() => {
     const elementToTrack = isEmbed ? embedDetails?.rootElement : window;
-    setSizeBox(
-      getSizeBox(considerTopBar, embedDetails?.rootElement ?? undefined)
-    );
+    setSizeBox(getSizeBox(considerTopBar, embedDetails?.rootElement ?? undefined));
     const handleResize = () => {
-      setSizeBox(
-        getSizeBox(considerTopBar, embedDetails?.rootElement ?? undefined)
-      );
+      setSizeBox(getSizeBox(considerTopBar, embedDetails?.rootElement ?? undefined));
     };
     elementToTrack?.addEventListener("resize", handleResize);
     return () => {
@@ -53,14 +52,9 @@ const NAVBAR_HEIGHT = 64;
  */
 const MARGIN = 16;
 
-function getSizeBox(
-  considerTopBar: boolean = true,
-  rootElement?: HTMLElement
-): SizeBoxType {
+function getSizeBox(considerTopBar: boolean = true, rootElement?: HTMLElement): SizeBoxType {
   const height =
-    (rootElement ? rootElement.clientHeight : window.innerHeight) -
-    (considerTopBar ? NAVBAR_HEIGHT : 0) -
-    MARGIN;
+    (rootElement ? rootElement.clientHeight : window.innerHeight) - (considerTopBar ? NAVBAR_HEIGHT : 0) - MARGIN;
   const width = height * (9 / 16);
   return {
     height,

@@ -1,14 +1,14 @@
 import { z } from "zod";
 
+import { VideoTypes } from "@genuin/components/context";
 import { CommunityUserRoleSchema } from "@genuin/components/types/post";
 import { GroupUserStatusSchema } from "@genuin/components/types/roles";
-import { VideoTypes } from "@genuin/components/context";
 
 const description = z.array(
   z
     .object({ member_id: z.string(), text: z.string() })
     .or(z.object({ community_id: z.string(), text: z.string() }))
-    .or(z.string()),
+    .or(z.string())
 );
 
 // Define the video schema
@@ -150,32 +150,42 @@ const PostDetailsSchema = z.object({
   sponsored: sponsoredSchema,
 });
 
-export const adTagObjectSchema = z.object({
-  display_ad: z.object({ platform: z.string(), tag_id: z.string() }).nullish(),
-  native_ad: z.object({ platform: z.string(), tag_id: z.string() }).nullish(),
-  video_ad: z
+const videoAdItemSchema = z.object({
+  ads_url: z.string(),
+  url: z.string(),
+  cpm: z.number(),
+  platform: z.string().optional(),
+  advertiserDetails: z
     .object({
-      ads_url: z.string(),
-      url: z.string(),
-      cpm: z.number(),
-      platform: z.string(),
-      advertiserDetails: z
-        .object({
-          logo: z.string(),
-          primaryColor: z.string(),
-        })
-        .nullish(),
-      contentVideo: z
-        .object({
-          url: z.string(),
-          autoplay: z.boolean(),
-          loop: z.boolean(),
-          muted: z.boolean(),
-          objectFit: z.string(),
-        })
-        .nullish(),
+      logo: z.string(),
+      primaryColor: z.string(),
     })
     .nullish(),
+  contentVideo: z
+    .object({
+      url: z.string(),
+      autoplay: z.boolean(),
+      loop: z.boolean(),
+      muted: z.boolean(),
+      objectFit: z.string(),
+    })
+    .nullish(),
+});
+
+export const adTagObjectSchema = z.object({
+  display_ad: z
+    .union([
+      z.object({ platform: z.string(), tag_id: z.string() }),
+      z.array(z.object({ platform: z.string(), tag_id: z.string() })),
+    ])
+    .nullish(),
+  native_ad: z
+    .union([
+      z.object({ platform: z.string(), tag_id: z.string() }),
+      z.array(z.object({ platform: z.string(), tag_id: z.string() })),
+    ])
+    .nullish(),
+  video_ad: z.union([videoAdItemSchema, z.array(videoAdItemSchema)]).nullish(),
   order: z.array(z.string()).nullish(),
 });
 
@@ -194,8 +204,7 @@ export const AdsPostDetailsSchema = z.object({
 
 export type AdsPostDetailsType = z.infer<typeof AdsPostDetailsSchema>;
 // export type AdsPostDetailsType = z.infer<typeof AdsPostDetailsSchema>;
-type PostDetailsType = z.infer<
-  typeof PostDetailsSchema | typeof AdsPostDetailsSchema
->;
+type PostDetailsType = z.infer<typeof PostDetailsSchema | typeof AdsPostDetailsSchema>;
+export type VideoType = z.infer<typeof videoSchema>;
 export { PostDetailsSchema };
 export type { PostDetailsType };

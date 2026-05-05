@@ -1,15 +1,13 @@
-import { API_PATHS } from "@genuin/components/react-query/paths";
-import { parseFeed } from "../../feed/parser";
-import { useAxiosInstance } from "@genuin/components/context/axios";
-import { getQueryKeyForCommunityFeed } from "@genuin/components/react-query/keys/community";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import type { AxiosInstance } from "axios";
 
-async function fetchLoopVideos(
-  slug: string,
-  axios: AxiosInstance,
-  pageParams?: { lastVideoId: string }
-) {
+import { useAxiosInstance } from "@genuin/components/context/axios";
+import { getQueryKeyForCommunityFeed } from "@genuin/components/react-query/keys/community";
+import { API_PATHS } from "@genuin/components/react-query/paths";
+
+import { parseFeed } from "../../feed/parser";
+
+async function fetchLoopVideos(slug: string, axios: AxiosInstance, pageParams?: { lastVideoId: string }) {
   return await axios
     .get(API_PATHS.COMMUNITY_FEED, {
       params: {
@@ -22,7 +20,7 @@ async function fetchLoopVideos(
       const videos = parseFeed(resData.feeds);
       return { feed: videos, end: resData.end_of_feed };
     })
-    .catch((e) => {
+    .catch((_e) => {
       throw new Error("Something went wrong with loop videos fetching api.");
     });
 }
@@ -43,7 +41,7 @@ export function useGetCommunityFeed(slug: string, videoId: string) {
         return undefined;
       }
       return {
-        lastVideoId: lastFeed.video.id,
+        lastVideoId: lastFeed.video?.id ?? "",
       };
     },
   });

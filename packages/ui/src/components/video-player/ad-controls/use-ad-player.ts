@@ -1,6 +1,8 @@
-import { useDocumentVisibilityState } from "@genuin/ui/hooks";
 import type OpenPlayerJS from "openplayerjs";
 import { useCallback, useEffect, useRef, useState } from "react";
+
+import { useDocumentVisibilityState } from "@genuin/ui/hooks";
+
 import { categorizeAdError, handleAdErrorRecovery } from "./ad-error-utils";
 
 export type AdDataType = {
@@ -123,6 +125,8 @@ export function useAdPlayer({
   // Ref to store IMA AdsManager for volume/mute sync
   const adsManagerRef = useRef<any>(null);
 
+  console.log("loading state in useAdPlayer:", { adsManagerRef });
+
   // Sync mute/volume state with IMA AdsManager
   useEffect(() => {
     if (!adsManagerRef.current) return;
@@ -161,6 +165,7 @@ export function useAdPlayer({
   });
 
   const setupAdEventListeners = useCallback((player: OpenPlayerJS) => {
+    console.log("Setting up ad event listeners on player:", player);
     if (!player) {
       console.warn("Player not available for event listeners");
       return;
@@ -210,11 +215,14 @@ export function useAdPlayer({
 
     setTimeout(() => {
       try {
+        console.log("Setting up ad event listeners on player element");
         const playerElement = player.getElement();
         if (!playerElement || !playerElement.addEventListener) {
           console.warn("Player element does not support addEventListener");
           return;
         }
+
+        console.log("Setting up ad event listeners on player element:", playerElement);
 
         playerElement.addEventListener("adserror", (e: any) => {
           console.error("AdsLoader error:", e.detail);
@@ -226,6 +234,7 @@ export function useAdPlayer({
         });
 
         playerElement.addEventListener("adsloaded", () => {
+          console.log("Ads loaded event received");
           const adManager = player.getAd();
           if (!adManager) {
             console.error("Ad manager is not available.");
@@ -244,401 +253,315 @@ export function useAdPlayer({
           onAdResponseReceivedRef.current?.();
 
           // LOADED event handler
-          adsManager.addEventListener(
-            (window as any)?.google?.ima?.AdEvent.Type.LOADED,
-            (e: any) => {
-              setAdInfo((prev) => {
-                const updatedCtaInfo = {
-                  adId: e.ad?.data?.adId || prev.ctaInfo?.adId || null,
-                  url: e.ad?.data?.clickThroughUrl || prev.ctaInfo?.url || null,
-                  title: e.ad?.data?.title || prev.ctaInfo?.title || null,
-                  creativeId:
-                    e.ad?.data?.creativeId || prev.ctaInfo?.creativeId || null,
-                  advertiserBrandId:
-                    e.ad?.data?.advertiserBrandId ||
-                    prev.ctaInfo?.advertiserBrandId ||
-                    null,
-                  campaignId:
-                    e.ad?.data?.campaignId || prev.ctaInfo?.campaignId || null,
-                  lineItemId:
-                    e.ad?.data?.lineItemId || prev.ctaInfo?.lineItemId || null,
-                  mediaType:
-                    e.ad?.data?.mediaType ||
-                    e.ad?.data?.contentType ||
-                    prev.ctaInfo?.mediaType ||
-                    null,
-                  adFormat:
-                    e.ad?.data?.adFormat || prev.ctaInfo?.adFormat || null,
-                };
-                onAdRenderedRef.current?.({
-                  ...updatedCtaInfo,
-                  currentAdIndex: prev.currentIndex,
-                  totalAds: prev.totalAds,
-                });
-                return { ...prev, ctaInfo: updatedCtaInfo };
+          adsManager.addEventListener((window as any)?.google?.ima?.AdEvent.Type.LOADED, (e: any) => {
+            setAdInfo((prev) => {
+              const updatedCtaInfo = {
+                adId: e.ad?.data?.adId || prev.ctaInfo?.adId || null,
+                url: e.ad?.data?.clickThroughUrl || prev.ctaInfo?.url || null,
+                title: e.ad?.data?.title || prev.ctaInfo?.title || null,
+                creativeId: e.ad?.data?.creativeId || prev.ctaInfo?.creativeId || null,
+                advertiserBrandId: e.ad?.data?.advertiserBrandId || prev.ctaInfo?.advertiserBrandId || null,
+                campaignId: e.ad?.data?.campaignId || prev.ctaInfo?.campaignId || null,
+                lineItemId: e.ad?.data?.lineItemId || prev.ctaInfo?.lineItemId || null,
+                mediaType: e.ad?.data?.mediaType || e.ad?.data?.contentType || prev.ctaInfo?.mediaType || null,
+                adFormat: e.ad?.data?.adFormat || prev.ctaInfo?.adFormat || null,
+              };
+              onAdRenderedRef.current?.({
+                ...updatedCtaInfo,
+                currentAdIndex: prev.currentIndex,
+                totalAds: prev.totalAds,
               });
-            },
-          );
+              return { ...prev, ctaInfo: updatedCtaInfo };
+            });
+          });
 
           // IMPRESSION event handler
-          adsManager.addEventListener(
-            (window as any)?.google?.ima?.AdEvent.Type.IMPRESSION,
-            () => {
-              setAdInfo((prev) => {
-                onAdImpressionRef.current?.({
-                  adId: prev.ctaInfo?.adId || null,
-                  url: prev.ctaInfo?.url || null,
-                  title: prev.ctaInfo?.title || null,
-                  currentAdIndex: prev.currentIndex,
-                  totalAds: prev.totalAds,
-                  creativeId: prev.ctaInfo?.creativeId || null,
-                  advertiserBrandId: prev.ctaInfo?.advertiserBrandId || null,
-                  campaignId: prev.ctaInfo?.campaignId || null,
-                  lineItemId: prev.ctaInfo?.lineItemId || null,
-                  mediaType: prev.ctaInfo?.mediaType || null,
-                  adFormat: prev.ctaInfo?.adFormat || null,
-                });
-                return prev;
+          adsManager.addEventListener((window as any)?.google?.ima?.AdEvent.Type.IMPRESSION, () => {
+            setAdInfo((prev) => {
+              onAdImpressionRef.current?.({
+                adId: prev.ctaInfo?.adId || null,
+                url: prev.ctaInfo?.url || null,
+                title: prev.ctaInfo?.title || null,
+                currentAdIndex: prev.currentIndex,
+                totalAds: prev.totalAds,
+                creativeId: prev.ctaInfo?.creativeId || null,
+                advertiserBrandId: prev.ctaInfo?.advertiserBrandId || null,
+                campaignId: prev.ctaInfo?.campaignId || null,
+                lineItemId: prev.ctaInfo?.lineItemId || null,
+                mediaType: prev.ctaInfo?.mediaType || null,
+                adFormat: prev.ctaInfo?.adFormat || null,
               });
-            },
-          );
+              return prev;
+            });
+          });
 
           // FIRST_QUARTILE event handler
-          adsManager.addEventListener(
-            (window as any).google.ima.AdEvent.Type.FIRST_QUARTILE,
-            () => {
-              setAdInfo((prev) => {
-                onAdFirstQuartileRef.current?.({
-                  adId: prev.ctaInfo?.adId || null,
-                  url: prev.ctaInfo?.url || null,
-                  title: prev.ctaInfo?.title || null,
-                  currentAdIndex: prev.currentIndex,
-                  totalAds: prev.totalAds,
-                  creativeId: prev.ctaInfo?.creativeId || null,
-                  advertiserBrandId: prev.ctaInfo?.advertiserBrandId || null,
-                  campaignId: prev.ctaInfo?.campaignId || null,
-                  lineItemId: prev.ctaInfo?.lineItemId || null,
-                  mediaType: prev.ctaInfo?.mediaType || null,
-                  adFormat: prev.ctaInfo?.adFormat || null,
-                });
-                return prev;
+          adsManager.addEventListener((window as any).google.ima.AdEvent.Type.FIRST_QUARTILE, () => {
+            setAdInfo((prev) => {
+              onAdFirstQuartileRef.current?.({
+                adId: prev.ctaInfo?.adId || null,
+                url: prev.ctaInfo?.url || null,
+                title: prev.ctaInfo?.title || null,
+                currentAdIndex: prev.currentIndex,
+                totalAds: prev.totalAds,
+                creativeId: prev.ctaInfo?.creativeId || null,
+                advertiserBrandId: prev.ctaInfo?.advertiserBrandId || null,
+                campaignId: prev.ctaInfo?.campaignId || null,
+                lineItemId: prev.ctaInfo?.lineItemId || null,
+                mediaType: prev.ctaInfo?.mediaType || null,
+                adFormat: prev.ctaInfo?.adFormat || null,
               });
-            },
-          );
+              return prev;
+            });
+          });
 
-          adsManager.addEventListener(
-            (window as any)?.google?.ima?.AdEvent.Type.AD_PROGRESS,
-            (e: any) => {
-              try {
-                const adData = e.getAdData();
-                const adDuration = adData?.duration || 0;
-                const currentTime = adData?.currentTime || 0;
-                const skipOffset =
-                  adsManager.getCurrentAd().getSkipTimeOffset() ?? -1;
+          adsManager.addEventListener((window as any)?.google?.ima?.AdEvent.Type.AD_PROGRESS, (e: any) => {
+            try {
+              const adData = e.getAdData();
+              const adDuration = adData?.duration || 0;
+              const currentTime = adData?.currentTime || 0;
+              const skipOffset = adsManager.getCurrentAd().getSkipTimeOffset() ?? -1;
 
-                // Update ad time countdown
-                const remainingTime = Math.max(
-                  0,
-                  Math.ceil(adDuration - currentTime),
-                );
+              // Update ad time countdown
+              const remainingTime = Math.max(0, Math.ceil(adDuration - currentTime));
 
-                setAdTimeCountdown(remainingTime);
-                // Update skip countdown
-                if (skipOffset > 0) {
-                  setSkipCountdown(Math.ceil(skipOffset - currentTime));
-                }
-              } catch (err) {
-                console.warn("Error processing AD_PROGRESS event:", err);
+              setAdTimeCountdown(remainingTime);
+              // Update skip countdown
+              if (skipOffset > 0) {
+                setSkipCountdown(Math.ceil(skipOffset - currentTime));
               }
-            },
-          );
+            } catch (err) {
+              console.warn("Error processing AD_PROGRESS event:", err);
+            }
+          });
 
           // STARTED event handler
-          adsManager.addEventListener(
-            (window as any).google.ima.AdEvent.Type.STARTED,
-            (e: any) => {
-              try {
-                setAdIsActive(true);
-                updateLoadingStateRef.current(false, true);
+          adsManager.addEventListener((window as any).google.ima.AdEvent.Type.STARTED, (e: any) => {
+            try {
+              setAdIsActive(true);
+              updateLoadingStateRef.current(false, true);
 
-                // Pause player media if it's currently playing when ad starts
-                // try {
-                //   const media = player?.getMedia();
-                //   if (media && !media.paused) {
-                //     media.pause();
-                //     console.log("Player media paused as ad started");
-                //   }
-                // } catch (mediaPauseErr) {
-                //   console.warn(
-                //     "Error pausing player media on ad start:",
-                //     mediaPauseErr
-                //   );
-                // }
+              // Pause player media if it's currently playing when ad starts
+              // try {
+              //   const media = player?.getMedia();
+              //   if (media && !media.paused) {
+              //     media.pause();
+              //     console.log("Player media paused as ad started");
+              //   }
+              // } catch (mediaPauseErr) {
+              //   console.warn(
+              //     "Error pausing player media on ad start:",
+              //     mediaPauseErr
+              //   );
+              // }
 
-                const currentAd = e.ad;
-                // Get skip offset (time until skip button becomes available)
-                // const skipOffset =
-                //   currentAd && typeof currentAd.getSkipTimeOffset === "function"
-                //     ? currentAd.getSkipTimeOffset()
-                //     : -1;
+              // const currentAd = e.ad
+              // Get skip offset (time until skip button becomes available)
+              // const skipOffset =
+              //   currentAd && typeof currentAd.getSkipTimeOffset === "function"
+              //     ? currentAd.getSkipTimeOffset()
+              //     : -1;
 
-                const totalAds = e.ad?.data?.adPodInfo?.totalAds || 0;
-                const currentIndex = e.ad?.data?.adPodInfo?.adPosition || 0;
-                const ctaInfo =
-                  e.ad?.data?.clickThroughUrl &&
-                  e.ad?.data?.title &&
-                  e.ad?.data?.adId
-                    ? {
-                        url: e.ad.data.clickThroughUrl || null,
-                        title: e.ad.data.title || null,
-                        adId: e.ad.data.adId || null,
-                        creativeId: e.ad.data.creativeId || null,
-                        advertiserBrandId: e.ad.data.advertiserBrandId || null,
-                        campaignId: e.ad.data.campaignId || null,
-                        lineItemId: e.ad.data.lineItemId || null,
-                        mediaType:
-                          e.ad.data.mediaType || e.ad.data.contentType || null,
-                        adFormat: e.ad.data.adFormat || null,
-                      }
-                    : null;
+              const totalAds = e.ad?.data?.adPodInfo?.totalAds || 0;
+              const currentIndex = e.ad?.data?.adPodInfo?.adPosition || 0;
+              const ctaInfo =
+                e.ad?.data?.clickThroughUrl && e.ad?.data?.title && e.ad?.data?.adId
+                  ? {
+                      url: e.ad.data.clickThroughUrl || null,
+                      title: e.ad.data.title || null,
+                      adId: e.ad.data.adId || null,
+                      creativeId: e.ad.data.creativeId || null,
+                      advertiserBrandId: e.ad.data.advertiserBrandId || null,
+                      campaignId: e.ad.data.campaignId || null,
+                      lineItemId: e.ad.data.lineItemId || null,
+                      mediaType: e.ad.data.mediaType || e.ad.data.contentType || null,
+                      adFormat: e.ad.data.adFormat || null,
+                    }
+                  : null;
 
-                setAdInfo((prev) => ({
-                  ...prev,
-                  totalAds,
-                  currentIndex,
-                  ctaInfo: ctaInfo || prev.ctaInfo,
-                  isPlaying: true,
-                }));
+              setAdInfo((prev) => ({
+                ...prev,
+                totalAds,
+                currentIndex,
+                ctaInfo: ctaInfo || prev.ctaInfo,
+                isPlaying: true,
+              }));
 
-                onAdStartedRef.current?.({
-                  adId: ctaInfo?.adId || null,
-                  url: ctaInfo?.url || null,
-                  title: ctaInfo?.title || null,
-                  currentAdIndex: currentIndex,
-                  totalAds,
-                  creativeId: ctaInfo?.creativeId || null,
-                  advertiserBrandId: ctaInfo?.advertiserBrandId || null,
-                  campaignId: ctaInfo?.campaignId || null,
-                  lineItemId: ctaInfo?.lineItemId || null,
-                  mediaType: ctaInfo?.mediaType || null,
-                  adFormat: ctaInfo?.adFormat || null,
-                });
-
-                // Check if shouldPlay is false and pause if needed
-                if (!playerStateRef.current.shouldPlay) {
-                  try {
-                    adsManager.pause();
-                  } catch (pauseErr) {
-                    console.warn("Error pausing ad:", pauseErr);
-                  }
-                }
-              } catch (error) {
-                console.error("Error in ad started event:", error);
-              }
-            },
-          );
-
-          // SKIPPED event handler
-          adsManager.addEventListener(
-            (window as any).google.ima.AdEvent.Type.SKIPPED,
-            () => {
-              setAdInfo((prev) => {
-                onAdSkippedRef.current?.({
-                  adId: prev.ctaInfo?.adId || null,
-                  url: prev.ctaInfo?.url || null,
-                  title: prev.ctaInfo?.title || null,
-                  currentAdIndex: prev.currentIndex,
-                  totalAds: prev.totalAds,
-                  creativeId: prev.ctaInfo?.creativeId || null,
-                  advertiserBrandId: prev.ctaInfo?.advertiserBrandId || null,
-                  campaignId: prev.ctaInfo?.campaignId || null,
-                  lineItemId: prev.ctaInfo?.lineItemId || null,
-                  mediaType: prev.ctaInfo?.mediaType || null,
-                  adFormat: prev.ctaInfo?.adFormat || null,
-                });
-                return prev;
+              onAdStartedRef.current?.({
+                adId: ctaInfo?.adId || null,
+                url: ctaInfo?.url || null,
+                title: ctaInfo?.title || null,
+                currentAdIndex: currentIndex,
+                totalAds,
+                creativeId: ctaInfo?.creativeId || null,
+                advertiserBrandId: ctaInfo?.advertiserBrandId || null,
+                campaignId: ctaInfo?.campaignId || null,
+                lineItemId: ctaInfo?.lineItemId || null,
+                mediaType: ctaInfo?.mediaType || null,
+                adFormat: ctaInfo?.adFormat || null,
               });
 
-              setAdIsActive(false);
-              // As user clicks on ad and ad is loaded in iframe, window will lose focus
-              // Bring back focus to the window after ad is skipped
-              window.focus();
-            },
-          );
-
-          // COMPLETE event handler
-          adsManager.addEventListener(
-            (window as any).google.ima.AdEvent.Type.COMPLETE,
-            () => {
-              setAdInfo((prev) => {
-                onAdCompletedRef.current?.(
-                  prev.ctaInfo
-                    ? {
-                        adId: prev.ctaInfo.adId,
-                        url: prev.ctaInfo.url,
-                        title: prev.ctaInfo.title,
-                        creativeId: prev.ctaInfo.creativeId || null,
-                        advertiserBrandId:
-                          prev.ctaInfo.advertiserBrandId || null,
-                        campaignId: prev.ctaInfo.campaignId || null,
-                        lineItemId: prev.ctaInfo.lineItemId || null,
-                        mediaType: prev.ctaInfo.mediaType || null,
-                        adFormat: prev.ctaInfo.adFormat || null,
-                      }
-                    : { adId: null, url: null, title: null },
-                );
-                return {
-                  ...prev,
-                  isPlaying: false,
-                  ctaInfo: null,
-                };
-              });
-
-              setAdIsActive(false);
-            },
-          );
-
-          // CLICK event handler
-          adsManager.addEventListener(
-            (window as any).google.ima.AdEvent.Type.CLICK,
-            (e: any) => {
-              if (e.ad?.data?.clickThroughUrl && e.ad?.data?.title) {
-                setAdInfo((prev) => {
-                  onAdClickedRef.current?.({
-                    url: e.ad?.data?.clickThroughUrl || null,
-                    title: e.ad?.data?.title || null,
-                    adId: e.ad?.data?.adId || null,
-                    currentAdIndex: prev.currentIndex,
-                    totalAds: prev.totalAds,
-                    creativeId:
-                      e.ad?.data?.creativeId ||
-                      prev.ctaInfo?.creativeId ||
-                      null,
-                    advertiserBrandId:
-                      e.ad?.data?.advertiserBrandId ||
-                      prev.ctaInfo?.advertiserBrandId ||
-                      null,
-                    campaignId:
-                      e.ad?.data?.campaignId ||
-                      prev.ctaInfo?.campaignId ||
-                      null,
-                    lineItemId:
-                      e.ad?.data?.lineItemId ||
-                      prev.ctaInfo?.lineItemId ||
-                      null,
-                    mediaType:
-                      e.ad?.data?.mediaType ||
-                      e.ad?.data?.contentType ||
-                      prev.ctaInfo?.mediaType ||
-                      null,
-                    adFormat:
-                      e.ad?.data?.adFormat || prev.ctaInfo?.adFormat || null,
-                  });
-                  return prev;
-                });
-              }
-            },
-          );
-
-          // ALL_ADS_COMPLETED event handler
-          adsManager.addEventListener(
-            (window as any).google.ima.AdEvent.Type.ALL_ADS_COMPLETED,
-            () => {
-              console.log("All ads completed");
-              onAllAdsCompletedRef.current?.();
-              setAdInfo((prev) => ({ ...prev, allCompleted: true }));
-              setAdIsActive(false);
-            },
-          );
-
-          // RESUMED event handler
-          adsManager.addEventListener(
-            (window as any).google.ima.AdEvent.Type.RESUMED,
-            () => {
-              setAdInfo((prev) => ({ ...prev, isPlaying: true }));
               // Check if shouldPlay is false and pause if needed
               if (!playerStateRef.current.shouldPlay) {
                 try {
                   adsManager.pause();
-                  console.log(
-                    "Ad paused on resume due to shouldPlay being false",
-                  );
-                  setAdInfo((prev) => ({ ...prev, isPlaying: false }));
-                  return;
                 } catch (pauseErr) {
-                  console.warn("Error pausing ad on resume:", pauseErr);
+                  console.warn("Error pausing ad:", pauseErr);
                 }
               }
-            },
-          );
+            } catch (error) {
+              console.error("Error in ad started event:", error);
+            }
+          });
 
-          // PAUSED event handler
-          adsManager.addEventListener(
-            (window as any).google.ima.AdEvent.Type.PAUSED,
-            (e: any) => {
-              setAdInfo((prev) => {
-                const adData = e.ad?.data;
-                onAdPauseRef.current?.({
-                  adId: adData?.adId || prev.ctaInfo?.adId || null,
-                  url: adData?.clickThroughUrl || prev.ctaInfo?.url || null,
-                  title: adData?.title || prev.ctaInfo?.title || null,
-                  currentAdIndex: prev.currentIndex,
-                  totalAds: prev.totalAds,
-                  creativeId:
-                    adData?.creativeId || prev.ctaInfo?.creativeId || null,
-                  advertiserBrandId:
-                    adData?.advertiserBrandId ||
-                    prev.ctaInfo?.advertiserBrandId ||
-                    null,
-                  campaignId:
-                    adData?.campaignId || prev.ctaInfo?.campaignId || null,
-                  lineItemId:
-                    adData?.lineItemId || prev.ctaInfo?.lineItemId || null,
-                  mediaType:
-                    adData?.mediaType ||
-                    adData?.contentType ||
-                    prev.ctaInfo?.mediaType ||
-                    null,
-                  adFormat: adData?.adFormat || prev.ctaInfo?.adFormat || null,
-                });
-                return { ...prev, isPlaying: false };
+          // SKIPPED event handler
+          adsManager.addEventListener((window as any).google.ima.AdEvent.Type.SKIPPED, () => {
+            setAdInfo((prev) => {
+              onAdSkippedRef.current?.({
+                adId: prev.ctaInfo?.adId || null,
+                url: prev.ctaInfo?.url || null,
+                title: prev.ctaInfo?.title || null,
+                currentAdIndex: prev.currentIndex,
+                totalAds: prev.totalAds,
+                creativeId: prev.ctaInfo?.creativeId || null,
+                advertiserBrandId: prev.ctaInfo?.advertiserBrandId || null,
+                campaignId: prev.ctaInfo?.campaignId || null,
+                lineItemId: prev.ctaInfo?.lineItemId || null,
+                mediaType: prev.ctaInfo?.mediaType || null,
+                adFormat: prev.ctaInfo?.adFormat || null,
               });
-            },
-          );
+              return prev;
+            });
 
-          // AD_ERROR event handler
-          adsManager.addEventListener(
-            (window as any).google.ima.AdErrorEvent.Type.AD_ERROR,
-            (adErrorEvent: any) => {
-              const error = adErrorEvent.getError();
+            setAdIsActive(false);
+            // As user clicks on ad and ad is loaded in iframe, window will lose focus
+            // Bring back focus to the window after ad is skipped
+            window.focus();
+          });
 
-              setAdInfo((prev) => ({
+          // COMPLETE event handler
+          adsManager.addEventListener((window as any).google.ima.AdEvent.Type.COMPLETE, () => {
+            setAdInfo((prev) => {
+              onAdCompletedRef.current?.(
+                prev.ctaInfo
+                  ? {
+                      adId: prev.ctaInfo.adId,
+                      url: prev.ctaInfo.url,
+                      title: prev.ctaInfo.title,
+                      creativeId: prev.ctaInfo.creativeId || null,
+                      advertiserBrandId: prev.ctaInfo.advertiserBrandId || null,
+                      campaignId: prev.ctaInfo.campaignId || null,
+                      lineItemId: prev.ctaInfo.lineItemId || null,
+                      mediaType: prev.ctaInfo.mediaType || null,
+                      adFormat: prev.ctaInfo.adFormat || null,
+                    }
+                  : { adId: null, url: null, title: null }
+              );
+              return {
                 ...prev,
                 isPlaying: false,
                 ctaInfo: null,
-              }));
+              };
+            });
 
-              setAdIsActive(false);
+            setAdIsActive(false);
+          });
 
-              // Categorize and handle the error using centralized utilities
-              const errorResult = categorizeAdError(error);
-              handleAdErrorRecovery(adsManager, errorResult, playerStateRef);
+          // CLICK event handler
+          adsManager.addEventListener((window as any).google.ima.AdEvent.Type.CLICK, (e: any) => {
+            if (e.ad?.data?.clickThroughUrl && e.ad?.data?.title) {
+              setAdInfo((prev) => {
+                onAdClickedRef.current?.({
+                  url: e.ad?.data?.clickThroughUrl || null,
+                  title: e.ad?.data?.title || null,
+                  adId: e.ad?.data?.adId || null,
+                  currentAdIndex: prev.currentIndex,
+                  totalAds: prev.totalAds,
+                  creativeId: e.ad?.data?.creativeId || prev.ctaInfo?.creativeId || null,
+                  advertiserBrandId: e.ad?.data?.advertiserBrandId || prev.ctaInfo?.advertiserBrandId || null,
+                  campaignId: e.ad?.data?.campaignId || prev.ctaInfo?.campaignId || null,
+                  lineItemId: e.ad?.data?.lineItemId || prev.ctaInfo?.lineItemId || null,
+                  mediaType: e.ad?.data?.mediaType || e.ad?.data?.contentType || prev.ctaInfo?.mediaType || null,
+                  adFormat: e.ad?.data?.adFormat || prev.ctaInfo?.adFormat || null,
+                });
+                return prev;
+              });
+            }
+          });
 
-              // Resume content playback
-              setTimeout(() => {
-                if (playerStateRef.current.shouldPlay) {
-                  player.play();
-                }
-              }, 50);
+          // ALL_ADS_COMPLETED event handler
+          adsManager.addEventListener((window as any).google.ima.AdEvent.Type.ALL_ADS_COMPLETED, () => {
+            onAllAdsCompletedRef.current?.();
+            setAdInfo((prev) => ({ ...prev, allCompleted: true }));
+            setAdIsActive(false);
+          });
 
-              onAdErrorRef.current?.(error);
-            },
-          );
+          // RESUMED event handler
+          adsManager.addEventListener((window as any).google.ima.AdEvent.Type.RESUMED, () => {
+            setAdInfo((prev) => ({ ...prev, isPlaying: true }));
+            // Check if shouldPlay is false and pause if needed
+            if (!playerStateRef.current.shouldPlay) {
+              try {
+                adsManager.pause();
+                setAdInfo((prev) => ({ ...prev, isPlaying: false }));
+                return;
+              } catch (pauseErr) {
+                console.warn("Error pausing ad on resume:", pauseErr);
+              }
+            }
+          });
+
+          // PAUSED event handler
+          adsManager.addEventListener((window as any).google.ima.AdEvent.Type.PAUSED, (e: any) => {
+            setAdInfo((prev) => {
+              const adData = e.ad?.data;
+              onAdPauseRef.current?.({
+                adId: adData?.adId || prev.ctaInfo?.adId || null,
+                url: adData?.clickThroughUrl || prev.ctaInfo?.url || null,
+                title: adData?.title || prev.ctaInfo?.title || null,
+                currentAdIndex: prev.currentIndex,
+                totalAds: prev.totalAds,
+                creativeId: adData?.creativeId || prev.ctaInfo?.creativeId || null,
+                advertiserBrandId: adData?.advertiserBrandId || prev.ctaInfo?.advertiserBrandId || null,
+                campaignId: adData?.campaignId || prev.ctaInfo?.campaignId || null,
+                lineItemId: adData?.lineItemId || prev.ctaInfo?.lineItemId || null,
+                mediaType: adData?.mediaType || adData?.contentType || prev.ctaInfo?.mediaType || null,
+                adFormat: adData?.adFormat || prev.ctaInfo?.adFormat || null,
+              });
+              return { ...prev, isPlaying: false };
+            });
+          });
+
+          // AD_ERROR event handler
+          adsManager.addEventListener((window as any).google.ima.AdErrorEvent.Type.AD_ERROR, (adErrorEvent: any) => {
+            const error = adErrorEvent.getError();
+
+            setAdInfo((prev) => ({
+              ...prev,
+              isPlaying: false,
+              ctaInfo: null,
+            }));
+
+            setAdIsActive(false);
+
+            // Categorize and handle the error using centralized utilities
+            const errorResult = categorizeAdError(error);
+            handleAdErrorRecovery(adsManager, errorResult, playerStateRef);
+
+            // Resume content playback
+            setTimeout(() => {
+              if (playerStateRef.current.shouldPlay) {
+                player.play();
+              }
+            }, 50);
+
+            onAdErrorRef.current?.(error);
+          });
         });
       } catch (error) {
         console.error("Error setting up player event listeners:", error);
       }
-    }, 100);
+    }, 10);
   }, []);
 
   const handleSkip = useCallback(() => {

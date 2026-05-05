@@ -1,7 +1,9 @@
-import { cn, defaultSizesForIcons } from "@genuin/ui/lib/utils";
-import type { SVGIconsProps } from "../type";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
+
+import { cn, defaultSizesForIcons } from "@genuin/ui/lib/utils";
+
+import type { SVGIconsProps } from "../type";
 
 const iconVariant = cva("", {
   variants: {
@@ -31,8 +33,7 @@ export function MultipleDotsIcon({
       height="14"
       viewBox="0 0 12 14"
       className={cn(className, iconVariant({ theme, size }))}
-      {...restProps}
-    >
+      {...restProps}>
       <circle cx="2.17898" cy="1.27273" r="1.27273" />
       <circle cx="2.17898" cy="5.09109" r="1.27273" />
       <circle cx="2.17898" cy="8.90945" r="1.27273" />

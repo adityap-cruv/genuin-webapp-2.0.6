@@ -1,6 +1,7 @@
-import { ComponentType } from "react";
-import { useRouter } from "next/navigation";
-import { UrlObject } from "url";
+import type { UrlObject } from "url";
+
+import type { useRouter } from "next/navigation";
+import type { ComponentType } from "react";
 
 type Url = string | UrlObject;
 

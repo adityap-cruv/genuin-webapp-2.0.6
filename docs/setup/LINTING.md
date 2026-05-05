@@ -1,3 +1,5 @@
+<<<<<<< HEAD
+
 # Linting & ESLint Setup for Genuin Monorepo
 
 ## Shared ESLint Configuration
@@ -108,4 +110,174 @@ Linting is included in the `turbo.json` pipeline for all packages.
 ## Maintenance
 
 - Update plugins and rules in the root and `packages/eslint-config` only.
-- When adding a new package/app, add an `eslint.config.mjs` that re-exports the shared config.
+- # When adding a new package/app, add an `eslint.config.mjs` that re-exports the shared config.
+
+# Linting & Formatting Setup for Genuin Monorepo
+
+## Architecture
+
+All ESLint rules are defined exclusively in `packages/eslint-config`. Apps and packages
+import a preset from there and only add environment-specific config (parser project path,
+globals, ignores, migration suppressions). **No app defines its own rules or imports
+ESLint plugins directly.**
+
+### Shared config structure
+
+| File                                       | Purpose                                                                   |
+| ------------------------------------------ | ------------------------------------------------------------------------- |
+| `packages/eslint-config/base.js`           | `@eslint/js`, `typescript-eslint`, `eslint-config-prettier`, Turbo plugin |
+| `packages/eslint-config/react-internal.js` | React, React Hooks, `eslint-plugin-import`                                |
+| `packages/eslint-config/next.js`           | Next.js, TanStack Query, React (for Next.js apps)                         |
+| `packages/eslint-config/index.js`          | Composes all three in order: `[...base, ...reactInternal, ...next]`       |
+
+Each sub-config is **self-contained** — `react-internal.js` and `next.js` do NOT
+internally extend `base.js`. This prevents rule duplication.
+
+---
+
+## App / Package Configs
+
+Each app/package has an `eslint.config.mjs` that does one of:
+
+**Next.js apps** (`apps/webapp`, `apps/legacy-webapp`) — use the full preset:
+
+```js
+import sharedConfig from "../../packages/eslint-config/index.js";
+import globals from "globals";
+
+const tsconfigRootDir = new URL(".", import.meta.url).pathname;
+
+export default [
+  ...sharedConfig,
+  { ignores: ["..."] },
+  {
+    languageOptions: {
+      parserOptions: { project: "./tsconfig.json", tsconfigRootDir },
+      globals: { ...globals.browser, ...globals.es2021 },
+    },
+    rules: {
+      // migration suppressions only — no rule definitions
+    },
+  },
+];
+```
+
+**React library packages** (`packages/web-sdk`) — use base + react-internal only (no Next.js):
+
+```js
+import base from "../eslint-config/base.js";
+import reactInternal from "../eslint-config/react-internal.js";
+
+export default [...base, ...reactInternal, { ignores: ["dist/**"] }];
+```
+
+**UI/component packages** (`packages/ui`, `packages/components`) — use the full preset
+with `@next/next` rules disabled (library packages don't need them):
+
+```js
+import sharedConfig from "../eslint-config/index.js";
+
+export default [
+  ...sharedConfig,
+  {
+    rules: {
+      "@next/next/no-html-link-for-pages": "off",
+      // migration suppressions only
+    },
+  },
+];
+```
+
+---
+
+## Prettier Integration
+
+Prettier is **not** run as an ESLint rule. The integration is:
+
+1. `eslint-config-prettier` (included in `base.js`) — disables ESLint formatting rules
+   that would conflict with Prettier
+2. `prettier` CLI — runs separately via `pnpm format`
+
+Do not add `eslint-plugin-prettier` to any config. It is redundant and slow.
+
+### Prettier config
+
+Root `.prettierrc.json` is the single source of truth. All packages inherit it.
+Apps that use Tailwind CSS also add `prettier-plugin-tailwindcss` in their local
+`.prettierrc.json`.
+
+| Setting           | Value |
+| ----------------- | ----- |
+| `printWidth`      | 120   |
+| `singleQuote`     | true  |
+| `semi`            | false |
+| `trailingComma`   | "es5" |
+| `tabWidth`        | 2     |
+| `bracketSameLine` | true  |
+| `endOfLine`       | "lf"  |
+
+---
+
+## Running Lint & Format
+
+```sh
+pnpm lint              # Lint all packages via Turborepo
+pnpm format            # Format all .ts, .tsx, .js, .mjs, .json, .md files
+
+# Per-package
+pnpm --filter @genuin/webapp lint
+pnpm --filter @genuin/webapp lint:fix   # auto-fix
+pnpm --filter @genuin/web-sdk lint
+pnpm --filter @genuin/components lint
+```
+
+---
+
+## Type-Aware Linting
+
+Enabled only in `apps/webapp` and `apps/legacy-webapp` via `parserOptions.project`.
+Other packages use standard (non-type-aware) linting for performance.
+
+---
+
+## TanStack Query Rules
+
+`@tanstack/eslint-plugin-query` v5.78.0+ is compatible with ESLint v9.
+All recommended rules are active via `packages/eslint-config/next.js`.
+Do not suppress them.
+
+---
+
+## Temporary Suppressions (Migration TODOs)
+
+Common warnings are suppressed in app configs with `// TODO(eslint-migration):` comments.
+Re-enable them incrementally. Prioritise:
+
+1. `react-hooks/rules-of-hooks` — safety rule
+2. `@typescript-eslint/no-unused-vars` — code quality
+3. `no-console` — production hygiene
+4. `import/order` — consistency
+
+---
+
+## Adding a New Package
+
+1. Create `eslint.config.mjs` importing the appropriate preset from `packages/eslint-config`
+2. Add `"lint": "eslint ."` and `"format": "prettier --write ."` to `package.json`
+3. Create `.prettierrc.json` (copy from root or another package)
+4. Do **not** import any ESLint plugins directly — add rules to `packages/eslint-config` if needed
+
+---
+
+## Troubleshooting
+
+- **Type resolution errors**: ensure Node.js ≥20.12 and run `pnpm install` at root
+- **Cache issues**: run `pnpm turbo clean`
+- **Verify no rule duplication**: `cd apps/webapp && pnpm exec eslint --print-config src/app/page.tsx`
+
+## References
+
+- [ESLint Flat Config Docs](https://eslint.org/docs/latest/use/configure/configuration-files-new)
+- [Prettier Docs](https://prettier.io/docs/en/configuration.html)
+- [TanStack Query ESLint Plugin](https://tanstack.com/query/latest/docs/eslint/eslint-plugin-query)
+  > > > > > > > release/genuin-sdk/2.0.5

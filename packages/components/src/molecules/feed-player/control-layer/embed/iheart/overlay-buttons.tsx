@@ -1,13 +1,11 @@
-import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { Button } from "@genuin/ui/button";
+import { IHeartPauseIcon, IHeartPlayIcon, IHeartStopIcon } from "@genuin/ui/icons/iheart-icons";
 import { cn } from "@genuin/ui/lib/utils";
-import {
-  IHeartPauseIcon,
-  IHeartPlayIcon,
-  IHeartStopIcon,
-} from "@genuin/ui/icons/iheart-icons";
-import { useIHeartPlayback } from "./use-iheart-playback";
+
 import { useBaseContext } from "@genuin/components/context";
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+
+import { useIHeartPlayback } from "./use-iheart-playback";
 
 type OverLayButtonProps = {
   onIheartRedirection?: () => void;
@@ -61,11 +59,9 @@ export function OverLayButton({
               ? "gencl:bg-transparent gencl:text-white gencl:border! gencl:border-white!"
               : "gencl:bg-black gencl:text-white"),
         variant === "complete" && "gencl:bg-white gencl:text-black",
-        (variant === "complete" || variant === "overlay") &&
-          "gencl:w-fit! gencl:self-center!"
+        (variant === "complete" || variant === "overlay") && "gencl:w-fit! gencl:self-center!"
       )}
-      title={ctaText}
-    >
+      title={ctaText}>
       {!isGoToEpisode &&
         (isPlaying ? (
           info.type === "station" ? (

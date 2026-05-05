@@ -1,22 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
-import {
-  useAxiosInstance,
-} from "@genuin/components/context/axios";
+import type { QueryKey } from "@tanstack/react-query";
+import type { AxiosInstance } from "axios";
+
+import { useAxiosInstance } from "@genuin/components/context/axios";
 import { axiosInstance as globalAxiosInstance } from "@genuin/components/context/axios/context";
 import { NOT_FOUND_ERROR_CODES } from "@genuin/components/lib/constants/errors";
-import { API_PATHS } from "@genuin/components/react-query/paths";
-import { PostDetailsType } from "../feed/schema";
-import { getQueryKeyForVideoDetails } from "../../keys/video";
-import type { QueryKey } from "@tanstack/react-query";
-import { queryClient } from "@genuin/components/react-query/client";
-import { parseFeed } from "../feed/parser";
+import { SDKEventEmitter, SDKEventName } from "@genuin/components/lib/sdk-event-emitter";
 import { isUuid } from "@genuin/components/lib/utils";
-import {
-  SDKEventEmitter,
-  SDKEventName,
-} from "@genuin/components/lib/sdk-event-emitter";
-import { FeedResponseFromGoApi } from "../feed/types";
-import type { AxiosInstance } from "axios";
+import { queryClient } from "@genuin/components/react-query/client";
+import { API_PATHS } from "@genuin/components/react-query/paths";
+
+import { getQueryKeyForVideoDetails } from "../../keys/video";
+import { parseFeed } from "../feed/parser";
+import type { PostDetailsType } from "../feed/schema";
+import type { FeedResponseFromGoApi } from "../feed/types";
 
 type BrandContext =
   | {
@@ -144,13 +141,7 @@ export function useGetVideoDetailsAsFeed(
  * @param queryKey - The query key associated with this video's details in the cache.
  * @param isReacted - The new reaction state (true if reacted/sparked, false if un-reacted/unsparked).
  */
-export function setQueryDataForVideoDetails({
-  queryKey,
-  isReacted,
-}: {
-  queryKey: QueryKey;
-  isReacted: boolean;
-}) {
+export function setQueryDataForVideoDetails({ queryKey, isReacted }: { queryKey: QueryKey; isReacted: boolean }) {
   queryClient.setQueryData<PostDetailsType[]>(queryKey, (oldData) => {
     if (!oldData?.[0]?.video) {
       // Nothing to update
@@ -165,9 +156,7 @@ export function setQueryDataForVideoDetails({
         video: {
           ...firstVideo,
           isSparked: isReacted,
-          sparkCount: isReacted
-            ? (firstVideo.sparkCount ?? 0) + 1
-            : Math.max((firstVideo.sparkCount ?? 0) - 1, 0),
+          sparkCount: isReacted ? (firstVideo.sparkCount ?? 0) + 1 : Math.max((firstVideo.sparkCount ?? 0) - 1, 0),
         },
       },
     ];

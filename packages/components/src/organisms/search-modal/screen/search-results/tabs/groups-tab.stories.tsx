@@ -1,6 +1,9 @@
+import { Dialog } from "@genuin/ui/components/dialog";
 import type { Meta, StoryObj } from "@storybook/react";
+
+import type { LoopTopResultType } from "@genuin/components/react-query/api/search";
+
 import { GroupsTab } from "./groups-tab";
-import { LoopTopResultType } from "@genuin/components/react-query/api/search";
 
 // Mock groups/loops data based on API response format
 const mockGroups: LoopTopResultType[] = [
@@ -11,8 +14,7 @@ const mockGroups: LoopTopResultType[] = [
       group_id: "group_1",
       slug: "product-development",
       group_name: "Product Development",
-      group_description:
-        "Discussing product development strategies and best practices",
+      group_description: "Discussing product development strategies and best practices",
       no_of_members: 25,
       no_of_videos: 150,
       no_of_views: 500,
@@ -27,8 +29,7 @@ const mockGroups: LoopTopResultType[] = [
       group_id: "group_2",
       slug: "design-system",
       group_name: "Design System Discussion",
-      group_description:
-        "Collaborative space for design system development and implementation",
+      group_description: "Collaborative space for design system development and implementation",
       no_of_members: 18,
       no_of_videos: 89,
       no_of_views: 300,
@@ -43,8 +44,7 @@ const mockGroups: LoopTopResultType[] = [
       group_id: "group_3",
       slug: "frontend-dev",
       group_name: "Frontend Development",
-      group_description:
-        "Discussion group for frontend developers sharing tips and techniques",
+      group_description: "Discussion group for frontend developers sharing tips and techniques",
       no_of_members: 42,
       no_of_videos: 234,
       no_of_views: 600,
@@ -60,8 +60,7 @@ const mockGroups: LoopTopResultType[] = [
       group_id: "group_4",
       slug: "react-community",
       group_name: "React Community",
-      group_description:
-        "Share React tips, tricks, and best practices with fellow developers",
+      group_description: "Share React tips, tricks, and best practices with fellow developers",
       no_of_members: 67,
       no_of_videos: 389,
       no_of_views: 1200,
@@ -76,8 +75,7 @@ const mockGroups: LoopTopResultType[] = [
       group_id: "group_5",
       slug: "startup-founders",
       group_name: "Startup Founders",
-      group_description:
-        "Community for startup founders to share experiences and advice",
+      group_description: "Community for startup founders to share experiences and advice",
       no_of_members: 31,
       no_of_videos: 112,
       no_of_views: 400,
@@ -105,9 +103,12 @@ const meta: Meta<typeof GroupsTab> = {
   },
   decorators: [
     (Story) => (
-      <div className="gencl:w-[500px] gencl:max-w-[500px] gencl:h-[400px] gencl:border gencl:border-gray-200 gencl:rounded-lg gencl:p-4 gencl:bg-white gencl:overflow-auto">
-        <Story />
-      </div>
+      // Dialog context is required because GroupsTab renders DialogClose around each item
+      <Dialog type="storybook-groups-tab" open>
+        <div className="gencl:w-[500px] gencl:max-w-[500px] gencl:h-[400px] gencl:border gencl:border-gray-200 gencl:rounded-lg gencl:p-4 gencl:bg-white gencl:overflow-auto">
+          <Story />
+        </div>
+      </Dialog>
     ),
   ],
   tags: ["autodocs"],
@@ -182,8 +183,7 @@ export const LargeGroup: Story = {
           ...mockGroups[3]!.group,
           no_of_members: 123456,
           no_of_videos: 7890,
-          group_description:
-            "A large community of React developers sharing knowledge and resources",
+          group_description: "A large community of React developers sharing knowledge and resources",
         },
       },
     ],
@@ -234,8 +234,7 @@ export const LongContent: Story = {
         ...mockGroups[0]!,
         group: {
           ...mockGroups[0]!.group,
-          group_name:
-            "Extremely Long Group Name That Exceeds Normal Length Expectations",
+          group_name: "Extremely Long Group Name That Exceeds Normal Length Expectations",
           group_description:
             "This is a very long description that goes on and on, providing extensive details about the group's purpose, activities, and community guidelines. It is meant to test how the UI handles long text content without breaking the layout or causing overflow issues.",
         },

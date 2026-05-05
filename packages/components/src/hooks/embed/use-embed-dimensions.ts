@@ -1,8 +1,10 @@
 "use client";
 
 import { useMemo, useEffect, useState } from "react";
-import { useEmbedConfigs } from "./use-embed-config";
+
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+
+import { useEmbedConfigs } from "./use-embed-config";
 
 export interface EmbedDimensions {
   containerHeight: number;
@@ -66,9 +68,7 @@ export function useEmbedDimensions() {
     const getHeaderHeight = (): number => {
       if (
         !config.header.showHeader ||
-        (config.view.isPlacementView &&
-          !config.contentDisplay.showStyleDetails &&
-          !config.header.heading)
+        (config.view.isPlacementView && !config.contentDisplay.showStyleDetails && !config.header.heading)
       )
         return 0;
 
@@ -76,9 +76,7 @@ export function useEmbedDimensions() {
         if (config.header.ctaButton?.url) {
           return HEADER_HEIGHTS.feed.withCtaButton;
         }
-        return config.header.subHeading
-          ? HEADER_HEIGHTS.feed.withSubHeading
-          : HEADER_HEIGHTS.feed.basic;
+        return config.header.subHeading ? HEADER_HEIGHTS.feed.withSubHeading : HEADER_HEIGHTS.feed.basic;
       }
 
       if (config.view.isCarousel) {
@@ -93,35 +91,22 @@ export function useEmbedDimensions() {
     };
 
     const headerHeight = getHeaderHeight();
-    const statsHeight =
-      config.engagement.showSocialInteractionData &&
-      config.responsive.canShowEngagement
-        ? 40
-        : 0;
+    const statsHeight = config.engagement.showSocialInteractionData && config.responsive.canShowEngagement ? 40 : 0;
     const linkoutHeight =
       config.links.showLinkOutside && config.responsive.canShowEngagement
-        ? 108
+        ? config.responsive.effectiveVideoWidth > 300
+          ? 154
+          : 38
         : 0;
 
-    const containerHeight =
-      observedDimensions.height ??
-      config.dimensions.containerHeight ??
-      DEFAULT_HEIGHT;
-    const containerWidth =
-      observedDimensions.width ??
-      config.dimensions.containerWidth ??
-      DEFAULT_WIDTH;
+    const containerHeight = observedDimensions.height ?? config.dimensions.containerHeight ?? DEFAULT_HEIGHT;
+    const containerWidth = observedDimensions.width ?? config.dimensions.containerWidth ?? DEFAULT_WIDTH;
 
-    const availableHeight = Math.max(
-      containerHeight - headerHeight,
-      MIN_CAROUSEL_HEIGHT,
-    );
+    const availableHeight = Math.max(containerHeight - headerHeight, MIN_CAROUSEL_HEIGHT);
 
     // For iheart brand layout in carousel view, reserve space for navigation buttons below the embed
-    const isIheartCarouselLayout =
-      config.view.brandLayoutType === "iheart" && config.view.isCarousel;
-    // const navigationButtonHeight = config.view.isNavigationControlEnabled ? 68 : 0; // Approximate height for navigation buttons
-    const navigationButtonHeight = 0;
+    const isIheartCarouselLayout = config.view.brandLayoutType === "iheart" && config.view.isCarousel;
+    const navigationButtonHeight = config.view.isNavigationControlEnabled ? 68 : 0; // Approximate height for navigation buttons
     const finalAvailableHeight = isIheartCarouselLayout
       ? Math.max(availableHeight - navigationButtonHeight, MIN_CAROUSEL_HEIGHT)
       : availableHeight;
@@ -136,16 +121,24 @@ export function useEmbedDimensions() {
       availableHeight: finalAvailableHeight,
     };
   }, [
-    config.dimensions.containerHeight,
-    config.dimensions.containerWidth,
-    config.header.showHeader,
     config.engagement.showSocialInteractionData,
     config.responsive.canShowEngagement,
+    config.responsive.effectiveVideoWidth,
     config.links.showLinkOutside,
-    config.view.isFeed,
+    config.dimensions.containerHeight,
+    config.dimensions.containerWidth,
     config.view.brandLayoutType,
+    config.view.isCarousel,
     config.view.isNavigationControlEnabled,
-    observedDimensions.width,
+    config.view.isPlacementView,
+    config.view.isFeed,
+    config.view.isGrid,
+    config.header.showHeader,
+    config.header.heading,
+    config.header.ctaButton?.url,
+    config.header.subHeading,
+    config.contentDisplay.showStyleDetails,
     observedDimensions.height,
+    observedDimensions.width,
   ]);
 }

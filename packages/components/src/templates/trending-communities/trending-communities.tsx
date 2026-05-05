@@ -1,31 +1,26 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import {
-  CommunityCard,
-  CommunityCardSkeleton,
-} from "@genuin/components/organisms/community-card";
 import { Button } from "@genuin/ui/components/button";
-import { getTrendingCommunities } from "@genuin/components/react-query/api/community/trending";
-import { Swiper, SwiperSlide } from "swiper/react";
+import { useState, useEffect } from "react";
 import { Navigation } from "swiper/modules";
-import { Swiper as SwiperType } from "swiper/types";
+import { Swiper, SwiperSlide } from "swiper/react";
 
-// Import Swiper styles
-import "swiper/css";
-import "swiper/css/navigation";
-import { TrendingCommunitiesSkeleton } from "./skeleton";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-import { Link } from "@genuin/components/molecules/link";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
-import { CommunityUserRole } from "@genuin/components/types/post";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Link } from "@genuin/components/molecules/link";
+import { CommunityCard } from "@genuin/components/organisms/community-card";
+import { getTrendingCommunities } from "@genuin/components/react-query/api/community/trending";
+import type { CommunityUserRole } from "@genuin/components/types/post";
+
+import { TrendingCommunitiesSkeleton } from "./skeleton";
+
+import "swiper/css";
+
+import "swiper/css/navigation";
 
 // Shared hook for join status logic
 function useCommunityJoinStatus(communities: CommunityInfoType[]) {
-  const [communitiesWithJoinStatus, setCommunitiesWithJoinStatus] = useState<
-    Record<string, CommunityUserRole>
-  >({});
+  const [communitiesWithJoinStatus, setCommunitiesWithJoinStatus] = useState<Record<string, CommunityUserRole>>({});
 
   useEffect(() => {
     if (communities?.length) {
@@ -37,32 +32,27 @@ function useCommunityJoinStatus(communities: CommunityInfoType[]) {
     }
   }, [communities]);
 
-  const handleCommunityJoinStatusChange = (
-    communityId: string,
-    newRole: CommunityUserRole
-  ) => {
+  const handleCommunityJoinStatusChange = (communityId: string, newRole: CommunityUserRole) => {
     setCommunitiesWithJoinStatus((prev) => ({
       ...prev,
       [communityId]: newRole,
     }));
   };
 
-  const communitiesWithUpdatedCounts = communities.map(
-    (community: CommunityInfoType) => {
-      let roleNumber: number | undefined;
-      const joinStatus = communitiesWithJoinStatus[community.community_id];
-      if (joinStatus === "LEADER") roleNumber = 1;
-      else if (joinStatus === "MEMBER") roleNumber = 2;
-      else if (joinStatus === "MODERATOR") roleNumber = 3;
-      else roleNumber = undefined;
-      return {
-        ...community,
-        joinStatus,
-        roleNumber,
-        isRequested: joinStatus === "REQUESTED",
-      };
-    }
-  );
+  const communitiesWithUpdatedCounts = communities.map((community: CommunityInfoType) => {
+    let roleNumber: number | undefined;
+    const joinStatus = communitiesWithJoinStatus[community.community_id];
+    if (joinStatus === "LEADER") roleNumber = 1;
+    else if (joinStatus === "MEMBER") roleNumber = 2;
+    else if (joinStatus === "MODERATOR") roleNumber = 3;
+    else roleNumber = undefined;
+    return {
+      ...community,
+      joinStatus,
+      roleNumber,
+      isRequested: joinStatus === "REQUESTED",
+    };
+  });
 
   return {
     communitiesWithJoinStatus,
@@ -98,7 +88,7 @@ interface CommunityWithJoinStatus extends CommunityInfoType {
 }
 
 export function TrendingCommunities() {
-  const { isLoading, data, isError } = getTrendingCommunities();
+  const { isLoading, data } = getTrendingCommunities();
   const [isExpanded, setIsExpanded] = useState(false);
   const { isMobile } = useDeviceDetectMediaQuery();
 
@@ -123,11 +113,7 @@ export function TrendingCommunities() {
   return isMobile ? (
     <TrendingCommunitiesMobileView data={data} />
   ) : (
-    <TrendingCommunitiesDesktopView
-      data={data}
-      isExpanded={isExpanded}
-      handleToggle={handleToggle}
-    />
+    <TrendingCommunitiesDesktopView data={data} isExpanded={isExpanded} handleToggle={handleToggle} />
   );
 }
 
@@ -141,12 +127,9 @@ export function TrendingCommunitiesDesktopView({
   isExpanded: boolean;
   handleToggle: () => void;
 }) {
-  const { handleCommunityJoinStatusChange, communitiesWithUpdatedCounts } =
-    useCommunityJoinStatus(data.communities);
+  const { handleCommunityJoinStatusChange, communitiesWithUpdatedCounts } = useCommunityJoinStatus(data.communities);
 
-  const communitiesToDisplay = isExpanded
-    ? communitiesWithUpdatedCounts
-    : communitiesWithUpdatedCounts.slice(0, 3);
+  const communitiesToDisplay = isExpanded ? communitiesWithUpdatedCounts : communitiesWithUpdatedCounts.slice(0, 3);
 
   return (
     <div className="gencl:w-full gencl:flex gencl:flex-col gencl:gap-4">
@@ -160,11 +143,8 @@ export function TrendingCommunitiesDesktopView({
       </div>
 
       <div className="gencl:grid gencl:grid-cols-1 gencl:sm:grid-cols-2 gencl:md:grid-cols-3 gencl:lg:grid-cols-3 gencl:gap-x-2 gencl:gap-y-4">
-        {communitiesToDisplay.map((community: CommunityWithJoinStatus) => (
-          <Link
-            key={community.community_id}
-            href={buildPageUrl({ type: "community", slug: community.slug })}
-          >
+        {communitiesToDisplay.map((community: CommunityWithJoinStatus, idx: number) => (
+          <Link key={idx} href={buildPageUrl({ type: "community", slug: community.slug })}>
             <CommunityCard
               onCommunityJoinStatusChange={(newRole) =>
                 handleCommunityJoinStatusChange(community.community_id, newRole)
@@ -198,29 +178,8 @@ export function TrendingCommunitiesDesktopView({
 }
 
 // Mobile view component with horizontal swiper
-export function TrendingCommunitiesMobileView({
-  data,
-}: {
-  data: { communities: CommunityInfoType[] };
-}) {
-  const [swiperInstance, setSwiperInstance] = useState<any>(null);
-  const [isBeginning, setIsBeginning] = useState(true);
-  const [isEnd, setIsEnd] = useState(false);
-  const { handleCommunityJoinStatusChange, communitiesWithUpdatedCounts } =
-    useCommunityJoinStatus(data.communities);
-
-  // Handle swiper events
-  const handleSwiperInit = (swiper: SwiperType) => {
-    setSwiperInstance(swiper);
-    setIsBeginning(swiper.isBeginning);
-    setIsEnd(swiper.isEnd);
-  };
-
-  // Handle slide change
-  const handleSlideChange = (swiper: SwiperType) => {
-    setIsBeginning(swiper.isBeginning);
-    setIsEnd(swiper.isEnd);
-  };
+export function TrendingCommunitiesMobileView({ data }: { data: { communities: CommunityInfoType[] } }) {
+  const { handleCommunityJoinStatusChange, communitiesWithUpdatedCounts } = useCommunityJoinStatus(data.communities);
 
   return (
     <div className="gencl:w-full gencl:relative">
@@ -235,71 +194,59 @@ export function TrendingCommunitiesMobileView({
             spaceBetween={10}
             slidesPerView={1.05} // Show 5% of the next slide
             className="gencl:w-full gencl:h-58"
-            snapToSlideEdge
+            // snapToSlideEdge
             modules={[Navigation]}
             navigation={{
               prevEl: ".swiper-community-prev-button",
               nextEl: ".swiper-community-next-button",
             }}
-            onSwiper={handleSwiperInit}
-            onSlideChange={handleSlideChange}
             autoHeight={false}
             touchStartPreventDefault={false}
-            watchSlidesProgress={true}
-          >
-            {communitiesWithUpdatedCounts.map(
-              (community: CommunityWithJoinStatus) => (
-                <SwiperSlide
-                  key={community.community_id}
-                  className="gencl:h-full"
-                >
-                  <div className="gencl:card-wrapper gencl:h-full">
-                    <Link
-                      href={buildPageUrl({
-                        type: "community",
+            watchSlidesProgress={true}>
+            {communitiesWithUpdatedCounts.map((community: CommunityWithJoinStatus) => (
+              <SwiperSlide key={community.community_id} className="gencl:h-full">
+                <div className="gencl:card-wrapper gencl:h-full">
+                  <Link
+                    href={buildPageUrl({
+                      type: "community",
+                      slug: community.slug,
+                    })}
+                    className="gencl:block gencl:w-full gencl:h-full">
+                    <CommunityCard
+                      className="gencl:h-full gencl:flex gencl:flex-col"
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        overflow: "hidden",
+                      }}
+                      onCommunityJoinStatusChange={(newRole) =>
+                        handleCommunityJoinStatusChange(community.community_id, newRole)
+                      }
+                      community={{
+                        id: community.community_id,
+                        banner: community.banner,
+                        description: community.description,
+                        dp: community.dp,
+                        dp_s: community.dp_s,
+                        dp_m: community.dp_m,
+                        dp_l: community.dp_l,
+                        name: community.name,
+                        handle: community.handle,
                         slug: community.slug,
-                      })}
-                      className="gencl:block gencl:w-full gencl:h-full"
-                    >
-                      <CommunityCard
-                        className="gencl:h-full gencl:flex gencl:flex-col"
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          overflow: "hidden",
-                        }}
-                        onCommunityJoinStatusChange={(newRole) =>
-                          handleCommunityJoinStatusChange(
-                            community.community_id,
-                            newRole
-                          )
-                        }
-                        community={{
-                          id: community.community_id,
-                          banner: community.banner,
-                          description: community.description,
-                          dp: community.dp,
-                          dp_s: community.dp_s,
-                          dp_m: community.dp_m,
-                          dp_l: community.dp_l,
-                          name: community.name,
-                          handle: community.handle,
-                          slug: community.slug,
-                          type: "PUBLIC",
-                          logged_in_user_role: community.roleNumber,
-                          is_community_join_requested: community.isRequested,
-                          stats: {
-                            members: community.no_of_members ?? 0,
-                            groups: community.no_of_loops ?? 0,
-                            posts: community.no_of_videos ?? 0,
-                          },
-                        }}
-                      />
-                    </Link>
-                  </div>
-                </SwiperSlide>
-              )
-            )}
+                        type: "PUBLIC",
+                        logged_in_user_role: community.roleNumber,
+                        is_community_join_requested: community.isRequested,
+                        stats: {
+                          members: community.no_of_members ?? 0,
+                          groups: community.no_of_loops ?? 0,
+                          posts: community.no_of_videos ?? 0,
+                        },
+                      }}
+                    />
+                  </Link>
+                </div>
+              </SwiperSlide>
+            ))}
           </Swiper>
         </div>
 

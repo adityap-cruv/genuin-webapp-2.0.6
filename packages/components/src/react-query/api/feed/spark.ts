@@ -1,7 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
+import type { AxiosInstance } from "axios";
+
 import { useAxiosInstance } from "@genuin/components/context/axios";
 import { API_PATHS } from "@genuin/components/react-query/paths";
-import type { AxiosInstance } from "axios";
 
 const TYPE_MAPPING = {
   VIDEO: 2,
@@ -15,15 +16,18 @@ const TYPE_MAPPING = {
  * @param reaction reacted or not.
  * @returns
  */
-async function videoReaction({
-  contentId,
-  type,
-  reaction,
-}: {
-  contentId: string;
-  type: "VIDEO" | "COMMENT";
-  reaction: boolean;
-}, axiosInstance: AxiosInstance) {
+async function videoReaction(
+  {
+    contentId,
+    type,
+    reaction,
+  }: {
+    contentId: string;
+    type: "VIDEO" | "COMMENT";
+    reaction: boolean;
+  },
+  axiosInstance: AxiosInstance
+) {
   return await axiosInstance
     .post(API_PATHS.FEED_SPARK, {
       content_id: contentId,
@@ -34,14 +38,10 @@ async function videoReaction({
       if (res.status === 200) {
         return reaction;
       }
-      throw new Error(
-        `Unexpected response status: ${res.status} - ${res.statusText}`
-      );
+      throw new Error(`Unexpected response status: ${res.status} - ${res.statusText}`);
     })
     .catch((e) => {
-      throw new Error(
-        `Failed to ${reaction ? "react" : "unreact"} to content: ${e.message}`
-      );
+      throw new Error(`Failed to ${reaction ? "react" : "unreact"} to content: ${e.message}`);
     });
 }
 
@@ -60,7 +60,8 @@ export function useVideoReationMutation({
   const axiosInstance = useAxiosInstance();
 
   return useMutation({
-    mutationFn: (props: { contentId: string; type: "VIDEO" | "COMMENT"; reaction: boolean }) => videoReaction(props, axiosInstance),
+    mutationFn: (props: { contentId: string; type: "VIDEO" | "COMMENT"; reaction: boolean }) =>
+      videoReaction(props, axiosInstance),
     onSuccess,
     onError,
   });

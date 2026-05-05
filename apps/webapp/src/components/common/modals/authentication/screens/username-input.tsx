@@ -1,116 +1,116 @@
-import { Form, FormField, useFormField, FormItem, FormLabel, FormControl, FormMessage } from '@components/ui/form'
-import { cn, sanitizeInput } from '@lib/utils'
-import { Input } from '@components/ui/input'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect, useState } from 'react'
-import { useAuthenticationModalStore } from '../store'
-import { updateUser, validateUsername } from '../api/auth'
-import { Button } from '@components/ui/button'
-import { Loader } from '@components/ui/loader'
-import { ModalShell } from '../modal-shell'
-import { useSession } from 'next-auth/react'
-import Analytics from '@services/analytics'
-import { type ScreenProps } from '.'
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+import { Button } from "@components/ui/button";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@components/ui/form";
+import { Input } from "@components/ui/input";
+import { Loader } from "@components/ui/loader";
+import { cn, sanitizeInput } from "@lib/utils";
+import Analytics from "@services/analytics";
+
+import { updateUser, validateUsername } from "../api/auth";
+import { ModalShell } from "../modal-shell";
+import { useAuthenticationModalStore } from "../store";
+
+import { type ScreenProps } from ".";
 
 const usernameSchema = z.object({
   username: z
     .string()
-    .regex(/^[a-zA-Z0-9._-]+$/, { message: 'Usernames can only use letters, numbers, underscores, and periods.' }),
-})
+    .regex(/^[a-zA-Z0-9._-]+$/, { message: "Usernames can only use letters, numbers, underscores, and periods." }),
+});
 
 export function UsernameInput({ onNext }: ScreenProps) {
-  const { data: sessionData, update: updateSession } = useSession()
-  const [isLoading, setIsLoading] = useState(false)
-  const { setFormData, formData } = useAuthenticationModalStore()
+  const { data: sessionData, update: updateSession } = useSession();
+  const [isLoading, setIsLoading] = useState(false);
+  const { setFormData, formData } = useAuthenticationModalStore();
   // prefield username is always valid.
-  const [isUsernameValid, setIsUsernameValid] = useState(true)
+  const [isUsernameValid, setIsUsernameValid] = useState(true);
   const form = useForm<z.infer<typeof usernameSchema>>({
     resolver: zodResolver(usernameSchema),
-    mode: 'onBlur',
-    defaultValues: { username: '' },
-  })
-  const { isValid, isDirty } = form.formState
+    mode: "onBlur",
+    defaultValues: { username: "" },
+  });
+  const { isValid, isDirty } = form.formState;
 
   useEffect(() => {
     const watch = form.watch((value) => {
-      setFormData({ username: value.username })
-    })
+      setFormData({ username: value.username });
+    });
     return () => {
-      watch.unsubscribe()
-    }
-  }, [form.watch])
+      watch.unsubscribe();
+    };
+  }, [form.watch]);
 
   useEffect(() => {
     if (isValid && !isDirty) {
-      form.clearErrors()
-      setIsUsernameValid(true)
+      form.clearErrors();
+      setIsUsernameValid(true);
     }
     const validateUser = setTimeout(async () => {
       if (formData.username && formData.username?.length > 0 && isDirty) {
-        const usernameAvailable = await validateUsername(formData.username ?? '')
+        const usernameAvailable = await validateUsername(formData.username ?? "");
         if (!usernameAvailable) {
-          form.setError('username', { message: 'This username isn’t available. Choose a different username.' })
+          form.setError("username", { message: "This username isn’t available. Choose a different username." });
         } else {
-          form.clearErrors()
+          form.clearErrors();
         }
-        setIsUsernameValid(usernameAvailable ?? false)
+        setIsUsernameValid(usernameAvailable ?? false);
       }
-    }, 500)
+    }, 500);
 
     return () => {
-      clearTimeout(validateUser)
-    }
-  }, [formData.username, isValid, isDirty])
+      clearTimeout(validateUser);
+    };
+  }, [formData.username, isValid, isDirty]);
 
   async function onSubmit({ username }: { username: string }) {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       if (isUsernameValid) {
-        const { status } = await updateUser({ nickname: sanitizeInput(username) })
+        const { status } = await updateUser({ nickname: sanitizeInput(username) });
         if (status) {
           await updateSession({
             ...sessionData,
             user: { ...sessionData?.user, nickname: username, usernameSet: true },
-          })
-          onNext()
+          });
+          onNext();
           void Analytics.track({
-            eventName: 'Ks Username Set ',
+            eventName: "Ks Username Set ",
             properties: { username },
-          })
+          });
         }
       } else {
-        form.setError('username', { message: 'This username isn’t available. Choose a different username.' })
+        form.setError("username", { message: "This username isn’t available. Choose a different username." });
       }
     } catch (e) {
-      form.setError('root', { message: 'Something went wrong' })
+      form.setError("root", { message: "Something went wrong" });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
   return (
     <ModalShell>
       <div>
-        <h3 className="flex w-full items-center justify-center text-title-1-demi sm:text-heading-3 ">
-          Create username
-        </h3>
-        <p className="flex w-full justify-center text-title-3-med text-tertiary">Enter a name to show on your videos</p>
+        <h3 className="text-title-1-demi sm:text-heading-3 flex w-full items-center justify-center">Create username</h3>
+        <p className="text-title-3-med text-tertiary flex w-full justify-center">Enter a name to show on your videos</p>
       </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
           <FormField
             control={form.control}
             name="username"
-            render={({ field }) => {
-              const errors = useFormField().error
+            render={({ field, fieldState }) => {
               return (
                 <FormItem className="pb-6 sm:w-full">
                   <FormLabel className="text-body-1-med">
                     <div className="flex w-full justify-between">
                       <p className="">Username</p>
-                      <p className="text-cap-1-med ">{form.getValues('username')?.length ?? 0}/25</p>
+                      <p className="text-cap-1-med">{form.getValues("username")?.length ?? 0}/25</p>
                     </div>
                   </FormLabel>
                   <FormControl>
@@ -118,15 +118,15 @@ export function UsernameInput({ onNext }: ScreenProps) {
                       maxLength={25}
                       type="text"
                       className={cn(
-                        'border border-tertiary-200 bg-tertiary-100 text-title-3-med',
-                        errors && '!border-red'
+                        "border-tertiary-200 bg-tertiary-100 text-title-3-med border",
+                        fieldState.error && "!border-red"
                       )}
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage className={cn('!text-cap-1-demi')} />
+                  <FormMessage className={cn("!text-cap-1-demi")} />
                 </FormItem>
-              )
+              );
             }}
           />
           <Button
@@ -140,12 +140,12 @@ export function UsernameInput({ onNext }: ScreenProps) {
             )}
           </Button>
           {form.formState.errors.root && (
-            <p className="flex items-center justify-center text-title-3-med text-supplementary-red">
+            <p className="text-title-3-med text-supplementary-red flex items-center justify-center">
               {form.formState.errors.root.message}
             </p>
           )}
         </form>
       </Form>
     </ModalShell>
-  )
+  );
 }

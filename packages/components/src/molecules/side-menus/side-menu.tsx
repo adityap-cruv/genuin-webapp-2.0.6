@@ -1,17 +1,14 @@
+import { cn } from "@genuin/ui/lib/utils";
 import { lazy, Suspense } from "react";
 import type { FC } from "react";
+
 import type { MenuItem } from "./side-menu.types";
-import type { AuthenticationModalProps } from "@genuin/components/organisms/authentication-modal";
 
 const AuthenticationModal = lazy(() =>
-  import("@genuin/components/organisms/authentication-modal/index.js").then(
-    (m) => ({
-      default: m.AuthenticationModal,
-    })
-  )
-) as React.ComponentType<AuthenticationModalProps>;
-
-import { cn } from "@genuin/ui/lib/utils";
+  import("@genuin/components/organisms/authentication-modal").then((m) => ({
+    default: m.AuthenticationModal,
+  }))
+);
 
 interface SideMenuProps {
   items: MenuItem[];
@@ -29,12 +26,11 @@ const SideMenu: FC<SideMenuProps> = ({ items, activeId, onSelect }) => {
             key={item.id}
             onClick={() => onSelect(item.id)}
             className={cn(
-              "gencl:flex gencl:items-center gencl:gap-2 gencl:cursor-pointer gencl:px-3 gencl:py-2 gencl:my-1 gencl:rounded-md ",
+              "gencl:flex gencl:items-center gencl:gap-2 gencl:cursor-pointer gencl:px-3 gencl:py-2 gencl:my-1 gencl:rounded-md",
               isActive
                 ? "gencl:bg-secondary-50 gencl:text-body-1-bold"
                 : "gencl:hover:bg-secondary-50 gencl:text-body-1-medium"
-            )}
-          >
+            )}>
             {item.icon && <span>{item.icon}</span>}
             <span>{item.label}</span>
           </li>

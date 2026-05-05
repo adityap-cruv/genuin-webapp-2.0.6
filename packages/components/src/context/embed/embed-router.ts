@@ -1,4 +1,5 @@
 import { memoryLocation } from "wouter/memory-location";
+
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 
 class HistoryManager {

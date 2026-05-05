@@ -1,19 +1,17 @@
 // lib/axios-observability-interceptor.ts
-import { AxiosInstance } from "axios";
+import type { AxiosInstance } from "axios";
+
+import type * as ObservabilityService from "@genuin/components/lib/utils/observability/service";
 
 let interceptorId: number | null = null;
-let observabilityUtils:
-  | typeof import("@genuin/components/lib/utils/observability/service")
-  | null = null;
+let observabilityUtils: typeof ObservabilityService | null = null;
 
 /**
  * Lazy load observability utilities for axios interceptor
  */
 async function loadObservabilityUtils() {
   if (!observabilityUtils) {
-    observabilityUtils = await import(
-      "@genuin/components/lib/utils/observability/service.js"
-    );
+    observabilityUtils = await import("@genuin/components/lib/utils/observability/service");
   }
   return observabilityUtils;
 }
@@ -23,9 +21,7 @@ async function loadObservabilityUtils() {
  * This interceptor captures API status codes and error messages
  * @param axiosInstance - The axios instance to attach the interceptor to
  */
-export async function setupObservabilityInterceptor(
-  axiosInstance: AxiosInstance
-) {
+export async function setupObservabilityInterceptor(axiosInstance: AxiosInstance) {
   // Load utilities first
   const utils = await loadObservabilityUtils();
 

@@ -1,4 +1,4 @@
-import { QueryKey } from "@tanstack/react-query";
+import type { QueryKey } from "@tanstack/react-query";
 
 /**
  * This function generates a unique query key for the notification count.

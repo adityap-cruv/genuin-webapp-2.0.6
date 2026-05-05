@@ -1,5 +1,6 @@
-import { TrendingGroupCardSkeleton } from "@genuin/components/organisms/trending-groups-card";
 import { Skeleton } from "@genuin/ui/components/skeleton";
+
+import { TrendingGroupCardSkeleton } from "@genuin/components/organisms/trending-groups-card";
 
 export function TrendingGroupsSkeleton() {
   return (

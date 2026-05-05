@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+
 import { Checkbox } from "./checkbox";
 
 /**
@@ -56,10 +57,7 @@ export const Default: Story = {
   render: (args) => (
     <div className="gencl:flex gencl:items-center gencl:space-x-2">
       <Checkbox {...args} id="terms" />
-      <label 
-        htmlFor="terms" 
-        className="gencl:text-sm gencl:font-medium gencl:leading-none"
-      >
+      <label htmlFor="terms" className="gencl:text-sm gencl:font-medium gencl:leading-none">
         Accept terms and conditions
       </label>
     </div>

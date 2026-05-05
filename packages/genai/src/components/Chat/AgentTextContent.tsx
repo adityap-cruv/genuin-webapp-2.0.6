@@ -1,19 +1,22 @@
-import type { ChatHistoryEvent } from '@/types';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
+
+import type { ChatHistoryEvent } from '@/types';
+
 import BrandAssets from '../BCC/BrandAssets';
 import BrandCTKWs from '../BCC/BrandCTKWs';
+import BrandConsumerBrands from '../BCC/BrandConsumerBrands';
 import BrandGuidelines from '../BCC/BrandGuidelines';
 import BrandIndustryType from '../BCC/BrandIndustryType';
 import BrandPersona from '../BCC/BrandPersona';
-import BrandConsumerBrands from '../BCC/BrandConsumerBrands';
 import BrandSocialHandleFetcher from '../BCC/BrandSocialHandleFetcher';
+
 import Markdown from './Markdown';
-import VideoPlayer from './VideoPlayer';
-import VideoMetadata from './VideoMetadata';
 import ThinkingIndicator from './ThinkingIndicator';
+import VideoMetadata from './VideoMetadata';
+import VideoPlayer from './VideoPlayer';
 
 interface AgentTextContentProps {
     event: ChatHistoryEvent;

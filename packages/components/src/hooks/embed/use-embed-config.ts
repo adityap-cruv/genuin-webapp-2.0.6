@@ -1,11 +1,12 @@
-import { useEmbedContext } from "@genuin/components/context/embed";
-import { useBaseContext } from "@genuin/components/context/base";
-import { useMemo } from "react";
-import { useDeviceDetectMediaQuery } from "../use-devide-detect-media-query";
-import type { CustomizationType } from "@genuin/components/context/embed/embed.types";
 import { useBrowserDetect } from "@genuin/ui/hooks";
-import { FeedType } from "@genuin/components/types/post";
-import { IS_PRODUCTION_ENVIRONMENT } from "@genuin/components/lib/utils/env";
+import { useMemo } from "react";
+
+import { useBaseContext } from "@genuin/components/context/base";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import type { CustomizationType } from "@genuin/components/context/embed/embed.types";
+import type { FeedType } from "@genuin/components/types/post";
+
+import { useDeviceDetectMediaQuery } from "../use-devide-detect-media-query";
 
 const MIN_EMBED_WIDTH = 150;
 const MIN_EMBED_HEIGHT = 268; // Based on 9:16 aspect ratio for 150 width
@@ -17,19 +18,13 @@ const MIN_GRID_VIDEO_WIDTH = 150;
  * @returns A comprehensive, organized object containing all customization options
  */
 export function useEmbedConfigs() {
-  let embedContextData;
-  try {
-    embedContextData = useEmbedContext();
-  } catch (error) {
-    // Use default values if embed context is unavailable
-    embedContextData = {
-      customization: null,
-      rootElement: null,
-      embedData: null,
-    };
-  }
-  const { customization, rootElement, embedData, brandLayoutType } =
-    embedContextData;
+  const embedContextData = useSafeEmbedContext() ?? {
+    customization: null,
+    rootElement: null,
+    embedData: null,
+    brandLayoutType: undefined,
+  };
+  const { customization, rootElement, embedData, brandLayoutType } = embedContextData;
   const { brandDetails, isEmbed } = useBaseContext();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
   const { isSafari } = useBrowserDetect();
@@ -47,7 +42,7 @@ export function useEmbedConfigs() {
       containerWidth: customization?.dimensions?.width,
       aspectRatio: embedData?.aspect_ratio, // Add aspect ratio support from embedData
     }),
-    [customization?.dimensions, embedData?.aspect_ratio],
+    [customization?.dimensions, embedData?.aspect_ratio]
   );
 
   // ============================================================
@@ -89,10 +84,7 @@ export function useEmbedConfigs() {
           embedData?.placement_id === "69de814d6778217d372a2308") &&
         isMobile,
       scrollBehavior: customization?.scroll_behavior || "paging",
-      isNavigationControlEnabled:
-        brandLayoutType === "ted"
-          ? false
-          : customization?.is_navigation_control_enabled,
+      isNavigationControlEnabled: brandLayoutType === "ted" ? false : customization?.is_navigation_control_enabled,
       /**
        * This flag is used to determine whether the player should pause when the player doesn't autoplay in unmuted state specifically for safari.
        * If true: the player will pause when autoplay is not allowed error gets thrown from player.
@@ -127,10 +119,12 @@ export function useEmbedConfigs() {
   const headerConfig = useMemo(
     () => ({
       showHeader:
+        embedData?.placement_id === "69c2812fd98484cf6b83a5ba" ||
         Boolean(customization?.heading) ||
         Boolean(customization?.sub_heading) ||
         Boolean(customization?.cta_button?.url),
-      heading: customization?.heading || null,
+      heading:
+        embedData?.placement_id === "69c2812fd98484cf6b83a5ba" ? "Trending Highlights" : customization?.heading || null,
       subHeading: customization?.sub_heading || null,
       headingTextColor: customization?.heading_text_color,
       subHeadingTextColor: customization?.sub_heading_text_color,
@@ -143,7 +137,7 @@ export function useEmbedConfigs() {
           }
         : null,
     }),
-    [customization, embedData],
+    [customization, embedData]
   );
 
   // ============================================================
@@ -151,24 +145,17 @@ export function useEmbedConfigs() {
   // ============================================================
   const videoConfig = useMemo(
     () => ({
-      videoLoop: !!embedData?.placement_id
-        ? embedData?.media_play?.enable_loop_video
-        : !!customization?.is_loop_video,
-      videoAutoplay: !!embedData?.placement_id
+      videoLoop: embedData?.placement_id ? embedData?.media_play?.enable_loop_video : !!customization?.is_loop_video,
+      videoAutoplay: embedData?.placement_id
         ? embedData?.media_play?.enable_autoplay ||
-          (viewConfig.websiteType === "polaris" &&
-            viewConfig.brandLayoutType === "iheart")
+          (viewConfig.websiteType === "polaris" && viewConfig.brandLayoutType === "iheart")
         : !!customization?.autoplay,
-      moveToNextTime:
-        brandDetails.brand_id === 2476
-          ? 5
-          : embedData?.media_play?.auto_advance_playback || 0,
+      moveToNextTime: brandDetails.brand_id === 2476 ? 5 : embedData?.media_play?.auto_advance_playback || 0,
       showBorderAroundVideo:
         (!!customization?.is_show_social_interaction_data ||
-          (customization?.links?.is_show_links &&
-            customization?.links?.position === "outside")) &&
+          (customization?.links?.is_show_links && customization?.links?.position === "outside")) &&
         brandLayoutType !== "iheart",
-      videoCrop: customization?.video_crop,
+      videoCrop: customization ? customization?.video_crop : true,
       autoScrollToNextSlide: customization?.enable_auto_scroll ?? false,
       resumePlaybackFrom: brandDetails.web_configs.resume_playback_from,
       previewSeconds: embedData?.media_play?.video_preview_seconds ?? 0,
@@ -176,10 +163,9 @@ export function useEmbedConfigs() {
        * Video preview enabled flag.
        */
       videoShouldPreview:
-        embedData?.media_play?.video_preview_seconds !== undefined &&
-        embedData.media_play.video_preview_seconds > 0,
+        embedData?.media_play?.video_preview_seconds !== undefined && embedData.media_play.video_preview_seconds > 0,
     }),
-    [customization, brandDetails.brand_id, embedData?.style],
+    [customization, brandDetails.brand_id, embedData?.style]
   );
 
   // ============================================================
@@ -215,19 +201,15 @@ export function useEmbedConfigs() {
       showSectionSubTitle: embedData?.section_details?.sub_title ?? false,
       showSectionThumbnail: embedData?.section_details?.thumbnail ?? false,
       showClipsCount: embedData?.section_details?.no_of_clips ?? false,
-      sectionDetailsPosition:
-        embedData?.section_details?.position || "overlay_on_top",
+      sectionDetailsPosition: embedData?.section_details?.position || "overlay_on_top",
       showPostDate: embedData?.video_details?.post_date ?? false,
       showPostDescription: embedData?.video_details?.post_description ?? false,
       showVideoLinkouts: embedData?.video_details?.show_linkouts ?? false,
       showVideoDuration: embedData?.video_details?.video_duration ?? false,
-      videoDetailsPosition:
-        embedData?.video_details?.position || "overlay_on_bottom",
-      socialInteractionCountsPosition:
-        embedData?.social_interaction_counts?.position || "overlay_on_bottom",
+      videoDetailsPosition: embedData?.video_details?.position || "overlay_on_bottom",
+      socialInteractionCountsPosition: embedData?.social_interaction_counts?.position || "overlay_on_bottom",
       showCommentCount: embedData?.social_interaction_counts?.comments ?? false,
-      showReactionCount:
-        embedData?.social_interaction_counts?.reactions ?? false,
+      showReactionCount: embedData?.social_interaction_counts?.reactions ?? false,
       showViewCount: embedData?.social_interaction_counts?.views ?? false,
     }),
     [
@@ -236,7 +218,7 @@ export function useEmbedConfigs() {
       embedData?.show_style_details,
       embedData?.social_metrics,
       embedData?.social_interaction_counts,
-    ],
+    ]
   );
 
   // ============================================================
@@ -248,14 +230,16 @@ export function useEmbedConfigs() {
       communityLoopIds: customization?.community_loop_ids
         ? customization.community_loop_ids.map((group) => group.loop_id)
         : [],
-      showJoinCommunityButton: !!customization?.show_join_community_button,
-      showCommunityShareButton: !!customization?.show_community_share_button,
+      showJoinCommunityButton:
+        embedData?.style === "standard_wall" ? !!customization?.show_join_community_button : true,
+      showCommunityShareButton:
+        embedData?.style === "standard_wall" ? !!customization?.show_community_share_button : true,
       enableCommunityClick: !!customization?.enable_community_click,
       enableBrandClick: !!customization?.enable_brand_click,
       showUserName: !!customization?.is_show_username,
       showViewCount: !!customization?.is_show_view_count,
     }),
-    [customization],
+    [customization, embedData?.style]
   );
 
   // ============================================================
@@ -263,9 +247,7 @@ export function useEmbedConfigs() {
   // ============================================================
   const engagementConfig = useMemo(() => {
     // Generalized engagement tools logic
-    const showEngagementTools = isEmbed
-      ? !!customization?.is_enable_engagement_tools
-      : true;
+    const showEngagementTools = isEmbed ? !!customization?.is_enable_engagement_tools : true;
 
     // Default and disabled engagement tool states
     const defaultEngagementTools = {
@@ -289,10 +271,7 @@ export function useEmbedConfigs() {
 
     // Apply camera_enabled logic to repost functionality
     // Prioritize embed configuration over brand details camera_enabled
-    if (
-      !isEmbed ||
-      (isEmbed && customization?.enable_engagement_tools?.repost === undefined)
-    ) {
+    if (!isEmbed || (isEmbed && customization?.enable_engagement_tools?.repost === undefined)) {
       // Only apply camera_enabled check if not in embed context or if embed doesn't explicitly configure repost
       if (!brandDetails.camera_enabled) {
         engagementTools = {
@@ -314,7 +293,7 @@ export function useEmbedConfigs() {
           acc[key] = enabled;
           return acc;
         },
-        {} as Record<string, boolean>,
+        {} as Record<string, boolean>
       );
 
     // Generalized assignment for redirectionTools
@@ -322,8 +301,7 @@ export function useEmbedConfigs() {
     if (isEmbed) {
       if (isEnableRedirection) {
         // Use customized redirection tools if provided, otherwise enable all
-        redirectionTools =
-          customization?.enable_redirection_tools ?? getRedirectionTools(true);
+        redirectionTools = customization?.enable_redirection_tools ?? getRedirectionTools(true);
       } else {
         // All redirection tools disabled
         redirectionTools = getRedirectionTools(false);
@@ -336,8 +314,7 @@ export function useEmbedConfigs() {
     return {
       showEngagementTools,
       engagementTools,
-      showSocialInteractionData:
-        !!customization?.is_show_social_interaction_data,
+      showSocialInteractionData: !!customization?.is_show_social_interaction_data,
       showShareIcon: !!customization?.show_share_icon,
       showCommentsSection: !!customization?.show_comments_section,
       showSidePanel: !!customization?.show_side_panel,
@@ -355,14 +332,10 @@ export function useEmbedConfigs() {
       showLinks: customization?.links?.is_show_links ?? false,
       showLinksInExpand: embedData?.show_linkout_in_expand ?? true,
       linkPosition: customization?.links?.position ?? "outside",
-      showLinkOutside:
-        customization?.links?.is_show_links &&
-        customization?.links?.position === "outside",
-      showLinkInside:
-        customization?.links?.is_show_links &&
-        customization?.links?.position === "overlay",
+      showLinkOutside: customization?.links?.is_show_links && customization?.links?.position === "outside",
+      showLinkInside: customization?.links?.is_show_links && customization?.links?.position === "overlay",
     }),
-    [customization, embedData],
+    [customization, embedData]
   );
 
   // ============================================================
@@ -371,19 +344,11 @@ export function useEmbedConfigs() {
   const stylingConfig = useMemo(
     () => ({
       brandColors: customization?.brandColors || {},
-      isOpacityDown:
-        embedData?.style === "carousel" &&
-        customization?.carousel_style === "focus",
-      showDataOutside:
-        engagementConfig.showSocialInteractionData || linkConfig.showLinks,
+      isOpacityDown: embedData?.style === "carousel" && customization?.carousel_style === "focus",
+      showDataOutside: engagementConfig.showSocialInteractionData || linkConfig.showLinks,
       theme: customization?.theme || "light", // Added theme support
     }),
-    [
-      customization,
-      embedData?.style,
-      engagementConfig.showSocialInteractionData,
-      linkConfig.showLinks,
-    ],
+    [customization, embedData?.style, engagementConfig.showSocialInteractionData, linkConfig.showLinks]
   );
 
   // ============================================================
@@ -417,9 +382,7 @@ export function useEmbedConfigs() {
        * In case of standard wall and embed show navigation bar based on customization.
        * If it's not embed show the navigation bar.
        */
-      showNavigationBar: isEmbed
-        ? customization?.show_navigation && embedData?.style === "standard_wall"
-        : true,
+      showNavigationBar: isEmbed ? customization?.show_navigation && embedData?.style === "standard_wall" : true,
       /**
        * In case of embed show back and forward buttons.
        * In case of standard-wall we want to show back button and close button.
@@ -446,10 +409,7 @@ export function useEmbedConfigs() {
         embedContextData.embedData?.style === "expand_only" ||
         embedContextData.embedData?.expandOnLoad === true,
     };
-  }, [
-    embedContextData.embedData?.style,
-    embedContextData.embedData?.card_layout_id,
-  ]);
+  }, [embedContextData.embedData?.style, embedContextData.embedData?.card_layout_id]);
 
   //==================================================================
   // Responsive breakpoints configuration
@@ -468,13 +428,54 @@ export function useEmbedConfigs() {
       lg: 240,
     } as const;
 
+    // Header height constants — mirrors useEmbedDimensions to avoid circular deps
+    const HEADER_HEIGHTS = {
+      feed: { withCtaButton: 104, withSubHeading: 64, basic: 40 },
+      carousel: 56,
+      grid: 48,
+    } as const;
+
+    const getHeaderHeight = (): number => {
+      if (!headerConfig.showHeader || (viewConfig.isPlacementView && !contentDisplayConfig.showStyleDetails)) return 0;
+
+      if (viewConfig.isFeed) {
+        if (headerConfig.ctaButton?.url) return HEADER_HEIGHTS.feed.withCtaButton;
+        return headerConfig.subHeading ? HEADER_HEIGHTS.feed.withSubHeading : HEADER_HEIGHTS.feed.basic;
+      }
+
+      if (viewConfig.isCarousel) return HEADER_HEIGHTS.carousel;
+      if (viewConfig.isGrid) return HEADER_HEIGHTS.grid;
+
+      return 0;
+    };
+
+    // Parse aspect ratio (number like 0.5625, or string "9:16")
+    const parseAspectRatio = (): number => {
+      const ar = dimensionsConfig.aspectRatio;
+      if (typeof ar === "number" && ar > 0) return ar;
+      if (typeof ar === "string" && ar.includes(":")) {
+        const [w, h] = ar.split(":").map(Number);
+        if (w && h && h > 0) return w / h;
+      }
+      return 9 / 16; // default portrait
+    };
+
     // Calculate effective video width based on embed style
     const getEffectiveVideoWidth = () => {
       switch (currentStyle) {
         case "grid":
           return gridColumn > 0 ? containerWidth / gridColumn : containerWidth;
+
         case "carousel":
-        case "feed":
+        case "feed": {
+          // Video height = container height minus header
+          const headerH = getHeaderHeight();
+          const availableH = Math.max(containerHeight - headerH, 0);
+          const aspectRatioValue = parseAspectRatio();
+          const widthFromAspectRatio = availableH * aspectRatioValue;
+          return widthFromAspectRatio > 0 ? Math.min(containerWidth, widthFromAspectRatio) : containerWidth;
+        }
+
         case "standard_wall":
         default:
           return containerWidth;
@@ -488,20 +489,11 @@ export function useEmbedConfigs() {
 
       switch (currentStyle) {
         case "feed":
-          return (
-            containerWidth >= MIN_EMBED_WIDTH &&
-            containerHeight >= MIN_EMBED_HEIGHT
-          );
+          return containerWidth >= MIN_EMBED_WIDTH && containerHeight >= MIN_EMBED_HEIGHT;
         case "carousel":
-          return (
-            containerWidth >= MIN_EMBED_WIDTH &&
-            containerHeight >= MIN_EMBED_HEIGHT
-          );
+          return containerWidth >= MIN_EMBED_WIDTH && containerHeight >= MIN_EMBED_HEIGHT;
         case "grid":
-          return (
-            gridColumn > 0 &&
-            containerWidth / gridColumn >= MIN_GRID_VIDEO_WIDTH
-          );
+          return gridColumn > 0 && containerWidth / gridColumn >= MIN_GRID_VIDEO_WIDTH;
         default:
           return true;
       }
@@ -526,6 +518,15 @@ export function useEmbedConfigs() {
     embedData?.style,
     embedData?.grid_layout?.column,
     customization,
+    dimensionsConfig.aspectRatio,
+    headerConfig.showHeader,
+    headerConfig.ctaButton,
+    headerConfig.subHeading,
+    viewConfig.isFeed,
+    viewConfig.isCarousel,
+    viewConfig.isGrid,
+    viewConfig.isPlacementView,
+    contentDisplayConfig.showStyleDetails,
   ]);
 
   /**
@@ -552,8 +553,7 @@ export function useEmbedConfigs() {
     const IHEART_EMBED_IDS = new Set<string>([]);
 
     const isIheart =
-      (!!embedData?.placement_id &&
-        IHEART_PLACEMENT_IDS.has(embedData.placement_id)) ||
+      (!!embedData?.placement_id && IHEART_PLACEMENT_IDS.has(embedData.placement_id)) ||
       (!!embedData?.embed_id && IHEART_EMBED_IDS.has(embedData.embed_id));
 
     const autoPageContext = isIheart;
@@ -569,10 +569,8 @@ export function useEmbedConfigs() {
 
     const showIheartIframe = false;
     const isUsWeekly = brandDetails.brand_id === 2476;
-    // const feedType: FeedType = embedData?.placement_id
-    //   ? "PLACEMENT_SECTIONS"
-    //   : "FEED_V1";
     const feedType: FeedType = "FEED_V1";
+    const iheartArticleId = isIheart;
     return {
       // configuration to identify US Weekly brand
       isUsWeekly,
@@ -581,15 +579,15 @@ export function useEmbedConfigs() {
       autoPageContext,
       showIheartIframe,
       shouldInjectExpandViewAds,
+      iheartArticleId,
     };
-  }, [brandDetails.brand_id]);
+  }, [brandDetails.brand_id, embedData?.placement_id, embedData?.embed_id]);
 
   const embedSwiperConfigs = useMemo(() => {
     return {
       useWindowSwiperMode,
       virtualizeSwiper,
-      allowGestureScroll:
-        embedContextData.embedData?.configs?.allowGestureScroll ?? true,
+      allowGestureScroll: embedContextData.embedData?.configs?.allowGestureScroll ?? true,
     };
   }, [useWindowSwiperMode, virtualizeSwiper]);
 

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+
 import { Skeleton } from "./skeleton";
 
 const meta: Meta<typeof Skeleton> = {
@@ -35,10 +36,7 @@ export const Text: StoryObj<TextStoryArgs> = {
         {Array.from({ length: lines }).map((_, idx) => (
           <Skeleton
             key={idx}
-            className={
-              className ??
-              "gencl:w-full gencl:h-3 gencl:bg-secondary-100 gencl:rounded-md"
-            }
+            className={className ?? "gencl:w-full gencl:h-3 gencl:bg-secondary-100 gencl:rounded-md"}
             {...rest}
           />
         ))}
@@ -59,7 +57,6 @@ export const Text: StoryObj<TextStoryArgs> = {
 
 export const RoundedFull: Story = {
   args: {
-    className:
-      "gencl:w-16 gencl:h-16 gencl:rounded-full gencl:bg-secondary-100",
+    className: "gencl:w-16 gencl:h-16 gencl:rounded-full gencl:bg-secondary-100",
   },
 };

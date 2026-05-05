@@ -1,8 +1,8 @@
 // Import necessary libraries and modules
 import { TickIcon } from "@genuin/ui/icons";
+import { cn } from "@genuin/ui/utils";
 import { cva } from "class-variance-authority"; // Import the class variance authority (cva) function
 import React from "react";
-import { cn } from "@genuin/ui/utils";
 
 // Define the properties for the VerifiedBadge component
 type VerifiedBadgeProps = {
@@ -26,20 +26,10 @@ const badgeClasses = cva("", {
 });
 
 // Define the VerifiedBadge component
-const VerifiedBadge: React.FC<VerifiedBadgeProps> = ({
-  className,
-  variant,
-  size,
-}) => {
+const VerifiedBadge: React.FC<VerifiedBadgeProps> = ({ className, variant, size }) => {
   return (
     // Container div with flexbox properties, size-specific classes, and additional custom classes
-    <div
-      className={cn(
-        "flex items-center gap-1",
-        badgeClasses({ size }),
-        className
-      )}
-    >
+    <div className={cn("flex items-center gap-1", badgeClasses({ size }), className)}>
       {/* TickIcon component with variant-specific and size-specific classes */}
       <TickIcon variant={variant} className={badgeClasses({ size })} />
     </div>

@@ -57,7 +57,7 @@ const Brand = z
     favicon: z.string(),
     brand_system_user_id: z.string(),
     brand_slug: z.string(),
-    handle: z.string().optional()
+    handle: z.string().optional(),
   })
   .nullish();
 
@@ -94,7 +94,7 @@ const actionsSchema = z.array(
 /**
  * Schema for response of group details API.
  */
-const ResponseGroupDetailsSchema = z.object({
+const _ResponseGroupDetailsSchema = z.object({
   actions: actionsSchema,
   chat_id: z.string(),
   is_welcome_loop: z.boolean(),
@@ -115,6 +115,4 @@ const ResponseGroupDetailsSchema = z.object({
 /**
  * Api response type for group details.
  */
-export type ResponseGroupDetailsType = z.infer<
-  typeof ResponseGroupDetailsSchema
->;
+export type ResponseGroupDetailsType = z.infer<typeof _ResponseGroupDetailsSchema>;

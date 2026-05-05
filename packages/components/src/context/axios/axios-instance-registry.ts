@@ -1,5 +1,7 @@
+import type { AxiosInstance } from "axios";
+import axios from "axios";
+
 import { NEXT_PUBLIC_API_URL } from "@genuin/components/lib/utils/env";
-import axios, { AxiosInstance } from "axios";
 
 type BrandInstanceConfig = {
   instance: AxiosInstance;
@@ -12,7 +14,7 @@ type BrandInstanceConfig = {
  * Registry for managing brand-scoped axios instances.
  * Each brand gets its own axios instance with the x-brand-id header pre-configured.
  * Reference counting ensures proper cleanup when embeds unmount.
- * 
+ *
  * In case of user wants to set some data to all instances (e.g. auth token), it can be done via new methods on this registry, which will handle adding/removing interceptors as needed.
  */
 class AxiosInstanceRegistry {
@@ -66,12 +68,10 @@ class AxiosInstanceRegistry {
 
     // If there's a global auth token, apply it to this new instance
     if (this.globalAuthToken) {
-      config.authInterceptorId = instance.interceptors.request.use(
-        (reqConfig) => {
-          reqConfig.headers.Authorization = `Bearer ${this.globalAuthToken}`;
-          return reqConfig;
-        }
-      );
+      config.authInterceptorId = instance.interceptors.request.use((reqConfig) => {
+        reqConfig.headers.Authorization = `Bearer ${this.globalAuthToken}`;
+        return reqConfig;
+      });
     }
 
     this.instances.set(brandId, config);
@@ -122,12 +122,10 @@ class AxiosInstanceRegistry {
 
       // Add new interceptor if token provided
       if (normalizedToken) {
-        config.authInterceptorId = config.instance.interceptors.request.use(
-          (reqConfig) => {
-            reqConfig.headers.Authorization = `Bearer ${normalizedToken}`;
-            return reqConfig;
-          }
-        );
+        config.authInterceptorId = config.instance.interceptors.request.use((reqConfig) => {
+          reqConfig.headers.Authorization = `Bearer ${normalizedToken}`;
+          return reqConfig;
+        });
       }
     }
 

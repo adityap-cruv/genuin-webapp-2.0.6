@@ -1,29 +1,32 @@
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@components/ui/form'
-import { useEffect, useMemo, useState } from 'react'
-import { ModalShell } from '../modal-shell'
-import { Button } from '@components/ui/button'
-import { useAuthenticationModalStore } from '../store'
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { cn, sanitizeInput } from '@lib/utils'
-import { Loader } from '@components/ui/loader'
-import { InputOTP, InputOTPGroup, InputOTPSlot } from '@components/ui/input-otp'
-import { type ScreenProps } from '.'
-import { useShallow } from 'zustand/react/shallow'
-import { formatPhoneNumberIntl } from 'react-phone-number-input'
-import { consumeOtp, sendOtp, updateEmailOrPhone } from '../api/auth'
-import { signIn, useSession } from 'next-auth/react'
+import { zodResolver } from "@hookform/resolvers/zod";
+import { signIn, useSession } from "next-auth/react";
+import { useEffect, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
+import { formatPhoneNumberIntl } from "react-phone-number-input";
+import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
+
+import { Button } from "@components/ui/button";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@components/ui/form";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@components/ui/input-otp";
+import { Loader } from "@components/ui/loader";
+import { cn, sanitizeInput } from "@lib/utils";
+
+import { consumeOtp, sendOtp, updateEmailOrPhone } from "../api/auth";
+import { ModalShell } from "../modal-shell";
+import { useAuthenticationModalStore } from "../store";
+
+import { type ScreenProps } from ".";
 
 const formSchema = z.object({
   otp: z.string(),
-})
+});
 
-const OTP_LENGTH = 6
+const OTP_LENGTH = 6;
 
-type PropertiesType = { email?: string; phoneNumber?: string }
-type VerificationType = 'email' | 'number' | 'login'
-type OtpInputProps = { verificationType: VerificationType; title?: string } & ScreenProps
+type PropertiesType = { email?: string; phoneNumber?: string };
+type VerificationType = "email" | "number" | "login";
+type OtpInputProps = { verificationType: VerificationType; title?: string } & ScreenProps;
 
 export function OtpInput({ title, verificationType, onNext, onBack }: OtpInputProps) {
   const { flowType, email, closeModal, phone, action, setStep } = useAuthenticationModalStore(
@@ -35,99 +38,103 @@ export function OtpInput({ title, verificationType, onNext, onBack }: OtpInputPr
       action: state.action,
       setStep: state.setStep,
     }))
-  )
-  const [isLoading, setIsLoading] = useState(false)
-  const [isValid, setIsValid] = useState(false)
-  const { data: sessionData, update: updateSession } = useSession()
+  );
+  const [isLoading, setIsLoading] = useState(false);
+  const [isValid, setIsValid] = useState(false);
+  const { data: sessionData, update: updateSession } = useSession();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    mode: 'onSubmit',
-    criteriaMode: 'firstError',
+    mode: "onSubmit",
+    criteriaMode: "firstError",
     defaultValues: {
-      otp: '',
+      otp: "",
     },
-  })
+  });
 
   // Track OTP input validation separately to avoid recursive error setting
   useEffect(() => {
     // Create a safe handler that won't cause infinite loops
     const handleOTPChange = (value: any) => {
-      const isValidLength = value.otp?.length === 6
-      setIsValid(isValidLength)
-    }
+      const isValidLength = value.otp?.length === 6;
+      setIsValid(isValidLength);
+    };
 
     // Use the form's watch method to observe changes
-    const subscription = form.watch(handleOTPChange)
+    const subscription = form.watch(handleOTPChange);
 
     // Clean up subscription when component unmounts
     return () => {
-      subscription.unsubscribe()
-    }
-  }, [form])
+      subscription.unsubscribe();
+    };
+  }, [form]);
 
   // Handle error state separately from the watch subscription
   useEffect(() => {
     if (!isValid && form.getValues().otp?.length > 0) {
-      form.clearErrors('root')
+      form.clearErrors("root");
     }
-  }, [isValid, form])
+  }, [isValid, form]);
 
   async function onSubmit({ otp }: { otp: string }) {
-    setIsLoading(true)
+    setIsLoading(true);
     const properties: PropertiesType = {
       email: undefined,
       phoneNumber: undefined,
-    }
-    if (verificationType === 'login') {
-      flowType === 'email' ? (properties.email = email) : (properties.phoneNumber = phone)
-      const data = await consumeOtp({ code: sanitizeInput(otp), ...properties })
+    };
+    if (verificationType === "login") {
+      if (flowType === "email") {
+        properties.email = email;
+      } else {
+        properties.phoneNumber = phone;
+      }
+      const data = await consumeOtp({ code: sanitizeInput(otp), ...properties });
       if (data.otpVerified) {
-        await signIn('credentials', { ...data.user, redirect: false })
+        await signIn("credentials", { ...data.user, redirect: false });
         // If user comes from action delete account
-        if (action === 'DELETE_ACCOUNT') {
-          setStep('DELETE_CONFIRMATION')
+        if (action === "DELETE_ACCOUNT") {
+          setStep("DELETE_CONFIRMATION");
         } else {
           if (!data.user?.brandGuidelines) {
-            onNext()
+            onNext();
           } else if (!data.user.hasTopics) {
-            onNext('CATEGORY_SELECTION')
+            onNext("CATEGORY_SELECTION");
           } else if (!data.user.usernameSet) {
-            onNext('USERNAME_INPUT')
+            onNext("USERNAME_INPUT");
           } else {
-            closeModal()
+            closeModal();
           }
         }
       } else {
-        form.setError('otp', { message: 'Invalid OTP' })
+        form.setError("otp", { message: "Invalid OTP" });
       }
     } else {
-      const response = await updateEmailOrPhone(otp)
+      const response = await updateEmailOrPhone(otp);
       if (response.verified) {
         void updateSession({ ...sessionData, user: { ...sessionData?.user, email, phoneNumber: phone } }).then((_) => {
-          onNext()
-        })
+          onNext();
+        });
       } else {
-        form.setError('root', { message: 'Invalid OTP' })
+        form.setError("root", { message: "Invalid OTP" });
       }
     }
-    setIsLoading(false)
+    setIsLoading(false);
   }
 
   const isFlowEmail = useMemo(() => {
-    if (verificationType === 'login') {
-      return flowType === 'email'
+    if (verificationType === "login") {
+      return flowType === "email";
     }
-    return verificationType === 'email'
-  }, [verificationType, flowType])
+    return verificationType === "email";
+  }, [verificationType, flowType]);
 
   return (
     <ModalShell onBack={onBack}>
       <div className="flex flex-col items-center">
-        <p className="text-title-1-demi sm:text-heading-3 mb-6 text-center">{title ?? 'Enter code'}</p>
+        <p className="text-title-1-demi sm:text-heading-3 mb-6 text-center">{title ?? "Enter code"}</p>
         <p className="text-title-3-med text-secondary-300 w-full text-center">
-          Please Enter the 6-digit code sent to your{`${isFlowEmail ? ' email address' : ' phone number'}`}
+          Please Enter the 6-digit code sent to your{`${isFlowEmail ? " email address" : " phone number"}`}
           <span className="text-title-3-demi text-secondary">{`: ${
-            isFlowEmail ? email : formatPhoneNumberIntl(phone ?? '')
+            isFlowEmail ? email : formatPhoneNumberIntl(phone ?? "")
           }`}</span>
         </p>
         <div className="w-full">
@@ -158,9 +165,9 @@ export function OtpInput({ title, verificationType, onNext, onBack }: OtpInputPr
                           {...field}
                         />
                       </FormControl>
-                      <FormMessage className={cn('!text-cap-1-demi')} />
+                      <FormMessage className={cn("!text-cap-1-demi")} />
                     </FormItem>
-                  )
+                  );
                 }}
               />
               <TimerMessage time={30} verificationType={verificationType} />
@@ -181,7 +188,7 @@ export function OtpInput({ title, verificationType, onNext, onBack }: OtpInputPr
         </p>
       )}
     </ModalShell>
-  )
+  );
 }
 
 function TimerMessage({ time, verificationType }: { verificationType: VerificationType; time: number }) {
@@ -191,40 +198,44 @@ function TimerMessage({ time, verificationType }: { verificationType: Verificati
       email: state.formData.email,
       flowType: state.formData.flowType,
     }))
-  )
-  const [isSendingOtp, setIsSendingOtp] = useState(false)
-  const [timer, setTimer] = useState(time)
+  );
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [timer, setTimer] = useState(time);
 
   async function handleResendOtp() {
-    setIsSendingOtp(true)
-    if (verificationType === 'login') {
+    setIsSendingOtp(true);
+    if (verificationType === "login") {
       const properties: PropertiesType = {
         email: undefined,
         phoneNumber: undefined,
+      };
+      if (flowType === "email") {
+        properties.email = email;
+      } else {
+        properties.phoneNumber = phone;
       }
-      flowType === 'email' ? (properties.email = email) : (properties.phoneNumber = phone)
-      const response = await sendOtp({ ...properties })
-      setTimer(response.retryTime)
+      const response = await sendOtp({ ...properties });
+      setTimer(response.retryTime);
     } else {
       const response =
-        verificationType === 'email'
+        verificationType === "email"
           ? await sendOtp({ email, isUpdate: true })
-          : await sendOtp({ phoneNumber: phone, isUpdate: true })
-      setTimer(response.retryTime)
+          : await sendOtp({ phoneNumber: phone, isUpdate: true });
+      setTimer(response.retryTime);
     }
-    setIsSendingOtp(false)
+    setIsSendingOtp(false);
   }
 
   useEffect(() => {
     const interval = setInterval(() => {
       if (timer > 0) {
-        setTimer(timer - 1)
+        setTimer(timer - 1);
       }
-    }, 1000)
+    }, 1000);
     return () => {
-      clearInterval(interval)
-    }
-  }, [timer])
+      clearInterval(interval);
+    };
+  }, [timer]);
 
   return timer <= 0 ? (
     <Button
@@ -237,7 +248,7 @@ function TimerMessage({ time, verificationType }: { verificationType: Verificati
     </Button>
   ) : (
     <p className="text-body-1-med text-monochrome text-center">
-      Resend code in <span className="text-monochrome-black">{`00:${timer.toString().padStart(2, '0')}`}</span>
+      Resend code in <span className="text-monochrome-black">{`00:${timer.toString().padStart(2, "0")}`}</span>
     </p>
-  )
+  );
 }

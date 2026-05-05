@@ -33,49 +33,37 @@ export async function getVideoMetadata(videoFileOrUrl: File | string): Promise<{
   resolution: { width: number; height: number };
   size: number;
 }> {
-  return new Promise(async (resolve, reject) => {
+  let objectUrl: string | null = null;
+  let fileSize = 0;
+
+  if (videoFileOrUrl instanceof File) {
+    objectUrl = URL.createObjectURL(videoFileOrUrl);
+    fileSize = videoFileOrUrl.size;
+  } else {
+    // Try to fetch file size (if CORS allows)
+    try {
+      const headRes = await fetch(videoFileOrUrl, { method: "HEAD" });
+      const sizeHeader = headRes.headers.get("Content-Length");
+      if (sizeHeader) fileSize = parseInt(sizeHeader, 10);
+    } catch {
+      // Ignore size if fetch fails
+    }
+  }
+
+  return new Promise((resolve, reject) => {
     const video = document.createElement("video");
     video.preload = "metadata";
     video.crossOrigin = "anonymous"; // Important for CORS-safe URLs
-
-    let objectUrl: string | null = null;
-    let fileSize = 0;
-
-    if (videoFileOrUrl instanceof File) {
-      objectUrl = URL.createObjectURL(videoFileOrUrl);
-      video.src = objectUrl;
-      fileSize = videoFileOrUrl.size;
-    } else {
-      video.src = videoFileOrUrl;
-
-      // Try to fetch file size (if CORS allows)
-      try {
-        const headRes = await fetch(videoFileOrUrl, { method: "HEAD" });
-        const sizeHeader = headRes.headers.get("Content-Length");
-        if (sizeHeader) fileSize = parseInt(sizeHeader, 10);
-      } catch (e) {
-        // Ignore size if fetch fails
-      }
-    }
+    video.src = objectUrl ?? (videoFileOrUrl as string);
 
     // Fix: Wait for 'loadedmetadata' **and** check duration !== Infinity
     video.onloadedmetadata = () => {
-      // if (!isFinite(video.duration)) {
-      //   reject(
-      //     new Error(
-      //       "Video duration is Infinity — possible CORS or streaming issue."
-      //     )
-      //   );
-      //   return;
-      // }
-
       const width = video.videoWidth;
       const height = video.videoHeight;
       const duration = video.duration;
 
-      const gcd = (a: number, b: number): number =>
-        b === 0 ? a : gcd(b, a % b);
-      const divisor = gcd(width, height);
+      const gcdFn = (a: number, b: number): number => (b === 0 ? a : gcdFn(b, a % b));
+      const divisor = gcdFn(width, height);
       const aspect_ratio = `${width / divisor}:${height / divisor}`;
 
       if (objectUrl) URL.revokeObjectURL(objectUrl);
@@ -90,17 +78,12 @@ export async function getVideoMetadata(videoFileOrUrl: File | string): Promise<{
 
     video.onerror = () => {
       if (objectUrl) URL.revokeObjectURL(objectUrl);
-      reject(
-        new Error("Failed to load video metadata — invalid file or CORS issue.")
-      );
+      reject(new Error("Failed to load video metadata — invalid file or CORS issue."));
     };
   });
 }
 
-export async function urlToFile(
-  url: string,
-  mimeType = "video/mp4"
-): Promise<File> {
+export async function urlToFile(url: string, mimeType = "video/mp4"): Promise<File> {
   if (!url) throw new Error("Invalid URL");
   const response = await fetch(url);
   const blob = await response.blob();
@@ -129,9 +112,7 @@ function formatAspectRatio(width: number, height: number): string | null {
   return `${w}:${h}`;
 }
 
-export async function loadVideoMetadata(
-  source: Blob | File | string
-): Promise<VideoMetadata> {
+export async function loadVideoMetadata(source: Blob | File | string): Promise<VideoMetadata> {
   return new Promise((resolve, reject) => {
     const video = document.createElement("video");
     let url: string | null = null;

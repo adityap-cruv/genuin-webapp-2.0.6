@@ -1,11 +1,5 @@
 function getSupportedMimeType(): string {
-  const types = [
-    "video/webm;codecs=vp9",
-    "video/webm;codecs=vp8",
-    "video/webm",
-    "video/mp4;codecs=h264",
-    "video/mp4",
-  ];
+  const types = ["video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm", "video/mp4;codecs=h264", "video/mp4"];
 
   for (const type of types) {
     if (MediaRecorder.isTypeSupported(type)) {
@@ -27,18 +21,15 @@ export async function trimVideo({
   onProgress?: (progress: number, progressText: string) => void;
 }): Promise<Blob | null> {
   if (!file) throw new Error("No file selected");
-  if (startTime >= endTime)
-    throw new Error("Start time must be less than end time");
+  if (startTime >= endTime) throw new Error("Start time must be less than end time");
   if (!("MediaRecorder" in window)) {
-    throw new Error(
-      "Video trimming is not supported in this browser. Please use Chrome, Firefox, or Safari."
-    );
+    throw new Error("Video trimming is not supported in this browser. Please use Chrome, Firefox, or Safari.");
   }
 
   try {
     onProgress?.(0, "Setting up video processing...");
 
-    const video = document.createElement("video");
+    const video = document.createElement("video") as any;
     video.src = URL.createObjectURL(file);
     video.muted = true;
 
@@ -62,13 +53,9 @@ export async function trimVideo({
 
     try {
       let audioStream;
-      // @ts-ignore
       if (video.captureStream) {
-        // @ts-ignore
         audioStream = video.captureStream();
-        // @ts-ignore
       } else if (video.mozCaptureStream) {
-        // @ts-ignore
         audioStream = video.mozCaptureStream();
       }
 
@@ -79,7 +66,8 @@ export async function trimVideo({
         }
       }
     } catch (e) {
-      console.log("Audio capture not available:", e);
+      // console.log("Audio capture not available:", e);
+      //
     }
 
     const mediaRecorder = new MediaRecorder(stream, {
@@ -140,9 +128,7 @@ export async function trimVideo({
         const currentProgress = (video.currentTime - startTime) / trimDuration;
         onProgress?.(
           40 + currentProgress * 50,
-          `Recording... ${formatTime(
-            video.currentTime - startTime
-          )} / ${formatTime(trimDuration)}`
+          `Recording... ${formatTime(video.currentTime - startTime)} / ${formatTime(trimDuration)}`
         );
       }
 
@@ -167,11 +153,7 @@ export async function trimVideo({
   }
 }
 
-export function downloadBlob(
-  blob: Blob,
-  originalName: string,
-  suffix = "trimmed"
-) {
+export function downloadBlob(blob: Blob, originalName: string, suffix = "trimmed") {
   const baseName = originalName?.replace(/\.[^/.]+$/, "");
   const extension = blob.type.includes("webm") ? "webm" : "mp4";
   const link = document.createElement("a");

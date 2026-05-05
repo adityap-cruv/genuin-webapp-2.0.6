@@ -1,5 +1,5 @@
-import { FeedSkeleton } from '@genuin/components/templates/feed'
+import { FeedSkeleton } from "@genuin/components/templates/feed";
 
 export default function Loading() {
-  return <FeedSkeleton />
+  return <FeedSkeleton theme="light" />;
 }

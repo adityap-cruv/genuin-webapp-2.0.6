@@ -1,7 +1,7 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, type ReactNode, useMemo } from 'react';
 import type { RudderAnalytics } from '@rudderstack/analytics-js';
+import { createContext, useContext, useEffect, useState, type ReactNode, useMemo } from 'react';
 
 interface RudderAnalyticsContextValue {
     rudderAnalytics: RudderAnalytics | null;

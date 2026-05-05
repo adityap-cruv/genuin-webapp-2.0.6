@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 import { GroupDetailsTabs } from "./group-details-tabs";
 
-const meta = {
+const meta: Meta<typeof GroupDetailsTabs> = {
   title: "templates/GroupDetailsTabs",
   component: GroupDetailsTabs,
   parameters: {
@@ -17,8 +17,7 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta<typeof GroupDetailsTabs>;
-
+};
 export default meta;
 type Story = StoryObj<typeof GroupDetailsTabs>;
 

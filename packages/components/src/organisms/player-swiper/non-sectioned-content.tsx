@@ -1,17 +1,18 @@
-import { lazy, Suspense, useCallback } from "react";
+import { lazy, Suspense } from "react";
+import type { Dispatch, SetStateAction } from "react";
 import { SwiperSlide } from "swiper/react";
-import { SwiperImplementation } from "./swiper-implementation";
-import { AdInfoType } from "@genuin/components/molecules/feed-player";
-import { useAnalytics } from "@genuin/components/context";
+import type { Swiper } from "swiper/types";
 
-const Player = lazy(() =>
-  import("./player.js").then((m) => ({ default: m.Player })),
-);
+import { useAnalytics } from "@genuin/components/context/analytics/context";
+
+import { SwiperImplementation } from "./swiper-implementation";
+
+const Player = lazy(() => import("./player").then((m) => ({ default: m.Player })));
 
 const WatchBoundaryOverlay = lazy(() =>
-  import("../../molecules/feed-player/control-layer/watch-boundary-overlay.js").then(
-    (m) => ({ default: m.WatchBoundaryOverlay }),
-  ),
+  import("@genuin/components/molecules/feed-player/control-layer/watch-boundary-overlay").then((m) => ({
+    default: m.WatchBoundaryOverlay,
+  }))
 );
 
 interface NonSectionedContentProps {
@@ -23,7 +24,7 @@ interface NonSectionedContentProps {
   } | null;
   disableSwiper: boolean;
   websiteType: string;
-  setVerticalSwipers: (swipers: Record<number, any>) => void;
+  setVerticalSwipers: Dispatch<SetStateAction<Record<number, Swiper>>>;
   onActiveIndexChange?: (index: number) => void;
   brandLayoutType: string;
   isDesktop: boolean;
@@ -33,16 +34,14 @@ interface NonSectionedContentProps {
   onCommunityJoinStatusChange: any;
   onGroupJoinStatusChange: any;
   onGroupSubscriptionChange: any;
-  onReactionStateChange?: (
-    videoId: string,
-    videoSlug: string,
-    isReacted: boolean,
-  ) => void;
+  onReactionStateChange?: (videoId: string, videoSlug: string, isReacted: boolean) => void;
   onCommentCountChange?: any;
   totalVideos?: number;
   isSectioned: boolean;
   onAdFilled?: (type: string, index: number) => void;
   onAdPlaybackEnd: (index: number) => void;
+  /** Feed-session identifier from the first feed API page, forwarded to analytics. */
+  pageSession?: string | null;
 }
 
 export function NonSectionedContent({
@@ -66,27 +65,21 @@ export function NonSectionedContent({
   isSectioned,
   onAdFilled,
   onAdPlaybackEnd,
+  pageSession,
 }: NonSectionedContentProps) {
   const { track, EventName } = useAnalytics();
-
   return (
     <SwiperImplementation
       initialSlide={startIndex}
-      slidesPerView={
-        slideDimensions?.slidesPerView
-          ? disableSwiper || websiteType === "legacy"
-            ? 1
-            : 1.2
-          : undefined
-      }
+      slidesPerView={slideDimensions?.slidesPerView ? (disableSwiper || websiteType === "legacy" ? 1 : 1.2) : undefined}
       spaceBetween={slideDimensions?.slidesPerView ? 16 : undefined}
-      onSwiper={(swiper) => {
+      onSwiper={(swiper: Swiper) => {
         setVerticalSwipers((prev) => ({
           ...prev,
           [0]: swiper,
         }));
       }}
-      onActiveIndexChange={(swiper: any) => {
+      onActiveIndexChange={(swiper: Swiper) => {
         onActiveIndexChange?.(swiper.activeIndex);
 
         if (brandLayoutType === "iheart" && isDesktop) {
@@ -97,7 +90,7 @@ export function NonSectionedContent({
         }
       }}
       disableScroll={disableSwiper}
-      onReachEnd={(swiper: any) => {
+      onReachEnd={(swiper: Swiper) => {
         // Guard against spurious reachEnd fired when expand mode changes Swiper geometry:
         if (swiper.activeIndex < filteredPost.length - 1) return;
         setEndOfFeedReached(true);
@@ -105,9 +98,8 @@ export function NonSectionedContent({
       onSlideChange={() => {
         if (isEndOfFeedReached) setEndOfFeedReached(false);
       }}
-      onSlidePrevTransitionStart={() => track(EventName.SWIPE_UP)}
-      onSlideNextTransitionStart={() => track(EventName.SWIPE_DOWN)}
-    >
+      onSlidePrevTransitionStart={() => track(EventName.SWIPE_PREVIOUS)}
+      onSlideNextTransitionStart={() => track(EventName.SWIPE_NEXT)}>
       {filteredPost.map((post, index) => (
         <SwiperSlide
           key={post.video.id}
@@ -119,8 +111,7 @@ export function NonSectionedContent({
                   height: `${slideDimensions.slideHeight}px`,
                 }
               : undefined
-          }
-        >
+          }>
           {({ isActive, isNext, isPrev, isVisible }) => (
             <>
               {post.video.type === "video" ? (
@@ -141,14 +132,12 @@ export function NonSectionedContent({
                     index={index}
                     onAdFilled={onAdFilled}
                     onAdPlaybackEnd={onAdPlaybackEnd}
+                    pageSession={pageSession}
                   />
                 </Suspense>
               ) : post.video.type === "complete" ? (
                 <Suspense fallback={null}>
-                  <WatchBoundaryOverlay
-                    videoDetails={post.video}
-                    variant="complete"
-                  />
+                  <WatchBoundaryOverlay videoDetails={post.video} variant="complete" />
                 </Suspense>
               ) : (
                 <></>

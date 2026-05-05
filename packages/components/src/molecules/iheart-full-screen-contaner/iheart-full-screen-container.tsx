@@ -1,7 +1,9 @@
+import type { ReactNode } from "react";
+import { useEffect, useState } from "react";
+import { useWindowSize } from "usehooks-ts";
+
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-import { ReactNode, useEffect, useState } from "react";
-import { useWindowSize } from "usehooks-ts";
 
 // height of iheart's top bar
 const IHEART_TOP_BAR = 48;
@@ -9,11 +11,7 @@ const IHEART_TOP_BAR = 48;
 // height of iheart's mini player
 const IHEART_MINI_PLAYER_HEIGHT = 88;
 
-export function IheartFullscreenContainer({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export function IheartFullscreenContainer({ children }: { children: ReactNode }) {
   const { isDesktop } = useDeviceDetectMediaQuery();
   const {
     view: { brandLayoutType, websiteType, embedStyle },
@@ -107,8 +105,7 @@ export function IheartFullscreenContainer({
         left: 0,
         position: "fixed",
         zIndex: 50,
-      }}
-    >
+      }}>
       {children}
     </div>
   );

@@ -1,18 +1,21 @@
+import { Button } from "@genuin/ui/components/button";
+import { Loader } from "@genuin/ui/components/loader";
 import { cn } from "@genuin/ui/lib/utils";
-import { LinkData } from "@genuin/components/react-query/api/linkouts/schema";
+import type { VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 import { ChevronRight, LinkIcon } from "lucide-react";
+import { useMemo } from "react";
 
 import { useAnalytics } from "@genuin/components/context/analytics/context";
-import { VariantProps, cva } from "class-variance-authority";
 import { useBaseContext } from "@genuin/components/context/base";
-import { Loader } from "@genuin/ui/components/loader";
-import { useSafeRedirect } from "./use-safe-redirect";
-import { Link } from "../link/link";
-import { Button } from "@genuin/ui/components/button";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
-import { buildLinkoutsAnalyticsData } from "@genuin/components/organisms";
-import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
-import { useMemo } from "react";
+import type { buildLinkoutsAnalyticsData } from "@genuin/components/organisms/linkouts/build-linkouts-analytics-data";
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+import type { LinkData } from "@genuin/components/react-query/api/linkouts/schema";
+
+import { Link } from "../link/link";
+
+import { useSafeRedirect } from "./use-safe-redirect";
 
 // Combined variant for both card layouts
 const multiLinkCardVariants = cva(
@@ -37,18 +40,14 @@ const multiLinkCardVariants = cva(
   }
 );
 
-interface MultiLinkCardProps
-  extends VariantProps<typeof multiLinkCardVariants> {
+interface MultiLinkCardProps extends VariantProps<typeof multiLinkCardVariants> {
   isEmbed: boolean;
   isOutside: boolean;
   links: LinkData[];
   ctaText?: string;
   ctaLink?: string;
   maxVisible?: number;
-  videoDetails?: PostDetailsType["video"];
-  totalVideos?: number;
-  positionIndex?: number;
-  autoplay?: boolean;
+  analyticsEventData: ReturnType<typeof buildLinkoutsAnalyticsData>;
 }
 
 export const MultiLinkCard = ({
@@ -59,10 +58,7 @@ export const MultiLinkCard = ({
   ctaLink = "",
   maxVisible = 3,
   variant,
-  videoDetails,
-  totalVideos,
-  positionIndex,
-  autoplay,
+  analyticsEventData,
 }: MultiLinkCardProps) => {
   const visibleLinks = links.slice(0, maxVisible);
   const hasMore = links.length > maxVisible;
@@ -71,18 +67,6 @@ export const MultiLinkCard = ({
   const { brandDetails } = useBaseContext();
   const { isLoading, handleRedirect } = useSafeRedirect();
   const { isMobile } = useDeviceDetection();
-
-  // Memoized analytics event data
-  const analyticsEventData = useMemo(
-    () =>
-      buildLinkoutsAnalyticsData({
-        videoDetails,
-        totalVideos,
-        positionIndex,
-        autoplay,
-      }),
-    [videoDetails, totalVideos, positionIndex, autoplay]
-  );
 
   const handleLinkClick = async (e: React.MouseEvent, link: LinkData) => {
     e.stopPropagation();
@@ -116,9 +100,7 @@ export const MultiLinkCard = ({
     }
   };
 
-  const handleImageError = (
-    e: React.SyntheticEvent<HTMLImageElement, Event>
-  ) => {
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     const target = e.target as HTMLImageElement;
     const nextSibling = target.nextElementSibling as HTMLElement;
     target.style.display = "none";
@@ -138,14 +120,12 @@ export const MultiLinkCard = ({
         )}
         onClick={(e) => {
           e.stopPropagation();
-        }}
-      >
+        }}>
         <div
           className={cn(
             "gencl:w-full gencl:flex-1 gencl:text-start gencl:flex! gencl:items-center gencl:gap-2 gencl:line-clamp-2 gencl:overflow-auto gencl:flex-nowrap gencl:scrollbar-none",
             isEmbed && "gencl:gap-1"
-          )}
-        >
+          )}>
           {visibleLinks.map((link, index) => (
             <Link
               href={link.link}
@@ -156,8 +136,7 @@ export const MultiLinkCard = ({
                 "gencl:h-16 gencl:w-16 gencl:rounded-xl gencl:bg-[#F4F5F6] gencl:shrink-0 gencl:flex gencl:items-center gencl:justify-center gencl:cursor-pointer gencl:transition-colors gencl:overflow-hidden",
                 isOutside && "gencl:h-12 gencl:w-12 gencl:rounded-md"
               )}
-              onClick={(e) => handleLinkClick(e, link)}
-            >
+              onClick={(e) => handleLinkClick(e, link)}>
               {link.image && link.image.trim() !== "" ? (
                 <>
                   <img
@@ -168,7 +147,7 @@ export const MultiLinkCard = ({
                   />
                 </>
               ) : (
-                <LinkIcon className="gencl:h-6 gencl:w-6 gencl:shrink-0 gencl:stroke-black " />
+                <LinkIcon className="gencl:h-6 gencl:w-6 gencl:shrink-0 gencl:stroke-black" />
               )}
             </Link>
           ))}
@@ -183,27 +162,22 @@ export const MultiLinkCard = ({
           target="_blank"
           rel="noopener noreferrer"
           className="gencl:w-full"
-          onClick={(e) => e.stopPropagation()}
-        >
+          onClick={(e) => e.stopPropagation()}>
           <Button
             size={isEmbed ? "sm" : "md"}
             className={cn(
               "gencl:w-full gencl:text-body-1-medium! gencl:font-semibold gencl:transition-all gencl:bg-white gencl:hover:bg-white/90 gencl:text-black gencl:flex gencl:justify-between gencl:items-center gencl:px-3 gencl:py-2 gencl:rounded-lg",
               isOutside && "gencl:bg-secondary-50 gencl:hover:bg-secondary-150",
-              !brandDetails.cta_config?.show_arrow_icon &&
-                "gencl:text-center gencl:justify-center "
+              !brandDetails.cta_config?.show_arrow_icon && "gencl:text-center gencl:justify-center"
             )}
             style={{
               borderRadius: brandDetails.cta_config?.button_radius ?? "",
               background: brandDetails.cta_config?.button_color ?? "",
               color: brandDetails.cta_config?.text_color ?? "black",
             }}
-            onClick={handleCTAClick}
-          >
+            onClick={handleCTAClick}>
             <p className="gencl:line-clamp-1 gencl:truncate gencl:w-fit">
-              {brandDetails.cta_config?.default_button_text
-                ? brandDetails.cta_config?.default_button_text
-                : ctaText}
+              {brandDetails.cta_config?.default_button_text ? brandDetails.cta_config?.default_button_text : ctaText}
             </p>
             {brandDetails.cta_config?.show_arrow_icon &&
               (isLoading ? (
@@ -241,14 +215,12 @@ export const MultiLinkCard = ({
       )}
       onClick={(e) => {
         e.stopPropagation();
-      }}
-    >
+      }}>
       <div
         className={cn(
           "gencl:w-full gencl:flex-1 gencl:text-start gencl:flex! gencl:items-center gencl:gap-2 gencl:line-clamp-2 gencl:overflow-auto gencl:flex-nowrap gencl:scrollbar-hide",
           isEmbed && "gencl:gap-1"
-        )}
-      >
+        )}>
         {visibleLinks.map((link, index) => (
           <Link
             href={link.link}
@@ -259,8 +231,7 @@ export const MultiLinkCard = ({
               "gencl:h-16 gencl:w-16 gencl:rounded-xl gencl:bg-[#F4F5F6] gencl:shrink-0 gencl:flex gencl:items-center gencl:justify-center gencl:cursor-pointer gencl:transition-colors gencl:overflow-hidden",
               isOutside && "gencl:h-12 gencl:w-12 gencl:rounded-md"
             )}
-            onClick={(e) => handleLinkClick(e, link)}
-          >
+            onClick={(e) => handleLinkClick(e, link)}>
             {link.image && link.image.trim() !== "" ? (
               <>
                 <img
@@ -271,7 +242,7 @@ export const MultiLinkCard = ({
                 />
               </>
             ) : (
-              <LinkIcon className="gencl:h-6 gencl:w-6 gencl:shrink-0 gencl:stroke-black " />
+              <LinkIcon className="gencl:h-6 gencl:w-6 gencl:shrink-0 gencl:stroke-black" />
             )}
           </Link>
         ))}

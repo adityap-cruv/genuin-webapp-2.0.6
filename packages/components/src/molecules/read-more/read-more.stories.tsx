@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import React from "react";
+import { useState } from "react";
 
 import { ReadMore } from "./read-more";
 
@@ -114,18 +114,14 @@ Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deseru
   },
 };
 
+function WithExternalStateRender(args: React.ComponentProps<typeof ReadMore>) {
+  const [isExpanded, setIsExpanded] = useState(true);
+  return <ReadMore {...args} defaultExpand={isExpanded} onExpandChange={setIsExpanded} />;
+}
+
 // With external state control
 export const WithExternalState: Story = {
-  render: (args) => {
-    const [isExpanded, setIsExpanded] = React.useState(true);
-    return (
-      <ReadMore
-        {...args}
-        defaultExpand={isExpanded}
-        onExpandChange={setIsExpanded}
-      />
-    );
-  },
+  render: (args) => <WithExternalStateRender {...args} />,
   args: {
     text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
     maxLines: 2,
@@ -144,6 +140,11 @@ export const DynamicCollapsed: Story = {
   },
 };
 
+function DynamicExpandedWithAnimationRender(args: React.ComponentProps<typeof ReadMore>) {
+  const [isExpanded, setIsExpanded] = useState(true);
+  return <ReadMore {...args} open={isExpanded} onExpandChange={setIsExpanded} shouldAnimate={true} />;
+}
+
 // Dynamic expanded state
 export const DynamicExpandedWithAnimation: Story = {
   args: {
@@ -154,17 +155,7 @@ export const DynamicExpandedWithAnimation: Story = {
     maxWidth: "400px",
     shouldAnimate: true,
   },
-  render: (args) => {
-    const [isExpanded, setIsExpanded] = React.useState(true);
-    return (
-      <ReadMore
-        {...args}
-        open={isExpanded}
-        onExpandChange={setIsExpanded}
-        shouldAnimate={true}
-      />
-    );
-  },
+  render: (args) => <DynamicExpandedWithAnimationRender {...args} />,
 };
 
 // Dynamic with mentions
@@ -264,9 +255,7 @@ export const InlineWithoutExpansion: Story = {
         {/* Content */}
         <div className="gencl:flex-1">
           <div className="gencl:flex gencl:items-center gencl:gap-2 gencl:mb-2">
-            <h4 className="gencl:font-semibold gencl:text-gray-900">
-              John Doe
-            </h4>
+            <h4 className="gencl:font-semibold gencl:text-gray-900">John Doe</h4>
             <span className="gencl:text-yellow-500">★★★★★</span>
           </div>
 

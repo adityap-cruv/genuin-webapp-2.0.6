@@ -1,32 +1,16 @@
-import {
-  type FC,
-  type MouseEventHandler,
-  type ReactNode,
-  type HTMLAttributes,
-  useState,
-} from "react";
 import { Switch } from "@genuin/ui/components/switch";
-import {
-  ChevronRightIcon,
-  InstagramIcon,
-  LinkedInIcon,
-  TiktokIcon,
-  TwitterIcon,
-  YouTubeIcon,
-} from "@genuin/ui/icons";
+import { ChevronRightIcon, InstagramIcon, LinkedInIcon, TiktokIcon, TwitterIcon, YouTubeIcon } from "@genuin/ui/icons";
+import { cn } from "@genuin/ui/lib/utils";
+import { type FC, type MouseEventHandler, type ReactNode, type HTMLAttributes, useState } from "react";
 import { lazy, Suspense } from "react";
-import { AuthenticationModalProps } from "@genuin/components/organisms/authentication-modal";
+
+import type { StepsType } from "@genuin/components/organisms/authentication-modal/context";
 
 const AuthenticationModal = lazy(() =>
-  import("@genuin/components/organisms/authentication-modal/index.js").then(
-    (m) => ({
-      default: m.AuthenticationModal,
-    })
-  )
-) as React.ComponentType<AuthenticationModalProps>;
-import { StepsType } from "@genuin/components/organisms/authentication-modal/context";
-
-import { cn } from "@genuin/ui/lib/utils";
+  import("@genuin/components/organisms/authentication-modal").then((m) => ({
+    default: m.AuthenticationModal,
+  }))
+);
 
 interface SocialIds {
   instagram?: string;
@@ -85,32 +69,20 @@ export const SettingRow: FC<SettingFieldProps> = ({
       onMouseEnter={() => !toggle && setIsHovered(true)}
       onMouseLeave={() => !toggle && setIsHovered(false)}
       onClick={!toggle ? onClick : undefined}
-      className={cn(
-        "gencl:flex gencl:justify-between gencl:w-full gencl:mb-4 gencl:items-center",
-        { "gencl:cursor-pointer": !toggle }
-      )}
-      {...rest}
-    >
+      className={cn("gencl:flex gencl:justify-between gencl:w-full gencl:mb-4 gencl:items-center", {
+        "gencl:cursor-pointer": !toggle,
+      })}
+      {...rest}>
       <div>
-        <p className="gencl:text-body-1-medium gencl:text-secondary-900">
-          {label}
-        </p>
-        {subLabel && (
-          <span className="gencl:text-body-1-medium gencl:text-secondary-600">
-            {subLabel}
-          </span>
-        )}
+        <p className="gencl:text-body-1-medium gencl:text-secondary-900">{label}</p>
+        {subLabel && <span className="gencl:text-body-1-medium gencl:text-secondary-600">{subLabel}</span>}
       </div>
 
       <div className="gencl:flex gencl:items-center gencl:gap-3">
         <div>
           {renderedIcons?.length ? (
-            <div className="gencl:flex gencl:items-center gencl:gap-3">
-              {renderedIcons}
-            </div>
-          ) : modalType === "DELETE_CONFIRMATION" ||
-            modalType === undefined ||
-            toggle ? null : (
+            <div className="gencl:flex gencl:items-center gencl:gap-3">{renderedIcons}</div>
+          ) : modalType === "DELETE_CONFIRMATION" || modalType === undefined || toggle ? null : (
             <span className="gencl:text-body-1-medium gencl:text-secondary-600 gencl:line-clamp-1 gencl:max-w-sm">
               {value?.trim() ? value : "Not set"}
             </span>
@@ -119,31 +91,19 @@ export const SettingRow: FC<SettingFieldProps> = ({
 
         {!toggle && (
           <div
-            className={cn(
-              "gencl:w-6 gencl:h-6 gencl:rounded-sm gencl:flex gencl:justify-center gencl:flex-center",
-              {
-                "gencl:bg-secondary-100": isHovered,
-              }
-            )}
-          >
+            className={cn("gencl:w-6 gencl:h-6 gencl:rounded-sm gencl:flex gencl:justify-center gencl:flex-center", {
+              "gencl:bg-secondary-100": isHovered,
+            })}>
             <ChevronRightIcon
-              className={cn(
-                "gencl:h-4 gencl:w-4 gencl:flex-shrink-0 gencl:scale-75",
-                {
-                  "gencl:!stroke-black": isHovered,
-                }
-              )}
+              className={cn("gencl:h-4 gencl:w-4 gencl:flex-shrink-0 gencl:scale-75", {
+                "gencl:!stroke-black": isHovered,
+              })}
             />
           </div>
         )}
       </div>
 
-      {toggle && (
-        <Switch
-          checked={toggleValue}
-          onCheckedChange={(checked: boolean) => onToggleChange?.(checked)}
-        />
-      )}
+      {toggle && <Switch checked={toggleValue} onCheckedChange={(checked: boolean) => onToggleChange?.(checked)} />}
     </div>
   );
 

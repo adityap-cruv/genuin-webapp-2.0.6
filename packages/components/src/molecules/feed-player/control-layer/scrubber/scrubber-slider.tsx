@@ -1,13 +1,11 @@
 "use client";
 
-import * as React from "react";
-import * as SliderPrimitive from "@radix-ui/react-slider";
 import { cn, getWebpUrlForImage } from "@genuin/ui/utils";
+import * as SliderPrimitive from "@radix-ui/react-slider";
+import * as React from "react";
 import { useCallback, useState } from "react";
 
-type SliderPropsType = React.ComponentPropsWithoutRef<
-  typeof SliderPrimitive.Root
-> & {
+type SliderPropsType = React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root> & {
   spriteUrl?: string;
   showOnlyTime?: boolean;
   onSkipForward?: () => void;
@@ -100,8 +98,7 @@ const ScrubberSlider = React.forwardRef<
     ref
   ) => {
     // State for navigation announcements
-    const [navigationAnnouncement, setNavigationAnnouncement] =
-      useState<string>("");
+    const [navigationAnnouncement, setNavigationAnnouncement] = useState<string>("");
 
     // Keyboard event handler for accessibility
     const handleKeyDown = useCallback(
@@ -148,9 +145,7 @@ const ScrubberSlider = React.forwardRef<
       if (!effectiveDuration) return "00:00";
 
       // Show scrubbed time if user is scrubbing, otherwise current time
-      const timeToShow = value?.[0]
-        ? totalSeconds
-        : playerTimeState.currentTime || 0;
+      const timeToShow = value?.[0] ? totalSeconds : playerTimeState.currentTime || 0;
 
       if (showOnlyTime) {
         const currentTimeFormatted = formatTime(timeToShow);
@@ -164,19 +159,10 @@ const ScrubberSlider = React.forwardRef<
       }
 
       return formatTime(timeToShow);
-    }, [
-      totalSeconds,
-      effectiveDuration,
-      showOnlyTime,
-      value,
-      playerTimeState.currentTime,
-    ]);
+    }, [totalSeconds, effectiveDuration, showOnlyTime, value, playerTimeState.currentTime]);
 
     const ariaValueText = React.useMemo(() => {
-      const timeToShow =
-        value?.[0] && effectiveDuration
-          ? totalSeconds
-          : playerTimeState.currentTime || 0;
+      const timeToShow = value?.[0] && effectiveDuration ? totalSeconds : playerTimeState.currentTime || 0;
       return formatTimeForScreenReader(timeToShow);
     }, [totalSeconds, effectiveDuration, value, playerTimeState.currentTime]);
 
@@ -193,9 +179,7 @@ const ScrubberSlider = React.forwardRef<
 
     // Current time for accessibility
     const currentTimeFormatted = formatTime(
-      value?.[0] && effectiveDuration
-        ? (value[0] / 100) * effectiveDuration
-        : playerTimeState.currentTime || 0
+      value?.[0] && effectiveDuration ? (value[0] / 100) * effectiveDuration : playerTimeState.currentTime || 0
     );
     const durationFormatted = formatTime(effectiveDuration || 0);
     const scrubberLabel = `Slider, playback position, current time & duration ${currentTimeFormatted} / ${durationFormatted}`;
@@ -218,42 +202,30 @@ const ScrubberSlider = React.forwardRef<
           className
         )}
         value={value}
-        {...props}
-      >
+        {...props}>
         {/* Screen reader announcement for navigation */}
         <div aria-live="polite" aria-atomic="true" className="gencl:sr-only">
           {navigationAnnouncement}
         </div>
         <SliderPrimitive.Track
           className={cn(
-            "gencl:relative gencl:h-[3px] gencl:w-full gencl:grow gencl:overflow-hidden gencl:bg-white/50 "
-          )}
-        >
-          <SliderPrimitive.Range className="gencl:absolute gencl:h-full gencl:bg-primary " />
+            "gencl:relative gencl:h-[3px] gencl:w-full gencl:grow gencl:overflow-hidden gencl:bg-white/50"
+          )}>
+          <SliderPrimitive.Range className="gencl:absolute gencl:h-full gencl:bg-primary" />
         </SliderPrimitive.Track>
         {showSeeker && (
           <SliderPrimitive.Thumb
             className={cn(
               "gencl:block gencl:cursor-pointer gencl:h-3 gencl:w-3 gencl:rounded-full gencl:border-2 gencl:border-primary gencl:bg-primary gencl:outline-none gencl:transition-all gencl:disabled:pointer-events-none gencl:disabled:opacity-50"
-            )}
-          >
+            )}>
             {showScrubber && (
               <div
                 className={cn(
                   "gencl:flex gencl:w-24 gencl:-translate-x-[40%] gencl:flex-col gencl:items-center gencl:transition-all",
-                  showOnlyTime
-                    ? "gencl:-translate-y-10"
-                    : "gencl:-translate-y-[calc(100%+36px)]",
-                  value &&
-                    value[0] !== undefined &&
-                    value[0] < 3 &&
-                    "gencl:-translate-x-1/5",
-                  value &&
-                    value[0] !== undefined &&
-                    value[0] > 97 &&
-                    "gencl:-translate-x-3/4"
-                )}
-              >
+                  showOnlyTime ? "gencl:-translate-y-10" : "gencl:-translate-y-[calc(100%+36px)]",
+                  value && value[0] !== undefined && value[0] < 3 && "gencl:-translate-x-1/5",
+                  value && value[0] !== undefined && value[0] > 97 && "gencl:-translate-x-3/4"
+                )}>
                 {!showOnlyTime && spriteUrl && (
                   <div
                     className="gencl:aspect-reel gencl:w-24 gencl:overflow-clip gencl:rounded-lg gencl:border gencl:border-white"
@@ -265,9 +237,7 @@ const ScrubberSlider = React.forwardRef<
                     }}
                   />
                 )}
-                <p className="gencl:text-body-0-semi-bold gencl:text-white">
-                  {time}
-                </p>
+                <p className="gencl:text-body-0-semi-bold gencl:text-white">{time}</p>
               </div>
             )}
           </SliderPrimitive.Thumb>

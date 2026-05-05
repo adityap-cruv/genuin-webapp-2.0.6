@@ -1,7 +1,8 @@
 'use client'
+import Link from 'next/link'
+
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import Link from 'next/link'
 
 export function BrandCommunityTag({
   brandSlug,

@@ -1,22 +1,19 @@
 "use client";
 import { useMemo } from "react";
-import "swiper/css";
 
+import { useBaseContext } from "@genuin/components/context";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { isMiddlewareOverlayEnabled } from "@genuin/components/lib/utils";
+import { ErrorState } from "@genuin/components/molecules/error-state";
+import { GestureProvider } from "@genuin/components/molecules/gestures/context";
 import { useFeed } from "@genuin/components/react-query/api/feed";
+import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
 
 import { FeedContextProvider } from "./context";
-import { GestureProvider } from "@genuin/components/molecules/gestures/context";
-import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
-import { ErrorState } from "@genuin/components/molecules/error-state";
 import { FeedViewCore } from "./core";
-import {
-  FeedData,
-  FeedViewPropsType,
-  FeedWithDataPropsType,
-} from "./feed.type";
-import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
-import { useBaseContext } from "@genuin/components/context";
-import { isMiddlewareOverlayEnabled } from "@genuin/components/lib/utils";
+import type { FeedData, FeedViewPropsType, FeedWithDataPropsType } from "./feed.type";
+
+import "swiper/css";
 
 /**
  * Complete feed solution with built-in data fetching and context management.
@@ -38,13 +35,11 @@ export function FeedWithData({
   ...restProps
 }: FeedWithDataPropsType) {
   const embedDetails = useSafeEmbedContext();
-  const { isInIframe } = useBaseContext();
+  const { isInIframe, brandDetails } = useBaseContext();
   const queryOptions = useMemo(
     () => ({
       communityIds: embedDetails?.embedData?.customization.community_ids,
-      groupIds: embedDetails?.embedData?.customization.community_loop_ids?.map(
-        (item) => item.loop_id
-      ),
+      groupIds: embedDetails?.embedData?.customization.community_loop_ids?.map((item) => item.loop_id),
       startVideoSlug: embedDetails?.embedData?.startVideoSlug,
       contextualParams: embedDetails?.embedData?.contextualParams,
       embed_id: embedDetails?.embedData?.embed_id,
@@ -53,23 +48,14 @@ export function FeedWithData({
         videoLayoutId: embedDetails?.embedData.placement_video_layout_id,
         cardLayoutId: embedDetails?.embedData.placement_card_layout_id,
       }),
+      brandId: brandDetails.brand_id ?? undefined,
     }),
-    [embedDetails, isInIframe]
+    [embedDetails, isInIframe, brandDetails.brand_id]
   );
 
-  const {
-    data,
-    isLoading,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isError,
-  } = useFeed(feedType, queryOptions);
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage, isError } = useFeed(feedType, queryOptions);
 
-  const videos = useMemo(
-    () => data?.pages.flatMap((page) => page.feed) ?? [],
-    [data]
-  );
+  const videos = useMemo(() => data?.pages.flatMap((page) => page.feed) ?? [], [data]);
 
   const feedData: FeedData = {
     queryKey: getQueryKeyForFeed(feedType, queryOptions),
@@ -79,6 +65,7 @@ export function FeedWithData({
     isFetchingNextPage,
     fetchNextPage,
     totalVideos: data?.pages[0]?.totalVideos,
+    pageSession: data?.pages[0]?.pageSession,
   };
 
   if (isError) {
@@ -90,17 +77,9 @@ export function FeedWithData({
   }
 
   return (
-    <FeedContextProvider
-      defaultExpandView={defaultExpandView}
-      onCloseExpandView={onCloseExpandView}
-    >
+    <FeedContextProvider defaultExpandView={defaultExpandView} onCloseExpandView={onCloseExpandView}>
       <GestureProvider isInIframe={isInIframe}>
-        <FeedViewCore
-          isSectioned={isSectioned}
-          variant="page"
-          feedData={feedData}
-          {...restProps}
-        />
+        <FeedViewCore isSectioned={isSectioned} variant="page" feedData={feedData} {...restProps} />
       </GestureProvider>
     </FeedContextProvider>
   );
@@ -129,6 +108,7 @@ export function FeedView({
   onCloseExpandView,
   isSectioned,
   isInIframe,
+  platform,
   ...restProps
 }: FeedViewPropsType) {
   return (
@@ -136,13 +116,13 @@ export function FeedView({
       defaultExpandView={defaultExpandView}
       onCloseExpandView={onCloseExpandView}
       variant={variant ?? "expand"}
-      disableNativeFullscreenApi={disableNativeFullscreenApi}
-    >
+      disableNativeFullscreenApi={disableNativeFullscreenApi}>
       <GestureProvider isInIframe={isInIframe ?? false}>
         <FeedViewCore
           isSectioned={isSectioned}
           feedData={feedData}
           variant={variant}
+          platform={platform}
           {...restProps}
         />
       </GestureProvider>

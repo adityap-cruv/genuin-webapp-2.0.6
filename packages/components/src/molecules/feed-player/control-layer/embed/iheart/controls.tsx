@@ -1,30 +1,21 @@
 "use client";
+import { Button } from "@genuin/ui/components/button";
+import { IHeartMuteIcon, IHeartPauseIcon, IHeartPlayIcon, IHeartShareIcon, IHeartUnmuteIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/utils";
 import { type ComponentProps } from "react";
 
-import {
-  IHeartMuteIcon,
-  IHeartPauseIcon,
-  IHeartPlayIcon,
-  IHeartShareIcon,
-  IHeartUnmuteIcon,
-} from "@genuin/ui/icons";
+import { useAnalytics } from "@genuin/components/context/analytics";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+// import { useBaseContext } from "@genuin/components/context";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { SDKEventEmitter, SDKEventName } from "@genuin/components/lib/sdk-event-emitter";
+import { compressText } from "@genuin/components/lib/utils";
+import { DynamicReactionIcon } from "@genuin/components/molecules/reaction-button";
+import { ReactionButton } from "@genuin/components/molecules/reaction-button";
+import { ShareButton } from "@genuin/components/molecules/share-button";
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 import { usePlayerContext } from "../../../context";
-import { ShareButton } from "@genuin/components/molecules/share-button";
-import { useAnalytics } from "@genuin/components/context/analytics";
-import { ReactionButton } from "@genuin/components/molecules/reaction-button";
-import { DynamicReactionIcon } from "@genuin/components/molecules/reaction-button";
-import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import {
-  SDKEventEmitter,
-  SDKEventName,
-} from "@genuin/components/lib/sdk-event-emitter";
-// import { useBaseContext } from "@genuin/components/context";
-import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
-import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-import { Button } from "@genuin/ui/components/button";
-import { compressText } from "@genuin/components/lib/utils";
 
 type IHeartControlsProps = ComponentProps<"div"> & {
   /**
@@ -106,6 +97,8 @@ export function IHeartControls({
   //   };
   // }, [baseContextManager, index]);
 
+  if (!videoDetails) return null;
+
   const isExpand = variant === "expand";
 
   function hasIheartSubdomain(url: string): boolean {
@@ -120,11 +113,7 @@ export function IHeartControls({
   }
 
   // Generate share URL with action=share parameter
-  const generateShareUrl = (
-    isExpand: boolean,
-    slug?: string,
-    contentId?: string,
-  ) => {
+  const generateShareUrl = (isExpand: boolean, slug?: string, contentId?: string) => {
     // let url = isExpand
     //   ? window.location.href
     //   : (() => {
@@ -146,19 +135,15 @@ export function IHeartControls({
     const url = new URL(
       "https://iheart.com/" +
         (isPodcast ? "podcast/" : "live/") +
-        (isPodcast
-          ? videoDetails.attributes?.slug
-          : videoDetails?.attributes?.station_id) +
+        (isPodcast ? videoDetails.attributes?.slug : videoDetails?.attributes?.station_id) +
         "/highlights/" +
         videoDetails?.slug +
         "_" +
-        videoDetails?.id,
+        videoDetails?.id
     );
 
     const windowUrl = typeof window !== "undefined" ? window.location.href : "";
-    const localWebsiteType = hasIheartSubdomain(windowUrl)
-      ? "inferno"
-      : websiteType;
+    const localWebsiteType = hasIheartSubdomain(windowUrl) ? "inferno" : websiteType;
 
     if (!url.searchParams.has("action")) {
       url.searchParams.set("action", "share");
@@ -181,14 +166,8 @@ export function IHeartControls({
   const titleMaxLength = isMobile ? 30 : 55;
   const descriptionMaxLength = isMobile ? 120 : 180;
 
-  const truncatedTitle = compressText(
-    videoDetails?.attributes?.description ?? "",
-    titleMaxLength,
-  );
-  const truncatedDescription = compressText(
-    videoDetails?.descritptionText ?? "",
-    descriptionMaxLength,
-  );
+  const truncatedTitle = compressText(videoDetails.attributes?.description ?? "", titleMaxLength);
+  const truncatedDescription = compressText(videoDetails.descritptionText ?? "", descriptionMaxLength);
 
   return (
     <div
@@ -196,8 +175,7 @@ export function IHeartControls({
       // aria-label="Media controls"
       // aria-orientation={isExpand ? "vertical" : "horizontal"}
       className={cn("gencl:flex", isExpand && "gencl:flex-col", className)}
-      {...restProps}
-    >
+      {...restProps}>
       {isExpand && (
         <ReactionButton
           shareUrl={shareUrl ?? ""}
@@ -214,20 +192,16 @@ export function IHeartControls({
           }}
           className="gencl:w-[42px] gencl:h-[42px]"
           tabIndex={-1}
-          aria-hidden="true"
-        >
+          aria-hidden="true">
           <Button
             theme="custom"
-            aria-label={
-              isReacted ? `Thumb up, Pressed` : `Thumb up, Not pressed`
-            }
+            aria-label={isReacted ? `Thumb up, Pressed` : `Thumb up, Not pressed`}
             aria-pressed={isReacted}
             role="button"
             tabIndex={-1}
             variant="icon"
             title="Thumbs Up"
-            className="gencl:w-[42px] gencl:h-[42px] gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
-          >
+            className="gencl:w-[42px] gencl:h-[42px] gencl:p-0 gencl:flex gencl:items-center gencl:justify-center">
             <DynamicReactionIcon
               isSparked={isReacted}
               sparkCount={reactionCount}
@@ -265,8 +239,7 @@ export function IHeartControls({
           e.stopPropagation();
           toggleMuted(true);
         }}
-        title={muted ? "Unmute" : "Mute"}
-      >
+        title={muted ? "Unmute" : "Mute"}>
         {muted ? (
           <IHeartMuteIcon theme="dark" size={size} aria-hidden="true" />
         ) : (
@@ -277,9 +250,7 @@ export function IHeartControls({
       <Button
         theme="custom"
         variant="icon"
-        aria-label={
-          playingState === "PLAYING" ? "Paused, Not pressed" : "Paused, Pressed"
-        }
+        aria-label={playingState === "PLAYING" ? "Paused, Not pressed" : "Paused, Pressed"}
         role="button"
         aria-pressed={playingState !== "PLAYING"}
         tabIndex={isVideoWatched ? -1 : 0}
@@ -288,8 +259,7 @@ export function IHeartControls({
           e.stopPropagation();
           togglePlay(true);
         }}
-        title={playingState === "PLAYING" ? "Pause" : "Play"}
-      >
+        title={playingState === "PLAYING" ? "Pause" : "Play"}>
         {playingState === "PLAYING" ? (
           <IHeartPauseIcon theme="dark" size={size} aria-hidden="true" />
         ) : (
@@ -326,8 +296,7 @@ export function IHeartControls({
             clipTitle: truncatedTitle ?? "",
             clipThumbnailUrl: videoDetails?.thumbnail,
           });
-        }}
-      >
+        }}>
         <Button
           theme="custom"
           variant="icon"
@@ -335,8 +304,7 @@ export function IHeartControls({
           role="button"
           tabIndex={isVideoWatched ? -1 : 0}
           className="gencl:w-[42px] gencl:h-[42px] gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
-          title="Share"
-        >
+          title="Share">
           <IHeartShareIcon theme="dark" size={size} aria-hidden="true" />
         </Button>
       </ShareButton>

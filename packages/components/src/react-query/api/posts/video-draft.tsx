@@ -1,7 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
+import type { AxiosInstance } from "axios";
+
 import { useAxiosInstance } from "@genuin/components/context/axios";
 import { API_PATHS } from "@genuin/components/react-query/paths";
-import type { AxiosInstance } from "axios";
 
 export type PayloadDraftPost = {
   aspect_ratio?: string;
@@ -14,6 +15,7 @@ export type PayloadDraftPost = {
   thumbnail_name?: string;
   video_thumbnail?: string;
   meta_data?: { contains_external_videos: false; media_type: "video" };
+  platform: "web";
 
   // optional field
   uuid?: string;
@@ -42,10 +44,7 @@ export type PayloadDraftPost = {
 
 //------------------------create draft video------------------------
 
-export async function createDraftVideo(
-  payload: PayloadDraftPost,
-  axiosInstance: AxiosInstance,
-) {
+export async function createDraftVideo(payload: PayloadDraftPost, axiosInstance: AxiosInstance) {
   return await axiosInstance
     .post(API_PATHS.DRAFT_POST, payload)
     .then((res) => ({ res }))
@@ -67,8 +66,7 @@ export function useCreateDraftVideoMutation({
   const axiosInstance = useAxiosInstance();
 
   return useMutation({
-    mutationFn: (payload: PayloadDraftPost) =>
-      createDraftVideo(payload, axiosInstance),
+    mutationFn: (payload: PayloadDraftPost) => createDraftVideo(payload, axiosInstance),
     onError,
     onSuccess,
   });
@@ -76,10 +74,7 @@ export function useCreateDraftVideoMutation({
 
 //------------------------edit video draft------------------------
 
-export async function editDraftVideoPatch(
-  payload: PayloadDraftPost,
-  axiosInstance: AxiosInstance,
-) {
+export async function editDraftVideoPatch(payload: Omit<PayloadDraftPost, "platform">, axiosInstance: AxiosInstance) {
   return await axiosInstance
     .patch(API_PATHS.DRAFT_POST, payload)
     .then((res) => ({ res }))
@@ -101,8 +96,7 @@ export function useEditDraftVideoMutation({
   const axiosInstance = useAxiosInstance();
 
   return useMutation({
-    mutationFn: (payload: PayloadDraftPost) =>
-      editDraftVideoPatch(payload, axiosInstance),
+    mutationFn: (payload: Omit<PayloadDraftPost, "platform">) => editDraftVideoPatch(payload, axiosInstance),
     onError,
     onSuccess,
   });
@@ -110,10 +104,7 @@ export function useEditDraftVideoMutation({
 
 //------------------------Get draft video------------------------
 
-export async function getDraftVideo(
-  payload: PayloadDraftPost,
-  axiosInstance: AxiosInstance,
-) {
+export async function getDraftVideo(payload: Omit<PayloadDraftPost, "platform">, axiosInstance: AxiosInstance) {
   return await axiosInstance
     .get(`${API_PATHS.DRAFT_POST}/${payload.uuid}`)
     .then((res) => ({ res }))
@@ -135,8 +126,7 @@ export function useGetDraftVideoMutation({
   const axiosInstance = useAxiosInstance();
 
   return useMutation({
-    mutationFn: (payload: PayloadDraftPost) =>
-      getDraftVideo(payload, axiosInstance),
+    mutationFn: (payload: Omit<PayloadDraftPost, "platform">) => getDraftVideo(payload, axiosInstance),
     onError,
     onSuccess,
   });

@@ -1,6 +1,8 @@
 'use client'
 import { QuestionMarkIcon } from '@icons/question-mark-icon'
+
 import { AuthenticationModal } from '../modals/authentication'
+
 import { useWalletStore } from './store'
 
 export const WalletBalanceCard = () => {

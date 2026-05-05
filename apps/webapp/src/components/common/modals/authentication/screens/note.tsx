@@ -1,6 +1,8 @@
-import { ModalShell } from '../modal-shell'
 import Image from 'next/image'
+
 import successGif from '@images/gifs/success.gif'
+
+import { ModalShell } from '../modal-shell'
 
 export function Note({ title, success = true }: { title: string; success?: boolean }) {
   return (

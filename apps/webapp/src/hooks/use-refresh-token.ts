@@ -1,61 +1,62 @@
-import { axiosInstance } from '@/lib/api/instance'
-import { useGenuinOptions } from '@/lib/stores/genuin-options'
-import axios from 'axios'
-import { signOut, useSession } from 'next-auth/react'
-import { useEffect } from 'react'
+import axios from "axios";
+import { signOut, useSession } from "next-auth/react";
+import { useEffect } from "react";
+
+import { axiosInstance } from "@/lib/api/instance";
+import { useGenuinOptions } from "@/lib/stores/genuin-options";
 
 export function useRefreshToken() {
-  const { update: updateSession, data: sessionData } = useSession()
+  const { update: updateSession, data: sessionData } = useSession();
 
   useEffect(() => {
     const interceptorId = axiosInstance.interceptors.response.use(
       (res) => res,
       async (error) => {
         try {
-          const prevReq = error.config
+          const prevReq = error.config;
 
-          if (error.name === 'CanceledError' || error.code === 'ERR_CANCELED') {
-            return await Promise.reject(error)
+          if (error.name === "CanceledError" || error.code === "ERR_CANCELED") {
+            return await Promise.reject(error);
           }
 
           if (error.response.status === 401 && !prevReq.sent) {
-            prevReq.sent = true
-            const response = await refreshToken()
+            prevReq.sent = true;
+            const response = await refreshToken();
             if (response) {
-              const { newAccessToken, newRefreshToken } = response
+              const { newAccessToken, newRefreshToken } = response;
               await updateSession({
                 ...sessionData,
                 user: { ...sessionData?.user, accessToken: newAccessToken, refreshToken: newRefreshToken },
-              })
-              prevReq.headers.Authorization = `Bearer ${newAccessToken}`
-              return await axiosInstance(prevReq)
+              });
+              prevReq.headers.Authorization = `Bearer ${newAccessToken}`;
+              return await axiosInstance(prevReq);
             }
           }
         } catch (e) {
           // console.log('error::', e)
-          if (error.name !== 'CanceledError' || error.code !== 'ERR_CANCELED') {
-            void signOut()
+          if (error.name !== "CanceledError" || error.code !== "ERR_CANCELED") {
+            void signOut();
           }
         }
-        return await Promise.reject(error)
+        return await Promise.reject(error);
       }
-    )
+    );
     return () => {
-      axiosInstance.interceptors.response.eject(interceptorId)
-    }
-  }, [])
+      axiosInstance.interceptors.response.eject(interceptorId);
+    };
+  }, []);
 }
 
 export async function refreshToken(): Promise<{ newAccessToken: string; newRefreshToken: string } | null> {
-  const oldAccessToken = useGenuinOptions.getState().user?.accessToken
-  const oldRefreshToken = useGenuinOptions.getState().user?.refreshToken
-  if (!oldAccessToken || !oldRefreshToken) return null
+  const oldAccessToken = useGenuinOptions.getState().user?.accessToken;
+  const oldRefreshToken = useGenuinOptions.getState().user?.refreshToken;
+  if (!oldAccessToken || !oldRefreshToken) return null;
   return await axios
     .create({ baseURL: process.env.NEXT_PUBLIC_API_URL })
     .post(
-      '/api/v4/auth/session/refresh',
+      "/api/v4/auth/session/refresh",
       {
-        'gn-access-token': oldAccessToken,
+        "gn-access-token": oldAccessToken,
       },
       {
         headers: {
@@ -64,11 +65,11 @@ export async function refreshToken(): Promise<{ newAccessToken: string; newRefre
       }
     )
     .then((res) => {
-      const accessToken = res.headers['gn-access-token']
-      const newRefreshToken = res.headers['gn-refresh-token']
-      return { newAccessToken: accessToken, newRefreshToken }
+      const accessToken = res.headers["gn-access-token"];
+      const newRefreshToken = res.headers["gn-refresh-token"];
+      return { newAccessToken: accessToken, newRefreshToken };
     })
     .catch((e) => {
-      throw new Error('Something went wrong!')
-    })
+      throw new Error("Something went wrong!");
+    });
 }

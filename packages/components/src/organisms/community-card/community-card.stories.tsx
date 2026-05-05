@@ -1,8 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { CommunityCard, CommunityCardSkeleton } from "./community-card";
-import type { CommunityCardProps } from "./community-card.types";
 
-type StoryProps = CommunityCardProps & {
+import { CommunityCard, CommunityCardSkeleton } from "./community-card";
+import type { CommunityCardProps, CommunityInfoType } from "./community-card.types";
+
+type StoryProps = Omit<CommunityCardProps, "onSelect"> & {
+  onSelect?: (community: CommunityInfoType) => void;
   width?: string;
 };
 
@@ -42,14 +44,13 @@ const baseCommunity = {
   name: "Frontend Masters",
   dp: "https://randomuser.me/api/portraits/men/32.jpg",
   banner: "https://picsum.photos/400/300",
-  description:
-    "A community for frontend developers to share, learn, and grow together.",
+  description: "A community for frontend developers to share, learn, and grow together.",
   stats: {
     members: 3200,
     groups: 12,
     posts: 540,
   },
-  type: "PUBLIC" as "PUBLIC",
+  type: "PUBLIC" as const,
 };
 
 export const Default: Story = {
@@ -249,7 +250,7 @@ export const SuggestionPrivate: Story = {
     community: {
       ...baseCommunity,
       name: "Private Frontend Community",
-      type: "PRIVATE" as "PRIVATE",
+      type: "PRIVATE" as const,
     },
     variant: "suggestion",
     width: "400px",
@@ -271,7 +272,7 @@ export const SuggestionList: Story = {
   },
   render: ({ width, ...args }) => (
     <div style={{ width: width ?? "400px" }}>
-      <div className="flex flex-col gap-2 p-4 bg-white border rounded-lg shadow-sm">
+      <div className="flex flex-col gap-2 rounded-lg border bg-white p-4 shadow-sm">
         {/* <h3 className="text-sm font-medium text-gray-900 mb-2">
           Community Suggestions
         </h3> */}
@@ -292,7 +293,7 @@ export const SuggestionList: Story = {
             ...baseCommunity,
             id: "ui-ux",
             name: "UI/UX Design Hub",
-            type: "PRIVATE" as "PRIVATE",
+            type: "PRIVATE" as const,
             stats: { members: 2800, groups: 5, posts: 340 },
           }}
           url="/community/ui-ux-design"
@@ -338,7 +339,7 @@ export const RecentPrivate: Story = {
     community: {
       ...baseCommunity,
       name: "Private Frontend Community",
-      type: "PRIVATE" as "PRIVATE",
+      type: "PRIVATE" as const,
     },
     variant: "recent",
     width: "400px",
@@ -360,7 +361,7 @@ export const RecentList: Story = {
   },
   render: ({ width, ...args }) => (
     <div style={{ width: width ?? "400px" }}>
-      <div className="flex flex-col gap-2 p-4 bg-white border rounded-lg shadow-sm">
+      <div className="flex flex-col gap-2 rounded-lg border bg-white p-4 shadow-sm">
         <CommunityCard {...args} />
         <CommunityCard
           {...args}
@@ -378,7 +379,7 @@ export const RecentList: Story = {
             ...baseCommunity,
             id: "ui-ux",
             name: "UI/UX Design Hub",
-            type: "PRIVATE" as "PRIVATE",
+            type: "PRIVATE" as const,
             stats: { members: 2800, groups: 5, posts: 340 },
           }}
           url="/community/ui-ux-design"
@@ -412,10 +413,7 @@ export const Skeleton: StoryObj<SkeletonStoryProps> = {
   },
   render: (args) => (
     <div style={{ width: args.width ?? "450px" }}>
-      <CommunityCardSkeleton
-        className={args.className}
-        variant={args.variant ?? "explore"}
-      />
+      <CommunityCardSkeleton className={args.className} variant={args.variant ?? "explore"} />
     </div>
   ),
 };

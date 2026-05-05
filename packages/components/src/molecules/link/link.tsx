@@ -1,11 +1,12 @@
 "use client";
 import { cn } from "@genuin/ui/utils";
 import type { ComponentProps } from "react";
-import type { NextJSLinkProps } from "@genuin/components/context/link/type";
-import { useLinkContext } from "@genuin/components/context/link";
-import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+
 import { useBaseContext } from "@genuin/components/context";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { useLinkContext } from "@genuin/components/context/link";
+import type { NextJSLinkProps } from "@genuin/components/context/link/type";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 type BaseLinkProps = ComponentProps<"a">;
 
@@ -35,9 +36,7 @@ type LinkProps = ExtendedLinkProps & {
  */
 function checkRedirectionEnabled(
   href: string | undefined,
-  redirectionTools:
-    | { user?: boolean; community?: boolean; group?: boolean }
-    | undefined
+  redirectionTools: { user?: boolean; community?: boolean; group?: boolean } | undefined
 ) {
   let isEnabled = true;
 
@@ -71,12 +70,13 @@ function checkIfExternal(href: string) {
   );
 }
 
-export function Link({
+type LinkInnerProps = Omit<LinkProps, "bypassChecks">;
+
+function LinkInner({
   className,
   href,
   children,
   enabled = true,
-  bypassChecks = false,
   // Next.js specific props
   as,
   replace,
@@ -89,18 +89,8 @@ export function Link({
   target,
   // Standard props
   ...restProps
-}: LinkProps) {
-  // If bypassChecks is true, render a plain <a> element directly
-  if (bypassChecks) {
-    return (
-      <a href={href} className={className} target={target} {...restProps}>
-        {children}
-      </a>
-    );
-  }
-
-  const { LinkComponent, isNextJS, isCustomRouting, createExternalLink } =
-    useLinkContext();
+}: LinkInnerProps) {
+  const { LinkComponent, isNextJS, isCustomRouting, createExternalLink } = useLinkContext();
   const wantsToOpenInNewTab = target === "_blank";
 
   // Extract engagement configurations for redirection tools and link behavior
@@ -124,21 +114,14 @@ export function Link({
   }
 
   // Determine if routing/redirection should be enabled for the given href
-  const isEnabled = isHrefExternal
-    ? true
-    : checkRedirectionEnabled(href, redirectionTools);
+  const isEnabled = isHrefExternal ? true : checkRedirectionEnabled(href, redirectionTools);
 
   // If the link is not external, modify href based on conditions
   if (!isHrefExternal) {
-    if (
-      isEnabled &&
-      openAllLinksInNewTab &&
-      typeof href === "string" &&
-      brandDetails.white_label_url
-    ) {
+    if (isEnabled && openAllLinksInNewTab && typeof href === "string" && brandDetails.white_label_url) {
       // Create an external URL using the white-label host and update href
       href = createExternalLink(href);
-      isHrefExternal = true; // Uncomment if needed to mark as external
+      isHrefExternal = true;
     }
   }
 
@@ -157,7 +140,7 @@ export function Link({
       onClick?.(e);
       if (!href) return;
 
-      e.preventDefault(); // Ensure this runs once
+      e.preventDefault();
       try {
         // As we only have to pass the pathname and to navigate internally.
         embedContext?.embedRouter.navigate(href);
@@ -167,11 +150,7 @@ export function Link({
     };
 
     return (
-      <span
-        className={cn("gencl:cursor-pointer", className)}
-        onClick={handleClick}
-        {...restRestProps}
-      >
+      <span className={cn("gencl:cursor-pointer", className)} onClick={handleClick} {...restRestProps}>
         {children}
       </span>
     );
@@ -210,4 +189,24 @@ export function Link({
   }
 
   return <LinkComponent {...linkProps}>{children}</LinkComponent>;
+}
+
+/**
+ * Smart link component that handles internal routing, external links, embed navigation,
+ * and redirection rules. Pass `bypassChecks` to skip all logic and render a plain `<a>`.
+ */
+export function Link({ bypassChecks = false, href, className, target, children, ...restProps }: LinkProps) {
+  if (bypassChecks) {
+    return (
+      <a href={href} className={className} target={target} {...restProps}>
+        {children}
+      </a>
+    );
+  }
+
+  return (
+    <LinkInner href={href} className={className} target={target} {...restProps}>
+      {children}
+    </LinkInner>
+  );
 }

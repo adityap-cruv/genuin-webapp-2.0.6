@@ -1,6 +1,7 @@
 "use client";
-import React from "react";
 import { cn } from "@genuin/ui/lib/utils";
+import React from "react";
+
 import { ClipButton } from "./clip-button";
 import { EditCoverButton } from "./edit-cover-button";
 
@@ -23,13 +24,8 @@ export const VideoEditActionButtons: React.FC<VideoEditActionButtonsProps> = ({
     <div
       className={cn(
         "gencl:flex gencl:items-center gencl:mb-2",
-        clipVideo && editCover
-          ? "gencl:justify-between"
-          : clipVideo
-            ? "gencl:justify-start"
-            : "gencl:justify-end"
-      )}
-    >
+        clipVideo && editCover ? "gencl:justify-between" : clipVideo ? "gencl:justify-start" : "gencl:justify-end"
+      )}>
       {clipVideo && <ClipButton onClick={onClickClip} />}
       {editCover && <EditCoverButton onClick={onClickEditCover} />}
     </div>

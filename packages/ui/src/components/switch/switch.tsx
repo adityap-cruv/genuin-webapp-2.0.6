@@ -1,23 +1,19 @@
 "use client";
 
-import * as React from "react";
 import * as SwitchPrimitive from "@radix-ui/react-switch";
+import * as React from "react";
 
 import { cn } from "@genuin/ui/lib/utils";
 
-function Switch({
-  className,
-  ...props
-}: React.ComponentProps<typeof SwitchPrimitive.Root>) {
+function Switch({ className, ...props }: React.ComponentProps<typeof SwitchPrimitive.Root>) {
   return (
     <SwitchPrimitive.Root
       data-slot="switch"
       className={cn(
-        "gencl:peer gencl:data-[state=checked]:bg-primary gencl:data-[state=unchecked]:bg-secondary-500 gencl:focus-visible:border-  gencl:focus-visible:ring-ring/50  gencl:inline-flex gencl:h-[1.15rem] gencl:w-8 gencl:shrink-0 gencl:items-center gencl:rounded-full gencl:border gencl:border-transparent gencl:shadow-xs gencl:transition-all gencl:outline-none gencl:focus-visible:ring-[3px] gencl:disabled:cursor-not-allowed gencl:disabled:opacity-50 gencl:cursor-pointer",
+        "gencl:peer gencl:data-[state=checked]:bg-primary gencl:data-[state=unchecked]:bg-secondary-500 gencl:focus-visible:border- gencl:focus-visible:ring-ring/50 gencl:inline-flex gencl:h-[1.15rem] gencl:w-8 gencl:shrink-0 gencl:items-center gencl:rounded-full gencl:border gencl:border-transparent gencl:shadow-xs gencl:transition-all gencl:outline-none gencl:focus-visible:ring-[3px] gencl:disabled:cursor-not-allowed gencl:disabled:opacity-50 gencl:cursor-pointer",
         className
       )}
-      {...props}
-    >
+      {...props}>
       <SwitchPrimitive.Thumb
         data-slot="switch-thumb"
         className={cn(

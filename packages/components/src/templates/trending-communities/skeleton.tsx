@@ -1,4 +1,5 @@
 import { Skeleton } from "@genuin/ui/components/skeleton";
+
 import { CommunityCardSkeleton } from "@genuin/components/organisms/community-card";
 
 export function TrendingCommunitiesSkeleton() {
@@ -23,11 +24,7 @@ export function TrendingCommunitiesSkeleton() {
   );
 }
 
-function CommunitiesSkeleton({
-  noOfCommunities = 1,
-}: {
-  noOfCommunities: number;
-}) {
+function CommunitiesSkeleton({ noOfCommunities = 1 }: { noOfCommunities: number }) {
   return (
     <>
       {Array.from({ length: noOfCommunities }).map((_, index) => (

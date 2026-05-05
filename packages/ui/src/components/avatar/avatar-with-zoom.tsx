@@ -2,9 +2,9 @@
 
 import * as AvatarPrimitive from "@radix-ui/react-avatar";
 import { cva, type VariantProps } from "class-variance-authority";
+import { motion, AnimatePresence } from "motion/react";
 import * as React from "react";
 import { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
 
 import { cn, isValidHTTPS } from "@genuin/ui/lib/utils";
 import { getWebpUrlForImage } from "@genuin/ui/utils";
@@ -30,9 +30,7 @@ const avatarVariants = cva(
   }
 );
 
-export type AvatarPropsType = React.ComponentProps<
-  typeof AvatarPrimitive.Root
-> &
+export type AvatarPropsType = React.ComponentProps<typeof AvatarPrimitive.Root> &
   VariantProps<typeof avatarVariants> & {
     isAvatar: boolean;
     /**
@@ -59,9 +57,7 @@ const AvatarWithZoom = React.memo(function AvatarWithZoom({
   ...props
 }: AvatarPropsType) {
   const [isOpen, setIsOpen] = useState(false);
-  const finalImageSrc = isAvatar
-    ? getAvatarUrl(imageUrl)
-    : getWebpUrlForImage(imageUrl);
+  const finalImageSrc = isAvatar ? getAvatarUrl(imageUrl) : getWebpUrlForImage(imageUrl);
   // Generate a unique ID for this Avatar instance
   const uniqueId = React.useId();
   const layoutId = `avatar-zoom-${uniqueId}`;
@@ -76,14 +72,10 @@ const AvatarWithZoom = React.memo(function AvatarWithZoom({
         "gencl:cursor-pointer",
         className
       )}
-      {...props}
-    >
+      {...props}>
       <AvatarPrimitive.Image
         data-slot="avatar-image"
-        className={cn(
-          "gencl:aspect-square gencl:rounded-full gencl:size-full",
-          imageClassName
-        )}
+        className={cn("gencl:aspect-square gencl:rounded-full gencl:size-full", imageClassName)}
         src={finalImageSrc}
         alt={alt}
         loading="lazy"
@@ -93,8 +85,7 @@ const AvatarWithZoom = React.memo(function AvatarWithZoom({
         className={cn(
           "gencl:bg-secondary-300 gencl:flex gencl:size-full gencl:items-center gencl:justify-center gencl:rounded-full",
           fallbackClassName
-        )}
-      >
+        )}>
         {getAvatarFallback(alt)}
       </AvatarPrimitive.Fallback>
     </AvatarPrimitive.Root>
@@ -109,8 +100,7 @@ const AvatarWithZoom = React.memo(function AvatarWithZoom({
             type: "spring",
             bounce: 0.15,
             duration: 0.5,
-          }}
-        >
+          }}>
           {createAvatarComponent()}
         </motion.div>
       </div>
@@ -134,16 +124,14 @@ const AvatarWithZoom = React.memo(function AvatarWithZoom({
                 duration: 0.2,
                 ease: [0.4, 0, 0.2, 1], // ease-out for exits
               },
-            }}
-          >
+            }}>
             <motion.div
               layoutId={layoutId}
               transition={{
                 type: "spring",
                 bounce: 0.15,
                 duration: 0.5,
-              }}
-            >
+              }}>
               {createAvatarComponent("4xl")}
             </motion.div>
           </motion.div>

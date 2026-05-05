@@ -33,18 +33,19 @@
  * 2. AWS CLI configuration (recommended)
  */
 
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
+import fs from 'fs'
+import path from 'path'
+
 import {
   CloudFrontClient,
   CreateInvalidationCommand,
 } from '@aws-sdk/client-cloudfront'
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 import { fromIni } from '@aws-sdk/credential-provider-ini'
-import fs from 'fs'
-import path from 'path'
 import { confirm, checkbox } from '@inquirer/prompts'
 import chalk from 'chalk'
-import dotenv from 'dotenv'
 import cliProgress from 'cli-progress'
+import dotenv from 'dotenv'
 
 /**
  * Configuration interface for S3 upload settings

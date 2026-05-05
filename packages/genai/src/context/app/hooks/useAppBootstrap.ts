@@ -1,9 +1,12 @@
+import type { AxiosResponse } from 'axios';
+import { useEffect } from 'react';
+
 import { getBrandAgentId, getIpInfo, getSessionsV2, getSubAgentsV2, userContext } from '@/lib/api';
 import type { GetAgentIdResponse, SessionV2, SubAgentV2 } from '@/lib/apiTypes';
-import type { AxiosResponse } from 'axios';
 import type { Agent, AgentType, PendingMessage, Session } from '@/types';
+
 import type { HandleSendMessageParams } from '../provider';
-import { useEffect } from 'react';
+
 
 interface UseAppBootstrapParams {
     brandId: number;

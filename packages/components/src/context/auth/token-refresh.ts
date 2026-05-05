@@ -1,7 +1,8 @@
 import axios from "axios";
-import { API_PATHS } from "@genuin/components/react-query/paths";
-import { NEXT_PUBLIC_API_URL } from "@genuin/components/lib/utils/env";
+
 import { SDKEventEmitter, SDKEventName } from "@genuin/components/lib/sdk-event-emitter";
+import { NEXT_PUBLIC_API_URL } from "@genuin/components/lib/utils/env";
+import { API_PATHS } from "@genuin/components/react-query/paths";
 
 export async function performTokenRefresh(
   accessToken?: string,
@@ -40,11 +41,7 @@ export async function performTokenRefresh(
 }
 
 // Utility function to emit refresh failure event
-export function emitRefreshFailedEvent(payload?: {
-  token?: string;
-  brandId: number;
-  params?: any;
-}): void {
+export function emitRefreshFailedEvent(payload?: { token?: string; brandId: number; params?: any }): void {
   SDKEventEmitter.emit(SDKEventName.AUTH_REFRESH_FAILED, payload || {});
 }
 

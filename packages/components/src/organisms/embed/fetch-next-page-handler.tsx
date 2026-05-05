@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Swiper } from "swiper/types";
+import type { Swiper } from "swiper/types";
+
 import { useEmbedContext } from "@genuin/components/context/embed";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
@@ -34,11 +35,7 @@ export function FetchNextPageHandler({
     function handleActiveIndexChange() {
       const activeIndex = embedEventBus.getContext().activeIndex;
 
-      if (
-        activeIndex >= videos.length - 3 &&
-        !isFetchingNextPage &&
-        hasNextPage
-      ) {
+      if (activeIndex >= videos.length - 3 && !isFetchingNextPage && hasNextPage) {
         fetchNextPage();
       }
     }
@@ -77,10 +74,7 @@ export function FetchNextPageHandler({
       const currentProgress = swiper.progress;
 
       // Check if we've crossed the trigger threshold
-      if (
-        currentProgress >= triggerProgress &&
-        lastTriggeredAtProgressRef.current < triggerProgress
-      ) {
+      if (currentProgress >= triggerProgress && lastTriggeredAtProgressRef.current < triggerProgress) {
         lastTriggeredAtProgressRef.current = currentProgress;
         fetchNextPage();
       }

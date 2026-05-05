@@ -2,13 +2,7 @@ import type { ComponentProps, ReactNode, RefObject } from "react";
 
 // ─── Sheet States ─────────────────────────────────────────────────────────────
 
-export const DYNAMIC_SHEET_STATES = [
-  "default",
-  "default-active",
-  "expand-view",
-  "panel-view",
-  "full-view",
-] as const;
+export const DYNAMIC_SHEET_STATES = ["default", "default-active", "expand-view", "panel-view", "full-view"] as const;
 
 export type DynamicSheetState = (typeof DYNAMIC_SHEET_STATES)[number];
 
@@ -16,9 +10,7 @@ export type DynamicSheetState = (typeof DYNAMIC_SHEET_STATES)[number];
 
 export type HeightValue = string | number;
 
-export type DynamicSheetHeightConfig = Partial<
-  Record<DynamicSheetState, HeightValue>
->;
+export type DynamicSheetHeightConfig = Partial<Record<DynamicSheetState, HeightValue>>;
 
 export const DEFAULT_HEIGHTS: Record<DynamicSheetState, HeightValue> = {
   default: 15,
@@ -111,7 +103,7 @@ export interface DynamicSheetConfig {
 
 // ─── Component Props ──────────────────────────────────────────────────────────
 
-export interface DynamicSheetProps extends ComponentProps<"div">  {
+export interface DynamicSheetProps extends ComponentProps<"div"> {
   /** Controls the open/close animation */
   isOpen: boolean;
   /** Called after the close animation completes so the parent can unmount */
@@ -150,7 +142,7 @@ export interface DynamicSheetProps extends ComponentProps<"div">  {
   onDragging?: (isDragging: boolean) => void;
   /** Callback to enable/disable swipers when interacting with the sheet */
   onSwiperToggle?: (disable: boolean) => void;
-} 
+}
 
 // ─── Hook Types ───────────────────────────────────────────────────────────────
 

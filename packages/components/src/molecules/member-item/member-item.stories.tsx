@@ -34,9 +34,9 @@ const baseMemberData = {
   bio: "Navigating the Controversial Terrain of Gun Control Policies in the U.S. and globally",
   userName: "elvisduran",
   brand: {
-    brand_id: 1,
-    brand_slug: "elvis-brand",
-    brand_user_logo: 1,
+    brandId: 1,
+    brandSlug: "elvis-brand",
+    brandUserLogo: 1,
   },
   stats: {
     communities: 12,
@@ -87,9 +87,9 @@ export const ProfileOwner: Story = {
       name: "Jane Smith",
       userName: "janesmith",
       brand: {
-        brand_id: 2,
-        brand_slug: "jane-brand",
-        brand_user_logo: 2,
+        brandId: 2,
+        brandSlug: "jane-brand",
+        brandUserLogo: 2,
       },
     },
   },
@@ -109,9 +109,9 @@ export const Owner: Story = {
       bio: "Team Owner and lead developer.",
       userName: "janesmith",
       brand: {
-        brand_id: 2,
-        brand_slug: "jane-brand",
-        brand_user_logo: 2,
+        brandId: 2,
+        brandSlug: "jane-brand",
+        brandUserLogo: 2,
       },
     },
   },
@@ -131,9 +131,9 @@ export const WithoutProfileImage: Story = {
       bio: "No profile picture here.",
       userName: "alexj",
       brand: {
-        brand_id: 3,
-        brand_slug: "alex-brand",
-        brand_user_logo: 1,
+        brandId: 3,
+        brandSlug: "alex-brand",
+        brandUserLogo: 1,
       },
     },
   },
@@ -153,9 +153,9 @@ export const WithLongBio: Story = {
       bio: "This is a very long bio that should be truncated by the line-clamp utility to ensure the layout remains consistent and does not break. It should show an ellipsis at the end.",
       userName: "samb",
       brand: {
-        brand_id: 4,
-        brand_slug: "sam-brand",
-        brand_user_logo: 1,
+        brandId: 4,
+        brandSlug: "sam-brand",
+        brandUserLogo: 1,
       },
     },
   },
@@ -175,9 +175,9 @@ export const WithAvatarImage: Story = {
       bio: "Using an avatar instead of a regular image.",
       userName: "chrisl",
       brand: {
-        brand_id: 5,
-        brand_slug: "chris-brand",
-        brand_user_logo: 2,
+        brandId: 5,
+        brandSlug: "chris-brand",
+        brandUserLogo: 2,
       },
     },
   },
@@ -197,9 +197,9 @@ export const WithoutName: Story = {
       bio: "This member has no display name shown due to empty string name.",
       userName: "nonameuser",
       brand: {
-        brand_id: 6,
-        brand_slug: "noname-brand",
-        brand_user_logo: 1,
+        brandId: 6,
+        brandSlug: "noname-brand",
+        brandUserLogo: 1,
       },
     },
   },
@@ -219,9 +219,9 @@ export const WithoutBio: Story = {
       bio: "",
       userName: "patg",
       brand: {
-        brand_id: 7,
-        brand_slug: "pat-brand",
-        brand_user_logo: 1,
+        brandId: 7,
+        brandSlug: "pat-brand",
+        brandUserLogo: 1,
       },
     },
   },
@@ -241,9 +241,9 @@ export const WithDifferentBrandLogos: Story = {
       bio: "User with different brand logo type.",
       userName: "branduser",
       brand: {
-        brand_id: 8,
-        brand_slug: "premium-brand",
-        brand_user_logo: 3,
+        brandId: 8,
+        brandSlug: "premium-brand",
+        brandUserLogo: 3,
       },
     },
   },
@@ -281,9 +281,7 @@ export const SkeletonDefault: Story = {
 
 export const SkeletonSuggestion: Story = {
   render: () => {
-    return (
-      <MemberItemSkeleton variant="suggestion" className="gencl:max-w-100" />
-    );
+    return <MemberItemSkeleton variant="suggestion" className="gencl:max-w-100" />;
   },
 };
 
@@ -305,30 +303,19 @@ export const SkeletonVariants: Story = {
     return (
       <div className="gencl:flex gencl:flex-col gencl:gap-8 gencl:p-4">
         <div>
-          <h3 className="gencl:text-lg gencl:font-semibold gencl:mb-4">
-            Default Skeleton
-          </h3>
+          <h3 className="gencl:text-lg gencl:font-semibold gencl:mb-4">Default Skeleton</h3>
           <MemberItemSkeleton variant="default" className="gencl:max-w-100" />
         </div>
         <div>
-          <h3 className="gencl:text-lg gencl:font-semibold gencl:mb-4">
-            Suggestion Skeleton
-          </h3>
-          <MemberItemSkeleton
-            variant="suggestion"
-            className="gencl:max-w-100"
-          />
+          <h3 className="gencl:text-lg gencl:font-semibold gencl:mb-4">Suggestion Skeleton</h3>
+          <MemberItemSkeleton variant="suggestion" className="gencl:max-w-100" />
         </div>
         <div>
-          <h3 className="gencl:text-lg gencl:font-semibold gencl:mb-4">
-            Recent Skeleton
-          </h3>
+          <h3 className="gencl:text-lg gencl:font-semibold gencl:mb-4">Recent Skeleton</h3>
           <MemberItemSkeleton variant="recent" className="gencl:max-w-100" />
         </div>
         <div>
-          <h3 className="gencl:text-lg gencl:font-semibold gencl:mb-4">
-            Profile Skeleton
-          </h3>
+          <h3 className="gencl:text-lg gencl:font-semibold gencl:mb-4">Profile Skeleton</h3>
           <div className="gencl:flex gencl:justify-center">
             <MemberItemSkeleton variant="profile" className="gencl:max-w-fit" />
           </div>

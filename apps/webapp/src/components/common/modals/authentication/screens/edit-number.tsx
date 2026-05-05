@@ -1,17 +1,24 @@
-import { isValidPhoneNumber } from 'react-phone-number-input'
-import { PhoneInput } from '@components/ui/phone-input'
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@components/ui/form'
-import { useState } from 'react'
-import { useAuthenticationModalStore } from '../store'
-import { ModalShell } from '../modal-shell'
-import { Button } from '@components/ui/button'
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { cn } from '@lib/utils'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { isValidPhoneNumber } from 'react-phone-number-input'
+import { z } from 'zod'
+
+import { Button } from '@components/ui/button'
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@components/ui/form'
 import { Loader } from '@components/ui/loader'
-import { type ScreenProps } from '.'
+import { PhoneInput } from '@components/ui/phone-input'
+import { cn } from '@lib/utils'
+
 import { sendOtp } from '../api/auth'
+import { ModalShell } from '../modal-shell'
+import { useAuthenticationModalStore } from '../store'
+
+
+
+
+import { type ScreenProps } from '.'
+
 
 const formSchema = z.object({
   phone: z.string(),

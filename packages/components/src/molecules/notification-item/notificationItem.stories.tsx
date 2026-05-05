@@ -1,9 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import {
-  NotificationItem,
-  NotificationItemSkeleton,
-} from "./notification-item";
-import { NotificationDataType } from "./notification-item.types";
+
+import { NotificationItem, NotificationItemSkeleton } from "./notification-item";
+import type { NotificationDataType } from "./notification-item.types";
 
 const meta: Meta<typeof NotificationItem> = {
   title: "Molecules/Notification Item",
@@ -34,18 +32,14 @@ const baseNotificationData: Partial<NotificationDataType> = {
     name: "Uniqlo",
     is_avatar: false,
     brand: { brand_id: 4839, brand_slug: "uniqlo" },
-    profile_image:
-      "https://media.qa.begenuin.com/uploads/profile_images/brandProfileLogo_1745996370159.png",
-    profile_image_m:
-      "https://media.qa.begenuin.com/uploads/profile_images/brandProfileLogo_1745996370159.png",
+    profile_image: "https://media.qa.begenuin.com/uploads/profile_images/brandProfileLogo_1745996370159.png",
+    profile_image_m: "https://media.qa.begenuin.com/uploads/profile_images/brandProfileLogo_1745996370159.png",
   },
   brand: {
     brand_id: 4839,
     created_at: 34287948334,
-    brand_web_logo:
-      "https://media.qa.begenuin.com/uploads/brands/logo/brandProfileLogo_1745996370159.png",
-    favicon:
-      "https://media.qa.begenuin.com/uploads/brands/favicon/brandProfileFavicon_1745996370159.png",
+    brand_web_logo: "https://media.qa.begenuin.com/uploads/brands/logo/brandProfileLogo_1745996370159.png",
+    favicon: "https://media.qa.begenuin.com/uploads/brands/favicon/brandProfileFavicon_1745996370159.png",
     brand_system_user_id: "1234567890",
     name: "Uniqlo",
     subdomain: "csxmcrkr",
@@ -63,8 +57,12 @@ const baseNotificationData: Partial<NotificationDataType> = {
   },
   conversation: {
     group: {
-      name: "Group One",
+      group_name: "Group One",
       slug: "group-one",
+    },
+    owner: {
+      member_id: "",
+      username: "",
     },
   },
 };
@@ -72,7 +70,7 @@ const baseNotificationData: Partial<NotificationDataType> = {
 export const Default: Story = {
   name: "Default",
   args: {
-    notification: { ...baseNotificationData, is_read: true },
+    notification: { ...baseNotificationData, is_read: true } as NotificationDataType,
   },
   parameters: {
     docs: {
@@ -88,13 +86,12 @@ export const NewNotification: Story = {
   name: "New Notification",
   args: {
     ...Default.args,
-    notification: { ...baseNotificationData, is_read: false },
+    notification: { ...baseNotificationData, is_read: false } as NotificationDataType,
   },
   parameters: {
     docs: {
       description: {
-        story:
-          "Highlights the notification as newly added, using the `isNew` prop.",
+        story: "Highlights the notification as newly added, using the `isNew` prop.",
       },
     },
   },

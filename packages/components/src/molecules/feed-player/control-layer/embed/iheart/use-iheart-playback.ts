@@ -1,16 +1,13 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import {
-  PlayChangeIHeartContentPayload,
-  SDKEventEmitter,
-  SDKEventName,
-  SDKListenerEventName,
-} from "@genuin/components/lib/sdk-event-emitter";
-import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+
 import { useBaseContext } from "@genuin/components/context";
-import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import { ActiveIHeartContentType } from "@genuin/components/context/base/feed-context-manager";
+import type { ActiveIHeartContentType } from "@genuin/components/context/base/feed-context-manager";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { SDKEventEmitter, SDKEventName, SDKListenerEventName } from "@genuin/components/lib/sdk-event-emitter";
+import type { PlayChangeIHeartContentPayload } from "@genuin/components/lib/sdk-event-emitter";
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 interface UseIHeartPlaybackParams {
   info: {
@@ -101,8 +98,7 @@ export function useIHeartPlayback({
       return (
         iheartStatus.type === info.type &&
         (iheartStatus.stationId === info.station ||
-          (iheartStatus.episodeId === info.episode &&
-            iheartStatus.podcastId === info.podcast))
+          (iheartStatus.episodeId === info.episode && iheartStatus.podcastId === info.podcast))
       );
     }
     const brandContext = embedDetails?.embedData.brand_context?.[0];
@@ -110,14 +106,12 @@ export function useIHeartPlayback({
     const isInitiallyPlaying = brandContext.isPlaying;
     if (isInitiallyPlaying && brandContext.activePlayingType) {
       const currentActivePlayerType =
-        brandContext.activePlayingType === "episode" ||
-        brandContext.activePlayingType === "podcast"
+        brandContext.activePlayingType === "episode" || brandContext.activePlayingType === "podcast"
           ? "podcast"
           : "station";
       return (
         currentActivePlayerType === info.type &&
-        ((info.type === "station" &&
-          Number(brandContext.activePlayingId) === info.station) ||
+        ((info.type === "station" && Number(brandContext.activePlayingId) === info.station) ||
           (info.type === "podcast" &&
             Number(brandContext.activePlayingId) === info.podcast &&
             Number(brandContext.episodeId) === info.episode))
@@ -149,23 +143,20 @@ export function useIHeartPlayback({
         podcastId?: number;
         episodeId?: number;
         stationId?: number;
-      } | null,
+      } | null
     ) => {
       if (payload === null) {
         baseContextManager.setActiveIHeartContent(null);
       } else {
         baseContextManager.setActiveIHeartContent({
           type: payload.type,
-          podcastId:
-            payload.type === "podcast" ? (payload.podcastId ?? -1) : -1,
-          episodeId:
-            payload.type === "podcast" ? (payload.episodeId ?? -1) : -1,
-          stationId:
-            payload.type === "station" ? (payload.stationId ?? -1) : -1,
+          podcastId: payload.type === "podcast" ? (payload.podcastId ?? -1) : -1,
+          episodeId: payload.type === "podcast" ? (payload.episodeId ?? -1) : -1,
+          stationId: payload.type === "station" ? (payload.stationId ?? -1) : -1,
         });
       }
     },
-    [baseContextManager],
+    [baseContextManager]
   );
 
   useEffect(() => {
@@ -176,23 +167,11 @@ export function useIHeartPlayback({
         updateActiveIHeartContent(payload);
       }
     }
-    SDKEventEmitter.on(
-      SDKListenerEventName.PLAY_CHANGE_IHEART_CONTENT,
-      handlePlayChange,
-    );
+    SDKEventEmitter.on(SDKListenerEventName.PLAY_CHANGE_IHEART_CONTENT, handlePlayChange);
     return () => {
-      SDKEventEmitter.off(
-        SDKListenerEventName.PLAY_CHANGE_IHEART_CONTENT,
-        handlePlayChange,
-      );
+      SDKEventEmitter.off(SDKListenerEventName.PLAY_CHANGE_IHEART_CONTENT, handlePlayChange);
     };
-  }, [
-    info.type,
-    info.podcast,
-    info.episode,
-    info.station,
-    updateActiveIHeartContent,
-  ]);
+  }, [info.type, info.podcast, info.episode, info.station, updateActiveIHeartContent]);
 
   useEffect(() => {
     function activeIHeartContentChange(payload: ActiveIHeartContentType) {
@@ -203,20 +182,13 @@ export function useIHeartPlayback({
       setIsPlaying(
         info.type === payload?.type &&
           (info.station === payload?.stationId ||
-            (info.episode === payload?.episodeId &&
-              info.podcast === payload?.podcastId)),
+            (info.episode === payload?.episodeId && info.podcast === payload?.podcastId))
       );
     }
 
-    baseContextManager.on(
-      "onActiveIHeartContentChanged",
-      activeIHeartContentChange as any,
-    );
+    baseContextManager.on("onActiveIHeartContentChanged", activeIHeartContentChange as any);
     return () => {
-      baseContextManager.off(
-        "onActiveIHeartContentChanged",
-        activeIHeartContentChange as any,
-      );
+      baseContextManager.off("onActiveIHeartContentChanged", activeIHeartContentChange as any);
     };
   }, [baseContextManager, info.type, info.episode, info.podcast, info.station]);
 
@@ -236,10 +208,7 @@ export function useIHeartPlayback({
   const constructClipPlayerPayload = useCallback(() => {
     const brandContext = embedDetails?.embedData.brand_context?.[0];
     return {
-      type:
-        brandContext?.type === "station" || brandContext?.type === "podcast"
-          ? brandContext.type
-          : undefined,
+      type: brandContext?.type === "station" || brandContext?.type === "podcast" ? brandContext.type : undefined,
 
       stationId: brandContext?.id ? Number(brandContext.id) : undefined,
       podcastId: brandContext?.id ? Number(brandContext.id) : undefined,
@@ -251,6 +220,7 @@ export function useIHeartPlayback({
   const handleClick = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
+      if (!videoDetails) return;
 
       // Call optional redirection callback (for overlay-buttons)
       options?.onRedirection?.();
@@ -270,10 +240,7 @@ export function useIHeartPlayback({
               videoTitle: videoDetails.attributes?.title ?? undefined,
             });
           }
-        } else if (
-          isPolaris &&
-          embedDetails?.embedData.brand_context?.[0]?.type === "podcast"
-        ) {
+        } else if (isPolaris && embedDetails?.embedData.brand_context?.[0]?.type === "podcast") {
           if (videoDetails?.attributes?.slug && info.type) {
             SDKEventEmitter.emit(SDKEventName.PLAY_IHEART_CONTENT, {
               ...payload,
@@ -306,10 +273,7 @@ export function useIHeartPlayback({
         return; // Don't play - just redirect/scroll
       }
       const clipPlayerPayLoad = constructClipPlayerPayload();
-      if (
-        clipPlayerPayLoad &&
-        (variant === "complete" || variant === "overlay")
-      ) {
+      if (clipPlayerPayLoad && (variant === "complete" || variant === "overlay")) {
         SDKEventEmitter.emit(SDKEventName.PLAY_IHEART_CONTENT, {
           ...clipPlayerPayLoad,
           type: "station",
@@ -341,15 +305,7 @@ export function useIHeartPlayback({
         });
       }
     },
-    [
-      isPlaying,
-      constructPayload,
-      constructClipPlayerPayload,
-      options?.onRedirection,
-      isGoToEpisode,
-      variant,
-      info.type,
-    ],
+    [isPlaying, constructPayload, constructClipPlayerPayload, options?.onRedirection, isGoToEpisode, variant, info.type]
   );
 
   return {

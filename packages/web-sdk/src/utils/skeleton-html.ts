@@ -5,41 +5,41 @@
  */
 
 export interface SkeletonOptions {
-  theme?: 'dark' | 'light'
-  websiteType?: string | null
-  isDesktop?: boolean
+  theme?: "dark" | "light";
+  websiteType?: string | null;
+  isDesktop?: boolean;
 }
 
 /**
  * Generate HTML skeleton for embed loading
  */
 export function generateEmbedSkeletonHTML(options: SkeletonOptions = {}): string {
-  const { theme = 'light', websiteType, isDesktop = false } = options
+  const { theme = "light", websiteType, isDesktop = false } = options;
 
-  const bgColor = theme === 'dark' ? '#1a1a1a' : '#e5e5e5'
-  const shimmerColor = theme === 'dark' ? '#2a2a2a' : '#f0f0f0'
-  const isPolaris = websiteType === 'polaris'
+  const bgColor = theme === "dark" ? "#1a1a1a" : "#e5e5e5";
+  const shimmerColor = theme === "dark" ? "#2a2a2a" : "#f0f0f0";
+  const isPolaris = websiteType === "polaris";
 
-  const skeletonItems = Array.from({ length: 6 }, (_, i) => {
-    const width = !isDesktop && isPolaris ? '100%' : 'auto'
-    const height = !isDesktop && isPolaris ? 'auto' : '100%'
-    const aspectRatio = !isDesktop && isPolaris ? '1' : '1'
+  const skeletonItems = Array.from({ length: 6 }, (_) => {
+    const width = !isDesktop && isPolaris ? "100%" : "auto";
+    const height = !isDesktop && isPolaris ? "auto" : "100%";
+    const aspectRatio = !isDesktop && isPolaris ? "1" : "1";
 
     return `
       <div class="gen-sdk-skeleton-item" style="
         aspect-ratio: ${aspectRatio};
-        ${width !== 'auto' ? `width: ${width};` : ''}
-        ${height !== 'auto' ? `height: ${height};` : ''}
+        ${width !== "auto" ? `width: ${width};` : ""}
+        ${height !== "auto" ? `height: ${height};` : ""}
         flex-shrink: 0;
         border-radius: 6px;
         background: ${shimmerColor};
         animation: gen-sdk-shimmer 1.5s ease-in-out infinite;
       "></div>
-    `
-  }).join('')
+    `;
+  }).join("");
 
-  const containerHeight = !isDesktop && isPolaris ? '100%' : 'calc(100% - 68px)'
-  const flexDirection = !isDesktop && isPolaris ? 'column' : 'row'
+  const containerHeight = !isDesktop && isPolaris ? "100%" : "calc(100% - 68px)";
+  const flexDirection = !isDesktop && isPolaris ? "column" : "row";
 
   return `
     <div class="gen-sdk-skeleton-container" style="
@@ -47,9 +47,11 @@ export function generateEmbedSkeletonHTML(options: SkeletonOptions = {}): string
       height: 100%;
       width: 100%;
       border-radius: 6px;
-      ${isDesktop ? `background: ${bgColor};` : ''}
+      ${isDesktop ? `background: ${bgColor};` : ""}
     ">
-      ${websiteType ? `
+      ${
+        websiteType
+          ? `
         <div style="
           height: ${containerHeight};
           width: 100%;
@@ -60,7 +62,8 @@ export function generateEmbedSkeletonHTML(options: SkeletonOptions = {}): string
         ">
           ${skeletonItems}
         </div>
-      ` : `
+      `
+          : `
         <div style="
           position: absolute;
           top: 50%;
@@ -73,7 +76,8 @@ export function generateEmbedSkeletonHTML(options: SkeletonOptions = {}): string
           border-radius: 50%;
           animation: gen-sdk-spin 0.8s linear infinite;
         "></div>
-      `}
+      `
+      }
     </div>
     <style>
       @keyframes gen-sdk-shimmer {
@@ -90,15 +94,15 @@ export function generateEmbedSkeletonHTML(options: SkeletonOptions = {}): string
         }
       }
     </style>
-  `
+  `;
 }
 
 /**
  * Generate HTML skeleton for expand view loading
  */
 export function generateExpandViewSkeletonHTML(options: SkeletonOptions = {}): string {
-  const { theme = 'light' } = options
-  const bgColor = theme === 'dark' ? '#1a1a1a' : '#fafafa'
+  const { theme = "light" } = options;
+  const bgColor = theme === "dark" ? "#1a1a1a" : "#fafafa";
 
   return `
     <div style="
@@ -115,7 +119,7 @@ export function generateExpandViewSkeletonHTML(options: SkeletonOptions = {}): s
       <div style="
         width: 40px;
         height: 40px;
-        border: 3px solid ${theme === 'dark' ? '#2a2a2a' : '#e5e5e5'};
+        border: 3px solid ${theme === "dark" ? "#2a2a2a" : "#e5e5e5"};
         border-top-color: ${bgColor};
         border-radius: 50%;
         animation: gen-sdk-spin 0.8s linear infinite;
@@ -128,6 +132,5 @@ export function generateExpandViewSkeletonHTML(options: SkeletonOptions = {}): s
         }
       </style>
     </div>
-  `
+  `;
 }
-

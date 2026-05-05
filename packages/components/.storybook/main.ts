@@ -1,4 +1,5 @@
 import { join, dirname } from "path";
+
 import type { StorybookConfig } from "@storybook/react-vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
@@ -28,20 +29,20 @@ const config: StorybookConfig = {
   viteFinal: (config) => {
     return {
       ...config,
-      plugins: [...(config.plugins || []), tsconfigPaths()],
+      plugins: [
+        ...(config.plugins || []),
+        tsconfigPaths({ projects: [join(__dirname, "../tsconfig.storybook.json")] }),
+      ],
       build: {
         ...config.build,
         rollupOptions: {
           ...config.build?.rollupOptions,
-          external: [
-            ...((config.build?.rollupOptions?.external ?? []) as any[]),
-            /.*\/__wip__\/.*/,
-            ,
-          ],
+          external: [...((config.build?.rollupOptions?.external ?? []) as any[]), /.*\/__wip__\/.*/],
         },
       },
       resolve: {
         ...config.resolve,
+        dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime"],
         alias: {
           ...config.resolve?.alias,
           "@hooks": join(__dirname, "../src/hooks"),
@@ -49,33 +50,15 @@ const config: StorybookConfig = {
       },
       define: {
         ...config.define,
-        "import.meta.env.NEXT_PUBLIC_RUDDERSTACK_KEY": JSON.stringify(
-          process.env.NEXT_PUBLIC_RUDDERSTACK_KEY
-        ),
-        "import.meta.env.NEXT_PUBLIC_RUDDERSTACK_URL": JSON.stringify(
-          process.env.NEXT_PUBLIC_RUDDERSTACK_URL
-        ),
-        "import.meta.env.NEXT_PUBLIC_MEDIA_BASE_URL": JSON.stringify(
-          process.env.NEXT_PUBLIC_MEDIA_BASE_URL
-        ),
-        "import.meta.env.NEXT_PUBLIC_HOST_URL": JSON.stringify(
-          process.env.NEXT_PUBLIC_HOST_URL
-        ),
-        "import.meta.env.NEXT_PUBLIC_API_URL": JSON.stringify(
-          process.env.NEXT_PUBLIC_API_URL
-        ),
-        "import.meta.env.NEXT_PUBLIC_AES_IV": JSON.stringify(
-          process.env.NEXT_PUBLIC_AES_IV
-        ),
-        "import.meta.env.NEXT_PUBLIC_AES_KEY": JSON.stringify(
-          process.env.NEXT_PUBLIC_AES_KEY
-        ),
-        "import.meta.env.NEXT_PUBLIC_SECRET_STRING": JSON.stringify(
-          process.env.NEXT_PUBLIC_SECRET_STRING
-        ),
-        "import.meta.env.NEXT_PUBLIC_REDIRECT_URI": JSON.stringify(
-          process.env.NEXT_PUBLIC_REDIRECT_URI
-        ),
+        "import.meta.env.NEXT_PUBLIC_RUDDERSTACK_KEY": JSON.stringify(process.env.NEXT_PUBLIC_RUDDERSTACK_KEY),
+        "import.meta.env.NEXT_PUBLIC_RUDDERSTACK_URL": JSON.stringify(process.env.NEXT_PUBLIC_RUDDERSTACK_URL),
+        "import.meta.env.NEXT_PUBLIC_MEDIA_BASE_URL": JSON.stringify(process.env.NEXT_PUBLIC_MEDIA_BASE_URL),
+        "import.meta.env.NEXT_PUBLIC_HOST_URL": JSON.stringify(process.env.NEXT_PUBLIC_HOST_URL),
+        "import.meta.env.NEXT_PUBLIC_API_URL": JSON.stringify(process.env.NEXT_PUBLIC_API_URL),
+        "import.meta.env.NEXT_PUBLIC_AES_IV": JSON.stringify(process.env.NEXT_PUBLIC_AES_IV),
+        "import.meta.env.NEXT_PUBLIC_AES_KEY": JSON.stringify(process.env.NEXT_PUBLIC_AES_KEY),
+        "import.meta.env.NEXT_PUBLIC_SECRET_STRING": JSON.stringify(process.env.NEXT_PUBLIC_SECRET_STRING),
+        "import.meta.env.NEXT_PUBLIC_REDIRECT_URI": JSON.stringify(process.env.NEXT_PUBLIC_REDIRECT_URI),
       },
     };
   },

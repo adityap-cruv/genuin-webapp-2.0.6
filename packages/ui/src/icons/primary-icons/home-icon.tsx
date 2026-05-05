@@ -1,7 +1,8 @@
+import { cva, type VariantProps } from "class-variance-authority";
+
 import { cn } from "@genuin/ui/lib/utils";
 
 import type { SVGIconsProps } from "../type";
-import { cva, type VariantProps } from "class-variance-authority";
 
 const iconVariants = cva("", {
   variants: {
@@ -15,11 +16,7 @@ const iconVariants = cva("", {
   },
 });
 
-export function HomeIcon({
-  className,
-  variant,
-  ...restProps
-}: SVGIconsProps & VariantProps<typeof iconVariants>) {
+export function HomeIcon({ className, variant, ...restProps }: SVGIconsProps & VariantProps<typeof iconVariants>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -28,8 +25,7 @@ export function HomeIcon({
       viewBox="0 0 24 24"
       fill="none"
       className={cn(className, iconVariants({ variant }))}
-      {...restProps}
-    >
+      {...restProps}>
       <path
         d="M5.53613 9.69189V20.3073H10.1515V15.449C10.1515 15.0929 10.2772 14.7534 10.4976 14.5016C10.7179 14.2498 11.0148 14.1064 11.3263 14.1064H12.669C12.9806 14.1064 13.2794 14.2478 13.4997 14.4996C13.72 14.7514 13.8438 15.0929 13.8438 15.449V20.3073H18.4592V9.69189"
         strokeWidth="1.5"

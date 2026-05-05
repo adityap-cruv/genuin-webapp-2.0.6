@@ -1,7 +1,9 @@
-import type { MessageMetadata } from '@/types';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
+
+import type { MessageMetadata } from '@/types';
+
 import Markdown from './Markdown';
 
 const VideoMetadata: React.FC<{ content: string; metadata?: MessageMetadata }> = ({ content, metadata }) => {

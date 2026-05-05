@@ -1,7 +1,7 @@
 // Import necessary libraries and modules
-import React from 'react'
 import { cva } from 'class-variance-authority'
 import cn from 'classnames'
+import React from 'react'
 
 // Define the properties for the BrandBadge component
 interface BrandBadgeProps {

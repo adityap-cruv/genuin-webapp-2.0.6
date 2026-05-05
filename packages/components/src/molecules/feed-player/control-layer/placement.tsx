@@ -1,15 +1,17 @@
-import { ControlLayerPropsType } from "./control-layer.types";
 import { type FC, lazy, Suspense } from "react";
+
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
+import type { ControlLayerPropsType } from "./control-layer.types";
+
 const IHeartControlLayer = lazy(() =>
-  import("./embed/iheart/index.js").then((module) => ({
+  import("./embed/iheart/index").then((module) => ({
     default: module.IHeartControlLayer,
   }))
 );
 
 const DefaultPlacement = lazy(() =>
-  import("./placement/default-placement.js").then((module) => ({
+  import("./placement/default-placement").then((module) => ({
     default: module.DefaultPlacement,
   }))
 );

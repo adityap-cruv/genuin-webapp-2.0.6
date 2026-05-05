@@ -3,14 +3,12 @@ import { ForwardIcon } from "@genuin/ui/icons";
 import { XIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
 import { type ComponentProps } from "react";
+
 import { useBaseContext } from "@genuin/components/context";
 
 type PlaybackSpeedCapsuleProps = ComponentProps<"div">;
 
-export const PlaybackSpeedCapsule = ({
-  className,
-  ...props
-}: PlaybackSpeedCapsuleProps) => {
+export const PlaybackSpeedCapsule = ({ className, ...props }: PlaybackSpeedCapsuleProps) => {
   const { playbackSpeed, setPlaybackSpeed } = useBaseContext();
 
   if (playbackSpeed.speed === 1) return null;
@@ -20,20 +18,16 @@ export const PlaybackSpeedCapsule = ({
       className={cn(
         "gencl:flex gencl:items-center gencl:justify-center gencl:gap-2",
         {
-          "gencl:rounded-xl gencl:bg-black/40 gencl:px-2 gencl:py-1":
-            !playbackSpeed.isSpeedFromGesture,
+          "gencl:rounded-xl gencl:bg-black/40 gencl:px-2 gencl:py-1": !playbackSpeed.isSpeedFromGesture,
         },
         className
       )}
       onClick={(e) => {
         e.stopPropagation();
       }}
-      {...props}
-    >
+      {...props}>
       <ForwardIcon />
-      <span className="gencl:text-body-2-medium gencl:text-white">
-        {playbackSpeed.speed}x speed
-      </span>
+      <span className="gencl:text-body-2-medium gencl:text-white">{playbackSpeed.speed}x speed</span>
       {!playbackSpeed.isSpeedFromGesture && (
         <XIcon
           size="sm"

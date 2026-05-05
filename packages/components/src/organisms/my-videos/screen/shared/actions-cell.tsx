@@ -1,22 +1,16 @@
-import React, { useState } from "react";
-import {
-  EditIcon,
-  BarGraphIcon,
-  ThreeDotsIcon,
-  BoostIcon,
-  DeleteIcon,
-  PublishIcon,
-} from "@genuin/ui/icons";
-
-import { DeleteModal, type DeleteType } from "./delete-modal";
-import { useDeleteDraftsMutation } from "@genuin/components/react-query/api/posts/delete-drafts";
-import { useDeletePostsMutation } from "@genuin/components/react-query/api/posts/delete-posts";
-import { Link } from "@genuin/components/molecules/link";
-import { buildPageUrl } from "@genuin/components/lib/utils/pages";
-import { usePostVideoMutation } from "@genuin/components/react-query/api/posts/active-post";
+import { Loader } from "@genuin/ui/components/loader";
 import { Popover, PopoverContent, PopoverTrigger } from "@genuin/ui/components/popover";
 import { Toast } from "@genuin/ui/components/toaster";
-import { Loader } from "@genuin/ui/components/loader";
+import { EditIcon, BarGraphIcon, ThreeDotsIcon, BoostIcon, DeleteIcon, PublishIcon } from "@genuin/ui/icons";
+import React, { useState } from "react";
+
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { Link } from "@genuin/components/molecules/link";
+import { usePostVideoMutation } from "@genuin/components/react-query/api/posts/active-post";
+import { useDeleteDraftsMutation } from "@genuin/components/react-query/api/posts/delete-drafts";
+import { useDeletePostsMutation } from "@genuin/components/react-query/api/posts/delete-posts";
+
+import { DeleteModal, type DeleteType } from "./delete-modal";
 
 /**
  * Actions cell for the rightmost column in the My Videos table.
@@ -47,20 +41,19 @@ export function ActionsCell({
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   // Move draft to active video
-  const { mutate: publishDraftPost, isPending: isLoadingPost } =
-    usePostVideoMutation({
-      onSuccess: ({ res }) => {
-        if (res.data.code === 200) {
-          if (onPublished) onPublished();
-          Toast.Success({ message: "Video published successfully" });
-        }
-      },
-      onError: () => {
-        Toast.Error({
-          message: "Failed to video post. Please try again later.",
-        });
-      },
-    });
+  const { mutate: publishDraftPost, isPending: isLoadingPost } = usePostVideoMutation({
+    onSuccess: ({ res }) => {
+      if (res.data.code === 200) {
+        if (onPublished) onPublished();
+        Toast.Success({ message: "Video published successfully" });
+      }
+    },
+    onError: () => {
+      Toast.Error({
+        message: "Failed to video post. Please try again later.",
+      });
+    },
+  });
 
   // Initialize delete mutations
   const deleteDraftsMutation = useDeleteDraftsMutation({
@@ -133,8 +126,7 @@ export function ActionsCell({
         href={buildPageUrl({
           type: variant === "posted" ? "post" : "posts-draft",
           slug: postId,
-        })}
-      >
+        })}>
         <span
           className="gencl:p-1 gencl:border-1 gencl:rounded-lg gencl:border-secondary-150 gencl:bg-white gencl:cursor-pointer gencl:hover:bg-secondary-100! gencl:flex gencl:items-center gencl:justify-center"
           // onClick={onEdit}
@@ -161,8 +153,7 @@ export function ActionsCell({
             // sideOffset={-6}
             className="gencl:w-35 gencl:border gencl:border-secondary-150 gencl:rounded-2xl gencl:p-4 gencl:shadow-lg gencl:bg-white"
             side="bottom"
-            align="end"
-          >
+            align="end">
             <div className="gencl:flex gencl:flex-col">
               {/* {variant === "posted" && (
                 <span
@@ -180,26 +171,16 @@ export function ActionsCell({
                   className="gencl:flex gencl:items-center gencl:px-2 gencl:py-3 gencl:rounded-lg gencl:hover:bg-secondary-50"
                   onClick={() => {
                     publishDraftPost({ uuid: postId });
-                  }}
-                >
-                  {isLoadingPost ? (
-                    <Loader />
-                  ) : (
-                    <PublishIcon theme={"light"} size={"lg"} />
-                  )}
-                  <span className="gencl:text-body-1-medium gencl:pl-4">
-                    Publish
-                  </span>
+                  }}>
+                  {isLoadingPost ? <Loader /> : <PublishIcon theme={"light"} size={"lg"} />}
+                  <span className="gencl:text-body-1-medium gencl:pl-4">Publish</span>
                 </span>
               )}
               <span
                 className="gencl:flex gencl:items-center gencl:px-2 gencl:py-3 gencl:rounded-lg gencl:hover:bg-secondary-50"
-                onClick={handleDeleteClick}
-              >
+                onClick={handleDeleteClick}>
                 <DeleteIcon theme={"light"} size={"lg"} />
-                <span className="gencl:text-body-1-medium gencl:pl-4">
-                  Delete
-                </span>
+                <span className="gencl:text-body-1-medium gencl:pl-4">Delete</span>
               </span>
             </div>
           </PopoverContent>
@@ -213,9 +194,7 @@ export function ActionsCell({
         isOpen={isDeleteModalOpen}
         onOpenChange={setIsDeleteModalOpen}
         onDelete={handleDeleteConfirm}
-        isLoading={
-          deleteDraftsMutation.isPending || deletePostsMutation.isPending
-        }
+        isLoading={deleteDraftsMutation.isPending || deletePostsMutation.isPending}
       />
     </div>
   );

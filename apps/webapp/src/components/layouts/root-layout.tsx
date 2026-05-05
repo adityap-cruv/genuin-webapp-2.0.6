@@ -1,8 +1,10 @@
-import { cn } from '@lib/utils'
 import { type Viewport } from 'next'
 import { type ComponentProps, type ReactNode } from 'react'
-import { RedirectToHTTPS } from './redirect-to-https'
+
+import { cn } from '@lib/utils'
+
 import { PageViewTracker } from './page-view-tracker'
+import { RedirectToHTTPS } from './redirect-to-https'
 
 type Props = ComponentProps<'body'> & {
   brandColors?: any

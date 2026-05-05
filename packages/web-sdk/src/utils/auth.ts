@@ -1,12 +1,12 @@
-import { ksCbRequestStatusType } from '@genuin/components/types/roles'
+import type { ksCbRequestStatusType } from "@genuin/components/types/roles";
 
 export const getKsCbRequestStatus = (status: number): ksCbRequestStatusType => {
   switch (status) {
     case 1:
-      return 'Pending'
+      return "Pending";
     case 2:
-      return 'Requested'
+      return "Requested";
     default:
-      return 'Success'
+      return "Success";
   }
-}
+};

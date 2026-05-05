@@ -1,7 +1,7 @@
+import { Button } from "@genuin/ui/components/button"; // Assuming Button is a common trigger
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { AuthenticationModal } from "./authentication-modal";
-import { Button } from "@genuin/ui/components/button"; // Assuming Button is a common trigger
 
 const meta: Meta<typeof AuthenticationModal> = {
   title: "Organisms/Authentication/AuthenticationModal", // Changed title

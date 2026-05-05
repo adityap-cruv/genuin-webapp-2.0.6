@@ -1,8 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
+
 import { StandardWall } from "./standard-wall";
-import { ReactQueryClientProvider } from "@genuin/components/react-query/react-query-provider";
-import { BaseContextProvider } from "@genuin/components/context/base/provider";
-import { AuthProvider } from "@genuin/components/context/auth/provider";
 
 const meta: Meta<typeof StandardWall> = {
   title: "Organisms/Web-SDK/StandardWall",
@@ -37,8 +35,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          "The default StandardWall component starts at the home feed route.",
+        story: "The default StandardWall component starts at the home feed route.",
       },
     },
   },
@@ -54,8 +51,7 @@ export const HomeFeed: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          "StandardWall displaying the home feed with personalized content.",
+        story: "StandardWall displaying the home feed with personalized content.",
       },
     },
   },
@@ -71,8 +67,7 @@ export const LatestFeed: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          "StandardWall displaying the latest feed with most recent content.",
+        story: "StandardWall displaying the latest feed with most recent content.",
       },
     },
   },
@@ -88,8 +83,7 @@ export const PopularFeed: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          "StandardWall displaying the popular feed with trending content.",
+        story: "StandardWall displaying the popular feed with trending content.",
       },
     },
   },
@@ -137,8 +131,7 @@ export const GroupDetails: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          "StandardWall displaying group details for 'design-enthusiasts'.",
+        story: "StandardWall displaying group details for 'design-enthusiasts'.",
       },
     },
   },
@@ -154,8 +147,7 @@ export const CommunityDetails: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          "StandardWall displaying community details for 'tech-innovators'.",
+        story: "StandardWall displaying community details for 'tech-innovators'.",
       },
     },
   },
@@ -171,8 +163,7 @@ export const VideoPage: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          "StandardWall displaying a video page for video ID 'sample-video-123'.",
+        story: "StandardWall displaying a video page for video ID 'sample-video-123'.",
       },
     },
   },
@@ -204,8 +195,7 @@ export const ExplorePage: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          "StandardWall displaying the explore page for content discovery.",
+        story: "StandardWall displaying the explore page for content discovery.",
       },
     },
   },

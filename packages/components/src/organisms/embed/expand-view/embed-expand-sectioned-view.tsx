@@ -1,26 +1,25 @@
-import { EmbedExpandView } from "./expand-view";
-import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
-import { useBaseContext, useEmbedContext } from "@genuin/components/context";
 import { useEffect, useMemo, useState } from "react";
-import { useFeed } from "@genuin/components/react-query/api/feed";
-import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
+
+import { useBaseContext, useEmbedContext } from "@genuin/components/context";
 import { isMiddlewareOverlayEnabled } from "@genuin/components/lib/utils";
+import { useFeed } from "@genuin/components/react-query/api/feed";
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
+
+import { EmbedExpandView } from "./expand-view";
 
 type EmbedExpandViewProps = {
   videos: PostDetailsType[];
   pageSession?: string;
 };
 
-export function EmbedExpandSectionedView({
-  videos,
-  pageSession,
-}: EmbedExpandViewProps) {
+export function EmbedExpandSectionedView({ videos, pageSession }: EmbedExpandViewProps) {
   const { embedEventBus, embedData } = useEmbedContext();
   const { isInIframe } = useBaseContext();
   const isSectioned = embedEventBus.getContext().isSectioned;
-  const [selectedSection, setSelectedSection] = useState<
-    PostDetailsType["section"]
-  >(embedEventBus.getContext().selectedSection);
+  const [selectedSection, setSelectedSection] = useState<PostDetailsType["section"]>(
+    embedEventBus.getContext().selectedSection
+  );
 
   // Memoize selectedSectionVideos calculation
   const filteredSelectedSectionVideos = useMemo(() => {
@@ -42,9 +41,7 @@ export function EmbedExpandSectionedView({
       }),
       lastVideoId:
         filteredSelectedSectionVideos.length > 0
-          ? (filteredSelectedSectionVideos[
-              filteredSelectedSectionVideos.length - 1
-            ]?.video?.id ?? undefined)
+          ? (filteredSelectedSectionVideos[filteredSelectedSectionVideos.length - 1]?.video?.id ?? undefined)
           : videos.length > 0
             ? (videos[videos.length - 1]?.video?.id ?? undefined)
             : undefined,
@@ -72,14 +69,7 @@ export function EmbedExpandSectionedView({
       refetchOnWindowFocus: false,
       refetchOnReconnect: true,
     }),
-    [
-      isSectioned,
-      selectedSection?.id,
-      pageSession,
-      videos,
-      filteredSelectedSectionVideos,
-      isInIframe,
-    ],
+    [isSectioned, selectedSection?.id, pageSession, videos, filteredSelectedSectionVideos, isInIframe]
   );
 
   // Use the correct feed type and options for the query with caching
@@ -95,10 +85,7 @@ export function EmbedExpandSectionedView({
   // Generate the correct query key for the actual query being made
   const queryKey = getQueryKeyForFeed("SECTION_FEED", feedOptions);
 
-  const sectionVideos = useMemo(
-    () => sectionFeedData?.pages?.flatMap((page) => page.feed) || [],
-    [sectionFeedData],
-  );
+  const sectionVideos = useMemo(() => sectionFeedData?.pages?.flatMap((page) => page.feed) || [], [sectionFeedData]);
 
   useEffect(() => {
     const handleSelectionChange = () => {

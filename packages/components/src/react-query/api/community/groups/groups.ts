@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
-import { useAxiosInstance } from "@genuin/components/context/axios";
+import type { AxiosInstance } from "axios";
 
+import { useAxiosInstance } from "@genuin/components/context/axios";
+import { queryClient } from "@genuin/components/react-query/client";
 import { getQueryKeyForCommunityGroups } from "@genuin/components/react-query/keys/community";
 import { API_PATHS } from "@genuin/components/react-query/paths";
+import type { GroupUserStatusType } from "@genuin/components/types/roles";
 
 import { validateCommunityGroups } from "./schema";
-import { queryClient } from "@genuin/components/react-query/client";
-import { GroupUserStatusType } from "@genuin/components/types/roles";
-import type { AxiosInstance } from "axios";
 
 export async function fetchCommunityGroups(slug: string, axiosInstance: AxiosInstance) {
   return await axiosInstance
@@ -30,7 +30,7 @@ export function useGetCommunityGroups(slug: string) {
   const axiosInstance = useAxiosInstance();
 
   return useQuery({
-    queryFn: async (context) => await fetchCommunityGroups(slug, axiosInstance),
+    queryFn: async (_context) => await fetchCommunityGroups(slug, axiosInstance),
     queryKey: getQueryKeyForCommunityGroups(slug),
   });
 }
@@ -49,24 +49,20 @@ export function setQueryDataForJoinGroupStatusInCommunityGroups(
   newRole: GroupUserStatusType
 ) {
   type QueryData = ReturnType<typeof useGetCommunityGroups>["data"];
-  queryClient.setQueryData(
-    getQueryKeyForCommunityGroups(slug),
-    (oldData: QueryData): QueryData => {
-      if (!oldData) return { groups: [] };
-      return {
-        groups: oldData.groups.map((group) =>
-          group.chat_id === chatId
-            ? {
-                ...group,
-                is_subscriber:
-                  newRole === "JOINED" ? true : group.is_subscriber,
-                logged_in_user_status: newRole,
-              }
-            : group
-        ),
-      };
-    }
-  );
+  queryClient.setQueryData(getQueryKeyForCommunityGroups(slug), (oldData: QueryData): QueryData => {
+    if (!oldData) return { groups: [] };
+    return {
+      groups: oldData.groups.map((group) =>
+        group.chat_id === chatId
+          ? {
+              ...group,
+              is_subscriber: newRole === "JOINED" ? true : group.is_subscriber,
+              logged_in_user_status: newRole,
+            }
+          : group
+      ),
+    };
+  });
 }
 
 /**
@@ -83,17 +79,12 @@ export function setQueryDataForSubscriptionStatusInCommunityGroups(
   isSubscribed: boolean
 ) {
   type QueryData = ReturnType<typeof useGetCommunityGroups>["data"];
-  queryClient.setQueryData(
-    getQueryKeyForCommunityGroups(slug),
-    (oldData: QueryData): QueryData => {
-      if (!oldData) return { groups: [] };
-      return {
-        groups: oldData.groups.map((group) =>
-          group.chat_id === chatId
-            ? { ...group, is_subscriber: isSubscribed }
-            : group
-        ),
-      };
-    }
-  );
+  queryClient.setQueryData(getQueryKeyForCommunityGroups(slug), (oldData: QueryData): QueryData => {
+    if (!oldData) return { groups: [] };
+    return {
+      groups: oldData.groups.map((group) =>
+        group.chat_id === chatId ? { ...group, is_subscriber: isSubscribed } : group
+      ),
+    };
+  });
 }

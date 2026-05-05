@@ -1,5 +1,5 @@
-import { type ComponentProps } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
+import { type ComponentProps } from "react";
 
 import { cn, defaultSizesForIcons } from "@genuin/ui/lib/utils";
 
@@ -19,15 +19,9 @@ const priceTagVariant = cva("", {
   },
 });
 
-type PriceTagIconPropsType = ComponentProps<"svg"> &
-  VariantProps<typeof priceTagVariant>;
+type PriceTagIconPropsType = ComponentProps<"svg"> & VariantProps<typeof priceTagVariant>;
 
-export function PriceTagIcon({
-  theme,
-  size,
-  className,
-  ...restProps
-}: PriceTagIconPropsType) {
+export function PriceTagIcon({ theme, size, className, ...restProps }: PriceTagIconPropsType) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -36,8 +30,7 @@ export function PriceTagIcon({
       viewBox="0 0 16 17"
       fill="none"
       className={cn(priceTagVariant({ theme, size }), className)}
-      {...restProps}
-    >
+      {...restProps}>
       <path
         d="M2.75 9.06348V3.06348H8.75L14.75 9.06348L8.75 15.0635L2.75 9.06348Z"
         stroke="currentColor"

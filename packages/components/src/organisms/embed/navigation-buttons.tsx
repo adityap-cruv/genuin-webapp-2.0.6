@@ -1,25 +1,16 @@
-import {
-  ChevronDownIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  ChevronUpIcon,
-} from "@genuin/ui/icons";
-import { useEmbedManagerContext } from "./context";
-import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { Button } from "@genuin/ui/components/button";
-import { useCallback, useState, useEffect, CSSProperties } from "react";
+import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon } from "@genuin/ui/icons";
+import type { CSSProperties } from "react";
+import { useCallback, useState, useEffect } from "react";
+
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
+
+import { useEmbedManagerContext } from "./context";
 
 // Common types
 type Theme = "light" | "dark";
-type EmbedVariant =
-  | "grid"
-  | "carousel"
-  | "feed"
-  | "dynamic"
-  | "standard_wall"
-  | "expand_only"
-  | undefined;
+type EmbedVariant = "grid" | "carousel" | "feed" | "dynamic" | "standard_wall" | "expand_only" | undefined;
 type ButtonSize = "sm" | "md";
 type ButtonTheme =
   | "custom"
@@ -132,8 +123,7 @@ export function NavigationButtons({
       onClick={onClick}
       aria-label={label}
       className={className}
-      style={{ ...style, ...safariOptimizationStyles }}
-    >
+      style={{ ...style, ...safariOptimizationStyles }}>
       <Icon
         theme={iconTheme}
         className={iconClassName}
@@ -169,31 +159,15 @@ export function NavigationButtons({
     const colors = isDarkTheme ? darkTheme : lightTheme;
 
     // Component with hover and focus state
-    const IHeartNavButton = ({
-      Icon,
-      disabled,
-      onClick,
-      label,
-    }: IHeartNavButtonProps) => {
+    const IHeartNavButton = ({ Icon, disabled, onClick, label }: IHeartNavButtonProps) => {
       const [isHovered, setIsHovered] = useState(false);
 
-      const buttonBg = disabled
-        ? colors.disabled.button
-        : isHovered
-          ? colors.hover.button
-          : colors.default.button;
+      const buttonBg = disabled ? colors.disabled.button : isHovered ? colors.hover.button : colors.default.button;
 
-      const iconFill = disabled
-        ? colors.disabled.icon
-        : isHovered
-          ? colors.hover.icon
-          : colors.default.icon;
+      const iconFill = disabled ? colors.disabled.icon : isHovered ? colors.hover.icon : colors.default.icon;
 
       return (
-        <div
-          onMouseEnter={() => !disabled && setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-        >
+        <div onMouseEnter={() => !disabled && setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
           {createNavButton({
             Icon,
             disabled,
@@ -293,13 +267,8 @@ export function NavigationButtonsWithContext({
   setSlidesOffsetBefore?: (value: number) => void;
   embedVariant?: EmbedVariant;
 }) {
-  const {
-    goToNextVideo,
-    goToPreviousVideo,
-    activeIndex,
-    getSlideVisibilityPercentage,
-    swiper,
-  } = useEmbedManagerContext();
+  const { goToNextVideo, goToPreviousVideo, activeIndex, getSlideVisibilityPercentage, swiper } =
+    useEmbedManagerContext();
   const config = useEmbedConfigs();
 
   const [isPrevDisabled, setIsPrevDisabled] = useState(false);
@@ -311,7 +280,7 @@ export function NavigationButtonsWithContext({
       e.preventDefault();
       goToPreviousVideo();
     },
-    [goToPreviousVideo],
+    [goToPreviousVideo]
   );
 
   const handleNext = useCallback(
@@ -322,10 +291,10 @@ export function NavigationButtonsWithContext({
         () => {
           goToNextVideo(false, true);
         },
-        activeIndex > 0 ? 0 : 50,
+        activeIndex > 0 ? 0 : 50
       );
     },
-    [goToNextVideo, activeIndex, setSlidesOffsetBefore],
+    [goToNextVideo, activeIndex, setSlidesOffsetBefore]
   );
 
   // Function to update disabled state based on current swiper state
@@ -393,9 +362,7 @@ export function NavigationButtonsWithContext({
       isIheartLayout={isIheartLayout}
       onPrev={handlePrev}
       onNext={handleNext}
-      isNavigationControlEnabled={
-        config.view.isNavigationControlEnabled ?? false
-      }
+      isNavigationControlEnabled={config.view.isNavigationControlEnabled ?? false}
       isPrevDisabled={isPrevDisabled}
       isNextDisabled={isNextDisabled}
       theme={theme}

@@ -13,7 +13,7 @@ const ownerSchema = z.object({
 });
 
 // Define the main schema
-const CommentSchema = z.array(
+const _CommentSchema = z.array(
   z.object({
     owner: ownerSchema,
     chat_id: z.string(),
@@ -55,4 +55,4 @@ const CommentSchema = z.array(
 );
 
 // api response type
-export type CommentsResponseType = z.infer<typeof CommentSchema>;
+export type CommentsResponseType = z.infer<typeof _CommentSchema>;

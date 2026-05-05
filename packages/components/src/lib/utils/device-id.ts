@@ -1,4 +1,5 @@
 import { useLocalStorage } from "usehooks-ts";
+
 import internalStorage from "@genuin/components/lib/utils/internal-storage-manager";
 
 /**
@@ -23,8 +24,7 @@ declare global {
  * CDN URL for FingerprintJS library
  * Using jsDelivr CDN with specific version for reliability and caching
  */
-const FINGERPRINTJS_CDN_URL =
-  "https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@4.6.2/dist/fp.umd.min.js";
+const FINGERPRINTJS_CDN_URL = "https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@4.6.2/dist/fp.umd.min.js";
 
 /**
  * Promise to track FingerprintJS script loading
@@ -65,19 +65,13 @@ function loadFingerprintJSScript(): Promise<void> {
         if (window.FingerprintJS) {
           resolve();
         } else {
-          reject(
-            new Error(
-              "[FingerprintJS] Script loaded but FingerprintJS not available on window"
-            )
-          );
+          reject(new Error("[FingerprintJS] Script loaded but FingerprintJS not available on window"));
         }
       };
 
       script.onerror = () => {
         fingerprintJSLoadPromise = null; // Reset promise to allow retry
-        reject(
-          new Error("[FingerprintJS] Failed to load FingerprintJS from CDN")
-        );
+        reject(new Error("[FingerprintJS] Failed to load FingerprintJS from CDN"));
       };
 
       document.head.appendChild(script);
@@ -96,9 +90,7 @@ function loadFingerprintJSScript(): Promise<void> {
  * @param onDeviceId - A callback function that is called with the new device ID.
  * @returns Promise that resolves when device ID is generated
  */
-export async function getNewDeviceId(
-  onDeviceId?: (deviceId: string) => void
-): Promise<void> {
+export async function getNewDeviceId(onDeviceId?: (deviceId: string) => void): Promise<void> {
   try {
     // Lazy load FingerprintJS from CDN
     await loadFingerprintJSScript();
@@ -135,8 +127,5 @@ export function getDeviceId(isInIframe: boolean) {
 }
 
 export function useGetDeviceId() {
-  return useLocalStorage<string | undefined>(
-    DEVICE_ID_KEY_FOR_LOCAL_STORAGE,
-    undefined
-  );
+  return useLocalStorage<string | undefined>(DEVICE_ID_KEY_FOR_LOCAL_STORAGE, undefined);
 }

@@ -1,8 +1,9 @@
-import { useEffect, useState, useRef } from "react";
-import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { cn } from "@genuin/ui/lib/utils";
-import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+import { useEffect, useState, useRef } from "react";
+
 import { useAnalytics } from "@genuin/components/context";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 type SectionsTabsProps = {
   onSectionSelect?: (section: PostDetailsType["section"]) => void;
@@ -13,12 +14,10 @@ export const SectionsTabs = ({ onSectionSelect }: SectionsTabsProps) => {
   const { track, EventName } = useAnalytics();
   const containerRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<Map<string | number, HTMLDivElement>>(new Map());
-  const [sectionList, setSectionList] = useState(
-    embedDetails?.embedEventBus.getContext().sectionList ?? []
+  const [sectionList, setSectionList] = useState(embedDetails?.embedEventBus.getContext().sectionList ?? []);
+  const [selectedSection, setSelectedSection] = useState<PostDetailsType["section"]>(
+    embedDetails?.embedEventBus.getContext().selectedSection ?? null
   );
-  const [selectedSection, setSelectedSection] = useState<
-    PostDetailsType["section"]
-  >(embedDetails?.embedEventBus.getContext().selectedSection ?? null);
 
   // Drag scrolling state
   const [isDragging, setIsDragging] = useState(false);
@@ -93,8 +92,7 @@ export const SectionsTabs = ({ onSectionSelect }: SectionsTabsProps) => {
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseLeave}
-      style={{ userSelect: isDragging ? "none" : "auto" }}
-    >
+      style={{ userSelect: isDragging ? "none" : "auto" }}>
       {sectionList?.map((section, index) => {
         const isSelected = selectedSection?.id === section?.id;
         return (
@@ -131,8 +129,7 @@ export const SectionsTabs = ({ onSectionSelect }: SectionsTabsProps) => {
               selectedSection?.id === section?.id
                 ? "gencl:bg-white gencl:border-white gencl:text-black!"
                 : "gencl:bg-black/40 gencl:border-white/40 gencl:text-white!"
-            )}
-          >
+            )}>
             {section?.title}
           </div>
         );

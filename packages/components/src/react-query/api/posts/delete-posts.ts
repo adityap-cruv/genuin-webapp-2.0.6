@@ -1,7 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
+import type { AxiosInstance } from "axios";
+
 import { useAxiosInstance } from "@genuin/components/context/axios";
 import { API_PATHS } from "@genuin/components/react-query/paths";
-import type { AxiosInstance } from "axios";
 
 export async function deletePosts(postIds: string[], axiosInstance: AxiosInstance) {
   return await axiosInstance
@@ -13,7 +14,7 @@ export async function deletePosts(postIds: string[], axiosInstance: AxiosInstanc
     .then(() => {
       return "Posts deleted successfully";
     })
-    .catch((e) => {
+    .catch((_e) => {
       throw new Error("Failed to delete posts");
     });
 }

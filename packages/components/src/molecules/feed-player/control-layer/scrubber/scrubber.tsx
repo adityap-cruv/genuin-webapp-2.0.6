@@ -1,15 +1,12 @@
 "use client";
-import {
-  type ComponentProps,
-  useCallback,
-  useState,
-  useEffect,
-  useRef,
-} from "react";
-import { ScrubberSlider } from "./scrubber-slider";
 import { cn } from "@genuin/ui/utils";
-import { usePlayerContext } from "../../context/context";
+import { type ComponentProps, useCallback, useState, useEffect, useRef } from "react";
+
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+
+import { usePlayerContext } from "../../context/context";
+
+import { ScrubberSlider } from "./scrubber-slider";
 
 type ScrubberPropsType = Omit<
   ComponentProps<typeof ScrubberSlider> & {
@@ -29,13 +26,7 @@ type ScrubberPropsType = Omit<
  * @param param0
  * @returns
  */
-export function Scrubber({
-  spriteUrl,
-  className,
-  value,
-  duration,
-  ...restProps
-}: ScrubberPropsType) {
+export function Scrubber({ spriteUrl, className, value, duration, ...restProps }: ScrubberPropsType) {
   const [playerTimeState, setPlayerTimeState] = useState({
     duration: 0,
     currentTime: 0,
@@ -69,25 +60,13 @@ export function Scrubber({
   // Sync scrubber with video time (only when user is not interacting)
   useEffect(() => {
     const shouldBlockUpdates =
-      isUserInteracting ||
-      showScrubber ||
-      !isVideoLoaded ||
-      !totalDuration ||
-      userPositionRef.current !== null;
+      isUserInteracting || showScrubber || !isVideoLoaded || !totalDuration || userPositionRef.current !== null;
 
     if (shouldBlockUpdates) return;
 
-    const videoProgress = Math.round(
-      (playerTimeState.currentTime / totalDuration) * 100,
-    );
+    const videoProgress = Math.round((playerTimeState.currentTime / totalDuration) * 100);
     setScrubberPosition(videoProgress);
-  }, [
-    playerTimeState.currentTime,
-    totalDuration,
-    isUserInteracting,
-    isVideoLoaded,
-    showScrubber,
-  ]);
+  }, [playerTimeState.currentTime, totalDuration, isUserInteracting, isVideoLoaded, showScrubber]);
 
   // Subscribe to video time changes
   useEffect(() => {
@@ -108,7 +87,7 @@ export function Scrubber({
         }, 400);
       }, delay);
     },
-    [setShowScrubber],
+    [setShowScrubber]
   );
 
   // Handle user dragging
@@ -129,7 +108,7 @@ export function Scrubber({
       setShowScrubber(true);
       setShowSeeker(true);
     },
-    [pause, brandLayoutType, showScrubber, setShowScrubber, setShowSeeker],
+    [pause, brandLayoutType, showScrubber, setShowScrubber, setShowSeeker]
   );
 
   // Handle when user finishes dragging
@@ -167,15 +146,7 @@ export function Scrubber({
         resetUserInteraction();
       }
     },
-    [
-      totalDuration,
-      brandLayoutType,
-      seek,
-      play,
-      feedPlayerShouldPlay,
-      setShowSeeker,
-      resetUserInteraction,
-    ],
+    [totalDuration, brandLayoutType, seek, play, feedPlayerShouldPlay, setShowSeeker, resetUserInteraction]
   );
 
   // Shared skip logic
@@ -184,10 +155,7 @@ export function Scrubber({
       if (!totalDuration) return;
 
       const currentTime = (scrubberPosition / 100) * totalDuration;
-      const newTime = Math.max(
-        0,
-        Math.min(currentTime + seconds, totalDuration),
-      );
+      const newTime = Math.max(0, Math.min(currentTime + seconds, totalDuration));
       const newPosition = Math.round((newTime / totalDuration) * 100);
 
       setScrubberPosition(newPosition);
@@ -199,7 +167,7 @@ export function Scrubber({
         userPositionRef.current = null;
       }, 1000);
     },
-    [scrubberPosition, totalDuration, play],
+    [scrubberPosition, totalDuration, play]
   );
 
   const skipForward = useCallback(() => handleSkip(15), [handleSkip]);
@@ -224,23 +192,13 @@ export function Scrubber({
 
     if (showScrubber) {
       const events = ["mouseup", "touchend", "pointerup"];
-      events.forEach((event) =>
-        document.addEventListener(event, handleGlobalEnd),
-      );
+      events.forEach((event) => document.addEventListener(event, handleGlobalEnd));
 
       return () => {
-        events.forEach((event) =>
-          document.removeEventListener(event, handleGlobalEnd),
-        );
+        events.forEach((event) => document.removeEventListener(event, handleGlobalEnd));
       };
     }
-  }, [
-    showScrubber,
-    brandLayoutType,
-    feedPlayerShouldPlay,
-    setShowSeeker,
-    resetUserInteraction,
-  ]);
+  }, [showScrubber, brandLayoutType, feedPlayerShouldPlay, setShowSeeker, resetUserInteraction]);
 
   return (
     <ScrubberSlider
@@ -248,7 +206,7 @@ export function Scrubber({
       className={cn(
         "swiper-no-swiping gencl:rounded-none",
         brandLayoutType === "iheart" && "gencl:py-2 gencl:px-1 gencl:min-h-6",
-        className,
+        className
       )}
       spriteUrl={spriteUrl ?? ""}
       showScrubber={showScrubber}

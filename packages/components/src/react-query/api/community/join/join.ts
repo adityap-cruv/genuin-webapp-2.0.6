@@ -1,8 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
+import type { AxiosInstance } from "axios";
+
 import { useAxiosInstance } from "@genuin/components/context/axios";
 import { API_PATHS } from "@genuin/components/react-query/paths";
-import { CommunityUserRole } from "@genuin/components/types/post";
-import type { AxiosInstance } from "axios";
+import type { CommunityUserRole } from "@genuin/components/types/post";
 
 /**
  * This api call is used to request to join a community.
@@ -19,7 +20,7 @@ async function requestCommunity(communityId: string | undefined, axiosInstance: 
       const status = res.data?.data?.status;
       if (status === "joined") {
         return "MEMBER" as CommunityUserRole;
-      }      
+      }
       return "REQUESTED" as CommunityUserRole;
     })
     .catch(() => {
@@ -51,7 +52,7 @@ async function joinCommunity(
       // return { code: res.status, data: res.data.data };
       return "MEMBER" as CommunityUserRole;
     })
-    .catch((e) => {
+    .catch((_e) => {
       // return { code: Number(e.response.data.code) };
       throw new Error("Failed to join community");
     });
@@ -123,7 +124,7 @@ export async function leaveCommunity(communityId: string | undefined, axiosInsta
     .then(() => {
       return "UNJOINED" as CommunityUserRole; // Returning empty string to indicate no role
     })
-    .catch((e) => {
+    .catch((_e) => {
       throw new Error("Failed to leave community");
     });
 }

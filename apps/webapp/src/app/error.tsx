@@ -1,7 +1,7 @@
 'use client'
-import { useRouter } from 'next/navigation';
-import { Button } from '@genuin/ui/components/button'
 import { ErrorState } from '@genuin/components/molecules/error-state'
+import { Button } from '@genuin/ui/components/button'
+import { useRouter } from 'next/navigation';
 
 export default function Error() {
   const router = useRouter();

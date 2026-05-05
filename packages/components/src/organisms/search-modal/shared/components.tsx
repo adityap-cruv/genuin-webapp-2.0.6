@@ -1,5 +1,6 @@
-import { ComponentProps, ReactNode } from "react";
 import { cn } from "@genuin/ui/lib/utils";
+import type { ComponentProps, ReactNode } from "react";
+
 import { SEARCH_MODAL_CLASSES } from "../constants";
 
 // Shared component types
@@ -26,25 +27,12 @@ export function SearchEmptyState({
 }) {
   return (
     <div
-      className={cn(
-        SEARCH_MODAL_CLASSES.CENTERED_MESSAGE,
-        "gencl:min-h-[400px] gencl:text-center",
-        className
-      )}
-      {...props}
-    >
-      {icon && (
-        <div className="gencl:mb-4 gencl:text-secondary-200">{icon}</div>
-      )}
+      className={cn(SEARCH_MODAL_CLASSES.CENTERED_MESSAGE, "gencl:min-h-[400px] gencl:text-center", className)}
+      {...props}>
+      {icon && <div className="gencl:mb-4 gencl:text-secondary-200">{icon}</div>}
       <div className="gencl:space-y-2 gencl:z-10">
-        <h3 className="gencl:text-headline-2-semi-bold gencl:text-black gencl:mb-2">
-          {title}
-        </h3>
-        {subtitle && (
-          <p className="gencl:text-body-1-medium gencl:text-secondary-600">
-            {subtitle}
-          </p>
-        )}
+        <h3 className="gencl:text-headline-2-semi-bold gencl:text-black gencl:mb-2">{title}</h3>
+        {subtitle && <p className="gencl:text-body-1-medium gencl:text-secondary-600">{subtitle}</p>}
         {children}
       </div>
     </div>
@@ -60,10 +48,7 @@ export function SearchErrorState({
   message?: string;
 }) {
   return (
-    <div
-      className={cn(SEARCH_MODAL_CLASSES.CENTERED_MESSAGE, className)}
-      {...props}
-    >
+    <div className={cn(SEARCH_MODAL_CLASSES.CENTERED_MESSAGE, className)} {...props}>
       <div className="gencl:text-sm gencl:text-red-500">{message}</div>
     </div>
   );

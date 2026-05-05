@@ -1,5 +1,6 @@
-import { cn, defaultSizesForIcons } from "@genuin/ui/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
+
+import { cn, defaultSizesForIcons } from "@genuin/ui/lib/utils";
 
 import type { SVGIconsProps } from "../type";
 
@@ -19,12 +20,10 @@ const iconsVariant = cva("gencl:fill-black gencl:cursor-pointer", {
   },
 });
 
-export function XIcon({
-  className,
-  theme,
-  size,
-  ...restProps
-}: SVGIconsProps & VariantProps<typeof iconsVariant>) {
+/** Props for the XIcon component. */
+export type XIconProps = SVGIconsProps & VariantProps<typeof iconsVariant>;
+
+export function XIcon({ className, theme, size, ...restProps }: XIconProps) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -33,8 +32,7 @@ export function XIcon({
       viewBox="0 0 16 16"
       fill="none"
       className={cn(iconsVariant({ theme, size }), className)}
-      {...restProps}
-    >
+      {...restProps}>
       <path d="M13 4.00714L11.9929 3L8 6.99286L4.00714 3L3 4.00714L6.99286 8L3 11.9929L4.00714 13L8 9.00714L11.9929 13L13 11.9929L9.00714 8L13 4.00714Z" />
     </svg>
   );

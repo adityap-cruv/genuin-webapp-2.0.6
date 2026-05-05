@@ -1,11 +1,12 @@
 'use client'
-import icBack from '@icons/icBack.svg'
 import Image from 'next/image'
-import { QuestionMarkIcon } from '@icons/question-mark-icon'
-import { BackIcon } from '@icons/back-icon'
+
 import { AuthenticationModal } from '@/components/common/modals/authentication'
-import { DiscountCouponIcon } from '@icons/wallet/discount-coupon-icon'
+import { BackIcon } from '@icons/back-icon'
+import icBack from '@icons/icBack.svg'
+import { QuestionMarkIcon } from '@icons/question-mark-icon'
 import { BillStreamlineIcon } from '@icons/wallet/bill-streamline'
+import { DiscountCouponIcon } from '@icons/wallet/discount-coupon-icon'
 
 export const EmptyState = {
   mobile: Mobile,

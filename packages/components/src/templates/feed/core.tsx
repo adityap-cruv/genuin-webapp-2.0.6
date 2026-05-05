@@ -1,22 +1,16 @@
 "use client";
 import { cn } from "@genuin/ui/utils";
-import { CommunityUserRole } from "@genuin/components/types/post";
 import { useCallback, useEffect, memo, lazy, Suspense } from "react";
-import "swiper/css";
 
-const PlayerList = lazy(() =>
-  import("../../organisms/player-swiper/index.js").then((m) => ({
-    default: m.PlayerList,
-  })),
-);
-
-// Lazy load side panel to split comments/forms from core chunk
-const PostSidePanel = lazy(() =>
-  import("../../organisms/post-side-panel/index.js").then((m) => ({
-    default: m.PostSidePanel,
-  })),
-);
-
+import { useBaseContext } from "@genuin/components/context";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { useInterruptionManager } from "@genuin/components/hooks/use-interruption-manager";
+import { useRouter } from "@genuin/components/hooks/use-router";
+import useViewportHeight from "@genuin/components/hooks/use-screen-height";
+import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
+import { setQueryDataForCommunityRoleChange } from "@genuin/components/react-query/api/community/details/details";
 import {
   setQueryDataForReactionInFeed,
   setQueryDataForGroupSubscriptionChangeInFeed,
@@ -24,42 +18,42 @@ import {
   setQueryDataForJoinGroupStatusInFeed,
   setQueryDataForCommentCountInFeed,
 } from "@genuin/components/react-query/api/feed";
-import { setQueryDataForCommunityRoleChange } from "@genuin/components/react-query/api/community/details/details";
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { setQueryDataForSubscribeGroupInGroupDetails } from "@genuin/components/react-query/api/group/details";
+import { getQueryKeyForVideoDetails } from "@genuin/components/react-query/keys/video";
+import type { CommunityUserRole } from "@genuin/components/types/post";
+import type { GroupUserStatusType } from "@genuin/components/types/roles";
 
 import { useFeedContext } from "./context";
-import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
-
-import { GroupUserStatusType } from "@genuin/components/types/roles";
+import { useAdInjectedFeed } from "./feed-ads";
 import { FeedSkeleton } from "./feed-skeleton";
-import { useInterruptionManager } from "@genuin/components/hooks/use-interruption-manager";
-import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import type { FeedViewPropsType } from "./feed.type";
+
+import "swiper/css";
+
+const PlayerList = lazy(() =>
+  import("@genuin/components/organisms/player-swiper").then((m) => ({
+    default: m.PlayerList,
+  }))
+);
+
+// Lazy load side panel to split comments/forms from core chunk
+const PostSidePanel = lazy(() =>
+  import("@genuin/components/organisms/post-side-panel").then((m) => ({
+    default: m.PostSidePanel,
+  }))
+);
+
 const AuthenticationModal = lazy(() =>
-  import("../../organisms/authentication-modal/index.js").then((m) => ({
+  import("@genuin/components/organisms/authentication-modal").then((m) => ({
     default: m.AuthenticationModal,
-  })),
-) as React.ComponentType<any>;
+  }))
+);
 
-import { FeedViewPropsType } from "./feed.type";
-import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
-import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
-import { getQueryKeyForVideoDetails } from "@genuin/components/react-query/keys/video";
-
-import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import { useBaseContext } from "@genuin/components/context";
-import useViewportHeight from "@genuin/components/hooks/use-screen-height";
-import { useRouter } from "@genuin/components/hooks/use-router";
-
-// Must be defined at module level — NOT inside a component.
-// Defining lazy() inside a component creates a new component type on every render,
-// causing React to unmount/remount the entire subtree (destroying the Swiper on
-// every re-render, which produces the iHeart infinite-loop/snap-back bug).
 const IheartFullscreenContainerLazy = lazy(() =>
-  import(
-    "@genuin/components/molecules/iheart-full-screen-contaner/index.js"
-  ).then((m) => ({
+  import("@genuin/components/molecules/iheart-full-screen-contaner").then((m) => ({
     default: m.IheartFullscreenContainer,
-  })),
+  }))
 );
 
 /**
@@ -76,9 +70,7 @@ const FeedContentWrapper = memo(function FeedContentWrapper({
   if (isIHeart) {
     return (
       <Suspense fallback={null}>
-        <IheartFullscreenContainerLazy>
-          {children}
-        </IheartFullscreenContainerLazy>
+        <IheartFullscreenContainerLazy>{children}</IheartFullscreenContainerLazy>
       </Suspense>
     );
   }
@@ -96,36 +88,47 @@ export const FeedViewCore = memo(function FeedViewCore({
   feedData,
   className,
   startIndex = 0,
-  style,
+  style: _style,
   variant,
   onActiveIndexChange,
-  embedOptions,
+  embedOptions: _embedOptions,
   isSectioned,
+  platform,
   ...restProps
 }: FeedViewPropsType) {
   const viewportHeight = useViewportHeight();
   const {
-    videos,
+    videos: rawVideos,
     isLoading,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
     queryKey,
     totalVideos,
+    pageSession,
   } = feedData;
   const { setActiveIndex, activeIndex, showExpandView } = useFeedContext();
   const { hideGestureOverlay } = useGestureOverlayManager();
-  const { handleSwipeCount, dialogType, shouldShowDialog, closeDialog } =
-    useInterruptionManager();
+  const { handleSwipeCount, dialogType, shouldShowDialog, closeDialog } = useInterruptionManager();
   const { canGoBack } = useRouter();
   const embedDetails = useSafeEmbedContext();
-  const { theme = "dark" } = useBaseContext();
+  const { theme = "dark", brandDetails } = useBaseContext();
+
   const {
     view: { brandLayoutType },
     engagement: {
       engagementTools: { comment: showCommentBox },
     },
+    brand: { shouldInjectExpandViewAds },
   } = useEmbedConfigs();
+
+  const videos = useAdInjectedFeed(
+    rawVideos,
+    brandDetails.brand_id ?? undefined,
+    showExpandView,
+    platform ?? "webapp",
+    shouldInjectExpandViewAds
+  );
   const { isDesktop } = useDeviceDetectMediaQuery();
   const showSidePanel =
     videos[activeIndex] &&
@@ -135,9 +138,7 @@ export const FeedViewCore = memo(function FeedViewCore({
 
   const isIHeart = brandLayoutType === "iheart";
   // Get disableSwiper flag from embed context (only applies to expand view)
-  const disableSwiper = showExpandView
-    ? (embedDetails?.embedEventBus.getContext().disableSwiper ?? false)
-    : false;
+  const disableSwiper = showExpandView ? (embedDetails?.embedEventBus.getContext().disableSwiper ?? false) : false;
 
   // Find the index of the video that matches startVideoSlug, fallback to parent's startIndex
   // const resolvedStartIndex = (() => {
@@ -159,11 +160,7 @@ export const FeedViewCore = memo(function FeedViewCore({
   // this is done to avoid fetching too many pages at once and to improve performance.
   useEffect(() => {
     if (!videos) return;
-    if (
-      hasNextPage &&
-      !isFetchingNextPage &&
-      videos?.length - 3 === activeIndex
-    ) {
+    if (hasNextPage && !isFetchingNextPage && videos?.length - 3 === activeIndex) {
       fetchNextPage();
     }
   }, [hasNextPage, isFetchingNextPage, videos, activeIndex, fetchNextPage]);
@@ -178,12 +175,9 @@ export const FeedViewCore = memo(function FeedViewCore({
         newRole,
       });
 
-      setQueryDataForCommunityRoleChange(
-        videos[activeIndex].community.slug,
-        newRole,
-      );
+      setQueryDataForCommunityRoleChange(videos[activeIndex].community.slug, newRole);
     },
-    [videos, activeIndex, queryKey],
+    [videos, activeIndex, queryKey]
   );
 
   const handleGroupJoinStatusChange = useCallback(
@@ -195,7 +189,7 @@ export const FeedViewCore = memo(function FeedViewCore({
         newRole,
       });
     },
-    [videos, activeIndex, queryKey],
+    [videos, activeIndex, queryKey]
   );
 
   const handleGroupSubscriptionChange = useCallback(
@@ -207,12 +201,9 @@ export const FeedViewCore = memo(function FeedViewCore({
         isSubscribed,
       });
 
-      setQueryDataForSubscribeGroupInGroupDetails(
-        videos[activeIndex].group.slug,
-        isSubscribed,
-      );
+      setQueryDataForSubscribeGroupInGroupDetails(videos[activeIndex].group.slug, isSubscribed);
     },
-    [videos, activeIndex, queryKey],
+    [videos, activeIndex, queryKey]
   );
 
   const handleReactionStateChange = useCallback(
@@ -223,7 +214,7 @@ export const FeedViewCore = memo(function FeedViewCore({
         isReacted,
       });
     },
-    [queryKey, getQueryKeyForVideoDetails],
+    [queryKey, getQueryKeyForVideoDetails]
   );
 
   const handleCommentCountChange = useCallback(
@@ -234,7 +225,7 @@ export const FeedViewCore = memo(function FeedViewCore({
         increment,
       });
     },
-    [queryKey],
+    [queryKey]
   );
 
   const handleActiveIndexChange = useCallback(
@@ -267,7 +258,7 @@ export const FeedViewCore = memo(function FeedViewCore({
       //   }, 100);
       // }
     },
-    [setActiveIndex, hideGestureOverlay, showExpandView, videos],
+    [setActiveIndex, hideGestureOverlay, showExpandView, videos]
   );
 
   const playerListProps = {
@@ -281,6 +272,7 @@ export const FeedViewCore = memo(function FeedViewCore({
     onCommentCountChange: handleCommentCountChange,
     disableSwiper,
     theme,
+    pageSession,
   };
 
   const skeletonTheme = variant === "page" ? "light" : theme;
@@ -301,7 +293,7 @@ export const FeedViewCore = memo(function FeedViewCore({
         className={cn(
           "gencl:flex gencl:gap-4",
           {
-            [` gencl:sm:p-0! gencl:flex gencl:items-center gencl:mt-0 gencl:z-50 gencl:left-0 gencl:w-full`]:
+            [`gencl:sm:p-0! gencl:flex gencl:items-center gencl:mt-0 gencl:z-50 gencl:left-0 gencl:w-full`]:
               showExpandView,
             "gencl:sm:pr-4! gencl:pt-0 gencl:sm:pt-4!": !showExpandView,
             // Apply fixed positioning from top for non-iHeart layouts in expand view
@@ -313,34 +305,22 @@ export const FeedViewCore = memo(function FeedViewCore({
             [theme === "dark" ? "gencl:bg-black" : "gencl:bg-white"]:
               showExpandView &&
               (embedDetails == null || // null OR undefined
-                (embedDetails && canGoBack())),
+                (embedDetails && canGoBack()) ||
+                embedDetails?.embedData.style === "standard_wall"),
           },
           variant === "expand" ? "gencl:w-screen" : "gencl:w-full gencl:h-full",
-          className,
+          className
         )}
         style={{
           height: variant === "expand" ? `${viewportHeight}px` : "100%",
         }}
-        {...restProps}
-      >
+        {...restProps}>
         <FeedContentWrapper isIHeart={isIHeart}>
-          <Suspense
-            fallback={
-              <FeedSkeleton variant="player-list" theme={skeletonTheme} />
-            }
-          >
-            <PlayerList
-              isSectioned={isSectioned}
-              totalVideos={totalVideos}
-              {...playerListProps}
-            />
+          <Suspense fallback={<FeedSkeleton variant="player-list" theme={skeletonTheme} />}>
+            <PlayerList isSectioned={isSectioned} totalVideos={totalVideos} {...playerListProps} />
           </Suspense>
           {showSidePanel && (
-            <Suspense
-              fallback={
-                <FeedSkeleton variant="side-panel" theme={skeletonTheme} />
-              }
-            >
+            <Suspense fallback={<FeedSkeleton variant="side-panel" theme={skeletonTheme} />}>
               <PostSidePanel
                 onGroupJoinStatusChange={handleGroupJoinStatusChange}
                 onGroupSubscriptionChange={handleGroupSubscriptionChange}

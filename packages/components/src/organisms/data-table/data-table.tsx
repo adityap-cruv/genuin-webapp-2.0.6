@@ -1,15 +1,13 @@
-
+import { TableHeader, TableRow, TableHead, TableBody, TableCell, Table } from "@genuin/ui/components/table";
+import type { ColumnDef, SortingState, RowSelectionState } from "@tanstack/react-table";
 import {
-  ColumnDef,
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-  SortingState,
-  RowSelectionState,
 } from "@tanstack/react-table";
-import { TableHeader, TableRow, TableHead, TableBody, TableCell, Table } from "@genuin/ui/components/table";
+
 import { DataTablePagination } from "./data-table-pagination";
 
 interface DataTableProps<TData, TValue> {
@@ -93,29 +91,21 @@ export function DataTable<TData, TValue>({
   return (
     <>
       <div className="gencl:rounded-2xl gencl:border gencl:bg-white gencl:border-secondary-150 gencl:overflow-hidden">
-        <div
-          className="gencl:overflow-x-auto"
-          style={{ height: "calc(100vh - 350px)" }}
-        >
+        <div className="gencl:overflow-x-auto" style={{ height: "calc(100vh - 350px)" }}>
           <Table
             className="gencl:table-fixed"
             style={{
               width: "100%",
               tableLayout: "fixed",
               minWidth: "100%",
-            }}
-          >
+            }}>
             <TableHeader className="gencl:sticky gencl:top-0 gencl:z-10 gencl:bg-white">
               {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow
-                  key={headerGroup.id}
-                  className="gencl:border-b gencl:border-secondary-150 "
-                >
+                <TableRow key={headerGroup.id} className="gencl:border-b gencl:border-secondary-150">
                   {headerGroup.headers.map((header) => {
                     const columnMeta = header.column.columnDef.meta as any;
                     const headerClassName =
-                      columnMeta?.headerClassName ||
-                      "gencl:text-body-1-semi-bold gencl:overflow-hidden";
+                      columnMeta?.headerClassName || "gencl:text-body-1-semi-bold gencl:overflow-hidden";
 
                     return (
                       <TableHead
@@ -125,14 +115,8 @@ export function DataTable<TData, TValue>({
                           width: `${header.getSize()}px`,
                           minWidth: `${header.getSize()}px`,
                           maxWidth: `${header.getSize()}px`,
-                        }}
-                      >
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
+                        }}>
+                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                       </TableHead>
                     );
                   })}
@@ -145,13 +129,10 @@ export function DataTable<TData, TValue>({
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
-                    className={`gencl:border-b gencl:border-secondary-150 gencl:hover:bg-secondary-50 gencl:min-h-20${row.getIsSelected() ? " gencl:bg-secondary-50" : ""}`}
-                  >
+                    className={`gencl:border-b gencl:border-secondary-150 gencl:hover:bg-secondary-50 gencl:min-h-20${row.getIsSelected() ? "gencl:bg-secondary-50" : ""}`}>
                     {row.getVisibleCells().map((cell) => {
                       const columnMeta = cell.column.columnDef.meta as any;
-                      const cellClassName =
-                        columnMeta?.cellClassName ||
-                        "gencl:overflow-hidden gencl:text-ellipsis";
+                      const cellClassName = columnMeta?.cellClassName || "gencl:overflow-hidden gencl:text-ellipsis";
 
                       return (
                         <TableCell
@@ -161,12 +142,8 @@ export function DataTable<TData, TValue>({
                             width: `${cell.column.getSize()}px`,
                             minWidth: `${cell.column.getSize()}px`,
                             maxWidth: `${cell.column.getSize()}px`,
-                          }}
-                        >
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
+                          }}>
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </TableCell>
                       );
                     })}
@@ -174,10 +151,7 @@ export function DataTable<TData, TValue>({
                 ))
               ) : (
                 <TableRow>
-                  <TableCell
-                    colSpan={table.getAllColumns().length}
-                    className="h-24 text-center"
-                  >
+                  <TableCell colSpan={table.getAllColumns().length} className="h-24 text-center">
                     No results.
                   </TableCell>
                 </TableRow>

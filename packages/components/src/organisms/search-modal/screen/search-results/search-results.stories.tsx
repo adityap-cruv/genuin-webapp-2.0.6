@@ -1,6 +1,8 @@
+import { Dialog } from "@genuin/ui/components/dialog";
 import type { Meta, StoryObj } from "@storybook/react";
-import { SearchResults } from "./search-results";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+import { SearchResults } from "./search-results";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,11 +31,13 @@ const meta: Meta<typeof SearchResults> = {
   },
   decorators: [
     (Story) => (
-      <QueryClientProvider client={queryClient}>
-        <div className="gencl:w-[600px] gencl:max-w-[600px] gencl:h-[500px] gencl:border gencl:border-gray-200 gencl:rounded-lg gencl:p-4 gencl:bg-white gencl:overflow-hidden">
-          <Story />
-        </div>
-      </QueryClientProvider>
+      <Dialog type="storybook-search-results" open>
+        <QueryClientProvider client={queryClient}>
+          <div className="gencl:w-[600px] gencl:max-w-[600px] gencl:h-[500px] gencl:border gencl:border-gray-200 gencl:rounded-lg gencl:p-4 gencl:bg-white gencl:overflow-hidden">
+            <Story />
+          </div>
+        </QueryClientProvider>
+      </Dialog>
     ),
   ],
   tags: ["autodocs"],

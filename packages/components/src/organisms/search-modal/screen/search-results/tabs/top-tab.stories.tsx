@@ -1,6 +1,9 @@
+import { Dialog } from "@genuin/ui/components/dialog";
 import type { Meta, StoryObj } from "@storybook/react";
-import { TopTab } from "./top-tab";
+
 import type { TopResultsResponseType } from "@genuin/components/react-query/api/search";
+
+import { TopTab } from "./top-tab";
 
 const meta: Meta<typeof TopTab> = {
   title: "Organisms/Search/Tabs/TopTab",
@@ -14,6 +17,14 @@ const meta: Meta<typeof TopTab> = {
       },
     },
   },
+  decorators: [
+    (Story) => (
+      // Dialog context is required because TopTab renders DialogClose around each item
+      <Dialog type="storybook-top-tab" open>
+        <Story />
+      </Dialog>
+    ),
+  ],
   argTypes: {
     query: {
       control: "text",
@@ -169,8 +180,7 @@ const mockTopResults: TopResultsResponseType = {
       group: {
         group_id: "group_1",
         group_name: "Tech Enthusiasts",
-        group_description:
-          "A community for technology lovers to share insights and discuss the latest innovations",
+        group_description: "A community for technology lovers to share insights and discuss the latest innovations",
         dp: "https://picsum.photos/200/200?random=20",
         dp_m: "https://picsum.photos/100/100?random=20",
         slug: "tech-enthusiasts",
@@ -189,8 +199,7 @@ const mockTopResults: TopResultsResponseType = {
       group: {
         group_id: "group_2",
         group_name: "Design Inspiration",
-        group_description:
-          "Showcase and discover amazing design work from creative professionals worldwide",
+        group_description: "Showcase and discover amazing design work from creative professionals worldwide",
         dp: "https://picsum.photos/200/200?random=21",
         dp_m: "https://picsum.photos/100/100?random=21",
         slug: "design-inspiration",
@@ -209,8 +218,7 @@ const mockTopResults: TopResultsResponseType = {
       group: {
         group_id: "group_3",
         group_name: "Startup Founders",
-        group_description:
-          "A private group for startup founders to share experiences and network",
+        group_description: "A private group for startup founders to share experiences and network",
         dp: "https://picsum.photos/200/200?random=22",
         dp_m: "https://picsum.photos/100/100?random=22",
         slug: "startup-founders",
@@ -230,8 +238,7 @@ const mockTopResults: TopResultsResponseType = {
       name: "Photography Masters",
       handle: "@photography_masters",
       slug: "photography-masters",
-      description:
-        "A vibrant community of photographers sharing techniques, showcasing work, and inspiring creativity",
+      description: "A vibrant community of photographers sharing techniques, showcasing work, and inspiring creativity",
       dp: "https://picsum.photos/200/200?random=30",
       no_of_members: 5600,
       no_of_loops: 24,
@@ -243,8 +250,7 @@ const mockTopResults: TopResultsResponseType = {
       name: "Coding Bootcamp",
       handle: "@coding_bootcamp",
       slug: "coding-bootcamp",
-      description:
-        "Learn to code with our comprehensive bootcamp curriculum and supportive community",
+      description: "Learn to code with our comprehensive bootcamp curriculum and supportive community",
       dp: "https://picsum.photos/200/200?random=31",
       no_of_members: 3200,
       no_of_loops: 18,
@@ -256,8 +262,7 @@ const mockTopResults: TopResultsResponseType = {
       name: "Elite Entrepreneurs",
       handle: "@elite_entrepreneurs",
       slug: "elite-entrepreneurs",
-      description:
-        "Exclusive community for successful entrepreneurs and business leaders",
+      description: "Exclusive community for successful entrepreneurs and business leaders",
       dp: "https://picsum.photos/200/200?random=32",
       no_of_members: 890,
       no_of_loops: 12,

@@ -1,6 +1,5 @@
 // Unified types for all search functionality
 import { z } from "zod";
-import { no } from "zod/v4/locales";
 
 // ===============================
 // COMMON SCHEMAS
@@ -223,7 +222,7 @@ export const VideoTopResultSchema = z.object({
     contains_external_videos: z.boolean(),
     aspect_ratio: z.string(),
     resolution: z.string(),
-    duration: z.string(),
+    duration: z.union([z.string(), z.number()]).transform(String),
     size: z.string(),
   }),
   is_ai_generated: z.boolean(),
@@ -247,9 +246,7 @@ export const VideoTopResultSchema = z.object({
 });
 
 // Rankings Schema
-export const RankingSchema = z.array(
-  z.enum(["loops", "people", "videos", "communities"])
-);
+export const RankingSchema = z.array(z.enum(["loops", "people", "videos", "communities"]));
 
 // Top Results Response Schema
 export const TopResultsResponseSchema = z.object({
@@ -306,3 +303,24 @@ export type PeopleTopResultType = z.infer<typeof PeopleTopResultSchema>;
 export type LoopTopResultType = z.infer<typeof LoopTopResultSchema>;
 export type VideoTopResultType = z.infer<typeof VideoTopResultSchema>;
 export type RankingType = z.infer<typeof RankingSchema>;
+
+/**
+ * Parsed (client-friendly) representation of a video search result.
+ * Used by UI components that display search result posts/videos.
+ */
+export type ParsedVideoType = {
+  id: string;
+  title?: string;
+  thumbnail?: string;
+  description?: string;
+  /** Duration in seconds */
+  duration?: number;
+  viewCount?: number;
+  likeCount?: number;
+  creator?: {
+    id: string;
+    nickname: string;
+    name?: string | null;
+    profileImage?: string | null;
+  };
+};

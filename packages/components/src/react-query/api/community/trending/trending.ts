@@ -1,8 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
+import type { AxiosInstance } from "axios";
+
 import { useAxiosInstance } from "@genuin/components/context/axios";
 import { getQueryKeyForTrendingCommunities } from "@genuin/components/react-query/keys/community";
 import { API_PATHS } from "@genuin/components/react-query/paths";
-import type { AxiosInstance } from "axios";
 
 async function fetchTrendingCommunities(axiosInstance: AxiosInstance) {
   return await axiosInstance
@@ -17,10 +18,12 @@ async function fetchTrendingCommunities(axiosInstance: AxiosInstance) {
 }
 
 export function getTrendingCommunities() {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const axiosInstance = useAxiosInstance();
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   return useQuery({
     queryKey: getQueryKeyForTrendingCommunities(),
-    queryFn: (context) => fetchTrendingCommunities(axiosInstance),
+    queryFn: (_context) => fetchTrendingCommunities(axiosInstance),
   });
 }

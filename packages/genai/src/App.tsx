@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
+
+import type { PendingMessage } from '@/types';
+
 import ArrowCornerLeft from './assets/SvgIcons/ArrowCornerLeft';
 import Close from './assets/SvgIcons/Close';
 import AppContent from './components/AppContent';
@@ -8,7 +11,6 @@ import { AnimatedDialog, AnimatedDialogContent, AnimatedDialogHeader } from './c
 import { Button } from './components/ui/button';
 import { AppProviders } from './context/AppProviders';
 import { hideFloater, showFloater } from './styles/floaterStyles';
-import type { PendingMessage } from '@/types';
 
 // Container creation utility
 const createContainer = (className: string): HTMLElement => {

@@ -1,7 +1,8 @@
 'use client'
-import { useWalletStore } from './store'
 import { BackIcon } from '@icons/back-icon'
 import { BillStreamlineIcon } from '@icons/wallet/bill-streamline'
+
+import { useWalletStore } from './store'
 
 export const WalletCashEarningsCard = () => {
   const { setCurrentCardView, currentCardView, walletDetails } = useWalletStore()

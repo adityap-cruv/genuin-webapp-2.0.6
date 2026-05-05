@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+
 import { CommunityHoverCard } from "./community-hover-card";
 
 /**
@@ -42,7 +43,7 @@ export const Default: Story = {
       groupsCount: 12,
       postsCount: 567,
       userRole: "MEMBER",
-      shareUrl : "URL",
+      shareUrl: "URL",
       brand: {
         id: 456,
         name: "Creative Brand",

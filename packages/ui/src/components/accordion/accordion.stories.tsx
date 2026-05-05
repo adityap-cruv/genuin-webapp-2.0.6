@@ -1,12 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "./accordion";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./accordion";
 
 const meta = {
   title: "Components/Accordion",
@@ -19,19 +14,16 @@ const meta = {
     type: {
       control: { type: "radio" },
       options: ["single", "multiple"],
-      description:
-        "Determines whether one or multiple items can be opened at the same time.",
+      description: "Determines whether one or multiple items can be opened at the same time.",
     },
     collapsible: {
       control: "boolean",
-      description:
-        "When type is 'single', allows closing content by clicking trigger for an open item.",
+      description: "When type is 'single', allows closing content by clicking trigger for an open item.",
       if: { arg: "type", eq: "single" }, // Only show if type is 'single'
     },
     defaultValue: {
       control: "text",
-      description:
-        "The value of the item to be initially open when type is 'single'.",
+      description: "The value of the item to be initially open when type is 'single'.",
       if: { arg: "type", eq: "single" },
     },
     // defaultValue for type="multiple" would be string[] which is harder to control in Storybook args
@@ -75,21 +67,17 @@ export const Single: Story = {
       <AccordionItem value="item-1">
         <AccordionTrigger>Getting Started</AccordionTrigger>
         <AccordionContent>
-          Learn the basics of our platform and how to get started with your
-          first project.
+          Learn the basics of our platform and how to get started with your first project.
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="item-2">
         <AccordionTrigger>Advanced Features</AccordionTrigger>
-        <AccordionContent>
-          Explore advanced features and techniques to enhance your workflow.
-        </AccordionContent>
+        <AccordionContent>Explore advanced features and techniques to enhance your workflow.</AccordionContent>
       </AccordionItem>
       <AccordionItem value="item-3">
         <AccordionTrigger>Best Practices</AccordionTrigger>
         <AccordionContent>
-          Discover best practices and tips for optimal performance and user
-          experience.
+          Discover best practices and tips for optimal performance and user experience.
         </AccordionContent>
       </AccordionItem>
     </Accordion>
@@ -115,23 +103,18 @@ export const Multiple: Story = {
             For simplicity, they are hardcoded here as per the original story. */}
         <AccordionTrigger>Account Settings</AccordionTrigger>
         <AccordionContent>
-          Manage your account preferences, security settings, and notification
-          preferences.
+          Manage your account preferences, security settings, and notification preferences.
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="item-2">
         <AccordionTrigger>Billing Information</AccordionTrigger>
         <AccordionContent>
-          View and update your billing details, payment methods, and
-          subscription plans.
+          View and update your billing details, payment methods, and subscription plans.
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="item-3">
         <AccordionTrigger>API Documentation</AccordionTrigger>
-        <AccordionContent>
-          Access comprehensive API documentation, examples, and integration
-          guides.
-        </AccordionContent>
+        <AccordionContent>Access comprehensive API documentation, examples, and integration guides.</AccordionContent>
       </AccordionItem>
     </Accordion>
   ),
@@ -152,22 +135,17 @@ export const WithDefaultValue: Story = {
     <Accordion {...args}>
       <AccordionItem value="item-1">
         <AccordionTrigger>Introduction</AccordionTrigger>
-        <AccordionContent>
-          This is the first section of the accordion.
-        </AccordionContent>
+        <AccordionContent>This is the first section of the accordion.</AccordionContent>
       </AccordionItem>
       <AccordionItem value="item-2">
         <AccordionTrigger>Default Open Section</AccordionTrigger>
         <AccordionContent>
-          This section is open by default because its value matches the
-          `defaultValue` prop.
+          This section is open by default because its value matches the `defaultValue` prop.
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="item-3">
         <AccordionTrigger>Another Section</AccordionTrigger>
-        <AccordionContent>
-          This is the third section of the accordion.
-        </AccordionContent>
+        <AccordionContent>This is the third section of the accordion.</AccordionContent>
       </AccordionItem>
     </Accordion>
   ),
@@ -185,15 +163,10 @@ export const CustomStyled: Story = {
   },
   render: (args) => (
     <Accordion className="gencl:w-[500px] gencl:rounded-lg" {...args}>
-      <AccordionItem
-        value="item-1"
-        className="gencl:border-b gencl:border-gray-200"
-      >
+      <AccordionItem value="item-1" className="gencl:border-b gencl:border-gray-200">
         <AccordionTrigger
           className="gencl:text-lg gencl:font-semibold gencl:text-gray-800"
-          openIcon={<ChevronUp className="gencl:text-gray-800" />}
-          closedIcon={<ChevronDown className="gencl:text-gray-800" />}
-        >
+          openCloseIcon={<ChevronDown className="gencl:text-gray-800" />}>
           Product Features
         </AccordionTrigger>
         <AccordionContent className="gencl:bg-gray-50">
@@ -207,15 +180,10 @@ export const CustomStyled: Story = {
           </div>
         </AccordionContent>
       </AccordionItem>
-      <AccordionItem
-        value="item-2"
-        className="gencl:border-b gencl:border-gray-200"
-      >
+      <AccordionItem value="item-2" className="gencl:border-b gencl:border-gray-200">
         <AccordionTrigger
           className="gencl:text-lg gencl:font-semibold gencl:text-gray-800"
-          openIcon={<ChevronUp className="gencl:text-gray-800" />}
-          closedIcon={<ChevronDown className="gencl:text-gray-800" />}
-        >
+          openCloseIcon={<ChevronDown className="gencl:text-gray-800" />}>
           Pricing Plans
         </AccordionTrigger>
         <AccordionContent className="gencl:bg-gray-50">

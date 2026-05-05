@@ -1,18 +1,15 @@
 import { Button } from "@genuin/ui/button";
-import { useBaseContext } from "@genuin/components/context/base";
-import {
-  GoogleIcon,
-  AppleIcon,
-  MultipleDotsIcon,
-  EmailIcon,
-} from "@genuin/ui/icons";
-import { useAuthenticationModalContext } from "../../context";
-import { useCallback } from "react";
-import { useGetRedirectionUrlForSSOMutation } from "@genuin/components/react-query/api/authentication/auto-login";
-import { Toast } from "@genuin/ui/components/toaster";
 import { Loader } from "@genuin/ui/components/loader";
-import { Link } from "@genuin/components/molecules/link";
+import { Toast } from "@genuin/ui/components/toaster";
+import { GoogleIcon, AppleIcon, MultipleDotsIcon, EmailIcon } from "@genuin/ui/icons";
+import { useCallback } from "react";
+
+import { useBaseContext } from "@genuin/components/context/base";
 import { NEXT_PUBLIC_HOST_URL } from "@genuin/components/lib/utils/env";
+import { Link } from "@genuin/components/molecules/link";
+import { useGetRedirectionUrlForSSOMutation } from "@genuin/components/react-query/api/authentication/auto-login";
+
+import { useAuthenticationModalContext } from "../../context";
 
 // TODO: handle signin with Goggle and Apple
 export function Footer() {
@@ -25,29 +22,22 @@ export function Footer() {
   return (
     <>
       <div className="gencl:flex gencl:w-full gencl:items-center gencl:gap-4 gencl:mt-4">
-        <div className="gencl:w-full gencl:h-px gencl:bg-secondary-50">
-          &nbsp;
-        </div>
+        <div className="gencl:w-full gencl:h-px gencl:bg-secondary-50">&nbsp;</div>
         <p className="gencl:whitespace-nowrap gencl:text-body-2-medium gencl:sm:!text-body-1-med gencl:text-secondary-500">
           OR
         </p>
-        <div className="gencl:w-full gencl:h-px gencl:bg-secondary-50">
-          &nbsp;
-        </div>
+        <div className="gencl:w-full gencl:h-px gencl:bg-secondary-50">&nbsp;</div>
       </div>
       <div className="gencl:mt-4 gencl:flex gencl:w-full gencl:flex-col gencl:gap-4 gencl:text-body-1-medium">
         {brandDetails.social_login.google && <SignInWithGoogle />}
         {brandDetails.social_login.apple && <SignInWithApple />}
-        {brandDetails.social_login.brand && (
-          <SignInWithBrand brandName={brandDetails.name} />
-        )}
+        {brandDetails.social_login.brand && <SignInWithBrand brandName={brandDetails.name} />}
       </div>
       <div
         onClick={() => {
           setFormData({ flowType: flowType === "EMAIL" ? "PHONE" : "EMAIL" });
         }}
-        className="gencl:flex gencl:justify-center gencl:items-center gencl:gap-2.5 gencl:mt-4 gencl:cursor-pointer"
-      >
+        className="gencl:flex gencl:justify-center gencl:items-center gencl:gap-2.5 gencl:mt-4 gencl:cursor-pointer">
         {flowType === "EMAIL" ? (
           <MultipleDotsIcon theme="primary" size="sm" />
         ) : (
@@ -64,18 +54,12 @@ export function Footer() {
             brandDetails.terms_and_condition?.trim()
               ? brandDetails.terms_and_condition
               : NEXT_PUBLIC_HOST_URL + "/terms"
-          }
-        >
+          }>
           <span className="gencl:text-primary"> Terms of Service </span>
         </Link>
         and
         <Link
-          href={
-            brandDetails.privacy_policy?.trim()
-              ? brandDetails.privacy_policy
-              : NEXT_PUBLIC_HOST_URL + "/privacy"
-          }
-        >
+          href={brandDetails.privacy_policy?.trim() ? brandDetails.privacy_policy : NEXT_PUBLIC_HOST_URL + "/privacy"}>
           <span className="gencl:text-primary"> Privacy Policy</span>
         </Link>
       </p>
@@ -90,20 +74,19 @@ function getUrlToRedirect(provider: string) {
 }
 
 function SignInWithGoogle() {
-  const { mutate: getUrlToRedirectForSSO, isPending } =
-    useGetRedirectionUrlForSSOMutation({
-      onSuccess: (url) => {
-        const responseUrl = new URL(url);
-        responseUrl.searchParams.set("prompt", "consent");
-        responseUrl.searchParams.set("state", getUrlToRedirect("google"));
-        window.open(responseUrl.href, "_self");
-      },
-      onError: (error) => {
-        Toast.Error({
-          message: "Something went wrong, please try again later",
-        });
-      },
-    });
+  const { mutate: getUrlToRedirectForSSO, isPending } = useGetRedirectionUrlForSSOMutation({
+    onSuccess: (url) => {
+      const responseUrl = new URL(url);
+      responseUrl.searchParams.set("prompt", "consent");
+      responseUrl.searchParams.set("state", getUrlToRedirect("google"));
+      window.open(responseUrl.href, "_self");
+    },
+    onError: (error) => {
+      Toast.Error({
+        message: "Something went wrong, please try again later",
+      });
+    },
+  });
 
   const handleSignInWithGoogle = useCallback(() => {
     getUrlToRedirectForSSO({
@@ -112,19 +95,13 @@ function SignInWithGoogle() {
   }, []);
 
   return (
-    <Button
-      className="gencl:border gencl:border-secondary-600"
-      theme="text"
-      onClick={handleSignInWithGoogle}
-    >
+    <Button className="gencl:border gencl:border-secondary-600" theme="text" onClick={handleSignInWithGoogle}>
       {isPending ? (
         <Loader />
       ) : (
         <>
           <GoogleIcon className="gencl:h-6 gencl:w-6" />
-          <p className="gencl:text-secondary-900 gencl:text-body-1-medium">
-            Continue with Google
-          </p>
+          <p className="gencl:text-secondary-900 gencl:text-body-1-medium">Continue with Google</p>
         </>
       )}
     </Button>
@@ -132,20 +109,19 @@ function SignInWithGoogle() {
 }
 
 function SignInWithApple() {
-  const { mutate: getUrlToRedirectForSSO, isPending } =
-    useGetRedirectionUrlForSSOMutation({
-      onSuccess: (url) => {
-        const responseUrl = new URL(url);
-        responseUrl.searchParams.set("prompt", "consent");
-        responseUrl.searchParams.set("state", getUrlToRedirect("apple"));
-        window.open(responseUrl.href, "_self");
-      },
-      onError: () => {
-        Toast.Error({
-          message: "Something went wrong, please try again later",
-        });
-      },
-    });
+  const { mutate: getUrlToRedirectForSSO, isPending } = useGetRedirectionUrlForSSOMutation({
+    onSuccess: (url) => {
+      const responseUrl = new URL(url);
+      responseUrl.searchParams.set("prompt", "consent");
+      responseUrl.searchParams.set("state", getUrlToRedirect("apple"));
+      window.open(responseUrl.href, "_self");
+    },
+    onError: () => {
+      Toast.Error({
+        message: "Something went wrong, please try again later",
+      });
+    },
+  });
 
   const handleSignInWithApple = useCallback(() => {
     getUrlToRedirectForSSO({
@@ -154,19 +130,13 @@ function SignInWithApple() {
   }, []);
 
   return (
-    <Button
-      className="gencl:bg-black"
-      theme="text"
-      onClick={handleSignInWithApple}
-    >
+    <Button className="gencl:bg-black" theme="text" onClick={handleSignInWithApple}>
       {isPending ? (
         <Loader />
       ) : (
         <>
           <AppleIcon className="gencl:h-6 gencl:w-6" />
-          <p className="gencl:text-white gencl:text-body-1-medium">
-            Continue with Apple
-          </p>
+          <p className="gencl:text-white gencl:text-body-1-medium">Continue with Apple</p>
         </>
       )}
     </Button>
@@ -175,37 +145,31 @@ function SignInWithApple() {
 
 function SignInWithBrand({ brandName }: { brandName: string }) {
   const { brandDetails } = useBaseContext();
-  const { mutate: getUrlToRedirectForSSO, isPending } =
-    useGetRedirectionUrlForSSOMutation({
-      onSuccess: (url) => {
-        const responseUrl = new URL(url);
-        responseUrl.searchParams.set("prompt", "consent");
-        responseUrl.searchParams.set(
-          "state",
-          getUrlToRedirect(brandDetails.social_login.brand_sso_id)
-        );
-        window.open(responseUrl.href, "_self");
-      },
-      onError: () => {
-        Toast.Error({
-          message: "Something went wrong, please try again later",
-        });
-      },
-    });
+  const { mutate: getUrlToRedirectForSSO, isPending } = useGetRedirectionUrlForSSOMutation({
+    onSuccess: (url) => {
+      const responseUrl = new URL(url);
+      responseUrl.searchParams.set("prompt", "consent");
+      if (brandDetails.social_login.brand_sso_id) {
+        responseUrl.searchParams.set("state", getUrlToRedirect(brandDetails.social_login.brand_sso_id));
+      }
+      window.open(responseUrl.href, "_self");
+    },
+    onError: () => {
+      Toast.Error({
+        message: "Something went wrong, please try again later",
+      });
+    },
+  });
 
   const handleClick = useCallback(() => {
-    if (!brandDetails.social_login.brand) {
+    if (!brandDetails.social_login.brand || !brandDetails.social_login.brand_sso_id) {
       Toast.Error({ message: "Brand does not support SSO login" });
       return;
     }
     getUrlToRedirectForSSO({
       thirdPartyId: brandDetails.social_login.brand_sso_id,
     });
-  }, [brandDetails.social_login.brand, getUrlToRedirectForSSO]);
+  }, [brandDetails.social_login.brand, brandDetails.social_login.brand_sso_id, getUrlToRedirectForSSO]);
 
-  return (
-    <Button onClick={handleClick}>
-      {isPending ? <Loader /> : <> Continue with {brandName}</>}
-    </Button>
-  );
+  return <Button onClick={handleClick}>{isPending ? <Loader /> : <> Continue with {brandName}</>}</Button>;
 }

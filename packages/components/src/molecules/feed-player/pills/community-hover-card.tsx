@@ -1,23 +1,22 @@
 import { Avatar } from "@genuin/ui/avatar";
+import { cn } from "@genuin/ui/lib/utils";
 import { type ComponentProps } from "react";
 
+import { useAnalytics } from "@genuin/components/context/analytics";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { compressText } from "@genuin/components/lib/utils";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { JoinCommunityButton } from "@genuin/components/molecules/join-community-button";
 import { ShareButton } from "@genuin/components/molecules/share-button";
-import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
-import { cn } from "@genuin/ui/lib/utils";
-import { GenericDetailsMetadata } from "@genuin/components/organisms/generic-details/generic-details-metadata";
-import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { Stats } from "@genuin/components/molecules/stats";
 import { Tag } from "@genuin/components/molecules/tag";
-import { compressText } from "@genuin/components/lib/utils";
-import { useAnalytics } from "@genuin/components/context/analytics";
+import { GenericDetailsMetadata } from "@genuin/components/organisms/generic-details/generic-details-metadata";
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 type CommunityHoverCardProps = {
   communityDetails: PostDetailsType["community"];
   videoId?: string;
-  onCommunityJoinStatusChange: ComponentProps<
-    typeof JoinCommunityButton
-  >["onCommunityJoinStatusChange"];
+  onCommunityJoinStatusChange: ComponentProps<typeof JoinCommunityButton>["onCommunityJoinStatusChange"];
 } & ComponentProps<"div">;
 
 export function CommunityHoverCard({
@@ -27,25 +26,18 @@ export function CommunityHoverCard({
   className,
   ...restProps
 }: CommunityHoverCardProps) {
-  const { name, profileImage, isPrivate, brand, id, userRole } =
-    communityDetails;
   const { track, EventName } = useAnalytics();
+  const { community: communityConfig } = useEmbedConfigs();
+
+  if (!communityDetails) return null;
+
+  const { name, profileImage, isPrivate, brand, id, userRole } = communityDetails;
 
   return (
-    <div
-      className={cn("gencl:space-y-2 gencl:w-full", className)}
-      {...restProps}
-    >
-      <Avatar
-        alt={name ?? ""}
-        imageUrl={profileImage ?? ""}
-        isAvatar={false}
-        size="2xl"
-      />
+    <div className={cn("gencl:space-y-2 gencl:w-full", className)} {...restProps}>
+      <Avatar alt={name ?? ""} imageUrl={profileImage ?? ""} isAvatar={false} size="2xl" />
       <div className="gencl:space-y-1">
-        <p className="gencl:text-body-1-semi-bold gencl:line-clamp-2 gencl:truncate">
-          {name}
-        </p>
+        <p className="gencl:text-body-1-semi-bold gencl:line-clamp-2 gencl:truncate">{name}</p>
         <GenericDetailsMetadata
           className="gencl:items-center"
           privacyInfo={{ isPrivate, showPrivacyText: false }}
@@ -93,33 +85,37 @@ export function CommunityHoverCard({
       </div>
 
       <div className="gencl:flex gencl:items-center gencl:gap-2 gencl:w-full">
-        <JoinCommunityButton
-          communityId={id}
-          communityHandle={communityDetails.handle}
-          communityName={communityDetails.name ?? ""}
-          slug={communityDetails.slug}
-          isPrivate={isPrivate}
-          role={userRole}
-          videoId={videoId}
-          onCommunityJoinStatusChange={onCommunityJoinStatusChange}
-          className="gencl:flex-grow"
-        />
-        <ShareButton
-          size="sm"
-          pathName={buildPageUrl({
-            type: "community",
-            slug: communityDetails.slug,
-          })}
-          onClick={() => {
-            track(EventName.COMMUNITY_SHARED, {
-              community_id: communityDetails.id,
-              share_url: buildPageUrl({
-                type: "community",
-                slug: communityDetails.slug,
-              }),
-            });
-          }}
-        />
+        {communityConfig.showJoinCommunityButton && (
+          <JoinCommunityButton
+            communityId={id}
+            communityHandle={communityDetails.handle}
+            communityName={communityDetails.name ?? ""}
+            slug={communityDetails.slug}
+            isPrivate={isPrivate}
+            role={userRole}
+            videoId={videoId}
+            onCommunityJoinStatusChange={onCommunityJoinStatusChange}
+            className="gencl:flex-grow"
+          />
+        )}
+        {communityConfig.showCommunityShareButton && (
+          <ShareButton
+            size="sm"
+            pathName={buildPageUrl({
+              type: "community",
+              slug: communityDetails.slug,
+            })}
+            onClick={() => {
+              track(EventName.COMMUNITY_SHARED, {
+                community_id: communityDetails.id,
+                share_url: buildPageUrl({
+                  type: "community",
+                  slug: communityDetails.slug,
+                }),
+              });
+            }}
+          />
+        )}
       </div>
     </div>
   );

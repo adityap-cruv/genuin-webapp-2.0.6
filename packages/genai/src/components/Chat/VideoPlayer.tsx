@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+
 import { Pause, Play, VolumeOff, VolumeOn } from '@/assets/SvgIcons/icons';
 
 interface VideoPlayerProps {

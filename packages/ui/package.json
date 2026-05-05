@@ -44,18 +44,56 @@
     "./textarea": "./src/components/textarea/index.ts",
     "./select": "./src/components/select/index.ts",
     "./hooks": "./src/hooks/index.ts",
+    "./hooks/use-device-detection": "./src/hooks/use-device-detection.ts",
     "./lib/utils": "./src/lib/utils.ts",
     "./lib/sanitize": "./src/lib/sanitize.ts",
+    "./lib/dialog-manager": "./src/lib/dialog-manager/index.ts",
     "./lib/dialog-manager/dialog-manager": "./src/lib/dialog-manager/dialog-manager.ts",
+    "./lib/shadow-dom.utils": "./src/lib/shadow-dom.utils.ts",
     "./icons/iheart-icons": "./src/icons/iheart-icons.tsx",
     "./components/image": "./src/components/image/index.ts",
     "./components/loader": "./src/components/loader/index.ts",
     "./components/skeleton": "./src/components/skeleton/index.ts",
     "./components/toaster": "./src/components/toaster/index.ts",
-    "./components/button": "./src/components/button/index.ts"
+    "./components/button": "./src/components/button/index.ts",
+    "./components/input": "./src/components/input/index.ts",
+    "./components/label": "./src/components/label/index.ts",
+    "./components": "./src/components/index.ts",
+    "./components/accordion": "./src/components/accordion/index.ts",
+    "./components/audio-player": "./src/components/audio-player/index.ts",
+    "./components/avatar": "./src/components/avatar/index.ts",
+    "./components/checkbox": "./src/components/checkbox/index.ts",
+    "./components/chip": "./src/components/chip/index.ts",
+    "./components/collapsible": "./src/components/collapsible/index.ts",
+    "./components/command": "./src/components/command/index.ts",
+    "./components/decorative-list": "./src/components/decorative-list/index.ts",
+    "./components/dialog": "./src/components/dialog/index.ts",
+    "./components/dialog/dialog": "./src/components/dialog/dialog.tsx",
+    "./components/dynamic-sheet": "./src/components/dynamic-sheet/index.ts",
+    "./components/form": "./src/components/form/index.ts",
+    "./components/hover-card": "./src/components/hover-card/index.ts",
+    "./components/infinite-scroll": "./src/components/infinite-scroll/index.ts",
+    "./components/input-otp": "./src/components/input-otp/index.ts",
+    "./components/phone-input": "./src/components/phone-input/index.ts",
+    "./components/popover": "./src/components/popover/index.ts",
+    "./components/radio-input": "./src/components/radio-input/index.ts",
+    "./components/select": "./src/components/select/index.ts",
+    "./components/sheet": "./src/components/sheet/index.ts",
+    "./components/slider": "./src/components/slider/index.ts",
+    "./components/switch": "./src/components/switch/index.ts",
+    "./components/table": "./src/components/table/index.ts",
+    "./components/tabs": "./src/components/tabs/index.ts",
+    "./components/textarea": "./src/components/textarea/index.ts",
+    "./components/tooltip": "./src/components/tooltip/index.ts",
+    "./components/video-player": "./src/components/video-player/index.ts",
+    "./icons/misc-icons/become-creator/community-01": "./src/icons/misc-icons/become-creator/community-01.tsx",
+    "./icons/misc-icons/become-creator/community-02": "./src/icons/misc-icons/become-creator/community-02.tsx",
+    "./icons/misc-icons/become-creator/community-03": "./src/icons/misc-icons/become-creator/community-03.tsx"
   },
   "scripts": {
-    "lint": "eslint . --max-warnings 20",
+    "build": "tsc --build",
+    "typecheck": "tsc --build",
+    "lint": "eslint .",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "preinstall": "pnpm run build:styles",
@@ -63,7 +101,18 @@
     "dev:styles": "npx @tailwindcss/cli -i ./src/styles/globals.css -o ./dist/index.css --watch",
     "test": "jest && vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "lint-staged": "lint-staged",
+    "publish:storybook:oracle:qa": "env-cmd -f ./.env.qa cross-env NODE_ENV=qa npx tsx scripts/uploadStorybookToOracle.ts",
+    "publish:storybook:oracle:prod": "env-cmd -f ./.env.production cross-env NODE_ENV=production npx tsx scripts/uploadStorybookToOracle.ts",
+    "deploy:storybook:qa": "npm run build-storybook && npm run publish:storybook:oracle:qa",
+    "deploy:storybook:prod": "npm run build-storybook && npm run publish:storybook:oracle:prod"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,mjs}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
   },
   "peerDependencies": {
     "@lottiefiles/react-lottie-player": "^3.5.4",
@@ -112,6 +161,9 @@
     "zod": "^3.25.16"
   },
   "devDependencies": {
+    "@aws-sdk/client-s3": "^3.0.0",
+    "@inquirer/prompts": "^7.0.0",
+    "@types/cli-progress": "^3.11.6",
     "@chromatic-com/storybook": "^4.0.0",
     "@genuin/eslint-config": "workspace:*",
     "@genuin/tailwind-config": "workspace:*",
@@ -142,6 +194,12 @@
     "ts-jest": "^29.3.4",
     "typescript": "^5.8.3",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^3.1.4"
+    "vitest": "^3.1.4",
+    "chalk": "^5.0.0",
+    "cli-progress": "^3.12.0",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.0.0",
+    "env-cmd": "^10.1.0",
+    "tsx": "^4.0.0"
   }
 }

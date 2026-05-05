@@ -1,29 +1,25 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { AnalyticsService, EventName } from "../analytics";
+import { useDebounceCallback } from "usehooks-ts";
 
+import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
+import { SDKEventEmitter, SDKEventName, SDKListenerEventName } from "@genuin/components/lib/sdk-event-emitter";
+import { parseBrandColors } from "@genuin/components/lib/utils/brand-color-parser";
 import {
   DEVICE_ID_KEY_FOR_LOCAL_STORAGE,
   getNewDeviceId,
   useGetDeviceId,
 } from "@genuin/components/lib/utils/device-id";
-import type { BrandDetailsConfigType } from "@genuin/components/types/brand";
+import internalStorageManager from "@genuin/components/lib/utils/internal-storage-manager";
 import type { PlaybackSpeedType } from "@genuin/components/molecules/feed-player/context/types";
+import type { BrandDetailsConfigType } from "@genuin/components/types/brand";
+
+import { AnalyticsService, EventName } from "../analytics";
+import { useSafeEmbedContext } from "../embed/context";
 
 import { BaseContext } from "./context";
-import { parseBrandColors } from "@genuin/components/lib/utils/brand-color-parser";
 import { createBaseEventBus } from "./event-bus";
-import internalStorageManager from "@genuin/components/lib/utils/internal-storage-manager";
 import { FeedContextManager } from "./feed-context-manager";
-import { useSafeEmbedContext } from "../embed/context";
-import {
-  SDKEventEmitter,
-  SDKEventName,
-  SDKListenerEventName,
-} from "@genuin/components/lib/sdk-event-emitter";
-import { getSdkVersion } from "../analytics/utils";
-import { useDebounceCallback } from "usehooks-ts";
-import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 
 type BaseContextProviderProps = {
   children: React.ReactNode;
@@ -61,8 +57,7 @@ type AutoplayParams = {
  * @returns boolean indicating whether autoplay should be enabled
  */
 function getShouldAutoplay(params: AutoplayParams): boolean {
-  const { isEmbed, embedDetails, embedData, customization, brandDetails } =
-    params;
+  const { isEmbed, embedDetails, embedData, customization, brandDetails } = params;
 
   const isIheart = embedDetails?.brandLayoutType === "iheart";
   const isPolaris = embedDetails?.embedData.websiteType === "polaris";
@@ -127,10 +122,7 @@ export function BaseContextProvider({
     return createBaseEventBus(shouldAutoplay);
   }, [isEmbed, embedDetails, brandDetails]);
 
-  const baseContextManager = useMemo(
-    () => FeedContextManager.getInstance(),
-    [],
-  );
+  const baseContextManager = useMemo(() => FeedContextManager.getInstance(), []);
 
   // TODO: move this states to event based states.
   const [muted, setMuted] = useState(true);
@@ -143,12 +135,8 @@ export function BaseContextProvider({
   // Per-embed play state. Uses baseEventBus (per-embed, created via useMemo) rather
   // than FeedContextManager, which is a page-level singleton whose isPlaying reflects
   // the last writer across all embeds and cannot be used for per-embed tracking.
-  const [isPlaying, setIsPlaying] = useState(
-    () => baseEventBus.getContext().globalPlayingState,
-  );
-  const [currentTheme, setCurrentTheme] = useState<
-    "dark" | "light" | undefined
-  >(theme);
+  const [isPlaying, setIsPlaying] = useState(() => baseEventBus.getContext().globalPlayingState);
+  const [currentTheme, setCurrentTheme] = useState<"dark" | "light" | undefined>(theme);
 
   // Detect if running inside an iframe (safe for SSR)
   const isInIframe = useMemo(() => {
@@ -214,8 +202,7 @@ export function BaseContextProvider({
     }
 
     SDKEventEmitter.on(SDKListenerEventName.MUTE_CHANGE, handleMuteChange);
-    return () =>
-      SDKEventEmitter.off(SDKListenerEventName.MUTE_CHANGE, handleMuteChange);
+    return () => SDKEventEmitter.off(SDKListenerEventName.MUTE_CHANGE, handleMuteChange);
   }, [muted, isPlaying]);
 
   // [3a] Emitter — mute toggled.
@@ -231,7 +218,7 @@ export function BaseContextProvider({
           volume: baseEventBus.getContext().volume,
           instanceId: instanceId ?? "",
         },
-        { debounceTime: 300 },
+        { debounceTime: 300 }
       );
     };
   }, [muted]);
@@ -283,14 +270,11 @@ export function BaseContextProvider({
             // reportAllChanges: true — fire callback every time INP worsens
             // without this you only get the final value on page unload (too late)
             reportAllChanges: true,
-          },
+          }
         );
       })
       .catch((error) => {
-        console.warn(
-          "Failed to load web-vitals for performance tracking:",
-          error,
-        );
+        console.warn("Failed to load web-vitals for performance tracking:", error);
       });
   }, [brandDetails?.brand_id]);
 
@@ -299,10 +283,7 @@ export function BaseContextProvider({
     if (!deviceId) {
       getNewDeviceId((deviceId) => {
         if (isInIframe) {
-          internalStorageManager.setItem(
-            DEVICE_ID_KEY_FOR_LOCAL_STORAGE,
-            deviceId,
-          );
+          internalStorageManager.setItem(DEVICE_ID_KEY_FOR_LOCAL_STORAGE, deviceId);
         } else {
           setDeviceId(deviceId);
         }
@@ -350,19 +331,17 @@ export function BaseContextProvider({
     };
 
     const handlePlayFromOutside = () => {
-      baseEventBus.emit(
-        "globalPlayingStateChange",
-        undefined,
-        (currentContext) => ({ ...currentContext, globalPlayingState: true }),
-      );
+      baseEventBus.emit("globalPlayingStateChange", undefined, (currentContext) => ({
+        ...currentContext,
+        globalPlayingState: true,
+      }));
     };
 
     const handlePauseFromOutside = () => {
-      baseEventBus.emit(
-        "globalPlayingStateChange",
-        undefined,
-        (currentContext) => ({ ...currentContext, globalPlayingState: false }),
-      );
+      baseEventBus.emit("globalPlayingStateChange", undefined, (currentContext) => ({
+        ...currentContext,
+        globalPlayingState: false,
+      }));
       baseContextManager.setPlayPauseTracker({ isPlaying: false });
     };
 
@@ -383,52 +362,28 @@ export function BaseContextProvider({
     }
 
     SDKEventEmitter.on(SDKListenerEventName.PLAYER_PLAY, handlePlayFromOutside);
-    SDKEventEmitter.on(
-      SDKListenerEventName.PLAYER_PAUSE,
-      handlePauseFromOutside,
-    );
+    SDKEventEmitter.on(SDKListenerEventName.PLAYER_PAUSE, handlePauseFromOutside);
     SDKEventEmitter.on(SDKListenerEventName.PLAYER_MUTE, handleMuteFromOutside);
-    SDKEventEmitter.on(
-      SDKListenerEventName.PLAYER_UNMUTE,
-      handleUnmuteFromOutside,
-    );
+    SDKEventEmitter.on(SDKListenerEventName.PLAYER_UNMUTE, handleUnmuteFromOutside);
 
     return () => {
       handleWindowFocus.cancel();
       handleWindowBlur.cancel();
 
       if (isIOS) {
-        document.removeEventListener(
-          "visibilitychange",
-          handleVisibilityChange,
-        );
+        document.removeEventListener("visibilitychange", handleVisibilityChange);
         window.removeEventListener("pagehide", handlePageHide);
         window.removeEventListener("pageshow", handlePageShow);
       } else {
         window.removeEventListener("focus", handleWindowFocus);
         window.removeEventListener("blur", handleWindowBlur);
-        document.removeEventListener(
-          "visibilitychange",
-          handleVisibilityChange,
-        );
+        document.removeEventListener("visibilitychange", handleVisibilityChange);
       }
 
-      SDKEventEmitter.off(
-        SDKListenerEventName.PLAYER_PLAY,
-        handlePlayFromOutside,
-      );
-      SDKEventEmitter.off(
-        SDKListenerEventName.PLAYER_PAUSE,
-        handlePauseFromOutside,
-      );
-      SDKEventEmitter.off(
-        SDKListenerEventName.PLAYER_MUTE,
-        handleMuteFromOutside,
-      );
-      SDKEventEmitter.off(
-        SDKListenerEventName.PLAYER_UNMUTE,
-        handleUnmuteFromOutside,
-      );
+      SDKEventEmitter.off(SDKListenerEventName.PLAYER_PLAY, handlePlayFromOutside);
+      SDKEventEmitter.off(SDKListenerEventName.PLAYER_PAUSE, handlePauseFromOutside);
+      SDKEventEmitter.off(SDKListenerEventName.PLAYER_MUTE, handleMuteFromOutside);
+      SDKEventEmitter.off(SDKListenerEventName.PLAYER_UNMUTE, handleUnmuteFromOutside);
     };
   }, [baseEventBus, handleWindowFocus, handleWindowBlur]);
 
@@ -444,10 +399,7 @@ export function BaseContextProvider({
     embedDetails.embedEventBus.on("containerInViewChange", handleInViewChange);
 
     return () => {
-      embedDetails.embedEventBus.off(
-        "containerInViewChange",
-        handleInViewChange,
-      );
+      embedDetails.embedEventBus.off("containerInViewChange", handleInViewChange);
     };
   }, [embedDetails?.embedEventBus, baseContextManager]);
 
@@ -455,9 +407,7 @@ export function BaseContextProvider({
     const handlePlay = () => {
       const baseContext = baseEventBus.getContext();
       const isInView =
-        typeof embedDetails !== undefined
-          ? (embedDetails?.embedEventBus.getContext().containerInView ?? true)
-          : true;
+        typeof embedDetails !== "undefined" ? (embedDetails?.embedEventBus.getContext().containerInView ?? true) : true;
       SDKEventEmitter.emit(
         SDKEventName.PLAY,
         {
@@ -467,16 +417,14 @@ export function BaseContextProvider({
           volume: baseContext.volume,
           autoplay: embedDetails?.embedData.media_play?.enable_autoplay,
         },
-        { debounceTime: 300 },
+        { debounceTime: 300 }
       );
     };
 
     const handlePause = () => {
       const baseContext = baseEventBus.getContext();
       const isInView =
-        typeof embedDetails !== undefined
-          ? (embedDetails?.embedEventBus.getContext().containerInView ?? true)
-          : true;
+        typeof embedDetails !== "undefined" ? (embedDetails?.embedEventBus.getContext().containerInView ?? true) : true;
 
       SDKEventEmitter.emit(
         SDKEventName.PAUSE,
@@ -486,7 +434,7 @@ export function BaseContextProvider({
           muted: baseContext.muted,
           volume: baseContext.volume,
         },
-        { debounceTime: 300 },
+        { debounceTime: 300 }
       );
     };
 
@@ -511,10 +459,7 @@ export function BaseContextProvider({
   //   1. Keep isPlaying in sync (always).
   //   2. Broadcast audible-play signal (only when play starts AND !muted).
   useEffect(() => {
-    function handleGlobalPlayingStateChange(
-      _: unknown,
-      context: { globalPlayingState: boolean },
-    ) {
+    function handleGlobalPlayingStateChange(_: unknown, context: { globalPlayingState: boolean }) {
       // [1] Keep isPlaying in sync with this embed's actual play state.
       setIsPlaying(context.globalPlayingState);
 
@@ -529,28 +474,20 @@ export function BaseContextProvider({
             volume: baseEventBus.getContext().volume,
             instanceId: instanceId ?? "",
           },
-          { debounceTime: 300 },
+          { debounceTime: 300 }
         );
       }
     }
 
     baseEventBus.on("globalPlayingStateChange", handleGlobalPlayingStateChange);
     return () => {
-      baseEventBus.off(
-        "globalPlayingStateChange",
-        handleGlobalPlayingStateChange,
-      );
+      baseEventBus.off("globalPlayingStateChange", handleGlobalPlayingStateChange);
     };
   }, [baseEventBus, muted, instanceId]);
 
   useEffect(() => {
-    function handleThemeChange({
-      payload,
-    }: {
-      payload: "dark" | "light" | undefined;
-    }) {
-      if (currentTheme !== payload && payload !== undefined)
-        setCurrentTheme(payload);
+    function handleThemeChange({ payload }: { payload: "dark" | "light" | undefined }) {
+      if (currentTheme !== payload && payload !== undefined) setCurrentTheme(payload);
     }
 
     SDKEventEmitter.on(SDKListenerEventName.THEME_CHANGE, handleThemeChange);
@@ -578,8 +515,7 @@ export function BaseContextProvider({
         setTheme: setCurrentTheme,
         useShadowDOM,
         isPlaying,
-      }}
-    >
+      }}>
       {children}
     </BaseContext.Provider>
   );

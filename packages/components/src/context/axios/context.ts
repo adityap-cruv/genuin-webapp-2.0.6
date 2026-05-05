@@ -1,6 +1,8 @@
 "use client";
+import type { AxiosInstance } from "axios";
+import axios from "axios";
 import { createContext, useContext } from "react";
-import axios, { AxiosInstance } from "axios";
+
 import { NEXT_PUBLIC_API_URL } from "@genuin/components/lib/utils/env";
 
 export type AxiosContextType = {

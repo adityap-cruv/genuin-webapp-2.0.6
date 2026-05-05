@@ -1,8 +1,10 @@
-import { LinksType } from "@genuin/components/molecules/social-links";
-import { ReadMoreTextType } from "@genuin/components/molecules/read-more";
-import { ComponentProps, ReactNode } from "react";
-import { GenericDetailsVariants } from "./generic-details.cva";
-import { Stats } from "@genuin/components/molecules/stats";
+import type { ComponentProps, ReactNode } from "react";
+
+import type { ReadMoreTextType } from "@genuin/components/molecules/read-more";
+import type { LinksType } from "@genuin/components/molecules/social-links";
+import type { Stats } from "@genuin/components/molecules/stats";
+
+import type { GenericDetailsVariants } from "./generic-details.cva";
 
 /**
  * Configuration for the profile image displayed in the generic details component.
@@ -78,6 +80,4 @@ export type GenericDetailsDataType = {
   };
 };
 
-export type GenericDetailsProps = GenericDetailsDataType &
-  ComponentProps<"div"> &
-  GenericDetailsVariants;
+export type GenericDetailsProps = GenericDetailsDataType & ComponentProps<"div"> & GenericDetailsVariants;

@@ -1,12 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import {
-  DetailsPageTopbar,
-  DetailsPageTopbarSkeleton,
-} from "./details-page-topbar";
-import { ShareButton } from "@genuin/components/molecules/share-button";
+
 import { BecomeCreatorButton } from "@genuin/components/molecules/become-creator-button";
 import { JoinCommunityButton } from "@genuin/components/molecules/join-community-button";
 import { JoinGroupButton } from "@genuin/components/molecules/join-group-button";
+import { ShareButton } from "@genuin/components/molecules/share-button";
+
+import { DetailsPageTopbar, DetailsPageTopbarSkeleton } from "./details-page-topbar";
 
 const meta: Meta<typeof DetailsPageTopbar> = {
   title: "Organisms/DetailsPageTopbar",
@@ -53,7 +52,7 @@ const meta: Meta<typeof DetailsPageTopbar> = {
     ctas: (
       <div className="gencl:flex gencl:gap-2">
         <ShareButton pathName={""} />
-        <BecomeCreatorButton />
+        <BecomeCreatorButton shareUrl="" />
       </div>
     ),
     // defaultOpen: true,
@@ -78,7 +77,7 @@ export const Default: Story = {
     ctas: (
       <div className="gencl:flex gencl:gap-2">
         <ShareButton pathName={""} />
-        <BecomeCreatorButton />
+        <BecomeCreatorButton shareUrl="" />
       </div>
     ),
   },
@@ -103,6 +102,7 @@ export const PrivateGroup: Story = {
           groupName={""}
           groupDescription={""}
           shareUrl={""}
+          groupSlug=""
         />
         <ShareButton pathName={""} />
       </div>

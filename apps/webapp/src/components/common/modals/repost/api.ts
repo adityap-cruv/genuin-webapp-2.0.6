@@ -1,4 +1,5 @@
 import { axiosInstance } from '@lib/api/instance'
+
 import { validateRepostCommunityListData } from './schema'
 
 export async function fetchRepostDestinations(videoId: string) {

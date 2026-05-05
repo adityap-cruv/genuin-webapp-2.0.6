@@ -1,16 +1,20 @@
 "use client";
 import { Skeleton } from "@genuin/ui/components/skeleton";
 import { cn, getAspectRatio } from "@genuin/ui/lib/utils";
-import { ComponentProps } from "react";
-import { cva, VariantProps } from "class-variance-authority";
-import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import type { VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
+import type { ComponentProps } from "react";
 import { SwiperSlide } from "swiper/react";
-import "swiper/css";
-import { EmbedSwiper } from "@genuin/components/molecules/embed-swiper";
-import { useEmbedContext } from "@genuin/components/context/embed";
-import { useEmbedDimensions } from "@genuin/components/hooks/embed/use-embed-dimensions";
+
 import { useBaseContext } from "@genuin/components/context";
+import { useEmbedContext } from "@genuin/components/context/embed";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { useEmbedDimensions } from "@genuin/components/hooks/embed/use-embed-dimensions";
+import { EmbedSwiper } from "@genuin/components/molecules/embed-swiper";
+
 import { NavigationButtons } from "./navigation-buttons";
+
+import "swiper/css";
 
 const carouselSkeletonVariant = cva("gencl:rounded-md", {
   variants: {
@@ -30,8 +34,7 @@ const carouselSkeletonVariant = cva("gencl:rounded-md", {
   },
 });
 
-type CarouselSkeletonProps = VariantProps<typeof carouselSkeletonVariant> &
-  ComponentProps<"div">;
+type CarouselSkeletonProps = VariantProps<typeof carouselSkeletonVariant> & ComponentProps<"div">;
 
 export function SdkSkeleton({
   className,
@@ -54,8 +57,7 @@ export function SdkSkeleton({
   const { embedData } = useEmbedContext();
   const config = useEmbedConfigs();
   const isGridLayout = config.view.isGrid;
-  const embedVariant: "carousel" | "feed" =
-    config.view.embedStyle === "feed" ? "feed" : "carousel";
+  const embedVariant: "carousel" | "feed" = config.view.embedStyle === "feed" ? "feed" : "carousel";
   const skeletonItems = Array(12).fill(null);
   const { theme } = useBaseContext();
 
@@ -63,24 +65,16 @@ export function SdkSkeleton({
   if (isGridLayout) {
     const rows = config.view.gridLayout?.row ?? 2;
     const cols = config.view.gridLayout?.column ?? 2;
-    const { width: widthRatio, height: heightRatio } = getAspectRatio(
-      config.dimensions.aspectRatio,
-    );
+    const { width: widthRatio, height: heightRatio } = getAspectRatio(config.dimensions.aspectRatio);
     // const autoAdjust = config.view.gridLayout?.auto_adjust;
     return (
       <div
-        className={cn(
-          "gencl:rounded-md",
-          theme === "dark"
-            ? "gencl:bg-secondary-900"
-            : "gencl:bg-secondary-200",
-        )}
+        className={cn("gencl:rounded-md", theme === "dark" ? "gencl:bg-secondary-900" : "gencl:bg-secondary-200")}
         style={{
           height: Math.max(0, containerHeight || 0),
           width: Math.max(0, containerWidth || 0),
         }}
-        {...restProps}
-      >
+        {...restProps}>
         <div className="gencl:h-full gencl:w-full gencl:overflow-auto">
           <EmbedHeaderSkeleton variant="grid" theme={theme} />
           <div
@@ -89,8 +83,7 @@ export function SdkSkeleton({
               display: "grid",
               gridTemplateColumns: `repeat(${cols}, 1fr)`,
               gridTemplateRows: `repeat(${rows}, 1fr)`,
-            }}
-          >
+            }}>
             {Array(rows * cols)
               .fill(0)
               .map((_, index) => (
@@ -99,18 +92,15 @@ export function SdkSkeleton({
                   className={cn(
                     "gencl:relative gencl:overflow-hidden gencl:rounded-md",
                     "gencl:transition-all gencl:duration-300 gencl:ease-in-out",
-                    "gencl:cursor-pointer",
+                    "gencl:cursor-pointer"
                   )}
                   style={{
                     aspectRatio: `${widthRatio} / ${heightRatio}`,
-                  }}
-                >
+                  }}>
                   <Skeleton
                     className={cn(
                       "gencl:h-full gencl:w-full",
-                      theme === "dark"
-                        ? "gencl:bg-secondary-800"
-                        : "gencl:bg-secondary-100",
+                      theme === "dark" ? "gencl:bg-secondary-800" : "gencl:bg-secondary-100"
                     )}
                   />
                 </div>
@@ -129,18 +119,15 @@ export function SdkSkeleton({
           variant: variant || embedVariant,
           theme: theme,
         }),
-        className,
+        className
       )}
       style={{
         height: containerHeight,
         width: containerWidth,
       }}
-      {...restProps}
-    >
+      {...restProps}>
       <EmbedHeaderSkeleton
-        variant={
-          variant === "carousel" || variant === "feed" ? variant : embedVariant
-        }
+        variant={variant === "carousel" || variant === "feed" ? variant : embedVariant}
         theme={theme}
       />
       <div className="gencl:relative">
@@ -150,24 +137,19 @@ export function SdkSkeleton({
           spaceBetweenVideos={spaceBetweenVideos}
           slidesPerView={1}
           containerDimensions={{
-            height: config.view.isFeed
-              ? availableHeight - spaceBetweenVideos
-              : availableHeight + spaceBetweenVideos,
+            height: config.view.isFeed ? availableHeight - spaceBetweenVideos : availableHeight + spaceBetweenVideos,
             width: containerWidth || 0,
           }}
           style={{
             height: availableHeight,
-          }}
-        >
+          }}>
           {skeletonItems.map((_, idx) => {
             return (
               <SwiperSlide className="gencl:h-full gencl:w-full" key={idx}>
                 <Skeleton
                   className={cn(
                     "gencl:h-full gencl:w-full",
-                    theme === "dark"
-                      ? "gencl:bg-secondary-800"
-                      : "gencl:bg-secondary-100",
+                    theme === "dark" ? "gencl:bg-secondary-800" : "gencl:bg-secondary-100"
                   )}
                 />
               </SwiperSlide>
@@ -179,31 +161,34 @@ export function SdkSkeleton({
             onPrev={() => {}}
             onNext={() => {}}
             isIheartLayout={config.view.brandLayoutType === "iheart"}
-            isNavigationControlEnabled={
-              config.view.isNavigationControlEnabled ?? false
-            }
+            isNavigationControlEnabled={config.view.isNavigationControlEnabled ?? false}
           />
         </EmbedSwiper>
       </div>
+      <NavigationButtons
+        theme={theme}
+        embedVariant={embedVariant}
+        onPrev={() => {}}
+        onNext={() => {}}
+        isIheartLayout={config.view.brandLayoutType === "iheart"}
+        isNavigationControlEnabled={config.view.isNavigationControlEnabled ?? false}
+      />
     </div>
   );
 }
 
-const embedHeaderSkeletonVariants = cva(
-  "gencl:flex gencl:shrink-0 gencl:gap-2 gencl:w-full gencl:p-2",
-  {
-    variants: {
-      variant: {
-        feed: "gencl:justify-center gencl:items-start gencl:flex-col",
-        carousel: "gencl:justify-between gencl:items-center gencl:flex-row",
-        grid: "gencl:justify-between gencl:items-center gencl:flex-row",
-      },
-    },
-    defaultVariants: {
-      variant: "carousel",
+const embedHeaderSkeletonVariants = cva("gencl:flex gencl:shrink-0 gencl:gap-2 gencl:w-full gencl:p-2", {
+  variants: {
+    variant: {
+      feed: "gencl:justify-center gencl:items-start gencl:flex-col",
+      carousel: "gencl:justify-between gencl:items-center gencl:flex-row",
+      grid: "gencl:justify-between gencl:items-center gencl:flex-row",
     },
   },
-);
+  defaultVariants: {
+    variant: "carousel",
+  },
+});
 
 function EmbedHeaderSkeleton({
   variant,
@@ -214,29 +199,20 @@ function EmbedHeaderSkeleton({
   const { header, view, contentDisplay } = useEmbedConfigs();
   const { headerHeight } = useEmbedDimensions();
 
-  if (
-    !header.showHeader ||
-    (view.isPlacementView &&
-      !contentDisplay.showStyleDetails &&
-      !header.heading)
-  )
-    return;
+  if (!header.showHeader || (view.isPlacementView && !contentDisplay.showStyleDetails && !header.heading)) return;
 
   return (
     <div
       style={{
         height: headerHeight,
       }}
-      className={cn(embedHeaderSkeletonVariants({ variant }))}
-    >
+      className={cn(embedHeaderSkeletonVariants({ variant }))}>
       <div className="gencl:flex gencl:flex-col gencl:items-start gencl:gap-2">
         {header.heading && (
           <Skeleton
             className={cn(
               "gencl:h-5 gencl:w-32",
-              theme === "dark"
-                ? "gencl:bg-secondary-800"
-                : "gencl:bg-secondary-100",
+              theme === "dark" ? "gencl:bg-secondary-800" : "gencl:bg-secondary-100"
             )}
           />
         )}
@@ -244,9 +220,7 @@ function EmbedHeaderSkeleton({
           <Skeleton
             className={cn(
               "gencl:h-3 gencl:w-24",
-              theme === "dark"
-                ? "gencl:bg-secondary-800"
-                : "gencl:bg-secondary-100",
+              theme === "dark" ? "gencl:bg-secondary-800" : "gencl:bg-secondary-100"
             )}
           />
         )}
@@ -255,9 +229,7 @@ function EmbedHeaderSkeleton({
         <Skeleton
           className={cn(
             "gencl:h-10 gencl:w-24 gencl:rounded-md",
-            theme === "dark"
-              ? "gencl:bg-secondary-800"
-              : "gencl:bg-secondary-100",
+            theme === "dark" ? "gencl:bg-secondary-800" : "gencl:bg-secondary-100"
           )}
         />
       )}
@@ -273,9 +245,7 @@ export function ShimmerSlide({ className }: { className?: string }) {
       <Skeleton
         className={cn(
           "gencl:h-full gencl:w-full gencl:rounded-lg",
-          theme === "dark"
-            ? "gencl:bg-secondary-800"
-            : "gencl:bg-secondary-100",
+          theme === "dark" ? "gencl:bg-secondary-800" : "gencl:bg-secondary-100"
         )}
       />
     </div>

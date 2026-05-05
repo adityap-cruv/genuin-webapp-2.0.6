@@ -1,11 +1,9 @@
 "use client";
-import { useEffect, useState } from "react";
 import { Button } from "@genuin/ui/components/button";
 import { Skeleton } from "@genuin/ui/components/skeleton";
-import {
-  MemberItem,
-  MemberItemSkeleton,
-} from "@genuin/components/molecules/member-item";
+import { useEffect, useState } from "react";
+
+import { MemberItem, MemberItemSkeleton } from "@genuin/components/molecules/member-item";
 
 type ProfileDataType = {
   username: string;
@@ -14,10 +12,7 @@ type ProfileDataType = {
   profile_img: string;
 };
 
-export function TrendingProfilesList(props: {
-  profiles: ProfileDataType[] | [];
-  isLoading: boolean;
-}) {
+export function TrendingProfilesList(props: { profiles: ProfileDataType[] | []; isLoading: boolean }) {
   const [hasMore, setHasMore] = useState(true);
   const [profiles, setProfiles] = useState<ProfileDataType[]>([]);
 
@@ -105,10 +100,7 @@ function TrendingProfilesSkeleton() {
 }
 
 function ProfilesSkeleton({ noOfProfiles = 1 }: { noOfProfiles: number }) {
-  return Array.from({ length: noOfProfiles }).map(() => (
-    <MemberItemSkeleton
-      variant="profile"
-      className="gencl:flex gencl:flex-col gencl:items-center"
-    />
+  return Array.from({ length: noOfProfiles }).map((_, idx) => (
+    <MemberItemSkeleton key={idx} variant="profile" className="gencl:flex gencl:flex-col gencl:items-center" />
   ));
 }

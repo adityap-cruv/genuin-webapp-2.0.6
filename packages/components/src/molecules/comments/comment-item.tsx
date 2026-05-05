@@ -1,25 +1,24 @@
 import { Avatar } from "@genuin/ui/avatar";
-import { ReadMore } from "@genuin/components/molecules/read-more";
-
-import type { CommentListType } from "src/react-query/api/comments";
-import { cn, getTimeAgo } from "@genuin/ui/utils";
-import { buildPageUrl } from "@genuin/components/lib/utils/pages";
-import { ProfileLink } from "@genuin/components/molecules/profile-link";
 import { Skeleton } from "@genuin/ui/components/skeleton";
+import { cn, getTimeAgo } from "@genuin/ui/utils";
+import type { ComponentProps } from "react";
+import { memo, useCallback } from "react";
 
+import type { VideoTypes } from "@genuin/components/context";
+import { useAuthContext } from "@genuin/components/context/auth";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { Audio } from "@genuin/components/molecules/comments/audio";
 import { Video } from "@genuin/components/molecules/comments/video";
-import { CommentMenu } from "./comment-menu";
-import {
-  DynamicReactionIcon,
-  ReactionButton,
-} from "@genuin/components/molecules/reaction-button";
-import { ComponentProps, memo } from "react";
-import { useAuthContext } from "@genuin/components/context/auth";
+import { ProfileLink } from "@genuin/components/molecules/profile-link";
+import { DynamicReactionIcon, ReactionButton } from "@genuin/components/molecules/reaction-button";
+import { ReadMore } from "@genuin/components/molecules/read-more";
+import type { CommentListType } from "@genuin/components/react-query/api/comments";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
-import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-import { DeleteComment } from "../delete-comment";
-import { VideoTypes } from "@genuin/components/context";
+
+import type { DeleteComment } from "../delete-comment";
+
+import { CommentMenu } from "./comment-menu";
 
 export type CommentItemProps = {
   comment: CommentListType[number];
@@ -27,11 +26,9 @@ export type CommentItemProps = {
   shareUrl: string;
   videoSlug: string;
   onReactionStateChange?: (commentId: string, isReacted: boolean) => void;
-  onCommentCountChange?: ComponentProps<
-    typeof DeleteComment
-  >["onCommentCountChange"];
+  onCommentCountChange?: ComponentProps<typeof DeleteComment>["onCommentCountChange"];
   isCommentsLoaded?: boolean;
-  videoType : VideoTypes
+  videoType: VideoTypes;
 };
 
 // TODO: Check why brand is not handled in the comment item
@@ -49,26 +46,25 @@ export const CommentItem = memo(function CommentItem({
   const { user } = useAuthContext();
   const { isMobile } = useDeviceDetectMediaQuery();
 
+  const handleReactionStateChange = useCallback(
+    (isReacted: boolean) => {
+      onReactionStateChange?.(comment.commentId, isReacted);
+    },
+    [onReactionStateChange, comment.commentId]
+  );
+
   return (
-    <div
-      className="comment gencl:last:pb-16 gencl:flex gencl:gap-2 gencl:group"
-      key={comment.commentId}
-    >
-      <Avatar
-        alt={owner.nickname}
-        imageUrl={owner.profileImage}
-        isAvatar={owner.isAvatar}
-      />
+    <div className="comment gencl:last:pb-16 gencl:flex gencl:gap-2 gencl:group" key={comment.commentId}>
+      <Avatar alt={owner.nickname} imageUrl={owner.profileImage} isAvatar={owner.isAvatar} />
       <div className="gencl:space-y-2 gencl:w-full">
         <div className="gencl:flex gencl:items-center gencl:h-4 gencl:justify-between">
           <div className="gencl:flex gencl:items-center">
             <ProfileLink
               className="gencl:text-body-1-semi-bold"
               url={buildPageUrl({
-                type: !!owner.brand ? "brand" : "profile",
-                slug: !!owner.brand ? owner.brand.brand_slug : owner.nickname,
-              })}
-            >
+                type: owner.brand ? "brand" : "profile",
+                slug: owner.brand ? owner.brand.brand_slug : owner.nickname,
+              })}>
               @{owner.nickname}
             </ProfileLink>
             <span className="gencl:text-body-1-medium gencl:text-secondary-500">
@@ -86,8 +82,7 @@ export const CommentItem = memo(function CommentItem({
               onCommentCountChange={onCommentCountChange}
               className={cn(
                 "gencl:block",
-                !isMobile &&
-                  "gencl:group-hover:block gencl:data-[state=open]:block gencl:hidden",
+                !isMobile && "gencl:group-hover:block gencl:data-[state=open]:block gencl:hidden"
               )}
             />
           )}
@@ -101,15 +96,12 @@ export const CommentItem = memo(function CommentItem({
             isReacted={comment.isSparked}
             videoType={videoType}
             reactionCount={comment.noOfSparks}
-            onReactionStateChange={(isReacted) => {
-              onReactionStateChange?.(comment.commentId, isReacted);
-            }}
+            onReactionStateChange={handleReactionStateChange}
             withCustomChildren
             showReactionCount={false}
             shareUrl={shareUrl}
             videoSlug={videoSlug}
-            isCommentsLoaded={isCommentsLoaded}
-          >
+            isCommentsLoaded={isCommentsLoaded}>
             <div className="gencl:flex gencl:gap-1 gencl:items-center gencl:cursor-pointer">
               <DynamicReactionIcon
                 isSparked={comment.isSparked}
@@ -119,9 +111,7 @@ export const CommentItem = memo(function CommentItem({
                 iconWidth={16}
                 type="comment"
               />
-              <p className="gencl:text-body-2-medium gencl:text-secondary-600">
-                {comment.noOfSparks}
-              </p>
+              <p className="gencl:text-body-2-medium gencl:text-secondary-600">{comment.noOfSparks}</p>
             </div>
           </ReactionButton>
         </div>
@@ -137,44 +127,26 @@ export function CommentsItemSkeleton() {
       <div className="gencl:w-full gencl:flex gencl:flex-col gencl:justify-center gencl:gap-2">
         <Skeleton className="gencl:w-full gencl:h-3 gencl:rounded-md gencl:mt-1.5" />
         <Skeleton className="gencl:w-full gencl:h-3 gencl:rounded-md" />
-        <Skeleton className="gencl:w-4 gencl:h-5  gencl:rounded-md" />
+        <Skeleton className="gencl:w-4 gencl:h-5 gencl:rounded-md" />
       </div>
     </div>
   );
 }
 
-export function CommentContent({
-  comment,
-}: {
-  comment: CommentListType[number];
-}) {
+export function CommentContent({ comment }: { comment: CommentListType[number] }) {
   const { showExpandView } = useFeedContext();
 
   return (
     <>
       {comment.type === "text" && (
         <ReadMore
-          text={
-            comment.commentData?.length !== 0
-              ? comment.commentData
-              : comment.commentText
-          }
+          text={comment.commentData?.length !== 0 ? comment.commentData : comment.commentText}
           maxLines={2}
           textClassName="gencl:text-secondary-900 gencl:break-all gencl:text-body-1-medium"
         />
       )}
-      {comment.type === "video" && (
-        <Video
-          videoUrl={comment.videoUrlM3u8 || ""}
-          thumbnail={comment.thumbnail || ""}
-        />
-      )}
-      {comment.type === "audio" && (
-        <Audio
-          showExpandView={showExpandView}
-          audioUrl={comment.audioUrl || ""}
-        />
-      )}
+      {comment.type === "video" && <Video videoUrl={comment.videoUrlM3u8 || ""} thumbnail={comment.thumbnail || ""} />}
+      {comment.type === "audio" && <Audio showExpandView={showExpandView} audioUrl={comment.audioUrl || ""} />}
     </>
   );
 }

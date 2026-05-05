@@ -1,30 +1,19 @@
 "use client";
 
-import {
-  forwardRef,
-  useCallback,
-  useImperativeHandle,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import { Toast } from "@genuin/ui/components/toaster";
+import { forwardRef, useCallback, useImperativeHandle, useLayoutEffect, useRef, useState } from "react";
 import { v4 as uuid } from "uuid";
-import { VideoTrimSlider } from "@genuin/components/molecules/video-trim-slider";
 
 import { trimVideo } from "@genuin/components/lib/utils/video-processor";
+import { VideoTrimSlider } from "@genuin/components/molecules/video-trim-slider";
+import { loadVideoMetadata, urlToFile } from "@genuin/components/molecules/video-trim-slider/utils";
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { usePostCreateUploadUrlMutation } from "@genuin/components/react-query/api/posts/post-video-upload";
-import {
-  loadVideoMetadata,
-  urlToFile,
-} from "@genuin/components/molecules/video-trim-slider/utils";
+
 import { PostPlayer } from "../post-player";
-import { EditTrimVideoProps, TrimHandler, UpdatePostDataProps } from "./types";
-import { Toast } from "@genuin/ui/components/toaster";
-import {
-  SectionLayout,
-  SectionLayoutLeft,
-  SectionLayoutRight,
-} from "./section-layout";
+
+import { SectionLayout, SectionLayoutLeft, SectionLayoutRight } from "./section-layout";
+import type { EditTrimVideoProps, TrimHandler, UpdatePostDataProps } from "./types";
 
 type VideoFileDataState = {
   videoDuration: number;
@@ -49,12 +38,9 @@ function ComingSoonPlaceholder() {
 
         {/* Coming Soon Screen */}
         <div className="gencl:flex gencl:flex-col gencl:items-center gencl:justify-center gencl:gap-1 gencl:w-full gencl:h-full gencl:bg-secondary-50 gencl:rounded-lg">
-          <p className="gencl:text-body-0-semi-bold gencl:text-secondary-900">
-            Clip Editing Coming Soon!
-          </p>
+          <p className="gencl:text-body-0-semi-bold gencl:text-secondary-900">Clip Editing Coming Soon!</p>
           <p className="gencl:text-body-2-medium gencl:text-secondary-600">
-            You'll soon be able to replace, add, and reorder clips in your
-            video.
+            You&apos;ll soon be able to replace, add, and reorder clips in your video.
           </p>
         </div>
       </div>
@@ -82,14 +68,12 @@ export const EditVideoTrim = forwardRef<TrimHandler, EditTrimVideoProps>(
     const postPlayerRef = useRef<HTMLDivElement | null>(null);
     const [containerHeight, setContainerHeight] = useState(0);
 
-    const [videoFileData, setVideoFileData] =
-      useState<VideoFileDataState | null>(null);
+    const [videoFileData, setVideoFileData] = useState<VideoFileDataState | null>(null);
 
     const { mutate: generateUploadVideoUrl } = usePostCreateUploadUrlMutation({
       onSuccess: (res) => {
         if (!videoFileData) return;
-        const { videoDuration, file, aspectRatio, resolution, size } =
-          videoFileData;
+        const { videoDuration, file, aspectRatio, resolution, size } = videoFileData;
 
         const basePayload = {
           duration: videoDuration?.toString(),
@@ -135,9 +119,6 @@ export const EditVideoTrim = forwardRef<TrimHandler, EditTrimVideoProps>(
           file: inputFile,
           startTime: trimRangeRef?.current?.start,
           endTime: trimRangeRef?.current?.end,
-          onProgress: (progress, progressText) => {
-            console.log(`Progress: ${progress}% - ${progressText}`);
-          },
         });
 
         if (!newBlobFile) {
@@ -165,7 +146,6 @@ export const EditVideoTrim = forwardRef<TrimHandler, EditTrimVideoProps>(
 
         // upload post video
         if (renamedFile) {
-          console.log("UPLOADING VIDEO::");
           generateUploadVideoUrl({ file: renamedFile, kind: "video" });
         }
 
@@ -195,7 +175,7 @@ export const EditVideoTrim = forwardRef<TrimHandler, EditTrimVideoProps>(
             <PostPlayer
               editClipVideo={() => playerOverlayAction("clip")}
               editCoverImage={(url) => playerOverlayAction("cover", url)}
-              post={postData}
+              post={postData as unknown as PostDetailsType}
               className="gencl:mb-2"
               showClipVideoBtn={showTrimVideoBtn}
               showEditCoverBtn={showEditCoverBtn}
@@ -217,3 +197,5 @@ export const EditVideoTrim = forwardRef<TrimHandler, EditTrimVideoProps>(
     );
   }
 );
+
+EditVideoTrim.displayName = "EditVideoTrim";

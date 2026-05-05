@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Recents } from "./recents";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+import { Recents } from "./recents";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -71,8 +72,7 @@ export const Loading: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          "Loading state displayed while recent searches are being fetched from the server.",
+        story: "Loading state displayed while recent searches are being fetched from the server.",
       },
     },
   },
@@ -88,8 +88,7 @@ export const Empty: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          "Empty state shown when the user has no recent search history to display.",
+        story: "Empty state shown when the user has no recent search history to display.",
       },
     },
   },
@@ -105,8 +104,7 @@ export const WithManyItems: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          "Demonstrates the scrollable behavior when there are many recent search items.",
+        story: "Demonstrates the scrollable behavior when there are many recent search items.",
       },
     },
   },

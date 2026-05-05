@@ -1,15 +1,7 @@
-import * as React from "react";
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableFooter,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableCaption,
-} from "./table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import * as React from "react";
+
+import { Table, TableHeader, TableBody, TableFooter, TableHead, TableRow, TableCell, TableCaption } from "./table";
 
 const meta: Meta<typeof Table> = {
   title: "Components/Table",

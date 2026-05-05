@@ -1,31 +1,33 @@
-import { type ConfigType } from '@lib/stores/genuin-options'
-import { checkAndAppendHttps } from '@lib/utils'
-import { auth } from 'auth'
-import { headers } from 'next/headers'
-import { permanentRedirect, redirect } from 'next/navigation'
-import type { ReactNode } from 'react'
-import { cookies } from 'next/headers'
+import { headers } from "next/headers";
+import { cookies } from "next/headers";
+import { permanentRedirect, redirect } from "next/navigation";
+import type { ReactNode } from "react";
+
+import { type ConfigType } from "@lib/stores/genuin-options";
+import { checkAndAppendHttps } from "@lib/utils";
+import { auth } from "auth";
 
 // Define which routes require authentication with optional additional conditions
 const PROTECTED_ROUTES = [
   {
-    path: '/settings',
+    path: "/settings",
     additionalCheck: (user: any) => {
       // Only allow if user is NOT a brand system user
-      return user?.isBrandSystemUser === false
+      return user?.isBrandSystemUser === false;
     },
   },
   {
-    path: '/posts',
+    path: "/posts",
     additionalCheck: (user: any, config: any, isMobile: boolean) => {
-      // Check if camera_enabled is true and device is not mobile
-      const cameraEnabled = config?.camera_enabled || false
-      return cameraEnabled && !isMobile
+      // Check if camera_enabled is true and device is not mobile and user has creator access enabled
+      const cameraEnabled = config?.camera_enabled || false;
+      const hasCreatorAccess = user?.create_post_enabled || false;
+      return cameraEnabled && !isMobile && hasCreatorAccess;
     },
   },
   // Add more protected routes as needed
   // Example: { path: '/create-post', additionalCheck: (user) => user?.subscription === 'active' }
-]
+];
 
 // Helper function to check if a route is protected and meets additional conditions
 function checkProtectedRoute(
@@ -34,25 +36,25 @@ function checkProtectedRoute(
   config?: any,
   isMobile: boolean = false
 ): { isProtected: boolean; hasAccess: boolean; reason?: string } {
-  const route = PROTECTED_ROUTES.find((route) => path.startsWith(route.path))
+  const route = PROTECTED_ROUTES.find((route) => path.startsWith(route.path));
 
   if (!route) {
-    return { isProtected: false, hasAccess: true }
+    return { isProtected: false, hasAccess: true };
   }
 
   // Route is protected, check additional conditions if any
   if (route.additionalCheck) {
-    const hasAdditionalAccess = route.additionalCheck(user, config, isMobile)
+    const hasAdditionalAccess = route.additionalCheck(user, config, isMobile);
     if (!hasAdditionalAccess) {
       return {
         isProtected: true,
         hasAccess: false,
         reason: `Additional access condition failed for ${route.path}`,
-      }
+      };
     }
   }
 
-  return { isProtected: true, hasAccess: true }
+  return { isProtected: true, hasAccess: true };
 }
 
 export async function RedirectHandler({
@@ -60,121 +62,121 @@ export async function RedirectHandler({
   config,
   shouldRedirect = false,
 }: {
-  children: ReactNode
-  config?: ConfigType
-  shouldRedirect: boolean
+  children: ReactNode;
+  config?: ConfigType;
+  shouldRedirect: boolean;
 }) {
-  const headersList = await headers()
-  const session = await auth()
+  const headersList = await headers();
+  const session = await auth();
 
   // Check for actual user login session (NextAuth)
-  const hasUserLogin = !!session?.user
-  const pathParamStr = headersList.get('x-path-params') ?? ''
-  const isMobile = (await cookies()).get('device_type')?.value === 'mobile'
-  const protectedRouteCheck = checkProtectedRoute(pathParamStr, session?.user, config, isMobile)
+  const hasUserLogin = !!session?.user;
+  const pathParamStr = headersList.get("x-path-params") ?? "";
+  const isMobile = (await cookies()).get("device_type")?.value === "mobile";
+  const protectedRouteCheck = checkProtectedRoute(pathParamStr, session?.user, config, isMobile);
   if (config && Object.keys(config).length === 0) {
-    if (pathParamStr === '/inactive') {
-      return children
+    if (pathParamStr === "/inactive") {
+      return children;
     }
-    console.log('[RedirectHandler] Empty config, redirecting to /inactive')
-    return permanentRedirect('/inactive')
+    console.log("[RedirectHandler] Empty config, redirecting to /inactive");
+    return permanentRedirect("/inactive");
   }
 
   // Protected routes handling - check FIRST before any other logic
   if (protectedRouteCheck.isProtected) {
     if (!hasUserLogin) {
-      permanentRedirect('/home')
+      permanentRedirect("/home");
     }
 
     if (!protectedRouteCheck.hasAccess) {
-      permanentRedirect('/home')
+      permanentRedirect("/home");
     }
 
     // User is authenticated and has access - allow access
-    console.log(`[RedirectHandler] Authenticated user accessing protected route: ${pathParamStr}`)
+    console.log(`[RedirectHandler] Authenticated user accessing protected route: ${pathParamStr}`);
   }
 
   if (config) {
     if (config?.integrations.white_label.enable && config?.integrations.white_label.allowed_domains[0]) {
-      const searchParamStr = headersList.get('x-search-params')
-      const pathParamStr = headersList.get('x-path-params')
-      const isMobile = (await cookies()).get('device_type')?.value === 'mobile'
-      console.log('[RedirectHandler] in RedirectHandler', pathParamStr, isMobile)
+      const searchParamStr = headersList.get("x-search-params");
+      const pathParamStr = headersList.get("x-path-params");
+      const isMobile = (await cookies()).get("device_type")?.value === "mobile";
+      console.log("[RedirectHandler] in RedirectHandler", pathParamStr, isMobile);
       // Special case for brand_id 2357 (ted), redirect to the specific domain as per the client request
       // Convert path params to query string for this special case
       // Always start with utm_source=shorts
       // **NOTE**: This is a special case for ted.com, where we need to handle the path and search params differently
       //  reason to pass all the details in query param is to consume it on our ted.com embed
-      if (config.brand_id.toString() === '2357') {
-        const secFetchDest = headersList.get('sec-fetch-dest') ?? ''
-        const referer = headersList.get('referer') ?? ''
-        if (secFetchDest === 'iframe' && referer && referer.includes('begenuin.com')) {
-          return children
+      if (config.brand_id.toString() === "2357") {
+        const secFetchDest = headersList.get("sec-fetch-dest") ?? "";
+        const referer = headersList.get("referer") ?? "";
+        if (secFetchDest === "iframe" && referer && referer.includes("begenuin.com")) {
+          return children;
         }
         if (!pathParamStr) {
-          return children
+          return children;
         }
         // if path param is /ted it means the url is shared from the ted.com desktop/mobile web and it should go only
         // to ted.com web even if the user has TED app installed
         // if user has app installed why this will work and how this request would even reach to web?
         // because the app will not handle the /ted path, it has added this path specifically to it's exclusion list
         // so that the request will reach to the webapp and then we can handle it here
-        if (pathParamStr && pathParamStr.startsWith('/ted')) {
-          console.log('[RedirectHandler] Path starts with /ted', pathParamStr)
+        if (pathParamStr && pathParamStr.startsWith("/ted")) {
+          console.log("[RedirectHandler] Path starts with /ted", pathParamStr);
           // Remove '/ted' from the start of the path before processing
-          const cleanPathParamStr = pathParamStr.replace(/^\/ted/, '')
+          const cleanPathParamStr = pathParamStr.replace(/^\/ted/, "");
           // only allow these pages for redirection, allow rest of the pages to go through
           const whitelistPaths = [
-            '/home',
-            '/popular',
-            '/latest',
-            '/explore',
-            '/group',
-            '/community',
-            '/brand',
-            '/profile',
-            '/video',
-            '/settings',
-            '/posts',
-          ]
+            "/home",
+            "/popular",
+            "/latest",
+            "/explore",
+            "/group",
+            "/community",
+            "/brand",
+            "/profile",
+            "/video",
+            "/settings",
+            "/posts",
+          ];
           // This is the case where share link is from mobile web of ted.com and if the user tries to open it up on
           // desktop web, we will redirect them to the video page of the webapp and show the app popup
           // reason fo this is that the mobile web share link will not work on desktop web since ted has not implemented
           // embed on their desktop
-          if (!isMobile && cleanPathParamStr && cleanPathParamStr.replace(/\/$/, '').startsWith('/video')) {
-            console.log('[RedirectHandler] Redirecting to video page', cleanPathParamStr)
-            const searchParams = new URLSearchParams(searchParamStr ?? '')
-            searchParams.set('show_app_popup', 'true')
-            return redirect(cleanPathParamStr + '?' + searchParams.toString())
+          if (!isMobile && cleanPathParamStr && cleanPathParamStr.replace(/\/$/, "").startsWith("/video")) {
+            console.log("[RedirectHandler] Redirecting to video page", cleanPathParamStr);
+            const searchParams = new URLSearchParams(searchParamStr ?? "");
+            searchParams.set("show_app_popup", "true");
+            return redirect(cleanPathParamStr + "?" + searchParams.toString());
           }
           // for these paths we will add the path as a query param to consumed on ted.com, which will be added as trend
           // and will be used to show the correct feed home, latest, popular etc. content on ted.com if our
           // embed is integrated
-          const trendWhitelistPaths = ['/home', '/popular', '/latest']
+          const trendWhitelistPaths = ["/home", "/popular", "/latest"];
           // Check if cleanPathParamStr starts with any whitelisted path (with or without trailing slash)
           const isWhitelisted = whitelistPaths.some(
-            (base) => cleanPathParamStr && cleanPathParamStr.replace(/\/$/, '').startsWith(base)
-          )
+            (base) => cleanPathParamStr && cleanPathParamStr.replace(/\/$/, "").startsWith(base)
+          );
           if (cleanPathParamStr && !isWhitelisted) {
-            return children
+            return children;
           }
-          const queryParts = ['utm_source=shorts']
+          const queryParts = ["utm_source=shorts"];
 
           // If cleanPathParamStr is present and not just '/', add as path param
           if (cleanPathParamStr) {
             // Remove leading and trailing slashes
-            const cleanPath = cleanPathParamStr.replace(/^\/|\/$/g, '')
+            const cleanPath = cleanPathParamStr.replace(/^\/|\/$/g, "");
             // If path is in trendWhitelistPaths, add as "trend" param
-            if (trendWhitelistPaths.includes('/' + cleanPath)) {
-              queryParts.push(`trend=${encodeURIComponent(cleanPath)}`)
+            if (trendWhitelistPaths.includes("/" + cleanPath)) {
+              queryParts.push(`trend=${encodeURIComponent(cleanPath)}`);
             } else {
               // Split by '/' and process as key/value pairs
-              const segments = cleanPath.split('/')
+              const segments = cleanPath.split("/");
               for (let i = 0; i < segments.length - 1; i += 2) {
-                const key = segments[i]
-                const value = segments[i + 1]
+                const key = segments[i];
+                const value = segments[i + 1];
                 if (key && value) {
-                  queryParts.push(`${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+                  queryParts.push(`${encodeURIComponent(key)}=${encodeURIComponent(value)}`);
                 }
               }
             }
@@ -182,151 +184,151 @@ export async function RedirectHandler({
 
           // If searchParamStr is present, append its params (without leading '?')
           if (searchParamStr) {
-            const search = searchParamStr.startsWith('?') ? searchParamStr.slice(1) : searchParamStr
+            const search = searchParamStr.startsWith("?") ? searchParamStr.slice(1) : searchParamStr;
             if (search) {
-              queryParts.push(search)
+              queryParts.push(search);
             }
           }
 
           // Join all parts with '&' and prepend '?'
-          const finalQuery = '?' + queryParts.join('&')
-          console.log('[RedirectHandler] Redirecting to TED with query:', finalQuery)
-          return permanentRedirect(checkAndAppendHttps('https://ted.com') + finalQuery)
+          const finalQuery = "?" + queryParts.join("&");
+          console.log("[RedirectHandler] Redirecting to TED with query:", finalQuery);
+          return permanentRedirect(checkAndAppendHttps("https://ted.com") + finalQuery);
         } else {
-          console.log('[RedirectHandler] Path is not /ted, checking for /redirect', pathParamStr)
-          if (pathParamStr && pathParamStr.startsWith('/ted')) {
-            return children
+          console.log("[RedirectHandler] Path is not /ted, checking for /redirect", pathParamStr);
+          if (pathParamStr && pathParamStr.startsWith("/ted")) {
+            return children;
           }
           // return this since this is meant to show app promotion popup on webapp
-          if (searchParamStr && searchParamStr.includes('show_app_popup')) {
-            return children
+          if (searchParamStr && searchParamStr.includes("show_app_popup")) {
+            return children;
           }
-          let targetDomain = checkAndAppendHttps(config.integrations.white_label.allowed_domains[0])
-          const host = headersList.get('host') ?? ''
-          if (host.includes('localhost') || host.includes('127.0.0.1') || host.startsWith('192.168.')) {
-            targetDomain = `//${host}`
+          let targetDomain = checkAndAppendHttps(config.integrations.white_label.allowed_domains[0]);
+          const host = headersList.get("host") ?? "";
+          if (host.includes("localhost") || host.includes("127.0.0.1") || host.startsWith("192.168.")) {
+            targetDomain = `//${host}`;
           }
           // For all other paths, we will redirect to the app store or play store link of TED app
           // if user had TED app installed they would've been redirected to the app already
-          console.log('[RedirectHandler] Redirecting to TED app store link')
-          console.log('[RedirectHandler] Target domain:', targetDomain + '/ted/redirect?utm_source=shorts')
+          console.log("[RedirectHandler] Redirecting to TED app store link");
+          console.log("[RedirectHandler] Target domain:", targetDomain + "/ted/redirect?utm_source=shorts");
           if (isMobile) {
-            return permanentRedirect(targetDomain + '/ted/redirect?utm_source=shorts')
+            return permanentRedirect(targetDomain + "/ted/redirect?utm_source=shorts");
           } else {
-            return permanentRedirect(checkAndAppendHttps('https://ted.com?utm_source=shorts'))
+            return permanentRedirect(checkAndAppendHttps("https://ted.com?utm_source=shorts"));
           }
         }
       }
 
       if (shouldRedirect) {
         // Redirect to the first allowed domain with path and search params
-        const targetDomain = checkAndAppendHttps(config.integrations.white_label.allowed_domains[0])
-        const currentHost = headersList.get('host')
+        const targetDomain = checkAndAppendHttps(config.integrations.white_label.allowed_domains[0]);
+        const currentHost = headersList.get("host");
         // Extract hostname from targetDomain (remove protocol)
-        const targetHostname = targetDomain.replace(/^https?:\/\//, '').replace(/\/.*$/, '')
+        const targetHostname = targetDomain.replace(/^https?:\/\//, "").replace(/\/.*$/, "");
         if (currentHost && currentHost === targetHostname) {
           // Already on the correct domain, do not redirect
-          return await children
+          return await children;
         }
-        return permanentRedirect(targetDomain + pathParamStr + searchParamStr)
+        return permanentRedirect(targetDomain + pathParamStr + searchParamStr);
       }
     } else {
       if (!config?.protected_content) {
         // If protected_content is false, skip auth check
-        return children
+        return children;
       }
       // Skip auth check if running on localhost or if loaded in an iframe from BCC_URL
-      const host = headersList.get('host') ?? ''
-      const referer = headersList.get('referer') ?? ''
-      const secFetchDest = headersList.get('sec-fetch-dest') ?? ''
-      const bccUrl = process.env.NEXT_PUBLIC_BCC_URL || 'https://brands.qa.begenuin.com'
+      const host = headersList.get("host") ?? "";
+      const referer = headersList.get("referer") ?? "";
+      const secFetchDest = headersList.get("sec-fetch-dest") ?? "";
+      const bccUrl = process.env.NEXT_PUBLIC_BCC_URL || "https://brands.qa.begenuin.com";
 
       // Check if the app is running locally, is embedded in an iframe from BCC_URL,
       // or explicitly has the sec-fetch-dest header set to 'iframe'
       if (
-        host.includes('localhost') ||
-        host.includes('127.0.0.1') ||
-        host.startsWith('192.168.') ||
-        (secFetchDest === 'iframe' && referer && referer.includes(bccUrl))
+        host.includes("localhost") ||
+        host.includes("127.0.0.1") ||
+        host.startsWith("192.168.") ||
+        (secFetchDest === "iframe" && referer && referer.includes(bccUrl))
       ) {
-        return children
+        return children;
       }
 
-      if (config && config?.brand_id.toString() === '99') {
+      if (config && config?.brand_id.toString() === "99") {
         // Skip auth check for the begenuin brand
-        return children
+        return children;
       }
 
       if (config) {
         // Skip auth check for the dlk page itself to avoid redirect loops
-        const pathParamStr = headersList.get('x-path-params') ?? ''
-        if (pathParamStr === '/dlk/') {
-          return children
+        const pathParamStr = headersList.get("x-path-params") ?? "";
+        if (pathParamStr === "/dlk/") {
+          return children;
         }
 
         // Check if this is a return from Google auth (contains provider=google and code parameters)
-        const searchParams = headersList.get('x-search-params') ?? ''
+        const searchParams = headersList.get("x-search-params") ?? "";
         if (
-          (searchParams.includes('provider=google') && searchParams.includes('code=')) ||
-          (searchParams.includes('provider=apple') && searchParams.includes('code=')) ||
-          (searchParams.includes('provider=auth') && searchParams.includes('code='))
+          (searchParams.includes("provider=google") && searchParams.includes("code=")) ||
+          (searchParams.includes("provider=apple") && searchParams.includes("code=")) ||
+          (searchParams.includes("provider=auth") && searchParams.includes("code="))
         ) {
           // This is a auth callback, allow access without checking session
           // The session will be established during the callback processing
           // Detected auth callback, allowing access
-          return children
+          return children;
         }
 
         // Check if user is authenticated with our custom auth wall
-        const cookieHeader = headersList.get('cookie') ?? ''
-        let hasAuthCookie = false
+        const cookieHeader = headersList.get("cookie") ?? "";
+        let hasAuthCookie = false;
 
         if (cookieHeader) {
           // Just check if the secure cookie exists at all
           // The actual value is a hash that we don't need to verify here
           // Since it's HTTP-only, if it exists, it means it was set by our server
           const authCookie = cookieHeader
-            .split(';')
+            .split(";")
             .map((cookie) => cookie.trim())
-            .find((cookie) => cookie.startsWith('gn_bx_acc='))
+            .find((cookie) => cookie.startsWith("gn_bx_acc="));
 
-          hasAuthCookie = !!authCookie
+          hasAuthCookie = !!authCookie;
         }
 
         // Special logic for /auth-wall: if already authenticated, redirect to returnUrl or /home
-        if (pathParamStr === '/auth-wall') {
+        if (pathParamStr === "/auth-wall") {
           if (hasAuthCookie) {
-            const searchParams = headersList.get('x-search-params') ?? ''
+            const searchParams = headersList.get("x-search-params") ?? "";
             // Try to extract returnUrl from searchParams
-            let returnUrl = '/home'
-            const match = searchParams.match(/returnUrl=([^&]*)/)
+            let returnUrl = "/home";
+            const match = searchParams.match(/returnUrl=([^&]*)/);
             if (match?.[1]) {
               try {
-                returnUrl = decodeURIComponent(match[1])
+                returnUrl = decodeURIComponent(match[1]);
               } catch (error) {
-                console.error('[RedirectHandler] Error decoding returnUrl:', error)
+                console.error("[RedirectHandler] Error decoding returnUrl:", error);
               }
             }
-            permanentRedirect(returnUrl)
+            permanentRedirect(returnUrl);
           } else {
-            console.log('[RedirectHandler] No auth cookie, showing auth wall')
-            return children
+            console.log("[RedirectHandler] No auth cookie, showing auth wall");
+            return children;
           }
         }
 
         // If not authenticated, redirect to auth wall
         if (!hasAuthCookie) {
           // Store the intended destination URL to redirect back after authentication
-          const currentPath = pathParamStr
-          const searchParams = headersList.get('x-search-params') ?? ''
-          const destinationUrl = currentPath + searchParams
+          const currentPath = pathParamStr;
+          const searchParams = headersList.get("x-search-params") ?? "";
+          const destinationUrl = currentPath + searchParams;
 
           // Redirect to auth wall with the return URL as a parameter
-          permanentRedirect(`/auth-wall?returnUrl=${encodeURIComponent(destinationUrl)}`)
+          permanentRedirect(`/auth-wall?returnUrl=${encodeURIComponent(destinationUrl)}`);
         }
       }
     }
   }
 
-  return await children
+  return await children;
 }

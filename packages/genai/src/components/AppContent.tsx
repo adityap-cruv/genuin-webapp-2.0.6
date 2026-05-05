@@ -1,9 +1,12 @@
-import { useRudderEvents } from '@/services/analytics/useRudderAnalytics';
 import { Share } from 'lucide-react';
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { toast } from 'sonner';
+
+import { useRudderEvents } from '@/services/analytics/useRudderAnalytics';
+
 import NewChat from '../assets/SvgIcons/NewChat';
 import { useAgentsContext } from '../context/app/context';
+
 import AgentsDropdown from './AgentsDropdown';
 import AgentsSection from './AgentsSection';
 import MessageInput from './MessageInput';

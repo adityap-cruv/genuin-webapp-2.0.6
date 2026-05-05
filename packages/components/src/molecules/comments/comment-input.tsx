@@ -1,30 +1,28 @@
+import { lazy, Suspense } from "react";
+import { useMemo } from "react";
+
+import type { VideoTypes } from "@genuin/components/context";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
-import { lazy, Suspense } from "react";
-import type { AuthenticationModalProps } from "@genuin/components/organisms/authentication-modal";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
+import { type CommentListType } from "@genuin/components/react-query/api/comments";
+
+import { ActionPopover } from "../actions/action-popover";
+import { Link } from "../link";
 
 const AuthenticationModal = lazy(() =>
-  import("@genuin/components/organisms/authentication-modal/index.js").then(
-    (m) => ({
-      default: m.AuthenticationModal,
-    }),
-  ),
-) as React.ComponentType<AuthenticationModalProps>;
+  import("@genuin/components/organisms/authentication-modal").then((m) => ({
+    default: m.AuthenticationModal,
+  }))
+);
 
 // Lazy load MentionInput to defer vendor-forms chunks (react-hook-form + zod)
 const MentionInput = lazy(() =>
-  import("../mention-input/index.js").then((m) => ({
+  import("../mention-input").then((m) => ({
     default: m.MentionInput,
-  })),
-) as React.ComponentType<any>;
-
-import { type CommentListType } from "@genuin/components/react-query/api/comments";
-import { useMemo, useCallback } from "react";
-import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
-import { ActionPopover } from "../actions/action-popover";
-import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import { Link } from "../link";
-import { VideoTypes } from "@genuin/components/context";
+  }))
+);
 
 // const commentFormSchema = z.object({
 //   comment: z.string().min(1, { message: "" }),
@@ -83,7 +81,7 @@ export function CommentInputBox({
           videoSlug,
         },
       }),
-    [shareUrl, videoSlug],
+    [shareUrl, videoSlug]
   );
 
   const authClickHandler = handleAuthCallback({
@@ -108,8 +106,7 @@ export function CommentInputBox({
         content={"to comment on this Short."}
         params={returnQueryParams}
         align="start"
-        onPopOverClick={authClickHandler}
-      >
+        onPopOverClick={authClickHandler}>
         <div className="gencl:h-18">
           <MentionInput
             videoId={videoId}
@@ -144,12 +141,7 @@ export function CommentInputBox({
     if (modalConfig.hideModal) {
       return (
         <Link href={shareUrl} target="_blank">
-          <MentionInput
-            videoId={videoId}
-            loopId={loopId}
-            videoType={videoType}
-            {...commentInputProps}
-          />
+          <MentionInput videoId={videoId} loopId={loopId} videoType={videoType} {...commentInputProps} />
         </Link>
       );
     }
@@ -165,8 +157,7 @@ export function CommentInputBox({
               {...commentInputProps}
             />
           </div>
-        }
-      >
+        }>
         <AuthenticationModal
           getAppData={{
             data: {
@@ -177,8 +168,7 @@ export function CommentInputBox({
                 videoSlug: videoSlug,
               },
             },
-          }}
-        >
+          }}>
           <div>
             <MentionInput
               videoId={videoId}

@@ -1,34 +1,33 @@
-import * as React from 'react'
-import { createContext, useContext, useEffect, useState } from 'react'
-import { EmbedConfig } from '../types/embed'
+import * as React from "react";
+import { createContext, useContext, useState } from "react";
+
+import type { EmbedConfig } from "../types/embed";
 
 interface SDKContextType {
-  config: EmbedConfig | null
-  isInitialized: boolean
-  error: string | null
-  setConfig: (config: EmbedConfig) => void
-  setError: (error: string | null) => void
+  config: EmbedConfig | null;
+  isInitialized: boolean;
+  error: string | null;
+  setConfig: (config: EmbedConfig) => void;
+  setError: (error: string | null) => void;
 }
 
-const SDKContext = createContext<SDKContextType | undefined>(undefined)
+const SDKContext = createContext<SDKContextType | undefined>(undefined);
 
 interface SDKProviderProps {
-  children: React.ReactNode
-  initialConfig?: EmbedConfig
+  children: React.ReactNode;
+  initialConfig?: EmbedConfig;
 }
 
 export function SDKProvider({ children, initialConfig }: SDKProviderProps) {
-  const [config, setConfigState] = useState<EmbedConfig | null>(
-    initialConfig || null,
-  )
-  const [isInitialized, setIsInitialized] = useState(!!initialConfig)
-  const [error, setError] = useState<string | null>(null)
+  const [config, setConfigState] = useState<EmbedConfig | null>(initialConfig || null);
+  const [isInitialized, setIsInitialized] = useState(!!initialConfig);
+  const [error, setError] = useState<string | null>(null);
 
   const setConfig = (newConfig: EmbedConfig) => {
-    setConfigState(newConfig)
-    setIsInitialized(true)
-    setError(null)
-  }
+    setConfigState(newConfig);
+    setIsInitialized(true);
+    setError(null);
+  };
 
   const contextValue: SDKContextType = {
     config,
@@ -36,25 +35,23 @@ export function SDKProvider({ children, initialConfig }: SDKProviderProps) {
     error,
     setConfig,
     setError,
-  }
+  };
 
-  return (
-    <SDKContext.Provider value={contextValue}>{children}</SDKContext.Provider>
-  )
+  return <SDKContext.Provider value={contextValue}>{children}</SDKContext.Provider>;
 }
 
 export function useSDK(): SDKContextType {
-  const context = useContext(SDKContext)
+  const context = useContext(SDKContext);
   if (context === undefined) {
-    throw new Error('useSDK must be used within an SDKProvider')
+    throw new Error("useSDK must be used within an SDKProvider");
   }
-  return context
+  return context;
 }
 
 export function useSDKConfig(): EmbedConfig {
-  const { config, isInitialized } = useSDK()
+  const { config, isInitialized } = useSDK();
   if (!isInitialized || !config) {
-    throw new Error('SDK not initialized. Call Genuin.init() first.')
+    throw new Error("SDK not initialized. Call Genuin.init() first.");
   }
-  return config
+  return config;
 }

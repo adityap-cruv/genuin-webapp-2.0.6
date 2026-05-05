@@ -1,8 +1,10 @@
-import { ComponentProps } from "react";
-import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
-import { VariantProps } from "class-variance-authority";
-import { controlLayerVariant } from "./control-layer";
-import { BrandType } from "@genuin/components/lib/utils/brand-layout";
+import type { VariantProps } from "class-variance-authority";
+import type { ComponentProps } from "react";
+
+import type { BrandType } from "@genuin/components/lib/utils/brand-layout";
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+
+import type { controlLayerVariant } from "./control-layer";
 import type { ExpandViewCallbacks } from "./expand-view";
 
 export type ControlLayerPropsType = ComponentProps<"div"> & {

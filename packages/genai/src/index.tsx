@@ -1,7 +1,7 @@
+import { OctoAnalytics } from './analytics';
 import './index.css';
 import { createFloaterElement, showFloaterSpinner, createFloaterSpinner } from './styles/floaterStyles';
 import type { PendingMessage } from './types';
-import { OctoAnalytics } from './analytics';
 
 interface SDKConfig {
     containerId?: string;
@@ -413,14 +413,17 @@ export async function init(initConfig: SDKConfig) {
         });
 
         // Initialize analytics and track SDK loaded
-        sdkAnalytics.initialize().then(() => {
-            sdkAnalytics?.trackSDKLoaded({
-                load_time: Date.now() - sdkLoadTime,
-                sdk_version: (window as any).GenAISDK?.version || '1.0.0',
+        sdkAnalytics
+            .initialize()
+            .then(() => {
+                sdkAnalytics?.trackSDKLoaded({
+                    load_time: Date.now() - sdkLoadTime,
+                    sdk_version: (window as any).GenAISDK?.version || '1.0.0',
+                });
+            })
+            .catch(error => {
+                console.error('[GenAI SDK] Failed to initialize analytics:', error);
             });
-        }).catch((error) => {
-            console.error('[GenAI SDK] Failed to initialize analytics:', error);
-        });
     }
 
     setupPersistentEventListener();
@@ -432,7 +435,8 @@ export async function init(initConfig: SDKConfig) {
                 return;
             }
 
-            const container = normalizedConfig.containerElement || document.getElementById(normalizedConfig.containerId!);
+            const container =
+                normalizedConfig.containerElement || document.getElementById(normalizedConfig.containerId!);
             if (!container) {
                 console.error(`Container with ID '${normalizedConfig.containerId}' not found`);
                 return;

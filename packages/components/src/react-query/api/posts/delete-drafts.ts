@@ -1,7 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
+import type { AxiosInstance } from "axios";
+
 import { useAxiosInstance } from "@genuin/components/context/axios";
 import { API_PATHS } from "@genuin/components/react-query/paths";
-import type { AxiosInstance } from "axios";
 
 export async function deleteDrafts(postIds: string[], axiosInstance: AxiosInstance) {
   return await axiosInstance
@@ -13,7 +14,7 @@ export async function deleteDrafts(postIds: string[], axiosInstance: AxiosInstan
     .then(() => {
       return "Drafts deleted successfully";
     })
-    .catch((e) => {
+    .catch((_e) => {
       throw new Error("Failed to delete drafts");
     });
 }

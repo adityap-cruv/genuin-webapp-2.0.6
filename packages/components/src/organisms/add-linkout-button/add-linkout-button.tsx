@@ -1,27 +1,29 @@
 "use client";
+
+import { Button } from "@genuin/ui/components/button";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@genuin/ui/components/form";
+import { Input } from "@genuin/ui/components/input";
 import { cn } from "@genuin/ui/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Button } from "@genuin/ui/components/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  useFormField,
-} from "@genuin/ui/components/form";
-import { Input } from "@genuin/ui/components/input";
-import { Toast } from "@genuin/ui/components/toaster";
 
-import { useEffect } from "react";
+import { isValidUrlFormat, LinkoutLinkInput } from "@genuin/components/molecules/linkout-link-input";
+
+interface IAddButtonProps {
+  button?: {
+    url: string;
+    text: string;
+  };
+  onCancel?: () => void;
+  onSubmit?: (data: { url: string; text: string }) => void;
+}
 
 const BUTTON_TEXT_LENGTH = 25;
 
 const formSchema = z.object({
-  url: z.string().url().min(1, { message: "Button url is required" }),
+  url: z.string().nonempty("Button url is required").refine(isValidUrlFormat, { message: "Invalid URL" }),
   text: z
     .string()
     .trim()
@@ -31,18 +33,7 @@ const formSchema = z.object({
     }),
 });
 
-export const AddButton = ({
-  button,
-  onCancel,
-  onSubmit: onSubmitProp,
-}: {
-  button?: {
-    url: string;
-    text: string;
-  };
-  onCancel?: () => void;
-  onSubmit?: (data: { url: string; text: string }) => void;
-}) => {
+export const AddButton = ({ button, onCancel, onSubmit: onSubmitProp }: IAddButtonProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     mode: "onChange",
@@ -68,37 +59,13 @@ export const AddButton = ({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="gencl:bg-white gencl:relative gencl:h-full gencl:w-full gencl:border gencl:border-secondary-150 gencl:p-4 gencl:rounded-lg"
-      >
-        <FormField
-          control={form.control}
-          name="url"
-          render={({ field }) => {
-            const errors = useFormField().error;
-            return (
-              <FormItem className="gencl:sm:w-full gencl:mb-4 gencl:mt-2">
-                <FormLabel className="is-required">Button URL</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Enter URL"
-                    className={cn(
-                      "gencl:border gencl:border-tertiary-200 gencl:bg-tertiary-100 gencl:text-title-3-med",
-                      errors && "!gencl:border-red"
-                    )}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage className={cn("")} />
-              </FormItem>
-            );
-          }}
-        />
+        className="gencl:bg-white gencl:relative gencl:h-full gencl:w-full gencl:border gencl:border-secondary-150 gencl:p-4 gencl:rounded-lg">
+        <LinkoutLinkInput form={form} fieldName="url" label="Button URL" placeholder="Enter URL" />
 
         <FormField
           name="text"
           control={form.control}
-          render={({ field }) => {
-            const errors = useFormField().error;
+          render={({ field, fieldState }) => {
             const currentLength = field.value?.length || 0;
             return (
               <FormItem className="gencl:sm:w-full gencl:mb-4 gencl:mt-2">
@@ -113,7 +80,7 @@ export const AddButton = ({
                     placeholder="Enter button text"
                     className={cn(
                       "gencl:border gencl:border-tertiary-200 gencl:bg-tertiary-100 gencl:text-title-3-med",
-                      errors && "!gencl:border-red"
+                      fieldState.error && "!gencl:border-red"
                     )}
                     {...field}
                   />
@@ -134,12 +101,7 @@ export const AddButton = ({
           <Button size="sm" theme="custom" variant="default" onClick={onCancel}>
             Cancel
           </Button>
-          <Button
-            size="sm"
-            variant="default"
-            type="submit"
-            disabled={!isValid || !isDirty}
-          >
+          <Button size="sm" variant="default" type="submit" disabled={!isValid || !isDirty}>
             Save
           </Button>
         </div>

@@ -1,11 +1,12 @@
-import { Loader } from "@genuin/ui/loader";
 import { MuteIcon } from "@genuin/ui/icons";
 import { UnmuteIcon } from "@genuin/ui/icons";
-import { cn } from "@genuin/ui/utils";
 import { PlayIcon } from "@genuin/ui/icons";
 import { PauseIcon } from "@genuin/ui/icons";
+import { Loader } from "@genuin/ui/loader";
+import { cn } from "@genuin/ui/utils";
+import type { ComponentProps } from "react";
+
 import { usePlayerContext } from "../context/context";
-import { ComponentProps } from "react";
 
 export type PlayingStateProps = ComponentProps<"div"> & {
   showOnlyPlayAction?: boolean;
@@ -41,17 +42,15 @@ export function PlayingState({
     return (
       <div
         key="system-pause"
-        className="gencl:flex gencl:flex-col gencl:items-center gencl:gap-2 gencl:absolute gencl:h-full gencl:w-full gencl:justify-center"
-      >
+        className="gencl:flex gencl:flex-col gencl:items-center gencl:gap-2 gencl:absolute gencl:h-full gencl:w-full gencl:justify-center">
         <div
           role="status"
           aria-live="polite"
           className={cn(
             "gencl:rounded-full gencl:bg-black/40 gencl:align-middle gencl:backdrop-blur-sm",
-            "gencl:flex gencl:items-center gencl:justify-center gencl:h-16 gencl:w-16",
+            "gencl:flex gencl:items-center gencl:justify-center gencl:h-16 gencl:w-16"
           )}
-          {...restProps}
-        >
+          {...restProps}>
           <PauseIcon theme="dark" size="xl" aria-hidden="true" />
         </div>
         <p className="gencl:bg-black/40 gencl:p-2 gencl:backdrop-blur-sm gencl:rounded-md gencl:text-center gencl:text-body-1-semi-bold gencl:text-white">
@@ -75,10 +74,9 @@ export function PlayingState({
         className={cn(
           "gencl:rounded-full gencl:bg-black/40",
           "gencl:align-middle gencl:opacity-100 gencl:backdrop-blur-sm gencl:transition-all gencl:duration-100",
-          className,
+          className
         )}
-        {...restProps}
-      >
+        {...restProps}>
         <Loader size="sm" aria-hidden="true" />
       </div>
     );
@@ -96,10 +94,9 @@ export function PlayingState({
           className={cn(
             "gencl:rounded-full gencl:bg-black/40 gencl:align-middle gencl:backdrop-blur-sm",
             "gencl:delay-500 gencl:animate-fade-out gencl:duration-1500",
-            className,
+            className
           )}
-          {...restProps}
-        >
+          {...restProps}>
           <PlayIcon theme="fill-dark" size="xl" aria-hidden="true" />
         </div>
       );
@@ -117,12 +114,8 @@ export function PlayingState({
         role="status"
         aria-live="polite"
         aria-label={getAriaLabelForAction(buttonAction)}
-        className={cn(
-          "gencl:rounded-full gencl:bg-black/40 gencl:align-middle gencl:backdrop-blur-sm",
-          className,
-        )}
-        {...restProps}
-      >
+        className={cn("gencl:rounded-full gencl:bg-black/40 gencl:align-middle gencl:backdrop-blur-sm", className)}
+        {...restProps}>
         <PauseIcon theme="dark" size="xl" aria-hidden="true" />
       </div>
     );
@@ -159,10 +152,9 @@ export function PlayingState({
       className={cn(
         "gencl:rounded-full gencl:bg-black/40 gencl:align-middle gencl:backdrop-blur-sm",
         "gencl:delay-500 gencl:animate-fade-out gencl:duration-1500",
-        className,
+        className
       )}
-      {...restProps}
-    >
+      {...restProps}>
       {icon}
     </div>
   );

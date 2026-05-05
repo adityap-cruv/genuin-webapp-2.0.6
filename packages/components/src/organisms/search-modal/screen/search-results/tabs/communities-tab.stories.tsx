@@ -1,6 +1,9 @@
+import { Dialog } from "@genuin/ui/components/dialog";
 import type { Meta, StoryObj } from "@storybook/react";
+
+import type { CommunityTopResultType } from "@genuin/components/react-query/api/search";
+
 import { CommunitiesTab } from "./communities-tab";
-import { CommunityTopResultType } from "@genuin/components/react-query/api/search";
 
 // Mock communities data based on API response format
 const mockCommunities: CommunityTopResultType[] = [
@@ -9,8 +12,7 @@ const mockCommunities: CommunityTopResultType[] = [
     handle: "@reactdevs",
     slug: "react-developers",
     name: "React Developers",
-    description:
-      "A community for React developers to share knowledge and best practices",
+    description: "A community for React developers to share knowledge and best practices",
     dp: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=100&h=100&fit=crop",
     no_of_members: 15420,
     no_of_loops: 120,
@@ -22,10 +24,8 @@ const mockCommunities: CommunityTopResultType[] = [
       subdomain: "techcorp",
       logo: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=100&h=100&fit=crop",
       created_at: Date.now(),
-      brand_web_logo:
-        "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=100&h=100&fit=crop",
-      favicon:
-        "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=32&h=32&fit=crop",
+      brand_web_logo: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=100&h=100&fit=crop",
+      favicon: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=32&h=32&fit=crop",
       brand_system_user_id: "sys_1",
       brand_slug: "techcorp",
       brand_user_logo: 1,
@@ -36,8 +36,7 @@ const mockCommunities: CommunityTopResultType[] = [
     handle: "@webdev",
     slug: "web-development",
     name: "Web Development Hub",
-    description:
-      "Community focused on modern web development technologies and best practices",
+    description: "Community focused on modern web development technologies and best practices",
     dp: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=100&h=100&fit=crop",
     no_of_members: 15420,
     no_of_loops: 120,
@@ -49,10 +48,8 @@ const mockCommunities: CommunityTopResultType[] = [
       subdomain: "techcorp",
       logo: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=100&h=100&fit=crop",
       created_at: Date.now(),
-      brand_web_logo:
-        "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=100&h=100&fit=crop",
-      favicon:
-        "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=32&h=32&fit=crop",
+      brand_web_logo: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=100&h=100&fit=crop",
+      favicon: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=32&h=32&fit=crop",
       brand_system_user_id: "sys_1",
       brand_slug: "techcorp",
       brand_user_logo: 1,
@@ -63,8 +60,7 @@ const mockCommunities: CommunityTopResultType[] = [
     handle: "@javascript",
     slug: "javascript-community",
     name: "JavaScript Community",
-    description:
-      "Everything about JavaScript - from basics to advanced concepts",
+    description: "Everything about JavaScript - from basics to advanced concepts",
     dp: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=100&h=100&fit=crop",
     no_of_members: 15420,
     no_of_loops: 120,
@@ -76,10 +72,8 @@ const mockCommunities: CommunityTopResultType[] = [
       subdomain: "techcorp",
       logo: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=100&h=100&fit=crop",
       created_at: Date.now(),
-      brand_web_logo:
-        "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=100&h=100&fit=crop",
-      favicon:
-        "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=32&h=32&fit=crop",
+      brand_web_logo: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=100&h=100&fit=crop",
+      favicon: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=32&h=32&fit=crop",
       brand_system_user_id: "sys_1",
       brand_slug: "techcorp",
       brand_user_logo: 1,
@@ -102,10 +96,8 @@ const mockCommunities: CommunityTopResultType[] = [
       subdomain: "techcorp",
       logo: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=100&h=100&fit=crop",
       created_at: Date.now(),
-      brand_web_logo:
-        "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=100&h=100&fit=crop",
-      favicon:
-        "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=32&h=32&fit=crop",
+      brand_web_logo: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=100&h=100&fit=crop",
+      favicon: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=32&h=32&fit=crop",
       brand_system_user_id: "sys_1",
       brand_slug: "techcorp",
       brand_user_logo: 1,
@@ -128,10 +120,8 @@ const mockCommunities: CommunityTopResultType[] = [
       subdomain: "techcorp",
       logo: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=100&h=100&fit=crop",
       created_at: Date.now(),
-      brand_web_logo:
-        "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=100&h=100&fit=crop",
-      favicon:
-        "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=32&h=32&fit=crop",
+      brand_web_logo: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=100&h=100&fit=crop",
+      favicon: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=32&h=32&fit=crop",
       brand_system_user_id: "sys_1",
       brand_slug: "techcorp",
       brand_user_logo: 1,
@@ -157,9 +147,12 @@ const meta: Meta<typeof CommunitiesTab> = {
   },
   decorators: [
     (Story) => (
-      <div className="gencl:w-[500px] gencl:max-w-[500px] gencl:h-[400px] gencl:border gencl:border-gray-200 gencl:rounded-lg gencl:p-4 gencl:bg-white gencl:overflow-auto">
-        <Story />
-      </div>
+      // Dialog context is required because CommunitiesTab renders DialogClose around each item
+      <Dialog type="storybook-communities-tab" open>
+        <div className="gencl:w-[500px] gencl:max-w-[500px] gencl:h-[400px] gencl:border gencl:border-gray-200 gencl:rounded-lg gencl:p-4 gencl:bg-white gencl:overflow-auto">
+          <Story />
+        </div>
+      </Dialog>
     ),
   ],
   tags: ["autodocs"],

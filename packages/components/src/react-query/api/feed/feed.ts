@@ -1,22 +1,21 @@
-import { QueryKey, useInfiniteQuery } from "@tanstack/react-query";
+import type { QueryKey } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { type AxiosInstance } from "axios";
+
 import { useAxiosInstance } from "@genuin/components/context/axios";
 import { axiosInstance as globalAxiosInstance } from "@genuin/components/context/axios/context";
-
+import type { EmbedDataType } from "@genuin/components/context/embed/embed.types";
 import { getDeviceId } from "@genuin/components/lib/utils/device-id";
+import { queryClient } from "@genuin/components/react-query/client";
 import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
-import type {
-  CommunityUserRole,
-  FeedType,
-} from "@genuin/components/types/post";
+import { API_PATHS } from "@genuin/components/react-query/paths";
+import type { CommunityUserRole, FeedType } from "@genuin/components/types/post";
+import type { GroupUserStatusType } from "@genuin/components/types/roles";
+
+import { fetchVideoDetails } from "../video";
 
 import { parseFeed } from "./parser";
-import { queryClient } from "@genuin/components/react-query/client";
-import { API_PATHS } from "@genuin/components/react-query/paths";
-import { GroupUserStatusType } from "@genuin/components/types/roles";
-import { fetchVideoDetails } from "../video";
-import { EmbedDataType } from "@genuin/components/context/embed/embed.types";
-import { type AxiosInstance } from "axios";
-import { type PostDetailsType } from "./schema";
+import type { AdsPostDetailsType } from "./schema";
 // Mapper for FeedType to corresponding numbers
 const feedTypeToNumber: Record<FeedType, number> = {
   HOME: 1,
@@ -46,7 +45,7 @@ async function fetchFeed(
     lastVideoCount?: number;
   },
   options?: UseFeedOptionsType,
-  axiosInstance?: AxiosInstance,
+  axiosInstance?: AxiosInstance
 ) {
   const requestAxiosInstance = axiosInstance ?? globalAxiosInstance;
 
@@ -67,8 +66,7 @@ async function fetchFeed(
     }),
 
     // Geographic context
-    ...((options?.contextualParams?.geo?.lat ||
-      options?.contextualParams?.geo?.long) && {
+    ...((options?.contextualParams?.geo?.lat || options?.contextualParams?.geo?.long) && {
       geo: {
         lat:
           typeof options.contextualParams.geo.lat === "number"
@@ -235,7 +233,8 @@ async function fetchFeed(
       break;
 
     default:
-      url = API_PATHS.FEED_HOME;
+      url =
+        options?.brandId && [3283, 2249, 2910].includes(options.brandId) ? API_PATHS.FEED_HOME_V1 : API_PATHS.FEED_HOME;
       requestBody = {
         type: feedTypeToNumber[feedType],
         ...(deviceId && { device_id: deviceId }),
@@ -273,11 +272,7 @@ async function fetchFeed(
       }
 
       return {
-        feed: parseFeed(
-          res.data.data.feeds,
-          options?.shouldShowMiddlewareOverlay,
-          res.data.data.end_of_feed,
-        ),
+        feed: parseFeed(res.data.data.feeds, options?.shouldShowMiddlewareOverlay, res.data.data.end_of_feed),
         hasSection: res.data.data.has_section ?? false,
         pageSession: res.data.data.page_session,
         endOfFeed: res.data.data.end_of_feed,
@@ -324,6 +319,7 @@ type UseFeedOptionsType = {
   videoIds?: string[];
   isSingleVideo?: boolean;
   initialVideoIds?: string[];
+  brandId?: number;
 };
 
 /**
@@ -360,16 +356,14 @@ const createEmptyFeedPage = (): FeedPage => ({
  * @param options - Feed options containing videoIds and related parameters
  * @returns Feed page with the requested video details
  */
-async function fetchFeedByVideoIds(
-  options: UseFeedOptionsType,
-): Promise<FeedPage> {
+async function fetchFeedByVideoIds(options: UseFeedOptionsType): Promise<FeedPage> {
   const videoDetails = await fetchVideoDetails(
     "",
     options.embedId,
     options.placementId,
     options.shouldShowMiddlewareOverlay,
     options.brandContext,
-    options.videoIds,
+    options.videoIds
   );
 
   return {
@@ -388,9 +382,7 @@ async function fetchFeedByVideoIds(
  * @returns True if the video exists in the feed
  */
 function isVideoInFeed(feed: FeedPage["feed"], slug: string): boolean {
-  return feed.some(
-    (item) => item.video?.slug === slug || item.video?.id === slug,
-  );
+  return feed.some((item) => item.video?.slug === slug || item.video?.id === slug);
 }
 
 /**
@@ -400,23 +392,15 @@ function isVideoInFeed(feed: FeedPage["feed"], slug: string): boolean {
  * @param slug - Video slug or ID to move to top
  * @returns New feed array with the video moved to the top, or original array if not found
  */
-function moveVideoToTop(
-  feed: FeedPage["feed"],
-  slug: string,
-): FeedPage["feed"] {
-  const videoIndex = feed.findIndex(
-    (item) => item.video?.slug === slug || item.video?.id === slug,
-  );
+function moveVideoToTop(feed: FeedPage["feed"], slug: string): FeedPage["feed"] {
+  const videoIndex = feed.findIndex((item) => item.video?.slug === slug || item.video?.id === slug);
   const video = feed[videoIndex];
 
   if (videoIndex === -1 || !video) {
     return feed; // Video not found, return original array
   }
 
-  const remainingFeed = [
-    ...feed.slice(0, videoIndex),
-    ...feed.slice(videoIndex + 1),
-  ];
+  const remainingFeed = [...feed.slice(0, videoIndex), ...feed.slice(videoIndex + 1)];
 
   return [video, ...remainingFeed];
 }
@@ -433,7 +417,7 @@ function moveVideoToTop(
 async function prependVideoToFeed(
   feedData: FeedPage,
   startVideoSlug: string,
-  options?: UseFeedOptionsType,
+  options?: UseFeedOptionsType
 ): Promise<FeedPage> {
   try {
     const videoDetails = await fetchVideoDetails(
@@ -441,14 +425,12 @@ async function prependVideoToFeed(
       options?.embedId,
       options?.placementId,
       options?.shouldShowMiddlewareOverlay,
-      options?.brandContext,
+      options?.brandContext
     );
 
     // For single video mode, return only the fetched video
     // Otherwise, prepend the video to the existing feed
-    const feed = options?.isSingleVideo
-      ? [...videoDetails]
-      : [...videoDetails, ...feedData.feed];
+    const feed = options?.isSingleVideo ? [...videoDetails] : [...videoDetails, ...feedData.feed];
 
     return {
       ...feedData,
@@ -472,7 +454,7 @@ async function prependVideoToFeed(
 async function prependInitialVideosToFeed(
   feedData: FeedPage,
   initialVideoIds: string[],
-  options?: UseFeedOptionsType,
+  options?: UseFeedOptionsType
 ): Promise<FeedPage> {
   try {
     const videoDetails = await fetchVideoDetails(
@@ -481,13 +463,11 @@ async function prependInitialVideosToFeed(
       options?.placementId,
       options?.shouldShowMiddlewareOverlay,
       options?.brandContext,
-      initialVideoIds,
+      initialVideoIds
     );
     // Filter out any videos that are already in the feed to avoid duplicates
     const existingVideoIds = new Set(initialVideoIds);
-    const uniqueFeedVideos = feedData.feed.filter(
-      (feed) => !feed.video?.id || !existingVideoIds.has(feed.video.id),
-    );
+    const uniqueFeedVideos = feedData.feed.filter((feed) => !feed.video?.id || !existingVideoIds.has(feed.video.id));
     return {
       ...feedData,
       feed: [...videoDetails, ...uniqueFeedVideos],
@@ -515,7 +495,7 @@ async function createFeedQueryFn(
   feedType: FeedType,
   pageParam: { pageSession?: string; lastVideoId?: string; lastVideoCount?: number } | undefined,
   options?: UseFeedOptionsType,
-  axiosInstance?: AxiosInstance,
+  axiosInstance?: AxiosInstance
 ): Promise<FeedPage> {
   const startVideoSlug = options?.startVideoSlug;
   const hasVideoIds = options?.videoIds && options.videoIds.length > 0;
@@ -532,9 +512,7 @@ async function createFeedQueryFn(
 
   // For the first page with a startVideoSlug, ensure the video is included
   const isFirstPage = !pageParam;
-  const videoExistsInFeed = startVideoSlug
-    ? isVideoInFeed(feedData.feed, startVideoSlug)
-    : false;
+  const videoExistsInFeed = startVideoSlug ? isVideoInFeed(feedData.feed, startVideoSlug) : false;
 
   if (isFirstPage && startVideoSlug) {
     if (videoExistsInFeed) {
@@ -546,16 +524,11 @@ async function createFeedQueryFn(
     }
   }
 
-  const hasInitialVideoIds =
-    options?.initialVideoIds && options.initialVideoIds.length > 0;
+  const hasInitialVideoIds = options?.initialVideoIds && options.initialVideoIds.length > 0;
 
   // Scenario 4: Prepend initial videos if initialVideoIds are provided (first page only)
   if (isFirstPage && hasInitialVideoIds) {
-    feedData = await prependInitialVideosToFeed(
-      feedData,
-      options!.initialVideoIds!,
-      options,
-    );
+    feedData = await prependInitialVideosToFeed(feedData, options!.initialVideoIds!, options);
   }
 
   // Check the placementData and if found than add feed after that
@@ -567,15 +540,9 @@ async function createFeedQueryFn(
 
   if (isFirstPage && hasPlaceholderData) {
     const placeholderVideos = options!.placeholderData!.pages[0]!.feed;
-    const placeholderVideoIds = new Set(
-      placeholderVideos.flatMap((item) =>
-        item.video?.id ? [item.video.id] : [],
-      ),
-    );
+    const placeholderVideoIds = new Set(placeholderVideos.flatMap((item) => (item.video?.id ? [item.video.id] : [])));
     // Filter out any videos from feedData that are already in placeholder data
-    const uniqueFeedVideos = feedData.feed.filter(
-      (item) => !item.video?.id || !placeholderVideoIds.has(item.video.id),
-    );
+    const uniqueFeedVideos = feedData.feed.filter((item) => !item.video?.id || !placeholderVideoIds.has(item.video.id));
     feedData = {
       ...feedData,
       feed: [...placeholderVideos, ...uniqueFeedVideos],
@@ -594,7 +561,7 @@ async function createFeedQueryFn(
       feed: feedData.feed.filter(
         (item) =>
           (!item.video?.id || !idsToFilter.has(item.video.id)) &&
-          (!item.video?.slug || !idsToFilter.has(item.video.slug)),
+          (!item.video?.slug || !idsToFilter.has(item.video.slug))
       ),
     };
   }
@@ -609,8 +576,7 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
 
   return useInfiniteQuery({
     queryKey,
-    queryFn: ({ pageParam }) =>
-      createFeedQueryFn(feedType, pageParam, options, axiosInstance),
+    queryFn: ({ pageParam }) => createFeedQueryFn(feedType, pageParam, options, axiosInstance),
     enabled: options?.enabled !== false,
     initialPageParam: undefined as undefined | { pageSession?: string; lastVideoId?: string; lastVideoCount?: number },
     getNextPageParam: (lastPage, _allPages, lastPageParam) => {
@@ -619,15 +585,10 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
       if (!lastPageData) return undefined;
       // If the last item is an ads item, find the last non-ads video for lastVideoId
       const lastVideoData =
-        (lastPageData as PostDetailsType).type === "ads" ||
-        lastPageData?.video?.videoLayoutId === 6
+        (lastPageData as AdsPostDetailsType).type === "ads" || lastPageData?.video?.videoLayoutId === 6
           ? [...lastPage.feed]
               .reverse()
-              .find(
-                (item) =>
-                  (item as PostDetailsType).type !== "ads" &&
-                  item.video?.videoLayoutId !== 6,
-              )
+              .find((item) => (item as AdsPostDetailsType).type !== "ads" && item.video?.videoLayoutId !== 6)
           : lastPageData;
 
       return {
@@ -643,10 +604,7 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
     refetchOnReconnect: options?.refetchOnReconnect,
     refetchInterval: options?.refetchInterval,
     refetchIntervalInBackground: options?.refetchIntervalInBackground,
-    placeholderData:
-      options?.placeholderData && !options?.startVideoSlug
-        ? options.placeholderData
-        : undefined,
+    placeholderData: options?.placeholderData && !options?.startVideoSlug ? options.placeholderData : undefined,
   });
 };
 
@@ -679,11 +637,7 @@ export function setQueryDataForReactionInFeed({
               video: {
                 ...video.video,
                 isSparked: isReacted,
-                sparkCount: isReacted
-                  ? (video.video?.sparkCount ?? 0) + 1
-                  : sparkCount > 0
-                    ? sparkCount - 1
-                    : 0,
+                sparkCount: isReacted ? (video.video?.sparkCount ?? 0) + 1 : sparkCount > 0 ? sparkCount - 1 : 0,
               },
             };
           }
@@ -714,37 +668,34 @@ export function setQueryDataForJoinCommunityStatusInFeed({
   communityId: string;
   newRole: CommunityUserRole;
 }) {
-  queryClient.setQueriesData<QueryData>(
-    { queryKey, exact: false },
-    (oldData) => {
-      if (!oldData) return oldData;
+  queryClient.setQueriesData<QueryData>({ queryKey, exact: false }, (oldData) => {
+    if (!oldData) return oldData;
 
-      // Create a new array with the updated community role
-      const updatedPages = oldData.pages.map((page) => {
-        return {
-          ...page,
-          feed: page.feed.map((video) => {
-            if (video.community?.id === communityId) {
-              return {
-                ...video,
-                community: {
-                  ...video.community,
-                  userRole: newRole,
-                },
-              };
-            }
-            return video;
-          }),
-        };
-      });
-
-      // Return the updated data structure
+    // Create a new array with the updated community role
+    const updatedPages = oldData.pages.map((page) => {
       return {
-        ...oldData,
-        pages: updatedPages,
-      } as NonNullable<QueryData>;
-    },
-  );
+        ...page,
+        feed: page.feed.map((video) => {
+          if (video.community?.id === communityId) {
+            return {
+              ...video,
+              community: {
+                ...video.community,
+                userRole: newRole,
+              },
+            };
+          }
+          return video;
+        }),
+      };
+    });
+
+    // Return the updated data structure
+    return {
+      ...oldData,
+      pages: updatedPages,
+    } as NonNullable<QueryData>;
+  });
 }
 
 /**
@@ -774,8 +725,7 @@ export function setQueryDataForJoinGroupStatusInFeed({
               group: {
                 ...video.group,
                 role: newRole,
-                isSubscribed:
-                  newRole === "JOINED" ? true : video.group.isSubscribed,
+                isSubscribed: newRole === "JOINED" ? true : video.group.isSubscribed,
               },
             };
           }
@@ -805,37 +755,34 @@ export function setQueryDataForGroupSubscriptionChangeInFeed({
   groupId: string;
   isSubscribed: boolean;
 }) {
-  queryClient.setQueriesData<QueryData>(
-    { queryKey, exact: false },
-    (oldData) => {
-      if (!oldData) return oldData;
+  queryClient.setQueriesData<QueryData>({ queryKey, exact: false }, (oldData) => {
+    if (!oldData) return oldData;
 
-      // Create a new array with the updated group subscription status
-      const updatedPages = oldData.pages.map((page) => {
-        return {
-          ...page,
-          feed: page.feed.map((video) => {
-            if (video.group?.id === groupId) {
-              return {
-                ...video,
-                group: {
-                  ...video.group,
-                  isSubscribed,
-                },
-              };
-            }
-            return video;
-          }),
-        };
-      });
-
-      // Return the updated data structure
+    // Create a new array with the updated group subscription status
+    const updatedPages = oldData.pages.map((page) => {
       return {
-        ...oldData,
-        pages: updatedPages,
-      } as NonNullable<QueryData>;
-    },
-  );
+        ...page,
+        feed: page.feed.map((video) => {
+          if (video.group?.id === groupId) {
+            return {
+              ...video,
+              group: {
+                ...video.group,
+                isSubscribed,
+              },
+            };
+          }
+          return video;
+        }),
+      };
+    });
+
+    // Return the updated data structure
+    return {
+      ...oldData,
+      pages: updatedPages,
+    } as NonNullable<QueryData>;
+  });
 }
 
 /**
@@ -865,11 +812,7 @@ export function setQueryDataForCommentCountInFeed({
               ...video,
               video: {
                 ...video.video,
-                commentCount: increment
-                  ? commentCount + 1
-                  : commentCount > 0
-                    ? commentCount - 1
-                    : 0,
+                commentCount: increment ? commentCount + 1 : commentCount > 0 ? commentCount - 1 : 0,
               },
             };
           }

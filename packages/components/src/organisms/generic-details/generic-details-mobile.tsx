@@ -1,9 +1,11 @@
-import { cn } from "@genuin/ui/lib/utils";
-import { type GenericDetailsProps } from "./generic-details.type";
-import { genericDetailsVariants } from "./generic-details.cva";
 import { Avatar } from "@genuin/ui/components/avatar";
+import { cn } from "@genuin/ui/lib/utils";
+
 import { ProfileLink } from "@genuin/components/molecules/profile-link";
 import { Stats } from "@genuin/components/molecules/stats";
+
+import { genericDetailsVariants } from "./generic-details.cva";
+import { type GenericDetailsProps } from "./generic-details.type";
 
 /**
  * Mobile view for the GenericDetails component.
@@ -22,10 +24,7 @@ export function GenericDetailsMobile({
 }: GenericDetailsProps) {
   if (variant === "profile") {
     return (
-      <div
-        className={cn(genericDetailsVariants({ variant }), className)}
-        {...restProps}
-      >
+      <div className={cn(genericDetailsVariants({ variant }), className)} {...restProps}>
         <div className="gencl:flex gencl:gap-4 gencl:items-center">
           <Avatar
             imageUrl={profileImageDetails?.imageUrl ?? ""}
@@ -35,14 +34,11 @@ export function GenericDetailsMobile({
             shouldZoom
           />
           <div className="gencl:space-y-1">
-            {title && (
-              <p className="gencl:text-headline-4-semi-bold">{title}</p>
-            )}
+            {title && <p className="gencl:text-headline-4-semi-bold">{title}</p>}
             {handle && (
               <ProfileLink
                 userLogoType={handle.brandUserLogo}
-                className="gencl:text-body-1-medium gencl:text-secondary-600"
-              >
+                className="gencl:text-body-1-medium gencl:text-secondary-600">
                 @{handle.userName}
               </ProfileLink>
             )}
@@ -63,10 +59,7 @@ export function GenericDetailsMobile({
     );
   }
   return (
-    <div
-      className={cn(genericDetailsVariants({ variant }), className)}
-      {...restProps}
-    >
+    <div className={cn(genericDetailsVariants({ variant }), className)} {...restProps}>
       {title && <p className="gencl:text-headline-4-semi-bold">{title}</p>}
       {metadata && metadata}
       {ctas && ctas}

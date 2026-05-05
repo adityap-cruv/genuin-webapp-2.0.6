@@ -5,25 +5,14 @@ import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 import * as React from "react";
 
-import { cn, getGenclStyles } from "@genuin/ui/lib/utils";
 import { getRootContainer } from "@genuin/ui/lib/shadow-dom.utils";
+import { cn, getGenclStyles } from "@genuin/ui/lib/utils";
 
-function TooltipProvider({
-  delayDuration = 0,
-  ...props
-}: React.ComponentProps<typeof TooltipPrimitive.Provider>) {
-  return (
-    <TooltipPrimitive.Provider
-      data-slot="tooltip-provider"
-      delayDuration={delayDuration}
-      {...props}
-    />
-  );
+function TooltipProvider({ delayDuration = 0, ...props }: React.ComponentProps<typeof TooltipPrimitive.Provider>) {
+  return <TooltipPrimitive.Provider data-slot="tooltip-provider" delayDuration={delayDuration} {...props} />;
 }
 
-function Tooltip({
-  ...props
-}: React.ComponentProps<typeof TooltipPrimitive.Root>) {
+function Tooltip({ ...props }: React.ComponentProps<typeof TooltipPrimitive.Root>) {
   return (
     <TooltipProvider>
       <TooltipPrimitive.Root data-slot="tooltip" {...props} />
@@ -31,9 +20,7 @@ function Tooltip({
   );
 }
 
-function TooltipTrigger({
-  ...props
-}: React.ComponentProps<typeof TooltipPrimitive.Trigger>) {
+function TooltipTrigger({ ...props }: React.ComponentProps<typeof TooltipPrimitive.Trigger>) {
   return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />;
 }
 
@@ -49,7 +36,7 @@ const tooltipContentVariants = cva(
     defaultVariants: {
       theme: "light",
     },
-  },
+  }
 );
 
 const tooltipArrowVariants = cva(
@@ -64,43 +51,27 @@ const tooltipArrowVariants = cva(
     defaultVariants: {
       theme: "light",
     },
-  },
+  }
 );
 
-type TooltipContentProps = React.ComponentProps<
-  typeof TooltipPrimitive.Content
-> &
+type TooltipContentProps = React.ComponentProps<typeof TooltipPrimitive.Content> &
   VariantProps<typeof tooltipContentVariants>;
 
 //TODO: somehow animation are not working in tooltip content open and close.
 // tooltip content stays on screen if we enable animations fix the issue.
 
-function TooltipContent({
-  className,
-  sideOffset = 0,
-  children,
-  theme,
-  style,
-  ...props
-}: TooltipContentProps) {
+function TooltipContent({ className, sideOffset = 0, children, theme, style, ...props }: TooltipContentProps) {
   const portalContainer = getRootContainer();
   return (
     <TooltipPrimitive.Portal container={portalContainer}>
       <TooltipPrimitive.Content
         data-slot="tooltip-content"
         sideOffset={sideOffset}
-        className={cn(
-          "gen-sdk-class gen-sdk-root-portal",
-          className,
-          tooltipContentVariants({ theme }),
-        )}
+        className={cn("gen-sdk-class gen-sdk-root-portal", className, tooltipContentVariants({ theme }))}
         style={{ fontSize: "16px", ...style, ...getGenclStyles() }}
-        {...props}
-      >
+        {...props}>
         {children}
-        <TooltipPrimitive.Arrow
-          className={cn(tooltipArrowVariants({ theme }))}
-        />
+        <TooltipPrimitive.Arrow className={cn(tooltipArrowVariants({ theme }))} />
       </TooltipPrimitive.Content>
     </TooltipPrimitive.Portal>
   );

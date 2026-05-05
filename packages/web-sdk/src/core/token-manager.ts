@@ -1,28 +1,30 @@
-import { USER_DATA_KEY } from '@/constants'
-import { APIService } from './api'
-import { AuthUser } from '@genuin/components/types/auth'
-import { ErrorHandler, ErrorType } from './errors'
-import { getKsCbRequestStatus } from '@/utils/auth'
-import { EventManager, SDKEventType } from './events'
-import internalStorage from '@genuin/components/lib/utils/internal-storage-manager'
+import internalStorage from "@genuin/components/lib/utils/internal-storage-manager";
+import type { AuthUser } from "@genuin/components/types/auth";
+
+import { USER_DATA_KEY } from "@/constants";
+import { getKsCbRequestStatus } from "@/utils/auth";
+
+import { APIService } from "./api";
+import { ErrorHandler, ErrorType } from "./errors";
+import { EventManager, SDKEventType } from "./events";
 
 /**
  * This class will only manage single user toke for its lifetime.
  */
 export class TokenManager {
-  private static instance: TokenManager
-  private apiService: APIService
-  private errorHandler: ErrorHandler
-  private eventManager: EventManager
-  private cachedUser: AuthUser | null = null
-  private isInIframe: boolean = false
+  private static instance: TokenManager;
+  private apiService: APIService;
+  private errorHandler: ErrorHandler;
+  private eventManager: EventManager;
+  private cachedUser: AuthUser | null = null;
+  private isInIframe: boolean = false;
 
   private constructor() {
-    this.apiService = APIService.getInstance()
-    this.errorHandler = ErrorHandler.getInstance()
-    this.eventManager = EventManager.getInstance()
-    this.setupAuthEventListeners()
-    this.isInIframe = window.self !== window.top
+    this.apiService = APIService.getInstance();
+    this.errorHandler = ErrorHandler.getInstance();
+    this.eventManager = EventManager.getInstance();
+    this.setupAuthEventListeners();
+    this.isInIframe = window.self !== window.top;
   }
 
   /**
@@ -31,57 +33,42 @@ export class TokenManager {
    */
   private setupAuthEventListeners(): void {
     // Listen for authentication refresh failures
-    this.eventManager.on(
-      SDKEventType.AUTHENTICATION_REFRESH_FAILED,
-      async (event) => {
-        try {
-          if (event.payload && typeof event.payload === 'object') {
-            // Clear user from local storage
-            this.clearAuth()
+    this.eventManager.on(SDKEventType.AUTHENTICATION_REFRESH_FAILED, async (event) => {
+      try {
+        if (event.payload && typeof event.payload === "object") {
+          // Clear user from local storage
+          this.clearAuth();
 
-            // Attempt to get fresh user details using the autoLoginToken
-            const freshUserData = await this.getCurrentUser(event.payload)
+          // Attempt to get fresh user details using the autoLoginToken
+          const freshUserData = await this.getCurrentUser(event.payload);
 
-            // Set user back to the provider
-            if (freshUserData) {
-              this.eventManager.emit(
-                SDKEventType.SDK_AUTHENTICATE_USER,
-                freshUserData,
-              )
-            }
+          // Set user back to the provider
+          if (freshUserData) {
+            this.eventManager.emit(SDKEventType.SDK_AUTHENTICATE_USER, freshUserData);
           }
-        } catch (error) {
-          console.error(
-            'TokenManager: Error during auto re-authentication after refresh failure:',
-            error,
-          )
         }
-      },
-    )
+      } catch (error) {
+        console.error("TokenManager: Error during auto re-authentication after refresh failure:", error);
+      }
+    });
 
     // Listen for authentication user updates
-    this.eventManager.on(
-      SDKEventType.AUTHENTICATION_CACHED_USER_UPDATE,
-      (event) => {
-        try {
-          if (event.payload && typeof event.payload === 'object') {
-            this.setUserData(event.payload)
-          }
-        } catch (error) {
-          console.error(
-            'TokenManager: Error handling AUTHENTICATION_CACHED_USER_UPDATE event:',
-            error,
-          )
+    this.eventManager.on(SDKEventType.AUTHENTICATION_CACHED_USER_UPDATE, (event) => {
+      try {
+        if (event.payload && typeof event.payload === "object") {
+          this.setUserData(event.payload);
         }
-      },
-    )
+      } catch (error) {
+        console.error("TokenManager: Error handling AUTHENTICATION_CACHED_USER_UPDATE event:", error);
+      }
+    });
   }
 
   static getInstance(): TokenManager {
     if (!TokenManager.instance) {
-      TokenManager.instance = new TokenManager()
+      TokenManager.instance = new TokenManager();
     }
-    return TokenManager.instance
+    return TokenManager.instance;
   }
 
   /**
@@ -93,10 +80,10 @@ export class TokenManager {
     refreshToken,
     autoLoginToken,
   }: {
-    apiUser: any
-    accessToken: string
-    refreshToken: string
-    autoLoginToken?: string
+    apiUser: any;
+    accessToken: string;
+    refreshToken: string;
+    autoLoginToken?: string;
   }): AuthUser {
     return {
       id: apiUser.user_id,
@@ -116,7 +103,7 @@ export class TokenManager {
       brandGuidelines: apiUser.brand_guidelines,
       refreshToken,
       autoLoginToken,
-    }
+    };
   }
 
   /**
@@ -124,16 +111,18 @@ export class TokenManager {
    */
   setUserData(userData: AuthUser): void {
     try {
-      const currentUserData = this.getUserData()
+      const currentUserData = this.getUserData();
       // Clear cached user if the user data has changed
       if (currentUserData && currentUserData.id !== userData.id) {
-        this.cachedUser = null
+        this.cachedUser = null;
       }
-      this.isInIframe
-        ? internalStorage.setItem(USER_DATA_KEY, JSON.stringify(userData))
-        : localStorage.setItem(USER_DATA_KEY, JSON.stringify(userData))
+      if (this.isInIframe) {
+        internalStorage.setItem(USER_DATA_KEY, JSON.stringify(userData));
+      } else {
+        localStorage.setItem(USER_DATA_KEY, JSON.stringify(userData));
+      }
     } catch (error) {
-      console.warn('Failed to store user data:', error)
+      console.warn("Failed to store user data:", error);
     }
   }
 
@@ -142,13 +131,11 @@ export class TokenManager {
    */
   getUserData(): AuthUser | null {
     try {
-      const userData = this.isInIframe
-        ? internalStorage.getItem(USER_DATA_KEY)
-        : localStorage.getItem(USER_DATA_KEY)
-      return userData ? JSON.parse(userData) : null
+      const userData = this.isInIframe ? internalStorage.getItem(USER_DATA_KEY) : localStorage.getItem(USER_DATA_KEY);
+      return userData ? JSON.parse(userData) : null;
     } catch (error) {
-      console.warn('Failed to get user data:', error)
-      return null
+      console.warn("Failed to get user data:", error);
+      return null;
     }
   }
 
@@ -157,12 +144,14 @@ export class TokenManager {
    */
   removeUserData(): void {
     try {
-      this.isInIframe
-        ? internalStorage.removeItem(USER_DATA_KEY)
-        : localStorage.removeItem(USER_DATA_KEY)
-      this.cachedUser = null
+      if (this.isInIframe) {
+        internalStorage.removeItem(USER_DATA_KEY);
+      } else {
+        localStorage.removeItem(USER_DATA_KEY);
+      }
+      this.cachedUser = null;
     } catch (error) {
-      console.warn('Failed to remove user data:', error)
+      console.warn("Failed to remove user data:", error);
     }
   }
 
@@ -170,7 +159,7 @@ export class TokenManager {
    * Check if user data exists in localStorage
    */
   hasUserData(): boolean {
-    return this.getUserData() !== null
+    return this.getUserData() !== null;
   }
 
   /**
@@ -178,32 +167,26 @@ export class TokenManager {
    * Handles both token-based and session-based authentication
    * Now checks local storage first to skip API calls when possible
    */
-  async getCurrentUser(config?: {
-    token?: string
-    brandId: number
-    params?: any
-  }): Promise<AuthUser | null> {
+  async getCurrentUser(config?: { token?: string; brandId: number; params?: any }): Promise<AuthUser | null> {
     try {
       // Return cached user if available
       if (this.cachedUser) {
-        return this.cachedUser
+        return this.cachedUser;
       }
 
       // Check local storage for user data first
-      const storedUserData = this.getUserData()
+      const storedUserData = this.getUserData();
 
       if (storedUserData) {
         // remove stored data and fetch fresh data
         if (config?.token && storedUserData.autoLoginToken !== config.token) {
-          console.log(
-            'Token mismatch detected, removing stored data and fetching fresh',
-          )
-          this.removeUserData()
+          console.log("Token mismatch detected, removing stored data and fetching fresh");
+          this.removeUserData();
         } else {
           // Set cached user and return it
-          this.cachedUser = storedUserData
-          console.log('Using stored user data, skipping API call')
-          return this.cachedUser
+          this.cachedUser = storedUserData;
+          console.log("Using stored user data, skipping API call");
+          return this.cachedUser;
         }
       }
 
@@ -213,73 +196,73 @@ export class TokenManager {
           config.token,
           config.brandId,
           window.self !== window.top,
-          config.params,
-        )
+          config.params
+        );
 
         if (userData) {
           // Store user data in local storage
-          this.setUserData(userData)
+          this.setUserData(userData);
 
           // Cache the user
-          this.cachedUser = userData
-          return this.cachedUser
+          this.cachedUser = userData;
+          return this.cachedUser;
         }
       }
       // Otherwise, check for existing session using mini profile
       else if (this.hasUserData()) {
-        const token = this.getUserData()?.accessToken
+        const token = this.getUserData()?.accessToken;
         if (token) {
-          const profileResponse = await this.apiService.getMiniProfile()
+          const profileResponse = await this.apiService.getMiniProfile();
           if (profileResponse.data && token) {
             const parsedUser = this.parseUserResponse({
               apiUser: profileResponse.data,
               accessToken: token,
               refreshToken: token,
-            })
+            });
 
             // Store user data in local storage
-            this.setUserData(parsedUser)
+            this.setUserData(parsedUser);
 
             // Cache the user
-            this.cachedUser = parsedUser
-            return parsedUser
+            this.cachedUser = parsedUser;
+            return parsedUser;
           }
         }
       }
 
       // Remove token and user data if authentication failed
-      this.removeUserData()
-      return null
+      this.removeUserData();
+      return null;
     } catch (error) {
       this.errorHandler.handleError(
         ErrorType.AUTHENTICATION_ERROR,
-        `Failed to get current user: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        { originalError: error instanceof Error ? error : undefined },
-      )
+        `Failed to get current user: ${error instanceof Error ? error.message : "Unknown error"}`,
+        { originalError: error instanceof Error ? error : undefined }
+      );
 
       // Remove invalid token and user data
-      this.removeUserData()
-      return null
+      this.removeUserData();
+      return null;
     }
   }
 
   getCachedUser() {
-    return this.cachedUser
+    return this.cachedUser;
   }
 
   /**
    * Validate current session
    */
   async validateSession(): Promise<boolean> {
-    const user = await this.getCurrentUser()
-    return user !== null
+    const user = await this.getCurrentUser();
+    return user !== null;
   }
 
   /**
    * Clear all authentication data
    */
   clearAuth(): void {
-    this.removeUserData()
-    this.cachedUser = null
+    this.removeUserData();
+    this.cachedUser = null;
   }
 }

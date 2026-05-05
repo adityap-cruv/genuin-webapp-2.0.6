@@ -1,4 +1,4 @@
-import { BrandDetailsConfigType } from "@genuin/components/types/brand";
+import type { BrandDetailsConfigType } from "@genuin/components/types/brand";
 
 /**
  * Determines video playback configuration based on web configs
@@ -13,26 +13,21 @@ import { BrandDetailsConfigType } from "@genuin/components/types/brand";
  * - repeatCount is set to repeat_video value or 0
  * - shouldSwipeNext is false (auto swipe disabled)
  */
-export const getVideoPlayerConfigs = (
-  webConfigs?: BrandDetailsConfigType["web_configs"]
-) => {
+export const getVideoPlayerConfigs = (webConfigs?: BrandDetailsConfigType["web_configs"]) => {
   let repeatCount: number;
 
   // Check if feed_video_play.type is 2, (auto swipe enabled)
   if (webConfigs?.feed_video_play.type === 2) {
     repeatCount = webConfigs.feed_video_play.swipe_after;
     // Check if feed_video_play.repeat_video is 0 (infinite repeats)
-  } else if (
-    webConfigs?.feed_video_play.type === 1 &&
-    webConfigs?.feed_video_play.repeat_video === 0
-  ) {
+  } else if (webConfigs?.feed_video_play.type === 1 && webConfigs?.feed_video_play.repeat_video === 0) {
     repeatCount = Infinity; // infinite repeats
     // Otherwise, set repeatCount to the value of repeat_video
   } else {
     repeatCount = webConfigs?.feed_video_play.repeat_video ?? 0;
   }
 
-  let shouldSwipeNext = webConfigs?.feed_video_play.type === 2;
+  const shouldSwipeNext = webConfigs?.feed_video_play.type === 2;
 
   let autoplay: boolean = true;
   let autoplayAfter: number = 0;
@@ -42,14 +37,13 @@ export const getVideoPlayerConfigs = (
     autoplay = false;
   }
 
-  // if type is 3 than autoplay video after auto_play_after 
+  // if type is 3 than autoplay video after auto_play_after
   if (webConfigs?.video_autoplay.type === 3) {
-    autoplay = false;  // Don't play immediately
-    autoplayAfter = webConfigs.video_autoplay.auto_play_after; 
+    autoplay = false; // Don't play immediately
+    autoplayAfter = webConfigs.video_autoplay.auto_play_after;
   }
 
-  const unmuteVideo =
-    (webConfigs?.is_start_with_sound && webConfigs.tap_behavior !== 2) ?? false;
+  const unmuteVideo = (webConfigs?.is_start_with_sound && webConfigs.tap_behavior !== 2) ?? false;
 
   return {
     repeatCount: repeatCount - 1,

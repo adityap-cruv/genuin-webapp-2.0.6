@@ -59,11 +59,16 @@ const minimalEntityData = {
 };
 
 const defaultSideInfoData: ComponentProps<typeof SideInfo>["sideInfoData"] = {
-  stats: { Views: 1234, Comments: 56, Sparks: 789 },
+  description: null,
+  stats: { Views: 1234, Comments: 56, Reactions: 789 },
   createdAt: "Jan 15, 2024",
   createdBy: mockCreatedByData,
   createdIn: mockCreatedInData,
-  guidelines: ["Be awesome.", "Follow the rules.", "Have fun!"],
+  guidelines: [
+    { id: 1, position: 1, title: "Be awesome.", description: "" },
+    { id: 2, position: 2, title: "Follow the rules.", description: "" },
+    { id: 3, position: 3, title: "Have fun!", description: "" },
+  ],
 };
 
 export const Default: Story = {
@@ -78,9 +83,9 @@ export const WithGuidelines: Story = {
     sideInfoData: {
       ...defaultSideInfoData,
       guidelines: [
-        "Always be kind and respectful.",
-        "No offensive content.",
-        "Report any issues to the admins.",
+        { id: 1, position: 1, title: "Always be kind and respectful.", description: "" },
+        { id: 2, position: 2, title: "No offensive content.", description: "" },
+        { id: 3, position: 3, title: "Report any issues to the admins.", description: "" },
       ],
     },
     className: "w-[300px] p-4",
@@ -100,7 +105,8 @@ export const WithoutGuidelines: Story = {
 export const MinimalData: Story = {
   args: {
     sideInfoData: {
-      stats: { Views: 10, Comments: 1, Sparks: 2 },
+      description: null,
+      stats: { Views: 10, Comments: 1, Reactions: 2 },
       createdAt: "Feb 01, 2024",
       createdBy: mockCreatedByData,
       createdIn: mockCreatedInData,
@@ -117,7 +123,7 @@ export const WithoutStats: Story = {
       // stats is mandatory, so providing zero values.
       // The SideInfo component's `stats && <Stats ... />` check means
       // this object will be passed to the Stats component.
-      stats: { Views: 0, Comments: 0, Sparks: 0 },
+      stats: { Views: 0, Comments: 0, Reactions: 0 },
     },
     className: "w-[300px] p-4",
   },
@@ -136,9 +142,10 @@ export const EntityWithoutName: Story = {
 export const OnlyCreatedAt: Story = {
   args: {
     sideInfoData: {
+      description: null,
       createdAt: "Mar 10, 2024",
       // Other fields are mandatory as per SideInfoDataType
-      stats: { Views: 0, Comments: 0, Sparks: 0 }, // Minimal stats
+      stats: { Views: 0, Comments: 0, Reactions: 0 }, // Minimal stats
       createdBy: minimalEntityData, // Minimal valid entity
       createdIn: minimalEntityData, // Minimal valid entity
       guidelines: [], // Explicitly no guidelines for this test
@@ -150,9 +157,10 @@ export const OnlyCreatedAt: Story = {
 export const OnlyCreatedBy: Story = {
   args: {
     sideInfoData: {
+      description: null,
       createdBy: mockCreatedByData, // Focus of this story
       // Other fields are mandatory
-      stats: { Views: 0, Comments: 0, Sparks: 0 },
+      stats: { Views: 0, Comments: 0, Reactions: 0 },
       createdAt: "Mar 11, 2024", // Provide a valid date
       createdIn: minimalEntityData,
       guidelines: [],
@@ -164,9 +172,10 @@ export const OnlyCreatedBy: Story = {
 export const OnlyCreatedIn: Story = {
   args: {
     sideInfoData: {
+      description: null,
       createdIn: mockCreatedInData, // Focus of this story
       // Other fields are mandatory
-      stats: { Views: 0, Comments: 0, Sparks: 0 },
+      stats: { Views: 0, Comments: 0, Reactions: 0 },
       createdAt: "Mar 12, 2024", // Provide a valid date
       createdBy: minimalEntityData,
       guidelines: [],

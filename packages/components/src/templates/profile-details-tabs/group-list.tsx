@@ -1,9 +1,11 @@
 "use client";
 import { useMemo } from "react";
 
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { GroupSubscriptionButton } from "@genuin/components/molecules/group-subscription-button";
 import { JoinGroupButton } from "@genuin/components/molecules/join-group-button";
 import { ShareButton } from "@genuin/components/molecules/share-button";
+import { ComponentErrorState } from "@genuin/components/organisms/error-state-component";
 import { GenericDetails } from "@genuin/components/organisms/generic-details";
 import { GenericDetailsMetadata } from "@genuin/components/organisms/generic-details/generic-details-metadata";
 import {
@@ -13,12 +15,9 @@ import {
 } from "@genuin/components/react-query/api/profile/posts";
 import type { LoopType } from "@genuin/components/react-query/api/profile/posts/schema";
 
-import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { CommunityGroupsSkeleton } from "../community-details-tabs";
-import { ComponentErrorState } from "@genuin/components/organisms/error-state-component";
+
 import { Posts } from "./posts";
-import { GroupDetailsType } from "@genuin/components/react-query/api/group/details";
-import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
 // TODO:  use <GroupCard/> component here.
 export function Groups({
@@ -34,14 +33,7 @@ export function Groups({
   forBrand: boolean;
   totalLoops: number;
 }) {
-  const {
-    isLoading,
-    isError,
-    data,
-    hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
-  } = useGetProfileGroups(
+  const { isLoading, isError, data, hasNextPage, fetchNextPage, isFetchingNextPage } = useGetProfileGroups(
     profileId,
     communityId,
     forBrand,
@@ -76,8 +68,7 @@ export function Groups({
   return (
     <>
       {groups.map((group) => {
-        const showPrivateGroupAccess =
-          group.isPrivate && group.role !== "JOINED";
+        const showPrivateGroupAccess = group.isPrivate && group.role !== "JOINED";
 
         return (
           <li key={group.id}>
@@ -140,8 +131,7 @@ export function Groups({
                     })}
                   />
                 </div>
-              }
-            >
+              }>
               {showPrivateGroupAccess ? (
                 <ComponentErrorState type="PRIVATE_GROUP" forList />
               ) : (
@@ -158,18 +148,17 @@ export function Groups({
           </li>
         );
       })}
-      {/*  Lazy Loading Shimmer for Community Groups */}
+      {/* Lazy Loading Shimmer for Community Groups */}
       {isFetchingNextPage && (
         <li>
-           <CommunityGroupsSkeleton />
+          <CommunityGroupsSkeleton />
         </li>
       )}
       {hasNextPage && !isFetchingNextPage && (
         <li>
           <div
             onClick={() => fetchNextPage()}
-            className="gencl:bg-secondary-50 gencl:cursor-pointer gencl:sm:!py-4 gencl:py-2 gencl:border gencl:flex gencl:w-full gencl:justify-center gencl:text-body-1-semi-bold gencl:text-secondary-600 gencl:border-secondary-150 gencl:rounded-lg gencl:sm:!rounded-xl"
-          >
+            className="gencl:bg-secondary-50 gencl:cursor-pointer gencl:sm:!py-4 gencl:py-2 gencl:border gencl:flex gencl:w-full gencl:justify-center gencl:text-body-1-semi-bold gencl:text-secondary-600 gencl:border-secondary-150 gencl:rounded-lg gencl:sm:!rounded-xl">
             View more groups
           </div>
         </li>

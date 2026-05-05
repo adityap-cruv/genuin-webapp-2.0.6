@@ -1,7 +1,8 @@
 'use client'
-import { useWalletStore } from './store'
-import { DiscountCouponIcon } from '@icons/wallet/discount-coupon-icon'
 import { BackIcon } from '@icons/back-icon'
+import { DiscountCouponIcon } from '@icons/wallet/discount-coupon-icon'
+
+import { useWalletStore } from './store'
 
 export const WalletRewardCreditsCard = () => {
   const { setCurrentCardView, currentCardView, walletDetails } = useWalletStore()

@@ -1,22 +1,13 @@
-import {
-  InstagramIcon,
-  TwitterIcon,
-  TiktokIcon,
-  LinkedInIcon,
-  YouTubeIcon,
-  RedditIcon,
-} from "@genuin/ui/icons";
+import { InstagramIcon, TwitterIcon, TiktokIcon, LinkedInIcon, YouTubeIcon, RedditIcon } from "@genuin/ui/icons";
+import { cn } from "@genuin/ui/lib/utils";
+import type { VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 import { LinkIcon } from "lucide-react";
 
 import { Link } from "../link";
-import { cva, VariantProps } from "class-variance-authority";
-import { cn } from "@genuin/ui/lib/utils";
 
 export type LinksType = Partial<
-  Record<
-    "x" | "instagram" | "tiktok" | "custom" | "linkedin" | "reddit" | "youtube",
-    string | undefined
-  >
+  Record<"x" | "instagram" | "tiktok" | "custom" | "linkedin" | "reddit" | "youtube", string | undefined>
 >;
 
 const socialLinksVariants = cva(
@@ -52,69 +43,52 @@ type LinkProps = {
  * @returns
  */
 export function SocialLinks({ links, variant, iconSize }: LinkProps) {
-  const textClassName =
-    "gencl:text-body-1-medium gencl:text-blue gencl:line-clamp-1 gencl:break-all";
+  const textClassName = "gencl:text-body-1-medium gencl:text-blue gencl:line-clamp-1 gencl:break-all";
 
-  const itemClassName = cn(
-    variant === "detailed" && "gencl:flex gencl:items-center gencl:gap-2"
-  );
+  const itemClassName = cn(variant === "detailed" && "gencl:flex gencl:items-center gencl:gap-2");
 
   return (
     <div className={socialLinksVariants({ variant, iconSize })}>
       {links.custom && (
         <Link href={links.custom} target="_blank" className={itemClassName}>
           <LinkIcon />
-          {links.custom && variant === "detailed" && (
-            <p className={textClassName}>{links.custom}</p>
-          )}
+          {links.custom && variant === "detailed" && <p className={textClassName}>{links.custom}</p>}
         </Link>
       )}
       {links.x && (
         <Link href={links.x} target="_blank" className={itemClassName}>
           <TwitterIcon className="gencl:fill-secondary-600" />
-          {links.x && variant === "detailed" && (
-            <p className={textClassName}>{links.x}</p>
-          )}
+          {links.x && variant === "detailed" && <p className={textClassName}>{links.x}</p>}
         </Link>
       )}
       {links.instagram && (
         <Link href={links.instagram} target="_blank" className={itemClassName}>
           <InstagramIcon className="gencl:fill-secondary-600" />
-          {links.instagram && variant === "detailed" && (
-            <p className={textClassName}>{links.instagram}</p>
-          )}
+          {links.instagram && variant === "detailed" && <p className={textClassName}>{links.instagram}</p>}
         </Link>
       )}
       {links.tiktok && (
         <Link href={links.tiktok} target="_blank" className={itemClassName}>
           <TiktokIcon className="gencl:fill-secondary-600" />
-          {links.tiktok && variant === "detailed" && (
-            <p className={textClassName}>{links.tiktok}</p>
-          )}
+          {links.tiktok && variant === "detailed" && <p className={textClassName}>{links.tiktok}</p>}
         </Link>
       )}
       {links.linkedin && (
         <Link href={links.linkedin} target="_blank" className={itemClassName}>
           <LinkedInIcon className="gencl:fill-secondary-600" />
-          {links.linkedin && variant === "detailed" && (
-            <p className={textClassName}>{links.linkedin}</p>
-          )}
+          {links.linkedin && variant === "detailed" && <p className={textClassName}>{links.linkedin}</p>}
         </Link>
       )}
       {links.youtube && (
         <Link href={links.youtube} target="_blank" className={itemClassName}>
           <YouTubeIcon className="gencl:fill-secondary-600" />
-          {links.youtube && variant === "detailed" && (
-            <p className={textClassName}>{links.youtube}</p>
-          )}
+          {links.youtube && variant === "detailed" && <p className={textClassName}>{links.youtube}</p>}
         </Link>
       )}
       {links.reddit && (
         <Link href={links.reddit} target="_blank" className={itemClassName}>
           <RedditIcon className="gencl:fill-secondary-600" />
-          {links.reddit && variant === "detailed" && (
-            <p className={textClassName}>{links.reddit}</p>
-          )}
+          {links.reddit && variant === "detailed" && <p className={textClassName}>{links.reddit}</p>}
         </Link>
       )}
     </div>

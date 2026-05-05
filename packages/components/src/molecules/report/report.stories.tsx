@@ -1,6 +1,7 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { Report } from "./report";
 import { Button } from "@genuin/ui/button";
+import type { Meta, StoryObj } from "@storybook/react";
+
+import { Report } from "./report";
 
 const meta: Meta<typeof Report> = {
   title: "Molecules/Report",
@@ -24,15 +25,14 @@ type Story = StoryObj<typeof Report>;
 
 export const PostReport: Story = {
   render: () => (
-    <Report reportFor="VIDEO" contentId="post-123">
+    <Report reportFor="VIDEO" contentId="post-123" type="report-post">
       <Button className="gencl:bg-primary gencl:text-white">Report Post</Button>
     </Report>
   ),
   parameters: {
     docs: {
       description: {
-        story:
-          "Report dialog for a post. Click the button to open the report dialog for a post.",
+        story: "Report dialog for a post. Click the button to open the report dialog for a post.",
       },
     },
   },
@@ -40,17 +40,14 @@ export const PostReport: Story = {
 
 export const CommentReport: Story = {
   render: () => (
-    <Report reportFor="COMMENT" contentId="comment-456">
-      <Button className="gencl:bg-primary gencl:text-white">
-        Report Comment
-      </Button>
+    <Report reportFor="COMMENT" contentId="comment-456" type="report-comment">
+      <Button className="gencl:bg-primary gencl:text-white">Report Comment</Button>
     </Report>
   ),
   parameters: {
     docs: {
       description: {
-        story:
-          "Report dialog for a comment. Click the button to open the report dialog for a comment.",
+        story: "Report dialog for a comment. Click the button to open the report dialog for a comment.",
       },
     },
   },

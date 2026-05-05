@@ -1,12 +1,6 @@
 import { cn } from "@genuin/ui/lib/utils";
-import React, {
-  useState,
-  useRef,
-  useEffect,
-  forwardRef,
-  InputHTMLAttributes,
-  ChangeEvent,
-} from "react";
+import type { InputHTMLAttributes, ChangeEvent } from "react";
+import React, { useState, useRef, useEffect, forwardRef } from "react";
 
 // Import the SelectedMention type
 export type SelectedMention = {
@@ -16,15 +10,9 @@ export type SelectedMention = {
   type: "member" | "community" | "url";
 };
 
-interface HighlightedInputProps
-  extends Omit<
-    InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement>,
-    "onChange"
-  > {
+interface HighlightedInputProps extends Omit<InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement>, "onChange"> {
   value?: string;
-  onChange?: (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => void;
+  onChange?: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   selectedMentions?: SelectedMention[];
   name: string;
   classes?: {
@@ -34,10 +22,7 @@ interface HighlightedInputProps
   inputType: "text" | "textarea";
 }
 
-const HighlightedInput = forwardRef<
-  HTMLInputElement | HTMLTextAreaElement,
-  HighlightedInputProps
->(
+const HighlightedInput = forwardRef<HTMLInputElement | HTMLTextAreaElement, HighlightedInputProps>(
   (
     {
       value = "",
@@ -68,9 +53,7 @@ const HighlightedInput = forwardRef<
       }
     }, [inputValue]);
 
-    const handleInputChange = (
-      e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-    ): void => {
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
       const newValue = e.target.value;
       setInputValue(newValue);
 
@@ -88,9 +71,7 @@ const HighlightedInput = forwardRef<
       }
     };
 
-    const handleScroll = (
-      e: React.UIEvent<HTMLInputElement | HTMLTextAreaElement>
-    ): void => {
+    const handleScroll = (e: React.UIEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
       if (highlightRef.current) {
         const target = e.target as HTMLInputElement | HTMLTextAreaElement;
         highlightRef.current.scrollLeft = target.scrollLeft;
@@ -99,17 +80,14 @@ const HighlightedInput = forwardRef<
     };
 
     // Helper to escape regex special characters
-    const escapeRegExp = (string: string) =>
-      string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const escapeRegExp = (string: string) => string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
     // Build a regex to match only the selected mentions' handles (with or without @)
     const getMentionsRegex = () => {
       if (!selectedMentions.length) return null;
       // Allow both @handle and handle
       const patterns = selectedMentions.map((mention) => {
-        const handle = mention.handle.startsWith("@")
-          ? mention.handle.slice(1)
-          : mention.handle;
+        const handle = mention.handle.startsWith("@") ? mention.handle.slice(1) : mention.handle;
         return `@?${escapeRegExp(handle)}`;
       });
       // Word boundary or start/end of string
@@ -117,20 +95,19 @@ const HighlightedInput = forwardRef<
     };
 
     // Replace spaces with &nbsp; for highlight layer
-    const preserveSpaces = (text: string) =>
-      text.replace(/  /g, " &nbsp;").replace(/ /g, "&nbsp;");
+    const preserveSpaces = (text: string) => text.replace(/ {2}/g, " &nbsp;").replace(/ /g, "&nbsp;");
 
     const getHighlightedText = (): string => {
       if (!inputValue) {
         // Show placeholder in highlight layer if input is empty
         if (placeholder) {
-          return `<span class=\"gencl:text-secondary-600 gencl:opacity-100\">${preserveSpaces(placeholder)}</span>`;
+          return `<span class="gencl:text-secondary-600 gencl:opacity-100">${preserveSpaces(placeholder)}</span>`;
         }
         return "";
       }
       const regex = getMentionsRegex();
       if (!regex) {
-        return `<span class=\"gencl:text-black\">${preserveSpaces(inputValue)}</span>`;
+        return `<span class="gencl:text-black">${preserveSpaces(inputValue)}</span>`;
       }
       let lastIndex = 0;
       let result = "";
@@ -141,12 +118,12 @@ const HighlightedInput = forwardRef<
         // Add text before match
         result += preserveSpaces(inputValue.slice(lastIndex, start));
         // Add highlighted match
-        result += `<span class=\"gencl:text-primary\">${preserveSpaces(match[0])}</span>`;
+        result += `<span class="gencl:text-primary">${preserveSpaces(match[0])}</span>`;
         lastIndex = end;
       }
       // Add remaining text
       result += preserveSpaces(inputValue.slice(lastIndex));
-      return `<span class=\"gencl:text-black\">${result}</span>`;
+      return `<span class="gencl:text-black">${result}</span>`;
     };
 
     return (
@@ -169,10 +146,7 @@ const HighlightedInput = forwardRef<
               dangerouslySetInnerHTML={{ __html: getHighlightedText() }}
             />
             <input
-              ref={
-                (ref as React.Ref<HTMLInputElement>) ||
-                (inputRef as React.RefObject<HTMLInputElement>)
-              }
+              ref={(ref as React.Ref<HTMLInputElement>) || (inputRef as React.RefObject<HTMLInputElement>)}
               type="text"
               name={name}
               value={inputValue}
@@ -193,10 +167,7 @@ const HighlightedInput = forwardRef<
         ) : (
           <textarea
             placeholder="Add description"
-            ref={
-              (ref as React.RefObject<HTMLTextAreaElement>) ||
-              (inputRef as React.RefObject<HTMLTextAreaElement>)
-            }
+            ref={(ref as React.RefObject<HTMLTextAreaElement>) || (inputRef as React.RefObject<HTMLTextAreaElement>)}
             name={name}
             value={inputValue}
             onChange={handleInputChange}
@@ -218,5 +189,7 @@ const HighlightedInput = forwardRef<
     );
   }
 );
+
+HighlightedInput.displayName = "HighlightedInput";
 
 export default HighlightedInput;

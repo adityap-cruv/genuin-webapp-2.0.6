@@ -6,10 +6,7 @@ interface WouterRouter {
   push: (href: string, options?: { scroll?: boolean }) => void;
   replace: (href: string, options?: { scroll?: boolean }) => void;
   refresh: () => void;
-  prefetch: (
-    href: string,
-    options?: { onInvalidate?: () => void }
-  ) => Promise<void>;
+  prefetch: (href: string, options?: { onInvalidate?: () => void }) => Promise<void>;
   back: () => void;
   forward: () => void;
   canGoBack: () => boolean;
@@ -20,14 +17,14 @@ export function useRouter() {
   const embedContext = useSafeEmbedContext();
 
   return useRouter
-    ? { ...useRouter(), canGoBack: () => true }
-    : useWouterRouter(embedContext?.embedRouter);
+    ? // eslint-disable-next-line react-hooks/rules-of-hooks
+      { ...useRouter(), canGoBack: () => true }
+    : // eslint-disable-next-line react-hooks/rules-of-hooks
+      useWouterRouter(embedContext?.embedRouter);
 }
 
 function useWouterRouter(
-  embedRouter?: NonNullable<
-    ReturnType<typeof useSafeEmbedContext>
-  >["embedRouter"]
+  embedRouter?: NonNullable<ReturnType<typeof useSafeEmbedContext>>["embedRouter"]
 ): WouterRouter {
   return {
     /**

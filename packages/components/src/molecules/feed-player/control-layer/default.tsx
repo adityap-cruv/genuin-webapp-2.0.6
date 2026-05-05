@@ -1,35 +1,35 @@
-import { ControlLayerPropsType } from "./control-layer.types";
+import { Button } from "@genuin/ui/button";
 import { cn } from "@genuin/ui/lib/utils";
 import React, { useCallback, Suspense } from "react";
+
+import { useAuthContext } from "@genuin/components/context";
 import { useBaseContext } from "@genuin/components/context/base";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
+import { useDoubleClick } from "@genuin/components/hooks/use-double-click";
+import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
+import { PlaybackSpeedCapsule } from "@genuin/components/molecules/playback-speed/speed-capsule";
+import { DynamicReactionIcon, ReactionButton } from "@genuin/components/molecules/reaction-button";
+
+import { SpeedControlSideBars } from "../../playback-speed/speed-control-bars";
 import { usePlayerContext } from "../context/context";
+
+import type { ControlLayerPropsType } from "./control-layer.types";
 import { Controls } from "./controls";
+import { VideoEditActionButtons } from "./controls/control-buttons";
 import { PlayingState } from "./playing-state";
 import { Scrubber } from "./scrubber";
-import { PlaybackSpeedCapsule } from "@genuin/components/molecules/playback-speed/speed-capsule";
-import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
-import { SpeedControlSideBars } from "../../playback-speed/speed-control-bars";
-import { VideoEditActionButtons } from "./controls/control-buttons";
-import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import {
-  DynamicReactionIcon,
-  ReactionButton,
-} from "@genuin/components/molecules/reaction-button";
-import { Button } from "@genuin/ui/button";
-import { useDoubleClick } from "@genuin/components/hooks/use-double-click";
-import { useAuthContext } from "@genuin/components/context";
-import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 
 const ExpandViewDetails = React.lazy(() =>
-  import("./expand-view/index.js").then((m) => ({
+  import("./expand-view").then((m) => ({
     default: m.ExpandViewDetails,
-  })),
+  }))
 );
 
 const Linkouts = React.lazy(() =>
-  import("@genuin/components/organisms/linkouts/index.js").then((m) => ({
+  import("@genuin/components/organisms/linkouts").then((m) => ({
     default: m.Linkouts,
-  })),
+  }))
 );
 
 export function Default({
@@ -53,7 +53,7 @@ export function Default({
   containerWidth,
   ...restProps
 }: ControlLayerPropsType) {
-  const { brandDetails, playbackSpeed } = useBaseContext();
+  const { brandDetails, playbackSpeed, isEmbed } = useBaseContext();
   const {
     showExpandView,
     togglePlay,
@@ -100,7 +100,7 @@ export function Default({
       }, 1000);
 
       // Programmatically trigger reaction button click only if not already sparked
-      if (!postDetails.video.isSparked && reactionButtonRef.current) {
+      if (!postDetails.video?.isSparked && reactionButtonRef.current) {
         reactionButtonRef.current.click();
       }
     },
@@ -108,16 +108,15 @@ export function Default({
 
   // Extract properties with fallbacks to prevent undefined errors
   const tapBehavior = brandDetails?.web_configs?.tap_behavior || 1; // Default to 1 if undefined
-  const playback_speed_enabled =
-    brandDetails?.web_configs?.playback_speed_enabled || false;
+  const playback_speed_enabled = brandDetails?.web_configs?.playback_speed_enabled || false;
 
   // Event handlers
   const handleVideoClick = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
 
-      if (postDetails.video.clickableUrl) {
-        window.open(postDetails.video.clickableUrl, "_blank");
+      if (postDetails.video?.clickableUrl) {
+        window.open(postDetails.video.clickableUrl ?? undefined, "_blank");
         return;
       }
 
@@ -148,10 +147,13 @@ export function Default({
           break;
       }
     },
-    [muted, togglePlay, toggleMuted],
+    [muted, togglePlay, toggleMuted]
   );
 
-  const hidePlayerControls = (containerWidth ?? 0) < 200;
+  const { video } = postDetails;
+  if (!video) return null;
+
+  const hidePlayerControls = isEmbed && containerWidth ? ((containerWidth ?? 0) < 200 ? true : false) : false;
 
   switch (brandLayoutType) {
     case "iheart":
@@ -161,10 +163,9 @@ export function Default({
           className={cn(
             "group gencl:inset-0 gencl:z-10 gencl:flex gencl:justify-center",
             "gencl:appearance-none gencl:border-0 gencl:bg-transparent gencl:p-0 gencl:cursor-pointer gencl:w-full",
-            className,
+            className
           )}
-          {...restProps}
-        >
+          {...restProps}>
           {/* Top gradient overlay (10% height) */}
           <div
             className="gencl:absolute gencl:top-0 gencl:left-0 gencl:right-0 gencl:pointer-events-none"
@@ -205,53 +206,40 @@ export function Default({
             className={cn(
               "gencl:absolute gencl:left-1/2 gencl:top-1/2 gencl:flex gencl:items-center",
               "gencl:justify-center gencl:h-16 gencl:w-16",
-              "gencl:-translate-x-1/2 gencl:-translate-y-1/2",
+              "gencl:-translate-x-1/2 gencl:-translate-y-1/2"
             )}
           />
           {/* Large reaction icon on double-click */}
           {showReactionIcon && (
             <DynamicReactionIcon
-              isSparked={postDetails.video.isSparked ?? false}
-              sparkCount={postDetails.video.sparkCount}
+              isSparked={video.isSparked ?? false}
+              sparkCount={video.sparkCount}
               type="feed_animate"
               iconHeight={185}
               iconWidth={185}
               theme="light"
               className={cn(
                 "gencl:absolute gencl:left-1/2 gencl:top-1/2 gencl:-translate-x-1/2 gencl:-translate-y-1/2 gencl:z-20",
-                "gencl:delay-1000 gencl:animate-fade-out gencl:transition-all gencl:duration-700 gencl:ease-out",
+                "gencl:delay-1000 gencl:animate-fade-out gencl:transition-all gencl:duration-700 gencl:ease-out"
               )}
             />
           )}
           {/* This is invisible button for reactions */}
           <ReactionButton
-            contentId={postDetails.video.id}
-            isReacted={postDetails.video.isSparked ?? false}
-            reactionCount={postDetails.video.sparkCount}
+            contentId={video.id}
+            isReacted={video.isSparked ?? false}
+            reactionCount={video.sparkCount}
             contentType="VIDEO"
-            onReactionStateChange={(isReacted) =>
-              onReactionStateChange?.(
-                postDetails.video.id,
-                postDetails.video.slug,
-                isReacted,
-              )
-            }
+            onReactionStateChange={(isReacted) => onReactionStateChange?.(video.id, video.slug, isReacted)}
             onClick={(e) => {
               e?.stopPropagation();
             }}
             asChild
             withCustomChildren
             tabIndex={-1}
-            aria-hidden={true}
-            children={
-              <Button
-                ref={reactionButtonRef}
-                className="gencl:opacity-0"
-                aria-hidden={true}
-                tabIndex={-1}
-              />
-            }
-          />
+            aria-hidden={true}>
+            <Button ref={reactionButtonRef} className="gencl:opacity-0" aria-hidden={true} tabIndex={-1} />
+          </ReactionButton>
 
           {/* {gestureOverlayUI} */}
         </div>
@@ -270,24 +258,35 @@ export function Default({
               "group gencl:inset-0 gencl:z-10 gencl:flex gencl:justify-center",
               // showSeeker && "gencl:-translate-y-4",
               // showScrubber ? "gencl:hidden" : "gencl:block",
-              className,
+              className
             )}
-            {...restProps}
-          >
+            {...restProps}>
             <Controls
               showCloseButton={showCloseButton}
               enableExpand={enableExpand}
               className={cn(
                 isMobile || isTablet || isIpad
                   ? `${!isSectioned && showExpandView && "gencl:top-0"}`
-                  : postDetails.video.videoLayoutId === 6
-                    ? ""
-                    : "gencl:group-hover:opacity-100 gencl:group-hover:pointer-events-auto gencl:opacity-0 gencl:pointer-events-none gencl:transition-opacity gencl:duration-300",
+                  : "gencl:group-hover:opacity-100 gencl:group-hover:pointer-events-auto gencl:opacity-0 gencl:pointer-events-none gencl:transition-opacity gencl:duration-300",
+                video.videoLayoutId === 6 && "gencl:left-0 gencl:w-[calc(100%-134px)]"
               )}
               variant={isSectioned ? "sectioned" : "default"}
-              isSponsored={postDetails.video.videoLayoutId === 6}
+              isSponsored={video.videoLayoutId === 6}
               hidePlayerControls={hidePlayerControls}
             />
+
+            {/* Always-visible Sponsored badge rendered outside the hover-controlled Controls wrapper
+                so parent opacity-0 on desktop does not hide it. */}
+            {video.videoLayoutId === 6 && (
+              <div
+                className={cn(
+                  "gencl:absolute gencl:top-4 gencl:right-4 gencl:z-50",
+                  "gencl:bg-black/40 gencl:px-4 gencl:rounded-[50px] gencl:flex-center gencl:text-white",
+                  isMobile || isTablet || isIpad ? "gencl:h-9" : "gencl:h-12"
+                )}>
+                <p className="gencl:text-body-1-normal">Sponsored</p>
+              </div>
+            )}
 
             {/* this is wallet badge for wallet. */}
             {/* {isInModal && (
@@ -318,10 +317,7 @@ export function Default({
                   onReactionStateChange={onReactionStateChange}
                   onCommentCountChange={onCommentCountChange}
                   variant={variant}
-                  className={cn(
-                    playbackSpeed.speed !== 1 &&
-                      "gencl:hidden gencl:transition-all",
-                  )}
+                  className={cn(playbackSpeed.speed !== 1 && "gencl:hidden gencl:transition-all")}
                 />
               </Suspense>
             ) : (
@@ -329,9 +325,8 @@ export function Default({
                 className={cn(
                   "gencl:absolute gencl:bottom-0 gencl:w-full gencl:p-2 gencl:transition-all",
                   showSeeker && "gencl:bottom-4",
-                  playbackSpeed.speed !== 1 && "gencl:hidden",
-                )}
-              >
+                  playbackSpeed.speed !== 1 && "gencl:hidden"
+                )}>
                 {/**
                  * This section renders the video interaction buttons:
                  * - "Trim" button if `clipVideo` is enabled
@@ -342,18 +337,19 @@ export function Default({
                 <VideoEditActionButtons
                   clipVideo={clipVideo}
                   editCover={editCover}
-                  onClickClip={() => editClipVideo?.(postDetails.video.source)}
-                  onClickEditCover={() =>
-                    editCoverImage?.(postDetails.video.source)
-                  }
+                  onClickClip={() => editClipVideo?.(video.source)}
+                  onClickEditCover={() => editCoverImage?.(video.source)}
                 />
 
-                {postDetails.video.linkoutId && (
+                {video.linkouts && (
                   <Suspense fallback={null}>
                     <Linkouts
                       isActive={isActive}
-                      linkouts={postDetails.video.linkouts}
-                      linkoutId={postDetails.video.linkoutId}
+                      view="embed"
+                      // variant="dynamic"
+                      layout="overlay"
+                      linkouts={video.linkouts}
+                      linkoutId={video.linkoutId}
                       videoDetails={postDetails.video}
                       totalVideos={totalVideos}
                       positionIndex={positionIndex}
@@ -371,7 +367,7 @@ export function Default({
               className={cn(
                 "gencl:absolute gencl:left-1/2 gencl:top-1/2 gencl:flex gencl:items-center",
                 "gencl:justify-center gencl:h-16 gencl:w-16",
-                "gencl:-translate-x-1/2 gencl:-translate-y-1/2",
+                "gencl:-translate-x-1/2 gencl:-translate-y-1/2"
               )}
             />
 
@@ -380,7 +376,7 @@ export function Default({
               <>
                 <PlaybackSpeedCapsule
                   className={cn(
-                    "gencl:absolute gencl:z-10 gencl:transition-all gencl:bottom-12",
+                    "gencl:absolute gencl:z-10 gencl:transition-all gencl:bottom-12"
                     // showExpandView ? "gencl:bottom-32" : "gencl:bottom-12"
                   )}
                 />
@@ -392,16 +388,15 @@ export function Default({
              * This is basically player scrubber.
              */}
             <Scrubber
-              spriteUrl={postDetails.video.thumbnailSprite ?? ""}
-              duration={postDetails.video.duration}
+              spriteUrl={video.thumbnailSprite ?? ""}
+              duration={video.duration}
               className={cn(
                 "gencl:absolute gencl:bottom-0 gencl:z-20 gencl:transition-all",
-                showSeeker &&
-                  "gencl:mx-auto gencl:px-4 gencl:-translate-y-2 gencl:pb-3 gencl:py-1.5",
+                showSeeker && "gencl:mx-auto gencl:px-4 gencl:-translate-y-2 gencl:pb-3 gencl:py-1.5"
               )}
             />
 
-            {gestureOverlayUI}
+            {/* {gestureOverlayUI} */}
           </div>
         </>
       );

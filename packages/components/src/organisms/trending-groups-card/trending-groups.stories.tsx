@@ -1,9 +1,6 @@
-import React from "react";
-import { Meta, StoryObj } from "@storybook/react";
-import {
-  TrendingGroupCard,
-  TrendingGroupCardSkeleton,
-} from "./trending-group-card";
+import type { Meta, StoryObj } from "@storybook/react";
+
+import { TrendingGroupCard, TrendingGroupCardSkeleton } from "./trending-group-card";
 
 const meta: Meta<typeof TrendingGroupCard> = {
   title: "Organisms/TrendingGroupCard",
@@ -24,8 +21,8 @@ type Story = StoryObj<typeof TrendingGroupCard>;
 export const Default: Story = {
   args: {
     groupName: "TED Talks",
-    memberCount: "818K",
-    postCount: "680",
+    memberCount: 8383,
+    postCount: 878,
     userAvatars: [
       {
         imageUrl: "https://randomuser.me/api/portraits/women/1.jpg",
@@ -56,35 +53,31 @@ export const Default: Story = {
         name: "mexy",
       },
     ],
-    content:
+    slug: "ted-talks",
+    description:
       "It's going to be a fun, chill year! 2025 is going to be enjoyable for you. You will most likely be seen at pool parties, outings with your friends, or simply revelling in the things you like to do best. It's going to be a fun, chill year! 2025 is going to be enjoyable for you. You will most likely be seen at pool parties, outings with your friends, or simply revelling in the things you like to do best. It's going to be a fun, chill year! 2025 is going to be enjoyable for you. You will most likely be seen at pool parties, outings with your friends, or simply revelling in the things you like to do best.",
-    thumbnailAvatars: [
+    postData: [
       {
         imageUrl: "https://randomuser.me/api/portraits/women/1.jpg",
         alt: "Profile Image",
-        isAvatar: false,
+        slug: "post-1",
       },
       {
         imageUrl: "https://randomuser.me/api/portraits/men/2.jpg",
         alt: "Profile Image",
-        isAvatar: false,
+        slug: "post-2",
       },
       {
         imageUrl: "https://randomuser.me/api/portraits/women/3.jpg",
         alt: "Profile Image",
-        isAvatar: false,
-      },
-      {
-        imageUrl: "https://randomuser.me/api/portraits/men/4.jpg",
-        alt: "Profile Image",
-        isAvatar: false,
+        slug: "post-3",
       },
     ],
   },
 };
 
 export const Skeleton: Story = {
-  render: (args) => {
+  render: (_args) => {
     return (
       <div className="gencl:w-[750px]">
         <TrendingGroupCardSkeleton />

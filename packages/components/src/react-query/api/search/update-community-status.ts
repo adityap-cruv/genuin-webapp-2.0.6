@@ -1,14 +1,13 @@
-import { queryClient } from "../../client";
-import { getQueryKeyForTopResults } from "../../keys/search";
-import { TopResultsResponseType } from "./types";
-import { CommunityUserRole } from "@genuin/components/types/post";
-import { getQueryKeyForFeed } from "../../keys/feed";
-import {
-  getQueryKeyForCommunityDetails,
-  getQueryKeyForTrendingCommunities,
-} from "../../keys/community";
-import { setQueryDataForJoinCommunityStatusInFeed } from "../feed/feed";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import type { CommunityUserRole } from "@genuin/components/types/post";
+
+import { queryClient } from "../../client";
+import { getQueryKeyForCommunityDetails, getQueryKeyForTrendingCommunities } from "../../keys/community";
+import { getQueryKeyForFeed } from "../../keys/feed";
+import { getQueryKeyForTopResults } from "../../keys/search";
+import { setQueryDataForJoinCommunityStatusInFeed } from "../feed/feed";
+
+import type { TopResultsResponseType } from "./types";
 
 /**
  * Updates the community join status in the search results and other relevant pages.
@@ -65,20 +64,14 @@ export function updateCommunityJoinStatusInSearchResults({
  * @param communityId The ID of the community to update
  * @param newRole The new role of the user in the community
  */
-function updateSearchResults(
-  query: string,
-  communityId: string,
-  newRole: CommunityUserRole
-) {
+function updateSearchResults(query: string, communityId: string, newRole: CommunityUserRole) {
   // Get the query key for the top results
   const queryKey = getQueryKeyForTopResults(query);
 
   // Update the data in the query cache
   queryClient.setQueryData(
     queryKey,
-    (
-      oldData: TopResultsResponseType | undefined
-    ): TopResultsResponseType | undefined => {
+    (oldData: TopResultsResponseType | undefined): TopResultsResponseType | undefined => {
       if (!oldData) return oldData;
 
       // Create a deep copy of the data
@@ -133,11 +126,7 @@ function updateSearchResults(
  * @param communityId The ID of the community to update
  * @param newRole The new role of the user in the community
  */
-function updateFeedPageData(
-  pathname: string,
-  communityId: string,
-  newRole: CommunityUserRole
-) {
+function updateFeedPageData(pathname: string, communityId: string, newRole: CommunityUserRole) {
   // Extract the feed type from the pathname
   // Remove the leading slash and convert to uppercase for FeedType
   const feedType = pathname.substring(1).toUpperCase();

@@ -17,20 +17,22 @@ const REQUIRED_STYLES: StyleRequirement[] = [
   {
     name: "sonner",
     selector: "style",
-    check: (el: Element) =>
-      (el as HTMLStyleElement).textContent?.includes("sonner-toaster") || false,
+    check: (el: Element) => (el as HTMLStyleElement).textContent?.includes("sonner-toaster") || false,
   },
   {
     name: "gencl",
     selector: "style",
-    check: (el: Element) =>
-      (el as HTMLStyleElement).textContent?.includes("gencl:") || false,
+    check: (el: Element) => (el as HTMLStyleElement).textContent?.includes("gencl:") || false,
   },
   {
     name: "gen-ad",
     selector: 'link[rel="stylesheet"]',
-    check: (el: Element) =>
-      (el as HTMLLinkElement).href?.includes("gen_ad.min.css") || false,
+    check: (el: Element) => (el as HTMLLinkElement).href?.includes("gen_ad.min.css") || false,
+  },
+  {
+    name: "gen-ad",
+    selector: 'link[rel="stylesheet"]',
+    check: (el: Element) => (el as HTMLLinkElement).href?.includes("gen_ad.min.css") || false,
   },
 ] as const;
 
@@ -52,9 +54,7 @@ const overlayShadowHostCache = new Map<
  * Ensures shadow root has all required styles (idempotent)
  * Can be called multiple times safely - checks before cloning
  */
-export async function ensureStylesInShadowRoot(
-  shadowRoot: ShadowRoot,
-): Promise<void> {
+export async function ensureStylesInShadowRoot(shadowRoot: ShadowRoot): Promise<void> {
   // Bail if the host was removed from the DOM before we get to mutate it.
   // Prevents "removeChild: not a child" crashes when React unmounts nodes
   // concurrently with async style injection.
@@ -64,10 +64,8 @@ export async function ensureStylesInShadowRoot(
 
   if (cssURL) {
     const resolvedCssUrl = new URL(cssURL, window.location.href).href;
-    const existingCssLink = Array.from(
-      shadowRoot.querySelectorAll('link[rel="stylesheet"]'),
-    ).find(
-      (styleLink) => (styleLink as HTMLLinkElement).href === resolvedCssUrl,
+    const existingCssLink = Array.from(shadowRoot.querySelectorAll('link[rel="stylesheet"]')).find(
+      (styleLink) => (styleLink as HTMLLinkElement).href === resolvedCssUrl
     );
 
     if (!existingCssLink) {
@@ -85,31 +83,23 @@ export async function ensureStylesInShadowRoot(
     // Re-check after await — host may have been removed while we were fetching.
     if (!shadowRoot.host?.isConnected) return;
   } else {
-    console.warn(
-      "⚠️ No cssUrl found in window.genuin. Required styles may not be applied to shadow root.",
-    );
+    console.warn("⚠️ No cssUrl found in window.genuin. Required styles may not be applied to shadow root.");
   }
 
   REQUIRED_STYLES.forEach(({ name, selector, check }) => {
     // Check if this style type already exists in shadow root
-    const existsInShadow = Array.from(
-      shadowRoot.querySelectorAll(selector),
-    ).some(check);
+    const existsInShadow = Array.from(shadowRoot.querySelectorAll(selector)).some(check);
 
     if (!existsInShadow) {
       // Find and clone matching styles from document
-      const matchingStyles = Array.from(
-        document.querySelectorAll(selector),
-      ).filter(check);
+      const matchingStyles = Array.from(document.querySelectorAll(selector)).filter(check);
 
       matchingStyles.forEach((style) => {
         shadowRoot.appendChild(style.cloneNode(true));
       });
 
       if (matchingStyles.length > 0) {
-        console.log(
-          `✅ Cloned ${matchingStyles.length} ${name} styles to shadow root`,
-        );
+        console.log(`✅ Cloned ${matchingStyles.length} ${name} styles to shadow root`);
       }
     }
   });
@@ -157,13 +147,8 @@ function resetContainerStyles(container: HTMLElement): void {
 /**
  * Copies all styles from one shadow root to another
  */
-function copyStylesBetweenShadowRoots(
-  sourceShadowRoot: ShadowRoot,
-  targetShadowRoot: ShadowRoot,
-): void {
-  const styles = sourceShadowRoot.querySelectorAll(
-    'link[rel="stylesheet"], style',
-  );
+function copyStylesBetweenShadowRoots(sourceShadowRoot: ShadowRoot, targetShadowRoot: ShadowRoot): void {
+  const styles = sourceShadowRoot.querySelectorAll('link[rel="stylesheet"], style');
 
   styles.forEach((styleElement) => {
     // Only clone if not already present
@@ -172,13 +157,8 @@ function copyStylesBetweenShadowRoots(
         ? (styleElement as HTMLStyleElement).textContent
         : (styleElement as HTMLLinkElement).href;
 
-    const alreadyExists = Array.from(
-      targetShadowRoot.querySelectorAll("link, style"),
-    ).some((existingStyle) => {
-      if (
-        existingStyle.tagName === "STYLE" &&
-        styleElement.tagName === "STYLE"
-      ) {
+    const alreadyExists = Array.from(targetShadowRoot.querySelectorAll("link, style")).some((existingStyle) => {
+      if (existingStyle.tagName === "STYLE" && styleElement.tagName === "STYLE") {
         return (existingStyle as HTMLStyleElement).textContent === styleContent;
       }
       if (existingStyle.tagName === "LINK" && styleElement.tagName === "LINK") {
@@ -197,9 +177,7 @@ function copyStylesBetweenShadowRoots(
  * Sets up shadow DOM for the main embed container
  * Returns the shadow root that was created or already exists
  */
-export async function setupMainShadowDOM(
-  container: HTMLElement,
-): Promise<HTMLElement> {
+export async function setupMainShadowDOM(container: HTMLElement): Promise<HTMLElement> {
   const rootNode = container.getRootNode();
   const isInShadow = rootNode instanceof ShadowRoot;
   let shadowRoot: ShadowRoot | null = null;
@@ -260,7 +238,7 @@ export function getOrCreateOverlayShadowHost(portalKey: string = "default"): {
   const doc = document;
 
   // Return the existing host+shadow root if already created for this portalKey
-  let cachedShadow = overlayShadowHostCache.get(portalKey);
+  const cachedShadow = overlayShadowHostCache.get(portalKey);
   if (cachedShadow) {
     return { host: cachedShadow.host, shadowRoot: cachedShadow.shadowRoot };
   }
@@ -286,9 +264,7 @@ export function getOrCreateOverlayShadowHost(portalKey: string = "default"): {
   const mainShadowHost = doc.querySelector("[data-genuin-host]");
   if (mainShadowHost?.shadowRoot) {
     copyStylesBetweenShadowRoots(mainShadowHost.shadowRoot, shadowRoot);
-    console.log(
-      "✅ Copied styles from main shadow root to overlay shadow root",
-    );
+    console.log("✅ Copied styles from main shadow root to overlay shadow root");
   }
 
   void ensureStylesInShadowRoot(shadowRoot);

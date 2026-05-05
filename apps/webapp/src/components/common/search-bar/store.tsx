@@ -37,7 +37,11 @@ export const useSearchBarStore = create<StatesType & ActionsType>((set) => {
       set({ view, defaultTab: tabType })
     },
     setKeyword(value) {
-      value.length === 0 ? set({ keyword: value, view: 'RECENT' }) : set({ keyword: value, view: 'SUGGESTION' })
+      if (value.length === 0) {
+        set({ keyword: value, view: 'RECENT' })
+      } else {
+        set({ keyword: value, view: 'SUGGESTION' })
+      }
     },
     updateFocus(focusOnInput, focusOnModal) {
       set((state) => {

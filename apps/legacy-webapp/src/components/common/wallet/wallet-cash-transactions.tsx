@@ -2,12 +2,12 @@
 import { Button } from '@/components/ui/button'
 import { useWalletStore } from './store'
 import { AuthenticationModal } from '../modals/authentication'
-import { getTransactionsList } from '@/lib/api/wallet'
+import { u } from '@/lib/api/wallet'
 import { useEffect, useRef } from 'react'
 import { Loader } from '@/components/ui/loader'
 
 export const WalletCashTransactionsCard = () => {
-  const { data, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage, refetch } = getTransactionsList({
+  const { data, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage, refetch } = useTransactionsList({
     pageSize: 10,
     type: 'CASH',
   })

@@ -1,8 +1,9 @@
 import { DynamicSheet } from "@genuin/ui";
 import type { DynamicSheetState } from "@genuin/ui/dynamic-sheet";
+import type { ComponentProps, RefObject } from "react";
+
 import { OctoPanel } from "@genuin/components/molecules/octo-panel";
 import { getOctoSheetConfig } from "@genuin/components/molecules/octo-panel/octo-sheet-config";
-import type { ComponentProps, RefObject } from "react";
 
 type OctoDynamicSheetProps = {
   /**
@@ -149,8 +150,7 @@ export function OctoDynamicSheet({
       className={octoClassName(octoSheetState)}
       contentClassName="gencl:bg-transparent"
       footerClassName={octoFooterClassName(octoSheetState)}
-      headerClassName="gencl:text-body-1-semi-bold!"
-    >
+      headerClassName="gencl:text-body-1-semi-bold!">
       <OctoPanel
         videoId={videoId}
         videoSlug={videoSlug}

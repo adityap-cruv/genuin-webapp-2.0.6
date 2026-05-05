@@ -1,46 +1,31 @@
 "use client";
-import {
-  Popover,
-  PopoverClose,
-  PopoverContent,
-  PopoverTrigger,
-} from "@genuin/ui/popover";
-import { lazy, Suspense, useState, useCallback } from "react";
-import { useBaseContext } from "@genuin/components/context/base";
-import { useAuthContext } from "@genuin/components/context/auth";
+import { Avatar } from "@genuin/ui/avatar";
 import { Button } from "@genuin/ui/button";
+import { Sheet, SheetClose, SheetContent, SheetTrigger } from "@genuin/ui/components/sheet";
+import { NotificationIcon, XIcon, PlusIcon } from "@genuin/ui/icons";
+import { cn } from "@genuin/ui/lib/utils";
+import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "@genuin/ui/popover";
+import type { VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
+import { ChevronLeft, LogOutIcon, SettingsIcon } from "lucide-react";
+import { lazy, Suspense, useState, useCallback } from "react";
 
-import type { AuthenticationModalProps } from "@genuin/components/organisms/authentication-modal";
+import { useAnalytics } from "@genuin/components/context/analytics";
+import { useAuthContext } from "@genuin/components/context/auth";
+import { useBaseContext } from "@genuin/components/context/base";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { Link } from "@genuin/components/molecules/link";
+import { Search } from "@genuin/components/molecules/search";
+import { NotificationList } from "@genuin/components/organisms/notification-list";
+import type { NotificationCountResponse } from "@genuin/components/react-query/api/notification";
+import { useNotificationCount, useReadNotifications } from "@genuin/components/react-query/api/notification";
 
 const AuthenticationModal = lazy(() =>
-  import("../../organisms/authentication-modal/index.js").then((m) => ({
+  import("@genuin/components/organisms/authentication-modal").then((m) => ({
     default: m.AuthenticationModal,
-  })),
-) as React.ComponentType<AuthenticationModalProps>;
-
-import { Avatar } from "@genuin/ui/avatar";
-import { ChevronLeft, LogOutIcon, SettingsIcon } from "lucide-react";
-import { Link } from "@genuin/components/molecules/link";
-import { buildPageUrl } from "@genuin/components/lib/utils/pages";
-import { cn } from "@genuin/ui/lib/utils";
-import { NotificationIcon, XIcon, PlusIcon } from "@genuin/ui/icons";
-import { NotificationList } from "@genuin/components/organisms/notification-list";
-import {
-  NotificationCountResponse,
-  useNotificationCount,
-  useReadNotifications,
-} from "@genuin/components/react-query/api/notification";
-import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-
-import { Search } from "@genuin/components/molecules/search";
-import { cva, VariantProps } from "class-variance-authority";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetTrigger,
-} from "@genuin/ui/components/sheet";
-import { useAnalytics } from "@genuin/components/context/analytics";
+  }))
+);
 
 export const iconVariant = cva(
   "gencl:flex gencl:size-9 gencl:items-center gencl:justify-center gencl:rounded-full gencl:sm:rounded-lg!",
@@ -54,7 +39,7 @@ export const iconVariant = cva(
     defaultVariants: {
       theme: "light",
     },
-  },
+  }
 );
 
 /**
@@ -62,7 +47,7 @@ export const iconVariant = cva(
  * Handles login, app download, notifications, and user menu.
  */
 export function CtaButtons({ theme }: VariantProps<typeof iconVariant>) {
-  const { web_cta, camera_enabled } = useBaseContext().brandDetails;
+  const { web_cta, camera_enabled, create_post_enabled } = useBaseContext().brandDetails;
   const { authenticationStatus } = useAuthContext();
   const { track, EventName } = useAnalytics();
 
@@ -80,15 +65,13 @@ export function CtaButtons({ theme }: VariantProps<typeof iconVariant>) {
             <Button theme="outline" size="sm">
               Get app
             </Button>
-          }
-        >
+          }>
           <AuthenticationModal
             asChild
             customStep="GET_APP"
             onClick={() => {
               track(EventName.GET_APP_BUTTON_CLICKED);
-            }}
-          >
+            }}>
             <Button theme="outline" size="sm">
               Get app
             </Button>
@@ -96,11 +79,8 @@ export function CtaButtons({ theme }: VariantProps<typeof iconVariant>) {
         </Suspense>
       )}
 
-      {isAuthenticated && camera_enabled && (
-        <Link
-          className="gencl:hidden gencl:md:block!"
-          href={buildPageUrl({ type: "posts-create" })}
-        >
+      {isAuthenticated && camera_enabled && create_post_enabled && (
+        <Link className="gencl:hidden gencl:md:block!" href={buildPageUrl({ type: "posts-create" })}>
           <Button theme="outline" size="sm">
             <PlusIcon className="gencl:size-6" />
             Create
@@ -111,21 +91,12 @@ export function CtaButtons({ theme }: VariantProps<typeof iconVariant>) {
       {showLogin && (
         <Suspense
           fallback={
-            <Button
-              theme="primary"
-              className={cn(isAuthenticated && "gencl:hidden")}
-              size="sm"
-            >
+            <Button theme="primary" className={cn(isAuthenticated && "gencl:hidden")} size="sm">
               Log in
             </Button>
-          }
-        >
+          }>
           <AuthenticationModal customStep="SIGNIN" asChild>
-            <Button
-              theme="primary"
-              className={cn(isAuthenticated && "gencl:hidden")}
-              size="sm"
-            >
+            <Button theme="primary" className={cn(isAuthenticated && "gencl:hidden")} size="sm">
               Log in
             </Button>
           </AuthenticationModal>
@@ -153,18 +124,13 @@ function UserMenu() {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger className="gencl:cursor-pointer">
-        <Avatar
-          imageUrl={user.image}
-          isAvatar={user.isAvatar}
-          alt={user.name}
-        />
+        <Avatar imageUrl={user.image} isAvatar={user.isAvatar} alt={user.name} />
       </PopoverTrigger>
       <PopoverContent
         className="gencl:border-none gencl:bg-white"
         avoidCollisions
         sideOffset={8}
-        collisionPadding={{ right: 16 }}
-      >
+        collisionPadding={{ right: 16 }}>
         <UserMenuContent onClose={() => setOpen(false)} />
       </PopoverContent>
     </Popover>
@@ -179,7 +145,6 @@ function UserMenu() {
 function UserMenuContent({ onClose }: { onClose: () => void }) {
   const { user, signOut } = useAuthContext();
   const { track, EventName } = useAnalytics();
-  if (!user) return null;
 
   // Profile is considered complete if all required fields are truthy
   const isProfileComplete = useCallback(() => {
@@ -188,21 +153,16 @@ function UserMenuContent({ onClose }: { onClose: () => void }) {
     return [hasTopics, name, usernameSet, image, bio].every(Boolean);
   }, [user]);
 
+  if (!user) return null;
+
   return (
     <div className="gencl:flex gencl:flex-col gencl:gap-2">
       {/* User info and profile completion */}
       <div className="gencl:border-b gencl:border-secondary-150 gencl:pb-3">
         <div className="gencl:flex gencl:items-center gencl:gap-2">
-          <Avatar
-            imageUrl={user.image}
-            isAvatar={user.isAvatar}
-            alt={user.name}
-            size="md"
-          />
+          <Avatar imageUrl={user.image} isAvatar={user.isAvatar} alt={user.name} size="md" />
           <div>
-            <p className="gencl:text-body-1-bold">
-              {user.name ?? "@" + user.nickname}
-            </p>
+            <p className="gencl:text-body-1-bold">{user.name ?? "@" + user.nickname}</p>
             {!user.isBrandSystemUser && (
               <Link href={buildPageUrl({ type: "settings" })} onClick={onClose}>
                 <p className="gencl:text-body-1-semi-bold gencl:cursor-pointer gencl:text-secondary-600 gencl:hover:text-secondary-900">
@@ -232,8 +192,7 @@ function UserMenuContent({ onClose }: { onClose: () => void }) {
           onClose();
           track(EventName.LOG_OUT);
           signOut(buildPageUrl({ type: "home" }));
-        }}
-      >
+        }}>
         <LogOutIcon className="gencl:size-6" />
         Log out
       </Button>
@@ -246,10 +205,7 @@ type NotificationItemWrapperType = {
   onClick: () => void;
 };
 
-const NotificationItemWrapper = ({
-  children,
-  onClick,
-}: NotificationItemWrapperType) => {
+const NotificationItemWrapper = ({ children, onClick }: NotificationItemWrapperType) => {
   const { isMobile } = useDeviceDetectMediaQuery();
 
   if (isMobile) {
@@ -262,15 +218,13 @@ function Notification() {
   const { user } = useAuthContext();
   const { isMobile } = useDeviceDetectMediaQuery();
   // Only enable the query if the user is logged in
-  const { data: notificationData, refetch: refreshNotification } =
-    useNotificationCount({ enabled: !!user });
+  const { data: notificationData, refetch: refreshNotification } = useNotificationCount({ enabled: !!user });
 
   const { mutate: markAsReadAll } = useReadNotifications({
     onSuccess: () => refreshNotification(),
   });
 
-  const hasUnreadNotifications =
-    ((notificationData as NotificationCountResponse)?.count || 0) > 0;
+  const hasUnreadNotifications = ((notificationData as NotificationCountResponse)?.count || 0) > 0;
 
   const notificationButton = (
     <Button theme="outline" variant="icon" size="sm">
@@ -293,11 +247,8 @@ function Notification() {
     <div
       className={cn(
         "gencl:flex gencl:items-center gencl:justify-between",
-        isMobile
-          ? "gencl:border-b gencl:border-secondary-150 gencl:px-4 gencl:py-2"
-          : "gencl:mb-4",
-      )}
-    >
+        isMobile ? "gencl:border-b gencl:border-secondary-150 gencl:px-4 gencl:py-2" : "gencl:mb-4"
+      )}>
       <div className="gencl:flex gencl:items-center gencl:gap-2">
         {isMobile && (
           <NotificationItemWrapper onClick={handleNotificationClick}>
@@ -323,18 +274,12 @@ function Notification() {
     return (
       <Sheet onOpenChange={handleNotificationClick}>
         <SheetTrigger>{notificationButton}</SheetTrigger>
-        <SheetContent
-          side="left"
-          className="gencl:gap-0 gencl:w-full"
-          hideCloseIcon
-        >
+        <SheetContent side="left" className="gencl:gap-0 gencl:w-full" hideCloseIcon>
           {notificationHeader}
           <div className="gencl:w-full gencl:h-full gencl:p-4">
             <NotificationList
               ItemWrapper={({ children }) => (
-                <NotificationItemWrapper onClick={handleNotificationClick}>
-                  {children}
-                </NotificationItemWrapper>
+                <NotificationItemWrapper onClick={handleNotificationClick}>{children}</NotificationItemWrapper>
               )}
             />
           </div>
@@ -348,14 +293,11 @@ function Notification() {
       <PopoverTrigger asChild>{notificationButton}</PopoverTrigger>
       <PopoverContent
         className="gencl:border-none gencl:bg-white gencl:px-4 gencl:pt-6 gencl:pb-4 gencl:w-100 gencl:rounded-3xl gencl:drop-shadow-sm"
-        align="end"
-      >
+        align="end">
         {notificationHeader}
         <NotificationList
           ItemWrapper={({ children }) => (
-            <NotificationItemWrapper onClick={handleNotificationClick}>
-              {children}
-            </NotificationItemWrapper>
+            <NotificationItemWrapper onClick={handleNotificationClick}>{children}</NotificationItemWrapper>
           )}
         />
       </PopoverContent>

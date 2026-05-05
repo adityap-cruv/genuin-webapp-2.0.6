@@ -1,11 +1,13 @@
 "use client";
+import { Button } from "@genuin/ui/components/button";
+import { cn } from "@genuin/ui/lib/utils";
 import { createRef, useState } from "react";
 import Cropper from "react-cropper";
-import "cropperjs/dist/cropper.css";
-import { uploadProfileImage } from "@genuin/components/react-query/api/profile/image";
-import { Button } from "@genuin/ui/components/button";
 
-import { cn } from "@genuin/ui/lib/utils";
+import { useAxiosInstance } from "@genuin/components/context/axios";
+import { uploadProfileImage } from "@genuin/components/react-query/api/profile/image";
+
+import "cropperjs/dist/cropper.css";
 
 export function ImageCropper({
   image,
@@ -19,12 +21,13 @@ export function ImageCropper({
   image: string;
   setImage: (args: { file: File; url: string }) => void;
   onCancel: () => void;
-  uploadPath: string;
-  fileNamePrefix: string;
-  aspectRatio: number;
-  roundCrop: boolean;
+  uploadPath?: string;
+  fileNamePrefix?: string;
+  aspectRatio?: number;
+  roundCrop?: boolean;
 }) {
   const cropperRef = createRef<any>();
+  const axiosInstance = useAxiosInstance();
   const [error, setError] = useState("");
   const [uploadingImage, setUploadingImage] = useState(false);
 
@@ -41,14 +44,7 @@ export function ImageCropper({
       context?.drawImage(sourceCanvas, 0, 0, width, height);
       context.globalCompositeOperation = "destination-in";
       context?.beginPath();
-      context?.arc(
-        width / 2,
-        height / 2,
-        Math.min(width, height) / 2,
-        0,
-        2 * Math.PI,
-        true
-      );
+      context?.arc(width / 2, height / 2, Math.min(width, height) / 2, 0, 2 * Math.PI, true);
       context?.fill();
     }
     return canvas;
@@ -64,15 +60,11 @@ export function ImageCropper({
         canvas.toBlob((blob: any) => {
           if (blob) {
             const timeStamp = Date.now();
-            const file = new File(
-              [blob],
-              `${fileNamePrefix}_${timeStamp}.png`,
-              {
-                type: "image/png",
-              }
-            );
+            const file = new File([blob], `${fileNamePrefix}_${timeStamp}.png`, {
+              type: "image/png",
+            });
             setUploadingImage(true);
-            uploadProfileImage(file, uploadPath)
+            uploadProfileImage(file, uploadPath, axiosInstance)
               .then((res) => {
                 if (res) {
                   setImage({ file, url: res });
@@ -97,8 +89,7 @@ export function ImageCropper({
       <div
         className={cn("gencl:pb-5", {
           "round-crop": !roundCrop,
-        })}
-      >
+        })}>
         <Cropper
           viewMode={1}
           minCropBoxHeight={10}
@@ -112,34 +103,21 @@ export function ImageCropper({
           zoomOnWheel
           initialAspectRatio={aspectRatio}
           ref={cropperRef}
-          src={
-            typeof image === "string"
-              ? image
-              : URL.createObjectURL(image as any)
-          }
+          src={typeof image === "string" ? image : URL.createObjectURL(image as any)}
           cropBoxMovable
           aspectRatio={aspectRatio}
           style={{ maxHeight: "400px", maxWidth: "900px" }}
         />
       </div>
       <div className="gencl:flex gencl:justify-end gencl:gap-3">
-        <Button
-          theme="custom"
-          size="sm"
-          onClick={onCancel}
-          disabled={uploadingImage}
-        >
+        <Button theme="custom" size="sm" onClick={onCancel} disabled={uploadingImage}>
           Cancel
         </Button>
         <Button size="sm" disabled={uploadingImage} onClick={getCropData}>
           {uploadingImage ? <p>Uploading...</p> : "Done"}
         </Button>
       </div>
-      {error && (
-        <p className="gencl:text-title-3-med gencl:text-error-status">
-          {error}
-        </p>
-      )}
+      {error && <p className="gencl:text-title-3-med gencl:text-error-status">{error}</p>}
     </div>
   );
 }

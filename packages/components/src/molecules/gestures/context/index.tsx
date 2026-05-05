@@ -1,31 +1,21 @@
 "use client";
+import type { ReactNode } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
+
 import internalStorage from "@genuin/components/lib/utils/internal-storage-manager";
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-} from "react";
 
 export type GestureOverlayKeysType = "SWIPE" | "PLAY_PAUSE";
 
 type GestureOverlayStateType = { isVisible: boolean; hasShown: boolean };
 
 type GestureContextType = {
-  setGestureOverlay: (
-    gesture: GestureOverlayKeysType,
-    isVisible: boolean
-  ) => void;
+  setGestureOverlay: (gesture: GestureOverlayKeysType, isVisible: boolean) => void;
   gestureOverlays: Record<GestureOverlayKeysType, GestureOverlayStateType>;
   resetAllGestures: () => void;
   resetGestureOverlay: (gesture: GestureOverlayKeysType) => void;
 };
 
-const DEFAULT_GESTURE_STATE: Record<
-  GestureOverlayKeysType,
-  GestureOverlayStateType
-> = {
+const DEFAULT_GESTURE_STATE: Record<GestureOverlayKeysType, GestureOverlayStateType> = {
   SWIPE: { isVisible: false, hasShown: false },
   PLAY_PAUSE: { isVisible: false, hasShown: false },
 };
@@ -40,34 +30,23 @@ export const GestureProvider: React.FC<{
 
   // Load from localStorage on mount
   useEffect(() => {
-    const stored = isInIframe
-      ? internalStorage.getItem("_ks_gestures_")
-      : localStorage.getItem("_ks_gestures_");
+    const stored = isInIframe ? internalStorage.getItem("_ks_gestures_") : localStorage.getItem("_ks_gestures_");
     if (stored) {
       const parsed = JSON.parse(stored);
-      setGestureOverlays(
-        parsed.state?.gestureOverlays || DEFAULT_GESTURE_STATE
-      );
+      setGestureOverlays(parsed.state?.gestureOverlays || DEFAULT_GESTURE_STATE);
     }
   }, [isInIframe]);
 
   // Save to localStorage when state changes
   useEffect(() => {
-    isInIframe
-      ? internalStorage.setItem(
-          "_ks_gestures_",
-          JSON.stringify({ state: { gestureOverlays } })
-        )
-      : localStorage.setItem(
-          "_ks_gestures_",
-          JSON.stringify({ state: { gestureOverlays } })
-        );
+    if (isInIframe) {
+      internalStorage.setItem("_ks_gestures_", JSON.stringify({ state: { gestureOverlays } }));
+    } else {
+      localStorage.setItem("_ks_gestures_", JSON.stringify({ state: { gestureOverlays } }));
+    }
   }, [gestureOverlays, isInIframe]);
 
-  const setGestureOverlay = (
-    gesture: GestureOverlayKeysType,
-    isVisible: boolean
-  ) => {
+  const setGestureOverlay = (gesture: GestureOverlayKeysType, isVisible: boolean) => {
     setGestureOverlays((prev) => {
       if (prev[gesture].hasShown && isVisible) return prev;
 
@@ -110,8 +89,7 @@ export const GestureProvider: React.FC<{
         setGestureOverlay,
         resetAllGestures,
         resetGestureOverlay,
-      }}
-    >
+      }}>
       {children}
     </GestureContext.Provider>
   );

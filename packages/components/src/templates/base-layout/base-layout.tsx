@@ -1,21 +1,23 @@
 "use client";
+import { Toaster } from "@genuin/ui";
 import { cn } from "@genuin/ui/utils";
+import type { VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 import { useEffect, useState, type ComponentProps } from "react";
 
-import { TopBar } from "@genuin/components/organisms/top-bar";
-import { SideBar } from "@genuin/components/organisms/side-bar";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { usePathname } from "@genuin/components/hooks/use-pathname";
 import { useSearchParams } from "@genuin/components/hooks/use-search-params";
-import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import { cva, VariantProps } from "class-variance-authority";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { SideBar } from "@genuin/components/organisms/side-bar";
+import { TopBar } from "@genuin/components/organisms/top-bar";
 
 type BaseLayoutProps = ComponentProps<"section"> & {
   showToaster?: boolean;
 };
 
-const baseLayoutVariant = cva("", {
+const _baseLayoutVariant = cva("", {
   variants: {
     variant: {
       "embed-expand-view": "",
@@ -37,7 +39,7 @@ export function BaseLayout({
   variant,
   className,
   ...restProps
-}: BaseLayoutProps & VariantProps<typeof baseLayoutVariant>) {
+}: BaseLayoutProps & VariantProps<typeof _baseLayoutVariant>) {
   const { isMobile } = useDeviceDetectMediaQuery();
   const pathname = usePathname();
   const { searchParams, getSearchParams } = useSearchParams();
@@ -45,6 +47,7 @@ export function BaseLayout({
 
   // Update shouldUseDarkTheme when searchParams or pathname changes
   const [shouldUseDarkTheme, setShouldUseDarkTheme] = useState(false);
+  const [isAdPlaying, setIsAdPlaying] = useState(false);
 
   useEffect(() => {
     const isDarkTheme =
@@ -55,43 +58,41 @@ export function BaseLayout({
     setShouldUseDarkTheme(isDarkTheme);
   }, [pathname, searchParams]);
 
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsAdPlaying(document.documentElement.classList.contains("gen-ad-playing"));
+    });
+    observer.observe(document.documentElement, { attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <>
-      {(layoutConfig.showNavigationBar ||
-        layoutConfig.showBackAndCloseButton) && (
-        <TopBar
-          theme={shouldUseDarkTheme && isMobile ? "dark" : "light"}
-          style={{ zIndex: 9 }}
-          variant={variant}
-        />
+      {!(isAdPlaying && isMobile) && (layoutConfig.showNavigationBar || layoutConfig.showBackAndCloseButton) && (
+        <TopBar theme={shouldUseDarkTheme && isMobile ? "dark" : "light"} style={{ zIndex: 9 }} variant={variant} />
       )}
       <main
         className={cn(
           "gencl:sm:flex gencl:overflow-clip gencl:relative gencl:bg-white",
-          (layoutConfig.showNavigationBar ||
-            layoutConfig.showBackAndCloseButton) &&
-            !isMobile
+          (layoutConfig.showNavigationBar || layoutConfig.showBackAndCloseButton) && !isMobile
             ? "gencl:h-[calc(100%_-_64px)]"
-            : "gencl:h-full",
+            : "gencl:h-full"
         )}
         // style={{
         //   height: calculatedHeight,
         // }}
-        suppressHydrationWarning
-      >
-        {!isMobile && layoutConfig.showSideBar && (
-          <SideBar className="gencl:sm:block! gencl:hidden" />
-        )}
+        suppressHydrationWarning>
+        {!isMobile && layoutConfig.showSideBar && <SideBar className="gencl:sm:block! gencl:hidden" />}
         <section
           className={cn(
             "gencl:w-full gencl:flex-grow gencl:!h-full gencl:relative",
             variant === "embed-expand-view" && "gencl:xl:px-15",
-            className,
+            className
           )}
-          {...restProps}
-        >
+          {...restProps}>
           {children}
         </section>
+        <Toaster />
       </main>
     </>
   );

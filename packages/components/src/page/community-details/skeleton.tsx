@@ -1,5 +1,6 @@
 import { Skeleton } from "@genuin/ui/skeleton";
 import { TabsSkeleton } from "@genuin/ui/tabs";
+
 import { GenericDetailsSkeleton } from "@genuin/components/organisms/generic-details";
 import { CommunityGroupsSkeleton } from "@genuin/components/templates/community-details-tabs";
 
@@ -32,10 +33,7 @@ export function CommunityDetailsSkeleton() {
           </div>
         </div>
         {/* Side Info Skeleton */}
-        <div
-          className="gencl:hidden gencl:md:block!"
-          style={{ width: "100%", maxWidth: "384px" }}
-        >
+        <div className="gencl:hidden gencl:md:block!" style={{ width: "100%", maxWidth: "384px" }}>
           <Skeleton className="gencl:w-full gencl:h-100" />
         </div>
       </div>

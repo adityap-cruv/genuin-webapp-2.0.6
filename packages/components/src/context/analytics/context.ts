@@ -1,7 +1,8 @@
 "use client";
 
 import { createContext, useContext } from "react";
-import { TrackFunction } from "./types";
+
+import type { TrackFunction } from "./types";
 
 // TODO: Change the type in case of SDK
 /**
@@ -54,6 +55,8 @@ export const EventName = {
   SWIPE_UP: "Swipe Previous",
   SWIPE_DOWN: "Swipe Next",
   SWIPE_UP_GESTURE: "Swipe Up Gesture",
+  SWIPE_PREVIOUS: "Swipe Previous",
+  SWIPE_NEXT: "Swipe Next",
   PLAY_PAUSE_GESTURE: "Play/Pause Gesture",
   VIDEO_COMMENT: "RT Comment Clicked",
   VIDEO_COMMENTED: "Commented On Video",
@@ -140,9 +143,7 @@ type AnalyticsContextType = {
   getScreen: () => ScreenType;
 };
 
-export const AnalyticsContext = createContext<AnalyticsContextType | undefined>(
-  undefined,
-);
+export const AnalyticsContext = createContext<AnalyticsContextType | undefined>(undefined);
 
 /**
  * Custom hook to access the AnalyticsContext.

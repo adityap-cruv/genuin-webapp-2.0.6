@@ -36,6 +36,7 @@ export { EmbedStyle } from './types/embed'
 
 // Import for browser global setup
 import { Genuin } from './sdk'
+import type { ConfigByUser, UpdateConfigByUserType } from './type'
 
 // Extend the global Window interface for TypeScript
 declare global {
@@ -45,18 +46,23 @@ declare global {
       SDK?: typeof Genuin
       on?: typeof Genuin.on
       off?: typeof Genuin.off
-      init?: (config: any) => ReturnType<typeof Genuin.newInit>
-      update?: (config: any) => ReturnType<typeof Genuin.newUpdate>
+      init?: (config: ConfigByUser) => ReturnType<typeof Genuin.newInit>
+      update?: (config: UpdateConfigByUserType) => ReturnType<typeof Genuin.newUpdate>
       expand?: typeof Genuin.expand
       collapse?: typeof Genuin.collapse
-      emit?: typeof Genuin.emit
+      // Widened to `string` so that cross-package callers (e.g. sdk-event-emitter
+      // in @genuin/components) can pass their own event-name enums without a
+      // type mismatch against the SDK-internal SDKEventType enum.
+      emit?: (eventType: string, payload?: unknown) => void
       onAll?: typeof Genuin.onAll
-      onInternal: typeof Genuin.onInternal
-      offInternal: typeof Genuin.offInternal
-      emitInternal: typeof Genuin.emitInternal
+      emitInternal: (eventType: string, payload?: unknown) => void
+      onInternal: (eventType: string, listener: (payload: unknown) => void) => () => void
+      offInternal: (eventType: string, listener: (payload: unknown) => void) => void
       destroy: typeof Genuin.destroy
       _initQueue?: Array<() => void>
-      version? : string
+      version?: string
+      /** URL of the SDK stylesheet injected into Shadow DOM. Set by the SDK at init time. */
+      cssUrl?: string
     }
     onGenuinReady?: (sdk: typeof Genuin) => void
   }
@@ -72,9 +78,11 @@ if (typeof window !== 'undefined') {
     ...window.genuin,
     // Main SDK instance
     SDK: Genuin,
-    onInternal: Genuin.onInternal.bind(Genuin),
-    offInternal: Genuin.offInternal.bind(Genuin),
-    emitInternal: Genuin.emitInternal.bind(Genuin),
+    // Cast needed: the window.genuin interface uses `string` for cross-package
+    // compatibility, but the underlying methods use the narrower SDKEventType.
+    onInternal: Genuin.onInternal.bind(Genuin) as (eventType: string, listener: (payload: unknown) => void) => () => void,
+    offInternal: Genuin.offInternal.bind(Genuin) as (eventType: string, listener: (payload: unknown) => void) => void,
+    emitInternal: Genuin.emitInternal.bind(Genuin) as (eventType: string, payload?: unknown) => void,
     destroy: Genuin.destroy.bind(Genuin),
     expand: Genuin.expand.bind(Genuin),
     collapse: Genuin.collapse.bind(Genuin),

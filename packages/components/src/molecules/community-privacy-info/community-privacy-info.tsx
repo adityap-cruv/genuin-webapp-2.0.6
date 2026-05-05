@@ -1,6 +1,6 @@
 import { LockIcon, PublicIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
-import { ComponentProps } from "react";
+import type { ComponentProps } from "react";
 
 type CommunityPrivacyInfoProps = {
   isPrivate: boolean;
@@ -14,13 +14,7 @@ export function CommunityPrivacyInfo({
   ...restProps
 }: CommunityPrivacyInfoProps) {
   return (
-    <div
-      className={cn(
-        "gencl:flex gencl:[&_svg]:size-4  gencl:items-center gencl:gap-1",
-        className
-      )}
-      {...restProps}
-    >
+    <div className={cn("gencl:flex gencl:[&_svg]:size-4 gencl:items-center gencl:gap-1", className)} {...restProps}>
       {isPrivate ? (
         <LockIcon className="gencl:stroke-secondary-600" />
       ) : (

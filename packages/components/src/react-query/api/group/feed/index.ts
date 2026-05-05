@@ -1,11 +1,11 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useAxiosInstance } from "@genuin/components/context/axios";
+import type { AxiosInstance } from "axios";
 
+import { useAxiosInstance } from "@genuin/components/context/axios";
 import { getQueryKeyForGroupFeed } from "@genuin/components/react-query/keys/feed";
 import { API_PATHS } from "@genuin/components/react-query/paths";
 
 import { parseFeed } from "../../feed/parser";
-import type { AxiosInstance } from "axios";
 
 /**
  *
@@ -52,8 +52,7 @@ export function useGetGroupFeed(slug: string) {
   const axiosInstance = useAxiosInstance();
 
   return useInfiniteQuery({
-    queryFn: ({ pageParam }: { pageParam: { lastVideoId?: string } }) =>
-      fetchFeed(slug, pageParam, axiosInstance),
+    queryFn: ({ pageParam }: { pageParam: { lastVideoId?: string } }) => fetchFeed(slug, pageParam, axiosInstance),
     queryKey: getQueryKeyForGroupFeed(slug),
     initialPageParam: { lastVideoId: undefined as string | undefined },
     getNextPageParam: (lastPage) => {
@@ -61,7 +60,7 @@ export function useGetGroupFeed(slug: string) {
         return;
       }
       return {
-        lastVideoId: lastPage.feed[lastPage.feed.length - 1]?.video.id,
+        lastVideoId: lastPage.feed[lastPage.feed.length - 1]?.video?.id,
       };
     },
   });

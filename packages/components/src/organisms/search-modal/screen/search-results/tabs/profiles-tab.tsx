@@ -1,29 +1,21 @@
-import { ComponentProps } from "react";
-import { cn } from "@genuin/ui/lib/utils";
-import { MemberItem } from "@genuin/components/molecules/member-item";
-import { PeopleTopResultType } from "@genuin/components/react-query/api/search";
-import { ComponentErrorState } from "@genuin/components/organisms/error-state-component";
 import { DialogClose } from "@genuin/ui/components/dialog";
+import { cn } from "@genuin/ui/lib/utils";
+import type { ComponentProps } from "react";
+
+import { MemberItem } from "@genuin/components/molecules/member-item";
+import { ComponentErrorState } from "@genuin/components/organisms/error-state-component";
+import type { PeopleTopResultType } from "@genuin/components/react-query/api/search";
+
 import { urlGenerators } from "../../../shared";
 
 type ProfilesTabProps = {
   profiles: PeopleTopResultType[];
 } & ComponentProps<"div">;
 
-export function ProfilesTab({
-  profiles,
-  className,
-  ...restProps
-}: ProfilesTabProps) {
+export function ProfilesTab({ profiles, className, ...restProps }: ProfilesTabProps) {
   if (profiles.length === 0) {
     return (
-      <div
-        className={cn(
-          "gencl:flex gencl:items-center gencl:justify-center ",
-          className
-        )}
-        {...restProps}
-      >
+      <div className={cn("gencl:flex gencl:items-center gencl:justify-center", className)} {...restProps}>
         <ComponentErrorState
           type="NO_MEMBERS"
           title="No profiles found"
@@ -46,7 +38,13 @@ export function ProfilesTab({
             url: profile.profile_image || "",
           },
           bio: profile.bio || "",
-          brand: profile.brand ?? undefined,
+          brand: profile.brand
+            ? {
+                brandId: profile.brand.brand_id,
+                brandSlug: profile.brand.brand_slug,
+                brandUserLogo: profile.brand.brand_user_logo,
+              }
+            : undefined,
           stats: {
             communities: profile.no_of_communities,
             groups: profile.no_of_loops,

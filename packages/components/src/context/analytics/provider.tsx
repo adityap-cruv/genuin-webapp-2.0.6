@@ -1,31 +1,33 @@
 "use client";
 
+import type { ReactNode } from "react";
 import {
   useEffect, // Keep useEffect for the initial service initialization call
   useCallback,
-  ReactNode,
   useState,
 } from "react";
-import { AnalyticsService, DefaultAnalyticsPayload } from "./service"; // Import the singleton service
-import { AnalyticsContext, EventName, ScreenType } from "./context";
-import { EventNameType, EventPayload } from "./types";
-import { useBaseContext } from "../base";
-import { getDeviceId } from "@genuin/components/lib/utils/device-id";
-import { GENUIN_BRAND_ID } from "@genuin/components/lib/constants";
+
+import { useAxiosInstance } from "@genuin/components/context/axios";
+import type { EmbedDataType } from "@genuin/components/context/embed/embed.types";
 import { usePathname } from "@genuin/components/hooks/use-pathname";
-import { EmbedDataType } from "@genuin/components/context/embed/embed.types";
-import { useSafeEmbedContext } from "../embed/context";
+import { GENUIN_BRAND_ID } from "@genuin/components/lib/constants";
+import { SDKEventEmitter, SDKEventName } from "@genuin/components/lib/sdk-event-emitter";
+import { getDeviceId } from "@genuin/components/lib/utils/device-id";
 import { sendAnalyticsToBackend } from "@genuin/components/react-query/api/analytics";
-import {
-  SDKEventEmitter,
-  SDKEventName,
-} from "@genuin/components/lib/sdk-event-emitter";
-import { EmitAnalyticsData } from "./emit-analytics-data";
-import { getSdkVersion } from "./utils";
-import { BrandDetailsConfigType } from "@genuin/components/types/brand";
-import { AuthUser } from "@genuin/components/types/auth";
 import { useIpInfo } from "@genuin/components/react-query/api/authentication/ip-info";
-import { useAxiosInstance } from "../axios";
+import type { AuthUser } from "@genuin/components/types/auth";
+import type { BrandDetailsConfigType } from "@genuin/components/types/brand";
+
+import { useBaseContext } from "../base";
+import { useSafeEmbedContext } from "../embed/context";
+
+import type { ScreenType } from "./context";
+import { AnalyticsContext, EventName } from "./context";
+import { EmitAnalyticsData } from "./emit-analytics-data";
+import type { DefaultAnalyticsPayload } from "./service";
+import { AnalyticsService } from "./service"; // Import the singleton service
+import type { EventNameType, EventPayload } from "./types";
+import { getSdkVersion } from "./utils";
 
 type AnalyticsProviderProps = {
   children: ReactNode;
@@ -101,9 +103,7 @@ export function AnalyticsProvider({
         };
 
   const cancelIdleCallbackPolyfill =
-    typeof cancelIdleCallback !== "undefined"
-      ? cancelIdleCallback
-      : (id: number) => window.clearTimeout(id);
+    typeof cancelIdleCallback !== "undefined" ? cancelIdleCallback : (id: number) => window.clearTimeout(id);
 
   useEffect(() => {
     const idleCallbackHandle = requestIdleCallbackPolyfill(() => {
@@ -125,9 +125,7 @@ export function AnalyticsProvider({
         device_id: deviceId,
         url: typeof window !== "undefined" ? window.location.href : undefined,
         path: pathname,
-        query_params: Object.fromEntries(
-          new URLSearchParams(window.location.search),
-        ),
+        query_params: Object.fromEntries(new URLSearchParams(window.location.search)),
         title: document.title,
       };
 
@@ -149,8 +147,7 @@ export function AnalyticsProvider({
           if (embedData.style_id) sdkPayload.style_id = embedData.style_id;
           if (embedData.feed_type) sdkPayload.feed_style = embedData.feed_type;
           if (embedData.style) sdkPayload.placement_layout = embedData.style;
-          if (embedData.type)
-            sdkPayload.feed_style = embedData.type.split("_")[0];
+          if (embedData.type) sdkPayload.feed_style = embedData.type.split("_")[0];
 
           // TODO : from where it should pass?
           /*
@@ -188,21 +185,14 @@ user_longitude
         // Add non-empty SDK values to the main payload
         Object.assign(initPayload, sdkPayload);
       }
-      AnalyticsService.initialize(
-        initPayload,
-        brandDetails,
-        embedDetails?.embedData,
-      )
+      AnalyticsService.initialize(initPayload, brandDetails, embedDetails?.embedData)
         .then(() => {
           // console.log(
           //   "[AnalyticsProvider] AnalyticsService.initialize() called and promise resolved."
           // );
         })
         .catch((error) => {
-          console.error(
-            "[AnalyticsProvider] AnalyticsService.initialize() failed:",
-            error,
-          );
+          console.error("[AnalyticsProvider] AnalyticsService.initialize() failed:", error);
         });
     });
 
@@ -253,48 +243,36 @@ user_longitude
     };
   }, []);
 
-  const emitAnalyticsEvent = useCallback(
-    (eventName: EventNameType, customPayload?: EventPayload) => {
-      if (
-        !EmitAnalyticsData[eventName] ||
-        !EmitAnalyticsData[eventName].canFire
-      )
-        return;
-      const basePayload = AnalyticsService.getDefaultPayload();
+  const emitAnalyticsEvent = useCallback((eventName: EventNameType, customPayload?: EventPayload) => {
+    if (!EmitAnalyticsData[eventName] || !EmitAnalyticsData[eventName].canFire) return;
+    const basePayload = AnalyticsService.getDefaultPayload();
 
-      const combinedPayload: EventPayload = {
-        ...(basePayload || {}),
-        ...(customPayload || {}),
-      };
+    const combinedPayload: EventPayload = {
+      ...(basePayload || {}),
+      ...(customPayload || {}),
+    };
 
-      // Some events expose only a subset of fields to SDK consumers; filter to allowed keys when defined.
-      const allowedKeys: (keyof EventPayload)[] | undefined =
-        EmitAnalyticsData[eventName].allowed_keys;
+    // Some events expose only a subset of fields to SDK consumers; filter to allowed keys when defined.
+    const allowedKeys: (keyof EventPayload)[] | undefined = EmitAnalyticsData[eventName].allowed_keys;
 
-      const filteredPayload =
-        allowedKeys && allowedKeys.length > 0
-          ? allowedKeys.reduce((result, payloadKey) => {
-              result[payloadKey] = combinedPayload[payloadKey];
-              return result;
-            }, {} as EventPayload)
-          : combinedPayload;
+    const filteredPayload =
+      allowedKeys && allowedKeys.length > 0
+        ? allowedKeys.reduce((result, payloadKey) => {
+            result[payloadKey] = combinedPayload[payloadKey];
+            return result;
+          }, {} as EventPayload)
+        : combinedPayload;
 
-      SDKEventEmitter.emit(SDKEventName.ANALYTICS, {
-        eventName: `analytics:${eventName}`,
-        eventPayload: filteredPayload,
-      });
-    },
-    [],
-  );
+    SDKEventEmitter.emit(SDKEventName.ANALYTICS, {
+      eventName: `analytics:${eventName}`,
+      eventPayload: filteredPayload,
+    });
+  }, []);
 
   // iHeart placements require a separate backend call on video completion for content reporting.
   const sendVideoCompletedToBackend = useCallback(
     (payload?: EventPayload) => {
-      if (
-        embedDetails?.brandLayoutType === "iheart" &&
-        user &&
-        embedDetails.embedData.placement_id
-      ) {
+      if (embedDetails?.brandLayoutType === "iheart" && user && embedDetails.embedData.placement_id) {
         sendAnalyticsToBackend({
           eventName: EventName.VIDEO_MARK_COMPLETE,
           payload: {
@@ -317,7 +295,7 @@ user_longitude
       brandDetails.environment,
       brandDetails.brand_id,
       isInIframe,
-    ],
+    ]
   );
 
   const track = useCallback(
@@ -332,13 +310,11 @@ user_longitude
         sendVideoCompletedToBackend(payload);
       }
     },
-    [emitAnalyticsEvent, sendVideoCompletedToBackend, getScreen],
+    [emitAnalyticsEvent, sendVideoCompletedToBackend, getScreen]
   );
 
   return (
-    <AnalyticsContext.Provider
-      value={{ track, EventName, updateScreen, getScreen }}
-    >
+    <AnalyticsContext.Provider value={{ track, EventName, updateScreen, getScreen }}>
       {children}
     </AnalyticsContext.Provider>
   );

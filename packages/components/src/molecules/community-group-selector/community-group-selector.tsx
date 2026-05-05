@@ -1,24 +1,14 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { SearchIcon } from "@genuin/ui/icons";
-
-import { Skeleton } from "@genuin/ui/components/skeleton";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@genuin/ui/components/select";
-import { useGetCommunityGroupList } from "@genuin/components/react-query/api/post";
 import { Avatar } from "@genuin/ui/components/avatar";
 import { Input } from "@genuin/ui/components/input";
-import {
-  CommunityOption,
-  DropdownProps,
-  FilterItem,
-  GroupOption,
-} from "./community-group-selector.types";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@genuin/ui/components/select";
+import { Skeleton } from "@genuin/ui/components/skeleton";
+import { SearchIcon } from "@genuin/ui/icons";
+import { useCallback, useEffect, useMemo, useState } from "react";
+
 import { useBaseContext } from "@genuin/components/context";
+import { useGetCommunityGroupList } from "@genuin/components/react-query/api/post";
+
+import type { CommunityOption, DropdownProps, FilterItem, GroupOption } from "./community-group-selector.types";
 
 const transformCommunityData = (data: any[]): CommunityOption[] =>
   data.map((community) => ({
@@ -29,47 +19,26 @@ const transformCommunityData = (data: any[]): CommunityOption[] =>
       isAvatar: true,
     },
     groups:
-      community.chats?.map(
-        (chat: { chat_id: string; group: { group_name: string } }) => ({
-          value: chat.chat_id,
-          label: chat.group.group_name,
-        }),
-      ) || [],
+      community.chats?.map((chat: { chat_id: string; group: { group_name: string } }) => ({
+        value: chat.chat_id,
+        label: chat.group.group_name,
+      })) || [],
   }));
 
 /* Dropdown Component */
-function DropdownSelector({
-  label,
-  items,
-  value,
-  showAvatar = true,
-  onChange,
-  disabled = false,
-}: DropdownProps) {
+function DropdownSelector({ label, items, value, showAvatar = true, onChange, disabled = false }: DropdownProps) {
   const [query, setQuery] = useState("");
   const { useShadowDOM } = useBaseContext();
   const filteredItems: FilterItem[] = query
-    ? items.filter((item) =>
-        item.label.toLowerCase().includes(query.toLowerCase()),
-      )
+    ? items.filter((item) => item.label.toLowerCase().includes(query.toLowerCase()))
     : items;
 
   return (
-    <Select
-      value={value?.value || ""}
-      onValueChange={onChange}
-      onOpenChange={() => setQuery("")}
-      disabled={disabled}
-    >
+    <Select value={value?.value || ""} onValueChange={onChange} onOpenChange={() => setQuery("")} disabled={disabled}>
       <SelectTrigger className="gencl:bg-white">
         <SelectValue placeholder={`Select ${label}`}>
           {showAvatar && value?.avatar && (
-            <Avatar
-              alt={value.label}
-              imageUrl={value.avatar.url}
-              isAvatar={value.avatar.isAvatar}
-              size="xs"
-            />
+            <Avatar alt={value.label} imageUrl={value.avatar.url} isAvatar={value.avatar.isAvatar} size="xs" />
           )}
           {value?.label}
         </SelectValue>
@@ -79,8 +48,7 @@ function DropdownSelector({
         className="gencl:rounded-xl"
         viewportClassName="gencl:p-0"
         showScrollUpButton={false}
-        showScrollDownButton={false}
-      >
+        showScrollDownButton={false}>
         <div className="gencl:pt-0 gencl:pr-4 gencl:pb-4 gencl:pl-4">
           <div className="gencl:sticky gencl:top-0 gencl:z-10 gencl:bg-white gencl:border-border gencl:pb-2 gencl:pt-4">
             <Input
@@ -100,12 +68,7 @@ function DropdownSelector({
             filteredItems?.map(({ value, label, avatar }) => (
               <SelectItem key={value} value={value} showTickMark={false}>
                 {showAvatar && (
-                  <Avatar
-                    alt={label}
-                    imageUrl={avatar?.url || ""}
-                    isAvatar={avatar?.isAvatar || false}
-                    size="xs"
-                  />
+                  <Avatar alt={label} imageUrl={avatar?.url || ""} isAvatar={avatar?.isAvatar || false} size="xs" />
                 )}
                 {label}
               </SelectItem>
@@ -128,18 +91,13 @@ export function CommunityGroupSelector({
   onSelectChange: (communityId: string, groupId: string | null) => void;
 }) {
   const { data: communityData } = useGetCommunityGroupList();
-  const communityOptions = useMemo(
-    () => transformCommunityData(communityData || []),
-    [communityData],
-  );
+  const communityOptions = useMemo(() => transformCommunityData(communityData || []), [communityData]);
 
-  const [selectedCommunity, setSelectedCommunity] =
-    useState<CommunityOption | null>(null);
+  const [selectedCommunity, setSelectedCommunity] = useState<CommunityOption | null>(null);
   const [selectedGroup, setSelectedGroup] = useState<GroupOption | null>(null);
 
   const handleCommunityChange = (communityId: string) => {
-    const selected =
-      communityOptions.find((c) => c.value === communityId) || null;
+    const selected = communityOptions.find((c) => c.value === communityId) || null;
     setSelectedCommunity(selected);
     setSelectedGroup(null);
     onSelectChange(communityId, null);
@@ -147,8 +105,7 @@ export function CommunityGroupSelector({
 
   const handleGroupChange = (groupId: string) => {
     if (!selectedCommunity?.value) return console.log("Community not selected");
-    const selected =
-      selectedCommunity?.groups.find((g) => g.value === groupId) || null;
+    const selected = selectedCommunity?.groups.find((g) => g.value === groupId) || null;
     setSelectedGroup(selected);
     onSelectChange(selectedCommunity?.value, groupId);
   };
@@ -156,13 +113,9 @@ export function CommunityGroupSelector({
   const syncSelectedValues = useCallback(() => {
     if (!communityOptions?.length) return;
 
-    const matchedCommunity = communityOptions.find(
-      (community) => community.value === communityId,
-    );
+    const matchedCommunity = communityOptions.find((community) => community.value === communityId);
 
-    const matchedGroup = matchedCommunity?.groups?.find(
-      (group) => group.value === groupId,
-    );
+    const matchedGroup = matchedCommunity?.groups?.find((group) => group.value === groupId);
 
     setSelectedCommunity(matchedCommunity ?? null);
     setSelectedGroup(matchedGroup ?? null);

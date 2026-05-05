@@ -1,18 +1,20 @@
+import { Image } from "@genuin/ui/components/image";
+import { CommentIcon, PlayIcon } from "@genuin/ui/icons";
 import { cn, getFormattedDuration, getMonthYear } from "@genuin/ui/lib/utils";
-import { ControlLayerPropsType } from "../control-layer.types";
 import { type FC, useMemo, lazy, Suspense } from "react";
 
-const Linkouts = lazy(() =>
-  import("@genuin/components/organisms/linkouts/index.js").then((m) => ({
-    default: m.Linkouts,
-  })),
-) as React.ComponentType<any>;
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import { EmbedControls } from "../controls/embed";
-import { Stats } from "../../../stats";
-import { CommentIcon, PlayIcon } from "@genuin/ui/icons";
+
 import { DynamicReactionIcon } from "../../../reaction-button";
-import { Image } from "@genuin/ui/components/image";
+import { Stats } from "../../../stats";
+import type { ControlLayerPropsType } from "../control-layer.types";
+import { EmbedControls } from "../controls/embed";
+
+const Linkouts = lazy(() =>
+  import("@genuin/components/organisms/linkouts").then((m) => ({
+    default: m.Linkouts,
+  }))
+);
 
 /**
  * Helper function to process video description
@@ -22,11 +24,7 @@ export const processVideoDescription = (description: any) => {
   if (Array.isArray(description)) {
     return description
       .map((desc, idx) =>
-        typeof desc === "string"
-          ? desc
-          : desc && typeof desc === "object" && "text" in desc
-            ? desc.text
-            : "",
+        typeof desc === "string" ? desc : desc && typeof desc === "object" && "text" in desc ? desc.text : ""
       )
       .filter(Boolean)
       .map((text, idx) => <span key={idx}>{text}</span>);
@@ -52,33 +50,22 @@ export const DefaultPlacement: FC<ControlLayerPropsType> = ({
       <div
         className={cn(
           "gencl:flex gencl:items-center gencl:gap-2",
-          contentDisplay.showSectionSubTitle &&
-            postDetails.section?.description &&
-            "gencl:justify-between",
+          contentDisplay.showSectionSubTitle && postDetails.section?.description && "gencl:justify-between"
+        )}>
+        {contentDisplay.showSectionThumbnail && postDetails.section?.thumbnail_url && !shouldHideOnSmall && (
+          <Image
+            src={postDetails.section?.thumbnail_url ?? ""}
+            alt="thumbnail"
+            className={cn("gencl:object-cover", shouldUseCompactText ? "gencl:size-8" : "gencl:size-12")}
+          />
         )}
-      >
-        {contentDisplay.showSectionThumbnail &&
-          postDetails.section?.thumbnail_url &&
-          !shouldHideOnSmall && (
-            <Image
-              src={postDetails.section?.thumbnail_url ?? ""}
-              alt="thumbnail"
-              className={cn(
-                "gencl:object-cover",
-                shouldUseCompactText ? "gencl:size-8" : "gencl:size-12",
-              )}
-            />
-          )}
         <div className="gencl:flex gencl:flex-col gencl:justify-center gencl:min-w-0 gencl:flex-1">
           {contentDisplay.showSectionTitle && (
             <p
               className={cn(
                 "gencl:truncate",
-                shouldUseCompactText
-                  ? "gencl:!text-[10px] gencl:font-semibold"
-                  : "gencl:text-body-2-semi-bold",
-              )}
-            >
+                shouldUseCompactText ? "gencl:!text-[12px] gencl:font-semibold" : "gencl:text-body-2-semi-bold"
+              )}>
               {postDetails.section?.title}
             </p>
           )}
@@ -86,11 +73,8 @@ export const DefaultPlacement: FC<ControlLayerPropsType> = ({
             <p
               className={cn(
                 "gencl:truncate",
-                shouldUseCompactText
-                  ? "gencl:!text-[10px] gencl:font-normal"
-                  : "gencl:text-body-2-normal",
-              )}
-            >
+                shouldUseCompactText ? "gencl:!text-[12px] gencl:font-normal" : "gencl:text-body-2-normal"
+              )}>
               {postDetails.section?.description}
             </p>
           )}
@@ -105,71 +89,48 @@ export const DefaultPlacement: FC<ControlLayerPropsType> = ({
       shouldUseCompactText,
       shouldHideOnSmall,
       isXs,
-    ],
+    ]
   );
 
   const noOfClips = useMemo(
     () => (
       <>
-        {contentDisplay.showClipsCount &&
-          (postDetails.section?.no_of_clips ?? 0) > 0 &&
-          !isSm && (
-            <p
-              className={cn(
-                "gencl:!leading-[16px]",
-                shouldUseCompactText
-                  ? "gencl:!text-[10px] gencl:font-semibold"
-                  : "gencl:text-body-1-semi-bold",
-              )}
-            >
-              {postDetails.section?.no_of_clips ?? 0} clips
-            </p>
-          )}
+        {contentDisplay.showClipsCount && (postDetails.section?.no_of_clips ?? 0) > 0 && !isSm && (
+          <p
+            className={cn(
+              "gencl:!leading-[16px]",
+              shouldUseCompactText ? "gencl:!text-[12px] gencl:font-semibold" : "gencl:text-body-1-semi-bold"
+            )}>
+            {postDetails.section?.no_of_clips ?? 0} clips
+          </p>
+        )}
       </>
     ),
-    [
-      contentDisplay.showClipsCount,
-      postDetails.section?.no_of_clips,
-      isSm,
-      shouldUseCompactText,
-    ],
+    [contentDisplay.showClipsCount, postDetails.section?.no_of_clips, isSm, shouldUseCompactText]
   );
 
   const videoDetails = useMemo(() => {
+    if (!postDetails.video) return null;
     const details = [
       contentDisplay.showPostDate && (
         <span key="date">
-          {getMonthYear(
-            postDetails.video.attributes?.timestamp ??
-              postDetails.video.createdAt ??
-              0,
-          )}
+          {getMonthYear(postDetails.video.attributes?.timestamp ?? postDetails.video.createdAt ?? 0)}
         </span>
       ),
-      contentDisplay.showVideoDuration &&
-        (postDetails?.video?.duration ?? 0) > 0 && (
-          <span key="duration">
-            {getFormattedDuration(String(postDetails.video.duration ?? ""))}
-          </span>
-        ),
-      contentDisplay.showPostDescription &&
-        (postDetails.video.description?.length ?? 0) > 0 &&
-        !shouldHideOnSmall && (
-          <span key="description">
-            {processVideoDescription(postDetails.video.description)}
-          </span>
-        ),
+      contentDisplay.showVideoDuration && (postDetails?.video?.duration ?? 0) > 0 && (
+        <span key="duration">{getFormattedDuration(String(postDetails.video.duration ?? ""))}</span>
+      ),
+      contentDisplay.showPostDescription && (postDetails.video.description?.length ?? 0) > 0 && !shouldHideOnSmall && (
+        <span key="description">{processVideoDescription(postDetails.video.description)}</span>
+      ),
     ].filter(Boolean);
 
     return (
       <div
         className={cn(
           "gencl:line-clamp-3",
-          shouldUseCompactText
-            ? "gencl:!text-[10px] gencl:font-normal"
-            : "gencl:text-body-2-normal",
-        )}
-      >
+          shouldUseCompactText ? "gencl:!text-[12px] gencl:font-normal" : "gencl:text-body-2-normal"
+        )}>
         {details.map((child, index, array) => (
           <span key={index}>
             {child}
@@ -178,36 +139,28 @@ export const DefaultPlacement: FC<ControlLayerPropsType> = ({
         ))}
       </div>
     );
-  }, [
-    contentDisplay,
-    postDetails.video,
-    shouldUseCompactText,
-    shouldHideOnSmall,
-  ]);
+  }, [contentDisplay, postDetails.video, shouldUseCompactText, shouldHideOnSmall]);
 
   const linkoutSection = useMemo(
     () => (
       <>
-        {contentDisplay.showVideoLinkouts && postDetails.video.linkoutId && (
+        {contentDisplay.showVideoLinkouts && postDetails.video?.linkouts && (
           <Suspense fallback={null}>
             <Linkouts
-              variant="embed"
+              view="embed"
+              // variant="dynamic"
+              layout="overlay"
               isActive={isActive}
               showImmediately
-              linkouts={postDetails.video.linkouts}
-              linkoutId={postDetails.video.linkoutId}
+              linkouts={postDetails.video?.linkouts}
+              linkoutId={postDetails.video?.linkoutId}
               videoDetails={postDetails.video}
             />
           </Suspense>
         )}
       </>
     ),
-    [
-      contentDisplay.showVideoLinkouts,
-      isActive,
-      postDetails.video.linkouts,
-      postDetails.video.linkoutId,
-    ],
+    [contentDisplay.showVideoLinkouts, isActive, postDetails.video?.linkouts, postDetails.video?.linkouts]
   );
 
   const socialInteraction = useMemo(() => {
@@ -220,7 +173,7 @@ export const DefaultPlacement: FC<ControlLayerPropsType> = ({
       }),
       ...(contentDisplay.showReactionCount && {
         Reactions: {
-          value: postDetails.video.sparkCount,
+          value: postDetails.video?.sparkCount ?? 0,
           icon: (
             <DynamicReactionIcon
               sparkCount={0}
@@ -235,7 +188,7 @@ export const DefaultPlacement: FC<ControlLayerPropsType> = ({
       }),
       ...(contentDisplay.showCommentCount && {
         Comments: {
-          value: postDetails.video.commentCount,
+          value: postDetails.video?.commentCount ?? 0,
           icon: <CommentIcon theme="dark" size="sm" strokeWidth={3} />,
         },
       }),
@@ -248,9 +201,7 @@ export const DefaultPlacement: FC<ControlLayerPropsType> = ({
 
     return (
       <Stats
-        className={cn(
-          "gencl:flex gencl:gap-2 gencl:justify-between gencl:items-center gencl:w-full",
-        )}
+        className={cn("gencl:flex gencl:gap-2 gencl:justify-between gencl:items-center gencl:w-full")}
         valueClassName="gencl:text-body-2-medium"
         pairClassName="gencl:gap-1!"
         stats={stats}
@@ -260,8 +211,8 @@ export const DefaultPlacement: FC<ControlLayerPropsType> = ({
     contentDisplay.showViewCount,
     contentDisplay.showReactionCount,
     contentDisplay.showCommentCount,
-    postDetails.video.sparkCount,
-    postDetails.video.commentCount,
+    postDetails.video?.sparkCount,
+    postDetails.video?.commentCount,
     isXs,
   ]);
 
@@ -269,61 +220,37 @@ export const DefaultPlacement: FC<ControlLayerPropsType> = ({
   const layoutSections = useMemo(
     () => ({
       top: [
-        contentDisplay.videoDetailsPosition === "overlay_on_top" &&
-          videoDetails,
-        contentDisplay.sectionDetailsPosition === "overlay_on_top" &&
-          sectionDetails,
+        contentDisplay.videoDetailsPosition === "overlay_on_top" && videoDetails,
+        contentDisplay.sectionDetailsPosition === "overlay_on_top" && sectionDetails,
         contentDisplay.sectionDetailsPosition === "overlay_on_top" && noOfClips,
       ].filter(Boolean),
       bottom: [
-        contentDisplay.sectionDetailsPosition === "overlay_on_bottom" &&
-          noOfClips,
-        contentDisplay.sectionDetailsPosition === "overlay_on_bottom" &&
-          sectionDetails,
-        contentDisplay.videoDetailsPosition === "overlay_on_bottom" &&
-          videoDetails,
-        contentDisplay.videoDetailsPosition === "overlay_on_bottom" &&
-          linkoutSection,
-        contentDisplay.socialInteractionCountsPosition ===
-          "overlay_on_bottom" && socialInteraction,
+        contentDisplay.sectionDetailsPosition === "overlay_on_bottom" && noOfClips,
+        contentDisplay.sectionDetailsPosition === "overlay_on_bottom" && sectionDetails,
+        contentDisplay.videoDetailsPosition === "overlay_on_bottom" && videoDetails,
+        contentDisplay.videoDetailsPosition === "overlay_on_bottom" && linkoutSection,
+        contentDisplay.socialInteractionCountsPosition === "overlay_on_bottom" && socialInteraction,
       ].filter(Boolean),
     }),
-    [
-      contentDisplay,
-      videoDetails,
-      sectionDetails,
-      noOfClips,
-      linkoutSection,
-      socialInteraction,
-    ],
+    [contentDisplay, videoDetails, sectionDetails, noOfClips, linkoutSection, socialInteraction]
   );
 
   return (
-    <div
-      className={cn("gencl:h-full gencl:relative", className)}
-      {...restProps}
-    >
+    <div className={cn("gencl:h-full gencl:relative", className)} {...restProps}>
       <div
         className="gencl:absolute gencl:w-full gencl:flex gencl:justify-between gencl:items-start gencl:gap-2 gencl:text-white gencl:top-0 gencl:p-2 gencl:bg-gradient-to-b gencl:from-black/50 gencl:to-transparent"
-        onClick={(e) => e.stopPropagation()}
-      >
+        onClick={(e) => e.stopPropagation()}>
         {/* Top Layout */}
-        {!(isLg && isActive) ? (
-          <div className="gencl:flex gencl:flex-col gencl:space-y-2 gencl:flex-1 gencl:min-w-0">
-            {layoutSections.top.map((element, index) => (
-              <div key={index}>{element}</div>
-            ))}
-          </div>
-        ) : (
-          <div />
-        )}
+
+        <div className="gencl:flex gencl:flex-col gencl:space-y-2 gencl:flex-1 gencl:min-w-0">
+          {layoutSections.top.map((element, index) => (
+            <div key={index}>{element}</div>
+          ))}
+        </div>
 
         {isActive && (
           <div className="gencl:shrink-0">
-            <EmbedControls
-              size={isXs ? "xs" : "sm"}
-              section={postDetails.section}
-            />
+            <EmbedControls size={isXs ? "xs" : "sm"} section={postDetails.section} />
           </div>
         )}
       </div>

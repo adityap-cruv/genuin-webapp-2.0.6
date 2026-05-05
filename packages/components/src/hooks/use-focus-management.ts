@@ -1,5 +1,5 @@
+import { detectAccessibilityMode, getTabindexElementsInViewport } from "@genuin/ui/lib/utils";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { getTabindexElementsInViewport, detectAccessibilityMode } from "@genuin/ui/lib/utils";
 import type { Swiper } from "swiper/types";
 
 // Type definition for focusable elements
@@ -71,15 +71,14 @@ export function useFocusManagement({
     }
 
     const elements = getTabindexElementsInViewport(containerRef.current);
-    
+
     // Filter out disabled elements
-    const enabledElements = elements.filter(element => {
+    const enabledElements = elements.filter((element) => {
       const htmlElement = element.element;
       // Check if element is disabled (for buttons, inputs, etc.)
-      return !htmlElement.hasAttribute('disabled') && 
-             !(htmlElement as any).disabled;
+      return !htmlElement.hasAttribute("disabled") && !(htmlElement as any).disabled;
     });
-    
+
     setFocusableElements(enabledElements);
     return enabledElements;
   }, []);
@@ -107,10 +106,7 @@ export function useFocusManagement({
       return () => clearTimeout(timeoutId);
     } else {
       // Restore focus to previous element when disabled
-      if (
-        previousFocusedElementRef.current &&
-        document.contains(previousFocusedElementRef.current)
-      ) {
+      if (previousFocusedElementRef.current && document.contains(previousFocusedElementRef.current)) {
         previousFocusedElementRef.current.focus();
       }
       // Reset focus state
@@ -161,9 +157,7 @@ export function useFocusManagement({
 
     const handleFocusIn = (event: FocusEvent) => {
       const focusedElement = event.target as HTMLElement;
-      const elementIndex = focusableElements.findIndex(
-        (el) => el.element === focusedElement
-      );
+      const elementIndex = focusableElements.findIndex((el) => el.element === focusedElement);
 
       if (elementIndex !== -1) {
         setCurrentFocusIndex(elementIndex);
@@ -203,10 +197,8 @@ export function useFocusManagement({
 
         // Get current focused element index
         const activeElement = document.activeElement as HTMLElement;
-        const currentElementIndex = focusableElements.findIndex(
-          (el) => el.element === activeElement
-        );
-        
+        const currentElementIndex = focusableElements.findIndex((el) => el.element === activeElement);
+
         const actualCurrentIndex = currentElementIndex !== -1 ? currentElementIndex : currentFocusIndex;
 
         if (event.shiftKey) {
@@ -259,8 +251,6 @@ export function useFocusManagement({
       return () => document.removeEventListener("keydown", handleKeyDown);
     }
   }, [isActive, focusableElements, currentFocusIndex, activeSwiper]);
-
-
 
   return {
     containerRef,

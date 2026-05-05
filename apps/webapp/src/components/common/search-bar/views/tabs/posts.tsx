@@ -1,11 +1,16 @@
-import { type VideoType } from '.'
 import Link from 'next/link'
-import { CustomAvatar } from '@components/custom/custom-avatar'
-import { PATH_NAME } from '@lib/utils/constants/path'
-import icPlay from '@icons/player-controls/icPlay.svg'
-import { NoResults } from './no-results'
-import { useSearchBarStore } from '../../store'
+
 import { CustomImage } from '@/components/custom/custom-image'
+import { CustomAvatar } from '@components/custom/custom-avatar'
+import icPlay from '@icons/player-controls/icPlay.svg'
+import { PATH_NAME } from '@lib/utils/constants/path'
+
+import { useSearchBarStore } from '../../store'
+
+import { NoResults } from './no-results'
+
+
+import { type VideoType } from '.'
 
 export function Posts({ videos }: { videos?: VideoType[] }) {
   const { close } = useSearchBarStore()

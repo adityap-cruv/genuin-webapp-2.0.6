@@ -1,5 +1,6 @@
-import MainComponent from './main-component'
 import type { Metadata } from 'next'
+
+import MainComponent from './main-component'
 
 export default async function Page() {
   return <MainComponent />

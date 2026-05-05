@@ -1,15 +1,8 @@
-import {
-  SkeletonColumn,
-  SkeletonTable,
-} from "@genuin/components/organisms/skeleton-table/skeleton-table";
 import { Skeleton } from "@genuin/ui/components/skeleton";
-import {
-  PlayIcon,
-  SparkIcon,
-  ShareIcon,
-  CommentIcon,
-  RepostIcon,
-} from "@genuin/ui/icons";
+import { PlayIcon, SparkIcon, ShareIcon, CommentIcon, RepostIcon } from "@genuin/ui/icons";
+
+import type { SkeletonColumn } from "@genuin/components/organisms/skeleton-table/skeleton-table";
+import { SkeletonTable } from "@genuin/components/organisms/skeleton-table/skeleton-table";
 
 const postedVideosColumns: SkeletonColumn[] = [
   {
@@ -117,9 +110,7 @@ const postedVideosColumns: SkeletonColumn[] = [
   },
   {
     width: "gencl:w-[150px]",
-    header: (
-      <div className="gencl:flex gencl:items-center gencl:justify-center" />
-    ),
+    header: <div className="gencl:flex gencl:items-center gencl:justify-center" />,
     cell: (
       <div className="gencl:flex gencl:items-center gencl:justify-center gencl:space-x-2">
         <Skeleton className="gencl:h-8 gencl:w-8" />
@@ -141,8 +132,6 @@ interface PostedVideosTableSkeletonProps {
  *
  * @param rows - Number of skeleton rows to display (default: 5)
  */
-export function PostedVideosTableSkeleton({
-  rows = 5,
-}: PostedVideosTableSkeletonProps) {
+export function PostedVideosTableSkeleton({ rows = 5 }: PostedVideosTableSkeletonProps) {
   return <SkeletonTable columns={postedVideosColumns} rows={rows} />;
 }

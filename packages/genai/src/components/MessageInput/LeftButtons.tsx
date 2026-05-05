@@ -1,5 +1,7 @@
-import { useAgentsContext } from '@/context/app/context';
 import { useState } from 'react';
+
+import { useAgentsContext } from '@/context/app/context';
+
 import Add from '../../assets/SvgIcons/Add';
 import { Button } from '../ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';

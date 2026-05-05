@@ -1,8 +1,9 @@
 import { Button } from "@genuin/ui/button";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { GenericDetails, GenericDetailsSkeleton } from "./generic-details";
+import { GenericDetails } from "./generic-details";
 import { GenericDetailsMetadata } from "./generic-details-metadata";
+import { GenericDetailsSkeleton } from "./skeleton";
 
 const meta: Meta<typeof GenericDetails> = {
   title: "Organisms/GenericDetails",
@@ -111,7 +112,7 @@ export const Skeleton: Story = {
   render: (args) => {
     return (
       <div className="gencl:w-[750px]">
-        <GenericDetailsSkeleton variant={args.variant} />
+        <GenericDetailsSkeleton variant={args.variant as "default" | "list" | undefined} />
       </div>
     );
   },

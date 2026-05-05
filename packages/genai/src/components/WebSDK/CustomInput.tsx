@@ -1,12 +1,14 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
 import { Player } from '@lottiefiles/react-lottie-player';
-import { useAgentsContext } from '@/context/app/context';
-import { useInputContext } from '@/context/input/context';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
 import ArrowUpward from '@/assets/SvgIcons/ArrowUpward';
 import Stop from '@/assets/SvgIcons/Stop';
+import { useAgentsContext } from '@/context/app/context';
+import { useInputContext } from '@/context/input/context';
+import { getCachedRemoteLottie, loadRemoteLottie } from '@/lib/lottie/load-remote-lottie';
+
 import { Button } from '../ui/button';
 import Spinner from '../ui/spinner';
-import { getCachedRemoteLottie, loadRemoteLottie } from '@/lib/lottie/load-remote-lottie';
 
 type CustomInputProps = {
     hideBackground?: boolean;

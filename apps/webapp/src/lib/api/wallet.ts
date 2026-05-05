@@ -1,21 +1,21 @@
-import { useInfiniteQuery } from '@tanstack/react-query'
-import { axiosInstance } from './instance'
+import { useInfiniteQuery } from "@tanstack/react-query";
+
+import { axiosInstance } from "./instance";
 
 export async function getBalanceAPI({ isCurrentBalance }: { isCurrentBalance: boolean }) {
   return await axiosInstance
-    .get('/goservices/wallets/getbalance', {
+    .get("/goservices/wallets/getbalance", {
       params: {
         is_current_balance: isCurrentBalance,
       },
     })
     .then((res) => {
-      return { wallet: res.data.data.wallet }
+      return { wallet: res.data.data.wallet };
     })
     .catch((e) => {
-       
-      console.log('error:;', e)
-      throw new Error('Something went wrong::')
-    })
+      console.log("error:;", e);
+      throw new Error("Something went wrong::");
+    });
 }
 
 export async function updateBalanceAPI({
@@ -23,20 +23,19 @@ export async function updateBalanceAPI({
   amount,
   metadata,
 }: {
-  action: string
-  amount: number
-  metadata: object
+  action: string;
+  amount: number;
+  metadata: object;
 }) {
   return await axiosInstance
-    .put('/goservices/wallets/transactions/create', { action, amount, metadata })
+    .put("/goservices/wallets/transactions/create", { action, amount, metadata })
     .then((res) => {
-      return res.data.data
+      return res.data.data;
     })
     .catch((e) => {
-       
-      console.log('error:;', e)
-      throw new Error('Something went wrong::')
-    })
+      console.log("error:;", e);
+      throw new Error("Something went wrong::");
+    });
 }
 
 export async function fetchTransactionsList({
@@ -44,12 +43,12 @@ export async function fetchTransactionsList({
   pagesize,
   type,
 }: {
-  page: number
-  pagesize: number
-  type: 'POINT' | 'CASH'
+  page: number;
+  pagesize: number;
+  type: "POINT" | "CASH";
 }) {
   return await axiosInstance
-    .get('/goservices/wallets/transactions', {
+    .get("/goservices/wallets/transactions", {
       params: {
         page,
         pagesize,
@@ -58,61 +57,60 @@ export async function fetchTransactionsList({
     })
     .then((res) => res.data.data)
     .catch(() => {
-      throw new Error('Something went wrong with transactions api.')
-    })
+      throw new Error("Something went wrong with transactions api.");
+    });
 }
 
-export function getTransactionsList({ pageSize, type }: { pageSize: number; type: 'POINT' | 'CASH' }) {
+export function useTransactionsList({ pageSize, type }: { pageSize: number; type: "POINT" | "CASH" }) {
   return useInfiniteQuery({
     queryFn: async ({ pageParam = 0 }) => {
-      const page = pageParam
+      const page = pageParam;
       const response = await fetchTransactionsList({
         page,
         pagesize: pageSize,
         type,
-      })
+      });
 
       return {
         transactions: response.transactions,
         end_of_transactions: response.end_of_transactions,
         nextPage: page + 1,
-      }
+      };
     },
-    queryKey: ['transactions', type],
+    initialPageParam: 0,
+    queryKey: ["transactions", type, pageSize],
     getNextPageParam: (lastPage) => {
       // If end_of_transactions is true, don't fetch more pages
-      return lastPage.end_of_transactions ? undefined : lastPage.nextPage
+      return lastPage.end_of_transactions ? undefined : lastPage.nextPage;
     },
-  })
+  });
 }
 
 export async function redeemCouponAPI() {
   return await axiosInstance
-    .post('/goservices/wallets/coupon/redeem ')
+    .post("/goservices/wallets/coupon/redeem ")
     .then((res) => {
-      return res
+      return res;
     })
     .catch((e) => {
-       
-      console.log('error:;', e)
-      return { data: { code: Number(e.response.data.code), message: e.response.data.message } }
+      console.log("error:;", e);
+      return { data: { code: Number(e.response.data.code), message: e.response.data.message } };
       // throw new Error('Something went wrong::')
-    })
+    });
 }
 
 export async function cashWithdrawAPI({ amount, redirectUrl }: { amount: number; redirectUrl: string }) {
   return await axiosInstance
-    .post('/goservices/wallets/cash/withdraw', {
+    .post("/goservices/wallets/cash/withdraw", {
       amount,
       return_link: redirectUrl,
     })
     .then((res) => {
-      return res
+      return res;
     })
     .catch((e) => {
-       
-      console.log('error:;', e)
-      return { data: { code: Number(e.response.data.code), message: e.response.data.message } }
+      console.log("error:;", e);
+      return { data: { code: Number(e.response.data.code), message: e.response.data.message } };
       // throw new Error('Something went wrong::')
-    })
+    });
 }

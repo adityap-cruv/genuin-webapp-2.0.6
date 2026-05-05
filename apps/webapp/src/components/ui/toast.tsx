@@ -1,8 +1,8 @@
-import * as React from 'react'
 import * as ToastPrimitives from '@radix-ui/react-toast'
 import { cva, type VariantProps } from 'class-variance-authority'
-import { CloseIcon } from '@icons/close-icon'
+import * as React from 'react'
 
+import { CloseIcon } from '@icons/close-icon'
 import { cn } from '@lib/utils'
 
 const ToastProvider = ToastPrimitives.Provider

@@ -1,14 +1,20 @@
 'use client'
-import { Button } from '@components/ui/button'
-import { useState } from 'react'
-import { PATH_NAME } from '@lib/utils/constants/path'
 import { useRouter } from 'next/navigation'
+import { signOut } from 'next-auth/react'
+import { useState } from 'react'
+
+import { Button } from '@components/ui/button'
 import { Loader } from '@components/ui/loader'
+import { PATH_NAME } from '@lib/utils/constants/path'
+
+
+
+import { AuthenticationModal } from '..'
 import { deleteUserAccount } from '../api/auth'
 import { ModalShell } from '../modal-shell'
+
 import { type ScreenProps } from '.'
-import { AuthenticationModal } from '..'
-import { signOut } from 'next-auth/react'
+
 
 export function DeleteConfirmation({ onNext }: ScreenProps) {
   const [isLoading, setIsLoading] = useState(false)

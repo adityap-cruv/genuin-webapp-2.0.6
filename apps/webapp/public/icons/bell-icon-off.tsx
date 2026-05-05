@@ -1,6 +1,6 @@
 // Import necessary modules and types from React and class-variance-authority
-import { type ComponentProps } from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
+import { type ComponentProps } from 'react'
 
 // Define the bellVariant function using cva to handle different styles based on props
 const bellVariant = cva('', {

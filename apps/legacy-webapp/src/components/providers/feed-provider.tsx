@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import Analytics from '@/services/analytics'
+import { EventName } from '@genuin/components/context/analytics/context'
 import { usePlayerControlStore } from '../common/player/player-control-store'
 import { type VideoPlayerModalType } from '@/lib/schemas/player/video'
 import { type CommunityUserRoleType } from '@/lib/schemas/roles'
@@ -61,9 +62,9 @@ export function FeedContextProvider({
     (newIndex: number) => {
       const { duration, currentTime } = usePlayerControlStore.getState()
       const playerProgress = Math.round((currentTime / duration) * 100)
-      const videoId = videos[currentIndex].video.id
+      const videoId = videos[currentIndex]?.video.id
       setCurrentIndex((currentIndex) => {
-        const eventName = newIndex < currentIndex ? 'Swipe Previous' : 'Swipe Next'
+        const eventName = newIndex < currentIndex ? EventName.SWIPE_PREVIOUS : EventName.SWIPE_NEXT
         const properties = {
           content_category: 'loop',
           content_id: videoId,
@@ -79,7 +80,7 @@ export function FeedContextProvider({
         })
 
         // Track 'Video Inview' only if the videoId changes
-        if (lastTrackedVideoId !== videoId) {
+        if (videoId && videoId !== lastTrackedVideoId) {
           setLastTrackedVideoId(videoId)
           void Analytics.track({ eventName: 'Video Inview', properties })
         }
@@ -134,7 +135,7 @@ export function FeedContextProvider({
 
     // update IHeart audio for the community.
     if (shouldShowIHeartDemo) {
-      const audioUrl = getAudioUrlForCommunity(videos[currentIndex].community.slug)
+      const audioUrl = getAudioUrlForCommunity(videos[currentIndex]?.community.slug ?? "")
       if (!audioUrl) return
       setAudioUrl(audioUrl)
     }

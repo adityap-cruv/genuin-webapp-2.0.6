@@ -1,9 +1,10 @@
 "use client";
-import { ComponentProps, ReactNode, useEffect, useState } from "react";
 import { Avatar } from "@genuin/ui/components/avatar";
 import { Skeleton } from "@genuin/ui/components/skeleton";
 import { LockIcon, PublicIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
+import { useEffect, useState } from "react";
+import type { ComponentProps, ReactNode } from "react";
 
 type DetailsPageProps = {
   idToTrack: string;
@@ -36,19 +37,9 @@ export function DetailsPageTopbar({
   function RenderTypeBadge() {
     switch (metadata?.type) {
       case "PUBLIC":
-        return (
-          <PublicIcon
-            className="gencl:stroke-secondary-600 gencl:size-5"
-            aria-label="Public"
-          />
-        );
+        return <PublicIcon className="gencl:stroke-secondary-600 gencl:size-5" aria-label="Public" />;
       case "PRIVATE":
-        return (
-          <LockIcon
-            className="gencl:stroke-secondary-600 gencl:size-5"
-            aria-label="Private"
-          />
-        );
+        return <LockIcon className="gencl:stroke-secondary-600 gencl:size-5" aria-label="Private" />;
       default:
         return null;
     }
@@ -76,8 +67,7 @@ export function DetailsPageTopbar({
 
       observer = new IntersectionObserver(
         ([entry]) => {
-          // @ts-ignore
-          setIsOpen(!entry.isIntersecting);
+          if (entry) setIsOpen(!entry.isIntersecting);
         },
         { threshold: 0.1 }
       );
@@ -120,8 +110,7 @@ export function DetailsPageTopbar({
         transform: `translateY(${isOpen ? "0" : "-100"}%) `,
         zIndex: 2,
       }}
-      {...restProps}
-    >
+      {...restProps}>
       <div className="gencl:flex gencl:items-center gencl:gap-2 gencl:w-full">
         {profileImageDetails && (
           <Avatar
@@ -132,9 +121,7 @@ export function DetailsPageTopbar({
             aria-label="Profile Image"
           />
         )}
-        <p className="gencl:text-headline-4-semi-bold gencl:line-clamp-1 gencl:break-all">
-          {title}
-        </p>
+        <p className="gencl:text-headline-4-semi-bold gencl:line-clamp-1 gencl:break-all">{title}</p>
         <div className="gencl:ml-1">{RenderTypeBadge()}</div>
       </div>
       {ctas && ctas}

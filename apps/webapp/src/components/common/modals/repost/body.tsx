@@ -1,17 +1,20 @@
+import { Lock } from 'lucide-react'
+import { useState } from 'react'
+
+import { LoopPrivacyInfo } from '@components/common/loop-privacy-info'
+import { NoSearchResults } from '@components/common/no-search-results'
 import { CustomAvatar } from '@components/custom/custom-avatar'
+import { DecorativeList } from '@components/custom/decorative-list'
+import { Button } from '@components/ui/button'
+import { Loader } from '@components/ui/loader'
+import { EarthIcon } from '@icons/earth-icon'
+import { RepostIcon } from '@icons/player-controls/repost-icon'
+import { cn } from '@lib/utils'
+
+import { repostVideo } from './api'
 import { type RepostCommunityType } from './schema'
 import { useRepostModalStore } from './state'
-import { DecorativeList } from '@components/custom/decorative-list'
-import { LoopPrivacyInfo } from '@components/common/loop-privacy-info'
-import { Button } from '@components/ui/button'
-import { RepostIcon } from '@icons/player-controls/repost-icon'
-import { repostVideo } from './api'
-import { useState } from 'react'
-import { Loader } from '@components/ui/loader'
-import { cn } from '@lib/utils'
-import { NoSearchResults } from '@components/common/no-search-results'
-import { EarthIcon } from '@icons/earth-icon'
-import { Lock } from 'lucide-react'
+
 
 export function Body() {
   const { data, filteredData, searchString } = useRepostModalStore((state) => ({
@@ -86,7 +89,7 @@ function CommunityCard({ communityInfo }: { communityInfo: RepostCommunityType }
               className="relative mb-4 flex w-full items-center justify-between rounded-lg border border-tertiary-200 bg-tertiary-100 px-4 py-3">
               <span>
                 <p className="line-clamp-1 break-all text-body-1-demi">{item.group.group_name}</p>
-                <LoopPrivacyInfo accessTypeId={item.actions[0].access_type_id} actionId={item.actions[0].action_id} />
+                <LoopPrivacyInfo accessTypeId={item.actions[0]?.access_type_id ?? 0} actionId={item.actions[0]?.action_id ?? 0} />
               </span>
               <RepostButton destinationId={item.chat_id} />
             </li>

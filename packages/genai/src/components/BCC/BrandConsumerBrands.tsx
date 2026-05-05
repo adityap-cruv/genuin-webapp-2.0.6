@@ -1,8 +1,9 @@
+import { useEffect, useState, useCallback, useRef } from 'react';
+
+import { Add, Verified } from '@/assets/SvgIcons/icons';
 import { useAgentsContext } from '@/context/app/context';
 import { updateAgentMessage, insertExistingBrandAsConsumerBrand, insertNewBrandAsConsumerBrand } from '@/lib/api';
 import type { BrandConsumerBrand } from '@/types';
-import { useEffect, useState, useCallback, useRef } from 'react';
-import { Add, Verified } from '@/assets/SvgIcons/icons';
 
 const BrandConsumerBrands = ({
     messageId,
@@ -14,17 +15,15 @@ const BrandConsumerBrands = ({
     new: BrandConsumerBrand[];
 }) => {
     const { updateAgentMessageContent, currentSessionId } = useAgentsContext();
-    
+
     // Initialize state with proper isNew flags
     const [existingBrands, setExistingBrands] = useState<BrandConsumerBrand[]>(
         existing.map(b => ({ ...b, isNew: false }))
     );
-    const [newBrands, setNewBrands] = useState<BrandConsumerBrand[]>(
-        new_brands.map(b => ({ ...b, isNew: true }))
-    );
+    const [newBrands, setNewBrands] = useState<BrandConsumerBrand[]>(new_brands.map(b => ({ ...b, isNew: true })));
     const [selectedBrands, setSelectedBrands] = useState<Set<string>>(new Set());
     const [isInserting, setIsInserting] = useState(false);
-    
+
     // Use refs to track latest state for synchronous updates
     const existingBrandsRef = useRef<BrandConsumerBrand[]>(existing.map(b => ({ ...b, isNew: false })));
     const newBrandsRef = useRef<BrandConsumerBrand[]>(new_brands.map(b => ({ ...b, isNew: true })));
@@ -39,6 +38,21 @@ const BrandConsumerBrands = ({
         newBrandsRef.current = updatedNew;
     }, [existing, new_brands]);
 
+    const updateMessageContent = useCallback(
+        (updatedExisting: BrandConsumerBrand[], updatedNew: BrandConsumerBrand[]) => {
+            if (currentSessionId) {
+                console.log('updated');
+                const content = JSON.stringify({ existing: updatedExisting, new: updatedNew });
+                updateAgentMessageContent(currentSessionId, messageId, content);
+                updateAgentMessage({
+                    chat_id: messageId,
+                    agent_message: content,
+                });
+            }
+        },
+        [currentSessionId, messageId, updateAgentMessageContent]
+    );
+
     if ((!existing && !new_brands) || (existing.length === 0 && new_brands.length === 0)) {
         return (
             <>
@@ -51,18 +65,6 @@ const BrandConsumerBrands = ({
             </>
         );
     }
-
-    const updateMessageContent = useCallback((updatedExisting: BrandConsumerBrand[], updatedNew: BrandConsumerBrand[]) => {
-        if (currentSessionId) {
-            console.log("updated")
-            const content = JSON.stringify({ existing: updatedExisting, new: updatedNew });
-            updateAgentMessageContent(currentSessionId, messageId, content);
-            updateAgentMessage({
-                chat_id: messageId,
-                agent_message: content,
-            });
-        }
-    }, [currentSessionId, messageId, updateAgentMessageContent]);
 
     const handleToggleSelect = (brandName: string) => {
         setSelectedBrands(prev => {
@@ -80,7 +82,7 @@ const BrandConsumerBrands = ({
         const allBrands = [...existingBrands, ...newBrands];
         const pendingBrands = allBrands.filter(b => !b.inserted);
         if (pendingBrands.length === 0) return;
-        
+
         const allSelected = pendingBrands.every(b => selectedBrands.has(b.brand_name));
         if (allSelected) {
             // Deselect all
@@ -93,36 +95,36 @@ const BrandConsumerBrands = ({
 
     const handleInsertAllSelected = async () => {
         if (selectedBrands.size === 0) return;
-        
+
         setIsInserting(true);
         const allBrands = [...existingBrands, ...newBrands];
         const brandsToInsert = allBrands.filter(b => selectedBrands.has(b.brand_name) && !b.inserted);
-        
+
         try {
             // Create promises for all insertions with immediate state updates
             const insertionPromises = brandsToInsert.map(brand => {
                 const insertPromise = brand.isNew
                     ? insertNewBrandAsConsumerBrand(brand)
                     : insertExistingBrandAsConsumerBrand(brand);
-                
+
                 return insertPromise
                     .then(() => {
                         // Update refs and state immediately after each successful insertion
                         if (brand.isNew) {
-                            newBrandsRef.current = newBrandsRef.current.map(b => 
+                            newBrandsRef.current = newBrandsRef.current.map(b =>
                                 b.brand_name === brand.brand_name ? { ...b, inserted: true } : b
                             );
                             setNewBrands([...newBrandsRef.current]);
                         } else {
-                            existingBrandsRef.current = existingBrandsRef.current.map(b => 
+                            existingBrandsRef.current = existingBrandsRef.current.map(b =>
                                 b.brand_name === brand.brand_name ? { ...b, inserted: true } : b
                             );
                             setExistingBrands([...existingBrandsRef.current]);
                         }
-                        
+
                         // Update message content immediately with latest ref values
                         updateMessageContent(existingBrandsRef.current, newBrandsRef.current);
-                        
+
                         return { success: true, brand };
                     })
                     .catch(error => {
@@ -130,10 +132,10 @@ const BrandConsumerBrands = ({
                         return { success: false, brand, error };
                     });
             });
-            
+
             // Wait for all insertions to complete
             await Promise.all(insertionPromises);
-            
+
             // Clear selection after all insertions complete
             setSelectedBrands(new Set());
         } catch (error) {
@@ -297,7 +299,7 @@ const BrandConsumerBrands = ({
                                                         href={`https://${social.platform.toLowerCase()}.com/${social.platform === 'tiktok' ? '@' : ''}${social.username}`}
                                                         target='_blank'
                                                         rel='noopener noreferrer'
-                                                        className='gai:hover:bg-[#F7F9FF] gai:flex gai:h-8 gai:w-8 gai:items-center gai:justify-center gai:rounded-[6.4px] gai:border gai:border-[#E6ECFF] gai:p-0 gai:transition-colors'
+                                                        className='gai:flex gai:h-8 gai:w-8 gai:items-center gai:justify-center gai:rounded-[6.4px] gai:border gai:border-[#E6ECFF] gai:p-0 gai:transition-colors gai:hover:bg-[#F7F9FF]'
                                                     >
                                                         <img
                                                             src={iconUrl}
@@ -315,7 +317,6 @@ const BrandConsumerBrands = ({
                         );
                     })}
                 </div>
-
             </div>
             {/* Insert All Button */}
             {pendingBrands.length > 0 && (
@@ -323,7 +324,7 @@ const BrandConsumerBrands = ({
                     <button
                         onClick={handleInsertAllSelected}
                         disabled={selectedBrands.size === 0 || isInserting}
-                        className='gai:hover:bg-[#0539DD] gai:flex gai:items-center gai:gap-1.5 gai:rounded-lg gai:bg-[#0645FF] gai:px-4 gai:py-2 gai:text-sm gai:font-medium gai:text-white gai:transition-colors gai:disabled:cursor-not-allowed gai:disabled:opacity-50'
+                        className='gai:flex gai:items-center gai:gap-1.5 gai:rounded-lg gai:bg-[#0645FF] gai:px-4 gai:py-2 gai:text-sm gai:font-medium gai:text-white gai:transition-colors gai:hover:bg-[#0539DD] gai:disabled:cursor-not-allowed gai:disabled:opacity-50'
                     >
                         <Add width='14' height='14' stroke='currentColor' />
                         {isInserting ? 'Inserting...' : `Insert Selected (${selectedBrands.size})`}

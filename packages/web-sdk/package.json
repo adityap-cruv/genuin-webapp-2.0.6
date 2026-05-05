@@ -55,7 +55,11 @@
     "lint": "eslint --ext .ts,.tsx src/",
     "typecheck": "tsc --noEmit",
     "version:bump": "npx tsx scripts/npmVersionManager.ts",
-    "sdk:bs": "npm run build:prod && serve -l 5555"
+    "sdk:bs": "npm run build:prod && serve -l 5555",
+    "lint-staged": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,mjs}": ["eslint --fix", "prettier --write"]
   },
   "author": "Genuin Inc.",
   "license": "ISC",

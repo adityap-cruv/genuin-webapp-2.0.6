@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
+
 import { GENAI_ASSETS_BASE_URL } from "@genuin/components/lib/utils/env";
 
-const FALLBACK_GENAI_ASSETS_BASE_URL =
-  "https://media.begenuin.com/webapp_assets/assets/genai/";
+const FALLBACK_GENAI_ASSETS_BASE_URL = "https://media.begenuin.com/webapp_assets/assets/genai/";
 
 function withTrailingSlash(value: string) {
   const sanitized = value.trim();
@@ -20,10 +20,7 @@ const OCTO_ANIMATION_URL = new URL(
   resolvedGenaiAssetsBaseUrl
 ).toString();
 
-const OCTO_ANIMATION_IMAGES_BASE_URL = new URL(
-  "gathering/",
-  resolvedGenaiAssetsBaseUrl
-).toString();
+const OCTO_ANIMATION_IMAGES_BASE_URL = new URL("gathering/", resolvedGenaiAssetsBaseUrl).toString();
 
 let cachedOctoAnimationData: object | null = null;
 let octoAnimationPromise: Promise<object> | null = null;
@@ -46,8 +43,7 @@ function normaliseOctoAnimationData(rawData: any) {
       return asset;
     }
 
-    const assetFolder =
-      typeof asset.u === "string" && asset.u.length > 0 ? asset.u : "";
+    const assetFolder = typeof asset.u === "string" && asset.u.length > 0 ? asset.u : "";
     const combinedPath = `${assetFolder}${asset.p}`;
     const absoluteAssetUrl = new URL(
       combinedPath
@@ -108,9 +104,7 @@ async function loadOctoAnimationData() {
  * @returns Object containing animation data and loading/error states
  */
 export function useOctoAnimation() {
-  const [octoAnimationData, setOctoAnimationData] = useState<object | null>(
-    cachedOctoAnimationData
-  );
+  const [octoAnimationData, setOctoAnimationData] = useState<object | null>(cachedOctoAnimationData);
   const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {

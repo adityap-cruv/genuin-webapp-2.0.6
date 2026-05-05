@@ -1,5 +1,5 @@
-import { type ComponentProps } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
+import { type ComponentProps } from "react";
 
 import { cn, defaultSizesForIcons } from "@genuin/ui/lib/utils";
 
@@ -18,15 +18,9 @@ const notificationVariant = cva("", {
   },
 });
 
-type NotificationIconPropsType = ComponentProps<"svg"> &
-  VariantProps<typeof notificationVariant>;
+type NotificationIconPropsType = ComponentProps<"svg"> & VariantProps<typeof notificationVariant>;
 
-export function NotificationIcon({
-  theme,
-  size,
-  className,
-  ...restProps
-}: NotificationIconPropsType) {
+export function NotificationIcon({ theme, size, className, ...restProps }: NotificationIconPropsType) {
   return (
     <svg
       width="24"
@@ -35,8 +29,7 @@ export function NotificationIcon({
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       {...restProps}
-      className={cn(notificationVariant({ theme, size }), className)}
-    >
+      className={cn(notificationVariant({ theme, size }), className)}>
       <path
         fillRule="evenodd"
         clipRule="evenodd"

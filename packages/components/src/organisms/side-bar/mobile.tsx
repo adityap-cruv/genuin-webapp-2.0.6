@@ -1,22 +1,19 @@
 "use client";
-import { useRef } from "react";
-import { SideBar } from "../side-bar";
-import {
-  Sheet,
-  SheetTrigger,
-  SheetContent,
-  SheetClose,
-} from "@genuin/ui/sheet";
 import { AlignJustifyIcon, XIcon } from "@genuin/ui/icons";
-import { cva, VariantProps } from "class-variance-authority";
-import { BrandLogo } from "@genuin/components/molecules/brand";
 import { cn } from "@genuin/ui/lib/utils";
+import { Sheet, SheetTrigger, SheetContent, SheetClose } from "@genuin/ui/sheet";
+import type { VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
+import { useRef } from "react";
+
+import { BrandLogo } from "@genuin/components/molecules/brand";
+
+import { SideBar } from "../side-bar";
 
 const mobileSidebarVariants = cva("", {
   variants: {
     theme: {
-      light:
-        "gencl:bg-white gencl:rounded-full gencl:border-secondary-150 gencl:border gencl:p-2 ",
+      light: "gencl:bg-white gencl:rounded-full gencl:border-secondary-150 gencl:border gencl:p-2 ",
       dark: "gencl:bg-black/40! gencl:p-2 gencl:rounded-full",
     },
   },
@@ -25,14 +22,9 @@ const mobileSidebarVariants = cva("", {
   },
 });
 
-type MobileSidebarProps = React.ComponentProps<typeof SheetTrigger> &
-  VariantProps<typeof mobileSidebarVariants>;
+type MobileSidebarProps = React.ComponentProps<typeof SheetTrigger> & VariantProps<typeof mobileSidebarVariants>;
 
-export function MobileSidebar({
-  theme,
-  className,
-  ...restProps
-}: MobileSidebarProps) {
+export function MobileSidebar({ theme, className, ...restProps }: MobileSidebarProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const handleCloseSheet = () => {
     closeButtonRef.current?.click();
@@ -40,10 +32,7 @@ export function MobileSidebar({
 
   return (
     <Sheet>
-      <SheetTrigger
-        className={cn(mobileSidebarVariants({ theme }), className)}
-        {...restProps}
-      >
+      <SheetTrigger className={cn(mobileSidebarVariants({ theme }), className)} {...restProps}>
         <AlignJustifyIcon size="md" theme={theme} />
       </SheetTrigger>
       <SheetContent side="left" hideCloseIcon>

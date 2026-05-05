@@ -1,41 +1,36 @@
 "use client";
 import { cn, detectAccessibilityMode } from "@genuin/ui/utils";
+import { useCallback, useMemo, lazy, Suspense, useState, useEffect } from "react";
+import type { ComponentProps } from "react";
+import { useSwiper } from "swiper/react";
+
+import { VideoTypes } from "@genuin/components/context";
 import { useBaseContext } from "@genuin/components/context/base";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
+import type { AdInfoType } from "@genuin/components/molecules/feed-player";
+import { PlayerProvider } from "@genuin/components/molecules/feed-player/context/provider";
+import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+import { useFeedContext } from "@genuin/components/templates/feed/context";
+
+import { usePlayerContext } from "../../molecules/feed-player/context/context";
+
+import { IHeartEmbedBar, IFRAME_HEIGHT } from "./iheart/iheart-embed-bar";
+
 const ControlLayer = lazy(() =>
-  import("../../molecules/feed-player/control-layer/index.js").then((m) => ({
+  import("@genuin/components/molecules/feed-player/control-layer").then((m) => ({
     default: m.ControlLayer,
-  })),
+  }))
 );
 
 // Lazy load video player to defer heavy playback logic
 const FeedPlayer = lazy(() =>
-  import("../../molecules/feed-player/index.js").then((m) => ({
+  import("@genuin/components/molecules/feed-player").then((m) => ({
     default: m.FeedPlayer,
-  })),
+  }))
 );
-
-import { PlayerProvider } from "../../molecules/feed-player/context/provider";
-import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
-import { useFeedContext } from "@genuin/components/templates/feed/context";
-
-import { useSwiper } from "swiper/react";
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  lazy,
-  Suspense,
-  useState,
-} from "react";
-import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
-import { ComponentProps } from "react";
-import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import { VideoTypes } from "@genuin/components/context";
-import { AdInfoType } from "@genuin/components/molecules/feed-player";
-import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
-import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-import { usePlayerContext } from "../../molecules/feed-player/context/context";
-import { IHeartEmbedBar, IFRAME_HEIGHT } from "./iheart/iheart-embed-bar";
 
 /**
  * Inner component that lives inside PlayerProvider so it can access player context.
@@ -70,27 +65,17 @@ type PlayerProps = {
   isPrev: boolean;
   isVisible: boolean;
   totalVideos?: number;
-  onReactionStateChange?: (
-    videoId: string,
-    videoSlug: string,
-    isReacted: boolean,
-  ) => void;
-  onCommunityJoinStatusChange: ComponentProps<
-    typeof ControlLayer
-  >["onCommunityJoinStatusChange"];
-  onGroupJoinStatusChange: ComponentProps<
-    typeof ControlLayer
-  >["onGroupJoinStatusChange"];
-  onGroupSubscriptionChange: ComponentProps<
-    typeof ControlLayer
-  >["onGroupSubscriptionChange"];
-  onCommentCountChange: ComponentProps<
-    typeof ControlLayer
-  >["onCommentCountChange"];
+  onReactionStateChange?: (videoId: string, videoSlug: string, isReacted: boolean) => void;
+  onCommunityJoinStatusChange: ComponentProps<typeof ControlLayer>["onCommunityJoinStatusChange"];
+  onGroupJoinStatusChange: ComponentProps<typeof ControlLayer>["onGroupJoinStatusChange"];
+  onGroupSubscriptionChange: ComponentProps<typeof ControlLayer>["onGroupSubscriptionChange"];
+  onCommentCountChange: ComponentProps<typeof ControlLayer>["onCommentCountChange"];
   onAdStarted?: (e?: AdInfoType, index?: number) => void;
   onAdEnded?: (e?: AdInfoType, index?: number) => void;
   onAdFilled?: (type: string, index: number) => void;
   onAdPlaybackEnd?: (index: number) => void;
+  /** Feed-session identifier from the first feed API page, forwarded to analytics. */
+  pageSession?: string | null;
 };
 
 // TODO: This component is using feed context, which is not ideal. Remove this dep of FeedContext in future.
@@ -112,9 +97,9 @@ export function Player({
   onAdEnded,
   onAdPlaybackEnd,
   onAdFilled,
+  pageSession,
 }: PlayerProps) {
-  const { showExpandView, toggleExpandView, activeIndex, variant } =
-    useFeedContext();
+  const { showExpandView, toggleExpandView, activeIndex, variant } = useFeedContext();
   const { muted } = useBaseContext();
   const [isAdFilled, setIsAdFilled] = useState(false);
   // const { isActive, isNext, isPrev, isVisible } = useSwiperSlide();
@@ -125,6 +110,7 @@ export function Player({
     video: { videoCrop },
     brand: { showIheartIframe },
   } = useEmbedConfigs();
+  const { isMobile } = useDeviceDetectMediaQuery();
 
   const showIheartBar = showIheartIframe && isActive;
   const { sheetState } = useSheetState();
@@ -145,7 +131,7 @@ export function Player({
         }
       }
     },
-    [activeIndex, muted, showGestureOverlay],
+    [activeIndex, muted, showGestureOverlay]
   );
 
   const handleAdFilled = useCallback(
@@ -153,7 +139,7 @@ export function Player({
       onAdFilled?.(type, index);
       setIsAdFilled(true);
     },
-    [onAdFilled, index],
+    [onAdFilled, index]
   );
 
   const handleAdPlaybackEnd = useCallback(() => {
@@ -162,12 +148,14 @@ export function Player({
   }, [onAdPlaybackEnd, index]);
 
   const handlePlayerIterationEnd = useCallback(() => {
-    if (!swiper.allowSlideNext || !swiper.allowSlidePrev) {
+    // Defer past React's render cycle so the disable effect from isAdFilled
+    // doesn't re-disable swiper after we enable it but before slideNext fires.
+    setTimeout(() => {
       swiper.allowSlideNext = true;
       swiper.allowSlidePrev = true;
       swiper.enable();
-    }
-    swiper.slideNext();
+      swiper.slideNext();
+    }, 0);
   }, [swiper]);
 
   const handleOnEnded = useCallback(() => {
@@ -193,8 +181,7 @@ export function Player({
         activeIndex={activeIndex}
         onAdStarted={onAdStarted}
         onAdEnded={onAdEnded}
-        videoType={post.video?.videoType ?? VideoTypes.Content}
-      >
+        videoType={post.video?.videoType ?? VideoTypes.Content}>
         <SheetStatePlaybackController isActive={isActive} />
         <div
           className={cn(
@@ -205,10 +192,8 @@ export function Player({
             {
               "gencl:sm:rounded!": brandLayoutType === "iheart",
             },
-            (showIheartBar ||
-              (isActive &&
-                (sheetState === "panel-view" || sheetState === "full-view"))) &&
-              "gencl:flex gencl:flex-col",
+            (showIheartBar || (isActive && (sheetState === "panel-view" || sheetState === "full-view"))) &&
+              "gencl:flex gencl:flex-col"
           )}
           // tabIndex={showExpandView ? 0 : -1}
           // role="region"
@@ -224,13 +209,8 @@ export function Player({
                   : isActive && sheetState === "full-view"
                     ? "0"
                     : "100%",
-              flexShrink:
-                isActive &&
-                (sheetState === "panel-view" || sheetState === "full-view")
-                  ? 0
-                  : undefined,
-            }}
-          >
+              flexShrink: isActive && (sheetState === "panel-view" || sheetState === "full-view") ? 0 : undefined,
+            }}>
             <Suspense fallback={null}>
               <FeedPlayer
                 videoId={post.video?.id ?? ""}
@@ -242,9 +222,7 @@ export function Player({
                 videoType={post.video?.videoType ?? VideoTypes.Content}
                 className={cn(
                   "gencl:h-full! gencl:w-full",
-                  videoCrop
-                    ? "gencl:object-cover gencl:bg-cover!"
-                    : "gencl:object-contain gencl:bg-contain!",
+                  videoCrop ? "gencl:object-cover gencl:bg-cover!" : "gencl:object-contain gencl:bg-contain!"
                 )}
                 playsInline
                 isActive={isActive}
@@ -254,10 +232,8 @@ export function Player({
                 onEnded={handleOnEnded}
                 style={{ height: "inherit" }}
                 onAdPlaybackEnd={handleAdPlaybackEnd}
-                isSponsored={
-                  post.video?.cardLayoutId === 7 ||
-                  post.video?.videoLayoutId === 6
-                }
+                isSponsored={post.video?.cardLayoutId === 7 || post.video?.videoLayoutId === 6}
+                pageSession={pageSession}
                 playerSize={{
                   height: swiper.height,
                   width: swiper.width,
@@ -283,9 +259,7 @@ export function Player({
               />
             </Suspense>
           </div>
-          {showIheartBar && (
-            <IHeartEmbedBar attributes={post.video?.attributes} />
-          )}
+          {showIheartBar && <IHeartEmbedBar attributes={post.video?.attributes} />}
         </div>
       </PlayerProvider>
     );

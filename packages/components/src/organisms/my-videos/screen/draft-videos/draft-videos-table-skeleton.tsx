@@ -1,8 +1,7 @@
-import {
-  SkeletonColumn,
-  SkeletonTable,
-} from "@genuin/components/organisms/skeleton-table/skeleton-table";
 import { Skeleton } from "@genuin/ui/components/skeleton";
+
+import type { SkeletonColumn } from "@genuin/components/organisms/skeleton-table/skeleton-table";
+import { SkeletonTable } from "@genuin/components/organisms/skeleton-table/skeleton-table";
 
 const draftVideosColumns: SkeletonColumn[] = [
   {
@@ -51,9 +50,7 @@ const draftVideosColumns: SkeletonColumn[] = [
   },
   {
     width: "gencl:w-[150px]",
-    header: (
-      <div className="gencl:flex gencl:items-center gencl:justify-center" />
-    ),
+    header: <div className="gencl:flex gencl:items-center gencl:justify-center" />,
     cell: (
       <div className="gencl:flex gencl:items-center gencl:justify-center gencl:space-x-2">
         <Skeleton className="gencl:h-8 gencl:w-8" />
@@ -75,8 +72,6 @@ interface DraftVideosTableSkeletonProps {
  *
  * @param rows - Number of skeleton rows to display (default: 5)
  */
-export function DraftVideosTableSkeleton({
-  rows = 5,
-}: DraftVideosTableSkeletonProps) {
+export function DraftVideosTableSkeleton({ rows = 5 }: DraftVideosTableSkeletonProps) {
   return <SkeletonTable columns={draftVideosColumns} rows={rows} />;
 }

@@ -1,4 +1,5 @@
 import type { Meta, StoryFn } from "@storybook/react-vite";
+
 import {
   Sheet,
   SheetTrigger,
@@ -25,9 +26,7 @@ const Template: Story = (args) => (
     <SheetContent side="right">
       <SheetHeader>
         <SheetTitle>Sheet Title</SheetTitle>
-        <SheetDescription>
-          This is a description for the sheet.
-        </SheetDescription>
+        <SheetDescription>This is a description for the sheet.</SheetDescription>
       </SheetHeader>
       <div className="gencl::p-4">Sheet Content goes here...</div>
       <SheetFooter>
@@ -40,5 +39,5 @@ const Template: Story = (args) => (
   </Sheet>
 );
 
-export const Default = Template.bind({});
+export const Default: Story = Template.bind({});
 Default.args = {};

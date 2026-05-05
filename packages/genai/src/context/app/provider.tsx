@@ -1,3 +1,8 @@
+import React, { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { toast } from 'sonner';
+import { v4 as uuidv4 } from 'uuid';
+
+import { useOctoAnalytics } from '@/context/analytics';
 import {
     getBrandSessions,
     getChatHistoryV2,
@@ -8,7 +13,6 @@ import {
 } from '@/lib/api';
 import type { CachedResponseItem } from '@/lib/apiTypes';
 import { ingestDataToBCC } from '@/lib/ingestDataToBCC';
-import { useOctoAnalytics } from '@/context/analytics';
 import { useRudderEvents } from '@/services/analytics/useRudderAnalytics';
 import type {
     Agent,
@@ -22,9 +26,8 @@ import type {
     ThinkingStep,
     ToolMetadataPayload,
 } from '@/types';
-import React, { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { toast } from 'sonner';
-import { v4 as uuidv4 } from 'uuid';
+
+
 import { AgentsContext } from './context';
 import { convertChatHistoryV2ToEvents } from './conversationUtils';
 import { useAppBootstrap } from './hooks/useAppBootstrap';
@@ -1552,12 +1555,12 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
         }
 
         const newNodeId = uuidv4();
-        let sessionId = targetSessionId;
+        const sessionId = targetSessionId;
         let tempSessionId: string | undefined;
         // let chat_id: string | null = null;
         let parent_id: string | null = null;
         // let isRegeneration = false;
-        let timestamp = new Date().toISOString();
+        const timestamp = new Date().toISOString();
 
         try {
             const sessionForChatId = sessions.find((s: Session) => s.id === sessionId);

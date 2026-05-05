@@ -1,17 +1,13 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useAxiosInstance } from "@genuin/components/context/axios";
+import type { AxiosInstance } from "axios";
 
+import { useAxiosInstance } from "@genuin/components/context/axios";
 import { getQueryKeyForGroupMembers } from "@genuin/components/react-query/keys/group";
 import { API_PATHS } from "@genuin/components/react-query/paths";
 
 import { validateGroupMembers } from "./schema";
-import type { AxiosInstance } from "axios";
 
-async function fetchGroupMembers(
-  slug: string,
-  axiosInstance: AxiosInstance,
-  pageParam?: string
-) {
+async function fetchGroupMembers(slug: string, axiosInstance: AxiosInstance, pageParam?: string) {
   return await axiosInstance
     .get(API_PATHS.GROUP_MEMBERS, {
       params: {
@@ -32,7 +28,8 @@ async function fetchGroupMembers(
         end: resData.end_of_result,
       };
     })
-    .catch((e) => {
+    .catch((_e) => {
+      console.log("something went wrong in fetching loop cohosts for slug done: ", { _e });
       throw new Error("Something went wrong in fetching loop cohosts.");
     });
 }
@@ -42,8 +39,7 @@ export function useGetGroupMembers(slug: string) {
 
   return useInfiniteQuery({
     queryKey: getQueryKeyForGroupMembers(slug),
-    queryFn: ({ pageParam }) =>
-      fetchGroupMembers(slug, axiosInstance, pageParam),
+    queryFn: ({ pageParam }) => fetchGroupMembers(slug, axiosInstance, pageParam),
     getNextPageParam: (lastPage) => {
       if (lastPage.end) return undefined;
       const lastPageData = lastPage.members[lastPage.members.length - 1];

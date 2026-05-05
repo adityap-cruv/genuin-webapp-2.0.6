@@ -1,12 +1,13 @@
-import { useBaseContext, useLinkContext } from "@genuin/components/context";
-import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { Button } from "@genuin/ui/button";
 import { Toast } from "@genuin/ui/components/toaster";
 import { ShareIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
 import { useCallback } from "react";
 import { useCopyToClipboard } from "usehooks-ts";
+
+import { useBaseContext, useLinkContext } from "@genuin/components/context";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
 type ShareButtonProps = {
   showText?: boolean;
@@ -66,9 +67,7 @@ export function ShareButton({
         // TODO : remove temporary check of ted brand id.
         const baseShareUrl = pathName ? pathName.split("/video") : [];
         const initialUrl =
-          (brandDetails.brand_id === 2357 &&
-          baseShareUrl &&
-          baseShareUrl.length === 2
+          (brandDetails.brand_id === 2357 && baseShareUrl && baseShareUrl.length === 2
             ? window.location.href
             : pathName) ?? pathName;
 
@@ -95,20 +94,16 @@ export function ShareButton({
 
       // If internal functionality is disabled, only trigger onClick and return
       if (disableInternalFunctionality) {
-        let fullUrl = buildShareUrl();
+        const fullUrl = buildShareUrl();
         await copy(fullUrl);
         return;
       }
 
-      let fullUrl = buildShareUrl();
+      const fullUrl = buildShareUrl();
 
-      const toastPosition =
-        brandLayoutType === "iheart" ? "bottom-center" : undefined;
+      const toastPosition = brandLayoutType === "iheart" ? "bottom-center" : undefined;
 
-      const toastMessage =
-        brandLayoutType === "iheart"
-          ? "Link copied to clipboard"
-          : "Link Copied";
+      const toastMessage = brandLayoutType === "iheart" ? "Link copied to clipboard" : "Link Copied";
 
       // For mobile/tablet devices, use native share API if available
       if (!isDesktop && navigator.share) {
@@ -180,10 +175,7 @@ export function ShareButton({
 
   if (withCustomChildren) {
     return (
-      <span
-        onClick={handleClick}
-        className={cn("gencl:cursor-pointer", className)}
-      >
+      <span onClick={handleClick} className={cn("gencl:cursor-pointer", className)}>
         {children}
       </span>
     );
@@ -196,8 +188,7 @@ export function ShareButton({
       className={cn(className)}
       variant={(variant ?? !showText) ? "icon" : "default"}
       onClick={handleClick}
-      {...restProps}
-    >
+      {...restProps}>
       <ShareIcon className="gencl:size-6 gencl:shrink-0" />
       {showText && "Share"}
     </Button>

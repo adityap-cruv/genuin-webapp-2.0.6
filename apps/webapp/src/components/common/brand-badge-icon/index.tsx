@@ -1,7 +1,8 @@
 // Import necessary libraries and components
 import React from 'react'
-import GenuinBadge from './GenuinBadge'
+
 import BrandBadge from './BrandBadge'
+import GenuinBadge from './GenuinBadge'
 import VerifiedBadge from './VerifiedBadge'
 
 // Define the properties for the BrandBadgeIcon component

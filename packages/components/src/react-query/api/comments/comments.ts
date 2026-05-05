@@ -1,14 +1,12 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import type { AxiosInstance } from "axios";
+
 import { useAxiosInstance } from "@genuin/components/context/axios";
-import {
-  getQueryKeyForComments,
-  getQueryKeyForMentions,
-} from "@genuin/components/react-query/keys/comment";
+import { queryClient } from "@genuin/components/react-query/client";
+import { getQueryKeyForComments, getQueryKeyForMentions } from "@genuin/components/react-query/keys/comment";
+import { API_PATHS } from "@genuin/components/react-query/paths";
 
 import { parseComments } from "./parser";
-import { API_PATHS } from "@genuin/components/react-query/paths";
-import { queryClient } from "@genuin/components/react-query/client";
-import type { AxiosInstance } from "axios";
 
 /**
  * Fetch comments for a video.
@@ -17,11 +15,7 @@ import type { AxiosInstance } from "axios";
  * @param axiosInstance - Axios instance to use for the request.
  * @returns A promise that resolves to the fetched comments.
  */
-async function fetchComments(
-  videoId: string,
-  axiosInstance: AxiosInstance,
-  pageParam?: string
-) {
+async function fetchComments(videoId: string, axiosInstance: AxiosInstance, pageParam?: string) {
   try {
     const res = await axiosInstance.get(API_PATHS.FEED_GET_COMMENTS, {
       params: {
@@ -34,7 +28,7 @@ async function fetchComments(
       comments: parseComments(resData.comments),
       end: resData.end_of_result,
     };
-  } catch (e) {
+  } catch (_e) {
     throw new Error("Something went wrong with comments API!");
   }
 }
@@ -49,8 +43,7 @@ export function useComments(videoId: string) {
 
   return useInfiniteQuery({
     queryKey: getQueryKeyForComments(videoId),
-    queryFn: ({ pageParam }) =>
-      fetchComments(videoId, axiosInstance, pageParam),
+    queryFn: ({ pageParam }) => fetchComments(videoId, axiosInstance, pageParam),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => {
       if (lastPage.end) {
@@ -68,34 +61,25 @@ type QueryData = ReturnType<typeof useComments>["data"];
  * @param videoId - The ID of the video for which comments are to be updated.
  * @param isSparked
  */
-export function handleReactionStateChangeInComments(
-  videoId: string,
-  commentId: string,
-  isSparked: boolean
-) {
-  queryClient.setQueryData<QueryData>(
-    getQueryKeyForComments(videoId),
-    (oldData) => {
-      if (!oldData) return oldData;
-      return {
-        ...oldData,
-        pages: oldData.pages.map((page) => ({
-          ...page,
-          comments: page.comments.map((comment) =>
-            comment.commentId === commentId
-              ? {
-                  ...comment,
-                  isSparked,
-                  noOfSparks: isSparked
-                    ? comment.noOfSparks + 1
-                    : comment.noOfSparks - 1,
-                }
-              : comment
-          ),
-        })),
-      };
-    }
-  );
+export function handleReactionStateChangeInComments(videoId: string, commentId: string, isSparked: boolean) {
+  queryClient.setQueryData<QueryData>(getQueryKeyForComments(videoId), (oldData) => {
+    if (!oldData) return oldData;
+    return {
+      ...oldData,
+      pages: oldData.pages.map((page) => ({
+        ...page,
+        comments: page.comments.map((comment) =>
+          comment.commentId === commentId
+            ? {
+                ...comment,
+                isSparked,
+                noOfSparks: isSparked ? comment.noOfSparks + 1 : comment.noOfSparks - 1,
+              }
+            : comment
+        ),
+      })),
+    };
+  });
 }
 
 /**
@@ -107,24 +91,20 @@ export function setQueryDataForNewComment(
   videoId: string,
   newComment: Awaited<ReturnType<typeof fetchComments>>["comments"]
 ) {
-  console.log("Setting new comment data for video:", videoId, newComment);
-  queryClient.setQueryData<QueryData>(
-    getQueryKeyForComments(videoId),
-    (oldData) => {
-      if (!oldData) return oldData;
-      return {
-        ...oldData,
-        pages: oldData.pages.map((page, index) =>
-          index === 0
-            ? {
-                ...page,
-                comments: [...newComment, ...page.comments],
-              }
-            : page
-        ),
-      };
-    }
-  );
+  queryClient.setQueryData<QueryData>(getQueryKeyForComments(videoId), (oldData) => {
+    if (!oldData) return oldData;
+    return {
+      ...oldData,
+      pages: oldData.pages.map((page, index) =>
+        index === 0
+          ? {
+              ...page,
+              comments: [...newComment, ...page.comments],
+            }
+          : page
+      ),
+    };
+  });
 }
 
 /**
@@ -132,13 +112,7 @@ export function setQueryDataForNewComment(
  * @param videoId
  * @param contentId
  */
-export function deleteCommentFromQueryData({
-  videoId,
-  commentId,
-}: {
-  videoId: string;
-  commentId: string;
-}) {
+export function deleteCommentFromQueryData({ videoId, commentId }: { videoId: string; commentId: string }) {
   // Update the cached comments data by removing the deleted comment
   queryClient.setQueryData(getQueryKeyForComments(videoId), (oldData: any) => {
     if (!oldData) return oldData;
@@ -147,9 +121,7 @@ export function deleteCommentFromQueryData({
       ...oldData,
       pages: oldData.pages.map((page: any) => ({
         ...page,
-        comments: page.comments.filter(
-          (comment: any) => comment.commentId !== commentId
-        ),
+        comments: page.comments.filter((comment: any) => comment.commentId !== commentId),
       })),
     };
   });
@@ -167,34 +139,25 @@ async function fetchMentionUser(
   });
 
   try {
-    const response = await axiosInstance.get(
-      API_PATHS.FEED_GET_MENTIONS_COMMENTS,
-      {
-        params: searchParams,
-        signal,
-      }
-    );
+    const response = await axiosInstance.get(API_PATHS.FEED_GET_MENTIONS_COMMENTS, {
+      params: searchParams,
+      signal,
+    });
 
     const resData = response.data.data ?? null;
     return { data: resData };
-  } catch (e: any) {
+  } catch (_e) {
     throw new Error("Something went wrong with mentions API!");
   }
 }
 
 // React Query hook for mentions
-export function useMentionUser(
-  chatId: string,
-  queryString: string,
-  enabled = true,
-  mentionSignal: AbortSignal | undefined
-) {
+export function useMentionUser(chatId: string, queryString: string, enabled = true) {
   const axiosInstance = useAxiosInstance();
 
   return useQuery({
     queryKey: getQueryKeyForMentions(chatId, queryString),
-    queryFn: ({ signal }) =>
-      fetchMentionUser(chatId, queryString, axiosInstance, signal),
+    queryFn: ({ signal }) => fetchMentionUser(chatId, queryString, axiosInstance, signal),
     enabled: !!chatId && !!queryString && enabled,
     // staleTime: 60 * 1000, // adjust as needed
   });

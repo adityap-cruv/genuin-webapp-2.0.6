@@ -1,5 +1,5 @@
 import { VideoTypes } from "@genuin/components/context";
-import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 /**
  * Type for the analytics data passed to Linkouts component

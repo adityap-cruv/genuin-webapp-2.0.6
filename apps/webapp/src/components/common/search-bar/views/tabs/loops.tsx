@@ -1,14 +1,18 @@
-import { PATH_NAME } from '@lib/utils/constants/path'
-import { CustomAvatar } from '@components/custom/custom-avatar'
-import { abbreviateNumber, getTimeAgo } from '@lib/utils'
-import { type LoopResType } from '../../schema/top-resp'
+import Image from 'next/image'
 import Link from 'next/link'
+
+import { CustomImage } from '@/components/custom/custom-image'
+import { CustomAvatar } from '@components/custom/custom-avatar'
 import icLock from '@icons/icLock.svg'
 import icPlay from '@icons/player-controls/icPlay.svg'
-import Image from 'next/image'
-import { NoResults } from './no-results'
+import { abbreviateNumber, getTimeAgo } from '@lib/utils'
+import { PATH_NAME } from '@lib/utils/constants/path'
+
+import { type LoopResType } from '../../schema/top-resp'
 import { useSearchBarStore } from '../../store'
-import { CustomImage } from '@/components/custom/custom-image'
+
+import { NoResults } from './no-results'
+
 
 export function Loops({ loops }: { loops?: LoopResType[] }) {
   if (loops)

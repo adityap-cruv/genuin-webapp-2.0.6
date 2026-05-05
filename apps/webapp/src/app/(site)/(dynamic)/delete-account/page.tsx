@@ -1,4 +1,5 @@
 import { type Metadata } from 'next'
+
 import MainComponent from './main-component'
 
 export default function Component() {

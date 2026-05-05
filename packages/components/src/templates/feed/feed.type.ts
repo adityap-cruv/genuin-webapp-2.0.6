@@ -1,11 +1,11 @@
 "use client";
+import type { QueryKey } from "@tanstack/react-query";
 import { type ComponentProps } from "react";
-import { FeedType } from "@genuin/components/types/post";
-import "swiper/css";
 
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+import type { FeedType } from "@genuin/components/types/post";
 
-import { QueryKey } from "@tanstack/react-query";
+import "swiper/css";
 
 /**
  * Feed data structure containing videos and pagination state
@@ -30,6 +30,11 @@ export type FeedData = {
    * Total videos in feed.
    */
   totalVideos?: number;
+  /**
+   * Feed-session identifier from the first page of the feed API response.
+   * Threaded down to analytics events as `page_session`.
+   */
+  pageSession?: string | null;
 };
 
 type BaseFeedPropsType = {
@@ -105,6 +110,12 @@ type FeedViewPropsType = {
   onActiveIndexChange?: (index: number) => void;
   isSectioned?: boolean;
   isInIframe?: boolean;
+  /**
+   * Which platform is rendering the feed.
+   * Controls ad-injection behaviour: in sdk mode ads are only injected when expand view is open.
+   * @default "webapp"
+   */
+  platform?: "webapp" | "sdk";
 } & BaseFeedPropsType &
   ComponentProps<"div">;
 

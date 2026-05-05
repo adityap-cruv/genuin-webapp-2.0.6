@@ -1,8 +1,11 @@
-import { useAgentsContext } from '@/context/app/context';
 import { useEffect, useRef, useState, useMemo } from 'react';
+
+import { useAgentsContext } from '@/context/app/context';
+
 import SDKLoader from '../CarousalLoader';
-import KoahSDKLoader from './KoahSDKLoader';
 import Spinner from '../ui/spinner';
+
+import KoahSDKLoader from './KoahSDKLoader';
 import Item from './MessageItem';
 
 const Chat = () => {

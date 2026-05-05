@@ -2,8 +2,10 @@
 import { TopBar } from '@components/layouts/desktop/top-bar'
 import { Button } from '@components/ui/button'
 import imgPuppet from '@images/not-found/puppet.svg'
-import { ContactUs } from './modals/contact-us'
+
 import { CustomImage } from '../custom/custom-image'
+
+import { ContactUs } from './modals/contact-us'
 
 export function BrandNotFound() {
   return (

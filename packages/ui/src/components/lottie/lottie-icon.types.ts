@@ -1,5 +1,5 @@
-import type { ComponentProps } from "react";
 import type { IPlayerProps } from "@lottiefiles/react-lottie-player";
+import type { ComponentProps } from "react";
 
 export type LottieIconProps = {
   /**

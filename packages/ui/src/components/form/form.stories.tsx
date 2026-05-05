@@ -1,19 +1,13 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
 import { zodResolver } from "@hookform/resolvers/zod";
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
 import { Button } from "@genuin/ui/components/button";
 import { Input } from "@genuin/ui/components/input";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "./form";
+
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "./form";
 
 const meta: Meta<typeof Form> = {
   title: "Components/Form",
@@ -30,10 +24,7 @@ type Story = StoryObj<typeof Form>;
 
 // Define form schema
 const formSchema = z.object({
-  username: z
-    .string()
-    .min(2, { message: "Username must be at least 2 characters." })
-    .max(50),
+  username: z.string().min(2, { message: "Username must be at least 2 characters." }).max(50),
   email: z.string().email({ message: "Please enter a valid email address." }),
   bio: z.string().max(160).optional(),
 });
@@ -57,7 +48,7 @@ export const BasicForm: Story = {
     }
 
     return (
-      <div className="w-[400px] space-y-6 p-4 border rounded-md">
+      <div className="w-[400px] space-y-6 rounded-md border p-4">
         <h2 className="text-lg font-semibold">Account Information</h2>
 
         <Form {...form}>
@@ -71,9 +62,7 @@ export const BasicForm: Story = {
                   <FormControl>
                     <Input placeholder="Enter username" {...field} />
                   </FormControl>
-                  <FormDescription>
-                    This is your public display name.
-                  </FormDescription>
+                  <FormDescription>This is your public display name.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -86,15 +75,9 @@ export const BasicForm: Story = {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input
-                      type="email"
-                      placeholder="your.email@example.com"
-                      {...field}
-                    />
+                    <Input type="email" placeholder="your.email@example.com" {...field} />
                   </FormControl>
-                  <FormDescription>
-                    We'll never share your email with anyone else.
-                  </FormDescription>
+                  <FormDescription>We&apos;ll never share your email with anyone else.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -113,9 +96,7 @@ export const BasicForm: Story = {
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription>
-                    Brief description for your profile. Max 160 characters.
-                  </FormDescription>
+                  <FormDescription>Brief description for your profile. Max 160 characters.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -143,7 +124,7 @@ export const ValidationErrors: Story = {
     });
 
     // Trigger validation immediately
-    React.useEffect(() => {
+    useEffect(() => {
       form.trigger();
     }, [form]);
 
@@ -152,7 +133,7 @@ export const ValidationErrors: Story = {
     }
 
     return (
-      <div className="w-[400px] space-y-6 p-4 border rounded-md">
+      <div className="w-[400px] space-y-6 rounded-md border p-4">
         <h2 className="text-lg font-semibold">Form with Validation Errors</h2>
 
         <Form {...form}>
@@ -178,11 +159,7 @@ export const ValidationErrors: Story = {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input
-                      type="email"
-                      placeholder="your.email@example.com"
-                      {...field}
-                    />
+                    <Input type="email" placeholder="your.email@example.com" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -213,7 +190,7 @@ export const PrefilledForm: Story = {
     }
 
     return (
-      <div className="w-[400px] space-y-6 p-4 border rounded-md">
+      <div className="w-[400px] space-y-6 rounded-md border p-4">
         <h2 className="text-lg font-semibold">Prefilled Form</h2>
 
         <Form {...form}>
@@ -239,11 +216,7 @@ export const PrefilledForm: Story = {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input
-                      type="email"
-                      placeholder="your.email@example.com"
-                      {...field}
-                    />
+                    <Input type="email" placeholder="your.email@example.com" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

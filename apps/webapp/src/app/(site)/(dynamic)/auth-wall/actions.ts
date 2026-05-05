@@ -1,6 +1,7 @@
 'use server'
-import { cookies } from 'next/headers'
 import { createHash } from 'crypto'
+
+import { cookies } from 'next/headers'
 
 // These credentials are only visible server-side
 const VALID_USERNAME = 'genuinadmin'

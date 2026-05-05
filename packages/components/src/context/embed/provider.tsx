@@ -1,24 +1,15 @@
 "use client";
+import { lazy, Suspense, useCallback, useEffect, useInsertionEffect, useMemo, useState } from "react";
+
+import { SDKEventEmitter, SDKEventName, SDKListenerEventName } from "@genuin/components/lib/sdk-event-emitter";
+import type { getBrandType } from "@genuin/components/lib/utils/brand-layout";
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+
 import { EmbedContext, type FollowStatusItem } from "./context";
-import { ActivePlayerType, createEmbedEventBus } from "./event-bus";
-import { EmbedDataType } from "./embed.types";
-import {
-  lazy,
-  Suspense,
-  useCallback,
-  useEffect,
-  useInsertionEffect,
-  useMemo,
-  useState,
-} from "react";
-import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { createEmbedRouter } from "./embed-router";
-import {
-  SDKEventEmitter,
-  SDKEventName,
-  SDKListenerEventName,
-} from "@genuin/components/lib/sdk-event-emitter";
-import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
+import type { EmbedDataType } from "./embed.types";
+import { createEmbedEventBus } from "./event-bus";
+import type { ActivePlayerType } from "./event-bus";
 import { useFollowStatus } from "./hooks";
 
 type EmbedProviderProps = {
@@ -32,11 +23,9 @@ type EmbedProviderProps = {
 
 // Lazy load the observability hook wrapper component
 const ObservabilityTracker = lazy(() =>
-  import(
-    "@genuin/components/lib/utils/observability/ObservabilityTracker.js"
-  ).then((module) => ({
+  import("@genuin/components/lib/utils/observability/ObservabilityTracker").then((module) => ({
     default: module.ObservabilityTracker,
-  })),
+  }))
 );
 
 /**
@@ -59,9 +48,7 @@ export function EmbedProvider({
 
   const isIHeartLayout = brandLayoutType === "iheart";
 
-  const urlParams = new URLSearchParams(
-    typeof window !== "undefined" ? window.location.search : "",
-  );
+  const urlParams = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
   const action = urlParams.get("action");
 
   // Initialize follow statuses from brand_context (only for iHeart layout)
@@ -81,10 +68,7 @@ export function EmbedProvider({
   const embedEventBus = useMemo(
     () =>
       createEmbedEventBus({
-        activePlayerType:
-          embedData.style === "expand_only" || embedData.expandOnLoad
-            ? "expand-view"
-            : "embed",
+        activePlayerType: embedData.style === "expand_only" || embedData.expandOnLoad ? "expand-view" : "embed",
         activeIndex: 0,
         previousActiveIndex: -1,
         sectionList: [],
@@ -93,10 +77,7 @@ export function EmbedProvider({
         skipTimeOffsetOnce: false,
         followStatuses: initialFollowStatuses,
         // Only disable swiper for iHeart layout with startVideoSlug and action=share
-        disableSwiper:
-          isIHeartLayout &&
-          !!stateEmbedData.startVideoSlug &&
-          action === "share",
+        disableSwiper: isIHeartLayout && !!stateEmbedData.startVideoSlug && action === "share",
         isCaughtUpEventFired: false,
         hasEmittedEmbedRendered: false,
         resourceTracking: {
@@ -114,13 +95,7 @@ export function EmbedProvider({
           },
         },
       }),
-    [
-      isIHeartLayout,
-      stateEmbedData.startVideoSlug,
-      action,
-      initialFollowStatuses,
-      embedData.expandOnLoad,
-    ],
+    [isIHeartLayout, stateEmbedData.startVideoSlug, action, initialFollowStatuses, embedData.expandOnLoad]
   );
 
   // Create a unique router for this provider instance
@@ -141,8 +116,7 @@ export function EmbedProvider({
       if (
         payload &&
         ((payload.embedId && payload.embedId === stateEmbedData.embed_id) ||
-          (payload.placementId &&
-            payload.placementId === stateEmbedData.placement_id)) &&
+          (payload.placementId && payload.placementId === stateEmbedData.placement_id)) &&
         payload.contextualParams
       ) {
         setStateEmbedData((prev) => ({
@@ -160,20 +134,14 @@ export function EmbedProvider({
       // Either by instanceId match (for child->parent communication)
       // OR by embedId/placementId match (for normal SDK operations)
       const isTargetedToThisInstance = payload.instanceId
-        ? instanceId === payload.instanceId ||
-          instanceId === payload.sourceInstanceId
+        ? instanceId === payload.instanceId || instanceId === payload.sourceInstanceId
         : (payload.embedId && payload.embedId === stateEmbedData.embed_id) ||
-          (payload.placementId &&
-            payload.placementId === stateEmbedData.placement_id);
+          (payload.placementId && payload.placementId === stateEmbedData.placement_id);
 
       if (payload && isTargetedToThisInstance && payload.startVideoSlug) {
         const sourceInstanceId =
-          typeof payload?.sourceInstanceId === "string"
-            ? payload.sourceInstanceId
-            : payload.instanceId;
-        const isNestedOctoUpdate =
-          typeof sourceInstanceId === "string" &&
-          sourceInstanceId.startsWith("octo-panel-");
+          typeof payload?.sourceInstanceId === "string" ? payload.sourceInstanceId : payload.instanceId;
+        const isNestedOctoUpdate = typeof sourceInstanceId === "string" && sourceInstanceId.startsWith("octo-panel-");
 
         if (embedEventBus.getContext().activePlayerType === "expand-view") {
           return;
@@ -184,9 +152,7 @@ export function EmbedProvider({
         setStateEmbedData((prev) => ({
           ...prev,
           startVideoSlug: payload.startVideoSlug,
-          autoUserInteractionToPerform: isNestedOctoUpdate
-            ? undefined
-            : payload.action,
+          autoUserInteractionToPerform: isNestedOctoUpdate ? undefined : payload.action,
           commentId: isNestedOctoUpdate ? undefined : payload.commentId,
         }));
       }
@@ -202,8 +168,7 @@ export function EmbedProvider({
       if (
         payload &&
         ((payload.embedId && payload.embedId === stateEmbedData.embed_id) ||
-          (payload.placementId &&
-            payload.placementId === stateEmbedData.placement_id)) &&
+          (payload.placementId && payload.placementId === stateEmbedData.placement_id)) &&
         instanceId === payload.instanceId
       ) {
         /*
@@ -224,41 +189,22 @@ export function EmbedProvider({
       if (
         payload &&
         ((payload.embedId && payload.embedId === stateEmbedData.embed_id) ||
-          (payload.placementId &&
-            payload.placementId === stateEmbedData.placement_id))
+          (payload.placementId && payload.placementId === stateEmbedData.placement_id))
       ) {
         changeActivePlayerType("embed");
       }
     };
 
-    SDKEventEmitter.on(
-      SDKListenerEventName.UPDATE_CONTEXTUAL_PARAMS,
-      handleUpdateContextualParams,
-    );
-    SDKEventEmitter.on(
-      SDKListenerEventName.UPDATE_START_VIDEO_SLUG,
-      handleUpdateStartVideoSlug,
-    );
+    SDKEventEmitter.on(SDKListenerEventName.UPDATE_CONTEXTUAL_PARAMS, handleUpdateContextualParams);
+    SDKEventEmitter.on(SDKListenerEventName.UPDATE_START_VIDEO_SLUG, handleUpdateStartVideoSlug);
     SDKEventEmitter.on(SDKListenerEventName.EXPAND_EMBED, handleExpandEmbed);
-    SDKEventEmitter.on(
-      SDKListenerEventName.COLLAPSE_EMBED,
-      handleCollapseEmbed,
-    );
+    SDKEventEmitter.on(SDKListenerEventName.COLLAPSE_EMBED, handleCollapseEmbed);
 
     return () => {
-      SDKEventEmitter.off(
-        SDKListenerEventName.UPDATE_CONTEXTUAL_PARAMS,
-        handleUpdateContextualParams,
-      );
-      SDKEventEmitter.off(
-        SDKListenerEventName.UPDATE_START_VIDEO_SLUG,
-        handleUpdateStartVideoSlug,
-      );
+      SDKEventEmitter.off(SDKListenerEventName.UPDATE_CONTEXTUAL_PARAMS, handleUpdateContextualParams);
+      SDKEventEmitter.off(SDKListenerEventName.UPDATE_START_VIDEO_SLUG, handleUpdateStartVideoSlug);
       SDKEventEmitter.off(SDKListenerEventName.EXPAND_EMBED, handleExpandEmbed);
-      SDKEventEmitter.off(
-        SDKListenerEventName.COLLAPSE_EMBED,
-        handleCollapseEmbed,
-      );
+      SDKEventEmitter.off(SDKListenerEventName.COLLAPSE_EMBED, handleCollapseEmbed);
     };
   }, [stateEmbedData, isExpandViewDisabled]);
 
@@ -275,21 +221,17 @@ export function EmbedProvider({
   const changeActivePlayerType = useCallback(
     (newActiveType: ActivePlayerType, activeIndex?: number) => {
       if (newActiveType === embedEventBus.getContext().activePlayerType) return;
-      embedEventBus.emit(
-        "activePlayerTypeChange",
-        undefined,
-        (currentContext) => ({
-          ...currentContext,
-          previousPlayerType: currentContext.activePlayerType,
-          activePlayerType: newActiveType,
-          activeIndex: activeIndex ?? currentContext.activeIndex,
-          skipTimeOffsetOnce: true,
-          previousActiveIndex: currentContext.activeIndex,
-          shouldTrackImpression: activeIndex !== currentContext.activeIndex,
-        }),
-      );
+      embedEventBus.emit("activePlayerTypeChange", undefined, (currentContext) => ({
+        ...currentContext,
+        previousPlayerType: currentContext.activePlayerType,
+        activePlayerType: newActiveType,
+        activeIndex: activeIndex ?? currentContext.activeIndex,
+        skipTimeOffsetOnce: true,
+        previousActiveIndex: currentContext.activeIndex,
+        shouldTrackImpression: activeIndex !== currentContext.activeIndex,
+      }));
     },
-    [embedEventBus],
+    [embedEventBus]
   );
 
   const changeActivePlayerTypeToExpandView = useCallback(() => {
@@ -309,12 +251,7 @@ export function EmbedProvider({
     ) {
       changeActivePlayerTypeToExpandView();
     }
-  }, [
-    stateEmbedData,
-    embedEventBus,
-    changeActivePlayerTypeToExpandView,
-    isExpandViewDisabled,
-  ]);
+  }, [stateEmbedData, embedEventBus, changeActivePlayerTypeToExpandView, isExpandViewDisabled]);
 
   const updateSectionList = useCallback(
     // Updates the section list in the embed context and emits a sectionListChange event
@@ -324,7 +261,7 @@ export function EmbedProvider({
         sectionList: newSectionList,
       }));
     },
-    [embedEventBus],
+    [embedEventBus]
   );
 
   const updateIsSectioned = useCallback(
@@ -335,22 +272,18 @@ export function EmbedProvider({
         isSectioned: sectioned,
       }));
     },
-    [embedEventBus],
+    [embedEventBus]
   );
 
   const updateSelectedSection = useCallback(
     // Updates the selected section in the embed context and emits a selectedSectionChange event
     (section: PostDetailsType["section"] | null) => {
-      embedEventBus.emit(
-        "selectedSectionChange",
-        undefined,
-        (currentContext) => ({
-          ...currentContext,
-          selectedSection: section,
-        }),
-      );
+      embedEventBus.emit("selectedSectionChange", undefined, (currentContext) => ({
+        ...currentContext,
+        selectedSection: section,
+      }));
     },
-    [embedEventBus],
+    [embedEventBus]
   );
 
   const changeActiveIndex = useCallback(
@@ -362,25 +295,15 @@ export function EmbedProvider({
         shouldTrackImpression: newIndex !== currentContext.activeIndex,
       }));
     },
-    [embedEventBus],
+    [embedEventBus]
   );
 
-  useEffect(() => {
-    if (stateEmbedData.startVideoSlug) {
-      changeActivePlayerType("expand-view");
-    }
-  }, [stateEmbedData, changeActivePlayerType]);
-
   const goBackToPreviousPlayerType = useCallback(() => {
-    embedEventBus.emit(
-      "activePlayerTypeChange",
-      undefined,
-      (currentContext) => ({
-        ...currentContext,
-        previousPlayerType: currentContext.activePlayerType,
-        activePlayerType: currentContext.previousPlayerType ?? "embed",
-      }),
-    );
+    embedEventBus.emit("activePlayerTypeChange", undefined, (currentContext) => ({
+      ...currentContext,
+      previousPlayerType: currentContext.activePlayerType,
+      activePlayerType: currentContext.previousPlayerType ?? "embed",
+    }));
   }, [embedEventBus]);
 
   const markAutoInteractionActionDone = useCallback(() => {
@@ -395,21 +318,16 @@ export function EmbedProvider({
   // and permanently enable swiper for all future opens
   // This feature is only enabled for iHeart brand layout
   useEffect(() => {
-    if (!isIHeartLayout || !stateEmbedData.startVideoSlug || action !== "share")
-      return;
+    if (!isIHeartLayout || !stateEmbedData.startVideoSlug || action !== "share") return;
 
     function handleActivePlayerTypeChange() {
       const context = embedEventBus.getContext();
       // If user exits expand view and swiper is currently disabled, enable it permanently
       if (context.activePlayerType !== "expand-view" && context.disableSwiper) {
-        embedEventBus.emit(
-          "disableSwiperChange",
-          undefined,
-          (currentContext) => ({
-            ...currentContext,
-            disableSwiper: false,
-          }),
-        );
+        embedEventBus.emit("disableSwiperChange", undefined, (currentContext) => ({
+          ...currentContext,
+          disableSwiper: false,
+        }));
       }
     }
 
@@ -431,14 +349,10 @@ export function EmbedProvider({
 
         // Emit event if container in-view status changed
         if (inView !== currentContext.containerInView) {
-          embedEventBus.emit(
-            "containerInViewChange",
-            undefined,
-            (currentContext) => ({
-              ...currentContext,
-              containerInView: inView,
-            }),
-          );
+          embedEventBus.emit("containerInViewChange", undefined, (currentContext) => ({
+            ...currentContext,
+            containerInView: inView,
+          }));
         }
 
         // Handle floating view behavior only if enabled
@@ -479,14 +393,10 @@ export function EmbedProvider({
         markAutoInteractionActionDone,
         getFollowStatus: followStatusMethods.getFollowStatus,
         updateFollowStatus: followStatusMethods.updateFollowStatus,
-      }}
-    >
+      }}>
       {trackObservability && (
         <Suspense fallback={null}>
-          <ObservabilityTracker
-            sdkInitTime={sdkInitTime}
-            embedEventBus={embedEventBus}
-          />
+          <ObservabilityTracker sdkInitTime={sdkInitTime} embedEventBus={embedEventBus} />
         </Suspense>
       )}
       {children}

@@ -1,17 +1,19 @@
 "use client";
-import { useState, useMemo, ComponentType, useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { usePaginatedPosts } from "@genuin/components/react-query/api/posts/paginated-posts";
-import { useVideoStatistics } from "@genuin/components/react-query/api/posts/video-statistics";
-import { useDeleteDraftsMutation } from "@genuin/components/react-query/api/posts/delete-drafts";
-import { useDeletePostsMutation } from "@genuin/components/react-query/api/posts/delete-posts";
-import { DataTable } from "../../../data-table";
-import { NoDataState, DeleteModal, type DeleteType } from "../shared";
-import { SearchInput } from "@genuin/components/molecules/search-input";
-
-import type { ColumnDef, RowSelectionState } from "@tanstack/react-table";
 import { Button } from "@genuin/ui/components/button";
 import { DeleteIcon } from "@genuin/ui/icons";
+import { useQueryClient } from "@tanstack/react-query";
+import type { ColumnDef, RowSelectionState } from "@tanstack/react-table";
+import type { ComponentType } from "react";
+import { useState, useMemo, useEffect } from "react";
+
+import { SearchInput } from "@genuin/components/molecules/search-input";
+import { useDeleteDraftsMutation } from "@genuin/components/react-query/api/posts/delete-drafts";
+import { useDeletePostsMutation } from "@genuin/components/react-query/api/posts/delete-posts";
+import { usePaginatedPosts } from "@genuin/components/react-query/api/posts/paginated-posts";
+import { useVideoStatistics } from "@genuin/components/react-query/api/posts/video-statistics";
+
+import { DataTable } from "../../../data-table";
+import { NoDataState, DeleteModal, type DeleteType } from "../shared";
 
 interface VideosTableBaseProps {
   status: number;
@@ -68,12 +70,7 @@ export default function VideosTableBase({
   const queryString = debouncedSearchQuery.trim() || undefined;
 
   // Extract sort direction for API
-  const sortDir =
-    sorting.length > 0 && sorting[0]?.id === "created_at"
-      ? sorting[0]?.desc
-        ? "desc"
-        : "asc"
-      : "desc";
+  const sortDir = sorting.length > 0 && sorting[0]?.id === "created_at" ? (sorting[0]?.desc ? "desc" : "asc") : "desc";
 
   const {
     data,
@@ -237,8 +234,7 @@ export default function VideosTableBase({
               onClick={handleBulkAction}
               theme="secondary"
               size="md"
-              className="gencl:flex gencl:items-center gencl:gap-2 gencl:flex-shrink-0"
-            >
+              className="gencl:flex gencl:items-center gencl:gap-2 gencl:flex-shrink-0">
               <DeleteIcon theme={"light"} size={"lg"} />
               Delete
             </Button>
@@ -266,11 +262,7 @@ export default function VideosTableBase({
       ) : (
         <NoDataState
           title={debouncedSearchQuery ? "No results found" : noDataTitle}
-          description={
-            debouncedSearchQuery
-              ? `No posts found matching "${debouncedSearchQuery}"`
-              : noDataDescription
-          }
+          description={debouncedSearchQuery ? `No posts found matching "${debouncedSearchQuery}"` : noDataDescription}
           buttonLabel="Create Post"
           // onButtonClick={onButtonClick}
         />
@@ -284,9 +276,7 @@ export default function VideosTableBase({
           isOpen={isBulkDeleteModalOpen}
           onOpenChange={setIsBulkDeleteModalOpen}
           onDelete={handleBulkDeleteConfirm}
-          isLoading={
-            deleteDraftsMutation.isPending || deletePostsMutation.isPending
-          }
+          isLoading={deleteDraftsMutation.isPending || deletePostsMutation.isPending}
         />
       )}
     </div>

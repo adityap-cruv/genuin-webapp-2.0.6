@@ -1,27 +1,28 @@
-import { axiosInstance } from '@/lib/api/instance'
-import { LOGIN_SOURCE } from '@/lib/constants'
-import { useLocalStorage } from '@/lib/stores/local-storage'
-import { encryptText } from '@/lib/utils'
-import { getQueryKeyForksCbStatus } from '@/lib/utils/react-query/keys'
-import { useQuery } from '@tanstack/react-query'
-import axios from 'axios'
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+
+import { axiosInstance } from "@/lib/api/instance";
+import { LOGIN_SOURCE } from "@/lib/constants";
+import { useLocalStorage } from "@/lib/stores/local-storage";
+import { encryptText } from "@/lib/utils";
+import { getQueryKeyForksCbStatus } from "@/lib/utils/react-query/keys";
 
 type SendOtpProps = {
-  phoneNumber: string
-  email: string
-}
-export type AuthActionType = 'JOIN_COMMUNITY' | 'SUBSCRIBE' | 'KS_CB_REQUEST' | 'DELETE_ACCOUNT'
+  phoneNumber: string;
+  email: string;
+};
+export type AuthActionType = "JOIN_COMMUNITY" | "SUBSCRIBE" | "KS_CB_REQUEST" | "DELETE_ACCOUNT";
 
-let preAuthSessionId: string | null = null
-let resDeviceId: string | null = null
+let preAuthSessionId: string | null = null;
+let resDeviceId: string | null = null;
 
-function parseUserData(data: any, accessToken: string, refreshToken: string) {
+function parseUserData(data: any, accessToken: string, refreshToken: string, autoLoginToken?: string) {
   return {
     isAvatar: data.is_avatar,
-    userId: data.user_id,
+    id: data.user_id,
     phoneNumber: data.phone,
     nickname: data.nickname,
-    profileImage: data.profile_image,
+    image: data.profile_image,
     email: data.email,
     bio: data.bio,
     name: data.name,
@@ -33,50 +34,51 @@ function parseUserData(data: any, accessToken: string, refreshToken: string) {
     hasTopics: data.onboarding_topics,
     brandGuidelines: data.brand_guidelines,
     refreshToken,
+    autoLoginToken,
     birth: data.birthday,
     usernameSet: !data.is_username_generated,
-  }
+  };
 }
 
 export async function sendOtp({ email, phoneNumber, isUpdate }: Partial<SendOtpProps> & { isUpdate?: boolean }) {
-  const deviceId = useLocalStorage.getState().deviceId
+  const deviceId = useLocalStorage.getState().deviceId;
   return await axiosInstance
-    .post('/api/v4/auth/signinup/code', {
-      phoneNumber: phoneNumber ? await encryptText(phoneNumber, false) : undefined,
-      email: email ? await encryptText(email, false) : undefined,
-      encrypted_device_id: await encryptText(deviceId, true),
+    .post("/api/v4/auth/signinup/code", {
+      phoneNumber: phoneNumber ? encryptText(phoneNumber, false) : undefined,
+      email: email ? encryptText(email, false) : undefined,
+      encrypted_device_id: encryptText(deviceId, true),
       is_update_flow: isUpdate,
     })
     .then((res) => {
       // To send in consume otp.
-      preAuthSessionId = res.data.data.preAuthSessionId
+      preAuthSessionId = res.data.data.preAuthSessionId;
       // To send in consume otp
-      resDeviceId = res.data.data.deviceId
-      return { codeSent: true, retryTime: res.data.data.retryTime, message: undefined }
+      resDeviceId = res.data.data.deviceId;
+      return { codeSent: true, retryTime: res.data.data.retryTime, message: undefined };
       // return true
     })
     .catch((e) => {
-      let message = 'Something went wrong. Please try again!'
-      const retryTime = Number(e.response.data.data?.retryTime)
-      if (e.response.data.code === '5262') {
-        message = 'This number is linked to another account. Please use a different one.'
+      let message = "Something went wrong. Please try again!";
+      const retryTime = Number(e.response.data.data?.retryTime);
+      if (e.response.data.code === "5262") {
+        message = "This number is linked to another account. Please use a different one.";
       }
-      if (e.response.data.code === '5263') {
+      if (e.response.data.code === "5263") {
         message = isUpdate
-          ? 'Unable to send the code. Please use another phone number.'
-          : 'Unable to send the code. Please use another phone number or email to log in.'
-      } else if (e.response.data.code === '5205') {
-        message = 'Email already exists. Please try another one.'
+          ? "Unable to send the code. Please use another phone number."
+          : "Unable to send the code. Please use another phone number or email to log in.";
+      } else if (e.response.data.code === "5205") {
+        message = "Email already exists. Please try another one.";
       } else if (!isNaN(retryTime)) {
         if (retryTime < 1) {
-          const minutes = Math.floor(retryTime / 60)
+          const minutes = Math.floor(retryTime / 60);
           if (minutes >= 1) {
-            const leftSeconds = retryTime % 60
+            const leftSeconds = retryTime % 60;
             message = `Please try again after ${minutes < 10 ? `0${minutes}` : minutes}:${
               leftSeconds < 10 ? `0${leftSeconds}` : leftSeconds
-            } minutes!`
+            } minutes!`;
           } else {
-            message = `Please try again after 00:${retryTime < 10 ? `0${retryTime}` : retryTime}!`
+            message = `Please try again after 00:${retryTime < 10 ? `0${retryTime}` : retryTime}!`;
           }
         }
       }
@@ -85,8 +87,8 @@ export async function sendOtp({ email, phoneNumber, isUpdate }: Partial<SendOtpP
         codeSent: false,
         retryTime,
         message,
-      }
-    })
+      };
+    });
 }
 
 /**
@@ -94,33 +96,33 @@ export async function sendOtp({ email, phoneNumber, isUpdate }: Partial<SendOtpP
  * @returns
  */
 export async function consumeOtp({ email, phoneNumber, code }: Partial<SendOtpProps> & { code: string }) {
-  const deviceId = useLocalStorage.getState().deviceId
+  const deviceId = useLocalStorage.getState().deviceId;
   return await axiosInstance
-    .post('/api/v4/auth/signinup/code/consume', {
+    .post("/api/v4/auth/signinup/code/consume", {
       userInputCode: code,
-      phoneNumber: phoneNumber ? await encryptText(phoneNumber, false) : undefined,
-      email: email ? await encryptText(email, false) : undefined,
+      phoneNumber: phoneNumber ? encryptText(phoneNumber, false) : undefined,
+      email: email ? encryptText(email, false) : undefined,
       login_source: LOGIN_SOURCE.web,
       // login source is web according to backend.
       device_type: 3,
-      encrypted_device_id: await encryptText(deviceId, true),
+      encrypted_device_id: encryptText(deviceId, true),
       preAuthSessionId,
       deviceId: resDeviceId,
     })
     .then((res) => {
-      const accessToken = res.headers['gn-access-token']
-      const refreshToken = res.headers['gn-refresh-token']
-      const data = res.data.data
-      let user
+      const accessToken = res.headers["gn-access-token"];
+      const refreshToken = res.headers["gn-refresh-token"];
+      const data = res.data.data;
+      let user;
       if (data) {
-        user = parseUserData(data, accessToken, refreshToken)
+        user = parseUserData(data, accessToken, refreshToken);
       }
-      return { otpVerified: true, user }
+      return { otpVerified: true, user };
     })
-    .catch((e) => {
+    .catch((_e) => {
       // console.log('e::', e)
-      return { otpVerified: false, user: null }
-    })
+      return { otpVerified: false, user: null };
+    });
 }
 
 /**
@@ -129,137 +131,137 @@ export async function consumeOtp({ email, phoneNumber, code }: Partial<SendOtpPr
  */
 export async function updateEmailOrPhone(code: string) {
   return await axiosInstance
-    .post('/api/v4/update_email_phone', {
+    .post("/api/v4/update_email_phone", {
       userInputCode: code,
       deviceId: resDeviceId,
-      encrypted_device_id: await encryptText(useLocalStorage.getState().deviceId, true),
+      encrypted_device_id: encryptText(useLocalStorage.getState().deviceId, true),
       preAuthSessionId,
     })
-    .then((res) => {
-      return { verified: true }
+    .then((_res) => {
+      return { verified: true };
     })
     .catch((_) => {
-      return { verified: false }
-    })
+      return { verified: false };
+    });
 }
 
 export async function acceptBrandGuidelines() {
   return await axiosInstance
-    .post('/api/v4/accept_brand_guidelines')
-    .then((res) => {
-      return true
+    .post("/api/v4/accept_brand_guidelines")
+    .then((_res) => {
+      return true;
     })
-    .catch((e) => {
-      return false
-    })
+    .catch((_e) => {
+      return false;
+    });
 }
 
 export async function uploadProfileImage(file: File) {
   try {
-    const getUrlResponse = await axiosInstance.post('/api/v3/users/video/upload/create_upload_url', {
+    const getUrlResponse = await axiosInstance.post("/api/v3/users/video/upload/create_upload_url", {
       contentType: file.type,
       path: `uploads/profile_images/${file.name}`,
-    })
-    const uploadUrl = getUrlResponse.data.data.uploadURL
+    });
+    const uploadUrl = getUrlResponse.data.data.uploadURL;
     const uploadResponse = await axios.put(uploadUrl, file, {
       headers: {
-        'Content-Type': file.type,
+        "Content-Type": file.type,
       },
-    })
-    return uploadResponse.status === 200
+    });
+    return uploadResponse.status === 200;
   } catch (e) {
-    console.log('::ERROR IN UPLOAD API::', e)
-    return false
+    console.log("::ERROR IN UPLOAD API::", e);
+    return false;
   }
 }
 
 export async function validateUsername(nickname: string) {
   return await axiosInstance
-    .post('/api/v3/users/validate_nickname', { nickname })
+    .post("/api/v3/users/validate_nickname", { nickname })
     .then((res) => {
-      if (res.data.code === 200) return true
-      else if (res.data.code === '5073') return false
+      if (res.data.code === 200) return true;
+      else if (res.data.code === "5073") return false;
     })
     .catch((e) => {
-      console.log('::ERROR in validata username::', e)
-      return false
-    })
+      console.log("::ERROR in validata username::", e);
+      return false;
+    });
 }
 
 type UserType = {
-  name?: string | null
-  bio?: string | null
-  nickname: string
-  is_avatar: boolean
-  profile_image: string
-  birthday: string
-  linkedin_id?: string | null
-  insta_id?: string | null
-  twitter_id?: string | null
-  tiktok_id?: string | null
-  platform_guidelines: boolean
-  community_walkthrough: boolean
-  password: string
-}
+  name?: string | null;
+  bio?: string | null;
+  nickname: string;
+  is_avatar: boolean;
+  profile_image: string;
+  birthday: string;
+  linkedin_id?: string | null;
+  insta_id?: string | null;
+  twitter_id?: string | null;
+  tiktok_id?: string | null;
+  platform_guidelines: boolean;
+  community_walkthrough: boolean;
+  password: string;
+};
 
 export async function updateUser(user: Partial<UserType>): Promise<{ status: boolean; user: any }> {
   return await axiosInstance
-    .patch('/api/v3/users/update_user_profile', { user })
+    .patch("/api/v3/users/update_user_profile", { user })
     .then((res) => {
-      return { status: res.status === 200, user: res.data.data }
+      return { status: res.status === 200, user: res.data.data };
     })
     .catch((e) => {
-      console.log('::ERROR in updata user profile::', e)
-      throw new Error('Something went wrong')
-    })
+      console.log("::ERROR in updata user profile::", e);
+      throw new Error("Something went wrong");
+    });
 }
 
 export async function deleteUserAccount(): Promise<{ code: number; data: any }> {
   return await axiosInstance
-    .delete('/api/v3/users/delete')
+    .delete("/api/v3/users/delete")
     .then((res) => {
-      return { code: res.data.code, data: res.data.data }
+      return { code: res.data.code, data: res.data.data };
     })
     .catch((e) => {
-      return { code: Number(e?.response?.data.code), data: e?.response?.data.data }
-    })
+      return { code: Number(e?.response?.data.code), data: e?.response?.data.data };
+    });
 }
 
 export async function getBrandGuidelines({
   brandId,
   idDefault,
 }: {
-  brandId: string | undefined
-  idDefault: boolean
+  brandId: string | undefined;
+  idDefault: boolean;
 }): Promise<{ code: number; data: any }> {
   return await axiosInstance
-    .get('/api/v3/brand/guidelines', {
+    .get("/api/v3/brand/guidelines", {
       params: {
         brand_id: brandId,
         is_default: idDefault,
       },
     })
     .then((res) => {
-      return { code: res.data.code, data: res.data.data }
+      return { code: res.data.code, data: res.data.data };
     })
     .catch((e) => {
-      console.log('::error in guidelines api::', e.response.data.code)
-      return { code: Number(e.response.data.code), data: e.response.data.data }
-    })
+      console.log("::error in guidelines api::", e.response.data.code);
+      return { code: Number(e.response.data.code), data: e.response.data.data };
+    });
 }
 
 export async function ksCbRequest(): Promise<{ code: number; data: any }> {
   return await axiosInstance
-    .post('/api/v3/users/ks_cb_request', {
-      source: 'app_web',
+    .post("/api/v3/users/ks_cb_request", {
+      source: "app_web",
     })
     .then((res) => {
-      return { code: res.data.code, data: res.data.data }
+      return { code: res.data.code, data: res.data.data };
     })
     .catch((e) => {
-      console.log('::error in ks_cb_request api::', e.response.data.code)
-      return { code: Number(e.response.data.code), data: e.response.data.data }
-    })
+      console.log("::error in ks_cb_request api::", e.response.data.code);
+      return { code: Number(e.response.data.code), data: e.response.data.data };
+    });
 }
 
 /**
@@ -272,15 +274,15 @@ export async function ksCbRequest(): Promise<{ code: number; data: any }> {
  */
 export async function fetchKsCbRequestStatus(): Promise<{ status: number }> {
   return await axiosInstance
-    .get('/api/v3/brand/cb_request_status')
+    .get("/api/v3/brand/cb_request_status")
     .then((res) => {
-      return { status: res.data.data.cb_request_status }
+      return { status: res.data.data.cb_request_status };
     })
     .catch((e) => {
       return {
         status: 1,
-      }
-    })
+      };
+    });
 }
 
 export function useKsCbStatus() {
@@ -289,23 +291,23 @@ export function useKsCbStatus() {
     queryFn: fetchKsCbRequestStatus,
     staleTime: 1000 * 60 * 5,
     retry: 2,
-  })
+  });
 }
 
 export async function miniProfile(verifiedKsToken: boolean): Promise<{ code: number; data: any }> {
   return await axiosInstance
-    .get('/api/v3/users/mini_profile', {
+    .get("/api/v3/users/mini_profile", {
       params: {
         verified_ks_token: verifiedKsToken,
       },
     })
     .then((res) => {
-      return { code: res.data.code, data: res.data.data }
+      return { code: res.data.code, data: res.data.data };
     })
     .catch((e) => {
-      console.log('::error in mini_profile api::', e.response.data.code)
-      return { code: Number(e.response.data.code), data: e.response.data.data }
-    })
+      console.log("::error in mini_profile api::", e.response.data.code);
+      return { code: Number(e.response.data.code), data: e.response.data.data };
+    });
 }
 
 export async function saveVisitor(
@@ -316,8 +318,8 @@ export async function saveVisitor(
   brandId: string | undefined
 ) {
   await axiosInstance
-    .post('/api/v3/guestusers/visit', {
-      device_id: await encryptText(visitorId || '', true),
+    .post("/api/v3/guestusers/visit", {
+      device_id: encryptText(visitorId || "", true),
       brand_id: brandId,
       meta_data: {
         os_type: os,
@@ -326,23 +328,23 @@ export async function saveVisitor(
       },
     })
     .then((res) => {
-      return true
+      return true;
       // if (res.data.code === 200) return true
       // else if (res.data.code === '5073') return false
     })
     .catch((e) => {
-      return false
-    })
+      return false;
+    });
 }
 
 export async function getUserDataForSSO(
   code: string,
   provider: string
 ): Promise<{ user: ReturnType<typeof parseUserData> | undefined }> {
-  const deviceId = useLocalStorage.getState().deviceId
+  const deviceId = useLocalStorage.getState().deviceId;
   return await axiosInstance
-    .post('/api/v4/auth/signinup', {
-      encrypted_device_id: await encryptText(deviceId, true),
+    .post("/api/v4/auth/signinup", {
+      encrypted_device_id: encryptText(deviceId, true),
       login_source: LOGIN_SOURCE.web,
       // login source is web according to backend.
       device_type: 3,
@@ -355,50 +357,65 @@ export async function getUserDataForSSO(
       },
     })
     .then((res) => {
-      const accessToken = res.headers['gn-access-token']
-      const refreshToken = res.headers['gn-refresh-token']
-      const data = res.data.data
-      const user = data ? parseUserData(data, accessToken, refreshToken) : undefined
-      return { user }
+      const accessToken = res.headers["gn-access-token"];
+      const refreshToken = res.headers["gn-refresh-token"];
+      const data = res.data.data;
+      const user = data ? parseUserData(data, accessToken, refreshToken) : undefined;
+      return { user };
     })
     .catch((e) => {
-      throw new Error('Something went wrong, please try again later')
-    })
+      throw new Error("Something went wrong, please try again later");
+    });
 }
 
-export async function ssoAutoLogin(token: string, brandId: string) {
-  const deviceId = useLocalStorage.getState().deviceId
+type OtherParams = {
+  profile_image?: string;
+  name?: string;
+  nickname?: string;
+  email?: string;
+  mobile?: string;
+  brand_user_identity?: string;
+};
+
+export async function ssoAutoLogin(
+  token: string,
+  brandId: string,
+  login_source: number = LOGIN_SOURCE.web_sdk,
+  otherParams?: OtherParams
+) {
+  const deviceId = useLocalStorage.getState().deviceId;
   return await axiosInstance
-    .post('/api/v4/sso/autologin', {
-      encrypted_device_id: await encryptText(deviceId, true),
+    .post("/api/v4/sso/autologin", {
+      encrypted_device_id: encryptText(deviceId, true),
       token,
       brand_id: brandId,
       device_type: 3,
-      login_source: LOGIN_SOURCE.web_sdk,
+      login_source,
+      profile_image: otherParams?.profile_image,
     })
     .then((res) => {
       if (res.data.code === 200) {
-        return parseUserData(res.data.data, res.headers['gn-access-token'], res.headers['gn-refresh-token'])
+        return parseUserData(res.data.data, res.headers["gn-access-token"], res.headers["gn-refresh-token"]);
       }
-      return null
+      return null;
     })
     .catch((e) => {
-      return null
-    })
+      return null;
+    });
 }
 
 export async function getUrlToRedirectForSSO(thirdPartyId: string) {
   return await axiosInstance
-    .get('/api/v4/auth/authorisationurl', {
+    .get("/api/v4/auth/authorisationurl", {
       params: {
         thirdPartyId,
         redirectURIOnProviderDashboard: `${process.env.NEXT_PUBLIC_REDIRECT_URI}`,
       },
     })
     .then((res) => {
-      return res.data.data.url
+      return res.data.data.url;
     })
     .catch((e) => {
-      throw new Error('Something went wrong, please try again later')
-    })
+      throw new Error("Something went wrong, please try again later");
+    });
 }

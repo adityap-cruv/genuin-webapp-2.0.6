@@ -1,7 +1,8 @@
 import { CommentIcon, PlayIcon, SparkIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/utils";
 import { abbreviateNumber } from "@genuin/ui/utils";
-import { cva, VariantProps } from "class-variance-authority";
+import type { VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 import type { ComponentProps, ReactNode } from "react";
 
 type StatsKeyType =
@@ -39,9 +40,7 @@ type StatsPropsType = {
    * - A number representing the statistic value.
    * - An object with `value`, `label`, and an optional `icon`.
    */
-  stats: Partial<
-    Record<StatsKeyType, { value: number; icon?: ReactNode } | number>
-  >;
+  stats: Partial<Record<StatsKeyType, { value: number; icon?: ReactNode } | number>>;
   /**
    * If value should be displayed before the label.
    */
@@ -65,28 +64,11 @@ type StatsPropsType = {
 } & ComponentProps<"div"> &
   VariantProps<typeof statsVariant>;
 
-const Icons = (
-  theme: VariantProps<typeof statsVariant>["theme"]
-): Partial<Record<StatsKeyType, ReactNode>> => {
+const Icons = (theme: VariantProps<typeof statsVariant>["theme"]): Partial<Record<StatsKeyType, ReactNode>> => {
   return {
-    Views: (
-      <PlayIcon
-        theme={theme === "secondary" ? "secondary" : "light"}
-        size="md"
-      />
-    ),
-    Comments: (
-      <CommentIcon
-        theme={theme === "secondary" ? "secondary" : "light"}
-        size="md"
-      />
-    ),
-    Reactions: (
-      <SparkIcon
-        theme={theme === "secondary" ? "secondary" : "light"}
-        size="md"
-      />
-    ),
+    Views: <PlayIcon theme={theme === "secondary" ? "secondary" : "light"} size="md" />,
+    Comments: <CommentIcon theme={theme === "secondary" ? "secondary" : "light"} size="md" />,
+    Reactions: <SparkIcon theme={theme === "secondary" ? "secondary" : "light"} size="md" />,
   };
 };
 
@@ -111,14 +93,7 @@ export function Stats({
 
   if (variant === "descriptive") {
     return (
-      <div
-        className={cn(
-          "gencl:space-y-2",
-          statsVariant({ variant, theme }),
-          className
-        )}
-        {...restProps}
-      >
+      <div className={cn("gencl:space-y-2", statsVariant({ variant, theme }), className)} {...restProps}>
         {statEntries.map(([key, value]) => {
           const isObjectWithValue = typeof value === "object" && value !== null;
           const val = isObjectWithValue ? value.value : value;
@@ -126,10 +101,7 @@ export function Stats({
           const icon = Icons("secondary")[key as StatsKeyType];
 
           return (
-            <div
-              key={key}
-              className="gencl:flex gencl:items-center gencl:gap-2"
-            >
+            <div key={key} className="gencl:flex gencl:items-center gencl:gap-2">
               {icon && icon}
               <p className="gencl:text-body-1-medium">
                 {abbreviateNumber(val)}&nbsp;
@@ -150,12 +122,7 @@ export function Stats({
         const icon = isObjectWithValue ? value.icon : undefined;
 
         const valueElement = (
-          <span
-            className={cn(
-              "gencl:text-black gencl:text-body-1-semi-bold",
-              valueClassName
-            )}
-          >
+          <span className={cn("gencl:text-black gencl:text-body-1-semi-bold", valueClassName)}>
             {abbreviateNumber(val)}
           </span>
         );
@@ -163,19 +130,11 @@ export function Stats({
         const labelElement = icon ? (
           <>{icon}</>
         ) : (
-          <span className={cn("gencl:text-body-1-medium", labelClassName)}>
-            {label}
-          </span>
+          <span className={cn("gencl:text-body-1-medium", labelClassName)}>{label}</span>
         );
 
         return (
-          <div
-            key={key}
-            className={cn(
-              "gencl:flex gencl:gap-2 gencl:items-center",
-              pairClassName
-            )}
-          >
+          <div key={key} className={cn("gencl:flex gencl:gap-2 gencl:items-center", pairClassName)}>
             {valueFirst ? (
               <>
                 {valueElement}

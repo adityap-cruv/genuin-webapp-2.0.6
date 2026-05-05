@@ -1,13 +1,9 @@
 "use client";
 
-import React, {
-  Component,
-  ErrorInfo,
-  PropsWithChildren,
-  ReactNode,
-} from "react";
 import { Button } from "@genuin/ui/button";
 import { RefreshCcw } from "lucide-react";
+import type { ErrorInfo, PropsWithChildren, ReactNode } from "react";
+import React, { Component } from "react";
 
 interface ErrorBoundaryProps extends PropsWithChildren {
   /**
@@ -44,10 +40,7 @@ interface ErrorBoundaryState {
  * </ErrorBoundary>
  * ```
  */
-export class ErrorBoundary extends Component<
-  ErrorBoundaryProps,
-  ErrorBoundaryState
-> {
+export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false, error: null };
@@ -82,9 +75,7 @@ export class ErrorBoundary extends Component<
       // Otherwise render the default fallback UI
       return (
         <div className="gencl:flex gencl:min-h-[200px] gencl:w-full gencl:flex-col gencl:items-center gencl:justify-center gencl:rounded-md gencl:border gencl:border-red-200 gencl:bg-red-50 gencl:p-6 gencl:text-center">
-          <h2 className="gencl:mb-2 gencl:text-lg gencl:font-semibold gencl:text-red-800">
-            Something went wrong
-          </h2>
+          <h2 className="gencl:mb-2 gencl:text-lg gencl:font-semibold gencl:text-red-800">Something went wrong</h2>
           <p className="gencl:mb-4 gencl:text-sm gencl:text-red-600">
             An error occurred while rendering this component
           </p>
@@ -92,8 +83,7 @@ export class ErrorBoundary extends Component<
             theme="outline"
             size="sm"
             onClick={this.resetErrorBoundary}
-            className="gencl:flex gencl:items-center gencl:gap-2"
-          >
+            className="gencl:flex gencl:items-center gencl:gap-2">
             <RefreshCcw className="gencl:h-4 gencl:w-4" /> Try again
           </Button>
         </div>

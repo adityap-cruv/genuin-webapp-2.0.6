@@ -1,24 +1,30 @@
 "use client";
-import { useAuthContext } from "@genuin/components/context/auth";
-import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { Button as PrimitiveButton } from "@genuin/ui/button";
 import { Toast } from "@genuin/ui/components/toaster";
-const AuthenticationModal = React.lazy(() =>
-  import("../../organisms/authentication-modal/index.js").then((m) => ({
-    default: m.AuthenticationModal,
-  })),
-);
-import { useVideoReationMutation } from "@genuin/components/react-query/api/feed/spark";
-import React, { ComponentProps, useCallback, useEffect, useMemo } from "react";
-import { DynamicReactionIcon } from "./dynamic-reaction-icon";
-import { useBaseContext } from "@genuin/components/context/base";
 import { cn } from "@genuin/ui/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
-import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
-import { Link } from "../link";
-import { useAnalytics, VideoTypes } from "@genuin/components/context/analytics";
-import { ActionPopover } from "../actions/action-popover";
+import React, { lazy, useCallback, useEffect, useMemo } from "react";
+import type { ComponentProps } from "react";
+
+import type { VideoTypes } from "@genuin/components/context/analytics";
+import { useAnalytics } from "@genuin/components/context/analytics";
+import { useAuthContext } from "@genuin/components/context/auth";
+import { useBaseContext } from "@genuin/components/context/base";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
+import { useVideoReationMutation } from "@genuin/components/react-query/api/feed/spark";
+
+import { ActionPopover } from "../actions/action-popover";
+import { Link } from "../link";
+
+import { DynamicReactionIcon } from "./dynamic-reaction-icon";
+
+const AuthenticationModal = lazy(() =>
+  import("@genuin/components/organisms/authentication-modal").then((m) => ({
+    default: m.AuthenticationModal,
+  }))
+);
 
 const reactionButtonVariant = cva("", {
   variants: {
@@ -90,7 +96,7 @@ export const ReactionButton = React.memo(function ReactionButton({
           ...(contentType === "COMMENT" && { commentId: contentId }),
         },
       }),
-    [contentType, videoSlug],
+    [contentType, videoSlug]
   );
 
   const clickHandler = handleAuthCallback({
@@ -134,9 +140,8 @@ export const ReactionButton = React.memo(function ReactionButton({
         "gencl:p-0 gencl:text-center gencl:text-body-2-medium",
         reactionButtonVariant({
           reactionButtonTheme,
-        }),
-      )}
-    >
+        })
+      )}>
       {reactionCount}
     </p>
   );
@@ -151,20 +156,14 @@ export const ReactionButton = React.memo(function ReactionButton({
 
     return (
       <ActionPopover
-        content={
-          contentType === "COMMENT"
-            ? "to like this comment."
-            : "to like this Short."
-        }
-        children={
-          <div>
-            {popoverButton}
-            {showReactionCount && count}
-          </div>
-        }
+        content={contentType === "COMMENT" ? "to like this comment." : "to like this Short."}
         params={returnQueryParams}
-        onPopOverClick={clickHandler}
-      />
+        onPopOverClick={clickHandler}>
+        <div>
+          {popoverButton}
+          {showReactionCount && count}
+        </div>
+      </ActionPopover>
     );
   }
 
@@ -191,8 +190,7 @@ export const ReactionButton = React.memo(function ReactionButton({
               },
             },
           }}
-          asChild
-        >
+          asChild>
           <div>
             {button}
             {showReactionCount && count}
@@ -254,12 +252,12 @@ function Button({
           event_record_screen: "feed",
           event_target_screen: "none",
           is_reacted: isReacted,
-        },
+        }
       );
     },
-    onError: (error) => {
+    onError: (_err) => {
       // Revert the optimistic update on error
-      onReactionStateChange?.(isReacted);
+      onReactionStateChange?.(!isReacted);
       Toast.Error({
         message: "Failed to react to video. Please try again later.",
       });
@@ -285,43 +283,31 @@ function Button({
       type: contentType,
       reaction: newReactionState,
     });
-  }, [
-    reactToVideo,
-    contentId,
-    contentType,
-    isReacted,
-    user,
-    isPending,
-    onReactionStateChange,
-  ]);
+  }, [reactToVideo, contentId, contentType, isReacted, user, isPending, onReactionStateChange]);
 
   const handleOnClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
       onClick?.(e);
+      if (isPending) return;
       performReaction();
     },
-    [onClick, performReaction],
+    [onClick, performReaction, isPending]
   );
 
   useEffect(() => {
     const action = embedContext?.embedData.autoUserInteractionToPerform;
     const startVideoSlug = embedContext?.embedData.startVideoSlug;
 
-    const autoInteractionActionDone =
-      embedContext?.embedEventBus.getContext().autoInteractionActionDone;
+    const autoInteractionActionDone = embedContext?.embedEventBus.getContext().autoInteractionActionDone;
 
     // For iHeart brand, compare contentId instead of videoSlug
     const shouldAutoSparkForVideo =
       action === "spark" &&
-      (brandLayoutType === "iheart"
-        ? startVideoSlug === contentId
-        : startVideoSlug === videoSlug) &&
+      (brandLayoutType === "iheart" ? startVideoSlug === contentId : startVideoSlug === videoSlug) &&
       contentType === "VIDEO";
 
     const shouldAutoSparkForComment =
-      action === "comment-spark" &&
-      embedContext?.embedData.commentId === contentId &&
-      contentType === "COMMENT";
+      action === "comment-spark" && embedContext?.embedData.commentId === contentId && contentType === "COMMENT";
 
     if (
       !embedContext ||
@@ -344,17 +330,27 @@ function Button({
     if (shouldAutoSparkForVideo || shouldAutoSparkForComment) {
       performReaction();
     }
-  }, [performReaction, contentId, brandLayoutType, isCommentsLoaded]);
+  }, [
+    performReaction,
+    contentId,
+    brandLayoutType,
+    isCommentsLoaded,
+    isPending,
+    embedContext,
+    videoSlug,
+    contentType,
+    isSuccess,
+  ]);
 
   // If withCustomChildren is true, just return the children with logic attached
   if (withCustomChildren) {
     return (
       <span
         onClick={handleOnClick}
+        aria-disabled={isPending}
         className="gencl:cursor-pointer"
         role="button"
-        {...restProps}
-      >
+        {...restProps}>
         {children}
       </span>
     );
@@ -367,8 +363,7 @@ function Button({
       onClick={handleOnClick}
       aria-label={`${isReacted ? "Remove thumbs up" : "Thumbs up to this clip"}. ${reactionCount} ${reactionCount === 1 ? "spark" : "sparks"}`}
       aria-pressed={isReacted}
-      {...restProps}
-    >
+      {...restProps}>
       <DynamicReactionIcon
         theme="dark"
         isSparked={isReacted}

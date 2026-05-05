@@ -1,7 +1,8 @@
 'use client'
+import Image from 'next/image'
+
 import errorBg from '@images/error/errorDesktop.svg'
 import imgPuppet from '@images/not-found/puppet.svg'
-import Image from 'next/image'
 
 const MainComponent = () => {
   return (

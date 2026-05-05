@@ -1,9 +1,11 @@
 "use client";
 import { createContext, useContext } from "react";
-import { EmbedDataType } from "./embed.types";
-import { ActivePlayerType, createEmbedEventBus } from "./event-bus";
-import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+
 import type { BrandType } from "@genuin/components/lib/utils/brand-layout";
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+
+import type { EmbedDataType } from "./embed.types";
+import type { ActivePlayerType, createEmbedEventBus } from "./event-bus";
 
 /**
  * Type representing a follow status item
@@ -57,10 +59,7 @@ type EmbedContextType = {
    * @param activeIndex The index of the active player.
    * @returns
    */
-  changeActivePlayerType: (
-    newActiveType: ActivePlayerType,
-    activeIndex?: number
-  ) => void;
+  changeActivePlayerType: (newActiveType: ActivePlayerType, activeIndex?: number) => void;
   /**
    * Goes back to the previous player type in the embed context.
    * @returns

@@ -1,5 +1,7 @@
 import * as React from "react";
+
 import { cn } from "@genuin/ui/lib/utils";
+
 import { Loader } from "../loader";
 
 export type InputProps = React.ComponentProps<"input"> & {
@@ -8,15 +10,7 @@ export type InputProps = React.ComponentProps<"input"> & {
   isLoading?: boolean;
 };
 
-function Input({
-  className,
-  type,
-  icon,
-  iconPlacement = "left",
-  disabled,
-  isLoading,
-  ...props
-}: InputProps) {
+function Input({ className, type, icon, iconPlacement = "left", disabled, isLoading, ...props }: InputProps) {
   return (
     <div className="gencl:relative gencl:flex gencl:items-center gencl:w-full">
       {icon && (
@@ -26,8 +20,7 @@ function Input({
             iconPlacement === "left" ? "gencl:left-3" : "gencl:right-3",
             disabled && "gencl:opacity-50"
           )}
-          aria-hidden="true"
-        >
+          aria-hidden="true">
           {icon}
         </span>
       )}

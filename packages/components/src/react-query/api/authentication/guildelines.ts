@@ -1,8 +1,9 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
+import type { AxiosInstance } from "axios";
+
 import { useAxiosInstance } from "@genuin/components/context/axios";
 import { getQueryKeyForGuidelines } from "@genuin/components/react-query/keys/authentication";
 import { API_PATHS } from "@genuin/components/react-query/paths";
-import type { AxiosInstance } from "axios";
 
 // Type definitions
 export type GuideLineType = {
@@ -20,10 +21,10 @@ type GuidelinProps = {
  * @param params Guidelines request parameters
  * @returns Promise with guidelines data
  */
-async function getBrandGuidelines({
-  brandId,
-  isDefaultId,
-}: GuidelinProps, axiosInstance: AxiosInstance): Promise<GuideLineType[]> {
+async function getBrandGuidelines(
+  { brandId, isDefaultId }: GuidelinProps,
+  axiosInstance: AxiosInstance
+): Promise<GuideLineType[]> {
   try {
     const response = await axiosInstance.get(API_PATHS.AUTH_GET_GUIDELINES, {
       params: {
@@ -35,9 +36,7 @@ async function getBrandGuidelines({
     return response.data.data;
   } catch (error: any) {
     console.error("Guidelines API Error:", error.response?.data?.code);
-    throw new Error(
-      `Failed to fetch guidelines: ${error.response?.data?.message || "Unknown error"}`
-    );
+    throw new Error(`Failed to fetch guidelines: ${error.response?.data?.message || "Unknown error"}`);
   }
 }
 
@@ -51,7 +50,7 @@ export function useGetGuidelines(params: GuidelinProps) {
 
   return useQuery({
     queryKey: getQueryKeyForGuidelines(params.brandId),
-    queryFn: (context) => getBrandGuidelines(params, axiosInstance),
+    queryFn: (_context) => getBrandGuidelines(params, axiosInstance),
     enabled: !!params.brandId,
   });
 }
@@ -59,13 +58,11 @@ export function useGetGuidelines(params: GuidelinProps) {
 export async function acceptBrandGuidelines(axiosInstance: AxiosInstance) {
   return await axiosInstance
     .post(API_PATHS.AUTH_ACCEPT_GUIDELINES)
-    .then((res) => {
+    .then((_res) => {
       return true;
     })
     .catch((e) => {
-      throw new Error(
-        `Failed to accept guidelines: ${e.response?.data?.message || "Unknown error"}`
-      );
+      throw new Error(`Failed to accept guidelines: ${e.response?.data?.message || "Unknown error"}`);
     });
 }
 
@@ -73,9 +70,7 @@ export function useAcceptGuidelinesMutation({
   onSuccess,
   onError,
 }: {
-  onSuccess?: (
-    response: Awaited<ReturnType<typeof acceptBrandGuidelines>>
-  ) => void;
+  onSuccess?: (response: Awaited<ReturnType<typeof acceptBrandGuidelines>>) => void;
   onError?: (error: Error) => void;
 }) {
   const axiosInstance = useAxiosInstance();

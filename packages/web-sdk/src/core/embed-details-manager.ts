@@ -1,35 +1,33 @@
-import { EmbedDataType } from '@genuin/components/context/embed/embed.types'
-import { BrandDetailsConfigType } from '@genuin/components/context/embed/embed.types'
-import { apiService } from './api'
+import type { EmbedDataType } from "@genuin/components/context/embed/embed.types";
+import type { BrandDetailsConfigType } from "@genuin/components/context/embed/embed.types";
+
+import { apiService } from "./api";
 
 export class EmbedDetailsManager {
-  static instance: EmbedDetailsManager
-  private embedDetailsList: Record<string, EmbedDataType> = {}
+  static instance: EmbedDetailsManager;
+  private embedDetailsList: Record<string, EmbedDataType> = {};
   private constructor() {}
 
   public static getInstance(): EmbedDetailsManager {
     if (!EmbedDetailsManager.instance) {
-      EmbedDetailsManager.instance = new EmbedDetailsManager()
+      EmbedDetailsManager.instance = new EmbedDetailsManager();
     }
-    return EmbedDetailsManager.instance
+    return EmbedDetailsManager.instance;
   }
 
-  public async getEmbedDetails(
-    embedId: string,
-    brandDetails: BrandDetailsConfigType,
-  ) {
+  public async getEmbedDetails(embedId: string, _brandDetails: BrandDetailsConfigType) {
     if (this.embedDetailsList[embedId]) {
-      return this.embedDetailsList[embedId]
+      return this.embedDetailsList[embedId];
     }
 
-    const embedDetails = await apiService.fetchEmbedData(embedId)
+    const embedDetails = await apiService.fetchEmbedData(embedId);
 
     this.embedDetailsList[embedId] = Object.assign(embedDetails, {
       embed_id: embedId,
-    })
+    });
 
-    return embedDetails
+    return embedDetails;
   }
 }
 
-export const embedDetails = EmbedDetailsManager.getInstance()
+export const embedDetails = EmbedDetailsManager.getInstance();

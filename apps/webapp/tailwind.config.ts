@@ -284,12 +284,6 @@ const config: Config = {
     },
   },
   plugins: [require('tailwindcss-animate')],
-  variants: {
-    extend: {
-      fill: ['hover', 'focus'],
-      stroke: ['hover', 'focus'],
-    },
-  },
 }
 
 export default config

@@ -1,25 +1,23 @@
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
+
 import { useAgentsContext } from '@/context/app/context';
 import { getPreSignedUrl } from '@/lib/api';
 import type { UploadedFile } from '@/types';
+
 import { ALLOWED_TYPES, MAX_FILE_SIZE } from '../utils/fileUtils';
 
 const uploadFileToPreSignedUrl = async (file: File, preSignedUrl: string): Promise<void> => {
-    try {
-        const response = await fetch(preSignedUrl, {
-            method: 'PUT',
-            body: file,
-            headers: {
-                'Content-Type': file.type,
-            },
-        });
+    const response = await fetch(preSignedUrl, {
+        method: 'PUT',
+        body: file,
+        headers: {
+            'Content-Type': file.type,
+        },
+    });
 
-        if (!response.ok) {
-            throw new Error(`Upload failed: ${response.statusText}`);
-        }
-    } catch (error) {
-        throw error;
+    if (!response.ok) {
+        throw new Error(`Upload failed: ${response.statusText}`);
     }
 };
 
@@ -64,7 +62,7 @@ export const useFileUpload = () => {
                             f.id === uploadedFile.id ? { ...f, s3Key: data.s3_key, uploadStatus: 'success' } : f
                         )
                     );
-                } catch (error) {
+                } catch (_error) {
                     setUploadedFiles(prev =>
                         prev.map(f => (f.id === uploadedFile.id ? { ...f, uploadStatus: 'error' } : f))
                     );
@@ -84,7 +82,7 @@ export const useFileUpload = () => {
             }
 
             return true;
-        } catch (error) {
+        } catch (_error) {
             toast.error('Failed to upload some files. Please try again.');
             return false;
         } finally {
@@ -177,4 +175,3 @@ export const useFileUpload = () => {
         clearFiles,
     };
 };
-

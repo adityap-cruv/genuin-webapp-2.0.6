@@ -16,8 +16,16 @@
     "lint:fix": "lint . --fix",
     "br": "env-cmd -f ../../.env.production.local next build && cp -r .next/static .next/standalone/apps/webapp/.next/ && cp -r public .next/standalone/apps/webapp/public/ && env-cmd -f ../../.env.production.local node .next/standalone/apps/webapp/server.js",
     "check-node": "node ../../scripts/check-node-version.js",
+    "typecheck": "tsc --noEmit",
     "predev": "ALLOW_NODE_VERSION_WARNING=true npm run check-node",
-    "predev:turbo": "ALLOW_NODE_VERSION_WARNING=true npm run check-node"
+    "predev:turbo": "ALLOW_NODE_VERSION_WARNING=true npm run check-node",
+    "lint-staged": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,mjs}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
   },
   "husky": {
     "hooks": {
@@ -26,6 +34,7 @@
   },
   "dependencies": {
     "@auth/core": "^0.28.0",
+    "@fingerprintjs/fingerprintjs": "^4.2.2",
     "@genuin/components": "workspace:*",
     "@genuin/ui": "workspace:*",
     "@hookform/resolvers": "^5.0.1",
@@ -54,7 +63,7 @@
     "input-otp": "^1.4.2",
     "mobile-detect": "^1.4.5",
     "motion": "^12.18.1",
-    "next": "15.2.0",
+    "next": "15.3.9",
     "next-auth": "^5.0.0-beta.28",
     "openplayerjs": "^2.14.10",
     "react-cropper": "^2.3.3",
@@ -86,6 +95,7 @@
     "autoprefixer": "10.4.21",
     "babel-plugin-react-compiler": "19.1.0-rc.2",
     "critters": "^0.0.24",
+    "knip": "^6.7.0",
     "postcss": "^8.5.3",
     "prettier": "^3.2.4",
     "prettier-plugin-tailwindcss": "^0.6.11",

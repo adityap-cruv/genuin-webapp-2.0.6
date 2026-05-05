@@ -1,7 +1,8 @@
 'use client'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
 import type { RudderAnalytics } from '@rudderstack/analytics-js'
+
 import { getIpAddress } from '@/lib/api/config'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 export async function rudderStackTrack(eventName: string, properties: Record<string, string | number | undefined>) {
   const x = window.rudderanalytics as RudderAnalytics | undefined | null

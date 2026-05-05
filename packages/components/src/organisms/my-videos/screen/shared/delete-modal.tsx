@@ -1,11 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { cn } from "@genuin/ui/lib/utils";
-import { Dialog, DialogContent, DialogTrigger } from "@genuin/ui/components/dialog";
 import { Button } from "@genuin/ui/components/button";
-
+import { Dialog, DialogContent, DialogTrigger } from "@genuin/ui/components/dialog";
 import { Loader } from "@genuin/ui/components/loader";
+import { cn } from "@genuin/ui/lib/utils";
+import { useState } from "react";
 
 const DELETE_CONTENT = {
   single: {
@@ -17,8 +16,7 @@ const DELETE_CONTENT = {
     },
     post: {
       title: "Delete Post?",
-      description:
-        "Deleting this post will permanently remove it from our servers. Are you sure you want to continue?",
+      description: "Deleting this post will permanently remove it from our servers. Are you sure you want to continue?",
       deleteAction: "Delete Post",
     },
   },
@@ -103,27 +101,14 @@ export function DeleteModal({
       <DialogContent className="gencl:max-w-md">
         <div className="gencl:p-2 gencl:pb-0!">
           <div className="gencl:space-y-6 gencl:mb-6">
-            <h3 className="gencl:text-left gencl:text-headline-3-semi-bold">
-              {content[type].title}
-            </h3>
-            <p className="gencl:text-left gencl:text-body-0-medium ">
-              {content[type].description}
-            </p>
+            <h3 className="gencl:text-left gencl:text-headline-3-semi-bold">{content[type].title}</h3>
+            <p className="gencl:text-left gencl:text-body-0-medium">{content[type].description}</p>
           </div>
           <div className="gencl:flex gencl:gap-3 gencl:justify-end">
-            <Button
-              theme="text"
-              onClick={handleCancel}
-              disabled={isDeleting}
-              className="gencl:text-secondary-900!"
-            >
+            <Button theme="text" onClick={handleCancel} disabled={isDeleting} className="gencl:text-secondary-900!">
               Cancel
             </Button>
-            <Button
-              theme="primary"
-              onClick={handleDelete}
-              disabled={isDeleting}
-            >
+            <Button theme="primary" onClick={handleDelete} disabled={isDeleting}>
               {isDeleting ? (
                 <>
                   <Loader /> Deleting...

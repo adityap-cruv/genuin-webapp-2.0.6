@@ -1,7 +1,8 @@
+import { type ComponentProps } from 'react'
+
 import { GenuinIcon } from '@icons/genuin-icon'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { cn } from '@lib/utils'
-import { type ComponentProps } from 'react'
 // import { CustomImage } from '../custom/custom-image'
 
 type Props = ComponentProps<'svg'> & {

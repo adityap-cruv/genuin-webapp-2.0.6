@@ -1,17 +1,14 @@
 "use client";
 
-import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-import { useAnalytics } from "@genuin/components/context/analytics";
-import React, {
-  ComponentProps,
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import type { ComponentProps } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { useBoolean } from "usehooks-ts";
-import { FeedView } from "./feed";
+
+import { useAnalytics } from "@genuin/components/context/analytics";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+
+import type { FeedView } from "./feed";
 
 type VariantType = ComponentProps<typeof FeedView>["variant"];
 
@@ -109,9 +106,7 @@ export function FeedContextProvider({
 
   useEffect(() => {
     // Track when the expand view is opened or closed
-    const isEmbed: boolean = embedDetails
-      ? !!embedDetails.embedData.embed_id
-      : false;
+    const isEmbed: boolean = embedDetails ? !!embedDetails.embedData.embed_id : false;
     if (showExpandView) {
       track(
         embedDetails
@@ -124,8 +119,7 @@ export function FeedContextProvider({
           ...(!isEmbed &&
             embedDetails && {
               has_sections: embedDetails.embedEventBus.getContext().isSectioned,
-              section_count:
-                embedDetails.embedEventBus.getContext().sectionList.length,
+              section_count: embedDetails.embedEventBus.getContext().sectionList.length,
             }),
         }
       );
@@ -141,8 +135,7 @@ export function FeedContextProvider({
           ...(!isEmbed &&
             embedDetails && {
               has_sections: embedDetails.embedEventBus.getContext().isSectioned,
-              section_count:
-                embedDetails.embedEventBus.getContext().sectionList.length,
+              section_count: embedDetails.embedEventBus.getContext().sectionList.length,
             }),
         }
       );
@@ -231,8 +224,7 @@ export function FeedContextProvider({
         closeExpandView,
         toggleExpandView,
         variant,
-      }}
-    >
+      }}>
       {children}
     </FeedContext.Provider>
   );

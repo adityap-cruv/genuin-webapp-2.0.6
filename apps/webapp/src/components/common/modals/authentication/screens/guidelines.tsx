@@ -1,18 +1,23 @@
-import { ModalShell } from '../modal-shell'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
-import { GenuinIcon } from '@icons/genuin-icon'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+import { useShallow } from 'zustand/react/shallow'
+
+import { CustomImage } from '@/components/custom/custom-image'
 import { Button } from '@components/ui/button'
 import { Checkbox } from '@components/ui/checkbox'
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@components/ui/form'
-import { getBrandGuidelines, acceptBrandGuidelines } from '../api/auth'
-import { useEffect, useState } from 'react'
 import { Loader } from '@components/ui/loader'
+import { GenuinIcon } from '@icons/genuin-icon'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
+
+import { getBrandGuidelines, acceptBrandGuidelines } from '../api/auth'
+import { ModalShell } from '../modal-shell'
+
 import { type ScreenProps } from '.'
-import { useShallow } from 'zustand/react/shallow'
-import { CustomImage } from '@/components/custom/custom-image'
+
+
 
 const FormSchema = z.object({
   mobile: z.boolean().default(false).optional(),

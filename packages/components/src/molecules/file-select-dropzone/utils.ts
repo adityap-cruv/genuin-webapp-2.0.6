@@ -1,7 +1,4 @@
-import {
-  FileSelectDropzoneProps,
-  SupportedFileType,
-} from "./file-select-dropzone.types";
+import type { FileSelectDropzoneProps, SupportedFileType } from "./file-select-dropzone.types";
 
 export const allowedFileFormats = [
   // 📷 Image types
@@ -25,22 +22,19 @@ export const allowedFileFormats = [
   { extension: ".doc", mimeType: "application/msword", type: "DOC" },
   {
     extension: ".docx",
-    mimeType:
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     type: "DOCX",
   },
   { extension: ".xls", mimeType: "application/vnd.ms-excel", type: "XLS" },
   {
     extension: ".xlsx",
-    mimeType:
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     type: "XLSX",
   },
   { extension: ".ppt", mimeType: "application/vnd.ms-powerpoint", type: "PPT" },
   {
     extension: ".pptx",
-    mimeType:
-      "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    mimeType: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
     type: "PPTX",
   },
   { extension: ".txt", mimeType: "text/plain", type: "TXT" },

@@ -1,14 +1,6 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  useRef,
-  useEffect,
-  type ReactNode,
-  type KeyboardEvent,
-  ComponentProps,
-} from "react";
 import { cn } from "@genuin/ui/lib/utils";
+import type { ComponentProps } from "react";
+import { createContext, useContext, useState, useRef, useEffect, type ReactNode, type KeyboardEvent } from "react";
 
 type SelectableListContextType = {
   highlightedIndex: number;
@@ -16,14 +8,11 @@ type SelectableListContextType = {
   itemCount: number;
 };
 
-const SelectableListContext = createContext<SelectableListContextType | null>(
-  null
-);
+const SelectableListContext = createContext<SelectableListContextType | null>(null);
 
 export function useSelectableList() {
   const ctx = useContext(SelectableListContext);
-  if (!ctx)
-    throw new Error("SelectableList.Item must be used within SelectableList");
+  if (!ctx) throw new Error("SelectableList.Item must be used within SelectableList");
   return ctx;
 }
 
@@ -50,24 +39,19 @@ function SelectableList({ children, className }: SelectableListProps) {
   };
 
   useEffect(() => {
-    const el = listRef.current?.children[highlightedIndex] as
-      | HTMLElement
-      | undefined;
+    const el = listRef.current?.children[highlightedIndex] as HTMLElement | undefined;
     el?.scrollIntoView({ block: "nearest" });
   }, [highlightedIndex]);
 
   return (
-    <SelectableListContext.Provider
-      value={{ highlightedIndex, setHighlightedIndex, itemCount }}
-    >
+    <SelectableListContext.Provider value={{ highlightedIndex, setHighlightedIndex, itemCount }}>
       <div
         tabIndex={0}
         onKeyDown={handleKeyDown}
         className={cn(
           "gencl:w-full gencl:rounded-lg gencl:border gencl:border-secondary-150 gencl:overflow-y-auto gencl:max-h-60 gencl:px-3 gencl:py-2",
           className
-        )}
-      >
+        )}>
         <ul ref={listRef}>{children}</ul>
       </div>
     </SelectableListContext.Provider>
@@ -91,8 +75,7 @@ function Item({ children, index, className, ...rest }: SelectableItemProps) {
         className
       )}
       onMouseEnter={() => setHighlightedIndex(index)}
-      {...rest}
-    >
+      {...rest}>
       {children}
     </li>
   );

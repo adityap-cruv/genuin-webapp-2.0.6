@@ -1,8 +1,10 @@
-import { useBaseContext } from "@genuin/components/context/base";
 import { Image } from "@genuin/ui/image";
-import { getUrlForReaction } from "@genuin/components/lib/utils";
+import type { VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 import { useMemo } from "react";
-import { cva, VariantProps } from "class-variance-authority";
+
+import { useBaseContext } from "@genuin/components/context/base";
+import { getUrlForReaction } from "@genuin/components/lib/utils";
 
 const reactionButtonVariant = cva("", {
   variants: {
@@ -43,24 +45,17 @@ export function DynamicReactionIcon({
     const reaction = reactions;
 
     // In case there is no reactions in config then we will show the spark icon.
-    if (!reaction)
-      return getUrlForReaction("spark", isSparked, theme === "light");
+    if (!reaction) return getUrlForReaction("spark", isSparked, theme === "light");
 
     switch (type) {
       case "comment":
-        return isSparked
-          ? reaction?.keys.comment_selected.svg
-          : reaction?.keys.comment_unselected.svg;
+        return isSparked ? reaction?.keys.comment_selected.svg : reaction?.keys.comment_unselected.svg;
       case "feed":
-        return isSparked
-          ? reaction?.keys.feed_selected.svg
-          : reaction?.keys.feed_unselected.svg;
+        return isSparked ? reaction?.keys.feed_selected.svg : reaction?.keys.feed_unselected.svg;
       case "feed_animate":
         return reaction?.keys.feed_animate.svg;
       case "social_count":
-        return theme === "dark"
-          ? reaction?.keys.social_count_white.svg
-          : reaction?.keys.social_count_black.svg;
+        return theme === "dark" ? reaction?.keys.social_count_white.svg : reaction?.keys.social_count_black.svg;
       default:
         return getUrlForReaction("spark", isSparked, theme === "light");
     }

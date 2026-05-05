@@ -9,7 +9,7 @@ import { cn, isValidHTTPS } from "@genuin/ui/lib/utils";
 import { getWebpUrlForImage } from "@genuin/ui/utils";
 
 const AvatarWithZoom = React.lazy(() =>
-  import("./avatar-with-zoom.js").then((m) => ({
+  import("./avatar-with-zoom").then((m) => ({
     default: m.AvatarWithZoom,
   }))
 );
@@ -35,9 +35,7 @@ const avatarVariants = cva(
   }
 );
 
-export type AvatarPropsType = React.ComponentProps<
-  typeof AvatarPrimitive.Root
-> &
+export type AvatarPropsType = React.ComponentProps<typeof AvatarPrimitive.Root> &
   VariantProps<typeof avatarVariants> & {
     isAvatar: boolean;
     /**
@@ -64,15 +62,9 @@ const Avatar = React.memo(function Avatar({
   shouldZoom = false,
   ...props
 }: AvatarPropsType) {
-  const finalImageSrc = isAvatar
-    ? getAvatarUrl(imageUrl)
-    : getWebpUrlForImage(imageUrl);
+  const finalImageSrc = isAvatar ? getAvatarUrl(imageUrl) : getWebpUrlForImage(imageUrl);
 
-  const BasicAvatar = React.memo(function BasicAvatar({
-    addCursor = false,
-  }: {
-    addCursor?: boolean;
-  }) {
+  const BasicAvatar = React.memo(function BasicAvatar({ addCursor = false }: { addCursor?: boolean }) {
     return (
       <AvatarPrimitive.Root
         data-slot="avatar"
@@ -82,14 +74,10 @@ const Avatar = React.memo(function Avatar({
           addCursor && "gencl:cursor-pointer",
           className
         )}
-        {...props}
-      >
+        {...props}>
         <AvatarPrimitive.Image
           data-slot="avatar-image"
-          className={cn(
-            "gencl:aspect-square gencl:rounded-full gencl:size-full",
-            imageClassName
-          )}
+          className={cn("gencl:aspect-square gencl:rounded-full gencl:size-full", imageClassName)}
           src={finalImageSrc}
           alt={alt}
           loading="lazy"
@@ -99,8 +87,7 @@ const Avatar = React.memo(function Avatar({
           className={cn(
             "gencl:bg-secondary-300 gencl:flex gencl:size-full gencl:items-center gencl:justify-center gencl:rounded-full",
             fallbackClassName
-          )}
-        >
+          )}>
           {getAvatarFallback(alt)}
         </AvatarPrimitive.Fallback>
       </AvatarPrimitive.Root>

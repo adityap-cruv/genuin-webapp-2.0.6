@@ -30,8 +30,7 @@ export const Default: Story = {
   args: {
     postData: {
       postId: "1",
-      imageUrl:
-        "https://media.qa.begenuin.com/uploads/thumbnails/1691038031235.png",
+      imageUrl: "https://media.qa.begenuin.com/uploads/thumbnails/1691038031235.png",
       linkouts: "ldjfl",
       stats: {
         views: 12345,
@@ -54,17 +53,17 @@ export const Skeleton: Story = {
       source: {
         code: `
           <div className="gencl:flex gencl:gap-4"> 
-            <PostTileSkeleton />
+            <PostTileSkeleton size="sm" />
           </div>`,
         language: "tsx",
         type: "auto",
       },
     },
   },
-  render: (args) => {
+  render: () => {
     return (
       <div className="gencl:flex gencl:gap-4">
-        <PostTileSkeleton />
+        <PostTileSkeleton size="sm" />
       </div>
     );
   },
@@ -79,8 +78,7 @@ export const WithNavigation: Story = {
   args: {
     postData: {
       postId: "2",
-      imageUrl:
-        "https://media.qa.begenuin.com/uploads/thumbnails/1691038031235.png",
+      imageUrl: "https://media.qa.begenuin.com/uploads/thumbnails/1691038031235.png",
       url: "https://example.com", // External URL
       linkouts: "ldjfl",
       stats: {

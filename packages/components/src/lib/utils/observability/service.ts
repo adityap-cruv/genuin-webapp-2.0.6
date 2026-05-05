@@ -1,8 +1,5 @@
 // lib/utils/observability-tracker.ts
-import {
-  ResourceTimingDetail,
-  EventPayload,
-} from "../../../context/analytics/types";
+import type { ResourceTimingDetail, EventPayload } from "../../../context/analytics/types";
 
 /**
  * Configuration options for the ObservabilityTracker
@@ -48,7 +45,7 @@ class ObservabilityTracker {
   private static readonly IMAGE_EXTENSIONS = /\.(jpg|jpeg|png|gif|webp|svg)$/i;
   private static readonly VIDEO_EXTENSIONS = /\.(m3u8|mp4)$/i;
   private static readonly THUMBNAIL_KEYWORD = "thumbnail";
-  private static readonly HASH_PATTERN = /-[A-Z][A-Za-z0-9\-]*(?=\.)/;
+  private static readonly HASH_PATTERN = /-[A-Z][A-Za-z0-9-]*(?=\.)/;
 
   constructor(config?: TrackerConfig) {
     this.config = { ...ObservabilityTracker.DEFAULT_CONFIG, ...config };
@@ -131,10 +128,7 @@ class ObservabilityTracker {
    * Checks if URL is an image resource
    */
   public isImageResource(url: string): boolean {
-    return (
-      ObservabilityTracker.IMAGE_EXTENSIONS.test(url) ||
-      url.includes(ObservabilityTracker.THUMBNAIL_KEYWORD)
-    );
+    return ObservabilityTracker.IMAGE_EXTENSIONS.test(url) || url.includes(ObservabilityTracker.THUMBNAIL_KEYWORD);
   }
 
   /**
@@ -159,7 +153,7 @@ class ObservabilityTracker {
     const { pathname } = new URL(url);
 
     if (isApi) {
-      return pathname.replace(/[\/-]/g, "_").replace(/^_+/, "");
+      return pathname.replace(/[/-]/g, "_").replace(/^_+/, "");
     }
 
     const filename = pathname.split("/").pop() || "";
@@ -180,10 +174,7 @@ class ObservabilityTracker {
   /**
    * Creates a structured timing object for a resource
    */
-  private createResourceTiming(
-    resource: PerformanceResourceTiming,
-    isApi: boolean,
-  ): ResourceTimingDetail {
+  private createResourceTiming(resource: PerformanceResourceTiming, isApi: boolean): ResourceTimingDetail {
     const url = resource.name || "";
     const { pathname } = new URL(url);
     const startTime = performance.timeOrigin + resource.startTime;
@@ -193,21 +184,11 @@ class ObservabilityTracker {
       name: this.createDisplayName(url, isApi),
       url,
       path: pathname,
-      status_code:
-        (resource as any).responseStatus || this.getApiStatusCode(url) || null,
+      status_code: (resource as any).responseStatus || this.getApiStatusCode(url) || null,
       error: this.getApiErrorMessage(url) || null,
-      network_latency:
-        resource.connectEnd > 0
-          ? Math.floor(resource.connectEnd - resource.fetchStart)
-          : 0,
-      processing_latency:
-        resource.requestStart > 0
-          ? Math.floor(resource.responseStart - resource.requestStart)
-          : 0,
-      response_latency:
-        resource.responseStart > 0
-          ? Math.floor(resource.responseEnd - resource.responseStart)
-          : 0,
+      network_latency: resource.connectEnd > 0 ? Math.floor(resource.connectEnd - resource.fetchStart) : 0,
+      processing_latency: resource.requestStart > 0 ? Math.floor(resource.responseStart - resource.requestStart) : 0,
+      response_latency: resource.responseStart > 0 ? Math.floor(resource.responseEnd - resource.responseStart) : 0,
       latency: Math.floor(resource.duration),
       start_time: Math.floor(startTime),
       end_time: Math.floor(endTime),
@@ -219,12 +200,8 @@ class ObservabilityTracker {
   /**
    * Filters resources based on timestamp and domain/pattern criteria
    */
-  private filterResourcesSince(
-    sinceTimestamp: number,
-  ): PerformanceResourceTiming[] {
-    const resources = performance.getEntriesByType(
-      "resource",
-    ) as PerformanceResourceTiming[];
+  private filterResourcesSince(sinceTimestamp: number): PerformanceResourceTiming[] {
+    const resources = performance.getEntriesByType("resource") as PerformanceResourceTiming[];
 
     return resources.filter((r) => {
       if (r.startTime <= sinceTimestamp) return false;
@@ -264,10 +241,7 @@ class ObservabilityTracker {
   /**
    * Captures performance metrics for resources loaded since a timestamp
    */
-  capturePerformanceMetricsSince(
-    sinceTimestamp: number,
-    configOverrides?: Partial<TrackerConfig>,
-  ): EventPayload {
+  capturePerformanceMetricsSince(sinceTimestamp: number, configOverrides?: Partial<TrackerConfig>): EventPayload {
     // Temporarily apply config overrides if provided
     const originalConfig = { ...this.config };
     if (configOverrides) {
@@ -302,9 +276,7 @@ class ObservabilityTracker {
    * Finds performance timing for a specific URL
    */
   private findResourceTiming(url: string): PerformanceResourceTiming | null {
-    const resources = performance.getEntriesByType(
-      "resource",
-    ) as PerformanceResourceTiming[];
+    const resources = performance.getEntriesByType("resource") as PerformanceResourceTiming[];
     return resources.find((r) => r.name === url) || null;
   }
 
@@ -313,7 +285,7 @@ class ObservabilityTracker {
    */
   private processTrackedResources(
     urls: string[],
-    type: "image" | "video",
+    type: "image" | "video"
   ): Array<ResourceTimingDetail & { type: "image" | "video" }> {
     return urls
       .map((url) => {
@@ -322,7 +294,7 @@ class ObservabilityTracker {
 
         const baseDetail = this.createResourceTiming(resourceTiming, false);
         const { pathname } = new URL(url);
-        const name = pathname.replace(/[\/\-\.]/g, "_").replace(/^_+/, "");
+        const name = pathname.replace(/[/\-.]/g, "_").replace(/^_+/, "");
 
         return { ...baseDetail, name, type };
       })
@@ -342,24 +314,16 @@ class ObservabilityTracker {
   public buildEmbedRenderedPayload(
     performanceMetrics: EventPayload,
     trackedImageUrls: string[],
-    trackedVideoUrls: string[],
+    trackedVideoUrls: string[]
   ): {
     api_details: ResourceTimingDetail[];
     resource_details: ResourceTimingDetail[];
     api_latency: number;
     resource_latency: number;
   } {
-    const imageDetails = this.processTrackedResources(
-      trackedImageUrls,
-      "image",
-    );
-    const videoDetails = this.processTrackedResources(
-      trackedVideoUrls,
-      "video",
-    );
-    const uniqueByName = (
-      arr: ResourceTimingDetail[],
-    ): ResourceTimingDetail[] => {
+    const imageDetails = this.processTrackedResources(trackedImageUrls, "image");
+    const videoDetails = this.processTrackedResources(trackedVideoUrls, "video");
+    const uniqueByName = (arr: ResourceTimingDetail[]): ResourceTimingDetail[] => {
       const map = new Map<string, ResourceTimingDetail>();
       for (const item of arr) {
         if (!map.has(item.name)) {
@@ -370,13 +334,11 @@ class ObservabilityTracker {
     };
 
     const apiDetails: ResourceTimingDetail[] = uniqueByName(
-      performanceMetrics.api_details ?? ([] as ResourceTimingDetail[]),
+      performanceMetrics.api_details ?? ([] as ResourceTimingDetail[])
     );
 
     const apiLatency = this.calculateTotalLatency(apiDetails || []);
-    const baseResourceLatency = this.calculateTotalLatency(
-      performanceMetrics.resource_details || [],
-    );
+    const baseResourceLatency = this.calculateTotalLatency(performanceMetrics.resource_details || []);
     const imageLatency = this.calculateTotalLatency(imageDetails);
     const videoLatency = this.calculateTotalLatency(videoDetails);
 
@@ -384,11 +346,7 @@ class ObservabilityTracker {
       api_details: apiDetails,
       api_latency: apiLatency,
       resource_latency: baseResourceLatency + imageLatency + videoLatency,
-      resource_details: [
-        ...(performanceMetrics.resource_details || []),
-        ...imageDetails,
-        ...videoDetails,
-      ],
+      resource_details: [...(performanceMetrics.resource_details || []), ...imageDetails, ...videoDetails],
     };
   }
 }

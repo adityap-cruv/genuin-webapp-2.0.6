@@ -1,19 +1,19 @@
 "use client";
 
-import { useState } from "react";
-import { TrendingGroupCard } from "@genuin/components/organisms/trending-groups-card";
 import { Button } from "@genuin/ui/components/button";
-import { getTrendingGroups } from "@genuin/components/react-query/api/group/trending";
-import { Swiper, SwiperSlide } from "swiper/react";
+import { useState } from "react";
 import { Navigation } from "swiper/modules";
-import { Swiper as SwiperType } from "swiper/types";
+import { Swiper, SwiperSlide } from "swiper/react";
 
-// Import Swiper styles
-import "swiper/css";
-import "swiper/css/navigation";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { TrendingGroupCard } from "@genuin/components/organisms/trending-groups-card";
+import { getTrendingGroups } from "@genuin/components/react-query/api/group/trending";
+
 import { TrendingGroupsSkeleton } from "./skeleton";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+
+import "swiper/css";
+
+import "swiper/css/navigation";
 
 type GroupMemberInfoType = {
   member_id: string;
@@ -68,69 +68,41 @@ export function TrendingGroupsDesktopView({
       </div>
 
       <div className="gencl:grid gencl:grid-cols-1 gencl:md:grid-cols-2! gencl:lg:grid-cols-3! gencl:xl:grid-cols-3! gencl:gap-x-2 gencl:gap-y-4">
-        {groupsToDisplay.map(
-          ({ chat_id, group, slug, latest_messages }: GroupInfoType) => {
-            const formattedPostThumbnails = latest_messages?.map(
-              ({ thumbnail_url, thumbnail_url_l, thumbnail_url_s, slug }) => ({
-                imageUrl: thumbnail_url_l ?? thumbnail_url,
-                alt: "Post Thumbnail",
-                slug: slug,
-              })
-            );
+        {groupsToDisplay.map(({ chat_id, group, slug, latest_messages }: GroupInfoType) => {
+          const formattedPostThumbnails = latest_messages?.map(({ thumbnail_url, thumbnail_url_l, slug }) => ({
+            imageUrl: thumbnail_url_l ?? thumbnail_url,
+            alt: "Post Thumbnail",
+            slug: slug,
+          }));
 
-            const formattedMembersAvatars = group.members.map((member) => ({
-              userName: member.username,
-              name: member.name,
-              imageUrl:
-                member.profile_image_s ??
-                member.profile_image_m ??
-                member.profile_image,
-              isAvatar: member.is_avatar,
-              alt: member.name,
-            }));
-            return (
-              <TrendingGroupCard
-                className="gencl:w-full gencl:h-full"
-                key={chat_id}
-                slug={slug}
-                groupName={group.group_name}
-                description={group.group_description}
-                memberCount={group.no_of_members}
-                postCount={group.no_of_videos}
-                userAvatars={formattedMembersAvatars ?? []}
-                postData={formattedPostThumbnails ?? []}
-              />
-            );
-          }
-        )}
+          const formattedMembersAvatars = group.members.map((member) => ({
+            userName: member.username,
+            name: member.name,
+            imageUrl: member.profile_image_s ?? member.profile_image_m ?? member.profile_image,
+            isAvatar: member.is_avatar,
+            alt: member.name,
+          }));
+          return (
+            <TrendingGroupCard
+              className="gencl:w-full gencl:h-full"
+              key={chat_id}
+              slug={slug}
+              groupName={group.group_name}
+              description={group.group_description}
+              memberCount={group.no_of_members}
+              postCount={group.no_of_videos}
+              userAvatars={formattedMembersAvatars ?? []}
+              postData={formattedPostThumbnails ?? []}
+            />
+          );
+        })}
       </div>
     </div>
   );
 }
 
 // Mobile view component with horizontal swiper
-function TrendingGroupsMobileView({
-  data,
-}: {
-  data: { groups: GroupInfoType[] };
-}) {
-  const [swiperInstance, setSwiperInstance] = useState<any>(null);
-  const [isBeginning, setIsBeginning] = useState(true);
-  const [isEnd, setIsEnd] = useState(false);
-
-  // Handle swiper events
-  const handleSwiperInit = (swiper: SwiperType) => {
-    setSwiperInstance(swiper);
-    setIsBeginning(swiper.isBeginning);
-    setIsEnd(swiper.isEnd);
-  };
-
-  // Handle slide change
-  const handleSlideChange = (swiper: SwiperType) => {
-    setIsBeginning(swiper.isBeginning);
-    setIsEnd(swiper.isEnd);
-  };
-
+function TrendingGroupsMobileView({ data }: { data: { groups: GroupInfoType[] } }) {
   return (
     <div className="gencl:w-full gencl:relative">
       <div className="gencl:flex gencl:justify-between gencl:items-center gencl:self-stretch gencl:mb-2">
@@ -142,52 +114,42 @@ function TrendingGroupsMobileView({
           spaceBetween={10}
           slidesPerView={1.05} // Show 5% of the next slide
           className="gencl:w-full"
-          snapToSlideEdge
+          // snapToSlideEdge
           modules={[Navigation]}
           touchStartPreventDefault={false}
           navigation={{
             prevEl: ".swiper-prev-button",
             nextEl: ".swiper-next-button",
-          }}
-          onSwiper={handleSwiperInit}
-          onSlideChange={handleSlideChange}
-        >
-          {data.groups.map(
-            ({ chat_id, group, latest_messages, slug }: GroupInfoType) => {
-              const formattedPostThumbnails = latest_messages?.map(
-                ({ thumbnail_url, thumbnail_url_l, slug }) => ({
-                  imageUrl: thumbnail_url_l ?? thumbnail_url,
-                  alt: "Post Thumbnail",
-                  slug: slug,
-                })
-              );
+          }}>
+          {data.groups.map(({ chat_id, group, latest_messages, slug }: GroupInfoType) => {
+            const formattedPostThumbnails = latest_messages?.map(({ thumbnail_url, thumbnail_url_l, slug }) => ({
+              imageUrl: thumbnail_url_l ?? thumbnail_url,
+              alt: "Post Thumbnail",
+              slug: slug,
+            }));
 
-              const formattedMembersAvatars = group.members.map((member) => ({
-                userName: member.username,
-                name: member.name,
-                imageUrl:
-                  member.profile_image_s ??
-                  member.profile_image_m ??
-                  member.profile_image,
-                isAvatar: member.is_avatar,
-                alt: member.name,
-              }));
+            const formattedMembersAvatars = group.members.map((member) => ({
+              userName: member.username,
+              name: member.name,
+              imageUrl: member.profile_image_s ?? member.profile_image_m ?? member.profile_image,
+              isAvatar: member.is_avatar,
+              alt: member.name,
+            }));
 
-              return (
-                <SwiperSlide key={chat_id}>
-                  <TrendingGroupCard
-                    groupName={group.group_name}
-                    slug={slug}
-                    description={group.group_description}
-                    memberCount={group.no_of_members}
-                    postCount={group.no_of_videos}
-                    userAvatars={formattedMembersAvatars ?? []}
-                    postData={formattedPostThumbnails ?? []}
-                  />
-                </SwiperSlide>
-              );
-            }
-          )}
+            return (
+              <SwiperSlide key={chat_id}>
+                <TrendingGroupCard
+                  groupName={group.group_name}
+                  slug={slug}
+                  description={group.group_description}
+                  memberCount={group.no_of_members}
+                  postCount={group.no_of_videos}
+                  userAvatars={formattedMembersAvatars ?? []}
+                  postData={formattedPostThumbnails ?? []}
+                />
+              </SwiperSlide>
+            );
+          })}
         </Swiper>
 
         {/* Navigation buttons - Always in DOM but conditionally styled */}
@@ -210,7 +172,7 @@ function TrendingGroupsMobileView({
 }
 
 export function TrendingGroups() {
-  const { isLoading, data, isError } = getTrendingGroups();
+  const { isLoading, data } = getTrendingGroups();
   const [isExpanded, setIsExpanded] = useState(false);
   const { isMobile } = useDeviceDetectMediaQuery();
 
@@ -236,13 +198,7 @@ export function TrendingGroups() {
     return <TrendingGroupsMobileView data={data} />;
   }
 
-  return (
-    <TrendingGroupsDesktopView
-      data={data}
-      isExpanded={isExpanded}
-      handleToggle={handleToggle}
-    />
-  );
+  return <TrendingGroupsDesktopView data={data} isExpanded={isExpanded} handleToggle={handleToggle} />;
 }
 
 export { TrendingGroupsSkeleton };

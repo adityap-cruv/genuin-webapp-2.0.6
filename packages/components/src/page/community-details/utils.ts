@@ -25,18 +25,12 @@ export function mapMemberDetails(
     memberId: member.member_id,
     profileImage: {
       isAvatar: member.is_avatar,
-      url:
-        member.profile_image_s ??
-        member.profile_image_m ??
-        member.profile_image ??
-        "",
+      url: member.profile_image_s ?? member.profile_image_m ?? member.profile_image ?? "",
     },
     name: member.name ?? "",
     url: buildPageUrl({
-      type: !!member.brand ? "brand" : "profile",
-      slug: !!member.brand
-        ? (member.brand.brand_slug ?? undefined)
-        : (member.nickname ?? undefined),
+      type: member.brand ? "brand" : "profile",
+      slug: member.brand ? (member.brand.brand_slug ?? undefined) : (member.nickname ?? undefined),
     }),
     userName: member.nickname,
     brand: {

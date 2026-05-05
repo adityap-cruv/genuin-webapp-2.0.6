@@ -1,8 +1,10 @@
-import { useAxiosInstance } from "@genuin/components/context/axios";
-import { API_PATHS } from "../../paths";
-import { getQueryKeyForIpInfo } from "../../keys/ip-info";
-import type { AxiosInstance } from "axios";
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
+import type { AxiosInstance } from "axios";
+
+import { useAxiosInstance } from "@genuin/components/context/axios";
+
+import { getQueryKeyForIpInfo } from "../../keys/ip-info";
+import { API_PATHS } from "../../paths";
 
 type Response = {
   city: string;
@@ -22,9 +24,7 @@ async function fetchIpInfo<T>(axiosInstance: AxiosInstance): Promise<T> {
     return response.data;
   } catch (error: any) {
     console.error("IP Info API Error:", error.response?.data?.code);
-    throw new Error(
-      `Failed to fetch IP Info: ${error.response?.data?.message || "Unknown error"}`
-    );
+    throw new Error(`Failed to fetch IP Info: ${error.response?.data?.message || "Unknown error"}`);
   }
 }
 

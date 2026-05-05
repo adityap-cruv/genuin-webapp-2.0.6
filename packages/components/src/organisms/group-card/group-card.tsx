@@ -1,29 +1,22 @@
 import { Button } from "@genuin/ui/button";
-import {
-  NotificationIcon,
-  PinIcon,
-  GroupIcon,
-  DotIcon,
-} from "@genuin/ui/icons";
-import { cn } from "@genuin/ui/utils";
+import { DialogClose } from "@genuin/ui/components/dialog";
+import { NotificationIcon, PinIcon, GroupIcon, DotIcon } from "@genuin/ui/icons";
 import { Skeleton } from "@genuin/ui/skeleton";
+import { cn } from "@genuin/ui/utils";
 import type { ComponentProps } from "react";
 
-import { Link } from "@genuin/components/molecules/link";
-import { Stats } from "@genuin/components/molecules/stats";
+import { CommunityPrivacyInfo } from "@genuin/components/molecules/community-privacy-info";
 import { JoinGroupButton } from "@genuin/components/molecules/join-group-button";
+import { Link } from "@genuin/components/molecules/link";
+import { ReadMore } from "@genuin/components/molecules/read-more";
+import { Stats } from "@genuin/components/molecules/stats";
+import type { GroupUserStatusType } from "@genuin/components/types/roles";
 
 import { GenericDetails } from "../generic-details";
 import { GenericDetailsMetadata } from "../generic-details/generic-details-metadata";
-import {
-  groupCardVariants,
-  groupCardContentVariants,
-  GroupCardVariant,
-} from "./group-card.cva";
-import { ReadMore } from "@genuin/components/molecules/read-more";
-import { CommunityPrivacyInfo } from "@genuin/components/molecules/community-privacy-info";
-import { DialogClose } from "@genuin/ui/components/dialog";
-import { GroupUserStatusType } from "@genuin/components/types/roles";
+
+import type { GroupCardVariant } from "./group-card.cva";
+import { groupCardVariants, groupCardContentVariants } from "./group-card.cva";
 
 type OwnerInfoType = {
   userName: string;
@@ -77,10 +70,7 @@ function GroupName({
   // Don't create a nested link if the whole card is already clickable
   if (url && !isCardClickable) {
     const linkElement = (
-      <Link
-        href={url}
-        className="gencl:cursor-pointer hover:gencl:underline focus:gencl:outline-none"
-      >
+      <Link href={url} className="gencl:cursor-pointer hover:gencl:underline focus:gencl:outline-none">
         {nameElement}
       </Link>
     );
@@ -111,10 +101,7 @@ export function GroupCard({
   const isCardClickable = variant === "recent" || variant === "suggestion";
 
   const cardContent = (
-    <div
-      className={cn(groupCardVariants({ variant }), className)}
-      {...restProps}
-    >
+    <div className={cn(groupCardVariants({ variant }), className)} {...restProps}>
       <div className={groupCardContentVariants({ variant })}>
         {variant === "explore" ? (
           <>
@@ -326,10 +313,7 @@ export function GroupCard({
     );
 
     // For recent variant, wrap with DialogClose when shouldCloseModal is true
-    if (
-      shouldCloseModal &&
-      (variant === "recent" || variant === "suggestion")
-    ) {
+    if (shouldCloseModal && (variant === "recent" || variant === "suggestion")) {
       return <DialogClose asChild>{linkElement}</DialogClose>;
     }
 
@@ -360,14 +344,9 @@ export function GroupCardSkeleton({
           </div>
           <div className="gencl:flex gencl:items-center gencl:gap-2">
             {Array.from({ length: 4 }).map((_, idx, arr) => (
-              <div
-                key={idx}
-                className="gencl:flex gencl:items-center gencl:gap-2"
-              >
+              <div key={idx} className="gencl:flex gencl:items-center gencl:gap-2">
                 <Skeleton className="gencl:w-18 gencl:h-4 gencl:rounded-md" />
-                {idx < arr.length - 1 && (
-                  <Skeleton className="gencl:w-1 gencl:h-1 gencl:rounded-md" />
-                )}
+                {idx < arr.length - 1 && <Skeleton className="gencl:w-1 gencl:h-1 gencl:rounded-md" />}
               </div>
             ))}
           </div>
@@ -379,10 +358,7 @@ export function GroupCardSkeleton({
             <Skeleton className="gencl:w-[60%] gencl:h-6 gencl:rounded-md" />
             <div className="gencl:flex gencl:items-center gencl:gap-2">
               {Array.from({ length: 3 }).map((_, idx) => (
-                <Skeleton
-                  key={idx}
-                  className="gencl:w-16 gencl:h-4 gencl:rounded-md"
-                />
+                <Skeleton key={idx} className="gencl:w-16 gencl:h-4 gencl:rounded-md" />
               ))}
             </div>
           </div>
@@ -414,10 +390,7 @@ export function GroupCardSkeleton({
             <Skeleton className="gencl:w-[80%] gencl:h-4 gencl:rounded-md" />
             <div className="gencl:flex gencl:items-center gencl:gap-2">
               {Array.from({ length: 2 }).map((_, idx) => (
-                <Skeleton
-                  key={idx}
-                  className="gencl:w-12 gencl:h-3 gencl:rounded-md"
-                />
+                <Skeleton key={idx} className="gencl:w-12 gencl:h-3 gencl:rounded-md" />
               ))}
             </div>
           </div>

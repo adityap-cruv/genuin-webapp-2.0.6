@@ -1,13 +1,8 @@
-import { useBaseContext } from "@genuin/components/context/base";
 import { useState, useEffect, useMemo } from "react";
 
-function useShowLinkouts({
-  linkoutId,
-  isActive,
-}: {
-  linkoutId: number | null | undefined;
-  isActive: boolean;
-}) {
+import { useBaseContext } from "../context";
+
+export function useShowLinkouts({ linkoutId, isActive }: { linkoutId: number | null | undefined; isActive: boolean }) {
   const [showLinkouts, setShowLinkouts] = useState(false);
   const { brandDetails } = useBaseContext();
 
@@ -40,5 +35,3 @@ function useShowLinkouts({
 
   return { showLinkouts };
 }
-
-export default useShowLinkouts;

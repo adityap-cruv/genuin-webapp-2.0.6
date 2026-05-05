@@ -1,15 +1,14 @@
 import type { Meta, StoryFn } from "@storybook/react-vite";
 
-import { BaseLayout } from "@genuin/components/templates/base-layout";
-
 import { Home } from "@genuin/components/page/home";
+import { BaseLayout } from "@genuin/components/templates/base-layout";
 
 export default {
   title: "Page/Home",
   component: Home,
   decorators: [
     (Story) => (
-      <BaseLayout search={undefined}>
+      <BaseLayout>
         <Story />
       </BaseLayout>
     ),
@@ -18,5 +17,5 @@ export default {
 
 const Template: StoryFn = (args) => <Home {...args} />;
 
-export const Default = Template.bind({});
+export const Default: StoryFn = Template.bind({});
 Default.args = {};

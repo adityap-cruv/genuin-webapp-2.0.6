@@ -1,10 +1,12 @@
 "use client";
 import { getUrlForReaction } from "@genuin/ui/utils";
 import { createContext, useContext } from "react";
-import type { BrandDetailsConfigType } from "@genuin/components/types/brand";
+
 import type { PlaybackSpeedType } from "@genuin/components/molecules/feed-player/context/types";
-import { createBaseEventBus } from "./event-bus";
-import { FeedContextManager } from "./feed-context-manager";
+import type { BrandDetailsConfigType } from "@genuin/components/types/brand";
+
+import type { createBaseEventBus } from "./event-bus";
+import type { FeedContextManager } from "./feed-context-manager";
 
 const DEFAULT_WEB_CONFIGS: BrandDetailsConfigType["web_configs"] = {
   video_autoplay: {

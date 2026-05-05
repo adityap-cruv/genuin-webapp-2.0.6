@@ -1,22 +1,15 @@
-import js from "@eslint/js";
-import eslintConfigPrettier from "eslint-config-prettier";
+import pluginImport from "eslint-plugin-import";
 import pluginReact from "eslint-plugin-react";
 import pluginReactHooks from "eslint-plugin-react-hooks";
 import globals from "globals";
-import tseslint from "typescript-eslint";
-import pluginImport from "eslint-plugin-import";
-
-import baseConfig from "./base.js";
 
 /**
- * A custom ESLint configuration for libraries that use React.
+ * ESLint configuration for React library packages.
+ * Extends base — do not include base, js.configs.recommended, or tseslint here.
  *
- * @type {import("eslint").Linter.Config} */
+ * @type {import("eslint").Linter.Config[]}
+ */
 export default [
-  ...baseConfig,
-  js.configs.recommended,
-  eslintConfigPrettier,
-  ...tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,
   {
     languageOptions: {
@@ -43,33 +36,29 @@ export default [
     },
     rules: {
       ...pluginReactHooks.configs.recommended.rules,
-      // React scope no longer necessary with new JSX transform.
       "react/react-in-jsx-scope": "off",
       "react/prop-types": "off",
-      // Import rules
       "import/no-unresolved": "error",
       "import/named": "error",
       "import/default": "error",
       "import/order": [
         "error",
         {
-          groups: [
-            "builtin",
-            "external",
-            "internal",
-            "parent",
-            "sibling",
-            "index",
+          groups: ["builtin", "external", "internal", "parent", "sibling", "index"],
+          // CSS side-effect imports (e.g. "swiper/css", "foo.css") must be last.
+          pathGroups: [
+            { pattern: "**/*.css", group: "index", position: "after" },
+            { pattern: "*/css", group: "index", position: "after" },
+            { pattern: "*/css/**", group: "index", position: "after" },
           ],
+          // Allow external CSS packages (e.g. swiper/css) to match pathGroups.
+          pathGroupsExcludedImportTypes: ["builtin"],
           "newlines-between": "always",
           alphabetize: { order: "asc" },
+          warnOnUnassignedImports: true,
         },
       ],
-      // Enforce using 'import type' for type-only imports
-      "@typescript-eslint/consistent-type-imports": [
-        "error",
-        { prefer: "type-imports" },
-      ],
+      "@typescript-eslint/consistent-type-imports": ["error", { prefer: "type-imports" }],
     },
   },
 ];

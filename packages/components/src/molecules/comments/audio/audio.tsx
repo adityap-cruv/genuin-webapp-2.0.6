@@ -1,23 +1,18 @@
 "use client";
 
-import React, {
-  useState,
-  useRef,
-  useEffect,
-  useCallback,
-  useId,
-  ComponentProps,
-  memo,
-} from "react";
-import { PlayIcon } from "@genuin/ui/icons";
-import { useInView } from "@genuin/components/hooks/use-in-view";
-import { PauseIcon } from "@genuin/ui/icons";
 import { AudioPlayer } from "@genuin/ui/audio-player";
 import { BarWaveform } from "@genuin/ui/audio-player";
-import { formatTime } from "./utils";
-import { audioManager } from "@genuin/components/lib/audio-manager";
+import { PauseIcon } from "@genuin/ui/icons";
+import { PlayIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
+import React, { useState, useRef, useEffect, useCallback, useId, memo } from "react";
+import type { ComponentProps } from "react";
+
 import { useBaseContext } from "@genuin/components/context";
+import { useInView } from "@genuin/components/hooks/use-in-view";
+import { audioManager } from "@genuin/components/lib/audio-manager";
+
+import { formatTime } from "./utils";
 
 type AudioWaveformPlayerProps = ComponentProps<"div"> & {
   audioUrl: string;
@@ -33,18 +28,14 @@ type AudioWaveformPlayerProps = ComponentProps<"div"> & {
   onPlay?: () => void;
   onPause?: () => void;
   onEnded?: () => void;
-  onProgress?: (
-    progress: number,
-    currentTime: number,
-    duration: number,
-  ) => void;
+  onProgress?: (progress: number, currentTime: number, duration: number) => void;
   className?: string;
   showExpandView?: boolean;
 };
 
 const sampleData = [
-  0.2, 0.3, 0.5, 0.7, 0.2, 0.4, 0.9, 0.9, 0.2, 0.1, 0.4, 0.9, 0.8, 0.5, 0.9,
-  0.7, 0.3, 0.8, 1.0, 0.8, 0.7, 0.2, 0.1, 0.9, 1.0, 0.9, 0.8, 0.1, 0.8, 0.5,
+  0.2, 0.3, 0.5, 0.7, 0.2, 0.4, 0.9, 0.9, 0.2, 0.1, 0.4, 0.9, 0.8, 0.5, 0.9, 0.7, 0.3, 0.8, 1.0, 0.8, 0.7, 0.2, 0.1,
+  0.9, 1.0, 0.9, 0.8, 0.1, 0.8, 0.5,
 ];
 
 const CANVAS_HEIGHT = 35;
@@ -92,7 +83,7 @@ export const Audio = memo(
           onProgress?.(newProgress, current, total);
         }
       },
-      [onProgress],
+      [onProgress]
     );
 
     const onLoad = (e: React.SyntheticEvent<HTMLAudioElement, Event>) => {
@@ -114,9 +105,7 @@ export const Audio = memo(
     };
 
     // Audio ended
-    const handleAudioEnded = (
-      e: React.SyntheticEvent<HTMLAudioElement, Event>,
-    ) => {
+    const handleAudioEnded = (e: React.SyntheticEvent<HTMLAudioElement, Event>) => {
       const audioRef = e.currentTarget;
       setIsPlaying(false);
       setProgress(0);
@@ -160,32 +149,15 @@ export const Audio = memo(
     useEffect(() => {
       const canvas = document.getElementById(canvasId) as HTMLCanvasElement;
       const audioElement = audioRef.current;
-      const progressCanvas = document.getElementById(
-        progressCanvasId,
-      ) as HTMLCanvasElement;
-      const upperProgressDiv = document.getElementById(
-        upperProgressCanvasId,
-      ) as HTMLDivElement;
-      if (!canvas || !audioElement || !progressCanvas || !upperProgressDiv)
-        return;
+      const progressCanvas = document.getElementById(progressCanvasId) as HTMLCanvasElement;
+      const upperProgressDiv = document.getElementById(upperProgressCanvasId) as HTMLDivElement;
+      if (!canvas || !audioElement || !progressCanvas || !upperProgressDiv) return;
       progressCanvas.style.setProperty("width", canvas.clientWidth + "px");
 
-      const waveform = new BarWaveform(
-        canvas,
-        showExpandView ? 10 : 6,
-        8,
-        "#D4D7D9",
-        "center",
-      );
+      const waveform = new BarWaveform(canvas, showExpandView ? 10 : 6, 8, "#D4D7D9", "center");
       waveform.drawWaveform(getSampleData());
 
-      const progressWave = new BarWaveform(
-        progressCanvas,
-        showExpandView ? 10 : 6,
-        8,
-        "#939aa1",
-        "center",
-      );
+      const progressWave = new BarWaveform(progressCanvas, showExpandView ? 10 : 6, 8, "#939aa1", "center");
 
       progressWave.drawWaveform(getSampleData());
 
@@ -199,10 +171,7 @@ export const Audio = memo(
 
       function handleTimeUpdate() {
         if (!audioElement || audioElement.duration === 0) return;
-        upperProgressDiv.style.setProperty(
-          "width",
-          `${(audioElement.currentTime / audioElement.duration) * 100}%`,
-        );
+        upperProgressDiv.style.setProperty("width", `${(audioElement.currentTime / audioElement.duration) * 100}%`);
       }
 
       audioElement.addEventListener("timeupdate", handleTimeUpdate);
@@ -213,56 +182,33 @@ export const Audio = memo(
     }, []);
 
     return (
-      <div
-        className={cn("gencl:w-full gencl:h-14 gencl:pr-6", className)}
-        {...props}
-      >
+      <div className={cn("gencl:w-full gencl:h-14 gencl:pr-6", className)} {...props}>
         <div
           ref={elementRef}
-          className="gencl:flex gencl:w-3/5 gencl:items-center gencl:rounded-lg gencl:border gencl:gap-4 gencl:border-secondary-150 gencl:p-2"
-        >
-          <button
-            ref={btnRef}
-            onClick={togglePlayPause}
-            className="gencl:focus:outline-none"
-          >
-            {shouldPlay ? (
-              <PauseIcon theme="light" />
-            ) : (
-              <PlayIcon theme="light" />
-            )}
+          className="gencl:flex gencl:w-3/5 gencl:items-center gencl:rounded-lg gencl:border gencl:gap-4 gencl:border-secondary-150 gencl:p-2">
+          <button ref={btnRef} onClick={togglePlayPause} className="gencl:focus:outline-none">
+            {shouldPlay ? <PauseIcon theme="light" /> : <PlayIcon theme="light" />}
           </button>
           {/* Waveform replaces pipeHeights */}
-          <div
-            className="gencl:relative gencl:w-full"
-            style={{ height: CANVAS_HEIGHT }}
-          >
-            <canvas
-              className="gencl:w-full"
-              style={{ height: CANVAS_HEIGHT }}
-              id={canvasId}
-            />
+          <div className="gencl:relative gencl:w-full" style={{ height: CANVAS_HEIGHT }}>
+            <canvas className="gencl:w-full" style={{ height: CANVAS_HEIGHT }} id={canvasId} />
             <div
               id={upperProgressCanvasId}
               style={{
                 height: CANVAS_HEIGHT,
                 width: "0px",
               }}
-              className="gencl:overflow-clip gencl:absolute gencl:top-0 gencl:left-0"
-            >
+              className="gencl:overflow-clip gencl:absolute gencl:top-0 gencl:left-0">
               <canvas
                 className="gencl:w-full"
                 style={{
                   height: CANVAS_HEIGHT,
                 }}
-                id={progressCanvasId}
-              ></canvas>
+                id={progressCanvasId}></canvas>
             </div>
           </div>
           <div className="gencl:ml-3 gencl:h-full gencl:flex gencl:items-center gencl:text-secondary-500">
-            {isPlaying
-              ? formatTime(currentTime)
-              : formatTime(currentTime === 0 ? duration : currentTime)}
+            {isPlaying ? formatTime(currentTime) : formatTime(currentTime === 0 ? duration : currentTime)}
           </div>
           <AudioPlayer
             ref={getAudioRef}
@@ -275,5 +221,7 @@ export const Audio = memo(
         </div>
       </div>
     );
-  },
+  }
 );
+
+Audio.displayName = "Audio";

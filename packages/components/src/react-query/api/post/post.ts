@@ -1,7 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { useAxiosInstance } from "@genuin/components/context/axios";
-import { API_PATHS } from "../../paths";
 import type { AxiosInstance } from "axios";
+
+import { useAxiosInstance } from "@genuin/components/context/axios";
+
+import { API_PATHS } from "../../paths";
 
 /**
  * Fetch communities with groups list for a given brand ID.
@@ -27,6 +29,6 @@ export function useGetCommunityGroupList() {
 
   return useQuery({
     queryKey: ["brandId"],
-    queryFn: (context) => fetchCommunityGroupList(axiosInstance),
+    queryFn: (_context) => fetchCommunityGroupList(axiosInstance),
   });
 }

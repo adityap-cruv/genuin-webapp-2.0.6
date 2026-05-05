@@ -1,8 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
+import type { AxiosInstance } from "axios";
+
 import { useAxiosInstance } from "@genuin/components/context/axios";
 import { API_PATHS } from "@genuin/components/react-query/paths";
-import { GroupUserStatusType } from "@genuin/components/types/roles";
-import type { AxiosInstance } from "axios";
+import type { GroupUserStatusType } from "@genuin/components/types/roles";
 
 /**
  * Function to join a group.
@@ -13,9 +14,7 @@ async function joinGroup({ groupId }: { groupId: string }, axiosInstance: AxiosI
       chat_id: groupId,
     })
     .then((res) => {
-      return res.data.data.status === "requested"
-        ? "REQUESTED"
-        : ("JOINED" as GroupUserStatusType);
+      return res.data.data.status === "requested" ? "REQUESTED" : ("JOINED" as GroupUserStatusType);
     })
     .catch((e) => {
       // return { code: Number(e.response.data.code), data: null };

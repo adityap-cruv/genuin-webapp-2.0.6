@@ -1,11 +1,11 @@
 "use client";
+import { Chip } from "@genuin/ui/components/chip";
 import type { ComponentProps } from "react";
+
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 import { BrandBadge } from "../brand-badge";
 import { Link } from "../link";
-import { Chip } from "@genuin/ui/components/chip";
-
-import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 type ProfileLinkPropsType = {
   url?: string;
@@ -20,25 +20,17 @@ type ProfileLinkPropsType = {
   isOwner?: boolean;
 } & ComponentProps<"p">;
 
-export function ProfileLink({
-  url,
-  userLogoType,
-  isOwner,
-  children,
-  ...restProps
-}: ProfileLinkPropsType) {
+export function ProfileLink({ url, userLogoType, isOwner, children, ...restProps }: ProfileLinkPropsType) {
   const {
     view: { isCarousel, isFeed },
   } = useEmbedConfigs();
 
   return (
-    <Link href={url}>
+    <Link href={url ?? ""}>
       <div className="gencl:flex gencl:items-center gencl:gap-1">
         <p {...restProps}>{children}</p>
         {isOwner && <Chip>Owner</Chip>}
-        {userLogoType && !(isCarousel || isFeed) && (
-          <BrandBadge userLogoType={userLogoType} variant="dark" />
-        )}
+        {userLogoType && !(isCarousel || isFeed) && <BrandBadge userLogoType={userLogoType} variant="dark" />}
       </div>
     </Link>
   );

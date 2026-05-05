@@ -1,14 +1,12 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTrigger,
-} from "@genuin/ui/components/dialog";
-import { ComponentProps, ReactNode } from "react";
-import { CommentsList } from "./comments-list";
-import { CommentInputBox } from "./comment-input";
+import { Dialog, DialogContent, DialogHeader, DialogTrigger } from "@genuin/ui/components/dialog";
+import type { ComponentProps, ReactNode } from "react";
+
+import type { VideoTypes } from "@genuin/components/context";
+import { useBaseContext } from "@genuin/components/context";
 import { setQueryDataForNewComment } from "@genuin/components/react-query/api/comments";
-import { useBaseContext, VideoTypes } from "@genuin/components/context";
+
+import { CommentInputBox } from "./comment-input";
+import { CommentsList } from "./comments-list";
 
 type CommentDialogProps = {
   communityId: string;
@@ -45,22 +43,15 @@ export function CommentsDialog({
 }: CommentDialogProps) {
   const { useShadowDOM } = useBaseContext();
   return (
-    <Dialog
-      type="comment-dialog"
-      defaultOpen={defaultOpen}
-      onOpenChange={onOpenChange}
-    >
+    <Dialog type="comment-dialog" defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
       <DialogTrigger className={className} {...props}>
         {children}
       </DialogTrigger>
       <DialogContent
         autoFocus={false}
         onOpenAutoFocus={(e) => e.preventDefault()}
-        className="gencl:max-h-[80vh] gencl:flex gencl:flex-col gencl:overflow-clip gencl:h-full gencl:p-0 gencl:gap-0"
-      >
-        <DialogHeader className="gencl:py-4 gencl:text-body-0-semi-bold">
-          Comments({commentCount})
-        </DialogHeader>
+        className="gencl:max-h-[80vh] gencl:flex gencl:flex-col gencl:overflow-clip gencl:h-full gencl:p-0 gencl:gap-0">
+        <DialogHeader className="gencl:py-4 gencl:text-body-0-semi-bold">Comments({commentCount})</DialogHeader>
         <CommentsList
           videoId={videoId}
           showCloseButton={false}

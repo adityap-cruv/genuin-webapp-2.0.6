@@ -1,14 +1,17 @@
+import { Button } from "@genuin/ui/button";
+import { lazy, Suspense, type ComponentPropsWithoutRef } from "react";
+
 import { useAuthContext } from "@genuin/components/context";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import { lazy, Suspense, type ComponentPropsWithoutRef } from "react";
+import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
+
+import { Link } from "../link";
+
 const AuthenticationModal = lazy(() =>
-  import("../../organisms/authentication-modal/index.js").then((m) => ({
+  import("@genuin/components/organisms/authentication-modal").then((m) => ({
     default: m.AuthenticationModal,
   }))
 );
-import { Button } from "@genuin/ui/button";
-import { Link } from "../link";
-import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
 
 type BecomeCreatorButtonPropsType = Omit<
   ComponentPropsWithoutRef<typeof Button> & {
@@ -17,12 +20,7 @@ type BecomeCreatorButtonPropsType = Omit<
   "children"
 > & { shareUrl: string };
 
-export function BecomeCreatorButton({
-  buttonText,
-  size,
-  shareUrl,
-  ...restProps
-}: BecomeCreatorButtonPropsType) {
+export function BecomeCreatorButton({ buttonText, size, shareUrl, ...restProps }: BecomeCreatorButtonPropsType) {
   const { handleAuthCallback, user } = useAuthContext();
   const { modalConfig } = useEmbedConfigs();
 

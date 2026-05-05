@@ -1,17 +1,20 @@
+import { axiosInstance } from "@genuin/components/context/axios/context";
+import { getLoopAndCommunityShareString, getSearchParamsFromWindow, toTitleCase } from "@genuin/components/lib/utils";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { generateDeepLink } from "@genuin/components/react-query/api/deeplink";
-import { 
-  CommentActionData, 
-  JoinCollaboratorActionData, 
-  JoinCommunityActionData, 
-  ReportActionData, 
-  RepostActionData, 
-  SparkActionData, 
+
+import type {
+  CommentActionData,
+  JoinCollaboratorActionData,
+  JoinCommunityActionData,
+  JoinGroupActionData,
+  ReportActionData,
+  RepostActionData,
+  SparkActionData,
   SubscribeActionData,
   DeepLinkActionType,
-  DeepLinkActionData
+  DeepLinkActionData,
 } from "./types";
-import { getLoopAndCommunityShareString, getSearchParamsFromWindow, toTitleCase } from "@genuin/components/lib/utils";
 
 // Types
 type DeepLinkActionRegistry = {
@@ -40,34 +43,34 @@ interface ActionBuilder<T extends ActionType> {
 // Action builders with reduced duplication
 const ACTION_BUILDERS: Record<ActionType, ActionBuilder<any>> = {
   subscribe: {
-    action: 'subscribe',
-    contentType: 'loop',
+    action: "subscribe",
+    contentType: "loop",
     buildOptions: (data: SubscribeActionData) => ({
-      contentType: 'loop',
+      contentType: "loop",
       description: data.ldDescription,
       title: data.groupName,
-      community: getLoopAndCommunityShareString(data.shareUrl).communityShareString ?? '',
+      community: getLoopAndCommunityShareString(data.shareUrl).communityShareString ?? "",
       searchParams: data.searchParams ?? getSearchParamsFromWindow(),
     }),
   },
 
   join_as_collaborator: {
-    action: '',
-    contentType: 'loop',
+    action: "",
+    contentType: "loop",
     buildOptions: (data: JoinCollaboratorActionData) => ({
-      contentType: 'loop',
+      contentType: "loop",
       description: data.ldDescription,
       title: data.groupName,
-      community: getLoopAndCommunityShareString(data.shareUrl).communityShareString ?? '',
+      community: getLoopAndCommunityShareString(data.shareUrl).communityShareString ?? "",
       searchParams: data.searchParams ?? getSearchParamsFromWindow(),
     }),
   },
 
   join_community: {
-    action: 'join',
-    contentType: 'community',
+    action: "join",
+    contentType: "community",
     buildOptions: (data: JoinCommunityActionData) => ({
-      contentType: 'community',
+      contentType: "community",
       description: `Find your people. Find what you love. | Join ${data.communityName} to talk about it`,
       title: `join ${data.communityName}`,
       searchParams: data.searchParams ?? getSearchParamsFromWindow(),
@@ -76,11 +79,11 @@ const ACTION_BUILDERS: Record<ActionType, ActionBuilder<any>> = {
   },
 
   comment: {
-    action: 'comment',
-    contentType: 'video',
+    action: "comment",
+    contentType: "video",
     buildOptions: (data: CommentActionData) => ({
-      contentType: 'video',
-      pathName: buildPageUrl({ type: 'video', slug: data.videoSlug }),
+      contentType: "video",
+      pathName: buildPageUrl({ type: "video", slug: data.videoSlug }),
       community: data.communityId,
       loop: data.loopId,
       title: `comment on ${data.videoSlug} video`,
@@ -89,62 +92,77 @@ const ACTION_BUILDERS: Record<ActionType, ActionBuilder<any>> = {
   },
 
   repost: {
-    action: 'repost',
-    contentType: 'video',
+    action: "repost",
+    contentType: "video",
     buildOptions: (data: RepostActionData) => ({
-      contentType: 'video',
-      pathName: buildPageUrl({ type: 'video', slug: data.videoSlug }),
-      community: getLoopAndCommunityShareString(data.shareUrl).communityShareString ?? '',
-      loop: getLoopAndCommunityShareString(data.shareUrl).loopShareString ?? '',
+      contentType: "video",
+      pathName: buildPageUrl({ type: "video", slug: data.videoSlug }),
+      community: getLoopAndCommunityShareString(data.shareUrl).communityShareString ?? "",
+      loop: getLoopAndCommunityShareString(data.shareUrl).loopShareString ?? "",
       title: `repost ${data.videoSlug} video`,
       searchParams: data.searchParams ?? getSearchParamsFromWindow(),
     }),
   },
 
   spark: {
-    action: 'spark',
-    contentType: 'video',
+    action: "spark",
+    contentType: "video",
     buildOptions: (data: SparkActionData) => ({
-      contentType: 'video',
-      pathName: buildPageUrl({ type: 'video', slug: data.videoSlug }),
-      community: getLoopAndCommunityShareString(data.shareUrl).communityShareString ?? '',
-      loop: getLoopAndCommunityShareString(data.shareUrl).loopShareString ?? '',
+      contentType: "video",
+      pathName: buildPageUrl({ type: "video", slug: data.videoSlug }),
+      community: getLoopAndCommunityShareString(data.shareUrl).communityShareString ?? "",
+      loop: getLoopAndCommunityShareString(data.shareUrl).loopShareString ?? "",
       title: `${toTitleCase(data.reactionTitle)} ${data.reactionSuffix} the ${data.videoSlug} video`,
       searchParams: data.searchParams ?? getSearchParamsFromWindow(),
     }),
   },
 
   report: {
-    action: 'report',
-    contentType: 'video',
+    action: "report",
+    contentType: "video",
     buildOptions: (data: ReportActionData) => ({
-      contentType: 'video',
-      pathName: buildPageUrl({ type: 'video', slug: data.videoSlug }),
-      community: getLoopAndCommunityShareString(data.shareUrl).communityShareString ?? '',
-      loop: getLoopAndCommunityShareString(data.shareUrl).loopShareString ?? '',
+      contentType: "video",
+      pathName: buildPageUrl({ type: "video", slug: data.videoSlug }),
+      community: getLoopAndCommunityShareString(data.shareUrl).communityShareString ?? "",
+      loop: getLoopAndCommunityShareString(data.shareUrl).loopShareString ?? "",
       title: `report ${data.videoSlug} video`,
       searchParams: data.searchParams ?? getSearchParamsFromWindow(),
     }),
   },
 
+  join_group: {
+    action: "join",
+    contentType: "group",
+    buildOptions: (data: JoinGroupActionData) => ({
+      contentType: "group",
+      description: data.groupName ? `Join ${data.groupName}` : undefined,
+      title: data.groupName ? `join ${data.groupName}` : undefined,
+      searchParams: data.searchParams ?? getSearchParamsFromWindow(),
+      pathName: data.slug ? `/group/${data.slug}` : undefined,
+    }),
+  },
+
+  video: {
+    action: "video",
+    contentType: "video",
+    buildOptions: () => ({}),
+  },
+
   get_app: {
-    action: '/',
+    action: "/",
     buildOptions: () => ({}),
   },
 } as const;
 
-async function createDeepLink<T extends ActionType>(
-  actionType: T,
-  data: DeepLinkActionRegistry[T]
-): Promise<string> {
+async function createDeepLink<T extends ActionType>(actionType: T, data: DeepLinkActionRegistry[T]): Promise<string> {
   const builder = ACTION_BUILDERS[actionType];
-  
+
   if (!builder) {
     throw new Error(`Unsupported action type: ${actionType}`);
   }
-  
+
   const options = builder.buildOptions(data);
-  
+
   // Build parameters directly from options
   const params = {
     contentType: options.contentType ?? "",
@@ -163,22 +181,22 @@ async function createDeepLink<T extends ActionType>(
   };
 
   try {
-    return await generateDeepLink(params);
-  } catch (error) {
+    return await generateDeepLink(params, axiosInstance);
+  } catch (_error) {
     // window.open(process.env.NEXT_PUBLIC_HOST_URL);
     throw new Error(`Failed to generate deep link for action: ${builder.action}`);
   }
 }
 
 export const deepLinkActions = {
-  subscribe: (data: SubscribeActionData) => createDeepLink('subscribe', data),
-  joinAsCollaborator: (data: JoinCollaboratorActionData) => createDeepLink('join_as_collaborator', data),
-  joinCommunity: (data: JoinCommunityActionData) => createDeepLink('join_community', data),
-  comment: (data: CommentActionData) => createDeepLink('comment', data),
-  repost: (data: RepostActionData) => createDeepLink('repost', data),
-  spark: (data: SparkActionData) => createDeepLink('spark', data),
-  report: (data: ReportActionData) => createDeepLink('report', data),
-  getApp: () => createDeepLink('get_app', {}),
+  subscribe: (data: SubscribeActionData) => createDeepLink("subscribe", data),
+  joinAsCollaborator: (data: JoinCollaboratorActionData) => createDeepLink("join_as_collaborator", data),
+  joinCommunity: (data: JoinCommunityActionData) => createDeepLink("join_community", data),
+  comment: (data: CommentActionData) => createDeepLink("comment", data),
+  repost: (data: RepostActionData) => createDeepLink("repost", data),
+  spark: (data: SparkActionData) => createDeepLink("spark", data),
+  report: (data: ReportActionData) => createDeepLink("report", data),
+  getApp: () => createDeepLink("get_app", {}),
 } as const;
 
 // Usage examples:

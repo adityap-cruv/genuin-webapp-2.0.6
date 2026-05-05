@@ -1,37 +1,27 @@
 {
   "extends": "@genuin/typescript-config/react-library.json",
   "compilerOptions": {
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "baseUrl": ".",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "composite": true,
+    "incremental": true,
+    "outDir": "dist/types",
+    "rootDir": "src",
     "paths": {
-      "@genuin/ui": [
-        "../ui/src"
-      ],
-      "@genuin/ui/*": [
-        "../ui/src/*"
-      ],
-      "@genuin/components": [
-        "./src"
-      ],
-      "@genuin/components/*": [
-        "./src/*"
-      ],
+      "@genuin/components": ["./src/index.ts"],
+      "@genuin/components/*": ["./src/*"],
+      "@genuin/ui": ["../ui/src"],
+      "@genuin/ui/*": ["../ui/src/*"]
     },
-    "types": [
-      "eslint",
-      "react"
-    ],
+    "types": ["react"],
     "resolveJsonModule": true,
     "esModuleInterop": true
   },
-  "include": [
-    "src",
-    "vite-env.d.ts",
-  ],
-  "exclude": [
-    "dist",
-    "build",
-    "**/node_modules/**",
+  "include": ["src", "src/**/*.json"],
+  "exclude": ["dist", "build", "**/node_modules/**", "**/*.stories.tsx", "**/*.stories.ts", ".storybook"],
+  "references": [
+    {
+      "path": "../ui"
+    }
   ]
 }

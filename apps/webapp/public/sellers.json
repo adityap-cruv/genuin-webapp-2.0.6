@@ -65,6 +65,41 @@
       "name": "Genuin Studio",
       "domain": "begenuin.com",
       "is_confidential": 0
+    },
+    {
+      "seller_id": "1729",
+      "seller_type": "PUBLISHER",
+      "name": "iHeartMedia",
+      "domain": "iheart.com",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "2476",
+      "seller_type": "PUBLISHER",
+      "name": "US Weekly",
+      "domain": "usmagazine.com",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "2801",
+      "seller_type": "PUBLISHER",
+      "name": "Bargain Hunter",
+      "domain": "bargainhunter.com",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "2808",
+      "seller_type": "PUBLISHER",
+      "name": "Life and Style",
+      "domain": "lifeandstylemag.com",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "3099",
+      "seller_type": "PUBLISHER",
+      "name": "Kansas City Star",
+      "domain": "kansascity.com",
+      "is_confidential": 0
     }
   ]
 }

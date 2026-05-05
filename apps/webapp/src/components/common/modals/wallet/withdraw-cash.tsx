@@ -1,90 +1,92 @@
-import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Button } from '@/components/ui/button'
-import { Form, FormField, FormItem, FormControl, FormMessage } from '@components/ui/form'
-import { Input } from '@components/ui/input'
-import { cn, sanitizeInput } from '@/lib/utils'
-import { Loader } from '@/components/ui/loader'
-import { ModalShell } from '../authentication/modal-shell'
-import { useWalletStore } from '../../wallet/store'
-import { cashWithdrawAPI, getBalanceAPI } from '@/lib/api/wallet'
-import { useShallow } from 'zustand/react/shallow'
-import { useAuthenticationModalStore } from '../authentication/store'
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
+
+import { Button } from "@/components/ui/button";
+import { Loader } from "@/components/ui/loader";
+import { cashWithdrawAPI, getBalanceAPI } from "@/lib/api/wallet";
+import { cn, sanitizeInput } from "@/lib/utils";
+import { Form, FormField, FormItem, FormControl, FormMessage } from "@components/ui/form";
+import { Input } from "@components/ui/input";
+
+import { useWalletStore } from "../../wallet/store";
+import { ModalShell } from "../authentication/modal-shell";
+import { useAuthenticationModalStore } from "../authentication/store";
 
 // Define the schema with an optional `cash_balance` parameter
 const createSchema = (cashBalance: number) =>
   z.object({
     amount: z
       .string()
-      .min(1, { message: 'Required' })
+      .min(1, { message: "Required" })
       .refine(
         (value) => {
-          const numberValue = Number(value)
-          if (numberValue === 0) return true
-          return !isNaN(numberValue) && numberValue > 0 && numberValue <= cashBalance / 100
+          const numberValue = Number(value);
+          if (numberValue === 0) return true;
+          return !isNaN(numberValue) && numberValue > 0 && numberValue <= cashBalance / 100;
         },
         { message: `Value cannot be greater than $${cashBalance / 100}` }
       ),
-  })
+  });
 
 export function WithdrawDialog() {
-  const { walletDetails, setWalletDetails } = useWalletStore()
-  const [isLoading, setIsLoading] = useState(false)
-  const { closeModal } = useAuthenticationModalStore(useShallow((state) => ({ closeModal: state.close })))
-  const [errorMessage, setErrorMessage] = useState('')
+  const { walletDetails, setWalletDetails } = useWalletStore();
+  const [isLoading, setIsLoading] = useState(false);
+  const { closeModal } = useAuthenticationModalStore(useShallow((state) => ({ closeModal: state.close })));
+  const [errorMessage, setErrorMessage] = useState("");
 
   // Initialize form with dynamic schema based on walletDetails.cash_balance
-  const schema = createSchema(walletDetails.cash_balance)
+  const schema = createSchema(walletDetails.cash_balance);
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
-    mode: 'onBlur',
+    mode: "onBlur",
     // defaultValues: { amount: 0 },
-  })
+  });
 
   useEffect(() => {
     const watch = form.watch((value) => {
       if (Number(value.amount) <= walletDetails.cash_balance / 100) {
-        form.clearErrors()
-        setErrorMessage('')
+        form.clearErrors();
+        setErrorMessage("");
       } else {
-        form.setError('amount', { message: `Value cannot be greater than $${walletDetails.cash_balance / 100}` })
+        form.setError("amount", { message: `Value cannot be greater than $${walletDetails.cash_balance / 100}` });
       }
-    })
+    });
     return () => {
-      watch.unsubscribe()
-    }
-  }, [form.watch])
+      watch.unsubscribe();
+    };
+  }, [form.watch]);
 
-  const { isValid } = form.formState
+  const { isValid } = form.formState;
 
   async function onSubmit(data: { amount: string }) {
-    setIsLoading(true)
+    setIsLoading(true);
 
-    const redirectUrl = window.location.href
+    const redirectUrl = window.location.href;
 
     try {
-      const withdrawAmount: number = Math.round(Number(sanitizeInput(data.amount)) * 100)
-      const resp = await cashWithdrawAPI({ amount: withdrawAmount, redirectUrl })
+      const withdrawAmount: number = Math.round(Number(sanitizeInput(data.amount)) * 100);
+      const resp = await cashWithdrawAPI({ amount: withdrawAmount, redirectUrl });
 
       if (resp?.data?.code === 200) {
-        closeModal()
+        closeModal();
         if (resp.data.data.url) {
-          window.open(resp.data.data.url, '_self')
+          window.open(resp.data.data.url, "_self");
         }
-        const { wallet } = await getBalanceAPI({ isCurrentBalance: false })
-        setWalletDetails(wallet)
+        const { wallet } = await getBalanceAPI({ isCurrentBalance: false });
+        setWalletDetails(wallet);
       } else {
-        setErrorMessage(resp.data.message)
+        setErrorMessage(resp.data.message);
       }
     } catch (error) {
-      setErrorMessage('An unexpected error occurred.')
+      setErrorMessage("An unexpected error occurred.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
       setTimeout(() => {
-        setErrorMessage('')
-      }, 3000)
+        setErrorMessage("");
+      }, 3000);
     }
   }
 
@@ -108,36 +110,36 @@ export function WithdrawDialog() {
                         placeholder="Enter Amount"
                         type="text"
                         className={cn(
-                          'border border-tertiary-200 bg-tertiary-100 pl-7 text-title-3-med',
-                          form.formState.errors.amount ? '!border-red' : ''
+                          "border-tertiary-200 bg-tertiary-100 text-title-3-med border pl-7",
+                          form.formState.errors.amount ? "!border-red" : ""
                         )}
                         {...field}
                         onChange={(e) => {
-                          let value = e.target.value.replace(/[^0-9.]/g, '')
+                          let value = e.target.value.replace(/[^0-9.]/g, "");
                           // Ensure only two digits after the decimal
-                          if (value.includes('.')) {
-                            const [integerPart, decimalPart] = value.split('.')
-                            value = decimalPart.length > 2 ? `${integerPart}.${decimalPart.slice(0, 2)}` : value
+                          if (value.includes(".")) {
+                            const [integerPart, decimalPart = ""] = value.split(".");
+                            value = decimalPart.length > 2 ? `${integerPart}.${decimalPart.slice(0, 2)}` : value;
                           }
 
                           if (Number(value) === 0) {
-                            form.clearErrors('amount')
-                            setErrorMessage('')
+                            form.clearErrors("amount");
+                            setErrorMessage("");
                           }
 
-                          field.onChange(value)
+                          field.onChange(value);
                         }}
                       />
                     </div>
                   </FormControl>
-                  <FormMessage className={cn('!text-cap-1-demi')} />
+                  <FormMessage className={cn("!text-cap-1-demi")} />
                 </FormItem>
-              )
+              );
             }}
           />
           <Button
             type="submit"
-            disabled={isLoading || !isValid || Number(form.watch('amount')) === 0}
+            disabled={isLoading || !isValid || Number(form.watch("amount")) === 0}
             className="mt-4 flex w-full items-center justify-center border-0">
             {isLoading ? (
               <Loader size="sm" className="fill-monochrome-white stroke-monochrome-white" />
@@ -147,11 +149,11 @@ export function WithdrawDialog() {
           </Button>
         </form>
       </Form>
-      {errorMessage !== '' && (
+      {errorMessage !== "" && (
         <div>
           <p className="text-body-1-med text-supplementary-red">{errorMessage}</p>
         </div>
       )}
     </ModalShell>
-  )
+  );
 }

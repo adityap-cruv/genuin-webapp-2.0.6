@@ -1,7 +1,9 @@
-import { cn, defaultSizesForIcons } from "@genuin/ui/lib/utils";
-import type { SVGIconsProps } from "../type";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
+
+import { cn, defaultSizesForIcons } from "@genuin/ui/lib/utils";
+
+import type { SVGIconsProps } from "../type";
 
 const repostIconVariants = cva("gencl:stroke-black", {
   variants: {
@@ -19,12 +21,7 @@ const repostIconVariants = cva("gencl:stroke-black", {
 
 type RepostIconProps = SVGIconsProps & VariantProps<typeof repostIconVariants>;
 
-export function RepostIcon({
-  className,
-  theme = "light",
-  size = "md",
-  ...restProps
-}: RepostIconProps) {
+export function RepostIcon({ className, theme = "light", size = "md", ...restProps }: RepostIconProps) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -33,8 +30,7 @@ export function RepostIcon({
       viewBox="0 0 33 32"
       fill="none"
       className={cn(repostIconVariants({ theme, size }), className)}
-      {...restProps}
-    >
+      {...restProps}>
       <path
         d="M24.8333 8.94187C23.3665 7.30746 21.4365 6.15555 19.2986 5.63857C17.1608 5.12158 14.9159 5.26388 12.861 6.04663C10.8061 6.82937 9.03793 8.21569 7.79048 10.0222C6.54304 11.8286 5.87508 13.9701 5.875 16.1633V17.0695"
         strokeWidth="2"
@@ -59,18 +55,8 @@ export function RepostIcon({
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <path
-        d="M16.7085 12.5555V19.7778"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M13.0977 16.1666H20.3199"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      <path d="M16.7085 12.5555V19.7778" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M13.0977 16.1666H20.3199" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }

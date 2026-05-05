@@ -1,26 +1,15 @@
-import { useState } from "react";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@genuin/ui/components/accordion";
-import { SelectableList } from "@genuin/components/molecules/selectable-list";
-import { SearchInput } from "@genuin/components/molecules/search-input";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@genuin/ui/components/accordion";
 import { MapPinIcon, XIcon } from "@genuin/ui/icons";
-import { useDebouncedLocations } from "@genuin/components/hooks/use-locations";
-import { useIpInfo } from "@genuin/components/react-query/api/authentication/ip-info";
-import {
-  AddLoactionPanelProps,
-  LocationData,
-  LocationListProps,
-} from "./types";
+import { useState } from "react";
 
-function LocationList({
-  locations,
-  query,
-  handleOnChangeLocation,
-}: LocationListProps) {
+import { useDebouncedLocations } from "@genuin/components/hooks/use-locations";
+import { SearchInput } from "@genuin/components/molecules/search-input";
+import { SelectableList } from "@genuin/components/molecules/selectable-list";
+import { useIpInfo } from "@genuin/components/react-query/api/authentication/ip-info";
+
+import type { AddLoactionPanelProps, LocationData, LocationListProps } from "./types";
+
+function LocationList({ locations, query, handleOnChangeLocation }: LocationListProps) {
   if (!query) return null;
 
   if (locations.length === 0 && query?.length > 0) {
@@ -34,11 +23,7 @@ function LocationList({
   return (
     <SelectableList className="gencl:bg-white gencl:max-h-40 gencl:min-h-30">
       {locations.map((location: LocationData, index: number) => (
-        <SelectableList.Item
-          key={location?.id}
-          index={index}
-          onClick={() => handleOnChangeLocation(location)}
-        >
+        <SelectableList.Item key={location?.id} index={index} onClick={() => handleOnChangeLocation(location)}>
           {location?.name}
         </SelectableList.Item>
       ))}
@@ -46,10 +31,7 @@ function LocationList({
   );
 }
 
-export function AddLoactionPanel({
-  location,
-  onSelectionChange,
-}: AddLoactionPanelProps) {
+export function AddLoactionPanel({ location, onSelectionChange }: AddLoactionPanelProps) {
   const { data } = useIpInfo();
   const [openItem, setOpenItem] = useState("");
   const [query, setQuery] = useState("");
@@ -86,17 +68,10 @@ export function AddLoactionPanel({
   };
 
   return (
-    <Accordion
-      className="gencl:w-full"
-      collapsible
-      type="single"
-      value={openItem}
-      onValueChange={handleOnOpenClose}
-    >
+    <Accordion className="gencl:w-full" collapsible type="single" value={openItem} onValueChange={handleOnOpenClose}>
       <AccordionItem
         className="gencl:border gencl:border-secondary-150 gencl:rounded-lg gencl:overflow-clip"
-        value="item-1"
-      >
+        value="item-1">
         <AccordionTrigger
           className="gencl:text-lg gencl:font-semibold gencl:text-gray-800 gencl:py-2 gencl:px-4"
           openCloseIcon={
@@ -109,8 +84,7 @@ export function AddLoactionPanel({
                 }}
               />
             ) : null
-          }
-        >
+          }>
           <div className="gencl:flex gencl:justify-between gencl:w-full gencl:pr-2">
             <span className="gencl:flex gencl:flex-center gencl:gap-3 gencl:text-body-1-semi-bold">
               <MapPinIcon size="lg" />

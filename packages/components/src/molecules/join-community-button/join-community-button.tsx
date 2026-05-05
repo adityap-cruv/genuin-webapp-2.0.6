@@ -1,27 +1,30 @@
-import React, { useCallback, memo, Suspense, lazy } from "react";
-import type { CommunityUserRole } from "@genuin/components/types/post";
-import { useAuthContext } from "@genuin/components/context/auth";
-import { cn } from "@genuin/ui/lib/utils";
-const AuthenticationModal = React.lazy(() =>
-  import("../../organisms/authentication-modal/index.js").then((m) => ({
-    default: m.AuthenticationModal,
-  }))
-);
 import { Button as PrimitiveButton } from "@genuin/ui/components/button";
+import { Loader } from "@genuin/ui/components/loader";
+import { cn } from "@genuin/ui/lib/utils";
+import { Toast } from "@genuin/ui/toaster";
+import React, { useCallback, memo, Suspense, lazy } from "react";
+
+import { useAnalytics } from "@genuin/components/context/analytics";
+import { useAuthContext } from "@genuin/components/context/auth";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { useRouter } from "@genuin/components/hooks/use-router";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
 import {
   useJoinCommunityMutation,
   useLeaveCommunityMutation,
 } from "@genuin/components/react-query/api/community/join/join";
-import { Loader } from "@genuin/ui/components/loader";
-import { Toast } from "@genuin/ui/toaster";
-import { buildPageUrl } from "@genuin/components/lib/utils/pages";
-import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
-import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import { useAnalytics } from "@genuin/components/context/analytics";
-import { Link } from "../link";
-import { useRouter } from "@genuin/components/hooks/use-router";
 import { setQueryDataForJoinCommunityStatusInFeed } from "@genuin/components/react-query/api/feed";
 import { getPartialQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
+import type { CommunityUserRole } from "@genuin/components/types/post";
+
+import { Link } from "../link";
+
+const AuthenticationModal = React.lazy(() =>
+  import("@genuin/components/organisms/authentication-modal").then((m) => ({
+    default: m.AuthenticationModal,
+  }))
+);
 
 // TODO: lazy load authentication modal.
 type JoinCommunityButtonProps = {
@@ -99,10 +102,7 @@ export const JoinCommunityButton = memo(function JoinCommunityButton({
     // In case of embed hideModal will come true for that case open link in new tab.
     if (modalConfig.hideModal) {
       return (
-        <Link
-          href={buildPageUrl({ type: "community", slug: slug })}
-          target="_blank"
-        >
+        <Link href={buildPageUrl({ type: "community", slug: slug })} target="_blank">
           {button}
         </Link>
       );
@@ -126,8 +126,7 @@ export const JoinCommunityButton = memo(function JoinCommunityButton({
               },
             },
           }}
-          asChild
-        >
+          asChild>
           {button}
         </AuthenticationModal>
       </Suspense>
@@ -180,30 +179,29 @@ function Button({
     },
   });
 
-  const { mutate: leaveCommunity, isPending: isPendingLeaveCommunity } =
-    useLeaveCommunityMutation({
-      onSuccess: (newStatus) => {
-        onCommunityJoinStatusChange?.(newStatus);
-        track(EventName.COMMUNITY_LEFT, {
-          content_id: communityId,
-          slug: slug,
-          community_id: communityId,
-          community_handle: communityHandle,
-          community_name: communityName,
-          is_private: isPrivate,
-          ...(rest.videoId && { video_id: rest.videoId }),
-        });
+  const { mutate: leaveCommunity, isPending: isPendingLeaveCommunity } = useLeaveCommunityMutation({
+    onSuccess: (newStatus) => {
+      onCommunityJoinStatusChange?.(newStatus);
+      track(EventName.COMMUNITY_LEFT, {
+        content_id: communityId,
+        slug: slug,
+        community_id: communityId,
+        community_handle: communityHandle,
+        community_name: communityName,
+        is_private: isPrivate,
+        ...(rest.videoId && { video_id: rest.videoId }),
+      });
 
-        setQueryDataForJoinCommunityStatusInFeed({
-          queryKey: getPartialQueryKeyForFeed(),
-          communityId,
-          newRole: newStatus,
-        });
-      },
-      onError: (error) => {
-        Toast.Error({ message: "Failed to leave community" });
-      },
-    });
+      setQueryDataForJoinCommunityStatusInFeed({
+        queryKey: getPartialQueryKeyForFeed(),
+        communityId,
+        newRole: newStatus,
+      });
+    },
+    onError: (error) => {
+      Toast.Error({ message: "Failed to leave community" });
+    },
+  });
 
   const handleClick = useCallback(
     (e: any) => {
@@ -222,8 +220,7 @@ function Button({
     [onClick, user, role]
   );
 
-  const buttonDisabled =
-    isPending || disabled || isPendingLeaveCommunity || role === "REQUESTED";
+  const buttonDisabled = isPending || disabled || isPendingLeaveCommunity || role === "REQUESTED";
 
   const isLoading = isPending || isPendingLeaveCommunity;
 
@@ -234,21 +231,9 @@ function Button({
       {...rest}
       // when the role is MEMBER, we are adding background color to the button, so we need to override the theme
       className={cn(role === "MEMBER" && "gencl:bg-secondary-50")}
-      theme={
-        theme
-          ? theme
-          : role === "MEMBER"
-            ? "outline"
-            : role === "REQUESTED"
-              ? "secondary"
-              : "primary"
-      }
-    >
+      theme={theme ? theme : role === "MEMBER" ? "outline" : role === "REQUESTED" ? "secondary" : "primary"}>
       {isLoading ? (
-        <Loader
-          size={rest.shape === "pill" ? "xs" : "sm"}
-          strokeColor="black"
-        />
+        <Loader size={rest.shape === "pill" ? "xs" : "sm"} strokeColor="black" />
       ) : (
         (roleTexts[role] ?? DEFAULT_ROLE_TEXTS[role])
       )}

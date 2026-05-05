@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+
 import { Button } from "@genuin/ui/components/button";
 
 import {
@@ -34,8 +35,7 @@ export const Default: Story = {
         <DialogHeader>
           <DialogTitle>Dialog Title</DialogTitle>
           <DialogDescription>
-            This is a description of the dialog. It provides context for the
-            dialog content.
+            This is a description of the dialog. It provides context for the dialog content.
           </DialogDescription>
         </DialogHeader>
         <div className="py-4">
@@ -60,8 +60,7 @@ export const ConfirmationDialog: Story = {
         <DialogHeader>
           <DialogTitle>Are you sure?</DialogTitle>
           <DialogDescription>
-            This action cannot be undone. This will permanently delete the item
-            from our servers.
+            This action cannot be undone. This will permanently delete the item from our servers.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
@@ -82,30 +81,20 @@ export const FormDialog: Story = {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Edit Profile</DialogTitle>
-          <DialogDescription>
-            Make changes to your profile here. Click save when you're done.
-          </DialogDescription>
+          <DialogDescription>Make changes to your profile here. Click save when you&apos;re done.</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
             <label htmlFor="name" className="text-right">
               Name
             </label>
-            <input
-              id="name"
-              className="col-span-3 rounded border p-2"
-              placeholder="Enter your name"
-            />
+            <input id="name" className="col-span-3 rounded border p-2" placeholder="Enter your name" />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <label htmlFor="username" className="text-right">
               Username
             </label>
-            <input
-              id="username"
-              className="col-span-3 rounded border p-2"
-              placeholder="Enter your username"
-            />
+            <input id="username" className="col-span-3 rounded border p-2" placeholder="Enter your username" />
           </div>
         </div>
         <DialogFooter>
@@ -119,7 +108,7 @@ export const FormDialog: Story = {
 
 export const TopDialog: Story = {
   render: () => (
-    <Dialog>
+    <Dialog type="test">
       <DialogTrigger asChild>
         <Button theme="primary">Open Top Dialog</Button>
       </DialogTrigger>
@@ -127,8 +116,7 @@ export const TopDialog: Story = {
         <DialogHeader>
           <DialogTitle>Top Dialog</DialogTitle>
           <DialogDescription>
-            This dialog uses the <code>top</code> variant and appears near the
-            top of the viewport.
+            This dialog uses the <code>top</code> variant and appears near the top of the viewport.
           </DialogDescription>
         </DialogHeader>
         <div className="py-4">

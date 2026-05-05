@@ -1,7 +1,9 @@
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
-import type { SVGIconsProps } from "../type";
+
 import { cn, defaultSizesForIcons } from "@genuin/ui/lib/utils";
+
+import type { SVGIconsProps } from "../type";
 
 const iconVariants = cva("gencl:shrink-0", {
   variants: {
@@ -27,8 +29,7 @@ export function QRIcon({ className, size, theme, ...restProps }: Props) {
       height="24"
       viewBox="0 0 24 24"
       className={cn(iconVariants({ size, theme }), className)}
-      {...restProps}
-    >
+      {...restProps}>
       <path
         fillRule="evenodd"
         clipRule="evenodd"

@@ -203,7 +203,7 @@ const TopResponseSchema = z.object({
   videos: videosSchema,
 })
 
-export function validateTopResponse(data: any) {
+function validateTopResponse(data: any) {
   try {
     return TopResponseSchema.parse(data)
   } catch (e) {

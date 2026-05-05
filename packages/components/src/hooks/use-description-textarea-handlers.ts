@@ -1,7 +1,8 @@
 import { useCallback } from "react";
+import type { Dispatch, SetStateAction } from "react";
+import type { useForm } from "react-hook-form";
+
 import { convertCommentTextToArray } from "@genuin/components/molecules/comments/utils";
-import { useForm } from "react-hook-form";
-import { Dispatch, SetStateAction } from "react";
 
 type SelectedMention = {
   handle: string;
@@ -25,8 +26,7 @@ export function useCommentTextareaHandlers({
   setSelectedMentions: Dispatch<SetStateAction<SelectedMention[]>>;
   onPayload?: (payload: any) => void;
 }) {
-  const REGEX_FOR_URLS =
-    /(?:https?:\/\/)?(?:www\.)?[\w-]+(\.[\w-]+)+(\/[\S]*)?/g;
+  const REGEX_FOR_URLS = /(?:https?:\/\/)?(?:www\.)?[\w-]+(\.[\w-]+)+(\/[\S]*)?/g;
 
   // Input Change Handler
   const handleInputChange = useCallback(
@@ -46,22 +46,14 @@ export function useCommentTextareaHandlers({
           if (mention.type === "url") {
             return urlMatches?.includes(mention.handle);
           } else {
-            const handle = mention.handle.startsWith("@")
-              ? mention.handle
-              : `@${mention.handle}`;
-            return (
-              value.includes(handle) ||
-              value.includes(mention.handle.replace(/^@/, ""))
-            );
+            const handle = mention.handle.startsWith("@") ? mention.handle : `@${mention.handle}`;
+            return value.includes(handle) || value.includes(mention.handle.replace(/^@/, ""));
           }
         });
 
         if (urlMatches && urlMatches.length > 0) {
           const lastUrl = urlMatches[urlMatches.length - 1];
-          if (
-            typeof lastUrl === "string" &&
-            !newMentions.some((m) => m.type === "url" && m.handle === lastUrl)
-          ) {
+          if (typeof lastUrl === "string" && !newMentions.some((m) => m.type === "url" && m.handle === lastUrl)) {
             newMentions = newMentions.filter((m) => m.type !== "url");
             newMentions.push({ handle: lastUrl, id: lastUrl, type: "url" });
           }

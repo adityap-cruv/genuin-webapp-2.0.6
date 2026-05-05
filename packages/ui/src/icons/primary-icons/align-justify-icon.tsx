@@ -1,8 +1,10 @@
-import { AlignJustify } from "lucide-react";
-import type { SVGIconsProps } from "../type";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
+import { AlignJustify } from "lucide-react";
+
 import { cn } from "@genuin/ui/lib/utils";
+
+import type { SVGIconsProps } from "../type";
 
 const iconVariants = cva("", {
   variants: {
@@ -29,10 +31,5 @@ export function AlignJustifyIcon({
   size,
   ...restProps
 }: SVGIconsProps & VariantProps<typeof iconVariants>) {
-  return (
-    <AlignJustify
-      className={cn(iconVariants({ theme, size }), className)}
-      {...restProps}
-    />
-  );
+  return <AlignJustify className={cn(iconVariants({ theme, size }), className)} {...restProps} />;
 }

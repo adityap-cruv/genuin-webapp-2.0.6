@@ -1,6 +1,7 @@
-import { type AuthActionType } from '@components/common/modals/authentication/api/auth'
 import { type ReactNode } from 'react'
 import { create } from 'zustand'
+
+import { type AuthActionType } from '@components/common/modals/authentication/api/auth'
 
 type States = {
   isOpen: boolean

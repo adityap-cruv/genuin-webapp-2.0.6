@@ -1,8 +1,9 @@
+import type { VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
+
 import { cn, defaultSizesForIcons } from "@genuin/ui/lib/utils";
 
 import type { SVGIconsProps } from "../type";
-import type { VariantProps } from "class-variance-authority";
-import { cva } from "class-variance-authority";
 
 const iconVariants = cva("", {
   variants: {
@@ -33,8 +34,7 @@ export function IHeartReactionIcon({
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={cn(iconVariants({ theme, size }), className)}
-      {...restProps}
-    >
+      {...restProps}>
       <path
         fillRule="evenodd"
         clipRule="evenodd"

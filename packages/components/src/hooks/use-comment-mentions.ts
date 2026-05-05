@@ -1,7 +1,11 @@
-import { useCallback, useRef, useState, useEffect, RefObject, Dispatch, SetStateAction } from "react";
-import { useMentionUser, CommentMention } from "@genuin/components/react-query/api/comments";
+import type { RefObject, Dispatch, SetStateAction } from "react";
+import { useCallback, useRef, useState, useEffect } from "react";
+import type { useForm } from "react-hook-form";
+
+import type { CommentMention } from "@genuin/components/react-query/api/comments";
+import { useMentionUser } from "@genuin/components/react-query/api/comments";
+
 import { useAbortController } from "./use-abort-controller";
-import { useForm } from "react-hook-form";
 
 type SelectedMention = {
   handle: string;
@@ -54,8 +58,8 @@ export function useCommentMentions({
   const { data: mentionData } = useMentionUser(
     videoId,
     mentionQuery || "",
-    isMentioning && (mentionQuery || "").length > 0,
-    mentionSignal
+    isMentioning && (mentionQuery || "").length > 0
+    // mentionSignal
   );
 
   useEffect(() => {
@@ -83,34 +87,24 @@ export function useCommentMentions({
     (selected: CommentMention) => {
       if (inputRef.current) {
         const value = commentValue;
-        const start = value.slice(
-          0,
-          caretPosition - (mentionQuery?.length ?? 0) - 1
-        );
+        const start = value.slice(0, caretPosition - (mentionQuery?.length ?? 0) - 1);
         const end = value.slice(caretPosition);
         const isCommunity = !!selected.community;
-        const handle = isCommunity
-          ? (selected.community?.handle ?? "")
-          : "@" + (selected.user?.nickname ?? "");
-        const id = isCommunity
-          ? (selected.community?.community_id ?? "")
-          : (selected.user?.member_id ?? "");
+        const handle = isCommunity ? (selected.community?.handle ?? "") : "@" + (selected.user?.nickname ?? "");
+        const id = isCommunity ? (selected.community?.community_id ?? "") : (selected.user?.member_id ?? "");
         const slug = isCommunity ? (selected.community?.slug ?? "") : "";
         const type = isCommunity ? "community" : "member";
         const updatedText = `${start}${handle} ${end}`;
         setSelectedMentions((prev) => [...prev, { handle, id, slug, type }]);
         // When form is properly connected via FormField, the value update will be reflected
-        form?.setValue?.("comment", updatedText, { 
+        form?.setValue?.("comment", updatedText, {
           shouldValidate: true,
-          shouldDirty: true, 
-          shouldTouch: true 
+          shouldDirty: true,
+          shouldTouch: true,
         });
         setTimeout(() => {
           const newCaretPosition = start.length + handle.length + 1;
-          inputRef.current?.setSelectionRange(
-            newCaretPosition,
-            newCaretPosition
-          );
+          inputRef.current?.setSelectionRange(newCaretPosition, newCaretPosition);
           inputRef.current?.focus();
         }, 0);
         setIsMentioningOverride(true);
@@ -127,14 +121,10 @@ export function useCommentMentions({
 
       if (e.key === "ArrowDown") {
         e.preventDefault();
-        setActiveMentionIndex((prev) =>
-          prev < filteredMentions.length - 1 ? prev + 1 : 0
-        );
+        setActiveMentionIndex((prev) => (prev < filteredMentions.length - 1 ? prev + 1 : 0));
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
-        setActiveMentionIndex((prev) =>
-          prev > 0 ? prev - 1 : filteredMentions.length - 1
-        );
+        setActiveMentionIndex((prev) => (prev > 0 ? prev - 1 : filteredMentions.length - 1));
       } else if (e.key === "Enter") {
         if (filteredMentions[activeMentionIndex]) {
           e.preventDefault();
@@ -153,4 +143,4 @@ export function useCommentMentions({
     setActiveMentionIndex,
     handleMentionKeyDown,
   };
-} 
+}

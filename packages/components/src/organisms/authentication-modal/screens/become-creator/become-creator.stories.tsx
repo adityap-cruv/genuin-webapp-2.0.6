@@ -1,4 +1,6 @@
+import { Dialog } from "@genuin/ui/components/dialog";
 import type { Meta, StoryObj } from "@storybook/react";
+
 import { BecomeCreator } from "./become-creator";
 
 /**
@@ -19,9 +21,11 @@ const meta: Meta<typeof BecomeCreator> = {
   },
   decorators: [
     (Story) => (
+      <Dialog type="become-creator" open>
         <div className="gencl:max-w-2xl gencl:w-full gencl:bg-white gencl:shadow-sm">
           <Story />
         </div>
+      </Dialog>
     ),
   ],
   tags: ["autodocs"],

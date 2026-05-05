@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
+import type { AxiosInstance } from "axios";
+
 import { useAxiosInstance } from "@genuin/components/context/axios";
 import { API_PATHS } from "@genuin/components/react-query/paths";
-import {
-  validatePaginatedPostsResponse,
-  PaginatedPostsParams,
-  PaginatedPostsResponse,
-} from "./types";
+
 import { getQueryKeyForPaginatedPosts } from "../../keys/video";
-import type { AxiosInstance } from "axios";
+
+import type { PaginatedPostsParams, PaginatedPostsResponse } from "./types";
+import { validatePaginatedPostsResponse } from "./types";
 
 export async function fetchPaginatedPosts(
   params: PaginatedPostsParams = {},
@@ -27,7 +27,7 @@ export async function fetchPaginatedPosts(
     });
 
     return validatePaginatedPostsResponse(response?.data, params);
-  } catch (error: any) {
+  } catch (_error: any) {
     throw new Error("Something went wrong while fetching posts!");
   }
 }
@@ -37,6 +37,6 @@ export function usePaginatedPosts(params: PaginatedPostsParams = {}) {
 
   return useQuery({
     queryKey: getQueryKeyForPaginatedPosts(params),
-    queryFn: (context) => fetchPaginatedPosts(params, axiosInstance),
+    queryFn: (_context) => fetchPaginatedPosts(params, axiosInstance),
   });
 }

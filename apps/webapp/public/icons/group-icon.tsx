@@ -1,4 +1,5 @@
 import { type ComponentProps } from 'react'
+
 import { cn } from '@/lib/utils'
 
 export function GroupIcon({ className, ...restProps }: ComponentProps<'svg'>) {

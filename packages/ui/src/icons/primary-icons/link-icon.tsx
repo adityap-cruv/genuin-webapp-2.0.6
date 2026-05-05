@@ -1,7 +1,9 @@
-import { cn, defaultSizesForIcons } from "@genuin/ui/lib/utils";
-import type { SVGIconsProps } from "../type";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
+
+import { cn, defaultSizesForIcons } from "@genuin/ui/lib/utils";
+
+import type { SVGIconsProps } from "../type";
 
 const iconVariants = cva("", {
   variants: {
@@ -29,8 +31,7 @@ export function LinkIcon({
       viewBox="0 0 20 20"
       fill="none"
       className={cn(iconVariants({ size, variant }), className)}
-      {...restProps}
-    >
+      {...restProps}>
       <path
         d="M7.96281 14.5117L7.24243 15.2321C6.59014 15.8844 5.70543 16.2509 4.78294 16.2509C3.86045 16.2509 2.97574 15.8844 2.32344 15.2321C1.67115 14.5798 1.30469 13.6951 1.30469 12.7726C1.30469 11.8501 1.67115 10.9654 2.32344 10.3131L6.01269 6.6231C6.63121 6.00317 7.46081 5.63938 8.33582 5.60435C9.21083 5.56932 10.0669 5.86564 10.733 6.43414C11.3991 7.00264 11.8262 7.80148 11.9291 8.67112C12.032 9.54077 11.803 10.4172 11.288 11.1255"
         strokeWidth="1.5"

@@ -1,57 +1,56 @@
-import { Inter } from 'next/font/google'
-import '../../globals.css'
-import '@genuin/components/styles'
-import { type Metadata, type Viewport } from 'next'
+import "@genuin/components/styles";
+import { type Metadata, type Viewport } from "next";
+import { Inter } from "next/font/google";
+import { cookies } from "next/headers";
+import { type Session } from "next-auth";
 
-// Root layout is now split into server and client parts for Next.js 15
-// Client components are wrapped in ClientProviders
-import SiteProviders from '@components/providers/site-providers'
-import { cookies } from 'next/headers'
-import { getEmbedConfig } from '@lib/api/config'
-import { type ConfigType } from '@lib/stores/genuin-options'
-import { cn, parseBrandColors } from '@lib/utils'
-import { auth } from '../../../../auth'
-import { type Session } from 'next-auth'
-import Error from '../../error'
+import SiteProviders from "@components/providers/site-providers";
+import { getEmbedConfig } from "@lib/api/config";
+import { type ConfigType } from "@lib/stores/genuin-options";
+import { cn, parseBrandColors } from "@lib/utils";
+
+import { auth } from "../../../../auth";
+import Error from "../../error";
+import "../../globals.css";
 
 // Enhanced font configuration for better performance
 const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap', // Ensures text remains visible during font load
+  subsets: ["latin"],
+  display: "swap", // Ensures text remains visible during font load
   preload: true, // Preloads font files
-  fallback: ['system-ui', 'sans-serif'], // Fallback fonts
+  fallback: ["system-ui", "sans-serif"], // Fallback fonts
   adjustFontFallback: true, // Automatically adjusts the fallback font to match
-})
+});
 
 // Metadata API for Next.js 15
 export const metadata: Metadata = {
-  description: 'A video community platform',
-  metadataBase: new URL(process.env.NEXT_PUBLIC_HOST_URL ?? 'https://begenuin.com'),
-}
+  description: "A video community platform",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_HOST_URL ?? "https://begenuin.com"),
+};
 
 export const viewport: Viewport = {
-  height: 'device-height',
-  width: 'device-width',
+  height: "device-height",
+  width: "device-width",
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-}
+};
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   // SSR logic for config/session/cookies
-  const configParamsStr = (await cookies()).get('config_params')?.value || ''
-  let configParams = null
-  if (configParamsStr) configParams = JSON.parse(configParamsStr)
-  let userSession: Session | null = null
+  const configParamsStr = (await cookies()).get("config_params")?.value || "";
+  let configParams = null;
+  if (configParamsStr) configParams = JSON.parse(configParamsStr);
+  let userSession: Session | null = null;
   if (configParams) {
-    userSession = await auth()
+    userSession = await auth();
   }
 
-  let config: ConfigType | undefined
+  let config: ConfigType | undefined;
   if (configParams) {
     try {
-      config = await getEmbedConfig(configParams)
-    } catch (e) {
+      config = await getEmbedConfig(configParams);
+    } catch (_e) {
       return (
         <html lang="en">
           <head>
@@ -62,15 +61,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <Error />
           </body>
         </html>
-      )
+      );
     }
   }
   // if in case brand not found render inactive page
   if (
     !config ||
-    (typeof config === 'object' && Object.keys(config).length === 0) ||
+    (typeof config === "object" && Object.keys(config).length === 0) ||
     config.brand_id === undefined ||
-    config.brand_id === ''
+    config.brand_id === ""
   ) {
     return (
       <html lang="en">
@@ -81,32 +80,33 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         </head>
         <body className={inter.className}></body>
       </html>
-    )
+    );
   }
-  const favicon = !config?.protected_content ? config?.favicon : undefined
-  const brandColors = parseBrandColors(config?.brand_colors || {})
+  const favicon = !config?.protected_content ? config?.favicon : undefined;
+  const brandColors = parseBrandColors(config?.brand_colors || {});
 
   return (
     <html lang="en">
       <head>
-        <link rel="icon" type="image/x-icon" href={favicon ?? '/favicon.svg'} />
-        <link rel="mask-icon" href={favicon ?? '/favicon.svg'} />
+        <link rel="icon" type="image/x-icon" href={favicon ?? "/favicon.svg"} />
+        <link rel="mask-icon" href={favicon ?? "/favicon.svg"} />
         <meta rel="x-brand-id" content={config?.subdomain} />
+        {config?.brand_id == "2793" && <meta name="robots" content="noindex,nofollow" />}
         {/* Add any other head elements here */}
       </head>
       <body
-        className={cn(inter.className, 'important-fixed')}
+        className={cn(inter.className, "important-fixed")}
         style={{
           ...brandColors,
           /* iOS Safari specific fixes */
           // WebkitOverflowScrolling: 'touch',
-          width: '100%',
-          height: '100%',
+          width: "100%",
+          height: "100%",
         }}>
         <SiteProviders config={config} session={userSession}>
           {children}
         </SiteProviders>
       </body>
     </html>
-  )
+  );
 }

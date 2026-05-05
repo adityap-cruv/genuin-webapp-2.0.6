@@ -1,5 +1,6 @@
 import { Skeleton } from "@genuin/ui/components/skeleton";
 import { cn } from "@genuin/ui/lib/utils";
+
 import { CommunityGroupsSkeleton } from "../community-details-tabs";
 
 function CommunitySkeleton({ className }: { className?: string }) {
@@ -13,15 +14,13 @@ function CommunitySkeleton({ className }: { className?: string }) {
             {Array.from({ length: 3 }).map((_, idx, arr) => (
               <div key={idx}>
                 <Skeleton className="gencl:w-18 gencl:h-4 gencl:rounded-md" />
-                {idx < arr.length - 1 && (
-                  <Skeleton className="gencl:w-1 gencl:h-1 gencl:rounded-md" />
-                )}
+                {idx < arr.length - 1 && <Skeleton className="gencl:w-1 gencl:h-1 gencl:rounded-md" />}
               </div>
             ))}
           </div>
         </div>
       </div>
-      <div className="gencl:sm:flex! gencl:gap-2 gencl:hidden ">
+      <div className="gencl:sm:flex! gencl:gap-2 gencl:hidden">
         <Skeleton className="gencl:w-20 gencl:h-9 gencl:rounded-full" />
         <Skeleton className="gencl:w-15 gencl:h-9 gencl:rounded-md" />
         <Skeleton className="gencl:w-25 gencl:h-9 gencl:rounded-md" />

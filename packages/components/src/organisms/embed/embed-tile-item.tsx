@@ -1,20 +1,21 @@
 import { cn } from "@genuin/ui/lib/utils";
-import { EmbedTile } from "../embed-tile";
-import { ComponentProps, useCallback, useEffect, useState } from "react";
-import { EmbedEventContextType } from "@genuin/components/context/embed/event-bus";
-import { useEmbedManagerContext } from "./context";
+import type { ComponentProps } from "react";
+import { useCallback, useEffect, useState } from "react";
+import type { Swiper } from "swiper/types";
 import { useDebounceCallback } from "usehooks-ts";
+
 import { useBaseContext, useEmbedContext } from "@genuin/components/context";
+import type { GenericData } from "@genuin/components/context/base/feed-context-manager";
+import type { EmbedEventContextType } from "@genuin/components/context/embed/event-bus";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import { GenericData } from "@genuin/components/context/base/feed-context-manager";
-import { Swiper } from "swiper/types";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
+
+import { EmbedTile } from "../embed-tile";
+
+import { useEmbedManagerContext } from "./context";
 import { isSlideVisible } from "./utils";
 
-type EmbedItemProps = Omit<
-  ComponentProps<typeof EmbedTile>,
-  "onPlayerIterationEnd" | "isActive"
-> & {
+type EmbedItemProps = Omit<ComponentProps<typeof EmbedTile>, "onPlayerIterationEnd" | "isActive"> & {
   index: number;
   /**
    * number of total videos in feed.
@@ -31,6 +32,8 @@ type EmbedItemProps = Omit<
     height: number;
     width: number;
   };
+  /** Feed-session identifier from the first feed API page, forwarded to analytics as `page_session`. */
+  pageSession?: string | null;
 };
 
 export function EmbedItem({
@@ -39,23 +42,18 @@ export function EmbedItem({
   totalVideos,
   swiper,
   itemSize,
+  pageSession,
   ...restProps
 }: EmbedItemProps) {
-  const { updateActiveIndex, goToNextVideo, activeIndex } =
-    useEmbedManagerContext();
+  const { updateActiveIndex, goToNextVideo, activeIndex } = useEmbedManagerContext();
   const config = useEmbedConfigs();
   const { isPlaying, baseContextManager } = useBaseContext();
   const { embedEventBus, updateSelectedSection } = useEmbedContext();
   const { isTablet, isMobile } = useDeviceDetection();
   const [isHovering, setIsHovering] = useState(false);
-  const [embedIsActive, setEmbedIsActive] = useState(
-    embedEventBus.getContext().activePlayerType === "embed",
-  );
+  const [embedIsActive, setEmbedIsActive] = useState(embedEventBus.getContext().activePlayerType === "embed");
   const [isVideoWatched, setIsVideoWatched] = useState<boolean>(
-    postDetails.video?.isWatched ||
-      (baseContextManager.getVideoState(postDetails.video?.id || "")
-        ?.isWatched ??
-        false),
+    postDetails.video?.isWatched || (baseContextManager.getVideoState(postDetails.video?.id || "")?.isWatched ?? false)
   );
   const isSectioned = embedEventBus.getContext().isSectioned;
   const moveToNext = !config.video.videoLoop;
@@ -64,8 +62,7 @@ export function EmbedItem({
   useEffect(() => {
     if (config.view.brandLayoutType !== "iheart") return;
     function handleVideoWatched(payload: Partial<GenericData>) {
-      if (postDetails.video?.id === payload?.videoId)
-        setIsVideoWatched(payload?.isVideoWatched ?? false);
+      if (postDetails.video?.id === payload?.videoId) setIsVideoWatched(payload?.isVideoWatched ?? false);
     }
 
     baseContextManager.on("onVideoWatchedChanged", handleVideoWatched);
@@ -75,10 +72,7 @@ export function EmbedItem({
   }, [config]);
 
   useEffect(() => {
-    const handleActivePlayerTypeChange = (
-      eventData: any,
-      context: EmbedEventContextType,
-    ) => {
+    const handleActivePlayerTypeChange = (eventData: any, context: EmbedEventContextType) => {
       if (context.activePlayerType === "embed") {
         setEmbedIsActive(true);
       } else {
@@ -99,7 +93,7 @@ export function EmbedItem({
 
   const debouncedSetActiveIndex = useDebounceCallback(
     setActiveIndexCallback,
-    config.video.videoShouldPreview ? 300 : 700,
+    config.video.videoShouldPreview ? 300 : 700
   );
 
   const handleMouseEnter = useCallback(() => {
@@ -132,17 +126,12 @@ export function EmbedItem({
         return;
       }
 
-      if (
-        (config.view.isPlacementView && !config.video.autoScrollToNextSlide) ||
-        !moveToNext
-      )
-        return;
+      if ((config.view.isPlacementView && !config.video.autoScrollToNextSlide) || !moveToNext) return;
 
-      const useAutoScroll =
-        config.view.isPlacementView && config.video.autoScrollToNextSlide;
+      const useAutoScroll = config.view.isPlacementView && config.video.autoScrollToNextSlide;
       goToNextVideo(useAutoScroll);
     },
-    [goToNextVideo, config, moveToNext, moveToNextTime],
+    [goToNextVideo, config, moveToNext, moveToNextTime]
   );
 
   // Auto-advance logic: Move to next video after moveToNextTime seconds
@@ -180,9 +169,7 @@ export function EmbedItem({
       if (swiper) {
         const nextIndex = activeIndex + 1;
         const isVirtualEnabled = swiper.params.virtual && swiper.virtual;
-        const totalSlides = isVirtualEnabled
-          ? (swiper.virtual?.slides?.length ?? 0)
-          : (swiper.slides?.length ?? 0);
+        const totalSlides = isVirtualEnabled ? (swiper.virtual?.slides?.length ?? 0) : (swiper.slides?.length ?? 0);
         shouldMove = nextIndex < totalSlides;
       }
     }
@@ -196,8 +183,7 @@ export function EmbedItem({
       // Guard against advancing when tab loses focus or embed scrolls out of view —
       // both cases pause the video but isPlaying alone doesn't capture them.
       const playPauseTracker = baseContextManager.getPlayPauseTracker();
-      const shouldeMoveToNextVideo =
-        isPlaying && playPauseTracker.isFocused && playPauseTracker.isInView;
+      const shouldeMoveToNextVideo = isPlaying && playPauseTracker.isFocused && playPauseTracker.isInView;
       if (shouldeMoveToNextVideo) goToNextVideo();
     }, moveToNextTime * 1000);
 
@@ -223,11 +209,7 @@ export function EmbedItem({
     <EmbedTile
       className={cn("gencl:cursor-pointer")}
       postDetails={postDetails}
-      isActive={
-        activeIndex === index &&
-        embedIsActive &&
-        (config.view.brandLayoutType !== "iheart" || !isVideoWatched)
-      }
+      isActive={activeIndex === index && embedIsActive && (config.view.brandLayoutType !== "iheart" || !isVideoWatched)}
       onPlayerIterationEnd={handlePlayerIterationEnd}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -241,6 +223,7 @@ export function EmbedItem({
       swiper={swiper}
       totalVideos={totalVideos}
       itemSize={itemSize}
+      pageSession={pageSession}
       {...restProps}
     />
   );

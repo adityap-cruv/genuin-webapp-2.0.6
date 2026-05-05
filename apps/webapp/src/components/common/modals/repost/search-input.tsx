@@ -1,7 +1,10 @@
-import { Input } from '@components/ui/input'
 import { SearchIcon } from 'lucide-react'
-import { useRepostModalStore } from './state'
 import { useDebouncedCallback } from 'use-debounce'
+
+import { Input } from '@components/ui/input'
+
+import { useRepostModalStore } from './state'
+
 
 export function SearchInput() {
   const { data, search } = useRepostModalStore((state) => ({ data: state.repostCommunityData, search: state.search }))

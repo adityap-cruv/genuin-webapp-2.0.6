@@ -1,45 +1,43 @@
-import { cn } from "@genuin/ui/utils";
-import { memo, type ComponentProps } from "react";
-
 import { ExpandIcon, XIcon } from "@genuin/ui/icons";
 import { CollapseIcon } from "@genuin/ui/icons";
+import { cn } from "@genuin/ui/utils";
+import type { VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
+import { memo, type ComponentProps } from "react";
+
 import { useBaseContext } from "@genuin/components/context/base";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { usePathname } from "@genuin/components/hooks/use-pathname";
+import { useSearchParams } from "@genuin/components/hooks/use-search-params";
+
+import { usePlayerContext } from "../../context";
+
 import { AnimatedPlayButton } from "./control-buttons";
 import { AnimatedMuteIcon } from "./control-buttons";
-import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-import { useSearchParams } from "@genuin/components/hooks/use-search-params";
-import { usePlayerContext } from "../../context";
-import { usePathname } from "@genuin/components/hooks/use-pathname";
-import { cva, VariantProps } from "class-variance-authority";
 import { EmbedControls } from "./embed";
 
-const controlsVariants = cva(
-  "gencl:transition-all gencl:z-20 gencl:flex gencl:w-full gencl:justify-between",
-  {
-    variants: {
-      variant: {
-        default:
-          "gencl:absolute gencl:top-16 gencl:sm:top-0! gencl:items-center gencl:gap-3 gencl:p-4",
-        embed:
-          "gencl:absolute gencl:p-2 gencl:bg-gradient-to-b gencl:from-black/30 gencl:to-transparent",
-        custom: "",
-        sectioned:
-          "gencl:absolute gencl:items-center gencl:bg-gradient-to-b gencl:from-black/50 gencl:to-transparent gencl:gap-3 gencl:p-4 gencl:from-transparent gencl:to-transparent gencl:top-13 gencl:sm:top-14!",
-      },
-      /**
-       * spacing between the control buttons.
-       */
-      spacing: {
-        liberal: "",
-        tight: "",
-      },
+const controlsVariants = cva("gencl:transition-all gencl:z-20 gencl:flex gencl:w-full gencl:justify-between", {
+  variants: {
+    variant: {
+      default: "gencl:absolute gencl:top-12 gencl:sm:top-0! gencl:items-center gencl:gap-3 gencl:p-4",
+      embed: "gencl:absolute gencl:p-2 gencl:bg-gradient-to-b gencl:from-black/30 gencl:to-transparent",
+      custom: "",
+      sectioned:
+        "gencl:absolute gencl:items-center gencl:bg-gradient-to-b gencl:from-black/50 gencl:to-transparent gencl:gap-3 gencl:p-4 gencl:from-transparent gencl:to-transparent gencl:top-13 gencl:sm:top-14!",
     },
-    defaultVariants: {
-      variant: "default",
-      spacing: "tight",
+    /**
+     * spacing between the control buttons.
+     */
+    spacing: {
+      liberal: "",
+      tight: "",
     },
   },
-);
+  defaultVariants: {
+    variant: "default",
+    spacing: "tight",
+  },
+});
 
 type ControlButtonsPropsType = ComponentProps<"div"> & {
   showCloseButton?: boolean;
@@ -58,10 +56,7 @@ type ControlButtonsPropsType = ComponentProps<"div"> & {
         showUserName?: boolean;
       }
     | {
-        variant?: Exclude<
-          VariantProps<typeof controlsVariants>["variant"],
-          "embed"
-        >;
+        variant?: Exclude<VariantProps<typeof controlsVariants>["variant"], "embed">;
         ownerInfo?: never;
         showUserName?: never;
       }
@@ -114,29 +109,19 @@ export const Controls = memo(function Controls({
         e.stopPropagation();
         onClick?.(e);
       }}
-      {...restProps}
-    >
+      {...restProps}>
       {!isEmbed && !hidePlayerControls && (
         <div className="gencl:flex gencl:items-center gencl:gap-4 gencl:w-full">
-          {showPlayButton && (
-            <AnimatedPlayButton shouldAnimate={shouldAnimatePlayPause} />
-          )}
-          {showMuteButton && (
-            <AnimatedMuteIcon shouldAnimate={shouldAnimateMuteUnmute} />
-          )}
+          {showPlayButton && <AnimatedPlayButton shouldAnimate={shouldAnimatePlayPause} />}
+          {showMuteButton && <AnimatedMuteIcon shouldAnimate={shouldAnimateMuteUnmute} />}
         </div>
       )}
 
       {!isMobile && !isEmbed && !hidePlayerControls && enableExpand && !isSponsored && (
         <div
           onClick={toggleExpandView}
-          className="gencl:flex gencl:h-12 gencl:w-12 gencl:cursor-pointer gencl:flex-shrink-0 gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-black/40"
-        >
-          {showExpandView ? (
-            <CollapseIcon theme="dark" />
-          ) : (
-            <ExpandIcon theme="dark" />
-          )}
+          className="gencl:flex gencl:h-12 gencl:w-12 gencl:cursor-pointer gencl:flex-shrink-0 gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-black/40">
+          {showExpandView ? <CollapseIcon theme="dark" /> : <ExpandIcon theme="dark" />}
         </div>
       )}
       {isMobile &&
@@ -147,8 +132,7 @@ export const Controls = memo(function Controls({
         !isSponsored && (
           <div
             className="gencl:p-2 gencl:rounded-full gencl:bg-black/40 gencl:cursor-pointer"
-            onClick={toggleExpandView}
-          >
+            onClick={toggleExpandView}>
             <CollapseIcon theme="dark" />
           </div>
         )}
@@ -157,9 +141,8 @@ export const Controls = memo(function Controls({
         <div
           className={cn(
             "gencl:bg-black/40 gencl:z-50 gencl:px-4 gencl:rounded-[50px] gencl:flex-center gencl:text-white",
-            isMobile ? "gencl:h-9" : "gencl:h-12",
-          )}
-        >
+            isMobile ? "gencl:h-9" : "gencl:h-12"
+          )}>
           <p className="gencl:text-body-1-normal">Sponsored</p>
         </div>
       )}
@@ -167,13 +150,8 @@ export const Controls = memo(function Controls({
       {isMobile && isEmbed && !hidePlayerControls && showExpandView && !isSponsored && (
         <div
           onClick={toggleExpandView}
-          className="gencl:flex gencl:h-12 gencl:w-12 gencl:cursor-pointer gencl:flex-shrink-0 gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-black/40"
-        >
-          {showExpandView ? (
-            <CollapseIcon theme="dark" />
-          ) : (
-            <ExpandIcon theme="dark" />
-          )}
+          className="gencl:flex gencl:h-12 gencl:w-12 gencl:cursor-pointer gencl:flex-shrink-0 gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-black/40">
+          {showExpandView ? <CollapseIcon theme="dark" /> : <ExpandIcon theme="dark" />}
         </div>
       )}
 
@@ -186,10 +164,7 @@ export const Controls = memo(function Controls({
           ) : (
             <div />
           )}
-          <EmbedControls
-            className={cn(spacing === "liberal" && "gencl:gap-3")}
-            size="sm"
-          />
+          <EmbedControls className={cn(spacing === "liberal" && "gencl:gap-3")} size="sm" />
         </div>
       )}
     </div>

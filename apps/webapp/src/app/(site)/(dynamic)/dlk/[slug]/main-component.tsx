@@ -1,10 +1,11 @@
 'use client'
-import { useEffect } from 'react'
 import { usePathname } from 'next/navigation'
+import { useEffect } from 'react'
+import { useShallow } from 'zustand/react/shallow'
+
+import { Loader } from '@components/ui/loader'
 import { resolveDeepLink } from '@lib/get-deeplink'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
-import { useShallow } from 'zustand/react/shallow'
-import { Loader } from '@components/ui/loader'
 import smartAppRedirect from '@lib/utils/redirection'
 
 export function MainComponent() {

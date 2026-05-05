@@ -1,15 +1,14 @@
-import { useAxiosInstance } from "@genuin/components/context/axios";
-import { LinkoutsType } from "@genuin/components/react-query/api/linkouts/schema";
-import { validateLinkouts } from "./schema";
-import { getQueryKeyForLinkouts } from "@genuin/components/react-query/keys/linkouts";
-import { API_PATHS } from "@genuin/components/react-query/paths";
 import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
 import type { AxiosInstance } from "axios";
 
-async function fetchLinkouts(
-  axiosInstance: AxiosInstance,
-  id?: number | null | undefined
-) {
+import { useAxiosInstance } from "@genuin/components/context/axios";
+import type { LinkoutsType } from "@genuin/components/react-query/api/linkouts/schema";
+import { getQueryKeyForLinkouts } from "@genuin/components/react-query/keys/linkouts";
+import { API_PATHS } from "@genuin/components/react-query/paths";
+
+import { validateLinkouts } from "./schema";
+
+async function fetchLinkouts(axiosInstance: AxiosInstance, id?: number | null | undefined) {
   return await axiosInstance
     .get(API_PATHS.LINKOUTS, { params: { linkouts_ids: [id] } })
     .then((res) => {
@@ -22,10 +21,7 @@ async function fetchLinkouts(
 
 export function useGetLinkouts(
   id?: number | null,
-  options: Omit<
-    UseQueryOptions<LinkoutsType>,
-    "queryFn" | "queryKey" | "refetchOnWindowFocus" | "retry"
-  > = {}
+  options: Omit<UseQueryOptions<LinkoutsType>, "queryFn" | "queryKey" | "refetchOnWindowFocus" | "retry"> = {}
 ) {
   const axiosInstance = useAxiosInstance();
 

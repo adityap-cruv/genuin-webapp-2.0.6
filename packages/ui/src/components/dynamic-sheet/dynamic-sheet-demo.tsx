@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+
 import { DynamicSheet } from "./dynamic-sheet";
 import type { DynamicSheetConfig, DynamicSheetState } from "./types";
 
@@ -129,19 +130,14 @@ function CommentItem({ comment }: { comment: CommentData }) {
           fontWeight: 700,
           fontSize: 14,
           boxShadow: `0 2px 8px ${comment.color}55`,
-        }}
-      >
+        }}>
         {comment.avatar}
       </div>
 
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
-          <span style={{ fontWeight: 600, fontSize: 13.5, color: "#fff" }}>
-            {comment.user}
-          </span>
-          <span style={{ fontSize: 12, color: "rgba(255,255,255,0.35)" }}>
-            {comment.time}
-          </span>
+          <span style={{ fontWeight: 600, fontSize: 13.5, color: "#fff" }}>{comment.user}</span>
+          <span style={{ fontSize: 12, color: "rgba(255,255,255,0.35)" }}>{comment.time}</span>
         </div>
         <div
           style={{
@@ -149,8 +145,7 @@ function CommentItem({ comment }: { comment: CommentData }) {
             marginTop: 3,
             lineHeight: 1.45,
             color: "rgba(255,255,255,0.88)",
-          }}
-        >
+          }}>
           {comment.text}
         </div>
         <button
@@ -164,8 +159,7 @@ function CommentItem({ comment }: { comment: CommentData }) {
             cursor: "pointer",
             padding: 0,
             fontWeight: 500,
-          }}
-        >
+          }}>
           Reply
         </button>
       </div>
@@ -183,21 +177,17 @@ function CommentItem({ comment }: { comment: CommentData }) {
           border: "none",
           cursor: "pointer",
           padding: "2px 0",
-        }}
-      >
+        }}>
         <span
           style={{
             fontSize: 16,
             display: "block",
             transform: isBouncing ? "scale(1.5)" : "scale(1)",
             transition: "transform 0.25s cubic-bezier(0.34,1.56,0.64,1)",
-          }}
-        >
+          }}>
           {isLiked ? "❤️" : "🤍"}
         </span>
-        <span style={{ fontSize: 11, color: "rgba(255,255,255,0.35)" }}>
-          {likeCount}
-        </span>
+        <span style={{ fontSize: 11, color: "rgba(255,255,255,0.35)" }}>{likeCount}</span>
       </button>
     </div>
   );
@@ -211,8 +201,7 @@ function DemoSheetContent() {
         style={{
           padding: "10px 16px 12px",
           borderBottom: "1px solid rgba(255,255,255,0.06)",
-        }}
-      >
+        }}>
         <div
           style={{
             fontSize: 11,
@@ -224,8 +213,7 @@ function DemoSheetContent() {
             display: "flex",
             alignItems: "center",
             gap: 4,
-          }}
-        >
+          }}>
           📌 Pinned
         </div>
         <div style={{ display: "flex", gap: 12 }}>
@@ -240,22 +228,18 @@ function DemoSheetContent() {
               justifyContent: "center",
               flexShrink: 0,
               fontSize: 16,
-            }}
-          >
+            }}>
             🧳
           </div>
           <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 600, fontSize: 13.5, color: "#fff" }}>
-              travel.diaries
-            </div>
+            <div style={{ fontWeight: 600, fontSize: 13.5, color: "#fff" }}>travel.diaries</div>
             <div
               style={{
                 fontSize: 14,
                 color: "rgba(255,255,255,0.82)",
                 marginTop: 3,
                 lineHeight: 1.45,
-              }}
-            >
+              }}>
               Thanks for all the love! 🙏 Golden hour hit different here.
             </div>
           </div>
@@ -279,8 +263,7 @@ function DemoSheetHeader({ onClose }: { onClose: () => void }) {
         alignItems: "center",
         width: "100%",
         position: "relative",
-      }}
-    >
+      }}>
       <span style={{ flex: 1 }} />
       <span
         style={{
@@ -291,8 +274,7 @@ function DemoSheetHeader({ onClose }: { onClose: () => void }) {
           fontSize: 15,
           color: "#fff",
           pointerEvents: "none",
-        }}
-      >
+        }}>
         Comments
       </span>
       <button
@@ -316,8 +298,7 @@ function DemoSheetHeader({ onClose }: { onClose: () => void }) {
           color: "#fff",
           fontSize: 12,
           fontWeight: 700,
-        }}
-      >
+        }}>
         ✕
       </button>
     </div>
@@ -338,8 +319,7 @@ function DemoSheetFooter() {
           alignItems: "center",
           justifyContent: "center",
           fontSize: 15,
-        }}
-      >
+        }}>
         🧳
       </div>
       <div
@@ -352,8 +332,7 @@ function DemoSheetFooter() {
           fontSize: 14,
           color: "rgba(255,255,255,0.32)",
           cursor: "text",
-        }}
-      >
+        }}>
         Add a comment…
       </div>
       <span style={{ fontSize: 20 }}>😊</span>
@@ -363,18 +342,9 @@ function DemoSheetFooter() {
 
 // ─── Shared Config Builder ────────────────────────────────────────────────────
 
-function createSheetConfig(
-  onClose: () => void,
-  onStateChange: (state: DynamicSheetState) => void,
-): DynamicSheetConfig {
+function createSheetConfig(onClose: () => void, onStateChange: (state: DynamicSheetState) => void): DynamicSheetConfig {
   return {
-    enabledStates: [
-      "default",
-      "default-active",
-      "expand-view",
-      "panel-view",
-      "full-view",
-    ],
+    enabledStates: ["default", "default-active", "expand-view", "panel-view", "full-view"],
     heights: {
       default: "8%",
       "default-active": "15%",
@@ -405,8 +375,7 @@ export default function DynamicSheetDemo() {
   // Container mode state
   const [isContainerMounted, setIsContainerMounted] = useState(false);
   const [isContainerOpen, setIsContainerOpen] = useState(false);
-  const [containerState, setContainerState] =
-    useState<DynamicSheetState>("default");
+  const [containerState, setContainerState] = useState<DynamicSheetState>("default");
 
   // Fixed mode handlers
   const openFixed = () => {
@@ -435,18 +404,15 @@ export default function DynamicSheetDemo() {
       style={{
         width: "100%",
         minHeight: "100vh",
-        background:
-          "radial-gradient(ellipse at 60% 30%, #1a1035 0%, #090910 100%)",
+        background: "radial-gradient(ellipse at 60% 30%, #1a1035 0%, #090910 100%)",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
         gap: 40,
         padding: "40px 20px",
-        fontFamily:
-          "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif",
-      }}
-    >
+        fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif",
+      }}>
       {/* Mode picker label */}
       <div
         style={{
@@ -455,8 +421,7 @@ export default function DynamicSheetDemo() {
           fontWeight: 500,
           letterSpacing: "0.06em",
           textTransform: "uppercase",
-        }}
-      >
+        }}>
         Pick a render mode
       </div>
 
@@ -467,8 +432,7 @@ export default function DynamicSheetDemo() {
           alignItems: "flex-start",
           flexWrap: "wrap",
           justifyContent: "center",
-        }}
-      >
+        }}>
         {/* ── Fixed mode card ──────────────────────────────────────── */}
         <div
           style={{
@@ -476,8 +440,7 @@ export default function DynamicSheetDemo() {
             flexDirection: "column",
             alignItems: "center",
             gap: 14,
-          }}
-        >
+          }}>
           <div
             style={{
               background: "rgba(255,255,255,0.04)",
@@ -488,27 +451,22 @@ export default function DynamicSheetDemo() {
               fontSize: 13,
               textAlign: "center",
               maxWidth: 200,
-            }}
-          >
+            }}>
             <div style={{ fontSize: 22, marginBottom: 6 }}>🌐</div>
-            <div style={{ fontWeight: 700, color: "#fff", marginBottom: 4 }}>
-              Fixed (Portal)
-            </div>
+            <div style={{ fontWeight: 700, color: "#fff", marginBottom: 4 }}>Fixed (Portal)</div>
             <div
               style={{
                 color: "rgba(255,255,255,0.45)",
                 fontSize: 12,
                 lineHeight: 1.5,
-              }}
-            >
+              }}>
               Renders via portal into{" "}
               <code
                 style={{
                   background: "rgba(255,255,255,0.08)",
                   borderRadius: 4,
                   padding: "1px 5px",
-                }}
-              >
+                }}>
                 document.body
               </code>
               . Covers the full viewport.
@@ -527,8 +485,7 @@ export default function DynamicSheetDemo() {
               fontWeight: 600,
               cursor: "pointer",
               boxShadow: "0 4px 16px rgba(99,102,241,0.4)",
-            }}
-          >
+            }}>
             Open Sheet
           </button>
           {isFixedMounted && (
@@ -537,12 +494,8 @@ export default function DynamicSheetDemo() {
                 fontSize: 11,
                 color: "rgba(255,255,255,0.35)",
                 fontWeight: 500,
-              }}
-            >
-              state:{" "}
-              <strong style={{ color: "rgba(255,255,255,0.7)" }}>
-                {fixedState}
-              </strong>
+              }}>
+              state: <strong style={{ color: "rgba(255,255,255,0.7)" }}>{fixedState}</strong>
             </div>
           )}
         </div>
@@ -564,8 +517,7 @@ export default function DynamicSheetDemo() {
             flexDirection: "column",
             alignItems: "center",
             gap: 14,
-          }}
-        >
+          }}>
           <div
             style={{
               background: "rgba(255,255,255,0.04)",
@@ -576,27 +528,22 @@ export default function DynamicSheetDemo() {
               fontSize: 13,
               textAlign: "center",
               maxWidth: 200,
-            }}
-          >
+            }}>
             <div style={{ fontSize: 22, marginBottom: 6 }}>📦</div>
-            <div style={{ fontWeight: 700, color: "#fff", marginBottom: 4 }}>
-              Container
-            </div>
+            <div style={{ fontWeight: 700, color: "#fff", marginBottom: 4 }}>Container</div>
             <div
               style={{
                 color: "rgba(255,255,255,0.45)",
                 fontSize: 12,
                 lineHeight: 1.5,
-              }}
-            >
+              }}>
               Renders{" "}
               <code
                 style={{
                   background: "rgba(255,255,255,0.08)",
                   borderRadius: 4,
                   padding: "1px 5px",
-                }}
-              >
+                }}>
                 position:absolute
               </code>{" "}
               inside a bounded element. Clips to the phone frame below.
@@ -615,8 +562,7 @@ export default function DynamicSheetDemo() {
               fontWeight: 600,
               cursor: "pointer",
               boxShadow: "0 4px 16px rgba(236,72,153,0.4)",
-            }}
-          >
+            }}>
             Open in Phone
           </button>
           {isContainerMounted && (
@@ -625,12 +571,8 @@ export default function DynamicSheetDemo() {
                 fontSize: 11,
                 color: "rgba(255,255,255,0.35)",
                 fontWeight: 500,
-              }}
-            >
-              state:{" "}
-              <strong style={{ color: "rgba(255,255,255,0.7)" }}>
-                {containerState}
-              </strong>
+              }}>
+              state: <strong style={{ color: "rgba(255,255,255,0.7)" }}>{containerState}</strong>
             </div>
           )}
         </div>
@@ -643,13 +585,11 @@ export default function DynamicSheetDemo() {
           height: 640,
           background: "#000",
           borderRadius: 46,
-          boxShadow:
-            "0 50px 100px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08)",
+          boxShadow: "0 50px 100px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08)",
           overflow: "hidden",
           position: "relative",
           flexShrink: 0,
-        }}
-      >
+        }}>
         {/* Dynamic Island */}
         <div
           style={{
@@ -674,8 +614,7 @@ export default function DynamicSheetDemo() {
             background: "linear-gradient(170deg,#0d0d1a,#111827 45%,#0f172a)",
             position: "relative",
             overflow: "hidden",
-          }}
-        >
+          }}>
           {/* Decorative glow */}
           <div
             style={{
@@ -686,8 +625,7 @@ export default function DynamicSheetDemo() {
               width: 280,
               height: 280,
               borderRadius: "50%",
-              background:
-                "radial-gradient(circle, rgba(236,72,153,0.1) 0%, transparent 70%)",
+              background: "radial-gradient(circle, rgba(236,72,153,0.1) 0%, transparent 70%)",
               pointerEvents: "none",
             }}
           />
@@ -700,30 +638,23 @@ export default function DynamicSheetDemo() {
                 alignItems: "center",
                 gap: 10,
                 marginBottom: 12,
-              }}
-            >
+              }}>
               <div
                 style={{
                   width: 36,
                   height: 36,
                   borderRadius: "50%",
-                  background:
-                    "linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)",
+                  background: "linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   fontSize: 16,
-                }}
-              >
+                }}>
                 🧳
               </div>
               <div>
-                <div style={{ fontWeight: 600, fontSize: 13 }}>
-                  travel.diaries
-                </div>
-                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.42)" }}>
-                  Santorini, Greece
-                </div>
+                <div style={{ fontWeight: 600, fontSize: 13 }}>travel.diaries</div>
+                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.42)" }}>Santorini, Greece</div>
               </div>
               <button
                 type="button"
@@ -737,8 +668,7 @@ export default function DynamicSheetDemo() {
                   fontSize: 12,
                   fontWeight: 600,
                   cursor: "pointer",
-                }}
-              >
+                }}>
                 Follow
               </button>
             </div>
@@ -749,15 +679,13 @@ export default function DynamicSheetDemo() {
                 width: "100%",
                 height: 240,
                 borderRadius: 14,
-                background:
-                  "linear-gradient(135deg, rgba(255,255,255,0.04), rgba(236,72,153,0.06))",
+                background: "linear-gradient(135deg, rgba(255,255,255,0.04), rgba(236,72,153,0.06))",
                 border: "1px solid rgba(255,255,255,0.06)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 fontSize: 80,
-              }}
-            >
+              }}>
               🏛️
             </div>
 
@@ -768,13 +696,8 @@ export default function DynamicSheetDemo() {
                 gap: 12,
                 marginTop: 12,
                 alignItems: "center",
-              }}
-            >
-              {[
-                { icon: "♡" },
-                { icon: "💬", action: openContainer },
-                { icon: "✈︎" },
-              ].map(({ icon, action }, i) => (
+              }}>
+              {[{ icon: "♡" }, { icon: "💬", action: openContainer }, { icon: "✈︎" }].map(({ icon, action }, i) => (
                 <button
                   key={i}
                   type="button"
@@ -787,8 +710,7 @@ export default function DynamicSheetDemo() {
                     padding: 3,
                     color: "#fff",
                     opacity: 0.88,
-                  }}
-                >
+                  }}>
                   {icon}
                 </button>
               ))}
@@ -803,8 +725,7 @@ export default function DynamicSheetDemo() {
                   padding: 3,
                   color: "#fff",
                   opacity: 0.88,
-                }}
-              >
+                }}>
                 ⊕
               </button>
             </div>
@@ -815,8 +736,7 @@ export default function DynamicSheetDemo() {
                 fontSize: 13,
                 color: "#fff",
                 fontWeight: 600,
-              }}
-            >
+              }}>
               1,248 likes
             </div>
             <div
@@ -825,10 +745,8 @@ export default function DynamicSheetDemo() {
                 color: "rgba(255,255,255,0.8)",
                 marginTop: 3,
                 lineHeight: 1.5,
-              }}
-            >
-              <strong style={{ color: "#fff" }}>travel.diaries</strong> The
-              bluest waters 💙 #santorini
+              }}>
+              <strong style={{ color: "#fff" }}>travel.diaries</strong> The bluest waters 💙 #santorini
             </div>
             <button
               type="button"
@@ -841,32 +759,22 @@ export default function DynamicSheetDemo() {
                 border: "none",
                 cursor: "pointer",
                 padding: 0,
-              }}
-            >
+              }}>
               View all 47 comments
             </button>
           </div>
 
           {/* Container sheet anchor */}
-          <div
-            ref={containerRef}
-            style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
-          >
+          <div ref={containerRef} style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
             {isContainerMounted && (
               <DynamicSheet
                 isOpen={isContainerOpen}
                 onDismissed={dismissContainer}
-                renderMode={
-                  containerState !== "default" &&
-                  containerState !== "default-active"
-                    ? "fixed"
-                    : "container"
-                }
+                renderMode={containerState !== "default" && containerState !== "default-active" ? "fixed" : "container"}
                 containerRef={containerRef}
                 config={createSheetConfig(closeContainer, setContainerState)}
                 header={<DemoSheetHeader onClose={closeContainer} />}
-                footer={<DemoSheetFooter />}
-              >
+                footer={<DemoSheetFooter />}>
                 <DemoSheetContent />
               </DynamicSheet>
             )}
@@ -882,8 +790,7 @@ export default function DynamicSheetDemo() {
           fontWeight: 500,
           textAlign: "center",
           lineHeight: 1.7,
-        }}
-      >
+        }}>
         Drag up/down to change state · Swipe down to close · Tap 💬 to reopen
       </div>
 
@@ -895,8 +802,7 @@ export default function DynamicSheetDemo() {
           renderMode="fixed"
           config={createSheetConfig(closeFixed, setFixedState)}
           header={<DemoSheetHeader onClose={closeFixed} />}
-          footer={<DemoSheetFooter />}
-        >
+          footer={<DemoSheetFooter />}>
           <DemoSheetContent />
         </DynamicSheet>
       )}

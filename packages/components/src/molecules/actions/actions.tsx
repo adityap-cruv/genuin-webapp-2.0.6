@@ -1,52 +1,39 @@
-import {
-  CommentIcon,
-  RepostIcon,
-  ShareIcon,
-  ThreeDotsIcon,
-} from "@genuin/ui/icons";
+import { CommentIcon, LinkIcon, RepostIcon, ShareIcon, ThreeDotsIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/utils";
-import {
-  type ComponentProps,
-  type ReactNode,
-  useMemo,
-  cloneElement,
-  isValidElement,
-} from "react";
-const Menu = lazy(() =>
-  import("./menu/index.js").then((m) => ({ default: m.Menu })),
-);
+import type { VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
+import { type ComponentProps, type ReactNode, cloneElement, isValidElement, useMemo } from "react";
+import { lazy, Suspense } from "react";
 
-import { ReactionButton } from "@genuin/components/molecules/reaction-button";
-import { DynamicReactionIcon } from "@genuin/components/molecules/reaction-button";
-import { ShareButton } from "@genuin/components/molecules/share-button";
+import { useAnalytics, VideoTypes } from "@genuin/components/context/analytics";
+import { useAuthContext } from "@genuin/components/context/auth";
+import { useBaseContext } from "@genuin/components/context/base";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
 import { OctoActionIcon } from "@genuin/components/molecules/octo-action-icon";
+import { DynamicReactionIcon } from "@genuin/components/molecules/reaction-button";
+import { ReactionButton } from "@genuin/components/molecules/reaction-button";
+import { ShareButton } from "@genuin/components/molecules/share-button";
+
+import { Link } from "../link";
+
+import { ActionPopover } from "./action-popover";
+import { TooltipAction } from "./tooltip";
+
+const Menu = lazy(() => import("./menu").then((m) => ({ default: m.Menu })));
+
 const AuthenticationModal = lazy(() =>
-  import("@genuin/components/organisms/authentication-modal/index.js").then(
-    (m) => ({
-      default: m.AuthenticationModal,
-    }),
-  ),
+  import("@genuin/components/organisms/authentication-modal").then((m) => ({
+    default: m.AuthenticationModal,
+  }))
 );
 
 const RepostModal = lazy(() =>
-  import("@genuin/components/organisms/repost-modal/repost-modal.js").then(
-    (m) => ({ default: m.RepostModal }),
-  ),
+  import("@genuin/components/organisms/repost-modal/repost-modal").then((m) => ({ default: m.RepostModal }))
 );
 
-import { useAuthContext } from "@genuin/components/context/auth";
-import { TooltipAction } from "./tooltip";
-import { lazy, Suspense, useState, useEffect, useRef } from "react";
-import { cva, VariantProps } from "class-variance-authority";
-import { useBaseContext } from "@genuin/components/context/base";
-import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import { useAnalytics, VideoTypes } from "@genuin/components/context/analytics";
-import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
-import { ActionPopover } from "./action-popover";
-import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
-import { Link } from "../link";
-
-type ActionType = "OCTO" | "REPOST" | "REACTION" | "COMMENT" | "SHARE" | "MORE";
+type ActionType = "REPOST" | "REACTION" | "COMMENT" | "SHARE" | "LINKOUT" | "MORE" | "OCTO";
 
 // Define a new type for the context object
 type ActionWrapperContextType = {
@@ -80,25 +67,19 @@ const actionVariants = cva("", {
 type ActionsPropsType = ComponentProps<"div"> & {
   isReacted: boolean;
   reactionCount: number;
-  onReactionStateChange?: ComponentProps<
-    typeof ReactionButton
-  >["onReactionStateChange"];
+  onReactionStateChange?: ComponentProps<typeof ReactionButton>["onReactionStateChange"];
   contentId: string;
   shareUrl: string;
   slug: string;
   groupSlug: string;
   isCommentBoxOpen?: boolean;
+  /** Thumbnail image from the first available linkout link. Shows a square preview instead of LinkIcon. */
+  linkoutThumbnail?: string | null;
   videoType?: VideoTypes;
-  /**
-   * If you want to override the default action wrappers, you can pass a namedActionWrapper object.
-   * Each key in the object should correspond to an action type (e.g., "REPOST", "REACTION", etc.),
-   */
-  actionWrapper?: Partial<
-    Record<
-      ActionType,
-      (defaultNode: ReactNode, context: ActionWrapperContextType) => ReactNode
-    >
-  >;
+  /** Whether to show the linkout icon. Defaults to true. */
+  showLinkout?: boolean;
+  isLinkoutsOpen?: boolean;
+  actionWrapper?: Partial<Record<ActionType, (defaultNode: ReactNode, context: ActionWrapperContextType) => ReactNode>>;
 } & VariantProps<typeof actionVariants>;
 
 // Default wrappers for each action type
@@ -107,6 +88,7 @@ const defaultActionWrappers: Record<
   (defaultNode: ReactNode, context: ActionWrapperContextType) => ReactNode
 > = {
   OCTO: (node) => node,
+  LINKOUT: (node) => node,
   REPOST: (node, _context) => {
     const { authenticationStatus, handleAuthCallback } = useAuthContext();
     const embedDetails = useSafeEmbedContext();
@@ -127,7 +109,7 @@ const defaultActionWrappers: Record<
             videoSlug: _context.slug ?? undefined,
           },
         }),
-      [_context.shareUrl, _context.slug],
+      [_context.shareUrl, _context.slug]
     );
 
     // Setup authentication callback handler
@@ -152,12 +134,9 @@ const defaultActionWrappers: Record<
       embedDetails?.embedData.card_layout_id === 3
     ) {
       return (
-        <ActionPopover
-          content="to repost this Short."
-          children={<div onClick={handleRepostClick}>{node}</div>}
-          params={returnQueryParams}
-          onPopOverClick={clickHandler}
-        />
+        <ActionPopover content="to repost this Short." params={returnQueryParams} onPopOverClick={clickHandler}>
+          <div onClick={handleRepostClick}>{node}</div>
+        </ActionPopover>
       );
     }
 
@@ -167,8 +146,7 @@ const defaultActionWrappers: Record<
           <div
             onClick={() => {
               clickHandler();
-            }}
-          >
+            }}>
             {node}
           </div>
         );
@@ -195,8 +173,7 @@ const defaultActionWrappers: Record<
                 },
               },
             }}
-            asChild
-          >
+            asChild>
             <div onClick={handleRepostClick}>{node}</div>
           </AuthenticationModal>
         </Suspense>
@@ -209,8 +186,7 @@ const defaultActionWrappers: Record<
           key="repost-modal"
           videoId={_context.contentId}
           videoType={_context.videoType ?? VideoTypes.Content}
-          asChild
-        >
+          asChild>
           <div onClick={handleRepostClick}>{node}</div>
         </RepostModal>
       </Suspense>
@@ -227,13 +203,13 @@ const defaultActionWrappers: Record<
         reactionCount={context.reactionCount}
         contentType="VIDEO"
         onReactionStateChange={context.onReactionStateChange}
-        children={node}
         reactionButtonTheme={context.variant}
         showReactionCount
         videoType={context.videoType ?? VideoTypes.Content}
         withCustomChildren
-        asChild
-      />
+        asChild>
+        {node}
+      </ReactionButton>
     );
   },
   COMMENT: (node, _context) => {
@@ -267,12 +243,7 @@ const defaultActionWrappers: Record<
     };
 
     return (
-      <ShareButton
-        key="share-button"
-        pathName={_context.shareUrl}
-        withCustomChildren
-        onClick={handleShareClick}
-      >
+      <ShareButton key="share-button" pathName={_context.shareUrl} withCustomChildren onClick={handleShareClick}>
         {node}
       </ShareButton>
     );
@@ -286,9 +257,9 @@ const defaultActionWrappers: Record<
           shareUrl={context.shareUrl}
           videoSlug={context.slug}
           groupSlug={context.groupSlug}
-          videoType={context.videoType ?? VideoTypes.Content}
-          children={node}
-        />
+          videoType={context.videoType ?? VideoTypes.Content}>
+          {node}
+        </Menu>
       </Suspense>
     );
   },
@@ -308,6 +279,9 @@ export function Actions({
   slug,
   isCommentBoxOpen = false,
   videoType,
+  isLinkoutsOpen = false,
+  linkoutThumbnail,
+  showLinkout = true,
   onClick,
   ...restProps
 }: ActionsPropsType) {
@@ -329,6 +303,21 @@ export function Actions({
           icon: <OctoActionIcon size={32} />,
           actionType: "OCTO" as const,
           tooltipText: "Octo",
+        }
+      : null,
+    showLinkout
+      ? {
+          icon: linkoutThumbnail ? (
+            <img
+              src={linkoutThumbnail}
+              alt="link"
+              className="gencl:size-8 gencl:rounded-sm gencl:object-cover gencl:shrink-0"
+            />
+          ) : (
+            <LinkIcon variant={theme === "dark" ? "light" : "dark"} />
+          ),
+          actionType: "LINKOUT" as const,
+          tooltipText: "Linkouts",
         }
       : null,
     showEngagementTools && repost
@@ -381,14 +370,13 @@ export function Actions({
     <div
       className={cn(
         "gencl:gap-4 gencl:flex gencl:flex-col gencl:justify-end gencl:[&_svg]:size-8 gencl:[&_img]:size-8! gencl:z-10",
-        className,
+        className
       )}
       onClick={(e) => {
         e.stopPropagation();
         onClick?.(e);
       }}
-      {...restProps}
-    >
+      {...restProps}>
       {actions.map((action, index) => {
         const context = {
           contentId,
@@ -398,8 +386,7 @@ export function Actions({
           shareUrl,
           slug,
           groupSlug,
-          variant:
-            (variant === "mobile" ? "dark" : theme) ?? ("light" as const),
+          variant: (variant === "mobile" ? "dark" : theme) ?? ("light" as const),
           videoType,
         };
 
@@ -409,13 +396,10 @@ export function Actions({
 
         // Clone Octo icon with size="100%" for both mobile and desktop
         const iconElement =
-          isOctoAction && isValidElement(action.icon)
+          isOctoAction && isValidElement<{ size?: number | string; className?: string }>(action.icon)
             ? cloneElement(action.icon, {
                 size: "100%",
-                className: cn(
-                  "gencl:h-full gencl:w-full",
-                  (action.icon.props as { className?: string }).className
-                ),
+                className: cn("gencl:h-full gencl:w-full", action.icon.props.className),
               })
             : action.icon;
 
@@ -436,17 +420,9 @@ export function Actions({
           );
 
           if (actionWrapper?.[action.actionType]) {
-            return (
-              <div key={key}>
-                {actionWrapper[action.actionType]!(mobileNode, context)}
-              </div>
-            );
+            return <div key={key}>{actionWrapper[action.actionType]!(mobileNode, context)}</div>;
           }
-          return (
-            <div key={key}>
-              {defaultActionWrappers[action.actionType](mobileNode, context)}
-            </div>
-          );
+          return <div key={key}>{defaultActionWrappers[action.actionType](mobileNode, context)}</div>;
         }
 
         const isCommentActionOpen = action.actionType === "COMMENT" && isCommentBoxOpen;
@@ -457,7 +433,7 @@ export function Actions({
             variant={theme}
             iconSize={isOctoAction ? "fill" : "default"}
             className={cn(
-              isCommentActionOpen
+              isCommentActionOpen || (action.actionType === "LINKOUT" && isLinkoutsOpen)
                 ? theme === "dark"
                   ? "gencl:bg-secondary-800"
                   : "gencl:bg-secondary-50 gencl:border-secondary-50"
@@ -466,21 +442,13 @@ export function Actions({
                 ? "gencl:bg-transparent gencl:hover:bg-transparent gencl:border-0 gencl:shadow-none"
                 : undefined
             )}
-            disableTooltip={isCommentActionOpen}
+            disableTooltip={isCommentActionOpen || (action.actionType === "LINKOUT" && isLinkoutsOpen)}
           />
         );
         if (actionWrapper?.[action.actionType]) {
-          return (
-            <div key={key}>
-              {actionWrapper[action.actionType]!(defaultNode, context)}
-            </div>
-          );
+          return <div key={key}>{actionWrapper[action.actionType]!(defaultNode, context)}</div>;
         }
-        return (
-          <div key={key}>
-            {defaultActionWrappers[action.actionType](defaultNode, context)}
-          </div>
-        );
+        return <div key={key}>{defaultActionWrappers[action.actionType](defaultNode, context)}</div>;
       })}
     </div>
   );

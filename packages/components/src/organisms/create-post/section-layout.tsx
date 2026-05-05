@@ -1,35 +1,22 @@
 "use client";
 
 import { cn } from "@genuin/ui/lib/utils";
-import { ComponentProps, useEffect, useRef, useState } from "react";
+import type { ComponentProps } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type SectionLayoutProps = {
   children: React.ReactNode;
 } & ComponentProps<"div">;
 
-export function SectionLayout({
-  children,
-  className,
-  ...restProps
-}: SectionLayoutProps) {
+export function SectionLayout({ children, className, ...restProps }: SectionLayoutProps) {
   return (
-    <div
-      className={cn(
-        "gencl:flex gencl:w-full gencl:h-full gencl:bg-white",
-        className
-      )}
-      {...restProps}
-    >
+    <div className={cn("gencl:flex gencl:w-full gencl:h-full gencl:bg-white", className)} {...restProps}>
       {children}
     </div>
   );
 }
 
-export function SectionLayoutLeft({
-  children,
-  className,
-  ...restProps
-}: SectionLayoutProps) {
+export function SectionLayoutLeft({ children, className, ...restProps }: SectionLayoutProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [videoWidth, setVideoWidth] = useState<number>(0);
 
@@ -51,31 +38,17 @@ export function SectionLayoutLeft({
   return (
     <div
       ref={containerRef}
-      className={cn(
-        "gencl:flex gencl:flex-col gencl:items-end gencl:justify-center gencl:h-full",
-        className
-      )}
+      className={cn("gencl:flex gencl:flex-col gencl:items-end gencl:justify-center gencl:h-full", className)}
       style={{ width: `${videoWidth}px` }}
-      {...restProps}
-    >
+      {...restProps}>
       {children}
     </div>
   );
 }
 
-export function SectionLayoutRight({
-  children,
-  className,
-  ...restProps
-}: SectionLayoutProps) {
+export function SectionLayoutRight({ children, className, ...restProps }: SectionLayoutProps) {
   return (
-    <div
-      className={cn(
-        "gencl:flex-1 gencl:overflow-y-scroll gencl:px-6 gencl:py-4",
-        className
-      )}
-      {...restProps}
-    >
+    <div className={cn("gencl:flex-1 gencl:overflow-y-scroll gencl:px-6 gencl:py-4", className)} {...restProps}>
       {children}
     </div>
   );

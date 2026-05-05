@@ -1,5 +1,6 @@
-import { useComments } from "@genuin/components/react-query/api/comments";
 import { cn } from "@genuin/ui/lib/utils";
+
+import { useComments } from "@genuin/components/react-query/api/comments";
 
 type CommentButtonProps = {
   defaultNode: React.ReactNode;
@@ -8,7 +9,7 @@ type CommentButtonProps = {
   onClick?: () => void;
   className?: string;
   countClassName?: string;
-  postId : string;
+  postId: string;
 };
 
 export function CommentButton({
@@ -18,19 +19,14 @@ export function CommentButton({
   onClick,
   className,
   countClassName,
-  postId
+  postId,
 }: CommentButtonProps) {
-  const {data} = useComments(postId)
+  const { data } = useComments(postId);
   return (
     <span onClick={onClick} className={className}>
       {defaultNode}
       {showCount && (
-        <p
-          className={cn(
-            "gencl:p-0 gencl:text-center gencl:text-body-2-medium",
-            countClassName
-          )}
-        >
+        <p className={cn("gencl:p-0 gencl:text-center gencl:text-body-2-medium", countClassName)}>
           {data?.pages[0]?.comments.length || count}
         </p>
       )}

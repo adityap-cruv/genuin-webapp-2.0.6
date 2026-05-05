@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+
 import { SelectableList } from "./selectable-list";
 
 const meta: Meta<typeof SelectableList> = {
@@ -13,16 +14,7 @@ const meta: Meta<typeof SelectableList> = {
 export default meta;
 type Story = StoryObj<typeof SelectableList>;
 
-const items = [
-  "Apple",
-  "Banana",
-  "Cherry",
-  "Date",
-  "Elderberry",
-  "Fig",
-  "Grape",
-  "Honeydew",
-];
+const items = ["Apple", "Banana", "Cherry", "Date", "Elderberry", "Fig", "Grape", "Honeydew"];
 
 export const Default: Story = {
   render: () => (
@@ -40,11 +32,7 @@ export const CustomStyling: Story = {
   render: () => (
     <SelectableList className="gencl:border-blue-300 gencl:bg-blue-50">
       {items.map((item, index) => (
-        <SelectableList.Item
-          key={item}
-          index={index}
-          className="gencl:text-blue-900"
-        >
+        <SelectableList.Item key={item} index={index} className="gencl:text-blue-900">
           {item}
         </SelectableList.Item>
       ))}
@@ -68,8 +56,7 @@ export const KeyboardNavigationInfo: Story = {
   render: () => (
     <div>
       <p className="gencl:mb-2 gencl:text-sm gencl:text-gray-600">
-        Use ↑ and ↓ keys to navigate the list. The highlighted item is updated
-        based on keyboard or mouse hover.
+        Use ↑ and ↓ keys to navigate the list. The highlighted item is updated based on keyboard or mouse hover.
       </p>
       <SelectableList>
         {["Red", "Green", "Blue", "Yellow", "Purple"].map((item, index) => (

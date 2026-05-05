@@ -1,4 +1,5 @@
 import { cn } from "@genuin/ui/lib/utils";
+
 import type { SVGIconsProps } from "../type";
 
 export function GoogleIcon({ className, ...restProps }: SVGIconsProps) {
@@ -10,8 +11,7 @@ export function GoogleIcon({ className, ...restProps }: SVGIconsProps) {
       viewBox="0 0 24 24"
       fill="none"
       className={cn("gencl:fill-black", className)}
-      {...restProps}
-    >
+      {...restProps}>
       <path
         fillRule="evenodd"
         clipRule="evenodd"

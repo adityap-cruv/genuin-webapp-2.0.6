@@ -1,4 +1,5 @@
 import { z } from "zod";
+
 import { mapGroupJoinStatus } from "@genuin/components/lib/utils";
 import { GroupUserStatusSchema } from "@genuin/components/types/roles";
 
@@ -66,10 +67,7 @@ const CommunityLoopSchema = z.object({
   is_post_allowed: z.boolean().nullish(),
   is_view_allowed: z.boolean().default(true),
   unread_message_count: z.number(),
-  logged_in_user_status: z.preprocess(
-    (val) => mapGroupJoinStatus(val as number),
-    GroupUserStatusSchema
-  ),
+  logged_in_user_status: z.preprocess((val) => mapGroupJoinStatus(val as number), GroupUserStatusSchema),
   latest_messages: z.array(latestMessageSchema),
   group: groupSchema,
   settings: settingsSchema,
@@ -88,8 +86,6 @@ export function validateCommunityGroups(data: unknown) {
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log("error in parsing community loop list::", e);
-    throw new Error(
-      "Something went wrong with validation of community loop list validation."
-    );
+    throw new Error("Something went wrong with validation of community loop list validation.");
   }
 }

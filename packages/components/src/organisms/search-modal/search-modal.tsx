@@ -2,22 +2,20 @@
 
 import { CommandDialog, CommandInput, CommandList } from "@genuin/ui/command";
 import { Button } from "@genuin/ui/components/button";
-import { ComponentProps, useState, useMemo, useCallback } from "react";
-import { Recents } from "./screen/recents";
-import { Suggestions } from "./screen/suggestions";
-import { SearchResults } from "./screen/search-results";
-import { useDebouncedSuggestions } from "./hooks";
-import { SEARCH_CONFIG, SEARCH_MODAL_CLASSES } from "./constants";
-import {
-  postRecents,
-  RECENT_SEARCH_CONTENT_TYPE,
-} from "@genuin/components/react-query/api/search";
-import { useAnalytics } from "@genuin/components/context/analytics";
+import type { ComponentProps } from "react";
+import { useState, useMemo, useCallback } from "react";
 
-type SearchModalProps = Omit<
-  ComponentProps<typeof CommandDialog>,
-  "container"
-> & {
+import { useAnalytics } from "@genuin/components/context/analytics";
+import { useAxiosInstance } from "@genuin/components/context/axios";
+import { postRecents, RECENT_SEARCH_CONTENT_TYPE } from "@genuin/components/react-query/api/search";
+
+import { SEARCH_CONFIG, SEARCH_MODAL_CLASSES } from "./constants";
+import { useDebouncedSuggestions } from "./hooks";
+import { Recents } from "./screen/recents";
+import { SearchResults } from "./screen/search-results";
+import { Suggestions } from "./screen/suggestions";
+
+type SearchModalProps = Omit<ComponentProps<typeof CommandDialog>, "container"> & {
   placeholder?: string;
   onSearch?: (query: string) => void;
   onSeeAll?: () => void;
@@ -38,6 +36,7 @@ export function SearchModal({
   const [query, setQuery] = useState("");
   const [showFullResults, setShowFullResults] = useState(false);
   const { track, EventName } = useAnalytics();
+  const axiosInstance = useAxiosInstance();
 
   // Use debounced suggestions hook with configured delay
   const {
@@ -50,12 +49,8 @@ export function SearchModal({
   // Memoize filtered suggestions to avoid re-filtering on every render
   const validSuggestions = useMemo(
     () =>
-      suggestions.filter(
-        (s) =>
-          s.type !== undefined &&
-          SEARCH_CONFIG.VALID_SUGGESTION_TYPES.includes(s.type as any),
-      ),
-    [suggestions],
+      suggestions.filter((s) => s.type !== undefined && SEARCH_CONFIG.VALID_SUGGESTION_TYPES.includes(s.type as any)),
+    [suggestions]
   );
 
   // Memoize computed values
@@ -81,13 +76,7 @@ export function SearchModal({
         });
       }
     },
-    [
-      onSearch,
-      resetToSuggestions,
-      query,
-      track,
-      EventName.KEYWORD_SEARCH_CANCEL,
-    ],
+    [onSearch, resetToSuggestions, query, track, EventName.KEYWORD_SEARCH_CANCEL]
   );
 
   const handleSearch = useCallback(
@@ -101,13 +90,13 @@ export function SearchModal({
         query: searchQuery,
       });
     },
-    [onSearch, resetToSuggestions, track, EventName.CHECK_RECENT_SEARCH],
+    [onSearch, resetToSuggestions, track, EventName.CHECK_RECENT_SEARCH]
   );
 
   const handleSeeAll = useCallback(() => {
     setShowFullResults(true);
     onSeeAll?.();
-    postRecents(RECENT_SEARCH_CONTENT_TYPE.text, undefined, query);
+    postRecents(axiosInstance, RECENT_SEARCH_CONTENT_TYPE.text, undefined, query);
 
     // Track keyword search
     track(EventName.KEYWORD_SEARCHED, {
@@ -116,13 +105,7 @@ export function SearchModal({
   }, [onSeeAll, query, track, EventName.KEYWORD_SEARCHED]);
 
   // Helper component for centered messages
-  const CenteredMessage = ({
-    children,
-    className = "",
-  }: {
-    children: React.ReactNode;
-    className?: string;
-  }) => (
+  const CenteredMessage = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
     <div className={SEARCH_MODAL_CLASSES.CENTERED_MESSAGE}>
       <div className={`gencl:text-sm ${className}`}>{children}</div>
     </div>
@@ -136,8 +119,7 @@ export function SearchModal({
       variant={variant}
       contentClassName="gencl:max-h-[80vh] gencl:min-h-[500px] gencl:flex gencl:flex-col gencl:w-full sm:gencl:w-[40vw] md:gencl:w-[36vw] lg:gencl:w-[32vw] gencl:max-w-xl sm:gencl:max-w-none"
       showClose={true}
-      {...props}
-    >
+      {...props}>
       <CommandInput
         placeholder={placeholder}
         value={query}
@@ -177,8 +159,7 @@ export function SearchModal({
             ) : (
               // Show empty state for queries less than minimum characters
               <CenteredMessage className="gencl:text-muted-foreground">
-                Type at least {SEARCH_CONFIG.MIN_QUERY_LENGTH} characters to
-                search
+                Type at least {SEARCH_CONFIG.MIN_QUERY_LENGTH} characters to search
               </CenteredMessage>
             )}
           </CommandList>
@@ -191,8 +172,7 @@ export function SearchModal({
                 theme="text"
                 size="sm"
                 className="gencl:w-full gencl:text-body-1-semi-bold gencl:border-secondary-900"
-                onClick={handleSeeAll}
-              >
+                onClick={handleSeeAll}>
                 See all results
               </Button>
             </div>

@@ -1,44 +1,43 @@
-import { useEffect, useRef, useState, useMemo, lazy, Suspense } from "react";
-import type { Swiper as SwiperType } from "swiper/types";
-
-import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
-import { useFeedContext } from "@genuin/components/templates/feed/context";
-import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { dialogManager } from "@genuin/ui/lib/dialog-manager/dialog-manager";
 import { cn } from "@genuin/ui/lib/utils";
+import { useEffect, useRef, useState, useMemo, lazy, Suspense } from "react";
 import { Swiper } from "swiper/react";
+import type { Swiper as SwiperType } from "swiper/types";
+
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { useFeedContext } from "@genuin/components/templates/feed/context";
 
 // Lazy load both Swiper and modules together to avoid separate loading delays
 const SwiperWithModules = lazy(async () => {
   const [swiperModules] = await Promise.all([import("swiper/modules")]);
+  const { Mousewheel, Keyboard, Virtual } = swiperModules;
 
   // Return a wrapper component that has modules baked in
-  return {
-    default: ({
-      children,
-      virtualizeSwiper,
-      ...props
-    }: {
-      children: React.ReactNode;
-      virtualizeSwiper?: boolean;
-      [key: string]: any;
-    }) => {
-      const { Mousewheel, Keyboard, Virtual } = swiperModules;
+  function SwiperWithModulesInner({
+    children,
+    virtualizeSwiper,
+    ...props
+  }: {
+    children: React.ReactNode;
+    virtualizeSwiper?: boolean;
+    [key: string]: any;
+  }) {
+    const modules = useMemo(() => {
+      const baseModules = [Mousewheel, Keyboard];
+      if (virtualizeSwiper) baseModules.push(Virtual);
+      return baseModules;
+    }, [virtualizeSwiper, Mousewheel, Keyboard, Virtual]);
 
-      const modules = useMemo(() => {
-        const baseModules = [Mousewheel, Keyboard];
-        if (virtualizeSwiper) baseModules.push(Virtual);
-        return baseModules;
-      }, [virtualizeSwiper]);
+    return (
+      <Swiper {...props} modules={modules}>
+        {children}
+      </Swiper>
+    );
+  }
 
-      return (
-        <Swiper {...props} modules={modules}>
-          {children}
-        </Swiper>
-      );
-    },
-  };
+  return { default: SwiperWithModulesInner };
 });
 
 const CONFIG = {
@@ -86,15 +85,12 @@ export function SwiperImplementation({
   // const swiperHeight = showExpandView ? "100%" : isMobile ? "100%" : height;
   const defaultSpaceBetween = showExpandView || isMobile ? 0 : 16;
   const swiperSpaceBetween = spaceBetweenProp ?? defaultSpaceBetween;
-  const defaultSlidesPerView =
-    showExpandView || isMobile ? 1 : isWindows ? 1.06 : 1.03;
+  const defaultSlidesPerView = showExpandView || isMobile ? 1 : isWindows ? 1.06 : 1.03;
   const swiperSlidesPerView = slidesPerViewProp ?? defaultSlidesPerView;
   const swiperRef = useRef<any>(null);
 
   // Track if any modal is open
-  const [modalOpen, setModalOpen] = useState(
-    dialogManager.getRegisteredDialogs().length > 0,
-  );
+  const [modalOpen, setModalOpen] = useState(dialogManager.getRegisteredDialogs().length > 0);
 
   useEffect(() => {
     // Subscribe to modal open/close changes and update swiper controls
@@ -139,8 +135,7 @@ export function SwiperImplementation({
         <div className={cn("gencl:h-full gencl:w-full", className)}>
           <div className="gencl:animate-pulse gencl:bg-gray-200 gencl:h-full gencl:w-full" />
         </div>
-      }
-    >
+      }>
       <SwiperWithModules
         // ref={swiperRef}
         onSwiper={(swiper: SwiperType) => {
@@ -174,13 +169,9 @@ export function SwiperImplementation({
         mousewheel={{
           forceToAxis: true,
           releaseOnEdges: true,
-          thresholdDelta: isWindows
-            ? CONFIG.MOUSE_THRESHOLD.WINDOWS
-            : CONFIG.MOUSE_THRESHOLD.DEFAULT,
+          thresholdDelta: isWindows ? CONFIG.MOUSE_THRESHOLD.WINDOWS : CONFIG.MOUSE_THRESHOLD.DEFAULT,
           thresholdTime: CONFIG.THRESHOLD_TIME,
-          sensitivity: isWindows
-            ? CONFIG.MOUSE_SENSITIVITY.WINDOWS
-            : CONFIG.MOUSE_SENSITIVITY.DEFAULT,
+          sensitivity: isWindows ? CONFIG.MOUSE_SENSITIVITY.WINDOWS : CONFIG.MOUSE_SENSITIVITY.DEFAULT,
         }}
         a11y={{
           enabled: true,
@@ -190,8 +181,7 @@ export function SwiperImplementation({
         }}
         followFinger
         snapToSlideEdge
-        {...restProps}
-      >
+        {...restProps}>
         {children}
       </SwiperWithModules>
     </Suspense>

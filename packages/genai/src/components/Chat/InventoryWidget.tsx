@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { SyntheticEvent } from 'react';
-import Spinner from '../ui/spinner';
-import type { ToolMetadataPayload } from '@/types';
-import { renderInventoryWidget, type InventoryRenderRequest, type InventoryRenderResponse } from '@/lib/api';
+
 import { useAgentsContext } from '@/context/app/context';
+import { renderInventoryWidget, type InventoryRenderRequest, type InventoryRenderResponse } from '@/lib/api';
+import type { ToolMetadataPayload } from '@/types';
+
+import Spinner from '../ui/spinner';
 
 type InventoryWidgetProps = {
     metadata: ToolMetadataPayload;

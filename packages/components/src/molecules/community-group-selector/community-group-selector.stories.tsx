@@ -1,4 +1,5 @@
-import { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react";
+
 import { CommunityGroupSelector } from "./community-group-selector";
 
 const meta: Meta<typeof CommunityGroupSelector> = {
@@ -17,7 +18,7 @@ type Story = StoryObj<typeof CommunityGroupSelector>;
 export const Default: Story = {
   render: () => (
     <div className="gencl:w-[80vw]">
-      <CommunityGroupSelector />
+      <CommunityGroupSelector onSelectChange={() => {}} />
     </div>
   ),
 };

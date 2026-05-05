@@ -1,6 +1,18 @@
 "use client";
+import { Button } from "@genuin/ui/components/button";
+import { DialogClose } from "@genuin/ui/components/dialog";
+import { XIcon, ClockIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
-import { ComponentProps, ReactNode } from "react";
+import { Skeleton } from "@genuin/ui/skeleton";
+import type { ComponentProps, ReactNode } from "react";
+
+import { useAnalytics } from "@genuin/components/context/analytics";
+import { useAuthContext } from "@genuin/components/context/auth";
+import { useAxiosInstance } from "@genuin/components/context/axios";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { MemberItem } from "@genuin/components/molecules/member-item";
+import { CommunityCard } from "@genuin/components/organisms/community-card";
+import { GroupCard } from "@genuin/components/organisms/group-card";
 import {
   useRecents,
   useDeleteRecent,
@@ -8,16 +20,6 @@ import {
   postRecents,
   RECENT_SEARCH_CONTENT_TYPE,
 } from "@genuin/components/react-query/api/search";
-import { XIcon, ClockIcon } from "@genuin/ui/icons";
-import { Button } from "@genuin/ui/components/button";
-import { buildPageUrl } from "@genuin/components/lib/utils/pages";
-import { CommunityCard } from "@genuin/components/organisms/community-card";
-import { GroupCard } from "@genuin/components/organisms/group-card";
-import { MemberItem } from "@genuin/components/molecules/member-item";
-import { Skeleton } from "@genuin/ui/skeleton";
-import { DialogClose } from "@genuin/ui/components/dialog";
-import { useAuthContext } from "@genuin/components/context/auth";
-import { useAnalytics } from "@genuin/components/context/analytics";
 
 export function Recents({
   className,
@@ -29,6 +31,7 @@ export function Recents({
   const { authenticationStatus } = useAuthContext();
   const isAuthenticated = authenticationStatus === "authenticated";
   const { track, EventName } = useAnalytics();
+  const axiosInstance = useAxiosInstance();
   const {
     data: recentSearches,
     isLoading,
@@ -62,10 +65,7 @@ export function Recents({
 
   if (showSkeleton) {
     return (
-      <div
-        className={cn("gencl:space-y-3 gencl:p-4", className)}
-        {...restProps}
-      >
+      <div className={cn("gencl:space-y-3 gencl:p-4", className)} {...restProps}>
         {Array.from({ length: 6 }).map((_, index) => (
           <RecentItemSkeleton key={index} />
         ))}
@@ -73,19 +73,14 @@ export function Recents({
     );
   }
 
-  if (
-    !recentSearches ||
-    !Array.isArray(recentSearches) ||
-    recentSearches.length === 0
-  ) {
+  if (!recentSearches || !Array.isArray(recentSearches) || recentSearches.length === 0) {
     return (
       <div
         className={cn(
           "gencl:flex gencl:flex-col gencl:items-center gencl:justify-center gencl:p-8 gencl:text-center gencl:min-h-[400px]",
           className
         )}
-        {...restProps}
-      >
+        {...restProps}>
         <p className="gencl:text-body-1-semi-bold gencl:text-secondary-600">
           Try searching for communities, topics, or keywords
         </p>
@@ -97,17 +92,14 @@ export function Recents({
     <div className={cn("gencl:space-y-1", className)} {...restProps}>
       {/* Header */}
       <div className="gencl:flex gencl:items-center gencl:justify-between gencl:px-4 gencl:py-1">
-        <h3 className="gencl:text-body-1-semi-bold gencl:text-secondary-600">
-          Recent
-        </h3>
+        <h3 className="gencl:text-body-1-semi-bold gencl:text-secondary-600">Recent</h3>
         {Array.isArray(recentSearches) && recentSearches.length > 0 && (
           <Button
             onClick={handleClearAll}
             variant="default"
             theme="text"
             size="sm"
-            className="gencl:text-body-2-semi-bold gencl:text-secondary-600 hover:gencl:text-foreground gencl:transition-colors gencl:p-0 gencl:h-auto"
-          >
+            className="gencl:text-body-2-semi-bold gencl:text-secondary-600 hover:gencl:text-foreground gencl:transition-colors gencl:p-0 gencl:h-auto">
             Clear all
           </Button>
         )}
@@ -135,11 +127,11 @@ export function Recents({
                   key={item.id}
                   onClick={async () => {
                     await postRecents(
+                      axiosInstance,
                       RECENT_SEARCH_CONTENT_TYPE.community,
                       item?.community?.community_id
                     );
-                  }}
-                >
+                  }}>
                   <RecentCommunityItem
                     id={item.id}
                     community={item.community}
@@ -154,17 +146,9 @@ export function Recents({
                 <span
                   key={item.id}
                   onClick={async () => {
-                    await postRecents(
-                      RECENT_SEARCH_CONTENT_TYPE.loop,
-                      item?.loop?.chat_id
-                    );
-                  }}
-                >
-                  <RecentGroupItem
-                    id={item.id}
-                    loop={item.loop}
-                    onDelete={() => handleDeleteRecent(item.id)}
-                  />
+                    await postRecents(axiosInstance, RECENT_SEARCH_CONTENT_TYPE.loop, item?.loop?.chat_id);
+                  }}>
+                  <RecentGroupItem id={item.id} loop={item.loop} onDelete={() => handleDeleteRecent(item.id)} />
                 </span>
               );
             }
@@ -174,17 +158,9 @@ export function Recents({
                 <span
                   key={item.id}
                   onClick={async () => {
-                    await postRecents(
-                      RECENT_SEARCH_CONTENT_TYPE.user,
-                      item?.user?.user_id
-                    );
-                  }}
-                >
-                  <RecentUserItem
-                    id={item.id}
-                    user={item.user}
-                    onDelete={() => handleDeleteRecent(item.id)}
-                  />
+                    await postRecents(axiosInstance, RECENT_SEARCH_CONTENT_TYPE.user, item?.user?.user_id);
+                  }}>
+                  <RecentUserItem id={item.id} user={item.user} onDelete={() => handleDeleteRecent(item.id)} />
                 </span>
               );
             }
@@ -216,11 +192,8 @@ function RecentItem({
         onClick && "gencl:cursor-pointer",
         className
       )}
-      onClick={onClick}
-    >
-      <div className="gencl:flex gencl:items-center gencl:gap-3 gencl:flex-1 gencl:min-w-0">
-        {children}
-      </div>
+      onClick={onClick}>
+      <div className="gencl:flex gencl:items-center gencl:gap-3 gencl:flex-1 gencl:min-w-0">{children}</div>
       <Button
         onClick={(e) => {
           e.stopPropagation();
@@ -230,8 +203,7 @@ function RecentItem({
         theme="custom"
         size="sm"
         className="gencl:opacity-0 gencl:group-hover:opacity-100 gencl:transition-opacity gencl:p-1 hover:gencl:bg-secondary gencl:rounded-xs gencl:text-secondary-600"
-        aria-label="Remove from recent searches"
-      >
+        aria-label="Remove from recent searches">
         <XIcon size="md" />
       </Button>
     </div>
@@ -261,24 +233,14 @@ function RecentTextItem({
         <ClockIcon className="gencl:h-6 gencl:w-6 gencl:text-secondary-600" />
       </div>
       <div className="gencl:min-w-0 gencl:flex-1">
-        <p className="gencl:text-body-1-medium gencl:text-secondary-600 gencl:truncate">
-          {text}
-        </p>
+        <p className="gencl:text-body-1-medium gencl:text-secondary-600 gencl:truncate">{text}</p>
       </div>
     </RecentItem>
   );
 }
 
 // Community Recent Item
-function RecentCommunityItem({
-  id,
-  community,
-  onDelete,
-}: {
-  id: string;
-  community: any;
-  onDelete: () => void;
-}) {
+function RecentCommunityItem({ id, community, onDelete }: { id: string; community: any; onDelete: () => void }) {
   return (
     <RecentItem onDelete={onDelete}>
       <DialogClose asChild>
@@ -312,15 +274,7 @@ function RecentCommunityItem({
 }
 
 // Group Recent Item
-function RecentGroupItem({
-  id,
-  loop,
-  onDelete,
-}: {
-  id: string;
-  loop: any;
-  onDelete: () => void;
-}) {
+function RecentGroupItem({ id, loop, onDelete }: { id: string; loop: any; onDelete: () => void }) {
   const href = buildPageUrl({
     type: "group",
     slug: loop.group?.slug || loop.slug || "",
@@ -356,15 +310,7 @@ function RecentGroupItem({
 }
 
 // User Recent Item
-function RecentUserItem({
-  id,
-  user,
-  onDelete,
-}: {
-  id: string;
-  user: any;
-  onDelete: () => void;
-}) {
+function RecentUserItem({ id, user, onDelete }: { id: string; user: any; onDelete: () => void }) {
   const href = buildPageUrl({
     type: "profile",
     slug: user.nickname,
@@ -385,11 +331,7 @@ function RecentUserItem({
   return (
     <RecentItem onDelete={onDelete} className="gencl:w-full gencl:min-w-0">
       <DialogClose asChild>
-        <MemberItem
-          memberData={memberData}
-          variant="recent"
-          className="gencl:w-full gencl:min-w-0"
-        />
+        <MemberItem memberData={memberData} variant="recent" className="gencl:w-full gencl:min-w-0" />
       </DialogClose>
     </RecentItem>
   );

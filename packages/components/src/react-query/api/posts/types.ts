@@ -131,3 +131,28 @@ export function validatePaginatedPostsResponse(
     },
   };
 }
+
+export type Brand = {
+  brand_id: number;
+  logo: string;
+  brand_url: string;
+  website: string;
+};
+
+export interface PaginatedAllowedBrandsParams {
+  platform: "web";
+  page: number;
+  limit: number;
+  query_string: string;
+  brand_id: number;
+}
+
+export interface PaginatedAllowedBrandsResponse {
+  data: Brand[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}

@@ -1,20 +1,12 @@
 "use client";
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-import { Swiper as SwiperType } from "swiper/types";
-import {
-  isSlideVisible,
-  getVisibleSlideRange,
-  getNewActiveIndexOnSlideChange,
-} from "./utils";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import type { Swiper as SwiperType } from "swiper/types";
+
 import { useEmbedContext } from "@genuin/components/context/embed";
-import { EmbedEventContextType } from "@genuin/components/context/embed/event-bus";
+import type { EmbedEventContextType } from "@genuin/components/context/embed/event-bus";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+
+import { isSlideVisible, getVisibleSlideRange, getNewActiveIndexOnSlideChange } from "./utils";
 
 type EmbedManagerContextType = {
   /**
@@ -28,12 +20,7 @@ type EmbedManagerContextType = {
    * @param ifInView if we want to update active index only if swiper is in view.
    * @returns void
    */
-  updateActiveIndex: (
-    index: number,
-    byHover?: boolean,
-    ifInView?: boolean,
-    force?: boolean,
-  ) => void;
+  updateActiveIndex: (index: number, byHover?: boolean, ifInView?: boolean, force?: boolean) => void;
   /**
    * Function to go to the next video in the embed.
    * @param useAutoScroll Whether to use intelligent auto-scroll positioning (default: false)
@@ -56,25 +43,17 @@ type EmbedManagerContextType = {
    * @param params.dir The direction of the layout ('vertical' or 'horizontal')
    * @returns The percentage of the slide that is visible (0-100)
    */
-  getSlideVisibilityPercentage: (params: {
-    index: number;
-    dir: "vertical" | "horizontal";
-  }) => number;
+  getSlideVisibilityPercentage: (params: { index: number; dir: "vertical" | "horizontal" }) => number;
 };
 
-const EmbedManagerContext = createContext<EmbedManagerContextType | undefined>(
-  undefined,
-);
+const EmbedManagerContext = createContext<EmbedManagerContextType | undefined>(undefined);
 
 type EmbedManagerProviderProps = {
   children: React.ReactNode;
   swiper: SwiperType | null;
 };
 
-export function EmbedManagerProvider({
-  children,
-  swiper,
-}: EmbedManagerProviderProps) {
+export function EmbedManagerProvider({ children, swiper }: EmbedManagerProviderProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [previousVisibleRange, setPreviousVisibleRange] = useState({
     first: 0,
@@ -98,9 +77,7 @@ export function EmbedManagerProvider({
       const slidesPerView = swiper.params.slidesPerView as number;
       const currentActiveIndex = swiper.activeIndex;
       const isVirtualEnabled = swiper.params.virtual && swiper.virtual;
-      const totalSlides = isVirtualEnabled
-        ? (swiper.virtual?.slides?.length ?? 0)
-        : (swiper.slides?.length ?? 0);
+      const totalSlides = isVirtualEnabled ? (swiper.virtual?.slides?.length ?? 0) : (swiper.slides?.length ?? 0);
 
       // Calculate the number of slides to jump
       // For slidesPerView like 2.2, we want to jump by 2 (floor of the value)
@@ -111,10 +88,7 @@ export function EmbedManagerProvider({
 
       if (direction === "next") {
         // Navigate forward by slidesToJump positions
-        targetIndex = Math.min(
-          currentActiveIndex + slidesToJump,
-          totalSlides - 1,
-        );
+        targetIndex = Math.min(currentActiveIndex + slidesToJump, totalSlides - 1);
       } else {
         // Navigate backward by slidesToJump positions
         targetIndex = Math.max(currentActiveIndex - slidesToJump, 0);
@@ -126,7 +100,7 @@ export function EmbedManagerProvider({
       if (websiteType === "legacy") return;
       setActiveIndex(targetIndex);
     },
-    [swiper],
+    [swiper]
   );
 
   // Trigger changeActiveIndex whenever activeIndex changes
@@ -166,13 +140,7 @@ export function EmbedManagerProvider({
 
       // If current activeIndex is going out of visible bounds, update it intelligently
       if (!isSlideVisible(swiper, activeIndex)) {
-        const newActiveIndex = Math.floor(
-          getNewActiveIndexOnSlideChange(
-            swiper,
-            activeIndex,
-            previousVisibleRange,
-          ),
-        );
+        const newActiveIndex = Math.floor(getNewActiveIndexOnSlideChange(swiper, activeIndex, previousVisibleRange));
         setActiveIndex(newActiveIndex);
       } else if (config.useWindowSwiperMode) {
         setActiveIndex(swiper.activeIndex);
@@ -219,16 +187,13 @@ export function EmbedManagerProvider({
           if (!config.useWindowSwiperMode && visibilityPercentage < 70) {
             swiper.slideTo(index, 300);
           }
-          if (
-            config.useWindowSwiperMode &&
-            (swiper as any).getVisibilityPercentageByIndex(index) < 70
-          ) {
+          if (config.useWindowSwiperMode && (swiper as any).getVisibilityPercentageByIndex(index) < 70) {
             swiper.slideTo(index);
           }
         }
       }
     },
-    [swiper, setActiveIndex, isGridLayout, config.view.isFeed],
+    [swiper, setActiveIndex, isGridLayout, config.view.isFeed]
   );
 
   const goToNextVideo = useCallback(
@@ -248,9 +213,7 @@ export function EmbedManagerProvider({
 
       const nextIndex = activeIndex + 1;
       const isVirtualEnabled = swiper.params.virtual && swiper.virtual;
-      const totalSlides = isVirtualEnabled
-        ? (swiper.virtual?.slides?.length ?? 0)
-        : (swiper.slides?.length ?? 0);
+      const totalSlides = isVirtualEnabled ? (swiper.virtual?.slides?.length ?? 0) : (swiper.slides?.length ?? 0);
 
       // Check if we've reached the end
       if (nextIndex >= totalSlides) {
@@ -293,7 +256,7 @@ export function EmbedManagerProvider({
         }
       }
     },
-    [swiper, activeIndex, isGridLayout, isIHeart, handleIHeartNavigation],
+    [swiper, activeIndex, isGridLayout, isIHeart, handleIHeartNavigation]
   );
 
   const goToPreviousVideo = useCallback(() => {
@@ -309,10 +272,7 @@ export function EmbedManagerProvider({
   }, [swiper, activeIndex, isGridLayout, isIHeart, handleIHeartNavigation]);
 
   useEffect(() => {
-    const handleActivePlayerTypeChange = (
-      eventData: any,
-      context: EmbedEventContextType,
-    ) => {
+    const handleActivePlayerTypeChange = (eventData: any, context: EmbedEventContextType) => {
       if (context.activePlayerType === "embed") {
         if (isGridLayout) {
           // For grid layout, just set the active index
@@ -373,9 +333,7 @@ export function EmbedManagerProvider({
       // Find slide element (handle virtual slides)
       const slide =
         swiper.params.virtual && swiper.virtual
-          ? (swiper.el.querySelector(
-              `[data-swiper-slide-index="${index}"]`,
-            ) as HTMLElement)
+          ? (swiper.el.querySelector(`[data-swiper-slide-index="${index}"]`) as HTMLElement)
           : (swiper.slides[index] as HTMLElement);
 
       if (!slide) return 0;
@@ -385,27 +343,17 @@ export function EmbedManagerProvider({
 
       if (dir === "vertical") {
         const visibleTop = Math.max(slideRect.top, containerRect.top, 0);
-        const visibleBottom = Math.min(
-          slideRect.bottom,
-          containerRect.bottom,
-          window.innerHeight,
-        );
+        const visibleBottom = Math.min(slideRect.bottom, containerRect.bottom, window.innerHeight);
         const visibleHeight = Math.max(0, visibleBottom - visibleTop);
-        return slideRect.height > 0
-          ? (visibleHeight / slideRect.height) * 100
-          : 0;
+        return slideRect.height > 0 ? (visibleHeight / slideRect.height) * 100 : 0;
       } else {
         const visibleLeft = Math.max(slideRect.left, containerRect.left, 0);
-        const visibleRight = Math.min(
-          slideRect.right,
-          containerRect.right,
-          window.innerWidth,
-        );
+        const visibleRight = Math.min(slideRect.right, containerRect.right, window.innerWidth);
         const visibleWidth = Math.max(0, visibleRight - visibleLeft);
         return slideRect.width > 0 ? (visibleWidth / slideRect.width) * 100 : 0;
       }
     },
-    [swiper],
+    [swiper]
   );
 
   return (
@@ -417,8 +365,7 @@ export function EmbedManagerProvider({
         goToPreviousVideo,
         swiper,
         getSlideVisibilityPercentage,
-      }}
-    >
+      }}>
       {children}
     </EmbedManagerContext.Provider>
   );
@@ -427,9 +374,7 @@ export function EmbedManagerProvider({
 export function useEmbedManagerContext() {
   const context = useContext(EmbedManagerContext);
   if (!context) {
-    throw new Error(
-      "useEmbedManagerContext must be used within an EmbedManagerProvider",
-    );
+    throw new Error("useEmbedManagerContext must be used within an EmbedManagerProvider");
   }
   return context;
 }

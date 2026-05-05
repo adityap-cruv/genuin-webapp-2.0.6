@@ -1,22 +1,24 @@
-import { ComponentProps } from "react";
+import { Button } from "@genuin/ui/components/button";
+import { DialogClose } from "@genuin/ui/components/dialog";
 import { cn } from "@genuin/ui/lib/utils";
-import type { TopResultsResponseType } from "@genuin/components/react-query/api/search";
+import type { ComponentProps } from "react";
+
+import { usePathname } from "@genuin/components/hooks/use-pathname";
+import { mapGroupJoinStatus } from "@genuin/components/lib/utils";
+import { HorizontalScrollContainer } from "@genuin/components/molecules/horizontal-scroll-container";
+import { MemberItem } from "@genuin/components/molecules/member-item";
+import { PostTile } from "@genuin/components/molecules/post-tile";
 import { CommunityCard } from "@genuin/components/organisms/community-card";
 import { GroupCard } from "@genuin/components/organisms/group-card";
-import { PostTile } from "@genuin/components/molecules/post-tile";
-import { Button } from "@genuin/ui/components/button";
-import { MemberItem } from "@genuin/components/molecules/member-item";
-import { HorizontalScrollContainer } from "@genuin/components/molecules/horizontal-scroll-container";
-import { DialogClose } from "@genuin/ui/components/dialog";
-import { urlGenerators } from "../../../shared";
-import { mapGroupJoinStatus } from "@genuin/components/lib/utils";
+import type { TopResultsResponseType } from "@genuin/components/react-query/api/search";
 import {
   updateGroupJoinStatusInSearchResults,
   updateCommunityJoinStatusInSearchResults,
 } from "@genuin/components/react-query/api/search";
-import { GroupUserStatusType } from "@genuin/components/types/roles";
-import { CommunityUserRole } from "@genuin/components/types/post";
-import { usePathname } from "@genuin/components/hooks/use-pathname";
+import type { CommunityUserRole } from "@genuin/components/types/post";
+import type { GroupUserStatusType } from "@genuin/components/types/roles";
+
+import { urlGenerators } from "../../../shared";
 
 type SectionHeaderProps = {
   title: string;
@@ -28,9 +30,7 @@ function SectionHeader({ title, onSeeAll }: SectionHeaderProps) {
     <div className="gencl:flex gencl:items-center gencl:justify-between gencl:mb-0">
       <h3 className="gencl:text-body-0-semi-bold: gencl:text-black">{title}</h3>
       <Button theme="text" size="sm" className="gencl:px-0!" onClick={onSeeAll}>
-        <span className="gencl:text-body-1-semi-bold gencl:text-secondary-600">
-          See all{" "}
-        </span>
+        <span className="gencl:text-body-1-semi-bold gencl:text-secondary-600">See all </span>
       </Button>
     </div>
   );
@@ -43,14 +43,7 @@ type TopTabProps = {
   onSeeAll?: (tab: "posts" | "groups" | "communities" | "profiles") => void;
 } & ComponentProps<"div">;
 
-export function TopTab({
-  topResults,
-  onSelect,
-  query,
-  className,
-  onSeeAll,
-  ...restProps
-}: TopTabProps) {
+export function TopTab({ topResults, onSelect, query, className, onSeeAll, ...restProps }: TopTabProps) {
   const pathname = usePathname();
 
   // Create sections map for easy access
@@ -141,17 +134,11 @@ export function TopTab({
     ),
     communities: topResults.communities.length > 0 && (
       <section key="communities" className="gencl:mb-0">
-        <SectionHeader
-          title="Communities"
-          onSeeAll={() => onSeeAll?.("communities")}
-        />
+        <SectionHeader title="Communities" onSeeAll={() => onSeeAll?.("communities")} />
 
         <HorizontalScrollContainer gap="lg">
           {topResults.communities.map((community) => (
-            <div
-              key={community.community_id}
-              className="gencl:flex-shrink-0 gencl:max-w-100"
-            >
+            <div key={community.community_id} className="gencl:flex-shrink-0 gencl:max-w-100">
               <CommunityCard
                 community={{
                   id: community.community_id,
@@ -160,8 +147,7 @@ export function TopTab({
                   slug: community.slug,
                   description: community.description || "",
                   dp: community.dp || "",
-                  is_community_join_requested:
-                    community.is_community_join_requested,
+                  is_community_join_requested: community.is_community_join_requested,
                   logged_in_user_role: community.logged_in_user_role,
                   banner: "",
                   stats: {
@@ -195,17 +181,20 @@ export function TopTab({
     ),
     people: topResults.people.length > 0 && (
       <section key="profiles" className="gencl:mb-0">
-        <SectionHeader
-          title="Profiles"
-          onSeeAll={() => onSeeAll?.("profiles")}
-        />
+        <SectionHeader title="Profiles" onSeeAll={() => onSeeAll?.("profiles")} />
 
         <HorizontalScrollContainer gap="lg">
           {topResults.people.slice(0, 5).map((person) => {
             const memberData = {
               memberId: person.user_id,
               // isOwner: !!person.brand,
-              brand: person.brand ?? undefined,
+              brand: person.brand
+                ? {
+                    brandId: person.brand.brand_id,
+                    brandSlug: person.brand.brand_slug,
+                    brandUserLogo: person.brand.brand_user_logo,
+                  }
+                : undefined,
               name: person.name || person.nickname,
               url: urlGenerators.profile(person.nickname, person.brand),
               profileImage: {
@@ -219,8 +208,7 @@ export function TopTab({
             return (
               <div
                 key={person.user_id}
-                className="gencl:flex-shrink-0 gencl:cursor-pointer gencl:hover:bg-secondary-50 gencl:rounded-md gencl:p-2"
-              >
+                className="gencl:flex-shrink-0 gencl:cursor-pointer gencl:hover:bg-secondary-50 gencl:rounded-md gencl:p-2">
                 <DialogClose asChild>
                   <MemberItem memberData={memberData} variant="profile" />
                 </DialogClose>
@@ -233,17 +221,10 @@ export function TopTab({
   };
 
   // Get the ranking order from topResults, fallback to default order if not provided
-  const rankingOrder = topResults.ranking || [
-    "videos",
-    "loops",
-    "communities",
-    "people",
-  ];
+  const rankingOrder = topResults.ranking || ["videos", "loops", "communities", "people"];
 
   // Filter out sections that are falsy (empty arrays) and sort by ranking
-  const orderedSections = rankingOrder
-    .map((key) => sectionsMap[key as keyof typeof sectionsMap])
-    .filter(Boolean);
+  const orderedSections = rankingOrder.map((key) => sectionsMap[key as keyof typeof sectionsMap]).filter(Boolean);
 
   return (
     <div className={cn("gencl:space-y-6", className)} {...restProps}>

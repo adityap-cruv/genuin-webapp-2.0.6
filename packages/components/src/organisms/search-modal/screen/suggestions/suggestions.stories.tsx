@@ -1,6 +1,9 @@
+import { Dialog } from "@genuin/ui/components/dialog";
 import type { Meta, StoryObj } from "@storybook/react";
-import { Suggestions } from "./suggestions";
+
 import type { SuggestionItemType } from "@genuin/components/react-query/api/search";
+
+import { Suggestions } from "./suggestions";
 
 // Mock suggestion data for communities, groups, and users (no videos in suggestions)
 const mockSuggestions: SuggestionItemType[] = [
@@ -34,7 +37,7 @@ const mockSuggestions: SuggestionItemType[] = [
       },
       no_of_members: 0,
       no_of_loops: 0,
-      no_of_videos: 0
+      no_of_videos: 0,
     },
   },
   {
@@ -55,7 +58,7 @@ const mockSuggestions: SuggestionItemType[] = [
         slug: "product-development",
         no_of_members: 0,
         no_of_videos: 0,
-        no_of_views: 0
+        no_of_views: 0,
       },
       settings: {
         discoverable: true,
@@ -75,14 +78,10 @@ const mockSuggestions: SuggestionItemType[] = [
       is_avatar: false,
       bio: "Software Engineer passionate about React and TypeScript",
       user_id: "user_1",
-      profile_image:
-        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=faces",
-      profile_image_s:
-        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=faces",
-      profile_image_m:
-        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=faces",
-      profile_image_l:
-        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=faces",
+      profile_image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=faces",
+      profile_image_s: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=faces",
+      profile_image_m: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=faces",
+      profile_image_l: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=faces",
       brand: {
         brand_id: 1,
         brand_slug: "techcorp",
@@ -113,9 +112,12 @@ const meta: Meta<typeof Suggestions> = {
   },
   decorators: [
     (Story) => (
-      <div className="gencl:w-[400px] gencl:max-w-[400px] gencl:max-h-[400px] gencl:border gencl:border-gray-200 gencl:rounded-lg gencl:p-4 gencl:bg-white gencl:overflow-auto">
-        <Story />
-      </div>
+      // Dialog context is required because Suggestions renders DialogClose around each item
+      <Dialog type="storybook-suggestions" open>
+        <div className="gencl:w-[400px] gencl:max-w-[400px] gencl:max-h-[400px] gencl:border gencl:border-gray-200 gencl:rounded-lg gencl:p-4 gencl:bg-white gencl:overflow-auto">
+          <Story />
+        </div>
+      </Dialog>
     ),
   ],
   tags: ["autodocs"],
@@ -125,8 +127,7 @@ const meta: Meta<typeof Suggestions> = {
       control: false,
     },
     onSelect: {
-      description:
-        "Called when a suggestion is selected (deprecated - now handled by DialogClose)",
+      description: "Called when a suggestion is selected (deprecated - now handled by DialogClose)",
       control: false,
     },
     isLoading: {
@@ -168,8 +169,7 @@ export const Loading: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          "Loading state displayed while suggestions are being fetched based on the search query.",
+        story: "Loading state displayed while suggestions are being fetched based on the search query.",
       },
     },
   },
@@ -186,8 +186,7 @@ export const NoResults: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          "Empty state shown when no suggestions match the current search query without a specific search term.",
+        story: "Empty state shown when no suggestions match the current search query without a specific search term.",
       },
     },
   },
@@ -256,8 +255,7 @@ export const WithManyResults: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          "Multiple suggestion results demonstrating scrollable behavior and different content types.",
+        story: "Multiple suggestion results demonstrating scrollable behavior and different content types.",
       },
     },
   },

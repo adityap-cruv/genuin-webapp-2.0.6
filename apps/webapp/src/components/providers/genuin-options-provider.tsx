@@ -1,79 +1,92 @@
-'use client'
-import { type ConfigType, useGenuinOptions } from '@lib/stores/genuin-options'
-import { getSizeBoxes } from '@lib/utils/common/size-box'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useLayoutEffect } from 'react'
-import { useLocalStorage } from '@lib/stores/local-storage'
-import { setBrandIdInAxiosInstance, ejectAuthTokenInterceptor, setAuthTokenInAxiosInstance } from '@lib/api/instance'
-import dynamic from 'next/dynamic'
-import { saveVisitor, ssoAutoLogin } from '@components/common/modals/authentication/api/auth'
-import { notificationsCount } from '@lib/api/notification'
-import { useRefreshToken } from '@/hooks/use-refresh-token'
-import { rudderStackIdentify } from '@/services/analytics/useRudderAnalytics'
-import { type User } from 'next-auth'
-import { useSession, signIn } from 'next-auth/react'
-import { RepostModal } from '@components/common/modals/repost'
-import { checkAndResetGestures, replaceUrlWithoutReload, syncTapBehavior } from '@/lib/utils'
-import { useIHeartDemoStates } from './iheart-demo-provider'
-import { WEB_CONFIGS } from '@/lib/constants'
-import { useKsGestureStore } from '../common/gestures/gesture-store'
-import { Loader } from '../ui/loader'
+"use client";
+import FingerprintJS from "@fingerprintjs/fingerprintjs";
+import { loadGenAdScript } from "@genuin/components/molecules/feed-player/gen-ad-container";
+import dynamic from "next/dynamic";
+import { useRouter, useSearchParams } from "next/navigation";
+import { type User } from "next-auth";
+import { useSession, signIn } from "next-auth/react";
+import { useEffect, useLayoutEffect } from "react";
+
+import { useRefreshToken } from "@/hooks/use-refresh-token";
+import { WEB_CONFIGS } from "@/lib/constants";
+import { checkAndResetGestures, replaceUrlWithoutReload, syncTapBehavior } from "@/lib/utils";
+import { rudderStackIdentify } from "@/services/analytics/useRudderAnalytics";
+import { saveVisitor, ssoAutoLogin } from "@components/common/modals/authentication/api/auth";
+import { RepostModal } from "@components/common/modals/repost";
+import { setBrandIdInAxiosInstance, ejectAuthTokenInterceptor, setAuthTokenInAxiosInstance } from "@lib/api/instance";
+import { notificationsCount } from "@lib/api/notification";
+import { type ConfigType, useGenuinOptions } from "@lib/stores/genuin-options";
+import { useLocalStorage } from "@lib/stores/local-storage";
+import { getSizeBoxes } from "@lib/utils/common/size-box";
+
+import { useKsGestureStore } from "../common/gestures/gesture-store";
+import { Loader } from "../ui/loader";
+
+import { useIHeartDemoStates } from "./iheart-demo-provider";
 
 const AuthenticationModal = dynamic(
-  async () => await import('@components/common/modals/authentication').then((comp) => comp.AuthenticationModal.ui)
-)
+  async () => await import("@components/common/modals/authentication").then((comp) => comp.AuthenticationModal.ui)
+);
 const DownloadDialogModal = dynamic(
-  async () => await import('@components/common/modals/download-app').then((comp) => comp.DownloadDialogModal.ui)
-)
+  async () => await import("@components/common/modals/download-app").then((comp) => comp.DownloadDialogModal.ui)
+);
 
 type Props = {
-  children: React.ReactNode
-  deviceType: string
-  os: string
-  browserType: string
-  config?: ConfigType
-  user?: User | null
-}
+  children: React.ReactNode;
+  deviceType: string;
+  os: string;
+  browserType: string;
+  config?: ConfigType;
+  user?: User | null;
+};
+const AD_INJECT_BRAND_IDS = [3283, 2249, 2910];
+
 // it won't log any consoles in production.
 
-if (process.env.NEXT_PUBLIC_CURRENT_ENV === 'prod') console.log = () => {}
+if (process.env.NEXT_PUBLIC_CURRENT_ENV === "prod") console.log = () => {};
 
 // TODO: separate this component into 2 comps with once has auth and second doesn't have auth.
 // TODO: This component is too big, consider splitting it into smaller components.
 export function GenuinOptionsProvider({ children, deviceType, os, browserType, config, user }: Props) {
-  const router = useRouter()
-  const { resetAllGestures } = useKsGestureStore()
-  const { data: sessionData, status } = useSession()
-  const { shouldShowIHeartDemo } = useIHeartDemoStates()
+  const router = useRouter();
+  const { resetAllGestures } = useKsGestureStore();
+  const { data: sessionData, status } = useSession();
+  const { shouldShowIHeartDemo } = useIHeartDemoStates();
   const { setInitialData, isLoading } = useGenuinOptions((state) => ({
     setInitialData: state.setData,
     isLoading: state.isLoading,
-  }))
+  }));
   const { setDeviceId, visitorAdded, setVisitor } = useLocalStorage((state) => ({
     setDeviceId: state.setDeviceId,
     visitorAdded: state.visitorAdded,
     setVisitor: state.setVisitor,
-  }))
-  useRefreshToken()
+  }));
+  useRefreshToken();
+
+  useEffect(() => {
+    if (config?.brand_id && AD_INJECT_BRAND_IDS.includes(Number(config.brand_id))) {
+      loadGenAdScript();
+    }
+  }, []);
 
   useEffect(() => {
     if (config?.status === 3) {
-      router.push('/inactive')
+      router.push("/inactive");
     }
-  }, [config?.status, router])
+  }, [config?.status, router]);
 
-  const searchParams = useSearchParams()
+  const searchParams = useSearchParams();
 
-  const hideNavbar = searchParams.get('hide_navbar') === '1'
-  const from = searchParams.get('from') ?? ''
-  const isMobile = deviceType === 'mobile'
-  const isSafari = browserType.toLowerCase().includes('safari')
-  const host = typeof window !== 'undefined' ? window.location.host : process.env.NEXT_PUBLIC_HOST
+  const hideNavbar = searchParams.get("hide_navbar") === "1";
+  const from = searchParams.get("from") ?? "";
+  const isMobile = deviceType === "mobile";
+  const isSafari = browserType.toLowerCase().includes("safari");
+  const host = typeof window !== "undefined" ? window.location.host : process.env.NEXT_PUBLIC_HOST;
 
   async function fetchNotificationCount() {
-    const response = await notificationsCount()
-    if (!response) return
-    if (response.status) setInitialData({ notificationCount: response.count })
+    const response = await notificationsCount();
+    if (!response) return;
+    if (response.status) setInitialData({ notificationCount: response.count });
   }
 
   // async function fetchWalletBalance() {
@@ -82,109 +95,109 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
   // }
 
   useEffect(() => {
-    const autoLoginToken = searchParams.get('auto_login_token')
-    const action = searchParams.get('action')
-    const videoId = searchParams.get('video_id')
-    if (!autoLoginToken || !config) return
+    const autoLoginToken = searchParams.get("auto_login_token");
+    const action = searchParams.get("action");
+    const videoId = searchParams.get("video_id");
+    if (!autoLoginToken || !config) return;
     void ssoAutoLogin(autoLoginToken, config.brand_id)
       .then(async (user) => {
         if (user) {
-          setAuthTokenInAxiosInstance(user.accessToken)
-          await signIn('credentials', { ...user, redirect: false }).then((value) => {
+          setAuthTokenInAxiosInstance(user.accessToken);
+          await signIn("credentials", { ...user, redirect: false }).then((value) => {
             if (value?.ok) {
-              if (action && action === 'repost' && videoId) {
-                const url = new URL(window.location.href)
-                url.searchParams.delete('auto_login_token')
-                url.searchParams.delete('action')
-                url.searchParams.delete('video_id')
-                replaceUrlWithoutReload(url)
-                RepostModal.open(videoId)
+              if (action && action === "repost" && videoId) {
+                const url = new URL(window.location.href);
+                url.searchParams.delete("auto_login_token");
+                url.searchParams.delete("action");
+                url.searchParams.delete("video_id");
+                replaceUrlWithoutReload(url);
+                RepostModal.open(videoId);
               }
             }
-          })
+          });
         }
       })
       .catch((e) => {
-        console.log('error', e)
-      })
-  }, [searchParams])
+        console.log("error", e);
+      });
+  }, [searchParams]);
 
   useEffect(() => {
-    let interceptorId: number
+    let interceptorId: number;
     if (user) {
-      interceptorId = setAuthTokenInAxiosInstance(user.accessToken)
-      setInitialData({ user, isLoading: false })
-      void fetchNotificationCount()
+      interceptorId = setAuthTokenInAxiosInstance(user.accessToken);
+      setInitialData({ user, isLoading: false });
+      void fetchNotificationCount();
       // void fetchWalletBalance()
     }
-    void rudderStackIdentify()
+    void rudderStackIdentify();
 
     return () => {
-      ejectAuthTokenInterceptor(interceptorId)
-    }
-  }, [])
+      ejectAuthTokenInterceptor(interceptorId);
+    };
+  }, []);
 
   useLayoutEffect(() => {
-    if (status === 'loading') return
+    if (status === "loading") return;
 
-    if (user && status === 'authenticated') {
-      setInitialData({ user, isLoading: false })
-      setAuthTokenInAxiosInstance(user.accessToken)
-      void fetchNotificationCount()
+    if (user && status === "authenticated") {
+      setInitialData({ user, isLoading: false });
+      setAuthTokenInAxiosInstance(user.accessToken);
+      void fetchNotificationCount();
       // void fetchWalletBalance()
-    } else if (status === 'unauthenticated') {
+    } else if (status === "unauthenticated") {
       // Explicitly clear user data when status is unauthenticated
-      setInitialData({ user: undefined, isLoading: false })
-      setAuthTokenInAxiosInstance(undefined)
+      setInitialData({ user: undefined, isLoading: false });
+      setAuthTokenInAxiosInstance(undefined);
       // Ensure the Zustand store is fully cleared
-      useGenuinOptions.getState().clearUserData?.()
+      useGenuinOptions.getState().clearUserData?.();
     }
-  }, [user, status])
+  }, [user, status]);
 
   // update user data when session data is updated.
   useEffect(() => {
     if (sessionData?.user) {
-      setInitialData({ user: sessionData?.user })
-    } else if (status === 'unauthenticated' && sessionData === null) {
+      setInitialData({ user: sessionData?.user });
+    } else if (status === "unauthenticated" && sessionData === null) {
       // Clear user data when session is explicitly null and status is unauthenticated
-      setInitialData({ user: undefined })
+      setInitialData({ user: undefined });
       // Ensure the Zustand store is fully cleared
-      useGenuinOptions.getState().clearUserData?.()
+      useGenuinOptions.getState().clearUserData?.();
     }
-  }, [sessionData, status])
+  }, [sessionData, status]);
 
   function getParsedWebConfigs() {
-    let parsedWebConfigs = null
+    let parsedWebConfigs = null;
     try {
-      const webConfigs = searchParams.get('web_configs') ?? '{}'
-      parsedWebConfigs = JSON.parse(decodeURIComponent(webConfigs))
+      const webConfigs = searchParams.get("web_configs") ?? "{}";
+      parsedWebConfigs = JSON.parse(decodeURIComponent(webConfigs));
     } catch (error) {
-      console.error('Failed to parse web_configs:', error)
+      console.error("Failed to parse web_configs:", error);
     }
-    return parsedWebConfigs
+    return parsedWebConfigs;
   }
 
   function init() {
-    checkAndResetGestures()
-    syncTapBehavior(config?.web_configs?.tap_behavior)
+    checkAndResetGestures();
+    syncTapBehavior(config?.web_configs?.tap_behavior);
 
     // If 'device_type' is present in the URL (e.g., for demo purposes in BCC to simulate mobile view),
     // reset gestures to ensure the correct touch interactions are applied for the simulated device
-    if (searchParams.get('device_type')) resetAllGestures()
+    if (searchParams.get("device_type")) resetAllGestures();
 
-    if (config?.brand_id) setBrandIdInAxiosInstance(Number(config?.brand_id))
+    if (config?.brand_id) setBrandIdInAxiosInstance(Number(config?.brand_id));
 
-    const parsedWebConfigs = getParsedWebConfigs()
+    const parsedWebConfigs = getParsedWebConfigs();
     if (config) {
       // Create merged web configs by combining defaults with API response and URL params
       config.web_configs = {
         ...WEB_CONFIGS,
         ...config.web_configs,
         ...parsedWebConfigs,
-      }
+      };
     }
 
-    const isIframe = window !== window.parent
+    const isIframe = window !== window.parent;
     setInitialData({
       logoUrl: config?.logo,
       brandWebLogo: config?.brand_web_logo,
@@ -199,60 +212,55 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
       isSafari,
       parentUrl: from,
       config,
-      webCTA: config?.web_cta ?? 'app',
+      webCTA: config?.web_cta ?? "app",
       // webCTA: 'app',
       host,
-    })
+    });
   }
 
   function handleResize() {
-    setInitialData({ sizeBoxes: getSizeBoxes(isMobile, !hideNavbar, shouldShowIHeartDemo) })
+    setInitialData({ sizeBoxes: getSizeBoxes(isMobile, !hideNavbar, shouldShowIHeartDemo) });
   }
 
   function handleBlur() {
-    setInitialData({ userHasFocus: false })
+    setInitialData({ userHasFocus: false });
   }
 
   function handleFocus() {
-    setInitialData({ userHasFocus: true })
+    setInitialData({ userHasFocus: true });
   }
 
   useEffect(() => {
-    init()
-    // Lazy load FingerprintJS from CDN only when needed
+    init();
+    const fpPromise = FingerprintJS.load();
     void (async () => {
-      try {
-        const { getNewDeviceId } = await import('@genuin/components/lib/utils/device-id')
-        await getNewDeviceId((visitorId) => {
-          if (!visitorAdded) {
-            // Call API for visitor registration
-            setDeviceId(visitorId)
-            setVisitor(true)
-            void saveVisitor(visitorId, browserType, deviceType, os, config?.brand_id)
-          }
-        })
-      } catch (error) {
-        console.error('[FingerprintJS] Failed to load or generate device ID:', error)
+      const fp = await fpPromise;
+      const result = await fp.get();
+      if (!visitorAdded) {
+        // Call API for visitor registration
+        setDeviceId(result.visitorId);
+        setVisitor(true);
+        await saveVisitor(result.visitorId, browserType, deviceType, os, config?.brand_id);
       }
-    })()
+    })();
 
-    window.addEventListener('focus', handleFocus)
-    window.addEventListener('blur', handleBlur)
-    window.addEventListener('resize', handleResize)
+    window.addEventListener("focus", handleFocus);
+    window.addEventListener("blur", handleBlur);
+    window.addEventListener("resize", handleResize);
     return () => {
-      window.removeEventListener('resize', handleResize)
-      window.removeEventListener('blur', handleBlur)
-      window.removeEventListener('focus', handleFocus)
-    }
-  }, [])
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("blur", handleBlur);
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, []);
 
-  if (status === 'loading') {
-    console.log('stuck here in loader of genuin options provider')
+  if (status === "loading") {
+    console.log("stuck here in loader of genuin options provider");
     return (
       <div className="flex h-screen w-full items-center justify-center">
         <Loader size="md" />
       </div>
-    )
+    );
   }
 
   return (
@@ -262,5 +270,5 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
       <DownloadDialogModal />
       <RepostModal.ui />
     </>
-  )
+  );
 }

@@ -1,11 +1,7 @@
+import { InstagramIcon, LinkIcon, TiktokIcon, TwitterIcon } from "@genuin/ui/icons";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+
 import { EditProfileSettings } from "./edit-profile-settings";
-import {
-  InstagramIcon,
-  LinkIcon,
-  TiktokIcon,
-  TwitterIcon,
-} from "@genuin/ui/icons";
 
 const meta: Meta<typeof EditProfileSettings> = {
   title: "Organisms/Settings/Edit Profile Settings",

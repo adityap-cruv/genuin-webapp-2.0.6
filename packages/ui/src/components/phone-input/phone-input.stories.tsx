@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
+import type { Value } from "react-phone-number-input";
 
 import { PhoneInput } from "./phone-input";
 
@@ -18,14 +19,12 @@ type Story = StoryObj<typeof PhoneInput>;
 
 export const Default: Story = {
   render: function DefaultPhoneInput() {
-    const [value, setValue] = useState("");
+    const [value, setValue] = useState<Value>("" as Value);
 
     return (
       <div className="w-[300px]">
         <PhoneInput value={value} onChange={setValue} />
-        <p className="mt-2 text-sm text-gray-500">
-          Value: {value || "(no number entered)"}
-        </p>
+        <p className="mt-2 text-sm text-gray-500">Value: {value || "(no number entered)"}</p>
       </div>
     );
   },
@@ -33,7 +32,7 @@ export const Default: Story = {
 
 export const WithInitialValue: Story = {
   render: function PrefilledPhoneInput() {
-    const [value, setValue] = useState("+14155552671");
+    const [value, setValue] = useState<Value>("+14155552671" as Value);
 
     return (
       <div className="w-[300px]">
@@ -46,15 +45,11 @@ export const WithInitialValue: Story = {
 
 export const WithPlaceholder: Story = {
   render: function PlaceholderPhoneInput() {
-    const [value, setValue] = useState("");
+    const [value, setValue] = useState<Value>("" as Value);
 
     return (
       <div className="w-[300px]">
-        <PhoneInput
-          value={value}
-          onChange={setValue}
-          placeholder="Enter your phone number"
-        />
+        <PhoneInput value={value} onChange={setValue} placeholder="Enter your phone number" />
       </div>
     );
   },
@@ -62,7 +57,7 @@ export const WithPlaceholder: Story = {
 
 export const Disabled: Story = {
   render: function DisabledPhoneInput() {
-    const [value, setValue] = useState("+14155552671");
+    const [value, setValue] = useState<Value>("+14155552671" as Value);
 
     return (
       <div className="w-[300px]">
@@ -74,14 +69,12 @@ export const Disabled: Story = {
 
 export const WithDefaultCountry: Story = {
   render: function DefaultCountryPhoneInput() {
-    const [value, setValue] = useState("");
+    const [value, setValue] = useState<Value>("" as Value);
 
     return (
       <div className="w-[300px]">
         <PhoneInput value={value} onChange={setValue} defaultCountry="GB" />
-        <p className="mt-2 text-sm text-gray-500">
-          Default country set to United Kingdom (GB)
-        </p>
+        <p className="mt-2 text-sm text-gray-500">Default country set to United Kingdom (GB)</p>
       </div>
     );
   },
@@ -89,14 +82,12 @@ export const WithDefaultCountry: Story = {
 
 export const WithInternationalValue: Story = {
   render: function InternationalPhoneInput() {
-    const [value, setValue] = useState("+33123456789");
+    const [value, setValue] = useState<Value>("+33123456789" as Value);
 
     return (
       <div className="w-[300px]">
         <PhoneInput value={value} onChange={setValue} international />
-        <p className="mt-2 text-sm text-gray-500">
-          French number with international format: {value}
-        </p>
+        <p className="mt-2 text-sm text-gray-500">French number with international format: {value}</p>
       </div>
     );
   },

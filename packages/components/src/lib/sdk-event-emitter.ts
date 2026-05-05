@@ -298,10 +298,7 @@ export class SDKEventEmitter {
   /**
    * Internal method to actually emit the event
    */
-  private static emitEvent<T extends SDKEventName>(
-    eventName: T,
-    payload: SDKEventPayloadMap[T],
-  ): void {
+  private static emitEvent<T extends SDKEventName>(eventName: T, payload: SDKEventPayloadMap[T]): void {
     if (!this.isSDKAvailable()) {
       return;
     }
@@ -332,11 +329,7 @@ export class SDKEventEmitter {
    * );
    * ```
    */
-  static emit<T extends SDKEventName>(
-    eventName: T,
-    payload: SDKEventPayloadMap[T],
-    options?: SDKEmitOptions,
-  ): void {
+  static emit<T extends SDKEventName>(eventName: T, payload: SDKEventPayloadMap[T], options?: SDKEmitOptions): void {
     const { debounceTime } = options || {};
 
     // If no debounce time provided, emit immediately
@@ -424,10 +417,7 @@ export class SDKEventEmitter {
    * SDKEventEmitter.off(SDKListenerEventName.AUTHENTICATE_USER, handler);
    * ```
    */
-  static off(
-    eventName: SDKListenerEventName,
-    listener: SDKEventListener,
-  ): void {
+  static off(eventName: SDKListenerEventName, listener: SDKEventListener): void {
     if (!this.isSDKAvailable()) {
       return;
     }

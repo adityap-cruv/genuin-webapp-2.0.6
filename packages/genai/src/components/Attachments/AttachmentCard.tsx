@@ -1,10 +1,12 @@
 import type { ReactNode } from 'react';
-import Spinner from '../ui/spinner';
-import { getFileIcon, getFileTypeLabel, getUploadStatusIcon } from '../MessageInput/utils/fileUtils';
-import Pdf from '@/assets/SvgIcons/Pdf';
+
 import Document from '@/assets/SvgIcons/Document';
+import Pdf from '@/assets/SvgIcons/Pdf';
 import Table from '@/assets/SvgIcons/Table';
 import Video from '@/assets/SvgIcons/Video';
+
+import { getFileIcon, getFileTypeLabel, getUploadStatusIcon } from '../MessageInput/utils/fileUtils';
+import Spinner from '../ui/spinner';
 
 const getBadgeStyles = (type?: string) => {
     if (!type) {

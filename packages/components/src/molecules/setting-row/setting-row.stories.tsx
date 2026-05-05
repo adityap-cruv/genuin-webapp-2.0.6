@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+
 import { SettingRow } from "./setting-row";
 
 const meta: Meta<typeof SettingRow> = {
@@ -15,13 +16,13 @@ export default meta;
 type Story = StoryObj<typeof SettingRow>;
 
 export const Default: Story = {
- args: {  
+  args: {
     label: "Username",
     subLabel: "Your display handle",
     value: "kimpaquette",
     toggle: true,
     toggleValue: true,
-    onToggle: (val: boolean) => {
+    onToggleChange: (val: boolean) => {
       console.log("Toggle changed:", val);
     },
     onClick: () => {

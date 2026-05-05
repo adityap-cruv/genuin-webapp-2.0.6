@@ -1,42 +1,38 @@
 "use client";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-  DialogHeader,
-} from "@genuin/ui/dialog";
-import { RadioGroup, RadioItem } from "@genuin/ui/radio";
-import React, { ComponentProps, useCallback, useMemo, useState } from "react";
-import { REPORT_HEADER_DATA, REPORT_REASON_DATA } from "./report-data";
 import { Button } from "@genuin/ui/button";
-import {
-  ReportType,
-  useReport,
-} from "@genuin/components/react-query/api/report";
+import { Dialog, DialogContent, DialogTrigger, DialogHeader } from "@genuin/ui/dialog";
 import { Loader } from "@genuin/ui/loader";
-import { UseMutationResult } from "@tanstack/react-query";
-const AuthenticationModal = React.lazy(() =>
-  import("@genuin/components/organisms/authentication-modal/index.js").then(
-    (m) => ({
-      default: m.AuthenticationModal,
-    }),
-  ),
-);
-
-import { useAuthContext } from "@genuin/components/context/auth";
-import { useAnalytics, VideoTypes } from "@genuin/components/context/analytics";
-import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
-import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import { Link } from "../link";
-const Success = React.lazy(() =>
-  import("@genuin/components/molecules/success/index.js").then((m) => ({
-    default: m.Success,
-  })),
-);
-
+import { RadioGroup, RadioItem } from "@genuin/ui/radio";
+import type { UseMutationResult } from "@tanstack/react-query";
+import type { ComponentProps } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { Suspense } from "react";
+
 import { useBaseContext } from "@genuin/components/context";
+import { useAnalytics } from "@genuin/components/context/analytics";
+import type { VideoTypes } from "@genuin/components/context/analytics";
+import { useAuthContext } from "@genuin/components/context/auth";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
+import { useReport } from "@genuin/components/react-query/api/report";
+import type { ReportType } from "@genuin/components/react-query/api/report";
+
+import { Link } from "../link";
+
+import { REPORT_HEADER_DATA, REPORT_REASON_DATA } from "./report-data";
+
+const AuthenticationModal = React.lazy(() =>
+  import("@genuin/components/organisms/authentication-modal").then((m) => ({
+    default: m.AuthenticationModal,
+  }))
+);
+
+const Success = React.lazy(() =>
+  import("@genuin/components/molecules/success").then((m) => ({
+    default: m.Success,
+  }))
+);
 type ReportProps = ComponentProps<typeof Dialog> & {
   reportFor: "VIDEO" | "COMMENT";
   contentId: string;
@@ -65,7 +61,7 @@ export function Report({
       setOpen(value);
       if (!value) onClose?.();
     },
-    [onClose],
+    [onClose]
   );
 
   const { user } = useAuthContext();
@@ -84,7 +80,7 @@ export function Report({
           videoSlug: videoSlug ?? undefined,
         },
       }),
-    [shareUrl, videoSlug],
+    [shareUrl, videoSlug]
   );
 
   // Setup authentication callback handler
@@ -120,20 +116,15 @@ export function Report({
           reportMutation.reset();
           setOpen(false);
         }, 5000);
-        track(
-          reportFor === "COMMENT"
-            ? EventName.COMMENT_REPORT
-            : EventName.VIDEO_REPORT,
-          {
-            content_id: contentId,
-            video_type: videoType,
-            content_category: "loop",
-            event_record_screen: "feed",
-            event_target_screen: "none",
-            report_reason: selectedReason,
-            report_type: reportFor,
-          },
-        );
+        track(reportFor === "COMMENT" ? EventName.COMMENT_REPORT : EventName.VIDEO_REPORT, {
+          content_id: contentId,
+          video_type: videoType,
+          content_category: "loop",
+          event_record_screen: "feed",
+          event_target_screen: "none",
+          report_reason: selectedReason,
+          report_type: reportFor,
+        });
       },
     });
   }, [reportMutation, selectedReason, contentId, reportFor, track, EventName, videoType]);
@@ -144,8 +135,7 @@ export function Report({
         <div
           onClick={() => {
             clickHandler();
-          }}
-        >
+          }}>
           {children}
         </div>
       );
@@ -171,8 +161,7 @@ export function Report({
                 videoSlug: videoSlug ?? "",
               },
             },
-          }}
-        >
+          }}>
           {children}
         </AuthenticationModal>
       </Suspense>
@@ -182,17 +171,13 @@ export function Report({
     <Dialog modal open={open} onOpenChange={handleOpenChange} {...props}>
       <DialogTrigger
         autoFocus={false}
-        className="gencl:border-none! gencl:flex gencl:justify-baseline gencl:outline-none "
-      >
+        className="gencl:border-none! gencl:flex gencl:justify-baseline gencl:outline-none">
         {children}
       </DialogTrigger>
       <DialogContent className="gencl:max-w-xl gencl:rounded-t-2xl! gencl:sm:rounded-t-none gencl:sm:rounded-2xl! gencl:flex gencl:flex-col gencl:gap-y-4">
         {reportMutation.isSuccess ? (
           <Suspense fallback={<div>Loading…</div>}>
-            <Success
-              text="Thanks for your Feedback"
-              description="Our team will review and act on your report."
-            />
+            <Success text="Thanks for your Feedback" description="Our team will review and act on your report." />
           </Suspense>
         ) : (
           <ReportContent
@@ -234,11 +219,7 @@ function ReportContent({
       <p className="gencl:text-body-1-medium gencl:sm:!text-body-1-semi-bold gencl:text-secondary-500">
         Your report is anonymous.
       </p>
-      <RadioGroup
-        className="gencl:gap-4"
-        value={selectedReason}
-        onValueChange={handleReasonChange}
-      >
+      <RadioGroup className="gencl:gap-4" value={selectedReason} onValueChange={handleReasonChange}>
         {REPORT_REASON_DATA.map((reason: string) => (
           <RadioItem key={reason} value={reason} label={reason} />
         ))}
@@ -247,13 +228,8 @@ function ReportContent({
         theme="primary"
         disabled={selectedReason.trim() === "" || reportMutation.isPending}
         onClick={handleSubmit}
-        className="gencl:w-full gencl:bg-primary"
-      >
-        {reportMutation.isPending ? (
-          <Loader className="gencl:stroke-white" />
-        ) : (
-          "Submit"
-        )}
+        className="gencl:w-full gencl:bg-primary">
+        {reportMutation.isPending ? <Loader className="gencl:stroke-white" /> : "Submit"}
       </Button>
     </>
   );

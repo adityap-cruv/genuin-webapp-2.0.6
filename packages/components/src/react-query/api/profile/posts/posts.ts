@@ -1,6 +1,9 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useAxiosInstance } from "@genuin/components/context/axios";
+import type { AxiosInstance } from "axios";
 
+import { useAxiosInstance } from "@genuin/components/context/axios";
+import { NEXT_PUBLIC_API_URL } from "@genuin/components/lib/utils/env";
+import { queryClient } from "@genuin/components/react-query/client";
 import {
   getQueryKeyForProfileCommunities,
   getQueryKeyForProfileFeed,
@@ -8,16 +11,12 @@ import {
   getQueryKeyForProfileVideos,
 } from "@genuin/components/react-query/keys/profile";
 import { API_PATHS } from "@genuin/components/react-query/paths";
-import { NEXT_PUBLIC_API_URL } from "@genuin/components/lib/utils/env";
+import type { GroupUserStatusType } from "@genuin/components/types/roles";
 
 import { parseFeed } from "../../feed/parser";
 
 import type { VideoType, LoopType } from "./schema";
-import {
-  parseCommunityResponse,
-  parseGroupResponse,
-  parseVideoResponse,
-} from "./schema";
+import { parseCommunityResponse, parseGroupResponse, parseVideoResponse } from "./schema";
 import type {
   BaseFunctionPropsType,
   FetchCommunityPageParamType,
@@ -27,9 +26,6 @@ import type {
   FetchVideosPageParamType,
   FetchVideosReturnType,
 } from "./types";
-import { queryClient } from "@genuin/components/react-query/client";
-import type { GroupUserStatusType } from "@genuin/components/types/roles";
-import type { AxiosInstance } from "axios";
 
 // TODO: Refactor these functions to use API_PATHS
 
@@ -41,23 +37,11 @@ import type { AxiosInstance } from "axios";
  */
 function prepareApiUrl(
   endpoint: string,
-  {
-    forBrand,
-    profileId,
-    videosLimit,
-  }: { forBrand: boolean; profileId: string; videosLimit?: number }
+  { forBrand, profileId, videosLimit }: { forBrand: boolean; profileId: string; videosLimit?: number }
 ) {
-  const url = new URL(
-    NEXT_PUBLIC_API_URL +
-      "/" +
-      (forBrand ? endpoint : endpoint.replace("/brand", ""))
-  );
+  const url = new URL(NEXT_PUBLIC_API_URL + "/" + (forBrand ? endpoint : endpoint.replace("/brand", "")));
   url.searchParams.append(forBrand ? "brand_id" : "user_id", profileId);
-  if (videosLimit)
-    url.searchParams.append(
-      "page_limit_profile_videos",
-      videosLimit.toString()
-    );
+  if (videosLimit) url.searchParams.append("page_limit_profile_videos", videosLimit.toString());
   return url;
 }
 
@@ -98,10 +82,8 @@ async function fetchProfileCommunities({
       videosLimit,
     });
 
-    if (pageParam?.pageSession)
-      url.searchParams.append("page_session", pageParam.pageSession);
-    if (pageParam?.lastCommunityId)
-      url.searchParams.append("last_community_id", pageParam.lastCommunityId);
+    if (pageParam?.pageSession) url.searchParams.append("page_session", pageParam.pageSession);
+    if (pageParam?.lastCommunityId) url.searchParams.append("last_community_id", pageParam.lastCommunityId);
 
     const response = await axiosInstance.get(url.toString());
 
@@ -147,9 +129,7 @@ export function useGetProfileCommunities(profileId: string, forBrand = false) {
     },
   });
 }
-type OldQueryData = Awaited<
-  ReturnType<typeof useGetProfileCommunities>
->["data"];
+type OldQueryData = Awaited<ReturnType<typeof useGetProfileCommunities>>["data"];
 
 /**
  * This function updates the query data for joining a community in the profile's communities.
@@ -174,9 +154,7 @@ export function setQueryDataForJoinCommunityInProfileCommunities(
       pages: oldData.pages.map((page) => ({
         ...page,
         communities: page.communities.map((community) =>
-          community.id === communityId
-            ? { ...community, role: newRole }
-            : community
+          community.id === communityId ? { ...community, role: newRole } : community
         ),
       })),
     };
@@ -196,10 +174,7 @@ async function fetchProfileGroups({
   videosLimit,
   forBrand,
   axiosInstance,
-}: BaseFunctionPropsType<
-  FetchLoopPageParamType,
-  { communityId: string }
-> & {
+}: BaseFunctionPropsType<FetchLoopPageParamType, { communityId: string }> & {
   axiosInstance: AxiosInstance;
 }): Promise<FetchLoopReturnType> {
   try {
@@ -210,10 +185,8 @@ async function fetchProfileGroups({
     });
 
     url.searchParams.append("community_id", communityId);
-    if (pageParam?.lastLoopId)
-      url.searchParams.append("last_chat_id", pageParam.lastLoopId);
-    if (pageParam?.pageSession)
-      url.searchParams.append("page_session", pageParam.pageSession);
+    if (pageParam?.lastLoopId) url.searchParams.append("last_chat_id", pageParam.lastLoopId);
+    if (pageParam?.pageSession) url.searchParams.append("page_session", pageParam.pageSession);
 
     const response = await axiosInstance.get(url.toString());
 
@@ -262,14 +235,13 @@ export function useGetProfileGroups(
         {
           loops: initialLoops,
           nextPageParam:
-            // If totalLoops is equal to the length of initialLoops, it means there are no more loops to fetch.
-            totalLoops === initialLoops.length
-              ? null
-              : {
+            totalLoops > initialLoops.length
+              ? {
                   lastLoopId: initialLoops[initialLoops.length - 1]?.id ?? "",
                   pageSession: "",
-                },
-          end: totalLoops === initialLoops.length,
+                }
+              : null,
+          end: totalLoops <= initialLoops.length,
         },
       ],
     },
@@ -300,29 +272,26 @@ export function setQueryDataForGroupJoinStatusInProfileGroups({
   newRole: GroupUserStatusType;
 }) {
   type QueryData = Awaited<ReturnType<typeof useGetProfileGroups>>["data"];
-  queryClient.setQueryData<QueryData>(
-    getQueryKeyForProfileLoops(communityId, forBrand),
-    (oldData) => {
-      if (!oldData) return oldData;
+  queryClient.setQueryData<QueryData>(getQueryKeyForProfileLoops(communityId, forBrand), (oldData) => {
+    if (!oldData) return oldData;
 
-      // Update the loops in the query data
-      return {
-        ...oldData,
-        pages: oldData.pages.map((page) => ({
-          ...page,
-          loops: page.loops.map((loop) =>
-            loop.id === loopId
-              ? {
-                  ...loop,
-                  role: newRole, // Set the status to JOINED
-                  isSubscriber: newRole === "JOINED" ? true : loop.isSubscriber, // Set isSubscriber based on the new role
-                }
-              : loop
-          ),
-        })),
-      };
-    }
-  );
+    // Update the loops in the query data
+    return {
+      ...oldData,
+      pages: oldData.pages.map((page) => ({
+        ...page,
+        loops: page.loops.map((loop) =>
+          loop.id === loopId
+            ? {
+                ...loop,
+                role: newRole, // Set the status to JOINED
+                isSubscriber: newRole === "JOINED" ? true : loop.isSubscriber, // Set isSubscriber based on the new role
+              }
+            : loop
+        ),
+      })),
+    };
+  });
 }
 
 /**
@@ -342,23 +311,18 @@ export function setQueryDataForGroupSubscribeInProfileGroups({
 }) {
   type QueryData = Awaited<ReturnType<typeof useGetProfileGroups>>["data"];
 
-  queryClient.setQueryData<QueryData>(
-    getQueryKeyForProfileLoops(communityId, forBrand),
-    (oldData) => {
-      if (!oldData) return oldData;
+  queryClient.setQueryData<QueryData>(getQueryKeyForProfileLoops(communityId, forBrand), (oldData) => {
+    if (!oldData) return oldData;
 
-      // Update the loops in the query data
-      return {
-        ...oldData,
-        pages: oldData.pages.map((page) => ({
-          ...page,
-          loops: page.loops.map((loop) =>
-            loop.id === loopId ? { ...loop, isSubscriber: isSubscribed } : loop
-          ),
-        })),
-      };
-    }
-  );
+    // Update the loops in the query data
+    return {
+      ...oldData,
+      pages: oldData.pages.map((page) => ({
+        ...page,
+        loops: page.loops.map((loop) => (loop.id === loopId ? { ...loop, isSubscriber: isSubscribed } : loop)),
+      })),
+    };
+  });
 }
 
 /**
@@ -375,10 +339,7 @@ async function fetchProfileVideos({
   videosLimit,
   forBrand,
   axiosInstance,
-}: BaseFunctionPropsType<
-  FetchVideosPageParamType,
-  { communityId: string; loopId: string }
-> & {
+}: BaseFunctionPropsType<FetchVideosPageParamType, { communityId: string; loopId: string }> & {
   axiosInstance: AxiosInstance;
 }): Promise<FetchVideosReturnType> {
   try {
@@ -428,9 +389,7 @@ export function useGetProfileVideos(
 
   return useInfiniteQuery({
     queryKey: getQueryKeyForProfileVideos(communityId, loopId, forBrand),
-    queryFn: ({ pageParam }: {
-      pageParam: { lastVideoId: string; pageSession: string } | null;
-    }) =>
+    queryFn: ({ pageParam }: { pageParam: { lastVideoId: string; pageSession: string } | null }) =>
       fetchProfileVideos({
         profileId,
         loopId,
@@ -452,8 +411,7 @@ export function useGetProfileVideos(
             initialVideos.length === totalVideos
               ? null
               : {
-                  lastVideoId: initialVideos[initialVideos.length - 1]
-                    ?.id as string,
+                  lastVideoId: initialVideos[initialVideos.length - 1]?.id as string,
                   pageSession: "",
                 },
         },
@@ -484,13 +442,10 @@ export async function fetchProfileFeed(
   fromVideoId?: string
 ) {
   try {
-    const url = prepareApiUrl(
-      `goservices${!forBrand ? "/profile" : ""}/feed${forBrand ? "/brand" : ""}`,
-      {
-        forBrand,
-        profileId,
-      }
-    );
+    const url = prepareApiUrl(`goservices${!forBrand ? "/profile" : ""}/feed${forBrand ? "/brand" : ""}`, {
+      forBrand,
+      profileId,
+    });
 
     if (pageParam?.lastMessageId) {
       url.searchParams.append("last_video_id", pageParam.lastMessageId);
@@ -522,11 +477,7 @@ export async function fetchProfileFeed(
  * @param videoId - The identifier for the video.
  * @returns The generated query key.
  */
-export function useGetProfileFeed(
-  profileId: string,
-  forBrand: boolean,
-  videoId?: string
-) {
+export function useGetProfileFeed(profileId: string, forBrand: boolean, videoId?: string) {
   const axiosInstance = useAxiosInstance();
 
   return useInfiniteQuery({
@@ -539,13 +490,7 @@ export function useGetProfileFeed(
       const currentLastMessageId = pageParam?.lastMessageId;
 
       if (!currentLastMessageId && videoId) {
-        return await fetchProfileFeed(
-          profileId,
-          forBrand,
-          axiosInstance,
-          undefined,
-          videoId
-        );
+        return await fetchProfileFeed(profileId, forBrand, axiosInstance, undefined, videoId);
       }
 
       return await fetchProfileFeed(
@@ -563,7 +508,7 @@ export function useGetProfileFeed(
       }
       // Get the last video ID from the current page
       const lastVideo = lastPage.feed[lastPage.feed.length - 1];
-      return lastVideo ? { lastMessageId: lastVideo.video.id } : undefined;
+      return lastVideo?.video ? { lastMessageId: lastVideo.video.id } : undefined;
     },
   });
 }

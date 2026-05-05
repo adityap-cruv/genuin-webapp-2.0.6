@@ -1,7 +1,8 @@
-import { cn, defaultSizesForIcons } from "@genuin/ui/lib/utils";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 import type { ComponentProps } from "react";
+
+import { cn, defaultSizesForIcons } from "@genuin/ui/lib/utils";
 
 // Define the playVariant function using cva to handle different styles based on props
 const barGraphVariant = cva("", {
@@ -25,15 +26,9 @@ const barGraphVariant = cva("", {
 // theme: controls the overall theme (light/dark)
 // fill: controls the fill color (light/dark)
 // stroke: controls the stroke color (light/dark)
-type BarGraphIconPropsType = ComponentProps<"svg"> &
-  VariantProps<typeof barGraphVariant>;
+type BarGraphIconPropsType = ComponentProps<"svg"> & VariantProps<typeof barGraphVariant>;
 
-export function BarGraphIcon({
-  theme = "light",
-  size,
-  className,
-  ...restProps
-}: BarGraphIconPropsType) {
+export function BarGraphIcon({ theme = "light", size, className, ...restProps }: BarGraphIconPropsType) {
   return (
     <svg
       width="24"
@@ -42,8 +37,7 @@ export function BarGraphIcon({
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={cn(barGraphVariant({ theme, size }), className)}
-      {...restProps}
-    >
+      {...restProps}>
       <path
         fillRule="evenodd"
         clipRule="evenodd"

@@ -1,9 +1,12 @@
 'use client'
-import { Dialog, DialogContent, DialogClose } from '@components/ui/dialog'
 import { type DialogProps } from '@radix-ui/react-dialog'
-import { useDownloadDialogModalStore } from './store'
-import { Body } from './body'
+
+import { Dialog, DialogContent, DialogClose } from '@components/ui/dialog'
 import { CloseIcon } from '@icons/close-icon'
+
+import { Body } from './body'
+import { useDownloadDialogModalStore } from './store'
+
 
 type Props = DialogProps
 

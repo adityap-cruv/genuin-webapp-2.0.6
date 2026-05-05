@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+
 import { LinkThumbnail } from "./link-thumbnail";
 
 const meta: Meta<typeof LinkThumbnail> = {
@@ -15,7 +16,7 @@ const meta: Meta<typeof LinkThumbnail> = {
       options: [0, 0.5, 0.75, 0.9, 0.95, 1, 1.05, 1.1, 1.25, 1.5],
       defaultValue: 1,
     },
-    src: {
+    image: {
       control: "text",
     },
     title: { control: "text" },
@@ -47,7 +48,7 @@ export const WithImage: Story = {
     width: 128,
     height: 128,
     scale: 1,
-    src: "https://picsum.photos/400/300",
+    image: "https://picsum.photos/400/300",
     title: "Headphones",
     className: "gencl:rounded-xl",
     fileTypes: ".jpg, .png, .jpeg",

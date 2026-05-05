@@ -1,17 +1,12 @@
-import {
-  RUDDERSTACK_DATAPLANE_URL,
-  RUDDERSTACK_WRITE_KEY,
-} from "@genuin/components/lib/utils/env";
-import { EventNameType, EventPayload, QueuedEvent } from "./types";
 import { UAParser } from "ua-parser-js";
-import {
-  getLinkDelay,
-  getTapBehaviour,
-  getVideoAutoplay,
-  getVideoPlayInFeed,
-} from "./utils";
-import { BrandDetailsConfigType } from "@genuin/components/types/brand";
-import { EmbedDataType } from "../embed/embed.types";
+
+import { RUDDERSTACK_DATAPLANE_URL, RUDDERSTACK_WRITE_KEY } from "@genuin/components/lib/utils/env";
+import type { BrandDetailsConfigType } from "@genuin/components/types/brand";
+
+import type { EmbedDataType } from "../embed/embed.types";
+
+import type { EventNameType, EventPayload, QueuedEvent } from "./types";
+import { getLinkDelay, getTapBehaviour, getVideoAutoplay, getVideoPlayInFeed } from "./utils";
 
 // Define an interface for the default payload.
 // You can customize this based on your specific default payload structure.
@@ -124,10 +119,8 @@ class AnalyticsServiceSingleton {
         // Create stub for each method to queue calls
         for (const method of methods) {
           rudderanalytics[method] = (function (methodName: string) {
-            return function () {
-              rudderanalytics.push(
-                [methodName].concat(Array.prototype.slice.call(arguments)),
-              );
+            return function (...args: unknown[]) {
+              rudderanalytics.push([methodName, ...args]);
             };
           })(method);
         }
@@ -154,11 +147,7 @@ class AnalyticsServiceSingleton {
           };
 
           legacyScript.onerror = () => {
-            reject(
-              new Error(
-                "[AnalyticsService] Failed to load Rudderstack from CDN",
-              ),
-            );
+            reject(new Error("[AnalyticsService] Failed to load Rudderstack from CDN"));
           };
 
           document.head.appendChild(legacyScript);
@@ -174,12 +163,11 @@ class AnalyticsServiceSingleton {
   public initialize(
     defaultPayload: DefaultAnalyticsPayload,
     brandDetails?: BrandDetailsConfigType,
-    embedData?: EmbedDataType,
+    embedData?: EmbedDataType
   ): Promise<void> {
     if (
       typeof window !== "undefined" &&
-      (window.location.hostname === "localhost" ||
-        window.location.hostname === "127.0.0.1")
+      (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
     ) {
       return Promise.resolve();
     }
@@ -189,7 +177,7 @@ class AnalyticsServiceSingleton {
     }
     if (!defaultPayload) {
       console.warn(
-        "[AnalyticsService] initialize called without defaultPayload. Analytics events may be missing required fields.",
+        "[AnalyticsService] initialize called without defaultPayload. Analytics events may be missing required fields."
       );
       // Optionally, throw an error here if you want to enforce it strictly
       // throw new Error("defaultPayload is required for AnalyticsService.initialize");
@@ -222,14 +210,12 @@ class AnalyticsServiceSingleton {
             this.rudderAnalyticsInstance = (window as any).rudderanalytics;
 
             if (!this.rudderAnalyticsInstance) {
-              throw new Error(
-                "[AnalyticsService] Rudderstack failed to load from CDN",
-              );
+              throw new Error("[AnalyticsService] Rudderstack failed to load from CDN");
             }
 
             if (!RUDDERSTACK_WRITE_KEY || !RUDDERSTACK_DATAPLANE_URL) {
               throw new Error(
-                "[AnalyticsService] RudderStack WRITE_KEY or DATAPLANE_URL is undefined. Please check your environment variables.",
+                "[AnalyticsService] RudderStack WRITE_KEY or DATAPLANE_URL is undefined. Please check your environment variables."
               );
             }
 
@@ -265,7 +251,7 @@ class AnalyticsServiceSingleton {
                     flushInterval: 10000,
                   },
                 },
-              },
+              }
               // Optional: add load options if any, e.g. { configUrl: "YOUR_CONFIG_URL" }
             );
 
@@ -325,10 +311,7 @@ class AnalyticsServiceSingleton {
     return this.initializationPromise;
   }
 
-  private setVideoEventsPayload(
-    brandDetails?: BrandDetailsConfigType,
-    embedData?: EmbedDataType,
-  ) {
+  private setVideoEventsPayload(brandDetails?: BrandDetailsConfigType, embedData?: EmbedDataType) {
     // Only build video payload once; re-running after first init would overwrite brand config values.
     if (this.defaultVideoEventPayload || !brandDetails) return;
     const { web_configs, reactions } = brandDetails;
@@ -348,10 +331,7 @@ class AnalyticsServiceSingleton {
     };
   }
 
-  public updatePayload(
-    keyOrObject: string | Partial<DefaultAnalyticsPayload>,
-    value?: any,
-  ) {
+  public updatePayload(keyOrObject: string | Partial<DefaultAnalyticsPayload>, value?: any) {
     // Start with existing payload or minimal base structure
     const currentPayload = this.defaultPayload ?? {
       user_id: undefined,
@@ -376,8 +356,7 @@ class AnalyticsServiceSingleton {
       // Preserve the existing brand_id rather than wiping it with undefined/null.
       const incomingBrandId = keyOrObject.brand_id;
       const shouldPreserveBrandId =
-        currentPayload.brand_id &&
-        (incomingBrandId === undefined || incomingBrandId === null);
+        currentPayload.brand_id && (incomingBrandId === undefined || incomingBrandId === null);
 
       this.defaultPayload = {
         ...currentPayload,
@@ -387,10 +366,7 @@ class AnalyticsServiceSingleton {
       };
     } else {
       // Optional: Handle unexpected input
-      console.warn(
-        "[AnalyticsService] Invalid input to updatePayload:",
-        keyOrObject,
-      );
+      console.warn("[AnalyticsService] Invalid input to updatePayload:", keyOrObject);
       return;
     }
 
@@ -403,9 +379,7 @@ class AnalyticsServiceSingleton {
    */
   private validatePayload(): void {
     if (!this.defaultPayload) {
-      console.warn(
-        "[AnalyticsService] defaultPayload is null after updatePayload",
-      );
+      console.warn("[AnalyticsService] defaultPayload is null after updatePayload");
       return;
     }
 
@@ -421,23 +395,18 @@ class AnalyticsServiceSingleton {
 
     if (missingFields.length > 0) {
       console.warn(
-        `[AnalyticsService] Critical analytics fields missing or empty: ${missingFields.join(", ")}. Events may not track correctly.`,
+        `[AnalyticsService] Critical analytics fields missing or empty: ${missingFields.join(", ")}. Events may not track correctly.`
       );
     }
   }
 
-  public async track(
-    eventName: EventNameType,
-    payload?: EventPayload,
-  ): Promise<void> {
+  public async track(eventName: EventNameType, payload?: EventPayload): Promise<void> {
     // Early return if defaultPayload is not initialized
     if (!this.defaultPayload) {
       console.warn(
-        `[AnalyticsService] Cannot track event "${eventName}": defaultPayload is not initialized. Call initialize() first.`,
+        `[AnalyticsService] Cannot track event "${eventName}": defaultPayload is not initialized. Call initialize() first.`
       );
-      const isEventQueued = this.eventQueue.some(
-        (e) => e.eventName === eventName,
-      );
+      const isEventQueued = this.eventQueue.some((e) => e.eventName === eventName);
       if (!isEventQueued) {
         this.eventQueue.push({
           eventName,
@@ -454,8 +423,7 @@ class AnalyticsServiceSingleton {
     const mergedPayload = {
       ...(this.defaultPayload || {}),
       ...(payload || {}),
-      ...(eventName.startsWith("Video") ||
-      remainingVideoEvents.includes(eventName)
+      ...(eventName.startsWith("Video") || remainingVideoEvents.includes(eventName)
         ? this.defaultVideoEventPayload
         : {}),
     };
@@ -468,7 +436,7 @@ class AnalyticsServiceSingleton {
         }
         return acc;
       },
-      {} as Record<string, any>,
+      {} as Record<string, any>
     );
 
     // Define critical fields that must be present
@@ -477,18 +445,10 @@ class AnalyticsServiceSingleton {
 
     // Force inject critical fields if missing from sanitizedPayload but present in defaultPayload
     criticalFields.forEach((field) => {
-      if (
-        !(field in sanitizedPayload) ||
-        sanitizedPayload[field] === undefined ||
-        sanitizedPayload[field] === null
-      ) {
+      if (!(field in sanitizedPayload) || sanitizedPayload[field] === undefined || sanitizedPayload[field] === null) {
         // Check if the field exists in defaultPayload
         const defaultValue = this.defaultPayload?.[field];
-        if (
-          defaultValue !== undefined &&
-          defaultValue !== null &&
-          defaultValue !== ""
-        ) {
+        if (defaultValue !== undefined && defaultValue !== null && defaultValue !== "") {
           sanitizedPayload[field] = defaultValue;
         } else {
           // Track fields that are missing from both payload and defaultPayload
@@ -500,7 +460,7 @@ class AnalyticsServiceSingleton {
     // Warn if critical fields are still missing after injection attempt
     if (missingCriticalFields.length > 0) {
       console.warn(
-        `[AnalyticsService] Event "${eventName}" is missing critical fields: ${missingCriticalFields.join(", ")}. These fields were not found in defaultPayload and could not be injected.`,
+        `[AnalyticsService] Event "${eventName}" is missing critical fields: ${missingCriticalFields.join(", ")}. These fields were not found in defaultPayload and could not be injected.`
       );
     }
 
@@ -542,9 +502,7 @@ class AnalyticsServiceSingleton {
             // );
           });
         } else {
-          console.warn(
-            "[AnalyticsService] Cannot auto-initialize: defaultPayload is not set.",
-          );
+          console.warn("[AnalyticsService] Cannot auto-initialize: defaultPayload is not set.");
         }
       }
     }
@@ -574,17 +532,11 @@ class AnalyticsServiceSingleton {
         this.processEventQueue();
       }
 
-      if (
-        this.rudderAnalyticsInstance &&
-        typeof this.rudderAnalyticsInstance.flush === "function"
-      ) {
+      if (this.rudderAnalyticsInstance && typeof this.rudderAnalyticsInstance.flush === "function") {
         this.rudderAnalyticsInstance.flush();
       }
     } catch (error) {
-      console.warn(
-        "[AnalyticsService] Failed to flush analytics events:",
-        error,
-      );
+      console.warn("[AnalyticsService] Failed to flush analytics events:", error);
     }
   }
 

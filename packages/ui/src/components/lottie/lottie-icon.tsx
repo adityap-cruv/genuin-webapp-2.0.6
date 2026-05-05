@@ -1,9 +1,11 @@
 "use client";
 
 import { Player } from "@lottiefiles/react-lottie-player";
-import { cn } from "@genuin/ui/lib/utils";
-import type { LottieIconProps } from "./lottie-icon.types";
 import { useRef, useEffect } from "react";
+
+import { cn } from "@genuin/ui/lib/utils";
+
+import type { LottieIconProps } from "./lottie-icon.types";
 
 /**
  * LottieIcon - A reusable Lottie animation component
@@ -60,8 +62,7 @@ export function LottieIcon({
     <div
       className={cn("gencl:inline-flex gencl:items-center gencl:justify-center", className)}
       style={{ width, height }}
-      {...restProps}
-    >
+      {...restProps}>
       <Player
         ref={playerRef}
         src={src}

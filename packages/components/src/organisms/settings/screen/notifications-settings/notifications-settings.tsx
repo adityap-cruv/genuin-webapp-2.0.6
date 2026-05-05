@@ -1,6 +1,7 @@
-import { SettingRow } from "@genuin/components/molecules/setting-row";
 import type { FC } from "react";
+
 import { useAnalytics } from "@genuin/components/context/analytics";
+import { SettingRow } from "@genuin/components/molecules/setting-row";
 
 interface NotificationSettingsProps {
   group?: boolean;

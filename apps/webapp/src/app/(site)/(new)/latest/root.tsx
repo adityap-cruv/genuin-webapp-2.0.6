@@ -1,13 +1,13 @@
-'use client'
-import { FeedSkeleton } from '@genuin/components/templates/feed'
-import dynamic from 'next/dynamic'
+"use client";
+import { FeedSkeleton } from "@genuin/components/templates/feed";
+import dynamic from "next/dynamic";
 
-const Feed = dynamic(async () => await import('@genuin/components/templates/feed').then((comp) => comp.Feed), {
+const Feed = dynamic(async () => await import("@genuin/components/templates/feed").then((comp) => comp.Feed), {
   loading(_) {
-    return <FeedSkeleton />
+    return <FeedSkeleton theme="light" />;
   },
-})
+});
 
 export function Root() {
-  return <Feed feedType="LATEST" />
+  return <Feed feedType="LATEST" />;
 }

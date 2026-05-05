@@ -1,7 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
+import type { AxiosInstance } from "axios";
+
 import { useAxiosInstance } from "@genuin/components/context/axios";
 import { API_PATHS } from "@genuin/components/react-query/paths";
-import type { AxiosInstance } from "axios";
 
 /**
  * Function to subscribe or unsubscribe from a group.
@@ -10,13 +11,16 @@ import type { AxiosInstance } from "axios";
  * @param params.subscribe - Whether to subscribe or unsubscribe from the group.
  * @returns
  */
-async function postSubscribeLoop({
-  chatId,
-  subscribe,
-}: {
-  chatId: string;
-  subscribe: boolean;
-}, axiosInstance: AxiosInstance) {
+async function postSubscribeLoop(
+  {
+    chatId,
+    subscribe,
+  }: {
+    chatId: string;
+    subscribe: boolean;
+  },
+  axiosInstance: AxiosInstance
+) {
   return await axiosInstance
     .post(API_PATHS.GROUP_SUBSCRIBE, {
       chat_id: chatId,
@@ -26,9 +30,7 @@ async function postSubscribeLoop({
       return subscribe;
     })
     .catch((e) => {
-      throw new Error(
-        e.response?.data?.message || "Failed to subscribe to group"
-      );
+      throw new Error(e.response?.data?.message || "Failed to subscribe to group");
     });
 }
 

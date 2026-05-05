@@ -1,11 +1,12 @@
-import { CommunityGroupSelectorSkeleton } from "@genuin/components/molecules/community-group-selector";
 import { Skeleton } from "@genuin/ui/components/skeleton";
 import { ChevronRightIcon } from "@genuin/ui/icons";
+
+import { CommunityGroupSelectorSkeleton } from "@genuin/components/molecules/community-group-selector";
 
 export function EditPostSkeleton() {
   return (
     <div className="gencl:bg-secondary-50 gencl:h-full">
-      <div className="gencl:flex gencl:flex-col gencl:h-full bg-white gencl:overflow-hidden gencl:max-w-5xl gencl:m-auto">
+      <div className="gencl:flex gencl:flex-col gencl:h-full gencl:overflow-hidden gencl:max-w-5xl gencl:m-auto bg-white">
         {/* Sticky Header */}
         <div className="gencl:sticky gencl:top-0 gencl:z-10 gencl:flex gencl:justify-between gencl:items-center gencl:border-b gencl:border-secondary-150 gencl:bg-white gencl:p-6">
           <div className="gencl:w-full gencl:flex gencl:items-center">

@@ -1,5 +1,6 @@
-import { API_PATHS } from "@genuin/components/react-query/paths";
 import type { AxiosInstance } from "axios";
+
+import { API_PATHS } from "@genuin/components/react-query/paths";
 
 interface FetchCanonicalParams {
   url: string;
@@ -19,7 +20,7 @@ export async function fetchHtml(
     });
 
     return { html: response.data };
-  } catch (error: any) {
+  } catch (_error) {
     throw new Error("Something went wrong while fetching HTML!");
   }
 }

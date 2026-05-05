@@ -1,22 +1,18 @@
-import { useState, type ComponentProps, lazy, Suspense } from "react";
+import { Dialog, DialogContent } from "@genuin/ui/components/dialog";
 import { cn } from "@genuin/ui/utils";
-import type { AuthenticationModalProps } from "@genuin/components/organisms/authentication-modal";
-
-const AuthenticationModal = lazy(() =>
-  import("@genuin/components/organisms/authentication-modal/index.js").then(
-    (m) => ({
-      default: m.AuthenticationModal,
-    }),
-  ),
-) as React.ComponentType<AuthenticationModalProps>;
+import { cva, type VariantProps } from "class-variance-authority";
+import { type ComponentProps, lazy, Suspense } from "react";
 
 import { useAuthContext } from "@genuin/components/context/auth";
-import { cva, type VariantProps } from "class-variance-authority";
 import { useBaseContext } from "@genuin/components/context/base";
 import { Success } from "@genuin/components/molecules/success";
-import { Dialog, DialogContent } from "@genuin/ui/components/dialog";
+import type { AuthUser } from "@genuin/components/types/auth";
 
-import { AuthUser } from "@genuin/components/types/auth";
+const AuthenticationModal = lazy(() =>
+  import("@genuin/components/organisms/authentication-modal").then((m) => ({
+    default: m.AuthenticationModal,
+  }))
+);
 
 const sideBarBecomeCreatorVariants = cva(
   "gencl:px-4 gencl:py-3 gencl:border-b gencl:border-secondary-100 gencl:cursor-pointer",
@@ -30,22 +26,17 @@ const sideBarBecomeCreatorVariants = cva(
     defaultVariants: {
       variant: "default",
     },
-  },
+  }
 );
 
-export type SideBarBecomeCreatorProps = ComponentProps<"div"> &
-  VariantProps<typeof sideBarBecomeCreatorVariants>;
+export type SideBarBecomeCreatorProps = ComponentProps<"div"> & VariantProps<typeof sideBarBecomeCreatorVariants>;
 
 type CreatorSuccessProps = {
   user: AuthUser | null;
   onUserUpdate: (updates: Partial<AuthUser>) => void;
 };
 
-export function SideBarBecomeCreator({
-  className,
-  variant,
-  ...restProps
-}: SideBarBecomeCreatorProps) {
+export function SideBarBecomeCreator({ className, variant, ...restProps }: SideBarBecomeCreatorProps) {
   const { user, updateUser } = useAuthContext();
   const {
     brandDetails: { name },
@@ -54,8 +45,7 @@ export function SideBarBecomeCreator({
   if (user?.ksCbRequestStatus === "Success") {
     return null;
   }
-  if (user?.ksCbRequestStatus === "Accepted")
-    return <BecomeCreatorSuccess user={user} onUserUpdate={updateUser} />;
+  if (user?.ksCbRequestStatus === "Accepted") return <BecomeCreatorSuccess user={user} onUserUpdate={updateUser} />;
 
   return (
     <>
@@ -64,37 +54,32 @@ export function SideBarBecomeCreator({
           <div
             className={cn(
               "gencl:px-4 gencl:block gencl:sm:hidden! gencl:xl:block! gencl:py-3 gencl:border-b gencl:border-secondary-100 gencl:cursor-pointer",
-              className,
+              className
             )}
-            {...restProps}
-          >
+            {...restProps}>
             <div
               className={cn(
                 "gencl:bg-primary gencl:text-white gencl:break-words gencl:rounded-lg gencl:px-2.5 gencl:py-2 gencl:text-body-1-semi-bold gencl:relative gencl:overflow-hidden",
-                "genuin-become-creator-centerout",
-              )}
-            >
+                "genuin-become-creator-centerout"
+              )}>
               <span className="gencl:relative gencl:z-10 gencl:text-white">
                 Become a Creator for {name}, get rewards 🚀
               </span>
             </div>
           </div>
-        }
-      >
+        }>
         <AuthenticationModal asChild customStep="BECOME_CREATOR">
           <div
             className={cn(
               "gencl:px-4 gencl:block gencl:sm:hidden! gencl:xl:block! gencl:py-3 gencl:border-b gencl:border-secondary-100 gencl:cursor-pointer",
-              className,
+              className
             )}
-            {...restProps}
-          >
+            {...restProps}>
             <div
               className={cn(
                 "gencl:bg-primary gencl:text-white gencl:break-words gencl:rounded-lg gencl:px-2.5 gencl:py-2 gencl:text-body-1-semi-bold gencl:relative gencl:overflow-hidden",
-                "genuin-become-creator-centerout",
-              )}
-            >
+                "genuin-become-creator-centerout"
+              )}>
               <span className="gencl:relative gencl:z-10 gencl:text-white">
                 Become a Creator for {name}, get rewards 🚀
               </span>
@@ -148,19 +133,9 @@ function BecomeCreatorSuccess({ user, onUserUpdate }: CreatorSuccessProps) {
   };
 
   return (
-    <Dialog
-      type="become-creator-success"
-      open={isDialogOpen}
-      onOpenChange={handleDialogClose}
-      modal
-    >
+    <Dialog type="become-creator-success" open={isDialogOpen} onOpenChange={handleDialogClose} modal>
       <DialogContent>
-        <Success
-          text="You're a Creator Now!"
-          description="Start creating content for brands!"
-          button={{ label: "Create Post", href: "/posts" }}
-          onClose={handleDialogClose}
-        />
+        <Success text="You're a Creator Now!" onClose={handleDialogClose} />
       </DialogContent>
     </Dialog>
   );

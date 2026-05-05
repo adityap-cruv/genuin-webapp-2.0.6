@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+
 import { AddLoactionPanel } from "./add-location-panel";
 
 // Default export for metadata

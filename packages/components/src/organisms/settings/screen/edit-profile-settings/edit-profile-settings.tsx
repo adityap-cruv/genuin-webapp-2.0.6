@@ -1,22 +1,17 @@
-import { type FC, lazy, Suspense } from "react";
-
-import { SettingRow } from "@genuin/components/molecules/setting-row";
-
-import { cn } from "@genuin/ui/lib/utils";
-import type { AuthenticationModalProps } from "@genuin/components/organisms/authentication-modal";
-
-const AuthenticationModal = lazy(() =>
-  import("@genuin/components/organisms/authentication-modal/index.js").then(
-    (m) => ({
-      default: m.AuthenticationModal,
-    })
-  )
-) as React.ComponentType<AuthenticationModalProps>;
-
-import { useAuthContext } from "@genuin/components/context/auth";
 import { Avatar } from "@genuin/ui/components/avatar";
 import { Button } from "@genuin/ui/components/button";
+import { cn } from "@genuin/ui/lib/utils";
+import { type FC, lazy, Suspense } from "react";
+
+import { useAuthContext } from "@genuin/components/context/auth";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { SettingRow } from "@genuin/components/molecules/setting-row";
+
+const AuthenticationModal = lazy(() =>
+  import("@genuin/components/organisms/authentication-modal").then((m) => ({
+    default: m.AuthenticationModal,
+  }))
+);
 
 export const EditProfileSettings: FC = () => {
   const { user } = useAuthContext();
@@ -31,11 +26,7 @@ export const EditProfileSettings: FC = () => {
 
   return (
     <>
-      {isDesktop && (
-        <h4 className="gencl:text-headline-4-medium gencl:mb-4">
-          Edit Profile
-        </h4>
-      )}
+      {isDesktop && <h4 className="gencl:text-headline-4-medium gencl:mb-4">Edit Profile</h4>}
       <div className="gencl:flex gencl:gap-4 gencl:mb-4 gencl:flex-col gencl:items-center gencl:lg:flex-row gencl:lg:items-start! gencl:lg:justify-start">
         <div className="gencl:relative gencl:mb-0 gencl:lg:mb-0 gencl:max-h-22 gencl:max-w-22">
           <Avatar
@@ -48,19 +39,10 @@ export const EditProfileSettings: FC = () => {
           <div
             className={cn(
               "gencl:absolute gencl:flex gencl:flex-col gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-black/50 gencl:top-0 gencl:left-0 gencl:w-full gencl:h-full gencl:opacity-0 gencl:hover:opacity-0 gencl:lg:hover:opacity-100"
-            )}
-          >
-            <Suspense
-              fallback={
-                <p className="gencl:text-white gencl:text-body-2-medium gencl:cursor-pointer">
-                  Edit
-                </p>
-              }
-            >
+            )}>
+            <Suspense fallback={<p className="gencl:text-white gencl:text-body-2-medium gencl:cursor-pointer">Edit</p>}>
               <AuthenticationModal customStep="EDIT_PROFILE_PICTURE" asChild>
-                <p className="gencl:text-white gencl:text-body-2-medium gencl:cursor-pointer">
-                  Edit
-                </p>
+                <p className="gencl:text-white gencl:text-body-2-medium gencl:cursor-pointer">Edit</p>
               </AuthenticationModal>
             </Suspense>
 
@@ -75,23 +57,12 @@ export const EditProfileSettings: FC = () => {
           <div>
             <Suspense
               fallback={
-                <Button
-                  size="sm"
-                  theme="text"
-                  color="primary"
-                  className="gencl:text-body-1-semi-bold! gencl:text-red"
-                >
+                <Button size="sm" theme="text" color="primary" className="gencl:text-body-1-semi-bold! gencl:text-red">
                   Change Profile Photo
                 </Button>
-              }
-            >
+              }>
               <AuthenticationModal customStep="EDIT_PROFILE_PICTURE" asChild>
-                <Button
-                  size="sm"
-                  theme="text"
-                  color="primary"
-                  className="gencl:text-body-1-semi-bold! gencl:text-red"
-                >
+                <Button size="sm" theme="text" color="primary" className="gencl:text-body-1-semi-bold! gencl:text-red">
                   Change Profile Photo
                 </Button>
               </AuthenticationModal>

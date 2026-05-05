@@ -1,13 +1,10 @@
 "use client";
-import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
-
+import { Popover, PopoverContent, PopoverTrigger } from "@genuin/ui/components/popover";
 import { XIcon } from "@genuin/ui/icons";
-import { memo, ReactNode, useEffect, useState } from "react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@genuin/ui/components/popover";
+import type { ReactNode } from "react";
+import { memo, useEffect, useState } from "react";
+
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 
 interface ActionPopoverProps {
   /**
@@ -108,21 +105,19 @@ export const ActionPopover = memo(function ActionPopover({
       }, {});
   };
 
+  type AuthUrlFn = () => string;
+
   // Generate authentication URL based on configuration
   const generateAuthUrl = (
-    baseUrl: string | Function | undefined,
+    baseUrl: string | ((...args: string[]) => string) | undefined,
     queryParams: Record<string, string>,
-    rawParamString: string,
-  ): string | Function => {
+    rawParamString: string
+  ): string | AuthUrlFn => {
     if (!baseUrl) return "";
 
     if (typeof baseUrl === "function") {
       return () => {
-        return baseUrl(
-          queryParams.videoSlug,
-          queryParams.action,
-          queryParams.commentId,
-        );
+        return baseUrl(queryParams.videoSlug ?? "", queryParams.action ?? "", queryParams.commentId ?? "");
       };
     }
 
@@ -133,17 +128,11 @@ export const ActionPopover = memo(function ActionPopover({
   const parsedParameters = parseUrlParameters(params);
   const authInfo = embedDetails?.embedData?.authInfo;
 
+  type AuthUrlInput = string | ((...args: string[]) => string) | undefined;
+
   // Generate auth URLs efficiently - avoid multiple function calls if URLs are functions
-  const signInUrl: string | Function = generateAuthUrl(
-    authInfo?.signInUrl,
-    parsedParameters,
-    params,
-  );
-  const signUpUrl: string | Function = generateAuthUrl(
-    authInfo?.signUpUrl,
-    parsedParameters,
-    params,
-  );
+  const signInUrl = generateAuthUrl(authInfo?.signInUrl as AuthUrlInput, parsedParameters, params);
+  const signUpUrl = generateAuthUrl(authInfo?.signUpUrl as AuthUrlInput, parsedParameters, params);
 
   return (
     <Popover open={isOpen} onOpenChange={handleOpenChange}>
@@ -155,25 +144,20 @@ export const ActionPopover = memo(function ActionPopover({
         align={align}
         customBackgroundColor={backgroundColor}
         className={`gencl:border-none gencl:bg-transparent! gencl:duration-700 gencl:p-0 gencl:w-screen gencl:shadow-none gencl:sm:max-w-sm ${contentClassName}`}
-        onInteractOutside={() => handleOpenChange(false)}
-      >
+        onInteractOutside={() => handleOpenChange(false)}>
         <div
           className="gencl:flex gencl:justify-between gencl:items-center gencl:p-4 gencl:mx-4 gencl:rounded-md"
           style={{
             backgroundColor: backgroundColor,
-          }}
-        >
+          }}>
           <p className="gencl:text-white gencl:text-body-1-normal gencl:tracking-wide">
             <span
               className="gencl:font-bold gencl:underline"
               onClick={(e) => {
                 e.stopPropagation();
                 onPopOverClick?.();
-                window.location.assign(
-                  typeof signInUrl === "function" ? signInUrl() : signInUrl,
-                );
-              }}
-            >
+                window.location.assign(typeof signInUrl === "function" ? signInUrl() : signInUrl);
+              }}>
               Sign-in
             </span>
             <span className="gencl:text-white"> or </span>
@@ -182,21 +166,13 @@ export const ActionPopover = memo(function ActionPopover({
               onClick={(e) => {
                 e.stopPropagation();
                 onPopOverClick?.();
-                window.location.assign(
-                  typeof signUpUrl === "function" ? signUpUrl() : signUpUrl,
-                );
-              }}
-            >
+                window.location.assign(typeof signUpUrl === "function" ? signUpUrl() : signUpUrl);
+              }}>
               sign-up
             </span>
             <span className="gencl:text-white"> {content}</span>
           </p>
-          <XIcon
-            onClick={() => handleOpenChange(false)}
-            className="gencl:cursor-pointer"
-            theme="dark"
-            size="sm"
-          />
+          <XIcon onClick={() => handleOpenChange(false)} className="gencl:cursor-pointer" theme="dark" size="sm" />
         </div>
       </PopoverContent>
     </Popover>

@@ -3,20 +3,12 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { createPortal } from "react-dom";
 
+import { XIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
 
+import { DynamicSheetOverlay, DynamicSheetDragIndicator } from "./dynamic-sheet-parts";
+import { DEFAULT_HEIGHTS, DYNAMIC_SHEET_STATES, type DynamicSheetProps, type DynamicSheetState } from "./types";
 import { useDynamicSheet } from "./use-dynamic-sheet";
-import {
-  DynamicSheetOverlay,
-  DynamicSheetDragIndicator,
-} from "./dynamic-sheet-parts";
-import {
-  DEFAULT_HEIGHTS,
-  DYNAMIC_SHEET_STATES,
-  type DynamicSheetProps,
-  type DynamicSheetState,
-} from "./types";
-import { XIcon } from "@genuin/ui/icons";
 
 // ─── Animation Timing ─────────────────────────────────────────────────────────
 
@@ -86,12 +78,9 @@ function DynamicSheet({
 
     if (isInlineMode) {
       // Prefer explicit containerRef; otherwise observe the sheet's own parent.
-      const el =
-        containerRef?.current ?? selfRef.current?.parentElement ?? null;
+      const el = containerRef?.current ?? selfRef.current?.parentElement ?? null;
       if (!el) return;
-      const observer = new ResizeObserver(() =>
-        setContainerHeight(el.clientHeight),
-      );
+      const observer = new ResizeObserver(() => setContainerHeight(el.clientHeight));
       observer.observe(el);
       setContainerHeight(el.clientHeight);
       return () => observer.disconnect();
@@ -100,9 +89,7 @@ function DynamicSheet({
     // "container" mode
     const element = containerRef?.current;
     if (!element) return;
-    const observer = new ResizeObserver(() =>
-      setContainerHeight(element.clientHeight),
-    );
+    const observer = new ResizeObserver(() => setContainerHeight(element.clientHeight));
     observer.observe(element);
     setContainerHeight(element.clientHeight);
     return () => observer.disconnect();
@@ -118,13 +105,9 @@ function DynamicSheet({
 
   const startClose = useCallback(() => {
     config.onClose?.();
-    if (config.preventCloseCollapse) return; // caller handles state reset; don't collapse
     if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
     setIsVisible(false);
-    closeTimerRef.current = setTimeout(
-      () => onDismissed?.(),
-      CLOSE_ANIMATION_MS + 20,
-    );
+    closeTimerRef.current = setTimeout(() => onDismissed?.(), CLOSE_ANIMATION_MS + 20);
   }, [config, onDismissed]);
 
   useEffect(() => {
@@ -136,10 +119,7 @@ function DynamicSheet({
       });
     } else {
       setIsVisible(false);
-      closeTimerRef.current = setTimeout(
-        () => onDismissed?.(),
-        CLOSE_ANIMATION_MS + 20,
-      );
+      closeTimerRef.current = setTimeout(() => onDismissed?.(), CLOSE_ANIMATION_MS + 20);
     }
 
     return () => {
@@ -149,27 +129,15 @@ function DynamicSheet({
   }, [isOpen]);
 
   // ── Merge config with defaults ─────────────────────────────────────────
-  const heights = useMemo(
-    () => ({ ...DEFAULT_HEIGHTS, ...(config.heights || {}) }),
-    [config.heights],
-  );
+  const heights = useMemo(() => ({ ...DEFAULT_HEIGHTS, ...(config.heights || {}) }), [config.heights]);
 
   const enabledStates = useMemo(
-    () =>
-      config.enabledStates ??
-      ([...DYNAMIC_SHEET_STATES] as DynamicSheetState[]),
-    [config.enabledStates],
+    () => config.enabledStates ?? ([...DYNAMIC_SHEET_STATES] as DynamicSheetState[]),
+    [config.enabledStates]
   );
 
   // ── Draggable hook ─────────────────────────────────────────────────────
-  const {
-    currentState,
-    isDragging,
-    transientHeightPx,
-    handleDragStart,
-    stateToPx,
-    transitionTo,
-  } = useDynamicSheet({
+  const { currentState, isDragging, transientHeightPx, handleDragStart, stateToPx, transitionTo } = useDynamicSheet({
     enabledStates,
     heights,
     initialState: config.initialState ?? "default",
@@ -181,13 +149,14 @@ function DynamicSheet({
     autoAdvance: config.autoAdvance,
   });
 
-  // ── Reset to initial/controlled state when sheet opens ──────────────────
+  // ── Reset to initial state when sheet opens ────────────────────────────
   useEffect(() => {
     if (isOpen && !prevIsOpenRef.current) {
+      // Sheet is opening - reset to initial state
       // Sheet is opening - use controlled state if provided, otherwise initial state
-      const desiredState = controlledState ?? config.initialState ?? "default";
-      const targetState = enabledStates.includes(desiredState)
-        ? desiredState
+      // const desiredState = controlledState ?? config.initialState ?? "default";
+      const targetState = enabledStates.includes(config.initialState ?? "default")
+        ? (config.initialState ?? "default")
         : enabledStates[0];
       transitionTo(targetState ?? "default");
     }
@@ -229,7 +198,7 @@ function DynamicSheet({
       onSwiperToggle?.(true);
       handleDragStart(e);
     },
-    [disableDragAndSwipe, onSwiperToggle, handleDragStart],
+    [disableDragAndSwipe, onSwiperToggle, handleDragStart]
   );
 
   const handleSheetPointerUp = useCallback(() => {
@@ -273,7 +242,7 @@ function DynamicSheet({
         el.setPointerCapture(e.pointerId);
       }
     },
-    [disableDragAndSwipe, onSwiperToggle],
+    [disableDragAndSwipe, onSwiperToggle]
   );
 
   const handleContentPointerMove = useCallback(
@@ -302,7 +271,7 @@ function DynamicSheet({
         startClose();
       }
     },
-    [startClose],
+    [startClose]
   );
 
   const handleContentPointerUp = useCallback(() => {
@@ -312,24 +281,15 @@ function DynamicSheet({
   }, [disableDragAndSwipe, safeEnableSwiper]);
 
   // ── Computed height & transitions ──────────────────────────────────────
-  const snappedHeight =
-    isDragging && transientHeightPx !== null
-      ? transientHeightPx
-      : stateToPx(currentState);
+  const snappedHeight = isDragging && transientHeightPx !== null ? transientHeightPx : stateToPx(currentState);
 
   // In "inline" mode: open = snappedHeight, closed = 0 (no translateY).
   // In "fixed"/"container": always show snappedHeight, use translateY for
   // the open/close animation.
-  const computedHeight = isInlineMode
-    ? isVisible || isDragging
-      ? snappedHeight
-      : 0
-    : snappedHeight;
+  const computedHeight = isInlineMode ? (isVisible || isDragging ? snappedHeight : 0) : snappedHeight;
 
   const heightTransition =
-    isDragging || config.disableAnimation
-      ? "none"
-      : `height 320ms cubic-bezier(0.32, 0.72, 0, 1)`;
+    isDragging || config.disableAnimation ? "none" : `height 320ms cubic-bezier(0.32, 0.72, 0, 1)`;
 
   // translateY is only used for fixed/container render modes.
   const translateY = !isInlineMode && (isVisible || isDragging) ? "0%" : "100%";
@@ -344,9 +304,7 @@ function DynamicSheet({
   // ── Overlay ────────────────────────────────────────────────────────────
   // Overlay is only meaningful for fixed/container modes.
   const showOverlay =
-    !isInlineMode &&
-    config.showOverlay &&
-    (currentState === "panel-view" || currentState === "full-view");
+    !isInlineMode && config.showOverlay && (currentState === "panel-view" || currentState === "full-view");
 
   // ── Sheet panel style ──────────────────────────────────────────────────
   const panelPositionStyle: React.CSSProperties = isInlineMode
@@ -394,26 +352,20 @@ function DynamicSheet({
           isContainerMode && "gencl:z-[999]",
           "gencl:flex gencl:flex-col gencl:overflow-hidden gencl:pointer-events-auto",
           "gencl:rounded-2xl gencl:will-change-[transform,height]",
-          !disableDragAndSwipe &&
-            "gencl:cursor-grab gencl:active:cursor-grabbing",
-          isDarkTheme
-            ? "gencl:bg-black/50 gencl:backdrop-blur-sm"
-            : "gencl:bg-white",
-          className,
+          !disableDragAndSwipe && "gencl:cursor-grab gencl:active:cursor-grabbing",
+          isDarkTheme ? "gencl:bg-black/50 gencl:backdrop-blur-sm" : "gencl:bg-white",
+          className
         )}
         style={panelPositionStyle}
-        {...rest}
-      >
+        {...rest}>
         {/* Drag indicator */}
-        {!disableDragAndSwipe &&
-          config.showIndicator !== false &&
-          currentState !== "default" && (
-            <DynamicSheetDragIndicator
-              theme={config.theme}
-              isDragging={isDragging}
-              onPointerDown={handleSheetPointerDown}
-            />
-          )}
+        {!disableDragAndSwipe && config.showIndicator !== false && currentState !== "default" && (
+          <DynamicSheetDragIndicator
+            theme={config.theme}
+            isDragging={isDragging}
+            onPointerDown={handleSheetPointerDown}
+          />
+        )}
 
         {/* Header */}
         {header ? (
@@ -425,12 +377,9 @@ function DynamicSheet({
             }}
             className={cn(
               "gencl:border-b gencl:z-50",
-              isDarkTheme
-                ? "gencl:border-white/10"
-                : "gencl:border-secondary-150",
-              headerClassName,
-            )}
-          >
+              isDarkTheme ? "gencl:border-white/10" : "gencl:border-secondary-150",
+              headerClassName
+            )}>
             {header}
           </div>
         ) : config.navTitle || config.showClose ? (
@@ -444,21 +393,17 @@ function DynamicSheet({
               "gencl:w-full gencl:shrink-0 gencl:flex gencl:items-center gencl:justify-between gencl:relative",
               "gencl:p-3 gencl:border-b",
               "gencl:cursor-grab gencl:touch-none",
-              isDarkTheme
-                ? "gencl:border-white/10"
-                : "gencl:border-secondary-150",
-              headerClassName,
-            )}
-          >
+              isDarkTheme ? "gencl:border-white/10" : "gencl:border-secondary-150",
+              headerClassName
+            )}>
             {/* <span className="gencl:flex-1" /> */}
 
             {config.navTitle && (
               <span
                 className={cn(
                   "gencl:flex-1 gencl:min-w-0 gencl:truncate",
-                  isDarkTheme ? "gencl:text-white" : "gencl:text-black",
-                )}
-              >
+                  isDarkTheme ? "gencl:text-white" : "gencl:text-black"
+                )}>
                 {config.navTitle}
               </span>
             )}
@@ -471,7 +416,7 @@ function DynamicSheet({
                   "gencl:rounded-xs gencl:transition-all",
                   isDarkTheme
                     ? "hover:gencl:bg-white/10 hover:gencl:opacity-70"
-                    : "hover:gencl:bg-black/5 hover:gencl:opacity-70",
+                    : "hover:gencl:bg-black/5 hover:gencl:opacity-70"
                 )}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -479,8 +424,7 @@ function DynamicSheet({
                 }}
                 onPointerDown={(e) => e.stopPropagation()}
                 aria-label="Close"
-                type="button"
-              >
+                type="button">
                 <XIcon theme={config.theme} size="md" />
               </button>
             )}
@@ -502,10 +446,9 @@ function DynamicSheet({
               "gencl:flex-1 gencl:min-h-0 gencl:overflow-y-auto gencl:overflow-x-hidden",
               "gencl:touch-pan-y gencl:cursor-auto",
               isDarkTheme ? "gencl:text-white" : "gencl:text-black",
-              contentClassName,
+              contentClassName
             )}
-            style={{ WebkitOverflowScrolling: "touch" }}
-          >
+            style={{ WebkitOverflowScrolling: "touch" }}>
             {children}
           </div>
         )}
@@ -516,12 +459,9 @@ function DynamicSheet({
             data-slot="dynamic-sheet-footer"
             className={cn(
               "gencl:shrink-0 gencl:p-2 gencl:border-t",
-              isDarkTheme
-                ? "gencl:border-white/10 gencl:text-white"
-                : "gencl:border-secondary-150 gencl:text-black",
-              footerClassName,
-            )}
-          >
+              isDarkTheme ? "gencl:border-white/10 gencl:text-white" : "gencl:border-secondary-150 gencl:text-black",
+              footerClassName
+            )}>
             {footer}
           </div>
         )}

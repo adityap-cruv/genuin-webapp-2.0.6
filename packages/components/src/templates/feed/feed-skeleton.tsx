@@ -1,9 +1,10 @@
 "use client";
-import { FC } from "react";
-import { Skeleton } from "@genuin/ui/skeleton";
 import { cn } from "@genuin/ui/lib/utils";
-import { CommentsItemSkeleton } from "@genuin/components/molecules/comments/comment-item-skeleton";
+import { Skeleton } from "@genuin/ui/skeleton";
+import type { FC } from "react";
+
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { CommentsItemSkeleton } from "@genuin/components/molecules/comments/comment-item-skeleton";
 
 export type FeedSkeletonProps = {
   variant?: "default" | "fullscreen" | "player-list" | "side-panel";
@@ -23,62 +24,30 @@ const MobilePlayerOverlay: FC<{ colors: SkeletonColors }> = ({ colors }) => (
     <div className="gencl:w-full">
       {/* Owner info */}
       <div className="gencl:flex gencl:gap-2 gencl:overflow-hidden gencl:mb-3 gencl:mt-0">
-        <Skeleton
-          className={cn(
-            "gencl:size-10 gencl:rounded-full gencl:shrink-0",
-            colors.secondary
-          )}
-        />
+        <Skeleton className={cn("gencl:size-10 gencl:rounded-full gencl:shrink-0", colors.secondary)} />
         <div className="gencl:w-full gencl:flex gencl:flex-col gencl:justify-center gencl:gap-2">
-          <Skeleton
-            className={cn(
-              "gencl:w-1/2 gencl:h-3 gencl:rounded-md gencl:mt-1.5",
-              colors.secondary
-            )}
-          />
+          <Skeleton className={cn("gencl:w-1/2 gencl:h-3 gencl:rounded-md gencl:mt-1.5", colors.secondary)} />
         </div>
       </div>
       {/* Description */}
       <div className="gencl:mb-3 gencl:mt-0">
-        <Skeleton
-          className={cn(
-            "gencl:w-full gencl:h-3 gencl:rounded-md gencl:mt-1.5",
-            colors.secondary
-          )}
-        />
-        <Skeleton
-          className={cn(
-            "gencl:w-full gencl:h-3 gencl:rounded-md gencl:mt-1.5",
-            colors.secondary
-          )}
-        />
+        <Skeleton className={cn("gencl:w-full gencl:h-3 gencl:rounded-md gencl:mt-1.5", colors.secondary)} />
+        <Skeleton className={cn("gencl:w-full gencl:h-3 gencl:rounded-md gencl:mt-1.5", colors.secondary)} />
       </div>
       {/* Pills */}
       <div className="gencl:flex gencl:gap-2">
         <Skeleton
-          className={cn(
-            "gencl:size-10 gencl:rounded-full gencl:shrink-0 gencl:w-32 gencl:h-7",
-            colors.secondary
-          )}
+          className={cn("gencl:size-10 gencl:rounded-full gencl:shrink-0 gencl:w-32 gencl:h-7", colors.secondary)}
         />
         <Skeleton
-          className={cn(
-            "gencl:size-10 gencl:rounded-full gencl:shrink-0 gencl:w-32 gencl:h-7",
-            colors.secondary
-          )}
+          className={cn("gencl:size-10 gencl:rounded-full gencl:shrink-0 gencl:w-32 gencl:h-7", colors.secondary)}
         />
       </div>
     </div>
     {/* Mobile action buttons */}
     <div className="gencl:flex gencl:sm:hidden! gencl:gap-4 gencl:flex-col gencl:justify-end gencl:w-12">
       {Array.from({ length: 5 }).map((_, index) => (
-        <Skeleton
-          key={index}
-          className={cn(
-            "gencl:size-10 gencl:rounded-full gencl:shrink-0",
-            colors.secondary
-          )}
-        />
+        <Skeleton key={index} className={cn("gencl:size-10 gencl:rounded-full gencl:shrink-0", colors.secondary)} />
       ))}
     </div>
   </div>
@@ -88,33 +57,16 @@ const MobilePlayerOverlay: FC<{ colors: SkeletonColors }> = ({ colors }) => (
 const ActionButtonsSkeleton: FC<{ colors: SkeletonColors }> = ({ colors }) => (
   <div className="gencl:flex gencl:gap-4 gencl:flex-col gencl:justify-end gencl:w-13 gencl:pb-4">
     {Array.from({ length: 5 }).map((_, index) => (
-      <Skeleton
-        key={index}
-        className={cn(
-          "gencl:size-12 gencl:rounded-full gencl:shrink-0",
-          colors.secondary
-        )}
-      />
+      <Skeleton key={index} className={cn("gencl:size-12 gencl:rounded-full gencl:shrink-0", colors.secondary)} />
     ))}
   </div>
 );
 
 // Internal sub-component for player skeleton (video)
-const PlayerSkeleton: FC<{ colors: SkeletonColors; isMobile: boolean }> = ({
-  colors,
-  isMobile,
-}) => (
-  <div
-    className={cn(
-      "gencl:relative",
-      isMobile ? "gencl:w-full gencl:h-full" : "gencl:aspect-reel gencl:h-full"
-    )}
-  >
+const PlayerSkeleton: FC<{ colors: SkeletonColors; isMobile: boolean }> = ({ colors, isMobile }) => (
+  <div className={cn("gencl:relative", isMobile ? "gencl:w-full gencl:h-full" : "gencl:aspect-reel gencl:h-full")}>
     <Skeleton
-      className={cn(
-        "gencl:w-full gencl:h-full gencl:bg-secondary-500 gencl:sm:bg-secondary-100!",
-        colors.primary
-      )}
+      className={cn("gencl:w-full gencl:h-full gencl:bg-secondary-500 gencl:sm:bg-secondary-100!", colors.primary)}
     />
     <MobilePlayerOverlay colors={colors} />
   </div>
@@ -127,11 +79,8 @@ const SidePanelSkeleton: FC<{ theme: "light" | "dark" }> = ({ theme }) => (
     <div
       className={cn(
         "gencl:border gencl:p-4 gencl:rounded-2xl",
-        theme === "light"
-          ? "gencl:border-secondary-150"
-          : "gencl:border-secondary-800"
-      )}
-    >
+        theme === "light" ? "gencl:border-secondary-150" : "gencl:border-secondary-800"
+      )}>
       {/* Owner info */}
       <div className="gencl:w-100 gencl:flex gencl:gap-2 gencl:overflow-hidden gencl:mb-3 gencl:mt-0">
         <Skeleton className="gencl:size-10 gencl:rounded-full gencl:shrink-0" />
@@ -151,11 +100,8 @@ const SidePanelSkeleton: FC<{ theme: "light" | "dark" }> = ({ theme }) => (
     <div
       className={cn(
         "gencl:relative gencl:border gencl:p-4 gencl:rounded-2xl",
-        theme === "light"
-          ? "gencl:border-secondary-150"
-          : "gencl:border-secondary-800"
-      )}
-    >
+        theme === "light" ? "gencl:border-secondary-150" : "gencl:border-secondary-800"
+      )}>
       {Array.from({ length: 4 }).map((_, index) => (
         <CommentsItemSkeleton key={index} />
       ))}
@@ -163,25 +109,17 @@ const SidePanelSkeleton: FC<{ theme: "light" | "dark" }> = ({ theme }) => (
       <div
         className={cn(
           "gencl:absolute gencl:rounded-b-3xl gencl:bottom-0 gencl:right-0 gencl:flex gencl:w-full gencl:items-center gencl:justify-between gencl:gap-x-4 gencl:border-t gencl:p-4",
-          theme === "light"
-            ? "gencl:bg-white gencl:border-secondary-150"
-            : "gencl:bg-black gencl:border-secondary-800"
-        )}
-      >
+          theme === "light" ? "gencl:bg-white gencl:border-secondary-150" : "gencl:bg-black gencl:border-secondary-800"
+        )}>
         <div
           className={cn(
             "gencl:w-full gencl:rounded-lg gencl:h-10 gencl:border gencl:p-2 gencl:flex gencl:justify-center gencl:items-center",
-            theme === "light"
-              ? "gencl:border-secondary-150"
-              : "gencl:border-secondary-800"
-          )}
-        >
+            theme === "light" ? "gencl:border-secondary-150" : "gencl:border-secondary-800"
+          )}>
           <Skeleton
             className={cn(
               "gencl:h-3 gencl:w-full",
-              theme === "light"
-                ? "gencl:bg-secondary-150"
-                : "gencl:bg-secondary-800"
+              theme === "light" ? "gencl:bg-secondary-150" : "gencl:bg-secondary-800"
             )}
           />
         </div>
@@ -218,13 +156,7 @@ export const FeedSkeleton: FC<FeedSkeletonProps> = ({
         <PlayerSkeleton colors={colors} isMobile={isMobile} />
         <div className="gencl:hidden gencl:sm:flex! gencl:gap-4 gencl:flex-col gencl:justify-end gencl:w-13">
           {Array.from({ length: 5 }).map((_, index) => (
-            <Skeleton
-              key={index}
-              className={cn(
-                "gencl:size-12 gencl:rounded-full gencl:shrink-0",
-                colors.secondary
-              )}
-            />
+            <Skeleton key={index} className={cn("gencl:size-12 gencl:rounded-full gencl:shrink-0", colors.secondary)} />
           ))}
         </div>
       </div>
@@ -243,60 +175,34 @@ export const FeedSkeleton: FC<FeedSkeletonProps> = ({
         className={cn(
           "gencl:fixed gencl:inset-0 gencl:z-50 gencl:flex gencl:items-center gencl:justify-center gencl:gap-6",
           colors.container
-        )}
-      >
+        )}>
         {/* Mobile view */}
         <div
           className={cn(
             "gencl:relative gencl:block gencl:sm:hidden!",
-            isMobile
-              ? "gencl:w-full gencl:h-full"
-              : "gencl:aspect-reel gencl:h-full"
-          )}
-        >
-          <Skeleton
-            className={cn(
-              "gencl:w-full gencl:h-full gencl:sm:bg-secondary-900!",
-              colors.primary
-            )}
-          />
+            isMobile ? "gencl:w-full gencl:h-full" : "gencl:aspect-reel gencl:h-full"
+          )}>
+          <Skeleton className={cn("gencl:w-full gencl:h-full gencl:sm:bg-secondary-900!", colors.primary)} />
           <MobilePlayerOverlay colors={colors} />
         </div>
 
         {/* Desktop view: action items shimmer */}
         <div className="gencl:h-full gencl:gap-6 gencl:hidden gencl:sm:flex!">
-          <Skeleton
-            className={cn("gencl:aspect-reel gencl:h-full", colors.primary)}
-          />
+          <Skeleton className={cn("gencl:aspect-reel gencl:h-full", colors.primary)} />
           <ActionButtonsSkeleton colors={colors} />
         </div>
 
         {/* comment box shimmer */}
         {showCommentsSkeleton && (
           <div className="gencl:max-w-118 gencl:w-full gencl:h-full gencl:py-6 gencl:hidden gencl:sm:block!">
-            <Skeleton
-              className={cn(
-                "gencl:w-full gencl:h-full gencl:py-6 gencl:rounded-2xl",
-                colors.primary
-              )}
-            />
+            <Skeleton className={cn("gencl:w-full gencl:h-full gencl:py-6 gencl:rounded-2xl", colors.primary)} />
           </div>
         )}
 
         {/* Top right action buttons (close/expand) */}
         <div className="gencl:absolute gencl:right-7.5 gencl:space-y-4 gencl:hidden gencl:sm:block!">
-          <Skeleton
-            className={cn(
-              "gencl:size-12 gencl:rounded-full gencl:shrink-0",
-              colors.secondary
-            )}
-          />
-          <Skeleton
-            className={cn(
-              "gencl:size-12 gencl:rounded-full gencl:shrink-0",
-              colors.secondary
-            )}
-          />
+          <Skeleton className={cn("gencl:size-12 gencl:rounded-full gencl:shrink-0", colors.secondary)} />
+          <Skeleton className={cn("gencl:size-12 gencl:rounded-full gencl:shrink-0", colors.secondary)} />
         </div>
       </div>
     );
@@ -307,20 +213,13 @@ export const FeedSkeleton: FC<FeedSkeletonProps> = ({
     <div
       className={cn(
         "gencl:flex gencl:w-full gencl:sm:py-4 gencl:sm:pr-4 gencl:h-full gencl:sm:h-[calc(100vh-64px)]! gencl:gap-4"
-      )}
-    >
+      )}>
       {/* Main video area skeleton (matches PlayerList container) */}
-      <div className="gencl:flex gencl:justify-center gencl:h-full gencl:w-full gencl:gap-3 ">
+      <div className="gencl:flex gencl:justify-center gencl:h-full gencl:w-full gencl:gap-3">
         <PlayerSkeleton colors={colors} isMobile={isMobile} />
         <div className="gencl:hidden gencl:sm:flex! gencl:gap-4 gencl:flex-col gencl:justify-end gencl:w-13">
           {Array.from({ length: 5 }).map((_, index) => (
-            <Skeleton
-              key={index}
-              className={cn(
-                "gencl:size-12 gencl:rounded-full gencl:shrink-0",
-                colors.secondary
-              )}
-            />
+            <Skeleton key={index} className={cn("gencl:size-12 gencl:rounded-full gencl:shrink-0", colors.secondary)} />
           ))}
         </div>
       </div>

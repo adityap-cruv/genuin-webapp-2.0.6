@@ -1,21 +1,23 @@
 import { Button } from "@genuin/ui/components/button";
-import { cn } from "@genuin/ui/lib/utils";
-import { LinkData } from "@genuin/components/react-query/api/linkouts/schema";
-import { LinkIcon, ChevronRight } from "lucide-react";
-import { useAnalytics } from "@genuin/components/context/analytics/context";
-import { VariantProps, cva } from "class-variance-authority";
-import { useBaseContext } from "@genuin/components/context/base";
 import { Loader } from "@genuin/ui/components/loader";
-import { useSafeRedirect } from "./use-safe-redirect";
-import { Link } from "../link/link";
-import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
+import { cn } from "@genuin/ui/lib/utils";
+import type { VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
+import { LinkIcon, ChevronRight } from "lucide-react";
 import { useMemo } from "react";
-import {
-  buildLinkoutsAnalyticsData,
-  LinkoutsProps,
-} from "@genuin/components/organisms";
+
+import { useAnalytics } from "@genuin/components/context/analytics/context";
+import { useBaseContext } from "@genuin/components/context/base";
+import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
+import { LinkoutsProps } from "@genuin/components/organisms";
 import { PostData } from "@genuin/components/organisms/create-post/types";
-import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+import type { buildLinkoutsAnalyticsData } from "@genuin/components/organisms/linkouts/build-linkouts-analytics-data";
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+import type { LinkData } from "@genuin/components/react-query/api/linkouts/schema";
+
+import { Link } from "../link/link";
+
+import { useSafeRedirect } from "./use-safe-redirect";
 
 // Combined variant for both card types
 const linkCardVariants = cva(
@@ -47,13 +49,10 @@ interface LinkCardProps extends VariantProps<typeof linkCardVariants> {
   showThumbnail?: boolean;
   ctaText?: string;
   ctaLink?: string;
-  videoDetails?: PostDetailsType["video"];
-  totalVideos?: number;
-  positionIndex?: number;
-  autoplay?: boolean;
+  analyticsEventData: ReturnType<typeof buildLinkoutsAnalyticsData>;
 }
 
-export const LinkCard = ({
+export const SingleLinkCard = ({
   isEmbed,
   isOutside,
   link,
@@ -61,10 +60,7 @@ export const LinkCard = ({
   ctaText = "",
   ctaLink = "",
   variant,
-  videoDetails,
-  totalVideos,
-  positionIndex,
-  autoplay,
+  analyticsEventData,
 }: LinkCardProps) => {
   const hasImage = link.image && link.image.trim() !== "";
   const hasTitle = link.title && link.title.trim() !== "";
@@ -84,20 +80,7 @@ export const LinkCard = ({
 
   const displayText = hasTitle ? link.title : getDomain(link.link);
 
-  const analyticsEventData = useMemo(
-    () =>
-      buildLinkoutsAnalyticsData({
-        videoDetails,
-        totalVideos,
-        positionIndex,
-        autoplay,
-      }),
-    [videoDetails, totalVideos, positionIndex, autoplay]
-  );
-
-  const handleImageError = (
-    e: React.SyntheticEvent<HTMLImageElement, Event>
-  ) => {
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     const target = e.target as HTMLImageElement;
     const nextSibling = target.nextElementSibling as HTMLElement;
     target.style.display = "none";
@@ -150,16 +133,14 @@ export const LinkCard = ({
             layout: "withCTA",
           })
         )}
-        onClick={handleCardClick}
-      >
+        onClick={handleCardClick}>
         <div className="gencl:flex-1 gencl:text-start gencl:flex gencl:items-center gencl:gap-2 gencl:line-clamp-2">
           {hasImage && showThumbnail && (
             <div
               className={cn(
                 "gencl:h-16 gencl:w-16 gencl:rounded-xl gencl:bg-gray-200 gencl:shrink-0 gencl:overflow-hidden gencl:scrollbar-none",
                 isEmbed && "gencl:h-12 gencl:w-12 gencl:rounded-md"
-              )}
-            >
+              )}>
               <img
                 src={link.image ?? ""}
                 alt=""
@@ -171,18 +152,9 @@ export const LinkCard = ({
               </div>
             </div>
           )}
-          {!hasImage && showThumbnail && (
-            <LinkIcon className="gencl:h-4 gencl:w-4 gencl:shrink-0 gencl:stroke-white" />
-          )}
-          {!showThumbnail && (
-            <LinkIcon className="gencl:h-4 gencl:w-4 gencl:shrink-0 gencl:stroke-white" />
-          )}
-          <span
-            className={cn(
-              "gencl:truncate gencl:text-body-1-medium!",
-              isOutside && "gencl:text-black"
-            )}
-          >
+          {!hasImage && showThumbnail && <LinkIcon className="gencl:h-4 gencl:w-4 gencl:shrink-0 gencl:stroke-white" />}
+          {!showThumbnail && <LinkIcon className="gencl:h-4 gencl:w-4 gencl:shrink-0 gencl:stroke-white" />}
+          <span className={cn("gencl:truncate gencl:text-body-1-medium!", isOutside && "gencl:text-black")}>
             {displayText}
           </span>
         </div>
@@ -191,27 +163,22 @@ export const LinkCard = ({
           target="_blank"
           rel="noopener noreferrer"
           className="gencl:w-full"
-          onClick={(e) => e.stopPropagation()}
-        >
+          onClick={(e) => e.stopPropagation()}>
           <Button
             size={isEmbed ? "sm" : "md"}
             className={cn(
               "gencl:w-full gencl:text-body-1-medium! gencl:font-semibold gencl:transition-all gencl:text-black gencl:bg-white gencl:hover:bg-white/90 gencl:flex gencl:justify-between gencl:items-center gencl:px-3 gencl:py-2 gencl:rounded-lg",
               isOutside && "gencl:bg-secondary-50 gencl:hover:bg-secondary-150",
-              !brandDetails.cta_config?.show_arrow_icon &&
-                "gencl:text-center gencl:justify-center"
+              !brandDetails.cta_config?.show_arrow_icon && "gencl:text-center gencl:justify-center"
             )}
             style={{
               borderRadius: brandDetails.cta_config?.button_radius ?? "",
               background: brandDetails.cta_config?.button_color ?? "",
               color: brandDetails.cta_config?.text_color ?? "black",
             }}
-            onClick={handleCTAClick}
-          >
+            onClick={handleCTAClick}>
             <p className="gencl:line-clamp-1 gencl:truncate gencl:w-fit">
-              {brandDetails.cta_config?.default_button_text
-                ? brandDetails.cta_config?.default_button_text
-                : ctaText}
+              {brandDetails.cta_config?.default_button_text ? brandDetails.cta_config?.default_button_text : ctaText}
             </p>
             {brandDetails.cta_config?.show_arrow_icon &&
               (isLoading ? (
@@ -250,16 +217,14 @@ export const LinkCard = ({
           layout: "standard",
         })
       )}
-      onClick={handleCardClick}
-    >
+      onClick={handleCardClick}>
       <div className="gencl:flex-1 gencl:text-start gencl:flex gencl:items-center gencl:gap-2 gencl:line-clamp-2">
         {hasImage && showThumbnail ? (
           <div
             className={cn(
               "gencl:h-16 gencl:w-16 gencl:rounded-xl gencl:bg-gray-200 gencl:shrink-0 gencl:overflow-hidden gencl:scrollbar-none",
               isEmbed && "gencl:h-12 gencl:w-12 gencl:rounded-md"
-            )}
-          >
+            )}>
             <img
               src={link.image ?? ""}
               alt=""
@@ -273,12 +238,7 @@ export const LinkCard = ({
         ) : (
           <LinkIcon className="gencl:h-4 gencl:w-4 gencl:shrink-0 gencl:stroke-white" />
         )}
-        <span
-          className={cn(
-            "gencl:truncate gencl:text-body-1-medium!",
-            isOutside && "gencl:text-black"
-          )}
-        >
+        <span className={cn("gencl:truncate gencl:text-body-1-medium!", isOutside && "gencl:text-black")}>
           {displayText}
         </span>
       </div>
@@ -291,10 +251,7 @@ export const LinkCard = ({
         />
       ) : (
         <ChevronRight
-          className={cn(
-            "gencl:h-4 gencl:w-4 gencl:shrink-0 gencl:stroke-white!",
-            isOutside && "gencl:stroke-black!"
-          )}
+          className={cn("gencl:h-4 gencl:w-4 gencl:shrink-0 gencl:stroke-white!", isOutside && "gencl:stroke-black!")}
         />
       )}
     </Link>

@@ -1,6 +1,7 @@
 "use client";
 import { cva, type VariantProps } from "class-variance-authority";
 import { type ComponentProps, useState } from "react";
+
 import { cn } from "@genuin/ui/lib/utils";
 import { getWebpUrlForImage } from "@genuin/ui/lib/utils";
 
@@ -42,9 +43,7 @@ const imageVariants = cva("gencl:transition-all", {
   },
 });
 
-export interface ImageProps
-  extends ComponentProps<"img">,
-    VariantProps<typeof imageVariants> {
+export interface ImageProps extends ComponentProps<"img">, VariantProps<typeof imageVariants> {
   useWebp?: boolean;
   handleError?: boolean;
 }
@@ -60,8 +59,7 @@ export function Image({
   ...props
 }: ImageProps) {
   const [hasError, setHasError] = useState(false);
-  const imageSrc =
-    typeof src === "string" && useWebp ? getWebpUrlForImage(src) : src;
+  const imageSrc = typeof src === "string" && useWebp ? getWebpUrlForImage(src) : src;
 
   if (hasError || !src) {
     return null;

@@ -1,50 +1,47 @@
 "use client";
 
+import { Avatar } from "@genuin/ui/components/avatar";
+import { Button } from "@genuin/ui/components/button";
+import { Toast } from "@genuin/ui/components/toaster";
+import { DiamondIcon, ImportIcon, OctopusIcon, UploadFileIcon } from "@genuin/ui/icons";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "@genuin/components/hooks/use-router";
 import { v4 as uuid } from "uuid";
 
-import {
-  DiamondIcon,
-  ImportIcon,
-  OctopusIcon,
-  UploadFileIcon,
-} from "@genuin/ui/icons";
+import { useAuthContext } from "@genuin/components/context/auth";
+import { useRouter } from "@genuin/components/hooks/use-router";
 import { CommunityGroupSelector } from "@genuin/components/molecules/community-group-selector";
 import FileSelectDropzone from "@genuin/components/molecules/file-select-dropzone/file-select-dropzone";
 import { MediaModal } from "@genuin/components/molecules/link-thumbnail/link-thumbnail-modal";
-import { usePostCreateUploadUrlMutation } from "@genuin/components/react-query/api/posts/post-video-upload";
-import { useDeleteDraftsMutation } from "@genuin/components/react-query/api/posts/delete-drafts";
-import { useAuthContext } from "@genuin/components/context/auth";
 import { MentionInput } from "@genuin/components/molecules/mention-input";
-import {
-  useGetDraftVideoMutation,
-  useEditDraftVideoMutation,
-  useCreateDraftVideoMutation,
-} from "@genuin/components/react-query/api/posts/video-draft";
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import {
   useEditActiveVideoMutation,
   useGetActiveVideoMutation,
   usePostVideoMutation,
 } from "@genuin/components/react-query/api/posts/active-post";
-import { EditVideoTrim } from "./edit-video-trim";
-import { EditPostSkeleton } from "./edit-post-skeleton";
-import { PostLayout } from "../post-layout";
-import { PostPlayer } from "../post-player";
-import { AddLinkOut } from "../add-linkout";
-import SaveDraftDialog from "./save-draft-dialog";
-import { FileDetails, PostData, StepPost } from "./types";
-import { PostOriginCard } from "../post-origin-card";
-import { AddLoactionPanel, Location } from "../add-location-panel";
-import { EditCoverImage, EditCoverImageHandle } from "../edit-cover-image";
-import { Avatar } from "@genuin/ui/components/avatar";
-import { Button } from "@genuin/ui/components/button";
-import { Toast } from "@genuin/ui/components/toaster";
+import { useDeleteDraftsMutation } from "@genuin/components/react-query/api/posts/delete-drafts";
+import { usePostCreateUploadUrlMutation } from "@genuin/components/react-query/api/posts/post-video-upload";
+import type { PayloadDraftPost } from "@genuin/components/react-query/api/posts/video-draft";
 import {
-  SectionLayout,
-  SectionLayoutLeft,
-  SectionLayoutRight,
-} from "./section-layout";
+  useGetDraftVideoMutation,
+  useEditDraftVideoMutation,
+  useCreateDraftVideoMutation,
+} from "@genuin/components/react-query/api/posts/video-draft";
+
+import { AddLinkOut } from "../add-linkout";
+import type { Location } from "../add-location-panel";
+import { AddLoactionPanel } from "../add-location-panel";
+import type { EditCoverImageHandle } from "../edit-cover-image";
+import { EditCoverImage } from "../edit-cover-image";
+import { PostLayout } from "../post-layout";
+import { PostOriginCard } from "../post-origin-card";
+import { PostPlayer } from "../post-player";
+
+import { EditPostSkeleton } from "./edit-post-skeleton";
+import { EditVideoTrim } from "./edit-video-trim";
+import SaveDraftDialog from "./save-draft-dialog";
+import { SectionLayout, SectionLayoutLeft, SectionLayoutRight } from "./section-layout";
+import type { FileDetails, PostData, StepPost } from "./types";
 
 interface CreatePostProps {
   postId?: string;
@@ -67,40 +64,37 @@ export const CreatePost = ({ postId, draftId }: CreatePostProps) => {
   const ref = useRef<EditCoverImageHandle>(null);
 
   const [postData, setPostData] = useState<PostData>();
-  const [step, setStep] = useState<StepPost>(
-    postId || draftId ? "POST" : "UPLOAD"
-  );
+  const [step, setStep] = useState<StepPost>(postId || draftId ? "POST" : "UPLOAD");
   const [fileDetails, setFileDetails] = useState<FileDetails>();
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
-  const [groupId, setGroupId] = useState(null);
+  const [groupId, setGroupId] = useState<string | null>(null);
   const [videoTrimProcessing, setVideoTrimProcessing] = useState(false);
   const [isLoading, setIsLoading] = useState(postId || draftId ? true : false);
   const [openSaveDraftDialog, setOpenSaveDraftDialog] = useState(false);
   const [location, setLocation] = useState<PostData["video"]["location"]>(null);
   const [isTrimmerReady, setIsTrimmerReady] = useState(true);
-  const [postPayload, setPostPayload] = useState({});
+  const [postPayload, setPostPayload] = useState<{ description_text?: string; [key: string]: unknown }>({});
   const showTrimButton = useMemo(() => !postId, [postId]);
   const [thumbnail, setThumbnail] = useState("");
   const [isAutoSaveMsg, setIsAutoSaveMsg] = useState(false);
   const [isVideoUploading, setIsVideoUploading] = useState(false); // Video uploading loader
 
   // Reusable function to handle success while get details
-  const handleVideoSuccess =
-    (nextStep: StepPost, showMessage?: boolean) => (data: any) => {
-      if (data?.res?.data?.code === 200) {
-        const video = data.res.data.data.video;
-        setPostData({ ...data.res.data.data });
-        setLocation(video.location);
-        setThumbnail(video.thumbnail);
-        setGroupId(null);
-        setIsLoading(false);
-        setIsVideoUploading(false);
-        if (nextStep) {
-          setStep(nextStep);
-        }
-        if (showMessage) setIsAutoSaveMsg(true);
+  const handleVideoSuccess = (nextStep: StepPost, showMessage?: boolean) => (data: any) => {
+    if (data?.res?.data?.code === 200) {
+      const video = data.res.data.data.video;
+      setPostData({ ...data.res.data.data });
+      setLocation(video.location);
+      setThumbnail(video.thumbnail);
+      setGroupId(null);
+      setIsLoading(false);
+      setIsVideoUploading(false);
+      if (nextStep) {
+        setStep(nextStep);
       }
-    };
+      if (showMessage) setIsAutoSaveMsg(true);
+    }
+  };
 
   // Reusable function to handle error
   const handleVideoError = () => {
@@ -128,25 +122,24 @@ export const CreatePost = ({ postId, draftId }: CreatePostProps) => {
   });
 
   // Edit active Video
-  const { mutate: editActiveVideoPatch, isPending: isLoadingActivePost } =
-    useEditActiveVideoMutation({
-      onSuccess: ({ res }) => {
-        if (res.data.code === 200) {
-          setThumbnail(res.data.data.message.thumbnail_url);
-          if (step === "POST") {
-            router.push("/posts");
-          }
-          Toast.Success({
-            message: "Post updated successfully.",
-          });
+  const { mutate: editActiveVideoPatch, isPending: isLoadingActivePost } = useEditActiveVideoMutation({
+    onSuccess: ({ res }) => {
+      if (res.data.code === 200) {
+        setThumbnail(res.data.data.message.thumbnail_url);
+        if (step === "POST") {
+          router.push("/posts");
         }
-      },
-      onError: () => {
-        Toast.Error({
-          message: "Failed to edit post. Please try again later.",
+        Toast.Success({
+          message: "Post updated successfully.",
         });
-      },
-    });
+      }
+    },
+    onError: () => {
+      Toast.Error({
+        message: "Failed to edit post. Please try again later.",
+      });
+    },
+  });
 
   // Edit Draft Video
   const { mutate: editDraftVideoPatch } = useEditDraftVideoMutation({
@@ -155,13 +148,12 @@ export const CreatePost = ({ postId, draftId }: CreatePostProps) => {
   });
 
   // Delete draft post
-  const { mutateAsync: deleteDraftPost, isPending: isDraftDeleting } =
-    useDeleteDraftsMutation({
-      onSuccess: () => router.push("/posts"),
-      onError: (error) => {
-        console.error("Failed to delete draft:", error);
-      },
-    });
+  const { mutateAsync: deleteDraftPost, isPending: isDraftDeleting } = useDeleteDraftsMutation({
+    onSuccess: () => router.push("/posts"),
+    onError: (error) => {
+      console.error("Failed to delete draft:", error);
+    },
+  });
 
   useEffect(() => {
     const id = postId || draftId;
@@ -186,22 +178,11 @@ export const CreatePost = ({ postId, draftId }: CreatePostProps) => {
         }
         setIsVideoUploading(false);
       }
-      if (
-        !res ||
-        res.code !== 200 ||
-        !fileDetails ||
-        !fileDetails.videoThumbnail
-      ) {
+      if (!res || res.code !== 200 || !fileDetails || !fileDetails.videoThumbnail) {
         return;
       }
 
-      const {
-        aspectRatio = "9:16",
-        resolution = "1080x1920",
-        videoDuration,
-        file,
-        videoThumbnail,
-      } = fileDetails;
+      const { aspectRatio = "9:16", resolution = "1080x1920", videoDuration, file, videoThumbnail } = fileDetails;
 
       if (groupId) {
         updatePostData({
@@ -214,9 +195,7 @@ export const CreatePost = ({ postId, draftId }: CreatePostProps) => {
             media_type: "video",
           },
           video_name: file?.name ? `${UPLOAD_VIDEO_PATH}/${file.name}` : "",
-          thumbnail_name: videoThumbnail
-            ? `${UPLOAD_IMAGE_PATH}/${videoThumbnail}`
-            : ``,
+          thumbnail_name: videoThumbnail ? `${UPLOAD_IMAGE_PATH}/${videoThumbnail}` : ``,
         });
       }
     },
@@ -339,10 +318,17 @@ export const CreatePost = ({ postId, draftId }: CreatePostProps) => {
     }
     if (step === "POST" && postId) {
       if (Object.keys(postPayload).length > 0) {
-        editActiveVideoPatch({
-          ...postPayload,
+        const { video_thumbnail, ...rest } = postPayload;
+        const payload = {
+          // Pass only filename for already posted post thumbnail update
+          ...(video_thumbnail && typeof video_thumbnail === "string"
+            ? { video_thumbnail: video_thumbnail.split("/")[2] }
+            : {}),
+          ...rest,
+          platform: "web" as const,
           cv_id: postId,
-        });
+        };
+        editActiveVideoPatch(payload);
       }
     }
     if (step === "EDIT_THUMBNAIL") {
@@ -401,8 +387,7 @@ export const CreatePost = ({ postId, draftId }: CreatePostProps) => {
   // groupId initial set in state while create draft
   const getIdentifier = () => {
     if (groupId) return { chat_id: groupId };
-    if (!draftId && !postId && postData?.video?.id)
-      return { uuid: postData.video.id };
+    if (!draftId && !postId && postData?.video?.id) return { uuid: postData.video.id };
     if (draftId) return { uuid: draftId };
     return { chat_id: "" }; // fallback
   };
@@ -410,9 +395,8 @@ export const CreatePost = ({ postId, draftId }: CreatePostProps) => {
   const updatePostData = (dataToUpdate: Record<string, any>) => {
     if (!dataToUpdate) return;
     const identifier = getIdentifier();
-    const requestBody = { ...identifier, ...dataToUpdate };
-    const updateFunction =
-      draftId || postData?.group?.id ? editDraftVideoPatch : createDraftVideo;
+    const requestBody = { ...identifier, ...dataToUpdate, platform: "web" } as PayloadDraftPost;
+    const updateFunction = draftId || postData?.group?.id ? editDraftVideoPatch : createDraftVideo;
 
     updateFunction(requestBody);
   };
@@ -424,9 +408,7 @@ export const CreatePost = ({ postId, draftId }: CreatePostProps) => {
   return (
     <PostLayout
       isEdit={postId ? true : false}
-      bottomMessage={
-        isAutoSaveMsg ? `Your progress is automatically saved as a draft.` : ""
-      }
+      bottomMessage={isAutoSaveMsg ? `Your progress is automatically saved as a draft.` : ""}
       bottomMessageKey={Date.now()}
       postCountText=""
       isPostDisabled={
@@ -441,13 +423,7 @@ export const CreatePost = ({ postId, draftId }: CreatePostProps) => {
       onCancel={handleCancelButton}
       onNext={handleNextButton}
       stepNextButton={step}
-      isLoading={
-        isVideoUploading ||
-        isLoadingPost ||
-        videoTrimProcessing ||
-        isLoadingActivePost
-      }
-    >
+      isLoading={isVideoUploading || isLoadingPost || videoTrimProcessing || isLoadingActivePost}>
       <SaveDraftDialog
         open={openSaveDraftDialog}
         onOpenChange={setOpenSaveDraftDialog}
@@ -519,8 +495,7 @@ export const CreatePost = ({ postId, draftId }: CreatePostProps) => {
             ].map((item, i) => (
               <div
                 key={i}
-                className="gencl:opacity-40 gencl:w-full gencl:border gencl:border-secondary-150 gencl:rounded-lg gencl:p-5 gencl:flex gencl:gap-3 gencl:items-center"
-              >
+                className="gencl:opacity-40 gencl:w-full gencl:border gencl:border-secondary-150 gencl:rounded-lg gencl:p-5 gencl:flex gencl:gap-3 gencl:items-center">
                 <div className="gencl:w-12 gencl:h-12 gencl:bg-primary-200 gencl:rounded-2xl gencl:flex gencl:items-center gencl:justify-center">
                   {item.icon}
                 </div>
@@ -529,9 +504,7 @@ export const CreatePost = ({ postId, draftId }: CreatePostProps) => {
                     {item.title}
                     {/* <DiamondIconComponent /> */}
                   </h4>
-                  <p className="gencl:text-body-2-medium gencl:text-secondary-600">
-                    {item.description}
-                  </p>
+                  <p className="gencl:text-body-2-medium gencl:text-secondary-600">{item.description}</p>
                 </div>
               </div>
             ))}
@@ -543,10 +516,10 @@ export const CreatePost = ({ postId, draftId }: CreatePostProps) => {
         <SectionLayout>
           <SectionLayoutLeft>
             <PostPlayer
-              className="gencl:h-full"
+              className="gencl:h-full gencl:w-full"
               editClipVideo={() => handleEditAction("clip")}
               editCoverImage={(url) => handleEditAction("cover", url)}
-              post={postData}
+              post={postData as unknown as PostDetailsType}
               showClipVideoBtn={showTrimButton}
             />
           </SectionLayoutLeft>
@@ -554,15 +527,8 @@ export const CreatePost = ({ postId, draftId }: CreatePostProps) => {
             <div className="gencl:text-secondary-600 gencl:flex gencl:gap-2 gencl:items-center gencl:mb-8">
               <span className="gencl:text-body-1-medium">Posting by</span>
               <div className="gencl:flex gencl:bg-secondary-100 gencl:py-1 gencl:ps-1 gencl:pe-2 gencl:rounded-3xl gencl:items-center gencl:gap-2">
-                <Avatar
-                  alt={user?.name ?? ""}
-                  imageUrl={user?.image ?? ""}
-                  isAvatar
-                  size="sm"
-                />
-                <span className="gencl:text-secondary-900 gencl:text-body-1-medium">
-                  @{user?.nickname}
-                </span>
+                <Avatar alt={user?.name ?? ""} imageUrl={user?.image ?? ""} isAvatar size="sm" />
+                <span className="gencl:text-secondary-900 gencl:text-body-1-medium">@{user?.nickname}</span>
               </div>
             </div>
 
@@ -605,19 +571,14 @@ export const CreatePost = ({ postId, draftId }: CreatePostProps) => {
               />
             </div>
             <div className="gencl:mb-2">
-              <AddLoactionPanel
-                location={location}
-                onSelectionChange={handleAddLocation}
-              />
+              <AddLoactionPanel location={location} onSelectionChange={handleAddLocation} />
             </div>
             {postId ? (
               <div className="gencl:mb-2 gencl:mt-5">
                 <PostOriginCard
                   community={{
                     name: postData?.community?.name,
-                    profileImage:
-                      postData?.community?.profileImageM ||
-                      postData?.community?.profileImage,
+                    profileImage: postData?.community?.profileImageM || postData?.community?.profileImage,
                     slug: postData?.community?.slug,
                     isPrivate: postData?.community.type === 2,
                   }}
@@ -675,24 +636,17 @@ export const CreatePost = ({ postId, draftId }: CreatePostProps) => {
                       video_thumbnail: imagePath,
                     }));
 
-                    setThumbnail(
-                      `${process.env.NEXT_PUBLIC_MEDIA_BASE_URL}/${imagePath}`
-                    );
+                    setThumbnail(`${process.env.NEXT_PUBLIC_MEDIA_BASE_URL}/${imagePath}`);
                   } else {
                     updatePostData({ thumbnail_name: imagePath });
                   }
-                }}
-              >
+                }}>
                 <Button theme="outline">
                   <UploadFileIcon variant="black" /> Upload Cover
                 </Button>
               </MediaModal>
             </div>
-            <EditCoverImage
-              ref={ref}
-              videoURL={videoUrl ?? ""}
-              thumbHeight={90}
-            />
+            <EditCoverImage ref={ref} videoURL={videoUrl ?? ""} thumbHeight={90} />
           </SectionLayoutRight>
         </SectionLayout>
       )}
@@ -700,7 +654,7 @@ export const CreatePost = ({ postId, draftId }: CreatePostProps) => {
       {step === "CLIP_VIDEO" && (
         <EditVideoTrim
           ref={handleTrimVideoRef}
-          postData={postData}
+          postData={postData!}
           playerOverlayAction={handleEditAction}
           updatePostData={updatePostData}
           setVideoTrimProcessing={setVideoTrimProcessing}

@@ -1,3 +1,6 @@
+import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
+
 import Delete from '@/assets/SvgIcons/Delete';
 import Edit from '@/assets/SvgIcons/Edit';
 import Options from '@/assets/SvgIcons/Options';
@@ -12,8 +15,6 @@ import { useAgentsContext } from '@/context/app/context';
 import { deleteSessionV2 } from '@/lib/api';
 import { useRudderEvents } from '@/services/analytics/useRudderAnalytics';
 import type { Session } from '@/types';
-import { useEffect, useRef, useState } from 'react';
-import { toast } from 'sonner';
 
 const Item = ({ session }: { session: Session }) => {
     const { currentSessionId, setCurrentSessionId, updateSessionName, removeSession, ipInfo } =

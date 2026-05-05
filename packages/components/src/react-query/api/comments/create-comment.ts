@@ -1,8 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
-import { useAxiosInstance } from "@genuin/components/context/axios";
-import { parseComments } from "./parser";
-import { API_PATHS } from "../../paths";
 import type { AxiosInstance } from "axios";
+
+import { useAxiosInstance } from "@genuin/components/context/axios";
+
+import { API_PATHS } from "../../paths";
+
+import { parseComments } from "./parser";
 
 type PostCommentProps = {
   videoId: string;
@@ -12,16 +15,8 @@ type PostCommentProps = {
 };
 
 type PostCommentMutationCallbacks = {
-  onSuccess?: (
-    data: Awaited<ReturnType<typeof postComment>>,
-    variables: PostCommentProps,
-    context: unknown
-  ) => void;
-  onError?: (
-    error: Error,
-    variables: PostCommentProps,
-    context: unknown
-  ) => void;
+  onSuccess?: (data: Awaited<ReturnType<typeof postComment>>, variables: PostCommentProps, context: unknown) => void;
+  onError?: (error: Error, variables: PostCommentProps, context: unknown) => void;
 };
 
 /**
@@ -33,12 +28,10 @@ type PostCommentMutationCallbacks = {
  * @param commentData - Additional comment data.
  * @returns The response code and comment data.
  */
-async function postComment({
-  videoId,
-  loopId,
-  commentText,
-  commentData,
-}: PostCommentProps, axiosInstance: AxiosInstance) {
+async function postComment(
+  { videoId, loopId, commentText, commentData }: PostCommentProps,
+  axiosInstance: AxiosInstance
+) {
   try {
     const res = await axiosInstance.post(API_PATHS.FEED_CREATE_COMMENT, {
       conversation_id: videoId,
@@ -62,10 +55,7 @@ async function postComment({
  * React Query mutation hook for posting a comment.
  * @param callbacks - Optional onSuccess and onError callbacks.
  */
-export function useCreateCommentMutation({
-  onSuccess,
-  onError,
-}: PostCommentMutationCallbacks) {
+export function useCreateCommentMutation({ onSuccess, onError }: PostCommentMutationCallbacks) {
   const axiosInstance = useAxiosInstance();
 
   return useMutation({

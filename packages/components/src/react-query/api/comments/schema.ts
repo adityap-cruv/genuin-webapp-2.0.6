@@ -7,11 +7,11 @@ const ownerSchema = z.object({
   bio: z.string().nullish(),
   isAvatar: z.boolean(),
   profileImage: z.string(),
-    brand: z
+  brand: z
     .object({
       brand_id: z.number(),
       brand_slug: z.string(),
-      brand_user_logo: z.number()
+      brand_user_logo: z.number(),
     })
     .optional(),
 });
@@ -97,8 +97,8 @@ export const CommentMentionSchema = z.object({
   match_score: z.number(),
 });
 
-const CommentListSchema = z.array(CommentSchema);
+const _CommentListSchema = z.array(CommentSchema);
 
 // data in which format we want
-export type CommentListType = z.infer<typeof CommentListSchema>;
+export type CommentListType = z.infer<typeof _CommentListSchema>;
 export type CommentMention = z.infer<typeof CommentMentionSchema>;

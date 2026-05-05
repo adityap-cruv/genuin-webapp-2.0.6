@@ -1,5 +1,6 @@
 import Close from '@/assets/SvgIcons/Close';
 import type { UploadedFile } from '@/types';
+
 import AttachmentCard from '../Attachments/AttachmentCard';
 import { Button } from '../ui/button';
 

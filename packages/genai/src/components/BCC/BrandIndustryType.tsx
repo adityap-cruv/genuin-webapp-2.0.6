@@ -1,5 +1,6 @@
-import type { BrandIndustryTypeData } from '@/types';
 import React from 'react';
+
+import type { BrandIndustryTypeData } from '@/types';
 
 interface BrandIndustryTypeProps {
     jsonData?: BrandIndustryTypeData;
@@ -67,6 +68,7 @@ const BrandIndustryType: React.FC<BrandIndustryTypeProps> = ({ jsonData }) => {
     // };
 
     // Helper function to safely get string value
+     
     const getStringValue = (value: any): string | undefined => {
         if (typeof value === 'string') {
             return value;

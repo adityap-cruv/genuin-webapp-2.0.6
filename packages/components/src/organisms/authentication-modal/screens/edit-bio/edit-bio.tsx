@@ -1,24 +1,18 @@
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-  Form,
-  FormLabel,
-} from "@genuin/ui/components/form";
-import { ComponentProps } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { cn } from "@genuin/ui/lib/utils";
-import { sanitizeInput } from "@genuin/ui/lib/sanitize";
-import { useAuthContext } from "@genuin/components/context/auth";
-
-import { SubmitButton } from "../../submit-button";
-import { useAuthenticationModalContext } from "../../context";
+import { FormControl, FormField, FormItem, FormMessage, Form, FormLabel } from "@genuin/ui/components/form";
 import { Textarea } from "@genuin/ui/components/textarea";
 import { Toast } from "@genuin/ui/components/toaster";
+import { sanitizeInput } from "@genuin/ui/lib/sanitize";
+import { cn } from "@genuin/ui/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { ComponentProps } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+import { useAuthContext } from "@genuin/components/context/auth";
 import { useUpdateUserMutation } from "@genuin/components/react-query/api/authentication";
+
+import { useAuthenticationModalContext } from "../../context";
+import { SubmitButton } from "../../submit-button";
 
 const formSchema = z.object({
   bio: z.string().max(150, { message: "Max length should be 150." }).optional(),
@@ -34,23 +28,22 @@ export function EditBio({ className, ...restProps }: ComponentProps<"div">) {
     mode: "onChange",
   });
 
-  const { mutate: updateUserDetails, isPending: isPendingUpdateUser } =
-    useUpdateUserMutation({
-      onSuccess: ({ status }) => {
-        if (status) {
-          updateUser({ ...user, bio: sanitizeInput(form.getValues("bio")) });
-          Toast.Success({
-            message: "Your bio has been updated",
-          });
-        }
-        closeModal();
-      },
-      onError: () => {
-        form.setError("root", {
-          message: "Something went wrong while updating bio. Please try again!",
+  const { mutate: updateUserDetails, isPending: isPendingUpdateUser } = useUpdateUserMutation({
+    onSuccess: ({ status }) => {
+      if (status) {
+        updateUser({ ...user, bio: sanitizeInput(form.getValues("bio")) });
+        Toast.Success({
+          message: "Your bio has been updated",
         });
-      },
-    });
+      }
+      closeModal();
+    },
+    onError: () => {
+      form.setError("root", {
+        message: "Something went wrong while updating bio. Please try again!",
+      });
+    },
+  });
 
   const onSubmit = () => {
     const bioValue = sanitizeInput(form.getValues("bio"));
@@ -60,18 +53,13 @@ export function EditBio({ className, ...restProps }: ComponentProps<"div">) {
   return (
     <div className={cn("gencl:space-y-6", className)} {...restProps}>
       <div className="gencl:space-y-2">
-        <h3 className="gencl:text-center gencl:text-headline-2-semi-bold">
-          Edit Bio
-        </h3>
+        <h3 className="gencl:text-center gencl:text-headline-2-semi-bold">Edit Bio</h3>
         <p className="gencl:text-center gencl:text-body-1-medium gencl:text-secondary-600">
           This bio will show on your profile
         </p>
       </div>
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="gencl:space-y-6"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="gencl:space-y-6">
           <FormField
             control={form.control}
             name="bio"
@@ -80,23 +68,12 @@ export function EditBio({ className, ...restProps }: ComponentProps<"div">) {
 
               return (
                 <FormItem className="sm:w-full">
-                  <FormLabel
-                    htmlFor="bio-input"
-                    className="gencl:flex gencl:justify-between"
-                  >
+                  <FormLabel htmlFor="bio-input" className="gencl:flex gencl:justify-between">
                     <span className="gencl:text-secondary-900">Bio</span>
-                    <span className="gencl:text-secondary-500 gencl:text-body-2-medium">
-                      {currentLength}/150
-                    </span>
+                    <span className="gencl:text-secondary-500 gencl:text-body-2-medium">{currentLength}/150</span>
                   </FormLabel>
                   <FormControl>
-                    <Textarea
-                      id="bio-input"
-                      rows={4}
-                      maxLength={150}
-                      autoComplete="off"
-                      {...field}
-                    />
+                    <Textarea id="bio-input" rows={4} maxLength={150} autoComplete="off" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

@@ -1,31 +1,17 @@
-import React, {
-  useRef,
-  useEffect,
-  useImperativeHandle,
-  forwardRef,
-  useMemo,
-} from "react";
 import { cn } from "@genuin/ui/lib/utils";
+import React, { useRef, useEffect, useImperativeHandle, forwardRef, useMemo } from "react";
+
 import { NativeFeedScrollController } from "./native-feed-scroll-controller";
-import type {
-  NativeFeedScrollProps,
-  NativeFeedScrollInstance,
-} from "./native-feed-scroll.types";
+import type { NativeFeedScrollProps, NativeFeedScrollInstance } from "./native-feed-scroll.types";
 
 // Re-export types for convenience
-export type {
-  NativeFeedScrollProps,
-  NativeFeedScrollInstance,
-} from "./native-feed-scroll.types";
+export type { NativeFeedScrollProps, NativeFeedScrollInstance } from "./native-feed-scroll.types";
 
 /**
  * NativeFeedScroll component
  * Thin React wrapper that manages the NativeFeedScrollController lifecycle
  */
-const NativeFeedScroll = forwardRef<
-  NativeFeedScrollInstance,
-  NativeFeedScrollProps
->(
+const NativeFeedScroll = forwardRef<NativeFeedScrollInstance, NativeFeedScrollProps>(
   (
     {
       children,
@@ -241,15 +227,13 @@ const NativeFeedScroll = forwardRef<
         role="region"
         aria-roledescription="carousel"
         aria-label={ariaLabel}
-        tabIndex={0}
-      >
+        tabIndex={0}>
         {/* Flex container for vertical slide layout */}
         <div
           className="gencl:flex gencl:flex-col"
           style={{
             gap: spaceBetween,
-          }}
-        >
+          }}>
           {/* Render each child as a slide with calculated height */}
           {React.Children.map(children, (child, index) => {
             if (!React.isValidElement(child)) return child;
@@ -261,14 +245,8 @@ const NativeFeedScroll = forwardRef<
               <div
                 key={child.key || index}
                 style={{
-                  height:
-                    index === customHeightFor?.index
-                      ? customHeightFor.height
-                      : slideHeight,
-                  minHeight:
-                    index === customHeightFor?.index
-                      ? customHeightFor.height
-                      : slideHeight,
+                  height: index === customHeightFor?.index ? customHeightFor.height : slideHeight,
+                  minHeight: index === customHeightFor?.index ? customHeightFor.height : slideHeight,
                   flexShrink: 0, // Prevent slides from shrinking
                 }}
                 // Note: role, aria-roledescription, aria-label, and tabindex

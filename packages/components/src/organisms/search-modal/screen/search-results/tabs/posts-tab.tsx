@@ -1,9 +1,12 @@
-import { ComponentProps, useMemo } from "react";
 import { cn } from "@genuin/ui/lib/utils";
-import type { VideoTopResultType } from "@genuin/components/react-query/api/search";
-import { PostsGrid } from "@genuin/components/organisms/posts-grid";
+import type { ComponentProps } from "react";
+import { useMemo } from "react";
+
 import type { PostTileDataType } from "@genuin/components/molecules/post-tile";
 import { ComponentErrorState } from "@genuin/components/organisms/error-state-component";
+import { PostsGrid } from "@genuin/components/organisms/posts-grid";
+import type { VideoTopResultType } from "@genuin/components/react-query/api/search";
+
 import { urlGenerators } from "../../../shared";
 
 type PostsTabProps = {

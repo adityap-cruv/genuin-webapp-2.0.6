@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useAgentsContext } from '@/context/app/context';
+
 import { useOctoAnalytics } from '@/context/analytics';
+import { useAgentsContext } from '@/context/app/context';
 
 type KoahAdWidgetProps = {
     userMessage: string | null;

@@ -1,5 +1,5 @@
-import { LoopVideoType } from "./schema";
-import { LoopVideo } from "./type";
+import type { LoopVideoType } from "./schema";
+import type { LoopVideo } from "./type";
 
 export function parseVideo(data: LoopVideo): LoopVideoType {
   const { owner } = data;

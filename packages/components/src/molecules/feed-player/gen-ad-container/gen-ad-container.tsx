@@ -1,27 +1,26 @@
 "use client";
-import { useEffect, useRef } from "react";
 import { cn } from "@genuin/ui/lib/utils";
+import { useEffect, useRef } from "react";
+
 import { useAnalytics } from "../../../context/analytics/context";
-import type { GenAdConfig, GenAdContainerProps } from "./gen-ad.types";
 import { ensureStylesInShadowRoot } from "../../root-portal/shadow-root/shadow-dom.utils";
+
+import type { GenAdConfig, GenAdContainerProps } from "./gen-ad.types";
 
 function getAdSource(config: GenAdConfig, provider?: string): string {
   const map: Record<string, string | undefined> = {
-    video: config.video?.platform,
-    display: config.banner?.platform,
-    native: config.native?.platform,
+    video: Array.isArray(config.video) ? config.video[0]?.platform : config.video?.platform,
+    display: Array.isArray(config.banner) ? config.banner[0]?.platform : config.banner?.platform,
+    native: Array.isArray(config.native) ? config.native[0]?.platform : config.native?.platform,
   };
-  return provider
-    ? (map[provider] ?? "")
-    : (map.video ?? map.display ?? map.native ?? "");
+  return provider ? (map[provider] ?? "") : (map.video ?? map.display ?? map.native ?? "");
 }
 
-const GEN_AD_SCRIPT_URL =
-  "https://media.begenuin.com/ad-sdk/in-feed/gen_ad.min.js";
+const GEN_AD_SCRIPT_URL = "https://media.begenuin.com/ad-sdk/in-feed-multi/gen_ad.min.js";
 
 // const GEN_AD_SCRIPT_URL = "http://localhost:4000/dist/gen_ad.min.js";
 
-function loadGenAdScript(): void {
+export function loadGenAdScript(): void {
   const existing = document.querySelector(`script[src="${GEN_AD_SCRIPT_URL}"]`);
   if (existing) return; // already loading or loaded
 
@@ -86,6 +85,9 @@ export function GenAdContainer({
   const onSystemMuteChangeRef = useRef(onSystemMuteChange);
   onSystemMuteChangeRef.current = onSystemMuteChange;
 
+  const configRef = useRef(config);
+  configRef.current = config;
+
   useEffect(() => {
     if (!isActive) return;
 
@@ -103,11 +105,7 @@ export function GenAdContainer({
       if ((window as any).GenAd && adContainerRef.current) {
         clearInterval(initInterval);
         try {
-          const {
-            adSlotId: _adSlotId,
-            waterfallOrder,
-            ...genAdInitConfig
-          } = config;
+          const { adSlotId: _adSlotId, waterfallOrder, ...genAdInitConfig } = configRef.current;
           const baseAdParams = {
             video_id: videoId,
             ad_type: "in_feed",
@@ -118,35 +116,29 @@ export function GenAdContainer({
             containerElement: adContainerRef.current,
             muted: muted,
             ...genAdInitConfig,
-            ...(!!waterfallOrder && waterfallOrder.length !== 0
-              ? { waterfallOrder }
-              : {}),
+            ...(!!waterfallOrder && waterfallOrder.length !== 0 ? { waterfallOrder } : {}),
             onStageStart: (provider: string) => {
               trackRef.current(EventName.AD_REQUESTED, {
                 ...baseAdParams,
                 provider,
-                ad_source: getAdSource(config, provider),
+                ad_source: getAdSource(configRef.current, provider),
               });
             },
             onStageSuccess: (provider: string) => {
               trackRef.current(EventName.AD_RESPONSE_RECEIVED, {
                 ...baseAdParams,
                 provider,
-                ad_source: getAdSource(config, provider),
+                ad_source: getAdSource(configRef.current, provider),
               });
               onAdFilledRef.current?.(provider);
             },
             onStageFail: (provider: string, error: Error) => {
               const msg = error?.message ?? "";
-              const adSource = getAdSource(config, provider);
+              const adSource = getAdSource(configRef.current, provider);
               const params = { ...baseAdParams, provider, ad_source: adSource };
               if (msg.includes("303")) {
                 trackRef.current(EventName.AD_REQUEST_FAILED, params);
-              } else if (
-                msg.includes("401") ||
-                msg.includes("403") ||
-                msg.includes("404")
-              ) {
+              } else if (msg.includes("401") || msg.includes("403") || msg.includes("404")) {
                 trackRef.current(EventName.AD_RENDER_FAILED, params);
               } else {
                 trackRef.current(EventName.AD_ERROR, params);
@@ -156,20 +148,19 @@ export function GenAdContainer({
 
             // },
             onWaterfallFail: () => {
-              console.log("waterfall failed");
               onAdFillFailedRef.current?.();
             },
             onAdCompleted: (provider: string) => {
               trackRef.current(EventName.AD_COMPLETED, {
                 ...baseAdParams,
                 provider,
-                ad_source: getAdSource(config, provider),
+                ad_source: getAdSource(configRef.current, provider),
               });
               onAdCompletedRef.current?.();
               moveToNextVideoRef.current?.();
             },
-            onVolumeChange: (data: { isMuted: boolean; volume: number; reason?: 'system' | 'user' }) => {
-              if (data.reason === 'system') {
+            onVolumeChange: (data: { isMuted: boolean; volume: number; reason?: "system" | "user" }) => {
+              if (data.reason === "system") {
                 onSystemMuteChangeRef.current?.(data.isMuted);
               }
             },
@@ -179,21 +170,21 @@ export function GenAdContainer({
                 trackRef.current(EventName.AD_RENDERED, {
                   ...baseAdParams,
                   provider: event?.provider,
-                  ad_source: getAdSource(config, event?.provider),
+                  ad_source: getAdSource(configRef.current, event?.provider),
                 });
               },
               onAdImpression: (event: any) => {
                 trackRef.current(EventName.AD_IMPRESSION, {
                   ...baseAdParams,
                   provider: event?.provider,
-                  ad_source: getAdSource(config, event?.provider),
+                  ad_source: getAdSource(configRef.current, event?.provider),
                 });
               },
               onAdStarted: (event: any) => {
                 trackRef.current(EventName.AD_STARTED, {
                   ...baseAdParams,
                   provider: event?.provider,
-                  ad_source: getAdSource(config, event?.provider),
+                  ad_source: getAdSource(configRef.current, event?.provider),
                 });
               },
               onAdQuartile: (event: any) => {
@@ -201,7 +192,7 @@ export function GenAdContainer({
                   ...baseAdParams,
                   provider: event?.provider,
                   quartile: event?.quartile,
-                  ad_source: getAdSource(config, event?.provider),
+                  ad_source: getAdSource(configRef.current, event?.provider),
                 });
               },
               onAdSkipped: (event: any) => {
@@ -210,26 +201,31 @@ export function GenAdContainer({
                 trackRef.current(EventName.AD_SKIPPED, {
                   ...baseAdParams,
                   provider: event?.provider,
-                  ad_source: getAdSource(config, event?.provider),
+                  ad_source: getAdSource(configRef.current, event?.provider),
                 });
               },
               onAdClicked: (event: any) => {
                 trackRef.current(EventName.AD_CLICKED, {
                   ...baseAdParams,
                   provider: event?.provider,
-                  ad_source: getAdSource(config, event?.provider),
+                  ad_source: getAdSource(configRef.current, event?.provider),
                 });
               },
             },
           });
-        } catch (error) {}
+        } catch (error) {
+          console.warn("[GenAd] failed to initialise ad:", error);
+        }
       }
     };
 
     if ((window as any).GenAd && adContainerRef.current) {
       initAd();
     } else {
-      loadGenAdScript();
+      const scriptAlreadyInjected = !!document.querySelector(`script[src="${GEN_AD_SCRIPT_URL}"]`);
+      if (!scriptAlreadyInjected) {
+        loadGenAdScript();
+      }
       initInterval = setInterval(initAd, 100);
     }
 
@@ -240,7 +236,17 @@ export function GenAdContainer({
         instanceIdRef.current = null;
       }
     };
-  }, [isActive, config]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- videoId/videoType/muted captured at init time; muted changes handled by separate effect; EventName is stable
+  }, [isActive]);
+
+  useEffect(() => {
+    if (!isActive) return;
+
+    const instanceId = instanceIdRef.current;
+    if (!instanceId || !(window as any).GenAd?.mute) return;
+
+    (window as any).GenAd.mute(instanceId, muted);
+  }, [isActive, muted]);
 
   useEffect(() => {
     if (!isActive) return;
@@ -257,7 +263,7 @@ export function GenAdContainer({
       id={config.adSlotId}
       className={cn(
         "gencl:absolute gencl:z-20 gencl:text-white gencl:h-full gencl:w-full gencl:flex gencl:items-center gencl:justify-center",
-        !isVisible && "gencl:hidden",
+        !isVisible && "gencl:hidden"
       )}
     />
   );

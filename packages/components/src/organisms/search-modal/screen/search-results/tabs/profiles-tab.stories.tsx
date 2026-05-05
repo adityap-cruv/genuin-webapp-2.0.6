@@ -1,6 +1,9 @@
+import { Dialog } from "@genuin/ui/components/dialog";
 import type { Meta, StoryObj } from "@storybook/react";
+
+import type { PeopleTopResultType } from "@genuin/components/react-query/api/search";
+
 import { ProfilesTab } from "./profiles-tab";
-import { PeopleTopResultType } from "@genuin/components/react-query/api/search";
 
 // Mock profiles data
 const mockProfiles: PeopleTopResultType[] = [
@@ -9,8 +12,7 @@ const mockProfiles: PeopleTopResultType[] = [
     nickname: "johndoe",
     name: "John Doe",
     bio: "Software Engineer passionate about React and TypeScript. Building amazing user experiences.",
-    profile_image:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=faces",
+    profile_image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=faces",
     is_avatar: false,
     no_of_communities: 5,
     no_of_loops: 12,
@@ -26,8 +28,7 @@ const mockProfiles: PeopleTopResultType[] = [
     nickname: "janesmith",
     name: "Jane Smith",
     bio: "UX Designer and Product Manager. Love creating beautiful and functional designs.",
-    profile_image:
-      "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=faces",
+    profile_image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=faces",
     is_avatar: false,
     no_of_communities: 8,
     no_of_loops: 15,
@@ -44,8 +45,7 @@ const mockProfiles: PeopleTopResultType[] = [
     nickname: "alexchen",
     name: "Alex Chen",
     bio: "Entrepreneur and startup founder. Building the future of technology.",
-    profile_image:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces",
+    profile_image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces",
     is_avatar: false,
     no_of_communities: 3,
     no_of_loops: 7,
@@ -76,9 +76,12 @@ const meta: Meta<typeof ProfilesTab> = {
   },
   decorators: [
     (Story) => (
-      <div className="gencl:w-[500px] gencl:max-w-[500px] gencl:h-[400px] gencl:border gencl:border-gray-200 gencl:rounded-lg gencl:p-4 gencl:bg-white gencl:overflow-auto">
-        <Story />
-      </div>
+      // Dialog context is required because ProfilesTab renders DialogClose around each item
+      <Dialog type="storybook-profiles-tab" open>
+        <div className="gencl:w-[500px] gencl:max-w-[500px] gencl:h-[400px] gencl:border gencl:border-gray-200 gencl:rounded-lg gencl:p-4 gencl:bg-white gencl:overflow-auto">
+          <Story />
+        </div>
+      </Dialog>
     ),
   ],
   tags: ["autodocs"],

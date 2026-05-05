@@ -1,8 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
+import type { AxiosInstance } from "axios";
+
 import { useAxiosInstance } from "@genuin/components/context/axios";
 import { getQueryKeyForTrendingGroups } from "@genuin/components/react-query/keys/group";
 import { API_PATHS } from "@genuin/components/react-query/paths";
-import type { AxiosInstance } from "axios";
 
 async function fetchTrendingGroups(axiosInstance: AxiosInstance) {
   return await axiosInstance
@@ -17,10 +18,12 @@ async function fetchTrendingGroups(axiosInstance: AxiosInstance) {
 }
 
 export function getTrendingGroups() {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const axiosInstance = useAxiosInstance();
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   return useQuery({
     queryKey: getQueryKeyForTrendingGroups(),
-    queryFn: (context) => fetchTrendingGroups(axiosInstance),
+    queryFn: (_context) => fetchTrendingGroups(axiosInstance),
   });
 }

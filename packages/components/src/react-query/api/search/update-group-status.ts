@@ -1,13 +1,15 @@
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import type { GroupUserStatusType } from "@genuin/components/types/roles";
+
 import { queryClient } from "../../client";
-import { getQueryKeyForTopResults } from "../../keys/search";
-import { TopResultsResponseType } from "./types";
-import { GroupUserStatusType } from "@genuin/components/types/roles";
 import { getQueryKeyForFeed } from "../../keys/feed";
+import { getQueryKeyForLoopDetails } from "../../keys/group";
+import { getQueryKeyForTopResults } from "../../keys/search";
+import { setQueryDataForJoinGroupStatusInCommunityGroups } from "../community/groups";
 import { setQueryDataForJoinGroupStatusInFeed } from "../feed/feed";
 import { setQueryDataForGroupJoinStatusInProfileGroups } from "../profile/posts/posts";
-import { setQueryDataForJoinGroupStatusInCommunityGroups } from "../community/groups";
-import { getQueryKeyForLoopDetails } from "../../keys/group";
-import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+
+import type { TopResultsResponseType } from "./types";
 
 /**
  * Updates the group join status in the search results and other relevant pages.
@@ -69,20 +71,14 @@ export function updateGroupJoinStatusInSearchResults({
 /**
  * Updates the group join status in search results
  */
-function updateSearchResults(
-  query: string,
-  groupId: string,
-  newRole: GroupUserStatusType
-) {
+function updateSearchResults(query: string, groupId: string, newRole: GroupUserStatusType) {
   // Get the query key for the top results
   const queryKey = getQueryKeyForTopResults(query);
 
   // Update the data in the query cache
   queryClient.setQueryData(
     queryKey,
-    (
-      oldData: TopResultsResponseType | undefined
-    ): TopResultsResponseType | undefined => {
+    (oldData: TopResultsResponseType | undefined): TopResultsResponseType | undefined => {
       if (!oldData) return oldData;
 
       // Create a deep copy of the data
@@ -125,11 +121,7 @@ function updateSearchResults(
 /**
  * Updates the feed data for home, recent, or latest pages
  */
-function updateFeedPageData(
-  pathname: string,
-  groupId: string,
-  newRole: GroupUserStatusType
-) {
+function updateFeedPageData(pathname: string, groupId: string, newRole: GroupUserStatusType) {
   // Extract the feed type from the pathname
   // Remove the leading slash and convert to uppercase for FeedType
   const feedType = pathname.substring(1).toUpperCase();
@@ -183,15 +175,7 @@ function updateProfileGroupsData(
  * @param groupId The group ID
  * @param newRole The new role of the user in the group
  */
-function updateCommunityGroupsData(
-  communitySlug: string,
-  groupId: string,
-  newRole: GroupUserStatusType
-) {
+function updateCommunityGroupsData(communitySlug: string, groupId: string, newRole: GroupUserStatusType) {
   // Update the community groups data with the new group status
-  setQueryDataForJoinGroupStatusInCommunityGroups(
-    groupId,
-    communitySlug,
-    newRole
-  );
+  setQueryDataForJoinGroupStatusInCommunityGroups(groupId, communitySlug, newRole);
 }

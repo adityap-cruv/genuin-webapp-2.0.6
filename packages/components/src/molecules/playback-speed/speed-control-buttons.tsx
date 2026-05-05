@@ -1,8 +1,9 @@
 "use client";
 import { Button } from "@genuin/ui/button";
+import { cn } from "@genuin/ui/lib/utils";
 import { Slider } from "@genuin/ui/slider";
 import { useCallback } from "react";
-import { cn } from "@genuin/ui/lib/utils";
+
 import { useBaseContext } from "@genuin/components/context";
 
 const PLAYBACK_SPEEDS = [0.25, 1.0, 1.25, 1.5, 2.0];
@@ -35,8 +36,7 @@ export default function PlaybackSpeedControlSlider() {
           theme="secondary"
           onClick={decreaseSpeed}
           disabled={playbackSpeed.speed === PLAYBACK_SPEEDS[0]}
-          className="gencl:h-10 gencl:w-10 gencl:rounded-full"
-        >
+          className="gencl:h-10 gencl:w-10 gencl:rounded-full">
           <span className="gencl:text-black">−</span>
         </Button>
 
@@ -44,10 +44,7 @@ export default function PlaybackSpeedControlSlider() {
           value={[playbackSpeed.speed]}
           onValueChange={(val) => {
             const closestSpeed = PLAYBACK_SPEEDS.reduce((prev, curr) => {
-              return Math.abs(curr - (val[0] ?? 1)) <
-                Math.abs(prev - (val[0] ?? 1))
-                ? curr
-                : prev;
+              return Math.abs(curr - (val[0] ?? 1)) < Math.abs(prev - (val[0] ?? 1)) ? curr : prev;
             });
             setPlaybackSpeed({
               speed: closestSpeed,
@@ -62,11 +59,8 @@ export default function PlaybackSpeedControlSlider() {
         <Button
           theme="secondary"
           onClick={increaseSpeed}
-          disabled={
-            playbackSpeed.speed === PLAYBACK_SPEEDS[PLAYBACK_SPEEDS.length - 1]
-          }
-          className="gencl:h-10 gencl:w-10 gencl:rounded-full"
-        >
+          disabled={playbackSpeed.speed === PLAYBACK_SPEEDS[PLAYBACK_SPEEDS.length - 1]}
+          className="gencl:h-10 gencl:w-10 gencl:rounded-full">
           <span className="gencl:text-black">+</span>
         </Button>
       </div>
@@ -84,8 +78,7 @@ export default function PlaybackSpeedControlSlider() {
               playbackSpeed.speed === speed
                 ? "gencl:bg-primary gencl:text-white! gencl:hover:bg-primary gencl:hover:text-white!"
                 : ""
-            )}
-          >
+            )}>
             {speed}
           </Button>
         ))}

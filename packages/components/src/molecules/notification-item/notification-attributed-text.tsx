@@ -1,26 +1,23 @@
 "use client";
 
+import { getPastTense, getTimeAgo } from "@genuin/ui/lib/utils";
+
 import { useAuthContext } from "@genuin/components/context/auth";
 import { useBaseContext } from "@genuin/components/context/base";
-import { getPastTense, getTimeAgo } from "@genuin/ui/lib/utils";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
-import { Link } from "../link";
-import { NotificationDataType } from "./notification-item.types";
 
-export function GetNotificationAttributedText({
-  notification,
-}: {
-  notification: NotificationDataType;
-}) {
+import { Link } from "../link";
+
+import type { NotificationDataType } from "./notification-item.types";
+
+export function GetNotificationAttributedText({ notification }: { notification: NotificationDataType }) {
   const { brandDetails } = useBaseContext();
   const { user } = useAuthContext();
 
   const reactionSuffix = brandDetails.reactions.suffix;
   const reactionTitle = brandDetails.reactions.title;
   const agoTimeString = (
-    <span className="gencl:text-body-1-medium gencl:text-secondary-400">
-      {getTimeAgo(notification?.created_at)}
-    </span>
+    <span className="gencl:text-body-1-medium gencl:text-secondary-400">{getTimeAgo(notification?.created_at)}</span>
   );
 
   switch (notification.type) {
@@ -29,16 +26,9 @@ export function GetNotificationAttributedText({
         <div>
           {ProfileTag(notification)}
           <Text> deleted the group </Text>
-          {GroupTag(
-            notification?.conversation?.group?.slug,
-            notification?.conversation?.group?.group_name
-          )}
+          {GroupTag(notification?.conversation?.group?.slug, notification?.conversation?.group?.group_name)}
           <Text> of </Text>
-          {CommunityTag(
-            notification?.community?.slug,
-            notification?.community?.name
-          )}
-          . {agoTimeString}
+          {CommunityTag(notification?.community?.slug, notification?.community?.name)}. {agoTimeString}
         </div>
       );
     case "rt_comment":
@@ -46,11 +36,8 @@ export function GetNotificationAttributedText({
         <div>
           {ProfileTag(notification)}
           <Text> commented on your post in </Text>
-          {GroupTag(
-            notification?.conversation?.group?.slug,
-            notification?.conversation?.group?.group_name
-          )}
-          . {agoTimeString}
+          {GroupTag(notification?.conversation?.group?.slug, notification?.conversation?.group?.group_name)}.{" "}
+          {agoTimeString}
         </div>
       );
     case "rt_comment_to_other_users":
@@ -58,11 +45,8 @@ export function GetNotificationAttributedText({
         <div>
           {ProfileTag(notification)}
           <Text> also commented on a post in </Text>
-          {GroupTag(
-            notification?.conversation?.group?.slug,
-            notification?.conversation?.group?.group_name
-          )}
-          . {agoTimeString}
+          {GroupTag(notification?.conversation?.group?.slug, notification?.conversation?.group?.group_name)}.{" "}
+          {agoTimeString}
         </div>
       );
     case "delete_video_rt_by_owner":
@@ -70,11 +54,8 @@ export function GetNotificationAttributedText({
         <div>
           {ProfileTag(notification)}
           <Text> removed your post from </Text>
-          {GroupTag(
-            notification?.conversation?.group?.slug,
-            notification?.conversation?.group?.group_name
-          )}
-          . {agoTimeString}
+          {GroupTag(notification?.conversation?.group?.slug, notification?.conversation?.group?.group_name)}.{" "}
+          {agoTimeString}
         </div>
       );
     case "reply_rt":
@@ -82,11 +63,8 @@ export function GetNotificationAttributedText({
         <div>
           {ProfileTag(notification)}
           <Text> posted to </Text>
-          {GroupTag(
-            notification?.conversation?.group?.slug,
-            notification?.conversation?.group?.group_name
-          )}
-          .<Text> See it now. </Text>
+          {GroupTag(notification?.conversation?.group?.slug, notification?.conversation?.group?.group_name)}.
+          <Text> See it now. </Text>
           {agoTimeString}
         </div>
       );
@@ -95,10 +73,7 @@ export function GetNotificationAttributedText({
         <div>
           {ProfileTag(notification)}
           <Text> requested to join as a member in </Text>
-          {GroupTag(
-            notification?.conversation?.group?.slug,
-            notification?.conversation?.group?.group_name
-          )}
+          {GroupTag(notification?.conversation?.group?.slug, notification?.conversation?.group?.group_name)}
           <Text> Review their request now. </Text>
           {agoTimeString}
         </div>
@@ -108,15 +83,9 @@ export function GetNotificationAttributedText({
         <div>
           {ProfileTag(notification)}
           <Text> added you as a member of </Text>
-          {GroupTag(
-            notification?.conversation?.group?.slug,
-            notification?.conversation?.group?.group_name
-          )}
+          {GroupTag(notification?.conversation?.group?.slug, notification?.conversation?.group?.group_name)}
           <Text> in </Text>
-          {CommunityTag(
-            notification?.community?.slug,
-            notification?.community?.name
-          )}
+          {CommunityTag(notification?.community?.slug, notification?.community?.name)}
           <Text> community. </Text>
           {agoTimeString}
         </div>
@@ -126,15 +95,8 @@ export function GetNotificationAttributedText({
         <div>
           {ProfileTag(notification)}
           <Text> removed you as a member of </Text>
-          {GroupTag(
-            notification?.conversation?.group?.slug,
-            notification?.conversation?.group?.group_name
-          )}
-          .{" "}
-          <Text>
-            If you believe this was a mistake, contact the Group's member.
-          </Text>{" "}
-          {agoTimeString}
+          {GroupTag(notification?.conversation?.group?.slug, notification?.conversation?.group?.group_name)}.{" "}
+          <Text>If you believe this was a mistake, contact the Group&apos;s member.</Text> {agoTimeString}
         </div>
       );
     case "reposted_rt_to_rt":
@@ -147,10 +109,7 @@ export function GetNotificationAttributedText({
             notification?.reposted_conversation?.group?.group_name
           )}
           <Text> to </Text>
-          {GroupTag(
-            notification?.conversation?.group?.slug,
-            notification?.conversation?.group?.group_name
-          )}
+          {GroupTag(notification?.conversation?.group?.slug, notification?.conversation?.group?.group_name)}
           <Text>. Check it now.</Text> {agoTimeString}
         </div>
       );
@@ -158,10 +117,7 @@ export function GetNotificationAttributedText({
       return (
         <div>
           <Text> You successfully created the group </Text>
-          {GroupTag(
-            notification?.conversation?.group?.slug,
-            notification?.conversation?.group?.group_name
-          )}
+          {GroupTag(notification?.conversation?.group?.slug, notification?.conversation?.group?.group_name)}
           <Text> Invite people to join!</Text> {agoTimeString}
         </div>
       );
@@ -169,10 +125,7 @@ export function GetNotificationAttributedText({
       return (
         <div>
           <Text>Welcome to </Text>
-          {CommunityTag(
-            notification?.community?.slug,
-            notification?.community?.name
-          )}
+          {CommunityTag(notification?.community?.slug, notification?.community?.name)}
           <Text> community, </Text>
           {ProfileTag({ user: { nickname: user?.nickname ?? "" } })}
           <Text>! </Text>
@@ -184,11 +137,7 @@ export function GetNotificationAttributedText({
         <div>
           {ProfileTag(notification)}
           <Text> requested to join </Text>
-          {CommunityTag(
-            notification?.community?.slug,
-            notification?.community?.name
-          )}
-          . {agoTimeString}
+          {CommunityTag(notification?.community?.slug, notification?.community?.name)}. {agoTimeString}
         </div>
       );
     case "community_member_invited":
@@ -196,11 +145,7 @@ export function GetNotificationAttributedText({
         <div>
           {ProfileTag(notification)}
           <Text> added you in </Text>
-          {CommunityTag(
-            notification?.community?.slug,
-            notification?.community?.name
-          )}
-          . {agoTimeString}
+          {CommunityTag(notification?.community?.slug, notification?.community?.name)}. {agoTimeString}
         </div>
       );
     case "community_moderator_removed":
@@ -208,10 +153,7 @@ export function GetNotificationAttributedText({
         <div>
           {ProfileTag(notification)}
           <Text> removed you as admin from </Text>
-          {CommunityTag(
-            notification?.community?.slug,
-            notification?.community?.name
-          )}
+          {CommunityTag(notification?.community?.slug, notification?.community?.name)}
           <Text>. You can still post and interact with the community. </Text>
           {agoTimeString}
         </div>
@@ -220,10 +162,7 @@ export function GetNotificationAttributedText({
       return (
         <div>
           <Text>Update: </Text>
-          {CommunityTag(
-            notification?.community?.slug,
-            notification?.community?.name
-          )}
+          {CommunityTag(notification?.community?.slug, notification?.community?.name)}
           <Text> is now private.</Text> {agoTimeString}
         </div>
       );
@@ -231,10 +170,7 @@ export function GetNotificationAttributedText({
       return (
         <div>
           <Text>Update: </Text>
-          {CommunityTag(
-            notification?.community?.slug,
-            notification?.community?.name
-          )}
+          {CommunityTag(notification?.community?.slug, notification?.community?.name)}
           <Text> is now public.</Text> {agoTimeString}
         </div>
       );
@@ -242,27 +178,20 @@ export function GetNotificationAttributedText({
       return (
         <div>
           <Text>Important Update: </Text>
-          {CommunityTag(
-            notification?.community?.slug,
-            notification?.community?.name
-          )}
+          {CommunityTag(notification?.community?.slug, notification?.community?.name)}
           <Text> community has been deleted.</Text> {agoTimeString}
         </div>
       );
     case "comment_with_user_mentioned":
       return (
         <div>
-          <span className="gencl:text-body-1-semi-bold">
-            @{notification?.user?.nickname}
-          </span>
+          <span className="gencl:text-body-1-semi-bold">@{notification?.user?.nickname}</span>
           <Text> tagged you in a comment on </Text>
           {user?.id === notification?.conversation?.owner?.member_id ? (
             <Text>your post.</Text>
           ) : (
             <>
-              <span className="gencl:text-body-1-semi-bold">
-                @{notification?.conversation?.owner?.username}'s
-              </span>
+              <span className="gencl:text-body-1-semi-bold">@{notification?.conversation?.owner?.username}&apos;s</span>
               <Text> post. </Text>
             </>
           )}
@@ -272,22 +201,15 @@ export function GetNotificationAttributedText({
     case "comment_with_community_mentioned":
       return (
         <div>
-          <span className="gencl:text-body-1-semi-bold">
-            @{notification?.user?.nickname}
-          </span>
+          <span className="gencl:text-body-1-semi-bold">@{notification?.user?.nickname}</span>
           <Text> mentioned </Text>
-          {CommunityTag(
-            notification?.community?.slug,
-            notification?.community?.name
-          )}
+          {CommunityTag(notification?.community?.slug, notification?.community?.name)}
           <Text> in a comment on </Text>
           {user?.id === notification?.conversation?.owner?.member_id ? (
             <Text>your post.</Text>
           ) : (
             <>
-              <span className="gencl:text-body-1-semi-bold">
-                @{notification?.conversation?.owner?.username}'s
-              </span>
+              <span className="gencl:text-body-1-semi-bold">@{notification?.conversation?.owner?.username}&apos;s</span>
               <Text> post. </Text>
             </>
           )}
@@ -298,14 +220,9 @@ export function GetNotificationAttributedText({
       return (
         <div>
           {ProfileTag(notification)}
-          <Text>
-            {" " + getPastTense(reactionTitle) + " " + reactionSuffix}
-          </Text>
+          <Text>{" " + getPastTense(reactionTitle) + " " + reactionSuffix}</Text>
           <Text> your post in </Text>
-          {GroupTag(
-            notification?.conversation?.group?.slug,
-            notification?.conversation?.group?.group_name
-          )}
+          {GroupTag(notification?.conversation?.group?.slug, notification?.conversation?.group?.group_name)}
           <Text>. </Text>
           {agoTimeString}
         </div>
@@ -313,16 +230,10 @@ export function GetNotificationAttributedText({
     case "comment_sparked":
       return (
         <div>
-          {ProfileTag(notification)}{" "}
-          <Text>
-            {" " + getPastTense(reactionTitle) + " " + reactionSuffix}
-          </Text>
+          {ProfileTag(notification)} <Text>{" " + getPastTense(reactionTitle) + " " + reactionSuffix}</Text>
           <Text> your comment in </Text>
-          {GroupTag(
-            notification?.conversation?.group?.slug,
-            notification?.conversation?.group?.group_name
-          )}
-          . {agoTimeString}
+          {GroupTag(notification?.conversation?.group?.slug, notification?.conversation?.group?.group_name)}.{" "}
+          {agoTimeString}
         </div>
       );
     case "new_community_moderator_joined": {
@@ -331,53 +242,31 @@ export function GetNotificationAttributedText({
       if (moderatorsCount === 1) {
         moderatorsText = (
           <>
-            <span className="gencl:text-body-1-semi-bold">
-              @{notification?.moderators?.[0]?.nickname}
-            </span>
+            <span className="gencl:text-body-1-semi-bold">@{notification?.moderators?.[0]?.nickname}</span>
             <Text> joined as an admin of </Text>
-            {CommunityTag(
-              notification?.community?.slug,
-              notification?.community?.name
-            )}
+            {CommunityTag(notification?.community?.slug, notification?.community?.name)}
             <Text>.</Text>
           </>
         );
       } else if (moderatorsCount === 2) {
         moderatorsText = (
           <div>
-            <span className="gencl:text-body-1-semi-bold">
-              @{notification?.moderators?.[0]?.nickname}
-            </span>
+            <span className="gencl:text-body-1-semi-bold">@{notification?.moderators?.[0]?.nickname}</span>
             <Text> and </Text>
-            <span className="gencl:text-body-1-semi-bold">
-              @{notification?.moderators?.[1]?.nickname}
-            </span>
+            <span className="gencl:text-body-1-semi-bold">@{notification?.moderators?.[1]?.nickname}</span>
             <Text> joined as admin of </Text>
-            {CommunityTag(
-              notification?.community?.slug,
-              notification?.community?.name
-            )}
+            {CommunityTag(notification?.community?.slug, notification?.community?.name)}
             <Text>.</Text>
           </div>
         );
       } else if (moderatorsCount > 2) {
         moderatorsText = (
           <div>
-            <span className="gencl:text-body-1-semi-bold">
-              @{notification?.moderators?.[0]?.nickname}
-            </span>
+            <span className="gencl:text-body-1-semi-bold">@{notification?.moderators?.[0]?.nickname}</span>
             <Text>, </Text>
-            <span className="gencl:text-body-1-semi-bold">
-              @{notification?.moderators?.[1]?.nickname}
-            </span>
-            <Text>
-              and {moderatorsCount - 2} others joined as moderators of{" "}
-            </Text>
-            {CommunityTag(
-              notification?.community?.slug,
-              notification?.community?.name
-            )}
-            .
+            <span className="gencl:text-body-1-semi-bold">@{notification?.moderators?.[1]?.nickname}</span>
+            <Text>and {moderatorsCount - 2} others joined as moderators of </Text>
+            {CommunityTag(notification?.community?.slug, notification?.community?.name)}.
           </div>
         );
       }
@@ -403,8 +292,7 @@ export function GetNotificationAttributedText({
             href={buildPageUrl({
               type: "brand",
               slug: notification?.user?.brand?.brand_slug,
-            })}
-          >
+            })}>
             {notification?.brand?.name}
           </Link>
           <Text> added you as a creator. Create your community now. </Text>
@@ -416,15 +304,9 @@ export function GetNotificationAttributedText({
         <div>
           {ProfileTag(notification)}
           <Text> pinned your group </Text>
-          {GroupTag(
-            notification?.conversation?.group?.slug,
-            notification?.conversation?.group?.group_name
-          )}
+          {GroupTag(notification?.conversation?.group?.slug, notification?.conversation?.group?.group_name)}
           <Text> in </Text>
-          {CommunityTag(
-            notification?.community?.slug,
-            notification?.community?.name
-          )}
+          {CommunityTag(notification?.community?.slug, notification?.community?.name)}
           <Text> community. </Text>
           {agoTimeString}
         </div>
@@ -434,15 +316,9 @@ export function GetNotificationAttributedText({
         <div>
           {ProfileTag(notification)}
           <Text> pinned the group </Text>
-          {GroupTag(
-            notification?.conversation?.group?.slug,
-            notification?.conversation?.group?.group_name
-          )}
+          {GroupTag(notification?.conversation?.group?.slug, notification?.conversation?.group?.group_name)}
           <Text> to </Text>
-          {CommunityTag(
-            notification?.community?.slug,
-            notification?.community?.name
-          )}
+          {CommunityTag(notification?.community?.slug, notification?.community?.name)}
           <Text> community. </Text>
           {agoTimeString}
         </div>
@@ -452,15 +328,9 @@ export function GetNotificationAttributedText({
         <div>
           {ProfileTag(notification)}
           <Text> unpinned your group </Text>
-          {GroupTag(
-            notification?.conversation?.group?.slug,
-            notification?.conversation?.group?.group_name
-          )}
+          {GroupTag(notification?.conversation?.group?.slug, notification?.conversation?.group?.group_name)}
           <Text> from </Text>
-          {CommunityTag(
-            notification?.community?.slug,
-            notification?.community?.name
-          )}
+          {CommunityTag(notification?.community?.slug, notification?.community?.name)}
           <Text> community. </Text>
           {agoTimeString}
         </div>
@@ -470,15 +340,9 @@ export function GetNotificationAttributedText({
         <div>
           {ProfileTag(notification)}
           <Text> unpinned the group </Text>
-          {GroupTag(
-            notification?.conversation?.group?.slug,
-            notification?.conversation?.group?.group_name
-          )}
+          {GroupTag(notification?.conversation?.group?.slug, notification?.conversation?.group?.group_name)}
           <Text> from </Text>
-          {CommunityTag(
-            notification?.community?.slug,
-            notification?.community?.name
-          )}
+          {CommunityTag(notification?.community?.slug, notification?.community?.name)}
           <Text> community. </Text>
           {agoTimeString}
         </div>
@@ -488,10 +352,7 @@ export function GetNotificationAttributedText({
         <div>
           {ProfileTag(notification)}
           <Text> joined the </Text>
-          {CommunityTag(
-            notification?.community?.slug,
-            notification?.community?.name
-          )}
+          {CommunityTag(notification?.community?.slug, notification?.community?.name)}
           <Text> community as a member. </Text>
           {agoTimeString}
         </div>
@@ -501,15 +362,9 @@ export function GetNotificationAttributedText({
         <div>
           {ProfileTag(notification)}
           <Text> joined the </Text>
-          {GroupTag(
-            notification?.conversation?.group?.slug,
-            notification?.conversation?.group?.group_name
-          )}
+          {GroupTag(notification?.conversation?.group?.slug, notification?.conversation?.group?.group_name)}
           <Text> in </Text>
-          {CommunityTag(
-            notification?.community?.slug,
-            notification?.community?.name
-          )}
+          {CommunityTag(notification?.community?.slug, notification?.community?.name)}
           <Text> community as a member. </Text>
           {agoTimeString}
         </div>
@@ -519,10 +374,7 @@ export function GetNotificationAttributedText({
         <div>
           {ProfileTag(notification)}
           <Text> added you as an admin in </Text>
-          {CommunityTag(
-            notification?.community?.slug,
-            notification?.community?.name
-          )}
+          {CommunityTag(notification?.community?.slug, notification?.community?.name)}
           <Text>. Help us shape our community! </Text>
           {agoTimeString}
         </div>
@@ -541,11 +393,8 @@ function ProfileTag(notification: any) {
       className="gencl:text-body-1-semi-bold"
       href={buildPageUrl({
         type: isBrand ? "brand" : "profile",
-        slug: isBrand
-          ? notification?.user?.brand?.brand_slug
-          : notification?.user?.nickname,
-      })}
-    >
+        slug: isBrand ? notification?.user?.brand?.brand_slug : notification?.user?.nickname,
+      })}>
       @{notification?.user?.nickname}
     </Link>
   );
@@ -553,10 +402,7 @@ function ProfileTag(notification: any) {
 
 function CommunityTag(slug: string, name: string) {
   return (
-    <Link
-      href={buildPageUrl({ type: "community", slug })}
-      className="gencl:text-body-1-semi-bold"
-    >
+    <Link href={buildPageUrl({ type: "community", slug })} className="gencl:text-body-1-semi-bold">
       {name}
     </Link>
   );
@@ -564,10 +410,7 @@ function CommunityTag(slug: string, name: string) {
 
 function GroupTag(slug: string, name: string) {
   return (
-    <Link
-      href={buildPageUrl({ type: "group", slug })}
-      className="gencl:text-body-1-semi-bold"
-    >
+    <Link href={buildPageUrl({ type: "group", slug })} className="gencl:text-body-1-semi-bold">
       {name}
     </Link>
   );

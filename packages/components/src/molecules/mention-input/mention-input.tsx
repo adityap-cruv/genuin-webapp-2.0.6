@@ -1,29 +1,23 @@
 "use client";
-import { useCallback, useEffect, useRef, useState } from "react";
 import { Avatar } from "@genuin/ui/components/avatar";
 import { Button } from "@genuin/ui/components/button";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Form,
-  FormMessage,
-  FormField,
-  FormControl,
-} from "@genuin/ui/components/form";
+import { Command, CommandList, CommandItem } from "@genuin/ui/components/command";
+import { Form, FormMessage, FormField, FormControl } from "@genuin/ui/components/form";
 import { Loader } from "@genuin/ui/components/loader";
 import { cn } from "@genuin/ui/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-import { useCommentMentions } from "../../hooks/use-comment-mentions";
+import type { VideoTypes } from "@genuin/components/context/analytics";
+import { useAnalytics } from "@genuin/components/context/analytics";
+
 import { useCommentInputHandlers } from "../../hooks/use-comment-input-handlers";
+import { useCommentMentions } from "../../hooks/use-comment-mentions";
 import { useCommentTextareaHandlers } from "../../hooks/use-description-textarea-handlers";
+
 import HighlightedInput from "./highlighted-field";
-import {
-  Command,
-  CommandList,
-  CommandItem,
-} from "@genuin/ui/components/command";
-import { useAnalytics, VideoTypes } from "@genuin/components/context/analytics";
 
 // Types for props
 export type SelectedMention = {
@@ -44,7 +38,7 @@ export { commentFormSchema, type CommentFormValues };
 export interface MentionInputProps {
   videoId: string;
   loopId: string;
-  videoType: VideoTypes;
+  videoType?: VideoTypes;
   user?: {
     name?: string;
     isAvatar?: boolean;
@@ -99,53 +93,48 @@ export function MentionInput({
       }
       onCommentPosted?.(commentData);
     },
-    [track, EventName.VIDEO_COMMENTED, videoId, onCommentPosted],
+    [track, EventName.VIDEO_COMMENTED, videoId, onCommentPosted]
   );
 
-  const [selectedMentions, setSelectedMentions] = useState<SelectedMention[]>(
-    [],
-  );
+  const [selectedMentions, setSelectedMentions] = useState<SelectedMention[]>([]);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [commentValue, setCommentValue] = useState("");
   const { formState } = form;
   const isFormValid = formState.isValid && commentValue.trim().length > 0;
   const [description, setDescription] = useState(defaultValue ?? "");
 
-  const {
-    filteredMentions,
-    isMentioning,
-    handleUserSelect,
-    activeMentionIndex,
-    handleMentionKeyDown,
-  } = useCommentMentions({
-    videoId,
-    inputRef,
-    commentValue,
-    setSelectedMentions,
-    selectedMentions,
-    form,
-  });
+  const { filteredMentions, isMentioning, handleUserSelect, activeMentionIndex, handleMentionKeyDown } =
+    useCommentMentions({
+      videoId,
+      inputRef,
+      commentValue,
+      setSelectedMentions,
+      selectedMentions,
+      form,
+    });
 
   const handlePayloadTextArea = (payload: any) => {
     onPayload?.(payload);
   };
 
+  const textareaHandlers = useCommentTextareaHandlers({
+    form,
+    selectedMentions,
+    setSelectedMentions,
+    onPayload: handlePayloadTextArea,
+  });
+
+  const inputHandlers = useCommentInputHandlers({
+    form,
+    selectedMentions,
+    setSelectedMentions,
+    videoId,
+    loopId,
+    handleCommentPostSuccess,
+  });
+
   const { handleInputChange, handleInputBlur, commentSubmit, isPending } =
-    inputType === "textarea"
-      ? useCommentTextareaHandlers({
-          form,
-          selectedMentions,
-          setSelectedMentions,
-          onPayload: handlePayloadTextArea,
-        })
-      : useCommentInputHandlers({
-          form,
-          selectedMentions,
-          setSelectedMentions,
-          videoId,
-          loopId,
-          handleCommentPostSuccess,
-        });
+    inputType === "textarea" ? textareaHandlers : inputHandlers;
 
   useEffect(() => {
     const unSub = form.watch(({ comment }) => {
@@ -161,23 +150,15 @@ export function MentionInput({
       <form
         onSubmit={form.handleSubmit(commentSubmit)}
         onClick={onClick}
-        className={cn(
-          "gencl:bg-white gencl:border-secondary-150 gencl:flex gencl:justify-between gencl:items-center",
-          {
-            "gencl:p-4 gencl:border-t": inputType === "text",
-          },
-        )}
-      >
+        className={cn("gencl:bg-white gencl:border-secondary-150 gencl:flex gencl:justify-between gencl:items-center", {
+          "gencl:p-4 gencl:border-t": inputType === "text",
+        })}>
         {isMentioning && (
           <div
-            className={cn(
-              "gencl:absolute gencl:left-0 gencl:w-full gencl:z-50 ",
-              {
-                "gencl:bottom-18.25": inputType === "text",
-                "gencl:top-36": inputType === "textarea",
-              },
-            )}
-          >
+            className={cn("gencl:absolute gencl:left-0 gencl:w-full gencl:z-50", {
+              "gencl:bottom-18.25": inputType === "text",
+              "gencl:top-36": inputType === "textarea",
+            })}>
             <Command className="gencl:bg-white gencl:rounded-t-2xl gencl:max-h-60 gencl:overflow-y-auto gencl:shadow-[0px_-4px_15px_0px_#3F3F3F0D]">
               <CommandList>
                 {filteredMentions.map((mention: any, idx: number) => {
@@ -185,9 +166,7 @@ export function MentionInput({
                   const name = isCommunity
                     ? mention.community?.name || "Community"
                     : "@" + (mention.user?.nickname || "User");
-                  const profileImage = isCommunity
-                    ? mention.community?.dp || ""
-                    : mention.user?.profile_image || "";
+                  const profileImage = isCommunity ? mention.community?.dp || "" : mention.user?.profile_image || "";
 
                   // Generate stable keys for React 19 optimization
                   const uniqueKey = isCommunity
@@ -200,16 +179,13 @@ export function MentionInput({
                       onSelect={() => handleUserSelect(mention)}
                       className={cn(
                         "gencl:flex gencl:items-center gencl:gap-x-3 gencl:rounded-md gencl:p-2 gencl:px-4 gencl:cursor-pointer gencl:hover:bg-secondary-100",
-                        idx === activeMentionIndex && "gencl:bg-secondary-100",
+                        idx === activeMentionIndex && "gencl:bg-secondary-100"
                       )}
-                      value={name}
-                    >
+                      value={name}>
                       <Avatar
                         imageUrl={profileImage}
                         alt={name}
-                        isAvatar={
-                          isCommunity ? false : !!mention.user?.is_avatar
-                        }
+                        isAvatar={isCommunity ? false : !!mention.user?.is_avatar}
                         className="gencl:size-9"
                       />
                       <div className="gencl:pr-2">
@@ -238,42 +214,28 @@ export function MentionInput({
         <div
           className={cn("gencl:flex-1 gencl:relative", {
             "gencl:mt-7": inputType === "textarea",
-          })}
-        >
+          })}>
           <div
             className={cn(
               "gencl:border gencl:border-secondary-150 gencl:rounded-lg gencl:py-2 gencl:px-3 gencl:flex gencl:gap-3 gencl:w-full gencl:min-h-10",
               {
-                "gencl:border-red-400":
-                  description.length === maxLength && inputType === "textarea",
-              },
-            )}
-          >
+                "gencl:border-red-400": description.length === maxLength && inputType === "textarea",
+              }
+            )}>
             {!!user && (
-              <Avatar
-                alt={user.name || ""}
-                isAvatar={user.isAvatar || false}
-                imageUrl={user.image || ""}
-                size="xs"
-              />
+              <Avatar alt={user.name || ""} isAvatar={user.isAvatar || false} imageUrl={user.image || ""} size="xs" />
             )}
             {inputType === "textarea" && (
               <div
                 className="gencl:flex gencl:justify-between gencl:text-body-1-medium gencl:absolute gencl:left-0 gencl:right-0"
                 style={{
                   marginTop: "-35px",
-                }}
-              >
+                }}>
                 Description
                 <span
-                  className={cn(
-                    "gencl:text-secondary-500 gencl:text-body-2-medium",
-                    {
-                      "gencl:text-error-status":
-                        description.length === maxLength,
-                    },
-                  )}
-                >
+                  className={cn("gencl:text-secondary-500 gencl:text-body-2-medium", {
+                    "gencl:text-error-status": description.length === maxLength,
+                  })}>
                   {description.length}/{maxLength}
                 </span>
               </div>
@@ -293,22 +255,14 @@ export function MentionInput({
                             field.onChange(e);
                             handleInputChange(e as any);
                             setDescription?.(e.target.value);
-                            if (
-                              inputType === "textarea" &&
-                              description.length <= maxLength &&
-                              postId
-                            ) {
+                            if (inputType === "textarea" && description.length <= maxLength && postId) {
                               handleInputBlur?.();
                             }
                           }
                         }}
                         onBlur={(e) => {
                           field.onBlur();
-                          if (
-                            inputType === "textarea" &&
-                            description.length <= maxLength &&
-                            !postId
-                          ) {
+                          if (inputType === "textarea" && description.length <= maxLength && !postId) {
                             handleInputBlur?.();
                           }
                         }}
@@ -336,7 +290,7 @@ export function MentionInput({
           </div>
           {description.length === maxLength && inputType === "textarea" && (
             <p className="gencl:text-body-1-medium gencl:text-error-status gencl:mt-1">
-              You've reached the 2000 character limit.
+              You&apos;ve reached the 2000 character limit.
             </p>
           )}
           <FormMessage />
@@ -345,13 +299,9 @@ export function MentionInput({
           <Button
             type="submit"
             theme="text"
-            className={cn(
-              "gencl:!text-body-1-medium",
-              isFormValid ? "gencl:text-primary" : "gencl:text-secondary-400",
-            )}
+            className={cn("gencl:!text-body-1-medium", isFormValid ? "gencl:text-primary" : "gencl:text-secondary-400")}
             disabled={!isFormValid || isPending || !user}
-            aria-label="Post comment"
-          >
+            aria-label="Post comment">
             {isPending ? <Loader size="xs" /> : "Post"}
           </Button>
         )}

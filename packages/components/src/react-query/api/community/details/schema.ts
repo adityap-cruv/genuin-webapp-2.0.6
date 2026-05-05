@@ -1,4 +1,5 @@
 import { z } from "zod";
+
 import { mapCommunityUserRole } from "@genuin/components/lib/utils";
 
 const BrandUserSchema = z.object({
@@ -152,10 +153,7 @@ const CommunityDetailsSchema = z
   })
   .transform((data) => ({
     ...data,
-    logged_in_user_role: mapCommunityUserRole(
-      data.logged_in_user_role,
-      data.is_community_join_requested
-    ),
+    logged_in_user_role: mapCommunityUserRole(data.logged_in_user_role, data.is_community_join_requested),
   }));
 
 export type CommunityDetailsType = z.infer<typeof CommunityDetailsSchema>;
@@ -165,9 +163,7 @@ export type CommunityDetailsType = z.infer<typeof CommunityDetailsSchema>;
  * @param communityDetails
  * @returns
  */
-export function validateCommunityDetails(
-  communityDetails: CommunityDetailsType
-) {
+export function validateCommunityDetails(communityDetails: CommunityDetailsType) {
   try {
     return CommunityDetailsSchema.parse(communityDetails);
   } catch (e) {

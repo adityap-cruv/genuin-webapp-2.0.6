@@ -1,14 +1,14 @@
 import js from "@eslint/js";
 import eslintConfigPrettier from "eslint-config-prettier";
-import onlyWarn from "eslint-plugin-only-warn";
 import turboPlugin from "eslint-plugin-turbo";
 import tseslint from "typescript-eslint";
 
 /**
- * A shared ESLint configuration for the repository.
+ * Base ESLint configuration shared across all packages.
+ * React, Next.js, and other framework-specific rules go in their own config files.
  *
- * @type {import("eslint").Linter.Config}
- * */
+ * @type {import("eslint").Linter.Config[]}
+ */
 export default [
   js.configs.recommended,
   eslintConfigPrettier,
@@ -19,11 +19,6 @@ export default [
     },
     rules: {
       "turbo/no-undeclared-env-vars": "warn",
-    },
-  },
-  {
-    plugins: {
-      onlyWarn,
     },
   },
   {

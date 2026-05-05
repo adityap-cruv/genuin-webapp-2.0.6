@@ -1,4 +1,5 @@
 import { useDebounceValue } from "usehooks-ts";
+
 import { useLocations } from "@genuin/components/react-query/api/locations/locations";
 
 export const SEARCH_CONFIG = {
@@ -25,8 +26,7 @@ export function useDebouncedLocations(
   const [debouncedQuery] = useDebounceValue(query, debounceMs);
 
   // Only make API call if query has meaningful content
-  const shouldFetch =
-    debouncedQuery.trim().length >= SEARCH_CONFIG.MIN_QUERY_LENGTH;
+  const shouldFetch = debouncedQuery.trim().length >= SEARCH_CONFIG.MIN_QUERY_LENGTH;
 
   const locationsQuery = useLocations({
     query: shouldFetch ? debouncedQuery : "",

@@ -1,10 +1,11 @@
 import { Dialog, DialogClose, DialogContent } from '@components/ui/dialog'
-import { useRepostModalStore } from './state'
-import { Body } from './body'
-import { SearchInput } from './search-input'
 import { Loader } from '@components/ui/loader'
 import { CloseIcon } from '@icons/close-icon'
 import { IcLoop } from '@icons/ic-loop'
+
+import { Body } from './body'
+import { SearchInput } from './search-input'
+import { useRepostModalStore } from './state'
 
 export function Modal() {
   const { isOpen, close, isLoading, data, searchStr } = useRepostModalStore((state) => ({

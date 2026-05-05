@@ -11,165 +11,173 @@ When looking for a doc, start here. When adding a new doc, register it here.
 
 ## Where to put new docs
 
-| What you're writing                              | Where it goes                                        |
-| ------------------------------------------------ | ---------------------------------------------------- |
-| Environment / tooling prerequisites              | `docs/setup/`                                        |
-| Repo structure, monorepo decisions, path guides  | `docs/architecture/`                                 |
-| Technology migration guide (framework, CSS, etc) | `docs/migrations/`                                   |
-| Upgrade status, deployment procedures, QA       | `docs/upgrades/`                                     |
-| SDK bundle, chunk, lazy-loading analysis         | `packages/web-sdk/docs/performance/`                 |
-| SDK infrastructure (CDN, CSS versioning, deps)   | `packages/web-sdk/docs/infrastructure/`              |
-| SDK migration (build tools, validators)          | `packages/web-sdk/docs/migrations/`                  |
-| Historical SDK reorganization records            | `packages/web-sdk/docs/history/`                     |
-| Per-package usage instructions                   | `packages/<name>/README.md`                          |
-| Per-app usage instructions                       | `apps/<name>/README.md`                              |
+| What you're writing                              | Where it goes                           |
+| ------------------------------------------------ | --------------------------------------- |
+| Environment / tooling prerequisites              | `docs/setup/`                           |
+| Repo structure, monorepo decisions, path guides  | `docs/architecture/`                    |
+| Technology migration guide (framework, CSS, etc) | `docs/migrations/`                      |
+| Upgrade status, deployment procedures, QA        | `docs/upgrades/`                        |
+| SDK bundle, chunk, lazy-loading analysis         | `packages/web-sdk/docs/performance/`    |
+| SDK infrastructure (CDN, CSS versioning, deps)   | `packages/web-sdk/docs/infrastructure/` |
+| SDK migration (build tools, validators)          | `packages/web-sdk/docs/migrations/`     |
+| Historical SDK reorganization records            | `packages/web-sdk/docs/history/`        |
+| Per-package usage instructions                   | `packages/<name>/README.md`             |
+| Per-app usage instructions                       | `apps/<name>/README.md`                 |
 
 ---
 
 ## Root
 
-| File            | Purpose                              |
-| --------------- | ------------------------------------ |
-| [README.md](README.md) | Project overview, getting started   |
-| [docs.md](docs.md)     | This file — documentation map       |
+| File                   | Purpose                           |
+| ---------------------- | --------------------------------- |
+| [README.md](README.md) | Project overview, getting started |
+| [docs.md](docs.md)     | This file — documentation map     |
 
 ---
 
 ## `docs/` — General project documentation
 
 ### Setup
+
 Environment prerequisites, tooling, and dependency management.
 
-| File | Purpose |
-| ---- | ------- |
-| [docs/setup/NODE_VERSION.md](docs/setup/NODE_VERSION.md) | Node.js version requirements and setup |
-| [docs/setup/LINTING.md](docs/setup/LINTING.md) | ESLint and Prettier configuration |
-| [docs/setup/DEPENDENCY_MANAGEMENT.md](docs/setup/DEPENDENCY_MANAGEMENT.md) | Dependency management strategy |
+| File                                                                       | Purpose                                                                    |
+| -------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| [docs/setup/NODE_VERSION.md](docs/setup/NODE_VERSION.md)                   | Node.js version requirements and setup                                     |
+| [docs/setup/LINTING.md](docs/setup/LINTING.md)                             | ESLint and Prettier configuration                                          |
+| [docs/setup/TSCONFIG.md](docs/setup/TSCONFIG.md)                           | TypeScript configuration — shared presets, per-package setup, path aliases |
+| [docs/setup/DEPENDENCY_MANAGEMENT.md](docs/setup/DEPENDENCY_MANAGEMENT.md) | Dependency management strategy                                             |
 
 ### Architecture
+
 Structural documentation about how the repository is organized.
 
-| File | Purpose |
-| ---- | ------- |
-| [docs/architecture/REPO_CONTEXT.md](docs/architecture/REPO_CONTEXT.md) | Full repository context and structure |
-| [docs/architecture/MONOREPO_CONVERSION.md](docs/architecture/MONOREPO_CONVERSION.md) | History of the monorepo conversion |
-| [docs/architecture/PATH_RESOLUTION_GUIDE.md](docs/architecture/PATH_RESOLUTION_GUIDE.md) | Path resolution and import guide |
+| File                                                                                     | Purpose                               |
+| ---------------------------------------------------------------------------------------- | ------------------------------------- |
+| [docs/architecture/REPO_CONTEXT.md](docs/architecture/REPO_CONTEXT.md)                   | Full repository context and structure |
+| [docs/architecture/MONOREPO_CONVERSION.md](docs/architecture/MONOREPO_CONVERSION.md)     | History of the monorepo conversion    |
+| [docs/architecture/PATH_RESOLUTION_GUIDE.md](docs/architecture/PATH_RESOLUTION_GUIDE.md) | Path resolution and import guide      |
 
 ### Migrations
+
 Technology migration guides (Next.js 15, Tailwind v4, Turbopack, React Compiler).
 
-| File | Purpose |
-| ---- | ------- |
-| [docs/migrations/NEXT_JS_15_CHANGES.md](docs/migrations/NEXT_JS_15_CHANGES.md) | Next.js 15 code changes summary |
-| [docs/migrations/NEXTJS15_CODEMODS.md](docs/migrations/NEXTJS15_CODEMODS.md) | Next.js 15 automated codemods guide |
-| [docs/migrations/REACT_COMPILER.md](docs/migrations/REACT_COMPILER.md) | React Compiler setup and usage |
-| [docs/migrations/SERVER_COMPONENTS_AND_PPR.md](docs/migrations/SERVER_COMPONENTS_AND_PPR.md) | Server Components and PPR guide |
-| [docs/migrations/PACKAGE_IMPORT_OPTIMIZATION.md](docs/migrations/PACKAGE_IMPORT_OPTIMIZATION.md) | `optimizePackageImports` guide |
-| [docs/migrations/TAILWIND_V4_MIGRATION.md](docs/migrations/TAILWIND_V4_MIGRATION.md) | Tailwind v4 migration status |
-| [docs/migrations/TAILWIND_V4_MIGRATION_GUIDE.md](docs/migrations/TAILWIND_V4_MIGRATION_GUIDE.md) | Tailwind v4 step-by-step guide |
-| [docs/migrations/TURBOPACK_INTEGRATION.md](docs/migrations/TURBOPACK_INTEGRATION.md) | Turbopack integration guide |
-| [docs/migrations/TURBOPACK_TESTING_RESULTS.md](docs/migrations/TURBOPACK_TESTING_RESULTS.md) | Turbopack compatibility test results |
+| File                                                                                             | Purpose                              |
+| ------------------------------------------------------------------------------------------------ | ------------------------------------ |
+| [docs/migrations/NEXT_JS_15_CHANGES.md](docs/migrations/NEXT_JS_15_CHANGES.md)                   | Next.js 15 code changes summary      |
+| [docs/migrations/NEXTJS15_CODEMODS.md](docs/migrations/NEXTJS15_CODEMODS.md)                     | Next.js 15 automated codemods guide  |
+| [docs/migrations/REACT_COMPILER.md](docs/migrations/REACT_COMPILER.md)                           | React Compiler setup and usage       |
+| [docs/migrations/SERVER_COMPONENTS_AND_PPR.md](docs/migrations/SERVER_COMPONENTS_AND_PPR.md)     | Server Components and PPR guide      |
+| [docs/migrations/PACKAGE_IMPORT_OPTIMIZATION.md](docs/migrations/PACKAGE_IMPORT_OPTIMIZATION.md) | `optimizePackageImports` guide       |
+| [docs/migrations/TAILWIND_V4_MIGRATION.md](docs/migrations/TAILWIND_V4_MIGRATION.md)             | Tailwind v4 migration status         |
+| [docs/migrations/TAILWIND_V4_MIGRATION_GUIDE.md](docs/migrations/TAILWIND_V4_MIGRATION_GUIDE.md) | Tailwind v4 step-by-step guide       |
+| [docs/migrations/TURBOPACK_INTEGRATION.md](docs/migrations/TURBOPACK_INTEGRATION.md)             | Turbopack integration guide          |
+| [docs/migrations/TURBOPACK_TESTING_RESULTS.md](docs/migrations/TURBOPACK_TESTING_RESULTS.md)     | Turbopack compatibility test results |
 
 ### Upgrades
+
 Operational docs for the upgrade lifecycle: tracking, deployment, and QA.
 
-| File | Purpose |
-| ---- | ------- |
-| [docs/upgrades/UPGRADE_STATUS.md](docs/upgrades/UPGRADE_STATUS.md) | Next.js 15 / React 19 upgrade progress |
-| [docs/upgrades/UPGRADE_DEPLOYMENT_GUIDE.md](docs/upgrades/UPGRADE_DEPLOYMENT_GUIDE.md) | Safe deployment procedures |
-| [docs/upgrades/UPGRADE_TESTING_CHECKLIST.md](docs/upgrades/UPGRADE_TESTING_CHECKLIST.md) | Post-upgrade testing checklist |
-| [docs/upgrades/QA_PRIORITIZED_FILES.md](docs/upgrades/QA_PRIORITIZED_FILES.md) | QA branch prioritized file list |
+| File                                                                                     | Purpose                                |
+| ---------------------------------------------------------------------------------------- | -------------------------------------- |
+| [docs/upgrades/UPGRADE_STATUS.md](docs/upgrades/UPGRADE_STATUS.md)                       | Next.js 15 / React 19 upgrade progress |
+| [docs/upgrades/UPGRADE_DEPLOYMENT_GUIDE.md](docs/upgrades/UPGRADE_DEPLOYMENT_GUIDE.md)   | Safe deployment procedures             |
+| [docs/upgrades/UPGRADE_TESTING_CHECKLIST.md](docs/upgrades/UPGRADE_TESTING_CHECKLIST.md) | Post-upgrade testing checklist         |
+| [docs/upgrades/QA_PRIORITIZED_FILES.md](docs/upgrades/QA_PRIORITIZED_FILES.md)           | QA branch prioritized file list        |
 
 ---
 
 ## `apps/webapp/` — Next.js web application
 
-| File | Purpose |
-| ---- | ------- |
-| [apps/webapp/README.md](apps/webapp/README.md) | App overview and commands |
-| [apps/webapp/UPGRADE_GUIDE.md](apps/webapp/UPGRADE_GUIDE.md) | Next.js 15 and React 19 upgrade guide |
+| File                                                                                 | Purpose                                |
+| ------------------------------------------------------------------------------------ | -------------------------------------- |
+| [apps/webapp/README.md](apps/webapp/README.md)                                       | App overview and commands              |
+| [apps/webapp/UPGRADE_GUIDE.md](apps/webapp/UPGRADE_GUIDE.md)                         | Next.js 15 and React 19 upgrade guide  |
 | [apps/webapp/UPGRADE_TESTING_CHECKLIST.md](apps/webapp/UPGRADE_TESTING_CHECKLIST.md) | App-specific upgrade testing checklist |
 
 ---
 
 ## `apps/legacy-webapp/` — Legacy web application
 
-| File | Purpose |
-| ---- | ------- |
-| [apps/legacy-webapp/README.md](apps/legacy-webapp/README.md) | App overview and commands |
-| [apps/legacy-webapp/UPGRADE_GUIDE.md](apps/legacy-webapp/UPGRADE_GUIDE.md) | Next.js 15 and React 19 upgrade guide |
+| File                                                                                               | Purpose                                |
+| -------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| [apps/legacy-webapp/README.md](apps/legacy-webapp/README.md)                                       | App overview and commands              |
+| [apps/legacy-webapp/UPGRADE_GUIDE.md](apps/legacy-webapp/UPGRADE_GUIDE.md)                         | Next.js 15 and React 19 upgrade guide  |
 | [apps/legacy-webapp/UPGRADE_TESTING_CHECKLIST.md](apps/legacy-webapp/UPGRADE_TESTING_CHECKLIST.md) | App-specific upgrade testing checklist |
 
 ---
 
 ## `packages/components/`
 
-| File | Purpose |
-| ---- | ------- |
+| File                                                           | Purpose                         |
+| -------------------------------------------------------------- | ------------------------------- |
 | [packages/components/README.md](packages/components/README.md) | Shared components package guide |
 
 ---
 
 ## `packages/web-sdk/` — Genuin Web SDK
 
-| File | Purpose |
-| ---- | ------- |
-| [packages/web-sdk/README.md](packages/web-sdk/README.md) | SDK overview, build commands, usage |
-| [packages/web-sdk/docs/README.md](packages/web-sdk/docs/README.md) | SDK documentation index |
+| File                                                               | Purpose                             |
+| ------------------------------------------------------------------ | ----------------------------------- |
+| [packages/web-sdk/README.md](packages/web-sdk/README.md)           | SDK overview, build commands, usage |
+| [packages/web-sdk/docs/README.md](packages/web-sdk/docs/README.md) | SDK documentation index             |
 
 ### Architecture
 
-| File | Purpose |
-| ---- | ------- |
+| File                                                                                                     | Purpose                   |
+| -------------------------------------------------------------------------------------------------------- | ------------------------- |
 | [packages/web-sdk/docs/architecture/ARCHITECTURE.md](packages/web-sdk/docs/architecture/ARCHITECTURE.md) | SDK architecture overview |
 
 ### Performance
+
 Bundle size, chunk splitting, lazy loading, and performance measurement.
 
-| File | Purpose |
-| ---- | ------- |
-| [packages/web-sdk/docs/performance/PERFORMANCE_BASELINE.md](packages/web-sdk/docs/performance/PERFORMANCE_BASELINE.md) | Baseline bundle size measurements |
-| [packages/web-sdk/docs/performance/PERFORMANCE_IMPROVEMENTS.md](packages/web-sdk/docs/performance/PERFORMANCE_IMPROVEMENTS.md) | Performance improvements summary |
-| [packages/web-sdk/docs/performance/SDK_LAZY_LOADING_OPTIMIZATION.md](packages/web-sdk/docs/performance/SDK_LAZY_LOADING_OPTIMIZATION.md) | Lazy loading optimization plan |
-| [packages/web-sdk/docs/performance/CHUNK_ANALYSIS.md](packages/web-sdk/docs/performance/CHUNK_ANALYSIS.md) | Per-chunk analysis and recommendations |
-| [packages/web-sdk/docs/performance/CHUNK_LOADING_ANALYSIS.md](packages/web-sdk/docs/performance/CHUNK_LOADING_ANALYSIS.md) | Chunk loading behavior analysis |
-| [packages/web-sdk/docs/performance/CODE_SPLITTING_IMPLEMENTATION.md](packages/web-sdk/docs/performance/CODE_SPLITTING_IMPLEMENTATION.md) | Code splitting implementation |
-| [packages/web-sdk/docs/performance/SINGLE_BUNDLE_BUILD_PLAN.md](packages/web-sdk/docs/performance/SINGLE_BUNDLE_BUILD_PLAN.md) | Single bundle build plan |
-| [packages/web-sdk/docs/performance/VENDOR_CHUNK_SPLITTING_SUMMARY.md](packages/web-sdk/docs/performance/VENDOR_CHUNK_SPLITTING_SUMMARY.md) | Vendor chunk splitting summary |
+| File                                                                                                                                       | Purpose                                |
+| ------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------- |
+| [packages/web-sdk/docs/performance/PERFORMANCE_BASELINE.md](packages/web-sdk/docs/performance/PERFORMANCE_BASELINE.md)                     | Baseline bundle size measurements      |
+| [packages/web-sdk/docs/performance/PERFORMANCE_IMPROVEMENTS.md](packages/web-sdk/docs/performance/PERFORMANCE_IMPROVEMENTS.md)             | Performance improvements summary       |
+| [packages/web-sdk/docs/performance/SDK_LAZY_LOADING_OPTIMIZATION.md](packages/web-sdk/docs/performance/SDK_LAZY_LOADING_OPTIMIZATION.md)   | Lazy loading optimization plan         |
+| [packages/web-sdk/docs/performance/CHUNK_ANALYSIS.md](packages/web-sdk/docs/performance/CHUNK_ANALYSIS.md)                                 | Per-chunk analysis and recommendations |
+| [packages/web-sdk/docs/performance/CHUNK_LOADING_ANALYSIS.md](packages/web-sdk/docs/performance/CHUNK_LOADING_ANALYSIS.md)                 | Chunk loading behavior analysis        |
+| [packages/web-sdk/docs/performance/CODE_SPLITTING_IMPLEMENTATION.md](packages/web-sdk/docs/performance/CODE_SPLITTING_IMPLEMENTATION.md)   | Code splitting implementation          |
+| [packages/web-sdk/docs/performance/SINGLE_BUNDLE_BUILD_PLAN.md](packages/web-sdk/docs/performance/SINGLE_BUNDLE_BUILD_PLAN.md)             | Single bundle build plan               |
+| [packages/web-sdk/docs/performance/VENDOR_CHUNK_SPLITTING_SUMMARY.md](packages/web-sdk/docs/performance/VENDOR_CHUNK_SPLITTING_SUMMARY.md) | Vendor chunk splitting summary         |
 
 ### Infrastructure
+
 CDN, CSS versioning, and dependency management.
 
-| File | Purpose |
-| ---- | ------- |
-| [packages/web-sdk/docs/infrastructure/BUNNY_CDN_PURGING.md](packages/web-sdk/docs/infrastructure/BUNNY_CDN_PURGING.md) | Bunny CDN cache purging guide |
-| [packages/web-sdk/docs/infrastructure/CSS_PATH_VERSIONING.md](packages/web-sdk/docs/infrastructure/CSS_PATH_VERSIONING.md) | CSS path versioning strategy |
-| [packages/web-sdk/docs/infrastructure/DEPENDENCY_CLEANUP_ANALYSIS.md](packages/web-sdk/docs/infrastructure/DEPENDENCY_CLEANUP_ANALYSIS.md) | Dependency cleanup analysis |
+| File                                                                                                                                       | Purpose                       |
+| ------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------- |
+| [packages/web-sdk/docs/infrastructure/BUNNY_CDN_PURGING.md](packages/web-sdk/docs/infrastructure/BUNNY_CDN_PURGING.md)                     | Bunny CDN cache purging guide |
+| [packages/web-sdk/docs/infrastructure/CSS_PATH_VERSIONING.md](packages/web-sdk/docs/infrastructure/CSS_PATH_VERSIONING.md)                 | CSS path versioning strategy  |
+| [packages/web-sdk/docs/infrastructure/DEPENDENCY_CLEANUP_ANALYSIS.md](packages/web-sdk/docs/infrastructure/DEPENDENCY_CLEANUP_ANALYSIS.md) | Dependency cleanup analysis   |
 
 ### Migrations
 
-| File | Purpose |
-| ---- | ------- |
-| [packages/web-sdk/docs/migrations/ROLLUP_V4_MIGRATION_CHECKLIST.md](packages/web-sdk/docs/migrations/ROLLUP_V4_MIGRATION_CHECKLIST.md) | Rollup v4 migration checklist |
+| File                                                                                                                                                   | Purpose                             |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------- |
+| [packages/web-sdk/docs/migrations/ROLLUP_V4_MIGRATION_CHECKLIST.md](packages/web-sdk/docs/migrations/ROLLUP_V4_MIGRATION_CHECKLIST.md)                 | Rollup v4 migration checklist       |
 | [packages/web-sdk/docs/migrations/LEGACY_VALIDATION_INTEGRATION_SUCCESS.md](packages/web-sdk/docs/migrations/LEGACY_VALIDATION_INTEGRATION_SUCCESS.md) | Legacy validation integration notes |
 
 ### History
+
 Historical records of past reorganization efforts (not active reference material).
 
-| File | Purpose |
-| ---- | ------- |
-| [packages/web-sdk/docs/history/WEB_SDK_REORGANIZATION_ACTION_PLAN.md](packages/web-sdk/docs/history/WEB_SDK_REORGANIZATION_ACTION_PLAN.md) | Reorganization action plan |
-| [packages/web-sdk/docs/history/WEB_SDK_REORGANIZATION_SUCCESS.md](packages/web-sdk/docs/history/WEB_SDK_REORGANIZATION_SUCCESS.md) | Reorganization success report |
-| [packages/web-sdk/docs/history/REORGANIZATION_COMPLETE.md](packages/web-sdk/docs/history/REORGANIZATION_COMPLETE.md) | Reorganization completion note |
-| [packages/web-sdk/docs/history/REORGANIZATION_STATUS_UPDATE.md](packages/web-sdk/docs/history/REORGANIZATION_STATUS_UPDATE.md) | Reorganization status update |
-| [packages/web-sdk/docs/history/README_REORGANIZATION_COMPLETE.md](packages/web-sdk/docs/history/README_REORGANIZATION_COMPLETE.md) | README reorganization complete |
+| File                                                                                                                                       | Purpose                        |
+| ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------ |
+| [packages/web-sdk/docs/history/WEB_SDK_REORGANIZATION_ACTION_PLAN.md](packages/web-sdk/docs/history/WEB_SDK_REORGANIZATION_ACTION_PLAN.md) | Reorganization action plan     |
+| [packages/web-sdk/docs/history/WEB_SDK_REORGANIZATION_SUCCESS.md](packages/web-sdk/docs/history/WEB_SDK_REORGANIZATION_SUCCESS.md)         | Reorganization success report  |
+| [packages/web-sdk/docs/history/REORGANIZATION_COMPLETE.md](packages/web-sdk/docs/history/REORGANIZATION_COMPLETE.md)                       | Reorganization completion note |
+| [packages/web-sdk/docs/history/REORGANIZATION_STATUS_UPDATE.md](packages/web-sdk/docs/history/REORGANIZATION_STATUS_UPDATE.md)             | Reorganization status update   |
+| [packages/web-sdk/docs/history/README_REORGANIZATION_COMPLETE.md](packages/web-sdk/docs/history/README_REORGANIZATION_COMPLETE.md)         | README reorganization complete |
 
 ---
 
 ## `scripts/`
 
-| File | Purpose |
-| ---- | ------- |
+| File                                                           | Purpose                          |
+| -------------------------------------------------------------- | -------------------------------- |
 | [scripts/POSTINSTALL_README.md](scripts/POSTINSTALL_README.md) | Post-install script instructions |
 
 ---
@@ -179,8 +187,8 @@ Historical records of past reorganization efforts (not active reference material
 > These files are the **source** for `.claude/` and `.github/` which are generated
 > by `scripts/sync-ai-config.mjs`. Never edit `.claude/` or `.github/` directly.
 
-| File | Purpose |
-| ---- | ------- |
-| [.team/instructions.md](.team/instructions.md) | Shared coding rules for all AI tools |
-| [.team/docs/ai-context.md](.team/docs/ai-context.md) | React/Next.js patterns, Tailwind v4, env vars |
-| [.team/docs/AI_AGENT_SYSTEM_PRD.md](.team/docs/AI_AGENT_SYSTEM_PRD.md) | AI agent system product requirements |
+| File                                                                   | Purpose                                       |
+| ---------------------------------------------------------------------- | --------------------------------------------- |
+| [.team/instructions.md](.team/instructions.md)                         | Shared coding rules for all AI tools          |
+| [.team/docs/ai-context.md](.team/docs/ai-context.md)                   | React/Next.js patterns, Tailwind v4, env vars |
+| [.team/docs/AI_AGENT_SYSTEM_PRD.md](.team/docs/AI_AGENT_SYSTEM_PRD.md) | AI agent system product requirements          |

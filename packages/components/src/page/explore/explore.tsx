@@ -1,7 +1,7 @@
 "use client";
 
-import { TrendingGroups } from "@genuin/components/templates/trending-groups";
 import { TrendingCommunities } from "@genuin/components/templates/trending-communities";
+import { TrendingGroups } from "@genuin/components/templates/trending-groups";
 
 export function Explore() {
   return (

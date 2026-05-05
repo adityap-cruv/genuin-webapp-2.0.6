@@ -1,14 +1,9 @@
 import { Button } from "@genuin/ui/components/button";
-import type { ComponentProps } from "react";
-import { Link } from "@genuin/components/molecules/link";
-import {
-  CommunitiesIcon,
-  ErrorIcon,
-  GroupIcon,
-  LockIcon,
-  PlayIcon,
-} from "@genuin/ui/icons";
+import { CommunitiesIcon, ErrorIcon, GroupIcon, LockIcon, PlayIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
+import type { ComponentProps } from "react";
+
+import { Link } from "@genuin/components/molecules/link";
 
 const ICONS = {
   play: <PlayIcon theme="secondary" size="xl" className="gencl:mb-2" />,
@@ -51,8 +46,7 @@ const STATES_MESSAGES = {
   PRIVATE_COMMUNITY: {
     icon: "private",
     title: "Private Community",
-    subtitle:
-      "Join this community to see and interact with their groups and posts",
+    subtitle: "Join this community to see and interact with their groups and posts",
     showButton: false,
   },
   NO_POSTS_ITEM: {
@@ -99,16 +93,11 @@ export function ComponentErrorState({
           "gencl:flex gencl:items-center gencl:gap-4 gencl:bg-secondary-50 gencl:py-6 gencl:px-4",
           className
         )}
-        {...restProps}
-      >
+        {...restProps}>
         {ICONS[state.icon]}
         <div>
-          <p className="gencl:mb-2 gencl:text-body-0-semi-bold">
-            {title ? title : state.title}
-          </p>
-          <p className="gencl:text-secondary-600 gencl:text-body-1-semi-bold">
-            {subtitle ? subtitle : state.subtitle}
-          </p>
+          <p className="gencl:mb-2 gencl:text-body-0-semi-bold">{title ? title : state.title}</p>
+          <p className="gencl:text-secondary-600 gencl:text-body-1-semi-bold">{subtitle ? subtitle : state.subtitle}</p>
         </div>
       </div>
     );
@@ -120,8 +109,7 @@ export function ComponentErrorState({
         "gencl:flex gencl:flex-col gencl:h-full gencl:rounded-xl gencl:items-center gencl:w-full gencl:justify-center gencl:bg-secondary-50",
         className
       )}
-      {...restProps}
-    >
+      {...restProps}>
       <div className="gencl:flex gencl:flex-col gencl:h-100 gencl:items-center gencl:justify-center gencl:w-full">
         {ICONS[state.icon]}
         {(state.title || title) && (
@@ -130,7 +118,7 @@ export function ComponentErrorState({
           </p>
         )}
         {(state.subtitle || subtitle) && (
-          <p className="gencl:text-secondary-600 mb-4 gencl:text-body-1-medium gencl:text-center gencl:mb-4">
+          <p className="gencl:text-secondary-600 gencl:text-body-1-medium gencl:text-center gencl:mb-4 mb-4">
             {subtitle ? subtitle : state.subtitle}
           </p>
         )}

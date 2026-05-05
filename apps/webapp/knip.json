@@ -1,0 +1,48 @@
+{
+  "$schema": "https://unpkg.com/knip@latest/schema.json",
+  "entry": [
+    "src/app/**/*.{ts,tsx}",
+    "src/middleware.ts",
+    "auth.ts",
+    "auth.config.ts",
+    "next.config.js",
+    "sentry.client.config.ts",
+    "sentry.server.config.ts",
+    "sentry.edge.config.ts"
+  ],
+  "project": [
+    "src/components/**/*.{ts,tsx}",
+    "src/hooks/**/*.{ts,tsx}",
+    "src/lib/**/*.{ts,tsx,js}",
+    "src/services/**/*.{ts,tsx}",
+    "src/types/**/*.{ts,tsx}"
+  ],
+  "ignore": [
+    "src/types/svg.d.ts",
+    "src/lib/utils/ssai/urlParamResolver.js"
+  ],
+  "ignoreDependencies": [
+    "@auth/core",
+    "sharp",
+    "@svgr/webpack",
+    "url-loader",
+    "class-variance-authority",
+    "lucide-react",
+    "clsx",
+    "@radix-ui/react-dialog",
+    "@radix-ui/react-avatar",
+    "@radix-ui/react-label",
+    "@radix-ui/react-slot",
+    "@radix-ui/react-popover",
+    "@radix-ui/react-select",
+    "@radix-ui/react-tabs"
+  ],
+  "ignoreBinaries": ["env-cmd", "eslint", "lint"],
+  "paths": {
+    "@/*": ["./src/*"],
+    "@components/*": ["./src/components/*"],
+    "@lib/*": ["./src/lib/*"],
+    "@hooks/*": ["./src/hooks/*"],
+    "@services/*": ["./src/services/*"]
+  }
+}

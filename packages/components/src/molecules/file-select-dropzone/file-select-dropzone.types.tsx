@@ -1,5 +1,5 @@
-import { FileUploader } from "react-drag-drop-files";
 import type { ComponentProps } from "react";
+import type { FileUploader } from "react-drag-drop-files";
 
 export type SupportedFileType =
   // 📷 Image types

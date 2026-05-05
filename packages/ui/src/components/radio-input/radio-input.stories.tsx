@@ -1,5 +1,6 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import React from "react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { useState } from "react";
+
 import { RadioGroup, RadioGroupItem, RadioItem } from "./radio-input";
 
 const meta: Meta<typeof RadioGroup> = {
@@ -57,18 +58,27 @@ type Story = StoryObj<typeof RadioGroup>;
 // 1. Basic vertical radio group with manual labels
 export const Basic: Story = {
   render: () => (
-    <RadioGroup defaultValue="option1" aria-label="Basic radio group" className="gencl:flex gencl:flex-col gencl:gap-4 gencl:bg-secondary-50 gencl:p-6 gencl:rounded-lg gencl:shadow-md gencl:w-80">
+    <RadioGroup
+      defaultValue="option1"
+      aria-label="Basic radio group"
+      className="gencl:flex gencl:flex-col gencl:gap-4 gencl:bg-secondary-50 gencl:p-6 gencl:rounded-lg gencl:shadow-md gencl:w-80">
       <div className="gencl:flex gencl:items-center gencl:gap-3">
         <RadioGroupItem value="option1" id="option1" />
-        <label htmlFor="option1" className="gencl:text-body-1-medium gencl:cursor-pointer">Option 1</label>
+        <label htmlFor="option1" className="gencl:text-body-1-medium gencl:cursor-pointer">
+          Option 1
+        </label>
       </div>
       <div className="gencl:flex gencl:items-center gencl:gap-3">
         <RadioGroupItem value="option2" id="option2" />
-        <label htmlFor="option2" className="gencl:text-body-1-medium gencl:cursor-pointer">Option 2</label>
+        <label htmlFor="option2" className="gencl:text-body-1-medium gencl:cursor-pointer">
+          Option 2
+        </label>
       </div>
       <div className="gencl:flex gencl:items-center gencl:gap-3">
         <RadioGroupItem value="option3" id="option3" />
-        <label htmlFor="option3" className="gencl:text-body-1-medium gencl:cursor-pointer">Option 3</label>
+        <label htmlFor="option3" className="gencl:text-body-1-medium gencl:cursor-pointer">
+          Option 3
+        </label>
       </div>
     </RadioGroup>
   ),
@@ -84,25 +94,42 @@ export const Basic: Story = {
 // 2. Labeled options with disabled state and helper text
 export const WithLabelsAndDisabled: Story = {
   render: () => (
-    <RadioGroup defaultValue="b" aria-label="Labeled radio group" className="gencl:space-y-4 gencl:bg-white gencl:p-6 gencl:rounded-lg gencl:shadow-md gencl:w-80">
-      <RadioItem value="a" label={
-        <span>
-          Active Option
-          <span className="gencl:block gencl:text-body-2-regular gencl:text-secondary-400">You can select this.</span>
-        </span>
-      } />
-      <RadioItem value="b" label={
-        <span>
-          Selected Option
-          <span className="gencl:block gencl:text-body-2-regular gencl:text-secondary-400">This is currently selected.</span>
-        </span>
-      } />
-      <RadioItem value="c" label={
-        <span>
-          Disabled Option
-          <span className="gencl:block gencl:text-body-2-regular gencl:text-secondary-300">You cannot select this.</span>
-        </span>
-      } disabled />
+    <RadioGroup
+      defaultValue="b"
+      aria-label="Labeled radio group"
+      className="gencl:space-y-4 gencl:bg-white gencl:p-6 gencl:rounded-lg gencl:shadow-md gencl:w-80">
+      <RadioItem
+        value="a"
+        label={
+          <span>
+            Active Option
+            <span className="gencl:block gencl:text-body-2-regular gencl:text-secondary-400">You can select this.</span>
+          </span>
+        }
+      />
+      <RadioItem
+        value="b"
+        label={
+          <span>
+            Selected Option
+            <span className="gencl:block gencl:text-body-2-regular gencl:text-secondary-400">
+              This is currently selected.
+            </span>
+          </span>
+        }
+      />
+      <RadioItem
+        value="c"
+        label={
+          <span>
+            Disabled Option
+            <span className="gencl:block gencl:text-body-2-regular gencl:text-secondary-300">
+              You cannot select this.
+            </span>
+          </span>
+        }
+        disabled
+      />
     </RadioGroup>
   ),
   parameters: {
@@ -117,25 +144,37 @@ export const WithLabelsAndDisabled: Story = {
 // 3. Horizontal radio group with custom colors and icons
 export const HorizontalCustom: Story = {
   render: () => (
-    <RadioGroup defaultValue="left" aria-label="Horizontal radio group" className="gencl:flex gencl:flex-row gencl:gap-8 gencl:bg-secondary-100 gencl:p-6 gencl:rounded-lg gencl:shadow-md gencl:w-fit">
-      <RadioItem value="left" label={
-        <span className="gencl:flex gencl:items-center gencl:gap-2">
-          <span className="gencl:w-4 gencl:h-4 gencl:bg-primary-300 gencl:rounded-full" />
-          Left
-        </span>
-      } />
-      <RadioItem value="center" label={
-        <span className="gencl:flex gencl:items-center gencl:gap-2">
-          <span className="gencl:w-4 gencl:h-4 gencl:bg-primary-500 gencl:rounded-full" />
-          Center
-        </span>
-      } />
-      <RadioItem value="right" label={
-        <span className="gencl:flex gencl:items-center gencl:gap-2">
-          <span className="gencl:w-4 gencl:h-4 gencl:bg-primary-700 gencl:rounded-full" />
-          Right
-        </span>
-      } />
+    <RadioGroup
+      defaultValue="left"
+      aria-label="Horizontal radio group"
+      className="gencl:flex gencl:flex-row gencl:gap-8 gencl:bg-secondary-100 gencl:p-6 gencl:rounded-lg gencl:shadow-md gencl:w-fit">
+      <RadioItem
+        value="left"
+        label={
+          <span className="gencl:flex gencl:items-center gencl:gap-2">
+            <span className="gencl:w-4 gencl:h-4 gencl:bg-primary-300 gencl:rounded-full" />
+            Left
+          </span>
+        }
+      />
+      <RadioItem
+        value="center"
+        label={
+          <span className="gencl:flex gencl:items-center gencl:gap-2">
+            <span className="gencl:w-4 gencl:h-4 gencl:bg-primary-500 gencl:rounded-full" />
+            Center
+          </span>
+        }
+      />
+      <RadioItem
+        value="right"
+        label={
+          <span className="gencl:flex gencl:items-center gencl:gap-2">
+            <span className="gencl:w-4 gencl:h-4 gencl:bg-primary-700 gencl:rounded-full" />
+            Right
+          </span>
+        }
+      />
     </RadioGroup>
   ),
   parameters: {
@@ -149,8 +188,8 @@ export const HorizontalCustom: Story = {
 
 // 4. Controlled radio group with external state
 export const Controlled: Story = {
-  render: () => {
-    const [value, setValue] = React.useState("option2");
+  render: function ControlledRadio() {
+    const [value, setValue] = useState("option2");
     return (
       <div className="gencl:space-y-4 gencl:bg-secondary-50 gencl:p-6 gencl:rounded-lg gencl:shadow-md gencl:w-80">
         <div className="gencl:mb-2 gencl:text-body-1-bold">Controlled Radio Group</div>
@@ -177,7 +216,10 @@ export const Controlled: Story = {
 // 5. Radio group with many options and scroll
 export const ManyOptionsScrollable: Story = {
   render: () => (
-    <RadioGroup defaultValue="opt5" aria-label="Scrollable radio group" className="gencl:flex gencl:flex-col gencl:gap-2 gencl:bg-white gencl:p-6 gencl:rounded-lg gencl:shadow-md gencl:w-80 gencl:max-h-64 gencl:overflow-y-auto">
+    <RadioGroup
+      defaultValue="opt5"
+      aria-label="Scrollable radio group"
+      className="gencl:flex gencl:flex-col gencl:gap-2 gencl:bg-white gencl:p-6 gencl:rounded-lg gencl:shadow-md gencl:w-80 gencl:max-h-64 gencl:overflow-y-auto">
       {Array.from({ length: 10 }).map((_, i) => (
         <RadioItem key={i} value={`opt${i + 1}`} label={`Option ${i + 1}`} />
       ))}

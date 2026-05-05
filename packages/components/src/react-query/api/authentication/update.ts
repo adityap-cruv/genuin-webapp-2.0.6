@@ -1,9 +1,10 @@
-import { getDeviceId } from "@genuin/components/lib/utils/device-id";
-import { encryptText } from "@genuin/components/lib/utils/encryption";
-import { useAxiosInstance } from "@genuin/components/context/axios";
-import { API_PATHS } from "@genuin/components/react-query/paths";
 import { useMutation } from "@tanstack/react-query";
 import type { AxiosInstance } from "axios";
+
+import { useAxiosInstance } from "@genuin/components/context/axios";
+import { getDeviceId } from "@genuin/components/lib/utils/device-id";
+import { encryptText } from "@genuin/components/lib/utils/encryption";
+import { API_PATHS } from "@genuin/components/react-query/paths";
 
 type UpdateEmailOrPhoneProps = {
   code: string;
@@ -22,23 +23,19 @@ type UpdateEmailOrPhoneProps = {
  * This apis is only for update email/phone flow.
  * @returns
  */
-export async function updateEmailOrPhone({
-  code,
-  preAuthSessionId,
-  responseDeviceId: resDeviceId,
-  isInIframe
-}: UpdateEmailOrPhoneProps, axiosInstance: AxiosInstance) {
+export async function updateEmailOrPhone(
+  { code, preAuthSessionId, responseDeviceId: resDeviceId, isInIframe }: UpdateEmailOrPhoneProps,
+  axiosInstance: AxiosInstance
+) {
   const deviceId = getDeviceId(isInIframe);
   return await axiosInstance
     .post(API_PATHS.AUTH_UPDATE_EMAIL_OF_PHONE, {
       userInputCode: code,
       deviceId: resDeviceId,
-      encrypted_device_id: deviceId
-        ? await encryptText(deviceId, true)
-        : undefined,
+      encrypted_device_id: deviceId ? await encryptText(deviceId, true) : undefined,
       preAuthSessionId,
     })
-    .then((res) => {
+    .then((_res) => {
       return { verified: true };
     })
     .catch((_) => {

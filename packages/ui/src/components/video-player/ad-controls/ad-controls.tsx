@@ -1,12 +1,10 @@
+import type OpenPlayerJS from "openplayerjs";
+import { memo, useCallback, useEffect, useRef } from "react";
+
 import { PlayIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
-import type OpenPlayerJS from "openplayerjs";
-import { memo, useEffect, useRef } from "react";
-import {
-  useAdPlayer,
-  type AdDataType,
-  type VideoPlayerStateRef,
-} from "./use-ad-player";
+
+import { useAdPlayer, type AdDataType, type VideoPlayerStateRef } from "./use-ad-player";
 
 type AdControlsProps = {
   player: OpenPlayerJS | null;
@@ -35,7 +33,6 @@ type AdControlsProps = {
 
 export const AdControls = memo(function AdControls({
   player,
-  adUrl,
   muted,
   volume,
   playerStateRef,
@@ -58,15 +55,7 @@ export const AdControls = memo(function AdControls({
   playThePlayer,
 }: AdControlsProps) {
   // Use the ad player hook internally
-  const {
-    adIsActive,
-    // adPlaying,
-    // skipCountdown,
-    adTimeCountdown,
-    adInfo,
-    // handleSkip,
-    setupAdEventListeners,
-  } = useAdPlayer({
+  const { adIsActive, adTimeCountdown, adInfo, setupAdEventListeners } = useAdPlayer({
     player,
     muted,
     volume,
@@ -101,12 +90,19 @@ export const AdControls = memo(function AdControls({
     }
   }, [onSetupReady]);
 
+  const handlePlayClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      playThePlayer?.();
+    },
+    [playThePlayer]
+  );
+
   // Don't render UI until ad has started
   if (!adIsActive) {
     return null;
   }
 
-  const url = adInfo.ctaInfo?.url || null;
   // const title = adInfo.ctaInfo?.title || null;
   // const adId = adInfo.ctaInfo?.adId || null;
   const currentAdIndex = adInfo.currentIndex;
@@ -126,129 +122,17 @@ export const AdControls = memo(function AdControls({
         <p
           className={cn(
             "gencl:py-2 gencl:px-2 gencl:whitespace-nowrap gencl:rounded-full gencl:bg-white gencl:w-min gencl:text-black",
-            isInExpandView
-              ? "gencl:text-body-2-medium"
-              : "gencl:text-body-3-medium",
-          )}
-        >
-          Ad {totalAds > 1 ? `${currentAdIndex} of ${totalAds}` : ""} •{" "}
-          {formatTime(adTimeCountdown)}
+            isInExpandView ? "gencl:text-body-2-medium" : "gencl:text-body-3-medium"
+          )}>
+          Ad {totalAds > 1 ? `${currentAdIndex} of ${totalAds}` : ""} • {formatTime(adTimeCountdown)}
         </p>
       </div>
-      {/* <div className="gencl:absolute gencl:pointer-events-none gencl:bottom-3 gencl:w-full gencl:space-y-2 gencl:px-3 gencl:z-50 gencl:gap-3"> */}
-      {/* {url && (
-          <div className="gencl:w-full gencl:flex gencl:flex-col gencl:gap-2 gencl:bg-white gencl:p-2 gencl:rounded-lg gencl:pointer-events-auto">
-            {url && (
-              <a
-                href={url}
-                target="_blank"
-                rel="noreferrer"
-                className="gencl:flex gencl:items-center gencl:gap-1 gencl:text-body-1-bold"
-              >
-                <LinkIcon variant="dark" />
-                <p>Learn More</p>
-              </a>
-            )}
-            {title && (
-              <a
-                className="gencl:text-body-1-bold gencl:text-white gencl:line-clamp-1"
-                href={url ?? "#"}
-                target="_blank"
-                onClick={() => {
-                  // Analytics.track(Analytics.EventNames.AdCtaClicked, {
-                  //   video_id: getId(id),
-                  //   cta_url: url,
-                  //   ad_id: adId,
-                  //   click_position: "cta_button",
-                  //   cta_name: title,
-                  // });
-                }}
-                rel="noreferrer"
-              >
-                {title}
-              </a>
-            )}
-            <a
-              className="gencl:bg-white gencl:p-2 gencl:text-body-1-bold gencl:rounded-lg gencl:z-50"
-              href={url ?? "#"}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => {
-                // Analytics.track(Analytics.EventNames.AdCtaClicked, {
-                //   video_id: getId(id),
-                //   ad_id: adId,
-                //   cta_url: url,
-                //   click_position: "cta_button",
-                //   cta_name: "Learn More",
-                // });
-              }}
-            >
-              Learn More
-            </a>
-          </div>
-        )} */}
-      {/* <div className="gencl:flex gencl:justify-between gencl:w-full gencl:items-center">
-          <p
-            className={cn(
-              "gencl:py-2 gencl:px-2 gencl:whitespace-nowrap gencl:rounded-full gencl:bg-white gencl:w-min gencl:text-black",
-              isInExpandView
-                ? "gencl:text-body-2-medium"
-                : "gencl:text-body-3-medium"
-            )}
-          >
-            Ad {totalAds > 1 ? `${currentAdIndex} of ${totalAds}` : ""} •{" "}
-            {formatTime(adTimeCountdown)}
-          </p>
-          <div></div> */}
-      {/* <button
-            type="button"
-            aria-label="Skip ad"
-            onClick={handleSkip}
-            // disabled={skipCountdown <= 0}
-            className={cn(
-              "gencl:flex gencl:items-center gencl:bg-red gencl:gap-1 gencl:rounded-3xl gencl:pointer-events-auto",
-              isInExpandView
-                ? "gencl:px-3 gencl:py-2"
-                : "gencl:size-6 gencl:p-1 gencl:justify-center"
-            )}
-          >
-            {isInExpandView && (
-              <>
-                <p className="gencl:text-body-2-medium gencl:text-white">
-                  {skipCountdown > 0 &&
-                    `You can skip this ad in ${skipCountdown}`}
-                  {skipCountdown <= 0 && "Skip"}
-                </p>
-                <SkipAdIcon size="sm" />
-              </>
-            )}
-            {!isInExpandView && (
-              <>
-                {skipCountdown > 0 && (
-                  <p className="gencl:text-body-3-medium gencl:text-white">
-                    {skipCountdown}
-                  </p>
-                )}
-                {skipCountdown <= 0 && <SkipAdIcon size="xs" />}
-              </>
-            )}
-          </button> */}
-      {/* </div> */}
-      {/* </div> */}
       {!adInfo.isPlaying && (
         <div className="swiper-no-swiping gencl:absolute gencl:inset-0 gencl:h-full gencl:w-full gencl:bg-black/30 gencl:z-50 gencl:pointer-events-none">
           <button
             className="gencl:absolute gencl:pointer-events-auto gencl:inset-0 gencl:h-full gencl:w-full gencl:flex gencl:items-center gencl:justify-center"
-            onClick={(e) => {
-              e.stopPropagation();
-              playThePlayer?.();
-            }}
-          >
-            <PlayIcon
-              size="lg"
-              theme="fill-dark"
-              className="pointer-events-none"
-            />
+            onClick={handlePlayClick}>
+            <PlayIcon size="lg" theme="fill-dark" className="pointer-events-none" />
           </button>
         </div>
       )}

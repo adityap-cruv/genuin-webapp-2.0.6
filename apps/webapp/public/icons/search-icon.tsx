@@ -1,6 +1,7 @@
 // Import necessary modules and types from React and class-variance-authority
-import { type ComponentProps } from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
+import { type ComponentProps } from 'react'
+
 import { cn } from '@lib/utils'
 
 // Define the searchVariant function using cva to handle different styles based on props

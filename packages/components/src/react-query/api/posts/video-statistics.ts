@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
+import type { AxiosInstance } from "axios";
+
 import { useAxiosInstance } from "@genuin/components/context/axios";
 import { API_PATHS } from "@genuin/components/react-query/paths";
-import {
-  validateVideoStatisticsResponse,
-  VideoStatisticsParams,
-  VideoStatisticsResponse,
-} from "./video-statistics-types";
+
 import { getQueryKeyForVideoStatistics } from "../../keys/video";
-import type { AxiosInstance } from "axios";
+
+import type { VideoStatisticsParams, VideoStatisticsResponse } from "./video-statistics-types";
+import { validateVideoStatisticsResponse } from "./video-statistics-types";
 
 export async function fetchVideoStatistics(
   params: VideoStatisticsParams,

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+
 import { AddLinkCard } from "./add-linkout-card";
 
 const meta: Meta<typeof AddLinkCard> = {
@@ -18,12 +19,10 @@ type Story = StoryObj<typeof AddLinkCard>;
 export const Default: Story = {
   args: {
     item: {
-      id: "1",
-      image:
-        "https://media.qa.begenuin.com/webapp_assets/assets/avatar/jack_o_lantern.gif",
+      image: "https://media.qa.begenuin.com/webapp_assets/assets/avatar/jack_o_lantern.gif",
       title: "Buy Headset",
-      price: 199,
       link: "https://example.com/product",
+      position: 1,
     },
   },
 };

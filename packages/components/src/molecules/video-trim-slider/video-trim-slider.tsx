@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { ResizeHandle } from "./resize-handle";
-import { formatTime, loadVideoMetadata } from "./utils";
-import TimelineBar from "./timeline-bar";
-import { useVideoThumbnails } from "@genuin/components/hooks/use-video-thumbnails";
 import { Skeleton } from "@genuin/ui/components/skeleton";
+import { useEffect, useMemo, useRef, useState } from "react";
+
+import { useVideoThumbnails } from "@genuin/components/hooks/use-video-thumbnails";
+
+import { ResizeHandle } from "./resize-handle";
+import TimelineBar from "./timeline-bar";
+import { formatTime, loadVideoMetadata } from "./utils";
 
 const TRIM_MIN_SEC = 4;
 const TRIM_MAX_SEC = 300;
@@ -17,7 +19,7 @@ interface VideoTrimSlider {
   videoUrl: string;
   currentDuration?: number;
   trimDurationLimits?: { min: number; max: number }; // In Seconds
-  ref: React.RefObject<{ start: number; end: number }>;
+  ref: React.RefObject<{ start: number; end: number } | null>;
   onTrimmerReady: (isReady: boolean) => void;
 }
 
@@ -32,12 +34,8 @@ export function VideoTrimSlider({
   const [duration, setDuration] = useState(200);
   const [startPercent, setStartPercent] = useState(DEFAULT_START_PERCENT);
   const [endPercent, setEndPercent] = useState(DEFAULT_END_PERCENT);
-  const [dragging, setDragging] = useState<"left" | "right" | "middle" | null>(
-    null
-  );
-  const [showTimeLabel, setShowTimeLabel] = useState<"left" | "right" | null>(
-    null
-  );
+  const [dragging, setDragging] = useState<"left" | "right" | "middle" | null>(null);
+  const [showTimeLabel, setShowTimeLabel] = useState<"left" | "right" | null>(null);
   const options = useMemo(() => ({ count: 10, width: 120, height: 90 }), []);
   const { videoRef, canvasRef, thumbnails, isLoading } = useVideoThumbnails({
     ...options,
@@ -49,8 +47,10 @@ export function VideoTrimSlider({
   const trimMinSec = trimDurationLimits.min;
 
   const onTrimRangeChange = (start: number, end: number) => {
-    ref.current.start = start;
-    ref.current.end = end;
+    if (ref.current) {
+      ref.current.start = start;
+      ref.current.end = end;
+    }
   };
 
   // Load video duration and enforce max trim range
@@ -108,13 +108,8 @@ export function VideoTrimSlider({
       const maxDistancePercent = (trimMaxSec / duration) * 100;
 
       if (dragging === "left") {
-        const adjustedPercent = Math.max(
-          0,
-          Math.min(percent, endPercent - minDistancePercent)
-        );
-        const startTime = parseFloat(
-          ((adjustedPercent / 100) * duration).toFixed(1)
-        );
+        const adjustedPercent = Math.max(0, Math.min(percent, endPercent - minDistancePercent));
+        const startTime = parseFloat(((adjustedPercent / 100) * duration).toFixed(1));
         const endTime = parseFloat(((endPercent / 100) * duration).toFixed(1));
         if (endTime - startTime >= trimMinSec) {
           setStartPercent(adjustedPercent);
@@ -122,16 +117,9 @@ export function VideoTrimSlider({
           onTrimRangeChange?.(startTime, endTime);
         }
       } else if (dragging === "right") {
-        const adjustedPercent = Math.min(
-          100,
-          Math.max(percent, startPercent + minDistancePercent)
-        );
-        const startTime = parseFloat(
-          ((startPercent / 100) * duration).toFixed(1)
-        );
-        const endTime = parseFloat(
-          ((adjustedPercent / 100) * duration).toFixed(1)
-        );
+        const adjustedPercent = Math.min(100, Math.max(percent, startPercent + minDistancePercent));
+        const startTime = parseFloat(((startPercent / 100) * duration).toFixed(1));
+        const endTime = parseFloat(((adjustedPercent / 100) * duration).toFixed(1));
         if (endTime - startTime <= trimMaxSec) {
           setEndPercent(adjustedPercent);
           setShowTimeLabel("right");
@@ -140,10 +128,7 @@ export function VideoTrimSlider({
       } else if (dragging === "middle") {
         const deltaX = e.movementX;
         const deltaPercent = (deltaX / width) * 100;
-        const newStart = Math.max(
-          0,
-          Math.min(startPercent + deltaPercent, 100 - trimDurationPercent)
-        );
+        const newStart = Math.max(0, Math.min(startPercent + deltaPercent, 100 - trimDurationPercent));
         const newEnd = newStart + trimDurationPercent;
         setStartPercent(newStart);
         setEndPercent(newEnd);
@@ -170,12 +155,7 @@ export function VideoTrimSlider({
 
   const mediaElement = (
     <>
-      <video
-        ref={videoRef}
-        src={videoUrl}
-        crossOrigin="anonymous"
-        style={{ display: "none" }}
-      />
+      <video ref={videoRef} src={videoUrl} crossOrigin="anonymous" style={{ display: "none" }} />
       <canvas ref={canvasRef} style={{ display: "none" }} />
     </>
   );
@@ -227,14 +207,10 @@ export function VideoTrimSlider({
             }}
             onMouseDown={(e) => {
               const target = e.target as HTMLElement;
-              if (
-                target.dataset.handle !== "left" &&
-                target.dataset.handle !== "right"
-              ) {
+              if (target.dataset.handle !== "left" && target.dataset.handle !== "right") {
                 setDragging("middle");
               }
-            }}
-          >
+            }}>
             {/* Video play tracker */}
             {currentDuration > 0 && (
               <div>

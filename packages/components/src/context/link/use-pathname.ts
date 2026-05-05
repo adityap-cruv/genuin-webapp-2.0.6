@@ -9,7 +9,8 @@ import { useSafeEmbedContext } from "../embed/context";
 export function usePathnameFromEmbedRouter(): string {
   const embedContext = useSafeEmbedContext();
   // Use the embedRouter's hook directly to get the current location
-  const [location] = embedContext?.embedRouter.hook();
+  const hookResult = embedContext ? embedContext.embedRouter.hook() : ["/"];
+  const [location] = hookResult;
 
   return location;
 }

@@ -1,8 +1,9 @@
+import type { VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
+
 import { cn } from "@genuin/ui/lib/utils";
 
 import type { SVGIconsProps } from "../type";
-import type { VariantProps } from "class-variance-authority";
-import { cva } from "class-variance-authority";
 
 const iconVariants = cva("", {
   variants: {
@@ -17,11 +18,7 @@ const iconVariants = cva("", {
   },
 });
 
-export function ExploreIcon({
-  className,
-  variant,
-  ...restProps
-}: SVGIconsProps & VariantProps<typeof iconVariants>) {
+export function ExploreIcon({ className, variant, ...restProps }: SVGIconsProps & VariantProps<typeof iconVariants>) {
   return (
     <svg
       width="24"
@@ -30,8 +27,7 @@ export function ExploreIcon({
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={cn(className, iconVariants({ variant }))}
-      {...restProps}
-    >
+      {...restProps}>
       <path
         d="M12 21.75C17.3848 21.75 21.75 17.3848 21.75 12C21.75 6.61523 17.3848 2.25 12 2.25C6.61523 2.25 2.25 6.61523 2.25 12C2.25 17.3848 6.61523 21.75 12 21.75Z"
         strokeWidth="1.5"

@@ -1,5 +1,5 @@
 import { EventName } from "./context";
-import { EventNameType } from "./types";
+import type { EventNameType } from "./types";
 
 type AnalyticsEventData = {
   canFire: boolean;
@@ -45,6 +45,16 @@ export const EmitAnalyticsData: EmitAnalyticsDataType = {
     description: "",
   },
   [EventName.SWIPE_UP_GESTURE]: {
+    canFire: true,
+    allowed_keys: [...commonAllowedKeys],
+    description: "",
+  },
+  [EventName.SWIPE_PREVIOUS]: {
+    canFire: true,
+    allowed_keys: [...commonAllowedKeys],
+    description: "",
+  },
+  [EventName.SWIPE_NEXT]: {
     canFire: true,
     allowed_keys: [...commonAllowedKeys],
     description: "",
@@ -305,6 +315,121 @@ export const EmitAnalyticsData: EmitAnalyticsDataType = {
     description: "",
   },
   [EventName.GET_APP_LINK_SENT]: {
+    canFire: false,
+    allowed_keys: [...commonAllowedKeys],
+    description: "",
+  },
+  [EventName.SDK_PERFORMANCE]: {
+    canFire: false,
+    allowed_keys: [...commonAllowedKeys],
+    description: "",
+  },
+  [EventName.AD_STARTED]: {
+    canFire: false,
+    allowed_keys: [...commonAllowedKeys],
+    description: "",
+  },
+  [EventName.AD_COMPLETED]: {
+    canFire: false,
+    allowed_keys: [...commonAllowedKeys],
+    description: "",
+  },
+  [EventName.AD_CTA_CLICKED]: {
+    canFire: false,
+    allowed_keys: [...commonAllowedKeys],
+    description: "",
+  },
+  [EventName.AD_PAUSED]: {
+    canFire: false,
+    allowed_keys: [...commonAllowedKeys],
+    description: "",
+  },
+  [EventName.COMMUNITY_JOINED]: {
+    canFire: false,
+    allowed_keys: [...commonAllowedKeys],
+    description: "",
+  },
+  [EventName.COMMUNITY_LEFT]: {
+    canFire: false,
+    allowed_keys: [...commonAllowedKeys],
+    description: "",
+  },
+  [EventName.LOOP_JOINED]: {
+    canFire: false,
+    allowed_keys: [...commonAllowedKeys],
+    description: "",
+  },
+  [EventName.LOOP_LEFT]: {
+    canFire: false,
+    allowed_keys: [...commonAllowedKeys],
+    description: "",
+  },
+  [EventName.LOOP_SUBSCRIBED]: {
+    canFire: false,
+    allowed_keys: [...commonAllowedKeys],
+    description: "",
+  },
+  [EventName.LOOP_UNSUBSCRIBED]: {
+    canFire: false,
+    allowed_keys: [...commonAllowedKeys],
+    description: "",
+  },
+  [EventName.AD_REQUESTED]: {
+    canFire: false,
+    allowed_keys: [...commonAllowedKeys],
+    description: "",
+  },
+  [EventName.AD_REQUEST_FAILED]: {
+    canFire: false,
+    allowed_keys: [...commonAllowedKeys],
+    description: "",
+  },
+  [EventName.AD_REQUEST_RECEIVED]: {
+    canFire: false,
+    allowed_keys: [...commonAllowedKeys],
+    description: "",
+  },
+  [EventName.AD_RENDERED]: {
+    canFire: false,
+    allowed_keys: [...commonAllowedKeys],
+    description: "",
+  },
+  [EventName.AD_RESPONSE_RECEIVED]: {
+    canFire: false,
+    allowed_keys: [...commonAllowedKeys],
+    description: "",
+  },
+  [EventName.AD_RENDER_FAILED]: {
+    canFire: false,
+    allowed_keys: [...commonAllowedKeys],
+    description: "",
+  },
+  [EventName.AD_IMPRESSION]: {
+    canFire: false,
+    allowed_keys: [...commonAllowedKeys],
+    description: "",
+  },
+  [EventName.AD_CLICKED]: {
+    canFire: false,
+    allowed_keys: [...commonAllowedKeys],
+    description: "",
+  },
+  [EventName.AD_MEDIA_QUARTILE]: {
+    canFire: false,
+    allowed_keys: [...commonAllowedKeys],
+    description: "",
+  },
+  [EventName.AD_SKIPPED]: {
+    canFire: false,
+    allowed_keys: [...commonAllowedKeys],
+    description: "",
+  },
+  [EventName.AD_ERROR]: {
+    canFire: false,
+    allowed_keys: [...commonAllowedKeys],
+    description: "",
+  },
+  [EventName.AD_MEDIA_PLAY]: {
     canFire: false,
     allowed_keys: [...commonAllowedKeys],
     description: "",

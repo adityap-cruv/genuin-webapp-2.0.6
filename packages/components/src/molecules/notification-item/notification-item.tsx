@@ -1,26 +1,24 @@
-import type { ComponentProps } from "react";
-
+import { Avatar } from "@genuin/ui/components/avatar";
 import { Image } from "@genuin/ui/components/image";
-import { Link } from "../link";
-import { cn } from "@genuin/ui/lib/utils";
-import { GetNotificationAttributedText } from "./notification-attributed-text";
-import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { Skeleton } from "@genuin/ui/components/skeleton";
 import { PlayIcon } from "@genuin/ui/icons";
+import { cn } from "@genuin/ui/lib/utils";
+import type { ComponentProps } from "react";
+
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+
+import { Link } from "../link";
+
+import { GetNotificationAttributedText } from "./notification-attributed-text";
+import type { NotificationDataType } from "./notification-item.types";
 import { generatePathname } from "./utils";
-import { Avatar } from "@genuin/ui/components/avatar";
-import { NotificationDataType } from "./notification-item.types";
 
 type NotificationItemProps = {
   notification: NotificationDataType;
   className?: string;
 } & ComponentProps<"a">;
 
-export function NotificationItem({
-  notification,
-  className,
-  ...restProps
-}: NotificationItemProps) {
+export function NotificationItem({ notification, className, ...restProps }: NotificationItemProps) {
   const pathname = generatePathname(notification);
 
   // Removed notification from list which is not need to handle as fallback
@@ -38,22 +36,16 @@ export function NotificationItem({
             "gencl:hover:bg-secondary-50": notification?.is_read,
           },
           className
-        )}
-      >
+        )}>
         <Link
           href={buildPageUrl({
             type: "profile",
             slug: notification?.user?.nickname,
-          })}
-        >
+          })}>
           <Avatar
             size="lg"
             alt={notification?.user?.name || ""}
-            imageUrl={
-              (notification?.user?.profile_image_m ??
-                notification?.user?.profile_image) ||
-              ""
-            }
+            imageUrl={(notification?.user?.profile_image_m ?? notification?.user?.profile_image) || ""}
             isAvatar={notification?.user?.is_avatar || false}
           />
         </Link>
@@ -65,8 +57,7 @@ export function NotificationItem({
               type: "video",
               slug: notification?.conversation_video?.slug,
             })}
-            className="gencl:shrink-0"
-          >
+            className="gencl:shrink-0">
             <div className="gencl:relative gencl:w-12 gencl:h-12">
               <div className="gencl:absolute gencl:w-6 gencl:h-6 gencl:rounded-full gencl:bg-blend-overlay gencl:!bg-black/40 gencl:top-1/2 gencl:left-1/2 gencl:-translate-x-1/2 gencl:-translate-y-1/2 gencl:flex gencl:items-center gencl:justify-center gencl:z-10">
                 <PlayIcon className="gencl:w-3/4" />
@@ -84,8 +75,7 @@ export function NotificationItem({
             href={buildPageUrl({
               type: "community",
               slug: notification?.community?.slug,
-            })}
-          >
+            })}>
             <Avatar
               imageUrl={notification?.community?.dp}
               alt={notification?.community?.name}

@@ -1,5 +1,6 @@
-import { type ComponentProps } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
+import { type ComponentProps } from "react";
+
 import { cn, defaultSizesForIcons } from "@genuin/ui/lib/utils";
 
 // Define the playVariant function using cva to handle different styles based on props
@@ -18,15 +19,9 @@ const playVariant = cva("", {
 });
 
 // Define the Props type for the CollapseIcon component
-type CollapseIconPropsType = ComponentProps<"svg"> &
-  VariantProps<typeof playVariant>;
+type CollapseIconPropsType = ComponentProps<"svg"> & VariantProps<typeof playVariant>;
 
-export function CollapseIcon({
-  theme,
-  size,
-  className,
-  ...restProps
-}: CollapseIconPropsType) {
+export function CollapseIcon({ theme, size, className, ...restProps }: CollapseIconPropsType) {
   return (
     <svg
       className={cn(playVariant({ theme, size }), className)}
@@ -35,8 +30,7 @@ export function CollapseIcon({
       height="24"
       viewBox="0 0 24 24"
       fill="none"
-      {...restProps}
-    >
+      {...restProps}>
       <path
         fillRule="evenodd"
         clipRule="evenodd"

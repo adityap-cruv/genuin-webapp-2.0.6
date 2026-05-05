@@ -1,4 +1,9 @@
+import { Button } from "@genuin/ui/components/button";
 import { useEffect } from "react";
+
+import { useBaseContext } from "@genuin/components/context/base";
+import { Link } from "@genuin/components/molecules/link";
+
 import { useAuthenticationModalContext } from "./context";
 import { BecomeCreator } from "./screens/become-creator";
 import { CategoryInput } from "./screens/category-input";
@@ -18,10 +23,6 @@ import { OtpVerificationDeleteAccount } from "./screens/otp/otp-verfication-dele
 import { RemovePicture } from "./screens/remove-picture";
 import { SignOut } from "./screens/sign-out";
 import { SignIn } from "./screens/signin";
-import { useBaseContext } from "@genuin/components/context/base";
-import { Button } from "@genuin/ui/components/button";
-
-import { Link } from "@genuin/components/molecules/link";
 
 export function Screens() {
   const { step, setStep } = useAuthenticationModalContext();
@@ -35,13 +36,9 @@ export function Screens() {
     case "LOGIN_OTP_INPUT":
       return <OtpVerification verificationType="LOGIN" />;
     case "VERIFY_PHONE_OTP":
-      return (
-        <OtpVerification title="Verify your phone" verificationType="PHONE" />
-      );
+      return <OtpVerification title="Verify your phone" verificationType="PHONE" />;
     case "VERIFY_MAIL_OTP":
-      return (
-        <OtpVerification title="Verify your email" verificationType="EMAIL" />
-      );
+      return <OtpVerification title="Verify your email" verificationType="EMAIL" />;
     case "BRAND_GUIDELINES":
       return <Guidelines />;
     case "CATEGORY_SELECTION":
@@ -64,17 +61,12 @@ export function Screens() {
             <>
               <div className="gencl:flex gencl:items-center gencl:my-4">
                 <div className="gencl:flex-1 gencl:border-b gencl:border-secondary-150" />
-                <span className="gencl:px-2 gencl:text-secondary-400 gencl:text-xs">
-                  or
-                </span>
+                <span className="gencl:px-2 gencl:text-secondary-400 gencl:text-xs">or</span>
                 <div className="gencl:flex-1 gencl:border-b gencl:border-secondary-150" />
               </div>
               <Link href={website} target="_blank" rel="noopener noreferrer">
                 <Button theme="primary" className="gencl:w-full">
-                  Go to{" "}
-                  {website
-                    .replace(/^https?:\/\/(www\.)?/, "")
-                    .replace(/\/$/, "")}
+                  Go to {website.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "")}
                 </Button>
               </Link>
             </>

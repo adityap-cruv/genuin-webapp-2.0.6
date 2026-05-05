@@ -4,12 +4,7 @@ import { EventManager } from "@genuin/components/lib/utils/event-manager";
  * The visual state of the bottom sheet.
  * Matches the DraggableSheetState from @genuin/ui.
  */
-export type SheetState =
-  | "default"
-  | "default-active"
-  | "expand-view"
-  | "panel-view"
-  | "full-view";
+export type SheetState = "default" | "default-active" | "expand-view" | "panel-view" | "full-view";
 
 /**
  * @deprecated Use `SheetState` instead. Will be removed in a future version.
@@ -57,27 +52,37 @@ export type BaseEventBusContext = {
    * "inside"  — overlaid inside the video player.
    * "outside" — rendered outside / below the video player.
    */
-  sheetContentPlacements: Partial<
-    Record<SheetContentType, SheetContentPlacement>
-  >;
+  sheetContentPlacements: Partial<Record<SheetContentType, SheetContentPlacement>>;
   /*
    * Whether the player was paused by a system/browser restriction.
    * When true, all players should show the system pause recovery UI.
    */
   systemPaused: boolean;
-  /**
-   * Whether the user has explicitly interacted with mute/unmute controls.
-   * Used to prevent auto-unmute from overriding the user's explicit choice.
-   */
-  hasUserInteractedWithMute: boolean;
+  hasUserInteractedWithMute: boolean; // To track if user has manually interacted with mute/unmute, to handle browser autoplay policies that require user interaction before unmuting audio.
+  // /**
+  //  * Per-content-type sheet states. Each active content type independently tracks its own
+  //  * visual state (e.g. "default", "panel-view", "full-view").
+  //  */
+  // sheetContentStates: Partial<Record<SheetContentType, SheetState>>;
+  // /**
+  //  * All content types that are currently open / active.
+  //  * Multiple types can be open simultaneously.
+  //  */
+  // activeSheetContentTypes: SheetContentType[];
+  // /**
+  //  * Specifies where each active content type should be rendered.
+  //  * "inside"  — overlaid inside the video player.
+  //  * "outside" — rendered outside / below the video player.
+  //  */
+  // sheetContentPlacements: Partial<Record<SheetContentType, SheetContentPlacement>>;
 };
 
 type EventNames =
   | "userFocusChange"
   | "globalPlayingStateChange"
+  | "systemPauseStateChange"
   | "sheetStateChange"
-  | "sheetContentTypeChange"
-  | "systemPauseStateChange";
+  | "sheetContentTypeChange";
 
 export function createBaseEventBus(initialGlobalPlayingState: boolean = true) {
   return new EventManager<BaseEventBusContext, EventNames>({
@@ -85,10 +90,10 @@ export function createBaseEventBus(initialGlobalPlayingState: boolean = true) {
     muted: true,
     volume: 100,
     globalPlayingState: initialGlobalPlayingState,
-    sheetContentStates: {},
-    activeSheetContentTypes: [],
-    sheetContentPlacements: {},
     systemPaused: false,
     hasUserInteractedWithMute: false,
+    sheetContentStates: { linkouts: "default" },
+    activeSheetContentTypes: ["linkouts"],
+    sheetContentPlacements: { linkouts: "inside" },
   });
 }

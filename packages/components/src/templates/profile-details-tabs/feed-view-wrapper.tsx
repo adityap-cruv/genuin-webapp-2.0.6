@@ -1,9 +1,8 @@
 import { useMemo } from "react";
 
+import { ErrorState } from "@genuin/components/molecules/error-state";
 import { useGetProfileFeed } from "@genuin/components/react-query/api/profile/posts";
 import { getQueryKeyForProfileFeed } from "@genuin/components/react-query/keys/profile";
-import { ErrorState } from "@genuin/components/molecules/error-state";
-
 import { FeedView } from "@genuin/components/templates/feed";
 
 export function FeedViewWrapper({
@@ -26,10 +25,7 @@ export function FeedViewWrapper({
     isError,
   } = useGetProfileFeed(profileId, forBrand, videoId);
 
-  const videos = useMemo(
-    () => feedData?.pages.flatMap((page) => page.feed) ?? [],
-    [feedData]
-  );
+  const videos = useMemo(() => feedData?.pages.flatMap((page) => page.feed) ?? [], [feedData]);
 
   if (isError) {
     return <ErrorState type="ERROR" />;

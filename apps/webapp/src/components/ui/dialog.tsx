@@ -1,9 +1,10 @@
 'use client'
 
-import * as React from 'react'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
-import { CloseIcon } from '@icons/close-icon'
 import { usePathname } from 'next/navigation'
+import * as React from 'react'
+
+import { CloseIcon } from '@icons/close-icon'
 import { cn } from '@lib/utils'
 
 const Dialog = DialogPrimitive.Root

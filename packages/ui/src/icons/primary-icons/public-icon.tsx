@@ -1,6 +1,7 @@
 import React from "react";
 
 import { cn } from "@genuin/ui/lib/utils";
+
 import type { SVGIconsProps } from "../type";
 export function PublicIcon({ className, ...restProps }: SVGIconsProps) {
   return (
@@ -11,8 +12,7 @@ export function PublicIcon({ className, ...restProps }: SVGIconsProps) {
       viewBox="0 0 21 21"
       fill="none"
       className={cn("gencl:stroke-black", className)}
-      {...restProps}
-    >
+      {...restProps}>
       <path
         d="M1 10.375C1 12.8614 1.98772 15.246 3.74587 17.0041C5.50403 18.7623 7.8886 19.75 10.375 19.75C12.8614 19.75 15.246 18.7623 17.0041 17.0041C18.7623 15.246 19.75 12.8614 19.75 10.375C19.75 7.8886 18.7623 5.50403 17.0041 3.74587C15.246 1.98772 12.8614 1 10.375 1C7.8886 1 5.50403 1.98772 3.74587 3.74587C1.98772 5.50403 1 7.8886 1 10.375Z"
         strokeWidth="1.5"

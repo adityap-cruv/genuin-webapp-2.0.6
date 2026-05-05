@@ -1,8 +1,9 @@
+import Link from 'next/link'
+import { type ComponentProps } from 'react'
+
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
 import { cn } from '@/lib/utils'
 import { PATH_NAME } from '@/lib/utils/constants/path'
-import Link from 'next/link'
-import { type ComponentProps } from 'react'
 
 type WalletAmountBadgeProps = ComponentProps<'div'> & {
   type: 'light' | 'dark'

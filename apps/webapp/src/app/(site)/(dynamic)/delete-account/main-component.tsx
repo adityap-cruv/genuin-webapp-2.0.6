@@ -1,9 +1,11 @@
 'use client'
 import Link from 'next/link'
-import { PATH_NAME } from '@lib/utils/constants/path'
-import { GenuinIcon } from '@icons/genuin-icon'
-import { AuthenticationModal } from '@/components/common/modals/authentication'
 import { useEffect } from 'react'
+
+import { AuthenticationModal } from '@/components/common/modals/authentication'
+import { GenuinIcon } from '@icons/genuin-icon'
+import { PATH_NAME } from '@lib/utils/constants/path'
+
 
 export default function MainComponent() {
   useEffect(() => {

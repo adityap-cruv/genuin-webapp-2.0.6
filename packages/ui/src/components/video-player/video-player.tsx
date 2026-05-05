@@ -1,23 +1,14 @@
 "use client";
 import OpenPlayerJS from "openplayerjs";
 import type { ComponentProps } from "react";
-import {
-  memo,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from "react";
+import { memo, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 
-import { cn, encodeVideoSourceUrl } from "@genuin/ui/lib/utils";
 import { useBrowserDetect } from "@genuin/ui/hooks";
+import { cn, encodeVideoSourceUrl } from "@genuin/ui/lib/utils";
 import { Loader } from "@genuin/ui/loader";
-import type {
-  AdDataType,
-  VideoPlayerStateRef,
-} from "./ad-controls/use-ad-player";
+
 import { AdControls } from "./ad-controls";
+import type { AdDataType, VideoPlayerStateRef } from "./ad-controls/use-ad-player";
 
 // Lazy load AdControls component to reduce initial bundle size
 // const AdControls = lazy(() =>
@@ -26,7 +17,7 @@ import { AdControls } from "./ad-controls";
 //   })),
 // );
 
-const SAMPLE_AD_TAGS = {
+const _SAMPLE_AD_TAGS = {
   SINGLE_REDIRECT_LINEAR:
     "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_ad_samples&sz=640x480&cust_params=sample_ct%3Dredirectlinear&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&correlator=",
   SINGLE_REDIRECT_ERROR:
@@ -164,11 +155,7 @@ export type PlayerProps = ComponentProps<"video"> & {
   onAdRendered?: (adData: AdDataType) => void; // Callback when ad is rendered
   onAdResponseReceived?: () => void; // Callback when ad response is received
   onAdRequested?: () => void; // Callback when ad is requested
-  onVideoStart?: (
-    duration: number,
-    currentTime: number,
-    latency: number,
-  ) => void; // Add onVideoStart prop
+  onVideoStart?: (duration: number, currentTime: number, latency: number) => void; // Add onVideoStart prop
   onMutedChange?: (muted: boolean) => void;
   onVideoLoadStart?: (isPlaying: boolean) => void; // Callback when video loading starts
   onVideoLoadEnd?: (isPlaying: boolean) => void; // Callback when video loading ends
@@ -190,7 +177,6 @@ export const VideoPlayer = memo(function VideoPlayer({
   play = true,
   loop = false, // loop prop is now destructured
   adUrl,
-  adPlatform,
   isInFeed = false,
   enableLazyLoading = false, // Default to false for backward compatibility
   isInExpandView,
@@ -233,9 +219,7 @@ export const VideoPlayer = memo(function VideoPlayer({
   //   "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_ad_samples&sz=640x480&cust_params=sample_ct%3Dredirecterror&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&nofb=1&correlator=";
   // adUrl = SAMPLE_AD_TAGS.VMAP_PRE_ROLL;
   const internalVideoRef = useRef<HTMLVideoElement>(null);
-  useImperativeHandle(ref, () => internalVideoRef.current as HTMLVideoElement, [
-    internalVideoRef.current,
-  ]);
+  useImperativeHandle(ref, () => internalVideoRef.current as HTMLVideoElement, [internalVideoRef.current]);
   // adUrl = undefined;
   const videoRef = internalVideoRef;
   const playerRef = useRef<OpenPlayerJS | null>(null);
@@ -243,9 +227,7 @@ export const VideoPlayer = memo(function VideoPlayer({
   const [isLoading, setIsLoading] = useState(false);
   const [isPosterVisible, setIsPosterVisible] = useState(true);
   // const [allAdsCompleted, setAllAdsCompleted] = useState(adUrl ? false : true);
-  const setupAdEventListenersRef = useRef<
-    ((player: OpenPlayerJS) => void) | null
-  >(null);
+  const setupAdEventListenersRef = useRef<((player: OpenPlayerJS) => void) | null>(null);
   const onAdRequestedRef = useRef(onAdRequested);
   onAdRequestedRef.current = onAdRequested;
   const { isSafari } = useBrowserDetect();
@@ -278,7 +260,7 @@ export const VideoPlayer = memo(function VideoPlayer({
         return loading;
       });
     },
-    [onVideoLoadStart, onVideoLoadEnd],
+    [onVideoLoadStart, onVideoLoadEnd]
   );
 
   useEffect(() => {
@@ -357,7 +339,7 @@ export const VideoPlayer = memo(function VideoPlayer({
         detail: {
           reason: "NotAllowedError",
         },
-      }),
+      })
     );
   }, [pauseThePlayer]);
 
@@ -368,12 +350,21 @@ export const VideoPlayer = memo(function VideoPlayer({
         onMutedChange?.(muted);
       }
     },
-    [onMutedChange],
+    [onMutedChange]
   );
 
   const initializePlayer = useCallback(
     async (player: OpenPlayerJS, play?: boolean) => {
       await player.init();
+
+      // Register ad event listeners before player.load() so adsloaded is not missed
+      if (adUrl) {
+        onAdRequestedRef.current?.();
+        if (setupAdEventListenersRef.current) {
+          setupAdEventListenersRef.current(player);
+        }
+      }
+
       await player.load();
 
       playerRef.current = player;
@@ -383,14 +374,6 @@ export const VideoPlayer = memo(function VideoPlayer({
       if (media) {
         if (playbackSpeed) {
           media.playbackRate = playbackSpeed;
-        }
-      }
-
-      // Set up ad event listeners if ads are enabled
-      if (adUrl) {
-        onAdRequestedRef.current?.();
-        if (setupAdEventListenersRef.current) {
-          setupAdEventListenersRef.current(player);
         }
       }
 
@@ -412,7 +395,7 @@ export const VideoPlayer = memo(function VideoPlayer({
             }
           } else {
             if ((error as any)?.name !== "NotAllowedError") {
-            updatePlayerMutedState(true);
+              updatePlayerMutedState(true);
             }
             await player.play();
           }
@@ -422,7 +405,7 @@ export const VideoPlayer = memo(function VideoPlayer({
 
       onOpenPlayerReady?.(player);
     },
-    [onOpenPlayerReady, adUrl, playbackSpeed],
+    [onOpenPlayerReady, adUrl, playbackSpeed]
   );
 
   const playThePlayer = useCallback(() => {
@@ -490,10 +473,7 @@ export const VideoPlayer = memo(function VideoPlayer({
       }
     } catch (error) {
       // Fallback to content if player state check fails
-      console.warn(
-        "Error checking player state, falling back to content:",
-        error,
-      );
+      console.warn("Error checking player state, falling back to content:", error);
       player?.getMedia().play();
     }
   }, [updatePlayerMutedState, updatePlayerPlayState]);
@@ -563,7 +543,7 @@ export const VideoPlayer = memo(function VideoPlayer({
         alwaysVisible: false,
       },
       mode: "responsive",
-      forceNative: isSafari ? true : !src?.endsWith(".m3u8"), // Safari uses native HLS, others use hls.js
+      forceNative: isSafari ? true : !(typeof src === "string" && src.endsWith(".m3u8")), // Safari uses native HLS, others use hls.js
       showLoaderOnInit: false,
       hls: hlsConfigs,
       startTime,
@@ -616,6 +596,7 @@ export const VideoPlayer = memo(function VideoPlayer({
     if (!isInFeed) return;
     if (adUrl) {
       playerRef.current?.loadAd(adUrl);
+      setupAdEventListenersRef.current?.(playerRef.current!);
     }
   }, [adUrl, isInFeed]);
 
@@ -639,12 +620,7 @@ export const VideoPlayer = memo(function VideoPlayer({
     return () => {
       videoElement.removeEventListener("muteAndPlay", handleMuteAndPlay);
     };
-  }, [
-    updatePlayerMutedState,
-    updatePlayerPlayState,
-    playThePlayer,
-    pauseThePlayer,
-  ]);
+  }, [updatePlayerMutedState, updatePlayerPlayState, playThePlayer, pauseThePlayer]);
 
   // A function to check and call onEnded if both ads and video are completed
   const tryCallingEnd = useCallback(() => {
@@ -655,7 +631,7 @@ export const VideoPlayer = memo(function VideoPlayer({
     if (allAdsCompleted && videoCompleted) {
       if (adUrl) {
         onAdRequestedRef.current?.();
-        playerRef.current?.loadAd(adUrl).then((e) => {});
+        playerRef.current?.loadAd(adUrl).then((_e) => {});
         playerStateRef.current.allAdsCompleted = false;
       }
       playerStateRef.current.videoCompleted = false;
@@ -676,7 +652,7 @@ export const VideoPlayer = memo(function VideoPlayer({
       playerStateRef.current.videoCompleted = true;
       tryCallingEnd();
     },
-    [tryCallingEnd],
+    [tryCallingEnd]
   );
 
   useEffect(() => {
@@ -712,9 +688,7 @@ export const VideoPlayer = memo(function VideoPlayer({
         onVideoStart?.(
           playerRef.current?.getMedia().duration ?? 0,
           videoElement.currentTime,
-          typeof startTime === "number" && startTime !== -1
-            ? Math.floor(latency)
-            : 0,
+          typeof startTime === "number" && startTime !== -1 ? Math.floor(latency) : 0
         );
       }
     };
@@ -728,20 +702,10 @@ export const VideoPlayer = memo(function VideoPlayer({
     return () => {
       videoElement.removeEventListener("playing", handlePlaying);
       videoElement.removeEventListener("play", handlePlay);
-      videoElement.removeEventListener(
-        "adsallAdsCompleted",
-        handleAllAdsCompleted,
-      );
+      videoElement.removeEventListener("adsallAdsCompleted", handleAllAdsCompleted);
       videoElement.removeEventListener("ended", handleEnded);
     };
-  }, [
-    onVideoStart,
-    src,
-    updateLoadingState,
-    pauseThePlayer,
-    handleAllAdsCompleted,
-    handleEnded,
-  ]);
+  }, [onVideoStart, src, updateLoadingState, pauseThePlayer, handleAllAdsCompleted, handleEnded]);
 
   const changePlayerStateRef = useCallback(
     (isReset: boolean, duration?: number, currentTime?: number) => {
@@ -766,23 +730,17 @@ export const VideoPlayer = memo(function VideoPlayer({
       if (currentTime < 3 && playerStateRef.current.videoWatchedFired) {
         playerStateRef.current.videoWatchedFired = false;
       }
-      if (
-        currentTime < firstQuartileTime &&
-        playerStateRef.current.firstQuartileFired
-      ) {
+      if (currentTime < firstQuartileTime && playerStateRef.current.firstQuartileFired) {
         playerStateRef.current.firstQuartileFired = false;
       }
       if (currentTime < midpointTime && playerStateRef.current.midpointFired) {
         playerStateRef.current.midpointFired = false;
       }
-      if (
-        currentTime < thirdQuartileTime &&
-        playerStateRef.current.thirdQuartileFired
-      ) {
+      if (currentTime < thirdQuartileTime && playerStateRef.current.thirdQuartileFired) {
         playerStateRef.current.thirdQuartileFired = false;
       }
     },
-    [playerStateRef],
+    [playerStateRef]
   );
 
   useEffect(() => {
@@ -792,14 +750,8 @@ export const VideoPlayer = memo(function VideoPlayer({
     const handleTimeUpdate = () => {
       const videlElement = videoRef.current;
       const duration = videoElement.duration;
-      if (!videlElement || duration === 0 || !duration || duration === Infinity)
-        return;
-      const {
-        firstQuartileFired,
-        midpointFired,
-        thirdQuartileFired,
-        videoWatchedFired,
-      } = playerStateRef.current;
+      if (!videlElement || duration === 0 || !duration || duration === Infinity) return;
+      const { firstQuartileFired, midpointFired, thirdQuartileFired, videoWatchedFired } = playerStateRef.current;
 
       const { currentTime } = videoElement;
 
@@ -836,24 +788,14 @@ export const VideoPlayer = memo(function VideoPlayer({
       // Clean up the timeupdate event listener
       videoElement.removeEventListener("timeupdate", handleTimeUpdate);
     };
-  }, [
-    src,
-    onVideoFirstQuartile,
-    onVideoMidpoint,
-    onVideoThirdQuartile,
-    onVideoWatched,
-  ]);
+  }, [src, onVideoFirstQuartile, onVideoMidpoint, onVideoThirdQuartile, onVideoWatched]);
 
   const onVideoSeeked = useCallback(
     (event: React.SyntheticEvent<HTMLVideoElement, Event>) => {
       onSeeked?.(event);
-      changePlayerStateRef(
-        false,
-        videoRef.current?.duration,
-        videoRef.current?.currentTime,
-      );
+      changePlayerStateRef(false, videoRef.current?.duration, videoRef.current?.currentTime);
     },
-    [playerStateRef, changePlayerStateRef, onSeeked],
+    [playerStateRef, changePlayerStateRef, onSeeked]
   );
 
   const handleOnAdStarted = useCallback(
@@ -861,17 +803,18 @@ export const VideoPlayer = memo(function VideoPlayer({
       onAdStarted?.(adData);
       setIsPosterVisible(false);
     },
-    [onAdStarted, setIsPosterVisible],
+    [onAdStarted, setIsPosterVisible]
   );
+
+  const handleSetupReady = useCallback((fn: (player: OpenPlayerJS) => void) => {
+    setupAdEventListenersRef.current = fn;
+  }, []);
 
   return (
     <div className="gencl:relative gencl:h-full gencl:w-full">
       <video
         id={id}
-        className={cn(
-          "gencl:h-auto gencl:w-auto gencl:bg-center gencl:bg-no-repeat gencl:object-cover",
-          className,
-        )}
+        className={cn("gencl:h-auto gencl:w-auto gencl:bg-center gencl:bg-no-repeat gencl:object-cover", className)}
         style={style}
         // poster={poster}
         ref={videoRef}
@@ -879,22 +822,19 @@ export const VideoPlayer = memo(function VideoPlayer({
         playsInline={playsInline}
         preload="none"
         onSeeked={onVideoSeeked}
-        src={encodeVideoSourceUrl(src ?? "")}
+        src={encodeVideoSourceUrl(typeof src === "string" ? src : "")}
         // onEnded={handleEnded}
         {...props}
       />
       {/**
        * This dynamic poster implementation allows us to lazy load poster in whereas vidoe element's poster doesn't allow us to do that.
        */}
-      {poster && isPosterVisible && (
-        <VideoPoster src={poster} className={className} />
-      )}
+      {poster && isPosterVisible && <VideoPoster src={poster} className={className} />}
       {isLoading && (
         <div
           role="status"
           aria-label="Loading video"
-          className="gencl:absolute gencl:inset-0 gencl:flex gencl:items-center gencl:justify-center gencl:pointer-events-none"
-        >
+          className="gencl:absolute gencl:inset-0 gencl:flex gencl:items-center gencl:justify-center gencl:pointer-events-none">
           <div className="gencl:rounded-full gencl:bg-black/40 gencl:p-3 gencl:backdrop-blur-sm">
             <Loader size="md" aria-hidden="true" />
           </div>
@@ -909,9 +849,7 @@ export const VideoPlayer = memo(function VideoPlayer({
           playerStateRef={playerStateRef}
           updateLoadingState={updateLoadingState}
           isInExpandView={isInExpandView}
-          onSetupReady={(fn) => {
-            setupAdEventListenersRef.current = fn;
-          }}
+          onSetupReady={handleSetupReady}
           onAdStarted={handleOnAdStarted}
           onAdFirstQuartile={onAdFirstQuartile}
           onAdCompleted={onAdCompleted}
@@ -937,10 +875,7 @@ type VideoPosterProps = {
   className?: string;
 };
 
-export const VideoPoster = memo(function VideoPoster({
-  src,
-  className,
-}: VideoPosterProps) {
+export const VideoPoster = memo(function VideoPoster({ src, className }: VideoPosterProps) {
   const [visible, setVisible] = useState(true);
 
   if (!visible) return null;
@@ -951,7 +886,7 @@ export const VideoPoster = memo(function VideoPoster({
       loading="lazy"
       className={cn(
         "gencl:absolute gencl:inset-0 gencl:h-full gencl:w-full gencl:object-cover gencl:pointer-events-none",
-        className,
+        className
       )}
       style={{
         // To manage blink in safari I have added this transform properties.

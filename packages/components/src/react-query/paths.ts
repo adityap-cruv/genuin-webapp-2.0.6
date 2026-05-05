@@ -4,6 +4,10 @@ export const API_PATHS = {
    */
   FEED_HOME: "/goservices/feed/home",
   /**
+   * Api path to fetch feed via V1.
+   */
+  FEED_HOME_V1: "/goservices/feed/v1/home",
+  /**
    * Api path to fetch embed feed.
    */
   EMBED_FEED_HOME: "/goservices/feed/embed/home",
@@ -299,4 +303,12 @@ export const API_PATHS = {
    * Api path to send analytics event to backend.
    */
   BACKEND_ANALYTICS: "/goservices/data/collect",
+  /**
+   *  Api path to fetch allowed brand websites for linkouts.
+   */
+  BRAND_WEBSITES: "/api/v3/brand/websites",
+  /**
+   * Api path to validate url for the post linkout.
+   */
+  LINKOUT_URL_VALIDATE: "/api/v3/users/video/validate_url",
 } as const;

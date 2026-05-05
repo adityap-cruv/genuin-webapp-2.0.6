@@ -1,52 +1,55 @@
-import type { NextRequest } from 'next/server'
-import { NextResponse } from 'next/server'
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+
+import { toHttpUrl } from "@/lib/utils/common/url";
 
 export async function GET(request: NextRequest) {
   // Get the API URL from the header that was set in middleware
-  const apiUrl = request.headers.get('x-sitemap-index-api-url')
+  const apiUrl = request.headers.get("x-sitemap-index-api-url");
 
   if (!apiUrl) {
-    return NextResponse.json({ error: 'API URL not found' }, { status: 500 })
+    return NextResponse.json({ error: "API URL not found" }, { status: 500 });
   }
 
   try {
     // Fetch the sitemap index content from the API
-    const controller = new AbortController()
+    const controller = new AbortController();
     const timeoutId = setTimeout(() => {
-      controller.abort()
-    }, 5000) // 5 second timeout
-    console.log('Fetching sitemap from:', apiUrl)
-    const response = await fetch(apiUrl, {
+      controller.abort();
+    }, 5000); // 5 second timeout
+    const httpUrl = toHttpUrl(apiUrl);
+    console.log("Fetching sitemap from:", httpUrl);
+    const response = await fetch(httpUrl, {
       signal: controller.signal,
-    })
-    clearTimeout(timeoutId)
+    });
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
-      throw new Error(`API responded with status: ${response.status}`)
+      throw new Error(`API responded with status: ${response.status}`);
     }
 
     // Get the content from the API response
-    const text = await response.text()
+    const text = await response.text();
 
     // Return the content with the proper XML content type for sitemaps
     return new NextResponse(text, {
       headers: {
-        'Content-Type': 'application/xml; charset=utf-8',
+        "Content-Type": "application/xml; charset=utf-8",
       },
-    })
+    });
   } catch (error) {
-    console.error('Error fetching sitemap index:', error)
+    console.error("Error fetching sitemap index:", error);
     // Return a minimal valid sitemap index XML with 200 status if the API is having issues
     // This prevents search engines from treating the sitemap as broken
     const fallbackSitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-</sitemapindex>`
+</sitemapindex>`;
 
     return new NextResponse(fallbackSitemapXml, {
       status: 200,
       headers: {
-        'Content-Type': 'application/xml; charset=utf-8',
+        "Content-Type": "application/xml; charset=utf-8",
       },
-    })
+    });
   }
 }

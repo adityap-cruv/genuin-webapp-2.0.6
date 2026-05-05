@@ -1,21 +1,25 @@
-import { useCallback, Suspense, lazy, ComponentProps } from "react";
-const AuthenticationModal = lazy(() =>
-  import("../../organisms/authentication-modal/index.js").then((m) => ({
-    default: m.AuthenticationModal,
-  }))
-);
-import { useJoinGroupMutation } from "@genuin/components/react-query/api/group/join";
-import { GroupUserStatusType } from "@genuin/components/types/roles";
 import { Button as PrimitiveButton } from "@genuin/ui/button";
-import { Toast } from "@genuin/ui/components/toaster";
-import { useLeaveGroupMutation } from "@genuin/components/react-query/api/group/join";
-import { useAuthContext } from "@genuin/components/context/auth";
 import { Loader } from "@genuin/ui/components/loader";
+import { Toast } from "@genuin/ui/components/toaster";
+import type { ComponentProps } from "react";
+import { useCallback, Suspense, lazy } from "react";
+
+import { useAnalytics } from "@genuin/components/context/analytics";
+import { useAuthContext } from "@genuin/components/context/auth";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
-import { useAnalytics } from "@genuin/components/context/analytics";
+import { useJoinGroupMutation } from "@genuin/components/react-query/api/group/join";
+import { useLeaveGroupMutation } from "@genuin/components/react-query/api/group/join";
+import type { GroupUserStatusType } from "@genuin/components/types/roles";
+
 import { Link } from "../link";
+
+const AuthenticationModal = lazy(() =>
+  import("@genuin/components/organisms/authentication-modal").then((m) => ({
+    default: m.AuthenticationModal,
+  }))
+);
 
 const DEFAULT_BUTTON_TEXT = {
   UNJOINED: "Join Group",
@@ -39,10 +43,7 @@ type JoinGroupButtonProps = {
   onGroupJoinStatusChange?: (newRole: GroupUserStatusType) => void;
 } & ComponentProps<typeof PrimitiveButton>;
 
-export function JoinGroupButton({
-  groupId,
-  ...restProps
-}: JoinGroupButtonProps) {
+export function JoinGroupButton({ groupId, ...restProps }: JoinGroupButtonProps) {
   const { authenticationStatus, handleAuthCallback } = useAuthContext();
   const { modalConfig } = useEmbedConfigs();
 
@@ -99,8 +100,7 @@ export function JoinGroupButton({
               },
             },
           }}
-          asChild
-        >
+          asChild>
           {button}
         </AuthenticationModal>
       </Suspense>
@@ -124,41 +124,39 @@ function Button({
 }: JoinGroupButtonProps) {
   const { user } = useAuthContext();
   const { track, EventName } = useAnalytics();
-  const { mutate: joinGroup, isPending: isPendingJoinGroup } =
-    useJoinGroupMutation({
-      onSuccess: (status) => {
-        onGroupJoinStatusChange?.(status);
-        track(EventName.LOOP_JOINED, {
-          content_id: groupId,
-          slug: groupSlug,
-          group_id: groupId,
-          group_name: groupName,
-          is_private: isPrivate,
-          ...(restProps.videoId && { video_id: restProps.videoId }),
-        });
-      },
-      onError: () => {
-        Toast.Error({ message: "Failed to join group" });
-      },
-    });
+  const { mutate: joinGroup, isPending: isPendingJoinGroup } = useJoinGroupMutation({
+    onSuccess: (status) => {
+      onGroupJoinStatusChange?.(status);
+      track(EventName.LOOP_JOINED, {
+        content_id: groupId,
+        slug: groupSlug,
+        group_id: groupId,
+        group_name: groupName,
+        is_private: isPrivate,
+        ...(restProps.videoId && { video_id: restProps.videoId }),
+      });
+    },
+    onError: () => {
+      Toast.Error({ message: "Failed to join group" });
+    },
+  });
 
-  const { mutate: leaveGroup, isPending: isPendingLeaveGroup } =
-    useLeaveGroupMutation({
-      onSuccess: () => {
-        onGroupJoinStatusChange?.("UNJOINED");
-        track(EventName.LOOP_LEFT, {
-          content_id: groupId,
-          slug: groupSlug,
-          group_id: groupId,
-          group_name: groupName,
-          is_private: isPrivate,
-          ...(restProps.videoId && { video_id: restProps.videoId }),
-        });
-      },
-      onError: () => {
-        Toast.Error({ message: "Failed to leave group" });
-      },
-    });
+  const { mutate: leaveGroup, isPending: isPendingLeaveGroup } = useLeaveGroupMutation({
+    onSuccess: () => {
+      onGroupJoinStatusChange?.("UNJOINED");
+      track(EventName.LOOP_LEFT, {
+        content_id: groupId,
+        slug: groupSlug,
+        group_id: groupId,
+        group_name: groupName,
+        is_private: isPrivate,
+        ...(restProps.videoId && { video_id: restProps.videoId }),
+      });
+    },
+    onError: () => {
+      Toast.Error({ message: "Failed to leave group" });
+    },
+  });
 
   const handleGroupJoin = useCallback(
     (e: any) => {
@@ -188,14 +186,7 @@ function Button({
       onClick={handleGroupJoin}
       disabled={disabled}
       {...restProps}
-      theme={
-        role === "UNJOINED"
-          ? "primary"
-          : role === "JOINED"
-            ? "outline"
-            : "secondary"
-      }
-    >
+      theme={role === "UNJOINED" ? "primary" : role === "JOINED" ? "outline" : "secondary"}>
       {isLoading ? (
         <Loader strokeColor={role === "JOINED" ? "black" : "white"} />
       ) : (

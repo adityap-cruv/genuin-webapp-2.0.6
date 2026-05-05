@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
+
+import type { StepPost } from "../create-post/types";
+
 import { PostLayout } from "./post-layout";
-import type { StepPost } from "../create-post";
 
 const meta: Meta<typeof PostLayout> = {
   title: "Organisms/PostLayout",

@@ -1,7 +1,8 @@
-import { cn, defaultSizesForIcons } from "@genuin/ui/lib/utils";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 import type { ComponentProps } from "react";
+
+import { cn, defaultSizesForIcons } from "@genuin/ui/lib/utils";
 
 // Define the playVariant function using cva to handle different styles based on props
 const boostVariant = cva("", {
@@ -25,15 +26,9 @@ const boostVariant = cva("", {
 // theme: controls the overall theme (light/dark)
 // fill: controls the fill color (light/dark)
 // stroke: controls the stroke color (light/dark)
-type BoostIconPropsType = ComponentProps<"svg"> &
-  VariantProps<typeof boostVariant>;
+type BoostIconPropsType = ComponentProps<"svg"> & VariantProps<typeof boostVariant>;
 
-export function BoostIcon({
-  theme = "light",
-  size,
-  className,
-  ...restProps
-}: BoostIconPropsType) {
+export function BoostIcon({ theme = "light", size, className, ...restProps }: BoostIconPropsType) {
   return (
     <svg
       width="17"
@@ -42,8 +37,7 @@ export function BoostIcon({
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={cn(boostVariant({ theme, size }), className)}
-      {...restProps}
-    >
+      {...restProps}>
       <path
         d="M10 1V7.92308H16.2308L7.23077 19V12.0769H1L10 1Z"
         strokeWidth="1.5"

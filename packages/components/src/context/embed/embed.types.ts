@@ -6,13 +6,8 @@ export type SDKAPI = {
 };
 
 // Shared position types to eliminate redundancy
-export type OverlayPosition =
-  | "overlay_on_top"
-  | "overlay_on_bottom"
-  | "outside_on_bottom";
-export type SocialInteractionPosition =
-  | "overlay_on_bottom"
-  | "outside_on_bottom";
+export type OverlayPosition = "overlay_on_top" | "overlay_on_bottom" | "outside_on_bottom";
+export type SocialInteractionPosition = "overlay_on_bottom" | "outside_on_bottom";
 export type LinkPosition = "overlay" | "outside";
 
 // Shared engagement tools type
@@ -84,7 +79,7 @@ export type LiveCustomizationTools = {
      * Possible values: 'koah_ads', 'agent_text', 'videos', 'inventory'
      * Components not in the array are not shown.
      */
-    content_order?: ('koah_ads' | 'agent_text' | 'videos' | 'inventory')[];
+    content_order?: ("koah_ads" | "agent_text" | "videos" | "inventory")[];
   };
   // Allow other properties from the placement API response
   [key: string]: any;
@@ -298,11 +293,11 @@ export type BrandDetailsConfigType = {
       };
       android: {
         enable: boolean;
-        playstore_link: string;
+        playstore_link?: string;
       };
       ios: {
         enable: boolean;
-        appstore_link: string;
+        appstore_link?: string;
       };
     };
     white_label: {
@@ -459,8 +454,8 @@ export type ActionType =
 type AutoUserInteractionToPerformType = ActionType;
 
 type AuthInfoType = {
-  signInUrl: string | Function;
-  signUpUrl: string | Function;
+  signInUrl: string | ((...args: string[]) => string);
+  signUpUrl: string | ((...args: string[]) => string);
 };
 
 export type EmbedDataType = {
@@ -605,7 +600,7 @@ export type EmbedDataType = {
      * Possible values: 'koah_ads', 'agent_text', 'videos', 'inventory'
      * Components not in the array are not shown.
      */
-    content_order?: ('koah_ads' | 'agent_text' | 'videos' | 'inventory')[];
+    content_order?: ("koah_ads" | "agent_text" | "videos" | "inventory")[];
   };
   /**
    * Live customization tools containing the full placement configuration.
@@ -988,19 +983,9 @@ export type PlacementSection = {
   title: string;
 };
 
-export type CommunityJoinStatusType =
-  | "unjoined"
-  | "joined"
-  | "requested"
-  | "leader";
+export type CommunityJoinStatusType = "unjoined" | "joined" | "requested" | "leader";
 
-export type ViewType =
-  | "feed"
-  | "carousel"
-  | "standard_wall"
-  | "grid"
-  | "dynamic"
-  | "expand_only";
+export type ViewType = "feed" | "carousel" | "standard_wall" | "grid" | "dynamic" | "expand_only";
 
 export type SizeBoxType = { height: number; width: number };
 

@@ -1,9 +1,11 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useAxiosInstance } from "@genuin/components/context/axios";
-import { validateRepostCommunityListData } from "./schema";
-import { API_PATHS } from "@genuin/components/react-query/paths";
-import { getQueryKeyForRepostDestinations } from "@genuin/components/react-query/keys/repost";
 import type { AxiosInstance } from "axios";
+
+import { useAxiosInstance } from "@genuin/components/context/axios";
+import { getQueryKeyForRepostDestinations } from "@genuin/components/react-query/keys/repost";
+import { API_PATHS } from "@genuin/components/react-query/paths";
+
+import { validateRepostCommunityListData } from "./schema";
 
 /**
  * Fetch repost destinations for a given video ID.
@@ -41,13 +43,16 @@ export function useGetRepostDestinations(videoId: string) {
  * @param destinationId chat id of loop
  * @param sourceVideoId source video id (self)
  */
-async function repostVideo({
-  destinationId,
-  sourceVideoId,
-}: {
-  destinationId: string;
-  sourceVideoId: string;
-}, axiosInstance: AxiosInstance) {
+async function repostVideo(
+  {
+    destinationId,
+    sourceVideoId,
+  }: {
+    destinationId: string;
+    sourceVideoId: string;
+  },
+  axiosInstance: AxiosInstance
+) {
   return await axiosInstance
     .post(API_PATHS.REPOST_VIDEO, {
       chat_id: destinationId,
@@ -58,7 +63,7 @@ async function repostVideo({
       if (res.data.code === 200) return true;
       throw new Error("Something went wrong reposting video.");
     })
-    .catch((e) => {
+    .catch((_e) => {
       throw new Error("Something went wrong reposting video.");
     });
 }
@@ -68,13 +73,7 @@ async function repostVideo({
  * @param destinationId The ID of the destination (community or chat).
  * @param sourceVideoId The ID of the video being reposted.
  */
-export function useRepostVideoMutation({
-  onSuccess,
-  onError,
-}: {
-  onSuccess: () => void;
-  onError: () => void;
-}) {
+export function useRepostVideoMutation({ onSuccess, onError }: { onSuccess: () => void; onError: () => void }) {
   const axiosInstance = useAxiosInstance();
 
   return useMutation({

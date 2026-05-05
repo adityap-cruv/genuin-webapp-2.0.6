@@ -1,8 +1,9 @@
-import { ComponentProps, useRef, useState, useEffect, ReactNode } from "react";
-import { useResizeObserver } from "usehooks-ts";
-import { cn } from "@genuin/ui/lib/utils";
 import { Button } from "@genuin/ui/components/button";
+import { cn } from "@genuin/ui/lib/utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import type { ComponentProps, ReactNode } from "react";
+import { useRef, useState, useEffect } from "react";
+import { useResizeObserver } from "usehooks-ts";
 
 type HorizontalScrollContainerProps = {
   children: ReactNode;
@@ -31,8 +32,7 @@ export function HorizontalScrollContainer({
 
     const element = scrollRef.current;
     const canScrollLeft = element.scrollLeft > 0;
-    const canScrollRight =
-      element.scrollLeft < element.scrollWidth - element.clientWidth;
+    const canScrollRight = element.scrollLeft < element.scrollWidth - element.clientWidth;
 
     setScrollState({ canScrollLeft, canScrollRight });
   };
@@ -85,8 +85,7 @@ export function HorizontalScrollContainer({
           size="sm"
           theme="secondary"
           className="gencl:absolute gencl:left-2 gencl:top-1/2 gencl:-translate-y-1/2 gencl:z-10 gencl:w-8 gencl:h-8 gencl:shadow-md gencl:rounded-full! gencl:bg-white"
-          onClick={scrollLeft}
-        >
+          onClick={scrollLeft}>
           <ChevronLeft className="gencl:w-4 gencl:h-4" />
         </Button>
       )}
@@ -98,21 +97,16 @@ export function HorizontalScrollContainer({
           size="sm"
           theme="secondary"
           className="gencl:absolute gencl:right-2 gencl:top-1/2 gencl:-translate-y-1/2 gencl:z-10 gencl:w-8 gencl:h-8 gencl:shadow-md gencl:rounded-full! gencl:bg-white"
-          onClick={scrollRight}
-        >
+          onClick={scrollRight}>
           <ChevronRight className="gencl:w-4 gencl:h-4" />
         </Button>
       )}
 
       <div
         ref={scrollRef}
-        className={cn(
-          "gencl:flex gencl:overflow-x-auto gencl:scrollbar-hide gencl:pb-2",
-          gapClasses[gap]
-        )}
+        className={cn("gencl:flex gencl:overflow-x-auto gencl:scrollbar-hide gencl:pb-2", gapClasses[gap])}
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-        onScroll={handleScroll}
-      >
+        onScroll={handleScroll}>
         {children}
       </div>
     </div>

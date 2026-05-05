@@ -1,13 +1,13 @@
 "use client";
 
 import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { cva, type VariantProps } from "class-variance-authority";
 import { XIcon } from "lucide-react";
 import * as React from "react";
-import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn, getGenclStyles } from "@genuin/ui/lib/utils";
 import { dialogManager } from "@genuin/ui/lib/dialog-manager";
 import { getRootContainer } from "@genuin/ui/lib/shadow-dom.utils";
+import { cn, getGenclStyles } from "@genuin/ui/lib/utils";
 
 /**
  * Dialog component with registry tracking.
@@ -50,44 +50,28 @@ function Dialog({
     onOpenChange?.(next);
   };
 
-  return (
-    <DialogPrimitive.Root
-      data-slot="dialog"
-      open={isOpen}
-      onOpenChange={handleOpenChange}
-      {...props}
-    />
-  );
+  return <DialogPrimitive.Root data-slot="dialog" open={isOpen} onOpenChange={handleOpenChange} {...props} />;
 }
 
-function DialogTrigger({
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Trigger>) {
+function DialogTrigger({ ...props }: React.ComponentProps<typeof DialogPrimitive.Trigger>) {
   return <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />;
 }
 
-function DialogPortal({
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Portal>) {
+function DialogPortal({ ...props }: React.ComponentProps<typeof DialogPrimitive.Portal>) {
   return <DialogPrimitive.Portal data-slot="dialog-portal" {...props} />;
 }
 
-function DialogClose({
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Close>) {
+function DialogClose({ ...props }: React.ComponentProps<typeof DialogPrimitive.Close>) {
   return <DialogPrimitive.Close data-slot="dialog-close" {...props} />;
 }
 
-function DialogOverlay({
-  className,
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Overlay>) {
+function DialogOverlay({ className, ...props }: React.ComponentProps<typeof DialogPrimitive.Overlay>) {
   return (
     <DialogPrimitive.Overlay
       data-slot="dialog-overlay"
       className={cn(
         "gen-sdk-class gen-sdk-root-portal gencl:data-[state=open]:animate-in gencl:data-[state=closed]:animate-out gencl:data-[state=closed]:fade-out-0 gencl:data-[state=open]:fade-in-0 gencl:fixed gencl:inset-0 gencl:z-50 gencl:bg-black/50",
-        className,
+        className
       )}
       {...props}
     />
@@ -115,7 +99,7 @@ const dialogContentVariants = cva(
     defaultVariants: {
       variant: "default",
     },
-  },
+  }
 );
 
 export interface DialogContentProps
@@ -142,15 +126,10 @@ function DialogContent({
       <DialogOverlay className={cn({ "gencl:backdrop-blur-lg": bgBlur })}>
         <DialogPrimitive.Content
           data-slot="dialog-content"
-          className={cn(
-            dialogContentVariants({ variant }),
-            className,
-            "gen-sdk-class gen-sdk-root-portal",
-          )}
+          className={cn(dialogContentVariants({ variant }), className, "gen-sdk-class gen-sdk-root-portal")}
           style={{ ...style, ...getGenclStyles() }}
           autoFocus={false}
-          {...props}
-        >
+          {...props}>
           {children}
           {showClose && (
             <DialogPrimitive.Close
@@ -160,10 +139,9 @@ function DialogContent({
                 "gencl:disabled:pointer-events-none gencl:[&_svg]:pointer-events-none",
                 "gencl:[&_svg]:shrink-0 gencl:[&_svg:not([class*=size-])]:size-5",
                 "gencl:cursor-pointer",
-                closeIconClassName,
+                closeIconClassName
               )}
-              tabIndex={-1}
-            >
+              tabIndex={-1}>
               <XIcon className="gencl:stroke-secondary-600" />
               <span className="gencl:sr-only">Close</span>
             </DialogPrimitive.Close>
@@ -180,7 +158,7 @@ function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
       data-slot="dialog-header"
       className={cn(
         "gencl:flex gencl:flex-col gencl:gap-2 gencl:text-center gencl:border-b gencl:border-secondary-150",
-        className,
+        className
       )}
       {...props}
     />
@@ -193,37 +171,19 @@ function DialogFooter({ className, ...props }: React.ComponentProps<"div">) {
       data-slot="dialog-footer"
       className={cn(
         "gencl:flex gencl:flex-col-reverse gencl:gap-2 gencl:sm:flex-row! gencl:sm:justify-end!",
-        className,
+        className
       )}
       {...props}
     />
   );
 }
 
-function DialogTitle({
-  className,
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Title>) {
-  return (
-    <DialogPrimitive.Title
-      data-slot="dialog-title"
-      className={cn(className)}
-      {...props}
-    />
-  );
+function DialogTitle({ className, ...props }: React.ComponentProps<typeof DialogPrimitive.Title>) {
+  return <DialogPrimitive.Title data-slot="dialog-title" className={cn(className)} {...props} />;
 }
 
-function DialogDescription({
-  className,
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Description>) {
-  return (
-    <DialogPrimitive.Description
-      data-slot="dialog-description"
-      className={cn(className)}
-      {...props}
-    />
-  );
+function DialogDescription({ className, ...props }: React.ComponentProps<typeof DialogPrimitive.Description>) {
+  return <DialogPrimitive.Description data-slot="dialog-description" className={cn(className)} {...props} />;
 }
 
 export {

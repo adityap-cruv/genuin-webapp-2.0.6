@@ -1,12 +1,14 @@
 "use client";
 
-import { ReactNode, useEffect, useState } from "react";
-import { DiamondIcon, TickRoundIcon } from "@genuin/ui/icons";
-
-import { Breadcrumb } from "@genuin/components/molecules/breadcrumb";
-import { StepPost } from "../create-post/types";
 import { Button } from "@genuin/ui/components/button";
 import { Loader } from "@genuin/ui/components/loader";
+import { DiamondIcon, TickRoundIcon } from "@genuin/ui/icons";
+import type { ReactNode } from "react";
+import { useEffect, useState } from "react";
+
+import { Breadcrumb } from "@genuin/components/molecules/breadcrumb";
+
+import type { StepPost } from "../create-post/types";
 
 type PostLayoutProps = {
   isEdit: boolean;
@@ -25,10 +27,7 @@ const getBreadcrumbItems = (step: StepPost, isEdit: boolean) => {
   switch (step) {
     case "UPLOAD":
     case "POST":
-      return [
-        { label: "My Videos", href: "/posts" },
-        { label: isEdit ? "Edit Post" : "Create New Post" },
-      ];
+      return [{ label: "My Videos", href: "/posts" }, { label: isEdit ? "Edit Post" : "Create New Post" }];
     case "EDIT_THUMBNAIL":
     case "CLIP_VIDEO":
       return [
@@ -107,8 +106,7 @@ export const PostLayout: React.FC<PostLayoutProps> = ({
         <div className="gencl:w-full gencl:flex gencl:justify-between gencl:items-center gencl:border-t gencl:border-secondary-150 gencl:bg-white gencl:p-3">
           <span
             className="gencl:flex gencl:gap-2 gencl:items-center gencl:text-body-1-medium gencl:text-secondary-900 gencl:transition-opacity gencl:duration-300"
-            style={{ opacity: showMessage ? 1 : 0 }}
-          >
+            style={{ opacity: showMessage ? 1 : 0 }}>
             {bottomMessage && (
               <>
                 <TickRoundIcon />
@@ -120,11 +118,7 @@ export const PostLayout: React.FC<PostLayoutProps> = ({
             <Button theme="custom" onClick={() => onCancel?.(stepNextButton)}>
               Cancel
             </Button>
-            <Button
-              theme="primary"
-              onClick={() => onNext?.(stepNextButton)}
-              disabled={isPostDisabled}
-            >
+            <Button theme="primary" onClick={() => onNext?.(stepNextButton)} disabled={isPostDisabled}>
               {isLoading && <Loader />}
               {getPrimaryButtonLabel(stepNextButton)}
             </Button>

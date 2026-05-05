@@ -1,8 +1,9 @@
 "use client";
-import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@genuin/ui/lib/utils";
-import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { useCallback, useEffect, useRef, useState } from "react";
+
 import { useBaseContext } from "@genuin/components/context";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
 const LONG_PRESS_DURATION = 500; // 500ms for long press
 
@@ -20,14 +21,9 @@ export const SpeedControlSideBars = () => {
   });
 
   useEffect(() => {
-    const playbackSpeedElement = document.querySelector(
-      ".playback-speed-class"
-    );
+    const playbackSpeedElement = document.querySelector(".playback-speed-class");
     if (playbackSpeedElement) {
-      playbackSpeedElement.classList.toggle(
-        "gencl:invisible",
-        playbackSpeed.isSpeedFromGesture
-      );
+      playbackSpeedElement.classList.toggle("gencl:invisible", playbackSpeed.isSpeedFromGesture);
     }
   }, [playbackSpeed.isSpeedFromGesture]);
 
@@ -69,7 +65,7 @@ export const SpeedControlSideBars = () => {
       <div
         className={cn(
           "gencl:absolute gencl:left-0 gencl:top-0 gencl:z-10 gencl:h-full gencl:w-14 gencl:opacity-0 gencl:transition-opacity",
-          activeBar === "left" && "gencl:bg-white "
+          activeBar === "left" && "gencl:bg-white"
         )}
         onTouchStart={(e) => {
           handleTouchStart(e, "left");
@@ -81,7 +77,7 @@ export const SpeedControlSideBars = () => {
       <div
         className={cn(
           "gencl:absolute gencl:right-0 gencl:top-0 gencl:z-10 gencl:h-full gencl:w-14 gencl:opacity-0 gencl:transition-opacity",
-          activeBar === "right" && "gencl:bg-white "
+          activeBar === "right" && "gencl:bg-white"
         )}
         onTouchStart={(e) => {
           handleTouchStart(e, "right");

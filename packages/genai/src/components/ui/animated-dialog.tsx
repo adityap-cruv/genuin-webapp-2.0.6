@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { cn } from '@/lib/utils';
 import ReactDOM from 'react-dom';
+
+import { cn } from '@/lib/utils';
 
 interface AnimatedDialogProps {
     open: boolean;

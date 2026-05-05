@@ -1,7 +1,8 @@
 import axios from "axios";
-import { API_PATHS } from "@genuin/components/react-query/paths";
-import { MEDIA_BASE_URL } from "@genuin/components/lib/utils/env";
 import type { AxiosInstance } from "axios";
+
+import { MEDIA_BASE_URL } from "@genuin/components/lib/utils/env";
+import { API_PATHS } from "@genuin/components/react-query/paths";
 
 export async function fetchImageBlob(url: string): Promise<string> {
   try {

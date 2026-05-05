@@ -1,19 +1,21 @@
-import { ThirdPartyScriptProvider } from '@components/providers/third-party-script-provider'
-import { UrlParamProvider } from '@/lib/utils/ssai/urlParamResolver'
-import { RedirectHandler } from '@components/providers/redirect-handler'
-import { SessionProvider } from 'next-auth/react'
-import BrandDetailsProviderClient from '@components/providers/brand-details-provider'
-import { ReactQueryClientProvider } from '@genuin/components/react-query/react-query-provider'
-import { BaseLayout } from '@genuin/components/templates/base-layout/base-layout'
-import { AuthBridge } from './auth-bridge'
-import { AnalyticsProvider } from '@genuin/components/context/analytics'
-import { LinkBridge } from './link-bridge'
-import { AxiosProvider } from '@genuin/components/context'
+import { AxiosProvider } from "@genuin/components/context";
+import { AnalyticsProvider } from "@genuin/components/context/analytics";
+import { ReactQueryClientProvider } from "@genuin/components/react-query/react-query-provider";
+import { BaseLayout } from "@genuin/components/templates/base-layout/base-layout";
+import { SessionProvider } from "next-auth/react";
+
+import { UrlParamProvider } from "@/lib/utils/ssai/urlParamResolver";
+import BrandDetailsProviderClient from "@components/providers/brand-details-provider";
+import { RedirectHandler } from "@components/providers/redirect-handler";
+
+import { AuthBridge } from "./auth-bridge";
+import { AutoLoginHandler } from "./auto-login-handler";
+import { LinkBridge } from "./link-bridge";
 
 interface SiteProvidersBaseProps {
-  children: React.ReactNode
-  config: any
-  session: any
+  children: React.ReactNode;
+  config: any;
+  session: any;
 }
 
 /**
@@ -22,19 +24,22 @@ interface SiteProvidersBaseProps {
 function CoreProviders({ children, config, session }: SiteProvidersBaseProps) {
   return (
     <ReactQueryClientProvider>
-    <AxiosProvider brandId={config.brand_id}> 
-      <BrandDetailsProviderClient brandDetails={config}>
-        <SessionProvider refetchOnWindowFocus={false} refetchInterval={3600} session={session}>
-          <LinkBridge>
-            <AnalyticsProvider user={null} brandDetails={config} isWebSDK={false}>
-              <AuthBridge>{children}</AuthBridge>
-            </AnalyticsProvider>
-          </LinkBridge>
-        </SessionProvider>
-      </BrandDetailsProviderClient>
+      <AxiosProvider brandId={config.brand_id}>
+        <BrandDetailsProviderClient brandDetails={config}>
+          <SessionProvider refetchOnWindowFocus={false} refetchInterval={3600} session={session}>
+            <AuthBridge>
+              <AutoLoginHandler />
+              <LinkBridge>
+                <AnalyticsProvider user={null} isWebSDK={false} brandDetails={config}>
+                  {children}
+                </AnalyticsProvider>
+              </LinkBridge>
+            </AuthBridge>
+          </SessionProvider>
+        </BrandDetailsProviderClient>
       </AxiosProvider>
     </ReactQueryClientProvider>
-  )
+  );
 }
 
 /**
@@ -42,12 +47,10 @@ function CoreProviders({ children, config, session }: SiteProvidersBaseProps) {
  */
 function InnerContentProviders({ children, config }: { children: React.ReactNode; config: any }) {
   return (
-    <RedirectHandler config={config} shouldRedirect={Object.hasOwn(config || {}, 'subdomain')}>
-      <ThirdPartyScriptProvider>
-        <UrlParamProvider>{children}</UrlParamProvider>
-      </ThirdPartyScriptProvider>
+    <RedirectHandler config={config} shouldRedirect={Object.hasOwn(config || {}, "subdomain")}>
+      <UrlParamProvider>{children}</UrlParamProvider>
     </RedirectHandler>
-  )
+  );
 }
 
 /**
@@ -61,7 +64,7 @@ export function SiteProvidersWithLayout({ children, config, session }: SiteProvi
         <InnerContentProviders config={config}>{children}</InnerContentProviders>
       </BaseLayout>
     </CoreProviders>
-  )
+  );
 }
 
 /**
@@ -73,7 +76,7 @@ export function SiteProvidersWithoutLayout({ children, config, session }: SitePr
     <CoreProviders config={config} session={session}>
       <InnerContentProviders config={config}>{children}</InnerContentProviders>
     </CoreProviders>
-  )
+  );
 }
 
 /**
@@ -85,5 +88,5 @@ export default function SiteProviders({ children, config, session }: SiteProvide
     <SiteProvidersWithLayout config={config} session={session}>
       {children}
     </SiteProvidersWithLayout>
-  )
+  );
 }

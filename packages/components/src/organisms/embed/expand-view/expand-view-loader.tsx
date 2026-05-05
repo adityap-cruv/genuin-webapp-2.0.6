@@ -1,18 +1,16 @@
-import { useEmbedContext } from "@genuin/components/context/embed";
-import { EmbedEventContextType } from "@genuin/components/context/embed/event-bus";
-import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+import type { QueryKey } from "@tanstack/react-query";
 import { lazy, Suspense, useEffect, useState } from "react";
-import { QueryKey } from "@tanstack/react-query";
-import { FeedSkeleton } from "@genuin/components/templates/feed/feed-skeleton.js";
 
-const EmbedExpandView = lazy(() =>
-  import("./expand-view.js").then((m) => ({ default: m.EmbedExpandView })),
-);
+import { useEmbedContext } from "@genuin/components/context/embed";
+import type { EmbedEventContextType } from "@genuin/components/context/embed/event-bus";
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+
+const EmbedExpandView = lazy(() => import("./expand-view").then((m) => ({ default: m.EmbedExpandView })));
 
 const EmbedExpandSectionedView = lazy(() =>
-  import("./embed-expand-sectioned-view.js").then((m) => ({
+  import("./embed-expand-sectioned-view").then((m) => ({
     default: m.EmbedExpandSectionedView,
-  })),
+  }))
 );
 
 type ExpandViewLoaderProps = {
@@ -39,15 +37,10 @@ export function ExpandViewLoader({
   fetchNextPage,
 }: ExpandViewLoaderProps) {
   const { embedEventBus } = useEmbedContext();
-  const [isExpandMode, setIsExpandMode] = useState(
-    embedEventBus.getContext().activePlayerType === "expand-view",
-  );
+  const [isExpandMode, setIsExpandMode] = useState(embedEventBus.getContext().activePlayerType === "expand-view");
 
   useEffect(() => {
-    const handleActivePlayerTypeChange = (
-      _eventData: any,
-      context: EmbedEventContextType,
-    ) => {
+    const handleActivePlayerTypeChange = (_eventData: any, context: EmbedEventContextType) => {
       setIsExpandMode(context.activePlayerType === "expand-view");
     };
 
@@ -62,9 +55,7 @@ export function ExpandViewLoader({
   }
 
   if (isSectioned) {
-    return (
-      <EmbedExpandSectionedView videos={videos} pageSession={pageSession} />
-    );
+    return <EmbedExpandSectionedView videos={videos} pageSession={pageSession} />;
   }
 
   return (

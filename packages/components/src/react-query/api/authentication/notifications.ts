@@ -1,12 +1,12 @@
-import { API_PATHS } from "@genuin/components/react-query/paths";
 import type { AxiosInstance } from "axios";
 
+import { API_PATHS } from "@genuin/components/react-query/paths";
 
 type NotificationType = {
-  conversation_alarm_notification?: boolean | null
-  message_notification?: boolean | null
-  roundtable_notification?: boolean
-}
+  conversation_alarm_notification?: boolean | null;
+  message_notification?: boolean | null;
+  roundtable_notification?: boolean;
+};
 
 export async function notificationsSettings(
   payload: Partial<NotificationType>,
@@ -15,9 +15,9 @@ export async function notificationsSettings(
   return await axios
     .patch(API_PATHS.UPDATE_NOTIFICATION_SETTINGS, payload)
     .then((res) => {
-      return { status: res.status === 200, data: res.data.data }
+      return { status: res.status === 200, data: res.data.data };
     })
-    .catch((e) => {
-      throw new Error()
-    })
+    .catch((_e) => {
+      throw new Error();
+    });
 }

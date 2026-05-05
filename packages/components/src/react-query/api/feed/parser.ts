@@ -1,17 +1,25 @@
 import type z from "zod";
 
-import {
-  mapCommunityUserRole,
-  mapGroupJoinStatus,
-} from "@genuin/components/lib/utils";
+import { VideoTypes } from "@genuin/components/context";
+import { mapCommunityUserRole, mapGroupJoinStatus } from "@genuin/components/lib/utils";
 
 import type { PostDetailsSchema, PostDetailsType } from "./schema";
-import type {
-  AdsFeedItem,
-  FeedResponseFromGoApi,
-  VideoFeedItem,
-} from "./types";
-import { VideoTypes } from "@genuin/components/context";
+import type { AdsFeedItem, FeedResponseFromGoApi, VideoFeedItem } from "./types";
+
+type VideoAttributes = {
+  type: "station" | "podcast";
+  clip_type?: string | null;
+  description?: string | null;
+  image_url?: string | null;
+  timestamp?: number | null;
+  title?: string | null;
+  bucket_name?: string | null;
+  offer_text?: string | null;
+  slug?: string | null;
+  episode_id?: string | null;
+  podcast_id?: string | null;
+  station_id?: string | null;
+};
 
 function isRetinaDisplay(): boolean {
   return typeof window !== "undefined" && window.devicePixelRatio >= 2;
@@ -55,9 +63,7 @@ function mapVideoItem(item: VideoFeedItem): z.infer<typeof PostDetailsSchema> {
       thumbnail: item.video.thumbnail_url,
       viewCount: item.video.no_of_views || 0,
       thumbnailM: item.video.thumbnail_url_m || null,
-      description:
-        (tryJsonParse(item.video.description_data) as any) ??
-        item.video.description_text,
+      description: (tryJsonParse(item.video.description_data) as any) ?? item.video.description_text,
       descritptionText: item.video.description_text,
       slug: item.video.slug,
       linkoutId: item.video.linkouts_id || null,
@@ -71,30 +77,15 @@ function mapVideoItem(item: VideoFeedItem): z.infer<typeof PostDetailsSchema> {
       attributes:
         item.video.attributes &&
         item.video.attributes.type &&
-        (item.video.attributes.type === "station" ||
-          item.video.attributes.type === "podcast")
+        (item.video.attributes.type === "station" || item.video.attributes.type === "podcast")
           ? {
-              ...(item.video.attributes as {
-                type: "station" | "podcast";
-                clip_type?: string | null;
-                description?: string | null;
-                image_url?: string | null;
-                timestamp?: number | null;
-                title?: string | null;
-                bucket_name?: string | null;
-                offer_text?: string | null;
-                slug?: string | null;
-                episode_id?: string | null;
-                podcast_id?: string | null;
-                station_id?: string | null;
-              }),
+              ...(item.video.attributes as VideoAttributes),
               image_url: appendImageOps(item.video.attributes.image_url),
             }
           : null,
       placement_card_layout_id: item.video.placement_card_layout_id || null,
       placement_video_layout_id: item.video.placement_video_layout_id || null,
-      placement_card_section_layout_id:
-        item.video.placement_card_section_layout_id || null,
+      placement_card_section_layout_id: item.video.placement_card_section_layout_id || null,
     },
     group: {
       id: item.loop.uuid || "",
@@ -104,11 +95,7 @@ function mapVideoItem(item: VideoFeedItem): z.infer<typeof PostDetailsSchema> {
       name: item.loop.group_name || "",
       isSubscribed: item.loop.is_subscriber || false,
       role: mapGroupJoinStatus(item.loop.request_status),
-      isPrivate: isGroupPrivate(
-        item.loop.actions,
-        item.community.logged_in_user_role,
-        item.loop.member_info,
-      ),
+      isPrivate: isGroupPrivate(item.loop.actions, item.community.logged_in_user_role, item.loop.member_info),
     },
     community: {
       id: item.community.uuid || "",
@@ -119,8 +106,7 @@ function mapVideoItem(item: VideoFeedItem): z.infer<typeof PostDetailsSchema> {
       userRole: mapCommunityUserRole(item.community.logged_in_user_role),
       type: item.community.type || null,
       name: item.community.name || null,
-      profileImage:
-        item.community.dp_s || item.community.dp_m || item.community.dp || null,
+      profileImage: item.community.dp_s || item.community.dp_m || item.community.dp || null,
       membersCount: item.community.no_of_members || 0,
       groupsCount: item.community.no_of_groups || 0,
       postsCount: item.community.no_of_videos || 0,
@@ -136,10 +122,7 @@ function mapVideoItem(item: VideoFeedItem): z.infer<typeof PostDetailsSchema> {
       }),
     },
     owner: {
-      profileImage:
-        item.owner.profile_image_s ??
-        item.owner.profile_image_m ??
-        item.owner.profile_image,
+      profileImage: item.owner.profile_image_s ?? item.owner.profile_image_m ?? item.owner.profile_image,
       isAvatar: item.owner.is_avatar,
       userName: item.owner.username,
       name: item.owner.name || null,
@@ -197,7 +180,7 @@ function isAdsFeedItem(item: VideoFeedItem | AdsFeedItem): item is AdsFeedItem {
 export function parseFeed(
   data: FeedResponseFromGoApi,
   shouldShowMiddlewareOverlay: boolean = false,
-  endOfFeed: boolean = false,
+  endOfFeed: boolean = false
 ): Array<PostDetailsType> {
   if (!data || !Array.isArray(data)) {
     return [];
@@ -225,9 +208,7 @@ export function parseFeed(
           thumbnail: item?.video.thumbnail_url,
           viewCount: item?.video.no_of_views || 0,
           thumbnailM: item?.video.thumbnail_url_m || null,
-          description:
-            (tryJsonParse(item?.video.description_data) as any) ??
-            item?.video.description_text,
+          description: (tryJsonParse(item?.video.description_data) as any) ?? item?.video.description_text,
           descritptionText: item?.video.description_text,
           slug: item?.video.slug,
           linkoutId: item?.video.linkouts_id || null,
@@ -241,8 +222,7 @@ export function parseFeed(
           attributes:
             item?.video.attributes &&
             item?.video.attributes.type &&
-            (item?.video.attributes.type === "station" ||
-              item?.video.attributes.type === "podcast")
+            (item?.video.attributes.type === "station" || item?.video.attributes.type === "podcast")
               ? {
                   ...(item?.video.attributes as {
                     type: "station" | "podcast";
@@ -262,12 +242,9 @@ export function parseFeed(
                 }
               : null,
 
-          placement_card_layout_id:
-            item?.video.placement_card_layout_id || null,
-          placement_video_layout_id:
-            item?.video.placement_video_layout_id || null,
-          placement_card_section_layout_id:
-            item?.video.placement_card_section_layout_id || null,
+          placement_card_layout_id: item?.video.placement_card_layout_id || null,
+          placement_video_layout_id: item?.video.placement_video_layout_id || null,
+          placement_card_section_layout_id: item?.video.placement_card_section_layout_id || null,
         },
         sponsored: item.sponsored
           ? {
@@ -301,12 +278,7 @@ export function parseFeed(
       result.push(mapVideoItem(item));
     }
     // end of feed the caught up overlay
-    if (
-      endOfFeed &&
-      index === data.length - 1 &&
-      shouldShowMiddlewareOverlay &&
-      !isAdsFeedItem(item)
-    ) {
+    if (endOfFeed && index === data.length - 1 && shouldShowMiddlewareOverlay && !isAdsFeedItem(item)) {
       result.push({
         video: {
           type: "complete",
@@ -343,12 +315,9 @@ const getVideoType = (type: string, videoLayoutId: number): VideoTypes => {
  * @returns Boolean indicating whether the user can see group posts
  */
 function isGroupPrivate(
-  actionList:
-    | Array<{ actionId: number; accessTypeId: number }>
-    | null
-    | undefined,
+  actionList: Array<{ actionId: number; accessTypeId: number }> | null | undefined,
   communityRole: number | undefined,
-  memberInfo: unknown | null | undefined,
+  memberInfo: unknown | null | undefined
 ): boolean {
   // Community role enum values
   const CommunityMemberRole = {
@@ -357,9 +326,7 @@ function isGroupPrivate(
     MODERATOR: 2,
   };
 
-  const actionModel = actionList?.find(
-    (action) => action.actionId === 3 || action.actionId === 4,
-  );
+  const actionModel = actionList?.find((action) => action.actionId === 3 || action.actionId === 4);
 
   switch (actionModel?.actionId) {
     case 3:

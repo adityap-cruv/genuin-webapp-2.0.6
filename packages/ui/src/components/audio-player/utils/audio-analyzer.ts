@@ -7,7 +7,7 @@ export class AudioAnalyzer {
       this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
       const arrayBuffer = await file.arrayBuffer();
       this.audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
-      
+
       const rawData = this.audioBuffer.getChannelData(0);
       const blockSize = Math.floor(rawData.length / samples);
       const filteredData: number[] = [];
@@ -22,9 +22,8 @@ export class AudioAnalyzer {
 
       // Normalize data
       const max = Math.max(...filteredData);
-      return filteredData.map(val => val / max);
-    } catch (error) {
-      console.error('Error analyzing audio:', error);
+      return filteredData.map((val) => val / max);
+    } catch {
       return this.generateFallbackData(samples);
     }
   }
@@ -33,10 +32,10 @@ export class AudioAnalyzer {
     try {
       const response = await fetch(url);
       const arrayBuffer = await response.arrayBuffer();
-      
+
       this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
       this.audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
-      
+
       const rawData = this.audioBuffer.getChannelData(0);
       const blockSize = Math.floor(rawData.length / samples);
       const filteredData: number[] = [];
@@ -50,9 +49,8 @@ export class AudioAnalyzer {
       }
 
       const max = Math.max(...filteredData);
-      return filteredData.map(val => val / max);
-    } catch (error) {
-      console.error('Error analyzing audio URL:', error);
+      return filteredData.map((val) => val / max);
+    } catch {
       return this.generateFallbackData(samples);
     }
   }
@@ -69,9 +67,8 @@ export class AudioAnalyzer {
   }
 
   cleanup(): void {
-    if (this.audioContext && this.audioContext.state !== 'closed') {
+    if (this.audioContext && this.audioContext.state !== "closed") {
       this.audioContext.close();
     }
   }
 }
-

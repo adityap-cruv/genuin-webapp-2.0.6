@@ -1,10 +1,15 @@
-import { CustomAvatar } from '@components/custom/custom-avatar'
-import { type PeopleType } from '.'
 import Link from 'next/link'
-import { PATH_NAME } from '@lib/utils/constants/path'
-import { NoResults } from './no-results'
-import { useSearchBarStore } from '../../store'
+
 import BrandBadgeIcon from '@/components/common/brand-badge-icon'
+import { CustomAvatar } from '@components/custom/custom-avatar'
+import { PATH_NAME } from '@lib/utils/constants/path'
+
+import { useSearchBarStore } from '../../store'
+
+import { NoResults } from './no-results'
+
+import { type PeopleType } from '.'
+
 
 export function People({ people }: { people?: PeopleType[] }) {
   const { close } = useSearchBarStore((state) => ({ close: state.close }))

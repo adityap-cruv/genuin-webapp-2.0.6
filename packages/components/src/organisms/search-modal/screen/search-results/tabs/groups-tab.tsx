@@ -1,41 +1,29 @@
-import { ComponentProps } from "react";
-import { usePathname } from "next/navigation";
 import { cn } from "@genuin/ui/lib/utils";
-import { GroupCard } from "@genuin/components/organisms/group-card";
-import { LoopTopResultType } from "@genuin/components/react-query/api/search";
-import { ComponentErrorState } from "@genuin/components/organisms/error-state-component";
-import { buildPageUrl } from "@genuin/components/lib/utils/pages";
-import { urlGenerators } from "../../../shared";
+import { usePathname } from "next/navigation";
+import type { ComponentProps } from "react";
+
 import { mapGroupJoinStatus } from "@genuin/components/lib/utils";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { ComponentErrorState } from "@genuin/components/organisms/error-state-component";
+import { GroupCard } from "@genuin/components/organisms/group-card";
+import type { LoopTopResultType } from "@genuin/components/react-query/api/search";
 import { updateGroupJoinStatusInSearchResults } from "@genuin/components/react-query/api/search";
-import { GroupUserStatusType } from "@genuin/components/types/roles";
+import type { GroupUserStatusType } from "@genuin/components/types/roles";
+
+import { urlGenerators } from "../../../shared";
 
 type GroupsTabProps = {
   groups: LoopTopResultType[];
   query: string;
 } & ComponentProps<"div">;
 
-export function GroupsTab({
-  groups,
-  query,
-  className,
-  ...restProps
-}: GroupsTabProps) {
+export function GroupsTab({ groups, query, className, ...restProps }: GroupsTabProps) {
   const pathname = usePathname();
 
   if (groups.length === 0) {
     return (
-      <div
-        className={cn(
-          "gencl:flex gencl:items-center gencl:justify-center ",
-          className
-        )}
-        {...restProps}
-      >
-        <ComponentErrorState
-          type="NO_GROUPS"
-          subtitle="Try searching with different keywords"
-        />
+      <div className={cn("gencl:flex gencl:items-center gencl:justify-center", className)} {...restProps}>
+        <ComponentErrorState type="NO_GROUPS" subtitle="Try searching with different keywords" />
       </div>
     );
   }

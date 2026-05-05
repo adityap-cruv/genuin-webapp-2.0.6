@@ -1,9 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
+import type { AxiosInstance } from "axios";
+
 import { useAxiosInstance } from "@genuin/components/context/axios";
+import { getDeviceId } from "@genuin/components/lib/utils/device-id";
 import { encryptText } from "@genuin/components/lib/utils/encryption";
 import { API_PATHS } from "@genuin/components/react-query/paths";
-import { getDeviceId } from "@genuin/components/lib/utils/device-id";
-import type { AxiosInstance } from "axios";
 
 type SendOtpProps = Partial<{ email: string; phoneNumber: string }> & {
   isUpdate?: boolean;
@@ -12,17 +13,13 @@ type SendOtpProps = Partial<{ email: string; phoneNumber: string }> & {
 
 export async function sendOtp(
   { email, phoneNumber, isUpdate, isInIframe }: SendOtpProps,
-  axiosInstance: AxiosInstance,
+  axiosInstance: AxiosInstance
 ) {
   const deviceId = getDeviceId(isInIframe);
-    const encryptedDeviceId = deviceId
-    ? await encryptText(deviceId, true)
-    : undefined;
-  const encryptedPhoneNumber = phoneNumber
-    ? await encryptText(phoneNumber, false)
-    : undefined;
+  const encryptedDeviceId = deviceId ? await encryptText(deviceId, true) : undefined;
+  const encryptedPhoneNumber = phoneNumber ? await encryptText(phoneNumber, false) : undefined;
   const encryptedEmail = email ? await encryptText(email, false) : undefined;
-  
+
   return await axiosInstance
     .post(API_PATHS.AUTH_SEND_OTP, {
       phoneNumber: encryptedPhoneNumber,
@@ -74,11 +71,7 @@ export async function sendOtp(
 }
 
 type SendOtpMutationCallbacks = {
-  onSuccess?: (
-    data: Awaited<ReturnType<typeof sendOtp>>,
-    variables: SendOtpProps,
-    context: unknown,
-  ) => void;
+  onSuccess?: (data: Awaited<ReturnType<typeof sendOtp>>, variables: SendOtpProps, context: unknown) => void;
   onError?: (error: Error, variables: SendOtpProps, context: unknown) => void;
 };
 
@@ -88,10 +81,7 @@ type SendOtpMutationCallbacks = {
  * @param callbacks - Optional onSuccess and onError callbacks.
  * @returns
  */
-export function useSendOtpMutation({
-  onError,
-  onSuccess,
-}: SendOtpMutationCallbacks) {
+export function useSendOtpMutation({ onError, onSuccess }: SendOtpMutationCallbacks) {
   const axiosInstance = useAxiosInstance();
 
   return useMutation({

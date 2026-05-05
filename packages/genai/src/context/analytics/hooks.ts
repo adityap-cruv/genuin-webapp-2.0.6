@@ -4,6 +4,7 @@
  */
 
 import { useContext } from 'react'
+
 import { AnalyticsContext } from './context'
 import type { AnalyticsContextValue } from './context'
 

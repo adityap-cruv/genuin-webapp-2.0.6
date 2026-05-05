@@ -1,12 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { WebSDKInput } from './WebSDKInput';
+
+import { useOctoAnalytics } from '@/context/analytics';
 import { useAgentsContext } from '@/context/app/context';
 import { useInputContext } from '@/context/input/context';
-import { useOctoAnalytics } from '@/context/analytics';
-import Chat from '../Chat';
-import { Skeleton } from '../ui/skeleton';
-import { CompactSkeleton } from '../ui/compact-skeleton';
 import { getCachedRemoteLottie, loadRemoteLottie } from '@/lib/lottie/load-remote-lottie';
+
+import Chat from '../Chat';
+import { CompactSkeleton } from '../ui/compact-skeleton';
+import { Skeleton } from '../ui/skeleton';
+
+import { WebSDKInput } from './WebSDKInput';
 
 // Duration constants for the auto-prompt cycle (in milliseconds)
 const FULL_VIEW_IDLE_TIMEOUT_MS = 5_000; // Wait 5s after response before closing chat

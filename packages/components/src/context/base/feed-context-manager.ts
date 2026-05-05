@@ -75,7 +75,7 @@ export class FeedContextManager {
     isInView: true,
     isPlaying: false,
   };
-  private eventManager: EventManager<{}, EventNames>;
+  private eventManager: EventManager<object, EventNames>;
   /** Current preview index (-1 means no preview active) */
   private previewIndex: number = -1;
   /** Debounce timer to delay "playLastKnownIndex" event after preview ends */
@@ -120,18 +120,13 @@ export class FeedContextManager {
     // Helper function to check if a tracker property has changed
     const hasPropertyChanged = <K extends keyof PlayPauseTracker>(
       key: K,
-      newValue: PlayPauseTracker[K] | undefined,
+      newValue: PlayPauseTracker[K] | undefined
     ): boolean => {
-      return (
-        typeof newValue === "boolean" && this.playPauseTracker[key] !== newValue
-      );
+      return typeof newValue === "boolean" && this.playPauseTracker[key] !== newValue;
     };
 
     // Helper function to handle auto-pause when a condition becomes false (lost focus or out of view)
-    const handleAutoPause = <K extends keyof PlayPauseTracker>(
-      key: K,
-      newValue: PlayPauseTracker[K],
-    ): boolean => {
+    const handleAutoPause = <K extends keyof PlayPauseTracker>(key: K, newValue: PlayPauseTracker[K]): boolean => {
       this.playPauseTracker[key] = newValue;
 
       // If the condition is now false (lost focus/view) and video is currently playing
@@ -219,15 +214,7 @@ export class FeedContextManager {
   /**
    * A function to update time info of the video.
    */
-  public setTimeInfo({
-    currentTime,
-    duration,
-    videoId,
-  }: {
-    currentTime: number;
-    duration: number;
-    videoId: string;
-  }) {
+  public setTimeInfo({ currentTime, duration, videoId }: { currentTime: number; duration: number; videoId: string }) {
     if (!this.videos[videoId]) return;
     const videoDetails = this.videos[videoId];
     this.videos[videoId] = {
@@ -252,13 +239,7 @@ export class FeedContextManager {
   /**
    * Mark a video as watched or unwatched
    */
-  public setVideoWatched({
-    videoId,
-    isWatched,
-  }: {
-    videoId: string;
-    isWatched: boolean;
-  }) {
+  public setVideoWatched({ videoId, isWatched }: { videoId: string; isWatched: boolean }) {
     const videoDetails = this.videos[videoId];
     if (videoDetails) {
       this.videos[videoId] = {
@@ -340,10 +321,7 @@ export class FeedContextManager {
    *   It can be one of the values defined in `EventNames`.
    * @param listener - The callback function to execute when the event is triggered.
    */
-  public on(
-    eventName: GenericEventNames,
-    listener: GenericEventListener,
-  ): void {
+  public on(eventName: GenericEventNames, listener: GenericEventListener): void {
     this.eventManager.on(eventName, listener);
   }
 
@@ -389,10 +367,7 @@ export class FeedContextManager {
    * @param listener - The listener function to remove.
    *   It must be the same reference used when calling `on()`.
    */
-  public off(
-    eventName: GenericEventNames,
-    listener: GenericEventListener,
-  ): void {
+  public off(eventName: GenericEventNames, listener: GenericEventListener): void {
     this.eventManager.off(eventName, listener);
   }
 
@@ -402,6 +377,7 @@ export class FeedContextManager {
    * Useful for debugging and monitoring the current state of the feed context.
    */
   public printAllDetails(): void {
+    // eslint-disable-next-line no-console
     console.log("[FeedContextManager]", {
       playPauseTracker: this.playPauseTracker,
       videos: this.videos,
@@ -452,11 +428,7 @@ export class FeedContextManager {
       // This prevents interruption when quickly hovering between videos
       this.previewDebounceTimer = setTimeout(() => {
         // If still no preview after 300ms and we have a last active index, resume playback
-        if (
-          this.previewIndex === -1 &&
-          capturedLastActiveIndex !== -1 &&
-          !bypassTracking
-        ) {
+        if (this.previewIndex === -1 && capturedLastActiveIndex !== -1 && !bypassTracking) {
           this.emit("playLastKnownIndex", {
             videoId: videoId,
             isVideoWatched: currentVideo?.isWatched ?? false,
@@ -554,11 +526,7 @@ export class FeedContextManager {
    * }
    * ```
    */
-  public checkIfVideoShouldPreview({
-    videoId,
-  }: {
-    videoId: string;
-  }): boolean | undefined {
+  public checkIfVideoShouldPreview({ videoId }: { videoId: string }): boolean | undefined {
     return this.videos[videoId]?.shouldPreview;
   }
 

@@ -1,12 +1,12 @@
 "use client";
 import { useCallback, useMemo, useState } from "react";
 
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { PostsGrid } from "@genuin/components/organisms/posts-grid";
 import { useGetProfileVideos } from "@genuin/components/react-query/api/profile/posts";
 import type { VideoType } from "@genuin/components/react-query/api/profile/posts/schema";
 
 import { FeedViewWrapper } from "./feed-view-wrapper";
-import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
 export function Posts({
   profileId,
@@ -24,18 +24,9 @@ export function Posts({
   totalVideos: number;
 }) {
   // post id from which the expand view is opened
-  const [expandViewId, setExpandViewId] = useState<undefined | string>(
-    undefined
-  );
+  const [expandViewId, setExpandViewId] = useState<undefined | string>(undefined);
   const { isMobile } = useDeviceDetectMediaQuery();
-  const {
-    data,
-    isLoading,
-    isError,
-    fetchNextPage,
-    isFetchingNextPage,
-    hasNextPage,
-  } = useGetProfileVideos(
+  const { data, isLoading, isError, fetchNextPage, isFetchingNextPage, hasNextPage } = useGetProfileVideos(
     profileId,
     loopId,
     communityId,
@@ -44,10 +35,7 @@ export function Posts({
     totalVideos
   );
 
-  const videos = useMemo(
-    () => data.pages.flatMap((page) => page.videos),
-    [data]
-  );
+  const videos = useMemo(() => data.pages.flatMap((page) => page.videos), [data]);
 
   const handlePostTileClick = useCallback((postId: string) => {
     setExpandViewId(postId);
@@ -74,13 +62,11 @@ export function Posts({
         isLoading={isLoading}
         isError={isError}
         lazyLoad="manual"
-        onPostTileClick={handlePostTileClick}
-      >
+        onPostTileClick={handlePostTileClick}>
         {hasNextPage && !isFetchingNextPage && (
           <div
             className="gencl:flex-center gencl:pt-4 gencl:text-body-1-semi-bold gencl:text-secondary-600 gencl:cursor-pointer"
-            onClick={() => fetchNextPage()}
-          >
+            onClick={() => fetchNextPage()}>
             View more
           </div>
         )}

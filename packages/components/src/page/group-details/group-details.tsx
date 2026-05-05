@@ -1,37 +1,34 @@
 "use client";
-import { ComponentProps, useId } from "react";
 import { convertISOToLocalDateFormate } from "@genuin/ui/utils";
-import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import type { ComponentProps } from "react";
+import { useId } from "react";
 
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { NOT_FOUND_ERROR_CODES } from "@genuin/components/lib/constants/errors";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { ErrorState } from "@genuin/components/molecules/error-state";
 import { GroupSubscriptionButton } from "@genuin/components/molecules/group-subscription-button";
 import { JoinGroupButton } from "@genuin/components/molecules/join-group-button";
 import { ShareButton } from "@genuin/components/molecules/share-button";
+import { DetailsPageTopbar } from "@genuin/components/organisms/details-page-topbar";
+import { ComponentErrorState } from "@genuin/components/organisms/error-state-component";
 import { GenericDetails } from "@genuin/components/organisms/generic-details";
 import { GenericDetailsMetadata } from "@genuin/components/organisms/generic-details/generic-details-metadata";
 import { SideInfo } from "@genuin/components/organisms/side-info";
+import type { GroupDetailsType } from "@genuin/components/react-query/api/group/details";
 import {
-  GroupDetailsType,
   setQueryDataForJoinGroupInGroupDetails,
   setQueryDataForSubscribeGroupInGroupDetails,
   useGetGroupDetails,
 } from "@genuin/components/react-query/api/group/details";
 import { GroupDetailsTabs } from "@genuin/components/templates/group-details-tabs";
-import { ErrorState } from "@genuin/components/molecules/error-state";
-import { NOT_FOUND_ERROR_CODES } from "@genuin/components/lib/constants/errors";
-import { DetailsPageTopbar } from "@genuin/components/organisms/details-page-topbar";
-import { ComponentErrorState } from "@genuin/components/organisms/error-state-component";
+
 import { GroupDetailsSkeleton } from "./skeleton";
-import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
 export function GroupDetailsPage({ slug }: { slug: string }) {
   const { isDesktop } = useDeviceDetectMediaQuery();
   const detailsId = useId();
-  const {
-    data: groupDetails,
-    isLoading,
-    isError,
-    error,
-  } = useGetGroupDetails(slug);
+  const { data: groupDetails, isLoading, isError, error } = useGetGroupDetails(slug);
 
   if (isLoading) {
     return <GroupDetailsSkeleton />;
@@ -49,8 +46,7 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
     return <ErrorState type="NO_GROUP" />;
   }
 
-  const showPrivateGroupAccess =
-    groupDetails.isPrivate && groupDetails.role !== "JOINED";
+  const showPrivateGroupAccess = groupDetails.isPrivate && groupDetails.role !== "JOINED";
 
   const ldDescription = `${
     groupDetails?.description ? groupDetails.description + " | " : ""
@@ -87,9 +83,7 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
           }}
         />
       )}
-      {!inTopBar && (
-        <ShareButton pathName={buildPageUrl({ type: "group", slug })} />
-      )}
+      {!inTopBar && <ShareButton pathName={buildPageUrl({ type: "group", slug })} />}
     </>
   );
 
@@ -100,11 +94,7 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
         className="gencl:pl-4 gencl:pr-6 gencl:py-3"
         title={groupDetails.name ?? ""}
         metadata={{ type: groupDetails.isPrivate ? "PRIVATE" : "PUBLIC" }}
-        ctas={
-          <div className="gencl:flex gencl:gap-2 gencl:justify-end">
-            {createCtas({ inTopBar: true })}
-          </div>
-        }
+        ctas={<div className="gencl:flex gencl:gap-2 gencl:justify-end">{createCtas({ inTopBar: true })}</div>}
       />
       <div className="gencl:sm:p-6! gencl:p-0 gencl:flex gencl:h-full gencl:gap-6 gencl:flex-grow gencl:overflow-auto">
         <div className="gencl:w-full gencl:overflow-auto gencl:flex gencl:flex-col gencl:gap-0 gencl:sm:gap-6!">
@@ -123,11 +113,7 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
               />
             }
             description={groupDetails.description ?? ""}
-            ctas={
-              <div className="gencl:gap-2 gencl:flex gencl:items-center">
-                {createCtas({})}
-              </div>
-            }
+            ctas={<div className="gencl:gap-2 gencl:flex gencl:items-center">{createCtas({})}</div>}
           />
           {showPrivateGroupAccess ? (
             <ComponentErrorState type="PRIVATE_GROUP" className="gencl:my-4" />
@@ -135,9 +121,7 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
             <GroupDetailsTabs
               className="gencl:pb-6"
               slug={slug}
-              aboutComponent={
-                <About groupDetails={groupDetails} variant="mobile" />
-              }
+              aboutComponent={<About groupDetails={groupDetails} variant="mobile" />}
               ownerId={groupDetails.owner.id}
             />
           )}
@@ -161,9 +145,7 @@ function About({
       variant={variant}
       sideInfoData={{
         createdAt: convertISOToLocalDateFormate(
-          groupDetails.createdAt
-            ? groupDetails.createdAt
-            : new Date().toISOString()
+          groupDetails.createdAt ? groupDetails.createdAt : new Date().toISOString()
         ),
         description: groupDetails.description ?? "",
         createdBy: {
@@ -174,7 +156,7 @@ function About({
           name: groupDetails.owner.name ?? "",
           userName: groupDetails.owner.userName,
           url: buildPageUrl({
-            type: !!groupDetails.owner.brand ? "brand" : "profile",
+            type: groupDetails.owner.brand ? "brand" : "profile",
             slug:
               !!groupDetails.owner.brand && groupDetails.owner.brand.slug
                 ? groupDetails.owner.brand.slug

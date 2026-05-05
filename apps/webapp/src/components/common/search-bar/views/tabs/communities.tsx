@@ -1,11 +1,18 @@
-import { CustomAvatar } from '@components/custom/custom-avatar'
-import { type CommunityType } from '.'
 import Link from 'next/link'
-import { PATH_NAME } from '@lib/utils/constants/path'
-import { NoResults } from './no-results'
-import { useSearchBarStore } from '../../store'
-import { LockIcon } from '@icons/LockIcon'
+
 import { BrandCommunityTag } from '@components/common/brand-community-tag'
+import { CustomAvatar } from '@components/custom/custom-avatar'
+import { LockIcon } from '@icons/LockIcon'
+import { PATH_NAME } from '@lib/utils/constants/path'
+
+import { useSearchBarStore } from '../../store'
+
+import { NoResults } from './no-results'
+
+import { type CommunityType } from '.'
+
+
+
 
 export function Communities({ communities }: { communities?: CommunityType[] }) {
   if (communities)

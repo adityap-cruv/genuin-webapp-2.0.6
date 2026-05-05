@@ -1,5 +1,5 @@
-import { create } from 'zustand'
 import { v4 as uuid } from 'uuid'
+import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 type CommunityType = { name: string; handle: string; profileImage: string; slug: string }

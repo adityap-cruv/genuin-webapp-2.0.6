@@ -1,10 +1,10 @@
 import { cn } from "@genuin/ui/utils";
-import type { ComponentProps } from "react";
+import type { ComponentProps, ReactNode } from "react";
+import { Fragment } from "react";
 
-import { ReactNode, Fragment } from "react";
+import { CommunityPrivacyInfo } from "@genuin/components/molecules/community-privacy-info";
 import { ProfileLink } from "@genuin/components/molecules/profile-link";
 import { Stats } from "@genuin/components/molecules/stats/stats";
-import { CommunityPrivacyInfo } from "@genuin/components/molecules/community-privacy-info";
 
 /**
  * Props for the GenericDetailsMetadata component
@@ -129,22 +129,14 @@ export function GenericDetailsMetadata({
   const metadataElements = [
     privacyInfo && {
       key: "privacy",
-      element: (
-        <CommunityPrivacyInfo
-          isPrivate={privacyInfo.isPrivate}
-          showPrivacyText={privacyInfo.showPrivacyText}
-        />
-      ),
+      element: <CommunityPrivacyInfo isPrivate={privacyInfo.isPrivate} showPrivacyText={privacyInfo.showPrivacyText} />,
       showSeparatorAfter: separatorConfig?.afterPrivacy !== false,
     },
     handle && {
       key: "handle",
       element: (
         <span className="gencl:flex gencl:items-center">
-          <ProfileLink
-            url={handle.url ?? undefined}
-            userLogoType={handle.brandUserLogo}
-          >
+          <ProfileLink url={handle.url ?? undefined} userLogoType={handle.brandUserLogo}>
             @{handle.userName}
           </ProfileLink>
         </span>
@@ -166,11 +158,7 @@ export function GenericDetailsMetadata({
     },
     others && {
       key: "others",
-      element: (
-        <span className="gencl:flex gencl:items-center gencl:gap-2">
-          {others}
-        </span>
-      ),
+      element: <span className="gencl:flex gencl:items-center gencl:gap-2">{others}</span>,
       showSeparatorAfter: false, // No separator after the last element
     },
   ].filter(Boolean) as Array<{
@@ -185,8 +173,7 @@ export function GenericDetailsMetadata({
         "gencl:text-body-1-medium! gencl:text-secondary-600 gencl:flex gencl:flex-wrap gencl:sm:flex-nowrap gencl:gap-2",
         className
       )}
-      {...restProps}
-    >
+      {...restProps}>
       {metadataElements.map((item, index) => (
         <Fragment key={`metadata-item-${item.key}-${index}`}>
           {item.element}

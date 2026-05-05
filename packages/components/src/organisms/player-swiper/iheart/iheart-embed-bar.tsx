@@ -1,13 +1,12 @@
 "use client";
-import { useState } from "react";
 import { Skeleton } from "@genuin/ui/components/skeleton/skeleton";
+import { useState } from "react";
+
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 const IFRAME_HEIGHT = 50;
 
-function buildIheartSrc(
-  attributes: NonNullable<NonNullable<PostDetailsType["video"]>["attributes"]>,
-): string | null {
+function buildIheartSrc(attributes: NonNullable<NonNullable<PostDetailsType["video"]>["attributes"]>): string | null {
   if (attributes.type === "station" && attributes.station_id) {
     return `https://www.iheart.com/live/${attributes.station_id}/?embed=true`;
   }
@@ -39,11 +38,8 @@ export function IHeartEmbedBar({ attributes }: IHeartEmbedBarProps) {
   return (
     <div
       className="gencl:relative gencl:w-full gencl:shrink-0 gencl:border-secondary-150 gencl:transition-all gencl:duration-300 gencl:ease-in-out"
-      style={{ height: IFRAME_HEIGHT }}
-    >
-      {!isLoaded && (
-        <Skeleton className="gencl:absolute gencl:inset-0 gencl:rounded-none" />
-      )}
+      style={{ height: IFRAME_HEIGHT }}>
+      {!isLoaded && <Skeleton className="gencl:absolute gencl:inset-0 gencl:rounded-none" />}
       <iframe
         width="100%"
         height={IFRAME_HEIGHT}

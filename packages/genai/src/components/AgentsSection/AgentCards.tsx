@@ -1,9 +1,12 @@
 // Fixed AgentCard Component
+import { useState } from 'react';
+
+import { useAgentsContext } from '@/context/app/context';
+import type { Agent } from '@/types';
+
 import { Button } from '../ui/button';
 import { Skeleton } from '../ui/skeleton';
-import type { Agent } from '@/types';
-import { useAgentsContext } from '@/context/app/context';
-import { useState } from 'react';
+
 
 const AgentCards = ({ agents }: { agents: Agent[] }) => {
     const [focusedAgent, setFocusedAgent] = useState<Agent | null>(null);

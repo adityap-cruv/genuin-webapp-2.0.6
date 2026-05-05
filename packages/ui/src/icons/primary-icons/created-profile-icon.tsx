@@ -1,8 +1,9 @@
+import type { VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
+
 import { cn } from "@genuin/ui/lib/utils";
 
 import type { SVGIconsProps } from "../type";
-import type { VariantProps } from "class-variance-authority";
-import { cva } from "class-variance-authority";
 
 const iconVariants = cva("gencl:stroke-black gencl:shrink-0", {
   variants: {
@@ -36,8 +37,7 @@ export function CreatedProfileIcon({
       viewBox="0 0 24 24"
       fill="none"
       className={cn(iconVariants({ theme, size }), className)}
-      {...restProps}
-    >
+      {...restProps}>
       <g clipPath="url(#clip0_2003_51653)">
         <path
           d="M-207.999 -103V-61.0005H-255.999V81.9995H229.001V-103H-207.999Z"

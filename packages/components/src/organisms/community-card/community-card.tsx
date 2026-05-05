@@ -1,22 +1,22 @@
 import { Avatar } from "@genuin/ui/components/avatar";
-import { Stats } from "../../molecules/stats";
+import { DialogClose } from "@genuin/ui/components/dialog";
 import { Image } from "@genuin/ui/components/image";
 import { Skeleton } from "@genuin/ui/components/skeleton";
-import { CommunityCardProps } from "./community-card.types";
-import { ReadMore } from "@genuin/components/molecules/read-more";
-import { JoinCommunityButton } from "@genuin/components/molecules/join-community-button";
-import { CommunityUserRole } from "@genuin/components/types/post";
-import {
-  communityCardVariants,
-  communityCardHeaderVariants,
-  CommunityCardVariant,
-} from "./community-card.cva";
-import { CommunityPrivacyInfo } from "@genuin/components/molecules/community-privacy-info";
-import { Link } from "@genuin/components/molecules/link";
 import { DotIcon } from "@genuin/ui/icons";
-import { DialogClose } from "@genuin/ui/components/dialog";
-import { mapCommunityUserRole } from "@genuin/components/lib/utils";
 import { cn } from "@genuin/ui/lib/utils";
+
+import { mapCommunityUserRole } from "@genuin/components/lib/utils";
+import { CommunityPrivacyInfo } from "@genuin/components/molecules/community-privacy-info";
+import { JoinCommunityButton } from "@genuin/components/molecules/join-community-button";
+import { Link } from "@genuin/components/molecules/link";
+import { ReadMore } from "@genuin/components/molecules/read-more";
+import type { CommunityUserRole } from "@genuin/components/types/post";
+
+import { Stats } from "../../molecules/stats";
+
+import type { CommunityCardVariant } from "./community-card.cva";
+import { communityCardVariants, communityCardHeaderVariants } from "./community-card.cva";
+import type { CommunityCardProps } from "./community-card.types";
 
 function CommunityName({
   name,
@@ -92,10 +92,7 @@ function CommunityCardHeader({
               isCardClickable={isCardClickable}
               shouldCloseModal={shouldCloseModal}
             />
-            <CommunityPrivacyInfo
-              isPrivate={community.type === "PRIVATE"}
-              showPrivacyText={false}
-            />
+            <CommunityPrivacyInfo isPrivate={community.type === "PRIVATE"} showPrivacyText={false} />
           </div>
           {community?.description && (
             <ReadMore
@@ -147,10 +144,7 @@ function CommunityCardHeader({
                 onSelect={onSelect}
                 shouldCloseModal={shouldCloseModal}
               />
-              <CommunityPrivacyInfo
-                isPrivate={community.type === "PRIVATE"}
-                showPrivacyText={false}
-              />
+              <CommunityPrivacyInfo isPrivate={community.type === "PRIVATE"} showPrivacyText={false} />
             </div>
             <div>
               <Stats
@@ -172,23 +166,22 @@ function CommunityCardHeader({
             className="gencl:flex gencl:items-center gencl:gap-2"
             onClick={(e) => {
               e.stopPropagation();
-              e.preventDefault();
-            }}
-          >
+              // Prevent Link navigation only for direct DOM clicks, not for React portal
+              // events bubbling through the virtual tree (portal target is outside this DOM subtree).
+              if ((e.currentTarget as Element).contains(e.target as Node)) {
+                e.preventDefault();
+              }
+            }}>
             <JoinCommunityButton
               size="sm"
-              role={mapCommunityUserRole(
-                community.logged_in_user_role,
-                community.is_community_join_requested
-              )}
+              role={mapCommunityUserRole(community.logged_in_user_role, community.is_community_join_requested)}
               isPrivate={false}
               communityId={community.id}
               communityHandle={community.handle || ""}
               communityName={community.name}
               slug={community.slug || ""}
               roleTexts={{ UNJOINED: "Join" }}
-              onCommunityJoinStatusChange={onCommunityJoinStatusChange}
-            >
+              onCommunityJoinStatusChange={onCommunityJoinStatusChange}>
               Join
             </JoinCommunityButton>
           </div>
@@ -200,10 +193,7 @@ function CommunityCardHeader({
   return (
     <div className={communityCardHeaderVariants({ variant })}>
       {community.banner ? (
-        <Image
-          className="gencl:w-full gencl:h-full gencl:object-cover"
-          src={community.banner}
-        />
+        <Image className="gencl:w-full gencl:h-full gencl:object-cover" src={community.banner} />
       ) : (
         <div className="gencl:w-full gencl:h-full gencl:bg-secondary-500" />
       )}
@@ -220,7 +210,7 @@ export function CommunityCard({
   shouldCloseModal = false,
   onCommunityJoinStatusChange,
   ...props
-}: CommunityCardProps & {
+}: Omit<CommunityCardProps, "onSelect"> & {
   variant?: CommunityCardVariant;
   url?: string;
   onSelect?: (community: CommunityCardProps["community"]) => void;
@@ -228,10 +218,7 @@ export function CommunityCard({
   onCommunityJoinStatusChange?: (newRole: CommunityUserRole) => void;
 }) {
   const cardContent = (
-    <div
-      className={cn(communityCardVariants({ variant }), className)}
-      {...props}
-    >
+    <div className={cn(communityCardVariants({ variant }), className)} {...props}>
       <CommunityCardHeader
         community={community}
         variant={variant}
@@ -245,10 +232,9 @@ export function CommunityCard({
           <div
             className={
               variant === "explore"
-                ? "gencl:px-4 gencl:py-3 gencl:flex-1 "
+                ? "gencl:px-4 gencl:py-3 gencl:flex-1"
                 : "gencl:flex gencl:flex-col gencl:gap-3 gencl:w-full gencl:mt-2"
-            }
-          >
+            }>
             {variant === "explore" ? (
               <div className="gencl:flex gencl:justify-between gencl:items-start gencl:gap-3">
                 <div className="gencl:flex gencl:items-center gencl:gap-2">
@@ -269,14 +255,14 @@ export function CommunityCard({
                 <div
                   onClick={(e) => {
                     e.stopPropagation();
-                    e.preventDefault();
-                  }}
-                >
+                    // Prevent Link navigation only for direct DOM clicks, not for React portal
+                    // events bubbling through the virtual tree (portal target is outside this DOM subtree).
+                    if ((e.currentTarget as Element).contains(e.target as Node)) {
+                      e.preventDefault();
+                    }
+                  }}>
                   <JoinCommunityButton
-                    role={mapCommunityUserRole(
-                      community.logged_in_user_role,
-                      community.is_community_join_requested
-                    )}
+                    role={mapCommunityUserRole(community.logged_in_user_role, community.is_community_join_requested)}
                     isPrivate={false}
                     communityId={community.id}
                     communityHandle=""

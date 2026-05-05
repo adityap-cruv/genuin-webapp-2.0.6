@@ -62,7 +62,7 @@ export async function fetchTransactionsList({
     })
 }
 
-export function getTransactionsList({ pageSize, type }: { pageSize: number; type: 'POINT' | 'CASH' }) {
+export function useTransactionsList({ pageSize, type }: { pageSize: number; type: 'POINT' | 'CASH' }) {
   return useInfiniteQuery({
     queryFn: async ({ pageParam = 0 }) => {
       const page = pageParam
@@ -71,13 +71,13 @@ export function getTransactionsList({ pageSize, type }: { pageSize: number; type
         pagesize: pageSize,
         type,
       })
-
       return {
         transactions: response.transactions,
         end_of_transactions: response.end_of_transactions,
         nextPage: page + 1,
       }
     },
+    initialPageParam: 0,
     queryKey: ['transactions', type],
     getNextPageParam: (lastPage) => {
       // If end_of_transactions is true, don't fetch more pages

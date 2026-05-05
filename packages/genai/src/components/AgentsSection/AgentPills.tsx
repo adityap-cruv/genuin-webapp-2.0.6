@@ -1,5 +1,5 @@
-import type { Agent } from '@/types';
 import { useAgentsContext } from '@/context/app/context';
+import type { Agent } from '@/types';
 
 const AgentPill = ({ agents }: { agents: Agent[] }) => {
     const { showAllObjectives, setCurrentAgent } = useAgentsContext();

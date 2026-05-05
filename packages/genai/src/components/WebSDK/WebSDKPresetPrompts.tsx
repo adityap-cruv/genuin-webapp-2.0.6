@@ -1,8 +1,10 @@
 import { useEffect, useRef } from 'react';
+
+import { useOctoAnalytics } from '@/context/analytics';
 import { useAgentsContext } from '@/context/app/context';
 import { useInputContext } from '@/context/input/context';
-import { useOctoAnalytics } from '@/context/analytics';
 import { useRudderEvents } from '@/services/analytics/useRudderAnalytics';
+
 import PresetPromptsSkeleton from '../MessageInput/PresetPrompts/skeleton';
 
 interface WebSDKPresetPromptsProps {

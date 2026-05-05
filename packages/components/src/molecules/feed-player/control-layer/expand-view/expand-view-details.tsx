@@ -1,71 +1,61 @@
 "use client";
 import { Avatar } from "@genuin/ui/avatar";
-import { ReadMore } from "@genuin/components/molecules/read-more";
+import { Image } from "@genuin/ui/components/image";
 import { cn, getFormattedDuration, getMonthYear } from "@genuin/ui/utils";
-import {
-  useMemo,
-  memo,
-  useEffect,
-  useState,
-  type ComponentProps,
-  useCallback,
-  useRef,
-  lazy,
-  Suspense,
-} from "react";
-import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
-import { usePlayerContext } from "../../context";
-import { ProfileLink } from "@genuin/components/molecules/profile-link";
-import { buildPageUrl } from "@genuin/components/lib/utils/pages";
-import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
-import { Pills } from "@genuin/components/molecules/feed-player/pills";
-import { controlLayerVariant } from "../control-layer";
-import { VariantProps } from "class-variance-authority";
+import type { VariantProps } from "class-variance-authority";
+import { useMemo, memo, useEffect, useState, type ComponentProps, useCallback, useRef, lazy, Suspense } from "react";
+
+import { VideoTypes } from "@genuin/components/context";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-import { Image } from "@genuin/ui/components/image";
-import { Scrubber } from "../scrubber";
-import { IHeartControls, IHeartFollowButton } from "../embed/iheart";
-import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
-import { ReadMoreTextType } from "@genuin/components/molecules/read-more/read-more.types";
-import { Link } from "@genuin/components/molecules/link";
+import useViewportHeight from "@genuin/components/hooks/use-screen-height";
+import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
 import { getBaseUrl } from "@genuin/components/lib/utils";
+import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { Pills } from "@genuin/components/molecules/feed-player/pills";
+import { Link } from "@genuin/components/molecules/link";
+import { ProfileLink } from "@genuin/components/molecules/profile-link";
+import { ReadMore } from "@genuin/components/molecules/read-more";
+import type { ReadMoreTextType } from "@genuin/components/molecules/read-more/read-more.types";
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+
+import { usePlayerContext } from "../../context";
+import type { controlLayerVariant } from "../control-layer";
+import { IHeartControls } from "../embed/iheart";
 import { ClipPlayerCTA } from "../embed/iheart/clip-player-cta";
 import { getBaseUrlWithouthighlights } from "../embed/iheart/use-iheart-playback";
+import { OctoExpandSheet, type OctoExpandSheetRef } from "../octo/octo-expand-sheet";
+import { Scrubber } from "../scrubber";
+
 import type { ExpandViewCallbacks } from "./types";
-import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
-import type { DynamicSheetState } from "@genuin/ui/dynamic-sheet";
-import useViewportHeight from "@genuin/components/hooks/use-screen-height";
-import { useOctoSheetManagement } from "./use-octo-sheet-management";
-import { OctoDynamicSheet } from "./octo-dynamic-sheet";
 
 // Lazy load heavy components
 const Actions = lazy(() =>
-  import("../../../actions/index.js").then((m) => ({
+  import("../../../actions").then((m) => ({
     default: m.Actions,
-  })),
+  }))
 );
 
 const Linkouts = lazy(() =>
-  import("@genuin/components/organisms/linkouts/index.js").then((m) => ({
+  import("@genuin/components/organisms/linkouts").then((m) => ({
     default: m.Linkouts,
-  })),
+  }))
 );
 
 const CommentsDialog = lazy(() =>
-  import("../../../comments/index.js").then((m) => ({
+  import("../../../comments").then((m) => ({
     default: m.CommentsDialog,
-  })),
+  }))
 );
 
 type BrandLayoutType = "default" | "iheart" | "ted" | "walmart" | "grubhub";
 
 // Utility functions
-const brandHidesPills = (type: BrandLayoutType): boolean =>
-  type === "iheart" || type === "ted";
+const brandHidesPills = (type: BrandLayoutType): boolean => type === "iheart" || type === "ted";
 
-const brandHidesCommunityFeatures = (type: BrandLayoutType): boolean =>
-  type === "iheart" || type === "ted";
+const brandHidesCommunityFeatures = (type: BrandLayoutType): boolean => type === "iheart" || type === "ted";
 
 type ExpandViewProps = ComponentProps<"div"> & {
   postDetails: PostDetailsType;
@@ -92,18 +82,12 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
   positionIndex?: number;
   videoAutoplay?: boolean;
 } {
-  const {
-    showSeeker,
-    showScrubber,
-    toggleExpandView,
-    totalVideos,
-    positionIndex,
-  } = usePlayerContext();
+  const { showSeeker, showScrubber, toggleExpandView, totalVideos, positionIndex } = usePlayerContext();
   const { isDesktop } = useDeviceDetectMediaQuery();
   const embedDetails = useSafeEmbedContext();
   const embedConfig = useEmbedConfigs();
   const {
-    view: { websiteType },
+    view: { websiteType, brandLayoutType: embedBrandLayoutType },
     video: { videoAutoplay },
   } = useEmbedConfigs();
   const showLinkoutInExpand = embedConfig.links.showLinksInExpand;
@@ -115,22 +99,21 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
     ? postDetails.video?.placement_card_layout_id
     : postDetails.video?.cardLayoutId;
 
-  const brandLayoutType =
-    embedConfig.view.brandLayoutType === "iheart"
+  const brandLayoutType = embedDetails
+    ? embedConfig.view.brandLayoutType === "iheart"
       ? embedConfig.view.brandLayoutType
-      : (getBrandType(cardLayoutId, videoLayoutId) as BrandLayoutType);
+      : (getBrandType(cardLayoutId, videoLayoutId) as BrandLayoutType)
+    : "default";
 
   // Configure visibility based on layout type using utility functions
   const hideGroupPill = brandHidesPills(brandLayoutType);
   const hideCommunityPill = brandLayoutType === "iheart";
   const hideCommunityJoinButton = brandHidesCommunityFeatures(brandLayoutType);
-  const hideGroupSubscriptionButton =
-    brandHidesCommunityFeatures(brandLayoutType);
+  const hideGroupSubscriptionButton = brandHidesCommunityFeatures(brandLayoutType);
 
   const shouldOpenCommentDialog = useMemo(() => {
     return (
-      (embedDetails?.embedData.autoUserInteractionToPerform ===
-        "comment-spark" ||
+      (embedDetails?.embedData.autoUserInteractionToPerform === "comment-spark" ||
         embedDetails?.embedData.autoUserInteractionToPerform === "comment") &&
       embedDetails.embedData.startVideoSlug === postDetails.video?.slug &&
       !isDesktop &&
@@ -139,10 +122,7 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
   }, [embedDetails, postDetails.video?.slug, isDesktop]);
 
   useEffect(() => {
-    if (
-      shouldOpenCommentDialog &&
-      embedDetails?.embedData.autoUserInteractionToPerform === "comment"
-    ) {
+    if (shouldOpenCommentDialog && embedDetails?.embedData.autoUserInteractionToPerform === "comment") {
       embedDetails?.markAutoInteractionActionDone();
     }
   }, [shouldOpenCommentDialog, embedDetails]);
@@ -172,7 +152,7 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
   postDetails,
   type,
   isExpanded,
-  onExpand,
+  onExpand: _onExpand,
   websiteType,
 }: {
   postDetails: PostDetailsType;
@@ -183,36 +163,31 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
   isActive?: boolean;
 }) {
   const { video, owner } = postDetails;
-  const { attributes } = video;
+  const attributes = video?.attributes;
+
+  const embedContext = useSafeEmbedContext();
+  const contentType = embedContext?.embedData.brand_context?.some((val) => val.type === "podcast")
+    ? "podcast"
+    : "station";
+
+  const linkUrl = useMemo(() => {
+    if (typeof window === "undefined" || !attributes) return "";
+    if (contentType === attributes.type) {
+      return getBaseUrlWithouthighlights({
+        type: attributes.type,
+        slug: attributes.slug,
+      });
+    }
+    const baseUrl = getBaseUrl(window.location.href);
+    const path = attributes.type === "podcast" ? "/podcast" : "/live";
+    const slug = video?.attributes?.slug;
+    return `${baseUrl}${path}/${slug}`;
+  }, [contentType, attributes?.type, attributes?.slug, video?.attributes?.slug]);
+
+  if (!video) return null;
 
   switch (type) {
-    case "iheart":
-      const embedContext = useSafeEmbedContext();
-      const contentType = embedContext?.embedData.brand_context?.some((val) => {
-        return val.type === "podcast";
-      })
-        ? "podcast"
-        : "station";
-
-      const linkUrl = useMemo(() => {
-        if (typeof window === "undefined") return "";
-
-        // If content type matches, use current URL without highlights
-        // if (contentType === attributes?.type) {
-        //   return getBaseUrlWithouthighlights({
-        //     type: attributes.type,
-        //     slug: attributes.slug,
-        //   });
-        // }
-
-        // Otherwise, generate URL for the other content type
-        const baseUrl = new URL("https://iheart.com").origin;
-        const path = attributes?.type === "podcast" ? "/podcast" : "/live";
-        const slug = postDetails.video?.attributes?.slug;
-
-        return `${baseUrl}${path}/${slug}`;
-      }, [contentType, attributes?.type, postDetails.video?.attributes?.slug]);
-
+    case "iheart": {
       return (
         <div className="gencl:flex gencl:gap-2 gencl:items-center gencl:text-white">
           {attributes?.image_url && (
@@ -222,15 +197,12 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
                 bypassChecks
                 aria-label={`${postDetails.video?.attributes?.title || contentType} podcast artwork`}
                 tabIndex={0}
-                target="_blank"
-              >
+                target="_blank">
                 <Image
                   aspectRatio="square"
                   src={attributes.image_url}
                   alt={`${postDetails.video?.attributes?.title || contentType} podcast artwork`}
-                  className={cn(
-                    "gencl:rounded-md gencl:object-cover gencl:size-[68px]",
-                  )}
+                  className={cn("gencl:rounded-md gencl:object-cover gencl:size-[68px]")}
                 />
               </Link>
             </div>
@@ -243,10 +215,9 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
                   bypassChecks
                   aria-label={`${postDetails.video.attributes?.title} heading`}
                   tabIndex={0}
-                  target="_blank"
-                >
+                  target="_blank">
                   <ReadMore
-                    text={postDetails.video.attributes?.title}
+                    text={video.attributes?.title}
                     shouldAnimate
                     lineClampClassName="gencl:line-clamp-1"
                     maxLines={1}
@@ -255,9 +226,7 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
                     position="overlay"
                     textClassName={cn(
                       "gencl:my-3! gencl:h-5 gencl:flex gencl:items-center gencl:gap-2 gencl:font-semibold gencl:leading-[24px] gencl:tracking-[-0.2px] gencl:lg:font-semibold! gencl:lg:leading-[24px]! gencl:lg:tracking-[-0.2px]! gencl:break-all!",
-                      websiteType === "polaris"
-                        ? "gencl:text-[16px] gencl:lg:text-[17px]!"
-                        : "gencl:text-[16px]",
+                      websiteType === "polaris" ? "gencl:text-[16px] gencl:lg:text-[17px]!" : "gencl:text-[16px]"
                     )}
                   />
                 </Link>
@@ -291,26 +260,23 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
           </div>
         </div>
       );
+    }
     case "ted":
       return null;
     case "walmart":
     case "grubhub":
     case "default":
     default:
+      if (!owner) return null;
       return (
         <div className="gencl:flex gencl:gap-2 gencl:items-center gencl:text-white gencl:text-body-0-semi-bold">
-          <Avatar
-            imageUrl={owner?.profileImage || ""}
-            alt={owner?.name ?? ""}
-            isAvatar={owner?.isAvatar ?? false}
-          />
+          <Avatar imageUrl={owner?.profileImage || ""} alt={owner?.name ?? ""} isAvatar={owner?.isAvatar ?? false} />
           <ProfileLink
             url={buildPageUrl({
-              type: !!owner?.brand ? "brand" : "profile",
-              slug: !!owner?.brand ? owner.brand.slug : owner?.userName,
+              type: owner?.brand ? "brand" : "profile",
+              slug: owner?.brand ? owner.brand.slug : owner?.userName,
             })}
-            userLogoType={owner?.brand?.userLogo}
-          >
+            userLogoType={owner?.brand?.userLogo}>
             @{owner?.userName}
           </ProfileLink>
         </div>
@@ -334,21 +300,15 @@ const AdaptiveDescription = memo(function AdaptiveDescription({
   onExpand?: () => void;
   layoutType?: BrandLayoutType;
 }) {
-  const { description, createdAt, duration } = video;
-
   const enhancedDescription: ReadMoreTextType = useMemo(() => {
+    if (!video) return [];
+    const { description, createdAt, duration } = video;
     if (type !== "iheart") {
-      return description
-        ? Array.isArray(description)
-          ? description
-          : [description]
-        : [];
+      return description ? (Array.isArray(description) ? description : [description]) : [];
     }
 
     const monthYear = getMonthYear(createdAt ?? 0);
-    const durationText = duration
-      ? ` • ${getFormattedDuration(String(duration))}`
-      : "";
+    const durationText = duration ? ` • ${getFormattedDuration(String(duration))}` : "";
 
     return [
       {
@@ -359,13 +319,12 @@ const AdaptiveDescription = memo(function AdaptiveDescription({
           "gencl:text-[12px] gencl:font-normal gencl:leading-[20px] gencl:tracking-[-0.35px]! gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]!",
       },
       " ",
-      ...(description
-        ? Array.isArray(description)
-          ? description
-          : [description]
-        : []),
+      ...(description ? (Array.isArray(description) ? description : [description]) : []),
     ];
-  }, [type, createdAt, duration, description]);
+  }, [type, video]);
+
+  if (!video) return null;
+  const { description, createdAt, duration } = video;
 
   switch (type) {
     case "iheart":
@@ -426,10 +385,7 @@ const AdaptiveDescription = memo(function AdaptiveDescription({
 /**
  * Hook to determine iHeart scrubber visibility styling
  */
-function useIHeartScrubberVisibility(
-  showScrubber: boolean,
-  brandLayoutType: BrandLayoutType,
-) {
+function useIHeartScrubberVisibility(showScrubber: boolean, brandLayoutType: BrandLayoutType) {
   return {
     shouldHide: showScrubber && brandLayoutType === "iheart",
     hiddenClassName: "gencl:opacity-0 gencl:pointer-events-none",
@@ -447,23 +403,21 @@ const SharedActions = memo(function SharedActions({
   brandLayoutType,
   isActive,
   onOctoOpen,
+  linkoutThumbnail,
 }: {
   postDetails: PostDetailsType;
   defaultOpenCommentDialog: boolean;
   brandLayoutType: BrandLayoutType;
-  onCommentCountChange?: ComponentProps<
-    typeof CommentsDialog
-  >["onCommentCountChange"];
-  onReactionStateChange?: (
-    videoId: string,
-    videoSlug: string,
-    isReacted: boolean,
-  ) => void;
+  onCommentCountChange?: ComponentProps<typeof CommentsDialog>["onCommentCountChange"];
+  onReactionStateChange?: (videoId: string, videoSlug: string, isReacted: boolean) => void;
   isActive: boolean;
+  linkoutThumbnail?: string | null;
   onOctoOpen?: () => void;
 }) {
-  const { openContentType, setContentTypeState, hasContentType, resetSheet } =
-    useSheetState();
+  const { openContentType, hasContentType, toggleContentType, setContentTypeState } = useSheetState();
+
+  const { video, group, community } = postDetails;
+  if (!video || !community || !group) return null;
 
   // Handle iHeart brand controls
   if (brandLayoutType === "iheart") {
@@ -474,18 +428,14 @@ const SharedActions = memo(function SharedActions({
         size="lg"
         variant="expand"
         isActive={isActive}
-        contentId={postDetails.video?.id}
-        slug={postDetails.video?.slug}
-        isReacted={postDetails.video?.isSparked ?? false}
-        reactionCount={postDetails.video?.sparkCount}
+        contentId={video.id}
+        slug={video.slug}
+        isReacted={video.isSparked ?? false}
+        reactionCount={video.sparkCount}
         onReactionStateChange={(isReacted) => {
-          onReactionStateChange?.(
-            postDetails.video?.id || "",
-            postDetails.video?.slug || "",
-            isReacted,
-          );
+          onReactionStateChange?.(video.id, video.slug, isReacted);
         }}
-        videoDetails={postDetails.video}
+        videoDetails={video}
       />
     );
   }
@@ -498,13 +448,14 @@ const SharedActions = memo(function SharedActions({
         className="gencl:sm:hidden!"
         variant="mobile"
         theme="dark"
-        contentId={postDetails.video?.id || ""}
-        isReacted={postDetails.video?.isSparked ?? false}
-        reactionCount={postDetails.video?.sparkCount || 0}
-        shareUrl={postDetails.video?.shareUrl || ""}
-        slug={postDetails.video?.slug || ""}
-        videoType={postDetails.video?.videoType}
-        groupSlug={postDetails.group?.slug || ""}
+        contentId={video.id}
+        isReacted={video.isSparked ?? false}
+        reactionCount={video.sparkCount}
+        shareUrl={video.shareUrl}
+        slug={video.slug}
+        videoType={video.videoType}
+        groupSlug={group?.slug ?? ""}
+        showLinkout={false}
         actionWrapper={{
           OCTO: (defaultNode) => {
             return (
@@ -517,19 +468,61 @@ const SharedActions = memo(function SharedActions({
                   // Always open sheet in panel-view state
                   openContentType("octo", "inside", "panel-view");
                   setContentTypeState("octo", "panel-view");
-                }}
-              >
+                }}>
                 {defaultNode}
               </div>
             );
           },
+          COMMENT: (defaultNode) => {
+            return (
+              <CommentsDialog
+                key="comment-dialog"
+                shareUrl={video.shareUrl}
+                communityId={community.id}
+                loopId={group.id}
+                videoId={video.id}
+                videoSlug={video.slug}
+                commentCount={video.commentCount}
+                videoType={video.videoType ?? VideoTypes.Content}
+                defaultOpen={defaultOpenCommentDialog}
+                onCommentCountChange={(videoId, increment) => {
+                  onCommentCountChange?.(videoId, increment);
+                }}>
+                {defaultNode}
+                <p className="gencl:text-body-2-medium gencl:text-white!">{video.commentCount}</p>
+              </CommentsDialog>
+            );
+          },
         }}
+        // actionWrapper={{
+        //   COMMENT: (defaultNode) => {
+        //     return (
+        //       <div
+        //         key="comment-action"
+        //         onClick={(e) => {
+        //           e.stopPropagation();
+        //           openContentType("comments", "inside", "panel-view");
+        //         }}>
+        //         {defaultNode}
+        //         <p className="gencl:text-body-2-medium gencl:text-white! gencl:text-center">{video.commentCount}</p>
+        //       </div>
+        //     );
+        //   },
+        //   LINKOUT: (defaultNode) => {
+        //     return (
+        //       <div
+        //         key="linkout-action"
+        //         onClick={(e) => {
+        //           e.stopPropagation();
+        //           toggleContentType("linkouts", "inside", "default");
+        //         }}>
+        //         {defaultNode}
+        //       </div>
+        //     );
+        //   },
+        // }}
         onReactionStateChange={(isReacted) => {
-          onReactionStateChange?.(
-            postDetails.video?.id || "",
-            postDetails.video?.slug || "",
-            isReacted,
-          );
+          onReactionStateChange?.(video.id, video.slug, isReacted);
         }}
       />
     </Suspense>
@@ -564,164 +557,56 @@ export function ExpandViewDetails({
     positionIndex,
     videoAutoplay,
   } = useExpandViewConfig(postDetails);
-  const { brand } = useEmbedConfigs();
+  const { brand, engagement } = useEmbedConfigs();
+  const isOctoEnabled = engagement.engagementTools.octo;
   const viewportHeight = useViewportHeight();
-  const { isDesktop } = useDeviceDetectMediaQuery();
-  const {
-    sheetState,
-    hasContentType,
-    getContentTypeState,
-    setContentTypeState,
-    resetSheet,
-  } = useSheetState();
-  const isNonDesktop = !isDesktop; // Mobile + Tablet (< 1024px)
+  const { isMobile } = useDeviceDetectMediaQuery();
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isOctoSwipeBlocked, setIsOctoSwipeBlocked] = useState(false);
   const scrubberRef = useRef<HTMLDivElement>(null);
+  const octoExpandSheetRef = useRef<OctoExpandSheetRef>(null);
 
-  const { shouldHide, hiddenClassName } = useIHeartScrubberVisibility(
-    showScrubber,
-    brandLayoutType,
-  );
+  const { shouldHide, hiddenClassName } = useIHeartScrubberVisibility(showScrubber, brandLayoutType);
 
   const onExpand = useCallback(() => {
     setIsExpanded((prev) => !prev);
   }, []);
 
-  // Octo Sheet Management
-  const { engagement } = useEmbedConfigs();
-  const isOctoEnabled = engagement.engagementTools.octo;
-  const octoSheetState = getContentTypeState("octo");
-
-  const isCompactOctoState = !octoSheetState
-    ? true
-    : octoSheetState === "default" ||
-      octoSheetState === "default-active" ||
-      octoSheetState === "expand-view";
-  const octoRenderMode: "compact" | "full" = isCompactOctoState
-    ? "compact"
-    : "full";
-
-  // Use custom hook for Octo sheet state management
-  const {
-    handleOctoExpandRequest,
-    handleOctoSheetStateChange,
-    handleOctoSheetClose,
-    handleOctoThinkingStarted,
-    handleOctoCountdownActive,
-    handleOctoError,
-    handleOctoActionOpen,
-  } = useOctoSheetManagement({
-    isActive,
-    octoSheetState,
-    setContentTypeState,
-    resetSheet,
-  });
-
-  // Hide OctoDynamicSheet visually after close; reveal again when any action starts.
-  const [isOctoHidden, setIsOctoHidden] = useState(false);
-
-  const handleOctoSheetCloseWithHide = useCallback(() => {
-    setIsOctoHidden(true);
-    handleOctoSheetClose();
-  }, [handleOctoSheetClose]);
-
-  const handleOctoThinkingStartedWithShow = useCallback(() => {
-    setIsOctoHidden(false);
-    handleOctoThinkingStarted();
-  }, [handleOctoThinkingStarted]);
-
-  const handleOctoCountdownActiveWithShow = useCallback(
-    (active: boolean) => {
-      if (active) setIsOctoHidden(false);
-      handleOctoCountdownActive(active);
-    },
-    [handleOctoCountdownActive],
-  );
-
-  const handleOctoExpandRequestWithShow = useCallback(() => {
-    setIsOctoHidden(false);
-    handleOctoExpandRequest();
-  }, [handleOctoExpandRequest]);
-
-  // Delay Octo visibility by 5 seconds after the video becomes active.
-  // Resets immediately on slide change so the next active slide waits its own 5 s.
-  const [shouldShowOcto, setShouldShowOcto] = useState(false);
-
-  useEffect(() => {
-    setShouldShowOcto(false);
-
-    if (!isActive) return;
-    const timer = setTimeout(() => setShouldShowOcto(true), 5000);
-    return () => {
-      clearTimeout(timer);
-      resetSheet();
-    };
-  }, [isActive]);
+  const { video } = postDetails;
+  if (!video) return null;
 
   return (
     <div
       data-expand-view="true"
       className={cn(
         "gencl:absolute gencl:gap-2 gencl:w-full gencl:z-20 gencl:right-0 gencl:bottom-0 gencl:p-4 gencl:focus:outline-none",
-        brandLayoutType !== "iheart" &&
-          "gencl:bg-gradient-to-t gencl:from-black/50 gencl:to-transparent",
-        className,
+        brandLayoutType !== "iheart" && "gencl:bg-gradient-to-t gencl:from-black/50 gencl:to-transparent",
+        className
       )}
-      {...restProps}
-    >
+      {...restProps}>
       <div
         className={cn(
           "gencl:flex gencl:w-full gencl:gap-4 gencl:justify-between gencl:items-end gencl:transition-opacity gencl:duration-200",
           brandLayoutType === "ted" && "gencl:gap-3",
-          shouldHide && hiddenClassName,
-        )}
-      >
+          shouldHide && hiddenClassName
+        )}>
         <div
           className={cn(
             "gencl:flex gencl:flex-col gencl:gap-4 gencl:sm:gap-2 gencl:w-5/6 gencl:sm:w-full gencl:transition-all",
-            brandLayoutType === "ted" ||
-              (brandLayoutType === "iheart" && "gencl:gap-3"),
-            // Prevent video swiping when Octo is in collapsed states
-            hasContentType("octo") &&
-              (octoSheetState === "default" ||
-                octoSheetState === "default-active" ||
-                octoSheetState === "expand-view") &&
-              "swiper-no-swiping",
+            brandLayoutType === "ted" || (brandLayoutType === "iheart" && "gencl:gap-3"),
+            isOctoSwipeBlocked && "swiper-no-swiping"
           )}
-          onClick={(e) => e.stopPropagation()}
-        >
+          onClick={(e) => e.stopPropagation()}>
           <div className="gencl:z-20">
-            {/* Octo Sheet */}
-            <div
-              className="gencl:relative gencl:h-full gencl:w-full swiper-no-swiping"
-              onClick={(e) => {
-                e.stopPropagation();
-              }}
-            >
-              {isOctoEnabled && isActive && shouldShowOcto && (
-                <Suspense fallback={null}>
-                  <div className={cn(isOctoHidden && "gencl:invisible")}>
-                    <OctoDynamicSheet
-                      key={postDetails.video?.id}
-                      isOpen={isActive ?? false}
-                      videoId={postDetails.video?.id ?? ""}
-                      videoSlug={postDetails.video?.slug ?? ""}
-                      octoSheetState={octoSheetState}
-                      isMobile={isNonDesktop}
-                      viewportHeight={viewportHeight}
-                      octoRenderMode={octoRenderMode}
-                      variant="embed"
-                      onStateChange={handleOctoSheetStateChange}
-                      onClose={handleOctoSheetCloseWithHide}
-                      onExpandRequest={handleOctoExpandRequestWithShow}
-                      onThinkingStarted={handleOctoThinkingStartedWithShow}
-                      onCountdownActive={handleOctoCountdownActiveWithShow}
-                      onError={handleOctoError}
-                    />
-                  </div>
-                </Suspense>
-              )}
-            </div>
+            <OctoExpandSheet
+              ref={octoExpandSheetRef}
+              isActive={isActive}
+              videoId={video.id}
+              videoSlug={video.slug}
+              isMobile={isMobile}
+              viewportHeight={viewportHeight}
+              onSwipeBlockChange={setIsOctoSwipeBlocked}
+            />
 
             {/**
              * If the brand is US Weekly, we do not show the user profile in expand view.
@@ -740,27 +625,87 @@ export function ExpandViewDetails({
             )}
           </div>
 
-          {showLinkoutInExpand &&
-            !isOctoEnabled &&
-            brandLayoutType !== "iheart" &&
-            postDetails.video?.linkoutId && (
-              <Suspense fallback={null}>
-                <Linkouts
-                  linkouts={postDetails.video.linkouts}
-                  linkoutId={postDetails.video.linkoutId}
-                  isActive={isActive}
-                  className={cn("gencl:w-full gencl:z-10", className)}
-                  videoDetails={postDetails.video}
-                  totalVideos={totalVideos}
-                  positionIndex={positionIndex}
-                  autoplay={videoAutoplay}
-                />
-              </Suspense>
-            )}
+          {/* NOT NEEDED AS PER 2.0.5, if you want to make any changes for DynamicSheet contact devtejot@begenuin.com */}
+          {/* <DynamicSheet
+            isOpen={isMobile && hasContentType("comments")}
+            renderMode="container"
+            config={{
+              initialState: "panel-view",
+              enabledStates: ["panel-view", "full-view"],
+              heights: {
+                "panel-view": "70vh",
+                "full-view": `${viewportHeight}px`,
+              },
+              showClose: true,
+              showOverlay: true,
+              showIndicator: true,
+              navTitle: "Comments",
+              onStateChange: (state) => setContentTypeState("comments", state),
+              onClose: () => {
+                resetSheet();
+                // openContentType("linkouts", "inside");
+              },
+              theme: commentsState === "full-view" || commentsState === "panel-view" ? "light" : "dark",
+            }}
+            // onDragging={(isDragging) => {
+            //   // console.log("isDragging:: ", isDragging);
+            //   onSwiperToggle?.(isDragging);
+            // }}
+            footer={
+              <CommentInputBox
+                communityId={community?.id ?? ""}
+                shareUrl={video.shareUrl}
+                loopId={group?.id ?? ""}
+                videoId={video.id}
+                videoSlug={video.slug}
+                videoType={video.videoType as VideoTypes}
+                onCommentPosted={(comments) => {
+                  setQueryDataForNewComment(video.id, comments);
+                  onCommentCountChange?.(video.id);
+                }}
+              />
+            }
+            footerClassName="gencl:px-0 gencl:py-0"
+            headerClassName="gencl:text-body-1-semi-bold!"
+            className={cn(
+              (commentsState === "panel-view" || commentsState === "full-view") &&
+                "gencl:rounded-t-2xl! gencl:rounded-b-none!"
+            )}>
+            <CommentsList
+              videoId={video.id}
+              showCloseButton={false}
+              shareUrl={video.shareUrl}
+              className="gencl:pt-4"
+              videoSlug={video.slug}
+              videoType={video.videoType as VideoTypes}
+              onCommentCountChange={onCommentCountChange}
+            />
+          </DynamicSheet> */}
+
+          {/* Linkout inside player — show on mobile always, and on desktop only when
+              comments are also open (split view: linkout overlay + comment right panel). */}
+          {showLinkoutInExpand && brandLayoutType !== "iheart" && !isOctoEnabled && video.linkouts && (
+            <Suspense fallback={null}>
+              <Linkouts
+                linkouts={video.linkouts}
+                linkoutId={video.linkoutId!}
+                // variant="dynamic"
+                view="expand"
+                showImmediately={video.linkouts.length > 0 && !video.linkoutId}
+                isActive={isActive}
+                layout="overlay"
+                className={cn("gencl:w-full gencl:z-10", className)}
+                videoDetails={video}
+                totalVideos={totalVideos}
+                positionIndex={positionIndex}
+                autoplay={videoAutoplay}
+              />
+            </Suspense>
+          )}
 
           {!isOctoEnabled && (
             <AdaptiveDescription
-              video={postDetails.video}
+              video={video}
               type={brandLayoutType}
               {...(brandLayoutType === "iheart" && {
                 isExpanded,
@@ -778,7 +723,8 @@ export function ExpandViewDetails({
           onReactionStateChange={onReactionStateChange}
           onCommentCountChange={onCommentCountChange}
           isActive={isActive}
-          onOctoOpen={handleOctoActionOpen}
+          onOctoOpen={() => octoExpandSheetRef.current?.onActionOpen()}
+          linkoutThumbnail={video.linkouts?.[0]?.links?.find((l: any) => l.image)?.image}
         />
       </div>
       {(!hideGroupPill || !hideCommunityPill) && (
@@ -788,19 +734,18 @@ export function ExpandViewDetails({
           tabIndex={0}
           className={cn(
             "swiper-no-swiping gencl:w-full gencl:overflow-x-auto gencl:scrollbar-none gencl:transition-opacity",
-            shouldHide && hiddenClassName,
+            shouldHide && hiddenClassName
           )}
           onClick={(e) => {
             e.stopPropagation();
           }}
           style={{
             scrollBehavior: "smooth",
-          }}
-        >
+          }}>
           <Pills
             communityDetails={postDetails.community}
             groupDetails={postDetails.group}
-            videoId={postDetails.video?.id}
+            videoId={video.id}
             onGroupJoinStatusChange={onGroupJoinStatusChange}
             onGroupSubscriptionChange={onGroupSubscriptionChange}
             onCommunityJoinStatusChange={onCommunityJoinStatusChange}
@@ -817,22 +762,11 @@ export function ExpandViewDetails({
         <div
           ref={scrubberRef}
           className="gencl:h-11 gencl:flex gencl:items-center gencl:relative gencl:z-10"
-          data-scrubber-container="true"
-        >
-          <Scrubber
-            className={cn("gencl:z-20 gencl:transition-all")}
-            showOnlyTime={true}
-            duration={postDetails.video?.duration}
-          />
+          data-scrubber-container="true">
+          <Scrubber className={cn("gencl:z-20 gencl:transition-all")} showOnlyTime={true} duration={video.duration} />
         </div>
       ) : (
-        <div
-          aria-hidden="true"
-          className={cn(
-            "gencl:h-0 gencl:transition-all",
-            showSeeker && "gencl:h-4",
-          )}
-        />
+        <div aria-hidden="true" className={cn("gencl:h-0 gencl:transition-all", showSeeker && "gencl:h-4")} />
       )}
       {/* iHeart: Show linkouts below seeker */}
       {/* TODO : iheart phase-2 implementation  */}{" "}

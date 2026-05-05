@@ -1,12 +1,14 @@
 'use client'
-import { WalletLayout } from '@/components/layouts/wallet/desktop/layout'
 import React, { useEffect } from 'react'
-import Desktop from './desktop'
-import Mobile from './mobile'
+
 import { useWalletStore } from '@/components/common/wallet/store'
+import { WalletLayout } from '@/components/layouts/wallet/desktop/layout'
 import { getBalanceAPI } from '@/lib/api/wallet'
-import { EmptyState } from './empty-state'
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
+
+import Desktop from './desktop'
+import { EmptyState } from './empty-state'
+import Mobile from './mobile'
 
 const MainWalletComponent = () => {
   const { setInitialData } = useGenuinOptions((state) => ({

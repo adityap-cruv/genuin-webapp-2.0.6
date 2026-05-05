@@ -1,10 +1,13 @@
 "use client";
-import { useEffect, useRef, useCallback, useState, useMemo } from "react";
-import { useBaseContext } from "../context/base";
-import { useAuthContext } from "../context/auth";
-import type { AuthUser } from "@genuin/components/types/auth";
-import { StepsType } from "../organisms/authentication-modal/context";
 import { dialogManager } from "@genuin/ui/lib/dialog-manager";
+import { useEffect, useRef, useCallback, useState, useMemo } from "react";
+
+import type { AuthUser } from "@genuin/components/types/auth";
+
+import { useAuthContext } from "../context/auth";
+import { useBaseContext } from "../context/base";
+import type { StepsType } from "../organisms/authentication-modal/context";
+
 import { useEmbedConfigs } from "./embed/use-embed-config";
 
 const INTERRUPTION_STEPS = [
@@ -36,15 +39,12 @@ export function useInterruptionManager() {
   const { user } = useAuthContext();
   const interactionRef = useRef({ lastIndex: 0, swipeCount: 0 });
   const [shouldShowDialog, setShouldShowDialog] = useState(false);
-  const [dialogType, setDialogType] = useState<StepsType | undefined>(
-    undefined
-  );
+  const [dialogType, setDialogType] = useState<StepsType | undefined>(undefined);
   const { modalConfig } = useEmbedConfigs();
 
   // First check if get_app_popup is enabled
   const getAppConfig = brandDetails?.web_configs?.get_app_popup;
-  const shouldShowAppDownload =
-    getAppConfig?.enable && brandDetails.web_cta === "app";
+  const shouldShowAppDownload = getAppConfig?.enable && brandDetails.web_cta === "app";
 
   // Find the next interruption step to show
   const loginSignupConfig = brandDetails?.web_configs?.login_signup_popup;
@@ -74,9 +74,7 @@ export function useInterruptionManager() {
 
     // Find the next incomplete interruption step
     const nextInterruption = INTERRUPTION_STEPS.find(
-      (step) =>
-        brandDetails?.web_configs?.[step.configKey]?.enable &&
-        !step.isComplete(user)
+      (step) => brandDetails?.web_configs?.[step.configKey]?.enable && !step.isComplete(user)
     );
 
     if (!nextInterruption) {
@@ -91,18 +89,10 @@ export function useInterruptionManager() {
     return {
       type: nextInterruption.key,
       configKey: nextInterruption.configKey,
-      popupAfter:
-        brandDetails?.web_configs?.[nextInterruption.configKey]?.popup_after ??
-        0,
+      popupAfter: brandDetails?.web_configs?.[nextInterruption.configKey]?.popup_after ?? 0,
       isCompleted: false,
     };
-  }, [
-    brandDetails?.web_configs,
-    user,
-    isLoginSignupEnabled,
-    shouldShowAppDownload,
-    getAppConfig?.popup_after,
-  ]);
+  }, [brandDetails?.web_configs, user, isLoginSignupEnabled, shouldShowAppDownload, getAppConfig?.popup_after]);
 
   // Extract values from the interruptionState for easier use
   const dialogToShow = interruptionState.type;
@@ -158,11 +148,7 @@ export function useInterruptionManager() {
         triggerAuthenticationModal();
       }
     },
-    [
-      interruptionState.popupAfter,
-      triggerAuthenticationModal,
-      allInterruptionsCompleted,
-    ]
+    [interruptionState.popupAfter, triggerAuthenticationModal, allInterruptionsCompleted]
   );
 
   // Detect idle time and trigger modal if necessary
@@ -191,11 +177,7 @@ export function useInterruptionManager() {
       document.removeEventListener("click", resetIdleTimeout);
       clearTimeout(timeout);
     };
-  }, [
-    triggerAuthenticationModal,
-    brandDetails?.web_configs?.idle_time_interruption,
-    allInterruptionsCompleted,
-  ]);
+  }, [triggerAuthenticationModal, brandDetails?.web_configs?.idle_time_interruption, allInterruptionsCompleted]);
 
   return {
     handleSwipeCount,

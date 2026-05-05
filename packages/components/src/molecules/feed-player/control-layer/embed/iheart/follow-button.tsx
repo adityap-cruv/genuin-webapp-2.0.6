@@ -1,25 +1,23 @@
 "use client";
-import { cn } from "@genuin/ui/lib/utils";
 import { IHeartCheckIcon, IHeartPlusIcon } from "@genuin/ui/icons";
+import { cn } from "@genuin/ui/lib/utils";
 import { type ComponentProps, useMemo, useState, useEffect } from "react";
-import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
-import {
-  SDKEventEmitter,
-  SDKEventName,
-} from "@genuin/components/lib/sdk-event-emitter";
+
+import { useAuthContext } from "@genuin/components/context/auth";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { SDKEventEmitter, SDKEventName } from "@genuin/components/lib/sdk-event-emitter";
 import {
   getFollowButtonTexts,
   type ContentType,
   type WebsiteType,
 } from "@genuin/components/lib/utils/iheart-text-utils";
-import { useAuthContext } from "@genuin/components/context/auth";
 import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
+import { type VideoType } from "@genuin/components/react-query/api/feed/schema";
 
 interface IHeartFollowButtonProps extends ComponentProps<"button"> {
   size?: "xs" | "sm" | "md";
   websiteType: WebsiteType;
-  attributes?: PostDetailsType["video"]["attributes"];
+  attributes?: VideoType["attributes"];
   shareUrl?: string;
   videoSlug?: string;
   videoId?: string;
@@ -38,8 +36,7 @@ export function IHeartFollowButton({
   const embedDetails = useSafeEmbedContext();
   const { authenticationStatus, handleAuthCallback } = useAuthContext();
   const type = attributes?.type as ContentType;
-  const followId =
-    type === "station" ? attributes?.station_id : attributes?.podcast_id;
+  const followId = type === "station" ? attributes?.station_id : attributes?.podcast_id;
 
   // Get initial follow status from embed context
   const initialFollowStatus = useMemo(() => {
@@ -52,18 +49,9 @@ export function IHeartFollowButton({
 
   // Check if follow status exists and trigger CHECK_FOLLOWING_STATUS if not
   useEffect(() => {
-    if (
-      !followId ||
-      !type ||
-      !embedDetails?.getFollowStatus ||
-      authenticationStatus === "unauthenticated"
-    )
-      return;
+    if (!followId || !type || !embedDetails?.getFollowStatus || authenticationStatus === "unauthenticated") return;
 
-    const currentFollowStatus = embedDetails.getFollowStatus(
-      String(followId),
-      type
-    );
+    const currentFollowStatus = embedDetails.getFollowStatus(String(followId), type);
 
     // If follow status is undefined (not found), trigger CHECK_FOLLOWING_STATUS event
     if (currentFollowStatus === undefined) {
@@ -80,10 +68,7 @@ export function IHeartFollowButton({
 
     const handleFollowStatusChange = () => {
       if (followId && embedDetails?.getFollowStatus) {
-        const currentStatus = embedDetails.getFollowStatus(
-          String(followId),
-          type
-        );
+        const currentStatus = embedDetails.getFollowStatus(String(followId), type);
         if (currentStatus !== undefined) {
           setIsFollowing(currentStatus);
         }
@@ -91,23 +76,12 @@ export function IHeartFollowButton({
     };
 
     // Listen for follow status changes
-    embedDetails.embedEventBus.on(
-      "followStatusChange",
-      handleFollowStatusChange
-    );
+    embedDetails.embedEventBus.on("followStatusChange", handleFollowStatusChange);
 
     return () => {
-      embedDetails.embedEventBus.off(
-        "followStatusChange",
-        handleFollowStatusChange
-      );
+      embedDetails.embedEventBus.off("followStatusChange", handleFollowStatusChange);
     };
-  }, [
-    followId,
-    type,
-    embedDetails?.embedEventBus,
-    embedDetails?.getFollowStatus,
-  ]);
+  }, [followId, type, embedDetails?.embedEventBus, embedDetails?.getFollowStatus]);
 
   // Update local state when initial status changes
   useEffect(() => {
@@ -119,8 +93,7 @@ export function IHeartFollowButton({
     if (!embedDetails || !followId || !type) return;
 
     const action = embedDetails.embedData.autoUserInteractionToPerform;
-    const autoInteractionActionDone =
-      embedDetails.embedEventBus.getContext().autoInteractionActionDone;
+    const autoInteractionActionDone = embedDetails.embedEventBus.getContext().autoInteractionActionDone;
 
     // Check if this is an auto follow action for this specific follow target
     const shouldAutoFollow =
@@ -129,12 +102,7 @@ export function IHeartFollowButton({
       embedDetails.embedData.followType === type;
 
     // Don't perform auto action if already done, already following, or not authenticated
-    if (
-      autoInteractionActionDone ||
-      isFollowing ||
-      !shouldAutoFollow ||
-      authenticationStatus === "unauthenticated"
-    ) {
+    if (autoInteractionActionDone || isFollowing || !shouldAutoFollow || authenticationStatus === "unauthenticated") {
       return;
     }
 
@@ -146,11 +114,7 @@ export function IHeartFollowButton({
 
     // Update embed context follow status
     if (embedDetails.updateFollowStatus) {
-      embedDetails.updateFollowStatus(
-        String(followId),
-        type,
-        newFollowingState
-      );
+      embedDetails.updateFollowStatus(String(followId), type, newFollowingState);
     }
 
     // Emit SDK follow change event
@@ -163,14 +127,9 @@ export function IHeartFollowButton({
   }, [embedDetails, followId, type, isFollowing, authenticationStatus]);
 
   // Compute CTA text using utility function
-  const ctaTexts = useMemo(
-    () => getFollowButtonTexts(websiteType, type),
-    [websiteType, type]
-  );
+  const ctaTexts = useMemo(() => getFollowButtonTexts(websiteType, type), [websiteType, type]);
 
-  const displayText = isFollowing
-    ? ctaTexts.followingText
-    : ctaTexts.defaultText;
+  const displayText = isFollowing ? ctaTexts.followingText : ctaTexts.defaultText;
 
   // Create return query params for authentication callbacks
   const returnQueryParams = useMemo(
@@ -215,11 +174,7 @@ export function IHeartFollowButton({
 
     // Update embed context follow status if followId is available
     if (followId && type && embedDetails?.updateFollowStatus) {
-      embedDetails.updateFollowStatus(
-        String(followId),
-        type,
-        newFollowingState
-      );
+      embedDetails.updateFollowStatus(String(followId), type, newFollowingState);
     }
 
     // Emit SDK follow change event if followId is available
@@ -254,21 +209,12 @@ export function IHeartFollowButton({
           ? "gencl:border-white gencl:bg-transparent hover:gencl:bg-white/10"
           : "gencl:border-transparent gencl:bg-white hover:gencl:bg-gray-100",
         className
-      )}
-    >
+      )}>
       <div className="gencl:transition-transform gencl:duration-200 gencl:ease-out hover:gencl:rotate-12">
         {isFollowing ? (
-          <IHeartCheckIcon
-            theme={!isFollowing ? "dark" : "light"}
-            size={size}
-            aria-hidden="true"
-          />
+          <IHeartCheckIcon theme={!isFollowing ? "dark" : "light"} size={size} aria-hidden="true" />
         ) : (
-          <IHeartPlusIcon
-            theme={!isFollowing ? "dark" : "light"}
-            size={size}
-            aria-hidden="true"
-          />
+          <IHeartPlusIcon theme={!isFollowing ? "dark" : "light"} size={size} aria-hidden="true" />
         )}
       </div>
       <span
@@ -277,8 +223,7 @@ export function IHeartFollowButton({
           // Smooth text color transition
           "gencl:transition-colors gencl:duration-300 gencl:ease-in-out",
           !isFollowing ? "gencl:text-white" : "gencl:text-black"
-        )}
-      >
+        )}>
         {displayText}
       </span>
     </button>

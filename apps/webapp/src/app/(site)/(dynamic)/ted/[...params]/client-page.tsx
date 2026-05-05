@@ -1,9 +1,10 @@
 'use client'
 import { useEffect } from 'react'
-import { Loader } from '@components/ui/loader'
-import smartAppRedirect from '@lib/utils/redirection'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useShallow } from 'zustand/react/shallow'
+
+import { Loader } from '@components/ui/loader'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
+import smartAppRedirect from '@lib/utils/redirection'
 
 export function RedirectClientPage() {
   const { links } = useGenuinOptions(

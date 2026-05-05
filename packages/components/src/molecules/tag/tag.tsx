@@ -1,6 +1,6 @@
 import { Avatar } from "@genuin/ui/avatar";
-import { cn } from "@genuin/ui/utils";
 import { Skeleton } from "@genuin/ui/skeleton";
+import { cn } from "@genuin/ui/utils";
 import { cva } from "class-variance-authority";
 
 import { BrandBadge } from "../brand-badge";
@@ -8,20 +8,17 @@ import { Link } from "../link";
 
 import type { TagProps } from "./tag.types";
 
-const tagVariants = cva(
-  "gencl:flex gencl:bg-secondary-100 gencl:rounded-full gencl:items-center gencl:gap-1",
-  {
-    variants: {
-      size: {
-        sm: "gencl:p-0.5 gencl:pr-1.5",
-        md: "gencl:p-0.5 gencl:pr-2",
-      },
+const tagVariants = cva("gencl:flex gencl:bg-secondary-100 gencl:rounded-full gencl:items-center gencl:gap-1", {
+  variants: {
+    size: {
+      sm: "gencl:p-0.5 gencl:pr-1.5",
+      md: "gencl:p-0.5 gencl:pr-2",
     },
-    defaultVariants: {
-      size: "md",
-    },
-  }
-);
+  },
+  defaultVariants: {
+    size: "md",
+  },
+});
 
 const tagTextVariants = cva("gencl:line-clamp-1 gencl:break-all", {
   variants: {
@@ -76,25 +73,15 @@ export function Tag({
           className
         )}
         title={title ?? userName}
-        {...restProps}
-      >
+        {...restProps}>
         {hasProfileImage && (
-          <Avatar
-            isAvatar={profileImage.isAvatar ?? false}
-            size={avatarSize}
-            alt={alt}
-            imageUrl={profileImage.url}
-          />
+          <Avatar isAvatar={profileImage.isAvatar ?? false} size={avatarSize} alt={alt} imageUrl={profileImage.url} />
         )}
         <p title={userName} className={tagTextVariants({ size })}>
           {/* Truncate username based on size */}
-          {truncateLength
-            ? `${userName.slice(0, truncateLength)}...`
-            : userName}
+          {truncateLength ? `${userName.slice(0, truncateLength)}...` : userName}
         </p>
-        {userLogoType && (
-          <BrandBadge userLogoType={userLogoType} variant="dark" />
-        )}
+        {userLogoType && <BrandBadge userLogoType={userLogoType} variant="dark" />}
       </div>
     </Link>
   );

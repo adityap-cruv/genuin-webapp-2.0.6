@@ -1,4 +1,5 @@
 import { z } from "zod";
+
 import {
   videoSchema,
   GroupSchema,
@@ -7,16 +8,16 @@ import {
   ownerSchema,
 } from "@genuin/components/react-query/api/feed/schema";
 
-const descriptionArrSchema = z.array(
+const _descriptionArrSchema = z.array(
   z
     .object({ member_id: z.string(), text: z.string() })
     .or(z.object({ community_id: z.string(), text: z.string() }))
     .or(z.string())
 );
 
-export type DescriptionArrType = z.infer<typeof descriptionArrSchema>;
+export type DescriptionArrType = z.infer<typeof _descriptionArrSchema>;
 // Define the PlayerVideoModal schema
-const PlayerVideoModalSchema = z.object({
+const _PlayerVideoModalSchema = z.object({
   video: videoSchema,
   loop: GroupSchema,
   community: communitySchema,
@@ -46,7 +47,7 @@ const OwnerSchema = z.object({
   brand: BrandUserSchema.optional(),
 });
 
-const LoopVideoSchema = z.object({
+const _LoopVideoSchema = z.object({
   is_sparked: z.boolean().nullish(),
   message_id: z.string(),
   slug: z.string(),
@@ -75,10 +76,10 @@ const LoopVideoSchema = z.object({
   clickable_url: z.string().nullish(),
 });
 
-export type VideoPlayerModalType = z.infer<typeof PlayerVideoModalSchema>;
+export type VideoPlayerModalType = z.infer<typeof _PlayerVideoModalSchema>;
 
 export type VideoPlayerModalCommunityType = z.infer<typeof communitySchema>;
 
 export type VideoPlayerModalLoopType = z.infer<typeof GroupSchema>;
 
-export type LoopVideoType = z.infer<typeof LoopVideoSchema>;
+export type LoopVideoType = z.infer<typeof _LoopVideoSchema>;

@@ -1,5 +1,6 @@
 import { EventManager } from "@genuin/components/lib/utils/event-manager";
-import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+
 import type { FollowStatusItem } from "./context";
 
 export type ActivePlayerType = "embed" | "expand-view" | "pip";
@@ -122,7 +123,7 @@ export const createEmbedEventBus = (context?: EmbedEventContextType) =>
     disableSwiper: false,
     followStatuses: [],
     isCaughtUpEventFired: false,
-    hasEmittedEmbedRendered : false,
+    hasEmittedEmbedRendered: false,
     resourceTracking: {
       thumbnailImages: {
         expected: 0,

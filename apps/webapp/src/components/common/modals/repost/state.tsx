@@ -1,6 +1,7 @@
 import { create } from 'zustand'
-import { type RepostCommunityListType } from './schema'
+
 import { fetchRepostDestinations } from './api'
+import { type RepostCommunityListType } from './schema'
 
 type States = {
   isOpen: boolean

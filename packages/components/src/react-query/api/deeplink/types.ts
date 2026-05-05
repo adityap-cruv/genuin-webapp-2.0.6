@@ -4,6 +4,7 @@ export type DeepLinkActionType =
   | "subscribe"
   | "join_as_collaborator"
   | "join_community"
+  | "join_group"
   | "comment"
   | "repost"
   | "spark"
@@ -58,9 +59,13 @@ export interface ReportActionData {
   searchParams?: BaseSearchParams;
 }
 
-export interface GetAppActionData {
-  // No additional data needed
+export interface JoinGroupActionData {
+  groupName?: string;
+  slug?: string;
+  searchParams?: BaseSearchParams;
 }
+
+export type GetAppActionData = object;
 
 export type DeepLinkActionData = {
   [K in DeepLinkActionType]: K extends "subscribe"
@@ -69,17 +74,19 @@ export type DeepLinkActionData = {
       ? JoinCollaboratorActionData
       : K extends "join_community"
         ? JoinCommunityActionData
-        : K extends "comment"
-          ? CommentActionData
-          : K extends "repost"
-            ? RepostActionData
-            : K extends "spark"
-              ? SparkActionData
-              : K extends "report"
-                ? ReportActionData
-                : K extends "get_app"
-                  ? GetAppActionData
-                  : never;
+        : K extends "join_group"
+          ? JoinGroupActionData
+          : K extends "comment"
+            ? CommentActionData
+            : K extends "repost"
+              ? RepostActionData
+              : K extends "spark"
+                ? SparkActionData
+                : K extends "report"
+                  ? ReportActionData
+                  : K extends "get_app"
+                    ? GetAppActionData
+                    : never;
 }[DeepLinkActionType];
 
 export type DeepLinkPayloadUnion =
@@ -90,5 +97,6 @@ export type DeepLinkPayloadUnion =
   | { type: "repost"; payload: RepostActionData }
   | { type: "spark"; payload: SparkActionData }
   | { type: "report"; payload: ReportActionData }
+  | { type: "join_group"; payload: JoinGroupActionData }
   | { type: "get_app"; payload: GetAppActionData }
   | { type: "video" };

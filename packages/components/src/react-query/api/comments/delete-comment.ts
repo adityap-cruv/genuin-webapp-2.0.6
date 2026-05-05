@@ -1,7 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
-import { useAxiosInstance } from "@genuin/components/context/axios";
-import { API_PATHS } from "../../paths";
 import type { AxiosInstance } from "axios";
+
+import { useAxiosInstance } from "@genuin/components/context/axios";
+
+import { API_PATHS } from "../../paths";
 
 type DeleteCommentProps = {
   commentId: string;
@@ -13,11 +15,7 @@ type DeleteCommentMutationCallbacks = {
     variables: DeleteCommentProps,
     context: unknown
   ) => void;
-  onError?: (
-    error: Error,
-    variables: DeleteCommentProps,
-    context: unknown
-  ) => void;
+  onError?: (error: Error, variables: DeleteCommentProps, context: unknown) => void;
 };
 
 /**
@@ -27,9 +25,7 @@ type DeleteCommentMutationCallbacks = {
  */
 async function deleteComment({ commentId }: DeleteCommentProps, axiosInstance: AxiosInstance) {
   try {
-    const res = await axiosInstance.delete(
-      `${API_PATHS.FEED_DELETE_COMMENT}?comment_id=${commentId}`
-    );
+    const res = await axiosInstance.delete(`${API_PATHS.FEED_DELETE_COMMENT}?comment_id=${commentId}`);
 
     if (res.data.code === 200) {
       return { success: true };
@@ -44,10 +40,7 @@ async function deleteComment({ commentId }: DeleteCommentProps, axiosInstance: A
  * React Query mutation hook for deleting a comment.
  * @param callbacks - Optional onSuccess and onError callbacks.
  */
-export function useDeleteCommentMutation({
-  onSuccess,
-  onError,
-}: DeleteCommentMutationCallbacks) {
+export function useDeleteCommentMutation({ onSuccess, onError }: DeleteCommentMutationCallbacks) {
   const axiosInstance = useAxiosInstance();
 
   return useMutation({

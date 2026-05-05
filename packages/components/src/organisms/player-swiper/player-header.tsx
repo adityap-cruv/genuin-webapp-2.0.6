@@ -1,6 +1,6 @@
 import { Button } from "@genuin/ui/button";
 import { ChevronLeftIcon } from "@genuin/ui/icons";
-import { ComponentProps } from "react";
+import type { ComponentProps } from "react";
 
 type PlayerHeaderProps = ComponentProps<"div"> & {
   title?: string;
@@ -18,8 +18,7 @@ export function PlayerHeader({
   return (
     <div
       className="gencl:absolute gencl:top-0 gencl:left-0 gencl:right-0 gencl:z-20 gencl:flex gencl:items-center gencl:p-4 gencl:bg-gradient-to-b gencl:from-black/50 gencl:justify-center gencl:to-transparent"
-      {...restProps}
-    >
+      {...restProps}>
       {isMobile && (
         <Button
           id="player-header-back-button"
@@ -32,8 +31,7 @@ export function PlayerHeader({
           className="gencl:absolute gencl:left-0 gencl:w-11 gencl:h-11"
           aria-label="Back"
           role="button"
-          tabIndex={0}
-        >
+          tabIndex={0}>
           <ChevronLeftIcon theme="dark" size="lg" aria-hidden="true" />
         </Button>
       )}
@@ -42,8 +40,7 @@ export function PlayerHeader({
         // role="heading"
         // aria-level={1}
         aria-label={title}
-        tabIndex={0}
-      >
+        tabIndex={0}>
         {title}
       </p>
     </div>

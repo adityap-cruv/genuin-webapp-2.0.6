@@ -1,13 +1,17 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@components/ui/tabs'
-import { useSearchBarStore } from '../../store'
 import { useQuery } from '@tanstack/react-query'
-import { getTopResults } from '../../api'
-import { Top } from './top'
-import { People } from './people'
-import { Communities } from './communities'
-import { Posts } from './posts'
-import { Loops } from './loops'
+
 import { Shimmer } from '@components/ui/shimmer'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@components/ui/tabs'
+
+import { getTopResults } from '../../api'
+import { useSearchBarStore } from '../../store'
+
+import { Communities } from './communities'
+import { Loops } from './loops'
+import { People } from './people'
+import { Posts } from './posts'
+import { Top } from './top'
+
 
 export type CommunityType = {
   id: string
@@ -34,7 +38,7 @@ export type BrandType = {
   brand_user_logo: number | 1
 }
 
-export type LoopType = {
+type LoopType = {
   slug: string
   id: string
   name?: string | null

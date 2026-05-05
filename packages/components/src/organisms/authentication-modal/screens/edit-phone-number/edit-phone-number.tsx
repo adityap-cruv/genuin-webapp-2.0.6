@@ -1,25 +1,18 @@
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@genuin/ui/components/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@genuin/ui/components/form";
 import { PhoneInput } from "@genuin/ui/components/phone-input";
-import { ComponentProps, useCallback } from "react";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import {
-  formatPhoneNumber,
-  formatPhoneNumberIntl,
-  isValidPhoneNumber,
-} from "react-phone-number-input";
 import { sanitizeInput } from "@genuin/ui/lib/sanitize";
 import { cn } from "@genuin/ui/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
+import type { ComponentProps } from "react";
+import { useCallback } from "react";
+import { useForm } from "react-hook-form";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import { z } from "zod";
+
+import { useBaseContext } from "@genuin/components/context";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { useSendOtpMutation } from "@genuin/components/react-query/api/authentication";
+
 import { useAuthenticationModalContext } from "../../context";
 import { SubmitButton } from "../../submit-button";
 
@@ -29,12 +22,10 @@ const phoneFormSchema = z.object({
   }),
 });
 
-export function EditPhoneNumber({
-  className,
-  ...restProps
-}: ComponentProps<"div">) {
+export function EditPhoneNumber({ className, ...restProps }: ComponentProps<"div">) {
   const { user } = useAuthContext();
   const { setFormData, setStep } = useAuthenticationModalContext();
+  const { isInIframe } = useBaseContext();
 
   const { mutate: sendOtp, isPending } = useSendOtpMutation({
     onError() {
@@ -73,24 +64,20 @@ export function EditPhoneNumber({
     sendOtp({
       phoneNumber: sanitizeInput(form.getValues("phone")),
       isUpdate: true,
+      isInIframe,
     });
   }, []);
 
   return (
     <div className={cn("gencl:space-y-6", className)} {...restProps}>
       <div className="gencl:space-y-2">
-        <h3 className="gencl:text-center gencl:text-headline-2-semi-bold">
-          Edit phone number
-        </h3>
+        <h3 className="gencl:text-center gencl:text-headline-2-semi-bold">Edit phone number</h3>
         <p className="gencl:text-center gencl:text-body-1-medium gencl:text-secondary-600">
           Enter the phone number where you would like to receive updates
         </p>
       </div>
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="gencl:space-y-6"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="gencl:space-y-6">
           <FormField
             control={form.control}
             name="phone"
@@ -115,9 +102,7 @@ export function EditPhoneNumber({
           />
           <SubmitButton
             title="Save"
-            disabled={
-              !isValidPhoneNumber(form.watch("phone") ?? "") || isPending
-            }
+            disabled={!isValidPhoneNumber(form.watch("phone") ?? "") || isPending}
             isLoading={isPending}
             error={form.formState.errors.root?.message || ""}
           />

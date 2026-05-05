@@ -1,9 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import {
-  Toaster,
-  Toast,
-} from "./toaster"; // adjust path if needed
+
 import { Button } from "@genuin/ui/components/button"; // Use any button or native <button>
+
+import { Toaster, Toast } from "./toaster"; // adjust path if needed
 
 const meta: Meta = {
   title: "Components/Toast",
@@ -22,9 +21,7 @@ export const Success: Story = {
   render: () => (
     <>
       <Toaster />
-      <Button onClick={() => Toast.Success({ message: "Link copied" })}>
-        Show Success Toast
-      </Button>
+      <Button onClick={() => Toast.Success({ message: "Link copied" })}>Show Success Toast</Button>
     </>
   ),
 };
@@ -33,9 +30,7 @@ export const Error: Story = {
   render: () => (
     <>
       <Toaster />
-      <Button onClick={() => Toast.Error({ message: "Something went wrong" })}>
-        Show Error Toast
-      </Button>
+      <Button onClick={() => Toast.Error({ message: "Something went wrong" })}>Show Error Toast</Button>
     </>
   ),
 };
@@ -44,7 +39,7 @@ export const Descriptive: Story = {
   render: () => (
     <>
       <Toaster />
-      <Button onClick={() => Toast.Success({ message: "Something went wrong" , description : "Long Text Description" })}>
+      <Button onClick={() => Toast.Success({ message: "Something went wrong", description: "Long Text Description" })}>
         Show Toast
       </Button>
     </>

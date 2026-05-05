@@ -1,6 +1,7 @@
-import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
-import { IHeartCaughtUpOverlay } from "./embed/iheart";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+
+import { IHeartCaughtUpOverlay } from "./embed/iheart";
 
 export function WatchBoundaryOverlay({
   variant,
@@ -23,12 +24,7 @@ export function WatchBoundaryOverlay({
   switch (layoutType) {
     case "iheart": {
       return (
-        <IHeartCaughtUpOverlay
-          videoDetails={videoDetails}
-          info={info}
-          variant={variant}
-          websiteType={websiteType}
-        />
+        <IHeartCaughtUpOverlay videoDetails={videoDetails} info={info} variant={variant} websiteType={websiteType} />
       );
     }
     default:

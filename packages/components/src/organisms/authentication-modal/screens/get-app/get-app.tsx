@@ -1,23 +1,23 @@
-import { ComponentProps, useEffect, useState } from "react";
+import { Button } from "@genuin/ui/components/button";
+import { Loader } from "@genuin/ui/components/loader";
+import { Image } from "@genuin/ui/image";
+import type { ComponentProps } from "react";
+import { useEffect, useState } from "react";
 import QRCode from "react-qr-code";
+
 import appStoreImage from "@genuin/components/assets/images/appStore.svg";
 import playStoreImage from "@genuin/components/assets/images/playStore.svg";
-import { Image } from "@genuin/ui/image";
+import { useAnalytics } from "@genuin/components/context/analytics";
 import { useBaseContext } from "@genuin/components/context/base";
-import { AppDownloadForm, AppDownloadFormData } from "./app-download-form";
-import { Link } from "@genuin/components/molecules/link";
-import {
-  URL_TO_APP_STORE,
-  URL_TO_PLAY_STORE,
-} from "@genuin/components/lib/constants";
-import { useAuthenticationModalContext } from "@genuin/components/organisms/authentication-modal/context";
-import { deepLinkActions } from "@genuin/components/react-query/api/deeplink/get-deeplink";
-import { Loader } from "@genuin/ui/components/loader";
+import { URL_TO_APP_STORE, URL_TO_PLAY_STORE } from "@genuin/components/lib/constants";
 import { getActionText } from "@genuin/components/lib/utils";
 import { BrandLogo } from "@genuin/components/molecules/brand";
-import { Button } from "@genuin/ui/components/button";
+import { Link } from "@genuin/components/molecules/link";
+import { useAuthenticationModalContext } from "@genuin/components/organisms/authentication-modal/context";
+import { deepLinkActions } from "@genuin/components/react-query/api/deeplink/get-deeplink";
 
-import { useAnalytics } from "@genuin/components/context/analytics";
+import { AppDownloadForm } from "./app-download-form";
+import type { AppDownloadFormData } from "./app-download-form";
 
 export type GetAppProps = ComponentProps<"div"> & {
   onSubmit?: (data: AppDownloadFormData) => void;
@@ -52,14 +52,10 @@ export function GetApp({ onSubmit, ...props }: GetAppProps) {
               url = await deepLinkActions.subscribe(getAppData.data.payload);
               break;
             case "join_as_collaborator":
-              url = await deepLinkActions.joinAsCollaborator(
-                getAppData.data.payload
-              );
+              url = await deepLinkActions.joinAsCollaborator(getAppData.data.payload);
               break;
             case "join_community":
-              url = await deepLinkActions.joinCommunity(
-                getAppData.data.payload
-              );
+              url = await deepLinkActions.joinCommunity(getAppData.data.payload);
               break;
             case "comment":
               url = await deepLinkActions.comment(getAppData.data.payload);
@@ -97,10 +93,7 @@ export function GetApp({ onSubmit, ...props }: GetAppProps) {
   }, [getAppData?.data]);
 
   return (
-    <div
-      className="gencl:text-center gencl:space-y-4 gencl:w-full gencl:pt-0"
-      {...props}
-    >
+    <div className="gencl:text-center gencl:space-y-4 gencl:w-full gencl:pt-0" {...props}>
       {brandDetails.logo && (
         <BrandLogo className="gencl:mx-auto gencl:h-10 gencl:sm:h-12! gencl:w-10 gencl:sm:w-full! gencl:rounded-full gencl:sm:rounded-none! gencl:mb-3" />
       )}
@@ -110,11 +103,7 @@ export function GetApp({ onSubmit, ...props }: GetAppProps) {
         </p>
         <p className="gencl:text-body-1-medium gencl:text-secondary-600">
           {getAppData?.description ??
-            getActionText(
-              "Download app to browse more communities",
-              clickAction,
-              "Download app"
-            )}
+            getActionText("Download app to browse more communities", clickAction, "Download app")}
         </p>
       </div>
       <div className="gencl:sm:flex! gencl:hidden gencl:flex-col gencl:items-center gencl:gap-2">
@@ -125,9 +114,7 @@ export function GetApp({ onSubmit, ...props }: GetAppProps) {
         />
         <p className="gencl:text-body-1-medium">Scan to download app</p>
       </div>
-      {step !== "GET_APP_WITH_BLURRED_BG" && (
-        <AppDownloadForm className="gencl:sm:block! gencl:hidden" />
-      )}
+      {step !== "GET_APP_WITH_BLURRED_BG" && <AppDownloadForm className="gencl:sm:block! gencl:hidden" />}
 
       <div>
         <Link
@@ -139,34 +126,22 @@ export function GetApp({ onSubmit, ...props }: GetAppProps) {
               action_type: clickAction || "get_app",
               source: "mobile_button",
             });
-          }}
-        >
+          }}>
           <Button
             theme="primary"
-            className="gencl:w-full gencl:flex gencl:items-center gencl:justify-center gencl:sm:hidden!"
-          >
-            {isLoading ? (
-              <Loader size="sm" strokeColor="white" />
-            ) : (
-              <span>Get App</span>
-            )}
+            className="gencl:w-full gencl:flex gencl:items-center gencl:justify-center gencl:sm:hidden!">
+            {isLoading ? <Loader size="sm" strokeColor="white" /> : <span>Get App</span>}
           </Button>
         </Link>
       </div>
 
       <p className="gencl:text-center gencl:text-secondary-300 gencl:text-body-2-medium gencl:block gencl:sm:hidden!">
         By continuing, you agree to our{" "}
-        <Link
-          href={brandDetails?.terms_and_condition ?? ""}
-          className="gencl:underline gencl:text-primary!"
-        >
+        <Link href={brandDetails?.terms_and_condition ?? ""} className="gencl:underline gencl:text-primary!">
           Terms of Service
         </Link>{" "}
         and{" "}
-        <Link
-          href={brandDetails?.privacy_policy ?? ""}
-          className="gencl:underline gencl:text-primary!"
-        >
+        <Link href={brandDetails?.privacy_policy ?? ""} className="gencl:underline gencl:text-primary!">
           Privacy Policy
         </Link>
       </p>
@@ -179,31 +154,19 @@ export function GetApp({ onSubmit, ...props }: GetAppProps) {
           href={
             typeof brandDetails?.integrations.sdk.ios === "string"
               ? brandDetails.integrations.sdk.ios
-              : (brandDetails?.integrations.sdk.ios?.appstore_link ??
-                URL_TO_APP_STORE)
-          }
-        >
-          <Image
-            className="gencl:mx-2 gencl:h-10 gencl:w-auto"
-            alt="app store"
-            src={appStoreImage}
-          />
+              : (brandDetails?.integrations.sdk.ios?.appstore_link ?? URL_TO_APP_STORE)
+          }>
+          <Image className="gencl:mx-2 gencl:h-10 gencl:w-auto" alt="app store" src={appStoreImage} />
         </Link>
         <Link
           href={
             typeof brandDetails?.integrations.sdk.android === "string"
               ? brandDetails.integrations.sdk.android
-              : (brandDetails?.integrations.sdk.android?.playstore_link ??
-                URL_TO_PLAY_STORE)
+              : (brandDetails?.integrations.sdk.android?.playstore_link ?? URL_TO_PLAY_STORE)
           }
           target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            className="gencl:mx-2 gencl:h-10 gencl:w-auto"
-            src={playStoreImage}
-            alt="play store"
-          />
+          rel="noopener noreferrer">
+          <Image className="gencl:mx-2 gencl:h-10 gencl:w-auto" src={playStoreImage} alt="play store" />
         </Link>
       </div>
     </div>

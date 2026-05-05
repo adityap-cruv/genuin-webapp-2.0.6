@@ -1,7 +1,8 @@
 "use client";
-import * as React from "react";
-import { cn } from "@genuin/ui/lib/utils";
 import { Skeleton } from "@genuin/ui/components/skeleton";
+import { cn } from "@genuin/ui/lib/utils";
+import * as React from "react";
+
 import { loadVideoMetadata } from "@genuin/components/molecules/video-trim-slider/utils";
 
 // Public methods exposed to parent via ref
@@ -15,10 +16,10 @@ type EditCoverImageProps = {
   thumbHeight: number;
 };
 
-export const EditCoverImage = React.forwardRef<
-  EditCoverImageHandle,
-  EditCoverImageProps
->(function EditCoverImage({ videoURL, thumbHeight }, ref) {
+export const EditCoverImage = React.forwardRef<EditCoverImageHandle, EditCoverImageProps>(function EditCoverImage(
+  { videoURL, thumbHeight },
+  ref
+) {
   const videoRef = React.useRef<HTMLVideoElement | null>(null);
   const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
   const overlayCanvasRef = React.useRef<HTMLCanvasElement | null>(null);
@@ -33,88 +34,67 @@ export const EditCoverImage = React.forwardRef<
   const [selectedIndex, setSelectedIndex] = React.useState<number | null>(null);
 
   // Generate thumbnails by seeking video and capturing frames
-  const generateThumbnails = React.useCallback(
-    async (count: number, targetWidth: number, targetHeight: number) => {
-      const video = videoRef.current;
-      const canvas = canvasRef.current;
-      const context = canvas?.getContext("2d");
+  const generateThumbnails = React.useCallback(async (count: number, targetWidth: number, targetHeight: number) => {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    const context = canvas?.getContext("2d");
 
-      const metadata = await loadVideoMetadata(videoURL);
+    const metadata = await loadVideoMetadata(videoURL);
 
-      if (
-        !video ||
-        !canvas ||
-        !context ||
-        !count ||
-        isNaN(metadata?.duration)
-      ) {
-        setIsLoadingThumbnails(false);
-        return;
-      }
-
-      setIsLoadingThumbnails(true);
-      setThumbnails(Array(count).fill(""));
-
-      const { videoWidth, videoHeight } = video;
-      const videoAspect = videoWidth / videoHeight;
-      const targetAspect = targetWidth / targetHeight;
-      // Calculate cropping for correct aspect ratio
-      let sx = 0,
-        sy = 0,
-        sWidth = videoWidth,
-        sHeight = videoHeight;
-      if (videoAspect > targetAspect) {
-        sWidth = videoHeight * targetAspect;
-        sx = (videoWidth - sWidth) / 2;
-      } else {
-        sHeight = videoWidth / targetAspect;
-        sy = (videoHeight - sHeight) / 2;
-      }
-
-      // Setup canvas dimensions
-      canvas.width = targetWidth;
-      canvas.height = targetHeight;
-
-      // Function to seek and capture frame
-      const captureFrame = () => {
-        context.clearRect(0, 0, targetWidth, targetHeight);
-        context.drawImage(
-          video,
-          sx,
-          sy,
-          sWidth,
-          sHeight,
-          0,
-          0,
-          targetWidth,
-          targetHeight
-        );
-        return canvas.toDataURL("image/png", 0.6);
-      };
-
-      const interval = metadata.duration / (count - 1);
-
-      for (let i = 0; i < count; i++) {
-        const time = interval * i;
-        video.currentTime = Math.min(time, metadata.duration);
-
-        // Wait until seek finishes
-        await new Promise((resolve) =>
-          video.addEventListener("seeked", resolve, { once: true })
-        );
-
-        const thumb = captureFrame();
-        setThumbnails((prev) => {
-          const updated = [...prev];
-          updated[i] = thumb;
-          return updated;
-        });
-      }
-
+    if (!video || !canvas || !context || !count || isNaN(metadata?.duration)) {
       setIsLoadingThumbnails(false);
-    },
-    []
-  );
+      return;
+    }
+
+    setIsLoadingThumbnails(true);
+    setThumbnails(Array(count).fill(""));
+
+    const { videoWidth, videoHeight } = video;
+    const videoAspect = videoWidth / videoHeight;
+    const targetAspect = targetWidth / targetHeight;
+    // Calculate cropping for correct aspect ratio
+    let sx = 0,
+      sy = 0,
+      sWidth = videoWidth,
+      sHeight = videoHeight;
+    if (videoAspect > targetAspect) {
+      sWidth = videoHeight * targetAspect;
+      sx = (videoWidth - sWidth) / 2;
+    } else {
+      sHeight = videoWidth / targetAspect;
+      sy = (videoHeight - sHeight) / 2;
+    }
+
+    // Setup canvas dimensions
+    canvas.width = targetWidth;
+    canvas.height = targetHeight;
+
+    // Function to seek and capture frame
+    const captureFrame = () => {
+      context.clearRect(0, 0, targetWidth, targetHeight);
+      context.drawImage(video, sx, sy, sWidth, sHeight, 0, 0, targetWidth, targetHeight);
+      return canvas.toDataURL("image/png", 0.6);
+    };
+
+    const interval = metadata.duration / (count - 1);
+
+    for (let i = 0; i < count; i++) {
+      const time = interval * i;
+      video.currentTime = Math.min(time, metadata.duration);
+
+      // Wait until seek finishes
+      await new Promise((resolve) => video.addEventListener("seeked", resolve, { once: true }));
+
+      const thumb = captureFrame();
+      setThumbnails((prev) => {
+        const updated = [...prev];
+        updated[i] = thumb;
+        return updated;
+      });
+    }
+
+    setIsLoadingThumbnails(false);
+  }, []);
 
   // Track container resize to calculate number of thumbnails
   React.useEffect(() => {
@@ -171,10 +151,7 @@ export const EditCoverImage = React.forwardRef<
       newLeft = Math.max(minLeft, Math.min(newLeft, maxLeft));
 
       // Snap overlay to thumbnail index
-      const clampedLeft = Math.max(
-        0,
-        Math.min(newLeft, containerWidth - overlayPixelWidth)
-      );
+      const clampedLeft = Math.max(0, Math.min(newLeft, containerWidth - overlayPixelWidth));
       setLeftPosition(clampedLeft);
 
       const centerX = clampedLeft + overlayPixelWidth / 2;
@@ -235,10 +212,7 @@ export const EditCoverImage = React.forwardRef<
   };
 
   // Download image by URL (This code use only for the testing purpose)
-  const downloadImageFromURL = async (
-    imageUrl: string,
-    fileName = `thumbnail.png`
-  ) => {
+  const downloadImageFromURL = async (imageUrl: string, fileName = `thumbnail.png`) => {
     try {
       const response = await fetch(imageUrl, { mode: "cors" });
       const blob = await response.blob();
@@ -268,12 +242,7 @@ export const EditCoverImage = React.forwardRef<
   return (
     <div className="gencl:space-y-4">
       {/* Hidden elements for video and canvases */}
-      <video
-        ref={videoRef}
-        src={videoURL}
-        crossOrigin="anonymous"
-        style={{ display: "none" }}
-      />
+      <video ref={videoRef} src={videoURL} crossOrigin="anonymous" style={{ display: "none" }} />
       <canvas ref={canvasRef} style={{ display: "none" }} />
       <canvas ref={overlayCanvasRef} style={{ display: "none" }} />
 
@@ -281,8 +250,7 @@ export const EditCoverImage = React.forwardRef<
       <div
         ref={parentRef}
         className="gencl:relative gencl:w-full"
-        style={{ userSelect: "none", height: `${thumbHeight}px` }}
-      >
+        style={{ userSelect: "none", height: `${thumbHeight}px` }}>
         {/* Thumbnails row */}
         <div className="gencl:flex gencl:overflow-hidden gencl:rounded-lg gencl:w-full gencl:cursor-pointer">
           {thumbnails.map((src, index) => (
@@ -299,21 +267,12 @@ export const EditCoverImage = React.forwardRef<
                 // Position overlay correctly
                 if (parentRef.current) {
                   const containerWidth = parentRef.current.offsetWidth;
-                  const overlayPixelWidth =
-                    (containerWidth * (120 / thumbnails.length)) / 100;
-                  const newLeft =
-                    (index / thumbnails.length) * containerWidth -
-                    overlayPixelWidth / 2;
+                  const overlayPixelWidth = (containerWidth * (120 / thumbnails.length)) / 100;
+                  const newLeft = (index / thumbnails.length) * containerWidth - overlayPixelWidth / 2;
 
-                  setLeftPosition(
-                    Math.max(
-                      0,
-                      Math.min(newLeft, containerWidth - overlayPixelWidth)
-                    )
-                  );
+                  setLeftPosition(Math.max(0, Math.min(newLeft, containerWidth - overlayPixelWidth)));
                 }
-              }}
-            >
+              }}>
               {src ? (
                 <img
                   src={src}
@@ -335,14 +294,11 @@ export const EditCoverImage = React.forwardRef<
               "gencl:absolute gencl:cursor-pointer gencl:rounded-lg gencl:border-2 gencl:border-white gencl:cursor-pointer gencl:overflow-hidden"
             )}
             style={{
-              width: isLoadingThumbnails
-                ? "100%"
-                : `${120 / thumbnails.length}%`,
+              width: isLoadingThumbnails ? "100%" : `${120 / thumbnails.length}%`,
               height: `${thumbHeight + 16}px`,
               left: leftPosition,
               top: -8,
-            }}
-          >
+            }}>
             {isLoadingThumbnails ? (
               <Skeleton className="gencl:size-36 gencl:shrink-0 gencl:rounded-md gencl:w-full" />
             ) : (

@@ -1,19 +1,19 @@
+import { Button } from "@genuin/ui/button";
+import { Avatar } from "@genuin/ui/components/avatar";
 import { DecorativeList } from "@genuin/ui/components/decorative-list";
+import { Toast } from "@genuin/ui/components/toaster";
+import { RepostIcon } from "@genuin/ui/icons";
+import { cn } from "@genuin/ui/lib/utils";
+import { useCallback } from "react";
+
+import { useAnalytics } from "@genuin/components/context";
+import type { VideoTypes } from "@genuin/components/context";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { CommunityPrivacyInfo } from "@genuin/components/molecules/community-privacy-info";
 import { GroupPrivacyInfo } from "@genuin/components/molecules/group-privacy-info";
-import { Avatar } from "@genuin/ui/components/avatar";
-import { RepostCommunityType } from "@genuin/components/react-query/api/repost/schema";
-
-import { Button } from "@genuin/ui/button";
-import { RepostIcon } from "@genuin/ui/icons";
-import { useRepostVideoMutation } from "@genuin/components/react-query/api/repost";
-import { useCallback } from "react";
-import { Toast } from "@genuin/ui/components/toaster";
-import { cn } from "@genuin/ui/lib/utils";
 import { Link } from "@genuin/components/molecules/link";
-import { buildPageUrl } from "@genuin/components/lib/utils/pages";
-import { useAnalytics } from "@genuin/components/context";
-import { VideoTypes } from "@genuin/components/context";
+import { useRepostVideoMutation } from "@genuin/components/react-query/api/repost";
+import type { RepostCommunityType } from "@genuin/components/react-query/api/repost/schema";
 
 export function CommunityCard({
   communityInfo,
@@ -39,12 +39,8 @@ export function CommunityCard({
               href={buildPageUrl({
                 type: "community",
                 slug: communityInfo.slug,
-              })}
-            >
-              <p
-                title={communityInfo.name ?? ""}
-                className="gencl:line-clamp-2 gencl:text-body-1-bold"
-              >
+              })}>
+              <p title={communityInfo.name ?? ""} className="gencl:line-clamp-2 gencl:text-body-1-bold">
                 {communityInfo.name}
               </p>
             </Link>
@@ -74,11 +70,7 @@ export function CommunityCard({
                     />
                   )}
                 </div>
-                <RepostButton
-                  videoType={videoType}
-                  videoId={videoId}
-                  destinationId={item.chat_id}
-                />
+                <RepostButton videoType={videoType} videoId={videoId} destinationId={item.chat_id} />
               </div>
             </li>
           );
@@ -126,14 +118,8 @@ function RepostButton({
   }, [destinationId, videoId]);
 
   return (
-    <Button
-      theme={isSuccess ? "primary" : "outline"}
-      disabled={isPending || isSuccess}
-      onClick={handleRepost}
-    >
-      <RepostIcon
-        className={cn("gencl:size-6", isPending && "gencl:animate-spin")}
-      />
+    <Button theme={isSuccess ? "primary" : "outline"} disabled={isPending || isSuccess} onClick={handleRepost}>
+      <RepostIcon className={cn("gencl:size-6", isPending && "gencl:animate-spin")} />
       {isSuccess ? "Reposted" : "Repost"}
     </Button>
   );

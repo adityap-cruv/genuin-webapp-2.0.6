@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+
 import { SignIn } from "./signin";
 
 /**
@@ -12,8 +13,7 @@ const meta: Meta<typeof SignIn> = {
     layout: "centered",
     docs: {
       description: {
-        component:
-          "Authentication form supporting both email and phone number sign-in methods with country code selection.",
+        component: "Authentication form supporting both email and phone number sign-in methods.",
       },
     },
   },
@@ -22,11 +22,6 @@ const meta: Meta<typeof SignIn> = {
     onSubmit: {
       description: "Callback fired when form is submitted with value and type",
       control: false,
-    },
-    defaultCountry: {
-      description: "Default country code for phone input",
-      control: { type: "select" },
-      options: ["US", "IN", "GB", "CA"],
     },
     email: {
       description: "Whether to show email input by default",
@@ -47,7 +42,6 @@ type Story = StoryObj<typeof SignIn>;
  */
 export const PhoneFirst: Story = {
   args: {
-    defaultCountry: "US",
     email: false,
   },
 };
@@ -58,16 +52,6 @@ export const PhoneFirst: Story = {
 export const EmailFirst: Story = {
   args: {
     email: true,
-  },
-};
-
-/**
- * Phone input with custom country code (India)
- */
-export const InternationalPhone: Story = {
-  args: {
-    defaultCountry: "IN",
-    email: false,
   },
 };
 
@@ -86,7 +70,6 @@ export const CustomStyled: Story = {
  */
 export const Playground: Story = {
   args: {
-    defaultCountry: "US",
     email: false,
     className: "",
   },

@@ -1,5 +1,6 @@
-import { Shimmer } from '@components/ui/shimmer'
 import { type ReactNode } from 'react'
+
+import { Shimmer } from '@components/ui/shimmer'
 
 export function ItemShimmer({ count = 4 }: { count?: number }) {
   const compArr: ReactNode[] = []

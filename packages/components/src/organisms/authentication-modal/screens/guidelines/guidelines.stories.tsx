@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Guidelines } from "./guidelines";
+
 import { BaseContextProvider } from "@genuin/components/context/base";
+
+import { Guidelines } from "./guidelines";
 
 /**
  * Guidelines component displays brand-specific guidelines and rules

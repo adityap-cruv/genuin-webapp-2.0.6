@@ -1,6 +1,10 @@
 "use client";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@genuin/ui/lib/utils";
+import { tryJsonParse } from "@genuin/ui/lib/utils";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo } from "react";
+
+import type { ReadMoreProps, ReadMoreTextType } from "./read-more.types";
 import {
   applyLineClampStyles,
   calculateMaxCharacterLimitCached,
@@ -8,9 +12,6 @@ import {
   convertUrlsToAnchorTags,
   renderAnchorTag,
 } from "./utils";
-import { tryJsonParse } from "@genuin/ui/lib/utils";
-import type { ReadMoreProps, ReadMoreTextType } from "./read-more.types";
-import { memo } from "react";
 
 /**
  * ReadMore Component
@@ -100,10 +101,7 @@ export const ReadMore = memo(function ReadMore({
       // Try to parse if it's a stringified JSON
       const parsed = tryJsonParse(text);
       // If parsing was successful and returned an object/array, use it
-      if (
-        parsed !== text &&
-        (Array.isArray(parsed) || (parsed && typeof parsed === "object"))
-      ) {
+      if (parsed !== text && (Array.isArray(parsed) || (parsed && typeof parsed === "object"))) {
         return parsed as ReadMoreTextType;
       }
       return text;
@@ -142,29 +140,16 @@ export const ReadMore = memo(function ReadMore({
               maxLines,
               textRef.current,
               flattenedText,
-              showExpandText
-                ? viewMoreText.length > viewLessText.length
-                  ? viewMoreText
-                  : viewLessText
-                : "",
+              showExpandText ? (viewMoreText.length > viewLessText.length ? viewMoreText : viewLessText) : ""
             );
             setCalculatedMaxChars(limit);
-            console.log("Calculated max characters:", limit);
           }
         });
       });
 
       return () => cancelAnimationFrame(rafId);
     }
-  }, [
-    maxChars,
-    flattenedText,
-    maxLines,
-    viewLessText,
-    viewMoreText,
-    shouldAnimate,
-    showExpandText,
-  ]);
+  }, [maxChars, flattenedText, maxLines, viewLessText, viewMoreText, shouldAnimate, showExpandText]);
 
   useEffect(() => {
     if (!useDynamicHeight) return;
@@ -218,10 +203,7 @@ export const ReadMore = memo(function ReadMore({
         const itemText =
           typeof item === "string"
             ? item
-            : item &&
-                typeof item === "object" &&
-                "text" in item &&
-                typeof item.text === "string"
+            : item && typeof item === "object" && "text" in item && typeof item.text === "string"
               ? item.text
               : "";
 
@@ -263,12 +245,7 @@ export const ReadMore = memo(function ReadMore({
   useEffect(() => {
     if (!textRef.current) return;
     const textElement = textRef.current;
-    applyLineClampStyles(
-      textElement,
-      isExpanded ? null : maxLines,
-      display,
-      isLineTruncate,
-    );
+    applyLineClampStyles(textElement, isExpanded ? null : maxLines, display, isLineTruncate);
   }, [maxLines, isExpanded, display, isLineTruncate]);
 
   // Modified animation logic for smooth expand/collapse and delayed char reduction
@@ -304,8 +281,7 @@ export const ReadMore = memo(function ReadMore({
       const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
 
       // Show bottom mask if not near bottom and content is scrollable
-      const shouldShowBottomMask =
-        distanceFromBottom > scrollThreshold && scrollHeight > clientHeight;
+      const shouldShowBottomMask = distanceFromBottom > scrollThreshold && scrollHeight > clientHeight;
       setMaskState((prev) => ({
         ...prev,
         bottom: shouldShowBottomMask,
@@ -380,7 +356,7 @@ export const ReadMore = memo(function ReadMore({
         onExpandChange?.(false);
       }
     },
-    [isExpanded, onExpandChange],
+    [isExpanded, onExpandChange]
   );
 
   // Memoize height calculations
@@ -389,7 +365,7 @@ export const ReadMore = memo(function ReadMore({
       collapsed: `${maxLines * 24}px`,
       expanded: useDynamicHeight ? measuredHeight : expandedHeight,
     }),
-    [maxLines, expandedHeight, measuredHeight, useDynamicHeight],
+    [maxLines, expandedHeight, measuredHeight, useDynamicHeight]
   );
 
   // Memoize display text generation
@@ -402,11 +378,7 @@ export const ReadMore = memo(function ReadMore({
         return (
           <>
             {renderText(parsedText)}
-            <span
-              className="gencl:whitespace-nowrap gencl:align-baseline"
-              aria-hidden="true"
-              tabIndex={-1}
-            >
+            <span className="gencl:whitespace-nowrap gencl:align-baseline" aria-hidden="true" tabIndex={-1}>
               …
             </span>
           </>
@@ -423,7 +395,7 @@ export const ReadMore = memo(function ReadMore({
         tabIndex={-1}
         className={cn(
           "gencl:inline gencl:bg-transparent gencl:!text-secondary-600 gencl:hover:underline gencl:cursor-pointer",
-          buttonClassName,
+          buttonClassName
         )}
         style={{
           padding: 0,
@@ -434,28 +406,20 @@ export const ReadMore = memo(function ReadMore({
         onClick={(e) => {
           e.stopPropagation();
           toggleExpand();
-        }}
-      >
+        }}>
         {text}
       </button>
     );
 
     if (!isExpanded) {
-      const teaserContent =
-        typeof teaser === "string"
-          ? teaser.replace(/\s*$/, "")
-          : renderText(teaser);
+      const teaserContent = typeof teaser === "string" ? teaser.replace(/\s*$/, "") : renderText(teaser);
 
       // If shouldAnimate, only show teaser after animation completes
       if (shouldAnimate && showCollapsed && !showExpandText) {
         return (
           <>
             {teaserContent}
-            <span
-              className="gencl:whitespace-nowrap gencl:align-baseline"
-              aria-hidden="true"
-              tabIndex={-1}
-            >
+            <span className="gencl:whitespace-nowrap gencl:align-baseline" aria-hidden="true" tabIndex={-1}>
               …
             </span>
           </>
@@ -470,11 +434,7 @@ export const ReadMore = memo(function ReadMore({
         <>
           {teaserContent}
           {showExpandText && (
-            <span
-              className="gencl:whitespace-nowrap gencl:align-baseline"
-              aria-hidden="true"
-              tabIndex={-1}
-            >
+            <span className="gencl:whitespace-nowrap gencl:align-baseline" aria-hidden="true" tabIndex={-1}>
               &nbsp;…
               {createButton(viewMoreText)}
             </span>
@@ -488,12 +448,8 @@ export const ReadMore = memo(function ReadMore({
       return (
         <>
           <span
-            className={cn(
-              "gencl:max-h-[10em] gencl:opacity-100 gencl:text-inherit",
-              lineClampClassName,
-            )}
-            tabIndex={-1}
-          >
+            className={cn("gencl:max-h-[10em] gencl:opacity-100 gencl:text-inherit", lineClampClassName)}
+            tabIndex={-1}>
             {renderText(teaser)}
             {renderText(remaining)}
           </span>
@@ -504,12 +460,8 @@ export const ReadMore = memo(function ReadMore({
     return (
       <>
         <span
-          className={cn(
-            "gencl:max-h-[10em] gencl:opacity-100 gencl:text-inherit",
-            lineClampClassName,
-          )}
-          tabIndex={-1}
-        >
+          className={cn("gencl:max-h-[10em] gencl:opacity-100 gencl:text-inherit", lineClampClassName)}
+          tabIndex={-1}>
           {renderText(teaser)}
           {renderText(remaining)}
           {showExpandText && <span>&nbsp;{createButton(viewLessText)}</span>}
@@ -541,15 +493,10 @@ export const ReadMore = memo(function ReadMore({
         className={cn(
           "gencl:transition-all gencl:relative gencl:duration-500 gencl:ease-in-out gencl:overflow-auto gencl:scrollbar-none gencl:w-full",
           "swiper-no-swiping",
-          className,
+          className
         )}
         style={{
-          maxHeight:
-            shouldAnimate && expandable
-              ? isExpanded
-                ? heights.expanded
-                : heights.collapsed
-              : undefined,
+          maxHeight: shouldAnimate && expandable ? (isExpanded ? heights.expanded : heights.collapsed) : undefined,
           overflow: shouldAnimate && expandable ? "auto" : undefined,
           transition:
             shouldAnimate && expandable
@@ -575,23 +522,15 @@ export const ReadMore = memo(function ReadMore({
             onExpandChange?.(!prev);
             return !prev;
           });
-        }}
-      >
+        }}>
         <span
           ref={textRef}
           className={cn(
             "gencl:w-full gencl:break-words",
-            position !== "outside"
-              ? "gencl:text-white!"
-              : "gencl:text-secondary-900",
-            textClassName,
+            position !== "outside" ? "gencl:text-white!" : "gencl:text-secondary-900",
+            textClassName
           )}
-          style={
-            !shouldAnimate && !isExpanded && expandable
-              ? clampedStyle
-              : { wordBreak: "break-word" }
-          }
-        >
+          style={!shouldAnimate && !isExpanded && expandable ? clampedStyle : { wordBreak: "break-word" }}>
           {displayText}
         </span>
       </p>
@@ -604,38 +543,22 @@ export const ReadMore = memo(function ReadMore({
         {...rest}
         className={cn(
           "gencl:transition-all gencl:relative gencl:duration-500 gencl:ease-in-out gencl:overflow-auto gencl:scrollbar-none gencl:w-full",
-          className,
+          className
         )}
         style={{
-          maxHeight:
-            shouldAnimate && expandable
-              ? isExpanded
-                ? heights.expanded
-                : heights.collapsed
-              : undefined,
+          maxHeight: shouldAnimate && expandable ? (isExpanded ? heights.expanded : heights.collapsed) : undefined,
           overflow: shouldAnimate && expandable ? "auto" : undefined,
-          transition:
-            shouldAnimate && expandable
-              ? "max-height 0.5s cubic-bezier(0.4,0,0.2,1)"
-              : undefined,
+          transition: shouldAnimate && expandable ? "max-height 0.5s cubic-bezier(0.4,0,0.2,1)" : undefined,
           ...rest.style,
-        }}
-      >
+        }}>
         <span
           ref={textRef}
           className={cn(
             "gencl:w-full gencl:break-words",
-            position !== "outside"
-              ? "gencl:text-white!"
-              : "gencl:text-secondary-900",
-            textClassName,
+            position !== "outside" ? "gencl:text-white!" : "gencl:text-secondary-900",
+            textClassName
           )}
-          style={
-            !shouldAnimate && !isExpanded && expandable
-              ? clampedStyle
-              : { wordBreak: "break-word" }
-          }
-        >
+          style={!shouldAnimate && !isExpanded && expandable ? clampedStyle : { wordBreak: "break-word" }}>
           {displayText}
         </span>
       </span>
@@ -646,11 +569,7 @@ export const ReadMore = memo(function ReadMore({
   const finalContent = href ? (
     <a
       href={href}
-      className={cn(
-        "gencl:cursor-pointer hover:gencl:underline focus:gencl:outline-none gencl:w-full",
-        linkClassName,
-      )}
-    >
+      className={cn("gencl:cursor-pointer hover:gencl:underline focus:gencl:outline-none gencl:w-full", linkClassName)}>
       {display === "inline" ? renderInlineContent : renderBlockContent}
     </a>
   ) : display === "inline" ? (
@@ -663,19 +582,16 @@ export const ReadMore = memo(function ReadMore({
     <div
       className={cn(
         "gencl:relative",
-        display === "inline" && "gencl:inline",
+        display === "inline" && "gencl:inline"
         // showOverlay && isExpanded && "gencl:z-10"
-      )}
-    >
+      )}>
       {/* Overlay backdrop */}
       {showOverlay && expandable && textParts.shouldTruncate && isExpanded && (
         <div
           className={cn(
             "gencl:fixed gencl:inset-0 gencl:bg-black/40 gencl:transition-opacity gencl:duration-300",
-            isExpanded
-              ? "gencl:opacity-100 gencl:pointer-events-auto"
-              : "gencl:opacity-0 gencl:pointer-events-none",
-            overlayClassName,
+            isExpanded ? "gencl:opacity-100 gencl:pointer-events-auto" : "gencl:opacity-0 gencl:pointer-events-none",
+            overlayClassName
           )}
           onClick={handleOverlayClick}
         />

@@ -1,15 +1,21 @@
 import { useQuery } from '@tanstack/react-query'
-import { deleteRecent, fetchRecents } from '../api'
-import { CloseIcon } from '@icons/close-icon'
-import { useSearchBarStore } from '../store'
-import { CustomAvatar } from '@components/custom/custom-avatar'
-import { PATH_NAME } from '@lib/utils/constants/path'
-import { IcLoop } from '@icons/ic-loop'
-import { useEffect, type ReactNode } from 'react'
 import Link from 'next/link'
-import { ItemShimmer } from './item-shimmer'
+import { useEffect, type ReactNode } from 'react'
+
+import { CustomAvatar } from '@components/custom/custom-avatar'
+import { CloseIcon } from '@icons/close-icon'
+import { IcLoop } from '@icons/ic-loop'
 import { SearchIcon } from '@icons/search-icon'
+import { PATH_NAME } from '@lib/utils/constants/path'
 import Analytics from '@services/analytics'
+
+import { deleteRecent, fetchRecents } from '../api'
+import { useSearchBarStore } from '../store'
+
+
+
+import { ItemShimmer } from './item-shimmer'
+
 
 export function Recents() {
   const {

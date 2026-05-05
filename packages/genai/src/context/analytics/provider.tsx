@@ -5,9 +5,11 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import type { ReactNode } from 'react'
+
+import type { OctoAnalytics } from '@/analytics'
+
 import { AnalyticsContext } from './context'
 import type { AnalyticsContextValue } from './context'
-import type { OctoAnalytics } from '@/analytics'
 
 /**
  * Analytics provider props

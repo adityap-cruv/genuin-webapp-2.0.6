@@ -42,22 +42,24 @@ type VideoAdConfig = {
   ads_url: string;
   url: string;
   cpm: number;
-  platform: string;
+  platform?: string;
+  advertiserDetails?: { logo: string; primaryColor: string } | null;
+  contentVideo?: { url: string; autoplay: boolean; loop: boolean; muted: boolean; objectFit: string } | null;
 };
 type HouseAd = { video: VideoFeedItem };
 
 export type AdTagObject = {
-  display_ad?: DisplayAdConfig | null;
-  native_ad?: NativeAdConfig | null;
-  video_ad?: VideoAdConfig | null;
+  display_ad?: DisplayAdConfig | DisplayAdConfig[] | null;
+  native_ad?: NativeAdConfig | NativeAdConfig[] | null;
+  video_ad?: VideoAdConfig | VideoAdConfig[] | null;
   order?: string[] | null;
 };
 
 export type AdsFeedItem = {
   type: "ads";
-  display_ad?: DisplayAdConfig | null;
-  native_ad?: NativeAdConfig | null;
-  video_ad?: VideoAdConfig | null;
+  display_ad?: DisplayAdConfig | DisplayAdConfig[] | null;
+  native_ad?: NativeAdConfig | NativeAdConfig[] | null;
+  video_ad?: VideoAdConfig | VideoAdConfig[] | null;
   order?: string[] | null;
   house_ad?: HouseAd;
 };

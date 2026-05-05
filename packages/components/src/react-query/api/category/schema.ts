@@ -19,5 +19,5 @@ const categoryWithCommunitiesSchema = z.object({
   communities: z.array(communitySchema),
 });
 
-const categoryListSchema = z.array(categoryWithCommunitiesSchema);
-export type CategoryListType = z.infer<typeof categoryListSchema>;
+const _categoryListSchema = z.array(categoryWithCommunitiesSchema);
+export type CategoryListType = z.infer<typeof _categoryListSchema>;

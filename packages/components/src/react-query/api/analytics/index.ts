@@ -1,5 +1,6 @@
-import { API_PATHS } from "../../paths";
 import type { AxiosInstance } from "axios";
+
+import { API_PATHS } from "../../paths";
 
 export async function sendAnalyticsToBackend({
   eventName,
@@ -11,13 +12,13 @@ export async function sendAnalyticsToBackend({
   axiosInstance: AxiosInstance;
 }) {
   try {
-    const response = await axiosInstance.post(API_PATHS.BACKEND_ANALYTICS, {
+    const _response = await axiosInstance.post(API_PATHS.BACKEND_ANALYTICS, {
       event: eventName,
       properties: payload,
     });
 
     return true;
-  } catch (e) {
+  } catch (_e) {
     // ignore analytics's service error silently
     return false;
   }

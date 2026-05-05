@@ -1,13 +1,15 @@
-import { Input } from '@components/ui/input'
 import { ChevronLeft } from 'lucide-react'
-import { useSearchBarStore } from './store'
 import { useDebouncedCallback } from 'use-debounce'
-import { postRecents } from './api'
-import { RECENT_SEARCH_CONTENT_TYPE } from '@lib/constants'
+
+import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
+import { Input } from '@components/ui/input'
 import { SheetClose } from '@components/ui/sheet'
 import { SearchIcon } from '@icons/search-icon'
+import { RECENT_SEARCH_CONTENT_TYPE } from '@lib/constants'
 import Analytics from '@services/analytics'
-import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
+
+import { postRecents } from './api'
+import { useSearchBarStore } from './store'
 
 export const SearchInput = {
   desktop: Desktop,

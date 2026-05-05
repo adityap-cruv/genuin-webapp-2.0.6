@@ -1,14 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
-import { useAxiosInstance } from "@genuin/components/context/axios";
+import type { AxiosInstance } from "axios";
 
+import { useAxiosInstance } from "@genuin/components/context/axios";
 import { NOT_FOUND_ERROR_CODES } from "@genuin/components/lib/constants/errors";
+import { queryClient } from "@genuin/components/react-query/client";
 import { getQueryKeyForCommunityDetails } from "@genuin/components/react-query/keys/community";
 import { API_PATHS } from "@genuin/components/react-query/paths";
+import type { CommunityUserRole } from "@genuin/components/types/post";
 
-import { CommunityDetailsType, validateCommunityDetails } from "./schema";
-import { queryClient } from "@genuin/components/react-query/client";
-import { CommunityUserRole } from "@genuin/components/types/post";
-import type { AxiosInstance } from "axios";
+import type { CommunityDetailsType } from "./schema";
+import { validateCommunityDetails } from "./schema";
 
 async function fetchCommunityDetails(slug: string, axiosInstance: AxiosInstance) {
   return await axiosInstance
@@ -21,7 +22,6 @@ async function fetchCommunityDetails(slug: string, axiosInstance: AxiosInstance)
       return validateCommunityDetails(res.data.data);
     })
     .catch((e) => {
-      // eslint-disable-next-line no-console
       if (e.response.data.code === NOT_FOUND_ERROR_CODES.community) {
         throw new Error(e.response.data.code);
       }
@@ -39,7 +39,7 @@ export function useGetCommunityDetails(slug: string) {
 
   return useQuery({
     queryKey: getQueryKeyForCommunityDetails(slug),
-    queryFn: async (context) => await fetchCommunityDetails(slug, axiosInstance),
+    queryFn: async (_context) => await fetchCommunityDetails(slug, axiosInstance),
   });
 }
 
@@ -48,18 +48,12 @@ export function useGetCommunityDetails(slug: string) {
  * @param slug - The slug of the community for which the role is being changed.
  * @param newRole - The new role of the logged-in user in the community.
  */
-export function setQueryDataForCommunityRoleChange(
-  slug: string,
-  newRole: CommunityUserRole,
-) {
-  queryClient.setQueryData<CommunityDetailsType>(
-    getQueryKeyForCommunityDetails(slug),
-    (oldData) => {
-      if (!oldData) return;
-      return {
-        ...oldData,
-        logged_in_user_role: newRole,
-      };
-    },
-  );
+export function setQueryDataForCommunityRoleChange(slug: string, newRole: CommunityUserRole) {
+  queryClient.setQueryData<CommunityDetailsType>(getQueryKeyForCommunityDetails(slug), (oldData) => {
+    if (!oldData) return;
+    return {
+      ...oldData,
+      logged_in_user_role: newRole,
+    };
+  });
 }

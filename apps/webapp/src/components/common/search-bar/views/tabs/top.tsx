@@ -1,18 +1,23 @@
-import { type VideoType, type CommunityType, type PeopleType } from '.'
-import { type RankingResType, type LoopResType } from '../../schema/top-resp'
-import { type ReactNode } from 'react'
-import { CommunityTile } from './communities'
-import { useState } from 'react'
-import Link from 'next/link'
-import { Swiper, SwiperSlide, useSwiper } from 'swiper/react'
-import { Button } from '@components/ui/button'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { useSearchBarStore } from '../../store'
+import Link from 'next/link'
+import { useState } from 'react'
+import { type ReactNode } from 'react'
+import { Swiper, SwiperSlide, useSwiper } from 'swiper/react'
+
+
 import { CustomAvatar } from '@components/custom/custom-avatar'
+import { Button } from '@components/ui/button'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { Posts } from './posts'
+
+import { type RankingResType, type LoopResType } from '../../schema/top-resp'
+import { useSearchBarStore } from '../../store'
+
+import { CommunityTile } from './communities'
 import { LoopItem } from './loops'
 import { NoResults } from './no-results'
+import { Posts } from './posts'
+
+import { type VideoType, type CommunityType, type PeopleType } from '.'
 
 type Props = Partial<{
   communities: CommunityType[]
@@ -53,7 +58,7 @@ function CommunityView({ communities }: { communities: CommunityType[] }) {
       <div className="relative w-full">
         {communities.length === 1 ? (
           <div className="px-4">
-            <CommunityTile community={communities[0]} />
+            <CommunityTile community={communities[0]!} />
           </div>
         ) : (
           <Swiper
@@ -131,7 +136,7 @@ function LoopView({ loops }: { loops: LoopResType[] }) {
       <div className="relative w-full">
         {loops.length === 1 ? (
           <div className="w-full px-4">
-            <LoopItem loop={loops[0]} />
+            <LoopItem loop={loops[0]!} />
           </div>
         ) : (
           <Swiper

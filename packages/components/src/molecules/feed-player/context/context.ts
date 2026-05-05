@@ -1,7 +1,9 @@
 "use client";
+import type OpenPlayerJS from "openplayerjs";
 import { createContext, useContext } from "react";
-import OpenPlayerJS from "openplayerjs";
-import { getVideoPlayerConfigs } from "../utils";
+
+import type { getVideoPlayerConfigs } from "../utils";
+
 import type {
   ButtonActionType,
   ExpandViewProps,
@@ -26,9 +28,7 @@ export type PlayerContextType = {
   setPlayerRef: (player: OpenPlayerJS | null) => void;
 
   setVideoTimeState: SetVideoTimeStateType;
-  onVideoTimeStateChange: (
-    callback: (state: VideoTimeStateType) => void,
-  ) => () => void;
+  onVideoTimeStateChange: (callback: (state: VideoTimeStateType) => void) => () => void;
 
   /**
    * Whether to show seeker for player or not.
@@ -98,9 +98,7 @@ export type PlayerContextType = {
   buttonAction?: ButtonActionType;
 
   videoId: string;
-  playerConfigRef: React.MutableRefObject<
-    ReturnType<typeof getVideoPlayerConfigs>
-  >;
+  playerConfigRef: React.MutableRefObject<ReturnType<typeof getVideoPlayerConfigs>>;
 
   /**
    * Function to be called when the player completes it's iteration.

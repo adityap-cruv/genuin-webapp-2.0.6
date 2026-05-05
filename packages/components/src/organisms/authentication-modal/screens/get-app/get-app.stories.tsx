@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+
 import { GetApp } from "./get-app";
 
 /**
@@ -12,8 +13,7 @@ const meta: Meta<typeof GetApp> = {
     layout: "centered",
     docs: {
       description: {
-        component:
-          "Download app form supporting both email and phone number methods with QR code scanning option.",
+        component: "Download app form supporting both email and phone number methods with QR code scanning option.",
       },
     },
   },

@@ -1,103 +1,85 @@
 "use client";
-import "swiper/css";
-import { useBoolean } from "usehooks-ts";
-import type { Swiper } from "swiper/types";
 
+import { Loader } from "@genuin/ui/components/loader";
+import { abbreviateNumber, cn } from "@genuin/ui/lib/utils";
+import type { ComponentProps } from "react";
+import { useEffect, useState, useRef, useMemo, useCallback, lazy, Suspense } from "react";
+import type { Swiper } from "swiper/types";
+import { useBoolean } from "usehooks-ts";
+
+import { useAnalytics, VideoTypes } from "@genuin/components/context";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { useFocusManagement } from "@genuin/components/hooks/use-focus-management";
+import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
+import type { OctoPanelHandle } from "@genuin/components/molecules/octo-panel/octo-panel";
+import { type PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
-import { Loader } from "@genuin/ui/loader";
-import { Player } from "./player";
+
+import type { Player } from "./player";
+import { calculateSlideDimensions } from "./utils";
+
+import "swiper/css";
+
+const CloseButton = lazy(() =>
+  import("./player-swiper-buttons").then((m) => ({
+    default: m.CloseButton,
+  }))
+);
+const NavigationButton = lazy(() =>
+  import("./player-swiper-buttons").then((m) => ({
+    default: m.NavigationButton,
+  }))
+);
+
+const PlayerHeader = lazy(() => import("./player-header").then((m) => ({ default: m.PlayerHeader })));
+
+const IHeartBackButton = lazy(() =>
+  import("./iheart/iheart-back-button").then((m) => ({
+    default: m.IHeartBackButton,
+  }))
+);
 
 const Actions = lazy(() =>
-  import("../../molecules/actions/index.js").then((m) => ({
+  import("@genuin/components/molecules/actions/index").then((m) => ({
     default: m.Actions,
-  })),
+  }))
 );
 // Using any for now to stop the bleed, will refine if possible
 
 // Lazy load heavy comment components to split vendor-forms chunk
 const Comments = lazy(() =>
-  import("../../molecules/comments/comments.js").then((m) => ({
+  import("@genuin/components/molecules/comments/comments").then((m) => ({
     default: m.Comments,
-  })),
+  }))
 );
 const CommentsDialog = lazy(() =>
-  import("../../molecules/comments/comments-dialog.js").then((m) => ({
+  import("@genuin/components/molecules/comments/comments-dialog").then((m) => ({
     default: m.CommentsDialog,
-  })),
+  }))
 );
 
 const OctoPanel = lazy(() =>
   import("../../molecules/octo-panel/index.js").then((m) => ({
     default: m.OctoPanel,
-  })),
+  }))
 );
 
 const SectionedContent = lazy(() =>
-  import("./sectioned-content.js").then((m) => ({
+  import("./sectioned-content").then((m) => ({
     default: m.SectionedContent,
-  })),
+  }))
 );
 
 const NonSectionedContent = lazy(() =>
-  import("./non-sectioned-content.js").then((m) => ({
+  import("./non-sectioned-content").then((m) => ({
     default: m.NonSectionedContent,
-  })),
+  }))
 );
 
-import { abbreviateNumber, cn } from "@genuin/ui/lib/utils";
-import {
-  ComponentProps,
-  useEffect,
-  useState,
-  useRef,
-  useMemo,
-  useCallback,
-  lazy,
-  Suspense,
-} from "react";
-import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-
-import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import { type PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
-import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
-
-import { useAnalytics, VideoTypes } from "@genuin/components/context";
-import { calculateSlideDimensions } from "./utils";
-
-import { useFocusManagement } from "@genuin/components/hooks/use-focus-management";
-import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
-import { type AdInfoType } from "@genuin/components/molecules/feed-player";
-import { DynamicSheet } from "@genuin/ui";
-import { CommentsList } from "@genuin/components/molecules/comments/comments-list";
-import { setQueryDataForNewComment } from "@genuin/components/react-query/api/comments";
-import { CommentInputBox } from "@genuin/components/molecules/comments/comment-input";
-import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
-import type { OctoPanelHandle } from "../../molecules/octo-panel";
-
-const CloseButton = lazy(() =>
-  import("./player-swiper-buttons.js").then((m) => ({
-    default: m.CloseButton,
-  })),
-);
-const NavigationButton = lazy(() =>
-  import("./player-swiper-buttons.js").then((m) => ({
-    default: m.NavigationButton,
-  })),
-);
-
-const PlayerHeader = lazy(() =>
-  import("./player-header.js").then((m) => ({ default: m.PlayerHeader })),
-);
-
-const IHeartBackButton = lazy(() =>
-  import("./iheart/iheart-back-button.js").then((m) => ({
-    default: m.IHeartBackButton,
-  })),
-);
-
-const SectionsTabs = lazy(() =>
-  import("./sections-tabs.js").then((m) => ({ default: m.SectionsTabs })),
-);
+const SectionsTabs = lazy(() => import("./sections-tabs").then((m) => ({ default: m.SectionsTabs })));
 
 type PlayerListPropsType = {
   posts: PostDetailsType[];
@@ -112,25 +94,17 @@ type PlayerListPropsType = {
    * @param isReacted - Whether the post is reacted to
    * @returns void
    */
-  onReactionStateChange?: (
-    videoId: string,
-    videoSlug: string,
-    isReacted: boolean,
-  ) => void;
-  onCommunityJoinStatusChange: ComponentProps<
-    typeof Player
-  >["onCommunityJoinStatusChange"];
-  onGroupJoinStatusChange: ComponentProps<
-    typeof Player
-  >["onGroupJoinStatusChange"];
-  onGroupSubscriptionChange: ComponentProps<
-    typeof Player
-  >["onGroupSubscriptionChange"];
+  onReactionStateChange?: (videoId: string, videoSlug: string, isReacted: boolean) => void;
+  onCommunityJoinStatusChange: ComponentProps<typeof Player>["onCommunityJoinStatusChange"];
+  onGroupJoinStatusChange: ComponentProps<typeof Player>["onGroupJoinStatusChange"];
+  onGroupSubscriptionChange: ComponentProps<typeof Player>["onGroupSubscriptionChange"];
   /**
    * @param videoId - The video id
    * @param increment - true to increment, false to decrement
    */
   onCommentCountChange?: ComponentProps<typeof Player>["onCommentCountChange"];
+  /** Feed-session identifier from the first feed API page, forwarded to analytics. */
+  pageSession?: string | null;
 };
 
 // TODO: This component is using feed context, which is not ideal. Remove this dep of FeedContext in future.
@@ -147,11 +121,13 @@ export function PlayerList({
   onGroupJoinStatusChange,
   onGroupSubscriptionChange,
   onCommentCountChange,
+  pageSession,
 }: PlayerListPropsType) {
   const { showExpandView, activeIndex, toggleExpandView } = useFeedContext();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
   const { isIpad } = useDeviceDetection();
   const { track, EventName } = useAnalytics();
+  const { value, toggle } = useBoolean(isDesktop && !isIpad);
   const {
     engagement: {
       engagementTools: { comment: showCommentBox, octo: isOctoToolEnabled },
@@ -165,25 +141,17 @@ export function PlayerList({
     value: isCommentOpen,
     toggle: toggleComment,
     setValue: setCommentOpen,
-  } = useBoolean(
-    isDesktop && !isIpad && !(showEngagementTools && isOctoToolEnabled),
-  );
+  } = useBoolean(isDesktop && !isIpad && !(showEngagementTools && isOctoToolEnabled));
 
   // OCTO panel state - auto-open on desktop when Octo tool is enabled
   const { value: isOctoOpen, setValue: setOctoOpen } = useBoolean(
-    isDesktop && !isIpad && showEngagementTools && isOctoToolEnabled,
+    isDesktop && !isIpad && showEngagementTools && isOctoToolEnabled
   );
   const octoPanelRef = useRef<OctoPanelHandle | null>(null);
   const lastOctoVideoIdRef = useRef<string | null>(null);
   const embedDetails = useSafeEmbedContext();
-  const {
-    sheetState,
-    openContentType,
-    setContentTypeState,
-    hasContentType,
-    closeContentType,
-    getContentTypeState,
-  } = useSheetState();
+  const { sheetState, openContentType, setContentTypeState, hasContentType, closeContentType, getContentTypeState } =
+    useSheetState();
   const [isEndOfFeedReached, setEndOfFeedReached] = useState<boolean>(false);
   // if we use directly isTablet from the hook then for desktop it will be true based on useDeviceDetectMediaQuery implementation
   const isTablet = !isMobile && !isDesktop;
@@ -246,9 +214,7 @@ export function PlayerList({
      * Expand view hides the overlay card, so we need to adjust the active index
      * when transitioning to maintain the correct video position.
      */
-    const overlayIndex = posts.findIndex(
-      (post) => post.video?.type === "overlay",
-    );
+    const overlayIndex = posts.findIndex((post) => post.video?.type === "overlay");
     const isNotAtEndOfFeed = posts[activeIndex + 1]?.video?.type !== "complete";
     // increment by 1 to account for overlay card that won't be shown in expand view
     if (
@@ -264,20 +230,43 @@ export function PlayerList({
 
   // Section-related state
   const sectionList = embedDetails?.embedEventBus.getContext().sectionList;
-  const selectedSection =
-    embedDetails?.embedEventBus.getContext().selectedSection;
+  const selectedSection = embedDetails?.embedEventBus.getContext().selectedSection;
 
   // Swiper state management
   const [horizontalSwiper, setHorizontalSwiper] = useState<Swiper | null>(null);
-  const [verticalSwipers, setVerticalSwipers] = useState<
-    Record<number, Swiper>
-  >({});
+  const [verticalSwipers, setVerticalSwipers] = useState<Record<number, Swiper>>({});
   const [activeHorizontalIndex, setActiveHorizontalIndex] = useState(0);
 
   // Get the active swiper for navigation buttons
-  const activeSwiper = isSectioned
-    ? verticalSwipers[activeHorizontalIndex]
-    : verticalSwipers[0];
+  const activeSwiper = isSectioned ? verticalSwipers[activeHorizontalIndex] : verticalSwipers[0];
+
+  // Callback to enable/disable swipers when interacting with Pills
+  const handleSwiperToggle = useCallback(
+    (disable: boolean) => {
+      if (isSectioned && horizontalSwiper) {
+        if (disable) {
+          horizontalSwiper.disable();
+        } else {
+          horizontalSwiper.enable();
+        }
+      }
+      // Also disable/enable the active vertical swiper
+      if (activeSwiper) {
+        if (disable) {
+          activeSwiper.disable();
+        } else {
+          activeSwiper.enable();
+        }
+      }
+    },
+    [isSectioned, horizontalSwiper, activeSwiper]
+  );
+
+  useEffect(() => {
+    if (!isMobile) return;
+    const shouldDisable = sheetState === "full-view" || sheetState === "panel-view";
+    handleSwiperToggle(shouldDisable);
+  }, [sheetState, handleSwiperToggle]);
 
   /*
 We need to filter out these posts because we shouldn't show the overlay middleware
@@ -292,7 +281,7 @@ a swiper inside another swiper.
     (index: number) => {
       onActiveIndexChange?.(index);
     },
-    [adActiveOn, filteredPost, onActiveIndexChange],
+    [adActiveOn, filteredPost, onActiveIndexChange]
   );
   // Focus management hook (only for iHeart)
   const { containerRef: playerListRef } = useFocusManagement({
@@ -317,26 +306,18 @@ a swiper inside another swiper.
       return;
     }
 
-    if (
-      isOctoOpen &&
-      lastOctoVideoIdRef.current &&
-      lastOctoVideoIdRef.current !== activeVideoId
-    ) {
+    if (isOctoOpen && lastOctoVideoIdRef.current && lastOctoVideoIdRef.current !== activeVideoId) {
       try {
         octoPanelRef.current?.resetForVideo(activeVideoId);
       } catch (error) {
-        console.error(
-          "[PlayerList] Failed to reset OctoPanel for video change:",
-          error,
-        );
+        console.error("[PlayerList] Failed to reset OctoPanel for video change:", error);
       }
     }
 
     lastOctoVideoIdRef.current = activeVideoId;
   }, [activeVideoId, isOctoOpen]);
 
-  const shouldAutoOpenOcto =
-    !isDesktop && showEngagementTools && isOctoToolEnabled;
+  const shouldAutoOpenOcto = !isDesktop && showEngagementTools && isOctoToolEnabled;
 
   const prevMobileVideoIdRef = useRef<string | null>(null);
   const octoReopenTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -380,13 +361,7 @@ a swiper inside another swiper.
         octoReopenTimerRef.current = null;
       }, 400);
     }
-  }, [
-    activeVideoId,
-    isDesktop,
-    shouldAutoOpenOcto,
-    hasContentType,
-    closeContentType,
-  ]);
+  }, [activeVideoId, isDesktop, shouldAutoOpenOcto, hasContentType, closeContentType]);
 
   useEffect(
     () => () => {
@@ -395,7 +370,7 @@ a swiper inside another swiper.
         octoReopenTimerRef.current = null;
       }
     },
-    [],
+    []
   );
 
   useEffect(() => {
@@ -424,16 +399,23 @@ a swiper inside another swiper.
     pendingOctoReopen,
   ]);
 
+  useEffect(() => {
+    const currentPost = filteredPost[activeIndex];
+    if (!currentPost?.video) return;
+
+    const hasLinkout = currentPost?.video.linkoutId !== null && currentPost?.video.linkoutId !== undefined;
+    if (hasLinkout) {
+      openContentType("linkouts", "outside", "expand-view");
+    } else {
+      closeContentType("linkouts");
+    }
+  }, [activeIndex, filteredPost, openContentType, closeContentType]);
+
   // Effect to navigate to selected section when it changes (only for sectioned mode)
   useEffect(() => {
     if (isSectioned && horizontalSwiper && selectedSection && sectionList) {
-      const selectedSectionIndex = sectionList.findIndex(
-        (section: any) => section.id === selectedSection.id,
-      );
-      if (
-        selectedSectionIndex !== -1 &&
-        selectedSectionIndex !== horizontalSwiper.activeIndex
-      ) {
+      const selectedSectionIndex = sectionList.findIndex((section: any) => section.id === selectedSection.id);
+      if (selectedSectionIndex !== -1 && selectedSectionIndex !== horizontalSwiper.activeIndex) {
         horizontalSwiper.slideTo(selectedSectionIndex);
       }
     }
@@ -451,26 +433,14 @@ a swiper inside another swiper.
 
       // Only navigate if the index actually changed and swiper is not already at that index
       if (activeSwiper.activeIndex !== newIndex && newIndex >= 0) {
-        console.log(
-          "[PlayerList] Programmatic navigation to index:",
-          newIndex,
-          "current:",
-          activeSwiper.activeIndex,
-        );
         activeSwiper.slideTo(newIndex, 300); // Navigate with animation
       }
     };
 
-    embedDetails.embedEventBus.on(
-      "activeIndexChange",
-      handleContextActiveIndexChange,
-    );
+    embedDetails.embedEventBus.on("activeIndexChange", handleContextActiveIndexChange);
 
     return () => {
-      embedDetails.embedEventBus.off(
-        "activeIndexChange",
-        handleContextActiveIndexChange,
-      );
+      embedDetails.embedEventBus.off("activeIndexChange", handleContextActiveIndexChange);
     };
   }, [embedDetails, activeSwiper]);
 
@@ -486,18 +456,14 @@ a swiper inside another swiper.
       ref={playerListRef}
       className={cn(
         "gencl:h-full gencl:w-full gencl:flex gencl:justify-center",
-        brandLayoutType === "iheart" && isDesktop && "gencl:sm:py-8!",
-        brandLayoutType === "iheart" &&
-          isTablet &&
-          websiteType === "polaris" &&
-          "gencl:sm:pt-8!",
+        // brandLayoutType === "iheart" && isDesktop && "gencl:sm:py-8!",
+        // brandLayoutType === "iheart" && isTablet && websiteType === "polaris" && "gencl:sm:pt-8!",
         brandLayoutType === "iheart" &&
           websiteType === "legacy" &&
           isAdsEnabledInIheart &&
           "gencl:pt-[72px]! gencl:md:pt-8!",
-        brandLayoutType !== "iheart" && "gencl:gap-6",
-      )}
-    >
+        brandLayoutType !== "iheart" && "gencl:gap-6"
+      )}>
       {/* Back button for iheart expand view (not on mobile) */}
       {brandLayoutType === "iheart" && !isMobile && (
         <Suspense fallback={null}>
@@ -512,15 +478,11 @@ a swiper inside another swiper.
       <div
         className={cn(
           "gencl:flex gencl:justify-center gencl:h-full gencl:w-full gencl:sm:w-fit! gencl:relative",
-          brandLayoutType !== "iheart" && "gencl:gap-6",
-        )}
-      >
+          brandLayoutType !== "iheart" && "gencl:gap-6"
+        )}>
         <div
           ref={containerRef}
-          className={cn(
-            "gencl:h-full gencl:aspect-reel gencl:relative",
-            isMobile && "gencl:h-full gencl:w-full",
-          )}
+          className={cn("gencl:h-full gencl:aspect-reel gencl:relative", isMobile && "gencl:h-full gencl:w-full")}
           style={
             slideDimensions
               ? {
@@ -532,19 +494,15 @@ a swiper inside another swiper.
           // aria-label="Video player"
         >
           {/* Header with back button and centered title */}
-          {brandLayoutType === "iheart" &&
-            !isEndOfFeedReached &&
-            !isAdFilled && (
-              <Suspense fallback={null}>
-                <PlayerHeader
-                  isMobile={isMobile}
-                  title={
-                    filteredPost[activeIndex]?.video?.attributes?.title ?? ""
-                  }
-                  onBackClick={changeExpandViewType}
-                />
-              </Suspense>
-            )}
+          {brandLayoutType === "iheart" && !isEndOfFeedReached && !isAdFilled && (
+            <Suspense fallback={null}>
+              <PlayerHeader
+                isMobile={isMobile}
+                title={filteredPost[activeIndex]?.video?.attributes?.title ?? ""}
+                onBackClick={changeExpandViewType}
+              />
+            </Suspense>
+          )}
 
           {isSectioned && (
             <Suspense fallback={null}>
@@ -579,6 +537,7 @@ a swiper inside another swiper.
                     setVerticalSwipers={setVerticalSwipers}
                     onAdFilled={handleAdFilled}
                     onAdPlaybackEnd={handleAdPlaybackEnd}
+                    pageSession={pageSession}
                   />
                 </Suspense>
               ) : (
@@ -604,6 +563,7 @@ a swiper inside another swiper.
                     isSectioned={isSectioned}
                     onAdFilled={handleAdFilled}
                     onAdPlaybackEnd={handleAdPlaybackEnd}
+                    pageSession={pageSession}
                   />
                 </Suspense>
               )}
@@ -612,22 +572,19 @@ a swiper inside another swiper.
         </div>
 
         {/* Navigation buttons for iheart expand view positioned relative to player */}
-        {showExpandView &&
-          brandLayoutType === "iheart" &&
-          isDesktop &&
-          !disableSwiper && (
-            <Suspense fallback={null}>
-              <NavigationButton
-                swiper={activeSwiper ?? undefined}
-                postsLength={filteredPost.length}
-                position="relative"
-                className={cn("gencl:pl-10 gencl:justify-center")}
-                theme={theme}
-                size={websiteType === "polaris" ? "lg" : "xl"}
-                disable={isAdFilled}
-              />
-            </Suspense>
-          )}
+        {showExpandView && brandLayoutType === "iheart" && isDesktop && !disableSwiper && (
+          <Suspense fallback={null}>
+            <NavigationButton
+              swiper={activeSwiper ?? undefined}
+              postsLength={filteredPost.length}
+              position="relative"
+              className={cn("gencl:pl-10 gencl:justify-center")}
+              theme={theme}
+              size={websiteType === "polaris" ? "lg" : "xl"}
+              disable={isAdFilled}
+            />
+          </Suspense>
+        )}
       </div>
       {showExpandView && isDesktop && (
         <Suspense fallback={null}>
@@ -646,171 +603,127 @@ a swiper inside another swiper.
           />
         </Suspense>
       )}
-      {!isMobile &&
-        brandLayoutType !== "iheart" &&
-        filteredPost[activeIndex] &&
-        !isAdFilled && (
-          <Suspense fallback={null}>
-            <Actions
-              shareUrl={filteredPost[activeIndex]?.video?.shareUrl ?? ""}
-              isReacted={filteredPost[activeIndex]?.video?.isSparked ?? false}
-              contentId={filteredPost[activeIndex]?.video?.id ?? ""}
-              groupSlug={filteredPost[activeIndex]?.group?.slug ?? ""}
-              slug={filteredPost[activeIndex]?.video?.slug ?? ""}
-              videoType={
-                filteredPost[activeIndex]?.video?.videoType ??
-                VideoTypes.Content
-              }
-              reactionCount={filteredPost[activeIndex]?.video?.sparkCount ?? 0}
-              theme={showExpandView ? "dark" : "light"}
-              className={cn(
-                "gencl:shrink-0",
-                showExpandView ? "gencl:pb-4" : "gencl:pb-7",
-              )}
-              isCommentBoxOpen={isCommentOpen}
-              actionWrapper={{
-                COMMENT: (defaultNode) => {
-                  if (!showCommentBox) return;
-                  //
-                  const defaultOpen =
-                    embedDetails?.embedData.autoUserInteractionToPerform ===
-                      "comment" &&
-                    filteredPost[activeIndex]?.video?.slug ===
-                      embedDetails.embedData?.startVideoSlug &&
-                    !embedDetails.embedEventBus.getContext()
-                      .autoInteractionActionDone;
+      {!isMobile && brandLayoutType !== "iheart" && filteredPost[activeIndex] && !isAdFilled && (
+        <Suspense fallback={null}>
+          <Actions
+            shareUrl={filteredPost[activeIndex]?.video?.shareUrl ?? ""}
+            isReacted={filteredPost[activeIndex]?.video?.isSparked ?? false}
+            contentId={filteredPost[activeIndex]?.video?.id ?? ""}
+            groupSlug={filteredPost[activeIndex]?.group?.slug ?? ""}
+            slug={filteredPost[activeIndex]?.video?.slug ?? ""}
+            videoType={filteredPost[activeIndex]?.video?.videoType ?? VideoTypes.Content}
+            reactionCount={filteredPost[activeIndex]?.video?.sparkCount ?? 0}
+            theme={showExpandView ? "dark" : "light"}
+            className={cn("gencl:shrink-0", showExpandView ? "gencl:pb-4" : "gencl:pb-7")}
+            isCommentBoxOpen={isCommentOpen}
+            actionWrapper={{
+              COMMENT: (defaultNode) => {
+                if (!showCommentBox) return;
+                //
+                const defaultOpen =
+                  embedDetails?.embedData.autoUserInteractionToPerform === "comment" &&
+                  filteredPost[activeIndex]?.video?.slug === embedDetails.embedData?.startVideoSlug &&
+                  !embedDetails.embedEventBus.getContext().autoInteractionActionDone;
 
-                  if (defaultOpen) {
-                    embedDetails.markAutoInteractionActionDone();
-                  }
+                //     if (defaultOpen) {
+                //       embedDetails.markAutoInteractionActionDone();
+                //     }
 
-                  // Simple ui to show for comment trigger
-                  function CommentBox({
-                    children,
-                  }: {
-                    children: React.ReactNode;
-                  }) {
-                    const commentCount =
-                      filteredPost[activeIndex]?.video?.commentCount ?? 0;
-                    return (
-                      <>
-                        {children}
-                        <p
-                          className={cn(
-                            "gencl:p-0 gencl:text-center gencl:text-black gencl:text-body-2-medium",
-                            showExpandView && "gencl:text-white!",
-                          )}
-                          aria-label={`${commentCount} ${commentCount === 1 ? "comment" : "comments"}`}
-                        >
-                          {abbreviateNumber(commentCount)}
-                        </p>
-                      </>
-                    );
-                  }
-
-                  if (
-                    !isDesktop &&
-                    filteredPost[activeIndex] &&
-                    (isCommentOpen || defaultOpen)
-                  )
-                    return (
-                      <Suspense fallback={null}>
-                        <CommentsDialog
-                          commentCount={
-                            filteredPost[activeIndex]?.video?.commentCount ?? 0
-                          }
-                          communityId={
-                            filteredPost[activeIndex]?.community?.id ?? ""
-                          }
-                          loopId={filteredPost[activeIndex]?.group?.id ?? ""}
-                          videoId={filteredPost[activeIndex]?.video?.id ?? ""}
-                          videoSlug={
-                            filteredPost[activeIndex]?.video?.slug ?? ""
-                          }
-                          shareUrl={
-                            filteredPost[activeIndex]?.video?.shareUrl ?? ""
-                          }
-                          videoType={
-                            filteredPost[activeIndex]?.video?.videoType ??
-                            VideoTypes.Content
-                          }
-                          defaultOpen={isCommentOpen}
-                          key={
-                            "feed-comment-box" +
-                            filteredPost[activeIndex]?.video?.id
-                          }
-                          onCommentCountChange={onCommentCountChange}
-                          onOpenChange={(open) => {
-                            setCommentOpen(open);
-                          }}
-                        >
-                          <CommentBox>{defaultNode}</CommentBox>
-                        </CommentsDialog>
-                      </Suspense>
-                    );
+                // Simple ui to show for comment trigger
+                function CommentBox({ children }: { children: React.ReactNode }) {
+                  const commentCount = filteredPost[activeIndex]?.video?.commentCount ?? 0;
                   return (
-                    <span
-                      key={
-                        "feed-comment-box" +
-                        filteredPost[activeIndex]?.video?.id
-                      }
-                      onClick={() => {
-                        if (showExpandView) {
-                          // Close OCTO if open
-                          if (isOctoOpen) setOctoOpen(false);
-                          // Toggle comments
-                          toggleComment();
-                        }
-                      }}
-                    >
-                      <CommentBox>{defaultNode}</CommentBox>
-                    </span>
+                    <>
+                      {children}
+                      <p
+                        className={cn(
+                          "gencl:p-0 gencl:text-center gencl:text-black gencl:text-body-2-medium",
+                          showExpandView && "gencl:text-white!"
+                        )}
+                        aria-label={`${commentCount} ${commentCount === 1 ? "comment" : "comments"}`}>
+                        {abbreviateNumber(commentCount)}
+                      </p>
+                    </>
                   );
-                },
-                OCTO: (defaultNode) => {
-                  if (!showExpandView) return defaultNode;
+                }
 
+                if (!isDesktop && filteredPost[activeIndex] && (isCommentOpen || defaultOpen))
                   return (
-                    <span
-                      key={"octo-panel-" + filteredPost[activeIndex]?.video?.id}
-                      onClick={(event) => {
-                        event.stopPropagation();
+                    <Suspense fallback={null}>
+                      <CommentsDialog
+                        commentCount={filteredPost[activeIndex]?.video?.commentCount ?? 0}
+                        communityId={filteredPost[activeIndex]?.community?.id ?? ""}
+                        loopId={filteredPost[activeIndex]?.group?.id ?? ""}
+                        videoId={filteredPost[activeIndex]?.video?.id ?? ""}
+                        videoSlug={filteredPost[activeIndex]?.video?.slug ?? ""}
+                        shareUrl={filteredPost[activeIndex]?.video?.shareUrl ?? ""}
+                        videoType={filteredPost[activeIndex]?.video?.videoType ?? VideoTypes.Content}
+                        defaultOpen={isCommentOpen}
+                        key={"feed-comment-box" + filteredPost[activeIndex]?.video?.id}
+                        onCommentCountChange={onCommentCountChange}
+                        onOpenChange={(open) => {
+                          setCommentOpen(open);
+                        }}>
+                        <CommentBox>{defaultNode}</CommentBox>
+                      </CommentsDialog>
+                    </Suspense>
+                  );
+                return (
+                  <span
+                    key={"feed-comment-box" + filteredPost[activeIndex]?.video?.id}
+                    onClick={() => {
+                      if (showExpandView) {
+                        // Close OCTO if open
+                        if (isOctoOpen) setOctoOpen(false);
+                        // Toggle comments
+                        toggleComment();
+                      }
+                    }}>
+                    <CommentBox>{defaultNode}</CommentBox>
+                  </span>
+                );
+              },
+              OCTO: (defaultNode) => {
+                if (!showExpandView) return defaultNode;
 
-                        const sheetActive =
-                          sheetState === "panel-view" ||
-                          sheetState === "full-view";
+                return (
+                  <span
+                    key={"octo-panel-" + filteredPost[activeIndex]?.video?.id}
+                    onClick={(event) => {
+                      event.stopPropagation();
 
-                        if (!isDesktop) {
-                          if (!sheetActive && isCommentOpen) {
-                            setCommentOpen(false);
-                          }
-                          openContentType("octo", "inside", "default");
-                          setContentTypeState("octo", "default");
-                          return;
-                        }
+                      const sheetActive = sheetState === "panel-view" || sheetState === "full-view";
 
-                        const nextState = !isOctoOpen;
-                        if (nextState && isCommentOpen) {
+                      if (!isDesktop) {
+                        if (!sheetActive && isCommentOpen) {
                           setCommentOpen(false);
                         }
-                        setOctoOpen(nextState);
-                      }}
-                    >
-                      {defaultNode}
-                    </span>
-                  );
-                },
-              }}
-              onReactionStateChange={(isReacted) => {
-                onReactionStateChange?.(
-                  filteredPost[activeIndex]?.video?.id ?? "",
-                  filteredPost[activeIndex]?.video?.slug ?? "",
-                  isReacted,
+                        openContentType("octo", "inside", "default");
+                        setContentTypeState("octo", "default");
+                        return;
+                      }
+
+                      const nextState = !isOctoOpen;
+                      if (nextState && isCommentOpen) {
+                        setCommentOpen(false);
+                      }
+                      setOctoOpen(nextState);
+                    }}>
+                    {defaultNode}
+                  </span>
                 );
-              }}
-            />
-          </Suspense>
-        )}
+              },
+            }}
+            onReactionStateChange={(isReacted) => {
+              onReactionStateChange?.(
+                filteredPost[activeIndex]?.video?.id ?? "",
+                filteredPost[activeIndex]?.video?.slug ?? "",
+                isReacted
+              );
+            }}
+          />
+        </Suspense>
+      )}
       {/* Comment panel - show this only if expand view is open  */}
       {isCommentOpen &&
         showExpandView &&
@@ -819,66 +732,20 @@ a swiper inside another swiper.
         filteredPost[activeIndex] &&
         brandLayoutType !== "iheart" &&
         isDesktop && (
-          <div className="gencl:max-w-118 gencl:w-full gencl:h-[calc(100%-48px)] gencl:hidden gencl:sm:block! gencl:py-6">
+          <div className="gencl:max-w-118 gencl:w-full gencl:h-full gencl:hidden gencl:sm:block! gencl:py-6">
             <Suspense fallback={null}>
-              <DynamicSheet
-                isOpen
-                renderMode="inline"
-                config={{
-                  initialState: "full-view",
-                  enabledStates: ["full-view"],
-                  heights: {
-                    "full-view": "100%",
-                  },
-                  showClose: true,
-                  showIndicator: false,
-                  navTitle: "Comments",
-                  disableDragAndSwipe: true,
-                  disableAnimation: true,
-                  onClose: () => {
-                    toggleComment();
-                  },
-                  theme: "light",
-                }}
-                footer={
-                  <CommentInputBox
-                    communityId={filteredPost[activeIndex].community?.id || ""}
-                    shareUrl={filteredPost[activeIndex].video?.shareUrl || ""}
-                    loopId={filteredPost[activeIndex].group?.id || ""}
-                    videoId={filteredPost[activeIndex].video?.id || ""}
-                    videoSlug={filteredPost[activeIndex].video?.slug || ""}
-                    videoType={
-                      filteredPost[activeIndex].video?.videoType ??
-                      VideoTypes.Content
-                    }
-                    onCommentPosted={(comments) => {
-                      if (filteredPost[activeIndex]) {
-                        setQueryDataForNewComment(
-                          filteredPost[activeIndex].video?.id || "",
-                          comments,
-                        );
-                        onCommentCountChange?.(
-                          filteredPost[activeIndex].video?.id || "",
-                        );
-                      }
-                    }}
-                  />
-                }
-                footerClassName="gencl:px-0 gencl:py-0"
-              >
-                <CommentsList
-                  videoId={filteredPost[activeIndex].video?.id || ""}
-                  showCloseButton={false}
-                  shareUrl={filteredPost[activeIndex].video?.shareUrl || ""}
-                  className="gencl:pt-4"
-                  videoSlug={filteredPost[activeIndex].video?.slug || ""}
-                  onCommentCountChange={onCommentCountChange}
-                  videoType={
-                    filteredPost[activeIndex].video?.videoType ||
-                    VideoTypes.Content
-                  }
-                />
-              </DynamicSheet>
+              <Comments
+                videoId={filteredPost[activeIndex].video?.id ?? ""}
+                loopId={filteredPost[activeIndex].group?.id ?? ""}
+                communityId={filteredPost[activeIndex].community?.id ?? ""}
+                videoSlug={filteredPost[activeIndex].video?.slug ?? ""}
+                videoType={filteredPost[activeIndex].video?.videoType ?? VideoTypes.Content}
+                className="gencl:h-full"
+                showCloseButton={value}
+                onClose={toggle}
+                onCommentCountChange={onCommentCountChange}
+                shareUrl={filteredPost[activeIndex].video?.shareUrl ?? ""}
+              />
             </Suspense>
           </div>
         )}
@@ -906,6 +773,40 @@ a swiper inside another swiper.
             </Suspense>
           </div>
         )}
+
+      {/* COMMENTED THIS AS WE DONT HAVE TO USE DYNAMIC SHEET for 2.0.5  */}
+      {/* Right panel container*/}
+      {/* {isDesktop && (
+        <DesktopRightPanels
+          filteredPost={filteredPost}
+          activeIndex={activeIndex}
+          totalVideos={totalVideos}
+          brandLayoutType={brandLayoutType}
+          isLinkoutsPanelVisible={
+            sheetContentPlacements["linkouts"] === "outside" &&
+            showExpandView &&
+            filteredPost[activeIndex] &&
+            !isAdFilled
+          }
+          isCommentsPanelVisible={
+            hasContentType("comments") &&
+            showExpandView &&
+            showCommentBox &&
+            !isAdFilled &&
+            filteredPost[activeIndex] &&
+            brandLayoutType !== "iheart"
+          }
+          onCommentCountChange={onCommentCountChange}
+          handleSwiperToggle={handleSwiperToggle}
+          onCommentClose={() => {
+            closeContentType("comments");
+            setValue(false);
+            if (sheetContentPlacements["linkouts"] === "outside") {
+              setContentTypeState("linkouts", "full-view");
+            }
+          }}
+        />
+      )} */}
     </div>
   );
 }

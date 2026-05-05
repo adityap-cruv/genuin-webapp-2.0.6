@@ -1,9 +1,10 @@
 "use client";
 
-import * as React from "react";
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
-import { Check } from "lucide-react";
 import { cva, type VariantProps } from "class-variance-authority";
+import { Check } from "lucide-react";
+import * as React from "react";
+
 import { cn } from "@genuin/ui/lib/utils";
 
 const checkboxVariants = cva(
@@ -13,8 +14,7 @@ const checkboxVariants = cva(
       variant: {
         default:
           "gencl:border-secondary-300 gencl:data-[state=checked]:bg-primary gencl:data-[state=checked]:border-primary",
-        secondary:
-          "gencl:border-secondary-300 gencl:data-[state=checked]:bg-secondary-600",
+        secondary: "gencl:border-secondary-300 gencl:data-[state=checked]:bg-secondary-600",
       },
       size: {
         sm: "gencl:h-3 gencl:w-3",
@@ -29,17 +29,10 @@ const checkboxVariants = cva(
   }
 );
 
-export type CheckboxPropsType = React.ComponentProps<
-  typeof CheckboxPrimitive.Root
-> &
+export type CheckboxPropsType = React.ComponentProps<typeof CheckboxPrimitive.Root> &
   VariantProps<typeof checkboxVariants>;
 
-function Checkbox({
-  className,
-  variant,
-  size = "md",
-  ...props
-}: CheckboxPropsType) {
+function Checkbox({ className, variant, size = "md", ...props }: CheckboxPropsType) {
   return (
     <CheckboxPrimitive.Root
       className={cn(
@@ -54,14 +47,9 @@ function Checkbox({
         "gencl:data-[state=checked]:text-primary-foreground",
         className
       )}
-      {...props}
-    >
+      {...props}>
       <CheckboxPrimitive.Indicator
-        className={cn(
-          "gencl:flex gencl:items-center gencl:justify-center",
-          "gencl:text-white"
-        )}
-      >
+        className={cn("gencl:flex gencl:items-center gencl:justify-center", "gencl:text-white")}>
         <Check
           className={cn("gencl:stroke-monochrome-white", {
             "gencl:h-2 gencl:w-2": size === "sm",

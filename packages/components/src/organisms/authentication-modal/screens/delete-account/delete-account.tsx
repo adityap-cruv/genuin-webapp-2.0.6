@@ -1,20 +1,19 @@
-import { ComponentProps, useCallback } from "react";
+import { Button } from "@genuin/ui/components/button";
 import { sanitizeInput } from "@genuin/ui/lib/sanitize";
 import { cn } from "@genuin/ui/lib/utils";
+import type { ComponentProps } from "react";
+import { useCallback } from "react";
+import { useForm } from "react-hook-form";
+
+import { useBaseContext } from "@genuin/components/context";
+import { useAuthContext } from "@genuin/components/context/auth";
+import { useSendOtpMutation } from "@genuin/components/react-query/api/authentication";
+
 import { useAuthenticationModalContext } from "../../context";
 
-import { useAuthContext } from "@genuin/components/context/auth";
-import { useForm } from "react-hook-form";
-import { useSendOtpMutation } from "@genuin/components/react-query/api/authentication";
-import { Button } from "@genuin/ui/components/button";
-import { useBaseContext } from "@genuin/components/context";
-
-export function DeleteAccount({
-  className,
-  ...restProps
-}: ComponentProps<"div">) {
+export function DeleteAccount({ className, ...restProps }: ComponentProps<"div">) {
   const { closeModal, setFormData, setStep } = useAuthenticationModalContext();
-  const {isInIframe} = useBaseContext();
+  const { isInIframe } = useBaseContext();
   const { user } = useAuthContext();
 
   const {
@@ -64,12 +63,9 @@ export function DeleteAccount({
   return (
     <div className={cn("gencl:space-y-5", className)} {...restProps}>
       <div className="gencl:space-y-2">
-        <h3 className="gencl:text-left gencl:text-headline-4-semi-bold gencl:mb-5">
-          Delete account?
-        </h3>
+        <h3 className="gencl:text-left gencl:text-headline-4-semi-bold gencl:mb-5">Delete account?</h3>
         <p className="gencl:text-left gencl:text-body-1-medium">
-          Are you sure you want to delete your account? This step cannot be
-          undone.
+          Are you sure you want to delete your account? This step cannot be undone.
         </p>
       </div>
       <div className="gencl:flex gencl:gap-5 gencl:justify-end">

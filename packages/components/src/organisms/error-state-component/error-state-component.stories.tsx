@@ -1,15 +1,10 @@
+import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
-import { Meta, StoryObj } from "@storybook/react";
+
 import { ComponentErrorState } from "./error-state-component";
 
 // Define valid types based on available states
-const TYPES = [
-  "NO_POSTS",
-  "NO_GROUPS",
-  "NO_COMMUNITIES",
-  "NO_POSTS_ITEM",
-  "WARNING",
-] as const;
+const TYPES = ["NO_POSTS", "NO_GROUPS", "NO_COMMUNITIES", "NO_POSTS_ITEM", "WARNING"] as const;
 
 type ComponentErrorStateStories = StoryObj<typeof ComponentErrorState>;
 

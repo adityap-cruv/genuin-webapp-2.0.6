@@ -1,5 +1,9 @@
-import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
+
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+
+import { testPostDetails } from "../../__test-data__/test-data";
+
 import { PostPlayer } from "./post-player";
 
 const meta: Meta<typeof PostPlayer> = {
@@ -16,10 +20,5 @@ export default meta;
 type Story = StoryObj<typeof PostPlayer>;
 
 export const Default: Story = {
-  render: (args) => <PostPlayer {...args} />,
-  args: {
-    onVideoUrl: (url: string) => {
-      console.log("Video URL from Storybook:", url);
-    },
-  },
+  render: () => <PostPlayer post={testPostDetails as unknown as PostDetailsType} />,
 };

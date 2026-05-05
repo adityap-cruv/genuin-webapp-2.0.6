@@ -7,3 +7,8 @@ if git diff --cached --name-only | grep -q "^\.team/"; then
   pnpm ai:sync
   git add .claude/ .github/
 fi
+
+# pnpm lint-staged
+
+# Per-package: ESLint uses each package's local eslint.config.mjs
+pnpm -r --if-present run lint-staged

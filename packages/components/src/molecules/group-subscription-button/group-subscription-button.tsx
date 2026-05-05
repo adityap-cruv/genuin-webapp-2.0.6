@@ -1,24 +1,28 @@
-import React, { ComponentProps, useCallback, Suspense, lazy } from "react";
+import { Button as PrimitiveButton } from "@genuin/ui/button";
+import { Loader } from "@genuin/ui/components/loader";
+import { Toast } from "@genuin/ui/components/toaster";
+import { NotificationEnabledIcon, NotificationIcon } from "@genuin/ui/icons";
+import { cn } from "@genuin/ui/lib/utils";
+import { useCallback, Suspense, lazy } from "react";
+import type { ComponentProps } from "react";
+
+import { useAnalytics } from "@genuin/components/context/analytics";
+import { useAuthContext } from "@genuin/components/context/auth";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { useRouter } from "@genuin/components/hooks/use-router";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
+import { setQueryDataForGroupSubscriptionChangeInFeed } from "@genuin/components/react-query/api/feed";
+import { useSubscribeGroupMutation } from "@genuin/components/react-query/api/group/subscribe";
+import { getPartialQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
+
+import { Link } from "../link";
+
 const AuthenticationModal = lazy(() =>
-  import("../../organisms/authentication-modal/index.js").then((m) => ({
+  import("@genuin/components/organisms/authentication-modal").then((m) => ({
     default: m.AuthenticationModal,
   }))
 );
-import { useSubscribeGroupMutation } from "@genuin/components/react-query/api/group/subscribe";
-import { Toast } from "@genuin/ui/components/toaster";
-import { Loader } from "@genuin/ui/components/loader";
-import { cn } from "@genuin/ui/lib/utils";
-import { useAnalytics } from "@genuin/components/context/analytics";
-import { Button as PrimitiveButton } from "@genuin/ui/button";
-import { NotificationEnabledIcon, NotificationIcon } from "@genuin/ui/icons";
-import { useAuthContext } from "@genuin/components/context/auth";
-import { buildPageUrl } from "@genuin/components/lib/utils/pages";
-import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
-import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import { Link } from "../link";
-import { useRouter } from "@genuin/components/hooks/use-router";
-import { setQueryDataForGroupSubscriptionChangeInFeed } from "@genuin/components/react-query/api/feed";
-import { getPartialQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
 
 type GroupSubscriptionButtonProps = {
   groupId: string;
@@ -32,9 +36,7 @@ type GroupSubscriptionButtonProps = {
   onSubscriptionChange?: (isSubscriber: boolean) => void;
 } & ComponentProps<typeof PrimitiveButton>;
 
-export function GroupSubscriptionButton({
-  ...restProps
-}: GroupSubscriptionButtonProps) {
+export function GroupSubscriptionButton({ ...restProps }: GroupSubscriptionButtonProps) {
   const { authenticationStatus, handleAuthCallback } = useAuthContext();
   const { modalConfig } = useEmbedConfigs();
 
@@ -86,8 +88,7 @@ export function GroupSubscriptionButton({
               },
             },
           }}
-          asChild
-        >
+          asChild>
           {button}
         </AuthenticationModal>
       </Suspense>
@@ -181,15 +182,11 @@ function Button({
       onClick={handleClick}
       className={cn(shape === "pill" && "gencl:p-0")}
       disabled={isPending || disabled}
-      {...restProps}
-    >
+      {...restProps}>
       {isPending ? (
         <Loader strokeColor="black" size={shape === "pill" ? "xs" : "sm"} />
       ) : isSubscriber ? (
-        <NotificationEnabledIcon
-          className={cn(shape === "pill" && "gencl:size-4")}
-          variant="light"
-        />
+        <NotificationEnabledIcon className={cn(shape === "pill" && "gencl:size-4")} variant="light" />
       ) : (
         <NotificationIcon className={cn(shape === "pill" && "gencl:size-4")} />
       )}

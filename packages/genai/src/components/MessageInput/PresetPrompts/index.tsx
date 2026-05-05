@@ -1,7 +1,9 @@
+import { useEffect, useRef } from 'react';
+
 import { useAgentsContext } from '@/context/app/context';
 import { useInputContext } from '@/context/input/context';
 import { useRudderEvents } from '@/services/analytics/useRudderAnalytics';
-import { useEffect, useRef } from 'react';
+
 import PresetPromptsSkeleton from './skeleton';
 
 const PresetPrompts = ({

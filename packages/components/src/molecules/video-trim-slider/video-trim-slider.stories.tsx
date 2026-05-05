@@ -1,4 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { useRef } from "react";
+
 import { VideoTrimSlider } from "./index";
 
 const meta: Meta<typeof VideoTrimSlider> = {
@@ -18,18 +20,22 @@ type Story = StoryObj<typeof VideoTrimSlider>;
 
 export const Default: Story = {
   args: {
-    videoUrl:
-      "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    videoUrl: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
     currentDuration: 0,
-    onTrimRangeChange: (start: number, end: number) => {
-      console.log("onTrimRangeChange::", start, end);
+    onTrimmerReady: (isReady: boolean) => {
+      console.log("onTrimmerReady::", isReady);
     },
   },
-  render: ({ videoUrl, currentDuration, onTrimRangeChange }) => (
-    <VideoTrimSlider
-      currentDuration={currentDuration}
-      videoUrl={videoUrl}
-      onTrimRangeChange={onTrimRangeChange}
-    />
-  ),
+  render: ({ videoUrl, currentDuration, onTrimmerReady }) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const trimRef = useRef<{ start: number; end: number }>(null);
+    return (
+      <VideoTrimSlider
+        ref={trimRef}
+        currentDuration={currentDuration}
+        videoUrl={videoUrl}
+        onTrimmerReady={onTrimmerReady ?? (() => {})}
+      />
+    );
+  },
 };

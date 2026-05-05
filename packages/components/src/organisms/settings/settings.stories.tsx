@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { BaseLayout } from "@genuin/components/templates/base-layout";
+
 import { SettingsPage } from "./settings";
 
 const meta: Meta<typeof SettingsPage> = {

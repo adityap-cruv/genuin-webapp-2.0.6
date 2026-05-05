@@ -1,9 +1,12 @@
-import { ModalShell } from '../modal-shell'
+import { signOut } from 'next-auth/react'
+
+import { checkIfUrlIncludesProtectedRoute } from '@/lib/utils'
 import { Button } from '@components/ui/button'
 import { removeAllAuthToken } from '@lib/api/instance'
-import { signOut } from 'next-auth/react'
+
+import { ModalShell } from '../modal-shell'
 import { useAuthenticationModalStore } from '../store'
-import { checkIfUrlIncludesProtectedRoute } from '@/lib/utils'
+
 
 export function Logout() {
   const { close } = useAuthenticationModalStore()

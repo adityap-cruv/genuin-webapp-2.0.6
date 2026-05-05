@@ -1,4 +1,5 @@
 import { axiosInstance } from '@lib/api/instance'
+
 import { parseCommunities, parseLoops, parsePeople, parseVideos, parseRankings } from './schema/resp-parser'
 import { validateRecentsResp, validateSuggestionsResp } from './schema/suggestions-resp'
 

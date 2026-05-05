@@ -1,13 +1,10 @@
+import { DialogClose } from "@genuin/ui/components/dialog";
 import { ErrorIcon, PlayIcon } from "@genuin/ui/icons";
 import { InfiniteScroll } from "@genuin/ui/infinite-scroll";
 import { cn } from "@genuin/ui/utils";
 import { useMemo } from "react";
-import { DialogClose } from "@genuin/ui/components/dialog";
 
-import {
-  PostTile,
-  PostTileSkeleton,
-} from "@genuin/components/molecules/post-tile";
+import { PostTile, PostTileSkeleton } from "@genuin/components/molecules/post-tile";
 
 import type { PostsGridProps } from "./posts-grid.types";
 
@@ -66,11 +63,7 @@ export function PostsGrid({
   if (isLoading) {
     return (
       <div className={cn("gencl:w-full gencl:h-fit", className)}>
-        <PostsGridSkeleton
-          noOfPosts={6}
-          gridClassName={gridClassName}
-          className={className}
-        />
+        <PostsGridSkeleton noOfPosts={6} gridClassName={gridClassName} className={className} />
       </div>
     );
   }
@@ -81,12 +74,9 @@ export function PostsGrid({
         className={cn(
           "gencl:w-full gencl:flex gencl:flex-col gencl:gap-4 gencl:justify-center gencl:items-center gencl:h-60",
           className
-        )}
-      >
+        )}>
         <ErrorIcon className="gencl:size-8" />
-        <p className="gencl:text-body-2-medium gencl:text-secondary-600">
-          We&apos;re unable to load posts
-        </p>
+        <p className="gencl:text-body-2-medium gencl:text-secondary-600">We&apos;re unable to load posts</p>
       </div>
     );
   }
@@ -97,14 +87,11 @@ export function PostsGrid({
         className={cn(
           "gencl:w-full gencl:flex gencl:flex-col gencl:gap-4 gencl:justify-center gencl:items-center gencl:h-45 gencl:sm:h-96! gencl:bg-secondary-50",
           className
-        )}
-      >
+        )}>
         <PlayIcon theme="light" size="xl" />
         <div className="gencl:space-y-1 gencl:flex-center gencl:flex-col">
           <p className="gencl:text-body-0-semi-bold">No Posts Yet</p>
-          <p className="gencl:text-body-1-medium gencl:text-secondary-600">
-            No content available
-          </p>
+          <p className="gencl:text-body-1-medium gencl:text-secondary-600">No content available</p>
         </div>
       </div>
     );
@@ -118,8 +105,7 @@ export function PostsGrid({
             getNextPage={fetchNextPage}
             hasNextPage={hasNextPage}
             isLoadingNextPage={isFetchingNextPage}
-            loader={<PostsGridLoader noOfPosts={6} />}
-          >
+            loader={<PostsGridLoader noOfPosts={6} />}>
             {Posts}
           </InfiniteScroll>
         </div>
@@ -161,13 +147,7 @@ export function PostsGridSkeleton({
   );
 }
 
-export function PostsGridLoader({
-  noOfPosts = 1,
-  size = "sm",
-}: {
-  noOfPosts?: number;
-  size?: "sm" | "lg";
-}) {
+export function PostsGridLoader({ noOfPosts = 1, size = "sm" }: { noOfPosts?: number; size?: "sm" | "lg" }) {
   return (
     <>
       {Array.from({ length: noOfPosts }).map((_, idx) => (

@@ -1,5 +1,7 @@
-import { Meta, StoryObj } from "@storybook/react";
-import { CreatePost, CreatePostSkeleton } from "./create-post";
+import type { Meta, StoryObj } from "@storybook/react";
+
+import { CreatePost } from "./create-post";
+import { EditPostSkeleton } from "./edit-post-skeleton";
 
 // Component meta configuration
 const meta: Meta<typeof CreatePost> = {
@@ -32,5 +34,5 @@ export const WithDraftId: Story = {
 
 // Just the skeleton loader
 export const Skeleton: Story = {
-  render: () => <CreatePostSkeleton />,
+  render: () => <EditPostSkeleton />,
 };

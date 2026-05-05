@@ -1,7 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
+import type { AxiosInstance } from "axios";
+
 import { useAxiosInstance } from "@genuin/components/context/axios";
 import { getQueryKeyForReport } from "@genuin/components/react-query/keys/report";
-import type { AxiosInstance } from "axios";
 
 /**
  * Submits a report for a video or comment to the server.
@@ -38,7 +39,7 @@ async function submitReport(data: ReportType, axiosInstance: AxiosInstance): Pro
       feedback: data.feedback,
     });
     return response.status === 200;
-  } catch (error) {
+  } catch (_error) {
     throw new Error("Failed to submit report");
   }
 }

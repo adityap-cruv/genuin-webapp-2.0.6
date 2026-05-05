@@ -1,28 +1,33 @@
-import { DownloadDialogModal } from '@components/common/modals/download-app'
-import { axiosInstance } from '@/lib/api/instance'
-import { type ClassValue, clsx } from 'clsx'
-import { createCipheriv } from 'crypto'
-import { twMerge } from 'tailwind-merge'
-import { type ConfigType, IntegrationSettingsType, useGenuinOptions } from './stores/genuin-options'
-import { AuthenticationModal } from '@components/common/modals/authentication'
-import { type ReactNode } from 'react'
-import { INDUSTRY, type IndustryName, PROTECTED_ROUTES, MOBILE_DOWNLOAD_APP_LINK } from './constants'
-import { type CommunityUserRoleType } from './schemas/roles'
-import Analytics from '@/services/analytics'
-import { UAParser } from 'ua-parser-js'
-import { getAppLink } from './get-deeplink'
-import DOMPurify from 'dompurify'
-import { type GestureOverlayKeysType, useKsGestureStore } from '@/components/common/gestures/gesture-store'
+import { createCipheriv } from "crypto";
+
+import type { GroupUserStatusType } from "@genuin/components/types/roles";
+import { type ClassValue, clsx } from "clsx";
+import DOMPurify from "dompurify";
+import { type ReactNode } from "react";
+import { twMerge } from "tailwind-merge";
+import { UAParser } from "ua-parser-js";
+
+import { type GestureOverlayKeysType, useKsGestureStore } from "@/components/common/gestures/gesture-store";
+import { axiosInstance } from "@/lib/api/instance";
+import Analytics from "@/services/analytics";
+import { AuthenticationModal } from "@components/common/modals/authentication";
+import { DownloadDialogModal } from "@components/common/modals/download-app";
+
+import { INDUSTRY, type IndustryName, PROTECTED_ROUTES, MOBILE_DOWNLOAD_APP_LINK } from "./constants";
+import { getAppLink } from "./get-deeplink";
+import { type CommunityUserRoleType } from "./schemas/roles";
+import { type ConfigType, useGenuinOptions } from "./stores/genuin-options";
+import type { IntegrationSettingsType } from "./stores/genuin-options";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 export function getLoopAndCommunityShareString(shareUrl: string) {
-  const urlObj = new URL(shareUrl)
-  const loopShareString = urlObj.searchParams.get('loop')
-  const communityShareString = urlObj.searchParams.get('community')
-  return { loopShareString, communityShareString }
+  const urlObj = new URL(shareUrl);
+  const loopShareString = urlObj.searchParams.get("loop");
+  const communityShareString = urlObj.searchParams.get("community");
+  return { loopShareString, communityShareString };
 }
 
 /**
@@ -34,23 +39,23 @@ export function openModal({
   subtitle,
   deepLink,
 }: {
-  title?: string | ReactNode
-  subtitle?: string | ReactNode
-  deepLink?: string
+  title?: string | ReactNode;
+  subtitle?: string | ReactNode;
+  deepLink?: string;
 }) {
-  const { webCTA, isMobile, user } = useGenuinOptions.getState()
+  const { webCTA, isMobile, user } = useGenuinOptions.getState();
 
-  if (webCTA !== 'app' && !user) {
-    AuthenticationModal.open()
+  if (webCTA !== "app" && !user) {
+    AuthenticationModal.open();
   } else {
     if (!isMobile) {
       DownloadDialogModal.open({
         title,
         subtitle,
-        deepLink: deepLink ?? '',
-      })
+        deepLink: deepLink ?? "",
+      });
     } else {
-      openGeneratedLink(deepLink)
+      openGeneratedLink(deepLink);
     }
   }
 }
@@ -60,20 +65,20 @@ export function deleteSearchParam({
   searchParams,
   paramsToDelete,
 }: {
-  pathName: string
-  searchParams: string
-  paramsToDelete: string[]
+  pathName: string;
+  searchParams: string;
+  paramsToDelete: string[];
 }) {
-  const searchParamObject = new URLSearchParams(searchParams)
+  const searchParamObject = new URLSearchParams(searchParams);
 
   paramsToDelete.forEach((param) => {
-    searchParamObject.delete(param)
-  })
+    searchParamObject.delete(param);
+  });
 
   if (searchParamObject.size === 0) {
-    window.history.replaceState('', '', `${pathName}`)
+    window.history.replaceState("", "", `${pathName}`);
   } else {
-    window.history.replaceState('', '', `${pathName}?${searchParamObject.toString()}`)
+    window.history.replaceState("", "", `${pathName}?${searchParamObject.toString()}`);
   }
 }
 
@@ -84,30 +89,30 @@ export function deleteSearchParam({
  * @returns Sanitized plain text string
  */
 export function sanitizeInput(input: string | null | undefined): string {
-  if (typeof input !== 'string' || input.trim() === '') return ''
+  if (typeof input !== "string" || input.trim() === "") return "";
   return DOMPurify.sanitize(input, {
     USE_PROFILES: { html: false },
-  })
+  });
 }
 
 export function getTimeAgo(createdAt: any) {
-  const currentDate: any = new Date()
-  const createdAtDate: any = new Date(Number(createdAt))
+  const currentDate: any = new Date();
+  const createdAtDate: any = new Date(Number(createdAt));
 
-  const timeDifference = currentDate - createdAtDate
-  const minutes = Math.floor(timeDifference / (1000 * 60))
-  const hours = Math.floor(minutes / 60)
-  const days = Math.floor(hours / 24)
-  const weeks = Math.floor(days / 7)
+  const timeDifference = currentDate - createdAtDate;
+  const minutes = Math.floor(timeDifference / (1000 * 60));
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+  const weeks = Math.floor(days / 7);
 
   if (weeks > 0) {
-    return weeks + 'w'
+    return weeks + "w";
   } else if (days > 0) {
-    return days + 'd'
+    return days + "d";
   } else if (hours > 0) {
-    return hours + 'h'
+    return hours + "h";
   } else {
-    return minutes + 'm'
+    return minutes + "m";
   }
 }
 
@@ -115,56 +120,56 @@ export function getAvatarUrl(avatarUrl: any) {
   if (avatarUrl) {
     return isValidHTTPS(avatarUrl)
       ? avatarUrl
-      : `https://media${process.env.NEXT_PUBLIC_CURRENT_ENV === 'local' || process.env.NEXT_PUBLIC_CURRENT_ENV === 'qa' ? '.qa' : ''}.begenuin.com/webapp_assets/assets/avatar/${avatarUrl}.gif`
+      : `https://media${process.env.NEXT_PUBLIC_CURRENT_ENV === "local" || process.env.NEXT_PUBLIC_CURRENT_ENV === "qa" ? ".qa" : ""}.begenuin.com/webapp_assets/assets/avatar/${avatarUrl}.gif`;
   }
-  return null
+  return null;
 }
 
 export function checkAndAppendHttps(link: string): string {
-  return link?.startsWith('http') || link?.startsWith('https')
+  return link?.startsWith("http") || link?.startsWith("https")
     ? link
-    : (process.env.NEXT_PUBLIC_CURRENT_ENV === 'local' ? 'http://' : 'https://') + link
+    : (process.env.NEXT_PUBLIC_CURRENT_ENV === "local" ? "http://" : "https://") + link;
 }
 
 export function isValidHTTPS(link: string) {
-  return link.startsWith('http') || link.startsWith('https') ? link : null
+  return link.startsWith("http") || link.startsWith("https") ? link : null;
 }
 
 export const abbreviateNumber = (value: number) => {
-  if (!value) return '0'
+  if (!value) return "0";
 
-  let newValue = value.toString()
+  let newValue = value.toString();
 
   if (value >= 1000) {
-    const suffixes = ['', 'K', 'M', 'B', 'T']
-    let suffixNum = 0
+    const suffixes = ["", "K", "M", "B", "T"];
+    let suffixNum = 0;
 
     while (value >= 1000 && suffixNum < suffixes.length - 1) {
-      value /= 1000
-      suffixNum++
+      value /= 1000;
+      suffixNum++;
     }
 
     // Ensure proper rounding to one decimal place if necessary
     if (value % 1 !== 0) {
-      value = Number(value.toFixed(1))
+      value = Number(value.toFixed(1));
     }
 
-    newValue = value + suffixes[suffixNum]
+    newValue = value + (suffixes[suffixNum] ?? "");
   }
 
-  return newValue
-}
+  return newValue;
+};
 
 export function replaceUrlWithoutReload(url: URL) {
-  if (!window) return
-  window.history.replaceState(null, '', url.href)
+  if (!window) return;
+  window.history.replaceState(null, "", url.href);
 }
 
-export const openGeneratedLink = (link = '') => {
+export const openGeneratedLink = (link = "") => {
   setTimeout(() => {
-    window.open(link, '_blank', 'noopener,noreferrer')
-  })
-}
+    window.open(link, "_blank", "noopener,noreferrer");
+  });
+};
 
 //  TODO: This function line can be reduced and validation can be automated.
 export const generateDeepLink = async ({
@@ -184,103 +189,103 @@ export const generateDeepLink = async ({
   loop,
   searchParams,
 }: any) => {
-  const queryParams = {}
+  const queryParams = {};
   if (utmCampaign) {
-    Object.assign(queryParams, { utm_campaign: utmCampaign })
+    Object.assign(queryParams, { utm_campaign: utmCampaign });
   }
   if (utmSource) {
-    Object.assign(queryParams, { utm_source: utmSource })
+    Object.assign(queryParams, { utm_source: utmSource });
   }
   if (utmMedium) {
-    Object.assign(queryParams, { utm_medium: utmMedium })
+    Object.assign(queryParams, { utm_medium: utmMedium });
   }
   if (action) {
-    Object.assign(queryParams, { action })
+    Object.assign(queryParams, { action });
   }
   // if (sourceId) {
   //   Object.assign(queryParams, { source_id: sourceId })
   // }
   if (contentType) {
-    Object.assign(queryParams, { content_type: contentType })
+    Object.assign(queryParams, { content_type: contentType });
   }
   if (fromUserName) {
-    Object.assign(queryParams, { from_username: fromUserName })
+    Object.assign(queryParams, { from_username: fromUserName });
   }
   // if (parentId) {
   //   Object.assign(queryParams, { parent_id: parentId })
   // }
 
   if (community) {
-    Object.assign(queryParams, { community })
+    Object.assign(queryParams, { community });
   }
   if (loop) {
-    Object.assign(queryParams, { loop })
+    Object.assign(queryParams, { loop });
   }
   const finalPayload = {
     query_params: { ...queryParams, ...searchParams },
     title,
     preview_url: previewImage,
     path_params: pathName,
-  }
+  };
   if (description) {
-    Object.assign(finalPayload, { description })
+    Object.assign(finalPayload, { description });
   }
 
-  const { host, webCTA, isMobile } = useGenuinOptions.getState()
+  const { host, webCTA, isMobile } = useGenuinOptions.getState();
 
   // Construct the full URL
   const redirectionUrl = `${host}${finalPayload.path_params}?${new URLSearchParams(
     finalPayload.query_params
-  ).toString()}`
+  ).toString()}`;
 
   if (isMobile) {
-    const shortLink = webCTA === 'app' ? getMobileAppUrl() : redirectionUrl
-    if (webCTA === 'app') {
+    const shortLink = webCTA === "app" ? getMobileAppUrl() : redirectionUrl;
+    if (webCTA === "app") {
       await Analytics.track({
-        eventName: action !== '/' ? 'Download App Clicked' : 'Download App Viewed',
+        eventName: action !== "/" ? "Download App Clicked" : "Download App Viewed",
         properties: {
           device_type: getPlatform(),
           redirection_link: shortLink,
           action,
         },
-      })
+      });
     }
-    return shortLink
+    return shortLink;
   } else {
     try {
       const res = await axiosInstance.post(
         `${process.env.NEXT_PUBLIC_API_URL}/goservices/links/dynamic_link`,
         finalPayload
-      )
-      const shortLink = res?.data?.data?.shortLink
+      );
+      const shortLink = res?.data?.data?.shortLink;
 
-      if (webCTA === 'app') {
+      if (webCTA === "app") {
         await Analytics.track({
-          eventName: 'Download App Viewed',
+          eventName: "Download App Viewed",
           properties: {
             device_type: getPlatform(),
             redirection_link: shortLink,
             action,
           },
-        })
+        });
       }
 
-      return shortLink
+      return shortLink;
     } catch (e) {
-      return process.env.NEXT_PUBLIC_HOST_URL
+      return process.env.NEXT_PUBLIC_HOST_URL;
     }
   }
-}
+};
 
 // TODO: Not used anywhere rn.
 export function getParentUrl(url: string): string {
-  const urlObj = new URL(url)
-  let path = urlObj.pathname
-  path = path.startsWith('/') ? path.slice(1, path.length) : path
-  path = path.endsWith('/') ? path.slice(0, path.length - 1) : path
-  const arr = path.split('/')
-  if (arr.length < 3) return url
-  return urlObj.hostname + '/' + arr[arr.length - 3]
+  const urlObj = new URL(url);
+  let path = urlObj.pathname;
+  path = path.startsWith("/") ? path.slice(1, path.length) : path;
+  path = path.endsWith("/") ? path.slice(0, path.length - 1) : path;
+  const arr = path.split("/");
+  if (arr.length < 3) return url;
+  return urlObj.hostname + "/" + arr[arr.length - 3];
 }
 
 /**
@@ -289,60 +294,60 @@ export function getParentUrl(url: string): string {
  * Make sure window object is there.
  */
 export function getCurrentShareUrl({ url }: { url: string }) {
-  const urlObj = new URL(url)
-  urlObj.searchParams.append('utm_source', 'app_web')
-  return urlObj.href
+  const urlObj = new URL(url);
+  urlObj.searchParams.append("utm_source", "app_web");
+  return urlObj.href;
 }
 
 export function getRandomAvatar() {
   const avatars = [
-    'cow_face',
-    'alien',
-    'dog_face',
-    'sloth',
-    'frog',
-    'hear_no_evil_monkey',
-    'jack_o_lantern',
-    'owl',
-    'penguin',
-    'rabbit_face',
-    'pile_of_poo',
-    'pig_face',
-    'robot',
-    'ghost',
-    'teddy_bear',
-    'smiling_face_with_horns',
-    'smiling_face_with_sunglasses',
-    'snowman',
-  ]
-  return avatars[Math.round(Math.random() * (avatars.length - 1))]
+    "cow_face",
+    "alien",
+    "dog_face",
+    "sloth",
+    "frog",
+    "hear_no_evil_monkey",
+    "jack_o_lantern",
+    "owl",
+    "penguin",
+    "rabbit_face",
+    "pile_of_poo",
+    "pig_face",
+    "robot",
+    "ghost",
+    "teddy_bear",
+    "smiling_face_with_horns",
+    "smiling_face_with_sunglasses",
+    "snowman",
+  ];
+  return avatars[Math.round(Math.random() * (avatars.length - 1))];
 }
 
 export function shortenedEmail(email?: string) {
-  if (!email) return ''
-  const splitArr = email.split('@')
-  let name = splitArr[0]
-  name = name.length > 12 ? name.slice(0, 12) + '...' : name
-  return name + '@' + splitArr[1]
+  if (!email) return "";
+  const splitArr = email.split("@");
+  let name = splitArr[0] ?? "";
+  name = name.length > 12 ? name.slice(0, 12) + "..." : name;
+  return name + "@" + (splitArr[1] ?? "");
 }
 
 export function encryptText(text: string, appendString: boolean) {
   // Extracting common variables
-  const iv = Buffer.from(process.env.NEXT_PUBLIC_AES_IV)
-  const key = Buffer.from(process.env.NEXT_PUBLIC_AES_KEY)
+  const iv = Buffer.from(process.env.NEXT_PUBLIC_AES_IV ?? "");
+  const key = Buffer.from(process.env.NEXT_PUBLIC_AES_KEY ?? "");
 
   // Appending secret string if needed
-  const textToEncrypt = appendString ? text + process.env.NEXT_PUBLIC_SECRET_STRING : text
+  const textToEncrypt = appendString ? text + process.env.NEXT_PUBLIC_SECRET_STRING : text;
 
   // Creating Cipher
-  const cipher = createCipheriv('aes-256-cbc', key, iv)
+  const cipher = createCipheriv("aes-256-cbc", key, iv);
 
   // Updating encrypted text
-  let encrypted = cipher.update(Buffer.from(textToEncrypt))
-  encrypted = Buffer.concat([encrypted, cipher.final()])
+  let encrypted = cipher.update(Buffer.from(textToEncrypt));
+  encrypted = Buffer.concat([encrypted, cipher.final()]);
 
   // Returning base64 encoded encrypted text
-  return encrypted.toString('base64')
+  return encrypted.toString("base64");
 }
 
 /**
@@ -365,23 +370,23 @@ export function encryptText(text: string, appendString: boolean) {
  * @returns An object mapping CSS variable names to color codes.
  */
 export function parseBrandColors(colors: any) {
-  const parsedColors: any = {}
+  const parsedColors: any = {};
 
   // Only parse primary category
   if (colors.primary) {
-    const categoryColors = colors.primary
+    const categoryColors = colors.primary;
     for (const shade in categoryColors) {
-      const colorCode = categoryColors[shade]
-      const parsedShade = shade.split('_')[1]
+      const colorCode = categoryColors[shade];
+      const parsedShade = shade.split("_")[1];
       if (parsedShade) {
-        parsedColors[`--gencl-color-primary-${parsedShade}`] = colorCode
+        parsedColors[`--gencl-color-primary-${parsedShade}`] = colorCode;
       } else {
-        parsedColors[`--gencl-color-primary`] = colorCode
+        parsedColors[`--gencl-color-primary`] = colorCode;
       }
     }
   }
 
-  return parsedColors
+  return parsedColors;
 }
 
 /**
@@ -389,27 +394,27 @@ export function parseBrandColors(colors: any) {
  * @param colors - An object containing color categories and their shades.
  */
 export function parseColors(colors: any) {
-  const parsedColors: any = {}
+  const parsedColors: any = {};
   if (colors.primary) {
-    const categoryColors = colors.primary
+    const categoryColors = colors.primary;
     for (const shade in categoryColors) {
-      const colorCode = categoryColors[shade]
-      const parsedShade = shade.split('_')[1]
+      const colorCode = categoryColors[shade];
+      const parsedShade = shade.split("_")[1];
       if (parsedShade) {
-        parsedColors[`--primary-${parsedShade}`] = colorCode
+        parsedColors[`--primary-${parsedShade}`] = colorCode;
       } else {
-        parsedColors[`--primary`] = colorCode
+        parsedColors[`--primary`] = colorCode;
       }
     }
   }
-  return parsedColors
+  return parsedColors;
 }
 
 export function tryJsonParse(data: string) {
   try {
-    return JSON.parse(data)
+    return JSON.parse(data);
   } catch (e) {
-    return data
+    return data;
   }
 }
 
@@ -427,9 +432,9 @@ export function tryJsonParse(data: string) {
  */
 
 export function getWebpUrlForImage(url?: string | null): string {
-  if (!url) return ''
+  if (!url) return "";
   // return url
-  return url.includes('/uploads/') ? url.replace(/(\/)([^/]+)\.([^/.]+)$/, '$1webp/$2.webp') : url
+  return url.includes("/uploads/") ? url.replace(/(\/)([^/]+)\.([^/.]+)$/, "$1webp/$2.webp") : url;
 }
 
 /**
@@ -438,31 +443,31 @@ export function getWebpUrlForImage(url?: string | null): string {
  * @returns
  */
 export function checkIfUrlIncludesProtectedRoute(url: string) {
-  return PROTECTED_ROUTES.some((route) => url.includes(route))
+  return PROTECTED_ROUTES.some((route) => url.includes(route));
 }
 
 export function encodeVideoSourceUrl(videoSource: string) {
   try {
     // Create a URL object to easily access query parameters
-    const url = new URL(videoSource)
+    const url = new URL(videoSource);
     // If there are no query parameters, return the original URL
     if (!url.search) {
-      return videoSource
+      return videoSource;
     }
     // Get query parameters from the URL
-    const params = new URLSearchParams(url.search)
+    const params = new URLSearchParams(url.search);
 
     // Encode each parameter value
     for (const [key, value] of params.entries()) {
-      params.set(key, encodeURIComponent(value))
+      params.set(key, encodeURIComponent(value));
     }
 
     // Return the complete encoded URL
-    const paramString = params.toString()
-    return `${url.origin}${url.pathname}${paramString ? '?' + paramString : ''}`
+    const paramString = params.toString();
+    return `${url.origin}${url.pathname}${paramString ? "?" + paramString : ""}`;
   } catch (error) {
-    console.error('Invalid URL:', error)
-    return videoSource
+    console.error("Invalid URL:", error);
+    return videoSource;
   }
 }
 
@@ -473,54 +478,54 @@ export function encodeVideoSourceUrl(videoSource: string) {
  */
 export function mapCommunityUserRole(role?: number | null, isRequested?: boolean | null): CommunityUserRoleType {
   // If isRequested is true, return 'REQUESTED'.
-  if (isRequested) return 'REQUESTED'
+  if (isRequested) return "REQUESTED";
 
   switch (role) {
     case 1:
-      return 'LEADER'
+      return "LEADER";
     case 2:
-      return 'MEMBER'
+      return "MEMBER";
     case 3:
-      return 'MODERATOR'
+      return "MODERATOR";
     // If role is null or anything other than above cases than return 'UNJOINED'.
     default:
-      return 'UNJOINED'
+      return "UNJOINED";
   }
 }
 
 export function getYear() {
-  return new Date().getFullYear()
+  return new Date().getFullYear();
 }
 
 export function getIndustryName(industryType: number | undefined): IndustryName {
   let industryName: IndustryName =
-    (Object.keys(INDUSTRY) as IndustryName[]).find((key) => INDUSTRY[key] === industryType) ?? 'Default'
+    (Object.keys(INDUSTRY) as IndustryName[]).find((key) => INDUSTRY[key] === industryType) ?? "Default";
 
-  if (!['Food', 'Healthcare', 'Fintech'].includes(industryName)) {
-    industryName = 'Default'
+  if (!["Food", "Healthcare", "Fintech"].includes(industryName)) {
+    industryName = "Default";
   }
 
-  return industryName
+  return industryName;
 }
 export function getDataForIndustry(config: ConfigType | undefined, embedSource: any) {
-  type IndustryName = keyof (typeof embedSource)[number]
-  const industryName = getIndustryName(config?.industry_type) as IndustryName
+  type IndustryName = keyof (typeof embedSource)[number];
+  const industryName = getIndustryName(config?.industry_type) as IndustryName;
   return embedSource.find((item: Record<string, any>) => Object.keys(item).includes(industryName as string))?.[
     industryName as string
-  ]
+  ];
 }
 
 export function getMobileAppUrl() {
-  const { config } = useGenuinOptions.getState()
+  const { config } = useGenuinOptions.getState();
 
-  const userAgent = navigator.userAgent.toLowerCase()
-  const osName = new UAParser().getResult().os.name?.toLowerCase().replace(/\s+/g, '')
-  const isIOS = osName === 'macos' || osName === 'ios' || /iphone|ipad|ipod/.test(userAgent)
+  const userAgent = navigator.userAgent.toLowerCase();
+  const osName = new UAParser().getResult().os.name?.toLowerCase().replace(/\s+/g, "");
+  const isIOS = osName === "macos" || osName === "ios" || /iphone|ipad|ipod/.test(userAgent);
 
-  const appStoreLink = config?.integrations.sdk.ios.appstore_link ?? MOBILE_DOWNLOAD_APP_LINK
-  const playStoreLink = config?.integrations.sdk.android.playstore_link ?? MOBILE_DOWNLOAD_APP_LINK
+  const appStoreLink = config?.integrations.sdk.ios.appstore_link ?? MOBILE_DOWNLOAD_APP_LINK;
+  const playStoreLink = config?.integrations.sdk.android.playstore_link ?? MOBILE_DOWNLOAD_APP_LINK;
 
-  return isIOS ? appStoreLink : playStoreLink
+  return isIOS ? appStoreLink : playStoreLink;
 }
 
 /**
@@ -530,18 +535,18 @@ export function getMobileAppUrl() {
  *                     "iOS" if on an iPhone, iPad, or iPod, and "Web" otherwise.
  */
 export const getPlatform = () => {
-  if (typeof navigator !== 'undefined') {
-    const userAgent = navigator.userAgent || navigator.vendor
+  if (typeof navigator !== "undefined") {
+    const userAgent = navigator.userAgent || navigator.vendor;
 
     if (/android/i.test(userAgent)) {
-      return 'Android'
+      return "Android";
     }
     if (/iPhone|iPad|iPod/i.test(userAgent)) {
-      return 'iOS'
+      return "iOS";
     }
   }
-  return 'Web'
-}
+  return "Web";
+};
 
 /**
  * This func returns the url for the reaction.
@@ -550,9 +555,9 @@ export const getPlatform = () => {
  * @returns
  */
 export function getUrlForReaction(reaction: string, isReacted: boolean, forComment: boolean = false) {
-  return `https://media.begenuin.com/webapp_assets/reactions/${reaction}/${forComment ? 'comment_' : 'feed_'}${
-    isReacted ? 'selected' : 'unselected'
-  }.svg`
+  return `https://media.begenuin.com/webapp_assets/reactions/${reaction}/${forComment ? "comment_" : "feed_"}${
+    isReacted ? "selected" : "unselected"
+  }.svg`;
 }
 
 /**
@@ -561,7 +566,7 @@ export function getUrlForReaction(reaction: string, isReacted: boolean, forComme
  * @returns
  * */
 export function toTitleCase(word: string) {
-  return word.charAt(0).toUpperCase() + word.slice(1)
+  return word.charAt(0).toUpperCase() + word.slice(1);
 }
 
 /**
@@ -572,43 +577,43 @@ export function toTitleCase(word: string) {
 export function getPastTense(word: string) {
   if (/e$/.test(word)) {
     // If the word already ends in 'e', just add 'd'
-    return word + 'd'
+    return word + "d";
   } else if (/[^aeiou]y$/.test(word)) {
     // If the word ends in a consonant + 'y', replace 'y' with 'ied'
-    return word.slice(0, -1) + 'ied'
+    return word.slice(0, -1) + "ied";
   } else if (/([aeiou])([^aeiou])$/.test(word)) {
     // If the word ends in vowel + consonant, double the consonant and add 'ed'
-    return word + word.slice(-1) + 'ed'
+    return word + word.slice(-1) + "ed";
   } else {
     // For most cases, just add 'ed'
-    return word + 'ed'
+    return word + "ed";
   }
 }
 
 export function getApiUrl(pathName: string, searchParams: URLSearchParams = new URLSearchParams()) {
-  const url = new URL(process.env.NEXT_PUBLIC_API_URL)
-  url.pathname = pathName
-  url.search = searchParams.toString()
-  return url.toString()
+  const url = new URL(process.env.NEXT_PUBLIC_API_URL ?? "");
+  url.pathname = pathName;
+  url.search = searchParams.toString();
+  return url.toString();
 }
 
 // This function is used in multiple places to trigger the app download modal.
 // It generates the appropriate deep link and opens a modal prompting users to download the app,
 export async function handleAppDownloadModal(options?: { title?: string; subtitle?: string }) {
-  const { isMobile } = useGenuinOptions.getState()
+  const { isMobile } = useGenuinOptions.getState();
   // had to cover this for use case of having smart get app for ipad
   // isMobile flag is not detecting ipad as mobile device
-  const isIpad = new UAParser().getResult().device.model?.toLowerCase() === 'ipad'
-  const generatedLink = await getAppLink()
+  const isIpad = new UAParser().getResult().device.model?.toLowerCase() === "ipad";
+  const generatedLink = await getAppLink();
 
   if (isMobile || isIpad) {
-    openGeneratedLink(generatedLink)
+    openGeneratedLink(generatedLink);
   } else {
     DownloadDialogModal.open({
-      title: options?.title ?? 'Download the app',
-      subtitle: options?.subtitle ?? 'Download app to browse more communities',
+      title: options?.title ?? "Download the app",
+      subtitle: options?.subtitle ?? "Download app to browse more communities",
       deepLink: generatedLink,
-    })
+    });
   }
 }
 
@@ -622,16 +627,16 @@ export async function handleAppDownloadModal(options?: { title?: string; subtitl
 export async function validateImage(file: File): Promise<boolean> {
   try {
     // Check MIME type reported by the browser
-    const validMimeTypes = ['image/jpeg', 'image/jpg', 'image/png']
+    const validMimeTypes = ["image/jpeg", "image/jpg", "image/png"];
     if (!validMimeTypes.includes(file.type)) {
-      return false
+      return false;
     }
     // Read the first few bytes to check for image signatures (magic numbers)
-    const buffer = await readFileAsArrayBuffer(file.slice(0, 12))
-    const arr = new Uint8Array(buffer)
+    const buffer = await readFileAsArrayBuffer(file.slice(0, 12));
+    const arr = new Uint8Array(buffer);
     // Check for JPEG signature (FF D8 FF)
     if (arr[0] === 0xff && arr[1] === 0xd8 && arr[2] === 0xff) {
-      return true
+      return true;
     }
     // Check for PNG signature (89 50 4E 47 0D 0A 1A 0A)
     if (
@@ -644,23 +649,23 @@ export async function validateImage(file: File): Promise<boolean> {
       arr[6] === 0x1a &&
       arr[7] === 0x0a
     ) {
-      return true
+      return true;
     }
-    return false
+    return false;
   } catch (err) {
-    return false
+    return false;
   }
 }
 
 async function readFileAsArrayBuffer(file: Blob): Promise<ArrayBuffer> {
   return await new Promise((resolve, reject) => {
-    const reader = new FileReader()
+    const reader = new FileReader();
     reader.onload = () => {
-      resolve(reader.result as ArrayBuffer)
-    }
-    reader.onerror = reject
-    reader.readAsArrayBuffer(file)
-  })
+      resolve(reader.result as ArrayBuffer);
+    };
+    reader.onerror = reject;
+    reader.readAsArrayBuffer(file);
+  });
 }
 
 /**
@@ -668,27 +673,27 @@ async function readFileAsArrayBuffer(file: Blob): Promise<ArrayBuffer> {
  * by checking and comparing localStorage state with current state
  */
 export const checkAndResetGestures = () => {
-  const { resetGestureOverlay } = useKsGestureStore.getState()
+  const { resetGestureOverlay } = useKsGestureStore.getState();
 
   try {
-    const storedGestures = localStorage.getItem('_ks_gestures_')
-    if (!storedGestures) return
+    const storedGestures = localStorage.getItem("_ks_gestures_");
+    if (!storedGestures) return;
 
-    const parsed = JSON.parse(storedGestures)
-    const storedOverlays = parsed?.state?.gestureOverlays
+    const parsed = JSON.parse(storedGestures);
+    const storedOverlays = parsed?.state?.gestureOverlays;
 
-    if (!storedOverlays) return
+    if (!storedOverlays) return;
 
     // Check each gesture in the store
     Object.entries(storedOverlays).forEach(([gestureKey, gesture]: [string, any]) => {
       if (gesture?.isVisible && gesture?.hasShown) {
-        resetGestureOverlay(gestureKey as GestureOverlayKeysType)
+        resetGestureOverlay(gestureKey as GestureOverlayKeysType);
       }
-    })
+    });
   } catch (error) {
-    console.error('Failed to parse _ks_gestures_:', error)
+    console.error("Failed to parse _ks_gestures_:", error);
   }
-}
+};
 
 /**
  * Synchronizes tap behavior between config and localStorage
@@ -697,24 +702,24 @@ export const checkAndResetGestures = () => {
  * @param tapBehavior - The tap behavior value from config
  */
 export function syncTapBehavior(tapBehavior: number | undefined) {
-  const { resetGestureOverlay } = useKsGestureStore.getState()
+  const { resetGestureOverlay } = useKsGestureStore.getState();
 
-  if (!tapBehavior) return
+  if (!tapBehavior) return;
 
-  const localTapBehavior = localStorage.getItem('_tap_behavior_')
+  const localTapBehavior = localStorage.getItem("_tap_behavior_");
   if (localTapBehavior !== tapBehavior.toString()) {
-    localStorage.setItem('_tap_behavior_', tapBehavior.toString())
-    resetGestureOverlay('PLAY_PAUSE')
+    localStorage.setItem("_tap_behavior_", tapBehavior.toString());
+    resetGestureOverlay("PLAY_PAUSE");
   }
 }
 
 export function checkWhiteLabelEnabled(integrations: IntegrationSettingsType): string | null {
-  const allowedDomains = integrations?.white_label?.allowed_domains
-  const isWhiteLabelEnabled = integrations?.white_label?.enable
+  const allowedDomains = integrations?.white_label?.allowed_domains;
+  const isWhiteLabelEnabled = integrations?.white_label?.enable;
 
   return isWhiteLabelEnabled && Array.isArray(allowedDomains) && allowedDomains.length > 0
     ? (allowedDomains[0] ?? null)
-    : null
+    : null;
 }
 
 /**
@@ -731,13 +736,29 @@ export function checkWhiteLabelEnabled(integrations: IntegrationSettingsType): s
 export function mapMemberJoinStatus(role?: number | null): GroupUserStatusType {
   switch (role) {
     case 1:
-      return 'UNJOINED'
+      return "UNJOINED";
     case 2:
-      return 'REQUESTED'
+      return "REQUESTED";
     case 3:
-      return 'JOINED'
+      return "JOINED";
     // If role is null or anything other than above cases than return 'UNJOINED'.
     default:
-      return 'UNJOINED'
+      return "UNJOINED";
   }
+}
+
+export function getOgUrl(path: string, domain?: string, subdomain?: string) {
+  let url = process.env.NEXT_PUBLIC_HOST_URL;
+
+  // Override url if whitelabel domain is provided
+  if (domain) {
+    url = `https://${domain}`;
+  }
+
+  // Override url if whitelabel subdomain is provided
+  if (subdomain) {
+    url = `https://${subdomain}${process.env.NEXT_PUBLIC_CURRENT_ENV === "local" || process.env.NEXT_PUBLIC_CURRENT_ENV === "qa" ? ".qa" : ""}.begenuin.com`;
+  }
+
+  return `${url}${path}`;
 }

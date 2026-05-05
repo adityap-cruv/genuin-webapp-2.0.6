@@ -1,5 +1,6 @@
 "use client";
 import { VideoPlayer } from "@genuin/ui/components/video-player";
+import { cn } from "@genuin/ui/lib/utils";
 import {
   lazy,
   memo,
@@ -12,32 +13,27 @@ import {
   useState,
   type ComponentProps,
 } from "react";
-import { useBaseContext } from "@genuin/components/context/base";
-import { audioManager } from "@genuin/components/lib/audio-manager";
-import { usePlayerContext } from "./context/context";
+
+import { useUrlParams } from "@genuin/components/context";
 import { useAnalytics, VideoTypes } from "@genuin/components/context/analytics";
-import { cn } from "@genuin/ui/lib/utils";
-import { BrandType } from "@genuin/components/lib/utils/brand-layout";
-import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { useBaseContext } from "@genuin/components/context/base";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
-import type {
-  AdTagObjectType,
-  PostDetailsType,
-} from "@genuin/components/react-query/api/feed/schema";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { audioManager } from "@genuin/components/lib/audio-manager";
+import type { BrandType } from "@genuin/components/lib/utils/brand-layout";
+import type { AdTagObjectType, PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+
+import { usePlayerContext } from "./context/context";
 import { buildGenAdConfigFromAdTagObject } from "./gen-ad-container";
 import type { GenAdConfig } from "./gen-ad-container";
-import { useUrlParams } from "@genuin/components/context";
 
 const GenAdContainer = lazy(() =>
-  import("./gen-ad-container/gen-ad-container.js").then((m) => ({
+  import("./gen-ad-container/gen-ad-container").then((m) => ({
     default: m.GenAdContainer,
-  })),
+  }))
 );
 
-type FeedPlayerProps = Omit<
-  ComponentProps<typeof VideoPlayer>,
-  "volume" | "playbackSpeed" | "shouldPlay"
-> & {
+type FeedPlayerProps = Omit<ComponentProps<typeof VideoPlayer>, "volume" | "playbackSpeed" | "shouldPlay"> & {
   /**
    * The id of the video to passed to analytics.
    */
@@ -82,6 +78,11 @@ type FeedPlayerProps = Omit<
   adsPlatform?: string | null;
   isSponsored?: boolean;
   /**
+   * Feed-session identifier threaded from the first page of the feed API response.
+   * Included as `page_session` in all video and ad analytics events.
+   */
+  pageSession?: string | null;
+  /**
    * Sponsorship info for video
    */
   sponsorshipInfo: NonNullable<PostDetailsType>["sponsored"];
@@ -105,6 +106,7 @@ export const FeedPlayer = memo(function FeedPlayer({
   videoType,
   adsPlatform,
   isSponsored,
+  pageSession,
   playerSize,
   sponsorshipInfo,
   onAdStateChange,
@@ -119,8 +121,7 @@ export const FeedPlayer = memo(function FeedPlayer({
   ...props
 }: FeedPlayerProps) {
   // adUrl = undefined;
-  const { muted, volume, playbackSpeed, baseContextManager, brandDetails } =
-    useBaseContext();
+  const { muted, volume, playbackSpeed, baseContextManager, brandDetails } = useBaseContext();
   const embedDetails = useSafeEmbedContext();
   const {
     feedPlayerShouldPlay,
@@ -174,25 +175,23 @@ export const FeedPlayer = memo(function FeedPlayer({
     // This function call sets player size before appending params to url,
     // Do not add it into dep array of useMemo, otherwise it will cause changes in adUrl which will load ad again.
     if (playerSize) setPlayerSize(playerSize);
-    if (adTagObject?.video_ad?.ads_url) {
-      adTagObject.video_ad.ads_url = appendParamsToUrl(
-        adTagObject.video_ad.ads_url,
-      );
+    if (adTagObject?.video_ad) {
+      if (Array.isArray(adTagObject.video_ad)) {
+        adTagObject.video_ad.forEach((vad) => {
+          if (vad.ads_url) vad.ads_url = appendParamsToUrl(vad.ads_url);
+        });
+      } else if (adTagObject.video_ad.ads_url) {
+        adTagObject.video_ad.ads_url = appendParamsToUrl(adTagObject.video_ad.ads_url);
+      }
     }
-    return adTagObject
-      ? buildGenAdConfigFromAdTagObject(adTagObject, videoId)
-      : undefined;
+    return adTagObject ? buildGenAdConfigFromAdTagObject(adTagObject, videoId) : undefined;
   }, [adConfig, adTagObject, videoId]);
 
   // When adTagObject/adConfig is present, suppress adUrl from VideoPlayer unless
   // the GenAd waterfall has failed (in which case fall back to adUrl for IMA).
-  let videoPlayerAdUrl = useMemo(() => {
-    return resolvedAdConfig && !waterfallFailed
-      ? undefined
-      : adUrl
-        ? appendParamsToUrl(adUrl)
-        : undefined;
-  }, [resolvedAdConfig, waterfallFailed]);
+  const videoPlayerAdUrl = useMemo(() => {
+    return resolvedAdConfig && !waterfallFailed ? undefined : adUrl ? appendParamsToUrl(adUrl) : undefined;
+  }, [adUrl, appendParamsToUrl, resolvedAdConfig, waterfallFailed]);
 
   useEffect(() => {
     baseContextManager.registerVideo({
@@ -226,13 +225,14 @@ export const FeedPlayer = memo(function FeedPlayer({
       video_id: videoId,
       video_url: src,
       video_type: videoType ?? VideoTypes.Content,
+      page_session_id: pageSession ?? undefined,
       ...(isSponsored && {
         ad_type: "sponsored_post",
         cpm_rate: sponsorshipInfo?.cpm,
         sponsorship_id: sponsorshipInfo?.id,
       }),
     };
-  }, [videoId, totalVideos, src, isSponsored]);
+  }, [videoId, totalVideos, src, isSponsored, pageSession]);
 
   // DRY: Common ad analytics event data (memoized)
   const adAnalyticsData = useMemo(
@@ -241,8 +241,9 @@ export const FeedPlayer = memo(function FeedPlayer({
       ad_source: adsPlatform,
       ad_type: "in_stream",
       video_type: videoType,
+      page_session: pageSession ?? undefined,
     }),
-    [videoId, adsPlatform, videoType],
+    [videoId, adsPlatform, videoType, pageSession]
   );
 
   // Track when video comes into view using IntersectionObserver
@@ -260,7 +261,7 @@ export const FeedPlayer = memo(function FeedPlayer({
       },
       {
         threshold: 0.5,
-      },
+      }
     );
 
     observer.observe(playerRef.current);
@@ -279,12 +280,19 @@ export const FeedPlayer = memo(function FeedPlayer({
         audioManager.notifyPlaying(id);
       }
     },
-    [mute, unmute, id],
+    [mute, unmute, id]
   );
 
   useEffect(() => {
     if (!isActive && isAdFilled) {
       setIsAdFilled(false);
+      updateAdInfo(false, {
+        adId: null,
+        url: null,
+        title: null,
+        totalAds: 0,
+        currentAdIndex: 0,
+      });
     }
   }, [isActive, isAdFilled]);
 
@@ -303,7 +311,7 @@ export const FeedPlayer = memo(function FeedPlayer({
         videoId,
       });
     },
-    [baseContextManager],
+    [baseContextManager]
   );
 
   const handleEnded = useCallback(
@@ -317,7 +325,7 @@ export const FeedPlayer = memo(function FeedPlayer({
         video_view_length: target?.currentTime,
       });
     },
-    [onEnded, stateHandleEnded, track, EventName, analyticsEventData],
+    [onEnded, stateHandleEnded, track, EventName, analyticsEventData]
   );
 
   const handlePlayerLoad = useCallback(
@@ -328,7 +336,7 @@ export const FeedPlayer = memo(function FeedPlayer({
       }
       setPlayingState("READY");
     },
-    [feedPlayerShouldPlay, id, baseContextManager, videoId],
+    [feedPlayerShouldPlay, id, baseContextManager, videoId]
   );
 
   const handleVideoFirstQuartile = useCallback(
@@ -339,7 +347,7 @@ export const FeedPlayer = memo(function FeedPlayer({
         video_view_length: currentTime,
       });
     },
-    [track, EventName, analyticsEventData],
+    [track, EventName, analyticsEventData]
   );
 
   const handleVideoWatched = useCallback(
@@ -350,7 +358,7 @@ export const FeedPlayer = memo(function FeedPlayer({
         video_view_length: currentTime,
       });
     },
-    [track, EventName, analyticsEventData],
+    [track, EventName, analyticsEventData]
   );
 
   const handleVideoMidpoint = useCallback(
@@ -361,7 +369,7 @@ export const FeedPlayer = memo(function FeedPlayer({
         video_view_length: currentTime,
       });
     },
-    [track, EventName, analyticsEventData],
+    [track, EventName, analyticsEventData]
   );
 
   const handleVideoThirdQuartile = useCallback(
@@ -372,7 +380,7 @@ export const FeedPlayer = memo(function FeedPlayer({
         video_view_length: currentTime,
       });
     },
-    [track, EventName, analyticsEventData],
+    [track, EventName, analyticsEventData]
   );
 
   const handleOpenPlayerReady = useCallback(
@@ -380,7 +388,7 @@ export const FeedPlayer = memo(function FeedPlayer({
       onOpenPlayerReady?.(player);
       setPlayerRef(player);
     },
-    [onOpenPlayerReady, setPlayerRef],
+    [onOpenPlayerReady, setPlayerRef]
   );
 
   const handleOnPlay = useCallback(
@@ -389,7 +397,7 @@ export const FeedPlayer = memo(function FeedPlayer({
       setPlayingState("PLAYING");
       baseContextManager.setVideoWatched({ isWatched: false, videoId });
     },
-    [onPlay, setPlayingState, baseContextManager, videoId],
+    [onPlay, setPlayingState, baseContextManager, videoId]
   );
 
   const handleOnPause = useCallback(
@@ -397,7 +405,7 @@ export const FeedPlayer = memo(function FeedPlayer({
       onPause?.(event);
       setPlayingState("PAUSED");
     },
-    [onPause, setPlayingState],
+    [onPause, setPlayingState]
   );
   const handleVideoStart = useCallback(
     (duration: number, currentTime: number, latency: number) => {
@@ -408,7 +416,7 @@ export const FeedPlayer = memo(function FeedPlayer({
         latency: latency,
       });
     },
-    [track, EventName.VIDEO_STARTED, analyticsEventData],
+    [track, EventName.VIDEO_STARTED, analyticsEventData]
   );
 
   const buildAdEventData = useCallback(
@@ -424,7 +432,7 @@ export const FeedPlayer = memo(function FeedPlayer({
       creative_id: event?.creativeId,
       media_type: event?.mediaType,
     }),
-    [adsPlatform],
+    [adsPlatform]
   );
 
   const handleAdStarted = useCallback(
@@ -446,14 +454,7 @@ export const FeedPlayer = memo(function FeedPlayer({
       // Handle ad started event if needed
       updateAdInfo(true, event);
     },
-    [
-      updateAdInfo,
-      track,
-      adAnalyticsData,
-      onAdFilled,
-      buildAdEventData,
-      videoId,
-    ],
+    [updateAdInfo, track, adAnalyticsData, onAdFilled, buildAdEventData, videoId]
   );
 
   const handleAdCompleted = useCallback(
@@ -466,7 +467,7 @@ export const FeedPlayer = memo(function FeedPlayer({
       // Handle ad ended event if needed
       updateAdInfo(false, event);
     },
-    [updateAdInfo, track, adAnalyticsData, buildAdEventData, onAdPlaybackEnd],
+    [updateAdInfo, track, adAnalyticsData, buildAdEventData, onAdPlaybackEnd]
   );
 
   const handleAdSkipped = useCallback(
@@ -480,7 +481,7 @@ export const FeedPlayer = memo(function FeedPlayer({
         video_id: videoId,
       });
     },
-    [updateAdInfo, track, adAnalyticsData, buildAdEventData, videoId],
+    [updateAdInfo, track, adAnalyticsData, buildAdEventData, videoId]
   );
 
   const handleAdError = useCallback(
@@ -489,7 +490,7 @@ export const FeedPlayer = memo(function FeedPlayer({
       // Update ad info to reflect error state
       updateAdInfo(false, error);
     },
-    [updateAdInfo],
+    [updateAdInfo]
   );
 
   const handleAdClicked = useCallback(
@@ -500,7 +501,7 @@ export const FeedPlayer = memo(function FeedPlayer({
         ...buildAdEventData(event),
       });
     },
-    [track, adAnalyticsData, buildAdEventData],
+    [track, adAnalyticsData, buildAdEventData]
   );
 
   // Handle video load start - set playing state to LOADING
@@ -520,7 +521,7 @@ export const FeedPlayer = memo(function FeedPlayer({
         ...buildAdEventData(event),
       });
     },
-    [track, adAnalyticsData, buildAdEventData],
+    [track, adAnalyticsData, buildAdEventData]
   );
 
   const handleOnAdRequested = useCallback(() => {
@@ -531,7 +532,7 @@ export const FeedPlayer = memo(function FeedPlayer({
     (_error: any) => {
       track(EventName.AD_RENDER_FAILED, { ...adAnalyticsData });
     },
-    [track, adAnalyticsData],
+    [track, adAnalyticsData]
   );
 
   const handleOnAdRequestFailed = useCallback(
@@ -540,7 +541,7 @@ export const FeedPlayer = memo(function FeedPlayer({
       // We could track ad request failures here with a custom event when needed
       track(EventName.AD_REQUEST_FAILED, { ...adAnalyticsData });
     },
-    [track, adAnalyticsData],
+    [track, adAnalyticsData]
   );
 
   const handleOnAdFirstQuartile = useCallback(
@@ -550,7 +551,7 @@ export const FeedPlayer = memo(function FeedPlayer({
         ...buildAdEventData(event),
       });
     },
-    [track, adAnalyticsData, buildAdEventData],
+    [track, adAnalyticsData, buildAdEventData]
   );
 
   const handleAdImpression = useCallback(
@@ -560,7 +561,7 @@ export const FeedPlayer = memo(function FeedPlayer({
         ...buildAdEventData(event),
       });
     },
-    [track, adAnalyticsData, buildAdEventData],
+    [track, adAnalyticsData, buildAdEventData]
   );
 
   const handleAdRendered = useCallback(
@@ -571,12 +572,64 @@ export const FeedPlayer = memo(function FeedPlayer({
         video_id: videoId,
       });
     },
-    [track, adAnalyticsData, buildAdEventData, videoId],
+    [track, adAnalyticsData, buildAdEventData, videoId]
   );
 
   const handleAdResponseReceived = useCallback(() => {
     track(EventName.AD_RESPONSE_RECEIVED, { ...adAnalyticsData });
   }, [track, adAnalyticsData]);
+
+  const handleGenAdFilled = useCallback(
+    (provider: string) => {
+      setIsAdFilled(true);
+      onAdStateChange?.(true);
+      onAdFilled?.(provider);
+      updateAdInfo(true, {
+        adId: provider,
+        url: null,
+        title: null,
+        totalAds: 1,
+        currentAdIndex: 1,
+      });
+    },
+    [onAdStateChange, onAdFilled, updateAdInfo]
+  );
+
+  const handleGenAdFillFailed = useCallback(() => {
+    setIsAdFilled(false);
+    setWaterfallFailed(true);
+    onAdStateChange?.(false);
+    updateAdInfo(false, {
+      adId: null,
+      url: null,
+      title: null,
+      totalAds: 0,
+      currentAdIndex: 0,
+    });
+  }, [onAdStateChange, updateAdInfo]);
+
+  const handleGenAdCompleted = useCallback(() => {
+    setIsAdFilled(false);
+    updateAdInfo(false, {
+      adId: null,
+      url: null,
+      title: null,
+      totalAds: 0,
+      currentAdIndex: 0,
+    });
+    onAdPlaybackEnd?.();
+  }, [updateAdInfo, onAdPlaybackEnd]);
+
+  const handleGenAdSystemMuteChange = useCallback(
+    (isMuted: boolean) => {
+      if (isMuted) {
+        mute(false);
+      } else {
+        unmute(false);
+      }
+    },
+    [mute, unmute]
+  );
 
   useEffect(() => {
     const videoElement = playerRef.current;
@@ -586,24 +639,15 @@ export const FeedPlayer = memo(function FeedPlayer({
       pauseBySystem();
     };
 
-    videoElement.addEventListener(
-      "videoPausedByBrowserRestriction",
-      handleBrowserRestrictionPause,
-    );
+    videoElement.addEventListener("videoPausedByBrowserRestriction", handleBrowserRestrictionPause);
 
     return () => {
-      videoElement.removeEventListener(
-        "videoPausedByBrowserRestriction",
-        handleBrowserRestrictionPause,
-      );
+      videoElement.removeEventListener("videoPausedByBrowserRestriction", handleBrowserRestrictionPause);
     };
   }, [pauseBySystem]);
 
   // If the videoid is registered already start it with that start tiime.
-  const startTime = useMemo(
-    () => baseContextManager.getTimeInfo(videoId).currentTime,
-    [baseContextManager],
-  );
+  const startTime = useMemo(() => baseContextManager.getTimeInfo(videoId).currentTime, [baseContextManager]);
 
   // This onClick handler prevents the expanded view from opening when ads are present.
   return (
@@ -618,53 +662,10 @@ export const FeedPlayer = memo(function FeedPlayer({
             moveToNextVideo={moveToNextVideo}
             videoId={videoId}
             videoType={videoType}
-            onAdInit={() => {
-              setIsAdFilled(true);
-              onAdStateChange?.(true);
-              onAdFilled?.("");
-              updateAdInfo(true, {
-                adId: "",
-                url: null,
-                title: null,
-                totalAds: 1,
-                currentAdIndex: 1,
-              });
-            }}
-            onAdFilled={(provider) => {
-              setIsAdFilled(true);
-              onAdStateChange?.(true);
-              onAdFilled?.(provider);
-              updateAdInfo(true, {
-                adId: provider,
-                url: null,
-                title: null,
-                totalAds: 1,
-                currentAdIndex: 1,
-              });
-            }}
-            onAdFillFailed={() => {
-              setIsAdFilled(false);
-              setWaterfallFailed(true);
-              onAdStateChange?.(false);
-              updateAdInfo(false, {
-                adId: null,
-                url: null,
-                title: null,
-                totalAds: 0,
-                currentAdIndex: 0,
-              });
-            }}
-            onAdCompleted={() => {
-              setIsAdFilled(false);
-              onAdPlaybackEnd?.();
-            }}
-            onSystemMuteChange={(isMuted) => {
-              if (isMuted) {
-                mute(false);
-              } else {
-                unmute(false);
-              }
-            }}
+            onAdFilled={handleGenAdFilled}
+            onAdFillFailed={handleGenAdFillFailed}
+            onAdCompleted={handleGenAdCompleted}
+            onSystemMuteChange={handleGenAdSystemMuteChange}
           />
         </Suspense>
       )}
@@ -683,10 +684,8 @@ export const FeedPlayer = memo(function FeedPlayer({
           enableLazyLoading={useWindowSwiperMode}
           className={cn(
             "gencl:m-auto",
-            resolvedAdConfig &&
-              isAdFilled &&
-              "gencl:opacity-0 gencl:pointer-events-none",
-            className,
+            resolvedAdConfig && isAdFilled && "gencl:opacity-0 gencl:pointer-events-none",
+            className
           )}
           volume={volume}
           play={feedPlayerShouldPlay}

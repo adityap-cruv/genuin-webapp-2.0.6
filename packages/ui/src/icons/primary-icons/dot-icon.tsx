@@ -1,7 +1,8 @@
+import { cva, type VariantProps } from "class-variance-authority";
+
 import { cn } from "@genuin/ui/lib/utils";
 
 import type { SVGIconsProps } from "../type";
-import { cva, type VariantProps } from "class-variance-authority";
 
 const iconVariants = cva("gencl:w-1 gencl:h-1", {
   variants: {
@@ -16,11 +17,7 @@ const iconVariants = cva("gencl:w-1 gencl:h-1", {
   },
 });
 
-export function DotIcon({
-  className,
-  variant,
-  ...restProps
-}: SVGIconsProps & VariantProps<typeof iconVariants>) {
+export function DotIcon({ className, variant, ...restProps }: SVGIconsProps & VariantProps<typeof iconVariants>) {
   return (
     <svg
       width="3"
@@ -29,8 +26,7 @@ export function DotIcon({
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={cn(className, iconVariants({ variant }))}
-      {...restProps}
-    >
+      {...restProps}>
       <rect y="0.5" width="3" height="3" rx="1.5" />
     </svg>
   );

@@ -1,9 +1,10 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
+import type { AxiosInstance } from "axios";
+import z from "zod";
+
 import { useAxiosInstance } from "@genuin/components/context/axios";
 import { getQueryKeyForInterests } from "@genuin/components/react-query/keys/authentication";
 import { API_PATHS } from "@genuin/components/react-query/paths";
-import z from "zod";
-import type { AxiosInstance } from "axios";
 
 const TopicSchema = z.object({
   topic_id: z.string(),
@@ -24,7 +25,7 @@ export type Category = z.infer<typeof CategorySchema>;
 function validateCategoryListResp(data: any) {
   try {
     return CategorySchema.parse(data);
-  } catch (e) {
+  } catch (_e) {
     throw new Error("Something went wrong validation in category list api!!");
   }
 }
@@ -50,7 +51,7 @@ export function useGetCategoriesQuery() {
   const axiosInstance = useAxiosInstance();
 
   return useQuery({
-    queryFn: (context) => fetchCategoryList(axiosInstance),
+    queryFn: (_context) => fetchCategoryList(axiosInstance),
     queryKey: getQueryKeyForInterests(),
   });
 }
@@ -58,10 +59,10 @@ export function useGetCategoriesQuery() {
 async function addTopics(topics: string[], axiosInstance: AxiosInstance) {
   return await axiosInstance
     .post(API_PATHS.AUTH_ADD_TOPICS, { topicIds: topics })
-    .then((res) => {
+    .then((_res) => {
       return true;
     })
-    .catch((e) => {
+    .catch((_e) => {
       // eslint-disable-next-line no-console
       console.log("Something went wrong posting topics");
       throw new Error("Something went wrong posting topics.");

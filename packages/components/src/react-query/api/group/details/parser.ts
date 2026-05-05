@@ -1,10 +1,9 @@
 import { mapGroupJoinStatus } from "@genuin/components/lib/utils";
+
 import type { ResponseGroupDetailsType } from "./response.types";
 import type { GroupDetailsType } from "./types";
 
-export function parseGroupDetails(
-  data: ResponseGroupDetailsType
-): GroupDetailsType {
+export function parseGroupDetails(data: ResponseGroupDetailsType): GroupDetailsType {
   return {
     id: data.chat_id,
     name: data.group.group_name,
@@ -41,10 +40,7 @@ export function parseGroupDetails(
       userName: data.owner.username,
       phone: data.owner.phone,
       isAvatar: data.owner.is_avatar,
-      profileImage:
-        data.owner.profile_image_s ??
-        data.owner.profile_image_m ??
-        data.owner.profile_image,
+      profileImage: data.owner.profile_image_s ?? data.owner.profile_image_m ?? data.owner.profile_image,
       profileImageM: data.owner.profile_image_m,
       brand: data.owner.brand
         ? {

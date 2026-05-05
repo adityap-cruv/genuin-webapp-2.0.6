@@ -1,4 +1,5 @@
-import { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react";
+
 import { AddLinks } from "./add-linkout-form";
 
 type AddLinksStories = StoryObj<typeof AddLinks>;

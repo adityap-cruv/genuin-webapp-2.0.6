@@ -1,5 +1,6 @@
-import { GroupUserStatusSchema } from "@genuin/components/types/roles";
 import { z } from "zod";
+
+import { GroupUserStatusSchema } from "@genuin/components/types/roles";
 
 const BrandUserSchema = z
   .object({
@@ -32,7 +33,7 @@ const Brand = z
     favicon: z.string(),
     brandSystemUserId: z.string(),
     slug: z.string(),
-    handle: z.string().optional()
+    handle: z.string().optional(),
   })
   .nullish();
 

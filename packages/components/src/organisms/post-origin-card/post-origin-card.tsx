@@ -1,32 +1,23 @@
-
-import { PostOriginCardProps } from "./types";
-import { buildPageUrl } from "@genuin/components/lib/utils/pages";
-import { Link } from "@genuin/components/molecules/link";
-import { CommunityPrivacyInfo } from "@genuin/components/molecules/community-privacy-info";
-import { GroupPrivacyInfo } from "@genuin/components/molecules/group-privacy-info";
 import { Avatar } from "@genuin/ui/components/avatar";
 import { DecorativeList } from "@genuin/ui/components/decorative-list";
 import { Skeleton } from "@genuin/ui/components/skeleton";
+
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { CommunityPrivacyInfo } from "@genuin/components/molecules/community-privacy-info";
+import { GroupPrivacyInfo } from "@genuin/components/molecules/group-privacy-info";
+import { Link } from "@genuin/components/molecules/link";
+
+import type { PostOriginCardProps } from "./types";
 
 export function PostOriginCard({ community, group }: PostOriginCardProps) {
   return (
     <div className="gencl:w-full">
       <div className="gencl:flex gencl:gap-x-3">
-        <Avatar
-          alt={community?.name ?? ""}
-          imageUrl={community?.profileImage ?? ""}
-          isAvatar={false}
-          size="md"
-        />
+        <Avatar alt={community?.name ?? ""} imageUrl={community?.profileImage ?? ""} isAvatar={false} size="md" />
         <div>
           <span className="gencl:space-y-1">
-            <Link
-              href={buildPageUrl({ type: "community", slug: community?.slug })}
-            >
-              <p
-                title={community?.name ?? ""}
-                className="gencl:line-clamp-1 gencl:text-body-1-semi-bold gencl:mb-1"
-              >
+            <Link href={buildPageUrl({ type: "community", slug: community?.slug })}>
+              <p title={community?.name ?? ""} className="gencl:line-clamp-1 gencl:text-body-1-semi-bold gencl:mb-1">
                 {community?.name}
               </p>
             </Link>

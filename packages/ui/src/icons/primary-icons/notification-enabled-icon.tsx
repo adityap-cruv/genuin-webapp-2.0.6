@@ -1,5 +1,6 @@
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
+
 import type { SVGIconsProps } from "../type";
 
 const variants = cva("gencl:shrink-0", {
@@ -26,9 +27,8 @@ export function NotificationEnabledIcon({
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={variants({ className, ...props })}
-      {...props}
-    >
+      className={variants({ className, variant })}
+      {...props}>
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -45,11 +45,7 @@ export function NotificationEnabledIcon({
         d="M10.6056 18.5C10.6056 19.6046 11.5124 20.5 12.6309 20.5C13.7495 20.5 14.6562 19.6046 14.6562 18.5"
         strokeWidth="1.5"
       />
-      <path
-        d="M3.51235 10C3.41749 8.6665 4.08266 5.4 7.50391 3"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      <path d="M3.51235 10C3.41749 8.6665 4.08266 5.4 7.50391 3" strokeLinecap="round" strokeLinejoin="round" />
       <path
         d="M17.5391 3.05762C17.5391 3.05762 18.5132 3.75365 19.046 4.29877C19.4343 4.6961 19.9574 5.39096 19.9574 5.39096C19.9574 5.39096 20.4744 6.13384 20.7364 6.64864C21.0115 7.1889 21.1576 7.50348 21.3165 8.08835C21.4489 8.5754 21.5025 8.85878 21.532 9.36258C21.5479 9.63355 21.532 10.0576 21.532 10.0576"
         strokeLinecap="round"

@@ -1,4 +1,5 @@
 import type { ComponentProps } from "react";
+
 import type { MemberItemVariant } from "./member-item.cva";
 
 export type MemberDataType = {

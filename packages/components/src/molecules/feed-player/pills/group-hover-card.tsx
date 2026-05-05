@@ -1,24 +1,20 @@
 import type { ComponentProps } from "react";
 
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { GroupSubscriptionButton } from "@genuin/components/molecules/group-subscription-button";
 import { JoinGroupButton } from "@genuin/components/molecules/join-group-button";
 import { PrivacyInfo } from "@genuin/components/molecules/privacy-info";
 import { ShareButton } from "@genuin/components/molecules/share-button";
-import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
-import { GenericDetailsMetadata } from "@genuin/components/organisms/generic-details/generic-details-metadata";
 import { Tag } from "@genuin/components/molecules/tag";
-import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { GenericDetailsMetadata } from "@genuin/components/organisms/generic-details/generic-details-metadata";
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 type GroupHoverCardProps = {
   groupDetails: PostDetailsType["group"];
   communityDetails: PostDetailsType["community"];
   videoId?: string;
-  onGroupJoinStatusChange?: ComponentProps<
-    typeof JoinGroupButton
-  >["onGroupJoinStatusChange"];
-  onGroupSubscriptionChange?: ComponentProps<
-    typeof GroupSubscriptionButton
-  >["onSubscriptionChange"];
+  onGroupJoinStatusChange?: ComponentProps<typeof JoinGroupButton>["onGroupJoinStatusChange"];
+  onGroupSubscriptionChange?: ComponentProps<typeof GroupSubscriptionButton>["onSubscriptionChange"];
   isAuthenticated?: boolean;
 } & ComponentProps<"div">;
 
@@ -31,6 +27,8 @@ export function GroupHoverCard({
   onGroupSubscriptionChange,
   ...props
 }: GroupHoverCardProps) {
+  if (!groupDetails) return null;
+
   const { name, isPrivate } = groupDetails;
 
   const ldDescription = `${
@@ -40,9 +38,7 @@ export function GroupHoverCard({
   return (
     <div className="gencl:space-y-2" {...props}>
       <div className="gencl:space-y-1">
-        <p className="gencl:text-body-1-semi-bold gencl:line-clamp-2 gencl:truncate">
-          {name}
-        </p>
+        <p className="gencl:text-body-1-semi-bold gencl:line-clamp-2 gencl:truncate">{name}</p>
         <GenericDetailsMetadata
           className="gencl:flex gencl:items-center"
           privacyInfo={{

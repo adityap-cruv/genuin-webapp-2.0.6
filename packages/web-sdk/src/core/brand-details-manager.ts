@@ -1,36 +1,37 @@
-import { apiService } from './api'
-import { BrandDetailsConfigType } from '@genuin/components/types/brand'
+import type { BrandDetailsConfigType } from "@genuin/components/types/brand";
+
+import { apiService } from "./api";
 
 export class BrandDetailsManager {
-  private static instance: BrandDetailsManager
-  private brandDetailsList: Record<string, BrandDetailsConfigType> = {}
+  private static instance: BrandDetailsManager;
+  private brandDetailsList: Record<string, BrandDetailsConfigType> = {};
 
   private constructor() {}
 
   public static getInstance(): BrandDetailsManager {
     if (!BrandDetailsManager.instance) {
-      BrandDetailsManager.instance = new BrandDetailsManager()
+      BrandDetailsManager.instance = new BrandDetailsManager();
     }
-    return BrandDetailsManager.instance
+    return BrandDetailsManager.instance;
   }
 
   public async getBrandDetails(apiKey?: string) {
     if (!apiKey) {
-      throw new Error('API key is required to fetch brand details.')
+      throw new Error("API key is required to fetch brand details.");
     }
     if (this.brandDetailsList[apiKey]) {
-      return this.brandDetailsList[apiKey]
+      return this.brandDetailsList[apiKey];
     }
 
-    const brandDetails = await apiService.fetchBrandDetails(apiKey)
+    const brandDetails = await apiService.fetchBrandDetails(apiKey);
 
-    this.brandDetailsList[apiKey] = brandDetails
+    this.brandDetailsList[apiKey] = brandDetails;
 
-    return brandDetails
+    return brandDetails;
   }
 }
 
 /**
  * Singleton instance of BrandDetails.
  */
-export const brandDetailsManager = BrandDetailsManager.getInstance()
+export const brandDetailsManager = BrandDetailsManager.getInstance();

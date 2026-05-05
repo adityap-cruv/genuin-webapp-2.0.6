@@ -1,27 +1,16 @@
+import { Form, FormControl, FormField, FormItem } from "@genuin/ui/components/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@genuin/ui/components/select";
+import { Toast } from "@genuin/ui/components/toaster";
+import { cn } from "@genuin/ui/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { type ComponentProps, useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-} from "@genuin/ui/components/form";
 
-import { useUpdateUserMutation } from "@genuin/components/react-query/api/authentication";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuthContext } from "@genuin/components/context/auth";
-import { cn } from "@genuin/ui/lib/utils";
+import { useUpdateUserMutation } from "@genuin/components/react-query/api/authentication";
 
 import { useAuthenticationModalContext } from "../../context";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@genuin/ui/components/select";
-import { Toast } from "@genuin/ui/components/toaster";
 import { SubmitButton } from "../../submit-button";
 
 const MONTHS = [
@@ -49,10 +38,7 @@ const formSchema = z.object({
   year: z.string(),
 });
 
-export function EditBirthDate({
-  className,
-  ...restProps
-}: ComponentProps<"div">) {
+export function EditBirthDate({ className, ...restProps }: ComponentProps<"div">) {
   const { user, updateUser } = useAuthContext();
   const { closeModal } = useAuthenticationModalContext();
   function parseBirthday() {
@@ -109,7 +95,7 @@ export function EditBirthDate({
     if (!selectedMonth) return [];
     // Use selectedYear if available, otherwise minYear (1940)
     const yearForDays = selectedYear || minYear;
-    let daysInMonth = getDaysInMonth(yearForDays, selectedMonth);
+    const daysInMonth = getDaysInMonth(yearForDays, selectedMonth);
     let maxDay = daysInMonth;
     if (selectedYear === maxYear && selectedMonth === currentMonth) {
       maxDay = currentDay;
@@ -124,25 +110,23 @@ export function EditBirthDate({
     return selected <= minAllowed;
   };
 
-  const { mutate: updateUserDetails, isPending: isPendingUpdateUser } =
-    useUpdateUserMutation({
-      onSuccess: ({ status }) => {
-        if (status) {
-          const { day, month, year } = form.getValues();
-          updateUser({ ...user, birth: `${day}/${month}/${year}` });
-          Toast.Success({
-            message: "Your birth date has been updated",
-          });
-          closeModal();
-        }
-      },
-      onError: () => {
-        form.setError("root", {
-          message:
-            "Something went wrong while updating birth date. Please try again!",
+  const { mutate: updateUserDetails, isPending: isPendingUpdateUser } = useUpdateUserMutation({
+    onSuccess: ({ status }) => {
+      if (status) {
+        const { day, month, year } = form.getValues();
+        updateUser({ ...user, birth: `${day}/${month}/${year}` });
+        Toast.Success({
+          message: "Your birth date has been updated",
         });
-      },
-    });
+        closeModal();
+      }
+    },
+    onError: () => {
+      form.setError("root", {
+        message: "Something went wrong while updating birth date. Please try again!",
+      });
+    },
+  });
 
   const onSubmit = useCallback(
     (data: z.infer<typeof formSchema>) => {
@@ -159,18 +143,14 @@ export function EditBirthDate({
       }
       updateUserDetails({ birthday: `${day}/${month}/${year}` });
     },
-    [currentYear, currentMonth, currentDay],
+    [currentYear, currentMonth, currentDay]
   );
 
   return (
     <div className={cn("gencl:space-y-6", className)} {...restProps}>
       <div className="gencl:space-y-2">
-        <h3 className="gencl:text-center gencl:text-headline-2-semi-bold">
-          Edit Birth date
-        </h3>
-        <p className="gencl:text-center gencl:text-body-1-medium gencl:text-secondary-600">
-          Update your birth date
-        </p>
+        <h3 className="gencl:text-center gencl:text-headline-2-semi-bold">Edit Birth date</h3>
+        <p className="gencl:text-center gencl:text-body-1-medium gencl:text-secondary-600">Update your birth date</p>
       </div>
       <p className="gencl:text-body-1-medium gencl:mb-2">Birth date</p>
       <Form {...form}>
@@ -188,11 +168,7 @@ export function EditBirthDate({
                       </SelectTrigger>
                       <SelectContent>
                         {monthOptions.map((m) => (
-                          <SelectItem
-                            key={m.value}
-                            value={m.value}
-                            showTickMark={false}
-                          >
+                          <SelectItem key={m.value} value={m.value} showTickMark={false}>
                             {m.label}
                           </SelectItem>
                         ))}
@@ -214,11 +190,7 @@ export function EditBirthDate({
                       </SelectTrigger>
                       <SelectContent>
                         {dayOptions.map((d) => (
-                          <SelectItem
-                            key={d.toString()}
-                            value={d.toString()}
-                            showTickMark={false}
-                          >
+                          <SelectItem key={d.toString()} value={d.toString()} showTickMark={false}>
                             {d}
                           </SelectItem>
                         ))}
@@ -240,11 +212,7 @@ export function EditBirthDate({
                       </SelectTrigger>
                       <SelectContent>
                         {yearOptions.map((y) => (
-                          <SelectItem
-                            key={y}
-                            value={y.toString()}
-                            showTickMark={false}
-                          >
+                          <SelectItem key={y} value={y.toString()} showTickMark={false}>
                             {y}
                           </SelectItem>
                         ))}

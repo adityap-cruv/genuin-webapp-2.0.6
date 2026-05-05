@@ -1,10 +1,12 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useAxiosInstance } from "@genuin/components/context/axios";
-import { getQueryKeyForksCbStatus } from "@genuin/components/react-query/keys/become-creator";
-import { API_PATHS } from "../../paths";
-import { queryClient } from "@genuin/components/react-query/client";
-import { ksCbRequestStatusType } from "@genuin/components/types/roles";
 import type { AxiosInstance } from "axios";
+
+import { useAxiosInstance } from "@genuin/components/context/axios";
+import { queryClient } from "@genuin/components/react-query/client";
+import { getQueryKeyForksCbStatus } from "@genuin/components/react-query/keys/become-creator";
+import type { ksCbRequestStatusType } from "@genuin/components/types/roles";
+
+import { API_PATHS } from "../../paths";
 
 /**
  * Returns the KS CB request status. If there is an error, it will return status 4.
@@ -23,14 +25,12 @@ export async function fetchKsCbRequestStatus(axiosInstance: AxiosInstance): Prom
     return {
       status: parseBecomeCreatorStatus(res.data.data.cb_request_status) ?? "Pending",
     };
-  } catch (e) {
+  } catch (_e) {
     throw new Error("Something went wrong!");
   }
 }
 
-export function parseBecomeCreatorStatus(
-  status: number | undefined,
-): ksCbRequestStatusType | undefined {
+export function parseBecomeCreatorStatus(status: number | undefined): ksCbRequestStatusType | undefined {
   if (status === undefined || status === null) return undefined;
   return status === 1 ? "Pending" : status === 2 ? "Requested" : "Accepted";
 }
@@ -40,21 +40,19 @@ export function useKsCbStatus({ id }: { id: string }) {
 
   return useQuery({
     queryKey: getQueryKeyForksCbStatus(id),
-    queryFn: (context) => fetchKsCbRequestStatus(axiosInstance),
+    queryFn: (_context) => fetchKsCbRequestStatus(axiosInstance),
     // staleTime: 1000 * 60 * 5,
     retry: 0,
   });
 }
 
-async function postCbRequest(
-  axiosInstance: AxiosInstance,
-): Promise<{ isRequestSent: boolean; data: any }> {
+async function postCbRequest(axiosInstance: AxiosInstance): Promise<{ isRequestSent: boolean; data: any }> {
   try {
     const res = await axiosInstance.post(API_PATHS.BECOME_CREATOR_REQUEST, {
       source: "app_web",
     });
     return { isRequestSent: res.data.code === 200, data: res.data.data };
-  } catch (e: any) {
+  } catch (_e) {
     throw new Error("Something went wrong");
   }
 }
@@ -76,8 +74,7 @@ export function useCbRequestMutation({
 }
 
 export function setQueryDataBecomeCreator(id: string) {
-  queryClient.setQueryData<{ status: ksCbRequestStatusType }>(
-    getQueryKeyForksCbStatus(id),
-    () => ({ status: "Requested" }),
-  );
+  queryClient.setQueryData<{ status: ksCbRequestStatusType }>(getQueryKeyForksCbStatus(id), () => ({
+    status: "Requested",
+  }));
 }

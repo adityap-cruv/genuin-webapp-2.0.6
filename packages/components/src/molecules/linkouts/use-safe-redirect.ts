@@ -1,7 +1,10 @@
-import { useState } from "react";
 import { checkAndAppendHttps } from "@genuin/ui/lib/utils";
-import { getRedirectUrl } from "./utils";
+import { useState } from "react";
+
+import { useAxiosInstance } from "@genuin/components/context/axios";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
+
+import { getRedirectUrl } from "./utils";
 
 /**
  * The hook opens a blank window immediately on user click (preserving the user gesture context),
@@ -11,6 +14,7 @@ import { useDeviceDetection } from "@genuin/components/hooks/use-device-detectio
 export const useSafeRedirect = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { isIOS } = useDeviceDetection();
+  const axiosInstance = useAxiosInstance();
 
   const handleRedirect = async (url: string): Promise<void> => {
     setIsLoading(true);
@@ -22,7 +26,7 @@ export const useSafeRedirect = () => {
 
     try {
       const urlWithProtocol = checkAndAppendHttps(url);
-      const finalUrl = await getRedirectUrl(urlWithProtocol);
+      const finalUrl = await getRedirectUrl(urlWithProtocol, axiosInstance);
 
       // Update the location of the already-opened window
       if (newWindow) {

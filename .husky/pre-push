@@ -28,6 +28,18 @@ fi
 echo "✅ SDK .env file exists"
 
 echo ""
+echo "🔍 Running type checks..."
+pnpm typecheck
+TYPECHECK_STATUS=$?
+if [ $TYPECHECK_STATUS -ne 0 ]; then
+  echo ""
+  echo "❌ Type check failed!"
+  echo "❌ Push rejected. Please fix type errors and try again."
+  exit 1
+fi
+echo "✅ Type checks passed"
+
+echo ""
 echo "⚠️  Building production bundles for SDK and Web App..."
 echo "⏳ This may take a few minutes..."
 echo ""
@@ -47,7 +59,7 @@ echo ""
 
 # Build Web App Production
 echo "🌐 Building Web App (production)..."
-pnpm --filter=@genuin/webapp run build
+pnpm turbo build --filter=./apps/webapp --filter=!@genuin/web-sdk
 WEBAPP_STATUS=$?
 if [ $WEBAPP_STATUS -ne 0 ]; then
   echo ""

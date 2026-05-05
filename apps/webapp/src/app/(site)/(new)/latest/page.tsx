@@ -1,5 +1,6 @@
-import { Root } from './root'
 import { type Metadata } from 'next'
+
+import { Root } from './root'
 
 // type Props = {
 //   searchParams: {

@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 import type {
     AgentType,
     BrandAssetsJsonData,
@@ -8,7 +10,7 @@ import type {
     BrandPersonaData,
     GuidelineItem
 } from '@/types';
-import axios from 'axios';
+
 import type {
     CreateSessionV2Response,
     GetAgentIdResponse,

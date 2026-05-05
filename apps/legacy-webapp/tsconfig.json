@@ -13,24 +13,6 @@
       "react"
     ],
     "baseUrl": ".",
-    // "allowJs": true,
-    // "skipLibCheck": true,
-    // "strict": true,
-    // "noEmit": true,
-    // "esModuleInterop": true,
-    // "module": "NodeNext",
-    // "moduleResolution": "nodenext",
-    // "resolveJsonModule": true,
-    // "isolatedModules": true,
-    // "jsx": "preserve",
-    // "incremental": true,
-    // "noImplicitAny": true,
-    // "verbatimModuleSyntax": true,
-    // "plugins": [
-    //   {
-    //     "name": "next"
-    //   }
-    // ],
     "paths": {
       "@/*": [
         "./src/*"

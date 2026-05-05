@@ -1,59 +1,54 @@
-import {
-  ComponentProps,
-  useMemo,
-  useRef,
-  lazy,
-  Suspense,
-  type ReactNode,
-} from "react";
-import { Swiper } from "swiper/react";
-import { Swiper as SwiperType } from "swiper/types";
-import { getSlidesPerView, SWIPER_CONFIG } from "./utils";
-import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
-import "swiper/css";
 import { cn } from "@genuin/ui/lib/utils";
+import type { ComponentProps } from "react";
+import { useMemo, useRef, lazy, Suspense, type ReactNode } from "react";
+import { Swiper } from "swiper/react";
+import type { Swiper as SwiperType } from "swiper/types";
+
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
+
+import { SWIPER_CONFIG } from "./utils";
+
+import "swiper/css";
 
 // Lazy load NativeFeedScroll
 const NativeFeedScroll = lazy(() =>
-  import("../native-feed-scroll/index.js").then((m) => ({
+  import("@genuin/components/molecules/native-feed-scroll").then((m) => ({
     default: m.NativeFeedScroll,
-  })),
+  }))
 );
 
 // Lazy load Swiper with modules to defer loading until component renders
 const SwiperWithModules = lazy(async () => {
   const [swiperModules] = await Promise.all([import("swiper/modules")]);
+  const { Mousewheel, FreeMode, Keyboard, A11y, Virtual } = swiperModules;
 
-  // Return a wrapper component that has modules baked in
-  return {
-    default: ({
-      children,
-      freeMode,
-      virtualizeSwiper,
-      ...props
-    }: {
-      children: React.ReactNode;
-      freeMode?: boolean | object;
-      virtualizeSwiper?: boolean;
-      [key: string]: any;
-    }) => {
-      const { Mousewheel, FreeMode, Keyboard, A11y, Virtual } = swiperModules;
+  function SwiperBase({
+    children,
+    freeMode,
+    virtualizeSwiper,
+    ...props
+  }: {
+    children: React.ReactNode;
+    freeMode?: boolean | object;
+    virtualizeSwiper?: boolean;
+    [key: string]: unknown;
+  }) {
+    const modules = useMemo(() => {
+      const baseModules = [Mousewheel, Keyboard, A11y];
+      if (freeMode) baseModules.push(FreeMode);
+      if (virtualizeSwiper) baseModules.push(Virtual);
+      return baseModules;
+    }, [freeMode, virtualizeSwiper]);
 
-      const modules = useMemo(() => {
-        const baseModules = [Mousewheel, Keyboard, A11y];
-        if (freeMode) baseModules.push(FreeMode);
-        if (virtualizeSwiper) baseModules.push(Virtual);
-        return baseModules;
-      }, [freeMode, virtualizeSwiper]);
+    return (
+      <Swiper {...props} modules={modules} freeMode={freeMode}>
+        {children}
+      </Swiper>
+    );
+  }
 
-      return (
-        <Swiper {...props} modules={modules} freeMode={freeMode}>
-          {children}
-        </Swiper>
-      );
-    },
-  };
+  return { default: SwiperBase };
 });
 
 type EmbedSwiperProps = {
@@ -103,11 +98,7 @@ export function EmbedSwiper({
   const { isWindows } = useDeviceDetection();
   const swiperRef = useRef<SwiperType | null>(null);
   const {
-    embedSwiperConfigs: {
-      useWindowSwiperMode,
-      virtualizeSwiper,
-      allowGestureScroll,
-    },
+    embedSwiperConfigs: { useWindowSwiperMode, virtualizeSwiper, allowGestureScroll },
   } = useEmbedConfigs();
 
   // Use native scroll for feed mode
@@ -120,10 +111,7 @@ export function EmbedSwiper({
           slidesPerView={slidesPerView}
           spaceBetween={spaceBetweenVideos}
           slidesOffsetBefore={slidesOffsetBefore}
-          className={cn(
-            className,
-            !allowGestureScroll && "gencl:overflow-hidden",
-          )}
+          className={cn(className, !allowGestureScroll && "gencl:overflow-hidden")}
           customHeightFor={customHeightFor}
           onActiveIndexChange={(instance: unknown) => {
             // Controller instance is passed directly, no wrapper needed!
@@ -148,8 +136,7 @@ export function EmbedSwiper({
             onSwiper?.(swiperCompatibleInstance);
           }}
           keyboardEnabled={true}
-          ariaLabel="Video feed"
-        >
+          ariaLabel="Video feed">
           {children}
         </NativeFeedScroll>
       </Suspense>
@@ -160,16 +147,10 @@ export function EmbedSwiper({
   return (
     <Suspense
       fallback={
-        <div
-          className={cn(
-            "gencl:h-full gencl:w-full gencl:rounded-lg",
-            className,
-          )}
-        >
+        <div className={cn("gencl:h-full gencl:w-full gencl:rounded-lg", className)}>
           <div className="gencl:animate-pulse gencl:bg-gray-200 gencl:h-full gencl:w-full gencl:rounded-lg" />
         </div>
-      }
-    >
+      }>
       <SwiperWithModules
         direction={forFeed ? "vertical" : "horizontal"}
         slidesPerView={slidesPerView}
@@ -217,20 +198,16 @@ export function EmbedSwiper({
           enabled: allowGestureScroll,
           forceToAxis: true,
           releaseOnEdges: true,
-          thresholdDelta: isWindows
-            ? SWIPER_CONFIG.MOUSE_THRESHOLD.WINDOWS
-            : SWIPER_CONFIG.MOUSE_THRESHOLD.DEFAULT,
+          thresholdDelta: isWindows ? SWIPER_CONFIG.MOUSE_THRESHOLD.WINDOWS : SWIPER_CONFIG.MOUSE_THRESHOLD.DEFAULT,
           thresholdTime: SWIPER_CONFIG.THRESHOLD_TIME,
-          sensitivity: isWindows
-            ? SWIPER_CONFIG.MOUSE_SENSITIVITY.WINDOWS
-            : SWIPER_CONFIG.MOUSE_SENSITIVITY.DEFAULT,
+          sensitivity: isWindows ? SWIPER_CONFIG.MOUSE_SENSITIVITY.WINDOWS : SWIPER_CONFIG.MOUSE_SENSITIVITY.DEFAULT,
         }}
         // role="region"
         // aria-label={forFeed ? "Video feed carousel" : "Video carousel"}
         className={cn(
           "gencl:h-full gencl:w-full gencl:rounded-lg",
           !allowGestureScroll && "swiper-no-swiping",
-          className,
+          className
         )}
         slidesOffsetBefore={slidesOffsetBefore}
         onInit={(swiper: SwiperType) => {
@@ -238,8 +215,7 @@ export function EmbedSwiper({
           swiperRef.current = swiper;
         }}
         onSwiper={onSwiper}
-        {...restProps}
-      >
+        {...restProps}>
         {children}
       </SwiperWithModules>
     </Suspense>

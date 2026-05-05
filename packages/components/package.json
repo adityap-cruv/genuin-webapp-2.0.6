@@ -1,6 +1,6 @@
 {
   "name": "@genuin/components",
-  "sideEffects": false,
+  "sideEffects": ["**/*.css", "dist/index.css"],
   "private": true,
   "description": "Genuin's components",
   "authors": "Genuin Inc.",
@@ -9,7 +9,10 @@
     ".": "./src/index.ts",
     "./*": "./src/*",
     "./globals.css": "./src/globals.css",
-    "./styles": "./dist/index.css",
+    "./styles": {
+      "types": "./dist/index.css.d.ts",
+      "default": "./dist/index.css"
+    },
     "./assets/*": "./src/assets/*",
     "./lib/*": "./src/lib/*"
   },
@@ -35,7 +38,7 @@
     "crypto-es": "^2.1.0",
     "dompurify": "^3.2.5",
     "motion": "^12.18.1",
-    "next": "15.2.0",
+    "next": "15.3.9",
     "openplayerjs": "^2.14.10",
     "react-drag-drop-files": "^3.0.1",
     "react-phone-number-input": "^3.4.12",
@@ -49,6 +52,9 @@
     "zod": "^3.25.56"
   },
   "devDependencies": {
+    "@aws-sdk/client-s3": "^3.0.0",
+    "@inquirer/prompts": "^7.0.0",
+    "@types/cli-progress": "^3.11.6",
     "@chromatic-com/storybook": "^4.0.0",
     "@genuin/eslint-config": "workspace:*",
     "@genuin/tailwind-config": "workspace:*",
@@ -64,13 +70,33 @@
     "@types/react-dom": "^19.1.5",
     "eslint-plugin-storybook": "9.0.0",
     "storybook": "^9.0.0",
-    "vite-tsconfig-paths": "^5.1.4"
+    "typescript": "^5.8.3",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.2.4",
+    "chalk": "^5.0.0",
+    "cli-progress": "^3.12.0",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.0.0",
+    "env-cmd": "^10.1.0",
+    "tsx": "^4.0.0"
   },
   "scripts": {
+    "build": "tsc --build",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "typecheck": "tsc --build",
     "storybook": "env-cmd -f ../../.env storybook dev -p 6005",
     "build-storybook": "storybook build",
     "preinstall": "pnpm run build:styles",
     "build:styles": "npx @tailwindcss/cli -i ./src/globals.css -o ./dist/index.css",
-    "dev:styles": "npx @tailwindcss/cli -i ./src/globals.css -o ./dist/index.css --watch"
+    "dev:styles": "npx @tailwindcss/cli -i ./src/globals.css -o ./dist/index.css --watch",
+    "lint-staged": "lint-staged",
+    "publish:storybook:oracle:qa": "env-cmd -f ./.env.qa cross-env NODE_ENV=qa npx tsx scripts/uploadStorybookToOracle.ts",
+    "publish:storybook:oracle:prod": "env-cmd -f ./.env.production cross-env NODE_ENV=production npx tsx scripts/uploadStorybookToOracle.ts",
+    "deploy:storybook:qa": "npm run build-storybook && npm run publish:storybook:oracle:qa",
+    "deploy:storybook:prod": "npm run build-storybook && npm run publish:storybook:oracle:prod"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,mjs}": ["eslint --fix", "prettier --write"]
   }
 }

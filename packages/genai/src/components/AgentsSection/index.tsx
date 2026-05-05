@@ -1,19 +1,16 @@
+import { useEffect, useRef, useState } from 'react';
+
 import ChevronLeft from '@/assets/SvgIcons/ChevronLeft';
 import ChevronRight from '@/assets/SvgIcons/ChevronRight';
 import { Button } from '@/components/ui/button';
 import { useAgentsContext } from '@/context/app/context';
-import { useEffect, useRef, useState } from 'react';
+
 import AgentCards from './AgentCards';
 import AgentPills from './AgentPills';
 
 const AgentsSection = () => {
     const { agents, showAllObjectives, isMaya } = useAgentsContext();
-    
-    // Hide AgentsSection when isMaya is true (Maya-only mode)
-    if (isMaya) {
-        return null;
-    }
-    
+
     const agentsToShow = agents.filter(agent => agent.type !== 'octo_head');
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -79,6 +76,11 @@ const AgentsSection = () => {
             setTimeout(checkScrollButtons, 500);
         }
     };
+
+    // Hide AgentsSection when isMaya is true (Maya-only mode)
+    if (isMaya) {
+        return null;
+    }
 
     return (
         <div className='gai:flex gai:w-full gai:flex-col gai:items-start'>

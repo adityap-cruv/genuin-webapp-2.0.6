@@ -17,11 +17,11 @@ export type BrandDetailsConfigType = {
       };
       android: {
         enable: boolean;
-        playstore_link: string;
+        playstore_link?: string;
       };
       ios: {
         enable: boolean;
-        appstore_link: string;
+        appstore_link?: string;
       };
     };
     white_label: {
@@ -67,8 +67,12 @@ export type BrandDetailsConfigType = {
     google: boolean;
     apple: boolean;
     brand: boolean;
-    brand_sso_id: string;
+    brand_sso_id: string | null | undefined;
   };
+  join_enabled?: boolean;
+  subscribe_enabled?: boolean;
+  post_enabled?: boolean;
+  is_socket_enabled?: boolean;
   slogan: {
     text: string | null;
     image: string | null;
@@ -98,10 +102,10 @@ export type BrandDetailsConfigType = {
     loop_videos: number;
   };
   ad_configs?: {
-    in_video_stream_frequency: number;
+    in_video_stream_frequency?: number;
     feed_stream: boolean;
     in_video_stream: boolean;
-    in_video_stream_type: string;
+    in_video_stream_type?: string;
   };
   comment_type?: {
     text: boolean;
@@ -138,6 +142,7 @@ export type BrandDetailsConfigType = {
     body: string;
   };
   cta_config?: CTAConfigType;
+  create_post_enabled?: boolean;
 };
 
 type WebConfigsType = {
@@ -211,6 +216,7 @@ type ReactionType = {
 type VideoAutoplayConfig = {
   type: number;
   auto_play_after: number;
+  is_start_with_sound?: boolean;
 };
 
 type FeedVideoPlayConfig = {
@@ -254,10 +260,11 @@ type MobileConfigsType = {
   share_transcript_enabled?: boolean;
   gesture_guidance: boolean;
   is_start_with_sound: boolean;
+  resume_playback_from?: -1 | 0 | 3 | 5;
 };
 
 type SitemapConfigsType = {
-  apple_app_site_association_config: {
+  apple_app_site_association_config?: {
     appclips: {
       apps: string[];
     };

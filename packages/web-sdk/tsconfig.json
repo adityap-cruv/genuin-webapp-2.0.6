@@ -1,7 +1,9 @@
 {
   "extends": "@genuin/typescript-config/base.json",
   "compilerOptions": {
-    // Target and module settings for browser compatibility
+    // Target and module: ES2020 + ESNext + bundler override the base config's NodeNext
+    // settings because this package is built by Vite, not tsc. "bundler" moduleResolution
+    // is required for Vite's bare-specifier imports and virtual module support.
     "target": "ES2020",
     "module": "ESNext",
     "moduleResolution": "bundler",
@@ -14,13 +16,16 @@
     "allowJs": true,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-    // Emit settings - let Rollup handle the output
+    // Emit: declaration is disabled because this SDK is distributed as a browser
+    // bundle (IIFE/ESM via Vite), not as an importable npm package. No consumers
+    // depend on .d.ts files from this package. Override the base config's declaration: true.
     "noEmit": false,
     "declaration": false,
     "declarationMap": false,
     "sourceMap": true,
     // Strict settings for our own code
     "strict": true,
+    // TODO(team): re-enable once dead code across the SDK is removed.
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "exactOptionalPropertyTypes": false,
@@ -31,12 +36,20 @@
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
+    // verbatimModuleSyntax is off because Vite/esbuild handles type-only import
+    // erasure during bundling; enabling it would require adding `import type`
+    // everywhere and offers no practical benefit for a pure-bundle SDK.
     "verbatimModuleSyntax": false,
     // JSX settings for React
     "jsx": "react-jsx",
     "jsxImportSource": "react",
-    // Path mapping for workspace packages
-    "baseUrl": ".",
+    // Path mapping for workspace packages.
+    // These paths point at the upstream source trees so TypeScript can resolve
+    // deep subpath imports (e.g. @genuin/components/lib/utils/encryption) with
+    // extension inference — the exports-map wildcard approach does not support
+    // extension-less resolution in bundler mode. baseUrl is intentionally omitted
+    // (deprecated in TS 5+; paths works standalone). Project references (below)
+    // still enforce correct compilation order and isolation.
     "paths": {
       "@genuin/ui": [
         "../ui/src"
@@ -54,25 +67,27 @@
         "./src/*"
       ]
     },
-    // Additional helpful options
-    "resolveJsonModule": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "resolveJsonModule": true
   },
   "include": [
     "src/**/*",
-    "../ui/src/**/*",
-    "../components/src/**/*",
     "*.ts",
     "*.tsx"
   ],
   "exclude": [
     "node_modules",
     "dist",
+    // Exclude test/spec/story files in this package
     "**/*.test.*",
     "**/*.spec.*",
     "**/*.stories.*",
+    // loader.js is a standalone runtime script copied directly to dist — not compiled by tsc
+    "src/loader.js",
     "coverage",
     ".turbo"
   ],
+  "references": [
+    { "path": "../ui" },
+    { "path": "../components" }
+  ]
 }

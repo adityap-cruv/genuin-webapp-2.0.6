@@ -1,12 +1,11 @@
 import { useCallback, useMemo, useInsertionEffect } from "react";
+
+import { SDKEventEmitter, SDKListenerEventName } from "@genuin/components/lib/sdk-event-emitter";
+import type { EventManager } from "@genuin/components/lib/utils/event-manager";
+
 import { type FollowStatusItem } from "../context";
-import { EmbedEventContextType, EmbedEventNameType } from "../event-bus";
-import { EmbedDataType } from "../embed.types";
-import { EventManager } from "@genuin/components/lib/utils/event-manager";
-import {
-  SDKEventEmitter,
-  SDKListenerEventName,
-} from "@genuin/components/lib/sdk-event-emitter";
+import type { EmbedDataType } from "../embed.types";
+import type { EmbedEventContextType, EmbedEventNameType } from "../event-bus";
 
 interface UseFollowStatusProps {
   embedData: EmbedDataType;
@@ -48,11 +47,9 @@ export function useFollowStatus({
   const getFollowStatus = useCallback(
     (id: string, type: "podcast" | "station"): boolean | undefined => {
       if (!isIHeartLayout) return undefined;
-      
+
       const followStatuses = embedEventBus.getContext().followStatuses;
-      const item = followStatuses.find(
-        (status: FollowStatusItem) => status.id === String(id) && status.type === type
-      );
+      const item = followStatuses.find((status: FollowStatusItem) => status.id === String(id) && status.type === type);
       return item?.isFollowed;
     },
     [embedEventBus, isIHeartLayout]
@@ -80,10 +77,7 @@ export function useFollowStatus({
           };
         } else {
           // Add new follow status
-          updatedFollowStatuses = [
-            ...currentContext.followStatuses,
-            { id: String(id), type, isFollowed },
-          ];
+          updatedFollowStatuses = [...currentContext.followStatuses, { id: String(id), type, isFollowed }];
         }
 
         return {
@@ -97,9 +91,7 @@ export function useFollowStatus({
         ...prev,
         brand_context:
           prev.brand_context?.map((item) =>
-            item.id === String(id) && item.type === type
-              ? { ...item, isFollowed }
-              : item
+            item.id === String(id) && item.type === type ? { ...item, isFollowed } : item
           ) ?? [],
       }));
     },
@@ -112,29 +104,15 @@ export function useFollowStatus({
 
     const handleExternalFollowChange = (data: any) => {
       const payload = data?.payload || data; // Handle both wrapped and direct payload
-      if (
-        payload?.id &&
-        payload?.type &&
-        typeof payload.isFollowed === "boolean"
-      ) {
-        updateFollowStatus(
-          String(payload.id),
-          payload.type,
-          payload.isFollowed
-        );
+      if (payload?.id && payload?.type && typeof payload.isFollowed === "boolean") {
+        updateFollowStatus(String(payload.id), payload.type, payload.isFollowed);
       }
     };
 
-    SDKEventEmitter.on(
-      SDKListenerEventName.PLAYER_ON_FOLLOW_CHANGED,
-      handleExternalFollowChange
-    );
+    SDKEventEmitter.on(SDKListenerEventName.PLAYER_ON_FOLLOW_CHANGED, handleExternalFollowChange);
 
     return () => {
-      SDKEventEmitter.off(
-        SDKListenerEventName.PLAYER_ON_FOLLOW_CHANGED,
-        handleExternalFollowChange
-      );
+      SDKEventEmitter.off(SDKListenerEventName.PLAYER_ON_FOLLOW_CHANGED, handleExternalFollowChange);
     };
   }, [isIHeartLayout, updateFollowStatus]);
 

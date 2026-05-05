@@ -17,9 +17,9 @@
  */
 
 // Environment detection
-const ENV = process.env.NEXT_PUBLIC_CURRENT_ENV || 'local'
-const isDev = ENV === 'local'
-const isProd = ENV === 'prod'
+const ENV = process.env.NEXT_PUBLIC_CURRENT_ENV || "local";
+const isDev = ENV === "local";
+const isProd = ENV === "prod";
 
 /**
  * Environment-specific host configurations
@@ -35,39 +35,57 @@ const HOSTS = {
    * API server endpoint - Uses environment variable if set,
    * otherwise falls back to environment-specific defaults
    */
-  api: process.env.NEXT_PUBLIC_API_URL || (isProd ? 'https://api.begenuin.com' : 'https://api.qa.begenuin.com'),
+  api: process.env.NEXT_PUBLIC_API_URL || (isProd ? "https://api.begenuin.com" : "https://api.qa.begenuin.com"),
 
   /**
    * Rudderstack analytics endpoint - Used for user event tracking
    */
   rudder:
     process.env.NEXT_PUBLIC_RUDDERSTACK_URL ||
-    (isProd ? 'https://rudderstack.begenuin.com' : 'https://rudderstack.qa.begenuin.com'),
+    (isProd ? "https://rudderstack.begenuin.com" : "https://rudderstack.qa.begenuin.com"),
 
   /**
    * Media server endpoint - Used for serving user-generated content
    */
-  media: 'https://*.begenuin.com',
+  media: "https://*.begenuin.com",
 
   /**
    * Amazon S3 bucket endpoints - Used for media storage
    * Production uses us-east-1 region while QA uses us-west-2
    */
   s3Media: isProd
-    ? 'https://genuin-media.s3.us-east-1.amazonaws.com https://genuin-media.s3-accelerate.amazonaws.com'
-    : 'https://genuin-qa-media.s3.us-west-2.amazonaws.com',
+    ? "https://genuin-media.s3.us-east-1.amazonaws.com https://genuin-media.s3-accelerate.amazonaws.com"
+    : "https://genuin-qa-media.s3.us-west-2.amazonaws.com",
+
+  /**
+   * Oracle Cloud Infrastructure bucket endpoints - Used for media storage
+   * Production uses us-ashburn-1 region while QA uses us-sanjose-1
+   */
+  ociMedia: isProd
+    ? "https://idj6whi5pua9.compat.objectstorage.us-ashburn-1.oraclecloud.com"
+    : "https://idj6whi5pua9.compat.objectstorage.us-sanjose-1.oraclecloud.com",
 
   /**
    * Brand community endpoints - Used for embedded content
    */
   brandsHost:
-    process.env.NEXT_PUBLIC_BCC_URL || (isProd ? 'https://brands.begenuin.com' : 'https://brands.qa.begenuin.com'),
-  sentry: 'https://sentry.begenuin.com',
+    process.env.NEXT_PUBLIC_BCC_URL || (isProd ? "https://brands.begenuin.com" : "https://brands.qa.begenuin.com"),
+  sentry: "https://sentry.begenuin.com",
   ssai: isProd
-    ? 'https://5815062334624ad3879ad30b8c92b7d7.mediatailor.us-east-1.amazonaws.com'
-    : 'https://9ec5df27fc5b48c3abc1fde4c81a87d5.mediatailor.us-west-2.amazonaws.com',
-  bunnyCDN: isProd ? 'https://vz-8bbc7bbf-a1e.b-cdn.net' : 'https://vz-eee5e913-a30.b-cdn.net',
-}
+    ? "https://5815062334624ad3879ad30b8c92b7d7.mediatailor.us-east-1.amazonaws.com"
+    : "https://9ec5df27fc5b48c3abc1fde4c81a87d5.mediatailor.us-west-2.amazonaws.com",
+  bunnyCDN: isProd ? "https://vz-8bbc7bbf-a1e.b-cdn.net" : "https://vz-eee5e913-a30.b-cdn.net",
+
+  /**
+   * Ad network endpoints — extend this list when integrating new ad providers.
+   * All entries are included in connect-src.
+   */
+  adHosts: [
+    "https://cmod-na.live.streamtheworld.com",
+    "https://od-spy.live.streamtheworld.com",
+    "https://gov.aniview.com",
+  ],
+};
 
 /**
  * Header Configuration Function
@@ -95,10 +113,10 @@ async function getHeaders() {
   return [
     // Minimal headers for authentication API endpoints
     {
-      source: '/api/auth(.*)',
+      source: "/api/auth(.*)",
       headers: [
         // Include a minimal, permissive header for auth endpoints
-        { key: 'Access-Control-Allow-Credentials', value: 'true' },
+        { key: "Access-Control-Allow-Credentials", value: "true" },
       ],
     },
     {
@@ -106,7 +124,7 @@ async function getHeaders() {
        * Apply these headers to all routes in the application
        * The '(.*)' pattern matches any path in the application
        */
-      source: '/((?!api/auth).*)',
+      source: "/((?!api/auth).*)",
       headers: [
         /**
          * X-Frame-Options Header
@@ -117,7 +135,7 @@ async function getHeaders() {
          *
          * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
          */
-        { key: 'X-Frame-Options', value: `ALLOW-FROM ${HOSTS.brandsHost}` },
+        { key: "X-Frame-Options", value: `ALLOW-FROM ${HOSTS.brandsHost}` },
 
         /**
          * Content-Security-Policy (CSP) Header
@@ -132,7 +150,7 @@ async function getHeaders() {
          * @see https://content-security-policy.com/
          */
         {
-          key: 'Content-Security-Policy',
+          key: "Content-Security-Policy",
           value: [
             // default
             "default-src 'self' https:",
@@ -140,22 +158,22 @@ async function getHeaders() {
             // scripts: self + CDNs + (dev-only HMR/eval)
             [
               "script-src 'self'",
-              'https://cdn.rudderlabs.com',
-              'https://cdn.jsdelivr.net',
-              'https://*.begenuin.com',
-              'https://*.vercel-insights.com',
+              "https://cdn.rudderlabs.com",
+              "https://cdn.jsdelivr.net",
+              "https://*.begenuin.com",
+              "https://*.vercel-insights.com",
               ...(isDev
-                ? ["'unsafe-inline'", "'unsafe-eval'", 'http://localhost:*', 'ws://localhost:*']
+                ? ["'unsafe-inline'", "'unsafe-eval'", "http://localhost:*", "ws://localhost:*"]
                 : ["'unsafe-inline'", "'unsafe-eval'"]),
-            ].join(' '),
+            ].join(" "),
 
             // styles: self + inline + dev HMR
             [
               "style-src 'self' 'unsafe-inline'",
-              'https://*.begenuin.com',
-              'https://fonts.googleapis.com',
-              ...(isDev ? ['http://localhost:*', 'ws://localhost:*'] : []),
-            ].join(' '),
+              "https://*.begenuin.com",
+              "https://fonts.googleapis.com",
+              ...(isDev ? ["http://localhost:*", "ws://localhost:*"] : []),
+            ].join(" "),
 
             // images
             `img-src 'self' data: blob: ${HOSTS.media} ${HOSTS.bunnyCDN} https://*.picsum.photos https://picsum.photos`,
@@ -168,36 +186,40 @@ async function getHeaders() {
             // XHR/fetch/WebSocket
             [
               "connect-src 'self'",
-              ...(isDev ? ['http://localhost:*', 'ws://localhost:*'] : []),
-              'https://api.rudderstack.com',
-              'https://*.begenuin.com',
+              ...(isDev ? ["http://localhost:*", "ws://localhost:*"] : []),
+              "https://api.rudderstack.com",
+              "https://cdn.rudderlabs.com",
+              "https://cdn.jsdelivr.net",
+              "https://*.begenuin.com",
               HOSTS.api,
               HOSTS.rudder,
               HOSTS.media,
               HOSTS.s3Media,
+              HOSTS.ociMedia,
               HOSTS.sentry,
               HOSTS.ssai,
               HOSTS.bunnyCDN,
+              ...HOSTS.adHosts,
               // Self is sufficient for NextAuth endpoints since they're on the same origin
-            ].join(' '),
+            ].join(" "),
 
             // web workers
             [
               "worker-src 'self' blob:",
-              ...(isDev ? ['http://localhost:*', 'ws://localhost:*'] : []),
-              'https://cdn.rudderlabs.com',
-              'https://cdn.jsdelivr.net',
-            ].join(' '),
+              ...(isDev ? ["http://localhost:*", "ws://localhost:*"] : []),
+              "https://cdn.rudderlabs.com",
+              "https://cdn.jsdelivr.net",
+            ].join(" "),
 
             // forms
             `form-action 'self' ${HOSTS.api}`,
 
             // framing
-            `frame-ancestors 'self' ${HOSTS.brandsHost}${isDev ? ' http://localhost:*' : ''}`,
+            `frame-ancestors 'self' ${HOSTS.brandsHost}${isDev ? " http://localhost:*" : ""}`,
 
             // upgrade/block mixed (QA+Prod only)
-            ...(isDev ? [] : ['upgrade-insecure-requests', 'block-all-mixed-content']),
-          ].join('; '),
+            ...(isDev ? [] : ["upgrade-insecure-requests", "block-all-mixed-content"]),
+          ].join("; "),
         },
 
         /**
@@ -208,7 +230,7 @@ async function getHeaders() {
          *
          * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
          */
-        { key: 'X-Content-Type-Options', value: 'nosniff' },
+        { key: "X-Content-Type-Options", value: "nosniff" },
 
         /**
          * X-XSS-Protection Header
@@ -219,7 +241,7 @@ async function getHeaders() {
          *
          * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
          */
-        { key: 'X-XSS-Protection', value: '1; mode=block' },
+        { key: "X-XSS-Protection", value: "1; mode=block" },
 
         /**
          * HTTP Strict Transport Security (HSTS) Header
@@ -235,7 +257,7 @@ async function getHeaders() {
          * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
          */
         ...(!isDev
-          ? [{ key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains; preload' }]
+          ? [{ key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains; preload" }]
           : []),
 
         /**
@@ -249,7 +271,7 @@ async function getHeaders() {
          *
          * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy
          */
-        { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+        { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
 
         /**
          * Permissions-Policy Header
@@ -264,13 +286,13 @@ async function getHeaders() {
          * @see https://w3c.github.io/webappsec-permissions-policy/
          */
         {
-          key: 'Permissions-Policy',
+          key: "Permissions-Policy",
           value:
-            'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()',
+            "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()",
         },
       ],
     },
-  ]
+  ];
 }
 
-module.exports = getHeaders
+module.exports = getHeaders;

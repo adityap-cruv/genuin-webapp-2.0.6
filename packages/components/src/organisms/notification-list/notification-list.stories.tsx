@@ -1,9 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import {
-  NotificationList,
-  NotificationListSkeleton,
-  NotificationsEmptyState,
-} from "./notification-list";
+
+import { NotificationList, NotificationListSkeleton, NotificationsEmptyState } from "./notification-list";
 
 const meta: Meta<typeof NotificationList> = {
   title: "Organisms/Notification List",

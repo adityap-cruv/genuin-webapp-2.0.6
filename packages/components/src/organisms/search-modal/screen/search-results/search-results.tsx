@@ -1,27 +1,15 @@
-import { useState, useMemo } from "react";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@genuin/ui/components/tabs";
-import { cn } from "@genuin/ui/lib/utils";
-import { ComponentProps } from "react";
-import { useTopResults } from "@genuin/components/react-query/api/search";
-import {
-  TopTab,
-  PostsTab,
-  CommunitiesTab,
-  GroupsTab,
-  ProfilesTab,
-} from "./tabs";
 import { Skeleton } from "@genuin/ui/components/skeleton";
-import {
-  SearchEmptyState,
-  SearchErrorState,
-  SearchLoadingState,
-} from "../../shared";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@genuin/ui/components/tabs";
+import { cn } from "@genuin/ui/lib/utils";
+import { useState, useMemo } from "react";
+import type { ComponentProps } from "react";
+
+import { useTopResults } from "@genuin/components/react-query/api/search";
+
 import { SEARCH_CONFIG } from "../../constants";
+import { SearchEmptyState, SearchErrorState, SearchLoadingState } from "../../shared";
+
+import { TopTab, PostsTab, CommunitiesTab, GroupsTab, ProfilesTab } from "./tabs";
 
 type SearchResultsProps = {
   query: string;
@@ -29,13 +17,7 @@ type SearchResultsProps = {
   onClose?: () => void;
 } & Omit<ComponentProps<"div">, "onSelect">;
 
-export function SearchResults({
-  query,
-  onSelect,
-  onClose,
-  className,
-  ...restProps
-}: SearchResultsProps) {
+export function SearchResults({ query, onSelect, onClose, className, ...restProps }: SearchResultsProps) {
   const [activeTab, setActiveTab] = useState("top");
   const { data: topResults, isLoading, error } = useTopResults(query);
 
@@ -64,9 +46,7 @@ export function SearchResults({
     };
   }, [topResults]);
 
-  const totalResults = totals
-    ? totals.posts + totals.communities + totals.groups + totals.profiles
-    : 0;
+  const totalResults = totals ? totals.posts + totals.communities + totals.groups + totals.profiles : 0;
 
   // Show loading state
   if (isLoading) {
@@ -104,18 +84,8 @@ export function SearchResults({
   }
 
   return (
-    <div
-      className={cn(
-        "gencl:w-full gencl:h-full gencl:flex gencl:flex-col",
-        className
-      )}
-      {...restProps}
-    >
-      <Tabs
-        value={activeTab}
-        onValueChange={setActiveTab}
-        className="gencl:flex gencl:flex-col gencl:h-full"
-      >
+    <div className={cn("gencl:w-full gencl:h-full gencl:flex gencl:flex-col", className)} {...restProps}>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="gencl:flex gencl:flex-col gencl:h-full">
         {/* Fixed header with tabs - sticky positioning */}
         <div className="gencl:sticky gencl:top-0 gencl:z-20 gencl:bg-white gencl:border-b gencl:border-secondary-200 gencl:px-4 gencl:overflow-x-auto gencl:scrollbar-none">
           <TabsList className="gencl:w-full gencl:inline-flex gencl:bg-transparent gencl:border-none gencl:rounded-none gencl:h-10 gencl:p-0 gencl:min-w-max">
@@ -123,8 +93,7 @@ export function SearchResults({
               <TabsTrigger
                 key={tab.value}
                 value={tab.value}
-                className="gencl:relative gencl:data-[state=active]:gencl:bg-transparent gencl:data-[state=active]:gencl:text-primary gencl:data-[state=active]:gencl:border-b-2 gencl:data-[state=active]:gencl:border-primary gencl:rounded-none gencl:px-4 gencl:py-1 gencl:text-sm gencl:font-medium"
-              >
+                className="gencl:relative gencl:data-[state=active]:gencl:bg-transparent gencl:data-[state=active]:gencl:text-primary gencl:data-[state=active]:gencl:border-b-2 gencl:data-[state=active]:gencl:border-primary gencl:rounded-none gencl:px-4 gencl:py-1 gencl:text-sm gencl:font-medium">
                 {tab.label}
               </TabsTrigger>
             ))}
@@ -151,10 +120,7 @@ export function SearchResults({
           </TabsContent>
 
           <TabsContent value="communities" className="gencl:p-4 gencl:m-0">
-            <CommunitiesTab
-              communities={topResults.communities}
-              query={query}
-            />
+            <CommunitiesTab communities={topResults.communities} query={query} />
           </TabsContent>
 
           <TabsContent value="groups" className="gencl:p-4 gencl:m-0">

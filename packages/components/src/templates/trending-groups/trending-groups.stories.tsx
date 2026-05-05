@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+
 import { TrendingGroups } from "./trending-groups";
 
 const meta: Meta<typeof TrendingGroups> = {
@@ -17,8 +18,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          "Displays a list of trending groups with their title, members, post, users and descriptions.",
+        story: "Displays a list of trending groups with their title, members, post, users and descriptions.",
       },
     },
   },

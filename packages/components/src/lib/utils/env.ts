@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 /**
  * Environment Variable Assignment Pattern
@@ -27,9 +28,7 @@
 // Determine if running in server or client environment
 const isServer = typeof process !== "undefined" && process.env;
 
-const ENVIRONMENT = isServer
-  ? (process.env.ENVIRONMENT as string)
-  : (import.meta.env.ENVIRONMENT as string);
+const ENVIRONMENT = isServer ? (process.env.ENVIRONMENT as string) : (import.meta.env.ENVIRONMENT as string);
 
 // Export environment variables with proper typing
 export const RUDDERSTACK_WRITE_KEY = isServer

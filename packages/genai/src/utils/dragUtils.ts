@@ -17,7 +17,7 @@ export interface DragHandlers {
 }
 
 export function createDragHandlers(element: HTMLElement, onDragStateChange?: (state: DragState) => void): DragHandlers {
-    let dragState: DragState = {
+    const dragState: DragState = {
         isDragging: false,
         hasDragged: false,
         offsetX: 0,

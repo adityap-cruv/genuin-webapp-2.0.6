@@ -5,17 +5,33 @@
   "private": true,
   "exports": {
     "./base": "./base.js",
+    "./library": "./library.js",
     "./next-js": "./next.js",
     "./react-internal": "./react-internal.js"
   },
   "peerDependencies": {
-    "eslint": "^9.27.0",
-    "typescript": "^5.8.3",
+    "@eslint/js": "^9.28.0",
+    "@next/eslint-plugin-next": "^15.0.0",
+    "@tanstack/eslint-plugin-query": "^5.0.0",
     "@typescript-eslint/eslint-plugin": "^8.33.0",
     "@typescript-eslint/parser": "^8.33.0",
-    "@eslint/js": "^9.28.0"
+    "eslint": "^9.27.0",
+    "eslint-config-prettier": "^10.0.0",
+    "eslint-plugin-import": "^2.0.0",
+    "eslint-plugin-react": "^7.0.0",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-turbo": "^2.0.0",
+    "globals": "^15.0.0",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.0.0"
   },
   "peerDependenciesMeta": {
+    "@next/eslint-plugin-next": {
+      "optional": true
+    },
+    "@tanstack/eslint-plugin-query": {
+      "optional": true
+    },
     "typescript": {
       "optional": true
     }

@@ -1,17 +1,19 @@
-import { CtaButtons } from "./cta-buttons";
-import { BrandLogo } from "@genuin/components/molecules/brand";
-import { BrandSlogan } from "@genuin/components/molecules/brand";
+import { Button } from "@genuin/ui/components/button";
+import { ArrowLeftIcon, XIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/utils";
 import { cva, type VariantProps } from "class-variance-authority";
-import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-import { MobileSidebar } from "../side-bar";
-import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-
-import { ArrowLeftIcon, XIcon } from "@genuin/ui/icons";
-import { useRouter } from "@genuin/components/hooks/use-router";
-import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
-import { Button } from "@genuin/ui/components/button";
 import { useCallback } from "react";
+
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { useRouter } from "@genuin/components/hooks/use-router";
+import { BrandLogo } from "@genuin/components/molecules/brand";
+import { BrandSlogan } from "@genuin/components/molecules/brand";
+
+import { MobileSidebar } from "../side-bar";
+
+import { CtaButtons } from "./cta-buttons";
 
 const topbarVariants = cva(
   "playback-speed-class gencl:h-16 gencl:w-full gencl:flex gencl:px-4 gencl:sm:px-6! gencl:items-center gencl:justify-between",
@@ -32,16 +34,9 @@ const topbarVariants = cva(
   }
 );
 
-type TopBarProps = React.ComponentProps<"div"> & {} & VariantProps<
-    typeof topbarVariants
-  >;
+type TopBarProps = React.ComponentProps<"div"> & {} & VariantProps<typeof topbarVariants>;
 
-export function TopBar({
-  className,
-  variant,
-  theme,
-  ...restProps
-}: TopBarProps) {
+export function TopBar({ className, variant, theme, ...restProps }: TopBarProps) {
   const { isMobile } = useDeviceDetectMediaQuery();
   const { layoutConfig } = useEmbedConfigs();
   const embedDetails = useSafeEmbedContext();
@@ -55,12 +50,7 @@ export function TopBar({
   const navBarItems = (
     <div className="gencl:w-full gencl:flex gencl:items-center gencl:justify-between">
       <div className="gencl:flex gencl:items-center">
-        {isMobile && (
-          <MobileSidebar
-            theme={theme}
-            className="gencl:mr-2 gencl:sm:hidden gencl:block"
-          />
-        )}
+        {isMobile && <MobileSidebar theme={theme} className="gencl:mr-2 gencl:sm:hidden gencl:block" />}
         <BrandLogo className="gencl:h-9 gencl:sm:h-12! gencl:w-9 gencl:sm:w-full! gencl:rounded-full gencl:sm:rounded-none!" />
       </div>
       {!isMobile && <BrandSlogan className="gencl:hidden gencl:sm:block!" />}
@@ -68,50 +58,26 @@ export function TopBar({
     </div>
   );
 
-  if (
-    (layoutConfig.showBackAndCloseButton && router.canGoBack()) ||
-    layoutConfig.showCloseButton
-  ) {
-    const buttonTheme = isMobile
-      ? theme === "dark"
-        ? "overlay"
-        : "outline"
-      : "outline";
+  if ((layoutConfig.showBackAndCloseButton && router.canGoBack()) || layoutConfig.showCloseButton) {
+    const buttonTheme = isMobile ? (theme === "dark" ? "overlay" : "outline") : "outline";
     const buttonShape = isMobile ? "circle" : "square";
     return (
       <div
         className={cn(
           className,
           topbarVariants({ theme, variant }),
-          layoutConfig.showNavigationBar
-            ? "gencl:gap-3"
-            : "gencl:justify-start gencl:gap-3"
+          layoutConfig.showNavigationBar ? "gencl:gap-3" : "gencl:justify-start gencl:gap-3"
         )}
-        {...restProps}
-      >
+        {...restProps}>
         {router.canGoBack() && (
           <Button onClick={router.back} theme={buttonTheme} shape={buttonShape}>
             <ArrowLeftIcon theme={theme} />
           </Button>
         )}
-        <div
-          className={cn(
-            "gencl:justify-between gencl:w-full gencl:flex gencl:items-center"
-          )}
-        >
-          {layoutConfig.showNavigationBar ? (
-            navBarItems
-          ) : isMobile ? (
-            <MobileSidebar theme={theme} />
-          ) : (
-            <div></div>
-          )}
+        <div className={cn("gencl:justify-between gencl:w-full gencl:flex gencl:items-center")}>
+          {layoutConfig.showNavigationBar ? navBarItems : isMobile ? <MobileSidebar theme={theme} /> : <div></div>}
           {layoutConfig.showCloseButton ? (
-            <Button
-              onClick={closeExpandView}
-              theme={buttonTheme}
-              shape={buttonShape}
-            >
+            <Button onClick={closeExpandView} theme={buttonTheme} shape={buttonShape}>
               <XIcon theme={theme} />
             </Button>
           ) : (
@@ -124,10 +90,7 @@ export function TopBar({
 
   if (layoutConfig.showNavigationBar) {
     return (
-      <div
-        className={cn(className, topbarVariants({ theme, variant }))}
-        {...restProps}
-      >
+      <div className={cn(className, topbarVariants({ theme, variant }))} {...restProps}>
         {navBarItems}
       </div>
     );

@@ -1,8 +1,10 @@
 import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
+import type { AxiosInstance } from "axios";
+
 import { useAxiosInstance } from "@genuin/components/context/axios";
 import { API_PATHS } from "@genuin/components/react-query/paths";
+
 import { getQueryKeyForNotifications } from "../../keys/notification";
-import type { AxiosInstance } from "axios";
 
 type PageParam = {
   first_notification_id?: string;
@@ -31,7 +33,7 @@ async function fetchNotifications(limit: number, pageParam: PageParam, axiosInst
         end: !!resData.end_of_notifications,
       };
     })
-    .catch((e) => {
+    .catch((_e) => {
       throw new Error("Somethig went wrong with notifications api.");
     });
 }
@@ -56,9 +58,7 @@ export function useGetNotifications(limit: number) {
       }
       return {
         first_notification_id: lastPage?.notifications[0]?.notification_id,
-        last_notification_id:
-          lastPage?.notifications[lastPage?.notifications?.length - 1]
-            ?.notification_id,
+        last_notification_id: lastPage?.notifications[lastPage?.notifications?.length - 1]?.notification_id,
       };
     },
   });
@@ -78,7 +78,7 @@ export async function readNotifications(readAll: boolean, axiosInstance: AxiosIn
     .then((res) => {
       return res.data.data;
     })
-    .catch((e) => {
+    .catch((_e) => {
       return undefined;
     });
 }

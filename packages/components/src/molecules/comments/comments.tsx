@@ -1,19 +1,20 @@
+import { Button } from "@genuin/ui/button";
 import { cn } from "@genuin/ui/utils";
+import type { VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
+import { X } from "lucide-react";
 import { type ComponentProps } from "react";
 
+import type { VideoTypes } from "@genuin/components/context";
 import { setQueryDataForNewComment } from "@genuin/components/react-query/api/comments";
+
 import { CommentInputBox } from "./comment-input";
-import { X } from "lucide-react";
-import { cva, VariantProps } from "class-variance-authority";
 import { CommentsList } from "./comments-list";
-import { Button } from "@genuin/ui/button";
-import { VideoTypes } from "@genuin/components/context";
 
 const commentsVariant = cva("gencl:relative gencl:bg-white", {
   variants: {
     variant: {
-      default:
-        "gencl:overflow-clip gencl:border gencl:border-secondary-200 gencl:rounded-2xl",
+      default: "gencl:overflow-clip gencl:border gencl:border-secondary-200 gencl:rounded-2xl",
       dialog: "gencl:overflow-auto gencl:h-full gencl:flex gencl:flex-col",
     },
   },
@@ -55,13 +56,8 @@ export function Comments({
 }: CommentPropsType) {
   return (
     <div
-      className={cn(
-        commentsVariant({ variant }),
-        "gencl:relative gencl:flex gencl:flex-col gencl:h-full",
-        className,
-      )}
-      {...restProps}
-    >
+      className={cn(commentsVariant({ variant }), "gencl:relative gencl:flex gencl:flex-col gencl:h-full", className)}
+      {...restProps}>
       {/* {showCloseButton && (
         <X
           className="gencl:absolute gencl:top-2 gencl:right-2 gencl:cursor-pointer"
@@ -71,16 +67,9 @@ export function Comments({
         />
       )} */}
       {showCloseButton && (
-        <div className="gencl:p-4 gencl:flex  gencl:border-b gencl:border-secondary-150 gencl:items-center gencl:justify-between">
-          <p className="gencl:text-headline-4-semi-bold gencl:text-secondary-900">
-            Comments
-          </p>
-          <Button
-            theme="custom"
-            variant="icon"
-            className="gencl:size-5!"
-            onClick={onClose}
-          >
+        <div className="gencl:p-4 gencl:flex gencl:border-b gencl:border-secondary-150 gencl:items-center gencl:justify-between">
+          <p className="gencl:text-headline-4-semi-bold gencl:text-secondary-900">Comments</p>
+          <Button theme="custom" variant="icon" className="gencl:size-5!" onClick={onClose}>
             <X className="gencl:size-5 gencl:cursor-pointer gencl:opacity-70 gencl:transition-opacity gencl:hover:opacity-100" />
           </Button>
         </div>

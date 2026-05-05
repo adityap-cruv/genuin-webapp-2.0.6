@@ -1,6 +1,7 @@
 import { useCallback, useRef } from 'react';
-import type { AgentType, HandleSSEMessageData } from '@/types';
+
 import { getChatStreamUrl, startChatSession, type StartChatPayload } from '@/lib/api';
+import type { AgentType, HandleSSEMessageData } from '@/types';
 
 export interface SSEMessagePayload {
     brand_id: number;
@@ -175,7 +176,7 @@ export const useSSEHandler = ({
 
         const processChunk = (chunk: string): { isCompleted: boolean; isError: boolean } => {
             const jsons = splitConcatenatedJson(chunk);
-            let result = { isCompleted: false, isError: false };
+            const result = { isCompleted: false, isError: false };
             for (const j of jsons) {
                 const chunkResult = processSingleJson(j);
                 if (chunkResult.isCompleted) result.isCompleted = true;

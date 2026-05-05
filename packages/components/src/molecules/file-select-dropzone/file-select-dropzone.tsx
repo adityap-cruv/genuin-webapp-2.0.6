@@ -1,15 +1,14 @@
+import { Loader } from "@genuin/ui/components/loader";
+import { UploadIcon } from "@genuin/ui/icons";
+import { cn } from "@genuin/ui/lib/utils";
 import React, { useState, useCallback } from "react";
 import { FileUploader } from "react-drag-drop-files";
 import { v4 as uuid } from "uuid";
-import { cn } from "@genuin/ui/lib/utils";
-import { UploadIcon } from "@genuin/ui/icons";
-import { Loader } from "@genuin/ui/components/loader";
-import { FileSelectDropzoneProps } from "./file-select-dropzone.types";
+
+import { validateVideoAspectRatio, validateVideoDuration } from "@genuin/components/lib/utils/video";
+
+import type { FileSelectDropzoneProps } from "./file-select-dropzone.types";
 import { allowedFileFormats, fileUploaderConfig } from "./utils";
-import {
-  validateVideoAspectRatio,
-  validateVideoDuration,
-} from "@genuin/components/lib/utils/video";
 
 const FileSelectDropzone: React.FC<FileSelectDropzoneProps> = ({
   onError,
@@ -38,12 +37,8 @@ const FileSelectDropzone: React.FC<FileSelectDropzoneProps> = ({
 
     // Make sure the extension matches allowed formats without any manipulation
     const fileExt = filename.split(".").pop()?.toLowerCase();
-    const filterAllowedFilesFormats = allowedFileFormats.filter(({ type }) =>
-      config?.allowedFileTypes?.includes(type)
-    );
-    const allowedExts = filterAllowedFilesFormats.map((type) =>
-      type?.extension?.replace(".", "").toLowerCase()
-    );
+    const filterAllowedFilesFormats = allowedFileFormats.filter(({ type }) => config?.allowedFileTypes?.includes(type));
+    const allowedExts = filterAllowedFilesFormats.map((type) => type?.extension?.replace(".", "").toLowerCase());
 
     if (!fileExt || !allowedExts.includes(fileExt)) {
       return false;
@@ -52,19 +47,9 @@ const FileSelectDropzone: React.FC<FileSelectDropzoneProps> = ({
     // Check for suspicious patterns like double extensions (e.g. file.php.mp4)
     const nameParts = filename.split(".");
     if (nameParts.length > 2) {
-      const suspiciousExts = [
-        "php",
-        "exe",
-        "js",
-        "html",
-        "htm",
-        "asp",
-        "jsp",
-        "sh",
-        "bat",
-      ];
+      const suspiciousExts = ["php", "exe", "js", "html", "htm", "asp", "jsp", "sh", "bat"];
       for (let i = 0; i < nameParts.length - 1; i += 1) {
-        if (suspiciousExts.includes(nameParts[i]?.toLowerCase())) {
+        if (suspiciousExts.includes(nameParts[i]!.toLowerCase())) {
           return false;
         }
       }
@@ -95,10 +80,7 @@ const FileSelectDropzone: React.FC<FileSelectDropzoneProps> = ({
       );
 
       if (isVideoFileType && config?.validation?.video) {
-        const isValidRatio = await validateVideoAspectRatio(
-          file,
-          config?.validation?.video?.aspectRatio
-        );
+        const isValidRatio = await validateVideoAspectRatio(file, config?.validation?.video?.aspectRatio);
         if (!isValidRatio) {
           const errorMessage = `Please upload a video with a ${config?.validation?.video?.aspectRatio} aspect ratio. Other formats are not supported.`;
           setFileError(errorMessage);
@@ -142,9 +124,7 @@ const FileSelectDropzone: React.FC<FileSelectDropzoneProps> = ({
   const renderLoading = (
     <>
       <Loader size="md" />
-      <p className="gencl:text-body-2-medium gencl:text-secondary-600">
-        Uploading...
-      </p>
+      <p className="gencl:text-body-2-medium gencl:text-secondary-600">Uploading...</p>
     </>
   );
 
@@ -159,17 +139,13 @@ const FileSelectDropzone: React.FC<FileSelectDropzoneProps> = ({
       />
       <div>
         <p className="gencl:text-body-1-semi-bold gencl:mb-2">
-          Drag your file(s) or{" "}
-          <span className="gencl:text-primary">browse</span>
+          Drag your file(s) or <span className="gencl:text-primary">browse</span>
         </p>
         <p
           className={cn("gencl:text-body-2-medium! gencl:text-secondary-600", {
             "gencl:text-error-status": fileError,
-          })}
-        >
-          {fileError
-            ? config?.messages?.uploadFailed
-            : config?.messages?.uploadInfo}
+          })}>
+          {fileError ? config?.messages?.uploadFailed : config?.messages?.uploadInfo}
         </p>
       </div>
     </>
@@ -189,8 +165,7 @@ const FileSelectDropzone: React.FC<FileSelectDropzoneProps> = ({
           },
           className
         )}
-        {...restContainerProps}
-      >
+        {...restContainerProps}>
         <FileUploader
           onDraggingStateChange={setIsDragging}
           multiple={config?.multiple}
@@ -203,17 +178,14 @@ const FileSelectDropzone: React.FC<FileSelectDropzoneProps> = ({
           disabled={isLoading || disabled}
           hoverTitle=" "
           classes={`drop_area drop_zone custom_style ${isDragging ? "drag-active" : ""}`}
-          {...fileUploadProps}
-        >
+          {...fileUploadProps}>
           <div className="gencl:flex gencl:flex-col gencl:items-center gencl:justify-center gencl:p-6 gencl:gap-3">
             {isLoading ? renderLoading : renderUploadInstructions}
           </div>
         </FileUploader>
       </div>
 
-      {fileError && showErrorMessage && (
-        <p className="gencl:text-body-2-medium gencl:text-red">{fileError}</p>
-      )}
+      {fileError && showErrorMessage && <p className="gencl:text-body-2-medium gencl:text-red">{fileError}</p>}
     </div>
   );
 };

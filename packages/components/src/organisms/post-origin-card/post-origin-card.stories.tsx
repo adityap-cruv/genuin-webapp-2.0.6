@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+
 import { PostOriginCard, PostOriginCardSkeleton } from "./post-origin-card";
 
 const meta: Meta<typeof PostOriginCard> = {
@@ -15,13 +16,9 @@ export const Default: Story = {
     community: {
       name: "Tech Community",
       slug: "tech-community",
-      type: "PRIVATE",
-      dp: "https://placehold.co/300x300?text=I",
-      dp_m: "https://placehold.co/300x300?text=I",
     },
     group: {
       name: "Frontend Developers",
-      type: "technical",
       slug: "frontend-developers",
       actions: [
         {

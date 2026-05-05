@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
-import type { VideoStyle, VideoStyleOption } from '../types';
+
 import { getBGMs } from '@/lib/api';
+
+import type { VideoStyle, VideoStyleOption } from '../types';
 
 const baseVideoStyles: VideoStyle[] = [
     {

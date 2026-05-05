@@ -1,22 +1,18 @@
 "use client";
 
-import * as React from "react";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
+import * as React from "react";
 
-import { cn } from "@genuin/ui/lib/utils";
 import { getRootContainer } from "@genuin/ui/lib/shadow-dom.utils";
+import { cn } from "@genuin/ui/lib/utils";
 
-function Popover({
-  ...props
-}: React.ComponentProps<typeof PopoverPrimitive.Root>) {
+function Popover({ ...props }: React.ComponentProps<typeof PopoverPrimitive.Root>) {
   return <PopoverPrimitive.Root data-slot="popover" {...props} />;
 }
 
-function PopoverTrigger({
-  ...props
-}: React.ComponentProps<typeof PopoverPrimitive.Trigger>) {
+function PopoverTrigger({ ...props }: React.ComponentProps<typeof PopoverPrimitive.Trigger>) {
   return <PopoverPrimitive.Trigger data-slot="popover-trigger" {...props} />;
 }
 
@@ -25,8 +21,7 @@ const popoverContentVariants = cva(
   {
     variants: {
       theme: {
-        light:
-          "gencl:bg-white gencl:border gencl:border-border gencl:w-72 gencl:p-4 gencl:shadow-md",
+        light: "gencl:bg-white gencl:border gencl:border-border gencl:w-72 gencl:p-4 gencl:shadow-md",
         dark: "gencl:bg-secondary-900 gencl:border gencl:border-secondary-700 gencl:text-white gencl:w-72 gencl:p-4 gencl:shadow-md",
         auth: "gencl:border gencl:border-border gencl:w-72 gencl:p-4 gencl:shadow-md",
       },
@@ -34,7 +29,7 @@ const popoverContentVariants = cva(
     defaultVariants: {
       theme: "light",
     },
-  },
+  }
 );
 
 const popoverArrowVariants = cva("gencl:z-50 gencl:size-3.5 gencl:w-5", {
@@ -50,16 +45,12 @@ const popoverArrowVariants = cva("gencl:z-50 gencl:size-3.5 gencl:w-5", {
   },
 });
 
-type PopoverContentProps = React.ComponentProps<
-  typeof PopoverPrimitive.Content
-> &
+type PopoverContentProps = React.ComponentProps<typeof PopoverPrimitive.Content> &
   VariantProps<typeof popoverContentVariants> & {
     showArrow?: boolean;
     customBackgroundColor?: string;
   };
-function PopoverClose({
-  ...props
-}: React.ComponentProps<typeof PopoverPrimitive.Trigger>) {
+function PopoverClose({ ...props }: React.ComponentProps<typeof PopoverPrimitive.Trigger>) {
   return <PopoverPrimitive.Close data-slot="popover-close" {...props} />;
 }
 
@@ -77,9 +68,7 @@ function PopoverContent({
   // const customColorStyle = customBackgroundColor
   //   ? { backgroundColor: customBackgroundColor }
   //   : {};
-  const arrowStyle = customBackgroundColor
-    ? { fill: customBackgroundColor }
-    : {};
+  const arrowStyle = customBackgroundColor ? { fill: customBackgroundColor } : {};
 
   return (
     <PopoverPrimitive.Portal container={portalContainer}>
@@ -88,28 +77,16 @@ function PopoverContent({
         align={align}
         sideOffset={sideOffset}
         // style={customColorStyle}
-        className={cn(
-          "gen-sdk-class gen-sdk-root-portal",
-          popoverContentVariants({ theme }),
-          className,
-        )}
-        {...props}
-      >
+        className={cn("gen-sdk-class gen-sdk-root-portal", popoverContentVariants({ theme }), className)}
+        {...props}>
         {children}
-        {showArrow && (
-          <PopoverPrimitive.Arrow
-            style={arrowStyle}
-            className={cn(popoverArrowVariants({ theme }))}
-          />
-        )}
+        {showArrow && <PopoverPrimitive.Arrow style={arrowStyle} className={cn(popoverArrowVariants({ theme }))} />}
       </PopoverPrimitive.Content>
     </PopoverPrimitive.Portal>
   );
 }
 
-function PopoverAnchor({
-  ...props
-}: React.ComponentProps<typeof PopoverPrimitive.Anchor>) {
+function PopoverAnchor({ ...props }: React.ComponentProps<typeof PopoverPrimitive.Anchor>) {
   return <PopoverPrimitive.Anchor data-slot="popover-anchor" {...props} />;
 }
 

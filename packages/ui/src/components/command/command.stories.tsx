@@ -1,11 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import {
-  CalendarIcon,
-  FolderIcon,
-  LaptopIcon,
-  MoonIcon,
-  SunIcon,
-} from "lucide-react";
+import { CalendarIcon, FolderIcon, LaptopIcon, MoonIcon, SunIcon } from "lucide-react";
+import { useState } from "react";
+
+import { Button } from "@genuin/ui/components/button";
 
 import {
   Command,
@@ -18,8 +15,6 @@ import {
   CommandSeparator,
   CommandShortcut,
 } from "./command";
-import { useState } from "react";
-import { Button } from "@genuin/ui/components/button";
 
 const meta: Meta<typeof Command> = {
   title: "Components/Command",
@@ -36,7 +31,7 @@ type Story = StoryObj<typeof Command>;
 
 export const Default: Story = {
   render: () => (
-    <div className="border p-2 rounded-md w-[450px]">
+    <div className="w-[450px] rounded-md border p-2">
       <Command>
         <CommandInput placeholder="Type a command or search..." />
         <CommandList>

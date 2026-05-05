@@ -2,8 +2,10 @@
 'use client'
 import React, { createContext, useContext, useEffect } from 'react'
 import { UAParser } from 'ua-parser-js'
-import keyParamMapping from './keyParamMapping'
+
 import { useGenuinOptions } from '@lib/stores/genuin-options'
+
+import keyParamMapping from './keyParamMapping'
 // Base Resolver class
 class BaseResolver {
   constructor() {

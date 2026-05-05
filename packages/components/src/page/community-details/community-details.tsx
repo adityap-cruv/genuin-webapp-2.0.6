@@ -1,55 +1,45 @@
 "use client";
-import {
-  useId,
-  useCallback,
-  useEffect,
-  ReactNode,
-  ComponentProps,
-  useState,
-} from "react";
-import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { Avatar } from "@genuin/ui/components/avatar";
+import { useQueryClient } from "@tanstack/react-query";
+import type { ReactNode, ComponentProps } from "react";
+import { useId, useCallback, useEffect, useState } from "react";
+import { useLocalStorage } from "usehooks-ts";
 
+import { useLinkContext } from "@genuin/components/context";
+import { useAnalytics } from "@genuin/components/context/analytics";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { RECENT_COMMUNITIES_KEY } from "@genuin/components/lib/constants";
+import { NOT_FOUND_ERROR_CODES } from "@genuin/components/lib/constants/errors";
+import { getSocialLinks } from "@genuin/components/lib/utils";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { CommunityBanner } from "@genuin/components/molecules/comunity-banner";
+import { ErrorState } from "@genuin/components/molecules/error-state";
 import { JoinCommunityButton } from "@genuin/components/molecules/join-community-button";
 import { ShareButton } from "@genuin/components/molecules/share-button";
+import { DetailsPageTopbar } from "@genuin/components/organisms/details-page-topbar";
+import { ComponentErrorState } from "@genuin/components/organisms/error-state-component";
 import { GenericDetails } from "@genuin/components/organisms/generic-details";
 import { GenericDetailsMetadata } from "@genuin/components/organisms/generic-details/generic-details-metadata";
 import { MemberList } from "@genuin/components/organisms/member-list";
 import { SideInfo } from "@genuin/components/organisms/side-info";
-import { DetailsPageTopbar } from "@genuin/components/organisms/details-page-topbar";
 import {
   useGetCommunityDetails,
   setQueryDataForCommunityRoleChange,
 } from "@genuin/components/react-query/api/community/details/details";
-import { CommunityDetailsTabs } from "@genuin/components/templates/community-details-tabs";
-import { CommunityDetailsSkeleton } from "./skeleton";
-import { ErrorState } from "@genuin/components/molecules/error-state";
-import { NOT_FOUND_ERROR_CODES } from "@genuin/components/lib/constants/errors";
-import { CommunityUserRole } from "@genuin/components/types/post";
-import { ComponentErrorState } from "@genuin/components/organisms/error-state-component";
-import { useLocalStorage } from "usehooks-ts";
-import { RECENT_COMMUNITIES_KEY } from "@genuin/components/lib/constants";
-import { type RecentCommunity } from "@genuin/components/types/community";
-import { CommunityFeedView } from "./feed-view";
-import { Avatar } from "@genuin/ui/components/avatar";
-import { CommunityBanner } from "@genuin/components/molecules/comunity-banner";
-import { mapMemberDetails } from "./utils";
-import { getSocialLinks } from "@genuin/components/lib/utils";
-import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-import { useAnalytics } from "@genuin/components/context/analytics";
-import { useLinkContext } from "@genuin/components/context";
-import { useQueryClient } from "@tanstack/react-query";
 import {
   getQueryKeyForCommunityGroups,
   getQueryKeyForCommunityMembers,
 } from "@genuin/components/react-query/keys/community";
+import { CommunityDetailsTabs } from "@genuin/components/templates/community-details-tabs";
+import { type RecentCommunity } from "@genuin/components/types/community";
+import type { CommunityUserRole } from "@genuin/components/types/post";
 
-export function CommunityDetails({
-  slug,
-  isFeed = false,
-}: {
-  slug: string;
-  isFeed?: boolean;
-}) {
+import { CommunityFeedView } from "./feed-view";
+import { CommunityDetailsSkeleton } from "./skeleton";
+import { mapMemberDetails } from "./utils";
+
+export function CommunityDetails({ slug, isFeed = false }: { slug: string; isFeed?: boolean }) {
   // If isFeed is true, render the community feed
   if (isFeed) {
     return <CommunityFeedView communitySlug={slug} />;
@@ -68,30 +58,20 @@ function updateRecentCommunities(
   const exists = prevCommunities.some((c) => c.slug === newCommunity.slug);
   if (exists) {
     // Move existing community to the start
-    return [
-      newCommunity,
-      ...prevCommunities.filter((c) => c.slug !== newCommunity.slug),
-    ];
+    return [newCommunity, ...prevCommunities.filter((c) => c.slug !== newCommunity.slug)];
   }
   // Add new community to the start, keep max 10 recent
   return [newCommunity, ...prevCommunities].slice(0, 10);
 }
 
 function CommunityDetailsView({ slug }: { slug: string }) {
-  const {
-    data: communityDetails,
-    isLoading,
-    isError,
-    error,
-  } = useGetCommunityDetails(slug);
+  const { community: communityConfig } = useEmbedConfigs();
+  const { data: communityDetails, isLoading, isError, error } = useGetCommunityDetails(slug);
   const { isDesktop } = useDeviceDetectMediaQuery();
   const detailsId = useId();
   const { track, EventName } = useAnalytics();
   const { createExternalLink } = useLinkContext();
-  const [, setStoredCommunities] = useLocalStorage<RecentCommunity[]>(
-    RECENT_COMMUNITIES_KEY,
-    []
-  );
+  const [, setStoredCommunities] = useLocalStorage<RecentCommunity[]>(RECENT_COMMUNITIES_KEY, []);
   const queryClient = useQueryClient();
   const [currentTab, setCurrentTab] = useState<string>("groups");
 
@@ -129,11 +109,7 @@ function CommunityDetailsView({ slug }: { slug: string }) {
     if (!communityDetails) return;
 
     const newCommunity: RecentCommunity = {
-      dp:
-        communityDetails.dp_s ??
-        communityDetails.dp_m ??
-        communityDetails.dp ??
-        "",
+      dp: communityDetails.dp_s ?? communityDetails.dp_m ?? communityDetails.dp ?? "",
       community_name: communityDetails.name ?? "",
       slug: communityDetails.slug,
     };
@@ -159,17 +135,13 @@ function CommunityDetailsView({ slug }: { slug: string }) {
 
   const showPrivateCommunityAccess =
     communityDetails.type === "PRIVATE" &&
-    (communityDetails.logged_in_user_role === "UNJOINED" ||
-      communityDetails.logged_in_user_role === "REQUESTED");
+    (communityDetails.logged_in_user_role === "UNJOINED" || communityDetails.logged_in_user_role === "REQUESTED");
 
   const admins = (
     <MemberList
       title="Admins"
       members={[
-        mapMemberDetails(
-          communityDetails.leader,
-          communityDetails.leader.member_id
-        ),
+        mapMemberDetails(communityDetails.leader, communityDetails.leader.member_id),
         ...communityDetails.moderators.map((moderator) =>
           mapMemberDetails(moderator, communityDetails.leader.member_id)
         ),
@@ -179,30 +151,28 @@ function CommunityDetailsView({ slug }: { slug: string }) {
 
   const createCtas = ({ inTopBar = false }: { inTopBar?: boolean }) => (
     <div className="gencl:flex gencl:gap-2">
-      <JoinCommunityButton
-        roleTexts={{
-          UNJOINED: inTopBar ? "Join" : "Join Community",
-        }}
-        role={communityDetails.logged_in_user_role}
-        communityId={communityDetails.community_id}
-        communityHandle={communityDetails.handle}
-        communityName={communityDetails.name ?? ""}
-        slug={communityDetails.slug}
-        isPrivate={communityDetails.type === "PRIVATE"}
-        onCommunityJoinStatusChange={handleCommunityJoinStatusChange}
-        className="gencl:flex-grow gencl:sm:flex-grow-0!"
-      />
-      {!inTopBar && (
+      {communityConfig.showJoinCommunityButton && (
+        <JoinCommunityButton
+          roleTexts={{
+            UNJOINED: inTopBar ? "Join" : "Join Community",
+          }}
+          role={communityDetails.logged_in_user_role}
+          communityId={communityDetails.community_id}
+          communityHandle={communityDetails.handle}
+          communityName={communityDetails.name ?? ""}
+          slug={communityDetails.slug}
+          isPrivate={communityDetails.type === "PRIVATE"}
+          onCommunityJoinStatusChange={handleCommunityJoinStatusChange}
+          className="gencl:flex-grow gencl:sm:flex-grow-0!"
+        />
+      )}
+      {!inTopBar && communityConfig.showCommunityShareButton && (
         <ShareButton
-          pathName={createExternalLink(
-            buildPageUrl({ type: "community", slug })
-          )}
+          pathName={createExternalLink(buildPageUrl({ type: "community", slug }))}
           onClick={() => {
             track(EventName.COMMUNITY_SHARED, {
               community_id: communityDetails.community_id,
-              share_url: createExternalLink(
-                buildPageUrl({ type: "community", slug })
-              ),
+              share_url: createExternalLink(buildPageUrl({ type: "community", slug })),
             });
           }}
         />
@@ -218,35 +188,19 @@ function CommunityDetailsView({ slug }: { slug: string }) {
         className="gencl:pl-4 gencl:pr-6 gencl:py-4"
         title={communityDetails?.name ?? ""}
         profileImageDetails={{
-          imageUrl:
-            communityDetails?.dp_s ??
-            communityDetails.dp_m ??
-            communityDetails.dp ??
-            "",
+          imageUrl: communityDetails?.dp_s ?? communityDetails.dp_m ?? communityDetails.dp ?? "",
           isAvatar: false,
           alt: communityDetails?.name ?? "",
         }}
         metadata={{ type: communityDetails.type }}
-        ctas={
-          <div className="gencl:gap-2 gencl:justify-end gencl:flex">
-            {createCtas({ inTopBar: true })}
-          </div>
-        }
+        ctas={<div className="gencl:gap-2 gencl:justify-end gencl:flex">{createCtas({ inTopBar: true })}</div>}
       />
       <div className="gencl:w-full gencl:overflow-auto gencl:h-full gencl:px-0 gencl:sm:px-6!">
         <div className="gencl:h-auto gencl:relative">
-          <CommunityBanner
-            src={communityDetails?.banner ?? ""}
-            className="gencl:shrink-0"
-          />
+          <CommunityBanner src={communityDetails?.banner ?? ""} className="gencl:shrink-0" />
           <Avatar
             alt={communityDetails?.name ?? ""}
-            imageUrl={
-              communityDetails?.dp_l ??
-              communityDetails.dp_m ??
-              communityDetails.dp ??
-              ""
-            }
+            imageUrl={communityDetails?.dp_l ?? communityDetails.dp_m ?? communityDetails.dp ?? ""}
             size="xl"
             isAvatar={false}
             className="gencl:absolute gencl:bottom-0 gencl:translate-y-1/2 gencl:left-4 gencl:sm:hidden! gencl:block gencl:border gencl:border-white"
@@ -254,16 +208,9 @@ function CommunityDetailsView({ slug }: { slug: string }) {
         </div>
         <div className="gencl:flex gencl:pt-10 gencl:sm:pt-6! gencl:gap-6">
           <div className="gencl:w-full">
-            <Details
-              communityDetails={communityDetails}
-              detailsId={detailsId}
-              ctas={createCtas({})}
-            />
+            <Details communityDetails={communityDetails} detailsId={detailsId} ctas={createCtas({})} />
             {showPrivateCommunityAccess ? (
-              <ComponentErrorState
-                type="PRIVATE_COMMUNITY"
-                className="gencl:my-4"
-              />
+              <ComponentErrorState type="PRIVATE_COMMUNITY" className="gencl:my-4" />
             ) : (
               <CommunityDetailsTabs
                 slug={slug}
@@ -272,26 +219,14 @@ function CommunityDetailsView({ slug }: { slug: string }) {
                 value={currentTab}
                 onValueChange={handleTabChange}
                 communityUserRole={communityDetails.logged_in_user_role}
-                aboutComponent={
-                  <About
-                    communityDetails={communityDetails}
-                    admins={admins}
-                    variant="mobile"
-                  />
-                }
+                aboutComponent={<About communityDetails={communityDetails} admins={admins} variant="mobile" />}
                 ownerInfo={{
                   userName: communityDetails.leader.nickname,
                 }}
               />
             )}
           </div>
-          {isDesktop && (
-            <About
-              communityDetails={communityDetails}
-              admins={admins}
-              variant="default"
-            />
-          )}
+          {isDesktop && <About communityDetails={communityDetails} admins={admins} variant="default" />}
         </div>
       </div>
     </>
@@ -326,8 +261,8 @@ function About({
             isAvatar: communityDetails.leader.is_avatar,
           },
           url: buildPageUrl({
-            type: !!communityDetails.leader.brand ? "brand" : "profile",
-            slug: !!communityDetails.leader.brand
+            type: communityDetails.leader.brand ? "brand" : "profile",
+            slug: communityDetails.leader.brand
               ? communityDetails.leader.brand.brand_slug
               : communityDetails.leader.nickname,
           }),
@@ -402,11 +337,7 @@ function Details({
       id={detailsId}
       title={communityDetails?.name ?? ""}
       profileImageDetails={{
-        imageUrl:
-          communityDetails?.dp_l ??
-          communityDetails.dp_m ??
-          communityDetails.dp ??
-          "",
+        imageUrl: communityDetails?.dp_l ?? communityDetails.dp_m ?? communityDetails.dp ?? "",
         isAvatar: false,
         alt: communityDetails?.name ?? "",
       }}

@@ -1,7 +1,9 @@
-import { cn, defaultSizesForIcons } from "@genuin/ui/lib/utils";
-import type { SVGIconsProps } from "../type";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
+
+import { cn, defaultSizesForIcons } from "@genuin/ui/lib/utils";
+
+import type { SVGIconsProps } from "../type";
 
 const iconVariants = cva("", {
   variants: {
@@ -18,12 +20,7 @@ const iconVariants = cva("", {
   },
 });
 
-export function FlagIcon({
-  size,
-  theme,
-  className,
-  ...restProps
-}: SVGIconsProps & VariantProps<typeof iconVariants>) {
+export function FlagIcon({ size, theme, className, ...restProps }: SVGIconsProps & VariantProps<typeof iconVariants>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -32,14 +29,9 @@ export function FlagIcon({
       viewBox="0 0 24 24"
       fill="none"
       className={cn(iconVariants({ size, theme }), className, "")}
-      {...restProps}
-    >
+      {...restProps}>
       <path d="M5 5V20" strokeWidth="1.5" strokeLinecap="round" />
-      <path
-        d="M5 6C5 6 6.75 4 9.375 4C12 4 14 6 16 6C18 6 19 5 19 5"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
+      <path d="M5 6C5 6 6.75 4 9.375 4C12 4 14 6 16 6C18 6 19 5 19 5" strokeWidth="1.5" strokeLinecap="round" />
       <path
         d="M5 16C5 16 6.75 13.8 9.375 13.8C12 13.8 14 16 16 16C18 16 19 14.9 19 14.9V5"
         strokeWidth="1.5"

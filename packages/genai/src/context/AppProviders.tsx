@@ -1,10 +1,13 @@
 import React, { useMemo, type ReactNode } from 'react';
+
+import { OctoAnalytics } from '@/analytics';
+import { RudderAnalyticsProvider } from '@/services/analytics/RudderAnalyticsProvider';
+import type { PendingMessage } from '@/types';
+
+import { AnalyticsProvider } from './analytics/provider';
 import { AgentsProvider } from './app/provider';
 import { InputProvider } from './input/provider';
-import { RudderAnalyticsProvider } from '@/services/analytics/RudderAnalyticsProvider';
-import { AnalyticsProvider } from './analytics/provider';
-import { OctoAnalytics } from '@/analytics';
-import type { PendingMessage } from '@/types';
+
 
 interface AppProvidersProps {
     children: ReactNode;

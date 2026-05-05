@@ -1,8 +1,9 @@
+import type { VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
+
 import { cn, defaultSizesForIcons } from "@genuin/ui/lib/utils";
 
 import type { SVGIconsProps } from "../type";
-import type { VariantProps } from "class-variance-authority";
-import { cva } from "class-variance-authority";
 
 const iconVariants = cva("", {
   variants: {
@@ -20,12 +21,7 @@ const iconVariants = cva("", {
 });
 
 // TODO: UPDATE this icon once the design is confirmed.
-export function PinIcon({
-  theme,
-  size,
-  className,
-  ...restProps
-}: SVGIconsProps & VariantProps<typeof iconVariants>) {
+export function PinIcon({ theme, size, className, ...restProps }: SVGIconsProps & VariantProps<typeof iconVariants>) {
   return (
     <svg
       width="16"
@@ -34,8 +30,7 @@ export function PinIcon({
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={cn(iconVariants({ theme, size }), className)}
-      {...restProps}
-    >
+      {...restProps}>
       <g clipPath="url(#clip0_5636_30482)">
         <path
           fillRule="evenodd"

@@ -1,9 +1,7 @@
-import { CategoryListResponseType } from "./index";
-import { CategoryListType } from "./index";
+import type { CategoryListResponseType } from "./index";
+import type { CategoryListType } from "./index";
 
-export function parseCategory(
-  data: CategoryListResponseType
-): CategoryListType {
+export function parseCategory(data: CategoryListResponseType): CategoryListType {
   return data.map((category) => ({
     category: category.category,
     communities: category.communities.map((community) => ({

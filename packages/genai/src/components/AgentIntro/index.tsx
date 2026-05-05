@@ -1,4 +1,5 @@
 import { useAgentsContext } from '@/context/app/context';
+
 import Objectives from '../Objectives';
 
 const AgentIntro = () => {

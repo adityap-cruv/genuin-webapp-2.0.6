@@ -1,29 +1,31 @@
-import { useState, useCallback, useEffect } from 'react'
-import { ModalShell } from '../modal-shell'
-import { Button } from '@components/ui/button'
-import { useAuthenticationModalStore } from '../store'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
-import { ksCbRequest, useKsCbStatus } from '../api/auth'
-import { useSession } from 'next-auth/react'
-import { Loader } from '@components/ui/loader'
-import Analytics from '@services/analytics'
-import { KsCbSlides } from '../components/ks-cb-slides'
-import { openModal } from '@/lib/utils'
-import { getAppLink } from '@/lib/get-deeplink'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { getQueryKeyForksCbStatus } from '@/lib/utils/react-query/keys'
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
+import { useState, useCallback, useEffect } from "react";
+
+import { getAppLink } from "@/lib/get-deeplink";
+import { openModal } from "@/lib/utils";
+import { getQueryKeyForksCbStatus } from "@/lib/utils/react-query/keys";
+import { Button } from "@components/ui/button";
+import { Loader } from "@components/ui/loader";
+import { useGenuinOptions } from "@lib/stores/genuin-options";
+import Analytics from "@services/analytics";
+
+import { ksCbRequest, useKsCbStatus } from "../api/auth";
+import { KsCbSlides } from "../components/ks-cb-slides";
+import { ModalShell } from "../modal-shell";
+import { useAuthenticationModalStore } from "../store";
 
 export function KsToCbSubdomain() {
-  const { setStep } = useAuthenticationModalStore()
-  const { data: sessionData, update: updateSession } = useSession()
+  const { setStep } = useAuthenticationModalStore();
+  const { data: sessionData, update: updateSession } = useSession();
   const { user, webCTA } = useGenuinOptions((state) => ({
     user: state.user,
     webCTA: state.webCTA,
-  }))
-  const [error, setError] = useState<string | null>(null)
-  const { data: ksCbStatus, isLoading: isKsCbStatusLoading } = useKsCbStatus()
-  const isRequested = ksCbStatus?.status === 2
-  const queryClient = useQueryClient()
+  }));
+  const [error, setError] = useState<string | null>(null);
+  const { data: ksCbStatus, isLoading: isKsCbStatusLoading } = useKsCbStatus();
+  const isRequested = ksCbStatus?.status === 2;
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (ksCbStatus?.status && sessionData?.user) {
@@ -33,11 +35,11 @@ export function KsToCbSubdomain() {
           ...sessionData.user,
           ksCbRequestStatus: ksCbStatus.status,
         },
-      })
+      });
     }
-  }, [ksCbStatus])
+  }, [ksCbStatus]);
 
-  const { mutate: requestKsCb, isLoading: isMutating } = useMutation({
+  const { mutate: requestKsCb, isPending: isMutating } = useMutation({
     mutationFn: ksCbRequest,
     onSuccess: async (res) => {
       if (res.code === 200) {
@@ -47,40 +49,40 @@ export function KsToCbSubdomain() {
             ...sessionData?.user,
             ksCbRequestStatus: res.data.ks_cb_request_status,
           },
-        })
-        void queryClient.invalidateQueries({ queryKey: getQueryKeyForksCbStatus() })
+        });
+        void queryClient.invalidateQueries({ queryKey: getQueryKeyForksCbStatus() });
         void Analytics.track({
-          eventName: 'Become Cb Request Clicked',
+          eventName: "Become Cb Request Clicked",
           properties: {},
-        })
+        });
       } else {
-        setError('Something went wrong.')
+        setError("Something went wrong.");
       }
     },
     onError: () => {
-      setError('Something went wrong.')
+      setError("Something went wrong.");
     },
-  })
+  });
 
   const handleClick = useCallback(() => {
-    setError(null)
+    setError(null);
 
     if (!user) {
-      if (webCTA === 'app') {
+      if (webCTA === "app") {
         void getAppLink().then((generatedLink) => {
           openModal({
             deepLink: generatedLink,
-            subtitle: 'Download app to become a creator.',
-          })
-        })
+            subtitle: "Download app to become a creator.",
+          });
+        });
       } else {
-        setStep('STARTER', 'KS_CB_REQUEST')
+        setStep("STARTER", "KS_CB_REQUEST");
       }
-      return
+      return;
     }
 
-    requestKsCb()
-  }, [user, webCTA, setStep, requestKsCb])
+    requestKsCb();
+  }, [user, webCTA, setStep, requestKsCb]);
 
   return (
     <ModalShell className="sm:max-w-[384px]">
@@ -95,13 +97,13 @@ export function KsToCbSubdomain() {
           {isMutating || isKsCbStatusLoading ? (
             <Loader size="sm" className="stroke-monochrome-white" />
           ) : isRequested ? (
-            'Requested'
+            "Requested"
           ) : (
-            'Become a Creator'
+            "Become a Creator"
           )}
         </Button>
       )}
       {error && <p className="text-supplementary-red">{error}</p>}
     </ModalShell>
-  )
+  );
 }

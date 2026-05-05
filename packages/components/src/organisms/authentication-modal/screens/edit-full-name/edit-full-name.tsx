@@ -1,22 +1,16 @@
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-  Form,
-  FormLabel,
-} from "@genuin/ui/components/form";
-import { ComponentProps } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useAuthContext } from "@genuin/components/context/auth";
-import { useUpdateUserMutation } from "@genuin/components/react-query/api/authentication";
-import { cn } from "@genuin/ui/lib/utils";
-
-import { useAuthenticationModalContext } from "../../context";
+import { FormControl, FormField, FormItem, FormMessage, Form, FormLabel } from "@genuin/ui/components/form";
 import { Input } from "@genuin/ui/components/input";
 import { Toast } from "@genuin/ui/components/toaster";
+import { cn } from "@genuin/ui/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { ComponentProps } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+import { useAuthContext } from "@genuin/components/context/auth";
+import { useUpdateUserMutation } from "@genuin/components/react-query/api/authentication";
+
+import { useAuthenticationModalContext } from "../../context";
 import { SubmitButton } from "../../submit-button";
 
 const nameRegex = /^[a-zA-Z0-9 ]+$/i;
@@ -31,10 +25,7 @@ const formSchema = z.object({
     .optional(),
 });
 
-export function EditFullName({
-  className,
-  ...restProps
-}: ComponentProps<"div">) {
+export function EditFullName({ className, ...restProps }: ComponentProps<"div">) {
   const { user, updateUser } = useAuthContext();
   const { closeModal } = useAuthenticationModalContext();
 
@@ -44,24 +35,22 @@ export function EditFullName({
     mode: "onChange",
   });
 
-  const { mutate: updateUserDetails, isPending: isPendingUpdateUser } =
-    useUpdateUserMutation({
-      onSuccess: ({ status }) => {
-        if (status) {
-          updateUser({ ...user, name: form.getValues("fullname") });
-          Toast.Success({
-            message: "Your full name has been updated",
-          });
-        }
-        closeModal();
-      },
-      onError: () => {
-        form.setError("root", {
-          message:
-            "Something went wrong while updating name. Please try again!",
+  const { mutate: updateUserDetails, isPending: isPendingUpdateUser } = useUpdateUserMutation({
+    onSuccess: ({ status }) => {
+      if (status) {
+        updateUser({ ...user, name: form.getValues("fullname") });
+        Toast.Success({
+          message: "Your full name has been updated",
         });
-      },
-    });
+      }
+      closeModal();
+    },
+    onError: () => {
+      form.setError("root", {
+        message: "Something went wrong while updating name. Please try again!",
+      });
+    },
+  });
 
   const onSubmit = () => {
     const fullNameValue = form.getValues("fullname");
@@ -71,18 +60,13 @@ export function EditFullName({
   return (
     <div className={cn("gencl:space-y-6", className)} {...restProps}>
       <div className="gencl:space-y-2">
-        <h3 className="gencl:text-center gencl:text-headline-2-semi-bold">
-          Edit full name
-        </h3>
+        <h3 className="gencl:text-center gencl:text-headline-2-semi-bold">Edit full name</h3>
         <p className="gencl:text-center gencl:text-body-1-medium gencl:text-secondary-600">
           This name will show on your videos
         </p>
       </div>
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="gencl:space-y-6"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="gencl:space-y-6">
           <FormField
             control={form.control}
             name="fullname"
@@ -90,23 +74,12 @@ export function EditFullName({
               const currentLength = field.value?.length || 0;
               return (
                 <FormItem className="sm:w-full">
-                  <FormLabel
-                    htmlFor="fullname-input"
-                    className="gencl:flex gencl:justify-between"
-                  >
+                  <FormLabel htmlFor="fullname-input" className="gencl:flex gencl:justify-between">
                     <span>Full Name</span>
-                    <span className="gencl:text-secondary-500 gencl:text-body-2-medium">
-                      {currentLength}/25
-                    </span>
+                    <span className="gencl:text-secondary-500 gencl:text-body-2-medium">{currentLength}/25</span>
                   </FormLabel>
                   <FormControl>
-                    <Input
-                      id="fullname-input"
-                      maxLength={25}
-                      type="text"
-                      autoComplete="off"
-                      {...field}
-                    />
+                    <Input id="fullname-input" maxLength={25} type="text" autoComplete="off" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

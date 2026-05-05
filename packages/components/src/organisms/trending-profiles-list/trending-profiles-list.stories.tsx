@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { TrendingProfilesList } from "./trending-profiles-list";
+
 import data from "./data.json";
+import { TrendingProfilesList } from "./trending-profiles-list";
 
 const meta: Meta<typeof TrendingProfilesList> = {
   title: "Organisms/Trending Profiles List",
@@ -23,8 +24,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          "Displays a list of trending profiles with avatars, usernames, and verification status.",
+        story: "Displays a list of trending profiles with avatars, usernames, and verification status.",
       },
     },
   },

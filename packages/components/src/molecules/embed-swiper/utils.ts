@@ -37,15 +37,13 @@ export function getSlidesPerView(
   clientWidth: number,
   forFeed: boolean,
   aspectRatio?: string,
-  useWindowSwiperMode?: boolean,
+  useWindowSwiperMode?: boolean
 ) {
   clientHeight = useWindowSwiperMode ? window.innerHeight : clientHeight;
-  clientWidth = clientWidth;
   const elementHeight = clientHeight;
   const elementWidth = clientWidth;
   let ratio = 1;
-  const { width: widthRatio, height: heightRatio } =
-    getAspectRatio(aspectRatio);
+  const { width: widthRatio, height: heightRatio } = getAspectRatio(aspectRatio);
 
   // separate logic for feed and carousel
   if (forFeed) {

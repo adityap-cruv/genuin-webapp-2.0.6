@@ -1,37 +1,23 @@
 "use client";
-import {
-  axiosRegistry,
-  useAxiosInstance,
-} from "@genuin/components/context/axios";
-import type { AuthUser } from "../../types/auth";
-
-import {
-  AuthCallbackDataType,
-  AuthContext,
-  AuthenticationStatusType,
-} from "./context";
-import { useCallback, useLayoutEffect, useEffect, useState } from "react";
-import { useSearchParams } from "@genuin/components/hooks/use-search-params";
-import { useGetUserDataForSSOMutation } from "@genuin/components/react-query/api/authentication/auto-login";
 import { Toast } from "@genuin/ui/components/toaster";
+import type { AxiosError, InternalAxiosRequestConfig } from "axios";
+import { useCallback, useLayoutEffect, useEffect, useState } from "react";
+
+import { axiosRegistry, useAxiosInstance } from "@genuin/components/context/axios";
+import { useSearchParams } from "@genuin/components/hooks/use-search-params";
+import { SDKEventEmitter, SDKListenerEventName } from "@genuin/components/lib/sdk-event-emitter";
+import { savePendingAction, type PendingActionData } from "@genuin/components/lib/utils/pending-action-storage";
+import { useGetUserDataForSSOMutation } from "@genuin/components/react-query/api/authentication/auto-login";
 import { invalidateAllQueries } from "@genuin/components/react-query/client";
-import { useBaseContext } from "../base";
-import {
-  SDKEventEmitter,
-  SDKListenerEventName,
-} from "@genuin/components/lib/sdk-event-emitter";
-import { useSafeEmbedContext } from "../embed/context";
-import { AxiosError, InternalAxiosRequestConfig } from "axios";
-import {
-  emitCachedUserUpdateEvent,
-  emitRefreshFailedEvent,
-  performTokenRefresh,
-} from "./token-refresh";
-import {
-  savePendingAction,
-  type PendingActionData,
-} from "@genuin/components/lib/utils/pending-action-storage";
+
+import type { AuthUser } from "../../types/auth";
 import { AnalyticsService } from "../analytics/service";
+import { useBaseContext } from "../base";
+import { useSafeEmbedContext } from "../embed/context";
+
+import { AuthContext } from "./context";
+import type { AuthCallbackDataType, AuthenticationStatusType } from "./context";
+import { emitCachedUserUpdateEvent, emitRefreshFailedEvent, performTokenRefresh } from "./token-refresh";
 
 // Define global window type for genuinAuth
 declare global {
@@ -86,18 +72,9 @@ function updateLocalStorageUserData(updates: Partial<AuthUser>) {
  * AuthProvider manages authentication state and provides it to child components via context.
  * It handles sign-in, sign-out, user updates, and token management.
  */
-export function AuthProvider({
-  children,
-  user,
-  onSignIn,
-  onSignOut,
-  onUpdateUser,
-}: AuthProviderPropsType) {
-  const [authenticatedUser, setAuthenticatedUser] = useState<
-    AuthUser | null | undefined
-  >(user);
-  const { removeSearchParams, getSearchParams, searchParams } =
-    useSearchParams();
+export function AuthProvider({ children, user, onSignIn, onSignOut, onUpdateUser }: AuthProviderPropsType) {
+  const [authenticatedUser, setAuthenticatedUser] = useState<AuthUser | null | undefined>(user);
+  const { removeSearchParams, getSearchParams, searchParams } = useSearchParams();
   // Get the brand-scoped axios instance for this embed
   const axiosInstance = useAxiosInstance();
 
@@ -121,10 +98,9 @@ export function AuthProvider({
     },
   });
 
-  const [authenticationStatus, setAuthenticationStatus] =
-    useState<AuthenticationStatusType>(
-      !!user ? "authenticated" : "unauthenticated",
-    );
+  const [authenticationStatus, setAuthenticationStatus] = useState<AuthenticationStatusType>(
+    user ? "authenticated" : "unauthenticated"
+  );
 
   useLayoutEffect(() => {
     /*
@@ -172,18 +148,12 @@ export function AuthProvider({
       }
     };
 
-    SDKEventEmitter.on(
-      SDKListenerEventName.AUTHENTICATE_USER,
-      handleAuthenticateUser,
-    );
+    SDKEventEmitter.on(SDKListenerEventName.AUTHENTICATE_USER, handleAuthenticateUser);
 
     SDKEventEmitter.on(SDKListenerEventName.LOGOUT_USER, handleLogoutUser);
 
     return () => {
-      SDKEventEmitter.off(
-        SDKListenerEventName.AUTHENTICATE_USER,
-        handleAuthenticateUser,
-      );
+      SDKEventEmitter.off(SDKListenerEventName.AUTHENTICATE_USER, handleAuthenticateUser);
       SDKEventEmitter.off(SDKListenerEventName.LOGOUT_USER, handleLogoutUser);
     };
   }, [isEmbed]);
@@ -195,14 +165,14 @@ export function AuthProvider({
     // If authenticatedUser is explicitly null (after logout), don't fall back to user prop
 
     // hasTokenChanged tracks the token & ensures we only invalidate queries if the token actually changes, preventing unnecessary refetches
-    const token =
-      authenticatedUser === null
-        ? null
-        : (authenticatedUser?.accessToken ?? user?.accessToken ?? null);
+    const token = authenticatedUser === null ? null : (authenticatedUser?.accessToken ?? user?.accessToken ?? null);
 
-    const hasTokenChanged = token
-      ? axiosRegistry.setAuthTokenOnAll(token)
-      : axiosRegistry.clearAuthTokenFromAll();
+    let hasTokenChanged = false;
+    if (token) {
+      hasTokenChanged = axiosRegistry.setAuthTokenOnAll(token);
+    } else {
+      hasTokenChanged = axiosRegistry.clearAuthTokenFromAll();
+    }
 
     // Invalidate ALL queries when auth token changes
     // Authentication data is included in every API request, so all responses
@@ -227,7 +197,7 @@ export function AuthProvider({
       try {
         setAuthenticatedUser(newUser);
         setAuthenticationStatus("loading");
-        if (!!newUser) {
+        if (newUser) {
           await onSignIn?.(newUser);
         }
         AnalyticsService.updatePayload({
@@ -243,7 +213,7 @@ export function AuthProvider({
         setAuthenticatedUser(null);
       }
     },
-    [onSignIn],
+    [onSignIn]
   );
 
   const signOut = useCallback(
@@ -259,7 +229,7 @@ export function AuthProvider({
         console.error("Error during sign out:", error);
       }
     },
-    [onSignOut],
+    [onSignOut]
   );
 
   // this is used for updating the user state in the embed when the video is watched and the user is authenticated. We need to update the user state in the embed because the video watched status is stored in the user object and we want to reflect that change in the embed without requiring a page refresh.
@@ -267,7 +237,7 @@ export function AuthProvider({
     async (newUser: Partial<AuthUser>) => {
       try {
         setAuthenticationStatus("loading");
-        if (!!newUser) {
+        if (newUser) {
           // Merge updated fields into the current authenticatedUser
           const mergedUser = {
             ...authenticatedUser,
@@ -286,12 +256,10 @@ export function AuthProvider({
         setAuthenticationStatus("authenticated");
       } catch (error) {
         console.error("Error during user update:", error);
-        setAuthenticationStatus(
-          authenticatedUser ? "authenticated" : "unauthenticated",
-        );
+        setAuthenticationStatus(authenticatedUser ? "authenticated" : "unauthenticated");
       }
     },
-    [onUpdateUser, authenticatedUser],
+    [onUpdateUser, authenticatedUser]
   );
 
   /**
@@ -320,19 +288,12 @@ export function AuthProvider({
 
       // In embed environments with genuinAuth.
       // return a function to handle external auth
-      if (
-        window.genuinAuth ||
-        embedData?.authInfo?.signInUrl ||
-        embedData?.authInfo?.signUpUrl
-      ) {
+      if (window.genuinAuth || embedData?.authInfo?.signInUrl || embedData?.authInfo?.signUpUrl) {
         return () => {
           // Save pending action if provided and user is unauthenticated
           if (authenticationStatus === "unauthenticated" && pendingActionData) {
             // Automatically add divId and embedId from the current embed context
-            const enrichedPendingActionData: Omit<
-              PendingActionData,
-              "timestamp"
-            > = {
+            const enrichedPendingActionData: Omit<PendingActionData, "timestamp"> = {
               ...pendingActionData,
               divId: embedContext?.rootElement?.id,
             };
@@ -349,13 +310,7 @@ export function AuthProvider({
       // so consumer shows auth modal
       return undefined;
     },
-    [
-      isEmbed,
-      embedData?.style,
-      authenticationStatus,
-      embedData?.authInfo,
-      embedContext?.rootElement?.id,
-    ],
+    [isEmbed, embedData?.style, authenticationStatus, embedData?.authInfo, embedContext?.rootElement?.id]
   );
 
   useEffect(() => {
@@ -367,18 +322,11 @@ export function AuthProvider({
         const originalRequest = error.config as ExtendedAxiosRequestConfig;
 
         // If the error is 401 and we haven't already tried to refresh
-        if (
-          error.response?.status === 401 &&
-          originalRequest &&
-          !originalRequest._retry
-        ) {
+        if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
           originalRequest._retry = true;
 
           try {
-            const newTokens = await performTokenRefresh(
-              user?.accessToken,
-              user?.refreshToken,
-            );
+            const newTokens = await performTokenRefresh(user?.accessToken, user?.refreshToken);
 
             if (newTokens) {
               const updatedUser = { ...user, ...newTokens };
@@ -394,8 +342,7 @@ export function AuthProvider({
             if (isEmbed) {
               axiosRegistry.clearAuthTokenFromAll();
               emitRefreshFailedEvent({
-                token:
-                  authenticatedUser?.autoLoginToken || user?.autoLoginToken,
+                token: authenticatedUser?.autoLoginToken || user?.autoLoginToken,
                 brandId: authenticatedUser?.brandId ?? user?.brandId ?? 0,
                 params: {},
               });
@@ -407,7 +354,7 @@ export function AuthProvider({
         }
 
         return Promise.reject(error);
-      },
+      }
     );
 
     return () => {
@@ -425,8 +372,7 @@ export function AuthProvider({
         updateUser,
         updateLocalStorageUserData,
         handleAuthCallback,
-      }}
-    >
+      }}>
       {children}
     </AuthContext.Provider>
   );

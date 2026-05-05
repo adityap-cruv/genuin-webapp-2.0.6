@@ -1,12 +1,15 @@
-import { Button } from '@/components/ui/button'
-import { ModalShell } from '../authentication/modal-shell'
-import WarningIcon from '@icons/wallet/icAlertsWarningTriangle.svg'
-import { useAuthenticationModalStore } from '../authentication/store'
-import { useShallow } from 'zustand/react/shallow'
-import { redeemCouponAPI } from '@/lib/api/wallet'
 import { useState } from 'react'
-import { Loader } from '@/components/ui/loader'
+import { useShallow } from 'zustand/react/shallow'
+
 import { CustomImage } from '@/components/custom/custom-image'
+import { Button } from '@/components/ui/button'
+import { Loader } from '@/components/ui/loader'
+import { redeemCouponAPI } from '@/lib/api/wallet'
+import WarningIcon from '@icons/wallet/icAlertsWarningTriangle.svg'
+
+import { ModalShell } from '../authentication/modal-shell'
+import { useAuthenticationModalStore } from '../authentication/store'
+
 
 export function RedeemCredits() {
   const { closeModal } = useAuthenticationModalStore(useShallow((state) => ({ closeModal: state.close })))

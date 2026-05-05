@@ -1,20 +1,16 @@
 "use client";
-import { cn } from "@genuin/ui/lib/utils";
-import {
-  IHeartPauseIcon,
-  IHeartPlayIcon,
-  IHeartStopIcon,
-} from "@genuin/ui/icons/iheart-icons";
 import { Button } from "@genuin/ui/button";
-import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
-import { useIHeartPlayback } from "./use-iheart-playback";
+import { IHeartPauseIcon, IHeartPlayIcon, IHeartStopIcon } from "@genuin/ui/icons/iheart-icons";
+import { cn } from "@genuin/ui/lib/utils";
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
-import {
-  SDKEventEmitter,
-  SDKEventName,
-} from "@genuin/components/lib/sdk-event-emitter";
+
 import { useAnalytics } from "@genuin/components/context";
-import { buildLinkoutsAnalyticsData } from "@genuin/components/organisms";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { SDKEventEmitter, SDKEventName } from "@genuin/components/lib/sdk-event-emitter";
+import { buildLinkoutsAnalyticsData } from "@genuin/components/organisms/linkouts/build-linkouts-analytics-data";
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+
+import { useIHeartPlayback } from "./use-iheart-playback";
 
 // Module-level set deduplicates LINKOUTS_VIEWED tracking across simultaneous
 // instances of the IHeart listen-live button (e.g. embed + expand rendered at the
@@ -33,29 +29,24 @@ interface IHeartListenLiveButtonProps {
   };
 }
 
-export function IHeartListenLiveButton({
-  className,
-  videoDetails,
-  info,
-}: IHeartListenLiveButtonProps) {
+export function IHeartListenLiveButton({ className, videoDetails, info }: IHeartListenLiveButtonProps) {
   const { isPlaying, handleClick, ctaText, isGoToEpisode } = useIHeartPlayback({
     info,
     videoDetails,
   });
+  const { brand } = useEmbedConfigs();
   const { track, EventName } = useAnalytics();
   const analyticsEventData = useMemo(
     () =>
       buildLinkoutsAnalyticsData({
         videoDetails,
       }),
-    [videoDetails],
+    [videoDetails]
   );
 
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [isVisible, setIsVisible] = useState(true);
-  const checkTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(
-    undefined,
-  );
+  const checkTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   // TODO: This view is used in iheart publisher page so in that the clicking behavior should be to open the clip player page instead of controlling playback, we should separate it via some flag to ensure proper rendering for both use cases
   const isOutlined = true;
@@ -82,24 +73,22 @@ export function IHeartListenLiveButton({
 
         // Calculate siblings width (all controls except this button's container)
         const siblings = Array.from(parent.children).filter(
-          (child) => child !== buttonElement.parentElement,
+          (child) => child !== buttonElement.parentElement
         ) as HTMLElement[];
 
-        const siblingsWidth = siblings.reduce(
-          (total, sibling) => total + sibling.getBoundingClientRect().width,
-          0,
-        );
+        const siblingsWidth = siblings.reduce((total, sibling) => total + sibling.getBoundingClientRect().width, 0);
 
         // Calculate available space and check if button would fit
         const availableSpace = parentRect.width - siblingsWidth;
         const buttonWidth = buttonElement.offsetWidth;
         const wouldFit = availableSpace >= buttonWidth + 8;
         const isCutOff = buttonRect.right > parentRect.right + 2;
-        const isOverflowing =
-          buttonElement.scrollWidth > buttonElement.clientWidth + 2;
+        const isOverflowing = buttonElement.scrollWidth > buttonElement.clientWidth + 2;
 
-        // Show button only if it fits and is not cut off or overflowing
-        // setIsVisible(wouldFit && !isCutOff && !isOverflowing);
+        // IHeart placements always keep button visible — skip dynamic sizing
+        if (!brand.iheartArticleId) {
+          setIsVisible(wouldFit && !isCutOff && !isOverflowing);
+        }
       }, 30); // Reduced debounce for faster response
     };
 
@@ -121,7 +110,7 @@ export function IHeartListenLiveButton({
       }
       resizeObserver.disconnect();
     };
-  }, [ctaText, isPlaying]);
+  }, [ctaText, isPlaying, brand.iheartArticleId]);
 
   // Fire LINKOUTS_VIEWED once when the button first mounts.
   // Mirrors the module-level Set deduplication pattern in linkouts.tsx so that
@@ -143,15 +132,9 @@ export function IHeartListenLiveButton({
   }, [videoDetails?.id, track, EventName.LINKOUTS_VIEWED, analyticsEventData]);
 
   const openClipPlayerLink = useCallback(() => {
-    const episodeId = videoDetails?.attributes?.episode_id
-      ? Number(videoDetails.attributes.episode_id)
-      : undefined;
-    const podcastId = videoDetails?.attributes?.podcast_id
-      ? Number(videoDetails.attributes.podcast_id)
-      : undefined;
-    const stationId = videoDetails?.attributes?.station_id
-      ? Number(videoDetails.attributes.station_id)
-      : undefined;
+    const episodeId = videoDetails?.attributes?.episode_id ? Number(videoDetails.attributes.episode_id) : undefined;
+    const podcastId = videoDetails?.attributes?.podcast_id ? Number(videoDetails.attributes.podcast_id) : undefined;
+    const stationId = videoDetails?.attributes?.station_id ? Number(videoDetails.attributes.station_id) : undefined;
     const slug = videoDetails?.attributes?.slug;
     const type = videoDetails?.attributes?.type;
 
@@ -175,16 +158,12 @@ export function IHeartListenLiveButton({
       "https://iheart.com/" +
         (isStation ? "live/" : "podcast/") +
         (isStation ? stationId : slug) +
-        (isFullEpisode ? "/episode/" + episodeId : ""),
+        (isFullEpisode ? "/episode/" + episodeId : "")
     );
     track(EventName.LINKOUTS_CLICKED, {
       ...analyticsEventData,
       linkUrl: url,
-      linkTitle: isGoToEpisode
-        ? "Go to Episode"
-        : isFullEpisode
-          ? "Full Episode"
-          : "Listen Live",
+      linkTitle: isGoToEpisode ? "Go to Episode" : isFullEpisode ? "Full Episode" : "Listen Live",
     });
     window.open(url, "_blank", "noopener,noreferrer");
   }, [videoDetails]);
@@ -195,8 +174,27 @@ export function IHeartListenLiveButton({
       // handleClick(e);
       openClipPlayerLink();
     },
-    [handleClick, openClipPlayerLink],
+    [handleClick, openClipPlayerLink]
   );
+
+  // Fire LINKOUTS_VIEWED once when the button first mounts.
+  // Mirrors the module-level Set deduplication pattern in linkouts.tsx so that
+  // simultaneous embed + expand renders of the same video only fire once.
+  useEffect(() => {
+    const trackingKey = `iheart-btn:${videoDetails?.id ?? "unknown"}`;
+
+    if (!trackedViewedKeys.has(trackingKey)) {
+      trackedViewedKeys.add(trackingKey);
+      console.log("listen live", videoDetails?.id);
+      track(EventName.LINKOUTS_VIEWED, {
+        ...analyticsEventData,
+      });
+    }
+
+    return () => {
+      trackedViewedKeys.delete(trackingKey);
+    };
+  }, [videoDetails?.id, track, EventName.LINKOUTS_VIEWED, analyticsEventData]);
 
   if (!ctaText) return null;
 
@@ -219,35 +217,23 @@ export function IHeartListenLiveButton({
         className={cn(
           "gencl:border gencl:px-3 gencl:py-2 gencl:rounded-full gencl:flex gencl:items-center gencl:justify-center gencl:gap-1 gencl:transition-colors gencl:h-9! gencl:text-body-1-semi-bold!",
           "gencl:border-white gencl:bg-transparent gencl:text-white",
-          !isVisible &&
-            "gencl:opacity-0 gencl:invisible gencl:pointer-events-none",
-          className,
+          !isVisible && "gencl:opacity-0 gencl:invisible gencl:pointer-events-none",
+          className
         )}
         title={ctaText}
         onClick={handleButtonClick}
-        aria-hidden={!isVisible}
-      >
+        aria-hidden={!isVisible}>
         {!isGoToEpisode &&
           (isPlaying ? (
             info.type === "station" ? (
               <IHeartStopIcon theme={isOutlined ? "dark" : "light"} size="md" />
             ) : (
-              <IHeartPauseIcon
-                theme={isOutlined ? "dark" : "light"}
-                size="md"
-              />
+              <IHeartPauseIcon theme={isOutlined ? "dark" : "light"} size="md" />
             )
           ) : (
             <IHeartPlayIcon theme={isOutlined ? "dark" : "light"} size="md" />
           ))}
-        <p
-          className={cn(
-            "gencl:text-body-1-semi-bold! gencl:whitespace-nowrap",
-            "gencl:text-white!",
-          )}
-        >
-          {ctaText}
-        </p>
+        <p className={cn("gencl:text-body-1-semi-bold! gencl:whitespace-nowrap", "gencl:text-white!")}>{ctaText}</p>
       </Button>
     </div>
   );

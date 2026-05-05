@@ -1,11 +1,13 @@
 import { useMutation } from "@tanstack/react-query";
+import type { AxiosInstance } from "axios";
+
 import { useAxiosInstance } from "@genuin/components/context/axios";
 import { getDeviceId } from "@genuin/components/lib/utils/device-id";
 import { encryptText } from "@genuin/components/lib/utils/encryption";
+import { API_PATHS } from "@genuin/components/react-query/paths";
+
 import { LOGIN_SOURCE } from "./constants";
 import { parseUserData } from "./parser";
-import { API_PATHS } from "@genuin/components/react-query/paths";
-import type { AxiosInstance } from "axios";
 
 type ConsumeOtpProps = Partial<{ email: string; phoneNumber: string }> & {
   code: string;
@@ -24,28 +26,20 @@ type ConsumeOtpProps = Partial<{ email: string; phoneNumber: string }> & {
  * This api is only for login/signup flow.
  * @returns
  */
-export async function consumeOtp({
-  email,
-  phoneNumber,
-  code,
-  preAuthSessionId,
-  responseDeviceId: resDeviceId,
-  isInIframe
-}: ConsumeOtpProps, axiosInstance: AxiosInstance) {
+export async function consumeOtp(
+  { email, phoneNumber, code, preAuthSessionId, responseDeviceId: resDeviceId, isInIframe }: ConsumeOtpProps,
+  axiosInstance: AxiosInstance
+) {
   const deviceId = getDeviceId(isInIframe);
   return await axiosInstance
     .post(API_PATHS.AUTH_CONSUME_OTP, {
       userInputCode: code,
-      phoneNumber: phoneNumber
-        ? await encryptText(phoneNumber, false)
-        : undefined,
+      phoneNumber: phoneNumber ? await encryptText(phoneNumber, false) : undefined,
       email: email ? await encryptText(email, false) : undefined,
       login_source: LOGIN_SOURCE.web,
       // login source is web according to backend.
       device_type: 3,
-      encrypted_device_id: deviceId
-        ? await encryptText(deviceId, true)
-        : undefined,
+      encrypted_device_id: deviceId ? await encryptText(deviceId, true) : undefined,
       preAuthSessionId,
       deviceId: resDeviceId,
     })
@@ -59,7 +53,7 @@ export async function consumeOtp({
       }
       return { otpVerified: true, user };
     })
-    .catch((e) => {
+    .catch((_e) => {
       // console.log('e::', e)
       return { otpVerified: false, user: null };
     });
@@ -68,16 +62,8 @@ export async function consumeOtp({
 type ConsumeOtpResponse = Awaited<ReturnType<typeof consumeOtp>>;
 
 type UseConsumeOtpMutationOptions = {
-  onSuccess?: (
-    data: ConsumeOtpResponse,
-    variables: ConsumeOtpProps,
-    context: unknown
-  ) => void;
-  onError?: (
-    error: unknown,
-    variables: ConsumeOtpProps,
-    context: unknown
-  ) => void;
+  onSuccess?: (data: ConsumeOtpResponse, variables: ConsumeOtpProps, context: unknown) => void;
+  onError?: (error: unknown, variables: ConsumeOtpProps, context: unknown) => void;
 };
 
 /**
@@ -85,10 +71,7 @@ type UseConsumeOtpMutationOptions = {
  * @param options - Options for the mutation including onSuccess and onError callbacks
  * @returns A mutation hook for consuming OTP.
  */
-export function useConsumeOtpMutation({
-  onError,
-  onSuccess,
-}: UseConsumeOtpMutationOptions) {
+export function useConsumeOtpMutation({ onError, onSuccess }: UseConsumeOtpMutationOptions) {
   const axiosInstance = useAxiosInstance();
 
   return useMutation({

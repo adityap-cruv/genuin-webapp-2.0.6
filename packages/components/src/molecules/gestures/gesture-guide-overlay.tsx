@@ -1,8 +1,10 @@
-import { type ComponentProps, type ReactNode } from "react";
-import { type GestureOverlayKeysType } from "./context";
 import { cn } from "@genuin/ui/lib/utils";
-import { getGifLink, getIconLink } from "@genuin/components/lib/utils";
+import { type ComponentProps, type ReactNode } from "react";
+
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { getGifLink, getIconLink } from "@genuin/components/lib/utils";
+
+import { type GestureOverlayKeysType } from "./context";
 // import { Image } from "@genuin/ui/components/image";
 
 type GestureConfig = {
@@ -70,17 +72,15 @@ export function LazyGestureGuideOverlay({
   return (
     <div
       className={cn(
-        "gencl:pointer-events-none gencl:z-[1000] gencl:h-full gencl:w-full gencl:bg-black/40 gencl:backdrop-blur-sm sm:gencl:absolute",
+        "gencl:pointer-events-none gencl:z-[1000] gencl:h-full gencl:w-full gencl:bg-black/40 gencl:backdrop-blur-sm sm:gencl:absolute"
       )}
-      {...props}
-    >
+      {...props}>
       <div
         className={cn(
           "gencl:flex gencl:h-full gencl:w-full gencl:flex-col gencl:items-center gencl:justify-center gencl:gap-2",
           gestureStep === "SWIPE" && "sm:gencl:justify-end sm:gencl:pb-20",
-          className,
-        )}
-      >
+          className
+        )}>
         {isMobile ? (
           <img
             src={gestureData.mobileImage}
@@ -98,9 +98,7 @@ export function LazyGestureGuideOverlay({
             className="sm:gencl:hidden gencl:h-20! gencl:w-fit! gencl:shrink-0"
           />
         )}
-        <p className="gencl:text-center gencl:text-body-1-bold gencl:text-white">
-          {gestureText}
-        </p>
+        <p className="gencl:text-center gencl:text-body-1-bold gencl:text-white">{gestureText}</p>
       </div>
     </div>
   );

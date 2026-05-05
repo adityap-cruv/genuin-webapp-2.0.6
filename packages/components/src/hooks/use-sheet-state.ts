@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect, useCallback, useMemo } from "react";
 
 import { useBaseContext } from "@genuin/components/context/base/context";
@@ -19,9 +18,7 @@ const STATE_PRIORITY: Record<SheetState, number> = {
   "full-view": 4,
 };
 
-function getMostExpandedState(
-  states: Partial<Record<SheetContentType, SheetState>>,
-): SheetState {
+function getMostExpandedState(states: Partial<Record<SheetContentType, SheetState>>): SheetState {
   let max: SheetState = "default";
   for (const state of Object.values(states)) {
     if (state && STATE_PRIORITY[state] > STATE_PRIORITY[max]) max = state;
@@ -39,24 +36,22 @@ function getMostExpandedState(
 export function useSheetState() {
   const { baseEventBus } = useBaseContext();
 
-  const [activeSheetContentTypes, setActiveSheetContentTypes] = useState<
-    SheetContentType[]
-  >(() => baseEventBus.getContext().activeSheetContentTypes || []);
+  const [activeSheetContentTypes, setActiveSheetContentTypes] = useState<SheetContentType[]>(
+    () => baseEventBus.getContext().activeSheetContentTypes
+  );
 
-  const [sheetContentStates, setSheetContentStates] = useState<
-    Partial<Record<SheetContentType, SheetState>>
-  >(() => baseEventBus.getContext().sheetContentStates || {});
+  const [sheetContentStates, setSheetContentStates] = useState<Partial<Record<SheetContentType, SheetState>>>(
+    () => baseEventBus.getContext().sheetContentStates
+  );
 
   const [sheetContentPlacements, setSheetContentPlacements] = useState<
     Partial<Record<SheetContentType, SheetContentPlacement>>
-  >(() => baseEventBus.getContext().sheetContentPlacements || {});
+  >(() => baseEventBus.getContext().sheetContentPlacements);
 
   // ── Subscriptions ─────────────────────────────────────────────────────────
 
   useEffect(() => {
-    const onStateChange = (_: unknown, ctx: BaseEventBusContext) => {
-      setSheetContentStates(ctx.sheetContentStates);
-    };
+    const onStateChange = (_: unknown, ctx: BaseEventBusContext) => setSheetContentStates(ctx.sheetContentStates);
     baseEventBus.on("sheetStateChange", onStateChange);
     return () => baseEventBus.off("sheetStateChange", onStateChange);
   }, [baseEventBus]);
@@ -77,24 +72,20 @@ export function useSheetState() {
    * The "most expanded" sheet state across all active content types.
    * Useful for components that only care whether any sheet is open (e.g. disabling swiper).
    */
-  const sheetState = useMemo(
-    () => getMostExpandedState(sheetContentStates),
-    [sheetContentStates],
-  );
+  const sheetState = useMemo(() => getMostExpandedState(sheetContentStates), [sheetContentStates]);
 
   // ── Helpers ───────────────────────────────────────────────────────────────
 
   /** Returns true if the given content type is currently active. */
   const hasContentType = useCallback(
     (type: SheetContentType) => activeSheetContentTypes.includes(type),
-    [activeSheetContentTypes],
+    [activeSheetContentTypes]
   );
 
   /** Returns the current sheet state for a content type, defaulting to "default". */
   const getContentTypeState = useCallback(
-    (type: SheetContentType): SheetState =>
-      sheetContentStates[type] ?? "default",
-    [sheetContentStates],
+    (type: SheetContentType): SheetState => sheetContentStates[type] ?? "default",
+    [sheetContentStates]
   );
 
   /** Updates the sheet visual state for a specific content type. */
@@ -105,37 +96,29 @@ export function useSheetState() {
         sheetContentStates: { ...ctx.sheetContentStates, [type]: state },
       }));
     },
-    [baseEventBus],
+    [baseEventBus]
   );
 
   /** Opens a content type. If already active, updates its placement only. */
   const openContentType = useCallback(
-    (
-      type: SheetContentType,
-      placement: SheetContentPlacement = "inside",
-      initialState: SheetState = "default",
-    ) => {
+    (type: SheetContentType, placement: SheetContentPlacement = "inside", initialState: SheetState = "default") => {
       baseEventBus.emit("sheetContentTypeChange", undefined, (ctx) => {
         const alreadyActive = ctx.activeSheetContentTypes.includes(type);
         return {
           ...ctx,
-          activeSheetContentTypes: alreadyActive
-            ? ctx.activeSheetContentTypes
-            : [...ctx.activeSheetContentTypes, type],
+          activeSheetContentTypes: alreadyActive ? ctx.activeSheetContentTypes : [...ctx.activeSheetContentTypes, type],
           sheetContentPlacements: {
             ...ctx.sheetContentPlacements,
             [type]: placement,
           },
           sheetContentStates: {
             ...ctx.sheetContentStates,
-            [type]: alreadyActive
-              ? ctx.sheetContentStates[type] ?? initialState
-              : initialState,
+            [type]: alreadyActive ? (ctx.sheetContentStates[type] ?? initialState) : initialState,
           },
         };
       });
     },
-    [baseEventBus],
+    [baseEventBus]
   );
 
   /** Closes a content type, removing its state and placement. */
@@ -148,26 +131,20 @@ export function useSheetState() {
         delete states[type];
         return {
           ...ctx,
-          activeSheetContentTypes: ctx.activeSheetContentTypes.filter(
-            (t) => t !== type,
-          ),
+          activeSheetContentTypes: ctx.activeSheetContentTypes.filter((t) => t !== type),
           sheetContentPlacements: placements,
           sheetContentStates: states,
         };
       });
     },
-    [baseEventBus],
+    [baseEventBus]
   );
 
   /**
    * Toggles a content type — opens if not active, closes if already active.
    */
   const toggleContentType = useCallback(
-    (
-      type: SheetContentType,
-      placement: SheetContentPlacement = "inside",
-      initialState: SheetState = "default",
-    ) => {
+    (type: SheetContentType, placement: SheetContentPlacement = "inside", initialState: SheetState = "default") => {
       baseEventBus.emit("sheetContentTypeChange", undefined, (ctx) => {
         if (ctx.activeSheetContentTypes.includes(type)) {
           const placements = { ...ctx.sheetContentPlacements };
@@ -176,9 +153,7 @@ export function useSheetState() {
           delete states[type];
           return {
             ...ctx,
-            activeSheetContentTypes: ctx.activeSheetContentTypes.filter(
-              (t) => t !== type,
-            ),
+            activeSheetContentTypes: ctx.activeSheetContentTypes.filter((t) => t !== type),
             sheetContentPlacements: placements,
             sheetContentStates: states,
           };
@@ -197,7 +172,7 @@ export function useSheetState() {
         };
       });
     },
-    [baseEventBus],
+    [baseEventBus]
   );
 
   /** Clears all active content types, states and placements. */

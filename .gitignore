@@ -26,7 +26,7 @@ yarn-error.log*
 
 # local env files
 .env*.local
-.env
+**/.env
 
 # vercel
 .vercel
@@ -37,7 +37,6 @@ next-env.d.ts
 
 # IDE
 .idea
-.vscode
 
 # Turborepo
 .turbo
@@ -46,6 +45,7 @@ next-env.d.ts
 **/dist
 **/.next
 **/build
+**/storybook-static
 
 # Dependencies
 **/node_modules
@@ -75,3 +75,5 @@ next-env.d.ts
 *.html
 
 packages/web-sdk/stats.json
+
+apps/legacy-webapp

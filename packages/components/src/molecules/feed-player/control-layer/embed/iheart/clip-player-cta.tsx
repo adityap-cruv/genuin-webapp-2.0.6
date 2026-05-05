@@ -1,20 +1,19 @@
-import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
-import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import {
-  SDKEventEmitter,
-  SDKEventName,
-} from "@genuin/components/lib/sdk-event-emitter";
-import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { cn } from "@genuin/ui/lib/utils";
 import { useCallback, lazy, Suspense, useMemo } from "react";
-import { usePlayerContext } from "../../../context";
-import { buildLinkoutsAnalyticsData } from "@genuin/components/organisms";
+
 import { useAnalytics } from "@genuin/components/context";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { SDKEventEmitter, SDKEventName } from "@genuin/components/lib/sdk-event-emitter";
+import { buildLinkoutsAnalyticsData } from "@genuin/components/organisms/linkouts/build-linkouts-analytics-data";
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+
+import { usePlayerContext } from "../../../context";
 
 const Linkouts = lazy(() =>
-  import("@genuin/components/organisms/linkouts/index.js").then((m) => ({
+  import("@genuin/components/organisms/linkouts").then((m) => ({
     default: m.Linkouts,
-  })),
+  }))
 ) as React.ComponentType<any>;
 
 interface ClipPlayerCTAProps {
@@ -24,10 +23,7 @@ interface ClipPlayerCTAProps {
   isActive: boolean;
 }
 
-export const ClipPlayerCTA = ({
-  postDetails,
-  isActive,
-}: ClipPlayerCTAProps) => {
+export const ClipPlayerCTA = ({ postDetails, isActive }: ClipPlayerCTAProps) => {
   const {
     view: { websiteType },
     video,
@@ -42,7 +38,7 @@ export const ClipPlayerCTA = ({
         totalVideos,
         positionIndex,
       }),
-    [postDetails.video, totalVideos, positionIndex],
+    [postDetails.video, totalVideos, positionIndex]
   );
 
   const handleCTAClick = useCallback(
@@ -50,13 +46,13 @@ export const ClipPlayerCTA = ({
       e.stopPropagation();
       const type = postDetails.video?.attributes?.type;
       const episodeId = postDetails.video?.attributes?.episode_id
-        ? Number(postDetails.video.attributes?.episode_id)
+        ? Number(postDetails.video?.attributes?.episode_id)
         : undefined;
       const podcastId = postDetails.video?.attributes?.podcast_id
-        ? Number(postDetails.video.attributes?.podcast_id)
+        ? Number(postDetails.video?.attributes?.podcast_id)
         : undefined;
       const stationId = postDetails.video?.attributes?.station_id
-        ? Number(postDetails.video.attributes?.station_id)
+        ? Number(postDetails.video?.attributes?.station_id)
         : undefined;
       const slug = postDetails.video?.attributes?.slug;
 
@@ -81,17 +77,13 @@ export const ClipPlayerCTA = ({
         "https://iheart.com/" +
           (isStation ? "live/" : "podcast/") +
           (isStation ? stationId : slug) +
-          (isFullEpisode ? "/episode/" + episodeId : ""),
+          (isFullEpisode ? "/episode/" + episodeId : "")
       );
 
       track(EventName.LINKOUTS_CLICKED, {
         ...analyticsEventData,
         linkUrl: url,
-        linkTitle: isGoToEpisode
-          ? "Go to Episode"
-          : isFullEpisode
-            ? "Full Episode"
-            : "Listen Live",
+        linkTitle: isGoToEpisode ? "Go to Episode" : isFullEpisode ? "Full Episode" : "Listen Live",
       });
 
       const isExpandViewOpen = embedDetails?.embedEventBus.getContext();
@@ -100,7 +92,7 @@ export const ClipPlayerCTA = ({
       // }
       window.open(url, "_blank", "noopener,noreferrer");
     },
-    [postDetails, embedDetails],
+    [postDetails, embedDetails]
   );
 
   if (!postDetails.video?.attributes?.slug) return;
@@ -113,8 +105,7 @@ export const ClipPlayerCTA = ({
         linkoutId={postDetails.video.linkoutId}
         isActive={isActive}
         className={cn("gencl:w-full")}
-        cardVariant="primary"
-        ctaOnly={true}
+        variant="cta_only"
         handleCTAClick={handleCTAClick}
         showImmediately={true}
         videoDetails={postDetails.video}

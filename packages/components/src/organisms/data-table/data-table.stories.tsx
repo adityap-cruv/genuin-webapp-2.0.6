@@ -1,39 +1,10 @@
+import { Button } from "@genuin/ui/components";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import {
-  ColumnDef,
-  getCoreRowModel,
-  getPaginationRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 
-import { Button } from "@genuin/ui/components";
 import { DataTable } from "./data-table";
 import { DataTableColumnHeader } from "./data-table-column-header";
-
-// Wrapper component to create table instance
-function DataTableWrapper({
-  columns,
-  data,
-}: {
-  columns: ColumnDef<any, any>[];
-  data: any[];
-}) {
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    columnResizeMode: "onChange",
-    enableColumnResizing: true,
-    defaultColumn: {
-      minSize: 0,
-      maxSize: Number.MAX_SAFE_INTEGER,
-    },
-  });
-
-  return <DataTable table={table} />;
-}
 
 // Sample data types
 interface User {
@@ -148,23 +119,17 @@ const productData: Product[] = [
 const userColumns: ColumnDef<User>[] = [
   {
     accessorKey: "name",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Name" />
-    ),
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Name" />,
     size: 200,
   },
   {
     accessorKey: "email",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Email" />
-    ),
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Email" />,
     size: 250,
   },
   {
     accessorKey: "status",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Status" />
-    ),
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
     cell: ({ row }) => {
       const status = row.getValue("status") as string;
       const statusColors = {
@@ -176,8 +141,7 @@ const userColumns: ColumnDef<User>[] = [
         <span
           className={`gencl:px-2 gencl:py-1 gencl:rounded-full gencl:text-xs gencl:font-medium ${
             statusColors[status as keyof typeof statusColors]
-          }`}
-        >
+          }`}>
           {status.charAt(0).toUpperCase() + status.slice(1)}
         </span>
       );
@@ -186,16 +150,12 @@ const userColumns: ColumnDef<User>[] = [
   },
   {
     accessorKey: "role",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Role" />
-    ),
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Role" />,
     size: 120,
   },
   {
     accessorKey: "posts",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Posts" />
-    ),
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Posts" />,
     cell: ({ row }) => {
       const posts = row.getValue("posts") as number;
       return <div className="gencl:text-right gencl:font-medium">{posts}</div>;
@@ -204,9 +164,7 @@ const userColumns: ColumnDef<User>[] = [
   },
   {
     accessorKey: "lastLogin",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Last Login" />
-    ),
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Last Login" />,
     cell: ({ row }) => {
       const date = new Date(row.getValue("lastLogin"));
       return <div>{date.toLocaleDateString()}</div>;
@@ -218,11 +176,7 @@ const userColumns: ColumnDef<User>[] = [
     header: "Actions",
     cell: ({ row }) => {
       return (
-        <Button
-          theme="outline"
-          size="sm"
-          className="gencl:h-8 gencl:w-8 gencl:p-0"
-        >
+        <Button theme="outline" size="sm" className="gencl:h-8 gencl:w-8 gencl:p-0">
           <MoreHorizontal className="gencl:h-4 gencl:w-4" />
         </Button>
       );
@@ -236,46 +190,33 @@ const userColumns: ColumnDef<User>[] = [
 const productColumns: ColumnDef<Product>[] = [
   {
     accessorKey: "name",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Product Name" />
-    ),
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Product Name" />,
     size: 250,
   },
   {
     accessorKey: "category",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Category" />
-    ),
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Category" />,
     size: 150,
   },
   {
     accessorKey: "price",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Price" />
-    ),
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Price" />,
     cell: ({ row }) => {
       const price = row.getValue("price") as number;
-      return (
-        <div className="gencl:text-right gencl:font-medium">
-          ${price.toFixed(2)}
-        </div>
-      );
+      return <div className="gencl:text-right gencl:font-medium">${price.toFixed(2)}</div>;
     },
     size: 120,
   },
   {
     accessorKey: "stock",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Stock" />
-    ),
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Stock" />,
     cell: ({ row }) => {
       const stock = row.getValue("stock") as number;
       return (
         <div
           className={`gencl:text-right gencl:font-medium ${
             stock === 0 ? "gencl:text-red-600" : "gencl:text-green-600"
-          }`}
-        >
+          }`}>
           {stock}
         </div>
       );
@@ -284,9 +225,7 @@ const productColumns: ColumnDef<Product>[] = [
   },
   {
     accessorKey: "rating",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Rating" />
-    ),
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Rating" />,
     cell: ({ row }) => {
       const rating = row.getValue("rating") as number;
       return (
@@ -300,19 +239,14 @@ const productColumns: ColumnDef<Product>[] = [
   },
   {
     accessorKey: "isAvailable",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Available" />
-    ),
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Available" />,
     cell: ({ row }) => {
       const isAvailable = row.getValue("isAvailable") as boolean;
       return (
         <span
           className={`gencl:px-2 gencl:py-1 gencl:rounded-full gencl:text-xs gencl:font-medium ${
-            isAvailable
-              ? "gencl:bg-green-100 gencl:text-green-800"
-              : "gencl:bg-red-100 gencl:text-red-800"
-          }`}
-        >
+            isAvailable ? "gencl:bg-green-100 gencl:text-green-800" : "gencl:bg-red-100 gencl:text-red-800"
+          }`}>
           {isAvailable ? "Yes" : "No"}
         </span>
       );
@@ -343,9 +277,9 @@ const simpleUserColumns: ColumnDef<User>[] = [
   },
 ];
 
-const meta: Meta<typeof DataTableWrapper> = {
+const meta: Meta<typeof DataTable> = {
   title: "Organisms/DataTable",
-  component: DataTableWrapper,
+  component: DataTable,
   tags: ["autodocs"],
   parameters: {
     layout: "padded",
@@ -366,47 +300,36 @@ const meta: Meta<typeof DataTableWrapper> = {
       description: "Data array to display in the table",
     },
   },
-} satisfies Meta<typeof DataTableWrapper>;
+} satisfies Meta<typeof DataTable>;
 
 export default meta;
 
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  args: {
-    columns: userColumns,
-    data: userData,
-  },
+  render: () => <DataTable columns={userColumns} data={userData} />,
   parameters: {
     docs: {
       description: {
-        story:
-          "Default data table with user data, sortable columns, and custom cell rendering.",
+        story: "Default data table with user data, sortable columns, and custom cell rendering.",
       },
     },
   },
 };
 
 export const ProductTable: Story = {
-  args: {
-    columns: productColumns,
-    data: productData,
-  },
+  render: () => <DataTable columns={productColumns} data={productData} />,
   parameters: {
     docs: {
       description: {
-        story:
-          "Data table displaying product information with pricing, stock, and availability status.",
+        story: "Data table displaying product information with pricing, stock, and availability status.",
       },
     },
   },
 };
 
 export const EmptyState: Story = {
-  args: {
-    columns: userColumns,
-    data: [],
-  },
+  render: () => <DataTable columns={userColumns} data={[]} />,
   parameters: {
     docs: {
       description: {
@@ -417,10 +340,7 @@ export const EmptyState: Story = {
 };
 
 export const SingleRow: Story = {
-  args: {
-    columns: userColumns,
-    data: [userData[0]],
-  },
+  render: () => <DataTable columns={userColumns} data={userData.slice(0, 1)} />,
   parameters: {
     docs: {
       description: {
@@ -431,10 +351,7 @@ export const SingleRow: Story = {
 };
 
 export const WithoutSorting: Story = {
-  args: {
-    columns: simpleUserColumns,
-    data: userData,
-  },
+  render: () => <DataTable columns={simpleUserColumns} data={userData} />,
   parameters: {
     docs: {
       description: {
@@ -444,122 +361,93 @@ export const WithoutSorting: Story = {
   },
 };
 
+const statuses = ["active", "inactive", "pending"] as const;
+const roles = ["Admin", "User", "Moderator"] as const;
+const largeDataset: User[] = Array.from({ length: 20 }, (_, i) => ({
+  id: `${i + 1}`,
+  name: `User ${i + 1}`,
+  email: `user${i + 1}@example.com`,
+  status: statuses[i % 3] as User["status"],
+  role: roles[i % 3] as string,
+  lastLogin: new Date(2024, 0, (i % 30) + 1).toISOString().split("T")[0] ?? "",
+  posts: (i + 1) * 13,
+}));
+
 export const LargeDataset: Story = {
-  args: {
-    columns: userColumns,
-    data: Array.from({ length: 20 }, (_, i) => ({
-      id: `${i + 1}`,
-      name: `User ${i + 1}`,
-      email: `user${i + 1}@example.com`,
-      status: (["active", "inactive", "pending"] as const)[i % 3],
-      role: (["Admin", "User", "Moderator"] as const)[i % 3],
-      lastLogin: new Date(2024, 0, Math.floor(Math.random() * 30) + 1)
-        .toISOString()
-        .split("T")[0],
-      posts: Math.floor(Math.random() * 500),
-    })),
-  },
+  render: () => <DataTable columns={userColumns} data={largeDataset} />,
   parameters: {
     docs: {
       description: {
-        story:
-          "Data table with a larger dataset to demonstrate scrolling and performance.",
+        story: "Data table with a larger dataset to demonstrate scrolling and performance.",
       },
     },
   },
 };
+
+const minimalColumns: ColumnDef<User>[] = [
+  { accessorKey: "name", header: "Name", size: 300 },
+  { accessorKey: "email", header: "Email", size: 300 },
+];
 
 export const MinimalColumns: Story = {
-  args: {
-    columns: [
-      {
-        accessorKey: "name",
-        header: "Name",
-        size: 300,
-      },
-      {
-        accessorKey: "email",
-        header: "Email",
-        size: 300,
-      },
-    ],
-    data: userData,
-  },
+  render: () => <DataTable columns={minimalColumns} data={userData} />,
   parameters: {
     docs: {
       description: {
-        story:
-          "Data table with minimal column configuration, showing only name and email.",
+        story: "Data table with minimal column configuration, showing only name and email.",
       },
     },
   },
 };
 
-export const CustomCellStyling: Story = {
-  args: {
-    columns: [
-      {
-        accessorKey: "name",
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Name" />
-        ),
-        cell: ({ row }) => (
-          <div className="gencl:font-bold gencl:text-primary-600">
-            {row.getValue("name")}
-          </div>
-        ),
-        size: 200,
-      },
-      {
-        accessorKey: "posts",
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Posts" />
-        ),
-        cell: ({ row }) => {
-          const posts = row.getValue("posts") as number;
-          const isHighPerformer = posts > 100;
-          return (
-            <div
-              className={`gencl:text-right gencl:font-medium gencl:px-2 gencl:py-1 gencl:rounded ${
-                isHighPerformer
-                  ? "gencl:bg-green-100 gencl:text-green-800"
-                  : "gencl:text-gray-600"
-              }`}
-            >
-              {posts}
-              {isHighPerformer && " 🏆"}
-            </div>
-          );
-        },
-        size: 150,
-      },
-      {
-        accessorKey: "status",
-        header: "Status",
-        cell: ({ row }) => {
-          const status = row.getValue("status") as string;
-          const statusEmojis = {
-            active: "✅",
-            inactive: "❌",
-            pending: "⏳",
-          };
-          return (
-            <div className="gencl:flex gencl:items-center gencl:gap-2">
-              <span>{statusEmojis[status as keyof typeof statusEmojis]}</span>
-              <span>{status}</span>
-            </div>
-          );
-        },
-        size: 120,
-      },
-    ],
-    data: userData,
+const customStyledColumns: ColumnDef<User>[] = [
+  {
+    accessorKey: "name",
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Name" />,
+    cell: ({ row }) => <div className="gencl:font-bold gencl:text-primary-600">{row.getValue("name")}</div>,
+    size: 200,
   },
+  {
+    accessorKey: "posts",
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Posts" />,
+    cell: ({ row }) => {
+      const posts = row.getValue("posts") as number;
+      const isHighPerformer = posts > 100;
+      return (
+        <div
+          className={`gencl:text-right gencl:font-medium gencl:px-2 gencl:py-1 gencl:rounded ${
+            isHighPerformer ? "gencl:bg-green-100 gencl:text-green-800" : "gencl:text-gray-600"
+          }`}>
+          {posts}
+          {isHighPerformer && " 🏆"}
+        </div>
+      );
+    },
+    size: 150,
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      const status = row.getValue("status") as string;
+      const statusEmojis = { active: "✅", inactive: "❌", pending: "⏳" };
+      return (
+        <div className="gencl:flex gencl:items-center gencl:gap-2">
+          <span>{statusEmojis[status as keyof typeof statusEmojis]}</span>
+          <span>{status}</span>
+        </div>
+      );
+    },
+    size: 120,
+  },
+];
+
+export const CustomCellStyling: Story = {
+  render: () => <DataTable columns={customStyledColumns} data={userData} />,
   parameters: {
     docs: {
       description: {
-        story:
-          "Data table with custom cell styling, colors, and icons for enhanced visual presentation.",
+        story: "Data table with custom cell styling, colors, and icons for enhanced visual presentation.",
       },
     },
   },

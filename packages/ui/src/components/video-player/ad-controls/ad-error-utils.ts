@@ -31,10 +31,7 @@ export interface AdErrorResult {
 /**
  * Checks if an error code falls within a specific range
  */
-function isInErrorRange(
-  code: number,
-  range: { min: number; max: number }
-): boolean {
+function isInErrorRange(code: number, range: { min: number; max: number }): boolean {
   return code >= range.min && code <= range.max;
 }
 
@@ -46,28 +43,16 @@ function isInErrorRange(
 export function categorizeAdError(error: any): AdErrorResult {
   // Extract error details
   const errorCode =
-    typeof error?.getErrorCode === "function"
-      ? error.getErrorCode()
-      : typeof error === "string"
-        ? error
-        : null;
+    typeof error?.getErrorCode === "function" ? error.getErrorCode() : typeof error === "string" ? error : null;
 
-  const errorType =
-    typeof error?.getType === "function" ? error.getType() : null;
+  const errorType = typeof error?.getType === "function" ? error.getType() : null;
 
-  const message =
-    typeof error?.getMessage === "function"
-      ? error.getMessage()
-      : "Unknown error";
+  const message = typeof error?.getMessage === "function" ? error.getMessage() : "Unknown error";
 
   // Check for string-based error codes (from playererror events)
   if (typeof errorCode === "string") {
     const codeStr = errorCode.toString().toUpperCase();
-    if (
-      codeStr.includes("VAST") ||
-      codeStr.includes("NETWORK") ||
-      codeStr.includes("VIDEO")
-    ) {
+    if (codeStr.includes("VAST") || codeStr.includes("NETWORK") || codeStr.includes("VIDEO")) {
       return {
         category: AdErrorCategory.FATAL,
         shouldDiscard: false,
@@ -81,8 +66,7 @@ export function categorizeAdError(error: any): AdErrorResult {
   }
 
   // Convert to number for range checking
-  const numericCode =
-    typeof errorCode === "number" ? errorCode : parseInt(errorCode, 10);
+  const numericCode = typeof errorCode === "number" ? errorCode : parseInt(errorCode, 10);
 
   // If we can't parse the error code, treat as non-fatal
   if (isNaN(numericCode)) {
@@ -101,10 +85,7 @@ export function categorizeAdError(error: any): AdErrorResult {
   const googleIma = (window as any).google?.ima;
   if (googleIma && errorType) {
     // Individual ad load/play failures - discard ad break and continue
-    if (
-      errorType === googleIma.AdError.Type.AD_LOAD ||
-      errorType === googleIma.AdError.Type.AD_PLAY
-    ) {
+    if (errorType === googleIma.AdError.Type.AD_LOAD || errorType === googleIma.AdError.Type.AD_PLAY) {
       return {
         category: AdErrorCategory.INDIVIDUAL_AD_FAILURE,
         shouldDiscard: true,
@@ -181,34 +162,22 @@ export function handleAdErrorRecovery(
   errorResult: AdErrorResult,
   playerStateRef: { current: { isAdErrored?: boolean } }
 ): void {
-  const { category, shouldDiscard, shouldDestroy, errorCode, errorType } =
-    errorResult;
-
-  console.error(
-    `Ad Error - Category: ${category}, Type: ${errorType}, Code: ${errorCode}`
-  );
+  const { shouldDiscard, shouldDestroy, errorCode } = errorResult;
 
   if (shouldDiscard) {
-    console.log(
-      `Discarding ad break due to individual ad failure (Code: ${errorCode})`
-    );
-
     try {
-      const currentAd = adsManager.getCurrentAd?.();
-      if (currentAd) {
-        const universalAdIds = currentAd.getUniversalAdIds?.() || [];
-        console.log("Discarding ad with IDs:", universalAdIds);
-      }
+      // const currentAd = adsManager.getCurrentAd?.()
+      // if (currentAd) {
+      // const universalAdIds = currentAd.getUniversalAdIds?.() || []
+      // }
       adsManager.discardAdBreak();
-    } catch (discardError) {
-      console.warn("Error discarding ad break:", discardError);
+    } catch (_discardError) {
       playerStateRef.current.isAdErrored = true;
     }
     return;
   }
 
   if (shouldDestroy) {
-    console.log(`Fatal ad error, destroying ads manager (Code: ${errorCode})`);
     playerStateRef.current.isAdErrored = true;
 
     try {
@@ -219,7 +188,5 @@ export function handleAdErrorRecovery(
     return;
   }
 
-  console.log(
-    `Non-fatal ad error, attempting to continue (Code: ${errorCode})`
-  );
+  console.log(`Non-fatal ad error, attempting to continue (Code: ${errorCode})`);
 }

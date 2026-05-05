@@ -1,15 +1,11 @@
-import { AuthUser } from '@genuin/components/types/auth'
-import {
+import type {
   EmbedDataType,
   LiveCustomizationTools,
   PlacementDataResponse,
-} from '@genuin/components/context/embed/embed.types'
+} from "@genuin/components/context/embed/embed.types";
+import type { AuthUser } from "@genuin/components/types/auth";
 
-export function parseUserData(
-  userData: any,
-  accessToken: string,
-  refreshToken?: string
-): AuthUser {
+export function parseUserData(userData: any, accessToken: string, refreshToken?: string): AuthUser {
   return {
     id: userData?.user_id,
     isAvatar: userData?.is_avatar,
@@ -29,7 +25,7 @@ export function parseUserData(
     refreshToken,
     birth: userData?.birthday,
     usernameSet: !userData?.is_username_generated,
-  }
+  };
 }
 
 /**
@@ -49,13 +45,10 @@ export function parseUserData(
  * @param data - PlacementDataResponse containing placement configuration
  * @returns EmbedDataType with all available data mapped
  */
-export function parsePlacementToEmbedData(
-  data: PlacementDataResponse,
-  styleId: string
-): EmbedDataType {
-  const webConfig = data.environments?.web
-  const configureView = webConfig?.configure_view
-  const expandView = webConfig?.expand_view
+export function parsePlacementToEmbedData(data: PlacementDataResponse, styleId: string): EmbedDataType {
+  const webConfig = data.environments?.web;
+  const configureView = webConfig?.configure_view;
+  const expandView = webConfig?.expand_view;
 
   return {
     // Direct mapping from PlacementDataResponse
@@ -63,7 +56,7 @@ export function parsePlacementToEmbedData(
     placement_id: data._id,
     name: data.name,
     style: data.type,
-    type: (data.feed_type as EmbedDataType['type']) ?? 'loop_feed',
+    type: (data.feed_type as EmbedDataType["type"]) ?? "loop_feed",
     brand_id: data.brand_id,
     __v: data.__v,
     is_live: data.is_live,
@@ -81,8 +74,7 @@ export function parsePlacementToEmbedData(
 
     placement_card_layout_id: configureView?.placement_card_layout_id,
     placement_video_layout_id: configureView?.placement_video_layout_id,
-    placement_card_section_layout_id:
-      configureView?.placement_card_section_layout_id,
+    placement_card_section_layout_id: configureView?.placement_card_section_layout_id,
 
     customization: {
       // Dimensions mapping
@@ -114,24 +106,22 @@ export function parsePlacementToEmbedData(
       // Links configuration
       links: {
         is_show_links: configureView?.links?.is_show_links ?? false,
-        position: 'overlay',
+        position: "overlay",
       },
 
       // Carousel style mapping
-      carousel_style: configureView?.carousel_style ?? 'default',
+      carousel_style: configureView?.carousel_style ?? "default",
 
       // Media play settings
       autoplay: configureView?.media_play?.enable_autoplay ?? false,
 
       // Display preferences
-      feed_display_pref: 'default',
+      feed_display_pref: "default",
 
       // Heading and sub-heading from styles
-      heading:
-        data.styles?.find((style) => style._id === styleId)?.title ?? null,
+      heading: data.styles?.find((style) => style._id === styleId)?.title ?? null,
       heading_text_color: configureView?.heading_text_color,
-      sub_heading:
-        data.styles?.find((style) => style._id === styleId)?.sub_title ?? null,
+      sub_heading: data.styles?.find((style) => style._id === styleId)?.sub_title ?? null,
       sub_heading_text_color: configureView?.sub_heading_text_color,
 
       // UI element visibility
@@ -156,16 +146,13 @@ export function parsePlacementToEmbedData(
       video_crop: configureView?.video_crop,
 
       // Engagement and redirection flags
-      is_enable_engagement_tools:
-        expandView?.is_enable_engagement_tools ?? false,
+      is_enable_engagement_tools: expandView?.is_enable_engagement_tools ?? false,
       is_enable_redirection: expandView?.is_enable_redirection ?? false,
 
       // Community and navigation settings
       show_side_panel: false, // Not available in PlacementDataResponse
-      show_join_community_button:
-        configureView?.show_join_community_button ?? false,
-      show_community_share_button:
-        configureView?.show_community_share_button ?? false,
+      show_join_community_button: configureView?.show_join_community_button ?? false,
+      show_community_share_button: configureView?.show_community_share_button ?? false,
       show_navigation: configureView?.show_navigation ?? false,
 
       // Additional show settings available in CustomizationType
@@ -186,8 +173,7 @@ export function parsePlacementToEmbedData(
       community_ids: data.community_ids,
       community_loop_ids: data.community_loop_ids,
       scroll_behavior: configureView?.scroll_behavior,
-      is_navigation_control_enabled:
-        configureView?.is_navigation_control_enabled,
+      is_navigation_control_enabled: configureView?.is_navigation_control_enabled,
       enable_auto_scroll: configureView?.enable_auto_scroll,
     },
 
@@ -216,36 +202,27 @@ export function parsePlacementToEmbedData(
     // Implementation guide settings
     implementation_guide: webConfig?.implementation_guide
       ? {
-          is_on_page_context_fetch:
-            webConfig?.implementation_guide?.is_on_page_context_fetch,
-          is_real_time_context_fetch:
-            webConfig?.implementation_guide?.is_real_time_context_fetch,
+          is_on_page_context_fetch: webConfig?.implementation_guide?.is_on_page_context_fetch,
+          is_real_time_context_fetch: webConfig?.implementation_guide?.is_real_time_context_fetch,
           show_brand_id: webConfig?.implementation_guide?.show_brand_id,
-          show_community_group_id:
-            webConfig?.implementation_guide?.show_community_group_id,
-          show_custom_context:
-            webConfig?.implementation_guide?.show_custom_context,
+          show_community_group_id: webConfig?.implementation_guide?.show_community_group_id,
+          show_custom_context: webConfig?.implementation_guide?.show_custom_context,
           show_location: webConfig?.implementation_guide?.show_location,
           show_pdp_url: webConfig?.implementation_guide?.show_pdp_url,
           show_place: webConfig?.implementation_guide?.show_place,
-          show_posted_by_user:
-            webConfig?.implementation_guide?.show_posted_by_user,
+          show_posted_by_user: webConfig?.implementation_guide?.show_posted_by_user,
           show_style_id: webConfig?.implementation_guide?.show_style_id,
           show_time: webConfig?.implementation_guide?.show_time,
-          show_user_interests:
-            webConfig?.implementation_guide?.show_user_interests,
-          show_user_segmentation:
-            webConfig?.implementation_guide?.show_user_segmentation,
+          show_user_interests: webConfig?.implementation_guide?.show_user_interests,
+          show_user_segmentation: webConfig?.implementation_guide?.show_user_segmentation,
         }
       : undefined,
 
     // Report options and settings
     report_options: expandView?.report_options
       ? {
-          inappropriate_content:
-            expandView?.report_options?.inappropriate_content,
-          non_professional_content:
-            expandView?.report_options?.non_professional_content,
+          inappropriate_content: expandView?.report_options?.inappropriate_content,
+          non_professional_content: expandView?.report_options?.non_professional_content,
           other: expandView?.report_options?.other,
           spam: expandView?.report_options?.spam,
           threatening_violent: expandView?.report_options?.threatening_violent,
@@ -266,9 +243,9 @@ export function parsePlacementToEmbedData(
 
     // Pass the entire placement data as live_customization_tools for octo panel
     live_customization_tools: data as unknown as LiveCustomizationTools,
-  }
+  };
 }
 
 export function getRandomNumber(min: number, max: number) {
-  return Math.floor(Math.random() * (max - min + 1)) + min
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }

@@ -1,4 +1,5 @@
 import { type PeopleType, type CommunityType, type VideoType } from '../views/tabs/index'
+
 import {
   type PeopleResType,
   type CommunitiesResType,

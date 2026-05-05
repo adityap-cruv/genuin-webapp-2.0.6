@@ -1,12 +1,13 @@
 "use client";
-import { VideoPlayer } from "@genuin/ui/video-player";
-import { PlayIcon } from "@genuin/ui/icons";
-import { useEffect, useId, useRef, useState } from "react";
 import { Button } from "@genuin/ui/button";
+import { PlayIcon } from "@genuin/ui/icons";
+import { VideoPlayer } from "@genuin/ui/video-player";
+import { useEffect, useId, useRef, useState } from "react";
+import { memo } from "react";
+
+import { useBaseContext } from "@genuin/components/context";
 import { useInView } from "@genuin/components/hooks/use-in-view";
 import { audioManager } from "@genuin/components/lib/audio-manager";
-import { memo } from "react";
-import { useBaseContext } from "@genuin/components/context";
 /**
  * Video component that displays a video player with a custom play button overlay and thumbnail.
  * Handles play/pause state and resets when the video ends.
@@ -21,64 +22,62 @@ import { useBaseContext } from "@genuin/components/context";
  * @param {string} props.videoUrl - URL of the video file to play
  * @param {string} props.thumbnail - URL of the thumbnail image to display before playback
  */
-export const Video = memo(
-  ({ videoUrl, thumbnail }: { videoUrl: string; thumbnail: string }) => {
-    const [isPlaying, setIsPlaying] = useState(false);
-    const { setMuted } = useBaseContext();
-    const id = useId();
-    const togglePlaying = () => {
-      setIsPlaying((prev) => !prev);
+export const Video = memo(({ videoUrl, thumbnail }: { videoUrl: string; thumbnail: string }) => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const { setMuted } = useBaseContext();
+  const id = useId();
+  const togglePlaying = () => {
+    setIsPlaying((prev) => !prev);
+  };
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const elementIsInView = useInView(videoRef);
+
+  useEffect(() => {
+    audioManager.register(id, () => {
+      videoRef.current?.pause();
+      setIsPlaying(false);
+    });
+
+    return () => {
+      audioManager.unregister(id);
     };
-    const videoRef = useRef<HTMLVideoElement>(null);
-    const elementIsInView = useInView(videoRef);
+  }, [id]);
 
-    useEffect(() => {
-      audioManager.register(id, () => {
-        videoRef.current?.pause();
-        setIsPlaying(false);
-      });
+  useEffect(() => {
+    if (isPlaying) {
+      audioManager.notifyPlaying(id);
+      // Set muted to true to prevent audio overlap when multiple feed players are playing simultaneously.
+      setMuted(true);
+    }
+  }, [isPlaying]);
 
-      return () => {
-        audioManager.unregister(id);
-      };
-    }, [id]);
+  return (
+    <div
+      className="gencl:w-30 gencl:h-30 gencl:relative gencl:flex gencl:justify-center gencl:items-center"
+      onClick={togglePlaying}>
+      {!isPlaying && (
+        <Button
+          theme="text"
+          className="gencl:absolute gencl:z-10 gencl:h-12 gencl:w-12 gencl:flex gencl:justify-center gencl:items-center gencl:bg-black/60 gencl:backdrop-blur-3xl gencl:rounded-full"
+          tabIndex={-1}
+          aria-label="Play video">
+          <PlayIcon size="md" theme="dark" />
+        </Button>
+      )}
+      <VideoPlayer
+        onEnded={() => {
+          setIsPlaying(false);
+        }}
+        className="gencl:w-full gencl:h-full gencl:rounded-2xl gencl:object-cover gencl:object-center"
+        play={isPlaying && elementIsInView}
+        src={videoUrl}
+        poster={thumbnail}
+        ref={videoRef}
+        playsInline
+        loop
+      />
+    </div>
+  );
+});
 
-    useEffect(() => {
-      if (isPlaying) {
-        audioManager.notifyPlaying(id);
-        // Set muted to true to prevent audio overlap when multiple feed players are playing simultaneously.
-        setMuted(true);
-      }
-    }, [isPlaying]);
-
-    return (
-      <div
-        className="gencl:w-30 gencl:h-30 gencl:relative gencl:flex gencl:justify-center gencl:items-center"
-        onClick={togglePlaying}
-      >
-        {!isPlaying && (
-          <Button
-            theme="text"
-            className="gencl:absolute gencl:h-12 gencl:w-12 gencl:flex gencl:justify-center gencl:items-center gencl:bg-black/60 gencl:backdrop-blur-3xl gencl:rounded-full"
-            tabIndex={-1}
-            aria-label="Play video"
-          >
-            <PlayIcon size="md" theme="dark" />
-          </Button>
-        )}
-        <VideoPlayer
-          onEnded={() => {
-            setIsPlaying(false);
-          }}
-          className="gencl:w-full gencl:h-full gencl:rounded-2xl gencl:object-cover gencl:object-center"
-          play={isPlaying && elementIsInView}
-          src={videoUrl}
-          poster={thumbnail}
-          ref={videoRef}
-          playsInline
-          loop
-        />
-      </div>
-    );
-  },
-);
+Video.displayName = "Video";

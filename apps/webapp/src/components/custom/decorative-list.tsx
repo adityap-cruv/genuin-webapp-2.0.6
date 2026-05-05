@@ -1,5 +1,6 @@
-import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useEffect, useRef, useState, type ComponentProps } from 'react'
+
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { cn } from '@lib/utils'
 
 type Props = ComponentProps<'ul'>

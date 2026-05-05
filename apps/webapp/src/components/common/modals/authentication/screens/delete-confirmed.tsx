@@ -1,11 +1,14 @@
 'use client'
-import { Button } from '@components/ui/button'
-import { PATH_NAME } from '@lib/utils/constants/path'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
+
+import { Button } from '@components/ui/button'
 import icConfirmationTick from '@icons/icConfirmationTick.svg'
+import { PATH_NAME } from '@lib/utils/constants/path'
+
 import { AuthenticationModal } from '..'
 import { ModalShell } from '../modal-shell'
-import Image from 'next/image'
+
 
 export function DeleteConfirmed() {
   const router = useRouter()

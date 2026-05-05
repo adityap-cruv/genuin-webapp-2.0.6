@@ -1,10 +1,11 @@
+import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
-import { Meta, StoryObj } from "@storybook/react";
+
 import { LazyGestureGuideOverlay } from "./gesture-guide-overlay";
 
 // Optional wrapper for better visibility in Storybook
 const Wrapper = ({ children }: { children: React.ReactNode }) => (
-  <div className="relative w-[300px] h-[600px] bg-gray-900">{children}</div>
+  <div className="relative h-[600px] w-[300px] bg-gray-900">{children}</div>
 );
 
 const meta: Meta<typeof LazyGestureGuideOverlay> = {

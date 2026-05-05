@@ -1,16 +1,13 @@
 import { Avatar } from "@genuin/ui/avatar";
-import { cn } from "@genuin/ui/utils";
+import { DotIcon } from "@genuin/ui/icons";
 import { Skeleton } from "@genuin/ui/skeleton";
+import { cn } from "@genuin/ui/utils";
 
 import { Link } from "@genuin/components/molecules/link";
 import { Stats } from "@genuin/components/molecules/stats";
 
 import { ProfileLink } from "../profile-link";
 
-import type {
-  MemberItemProps,
-  MemberItemSkeletonProps,
-} from "./member-item.types";
 import {
   memberItemVariants,
   memberItemUsernameVariants,
@@ -18,7 +15,7 @@ import {
   memberItemBioVariants,
   memberItemAvatarVariants,
 } from "./member-item.cva";
-import { DotIcon } from "@genuin/ui/icons";
+import type { MemberItemProps, MemberItemSkeletonProps } from "./member-item.types";
 
 export function MemberItem({
   memberData: { name, url, profileImage, bio, userName, brand, stats, isOwner },
@@ -29,8 +26,7 @@ export function MemberItem({
 }: MemberItemProps) {
   // Configuration constants
   const STATS_CONFIG = {
-    className:
-      "gencl:flex gencl:gap-1 gencl:text-body-1-medium! gencl:text-secondary-600",
+    className: "gencl:flex gencl:gap-1 gencl:text-body-1-medium! gencl:text-secondary-600",
     valueFirst: true,
     valueClassName: "gencl:text-black! gencl:mr-1 gencl:text-body-2-medium",
     labelClassName: "gencl:mr-2 gencl:text-body-2-medium",
@@ -42,8 +38,7 @@ export function MemberItem({
     <ProfileLink
       className={memberItemUsernameVariants({ variant })}
       userLogoType={brand?.brandUserLogo}
-      isOwner={isOwner}
-    >
+      isOwner={isOwner}>
       @{userName}
     </ProfileLink>
   );
@@ -73,20 +68,14 @@ export function MemberItem({
       <div className="gencl:flex gencl:items-center gencl:gap-1">
         <ProfileLinkWithUsername />
       </div>
-      {variant === "default" && name && (
-        <p className={memberItemNameVariants({ variant })}>{name}</p>
-      )}
+      {variant === "default" && name && <p className={memberItemNameVariants({ variant })}>{name}</p>}
       {bio && <p className={memberItemBioVariants({ variant })}>{bio}</p>}
       <StatsSection />
     </div>
   );
 
   const content = (
-    <div
-      className={cn(memberItemVariants({ variant }), className)}
-      onClick={onClick}
-      {...restProps}
-    >
+    <div className={cn(memberItemVariants({ variant }), className)} onClick={onClick} {...restProps}>
       <Avatar
         isAvatar={profileImage.isAvatar}
         imageUrl={profileImage.url}
@@ -109,17 +98,9 @@ export function MemberItem({
   return content;
 }
 
-export function MemberItemSkeleton({
-  variant = "default",
-  className,
-}: MemberItemSkeletonProps) {
+export function MemberItemSkeleton({ variant = "default", className }: MemberItemSkeletonProps) {
   const renderProfileSkeleton = () => (
-    <div
-      className={cn(
-        "gencl:flex gencl:flex-col gencl:items-center gencl:w-fit gencl:gap-2",
-        className
-      )}
-    >
+    <div className={cn("gencl:flex gencl:flex-col gencl:items-center gencl:w-fit gencl:gap-2", className)}>
       <Skeleton className="gencl:size-20 gencl:rounded-full gencl:shrink-0" />
       <div className="gencl:flex gencl:items-center gencl:justify-center gencl:gap-1 gencl:mt-2">
         <Skeleton className="gencl:w-20 gencl:h-3 gencl:rounded-md" />
@@ -137,9 +118,7 @@ export function MemberItemSkeleton({
         </div>
 
         {/* Name skeleton - only for default variant */}
-        {variant === "default" && (
-          <Skeleton className="gencl:w-32 gencl:h-4 gencl:rounded-md" />
-        )}
+        {variant === "default" && <Skeleton className="gencl:w-32 gencl:h-4 gencl:rounded-md" />}
 
         {/* Bio skeleton */}
         <Skeleton className="gencl:w-full gencl:h-3 gencl:rounded-md" />
@@ -156,7 +135,5 @@ export function MemberItemSkeleton({
     </div>
   );
 
-  return variant === "profile"
-    ? renderProfileSkeleton()
-    : renderDefaultSkeleton();
+  return variant === "profile" ? renderProfileSkeleton() : renderDefaultSkeleton();
 }

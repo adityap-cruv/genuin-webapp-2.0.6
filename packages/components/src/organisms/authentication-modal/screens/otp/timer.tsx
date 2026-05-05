@@ -1,6 +1,7 @@
-import { ComponentProps, useEffect, useState } from "react";
 import { Button } from "@genuin/ui/components/button";
 import { cn } from "@genuin/ui/lib/utils";
+import type { ComponentProps } from "react";
+import { useEffect, useState } from "react";
 
 type TimerMessageProps = ComponentProps<"div"> & {
   time: number;
@@ -38,19 +39,12 @@ export function TimerMessage({
   }, [isOtpSending]);
 
   return timer <= 0 ? (
-    <Button
-      onClick={resentOtp}
-      disabled={isOtpSending}
-      theme="text"
-      type="button"
-    >
+    <Button onClick={resentOtp} disabled={isOtpSending} theme="text" type="button">
       Resend Code
     </Button>
   ) : (
     <p {...props}>
-      <span className="gencl:text-body-0-medium gencl:text-secondary-600">
-        Resend code in{" "}
-      </span>
+      <span className="gencl:text-body-0-medium gencl:text-secondary-600">Resend code in </span>
       <span className="gencl:text-body-0-medium">{`00:${timer.toString().padStart(2, "0")}`}</span>
     </p>
   );

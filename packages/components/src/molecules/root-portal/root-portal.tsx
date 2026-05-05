@@ -1,13 +1,12 @@
-import { useBaseContext } from "@genuin/components/context/base";
+import { Toaster } from "@genuin/ui";
 import { cn } from "@genuin/ui/lib/utils";
 import * as React from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import {
-  cleanupOverlayShadowHost,
-  getOrCreateOverlayShadowHost,
-} from "./shadow-root/shadow-dom.utils";
-import { Toaster } from "@genuin/ui";
-import { useEffect } from "react";
+
+import { useBaseContext } from "@genuin/components/context/base";
+
+import { cleanupOverlayShadowHost, getOrCreateOverlayShadowHost } from "./shadow-root/shadow-dom.utils";
 
 type RootPortalProps = {
   children: React.ReactNode;
@@ -69,15 +68,11 @@ export function RootPortal({
   enabledToaster = true,
   portalKey = "default",
 }: RootPortalProps) {
-  // SSR guard: don't render on server
-  if (typeof window === "undefined") return null;
   const [mounted, setMounted] = React.useState(false);
-  const [containerElement, setContainerElement] =
-    React.useState<HTMLElement | null>(null);
-  const { parsedBrandColors, isEmbed, useShadowDOM, brandDetails, theme } =
-    useBaseContext();
+  const [containerElement, setContainerElement] = React.useState<HTMLElement | null>(null);
+  const { parsedBrandColors, isEmbed, useShadowDOM, brandDetails, theme } = useBaseContext();
 
-  React.useEffect(() => {
+  useEffect(() => {
     setMounted(true);
 
     // Resolve the container element
@@ -96,16 +91,12 @@ export function RootPortal({
         // (e.g. PipView height:0px vs ExpandView height:812px) never overwrite
         // each other.
         const { shadowRoot, host } = getOrCreateOverlayShadowHost(portalKey);
-        const brandOverlayZIndex = getOverlayZIndexByBrandId(
-          brandDetails.brand_id,
-        );
+        const brandOverlayZIndex = getOverlayZIndexByBrandId(brandDetails.brand_id);
         if (brandOverlayZIndex) {
           host.style.zIndex = brandOverlayZIndex;
         }
 
-        const portalContainer = shadowRoot.querySelector(
-          "[data-portal-container]",
-        ) as HTMLElement;
+        const portalContainer = shadowRoot.querySelector("[data-portal-container]") as HTMLElement;
         if (style) {
           Object.assign(host.style, style);
           Object.assign(portalContainer.style, style);
@@ -132,14 +123,11 @@ export function RootPortal({
     if (isCarlistBrand) {
       containerElement.style.backgroundColor = "rgba(0, 0, 0, 0.85)";
     } else {
-      containerElement?.classList.add(
-        theme === "dark" || theme === undefined
-          ? "gencl:bg-black"
-          : "gencl:bg-white",
-      );
+      containerElement?.classList.add(theme === "dark" || theme === undefined ? "gencl:bg-black" : "gencl:bg-white");
     }
   }, [containerElement, theme]);
 
+  if (typeof window === "undefined") return null;
   if (!isEmbed || !mounted || !containerElement) return null;
 
   const elementToRender = (
@@ -151,8 +139,7 @@ export function RootPortal({
         position: useShadowDOM ? "relative" : undefined,
         zIndex: 30,
       }}
-      className={cn("gen-sdk-root-portal gen-sdk-class", className)}
-    >
+      className={cn("gen-sdk-root-portal gen-sdk-class", className)}>
       {children}
       {enabledToaster && <Toaster />}
     </div>

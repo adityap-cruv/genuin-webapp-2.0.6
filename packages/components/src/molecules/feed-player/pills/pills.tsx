@@ -1,23 +1,18 @@
 import { cn } from "@genuin/ui/lib/utils";
+import type { ComponentProps } from "react";
+
 import { CommunityPill } from "@genuin/components/molecules/feed-player/pills/community-pill";
 import { GroupPill } from "@genuin/components/molecules/feed-player/pills/group-pill";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
-import { ComponentProps } from "react";
 
 type PillsPropsType = {
   variant?: ComponentProps<typeof CommunityPill>["variant"];
   communityDetails: PostDetailsType["community"];
   groupDetails: PostDetailsType["group"];
   videoId?: string;
-  onGroupJoinStatusChange?: ComponentProps<
-    typeof GroupPill
-  >["onGroupJoinStatusChange"];
-  onGroupSubscriptionChange?: ComponentProps<
-    typeof GroupPill
-  >["onGroupSubscriptionChange"];
-  onCommunityJoinStatusChange?: ComponentProps<
-    typeof CommunityPill
-  >["onCommunityJoinStatusChange"];
+  onGroupJoinStatusChange?: ComponentProps<typeof GroupPill>["onGroupJoinStatusChange"];
+  onGroupSubscriptionChange?: ComponentProps<typeof GroupPill>["onGroupSubscriptionChange"];
+  onCommunityJoinStatusChange?: ComponentProps<typeof CommunityPill>["onCommunityJoinStatusChange"];
   isHoverable?: boolean;
   hideCommunityJoinButton?: boolean;
   hideGroupSubscriptionButton?: boolean;

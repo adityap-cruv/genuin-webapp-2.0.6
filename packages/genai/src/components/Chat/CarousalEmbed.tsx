@@ -1,7 +1,10 @@
-import { useAgentsContext } from '@/context/app/context';
-import { useOctoAnalytics } from '@/context/analytics';
-import type { CarousalMetadata } from '@/types';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+
+import { useOctoAnalytics } from '@/context/analytics';
+import { useAgentsContext } from '@/context/app/context';
+import type { CarousalMetadata } from '@/types';
+
+
 import { Skeleton } from '../ui/skeleton';
 
 const generateRandomId = () => Math.floor(Math.random() * 1000) + 1;

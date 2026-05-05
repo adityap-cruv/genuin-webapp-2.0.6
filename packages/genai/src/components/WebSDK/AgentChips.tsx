@@ -1,4 +1,5 @@
 import { X } from 'lucide-react';
+
 import type { Agent } from '@/types';
 
 interface AgentChipsProps {

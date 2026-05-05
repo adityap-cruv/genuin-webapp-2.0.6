@@ -1,24 +1,17 @@
 "use client";
 
-import React, { useEffect, useMemo, useState, type FC } from "react";
-import { v4 as uuid } from "uuid";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@genuin/ui/components/accordion";
+import { Button } from "@genuin/ui/components/button";
 import { Switch } from "@genuin/ui/components/switch";
+import { LinkIcon } from "@genuin/ui/icons";
+import { Plus } from "lucide-react";
+import React, { useEffect, useMemo, useState, type FC } from "react";
+
 import { AddButton } from "../add-linkout-button";
 import { AddLinkCard } from "../add-linkout-card";
 import { AddLinks } from "../add-linkout-form";
 
-import { Plus } from "lucide-react";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@genuin/ui/components/accordion";
-import { Button } from "@genuin/ui/components/button";
-import { LinkIcon } from "@genuin/ui/icons";
-
 export type CardItems = {
-  id: string;
   image: string;
   link: string;
   title: string;
@@ -41,20 +34,15 @@ type AddLinkOutProps = {
   initialLinkouts?: any;
 };
 
-export const AddLinkOut: FC<AddLinkOutProps> = ({
-  onPayload,
-  initialLinkouts,
-}) => {
+export const AddLinkOut: FC<AddLinkOutProps> = ({ onPayload, initialLinkouts }) => {
   const MAX_LINKS = 4;
   const hasCTA = useMemo(() => {
     const primaryLinkout = initialLinkouts?.[0];
     if (!primaryLinkout) return false;
 
     const { cta_link: ctaLink, cta_text: ctaText } = primaryLinkout;
-    const isValidLink =
-      typeof ctaLink === "string" && ctaLink.trim().length > 0;
-    const isValidText =
-      typeof ctaText === "string" && ctaText.trim().length > 0;
+    const isValidLink = typeof ctaLink === "string" && ctaLink.trim().length > 0;
+    const isValidText = typeof ctaText === "string" && ctaText.trim().length > 0;
     return isValidLink && isValidText;
   }, [initialLinkouts]);
 
@@ -125,26 +113,17 @@ export const AddLinkOut: FC<AddLinkOutProps> = ({
     }
   };
 
-  const handleSaveAddLink = ({
-    url,
-    title,
-    image,
-  }: {
-    url: string;
-    title: string;
-    image: string;
-  }) => {
+  const handleSaveAddLink = ({ url, title, image }: { url: string; title: string; image: string }) => {
     let updatedCards: CardItems[];
 
     if (editItems) {
       // Edit existing card
       updatedCards = cards.map((card) =>
-        card.id === editItems.id ? { ...card, link: url, title, image } : card
+        card?.position === editItems?.position ? { ...card, link: url, title, image } : card
       );
     } else {
       // Add new card
       const newCard: CardItems = {
-        id: uuid(),
         image,
         link: url,
         title,
@@ -171,13 +150,10 @@ export const AddLinkOut: FC<AddLinkOutProps> = ({
     sendCardsPayload(payloadCards);
   };
 
-  const handleDeleteLink = (id: string) => {
+  const handleDeleteLink = (linkoutPosition: number) => {
     const updatedCards = cards
-      .filter((card) => card.id !== id)
-      .map((card, idx) => ({
-        ...card,
-        position: idx + 1,
-      }));
+      .filter((card) => card?.position !== linkoutPosition)
+      .map((card, idx) => ({ ...card, position: idx + 1 }));
 
     setCards(updatedCards);
     sendCardsPayload(updatedCards);
@@ -231,48 +207,38 @@ export const AddLinkOut: FC<AddLinkOutProps> = ({
   };
 
   return (
-    <Accordion
-      className="gencl:w-full"
-      collapsible
-      type="single"
-      onValueChange={handleAccordionToggle}
-    >
+    <Accordion className="gencl:w-full" collapsible type="single" onValueChange={handleAccordionToggle}>
       <AccordionItem
         className="gencl:border gencl:border-secondary-150 gencl:rounded-lg gencl:overflow-clip"
-        value="item-1"
-      >
+        value="item-1">
         <AccordionTrigger className="gencl:text-lg gencl:font-semibold gencl:text-gray-800 gencl:py-2 gencl:px-4">
           <div className="gencl:flex gencl:justify-between gencl:w-full gencl:pr-2">
             <span className="gencl:flex gencl:items-center gencl:gap-3 gencl:text-body-1-semi-bold">
               <LinkIcon />
-              Add link outs
+              Add Linkouts
             </span>
-            {cards.length > 1 && (
-              <span className="gencl:text-body-1-semi-bold">
-                +{cards.length - 1}
-              </span>
-            )}
+            {cards.length > 1 && <span className="gencl:text-body-1-semi-bold">+{cards.length - 1}</span>}
           </div>
         </AccordionTrigger>
 
         <AccordionContent className="gencl:bg-secondary-50 gencl:p-3 gencl:border-t gencl:border-secondary-150">
           <div className="gencl:w-full gencl:flex gencl:flex-col gencl:gap-3 gencl:mb-3">
             {cards.map((item) => (
-              <React.Fragment key={item.id}>
+              <React.Fragment key={item.position}>
                 <AddLinkCard
-                  key={item.id}
+                  key={item.position}
                   item={item}
-                  className={editItems?.id === item.id ? "gencl:hidden" : ""}
+                  className={editItems?.position === item.position ? "gencl:hidden" : ""}
                   onEdit={() => {
                     setEditItems(item);
                     // Close new link add form and open edit form
                     setShowForm(false);
                   }}
-                  onDelete={() => handleDeleteLink(item.id)}
+                  onDelete={() => handleDeleteLink(item.position)}
                 />
-                {editItems?.id === item.id && (
+                {editItems?.position === item.position && (
                   <AddLinks
-                    key={editItems?.id ?? ""}
+                    key={editItems?.position ?? ""}
                     url={editItems?.link ?? ""}
                     title={editItems?.title ?? ""}
                     image={editItems?.image ?? ""}
@@ -306,30 +272,20 @@ export const AddLinkOut: FC<AddLinkOutProps> = ({
               onClick={() => {
                 setShowForm(true);
                 setEditItems(undefined);
-              }}
-            >
-              <Plus className="gencl:size-6" /> Add Link
+              }}>
+              <Plus className="gencl:size-6" /> Add Linkout
             </Button>
           )}
 
           {/* CTA Button Section */}
           <div
-            className={`gencl:flex gencl:justify-between gencl:items-center ${!showAddCTAForm ? "gencl:mt-4" : "gencl:my-4"}`}
-          >
+            className={`gencl:flex gencl:justify-between gencl:items-center ${!showAddCTAForm ? "gencl:mt-4" : "gencl:my-4"}`}>
             <div className="gencl:flex gencl:items-center gencl:text-body-1-semi-bold">
-              <Switch
-                checked={addToggle}
-                onCheckedChange={handleAddButtonToggle}
-                disabled={cards.length === 0}
-              />
+              <Switch checked={addToggle} onCheckedChange={handleAddButtonToggle} disabled={cards.length === 0} />
               <label className="gencl:mx-2">Add Button</label>
             </div>
             {addToggle && !showAddCTAForm && (
-              <Button
-                size="sm"
-                theme="custom"
-                onClick={() => setShowAddCTAForm(true)}
-              >
+              <Button size="sm" theme="custom" onClick={() => setShowAddCTAForm(true)}>
                 Edit Button
               </Button>
             )}

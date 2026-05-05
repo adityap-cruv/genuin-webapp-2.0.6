@@ -1,25 +1,17 @@
 "use client";
 
 import { Checkbox } from "@genuin/ui/checkbox";
+import { Form, FormField, FormItem, FormControl, FormMessage, FormLabel } from "@genuin/ui/components/form";
 import type { ComponentProps } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormControl,
-  FormMessage,
-  FormLabel,
-} from "@genuin/ui/components/form";
 import { useState } from "react";
+import type { SubmitHandler } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
+import { useAuthContext } from "@genuin/components/context/auth";
 import { useBaseContext } from "@genuin/components/context/base";
 import { BrandLogo } from "@genuin/components/molecules/brand";
-import {
-  useAcceptGuidelinesMutation,
-  useGetGuidelines,
-} from "@genuin/components/react-query/api/authentication";
-import { useAuthContext } from "@genuin/components/context/auth";
+import { useAcceptGuidelinesMutation, useGetGuidelines } from "@genuin/components/react-query/api/authentication";
+
 import { useAuthenticationModalContext } from "../../context";
 import { SubmitButton } from "../../submit-button";
 
@@ -74,22 +66,16 @@ export function Guidelines({ ...props }: GuidelinesProps) {
       <div className="gencl:w-full gencl:mt-5">
         <h2 className="gencl:text-headline-3-bold">Brand Guidelines</h2>
         <p className="gencl:text-body-1-medium gencl:font-normal gencl:mt-3">
-          Welcome to Genuin! As you get settled, we wanted to introduce you to
-          our Platform Guidelines. To keep Genuin a space for authentic
-          connection and ongoing learning, here are a few ground rules, you, as
-          a user, acknowledge and agree to by using this platform.
+          Welcome to Genuin! As you get settled, we wanted to introduce you to our Platform Guidelines. To keep Genuin a
+          space for authentic connection and ongoing learning, here are a few ground rules, you, as a user, acknowledge
+          and agree to by using this platform.
         </p>
         <div className="gencl:overflow-y-auto gencl:max-h-[40vh]">
           {isLoading ? (
-            <div className="gencl:mt-3 gencl:text-body-1-medium gencl:font-normal">
-              Loading guidelines...
-            </div>
+            <div className="gencl:mt-3 gencl:text-body-1-medium gencl:font-normal">Loading guidelines...</div>
           ) : (
             guidelines?.map((guideline, index) => (
-              <div
-                key={index}
-                className="gencl:mt-3 gencl:text-body-1-medium gencl:font-normal"
-              >
+              <div key={index} className="gencl:mt-3 gencl:text-body-1-medium gencl:font-normal">
                 <span className="gencl:font-semibold">{guideline.title}: </span>
                 {guideline.description}
               </div>
@@ -113,9 +99,7 @@ export function Guidelines({ ...props }: GuidelinesProps) {
                       className="gencl:rounded-full gencl:w-5 gencl:h-5 gencl:fill-white"
                     />
                   </FormControl>
-                  <p className="gencl:text-body-1-medium">
-                    I agree to the guidelines
-                  </p>
+                  <p className="gencl:text-body-1-medium">I agree to the guidelines</p>
                 </FormLabel>
                 <FormMessage />
               </FormItem>

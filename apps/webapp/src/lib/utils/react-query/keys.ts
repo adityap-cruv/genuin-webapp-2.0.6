@@ -2,7 +2,7 @@
  * This page is used to define queryKeys for the react-query library.
  */
 
-import type { QueryKey } from '@tanstack/react-query'
+import type { QueryKey } from "@tanstack/react-query";
 
 /**
  * Returns a QueryKey for fetching profile community list.
@@ -13,7 +13,7 @@ import type { QueryKey } from '@tanstack/react-query'
  * @returns {QueryKey} The generated query key.
  */
 export function getQueryKeyForProfileCommunities(id: string, forBrand: boolean): QueryKey {
-  return [forBrand ? 'brand' : 'profile', 'communities', 'list', id]
+  return [forBrand ? "brand" : "profile", "communities", "list", id];
 }
 
 /**
@@ -25,7 +25,7 @@ export function getQueryKeyForProfileCommunities(id: string, forBrand: boolean):
  * @returns {QueryKey} The generated query key.
  */
 export function getQueryKeyForProfileLoops(communityId: string, forBrand: boolean): QueryKey {
-  return [forBrand ? 'brand' : 'profile', 'communities', 'loops', communityId]
+  return [forBrand ? "brand" : "profile", "communities", "loops", communityId];
 }
 
 /**
@@ -38,7 +38,7 @@ export function getQueryKeyForProfileLoops(communityId: string, forBrand: boolea
  * @returns {QueryKey} The generated query key.
  */
 export function getQueryKeyForProfileVideos(communityId: string, loopId: string, forBrand: boolean): QueryKey {
-  return [forBrand ? 'brand' : 'profile', 'communities', 'loops', 'videos', communityId, loopId]
+  return [forBrand ? "brand" : "profile", "communities", "loops", "videos", communityId, loopId];
 }
 
 /**
@@ -48,7 +48,7 @@ export function getQueryKeyForProfileVideos(communityId: string, loopId: string,
  * @returns
  */
 export function getQueryKeyForProfileDetails(id: string, forBrand: boolean): QueryKey {
-  return [forBrand ? 'brand' : 'profile', 'details', id]
+  return [forBrand ? "brand" : "profile", "details", id];
 }
 
 /**
@@ -59,7 +59,7 @@ export function getQueryKeyForProfileDetails(id: string, forBrand: boolean): Que
  * @returns
  */
 export function getQueryKeyForProfileFeed(id: string, forBrand: boolean, ...others: any[]): QueryKey {
-  return [forBrand ? 'brand' : 'profile', 'feed', id, ...others]
+  return [forBrand ? "brand" : "profile", "feed", id, ...others];
 }
 
 /**
@@ -68,7 +68,7 @@ export function getQueryKeyForProfileFeed(id: string, forBrand: boolean, ...othe
  * @returns
  */
 export function getQueryKeyForCommunityDetails(slug: string): QueryKey {
-  return ['community', 'details', slug]
+  return ["community", "details", slug];
 }
 
 /**
@@ -77,7 +77,7 @@ export function getQueryKeyForCommunityDetails(slug: string): QueryKey {
  * @returns
  */
 export function getQueryKeyForCommunityLoops(slug: string): QueryKey {
-  return ['community', 'loops', slug]
+  return ["community", "loops", slug];
 }
 
 /**
@@ -86,7 +86,7 @@ export function getQueryKeyForCommunityLoops(slug: string): QueryKey {
  * @returns
  */
 export function getQueryKeyForCommunityMembers(slug: string): QueryKey {
-  return ['community', 'members', slug]
+  return ["community", "members", slug];
 }
 
 /**
@@ -95,7 +95,7 @@ export function getQueryKeyForCommunityMembers(slug: string): QueryKey {
  * @returns
  */
 export function getQueryKeyForLoopDetails(slug: string): QueryKey {
-  return ['loop', 'details', slug]
+  return ["loop", "details", slug];
 }
 
 /**
@@ -104,7 +104,7 @@ export function getQueryKeyForLoopDetails(slug: string): QueryKey {
  * @returns
  */
 export function getQueryKeyForLoopPosts(slug: string) {
-  return ['loop', 'posts', slug]
+  return ["loop", "posts", slug];
 }
 
 /**
@@ -113,7 +113,7 @@ export function getQueryKeyForLoopPosts(slug: string) {
  * @returns
  */
 export function getQueryKeyForLoopMembers(slug: string) {
-  return ['loop', 'members', slug]
+  return ["loop", "members", slug];
 }
 
 /**
@@ -122,7 +122,7 @@ export function getQueryKeyForLoopMembers(slug: string) {
  * @returns
  */
 export function getQueryKeyForLoopFeed(slug: string) {
-  return ['loop', 'feed', slug]
+  return ["loop", "feed", slug];
 }
 
 /**
@@ -131,7 +131,7 @@ export function getQueryKeyForLoopFeed(slug: string) {
  * @returns
  */
 export function getQueryKeyForCommunityFeed(slug: string) {
-  return ['community', 'feed', slug]
+  return ["community", "feed", slug];
 }
 
 /**
@@ -139,7 +139,7 @@ export function getQueryKeyForCommunityFeed(slug: string) {
  * @returns
  */
 export function getQueryKeyForFeaturedCommunities(): QueryKey {
-  return ['featured', 'communities']
+  return ["featured", "communities"];
 }
 
 /**
@@ -147,7 +147,7 @@ export function getQueryKeyForFeaturedCommunities(): QueryKey {
  * @returns
  */
 export function getQueryKeyForFeaturedLoops(): QueryKey {
-  return ['featured', 'loops']
+  return ["featured", "loops"];
 }
 
 /**
@@ -156,7 +156,7 @@ export function getQueryKeyForFeaturedLoops(): QueryKey {
  * @returns
  */
 export function getQueryKeyForVideoComments(videoId: string) {
-  return [videoId, 'comments']
+  return [videoId, "comments"];
 }
 
 /**
@@ -165,7 +165,7 @@ export function getQueryKeyForVideoComments(videoId: string) {
  * @returns
  */
 export function getQueryKeyForUserDetails(nickname: string) {
-  return ['user', 'details', nickname]
+  return ["user", "details", nickname];
 }
 
 /**
@@ -174,7 +174,7 @@ export function getQueryKeyForUserDetails(nickname: string) {
  * @returns
  */
 export function getQueryKeyForUserSettings() {
-  return ['user', 'settings']
+  return ["user", "settings"];
 }
 
 /**
@@ -183,7 +183,7 @@ export function getQueryKeyForUserSettings() {
  * @returns
  */
 export function getQueryKeyForCategoryList() {
-  return ['categories']
+  return ["categories"];
 }
 
 /**
@@ -192,7 +192,7 @@ export function getQueryKeyForCategoryList() {
  * @returns
  */
 export function getQueryKeyForksCbStatus() {
-  return ['ksCbStatus']
+  return ["ksCbStatus"];
 }
 
 /**
@@ -201,5 +201,5 @@ export function getQueryKeyForksCbStatus() {
  * @returns
  */
 export function getQueryKeyForGroupMembers(slug: string) {
-  return ['cohosts', slug]
+  return ["cohosts", slug];
 }

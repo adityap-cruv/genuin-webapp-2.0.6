@@ -1,5 +1,5 @@
 // Updated for Next-Auth 5.0
-import { DefaultSession } from 'next-auth'
+import type { DefaultSession } from 'next-auth'
 import 'next-auth/jwt'
 
 declare module 'next-auth' {

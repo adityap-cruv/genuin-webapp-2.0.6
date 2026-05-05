@@ -1,24 +1,19 @@
 "use client";
 
-import { type ComponentProps, useState } from "react";
-import { cn } from "@genuin/ui/utils";
 import { SearchIcon } from "@genuin/ui/icons";
+import { cn } from "@genuin/ui/utils";
+import type { VariantProps } from "class-variance-authority";
+import { type ComponentProps, useState } from "react";
+
 import { SearchModal } from "@genuin/components/organisms/search-modal";
 import { iconVariant } from "@genuin/components/organisms/top-bar/cta-buttons";
-import { VariantProps } from "class-variance-authority";
 
 export type SearchProps = ComponentProps<"div"> & {
   placeholder?: string;
   onSearch?: (query: string) => void;
 } & VariantProps<typeof iconVariant>;
 
-export function Search({
-  className,
-  placeholder = "Search...",
-  onSearch,
-  theme,
-  ...restProps
-}: SearchProps) {
+export function Search({ className, placeholder = "Search...", onSearch, theme, ...restProps }: SearchProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleInputClick = () => {
@@ -32,13 +27,9 @@ export function Search({
   return (
     <>
       <div
-        className={cn(
-          "gencl:relative gencl:max-w-lg gencl:cursor-pointer",
-          className
-        )}
+        className={cn("gencl:relative gencl:max-w-lg gencl:cursor-pointer", className)}
         onClick={handleInputClick}
-        {...restProps}
-      >
+        {...restProps}>
         <div className="gencl:relative gencl:w-xs gencl:hidden gencl:lg:block!">
           <div
             className={cn(
@@ -49,8 +40,7 @@ export function Search({
             )}
             role="button"
             tabIndex={0}
-            aria-label={`Search: ${placeholder}`}
-          >
+            aria-label={`Search: ${placeholder}`}>
             <SearchIcon size="md" />
             <span className="gencl:text-secondary-600 gencl:select-none gencl:flex-1 gencl:hover:text-secondary-900 gencl:transition-colors">
               {placeholder}
@@ -58,9 +48,7 @@ export function Search({
           </div>
         </div>
 
-        <div
-          className={cn("gencl:flex gencl:lg:hidden!", iconVariant({ theme }))}
-        >
+        <div className={cn("gencl:flex gencl:lg:hidden!", iconVariant({ theme }))}>
           <SearchIcon size="md" theme={theme} />
         </div>
       </div>

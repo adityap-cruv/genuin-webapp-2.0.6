@@ -1,6 +1,8 @@
-import { cn, defaultSizesForIcons } from "@genuin/ui/lib/utils";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
+
+import { cn, defaultSizesForIcons } from "@genuin/ui/lib/utils";
+
 import type { SVGIconsProps } from "../type";
 
 // Define the mapPinVariant function using cva to handle different styles based on props
@@ -24,12 +26,7 @@ const mapPinVariant = cva("", {
 // Define the Props type for the MapPinIcon component
 type MapPinIconPropsType = SVGIconsProps & VariantProps<typeof mapPinVariant>;
 
-export function MapPinIcon({
-  theme = "dark",
-  size,
-  className,
-  ...restProps
-}: MapPinIconPropsType) {
+export function MapPinIcon({ theme = "dark", size, className, ...restProps }: MapPinIconPropsType) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -38,8 +35,7 @@ export function MapPinIcon({
       viewBox="0 0 25 24"
       fill="none"
       className={cn(mapPinVariant({ theme, size }), className)}
-      {...restProps}
-    >
+      {...restProps}>
       <path
         d="M12.849 20.2688C12.6958 20.3781 12.5123 20.4369 12.324 20.4369C12.1358 20.4369 11.9522 20.3781 11.799 20.2688C7.27183 17.0419 2.46714 10.4044 7.32433 5.60813C8.65732 4.29574 10.4534 3.56087 12.324 3.5625C14.199 3.5625 15.9981 4.29844 17.3237 5.60719C22.1809 10.4034 17.3762 17.04 12.849 20.2688Z"
         stroke="currentColor"

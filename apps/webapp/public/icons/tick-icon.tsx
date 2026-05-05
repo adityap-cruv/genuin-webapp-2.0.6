@@ -1,6 +1,6 @@
-import { type ComponentProps } from 'react'
 import { cva } from 'class-variance-authority'
 import cn from 'classnames'
+import { type ComponentProps } from 'react'
 
 // Define the properties for the TickIcon component
 type Props = ComponentProps<'svg'> & {

@@ -1,14 +1,17 @@
 import { useQuery } from '@tanstack/react-query'
-import { useSearchBarStore } from '../store'
-import { fetchSuggestions, postRecents } from '../api'
+import Link from 'next/link'
+import { type ReactNode } from 'react'
+
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { IcLoop } from '@icons/ic-loop'
-import Link from 'next/link'
-import { PATH_NAME } from '@lib/utils/constants/path'
-import { NoResults } from './tabs/no-results'
 import { RECENT_SEARCH_CONTENT_TYPE } from '@lib/constants'
-import { type ReactNode } from 'react'
+import { PATH_NAME } from '@lib/utils/constants/path'
+
+import { fetchSuggestions, postRecents } from '../api'
+import { useSearchBarStore } from '../store'
+
 import { ItemShimmer } from './item-shimmer'
+import { NoResults } from './tabs/no-results'
 
 export default function Suggestions() {
   return (

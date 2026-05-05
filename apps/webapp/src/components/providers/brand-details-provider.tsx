@@ -1,11 +1,11 @@
 // app/(new-site)/BrandDetailsProviderClient.tsx
-'use client'
-import { BaseContextProvider } from '@genuin/components/context/base/provider'
+"use client";
+import { BaseContextProvider } from "@genuin/components/context/base/provider";
 
 export default function BrandDetailsProviderClient({ brandDetails, children }: any) {
   return (
-    <BaseContextProvider useShadowDOM={false} isEmbed={false} brandDetails={brandDetails}>
+    <BaseContextProvider useShadowDOM isEmbed={false} brandDetails={brandDetails}>
       {children}
     </BaseContextProvider>
-  )
+  );
 }

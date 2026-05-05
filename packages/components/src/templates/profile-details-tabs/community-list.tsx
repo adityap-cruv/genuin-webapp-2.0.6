@@ -3,9 +3,14 @@ import { DecorativeList } from "@genuin/ui/decorative-list";
 import { InfiniteScroll } from "@genuin/ui/infinite-scroll";
 import { useCallback, useMemo } from "react";
 
+import { useAnalytics } from "@genuin/components/context/analytics";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { JoinCommunityButton } from "@genuin/components/molecules/join-community-button";
 import { ShareButton } from "@genuin/components/molecules/share-button";
 import { Tag } from "@genuin/components/molecules/tag";
+import { ComponentErrorState } from "@genuin/components/organisms/error-state-component";
 import { GenericDetails } from "@genuin/components/organisms/generic-details";
 import { GenericDetailsMetadata } from "@genuin/components/organisms/generic-details/generic-details-metadata";
 import {
@@ -13,45 +18,24 @@ import {
   useGetProfileCommunities,
 } from "@genuin/components/react-query/api/profile/posts";
 import type { CommunityType } from "@genuin/components/react-query/api/profile/posts/schema";
+import type { CommunityUserRole } from "@genuin/components/types/post";
 
-import { buildPageUrl } from "@genuin/components/lib/utils/pages";
-import { CommunityListSkeleton } from "./skeleton";
-import { CommunityUserRole } from "@genuin/components/types/post";
-import { ComponentErrorState } from "@genuin/components/organisms/error-state-component";
-import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { Groups } from "./group-list";
-import { useAnalytics } from "@genuin/components/context/analytics";
+import { CommunityListSkeleton } from "./skeleton";
 
-export function CommunityList({
-  userId,
-  forBrand,
-}: {
-  userId: string;
-  forBrand: boolean;
-}) {
-  const {
-    data,
-    isLoading,
-    isError,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useGetProfileCommunities(userId, forBrand);
-  const { track, EventName } = useAnalytics();
-
-  const communities = useMemo(
-    () => data?.pages.flatMap((page) => page.communities) ?? [],
-    [data]
+export function CommunityList({ userId, forBrand }: { userId: string; forBrand: boolean }) {
+  const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = useGetProfileCommunities(
+    userId,
+    forBrand
   );
+  const { track, EventName } = useAnalytics();
+  const { community: communityConfig } = useEmbedConfigs();
+
+  const communities = useMemo(() => data?.pages.flatMap((page) => page.communities) ?? [], [data]);
 
   const handleCommunityJoinStatusChange = useCallback(
     (communityId: string, newRole: CommunityUserRole) => {
-      setQueryDataForJoinCommunityInProfileCommunities(
-        newRole,
-        communityId,
-        userId,
-        forBrand
-      );
+      setQueryDataForJoinCommunityInProfileCommunities(newRole, communityId, userId, forBrand);
     },
     [forBrand, userId]
   );
@@ -71,15 +55,10 @@ export function CommunityList({
   // Placeholder for community list component
   return (
     <div className="gencl:w-full gencl:space-y-6 gencl:pb-6">
-      <InfiniteScroll
-        getNextPage={fetchNextPage}
-        hasNextPage={hasNextPage}
-        isLoadingNextPage={isFetchingNextPage}
-      >
+      <InfiniteScroll getNextPage={fetchNextPage} hasNextPage={hasNextPage} isLoadingNextPage={isFetchingNextPage}>
         {communities.map((community) => {
           const showPrivateCommunityAccess =
-            community.isPrivate &&
-            (community.role === "UNJOINED" || community.role === "REQUESTED");
+            community.isPrivate && (community.role === "UNJOINED" || community.role === "REQUESTED");
           return (
             <div className="gencl:w-full" key={community.id}>
               <GenericDetails
@@ -110,7 +89,7 @@ export function CommunityList({
                         truncateLength={21}
                       />
                     )}
-                    {community.isPrivate && (
+                    {community.isPrivate && communityConfig.showJoinCommunityButton && (
                       <JoinCommunityButton
                         className="gencl:sm:inline-flex! gencl:hidden"
                         roleTexts={{ UNJOINED: "Join" }}
@@ -125,33 +104,31 @@ export function CommunityList({
                         }
                       />
                     )}
-                    <ShareButton
-                      className="gencl:hidden gencl:sm:inline-flex!"
-                      showText
-                      size="sm"
-                      pathName={buildPageUrl({
-                        type: "community",
-                        slug: community.slug,
-                      })}
-                      onClick={() => {
-                        track(EventName.COMMUNITY_SHARED, {
-                          community_id: community.id,
-                          share_url: buildPageUrl({
-                            type: "community",
-                            slug: community.slug,
-                          }),
-                        });
-                      }}
-                    />
+                    {communityConfig.showCommunityShareButton && (
+                      <ShareButton
+                        className="gencl:hidden gencl:sm:inline-flex!"
+                        showText
+                        size="sm"
+                        pathName={buildPageUrl({
+                          type: "community",
+                          slug: community.slug,
+                        })}
+                        onClick={() => {
+                          track(EventName.COMMUNITY_SHARED, {
+                            community_id: community.id,
+                            share_url: buildPageUrl({
+                              type: "community",
+                              slug: community.slug,
+                            }),
+                          });
+                        }}
+                      />
+                    )}
                   </div>
                 }
               />
               {showPrivateCommunityAccess ? (
-                <ComponentErrorState
-                  type="PRIVATE_COMMUNITY"
-                  forList
-                  className="gencl:rounded-xl gencl:mt-4"
-                />
+                <ComponentErrorState type="PRIVATE_COMMUNITY" forList className="gencl:rounded-xl gencl:mt-4" />
               ) : (
                 <DecorativeList className="gencl:sm:ml-10.5! gencl:ml-4 gencl:[&_li]:sm:!mb-6 gencl:[&_li]:mb-3">
                   <div className="gencl:sm:!h-6 gencl:h-3" />

@@ -1,16 +1,17 @@
+import { DialogClose } from "@genuin/ui/components/dialog";
 import { CommentIcon, PinIcon, PlayIcon } from "@genuin/ui/icons";
 import { Image } from "@genuin/ui/image";
-import { cn } from "@genuin/ui/utils";
 import { Skeleton } from "@genuin/ui/skeleton";
+import { cn } from "@genuin/ui/utils";
 import { cva } from "class-variance-authority";
-import { DialogClose } from "@genuin/ui/components/dialog";
 
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { Link } from "@genuin/components/molecules/link";
+
+import { DynamicReactionIcon } from "../reaction-button";
 import { Stats } from "../stats";
 
 import type { PostTileProps } from "./post-tile.type";
-import { DynamicReactionIcon } from "../reaction-button";
-import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
 export const postTileVariants = cva(
   "gencl:group gencl:relative gencl:rounded-md gencl:overflow-hidden gencl:aspect-reel",
@@ -57,18 +58,9 @@ export function PostTile({
 }: PostTileProps & { shouldCloseModal?: boolean }) {
   const { isLargeDesktop, isDesktop } = useDeviceDetectMediaQuery();
   const content = (
-    <div
-      className={cn(postTileVariants({ size, variant }), className)}
-      onClick={onClick}
-      {...restProps}
-    >
+    <div className={cn(postTileVariants({ size, variant }), className)} onClick={onClick} {...restProps}>
       {imageUrl ? (
-        <Image
-          aspectRatio="reel"
-          className="gencl:bg-secondary-200"
-          src={imageUrl}
-          {...imageCompProps}
-        />
+        <Image aspectRatio="reel" className="gencl:bg-secondary-200" src={imageUrl} {...imageCompProps} />
       ) : (
         <div className="gencl:w-full gencl:h-full gencl:bg-secondary-50" />
       )}
@@ -110,9 +102,7 @@ export function PostTile({
                 ...((isLargeDesktop || isDesktop) && {
                   Comments: {
                     value: stats.comments,
-                    icon: (
-                      <CommentIcon className="gencl:stroke-white! gencl:shrink-0 gencl:stroke-2 gencl:size-4" />
-                    ),
+                    icon: <CommentIcon className="gencl:stroke-white! gencl:shrink-0 gencl:stroke-2 gencl:size-4" />,
                   },
                 }),
               }}
@@ -128,9 +118,7 @@ export function PostTile({
               stats={{
                 Views: {
                   value: stats.views,
-                  icon: (
-                    <PlayIcon className="gencl:stroke-white gencl:stroke-2 gencl:size-3 gencl:fill-none" />
-                  ),
+                  icon: <PlayIcon className="gencl:stroke-white gencl:stroke-2 gencl:size-3 gencl:fill-none" />,
                 },
               }}
             />
@@ -174,20 +162,6 @@ export function PostTile({
   return finalContent;
 }
 
-export function PostTileSkeleton({
-  size = "sm",
-  className,
-}: {
-  size: PostTileProps["size"];
-  className?: string;
-}) {
-  return (
-    <Skeleton
-      className={cn(
-        postTileVariants({ size }),
-        "gencl:w-full gencl:aspect-reel",
-        className
-      )}
-    />
-  );
+export function PostTileSkeleton({ size = "sm", className }: { size: PostTileProps["size"]; className?: string }) {
+  return <Skeleton className={cn(postTileVariants({ size }), "gencl:w-full gencl:aspect-reel", className)} />;
 }

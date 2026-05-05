@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+
 import { AccountSettings } from "./account-settings";
 
 const meta: Meta<typeof AccountSettings> = {

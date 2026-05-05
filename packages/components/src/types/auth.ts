@@ -1,4 +1,4 @@
-import { ksCbRequestStatusType } from "./roles";
+import type { ksCbRequestStatusType } from "./roles";
 
 /**
  * Authenticated user object.

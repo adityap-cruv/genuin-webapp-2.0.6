@@ -1,5 +1,6 @@
-import { type ComponentProps } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
+import { type ComponentProps } from "react";
+
 import { cn, defaultSizesForIcons } from "@genuin/ui/lib/utils";
 
 // Define the iconVariant function using cva to handle different styles based on props
@@ -14,15 +15,9 @@ const iconVariant = cva("", {
 });
 
 // Define the Props type for the ExpandIcon component
-type ExpandIconPropsType = ComponentProps<"svg"> &
-  VariantProps<typeof iconVariant>;
+type ExpandIconPropsType = ComponentProps<"svg"> & VariantProps<typeof iconVariant>;
 
-export function ExpandIcon({
-  theme,
-  size,
-  className,
-  ...restProps
-}: ExpandIconPropsType) {
+export function ExpandIcon({ theme, size, className, ...restProps }: ExpandIconPropsType) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -31,8 +26,7 @@ export function ExpandIcon({
       viewBox="0 0 24 24"
       fill="none"
       className={cn(iconVariant({ theme, size }), className)}
-      {...restProps}
-    >
+      {...restProps}>
       <path
         fillRule="evenodd"
         clipRule="evenodd"

@@ -1,13 +1,11 @@
 "use client";
 import { createContext, useContext } from "react";
-import type { AuthUser } from "@genuin/components/types/auth";
-import { ActionType } from "@genuin/components/lib/utils/return-query";
-import type { PendingActionData } from "@genuin/components/lib/utils/pending-action-storage";
 
-export type AuthenticationStatusType =
-  | "unauthenticated"
-  | "authenticated"
-  | "loading";
+import type { PendingActionData } from "@genuin/components/lib/utils/pending-action-storage";
+import type { ActionType } from "@genuin/components/lib/utils/return-query";
+import type { AuthUser } from "@genuin/components/types/auth";
+
+export type AuthenticationStatusType = "unauthenticated" | "authenticated" | "loading";
 
 export type AuthCallbackDataType = {
   path: string;
@@ -36,9 +34,7 @@ type AuthContextType = {
   }) => (() => void) | undefined;
 };
 
-export const AuthContext = createContext<AuthContextType | undefined>(
-  undefined
-);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 /**
  * Hook to access the auth context.

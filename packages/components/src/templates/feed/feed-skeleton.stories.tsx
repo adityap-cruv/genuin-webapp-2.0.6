@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+
 import { FeedSkeleton } from "./feed-skeleton";
 
 /**
@@ -12,7 +13,8 @@ const meta: Meta<typeof FeedSkeleton> = {
     layout: "fullscreen",
     docs: {
       description: {
-        component: "A skeleton loader component that represents the loading state of the feed view, including video player, comments, and interaction buttons.",
+        component:
+          "A skeleton loader component that represents the loading state of the feed view, including video player, comments, and interaction buttons.",
       },
     },
   },
@@ -57,7 +59,7 @@ Shows the complete feed skeleton layout including:
 export const Mobile: Story = {
   parameters: {
     viewport: {
-      defaultViewport: 'mobile1',
+      defaultViewport: "mobile1",
     },
     docs: {
       description: {

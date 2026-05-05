@@ -1,6 +1,7 @@
 "use client";
 import React, { createContext, useContext, useEffect } from "react";
 import { UAParser } from "ua-parser-js";
+
 import keyParamMapping from "./key-params-mapping.json";
 // Add types for class properties and methods
 type BaseResolverConfig = {
@@ -123,10 +124,7 @@ class BaseResolver implements BaseResolverConfig {
    * // Safely executes the resolveOS function
    * safeExecute('device.os', resolveOS)
    */
-  async safeExecute(
-    keyPath: string,
-    func: () => void | Promise<void>,
-  ): Promise<void> {
+  async safeExecute(keyPath: string, func: () => void | Promise<void>): Promise<void> {
     try {
       await func();
     } catch (error: unknown) {
@@ -252,10 +250,7 @@ class DeviceResolver extends BaseResolver implements DeviceResolverConfig {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolvePxRatio() {
-    this.setKeyValue(
-      "device.pxratio",
-      parseFloat(window.devicePixelRatio.toFixed(2)) || 1.0,
-    );
+    this.setKeyValue("device.pxratio", parseFloat(window.devicePixelRatio.toFixed(2)) || 1.0);
   }
 
   /**
@@ -316,10 +311,7 @@ class DeviceResolver extends BaseResolver implements DeviceResolverConfig {
       wifi: 2,
       ethernet: 1,
     };
-    this.setKeyValue(
-      "device.connectiontype",
-      conn ? types[conn.effectiveType] || 3 : 3,
-    );
+    this.setKeyValue("device.connectiontype", conn ? types[conn.effectiveType] || 3 : 3);
   }
 
   /**
@@ -355,10 +347,7 @@ class DeviceResolver extends BaseResolver implements DeviceResolverConfig {
    */
   resolveOS() {
     this.setKeyValue("device.os", this.uaParserResult.os?.name || "Unknown");
-    this.setKeyValue(
-      "device.osv",
-      this.uaParserResult.os?.version || "Unknown",
-    );
+    this.setKeyValue("device.osv", this.uaParserResult.os?.version || "Unknown");
   }
 
   /**
@@ -370,9 +359,7 @@ class DeviceResolver extends BaseResolver implements DeviceResolverConfig {
    */
   async resolveGeolocation() {
     try {
-      const response = await fetch(
-        `${process.env.API_BASE_URL}/goservices/data/ip_info`,
-      );
+      const response = await fetch(`${process.env.API_BASE_URL}/goservices/data/ip_info`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -423,9 +410,7 @@ class DeviceResolver extends BaseResolver implements DeviceResolverConfig {
   resolvePPI() {
     const diagPixels = Math.sqrt(screen.width ** 2 + screen.height ** 2);
     const diagInches = 6; // Approximate
-    const ppi = Math.round(
-      (diagPixels / diagInches) * (window.devicePixelRatio || 1),
-    );
+    const ppi = Math.round((diagPixels / diagInches) * (window.devicePixelRatio || 1));
     this.setKeyValue("device.ppi", ppi || "Unknown");
   }
 
@@ -437,13 +422,8 @@ class DeviceResolver extends BaseResolver implements DeviceResolverConfig {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolveFlashVersion() {
-    const flashPlugin = Array.from(navigator.plugins || []).find((plugin) =>
-      plugin.name.includes("Shockwave Flash"),
-    );
-    this.setKeyValue(
-      "device.flashver",
-      flashPlugin ? flashPlugin.description.split(" ")[2] : "Unknown",
-    );
+    const flashPlugin = Array.from(navigator.plugins || []).find((plugin) => plugin.name.includes("Shockwave Flash"));
+    this.setKeyValue("device.flashver", flashPlugin ? flashPlugin.description.split(" ")[2] : "Unknown");
   }
 
   /**
@@ -454,12 +434,7 @@ class DeviceResolver extends BaseResolver implements DeviceResolverConfig {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolveLMT(): void {
-    this.setKeyValue(
-      "device.lmt",
-      navigator.doNotTrack === "1" || (window as any).doNotTrack === "1"
-        ? 1
-        : 0,
-    );
+    this.setKeyValue("device.lmt", navigator.doNotTrack === "1" || (window as any).doNotTrack === "1" ? 1 : 0);
   }
 
   /**
@@ -470,12 +445,7 @@ class DeviceResolver extends BaseResolver implements DeviceResolverConfig {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolveDNT(): void {
-    this.setKeyValue(
-      "device.dnt",
-      navigator.doNotTrack === "1" || (window as any).doNotTrack === "1"
-        ? 1
-        : 0,
-    );
+    this.setKeyValue("device.dnt", navigator.doNotTrack === "1" || (window as any).doNotTrack === "1" ? 1 : 0);
   }
 
   /**
@@ -662,10 +632,7 @@ class SiteResolver extends BaseResolver implements SiteResolverConfig {
    */
   resolvePublisherDomain() {
     const raw = window.location.hostname;
-    this.setKeyValue(
-      "site.publisher.domain",
-      raw.startsWith("www.") ? raw.slice(4) : raw,
-    );
+    this.setKeyValue("site.publisher.domain", raw.startsWith("www.") ? raw.slice(4) : raw);
   }
 
   /**
@@ -707,11 +674,7 @@ class SiteResolver extends BaseResolver implements SiteResolverConfig {
 
     // Combine all keywords, remove duplicates, and filter out empty strings
     const combinedKeywords = [
-      ...new Set([
-        ...metaKeywords.split(","),
-        ...ogKeywords.split(","),
-        ...configKeywords.split(","),
-      ]),
+      ...new Set([...metaKeywords.split(","), ...ogKeywords.split(","), ...configKeywords.split(",")]),
     ]
       .map((keyword) => keyword.trim())
       .filter((keyword) => keyword !== "")
@@ -902,10 +865,7 @@ class UserResolver extends BaseResolver implements UserResolverConfig {
  * @extends BaseResolver
  * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
  */
-class ImpressionResolver
-  extends BaseResolver
-  implements ImpressionResolverConfig
-{
+class ImpressionResolver extends BaseResolver implements ImpressionResolverConfig {
   static instance?: ImpressionResolver;
   resolvers!: Record<string, () => void | Promise<void>>;
   private playerSize: { height: number; width: number } | null = null;
@@ -980,11 +940,7 @@ class MainResolver implements MainResolverConfig {
    * Resolves all properties from all resolvers
    */
   async resolveAll() {
-    await Promise.all([
-      this.deviceResolver.resolve(),
-      this.siteResolver.resolve(),
-      this.impressionResolver.resolve(),
-    ]);
+    await Promise.all([this.deviceResolver.resolve(), this.siteResolver.resolve(), this.impressionResolver.resolve()]);
     await this.userResolver.resolve();
   }
 
@@ -1031,11 +987,8 @@ class MainResolver implements MainResolverConfig {
             // If the macros property exists in the URL's search string, replace the macro with the value
             if (obj[key].macros && urlObj.search.includes(obj[key].macros)) {
               urlObj.search = urlObj.search.replace(
-                new RegExp(
-                  obj[key].macros.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
-                  "g",
-                ),
-                obj[key].value,
+                new RegExp(obj[key].macros.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"),
+                obj[key].value
               );
             }
             // If the value is an object, recursively call traverseJson
@@ -1156,7 +1109,9 @@ export const UrlParamProvider: React.FC<{
         const params = resolverInstance.getResolvedParams();
         resolvedParamsRef.current = params;
         resolverRef.current = resolverInstance;
-      } catch (error) {}
+      } catch (error) {
+        //
+      }
     };
     resolveUrlParams();
   }, []);
@@ -1169,12 +1124,8 @@ export const UrlParamProvider: React.FC<{
     return url;
   };
 
-  const setPlayerSize = (
-    size: { height: number; width: number } | null,
-  ): void => {
-    resolverRef.current?.setPlayerSize(
-      size ? { height: size.height, width: size.width } : null,
-    );
+  const setPlayerSize = (size: { height: number; width: number } | null): void => {
+    resolverRef.current?.setPlayerSize(size ? { height: size.height, width: size.width } : null);
   };
 
   return (
@@ -1183,12 +1134,10 @@ export const UrlParamProvider: React.FC<{
         resolvedParams: resolvedParamsRef.current,
         appendParamsToUrl,
         setPlayerSize,
-      }}
-    >
+      }}>
       {children}
     </UrlParamContext.Provider>
   );
 };
 
-export const useUrlParams = (): UrlParamContextType =>
-  useContext(UrlParamContext);
+export const useUrlParams = (): UrlParamContextType => useContext(UrlParamContext);

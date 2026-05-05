@@ -1,27 +1,15 @@
 import { useCallback, useMemo } from "react";
-import {
-  GestureOverlayKeysType,
-  useGestureContext,
-} from "@genuin/components/molecules/gestures/context";
-import { LazyGestureGuideOverlay } from "@genuin/components/molecules/gestures/gesture-guide-overlay";
+
+import { useAnalytics } from "@genuin/components/context";
 import { useBaseContext } from "@genuin/components/context/base";
 import { usePathname } from "@genuin/components/hooks/use-pathname";
-import { useAnalytics } from "@genuin/components/context";
 import internalStorage from "@genuin/components/lib/utils/internal-storage-manager";
+import type { GestureOverlayKeysType } from "@genuin/components/molecules/gestures/context";
+import { useGestureContext } from "@genuin/components/molecules/gestures/context";
+import { LazyGestureGuideOverlay } from "@genuin/components/molecules/gestures/gesture-guide-overlay";
 
-function useGestureOverlayMethods({
-  tapBehavior,
-  isInIframe,
-}: {
-  tapBehavior: number;
-  isInIframe: boolean;
-}) {
-  const {
-    gestureOverlays,
-    setGestureOverlay,
-    resetAllGestures,
-    resetGestureOverlay,
-  } = useGestureContext();
+function useGestureOverlayMethods({ tapBehavior, isInIframe }: { tapBehavior: number; isInIframe: boolean }) {
+  const { gestureOverlays, setGestureOverlay, resetAllGestures, resetGestureOverlay } = useGestureContext();
   const { track, EventName } = useAnalytics();
 
   /**
@@ -48,58 +36,44 @@ function useGestureOverlayMethods({
       if (gestureOverlays[step].hasShown) return;
 
       // Check conditions for each gesture type
-      const shouldShow =
-        (step === "PLAY_PAUSE" && shouldHandlePlayPause(muted)) ||
-        step === "SWIPE";
+      const shouldShow = (step === "PLAY_PAUSE" && shouldHandlePlayPause(muted)) || step === "SWIPE";
 
       if (shouldShow) {
         setGestureOverlay(step, true);
       }
     },
-    [gestureOverlays, setGestureOverlay, tapBehavior],
+    [gestureOverlays, setGestureOverlay, tapBehavior]
   );
 
   const hideGestureOverlay = useCallback(
     (step: GestureOverlayKeysType, muted?: boolean) => {
       // Check conditions for each gesture type
-      const shouldHide =
-        (step === "PLAY_PAUSE" && shouldHandlePlayPause(muted)) ||
-        step === "SWIPE";
+      const shouldHide = (step === "PLAY_PAUSE" && shouldHandlePlayPause(muted)) || step === "SWIPE";
 
       if (shouldHide) {
         const wasVisible = gestureOverlays[step].isVisible;
         setGestureOverlay(step, false);
         if (wasVisible) {
-          track(
-            step === "SWIPE"
-              ? EventName.SWIPE_UP_GESTURE
-              : EventName.PLAY_PAUSE_GESTURE,
-            {
-              value: true,
-            },
-          );
+          track(step === "SWIPE" ? EventName.SWIPE_UP_GESTURE : EventName.PLAY_PAUSE_GESTURE, {
+            value: true,
+          });
         }
       }
     },
-    [gestureOverlays, setGestureOverlay, tapBehavior],
+    [gestureOverlays, setGestureOverlay, tapBehavior]
   );
 
   const hasGestureBeenShown = useCallback(
     (step: GestureOverlayKeysType) => gestureOverlays[step].hasShown,
-    [gestureOverlays],
+    [gestureOverlays]
   );
 
   const gestureOverlayUI = useMemo(() => {
     return (
       <>
-        {gestureOverlays.SWIPE.isVisible && (
-          <LazyGestureGuideOverlay gestureStep="SWIPE" />
-        )}
+        {gestureOverlays.SWIPE.isVisible && <LazyGestureGuideOverlay gestureStep="SWIPE" />}
         {gestureOverlays.PLAY_PAUSE.isVisible && (
-          <LazyGestureGuideOverlay
-            gestureStep="PLAY_PAUSE"
-            tapBehavior={tapBehavior}
-          />
+          <LazyGestureGuideOverlay gestureStep="PLAY_PAUSE" tapBehavior={tapBehavior} />
         )}
       </>
     );
@@ -118,13 +92,11 @@ function useGestureOverlayMethods({
       if (!storedOverlays) return;
 
       // Check each gesture in the store
-      Object.entries(storedOverlays).forEach(
-        ([gestureKey, gesture]: [string, any]) => {
-          if (gesture?.isVisible && gesture?.hasShown) {
-            resetGestureOverlay(gestureKey as GestureOverlayKeysType);
-          }
-        },
-      );
+      Object.entries(storedOverlays).forEach(([gestureKey, gesture]: [string, any]) => {
+        if (gesture?.isVisible && gesture?.hasShown) {
+          resetGestureOverlay(gestureKey as GestureOverlayKeysType);
+        }
+      });
     } catch (error) {
       console.error("Failed to parse _ks_gestures_:", error);
     }
@@ -157,17 +129,17 @@ export function useGestureOverlayManager(gestureGuidance?: boolean) {
   const { brandDetails, isInIframe } = useBaseContext();
   const tapBehavior = brandDetails?.web_configs?.tap_behavior;
   const isGuidanceEnabled = brandDetails?.web_configs?.gesture_guidance;
-  const isValidTapBehavior =
-    tapBehavior && VALID_TAP_BEHAVIORS.includes(tapBehavior);
+  const isValidTapBehavior = tapBehavior && VALID_TAP_BEHAVIORS.includes(tapBehavior);
   const pathname = usePathname();
 
+  // Always call hooks before any early return (rules-of-hooks)
+  const methods = useGestureOverlayMethods({
+    tapBehavior: tapBehavior || 1,
+    isInIframe,
+  });
+
   // Return no-op functions if guidance is disabled or tap behavior is invalid
-  if (
-    !isGuidanceEnabled ||
-    !isValidTapBehavior ||
-    pathname.includes("/video") ||
-    pathname.includes("/posts")
-  ) {
+  if (!isGuidanceEnabled || !isValidTapBehavior || pathname.includes("/video") || pathname.includes("/posts")) {
     return {
       gestureOverlayUI: null,
       showGestureOverlay: () => {},
@@ -179,10 +151,5 @@ export function useGestureOverlayManager(gestureGuidance?: boolean) {
     };
   }
 
-  // Only call useGestureOverlayMethods if guidance is enabled and tap behavior is valid
-  // Ensure we always pass a valid number (fallback to 1 if somehow tapBehavior became undefined)
-  return useGestureOverlayMethods({
-    tapBehavior: tapBehavior || 1,
-    isInIframe,
-  });
+  return methods;
 }

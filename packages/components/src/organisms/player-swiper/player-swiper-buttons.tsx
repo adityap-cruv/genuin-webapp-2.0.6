@@ -1,14 +1,9 @@
-import {
-  ArrowLeftIcon,
-  ChevronDownIcon,
-  ChevronLeftIcon,
-  ChevronUpIcon,
-  XIcon,
-} from "@genuin/ui/icons";
-import { Button, ButtonProps } from "@genuin/ui/button";
+import type { ButtonProps } from "@genuin/ui/button";
+import { Button } from "@genuin/ui/button";
+import { ArrowLeftIcon, ChevronDownIcon, ChevronLeftIcon, ChevronUpIcon, XIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
 import { useEffect, useState } from "react";
-import { Swiper } from "swiper/types";
+import type { Swiper } from "swiper/types";
 
 export function CloseButton({
   theme,
@@ -25,14 +20,11 @@ export function CloseButton({
       className={cn(
         "gencl:text-white gencl:flex gencl:flex-col",
         "gencl:absolute gencl:right-7.5 gencl:top-6 gencl:rounded-full",
-        theme === "dark"
-          ? "gencl:bg-secondary-800"
-          : "gencl:bg-secondary-50 gencl:border-secondary-50",
+        theme === "dark" ? "gencl:bg-secondary-800" : "gencl:bg-secondary-50 gencl:border-secondary-50",
         className
       )}
       onClick={onCloseClick}
-      theme="custom"
-    >
+      theme="custom">
       <XIcon theme={theme} size="md" />
     </Button>
   );
@@ -63,12 +55,8 @@ export function BackButton({
             theme === "dark"
               ? "gencl:bg-white gencl:hover:bg-white/90"
               : "gencl:bg-[#D9D9D9] gencl:hover:bg-[#D9D9D9]/90"
-          )}
-        >
-          <ArrowLeftIcon
-            theme={theme === "dark" ? "light" : "light"}
-            size="md"
-          />
+          )}>
+          <ArrowLeftIcon theme={theme === "dark" ? "light" : "light"} size="md" />
         </Button>
       )}
 
@@ -80,19 +68,11 @@ export function BackButton({
           e.stopPropagation();
           onBackClick?.();
         }}
-        className={cn(
-          "gencl:flex!",
-          websiteType === "polaris" && "gencl:lg:hidden!"
-        )}
+        className={cn("gencl:flex!", websiteType === "polaris" && "gencl:lg:hidden!")}
         aria-label="Back"
         role="button"
-        tabIndex={0}
-      >
-        <ChevronLeftIcon
-          theme={theme === "dark" ? "dark" : "light"}
-          size="lg"
-          aria-hidden="true"
-        />
+        tabIndex={0}>
+        <ChevronLeftIcon theme={theme === "dark" ? "dark" : "light"} size="lg" aria-hidden="true" />
       </Button>
     </>
   );
@@ -153,47 +133,30 @@ export function NavigationButton({
 
   // Helper function to get button styles
   const getButtonStyles = (disabled: boolean, isHovered: boolean) => {
-    const buttonBg = disabled
-      ? colors.disabled.button
-      : isHovered
-        ? colors.hover.button
-        : colors.default.button;
+    const buttonBg = disabled ? colors.disabled.button : isHovered ? colors.hover.button : colors.default.button;
 
-    const iconFill = disabled
-      ? colors.disabled.icon
-      : isHovered
-        ? colors.hover.icon
-        : colors.default.icon;
+    const iconFill = disabled ? colors.disabled.icon : isHovered ? colors.hover.icon : colors.default.icon;
 
     return { buttonBg, iconFill };
   };
 
-  const prevStyles = getButtonStyles(
-    swiper.isBeginning || disable,
-    prevHovered
-  );
+  const prevStyles = getButtonStyles(swiper.isBeginning || disable, prevHovered);
   const nextStyles = getButtonStyles(swiper.isEnd || disable, nextHovered);
 
   return (
     <div
       className={cn(
         "gencl:z-50 gencl:text-white gencl:flex gencl:flex-col gencl:gap-4",
-        position === "fixed" &&
-          "gencl:fixed gencl:right-7.5 gencl:top-1/2 gencl:-translate-y-1/2",
-        position === "absolute" &&
-          "gencl:absolute gencl:right-7.5 gencl:top-1/2 gencl:-translate-y-1/2",
+        position === "fixed" && "gencl:fixed gencl:right-7.5 gencl:top-1/2 gencl:-translate-y-1/2",
+        position === "absolute" && "gencl:absolute gencl:right-7.5 gencl:top-1/2 gencl:-translate-y-1/2",
         position === "relative" && "gencl:relative",
         className
       )}
       role="navigation"
-      aria-label="Video navigation"
-    >
+      aria-label="Video navigation">
       <div
-        onMouseEnter={() =>
-          !(swiper.isBeginning || disable) && setPrevHovered(true)
-        }
-        onMouseLeave={() => setPrevHovered(false)}
-      >
+        onMouseEnter={() => !(swiper.isBeginning || disable) && setPrevHovered(true)}
+        onMouseLeave={() => setPrevHovered(false)}>
         <Button
           variant="icon"
           shape="circle"
@@ -215,8 +178,7 @@ export function NavigationButton({
           }}
           aria-label={`Previous video (${currentSlide - 1} of ${totalSlides})`}
           aria-disabled={swiper.isBeginning || disable}
-          tabIndex={0}
-        >
+          tabIndex={0}>
           <ChevronUpIcon
             theme={theme === "light" ? "dark" : "light"}
             size="lg"
@@ -228,8 +190,7 @@ export function NavigationButton({
       </div>
       <div
         onMouseEnter={() => !(swiper.isEnd || disable) && setNextHovered(true)}
-        onMouseLeave={() => setNextHovered(false)}
-      >
+        onMouseLeave={() => setNextHovered(false)}>
         <Button
           variant="icon"
           shape="circle"
@@ -251,8 +212,7 @@ export function NavigationButton({
           }}
           aria-label={`Next video (${currentSlide + 1} of ${totalSlides})`}
           aria-disabled={swiper.isEnd || disable}
-          tabIndex={0}
-        >
+          tabIndex={0}>
           <ChevronDownIcon
             theme={theme === "light" ? "dark" : "light"}
             size="lg"

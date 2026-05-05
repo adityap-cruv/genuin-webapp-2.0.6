@@ -1,5 +1,6 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { type ComponentProps } from "react";
+
 import { cn, defaultSizesForIcons } from "@genuin/ui/lib/utils";
 
 // Define the DangerVariant function using cva to handle different styles based on props
@@ -22,17 +23,9 @@ const DangerVariant = cva("", {
 // theme: controls the overall theme (light/dark)
 // fill: controls the fill color (light/dark)
 // stroke: controls the stroke color (light/dark)
-type DangerIconPropsType = ComponentProps<"svg"> &
-  VariantProps<typeof DangerVariant>;
+type DangerIconPropsType = ComponentProps<"svg"> & VariantProps<typeof DangerVariant>;
 
-export function DangerIcon({
-  theme = "light",
-  fill,
-  stroke,
-  size,
-  className,
-  ...restProps
-}: DangerIconPropsType) {
+export function DangerIcon({ theme = "light", size, className, ...restProps }: DangerIconPropsType) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -41,8 +34,7 @@ export function DangerIcon({
       viewBox="0 0 32 33"
       fill="none"
       className={cn(DangerVariant({ theme, size }), className)}
-      {...restProps}
-    >
+      {...restProps}>
       <path
         d="M16 25.875C15.7411 25.875 15.5312 25.6651 15.5312 25.4062C15.5312 25.1474 15.7411 24.9375 16 24.9375"
         strokeWidth="2"
@@ -51,12 +43,7 @@ export function DangerIcon({
         d="M16 25.875C16.2589 25.875 16.4688 25.6651 16.4688 25.4062C16.4688 25.1474 16.2589 24.9375 16 24.9375"
         strokeWidth="2"
       />
-      <path
-        d="M16 21.1875V11.8125"
-        strokeWidth="2"
-        strokeMiterlimit="10"
-        strokeLinecap="round"
-      />
+      <path d="M16 21.1875V11.8125" strokeWidth="2" strokeMiterlimit="10" strokeLinecap="round" />
       <path
         d="M18.0263 3.69971C17.8403 3.32097 17.5517 3.00196 17.1936 2.77886C16.8355 2.55576 16.422 2.4375 16 2.4375C15.578 2.4375 15.1645 2.55576 14.8064 2.77886C14.4482 3.00196 14.1598 3.32097 13.9738 3.69971L2.13251 27.8222C1.98998 28.1122 1.92368 28.4337 1.9399 28.7563C1.95611 29.0791 2.05429 29.3923 2.22517 29.6664C2.39605 29.9407 2.634 30.1668 2.91655 30.3236C3.19909 30.4803 3.51691 30.5624 3.84001 30.5622H28.16C28.4831 30.5624 28.8009 30.4803 29.0835 30.3236C29.366 30.1668 29.604 29.9407 29.7749 29.6664C29.9458 29.3923 30.0439 29.0791 30.0601 28.7563C30.0764 28.4337 30.01 28.1122 29.8675 27.8222L18.0263 3.69971Z"
         strokeWidth="2"

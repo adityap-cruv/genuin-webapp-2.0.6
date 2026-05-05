@@ -1,14 +1,15 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import React, { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+
+import { sanitizeInput } from '@/lib/utils'
 import { Button } from '@components/ui/button'
 import { FormField, Form, FormItem, FormControl, FormMessage } from '@components/ui/form'
 import { Input } from '@components/ui/input'
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader } from '@components/ui/loader'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@components/ui/select'
 import { userContactDetails } from '@lib/api/contact-us'
-import { sanitizeInput } from '@/lib/utils'
 
 const formSchema = z.object({
   firstName: z.string().trim().min(1, { message: 'First name is required' }),

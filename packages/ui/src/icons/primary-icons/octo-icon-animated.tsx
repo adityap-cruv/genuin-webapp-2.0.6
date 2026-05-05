@@ -1,28 +1,19 @@
-import { cn } from "@genuin/ui/lib/utils";
-import type { SVGIconsProps } from "../type";
 import { LottieIcon } from "@genuin/ui/components/lottie/lottie-icon";
 import type { LottieIconProps } from "@genuin/ui/components/lottie/lottie-icon.types";
+import { cn } from "@genuin/ui/lib/utils";
 
-type OctoIconAnimatedProps = Omit<SVGIconsProps, "width" | "height"> &
-  Pick<
-    LottieIconProps,
-    "loop" | "autoplay" | "speed" | "playing" | "onComplete" | "rendererSettings"
-  > & {
-    /**
-     * Lottie animation source - should be provided from the consumer
-     */
-    src: LottieIconProps["src"];
-    /**
-     * Width of the icon
-     * @default 32
-     */
-    width?: number | string;
-    /**
-     * Height of the icon
-     * @default 32
-     */
-    height?: number | string;
-  };
+type OctoIconAnimatedProps = Omit<LottieIconProps, "width" | "height"> & {
+  /**
+   * Width of the icon
+   * @default 32
+   */
+  width?: number | string;
+  /**
+   * Height of the icon
+   * @default 32
+   */
+  height?: number | string;
+};
 
 export function OctoIconAnimated({
   className,

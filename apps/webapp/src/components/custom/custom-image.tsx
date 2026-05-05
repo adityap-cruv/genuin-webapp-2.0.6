@@ -1,4 +1,5 @@
 import Image, { type ImageProps } from 'next/image'
+
 import { getWebpUrlForImage } from '@/lib/utils'
 
 type CustomImageProps = ImageProps & {

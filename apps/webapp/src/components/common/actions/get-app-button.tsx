@@ -1,7 +1,9 @@
 import React from 'react'
-import { Button, type ButtonProps } from '../../ui/button'
-import Analytics from '@/services/analytics'
+
 import { getPlatform, handleAppDownloadModal } from '@/lib/utils'
+import Analytics from '@/services/analytics'
+
+import { Button, type ButtonProps } from '../../ui/button'
 
 const GetAppButton = ({ buttonText, onClick, ...buttonProps }: ButtonProps & { buttonText: string }) => {
   return (

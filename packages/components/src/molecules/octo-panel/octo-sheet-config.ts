@@ -1,8 +1,5 @@
+import type { DynamicSheetConfig, DynamicSheetState } from "@genuin/ui/dynamic-sheet";
 import { cn } from "@genuin/ui/lib/utils";
-import type {
-  DynamicSheetConfig,
-  DynamicSheetState,
-} from "@genuin/ui/dynamic-sheet";
 
 export interface OctoSheetConfigParams {
   isMobile: boolean;
@@ -16,8 +13,7 @@ export interface OctoSheetConfig {
   footerClassName: (state: DynamicSheetState) => string;
 }
 
-const TRANSITION =
-  "gencl:transition-all gencl:duration-300 gencl:ease-in-out gencl:w-full";
+const TRANSITION = "gencl:transition-all gencl:duration-300 gencl:ease-in-out gencl:w-full";
 
 function panelFullClassName(state: DynamicSheetState): string {
   return cn(
@@ -28,7 +24,7 @@ function panelFullClassName(state: DynamicSheetState): string {
     state === "panel-view" &&
       "gencl:fixed! gencl:bottom-0! gencl:left-0! gencl:right-0! gencl:h-[70%]! gencl:w-full! gencl:rounded-t-2xl! gencl:rounded-b-none! gencl:z-50! gencl:bg-white!",
     state === "full-view" &&
-      "gencl:fixed! gencl:bottom-0! gencl:left-0! gencl:right-0! gencl:w-full! gencl:rounded-t-2xl! gencl:rounded-b-none! gencl:z-50! gencl:bg-white!",
+      "gencl:fixed! gencl:bottom-0! gencl:left-0! gencl:right-0! gencl:w-full! gencl:rounded-t-2xl! gencl:rounded-b-none! gencl:z-50! gencl:bg-white!"
   );
 }
 
@@ -37,13 +33,8 @@ function collapsedFooterClassName(state: DynamicSheetState): string {
   return state === "default" ? "" : "gencl:border-t";
 }
 
-export function getOctoSheetConfig({
-  isMobile,
-  octoState,
-  viewportHeight,
-}: OctoSheetConfigParams): OctoSheetConfig {
-  const isPanelOrFullState =
-    octoState === "panel-view" || octoState === "full-view";
+export function getOctoSheetConfig({ isMobile, octoState, viewportHeight }: OctoSheetConfigParams): OctoSheetConfig {
+  const isPanelOrFullState = octoState === "panel-view" || octoState === "full-view";
   const isExpandedState = octoState === "expand-view" || isPanelOrFullState;
 
   const autoAdvanceRules: DynamicSheetConfig["autoAdvance"] = (() => {
@@ -81,13 +72,7 @@ export function getOctoSheetConfig({
   return {
     config: {
       initialState: "default",
-      enabledStates: [
-        "default",
-        "default-active",
-        "expand-view",
-        "panel-view",
-        "full-view",
-      ],
+      enabledStates: ["default", "default-active", "expand-view", "panel-view", "full-view"],
       heights: {
         default: "108px",
         "default-active": "178px",

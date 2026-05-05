@@ -1,22 +1,17 @@
 "use client";
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-} from "@genuin/ui/components/dialog";
-import { ComponentProps, useState } from "react";
-import { ModalShell } from "./modal-shell";
+import { Dialog, DialogContent, DialogTrigger } from "@genuin/ui/components/dialog";
 import { cn } from "@genuin/ui/lib/utils";
-import {
-  AuthActionType,
-  AuthenticationModalProvider,
-  useAuthenticationModalContext,
-  getAppDataType,
-} from "./context";
-import { Screens } from "./screens";
+import type { ComponentProps } from "react";
+import { useState } from "react";
+
+import { useAuthContext } from "@genuin/components/context";
 import { useBaseContext } from "@genuin/components/context/base";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import { useAuthContext } from "@genuin/components/context";
+
+import type { AuthActionType, getAppDataType } from "./context";
+import { AuthenticationModalProvider, useAuthenticationModalContext } from "./context";
+import { ModalShell } from "./modal-shell";
+import { Screens } from "./screens";
 
 export type AuthenticationModalProps = ComponentProps<typeof DialogTrigger> & {
   action?: AuthActionType;
@@ -53,11 +48,7 @@ export function AuthenticationModal({
 
   const expandedSteps = ["EDIT_PROFILE_PICTURE", "MEDIA_UPLOAD"]; // Steps that use expand width
 
-  const variant = compactSteps.includes(step)
-    ? "compact"
-    : expandedSteps.includes(step)
-      ? "expanded"
-      : "default";
+  const variant = compactSteps.includes(step) ? "compact" : expandedSteps.includes(step) ? "expanded" : "default";
 
   const wrapClass = cn(
     "gencl:p-0 gencl:!max-w-xl gencl:rounded-t-2xl! gencl:md:rounded-2xl!",
@@ -65,7 +56,7 @@ export function AuthenticationModal({
       ? "gencl:max-w-[500px]"
       : expandedSteps.includes(step)
         ? "gencl:!max-w-4xl"
-        : "gencl:!max-w-xl",
+        : "gencl:!max-w-xl"
   );
 
   const isControlled = controlledOpen !== undefined;
@@ -92,26 +83,17 @@ export function AuthenticationModal({
   }
 
   return (
-    <Dialog
-      type={`${getAppData?.data?.type}-dialog`}
-      open={isOpen}
-      onOpenChange={handleOpenChange}
-    >
+    <Dialog type={`${getAppData?.data?.type}-dialog`} open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild={asChild} {...restProps}>
         {children}
       </DialogTrigger>
-      <DialogContent
-        bgBlur={customStep === "GET_APP_WITH_BLURRED_BG"}
-        className={wrapClass}
-        showClose={showClose}
-      >
+      <DialogContent bgBlur={customStep === "GET_APP_WITH_BLURRED_BG"} className={wrapClass} showClose={showClose}>
         <AuthenticationModalProvider
           action={action}
           customStep={customStep ?? step}
           onClose={handleClose}
           onOpen={handleOpen}
-          getAppData={getAppData}
-        >
+          getAppData={getAppData}>
           <div className="gencl:max-h-[90vh] gencl:overflow-y-auto gencl:my-2">
             <Content variant={variant} />
           </div>
@@ -124,10 +106,7 @@ export function AuthenticationModal({
 function Content({ variant }: { variant: "default" | "compact" | "expanded" }) {
   const { step } = useAuthenticationModalContext();
   // Determine if the back button should be shown based on the current step
-  const showBackButton =
-    step === "VERIFY_PHONE_OTP" ||
-    step === "VERIFY_MAIL_OTP" ||
-    step === "LOGIN_OTP_INPUT";
+  const showBackButton = step === "VERIFY_PHONE_OTP" || step === "VERIFY_MAIL_OTP" || step === "LOGIN_OTP_INPUT";
 
   return (
     <ModalShell showBack={showBackButton} variant={variant}>

@@ -1,7 +1,8 @@
 // src/services/analytics/usePageViewTracking.ts
 'use client'
-import { useEffect } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
+import { useEffect } from 'react'
+
 import Analytics from './index'
 
 export function usePageViewTracking() {

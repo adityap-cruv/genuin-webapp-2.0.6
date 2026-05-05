@@ -3,9 +3,9 @@ import { cn } from "@genuin/ui/utils";
 import type { ComponentProps } from "react";
 
 import { useBaseContext } from "@genuin/components/context/base";
-import { Link } from "@genuin/components/molecules/link";
-import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { Link } from "@genuin/components/molecules/link";
 
 type LogoType = "logo" | "brand_web_logo";
 
@@ -37,10 +37,7 @@ export function BrandLogo({ className, logoType, ...props }: BrandLogoProps) {
         alt="Brand Logo"
         useWebp={false}
         handleError
-        className={cn(
-          "gencl:h-10 gencl:w-auto gencl:max-w-40 gencl:object-contain",
-          className
-        )}
+        className={cn("gencl:h-10 gencl:w-auto gencl:max-w-40 gencl:object-contain", className)}
         {...props}
       />
     </Link>

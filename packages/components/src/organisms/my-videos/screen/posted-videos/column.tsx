@@ -1,18 +1,16 @@
-import { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import { useMemo } from "react";
-import { Post } from "@genuin/components/react-query/api/posts/types";
-import {
-  createColumns as createColumnsFactory,
-  ColumnFactoryOptions,
-} from "../shared/column-factory";
+
+import type { Post } from "@genuin/components/react-query/api/posts/types";
+
+import type { ColumnFactoryOptions } from "../shared/column-factory";
+import { createColumns as createColumnsFactory } from "../shared/column-factory";
 
 interface ColumnOptions {
   onRefresh?: () => void;
 }
 
-export const createColumns = (
-  options: ColumnOptions = {}
-): ColumnDef<Post>[] => {
+export const createColumns = (options: ColumnOptions = {}): ColumnDef<Post>[] => {
   const factoryOptions: ColumnFactoryOptions = {
     variant: "posted",
     onRefresh: options.onRefresh,

@@ -1,23 +1,19 @@
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@genuin/ui/components/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@genuin/ui/components/form";
 import { Input } from "@genuin/ui/components/input";
-import { SubmitButton } from "../../submit-button";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useAuthContext } from "@genuin/components/context/auth";
-import { ComponentProps, useCallback, useEffect } from "react";
-import { useSendOtpMutation } from "@genuin/components/react-query/api/authentication";
-import { useAuthenticationModalContext } from "../../context";
 import { sanitizeInput } from "@genuin/ui/lib/sanitize";
 import { cn } from "@genuin/ui/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { ComponentProps } from "react";
+import { useCallback, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
 import { useBaseContext } from "@genuin/components/context";
+import { useAuthContext } from "@genuin/components/context/auth";
+import { useSendOtpMutation } from "@genuin/components/react-query/api/authentication";
+
+import { useAuthenticationModalContext } from "../../context";
+import { SubmitButton } from "../../submit-button";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
@@ -64,18 +60,13 @@ export function EditEmail({ className, ...restProps }: ComponentProps<"div">) {
   return (
     <div className={cn("gencl:space-y-6", className)} {...restProps}>
       <div className="gencl:space-y-2">
-        <h3 className="gencl:text-center gencl:text-headline-2-semi-bold">
-          Edit email address
-        </h3>
+        <h3 className="gencl:text-center gencl:text-headline-2-semi-bold">Edit email address</h3>
         <p className="gencl:text-center gencl:text-body-1-medium gencl:text-secondary-600">
           Enter the email address where you would like to receive updates
         </p>
       </div>
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="gencl:space-y-6"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="gencl:space-y-6">
           <FormField
             control={form.control}
             name="email"

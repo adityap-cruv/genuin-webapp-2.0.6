@@ -1,7 +1,9 @@
-import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import MyVideosTable from "./posted-videos";
+import * as React from "react";
+
 import type { Post } from "@genuin/components/react-query/api/posts/types";
+
+import MyVideosTable from "./posted-videos";
 
 // Mock data that matches the Post interface
 const mockPosts: Post[] = [
@@ -21,8 +23,7 @@ const mockPosts: Post[] = [
       thumbnailS: "https://via.placeholder.com/150x100?text=Video+1",
       thumbnailL: "https://via.placeholder.com/600x400?text=Video+1",
       createdAt: "2024-01-15T10:30:00Z",
-      descriptionText:
-        "This is a sample video description for testing purposes.",
+      descriptionText: "This is a sample video description for testing purposes.",
       descriptionData: "{}",
       linkouts: [],
       noOfPlays: 1250,
@@ -187,12 +188,7 @@ export const WithSearchQuery: Story = {
         status: 200,
         response: {
           data: {
-            posts: mockPosts.filter(
-              (post) =>
-                post.video.descriptionText
-                  ?.toLowerCase()
-                  .includes("tutorial") ?? false
-            ),
+            posts: mockPosts.filter((post) => post.video.descriptionText?.toLowerCase().includes("tutorial") ?? false),
             no_of_data: 1,
           },
           code: 200,

@@ -1,20 +1,25 @@
 import { useMutation } from "@tanstack/react-query";
+import type { AxiosInstance } from "axios";
+
 import { useAxiosInstance } from "@genuin/components/context/axios";
 import { getDeviceId } from "@genuin/components/lib/utils/device-id";
-import { API_PATHS } from "@genuin/components/react-query/paths";
-import { LOGIN_SOURCE } from "./constants";
 import { encryptText } from "@genuin/components/lib/utils/encryption";
-import { parseUserData } from "./parser";
 import { NEXT_PUBLIC_REDIRECT_URI } from "@genuin/components/lib/utils/env";
-import type { AxiosInstance } from "axios";
+import { API_PATHS } from "@genuin/components/react-query/paths";
+
+import { LOGIN_SOURCE } from "./constants";
+import { parseUserData } from "./parser";
 
 const DEVICE_TYPE_WEB = 3;
 
-async function getUrlToRedirectForSSO({
-  thirdPartyId,
-}: {
-  thirdPartyId: "google" | "apple" | string;
-}, axiosInstance: AxiosInstance) {
+async function getUrlToRedirectForSSO(
+  {
+    thirdPartyId,
+  }: {
+    thirdPartyId: "google" | "apple" | string;
+  },
+  axiosInstance: AxiosInstance
+) {
   try {
     // TODO: Update the redirect URI to a dynamic one if needed
     const res = await axiosInstance.get(API_PATHS.AUTH_GET_REDIRECTION_URL, {
@@ -44,7 +49,8 @@ export function useGetRedirectionUrlForSSOMutation({
   const axiosInstance = useAxiosInstance();
 
   return useMutation({
-    mutationFn: (params: { thirdPartyId: "google" | "apple" | string }) => getUrlToRedirectForSSO(params, axiosInstance),
+    mutationFn: (params: { thirdPartyId: "google" | "apple" | string }) =>
+      getUrlToRedirectForSSO(params, axiosInstance),
     onSuccess,
     onError,
   });
@@ -56,15 +62,18 @@ export function useGetRedirectionUrlForSSOMutation({
  * @param provider - The name of the provider (e.g., "google", "apple").
  * @returns A promise that resolves to the user data or undefined.
  */
-export async function getUserDataForSSO({
-  code,
-  provider,
-  isInIframe,
-}: {
-  code: string;
-  provider: string;
-  isInIframe: boolean;
-}, axiosInstance: AxiosInstance) {
+export async function getUserDataForSSO(
+  {
+    code,
+    provider,
+    isInIframe,
+  }: {
+    code: string;
+    provider: string;
+    isInIframe: boolean;
+  },
+  axiosInstance: AxiosInstance
+) {
   const deviceId = getDeviceId(isInIframe);
   // TODO: Update the deviceId to a dynamic one if needed
   return await axiosInstance
@@ -85,9 +94,7 @@ export async function getUserDataForSSO({
       const accessToken = res.headers["gn-access-token"];
       const refreshToken = res.headers["gn-refresh-token"];
       const data = res.data.data;
-      const user = data
-        ? parseUserData(data, accessToken, refreshToken)
-        : undefined;
+      const user = data ? parseUserData(data, accessToken, refreshToken) : undefined;
       return { user };
     })
     .catch((e) => {
@@ -111,7 +118,8 @@ export function useGetUserDataForSSOMutation({
   const axiosInstance = useAxiosInstance();
 
   return useMutation({
-    mutationFn: (params: { code: string; provider: string; isInIframe: boolean }) => getUserDataForSSO(params, axiosInstance),
+    mutationFn: (params: { code: string; provider: string; isInIframe: boolean }) =>
+      getUserDataForSSO(params, axiosInstance),
     onSuccess,
     onError,
   });

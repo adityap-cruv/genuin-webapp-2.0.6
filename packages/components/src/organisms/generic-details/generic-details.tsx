@@ -1,13 +1,14 @@
-import { Link } from "@genuin/components/molecules/link";
-import { SocialLinks } from "@genuin/components/molecules/social-links";
-import { GenericDetailsProps } from "./generic-details.type";
-import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-import { GenericDetailsMobile } from "./generic-details-mobile";
+import { Avatar } from "@genuin/ui/components/avatar";
 import { PinIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
-import { Avatar } from "@genuin/ui/components/avatar";
 
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { Link } from "@genuin/components/molecules/link";
 import { ReadMore } from "@genuin/components/molecules/read-more";
+import { SocialLinks } from "@genuin/components/molecules/social-links";
+
+import { GenericDetailsMobile } from "./generic-details-mobile";
+import type { GenericDetailsProps } from "./generic-details.type";
 
 /**
  * Props for the GenericDetails component.
@@ -15,10 +16,7 @@ import { ReadMore } from "@genuin/components/molecules/read-more";
 export function GenericDetails({ variant, ...restProps }: GenericDetailsProps) {
   const { isMobile } = useDeviceDetectMediaQuery();
 
-  return isMobile &&
-    (variant === "default" ||
-      variant === "community" ||
-      variant === "profile") ? (
+  return isMobile && (variant === "default" || variant === "community" || variant === "profile") ? (
     <GenericDetailsMobile variant={variant} {...restProps} />
   ) : (
     <Default variant={variant === "list" ? "list" : "default"} {...restProps} />
@@ -58,14 +56,12 @@ function Default({
           "gencl:gap-4 gencl:border-secondary-150 gencl:border gencl:rounded-lg gencl:sm:!rounded-xl",
         className
       )}
-      {...restProps}
-    >
+      {...restProps}>
       {showPinned && (
         <div
           className={
             "gencl:flex gencl:text-body-1-medium gencl:text-secondary-600 gencl:gap-2 gencl:w-full gencl:items-center gencl:px-4 gencl:pt-4"
-          }
-        >
+          }>
           <PinIcon /> Pinned by @{ownerInfo?.userName}
         </div>
       )}
@@ -74,8 +70,7 @@ function Default({
           "gencl:flex gencl:w-full gencl:items-start",
           variant === "list" && "gencl:p-4",
           variant === "list" && isMobile ? "gencl:gap-2" : "gencl:gap-6"
-        )}
-      >
+        )}>
         {profileImageDetails && (
           <Avatar
             alt={profileImageDetails.alt}
@@ -91,14 +86,9 @@ function Default({
                 <div>
                   <Link href={url ?? ""}>
                     <p
-                      className={cn(
-                        "gencl:line-clamp-2 gencl:text-headline-2-semi-bold gencl:py-0.5",
-                        {
-                          "gencl:text-body-0-semi-bold  gencl:sm:!text-headline-3-semi-bold":
-                            variant === "list",
-                        }
-                      )}
-                    >
+                      className={cn("gencl:line-clamp-2 gencl:text-headline-2-semi-bold gencl:py-0.5", {
+                        "gencl:text-body-0-semi-bold gencl:sm:!text-headline-3-semi-bold": variant === "list",
+                      })}>
                       {title}
                     </p>
                   </Link>

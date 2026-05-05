@@ -1,24 +1,20 @@
-import { ColumnDef } from "@tanstack/react-table";
-import { useState } from "react";
 import { Checkbox } from "@genuin/ui/components/checkbox";
-import {
-  PlayIcon,
-  SparkIcon,
-  ShareIcon,
-  CommentIcon,
-  RepostIcon,
-} from "@genuin/ui/icons";
+import { PlayIcon, SparkIcon, ShareIcon, CommentIcon, RepostIcon } from "@genuin/ui/icons";
+import type { ColumnDef } from "@tanstack/react-table";
+import { useState } from "react";
+
+import { formatRelativeTime } from "@genuin/components/lib/utils";
 import { CommunityPill } from "@genuin/components/molecules/feed-player/pills/community-pill";
 import { GroupPill } from "@genuin/components/molecules/feed-player/pills/group-pill";
-import { PostTile } from "@genuin/components/molecules/post-tile";
-import { formatRelativeTime } from "@genuin/components/lib/utils";
-import { Post } from "@genuin/components/react-query/api/posts/types";
-import { StatsCell } from "./components";
-import { ActionsCell } from "./actions-cell";
-import { LinkoutsListModal } from "./linkouts-list-modal";
 import { Link } from "@genuin/components/molecules/link";
-import { DataTableColumnHeader } from "@genuin/components/organisms/data-table/data-table-column-header";
+import { PostTile } from "@genuin/components/molecules/post-tile";
 import { ReadMore } from "@genuin/components/molecules/read-more";
+import { DataTableColumnHeader } from "@genuin/components/organisms/data-table/data-table-column-header";
+import type { Post } from "@genuin/components/react-query/api/posts/types";
+
+import { ActionsCell } from "./actions-cell";
+import { StatsCell } from "./components";
+import { LinkoutsListModal } from "./linkouts-list-modal";
 
 export interface ColumnFactoryOptions {
   onRefresh?: () => void;
@@ -30,10 +26,7 @@ export const createSelectColumn = (): ColumnDef<Post> => ({
   id: "select",
   header: ({ table }) => (
     <Checkbox
-      checked={
-        table.getIsAllPageRowsSelected() ||
-        (table.getIsSomePageRowsSelected() && "indeterminate")
-      }
+      checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
       variant={"default"}
       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
       aria-label="Select all"
@@ -156,76 +149,68 @@ export const createCommunityGroupColumn = (): ColumnDef<Post> => ({
   },
 });
 
-export const createLinkoutsColumn = (
-  variant: "posted" | "draft"
-): ColumnDef<Post> => ({
+interface LinkoutsCellProps {
+  linkouts: Post["video"]["linkouts"];
+  postId: string;
+  variant: "posted" | "draft";
+}
+
+function LinkoutsCell({ linkouts, postId, variant }: LinkoutsCellProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const allUrls = linkouts?.flatMap((linkout) => linkout.links.map((link) => link.link)) || [];
+
+  return (
+    <>
+      {allUrls.length > 0 ? (
+        <div className="gencl:flex gencl:flex-col gencl:gap-1">
+          <Link
+            href={allUrls[0] ?? "/home"}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="gencl:text-body-2-medium! gencl:text-blue gencl:cursor-pointer gencl:underline gencl:m-0 gencl:line-clamp-2! gencl:break-all gencl:overflow-hidden gencl:block">
+            {allUrls[0]}
+          </Link>
+
+          {allUrls.length > 1 && (
+            <div className="gencl:text-body-2-medium gencl:cursor-pointer" onClick={() => setIsModalOpen(true)}>
+              + {allUrls.length - 1} more
+            </div>
+          )}
+        </div>
+      ) : (
+        <span className="gencl:text-body-1-medium">None</span>
+      )}
+
+      <LinkoutsListModal
+        links={allUrls}
+        isOpen={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        postId={postId}
+        type={variant}
+      />
+    </>
+  );
+}
+
+export const createLinkoutsColumn = (variant: "posted" | "draft"): ColumnDef<Post> => ({
   accessorKey: "video.linkouts",
   header: "Linkouts",
   size: 100,
   minSize: 100,
   maxSize: 150,
-  cell: ({ row }) => {
-    const { linkouts } = row.original.video;
-    const [isModalOpen, setIsModalOpen] = useState(false);
-
-    const allUrls =
-      linkouts?.flatMap((linkout) => linkout.links.map((link) => link.link)) ||
-      [];
-
-    const handleLinksClick = () => {
-      setIsModalOpen(true);
-    };
-
-    return (
-      <>
-        {allUrls.length > 0 ? (
-          <div className="gencl:flex gencl:flex-col gencl:gap-1">
-            <Link
-              href={allUrls[0] ?? "/home"}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="gencl:text-body-2-medium! gencl:text-blue gencl:cursor-pointer gencl:underline gencl:m-0 gencl:line-clamp-2! gencl:break-all gencl:overflow-hidden gencl:block"
-            >
-              {allUrls[0]}
-            </Link>
-
-            {allUrls.length > 1 && (
-              <div
-                className="gencl:text-body-2-medium gencl:cursor-pointer"
-                onClick={handleLinksClick}
-              >
-                + {allUrls.length - 1} more
-              </div>
-            )}
-          </div>
-        ) : (
-          <span className="gencl:text-body-1-medium">None</span>
-        )}
-
-        <LinkoutsListModal
-          links={allUrls}
-          isOpen={isModalOpen}
-          onOpenChange={setIsModalOpen}
-          postId={row.original.video.id}
-          type={variant}
-        />
-      </>
-    );
-  },
+  cell: ({ row }) => (
+    <LinkoutsCell linkouts={row.original.video.linkouts} postId={row.original.video.id} variant={variant} />
+  ),
   meta: {
     cellClassName: "gencl:whitespace-normal!",
   },
 });
 
-export const createDateColumn = (
-  variant: "posted" | "draft"
-): ColumnDef<Post> => ({
+export const createDateColumn = (variant: "posted" | "draft"): ColumnDef<Post> => ({
   accessorKey: "video.createdAt",
   header: ({ column }) => (
-    <DataTableColumnHeader
-      column={column}
-      title={variant === "posted" ? "Date" : "Last Edited"}
-    />
+    <DataTableColumnHeader column={column} title={variant === "posted" ? "Date" : "Last Edited"} />
   ),
   size: 100,
   minSize: 100,
@@ -238,21 +223,13 @@ export const createDateColumn = (
   },
 });
 
-export const createActionsColumn = (
-  variant: "posted" | "draft",
-  onRefresh?: () => void
-): ColumnDef<Post> => ({
+export const createActionsColumn = (variant: "posted" | "draft", onRefresh?: () => void): ColumnDef<Post> => ({
   id: "actions-right",
   size: 150,
   minSize: 120,
   maxSize: 180,
   cell: ({ row }) => (
-    <ActionsCell
-      variant={variant}
-      postId={row.original.video.id}
-      onPublished={onRefresh}
-      onDelete={onRefresh}
-    />
+    <ActionsCell variant={variant} postId={row.original.video.id} onPublished={onRefresh} onDelete={onRefresh} />
   ),
 });
 
@@ -267,9 +244,7 @@ export const createStatsColumns = (): ColumnDef<Post>[] => [
     ),
     size: 50,
     enableSorting: false,
-    cell: ({ row, table }) => (
-      <StatsCell statKey="noOfPlays" row={row} table={table} />
-    ),
+    cell: ({ row, table }) => <StatsCell statKey="noOfPlays" row={row} table={table} />,
   },
   {
     id: "noOfLikes",
@@ -280,9 +255,7 @@ export const createStatsColumns = (): ColumnDef<Post>[] => [
     ),
     size: 50,
     enableSorting: false,
-    cell: ({ row, table }) => (
-      <StatsCell statKey="noOfLikes" row={row} table={table} />
-    ),
+    cell: ({ row, table }) => <StatsCell statKey="noOfLikes" row={row} table={table} />,
   },
   {
     id: "noOfShares",
@@ -293,9 +266,7 @@ export const createStatsColumns = (): ColumnDef<Post>[] => [
     ),
     size: 50,
     enableSorting: false,
-    cell: ({ row, table }) => (
-      <StatsCell statKey="noOfShares" row={row} table={table} />
-    ),
+    cell: ({ row, table }) => <StatsCell statKey="noOfShares" row={row} table={table} />,
   },
   {
     id: "noOfComments",
@@ -306,9 +277,7 @@ export const createStatsColumns = (): ColumnDef<Post>[] => [
     ),
     size: 50,
     enableSorting: false,
-    cell: ({ row, table }) => (
-      <StatsCell statKey="noOfComments" row={row} table={table} />
-    ),
+    cell: ({ row, table }) => <StatsCell statKey="noOfComments" row={row} table={table} />,
   },
   {
     id: "noOfReposts",
@@ -331,9 +300,7 @@ export const createStatsColumns = (): ColumnDef<Post>[] => [
 ];
 
 // Main factory function to create columns based on variant
-export const createColumns = (
-  options: ColumnFactoryOptions
-): ColumnDef<Post>[] => {
+export const createColumns = (options: ColumnFactoryOptions): ColumnDef<Post>[] => {
   const { variant, onRefresh } = options;
 
   const baseColumns = [
@@ -345,11 +312,7 @@ export const createColumns = (
   ];
 
   if (variant === "posted") {
-    return [
-      ...baseColumns,
-      ...createStatsColumns(),
-      createActionsColumn(variant, onRefresh),
-    ];
+    return [...baseColumns, ...createStatsColumns(), createActionsColumn(variant, onRefresh)];
   }
 
   return [...baseColumns, createActionsColumn(variant, onRefresh)];

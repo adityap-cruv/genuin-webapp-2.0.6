@@ -1,17 +1,9 @@
-import {
-  createContext,
-  useContext,
-  useReducer,
-  useCallback,
-  ReactNode,
-} from "react";
-import { DeepLinkPayloadUnion } from "@genuin/components/react-query/api/deeplink/types";
+import type { ReactNode } from "react";
+import { createContext, useContext, useReducer, useCallback } from "react";
 
-export type AuthActionType =
-  | "JOIN_COMMUNITY"
-  | "SUBSCRIBE"
-  | "KS_CB_REQUEST"
-  | "DELETE_ACCOUNT";
+import type { DeepLinkPayloadUnion } from "@genuin/components/react-query/api/deeplink/types";
+
+export type AuthActionType = "JOIN_COMMUNITY" | "SUBSCRIBE" | "KS_CB_REQUEST" | "DELETE_ACCOUNT";
 
 export type StepsType =
   | "SIGNIN"
@@ -21,6 +13,7 @@ export type StepsType =
   | "EDIT_EMAIL_SUCCESS"
   | "EDIT_PHONE_NUMBER_SUCCESS"
   | "EDIT_USERNAME"
+  | "USERNAME_INPUT"
   | "EDIT_EMAIL"
   | "VERIFY_MAIL_OTP"
   | "VERIFY_PHONE_OTP"
@@ -172,8 +165,7 @@ export function AuthenticationModalProvider({
         closeModal,
         openModal,
         action,
-      }}
-    >
+      }}>
       {children}
     </AuthenticationModalContext.Provider>
   );
@@ -182,9 +174,7 @@ export function AuthenticationModalProvider({
 export function useAuthenticationModalContext() {
   const context = useContext(AuthenticationModalContext);
   if (!context) {
-    throw new Error(
-      "useAuthenticationModalContext must be used within an AuthenticationModalProvider"
-    );
+    throw new Error("useAuthenticationModalContext must be used within an AuthenticationModalProvider");
   }
   return context;
 }

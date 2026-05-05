@@ -1,28 +1,24 @@
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@genuin/ui/components/form";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@genuin/ui/components/input-otp";
+import { Toast } from "@genuin/ui/components/toaster";
+import { zodResolver } from "@hookform/resolvers/zod";
 import type { ComponentProps } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { formatPhoneNumberIntl } from "react-phone-number-input";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+import { useBaseContext } from "@genuin/components/context";
+import { useAuthContext } from "@genuin/components/context/auth";
 import {
   useConsumeOtpMutation,
   useSendOtpMutation,
   useUpdateEmailOrPhoneMutation,
 } from "@genuin/components/react-query/api/authentication";
-import { useAuthContext } from "@genuin/components/context/auth";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@genuin/ui/components/form";
 
 import { useAuthenticationModalContext } from "../../context";
-import { TimerMessage } from "./timer";
 import { SubmitButton } from "../../submit-button";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@genuin/ui/components/input-otp";
-import { Toast } from "@genuin/ui/components/toaster";
-import { useBaseContext } from "@genuin/components/context";
+
+import { TimerMessage } from "./timer";
 
 const OTPSchema = z.object({
   otp: z.string().min(6, { message: "OTP must be 6 digits." }),
@@ -40,12 +36,7 @@ type OtpVerificationProps = ComponentProps<"div"> & {
   onNext?: (step?: string) => void;
 };
 
-export function OtpVerification({
-  verificationType,
-  title,
-  className,
-  ...props
-}: OtpVerificationProps) {
+export function OtpVerification({ verificationType, title, className, ...props }: OtpVerificationProps) {
   const {
     formData: { flowType, email, phone, preAuthSessionId, responseDeviceId },
     action,
@@ -66,7 +57,6 @@ export function OtpVerification({
 
   const { mutate: consumeOtp, isPending } = useConsumeOtpMutation({
     onSuccess: async (data) => {
-      console.log("OTP verification successful:", data);
       if (data.otpVerified) {
         // If user is verified, sign in the user
         if (data.user) signIn({ ...data.user });
@@ -96,32 +86,31 @@ export function OtpVerification({
     },
   });
 
-  const { mutate: updateEmailOrPhone, isPending: updateEmailOrPhoneIsPending } =
-    useUpdateEmailOrPhoneMutation({
-      onError: () => {
-        form.setError("root", { message: "Invalid OTP" });
-      },
-      onSuccess: ({ verified }) => {
-        if (verified) {
-          if (verificationType === "EMAIL") {
-            updateUser({ email });
-            Toast.Success({
-              message: "Your email has been updated",
-              description: "",
-            });
-          } else if (verificationType === "PHONE") {
-            updateUser({ phoneNumber: phone });
-            Toast.Success({
-              message: "Your phone number has been updated",
-              description: "",
-            });
-          } else {
-            updateUser({ email, phoneNumber: phone });
-          }
-          closeModal();
+  const { mutate: updateEmailOrPhone, isPending: updateEmailOrPhoneIsPending } = useUpdateEmailOrPhoneMutation({
+    onError: () => {
+      form.setError("root", { message: "Invalid OTP" });
+    },
+    onSuccess: ({ verified }) => {
+      if (verified) {
+        if (verificationType === "EMAIL") {
+          updateUser({ email });
+          Toast.Success({
+            message: "Your email has been updated",
+            description: "",
+          });
+        } else if (verificationType === "PHONE") {
+          updateUser({ phoneNumber: phone });
+          Toast.Success({
+            message: "Your phone number has been updated",
+            description: "",
+          });
+        } else {
+          updateUser({ email, phoneNumber: phone });
         }
-      },
-    });
+        closeModal();
+      }
+    },
+  });
 
   const {
     mutate: sendOtp, // Changed back to mutate and aliased as sendOtp
@@ -165,7 +154,7 @@ export function OtpVerification({
         code: data.otp,
         preAuthSessionId,
         responseDeviceId: responseDeviceId,
-        isInIframe
+        isInIframe,
       });
     }
   }
@@ -192,9 +181,7 @@ export function OtpVerification({
 
   return (
     <div className="gencl:text-center" {...props}>
-      <p className="gencl:text-headline-3-semi-bold gencl:sm:!text-headline-2-semi-bold">
-        {title ?? "Enter code"}
-      </p>
+      <p className="gencl:text-headline-3-semi-bold gencl:sm:!text-headline-2-semi-bold">{title ?? "Enter code"}</p>
       <p className="gencl:text-body-1-medium gencl:text-secondary-600 gencl:my-3">
         Enter the 6-digit code sent to
         {flowType === "EMAIL"
@@ -202,10 +189,7 @@ export function OtpVerification({
           : ` your phone: ${formatPhoneNumberIntl(phone as string)}`}
       </p>
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="gencl:space-y-6 gencl:text-center"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="gencl:space-y-6 gencl:text-center">
           <FormField
             control={form.control}
             name="otp"
@@ -219,8 +203,7 @@ export function OtpVerification({
                     value={field.value} // Ensure value is controlled by react-hook-form
                     onChange={(value) => {
                       field.onChange(value); // Update react-hook-form field value
-                    }}
-                  >
+                    }}>
                     <InputOTPGroup className="gencl:w-full gencl:flex gencl:gap-4">
                       {[...Array(6)].map((_, idx) => (
                         <InputOTPSlot
@@ -244,11 +227,7 @@ export function OtpVerification({
           />
           <SubmitButton
             title="Verify"
-            disabled={
-              !form.formState.isValid ||
-              isPending ||
-              updateEmailOrPhoneIsPending
-            }
+            disabled={!form.formState.isValid || isPending || updateEmailOrPhoneIsPending}
             isLoading={isPending || updateEmailOrPhoneIsPending}
             error={form.formState.errors.root?.message || ""}
           />

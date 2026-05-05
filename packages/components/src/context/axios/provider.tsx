@@ -1,7 +1,8 @@
 "use client";
 import { useEffect, useMemo } from "react";
-import { AxiosContext } from "./context";
+
 import { axiosRegistry } from "./axios-instance-registry";
+import { AxiosContext } from "./context";
 
 type AxiosProviderProps = {
   children: React.ReactNode;
@@ -23,10 +24,7 @@ type AxiosProviderProps = {
  * - Releases the instance on unmount
  */
 export function AxiosProvider({ children, brandId }: AxiosProviderProps) {
-  const axiosInstance = useMemo(
-    () => axiosRegistry.getOrCreateInstance(brandId),
-    [brandId],
-  );
+  const axiosInstance = useMemo(() => axiosRegistry.getOrCreateInstance(brandId), [brandId]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -35,14 +33,7 @@ export function AxiosProvider({ children, brandId }: AxiosProviderProps) {
     };
   }, [brandId]);
 
-  const contextValue = useMemo(
-    () => ({ axiosInstance, brandId }),
-    [axiosInstance, brandId],
-  );
+  const contextValue = useMemo(() => ({ axiosInstance, brandId }), [axiosInstance, brandId]);
 
-  return (
-    <AxiosContext.Provider value={contextValue}>
-      {children}
-    </AxiosContext.Provider>
-  );
+  return <AxiosContext.Provider value={contextValue}>{children}</AxiosContext.Provider>;
 }

@@ -1,8 +1,9 @@
+import type { VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
+
 import { cn } from "@genuin/ui/lib/utils";
 
 import type { SVGIconsProps } from "../type";
-import type { VariantProps } from "class-variance-authority";
-import { cva } from "class-variance-authority";
 
 const iconVariants = cva("gencl:stroke-black gencl:shrink-0", {
   variants: {
@@ -21,12 +22,7 @@ const iconVariants = cva("gencl:stroke-black gencl:shrink-0", {
   },
 });
 
-export function BagIcon({
-  className,
-  theme,
-  size,
-  ...restProps
-}: SVGIconsProps & VariantProps<typeof iconVariants>) {
+export function BagIcon({ className, theme, size, ...restProps }: SVGIconsProps & VariantProps<typeof iconVariants>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -35,8 +31,7 @@ export function BagIcon({
       viewBox="0 0 24 24"
       fill="none"
       className={cn(iconVariants({ theme, size }), className)}
-      {...restProps}
-    >
+      {...restProps}>
       <path
         d="M3.5625 9.1875C3.5625 8.69022 3.76004 8.21331 4.11167 7.86167C4.46331 7.51004 4.94022 7.3125 5.4375 7.3125H18.5625C19.0598 7.3125 19.5367 7.51004 19.8883 7.86167C20.24 8.21331 20.4375 8.69022 20.4375 9.1875V17.625C20.4375 18.1223 20.24 18.5992 19.8883 18.9508C19.5367 19.3025 19.0598 19.5 18.5625 19.5H5.4375C4.94022 19.5 4.46331 19.3025 4.11167 18.9508C3.76004 18.5992 3.5625 18.1223 3.5625 17.625V9.1875Z"
         strokeWidth="1.5"
@@ -49,12 +44,7 @@ export function BagIcon({
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <path
-        d="M12 12V12.0094"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      <path d="M12 12V12.0094" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
       <path
         d="M3.5625 12.9375C6.17961 14.2563 9.0694 14.9432 12 14.9432C14.9306 14.9432 17.8204 14.2563 20.4375 12.9375"
         strokeWidth="1.5"

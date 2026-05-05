@@ -1,16 +1,37 @@
 "use client";
-import { useEffect, useState, useMemo, ComponentProps } from "react";
-import { LinkCard } from "@genuin/components/molecules/linkouts";
-import { MultiLinkCard } from "@genuin/components/molecules/linkouts";
-import { useGetLinkouts } from "@genuin/components/react-query/api/linkouts/get-linkouts";
-import { LinkoutsType } from "@genuin/components/react-query/api/linkouts/schema";
 import { cn } from "@genuin/ui/lib/utils";
-import useShowLinkouts from "@genuin/components/hooks/use-show-linkouts";
+import type { VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
+import type { ComponentProps } from "react";
+import { useEffect, useState, useMemo, lazy, Suspense } from "react";
+
 import { useAnalytics } from "@genuin/components/context/analytics/context";
-import { cva, VariantProps } from "class-variance-authority";
-import { CTAOnlyCard } from "@genuin/components/molecules/linkouts";
-import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
-import { buildLinkoutsAnalyticsData } from "..";
+import { useShowLinkouts } from "@genuin/components/hooks/use-show-linkouts";
+import { buildLinkoutsAnalyticsData } from "@genuin/components/organisms/linkouts/build-linkouts-analytics-data";
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+import { useGetLinkouts } from "@genuin/components/react-query/api/linkouts/get-linkouts";
+import type { LinkoutsType } from "@genuin/components/react-query/api/linkouts/schema";
+
+const SingleLinkCard = lazy(() =>
+  import("@genuin/components/molecules/linkouts/single-link-card").then((m) => ({
+    default: m.SingleLinkCard,
+  }))
+);
+const MultiLinkCard = lazy(() =>
+  import("@genuin/components/molecules/linkouts/multi-link-card").then((m) => ({
+    default: m.MultiLinkCard,
+  }))
+);
+const CTAOnlyCard = lazy(() =>
+  import("@genuin/components/molecules/linkouts/cta-only-card").then((m) => ({
+    default: m.CTAOnlyCard,
+  }))
+);
+const DynamicLinkouts = lazy(() =>
+  import("@genuin/components/molecules/linkout-new/linkouts-dynamic").then((m) => ({
+    default: m.DynamicLinkouts,
+  }))
+);
 
 // Module-level set deduplicates tracking across simultaneous instances (embed + expand).
 // Key format: `${linkoutId}:${positionIndex ?? 0}`. Cleared when video goes inactive.
@@ -20,102 +41,78 @@ export const linkOutVariant = cva("gencl:space-y-4", {
   variants: {
     variant: {
       default: "",
-      embed: "",
+      dynamic: "",
+      cta_only: "",
+      single: "",
+      multi: "",
     },
-    cardVariant: {
+    view: {
+      embed: "",
+      expand: "",
       default: "",
-      transparent: "",
-      primary: "",
-      secondary: "",
+    },
+    layout: {
+      overlay: "",
+      outside: "",
     },
   },
   defaultVariants: {
     variant: "default",
-    cardVariant: "default",
+    layout: "overlay",
+    view: "default",
   },
 });
 
-/**
- * Props for the Linkouts component
- */
+export type LinkoutsVariant = "default" | "dynamic" | "cta_only" | "single" | "multi";
+
+type ResolvedVariant = Exclude<LinkoutsVariant, "default">;
+
 export type LinkoutsProps = {
-  /**
-   * Initial linkouts data to display.
-   */
   linkouts?: LinkoutsType;
-  /**
-   * ID of the linkout to display.
-   */
   linkoutId?: number | null;
-  /**
-   * If isActive is true, the linkouts will be displayed.
-   */
   isActive: boolean;
-  /**
-   * If true, the linkouts will be shown immediately without animation.
-   */
   showImmediately?: boolean;
-  isOutside?: boolean;
-  /**
-   * If true, only the CTA button will be shown without link thumbnails.
-   * This can be controlled by brand configuration or layout preferences.
-   */
-  ctaOnly?: boolean;
-  handleCTAClick?: (e: React.MouseEvent) => void;
   videoDetails?: PostDetailsType["video"];
   totalVideos?: number;
   positionIndex?: number;
   autoplay?: boolean;
+  handleCTAClick?: (e: React.MouseEvent) => void;
+  onSwiperToggle?: (isOpen: boolean) => void;
 } & ComponentProps<"div"> &
   VariantProps<typeof linkOutVariant>;
 
-/**
- * Linkouts component to display a list of linkouts.
- * The component supports:
- * - Fetching linkouts data when not provided
- * - Animated display with entrance/exit effects
- * - Single and multi-link card rendering
- * - Analytics tracking for linkout views
- */
 export function Linkouts({
   linkouts: initialLinkouts,
   linkoutId,
   className,
   isActive,
-  variant,
-  cardVariant = "default",
+  variant: variantProp,
   showImmediately = false,
-  isOutside = false,
-  ctaOnly = false,
-  handleCTAClick,
   videoDetails,
   totalVideos,
   positionIndex,
   autoplay,
+  view,
+  layout,
+  handleCTAClick,
+  onSwiperToggle,
   ...restProps
 }: LinkoutsProps) {
-  const { showLinkouts } = useShowLinkouts({
-    linkoutId,
-    isActive,
-  });
+  const { showLinkouts } = useShowLinkouts({ linkoutId, isActive });
   const {
     data: fetchedLinkouts,
     isLoading,
     isError,
   } = useGetLinkouts(linkoutId, {
     enabled: !initialLinkouts && !!linkoutId,
-    staleTime: 1000 * 60, // 1 minute
+    staleTime: 1000 * 60,
   });
-  const linkouts = initialLinkouts ?? fetchedLinkouts;
-
   const { track, EventName } = useAnalytics();
   const trackingKey = `${linkoutId ?? 0}:${positionIndex ?? 0}`;
   const [isVisible, setIsVisible] = useState(showImmediately);
-  const [shouldRender, setShouldRender] = useState(
-    showImmediately || showLinkouts,
-  );
-  const isEmbed = variant === "embed";
+  const [shouldRender, setShouldRender] = useState(showImmediately || showLinkouts);
 
+  const linkouts = initialLinkouts ?? fetchedLinkouts;
   const analyticsEventData = useMemo(
     () =>
       buildLinkoutsAnalyticsData({
@@ -124,9 +121,10 @@ export function Linkouts({
         positionIndex,
         autoplay,
       }),
-    [videoDetails, totalVideos, positionIndex, autoplay],
+    [videoDetails, totalVideos, positionIndex, autoplay]
   );
 
+  // ─── Animation effect ─────────────────────────────────────────────────────
   useEffect(() => {
     if (!isActive) {
       trackedKeys.delete(trackingKey);
@@ -139,7 +137,6 @@ export function Linkouts({
 
       if (!trackedKeys.has(trackingKey) && linkouts && linkouts.length > 0) {
         trackedKeys.add(trackingKey);
-        console.log("linkout called");
         track(EventName.LINKOUTS_VIEWED, {
           ...analyticsEventData,
           linkoutId,
@@ -148,7 +145,6 @@ export function Linkouts({
       }
       return;
     }
-
     if (showLinkouts) {
       setShouldRender(true);
 
@@ -162,7 +158,6 @@ export function Linkouts({
         setIsVisible(true);
 
         if (shouldTrack) {
-          console.log("linkout viewed 2");
           track(EventName.LINKOUTS_VIEWED, {
             ...analyticsEventData,
             linkoutId,
@@ -172,7 +167,6 @@ export function Linkouts({
       }, 10);
       return () => clearTimeout(timer);
     } else {
-      // Handle hiding with animation
       setIsVisible(false);
       trackedKeys.delete(trackingKey);
 
@@ -189,120 +183,104 @@ export function Linkouts({
     EventName.LINKOUTS_VIEWED,
     showImmediately,
     analyticsEventData,
-    isActive
+    isActive,
   ]);
 
-  // Memoize rendered linkouts to avoid unnecessary re-renders
-  const renderedLinkouts = useMemo(() => {
-    if (!linkouts || linkouts.length === 0) {
-      return null;
-    }
+  // ─── Derive processed data ────────────────────────────────────────────────
+  const linkoutData = linkouts?.[0];
+  const sortedLinks = useMemo(
+    () => [...(linkoutData?.links ?? [])].sort((a, b) => (a.position || 0) - (b.position || 0)),
+    [linkoutData]
+  );
 
-    return linkouts.map((item, index) => {
-      const { links, cta_text, cta_link } = item;
+  const effectiveCTAText = linkoutData?.cta_text ?? "";
+  const effectiveCTALink = linkoutData?.cta_link ?? "";
 
-      if (!links || links.length === 0) {
-        return null;
-      }
+  // ─── Resolve effective variant ────────────────────────────────────────────
+  const resolvedVariant = useMemo((): ResolvedVariant => {
+    if (variantProp === "dynamic") return "dynamic";
+    if (variantProp === "cta_only") return "cta_only";
+    if (variantProp === "single") return "single";
+    if (variantProp === "multi") return "multi";
+    return sortedLinks.length === 1 ? "single" : "multi";
+  }, [variantProp, sortedLinks.length]);
 
-      // Sort links by position if available
-      const sortedLinks = [...links].sort(
-        (a, b) => (a.position || 0) - (b.position || 0),
-      );
+  // ─── Guard rails ──────────────────────────────────────────────────────────
+  if (isLoading) return <div className="gencl:p-4 animate-pulse">Loading…</div>;
+  if (isError || !linkouts || linkouts.length === 0) return null;
+  if (!shouldRender) return null;
+  if (!linkoutData || (!linkoutData.links?.length && !linkoutData.cta_text)) return null;
 
-      // Render CTA-only card if configured
-      if (ctaOnly) {
-        return (
-          <CTAOnlyCard
-            key={`cta-only-${index}`}
-            isEmbed={isEmbed}
-            ctaText={cta_text ?? ""}
-            showIcon={cta_text !== "Go to Episodes"}
-            ctaLink={cta_link ?? ""}
-            linkCount={sortedLinks.length}
-            handleCTAClick={handleCTAClick}
-          />
-        );
-      }
-
-      // Render single link card
-      if (sortedLinks.length === 1) {
-        const link = sortedLinks[0];
-        if (!link) return null;
-
-        const showThumbnail = !!(link.image && link.image.trim() !== "");
-
-        return (
-          <LinkCard
-            isEmbed={isEmbed}
-            isOutside={isOutside}
-            key={`single-${index}`}
-            link={link}
-            showThumbnail={showThumbnail}
-            ctaText={cta_text ?? ""}
-            ctaLink={cta_link ?? ""}
-            variant={cardVariant}
-            videoDetails={videoDetails}
-            totalVideos={totalVideos}
-            positionIndex={positionIndex}
-            autoplay={autoplay}
-          />
-        );
-      }
-
-      // Render multi-link card
-      return (
-        <MultiLinkCard
-          isOutside={isOutside}
-          isEmbed={isEmbed}
-          key={`multi-${index}`}
-          links={sortedLinks}
-          maxVisible={100}
-          ctaText={cta_text ?? ""}
-          ctaLink={cta_link ?? ""}
-          variant={cardVariant}
-          videoDetails={videoDetails}
-          totalVideos={totalVideos}
-          positionIndex={positionIndex}
-          autoplay={autoplay}
-        />
-      );
-    });
-  }, [linkouts, isEmbed, isOutside, cardVariant, ctaOnly]);
-
-  // Loading state
-  if (isLoading) {
-    return <div className="animate-pulse p-4">Loading…</div>;
-  }
-
-  // Error or empty state
-  if (isError || !linkouts || linkouts.length === 0) {
-    return null;
-  }
-
-  // Don't render if not in DOM
-  if (!shouldRender) {
-    return null;
-  }
-
-  // Animation classes based on visibility state
   const animationClasses = showImmediately
     ? "gencl:w-full"
     : cn(
         "gencl:transition-transform gencl:duration-300 gencl:ease-out gencl:w-full",
-        isVisible ? "gencl:translate-y-0" : "gencl:translate-y-full",
+        isVisible ? "gencl:translate-y-0" : "gencl:translate-y-full"
       );
 
-  return (
-    <div
-      className={cn(
-        animationClasses,
-        linkOutVariant({ variant, cardVariant }),
-        className,
-      )}
-      {...restProps}
-    >
-      {renderedLinkouts}
-    </div>
-  );
+  const commonCardProps = {
+    isOutside: layout === "outside",
+    isEmbed: view === "embed",
+    ctaText: effectiveCTAText,
+    ctaLink: effectiveCTALink,
+    analyticsEventData,
+  } as const;
+
+  // ─── Variant switch ───────────────────────────────────────────────────────
+  switch (resolvedVariant) {
+    case "dynamic":
+      return (
+        <Suspense fallback={null}>
+          <DynamicLinkouts
+            links={sortedLinks}
+            ctaText={effectiveCTAText}
+            ctaLink={effectiveCTALink}
+            isActive={isActive}
+            view={view}
+            layout={layout}
+            analyticsEventData={analyticsEventData}
+            onSwiperToggle={onSwiperToggle}
+          />
+        </Suspense>
+      );
+
+    case "cta_only":
+      return (
+        <div className={cn(animationClasses, className)} {...restProps}>
+          <Suspense fallback={null}>
+            <CTAOnlyCard
+              key={`cta-only`}
+              isEmbed={view === "embed"}
+              ctaText={effectiveCTAText ?? ""}
+              showIcon={effectiveCTAText !== "Go to Episodes"}
+              ctaLink={effectiveCTALink ?? ""}
+              linkCount={sortedLinks.length}
+              handleCTAClick={handleCTAClick}
+            />
+          </Suspense>
+        </div>
+      );
+
+    case "single": {
+      const link = sortedLinks[0];
+      if (!link) return null;
+
+      return (
+        <div className={cn(animationClasses, className)} {...restProps}>
+          <Suspense fallback={null}>
+            <SingleLinkCard link={link} showThumbnail={!!link.image?.trim()} {...commonCardProps} />
+          </Suspense>
+        </div>
+      );
+    }
+
+    case "multi":
+      return (
+        <div className={cn(animationClasses, className)} {...restProps}>
+          <Suspense fallback={null}>
+            <MultiLinkCard links={sortedLinks} maxVisible={100} {...commonCardProps} />
+          </Suspense>
+        </div>
+      );
+  }
 }

@@ -17,9 +17,9 @@ const meta: Meta<typeof Tag> = {
     alt: { control: "text", description: "Alt text for the profile image" },
     userName: { control: "text", description: "User name" },
     url: { control: "text", description: "URL for the tag link" },
-    isVerified: {
-      control: "boolean",
-      description: "Whether the user is verified",
+    userLogoType: {
+      control: "number",
+      description: "Brand logo type for verified badge",
     },
     className: { control: "text", description: "Additional class names" },
   },
@@ -37,7 +37,6 @@ export const Default: Story = {
     alt: "User Avatar",
     userName: "@JohnDoe",
     url: "#",
-    isVerified: false,
   },
 };
 
@@ -50,20 +49,19 @@ export const Verified: Story = {
     alt: "User Avatar",
     userName: "@johndoe",
     url: "#",
-    isVerified: true,
+    userLogoType: 1,
   },
 };
 
 export const NoProfileImage: Story = {
   args: {
     profileImage: {
-      isAvatar: false, // Assuming isAvatar should be false if no image
+      isAvatar: false,
       url: "",
     },
     alt: "User Avatar",
     userName: "@AnonymousUser",
     url: "#",
-    isVerified: false,
   },
 };
 
@@ -76,7 +74,6 @@ export const LongUserName: Story = {
     alt: "User Avatar",
     userName: "@UserWithAVeryLongNameThatMightOverflow",
     url: "#",
-    isVerified: false,
   },
 };
 
@@ -89,7 +86,6 @@ export const CustomStyle: Story = {
     alt: "User Avatar",
     userName: "@StyledUser",
     url: "#",
-    isVerified: false,
     className: "gencl:bg-primary-300 gencl:rounded-full",
   },
 };

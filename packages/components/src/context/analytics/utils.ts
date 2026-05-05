@@ -1,4 +1,4 @@
-import { BrandDetailsConfigType } from "@genuin/components/types/brand";
+import type { BrandDetailsConfigType } from "@genuin/components/types/brand";
 
 /**
  * Determines the tap behavior for the feed player based on the provided web configuration.
@@ -6,9 +6,7 @@ import { BrandDetailsConfigType } from "@genuin/components/types/brand";
  * @param webConfigs - The web configuration object containing the `tap_behavior` property.
  * @returns A string describing the tap behavior: "Mute/Unmute", "Play/Pause", or "Unmute then Play/Pause".
  */
-export const getTapBehaviour = (
-  webConfigs: BrandDetailsConfigType["web_configs"]
-) => {
+export const getTapBehaviour = (webConfigs: BrandDetailsConfigType["web_configs"]) => {
   switch (webConfigs.tap_behavior) {
     case 1:
       return "Mute/Unmute";
@@ -27,9 +25,7 @@ export const getTapBehaviour = (
  * @param webConfigs - The web configuration object containing video autoplay settings.
  * @returns A string representing the autoplay behavior: "always", "never", or "custom".
  */
-export const getVideoAutoplay = (
-  webConfigs: BrandDetailsConfigType["web_configs"]
-) => {
+export const getVideoAutoplay = (webConfigs: BrandDetailsConfigType["web_configs"]) => {
   switch (webConfigs.video_autoplay.type) {
     case 1:
       return "always";
@@ -51,14 +47,10 @@ export const getVideoAutoplay = (
  *   - "video_loop-{repeat_video}" if type is 1 (video loops)
  *   - "auto_swipe-{swipe_after}" if type is 2 (auto swipe after N repeats)
  */
-export const getVideoPlayInFeed = (
-  webConfigs: BrandDetailsConfigType["web_configs"]
-) => {
+export const getVideoPlayInFeed = (webConfigs: BrandDetailsConfigType["web_configs"]) => {
   const play = webConfigs.feed_video_play;
   // Used for RudderStack event tracking
-  return play.type === 1
-    ? `video_loop-${play.repeat_video}`
-    : `auto_swipe-${play.swipe_after}`;
+  return play.type === 1 ? `video_loop-${play.repeat_video}` : `auto_swipe-${play.swipe_after}`;
 };
 
 /**
@@ -69,9 +61,7 @@ export const getVideoPlayInFeed = (
  * @param webConfigs - The web configuration object containing linkout delay settings.
  * @returns A string indicating the link delay type for RudderStack events.
  */
-export const getLinkDelay = (
-  webConfigs: BrandDetailsConfigType["web_configs"]
-) => {
+export const getLinkDelay = (webConfigs: BrandDetailsConfigType["web_configs"]) => {
   const delay = webConfigs.linkout_delay;
   return delay.type === 1 ? `custom-${delay.appear_after}` : "immediately";
 };

@@ -1,17 +1,17 @@
 // Shared ESLint flat config for Genuin monorepo
 // See: https://eslint.org/docs/latest/use/configure/configuration-files-new
 
-/** @type {import('eslint').Linter.FlatConfig[]} */
 import base from "./base.js";
-import next from "./next.js";
 import reactInternal from "./react-internal.js";
+import next from "./next.js";
 
-// Flatten the config arrays to avoid nested arrays
-const flatConfig = [
-  ...base,
-  ...next,
-  ...reactInternal,
-  // Add more configs or overrides as needed
-];
+/**
+ * Full monorepo config: base + React + Next.js.
+ * Each sub-config is self-contained and does NOT internally extend base,
+ * so rules appear exactly once in the merged array.
+ *
+ * @type {import('eslint').Linter.Config[]}
+ */
+const flatConfig = [...base, ...reactInternal, ...next];
 
 export default flatConfig;

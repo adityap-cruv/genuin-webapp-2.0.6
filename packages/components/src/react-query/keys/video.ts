@@ -1,15 +1,13 @@
+import type { PaginatedPostsParams } from "../api/posts/types";
+
 import { baseQueryKey } from "./base";
-import { PaginatedPostsParams } from "../api/posts/types";
 
 /**
  * Generates a query key for fetching video details.
  * @param videoId - The ID of the video for which to generate the query key
  * @returns
  */
-export function getQueryKeyForVideoDetails(
-  videoId: string,
-  videoIds?: string[]
-) {
+export function getQueryKeyForVideoDetails(videoId: string, videoIds?: string[]) {
   return [...baseQueryKey, "video", videoId].concat(videoIds);
 }
 

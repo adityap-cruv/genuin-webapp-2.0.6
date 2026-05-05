@@ -1,7 +1,8 @@
 import { OctoIconAnimated } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/utils";
-import type { OctoActionIconProps } from "./octo-action-icon.types";
 import { useCallback, type CSSProperties, type MouseEvent } from "react";
+
+import type { OctoActionIconProps } from "./octo-action-icon.types";
 import { useOctoAnimation } from "./use-octo-animation";
 
 /**
@@ -37,14 +38,13 @@ export function OctoActionIcon({
 }: OctoActionIconProps) {
   const { animationData, isLoading, hasError } = useOctoAnimation();
 
-  const dimensionStyle: CSSProperties | undefined =
-    size !== undefined ? { width: size, height: size } : undefined;
+  const dimensionStyle: CSSProperties | undefined = size !== undefined ? { width: size, height: size } : undefined;
 
   const handleClick = useCallback(
     (e: MouseEvent<HTMLDivElement>) => {
       onClick?.(e);
     },
-    [onClick],
+    [onClick]
   );
 
   const handleComplete = useCallback(() => {
@@ -57,13 +57,12 @@ export function OctoActionIcon({
       <div
         className={cn(
           "gencl:flex gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-secondary-100",
-          className,
+          className
         )}
         style={dimensionStyle}
         data-active={isActive ? true : undefined}
         onClick={handleClick}
-        {...restProps}
-      >
+        {...restProps}>
         <div className="gencl:text-xs gencl:text-center gencl:text-secondary-500" />
       </div>
     );
@@ -72,17 +71,13 @@ export function OctoActionIcon({
   // Render Lottie animation
   return (
     <div
-      className={cn(
-        "gencl:flex gencl:items-center gencl:justify-center gencl:cursor-pointer",
-        className,
-      )}
+      className={cn("gencl:flex gencl:items-center gencl:justify-center gencl:cursor-pointer", className)}
       style={dimensionStyle}
       data-active={isActive ? true : undefined}
       onClick={handleClick}
-      {...restProps}
-    >
+      {...restProps}>
       <OctoIconAnimated
-        src={animationData}
+        src={animationData!}
         width={size}
         height={size}
         loop
