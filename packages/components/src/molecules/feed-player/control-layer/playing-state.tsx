@@ -34,8 +34,7 @@ export function PlayingState({
   showOnlyPlayAction = false,
   ...restProps
 }: PlayingStateProps) {
-  const { playingState, buttonAction, pausedBySystem } =
-    usePlayerContext();
+  const { playingState, buttonAction, pausedBySystem } = usePlayerContext();
 
   // System pause UI must remain stable across active/index/src transitions.
   if (pausedBySystem) {

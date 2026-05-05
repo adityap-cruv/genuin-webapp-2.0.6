@@ -100,7 +100,8 @@ export function useEmbedConfigs() {
        *
        * right now it is not productised so keeping this flag static based on brand id (only for ted.)
        */
-      playerShouldPauseOnNotAllowed: brandDetails.brand_id === 2357,
+      playerShouldPauseOnNotAllowed:
+        brandDetails.brand_id === 2357 || brandDetails.brand_id === 1729,
       centeredSlides:
         embedData?.style === "feed" &&
         embedData?.placement_card_layout_id === 2,
@@ -547,6 +548,7 @@ export function useEmbedConfigs() {
       "69de814d6778217d372a2308",
       "69de834da5228bc03bca779b",
     ]);
+    const AD_INJECTION_PLACEMENT_IDS = new Set(["69e22226dd5806e4fb990a48"]);
     const IHEART_EMBED_IDS = new Set<string>([]);
 
     const isIheart =
@@ -561,7 +563,9 @@ export function useEmbedConfigs() {
         window.location.hostname === "iheartvip.prototype.begenuin.com") ||
       (isIheart &&
         typeof window !== "undefined" &&
-        window.location.hostname === "gendemo.b-cdn.net");
+        window.location.hostname === "gendemo.b-cdn.net") ||
+      (!!embedData?.placement_id &&
+        AD_INJECTION_PLACEMENT_IDS.has(embedData.placement_id));
 
     const showIheartIframe = false;
     const isUsWeekly = brandDetails.brand_id === 2476;

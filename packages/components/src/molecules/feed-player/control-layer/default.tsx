@@ -81,6 +81,10 @@ export function Default({
   const handleIHeartClick = useDoubleClick({
     delay: 300,
     onSingleClick: () => {
+      if (pausedBySystem) {
+        resumeFromSystemPause();
+        return;
+      }
       // Single click - toggle play
       togglePlay(true);
     },
