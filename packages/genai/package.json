@@ -5,6 +5,7 @@
     "type": "module",
     "scripts": {
         "preview": "vite preview",
+        "dev:app": "cross-env NODE_ENV=development vite --mode development",
         "dev": "pnpm exec concurrently \"pnpm exec cross-env NODE_ENV=development vite build --mode development --watch\" \"serve dist --cors -l tcp://0.0.0.0:5500\"",
         "lint": "eslint .",
         "format": "prettier --write .",

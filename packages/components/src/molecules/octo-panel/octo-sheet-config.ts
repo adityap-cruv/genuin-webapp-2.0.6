@@ -74,7 +74,7 @@ export function getOctoSheetConfig({ isMobile, octoState, viewportHeight }: Octo
       initialState: "default",
       enabledStates: ["default", "default-active", "expand-view", "panel-view", "full-view"],
       heights: {
-        default: "108px",
+        default: "120px",
         "default-active": "178px",
         "expand-view": "280px",
         "panel-view": "70%",

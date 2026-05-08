@@ -27,7 +27,6 @@ import type {
     ToolMetadataPayload,
 } from '@/types';
 
-
 import { AgentsContext } from './context';
 import { convertChatHistoryV2ToEvents } from './conversationUtils';
 import { useAppBootstrap } from './hooks/useAppBootstrap';
@@ -55,6 +54,7 @@ interface AgentsProviderProps {
     integrationType?: 'embed' | 'placement';
     integrationId?: string;
     contentOrder?: string[];
+    allowAutoPrompt?: boolean;
 }
 
 export interface HandleSendMessageParams {
@@ -237,6 +237,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
     integrationType,
     integrationId,
     contentOrder,
+    allowAutoPrompt = true,
 }) => {
     const initialAgent = isMaya ? 'maya' : '695cefa2c19e333c687787f7';
     // State
@@ -250,6 +251,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
     const [enteredInChatMode, setEnteredInChatMode] = useState<boolean>(
         currentSessionIdProp ? true : isMaya ? true : false
     );
+    const [localAllowAutoPrompt, setLocalAllowPrompt] = useState(allowAutoPrompt);
     const [creatingSession, _setCreatingSession] = useState<boolean>(false);
     const [agents, setAgentsState] = useState<Agent[]>([]);
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(false);
@@ -871,15 +873,16 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                             const toolEventId = requestId ? `tool-${requestId}` : `tool-${Date.now()}`;
                             const existingIndex = chat.findIndex(event => event.id === toolEventId);
 
-                            const baseEvent: ChatHistoryEvent =
-                                (existingIndex >= 0 ? chat[existingIndex] : undefined) ?? {
-                                    id: toolEventId,
-                                    message: { content: '' },
-                                    role: 'agent',
-                                    parent_id: lastEvent?.id || null,
-                                    feedback: null,
-                                    created_at: new Date().toISOString(),
-                                };
+                            const baseEvent: ChatHistoryEvent = (existingIndex >= 0
+                                ? chat[existingIndex]
+                                : undefined) ?? {
+                                id: toolEventId,
+                                message: { content: '' },
+                                role: 'agent',
+                                parent_id: lastEvent?.id || null,
+                                feedback: null,
+                                created_at: new Date().toISOString(),
+                            };
 
                             const updatedEvent: ChatHistoryEvent = {
                                 ...baseEvent,
@@ -1482,6 +1485,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
     }
 
     async function handleSendMessage(params: HandleSendMessageParams) {
+        setLocalAllowPrompt(true);
         const { targetSessionId, messageInput, agent_id, editedChatId, onMessageQueued } = params;
 
         const currentSession = sessions.find((s: Session) => s.id === targetSessionId);
@@ -1906,6 +1910,8 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
         sessionsFetched,
         ipInfo,
         view,
+        allowAutoPrompt: localAllowAutoPrompt,
+        globalAllowAutoPrompt: allowAutoPrompt,
         pendingMessages: pendingMessages || [],
         userEmail,
         videoStyles,

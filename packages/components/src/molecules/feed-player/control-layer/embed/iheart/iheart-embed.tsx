@@ -35,7 +35,8 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
 }) => {
   const { baseContextManager } = useBaseContext();
   const {
-    view: { websiteType, expandOnInteraction },
+    view: { websiteType },
+    brand: { expandOnInteraction },
     engagement,
     expandViewConfig,
   } = useEmbedConfigs();

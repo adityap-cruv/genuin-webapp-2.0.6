@@ -8,7 +8,6 @@ import { AnalyticsProvider } from './analytics/provider';
 import { AgentsProvider } from './app/provider';
 import { InputProvider } from './input/provider';
 
-
 interface AppProvidersProps {
     children: ReactNode;
     userId: string;
@@ -30,6 +29,7 @@ interface AppProvidersProps {
     integrationType?: 'embed' | 'placement';
     integrationId?: string;
     contentOrder?: string[];
+    allowAutoPrompt?: boolean;
 }
 
 export const AppProviders: React.FC<AppProvidersProps> = ({
@@ -52,6 +52,7 @@ export const AppProviders: React.FC<AppProvidersProps> = ({
     integrationType,
     integrationId,
     contentOrder,
+    allowAutoPrompt,
 }) => {
     // Create OctoAnalytics instance
     const octoAnalytics = useMemo(() => {
@@ -92,21 +93,22 @@ export const AppProviders: React.FC<AppProvidersProps> = ({
                     brandId={brandId}
                     currentSessionId={currentSessionId}
                     view={view}
-                webSdkRenderMode={webSdkRenderMode}
-                pendingMessages={pendingMessages}
-                userEmail={userEmail}
-                userUUID={userUUID}
-                isMaya={isMaya}
-                parentWebSdkInstanceId={parentWebSdkInstanceId}
-                parentWebSdkContainerId={parentWebSdkContainerId}
-                parentWebSdkEmbedId={parentWebSdkEmbedId}
-                parentWebSdkPlacementId={parentWebSdkPlacementId}
-                parentOctoPanelId={parentOctoPanelId}
-                webSdkVideoId={videoId}
-                integrationType={integrationType}
-                integrationId={integrationId}
-                contentOrder={contentOrder}
-            >
+                    webSdkRenderMode={webSdkRenderMode}
+                    pendingMessages={pendingMessages}
+                    userEmail={userEmail}
+                    userUUID={userUUID}
+                    isMaya={isMaya}
+                    parentWebSdkInstanceId={parentWebSdkInstanceId}
+                    parentWebSdkContainerId={parentWebSdkContainerId}
+                    parentWebSdkEmbedId={parentWebSdkEmbedId}
+                    parentWebSdkPlacementId={parentWebSdkPlacementId}
+                    parentOctoPanelId={parentOctoPanelId}
+                    webSdkVideoId={videoId}
+                    integrationType={integrationType}
+                    integrationId={integrationId}
+                    contentOrder={contentOrder}
+                    allowAutoPrompt={allowAutoPrompt}
+                >
                     <InputProvider>{children}</InputProvider>
                 </AgentsProvider>
             </AnalyticsProvider>

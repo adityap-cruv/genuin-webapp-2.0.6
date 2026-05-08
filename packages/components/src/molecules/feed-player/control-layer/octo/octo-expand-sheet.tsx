@@ -107,12 +107,12 @@ export const OctoExpandSheet = forwardRef<OctoExpandSheetRef, OctoExpandSheetPro
   useEffect(() => {
     setShouldShowOcto(false);
     if (!isActive) return;
-    const timer = setTimeout(() => setShouldShowOcto(true), 5000);
+    const timer = setTimeout(() => setShouldShowOcto(true), 100);
     return () => {
       clearTimeout(timer);
       resetSheet();
     };
-  }, [isActive]);
+  }, [isActive, resetSheet]);
 
   useImperativeHandle(ref, () => ({ onActionOpen: handleOctoActionOpen }), [handleOctoActionOpen]);
 

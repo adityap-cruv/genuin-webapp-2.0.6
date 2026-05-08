@@ -12,6 +12,64 @@ const MIN_EMBED_WIDTH = 150;
 const MIN_EMBED_HEIGHT = 268; // Based on 9:16 aspect ratio for 150 width
 const MIN_GRID_VIDEO_WIDTH = 150;
 
+// ============================================================
+// Brand Feature ID Configuration
+// Add embed/placement IDs here to enable a feature for specific embeds.
+// Each key maps to a feature; add IDs to placementIds or embedIds to opt in.
+// ============================================================
+const BRAND_FEATURE_IDS = {
+  iheart: {
+    placementIds: new Set([
+      "69de71089f6934fe0ba22fb5",
+      "69c2812fd98484cf6b83a5ba",
+      "69de78f2d89621dcaa5e7d79",
+      "69de7b51ede71540a7f10fd7",
+      "69de7ea22e853bae28d73adb",
+      "69de7ff541254f559233a72a",
+      "69de824b41254f559233a8b1",
+      "69de814d6778217d372a2308",
+      "69de834da5228bc03bca779b",
+    ]),
+    embedIds: new Set<string>([]),
+  },
+  adInjection: {
+    placementIds: new Set(["69e22226dd5806e4fb990a48"]),
+    embedIds: new Set<string>([]),
+  },
+  autoExpand: {
+    placementIds: new Set<string>(["69faddecc002c7c205f3ad6a"]),
+    embedIds: new Set<string>([]),
+  },
+  expandOnInteraction: {
+    placementIds: new Set([
+      "69de71089f6934fe0ba22fb5",
+      "69de7b51ede71540a7f10fd7",
+      "69de814d6778217d372a2308",
+      "69faddecc002c7c205f3ad6a",
+    ]),
+    embedIds: new Set(["69c38273686a088a80a25ea2"]),
+  },
+};
+
+type EmbedDataSlice =
+  | {
+      embed_id?: string | null;
+      placement_id?: string | null;
+    }
+  | null
+  | undefined;
+
+function matchesFeature(
+  feature: { placementIds: Set<string>; embedIds: Set<string> },
+  embedData: EmbedDataSlice
+): boolean {
+  if (!embedData) return false;
+  return (
+    (!!embedData.placement_id && feature.placementIds.has(embedData.placement_id)) ||
+    (!!embedData.embed_id && feature.embedIds.has(embedData.embed_id))
+  );
+}
+
 // TODO REMOVE UNUSED CONFIGS, USE ONLY IF REQUIRED
 /**
  * Hook that extracts and organizes all customization values from the embed context
@@ -78,11 +136,6 @@ export function useEmbedConfigs() {
         }
         return embedData?.grid_layout || undefined;
       })(),
-      expandOnInteraction:
-        (embedData?.placement_id === "69de71089f6934fe0ba22fb5" ||
-          embedData?.placement_id === "69de7b51ede71540a7f10fd7" ||
-          embedData?.placement_id === "69de814d6778217d372a2308") &&
-        isMobile,
       scrollBehavior: customization?.scroll_behavior || "paging",
       isNavigationControlEnabled: brandLayoutType === "ted" ? false : customization?.is_navigation_control_enabled,
       /**
@@ -92,11 +145,8 @@ export function useEmbedConfigs() {
        *
        * right now it is not productised so keeping this flag static based on brand id (only for ted.)
        */
-      playerShouldPauseOnNotAllowed:
-        brandDetails.brand_id === 2357 || brandDetails.brand_id === 1729,
-      centeredSlides:
-        embedData?.style === "feed" &&
-        embedData?.placement_card_layout_id === 2,
+      playerShouldPauseOnNotAllowed: brandDetails.brand_id === 2357 || brandDetails.brand_id === 1729,
+      centeredSlides: embedData?.style === "feed" && embedData?.placement_card_layout_id === 2,
       brandLayoutType: brandLayoutType ?? "default",
       websiteType: embedData?.websiteType ?? "polaris",
       isAdsEnabledInIheart: isAdsEnabledInIheart ?? false,
@@ -360,10 +410,7 @@ export function useEmbedConfigs() {
     return {
       enable: !isDisabled && (customization?.is_popup_view ?? true),
       isShowByDefault: !isDisabled && !!customization?.is_show_popup_by_default,
-      defaultAudioUnmute:
-        embedData?.placement_id === "69f47831e964b815fc224b52" ||
-        embedData?.placement_id === "69f47bbbe964b815fc224dd2" ||
-        embedData?.placement_id === "69f47c44f1feb6b63d575df9",
+      defaultAudioUnmute: true,
     };
   }, [customization, embedData?.disable_expand_view]);
 
@@ -537,51 +584,28 @@ export function useEmbedConfigs() {
   const virtualizeSwiper = true;
 
   const brand = useMemo(() => {
-    /** IHeart placement/embed IDs — shared across all IHeart-specific feature flags. */
-    const IHEART_PLACEMENT_IDS = new Set([
-      "69de71089f6934fe0ba22fb5",
-      "69c2812fd98484cf6b83a5ba",
-      "69de78f2d89621dcaa5e7d79",
-      "69de7b51ede71540a7f10fd7",
-      "69de7ea22e853bae28d73adb",
-      "69de7ff541254f559233a72a",
-      "69de824b41254f559233a8b1",
-      "69de814d6778217d372a2308",
-      "69de834da5228bc03bca779b",
-    ]);
-    const AD_INJECTION_PLACEMENT_IDS = new Set(["69e22226dd5806e4fb990a48"]);
-    const IHEART_EMBED_IDS = new Set<string>([]);
-
-    const isIheart =
-      (!!embedData?.placement_id && IHEART_PLACEMENT_IDS.has(embedData.placement_id)) ||
-      (!!embedData?.embed_id && IHEART_EMBED_IDS.has(embedData.embed_id));
-
-    const autoPageContext = isIheart;
+    const isIheart = matchesFeature(BRAND_FEATURE_IDS.iheart, embedData);
 
     const shouldInjectExpandViewAds =
+      matchesFeature(BRAND_FEATURE_IDS.adInjection, embedData) ||
       (typeof window !== "undefined" &&
-        window.location.hostname === "iheartvip.prototype.begenuin.com") ||
-      (isIheart &&
-        typeof window !== "undefined" &&
-        window.location.hostname === "gendemo.b-cdn.net") ||
-      (!!embedData?.placement_id &&
-        AD_INJECTION_PLACEMENT_IDS.has(embedData.placement_id));
+        (window.location.hostname === "iheartvip.prototype.begenuin.com" ||
+          (isIheart && window.location.hostname === "gendemo.b-cdn.net")));
 
-    const showIheartIframe = false;
-    const isUsWeekly = brandDetails.brand_id === 2476;
     const feedType: FeedType = "FEED_V1";
     const iheartArticleId = isIheart;
     return {
-      // configuration to identify US Weekly brand
-      isUsWeekly,
+      isUsWeekly: brandDetails.brand_id === 2476,
       isIndianExpress: brandDetails.brand_id === 2793,
       feedType,
-      autoPageContext,
-      showIheartIframe,
+      autoPageContext: isIheart,
+      showIheartIframe: false,
       shouldInjectExpandViewAds,
       iheartArticleId,
+      shouldAutoExpand: matchesFeature(BRAND_FEATURE_IDS.autoExpand, embedData),
+      expandOnInteraction: matchesFeature(BRAND_FEATURE_IDS.expandOnInteraction, embedData) && isMobile,
     };
-  }, [brandDetails.brand_id, embedData?.placement_id, embedData?.embed_id]);
+  }, [brandDetails.brand_id, isMobile]);
 
   const embedSwiperConfigs = useMemo(() => {
     return {

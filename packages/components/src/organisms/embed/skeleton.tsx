@@ -155,14 +155,6 @@ export function SdkSkeleton({
               </SwiperSlide>
             );
           })}
-          <NavigationButtons
-            theme={theme}
-            embedVariant={embedVariant}
-            onPrev={() => {}}
-            onNext={() => {}}
-            isIheartLayout={config.view.brandLayoutType === "iheart"}
-            isNavigationControlEnabled={config.view.isNavigationControlEnabled ?? false}
-          />
         </EmbedSwiper>
       </div>
       <NavigationButtons

@@ -25,6 +25,7 @@ interface SDKConfig {
     integrationType?: 'embed' | 'placement';
     integrationId?: string;
     contentOrder?: string[];
+    allowAutoPrompt?: boolean;
 }
 
 let appInstance: any = null;
@@ -162,6 +163,7 @@ async function loadDialogApp(config: SDKConfig): Promise<void> {
             integrationType: config.integrationType,
             integrationId: config.integrationId,
             contentOrder: config.contentOrder,
+            allowAutoPrompt: config.allowAutoPrompt,
         }),
     };
 
@@ -465,6 +467,7 @@ export async function init(initConfig: SDKConfig) {
                     integrationType: normalizedConfig.integrationType,
                     integrationId: normalizedConfig.integrationId,
                     contentOrder: normalizedConfig.contentOrder,
+                    allowAutoPrompt: normalizedConfig.allowAutoPrompt,
                 }),
             };
 

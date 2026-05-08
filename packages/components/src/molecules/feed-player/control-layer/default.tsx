@@ -80,14 +80,7 @@ export function Default({
   // Use the useDoubleClick hook for iheart layout
   const handleIHeartClick = useDoubleClick({
     delay: 300,
-    onSingleClick: () => {
-      if (pausedBySystem) {
-        resumeFromSystemPause();
-        return;
-      }
-      // Single click - toggle play
-      togglePlay(true);
-    },
+    onSingleClick: () => handleVideoClick({ stopPropagation: () => {} } as React.MouseEvent),
     onDoubleClick: () => {
       // Only handle double-click on mobile or tablet
       if (!(isMobile || isTablet) || !user) return;
@@ -127,7 +120,9 @@ export function Default({
 
       hideGestureOverlay("PLAY_PAUSE", muted);
 
-      switch (tapBehavior) {
+      const effectiveTapBehavior = brandDetails?.brand_id === 1729 ? 3 : tapBehavior;
+
+      switch (effectiveTapBehavior) {
         case 1: // Tap to mute/unmute
           toggleMuted(true);
           // setButtonAction(muted ? "UNMUTE" : "MUTE");
@@ -147,7 +142,17 @@ export function Default({
           break;
       }
     },
-    [muted, togglePlay, toggleMuted]
+    [
+      muted,
+      togglePlay,
+      toggleMuted,
+      brandDetails?.brand_id,
+      hideGestureOverlay,
+      pausedBySystem,
+      postDetails.video?.clickableUrl,
+      resumeFromSystemPause,
+      tapBehavior,
+    ]
   );
 
   const { video } = postDetails;

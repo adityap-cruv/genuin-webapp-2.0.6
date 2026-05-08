@@ -95,7 +95,7 @@ export function EmbedExpandView({
 
   const { setMuted, muted, setPlaybackSpeed, isInIframe, baseEventBus, brandDetails } = useBaseContext();
   const {
-    brand: { isIndianExpress },
+    brand: { isIndianExpress, shouldAutoExpand },
     engagement: {
       engagementTools: { comment, share, repost, spark },
       redirectionTools: { community, group, user },
@@ -216,9 +216,9 @@ export function EmbedExpandView({
     );
 
     // When expand view mounts, set comment placement to 'outside' and apply width-based state.
-    if (isDesktop) {
-      openContentType("comments", "outside", "full-view");
-    }
+    // if (isDesktop) {
+    //   openContentType("comments", "outside", "full-view");
+    // }
   }, []);
 
   useUpdateStartVideoSlug({
@@ -233,6 +233,10 @@ export function EmbedExpandView({
   });
   // Handle mute state and global playing state when entering expand view
   useEffect(() => {
+    // Auto-expand opens without user gesture — browser blocks unmuted autoplay.
+    // Skip the unmute entirely; player starts muted and user can unmute manually.
+    if (shouldAutoExpand) return;
+
     if (defaultAudioUnmute) {
       setTimeout(() => {
         setMuted(false);
@@ -254,7 +258,7 @@ export function EmbedExpandView({
         setMuted(false);
       }, 300);
     }
-  }, [brandLayoutType, setMuted, baseEventBus, websiteType]);
+  }, [shouldAutoExpand, defaultAudioUnmute, brandLayoutType, setMuted, baseEventBus, websiteType]);
 
   // Add keyboard event listener for ESC key
   useEffect(() => {

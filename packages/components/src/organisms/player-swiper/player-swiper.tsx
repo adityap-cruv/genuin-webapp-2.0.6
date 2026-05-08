@@ -263,7 +263,6 @@ export function PlayerList({
   );
 
   useEffect(() => {
-    if (!isMobile) return;
     const shouldDisable = sheetState === "full-view" || sheetState === "panel-view";
     handleSwiperToggle(shouldDisable);
   }, [sheetState, handleSwiperToggle]);

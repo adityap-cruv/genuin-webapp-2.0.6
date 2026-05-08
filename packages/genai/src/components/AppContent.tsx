@@ -172,7 +172,7 @@ export default function AppContent() {
                             </div>
                             {/* Chat Mode Footer */}
                             <div
-                                className={`gai:right-0 gai:bottom-0 gai:bg-white gai:py-2 gai:md:px-0 gai:mt-2 ${
+                                className={`gai:right-0 gai:bottom-0 gai:mt-2 gai:bg-white gai:py-2 gai:md:px-0 ${
                                     !isSidebarCollapsed && brand_id !== -1 ? 'gai:left-0' : 'gai:left-0'
                                 }`}
                             >

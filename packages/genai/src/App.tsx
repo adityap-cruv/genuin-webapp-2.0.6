@@ -63,6 +63,7 @@ interface AppProps {
     integrationType?: 'embed' | 'placement';
     integrationId?: string;
     contentOrder?: string[];
+    allowAutoPrompt?: boolean;
 }
 
 function App({
@@ -85,6 +86,7 @@ function App({
     integrationType,
     integrationId,
     contentOrder,
+    allowAutoPrompt,
 }: AppProps) {
     const [open, setOpen] = useState(true);
     // const [isCollapsed, setIsCollapsed] = useState(false);
@@ -163,6 +165,7 @@ function App({
             integrationType={integrationType}
             integrationId={integrationId}
             contentOrder={contentOrder}
+            allowAutoPrompt={allowAutoPrompt}
         >
             <AppContent />
         </AppProviders>
@@ -188,6 +191,7 @@ function App({
             integrationType={integrationType}
             integrationId={integrationId}
             contentOrder={contentOrder}
+            allowAutoPrompt={allowAutoPrompt}
         >
             <WebSDKContent />
         </AppProviders>
@@ -234,6 +238,7 @@ function App({
             videoId={videoId}
             integrationType={integrationType}
             integrationId={integrationId}
+            allowAutoPrompt={allowAutoPrompt}
         >
             <AnimatedDialog open={open} onOpenChange={handleOpenChange}>
                 <AnimatedDialogContent

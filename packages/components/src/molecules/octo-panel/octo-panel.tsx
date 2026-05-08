@@ -31,6 +31,7 @@ type GenAISDKModule = {
     integrationType?: "embed" | "placement";
     integrationId?: string;
     contentOrder?: string[];
+    allowAutoPrompt?: boolean;
   }) => void;
   destroy: () => void | Promise<void>;
   setWebSdkRenderMode?: (mode: "compact" | "full") => void;
@@ -446,6 +447,7 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(functio
         integrationType,
         integrationId,
         contentOrder,
+        allowAutoPrompt: true,
       });
       sdkInitializedRef.current = true;
       setIsReinitializing(false);

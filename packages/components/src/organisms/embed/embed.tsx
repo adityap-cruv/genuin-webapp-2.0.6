@@ -31,6 +31,7 @@ import { ExpandViewLoader } from "./expand-view/expand-view-loader";
 import { FetchNextPageHandler } from "./fetch-next-page-handler";
 import { PipViewLoader } from "./pip-view/pip-view-loader";
 import { SdkSkeleton, ShimmerSlide } from "./skeleton";
+import { useAutoExpand } from "./use-auto-expand";
 import { isSlideVisible } from "./utils";
 
 const IheartUrlManager = lazy(() =>
@@ -80,25 +81,25 @@ const EmbedItem = lazy(() => import("./embed-tile-item").then((m) => ({ default:
 /** Ad configs used to inject between videos in expand-view only. */
 const EXPAND_VIEW_AD_CONFIGS = [
   {
-    videoSource: "https://vz-8bbc7bbf-a1e.b-cdn.net/07283c40-a199-410c-9d57-6b070d35ab33/play_360p.mp4",
+    videoSource: "https://vz-8bbc7bbf-a1e.b-cdn.net/738f9e12-141d-4c56-8357-16b71a68debd/play_360p.mp4",
     adUrl: "https://media.begenuin.com/ad-sdk/test-creatives/finance.xml",
     logo: "https://media.begenuin.com/ad-sdk/test-creatives/splitero.webp",
     primaryColor: "#F97316",
   },
   {
-    videoSource: "https://vz-8bbc7bbf-a1e.b-cdn.net/3aa3cdc7-1254-425d-93c0-2d060f19322e/play_360p.mp4",
+    videoSource: "https://vz-8bbc7bbf-a1e.b-cdn.net/2f4ed7d2-b4db-4925-b1e5-3d7a314a0307/play_360p.mp4",
     adUrl: "https://media.begenuin.com/ad-sdk/test-creatives/consumerserivce.xml",
     logo: "https://media.begenuin.com/ad-sdk/test-creatives/airtasker.webp",
     primaryColor: "#061257",
   },
   {
-    videoSource: "https://vz-8bbc7bbf-a1e.b-cdn.net/4f524c6b-153c-4e8e-8630-6b866f937a9a/play_360p.mp4",
+    videoSource: "https://vz-8bbc7bbf-a1e.b-cdn.net/4b01ccd6-4da4-4128-b17d-26714707fd69/play_360p.mp4",
     adUrl: "https://media.begenuin.com/ad-sdk/test-creatives/foodandgroceryads.xml",
     logo: "https://media.begenuin.com/ad-sdk/test-creatives/impossiblefoods.webp",
     primaryColor: "#E10600",
   },
   {
-    videoSource: "https://vz-8bbc7bbf-a1e.b-cdn.net/684a999f-8e14-4399-93e8-c0bc67f9d51c/play_360p.mp4",
+    videoSource: "https://vz-8bbc7bbf-a1e.b-cdn.net/09c2567e-73bd-4aca-9348-987da7c7cd20/play_360p.mp4",
     adUrl: "https://media.begenuin.com/ad-sdk/test-creatives/soda.xml",
     logo: "https://media.begenuin.com/ad-sdk/test-creatives/skypop.webp",
     primaryColor: "#061257",
@@ -123,10 +124,10 @@ function createInjectableAdItem(
         ads_url: adUrl,
         // platform: "aniview",
         cpm: 0.001,
-        advertiserDetails: {
-          logo,
-          primaryColor,
-        },
+        // advertiserDetails: {
+        //   logo,
+        //   primaryColor,
+        // },
         contentVideo: {
           url: videoSource,
           autoplay: true,
@@ -228,7 +229,8 @@ export function Embed({
   const [slidesOffsetBefore, setSlidesOffsetBefore] = useState<number>(0);
 
   const { isInIframe, theme } = useBaseContext();
-  const { embedData, embedEventBus, rootElement, updateIsSectioned, updateSectionList } = useEmbedContext();
+  const { embedData, embedEventBus, rootElement, updateIsSectioned, updateSectionList, changeActivePlayerType } =
+    useEmbedContext();
   // Local state for isSectioned synced with event bus
   const [isSectioned, setIsSectioned] = useState(embedEventBus.getContext().isSectioned);
   // Local state for activePlayerType synced with event bus
@@ -237,6 +239,14 @@ export function Embed({
   const [activeIndex, setActiveIndex] = useState(embedEventBus.getContext().activeIndex);
   const { track, EventName } = useAnalytics();
   const config = useEmbedConfigs();
+
+  useAutoExpand(
+    rootElement,
+    config.brand.shouldAutoExpand,
+    () => changeActivePlayerType("expand-view"),
+    config.expandViewConfig.enable
+  );
+
   const embedAspectRatio = config.dimensions.aspectRatio;
   // check that does it is embed or placement
   const isEmbed: boolean = !config.view.isPlacementView;
@@ -697,7 +707,7 @@ export function Embed({
                 spaceBetweenVideos={spaceBetweenVideos}
                 slidesPerView={slidesPerView}
                 isIheartLayout={isIheartLayout}
-                allowTouchMove={!config.view.expandOnInteraction}
+                allowTouchMove={!config.brand.expandOnInteraction}
                 onSlideChange={(swiperInstance: any) => {
                   // Early safety check
                   if (!swiperInstance) return;
@@ -774,7 +784,7 @@ export function Embed({
             </div>
           )
         )}
-        {isIheartLayout && embedData.style === "feed" && (
+        {/* {isIheartLayout && embedData.style === "feed" && (
           <NavigationButtonsWithContext
             totalSlides={totalSlides}
             isIheartLayout={true}
@@ -782,7 +792,7 @@ export function Embed({
             embedVariant={embedVariant}
             setSlidesOffsetBefore={setSlidesOffsetBefore}
           />
-        )}
+        )} */}
       </EmbedManagerProvider>
       {config.expandViewConfig.enable && (
         <ExpandViewLoader

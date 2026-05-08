@@ -1012,21 +1012,21 @@ export class GenuinSDK {
       }
 
       // Hide embed on mobile for specific embed ID
-      if (
-        extractedData.embedId === "69c38273686a088a80a25ea2" &&
-        /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
-      ) {
-        element.style.height = "0px";
-        element.style.width = "0px";
-        const parent = element.parentElement;
-        if (parent) {
-          const headingTitle = parent.querySelector(".heading-title");
-          if (headingTitle instanceof HTMLElement) {
-            headingTitle.hidden = true;
-          }
-        }
-        continue;
-      }
+      // if (
+      //   extractedData.embedId === '69c38273686a088a80a25ea2' &&
+      //   /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+      // ) {
+      //   element.style.height = '0px'
+      //   element.style.width = '0px'
+      //   const parent = element.parentElement
+      //   if (parent) {
+      //     const headingTitle = parent.querySelector('.heading-title')
+      //     if (headingTitle instanceof HTMLElement) {
+      //       headingTitle.hidden = true
+      //     }
+      //   }
+      //   continue
+      // }
 
       // Shadow DOM is enabled by default (useShadowDOM !== false).
       // Set up the Shadow DOM before any rendering so every subsequent write

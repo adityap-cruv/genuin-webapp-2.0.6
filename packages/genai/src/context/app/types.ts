@@ -78,4 +78,6 @@ export interface AgentsContextType {
     resetVideoStyles: () => void;
     updateAgentMessageContent: (sessionId: string, messageId: string, newContent: string) => void;
     setWebSdkRenderMode: (mode: 'compact' | 'full') => void;
+    allowAutoPrompt?: boolean;
+    globalAllowAutoPrompt?: boolean;
 }

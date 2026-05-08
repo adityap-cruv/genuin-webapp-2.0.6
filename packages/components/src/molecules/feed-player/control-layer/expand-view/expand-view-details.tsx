@@ -300,6 +300,8 @@ const AdaptiveDescription = memo(function AdaptiveDescription({
   onExpand?: () => void;
   layoutType?: BrandLayoutType;
 }) {
+  const { description, createdAt, duration } = video ?? {};
+
   const enhancedDescription: ReadMoreTextType = useMemo(() => {
     if (!video) return [];
     const { description, createdAt, duration } = video;
@@ -324,7 +326,6 @@ const AdaptiveDescription = memo(function AdaptiveDescription({
   }, [type, video]);
 
   if (!video) return null;
-  const { description, createdAt, duration } = video;
 
   switch (type) {
     case "iheart":
@@ -424,7 +425,7 @@ const SharedActions = memo(function SharedActions({
     return (
       <IHeartControls
         onClick={(e) => e.stopPropagation()}
-        className={cn("gencl:gap-1 gencl:z-20")}
+        className={cn("gencl:gap-1 gencl:z-10")}
         size="lg"
         variant="expand"
         isActive={isActive}
@@ -563,6 +564,9 @@ export function ExpandViewDetails({
   const { isMobile } = useDeviceDetectMediaQuery();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isOctoSwipeBlocked, setIsOctoSwipeBlocked] = useState(false);
+  const { getContentTypeState } = useSheetState();
+  const octoSheetState = getContentTypeState("octo");
+  const isOctoSheetExpanded = octoSheetState === "panel-view" || octoSheetState === "full-view";
   const scrubberRef = useRef<HTMLDivElement>(null);
   const octoExpandSheetRef = useRef<OctoExpandSheetRef>(null);
 
@@ -716,16 +720,18 @@ export function ExpandViewDetails({
           )}
         </div>
 
-        <SharedActions
-          postDetails={postDetails}
-          brandLayoutType={brandLayoutType}
-          defaultOpenCommentDialog={defaultOpenCommentDialog}
-          onReactionStateChange={onReactionStateChange}
-          onCommentCountChange={onCommentCountChange}
-          isActive={isActive}
-          onOctoOpen={() => octoExpandSheetRef.current?.onActionOpen()}
-          linkoutThumbnail={video.linkouts?.[0]?.links?.find((l: any) => l.image)?.image}
-        />
+        {!isOctoSheetExpanded && (
+          <SharedActions
+            postDetails={postDetails}
+            brandLayoutType={brandLayoutType}
+            defaultOpenCommentDialog={defaultOpenCommentDialog}
+            onReactionStateChange={onReactionStateChange}
+            onCommentCountChange={onCommentCountChange}
+            isActive={isActive}
+            onOctoOpen={() => octoExpandSheetRef.current?.onActionOpen()}
+            linkoutThumbnail={video.linkouts?.[0]?.links?.find((l: any) => l.image)?.image}
+          />
+        )}
       </div>
       {(!hideGroupPill || !hideCommunityPill) && (
         <div

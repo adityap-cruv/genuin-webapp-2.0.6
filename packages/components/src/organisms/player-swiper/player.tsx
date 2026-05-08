@@ -222,7 +222,11 @@ export function Player({
                 videoType={post.video?.videoType ?? VideoTypes.Content}
                 className={cn(
                   "gencl:h-full! gencl:w-full",
-                  videoCrop ? "gencl:object-cover gencl:bg-cover!" : "gencl:object-contain gencl:bg-contain!"
+                  sheetState === "panel-view" || sheetState === "full-view"
+                    ? "gencl:object-contain! gencl:bg-contain!"
+                    : videoCrop
+                      ? "gencl:object-cover gencl:bg-cover!"
+                      : "gencl:object-contain gencl:bg-contain!"
                 )}
                 playsInline
                 isActive={isActive}
@@ -241,24 +245,24 @@ export function Player({
                 sponsorshipInfo={post.sponsored}
               />
             </Suspense>
-            <Suspense fallback={null}>
-              <ControlLayer
-                index={index}
-                isActive={isActive}
-                postDetails={post}
-                isSectioned={isSectioned}
-                onCommunityJoinStatusChange={onCommunityJoinStatusChange}
-                onGroupJoinStatusChange={onGroupJoinStatusChange}
-                onGroupSubscriptionChange={onGroupSubscriptionChange}
-                showCloseButton={variant === "expand"}
-                onReactionStateChange={onReactionStateChange}
-                onCommentCountChange={onCommentCountChange}
-                containerWidth={swiper.width}
-                // Applies GPU acceleration to prevent layer flickering on iOS devices during animations
-                className="gencl:translate-x-0"
-              />
-            </Suspense>
           </div>
+          <Suspense fallback={null}>
+            <ControlLayer
+              index={index}
+              isActive={isActive}
+              postDetails={post}
+              isSectioned={isSectioned}
+              onCommunityJoinStatusChange={onCommunityJoinStatusChange}
+              onGroupJoinStatusChange={onGroupJoinStatusChange}
+              onGroupSubscriptionChange={onGroupSubscriptionChange}
+              showCloseButton={variant === "expand"}
+              onReactionStateChange={onReactionStateChange}
+              onCommentCountChange={onCommentCountChange}
+              containerWidth={swiper.width}
+              // Applies GPU acceleration to prevent layer flickering on iOS devices during animations
+              className="gencl:translate-x-0"
+            />
+          </Suspense>
           {showIheartBar && <IHeartEmbedBar attributes={post.video?.attributes} />}
         </div>
       </PlayerProvider>

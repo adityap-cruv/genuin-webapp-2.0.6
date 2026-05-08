@@ -137,7 +137,7 @@ export function OctoDynamicSheet({
   return (
     <DynamicSheet
       isOpen={isOpen}
-      renderMode="container"
+      renderMode="inline"
       controlledState={octoSheetState}
       config={{
         ...octoConfig,

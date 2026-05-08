@@ -280,11 +280,12 @@ function EmbedPlayer({ postDetails, isActive = false, index, itemSize, pageSessi
 
   const isSponsored = postDetails.video?.cardLayoutId === 7; // Sponsored content is determined by cardLayoutId 7
 
+  const hidePlayerControls = isEmbed ? itemSize.width < 200 : false;
+
   const isSheetExpanded = isNonDesktop && isActive && (sheetState === "panel-view" || sheetState === "full-view");
 
   const showIheartBar = config.brand.showIheartIframe && isActive;
 
-  const hidePlayerControls = isEmbed ? itemSize.width < 200 : false;
   return (
     <div
       className={cn(
@@ -321,9 +322,11 @@ function EmbedPlayer({ postDetails, isActive = false, index, itemSize, pageSessi
                   : postDetails.video?.thumbnail
               }
               className={
-                videoCrop
-                  ? "gencl:object-cover gencl:h-full! gencl:w-full gencl:bg-cover"
-                  : "gencl:h-full! gencl:bg-contain!"
+                sheetState === "panel-view" || sheetState === "full-view"
+                  ? "gencl:bg-contain! gencl:object-contain! gencl:h-full! gencl:w-full!"
+                  : videoCrop
+                    ? "gencl:object-cover gencl:h-full! gencl:w-full gencl:bg-cover"
+                    : "gencl:h-full! gencl:bg-contain!"
               }
               layoutType={layoutType}
               aria-hidden="true"

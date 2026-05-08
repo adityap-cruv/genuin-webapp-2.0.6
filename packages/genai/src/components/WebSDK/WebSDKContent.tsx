@@ -13,7 +13,7 @@ import { WebSDKInput } from './WebSDKInput';
 
 // Duration constants for the auto-prompt cycle (in milliseconds)
 const FULL_VIEW_IDLE_TIMEOUT_MS = 5_000; // Wait 5s after response before closing chat
-const VIDEO_PLAY_DURATION_MS = 5_000; // Play video for 30s before triggering next prompt
+const VIDEO_PLAY_DURATION_MS = 30_000; // Play video for 30s before triggering next prompt
 
 const OCTO_IDLE_ANIMATION_PATH = 'sleeping/animations/51914e32-e62c-43d5-b17d-50369bbbf7d6.json';
 const OCTO_IDLE_IMAGES_PATH = 'sleeping/';
@@ -34,6 +34,8 @@ export function WebSDKContent() {
         webSdkRenderMode,
         setWebSdkRenderMode,
         parentOctoPanelId,
+        allowAutoPrompt,
+        globalAllowAutoPrompt,
     } = useAgentsContext();
     const { setInput } = useInputContext();
     const { analytics } = useOctoAnalytics();
@@ -97,6 +99,7 @@ export function WebSDKContent() {
     //   2. Wait VIDEO_PLAY_DURATION_MS (video plays naturally during this gap).
     //   3. Send the next suggested prompt to restart the cycle.
     useEffect(() => {
+        if (!globalAllowAutoPrompt) return;
         // Only run this cycle in full-screen chat mode
         if (webSdkRenderMode !== 'full') return;
         if (!currentSessionId) return;
@@ -413,7 +416,7 @@ export function WebSDKContent() {
     // Auto-prompt feature: show dummy message and start countdown
     useEffect(() => {
         // After a close event, skip auto-prompt — user should see normal chat input
-        if (isPostCloseMode) {
+        if (isPostCloseMode || !allowAutoPrompt) {
             return;
         }
 
@@ -604,6 +607,10 @@ export function WebSDKContent() {
     }, [compactOctoLottie, compactLottieError]);
 
     useEffect(() => {
+        if (!allowAutoPrompt) {
+            // Do not allow auto prompting
+            return;
+        }
         if (!currentSessionId) {
             expandRequestedMessageRef.current = null;
             return;
@@ -667,7 +674,7 @@ export function WebSDKContent() {
     const primaryPrompt = suggestedPrompts[0];
 
     const handleCompactInputActivate = useCallback(() => {
-        if (webSdkRenderMode !== 'compact') {
+        if (webSdkRenderMode !== 'compact' || !globalAllowAutoPrompt) {
             return;
         }
 
@@ -779,66 +786,68 @@ export function WebSDKContent() {
 
     return (
         <div ref={rootContainerRef} className={`gai:flex gai:h-full gai:flex-col ${backgroundClass}`}>
-            <div ref={scrollContainerRef} className={scrollContainerClasses}>
-                <div className={contentWrapperClasses}>
-                    {!shouldHideContent && currentSession ? (
-                        <Chat />
-                    ) : !shouldHideContent && shouldShowLoader ? (
-                        isCompactMode ? (
-                            <div className='gai:flex gai:w-full gai:justify-end'>
-                                <div className='gai:flex gai:w-[80%] gai:flex-col gai:items-end gai:gap-2'>
-                                    <div className='gai:flex gai:w-full gai:max-w-[70%] gai:flex-col gai:gap-2 gai:rounded-3xl gai:rounded-br-none gai:bg-primary-50 gai:px-4 gai:py-3'>
-                                        <CompactSkeleton width='55%' />
-                                    </div>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className='gai:mx-auto gai:flex gai:w-full gai:flex-col gai:gap-6 gai:pb-6'>
+            {allowAutoPrompt && (
+                <div ref={scrollContainerRef} className={scrollContainerClasses}>
+                    <div className={contentWrapperClasses}>
+                        {!shouldHideContent && currentSession ? (
+                            <Chat />
+                        ) : !shouldHideContent && shouldShowLoader ? (
+                            isCompactMode ? (
                                 <div className='gai:flex gai:w-full gai:justify-end'>
                                     <div className='gai:flex gai:w-[80%] gai:flex-col gai:items-end gai:gap-2'>
-                                        <div className='gai:flex gai:w-full gai:max-w-[80%] gai:flex-col gai:gap-2 gai:rounded-3xl gai:rounded-br-none gai:bg-primary-50 gai:px-4 gai:py-3'>
-                                            <Skeleton className='gai:h-4 gai:w-full gai:max-w-[16rem] gai:bg-primary-200' />
-                                            <Skeleton className='gai:h-4 gai:w-3/4 gai:bg-primary-200' />
+                                        <div className='gai:flex gai:w-full gai:max-w-[70%] gai:flex-col gai:gap-2 gai:rounded-3xl gai:rounded-br-none gai:bg-primary-50 gai:px-4 gai:py-3'>
+                                            <CompactSkeleton width='55%' />
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        )
-                    ) : !shouldHideContent && !isCompactMode && showDummyMessage && primaryPrompt ? (
-                        <div className='gai:mx-auto gai:flex gai:w-full gai:flex-col gai:gap-6 gai:pb-6'>
-                            {/* Dummy user message - clickable to copy to input */}
-                            <div className='gai:flex gai:w-full gai:justify-end'>
-                                <div className='gai:flex gai:w-[80%] gai:flex-col gai:items-end gai:gap-2'>
-                                    <div
-                                        className='hover:gai:bg-primary-100 gai:max-w-[80%] gai:cursor-pointer gai:rounded-3xl gai:rounded-br-none gai:bg-primary-50 gai:px-4 gai:py-3 gai:font-body-1-med gai:text-secondary-gray-900 gai:transition-colors'
-                                        onClick={handleAutoPromptClick}
-                                    >
-                                        {primaryPrompt}
+                            ) : (
+                                <div className='gai:mx-auto gai:flex gai:w-full gai:flex-col gai:gap-6 gai:pb-6'>
+                                    <div className='gai:flex gai:w-full gai:justify-end'>
+                                        <div className='gai:flex gai:w-[80%] gai:flex-col gai:items-end gai:gap-2'>
+                                            <div className='gai:flex gai:w-full gai:max-w-[80%] gai:flex-col gai:gap-2 gai:rounded-3xl gai:rounded-br-none gai:bg-primary-50 gai:px-4 gai:py-3'>
+                                                <Skeleton className='gai:h-4 gai:w-full gai:max-w-[16rem] gai:bg-primary-200' />
+                                                <Skeleton className='gai:h-4 gai:w-3/4 gai:bg-primary-200' />
+                                            </div>
+                                        </div>
                                     </div>
-                                    {/* Countdown timer - blue badge with white background for number */}
-                                    {((countdown !== null && countdown > 0) ||
-                                        (panelViewCountdown !== null && panelViewCountdown > 0)) && (
-                                        <div className='gai:flex gai:items-center gai:gap-1.5 gai:px-1'>
-                                            <div className='gai:flex gai:h-4 gai:w-4 gai:items-center gai:justify-center gai:rounded-full gai:bg-primary-500'>
-                                                <span className='gai:text-[10px] gai:leading-none gai:font-bold gai:text-white'>
-                                                    {panelViewCountdown !== null && panelViewCountdown > 0
-                                                        ? panelViewCountdown
-                                                        : countdown}
+                                </div>
+                            )
+                        ) : !shouldHideContent && !isCompactMode && showDummyMessage && primaryPrompt ? (
+                            <div className='gai:mx-auto gai:flex gai:w-full gai:flex-col gai:gap-6 gai:pb-6'>
+                                {/* Dummy user message - clickable to copy to input */}
+                                <div className='gai:flex gai:w-full gai:justify-end'>
+                                    <div className='gai:flex gai:w-[80%] gai:flex-col gai:items-end gai:gap-2'>
+                                        <div
+                                            className='hover:gai:bg-primary-100 gai:max-w-[80%] gai:cursor-pointer gai:rounded-3xl gai:rounded-br-none gai:bg-primary-50 gai:px-4 gai:py-3 gai:font-body-1-med gai:text-secondary-gray-900 gai:transition-colors'
+                                            onClick={handleAutoPromptClick}
+                                        >
+                                            {primaryPrompt}
+                                        </div>
+                                        {/* Countdown timer - blue badge with white background for number */}
+                                        {((countdown !== null && countdown > 0) ||
+                                            (panelViewCountdown !== null && panelViewCountdown > 0)) && (
+                                            <div className='gai:flex gai:items-center gai:gap-1.5 gai:px-1'>
+                                                <div className='gai:flex gai:h-4 gai:w-4 gai:items-center gai:justify-center gai:rounded-full gai:bg-primary-500'>
+                                                    <span className='gai:text-[10px] gai:leading-none gai:font-bold gai:text-white'>
+                                                        {panelViewCountdown !== null && panelViewCountdown > 0
+                                                            ? panelViewCountdown
+                                                            : countdown}
+                                                    </span>
+                                                </div>
+                                                <span className='gai:text-[10px] gai:text-secondary-gray-500'>
+                                                    Prompting in...
                                                 </span>
                                             </div>
-                                            <span className='gai:text-[10px] gai:text-secondary-gray-500'>
-                                                Prompting in...
-                                            </span>
-                                        </div>
-                                    )}
+                                        )}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ) : !isCompactMode ? (
-                        <div className='gai:flex gai:w-full gai:items-center gai:justify-center' />
-                    ) : null}
+                        ) : !isCompactMode ? (
+                            <div className='gai:flex gai:w-full gai:items-center gai:justify-center' />
+                        ) : null}
+                    </div>
                 </div>
-            </div>
+            )}
             <div className={`${inputSectionBackground}`}>
                 <div className='gai:mx-auto gai:w-full'>
                     <WebSDKInput

@@ -20,6 +20,8 @@ export type ControlLayerPropsType = ComponentProps<"div"> & {
   expandViewDetails?: boolean;
   layoutType?: "responsiveness" | BrandType;
   containerWidth?: number;
+  /** Determines which side the mute button is positioned on during ad playback. Defaults to "in-feed". */
+  adType?: "in-feed" | "in-stream";
   editClipVideo?: (url: string) => void;
   editCoverImage?: (url: string) => void;
 } & ExpandViewCallbacks &

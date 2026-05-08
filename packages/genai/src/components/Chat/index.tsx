@@ -9,16 +9,8 @@ import KoahSDKLoader from './KoahSDKLoader';
 import Item from './MessageItem';
 
 const Chat = () => {
-    const {
-        sessions,
-        currentSessionId,
-        currentAgent,
-        setFeedback,
-        onBoardingAgents,
-        handleSendMessage,
-        agents,
-        view,
-    } = useAgentsContext();
+    const { sessions, currentSessionId, currentAgent, setFeedback, onBoardingAgents, handleSendMessage, agents, view } =
+        useAgentsContext();
     const [sdkLoaded, setSdkLoaded] = useState(false);
     const [koahSdkLoaded, setKoahSdkLoaded] = useState(false);
 
@@ -41,9 +33,10 @@ const Chat = () => {
         const thinkingJustStarted = !prevThinking && thinking;
 
         // For web-sdk view: don't auto-scroll during thinking to keep focus on ThinkingStatusList
-        const shouldScroll = view === 'web-sdk'
-            ? (hasNewEvents || thinkingJustStarted) && eventsLength > 0 && !thinking
-            : (hasNewEvents || thinkingJustStarted) && eventsLength > 0;
+        const shouldScroll =
+            view === 'web-sdk'
+                ? (hasNewEvents || thinkingJustStarted) && eventsLength > 0 && !thinking
+                : (hasNewEvents || thinkingJustStarted) && eventsLength > 0;
 
         if (shouldScroll) {
             // messagesEndRef.current?.scrollIntoView({

@@ -42,6 +42,7 @@ export function CustomInput({
         setTextAreaRef,
         enteredInChatMode,
         stopSessionResponse,
+        allowAutoPrompt,
     } = useAgentsContext();
     const { input, setInput } = useInputContext();
     const [stopping, setStopping] = useState(false);
@@ -78,7 +79,9 @@ export function CustomInput({
     const currentSession = sessions.find(session => session.id === currentSessionId);
     const hasUserMessages = currentSession?.chat?.some(message => message.role === 'user') ?? false;
     const isCompactMode = mode === 'compact';
-    const shouldShowCompactPrompt = isCompactMode && !hasUserMessages && suggestedPrompt !== undefined;
+    const shouldShowCompactPrompt = allowAutoPrompt
+        ? isCompactMode && !hasUserMessages && suggestedPrompt !== undefined
+        : true;
     const displayPrompt = isLoading ? 'Loading...' : suggestedPrompt || '';
     const showCountdownTimer = countdown !== null && countdown > 0;
 
@@ -148,7 +151,7 @@ export function CustomInput({
         .filter(Boolean)
         .join(' ');
     const inputShellClassName = [
-        'gai:flex gai:w-full gai:max-w-full gai:items-end gai:box-border gai:p-2 gai:gap-2 gai:min-h-[60px]',
+        'gai:flex gai:w-full gai:max-w-full gai:items-end gai:box-border gai:p-2 gai:gap-2 gai:h-fit!',
         'gai:max-w-[472px]',
         isCompactMode ? 'gai:bg-transparent gai:cursor-pointer' : 'gai:bg-white gai:border-t gai:border-[#DFE1E3]',
     ]
@@ -162,7 +165,7 @@ export function CustomInput({
     ]
         .filter(Boolean)
         .join(' ');
-    const showCountdownPrompt = shouldShowCompactPrompt && showCountdownTimer;
+    const showCountdownPrompt = allowAutoPrompt && shouldShowCompactPrompt && showCountdownTimer;
     const inputContainerClassName = [
         'gai:flex gai:flex-1 gai:min-w-0 gai:w-full gai:max-w-[404px] gai:rounded-[24px] gai:box-border',
         isCompactMode ? 'gai:bg-white' : 'gai:bg-[#EFF3FF]',
@@ -198,7 +201,7 @@ export function CustomInput({
                                             <span className='gai:line-clamp-3 gai:text-xs gai:font-semibold gai:text-secondary-gray-900 gai:md:text-sm'>
                                                 {displayPrompt}
                                             </span>
-                                        </div> 
+                                        </div>
                                         <div className='gai:flex gai:items-center gai:justify-between'>
                                             <span className='gai:text-[10px] gai:font-medium gai:text-secondary-gray-500 gai:md:text-xs'>
                                                 Prompting in...
@@ -224,7 +227,7 @@ export function CustomInput({
                                                     Loading...
                                                 </span>
                                             ) : (
-                                                <span className='gai:line-clamp-3 gai:text-xs gai:font-semibold gai:text-secondary-gray-900 gai:md:text-sm'>
+                                                <span className='gai:line-clamp-2 gai:text-xs gai:font-semibold gai:text-secondary-gray-900 gai:md:text-sm'>
                                                     {displayPrompt}
                                                 </span>
                                             )}

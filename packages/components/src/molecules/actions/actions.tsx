@@ -281,7 +281,7 @@ export function Actions({
   videoType,
   isLinkoutsOpen = false,
   linkoutThumbnail,
-  showLinkout = true,
+  showLinkout = false,
   onClick,
   ...restProps
 }: ActionsPropsType) {
