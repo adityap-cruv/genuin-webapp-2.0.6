@@ -1,5 +1,5 @@
 import { UrlParamProvider } from "@genuin/components";
-import { AxiosProvider, SdkSkeleton } from "@genuin/components";
+import { AxiosProvider } from "@genuin/components";
 import { AnalyticsProvider } from "@genuin/components/context/analytics";
 import { AuthProvider } from "@genuin/components/context/auth";
 import { BaseContextProvider } from "@genuin/components/context/base";
@@ -89,14 +89,16 @@ function EmbedSkeleton({ container, theme }: { container: HTMLElement; theme?: "
           ))}
         </div>
       ) : (
-        <SdkSkeleton
-          containerHeight={container.clientHeight || 400}
-          containerWidth={container.clientWidth || 600}
-          statsHeight={68}
-          linkoutHeight={40}
-          spaceBetweenVideos={8}
-          availableHeight={container.clientHeight || 400}
-        />
+        // TODO IMPROVE IT AS MAKE IT DYNAMIC BASED ON THE CONTAINER SIZE
+        // <SdkSkeleton
+        //   containerHeight={container.clientHeight || 400}
+        //   containerWidth={container.clientWidth || 600}
+        //   statsHeight={68}
+        //   linkoutHeight={40}
+        //   spaceBetweenVideos={8}
+        //   availableHeight={container.clientHeight || 400}
+        // />
+        <></>
       )}
     </div>
   );

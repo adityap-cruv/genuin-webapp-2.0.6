@@ -31,6 +31,8 @@ type OctoExpandSheetProps = {
   viewportHeight: number;
   /** Called whenever the Octo sheet should block parent swipe gestures. */
   onSwipeBlockChange?: (blocked: boolean) => void;
+  /** Called whenever Octo's rendered visibility changes. */
+  onVisibilityChange?: (visible: boolean) => void;
 };
 
 /**
@@ -41,7 +43,7 @@ type OctoExpandSheetProps = {
  * no Octo state — only an imperative `onActionOpen` handle via ref.
  */
 export const OctoExpandSheet = forwardRef<OctoExpandSheetRef, OctoExpandSheetProps>(function OctoExpandSheet(
-  { isActive, videoId, videoSlug, isMobile, viewportHeight, onSwipeBlockChange },
+  { isActive, videoId, videoSlug, isMobile, viewportHeight, onSwipeBlockChange, onVisibilityChange },
   ref
 ) {
   const { engagement } = useEmbedConfigs();
@@ -133,6 +135,11 @@ export const OctoExpandSheet = forwardRef<OctoExpandSheetRef, OctoExpandSheetPro
     handleOctoActionOpen,
     handleOctoActionToggle,
   ]);
+
+  const isOctoVisible = isOctoEnabled && isActive && shouldShowOcto && !isOctoHidden;
+  useEffect(() => {
+    onVisibilityChange?.(isOctoVisible);
+  }, [isOctoVisible, onVisibilityChange]);
 
   if (!isOctoEnabled || !isActive || !shouldShowOcto) return null;
 

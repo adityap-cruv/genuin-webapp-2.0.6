@@ -405,15 +405,7 @@ export function Actions({
 
         // For mobile variant, render icon directly (Octo gets circular treatment)
         if (variant === "mobile") {
-          const mobileNode = isOctoAction ? (
-            <TooltipAction
-              icon={iconElement}
-              tooltipText={action.tooltipText}
-              variant={theme}
-              iconSize="fill"
-              disableTooltip
-            />
-          ) : (
+          const mobileNode = (
             <div className="gencl:flex gencl:h-12 gencl:w-12 gencl:items-center gencl:justify-center">
               {iconElement}
             </div>
@@ -437,10 +429,10 @@ export function Actions({
                 ? theme === "dark"
                   ? "gencl:bg-secondary-800"
                   : "gencl:bg-secondary-50 gencl:border-secondary-50"
-                : undefined,
-              isOctoAction
-                ? "gencl:bg-transparent gencl:hover:bg-transparent gencl:border-0 gencl:shadow-none"
                 : undefined
+              // isOctoAction
+              //   ? "gencl:bg-transparent gencl:hover:bg-transparent gencl:border-0 gencl:shadow-none"
+              //   : undefined
             )}
             disableTooltip={isCommentActionOpen || (action.actionType === "LINKOUT" && isLinkoutsOpen)}
           />

@@ -22,7 +22,6 @@ import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import useViewportHeight from "@genuin/components/hooks/use-screen-height";
-import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
 import { getBaseUrl } from "@genuin/components/lib/utils";
 import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
@@ -574,15 +573,12 @@ export const ExpandViewDetails = forwardRef<ExpandViewDetailsRef, ExpandViewProp
     positionIndex,
     videoAutoplay,
   } = useExpandViewConfig(postDetails);
-  const { brand, engagement } = useEmbedConfigs();
-  const isOctoEnabled = engagement.engagementTools.octo;
+  const { brand } = useEmbedConfigs();
   const viewportHeight = useViewportHeight();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isOctoSwipeBlocked, setIsOctoSwipeBlocked] = useState(false);
-  const { getContentTypeState } = useSheetState();
-  const octoSheetState = getContentTypeState("octo");
-  const isOctoSheetExpanded = octoSheetState === "panel-view" || octoSheetState === "full-view";
+  const [isOctoVisible, setIsOctoVisible] = useState(false);
   const scrubberRef = useRef<HTMLDivElement>(null);
   const octoExpandSheetRef = useRef<OctoExpandSheetRef>(null);
 
@@ -636,6 +632,7 @@ export const ExpandViewDetails = forwardRef<ExpandViewDetailsRef, ExpandViewProp
                 isMobile={isMobile}
                 viewportHeight={viewportHeight}
                 onSwipeBlockChange={setIsOctoSwipeBlocked}
+                onVisibilityChange={setIsOctoVisible}
               />
             )}
           </div>
@@ -715,7 +712,7 @@ export const ExpandViewDetails = forwardRef<ExpandViewDetailsRef, ExpandViewProp
 
           {/* Linkout inside player — show on mobile always, and on desktop only when
               comments are also open (split view: linkout overlay + comment right panel). */}
-          {showLinkoutInExpand && brandLayoutType !== "iheart" && !isOctoEnabled && video.linkouts && (
+          {showLinkoutInExpand && brandLayoutType !== "iheart" && !isOctoVisible && video.linkouts && (
             <Suspense fallback={null}>
               <Linkouts
                 linkouts={video.linkouts}
@@ -734,7 +731,7 @@ export const ExpandViewDetails = forwardRef<ExpandViewDetailsRef, ExpandViewProp
             </Suspense>
           )}
 
-          {!isOctoEnabled && (
+          {!isOctoVisible && (
             <AdaptiveDescription
               video={video}
               type={brandLayoutType}
@@ -747,19 +744,17 @@ export const ExpandViewDetails = forwardRef<ExpandViewDetailsRef, ExpandViewProp
           )}
         </div>
 
-        {!isOctoSheetExpanded && (
-          <SharedActions
-            postDetails={postDetails}
-            brandLayoutType={brandLayoutType}
-            defaultOpenCommentDialog={defaultOpenCommentDialog}
-            onReactionStateChange={onReactionStateChange}
-            onCommentCountChange={onCommentCountChange}
-            isActive={isActive}
-            onOctoOpen={() => octoExpandSheetRef.current?.onActionToggle()}
-            linkoutThumbnail={video.linkouts?.[0]?.links?.find((l: any) => l.image)?.image}
-            isDesktop={isDesktop}
-          />
-        )}
+        <SharedActions
+          postDetails={postDetails}
+          brandLayoutType={brandLayoutType}
+          defaultOpenCommentDialog={defaultOpenCommentDialog}
+          onReactionStateChange={onReactionStateChange}
+          onCommentCountChange={onCommentCountChange}
+          isActive={isActive}
+          onOctoOpen={() => octoExpandSheetRef.current?.onActionToggle()}
+          linkoutThumbnail={video.linkouts?.[0]?.links?.find((l: any) => l.image)?.image}
+          isDesktop={isDesktop}
+        />
       </div>
       {(!hideGroupPill || !hideCommunityPill) && (
         <div

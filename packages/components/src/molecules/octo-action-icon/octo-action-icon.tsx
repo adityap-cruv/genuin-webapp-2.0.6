@@ -76,7 +76,7 @@ export function OctoActionIcon({
       data-active={isActive ? true : undefined}
       onClick={handleClick}
       {...restProps}>
-      <OctoIconAnimated
+      {/* <OctoIconAnimated
         src={animationData!}
         width={size}
         height={size}
@@ -84,6 +84,11 @@ export function OctoActionIcon({
         autoplay
         playing
         onComplete={handleComplete}
+      /> */}
+      <img
+        src={"https://media.begenuin.com/webapp_assets/assets/genai/icon-genai.svg"}
+        alt="Octo"
+        className={cn("gai:h-full gai:w-full")}
       />
     </div>
   );

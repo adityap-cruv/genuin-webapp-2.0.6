@@ -1,4 +1,3 @@
-import { Player } from '@lottiefiles/react-lottie-player';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import ArrowUpward from '@/assets/SvgIcons/ArrowUpward';
@@ -6,6 +5,7 @@ import Stop from '@/assets/SvgIcons/Stop';
 import { useAgentsContext } from '@/context/app/context';
 import { useInputContext } from '@/context/input/context';
 import { getCachedRemoteLottie, loadRemoteLottie } from '@/lib/lottie/load-remote-lottie';
+import { cn } from '@/lib/utils';
 
 import { Button } from '../ui/button';
 import Spinner from '../ui/spinner';
@@ -167,7 +167,7 @@ export function CustomInput({
         .join(' ');
     const showCountdownPrompt = allowAutoPrompt && shouldShowCompactPrompt && showCountdownTimer;
     const inputContainerClassName = [
-        'gai:flex gai:flex-1 gai:min-w-0 gai:w-full gai:max-w-[404px] gai:rounded-[8px] gai:box-border',
+        'gai:flex gai:flex-1 gai:min-w-0 gai:w-full gai:max-w-full gai:rounded-[8px] gai:box-border',
         isCompactMode ? 'gai:bg-white' : 'gai:bg-[#EFF3FF]',
         showCountdownPrompt
             ? 'gai:flex-col gai:items-stretch gai:gap-2 gai:px-3 gai:py-2 gai:min-h-[64px]'
@@ -182,11 +182,16 @@ export function CustomInput({
             <div className={wrapperClassName}>
                 <div className={inputShellClassName} onClick={handleActivate}>
                     <div className={avatarContainerClassName} onClick={handleActivate}>
-                        {octoLottie && !octoLottieError ? (
+                        {/* {octoLottie && !octoLottieError ? (
                             <Player autoplay loop src={octoLottie} className='gai:h-full gai:w-full' />
                         ) : (
                             <span className='gai:text-xs gai:font-semibold gai:text-secondary-gray-500'>Octo</span>
-                        )}
+                        )} */}
+                        <img
+                            src={'https://media.begenuin.com/webapp_assets/assets/genai/icon-genai-circle-white.svg'}
+                            alt='Octo'
+                            className={cn('gai:h-full gai:w-full')}
+                        />
                     </div>
 
                     <div

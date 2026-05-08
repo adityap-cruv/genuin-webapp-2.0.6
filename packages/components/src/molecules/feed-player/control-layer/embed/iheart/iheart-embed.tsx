@@ -55,6 +55,9 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
   const octoSheetState = getContentTypeState("octo");
   const isActiveOctoSheet = isOctoEnabled && (octoSheetState === "panel-view" || octoSheetState === "full-view");
 
+  // TODO: handle it better way in common state for all the usecases
+  const [isOctoVisible, setIsOctoVisible] = useState(false);
+
   const swipeStartYRef = useRef<number>(0);
 
   const [isVideoWatched, setIsVideoWatched] = useState<boolean>(
@@ -371,7 +374,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
             "gencl:absolute gencl:bottom-0 gencl:p-3 gencl:text-white gencl:w-full",
             isActiveOctoSheet && "gencl:space-y-3 gencl:h-full gencl:p-0"
           )}>
-          {!isOctoEnabled && (
+          {!isOctoVisible && (
             <div className="gencl:rounded">
               <ReadMore
                 text={enhancedDescription}
@@ -401,9 +404,10 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
               videoSlug={postDetails.video?.slug ?? ""}
               isMobile={isMobile}
               viewportHeight={viewportHeight}
+              onVisibilityChange={setIsOctoVisible}
             />
 
-            {!isActiveOctoSheet && (
+            {!isOctoVisible && (
               <IHeartControls
                 onClick={(e) => e.stopPropagation()}
                 className={cn("gencl:z-20 gencl:lg:gap-1!")}
@@ -422,7 +426,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
                 isVideoWatched={isVideoWatched}
               />
             )}
-            {!isOctoEnabled && (
+            {!isOctoVisible && (
               <IHeartListenLiveButton variant="filled" info={listenLiveButtonInfo} videoDetails={postDetails.video} />
             )}
           </div>
