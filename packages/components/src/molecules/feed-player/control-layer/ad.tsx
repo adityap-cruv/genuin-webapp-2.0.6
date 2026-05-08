@@ -27,8 +27,8 @@ export function Ad({ className, adType, ...restProps }: AdProps) {
       {...restProps}>
       <div
         className={cn(
-          "gencl:absolute gencl:top-4 gencl:rounded-full! gencl:shrink-0 gencl:pointer-events-auto",
-          adType === "in-stream" ? "gencl:left-4" : "gencl:right-4"
+          "gencl:absolute gencl:right-4 gencl:rounded-full! gencl:shrink-0 gencl:pointer-events-auto",
+          adType === "in-stream" ? "gencl:top-10" : "gencl:top-4"
         )}
         onClick={(e) => e.stopPropagation()}>
         <AnimatedMuteIcon shouldAnimate={muted} enableVolumeSlider={false} />

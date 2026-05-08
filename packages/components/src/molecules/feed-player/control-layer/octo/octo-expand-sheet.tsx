@@ -16,6 +16,11 @@ export type OctoExpandSheetRef = {
    * Resets internal state-tracking so swipe detection starts clean.
    */
   onActionOpen: () => void;
+  /**
+   * Toggles Octo visibility. If currently visible, hides it and closes the
+   * sheet. If currently hidden, shows it and opens via the action flow.
+   */
+  onActionToggle: () => void;
 };
 
 type OctoExpandSheetProps = {
@@ -114,17 +119,30 @@ export const OctoExpandSheet = forwardRef<OctoExpandSheetRef, OctoExpandSheetPro
     };
   }, [isActive, resetSheet]);
 
-  useImperativeHandle(ref, () => ({ onActionOpen: handleOctoActionOpen }), [handleOctoActionOpen]);
+  const handleOctoActionToggle = useCallback(() => {
+    if (isOctoHidden) {
+      setIsOctoHidden(false);
+      handleOctoActionOpen();
+    } else {
+      setIsOctoHidden(true);
+      handleOctoSheetClose();
+    }
+  }, [isOctoHidden, handleOctoActionOpen, handleOctoSheetClose]);
+
+  useImperativeHandle(ref, () => ({ onActionOpen: handleOctoActionOpen, onActionToggle: handleOctoActionToggle }), [
+    handleOctoActionOpen,
+    handleOctoActionToggle,
+  ]);
 
   if (!isOctoEnabled || !isActive || !shouldShowOcto) return null;
 
   return (
     <div className="gencl:relative gencl:h-full gencl:w-full swiper-no-swiping" onClick={(e) => e.stopPropagation()}>
       <Suspense fallback={null}>
-        <div className={cn(isOctoHidden && "gencl:invisible")}>
+        <div>
           <OctoDynamicSheet
             key={videoId}
-            isOpen={isActive}
+            isOpen={isActive && !isOctoHidden}
             videoId={videoId}
             videoSlug={videoSlug}
             octoSheetState={octoSheetState}

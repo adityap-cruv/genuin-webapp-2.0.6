@@ -4,11 +4,15 @@ import { cn, getFormattedDuration, getMonthYear } from "@genuin/ui/lib/utils";
 import { type FC, useMemo, lazy, Suspense } from "react";
 
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import useViewportHeight from "@genuin/components/hooks/use-screen-height";
+import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
 
 import { DynamicReactionIcon } from "../../../reaction-button";
 import { Stats } from "../../../stats";
 import type { ControlLayerPropsType } from "../control-layer.types";
 import { EmbedControls } from "../controls/embed";
+import { OctoExpandSheet } from "../octo/octo-expand-sheet";
 
 const Linkouts = lazy(() =>
   import("@genuin/components/organisms/linkouts").then((m) => ({
@@ -39,8 +43,14 @@ export const DefaultPlacement: FC<ControlLayerPropsType> = ({
   onReactionStateChange,
   ...restProps
 }) => {
-  const { contentDisplay, responsive, view } = useEmbedConfigs();
+  const { contentDisplay, responsive, view, engagement } = useEmbedConfigs();
   const { isXs, isMd, isSm, isLg } = responsive;
+  const { isMobile } = useDeviceDetectMediaQuery();
+  const viewportHeight = useViewportHeight();
+  const isOctoEnabled = engagement.engagementTools.octo;
+  const { getContentTypeState } = useSheetState();
+  const octoSheetState = getContentTypeState("octo");
+  const isActiveOctoSheet = isOctoEnabled && (octoSheetState === "panel-view" || octoSheetState === "full-view");
   const shouldHideOnSmall = isXs;
   const shouldUseCompactText = isMd;
 
@@ -228,11 +238,11 @@ export const DefaultPlacement: FC<ControlLayerPropsType> = ({
         contentDisplay.sectionDetailsPosition === "overlay_on_bottom" && noOfClips,
         contentDisplay.sectionDetailsPosition === "overlay_on_bottom" && sectionDetails,
         contentDisplay.videoDetailsPosition === "overlay_on_bottom" && videoDetails,
-        contentDisplay.videoDetailsPosition === "overlay_on_bottom" && linkoutSection,
+        contentDisplay.videoDetailsPosition === "overlay_on_bottom" && !isOctoEnabled && linkoutSection,
         contentDisplay.socialInteractionCountsPosition === "overlay_on_bottom" && socialInteraction,
       ].filter(Boolean),
     }),
-    [contentDisplay, videoDetails, sectionDetails, noOfClips, linkoutSection, socialInteraction]
+    [contentDisplay, videoDetails, sectionDetails, noOfClips, linkoutSection, socialInteraction, isOctoEnabled]
   );
 
   return (
@@ -257,10 +267,21 @@ export const DefaultPlacement: FC<ControlLayerPropsType> = ({
 
       {/* Bottom Layout */}
       <div className="gencl:absolute gencl:bottom-0 gencl:p-2 gencl:text-white gencl:w-full gencl:bg-gradient-to-t gencl:from-black/50 gencl:to-transparent">
-        <div className="gencl:space-y-2">
+        <div
+          className={cn(
+            "gencl:flex",
+            isOctoEnabled ? "gencl:justify-end gencl:items-end" : "gencl:flex-col gencl:space-y-2"
+          )}>
           {layoutSections.bottom.map((element, index) => (
             <div key={index}>{element}</div>
           ))}
+          <OctoExpandSheet
+            isActive={isActive ?? false}
+            videoId={postDetails.video?.id ?? ""}
+            videoSlug={postDetails.video?.slug ?? ""}
+            isMobile={isMobile}
+            viewportHeight={viewportHeight}
+          />
         </div>
       </div>
     </div>

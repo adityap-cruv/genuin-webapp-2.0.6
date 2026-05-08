@@ -837,6 +837,19 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     };
   }, []);
 
+  const resumeFromSystemPause = useCallback(() => {
+    baseEventBus.emit("systemPauseStateChange", undefined, (context) => ({
+      ...context,
+      systemPaused: false,
+      globalPlayingState: true,
+    }));
+
+    setPausedBySystem(false);
+    setMuted(false);
+    setFeedPlayerShouldPlay(true);
+    setButtonAction("PLAY");
+  }, [setMuted, baseEventBus]);
+
   // TODO: This function takes very heavy logical decision, refactor it with more maintainable code, If you want to do any changed contact himanshu@begenuin.com first.
   /**
    * This function is used to toggle the play state of the video player.
@@ -849,6 +862,13 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
 
       // If the player is still loading, ignore toggle requests.
       if (isLoading) return;
+
+      // If paused by system and user triggers play, resume from system pause.
+      if (byUser && (pausedBySystem || baseEventBus.getContext().systemPaused)) {
+        resumeFromSystemPause();
+        return;
+      }
+
       if (byUser && video.videoShouldPreview && typeof index === "number") {
         disablePreviewMode();
       }
@@ -947,7 +967,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       setFeedPlayerShouldPlay,
       EventName.VIDEO_PAUSED,
       EventName.VIDEO_PLAY,
-      baseContextManager,
       track,
       updateActiveIndex,
       isActive,
@@ -955,6 +974,13 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       baseAnalyticsData,
       feedPlayerShouldPlay,
       isLoading,
+      pausedBySystem,
+      baseEventBus,
+      resumeFromSystemPause,
+      disablePreviewMode,
+      isIHeartLayout,
+      video.videoShouldPreview,
+      websiteType,
     ]
   );
 
@@ -1027,19 +1053,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     setPausedBySystem(true);
     setButtonAction("PAUSE");
   }, [baseEventBus]);
-
-  const resumeFromSystemPause = useCallback(() => {
-    baseEventBus.emit("systemPauseStateChange", undefined, (context) => ({
-      ...context,
-      systemPaused: false,
-      globalPlayingState: true,
-    }));
-
-    setPausedBySystem(false);
-    setMuted(false);
-    setFeedPlayerShouldPlay(true);
-    setButtonAction("PLAY");
-  }, [setMuted, baseEventBus]);
 
   // toggleMuted: Toggles the muted state of the player.
   const toggleMuted = useCallback(

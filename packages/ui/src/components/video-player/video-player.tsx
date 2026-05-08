@@ -328,6 +328,16 @@ export const VideoPlayer = memo(function VideoPlayer({
     }
   }, []);
 
+  const updatePlayerMutedState = useCallback(
+    (muted: boolean) => {
+      if (videoRef.current) {
+        videoRef.current.muted = muted;
+        onMutedChange?.(muted);
+      }
+    },
+    [onMutedChange]
+  );
+
   const updatePlayerPlayState = useCallback(() => {
     const videoElement = videoRef.current;
     if (!videoElement) return;
@@ -341,17 +351,7 @@ export const VideoPlayer = memo(function VideoPlayer({
         },
       })
     );
-  }, [pauseThePlayer]);
-
-  const updatePlayerMutedState = useCallback(
-    (muted: boolean) => {
-      if (videoRef.current) {
-        videoRef.current.muted = muted;
-        onMutedChange?.(muted);
-      }
-    },
-    [onMutedChange]
-  );
+  }, [pauseThePlayer, updatePlayerMutedState]);
 
   const initializePlayer = useCallback(
     async (player: OpenPlayerJS, play?: boolean) => {
@@ -389,23 +389,28 @@ export const VideoPlayer = memo(function VideoPlayer({
             await player.getMedia().play();
           }
         } catch (error) {
-          if (playerShouldPauseOnNotAllowed) {
-            if ((error as any)?.name === "NotAllowedError") {
-              updatePlayerPlayState();
-            }
-          } else {
-            if ((error as any)?.name !== "NotAllowedError") {
-              updatePlayerMutedState(true);
-            }
-            await player.play();
-          }
           console.warn("Autoplay failed on initialization:", { error });
+          if ((error as any)?.name === "NotAllowedError") {
+            if (playerShouldPauseOnNotAllowed) {
+              updatePlayerPlayState();
+            } else {
+              updatePlayerMutedState(true);
+              await player.play().catch(() => {});
+            }
+          }
         }
       }
 
       onOpenPlayerReady?.(player);
     },
-    [onOpenPlayerReady, adUrl, playbackSpeed]
+    [
+      onOpenPlayerReady,
+      adUrl,
+      playbackSpeed,
+      playerShouldPauseOnNotAllowed,
+      updatePlayerPlayState,
+      updatePlayerMutedState,
+    ]
   );
 
   const playThePlayer = useCallback(() => {
@@ -449,8 +454,17 @@ export const VideoPlayer = memo(function VideoPlayer({
           .play()
           .catch((err: any) => {
             console.warn("Could not play ad, falling back to content:", err);
-            // If ad play fails, try content instead
-            player?.getMedia().play();
+            if (err?.name === "NotAllowedError") {
+              if (playerShouldPauseOnNotAllowed) {
+                updatePlayerPlayState();
+                return;
+              }
+              updatePlayerMutedState(true);
+            }
+            player
+              ?.getMedia()
+              .play()
+              .catch(() => {});
           });
       } else {
         // Currently playing content
@@ -474,9 +488,24 @@ export const VideoPlayer = memo(function VideoPlayer({
     } catch (error) {
       // Fallback to content if player state check fails
       console.warn("Error checking player state, falling back to content:", error);
-      player?.getMedia().play();
+      player
+        ?.getMedia()
+        .play()
+        .catch((playError) => {
+          if (playError?.name === "NotAllowedError") {
+            if (playerShouldPauseOnNotAllowed) {
+              updatePlayerPlayState();
+            } else {
+              updatePlayerMutedState(true);
+              player
+                ?.getMedia()
+                .play()
+                .catch(() => {});
+            }
+          }
+        });
     }
-  }, [updatePlayerMutedState, updatePlayerPlayState]);
+  }, [updatePlayerMutedState, updatePlayerPlayState, playerShouldPauseOnNotAllowed]);
 
   useEffect(() => {
     return () => {

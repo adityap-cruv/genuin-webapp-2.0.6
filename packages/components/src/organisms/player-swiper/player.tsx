@@ -261,6 +261,7 @@ export function Player({
               containerWidth={swiper.width}
               // Applies GPU acceleration to prevent layer flickering on iOS devices during animations
               className="gencl:translate-x-0"
+              adType={post.video?.adUrl ? "in-stream" : "in-feed"}
             />
           </Suspense>
           {showIheartBar && <IHeartEmbedBar attributes={post.video?.attributes} />}

@@ -3,6 +3,7 @@ import type { EmbedDataType } from "@genuin/components/context/embed/embed.types
 import type { ActionType } from "@genuin/components/context/embed/embed.types";
 import type { ContextualParamsType } from "@genuin/components/context/embed/embed.types";
 import { getPendingAction, clearPendingAction } from "@genuin/components/lib/utils/pending-action-storage";
+import { loadGenAdScript } from "@genuin/components/molecules/feed-player/gen-ad-container";
 import { setupMainShadowDOM } from "@genuin/components/molecules/root-portal/shadow-root/shadow-dom.utils";
 import type { AuthUser } from "@genuin/components/types/auth";
 
@@ -435,6 +436,11 @@ export class GenuinSDK {
 
       // This is where we get the brand details
       const brandDetails = await this.brandDetailsManager.getBrandDetails(config.apiKey);
+
+      const AD_INJECT_BRAND_IDS = [3283, 2249, 2910];
+      if (AD_INJECT_BRAND_IDS.includes(Number(brandDetails.brand_id))) {
+        loadGenAdScript();
+      }
 
       // Get embed details based on configuration
       await this.getEmbedDetails(config, brandDetails);

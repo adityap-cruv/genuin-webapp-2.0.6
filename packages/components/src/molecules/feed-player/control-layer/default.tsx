@@ -7,6 +7,7 @@ import { useBaseContext } from "@genuin/components/context/base";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 import { useDoubleClick } from "@genuin/components/hooks/use-double-click";
+import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
 import { PlaybackSpeedCapsule } from "@genuin/components/molecules/playback-speed/speed-capsule";
 import { DynamicReactionIcon, ReactionButton } from "@genuin/components/molecules/reaction-button";
@@ -70,6 +71,8 @@ export function Default({
   const embedConfig = useEmbedConfigs();
   const { user } = useAuthContext();
   const brandLayoutType = embedConfig.view.brandLayoutType;
+  const { sheetState } = useSheetState();
+  const isSheetOpen = sheetState === "panel-view" || sheetState === "full-view";
 
   // Ref to programmatically trigger reaction button click
   const reactionButtonRef = React.useRef<HTMLButtonElement>(null);
@@ -273,7 +276,8 @@ export function Default({
                 isMobile || isTablet || isIpad
                   ? `${!isSectioned && showExpandView && "gencl:top-0"}`
                   : "gencl:group-hover:opacity-100 gencl:group-hover:pointer-events-auto gencl:opacity-0 gencl:pointer-events-none gencl:transition-opacity gencl:duration-300",
-                video.videoLayoutId === 6 && "gencl:left-0 gencl:w-[calc(100%-134px)]"
+                video.videoLayoutId === 6 && !isMobile && "gencl:left-0 gencl:w-[calc(100%-134px)]",
+                isSheetOpen && "gencl:hidden"
               )}
               variant={isSectioned ? "sectioned" : "default"}
               isSponsored={video.videoLayoutId === 6}
@@ -282,7 +286,7 @@ export function Default({
 
             {/* Always-visible Sponsored badge rendered outside the hover-controlled Controls wrapper
                 so parent opacity-0 on desktop does not hide it. */}
-            {video.videoLayoutId === 6 && (
+            {video.videoLayoutId === 6 && !isMobile && (
               <div
                 className={cn(
                   "gencl:absolute gencl:top-4 gencl:right-4 gencl:z-50",
@@ -397,7 +401,8 @@ export function Default({
               duration={video.duration}
               className={cn(
                 "gencl:absolute gencl:bottom-0 gencl:z-20 gencl:transition-all",
-                showSeeker && "gencl:mx-auto gencl:px-4 gencl:-translate-y-2 gencl:pb-3 gencl:py-1.5"
+                showSeeker && "gencl:mx-auto gencl:px-4 gencl:-translate-y-2 gencl:pb-3 gencl:py-1.5",
+                isSheetOpen && "gencl:hidden"
               )}
             />
 

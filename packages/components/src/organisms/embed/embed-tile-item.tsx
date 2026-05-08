@@ -9,6 +9,7 @@ import type { GenericData } from "@genuin/components/context/base/feed-context-m
 import type { EmbedEventContextType } from "@genuin/components/context/embed/event-bus";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
+import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
 
 import { EmbedTile } from "../embed-tile";
 
@@ -58,6 +59,9 @@ export function EmbedItem({
   const isSectioned = embedEventBus.getContext().isSectioned;
   const moveToNext = !config.video.videoLoop;
   const moveToNextTime = config.video.moveToNextTime;
+  const { getContentTypeState } = useSheetState();
+  const octoSheetState = getContentTypeState("octo");
+  const isOctoVisible = octoSheetState === "panel-view" || octoSheetState === "full-view";
 
   useEffect(() => {
     if (config.view.brandLayoutType !== "iheart") return;
@@ -153,7 +157,9 @@ export function EmbedItem({
       embedEventBus.getContext().activePlayerType !== "embed" ||
       isHovering ||
       postDetails.type === "ads" ||
-      isSponsored
+      isSponsored ||
+      isOctoVisible ||
+      !isPlaying
     ) {
       return;
     }
@@ -180,10 +186,11 @@ export function EmbedItem({
     }
 
     const timer = setTimeout(() => {
-      // Guard against advancing when tab loses focus or embed scrolls out of view —
-      // both cases pause the video but isPlaying alone doesn't capture them.
+      // Read all three flags from the mutable tracker at fire time — avoids stale
+      // closure over the React `isPlaying` state which may not reflect a mid-timer pause.
       const playPauseTracker = baseContextManager.getPlayPauseTracker();
-      const shouldeMoveToNextVideo = isPlaying && playPauseTracker.isFocused && playPauseTracker.isInView;
+      const shouldeMoveToNextVideo =
+        playPauseTracker.isPlaying && playPauseTracker.isFocused && playPauseTracker.isInView;
       if (shouldeMoveToNextVideo) goToNextVideo();
     }, moveToNextTime * 1000);
 
@@ -203,6 +210,7 @@ export function EmbedItem({
     isPlaying,
     postDetails,
     baseContextManager,
+    isOctoVisible,
   ]);
 
   return (

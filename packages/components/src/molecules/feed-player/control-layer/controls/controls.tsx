@@ -117,7 +117,17 @@ export const Controls = memo(function Controls({
         </div>
       )}
 
-      {!isMobile && !isEmbed && !hidePlayerControls && enableExpand && !isSponsored && (
+      {isSponsored && isMobile && (
+        <div
+          className={cn(
+            "gencl:bg-black/40 gencl:z-50 gencl:px-4 gencl:rounded-[50px] gencl:flex-center gencl:text-white",
+            isMobile ? "gencl:h-9" : "gencl:h-12"
+          )}>
+          <p className="gencl:text-body-1-normal">Sponsored</p>
+        </div>
+      )}
+
+      {!isMobile && !isSponsored && !isEmbed && !hidePlayerControls && enableExpand && (
         <div
           onClick={toggleExpandView}
           className="gencl:flex gencl:h-12 gencl:w-12 gencl:cursor-pointer gencl:flex-shrink-0 gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-black/40">
@@ -128,24 +138,13 @@ export const Controls = memo(function Controls({
         !hidePlayerControls &&
         showCloseButton &&
         getSearchParams("feed") !== "1" &&
-        !pathname.includes("/video") &&
-        !isSponsored && (
+        !pathname.includes("/video") && (
           <div
             className="gencl:p-2 gencl:rounded-full gencl:bg-black/40 gencl:cursor-pointer"
             onClick={toggleExpandView}>
             <CollapseIcon theme="dark" />
           </div>
         )}
-
-      {isSponsored && (
-        <div
-          className={cn(
-            "gencl:bg-black/40 gencl:z-50 gencl:px-4 gencl:rounded-[50px] gencl:flex-center gencl:text-white",
-            isMobile ? "gencl:h-9" : "gencl:h-12"
-          )}>
-          <p className="gencl:text-body-1-normal">Sponsored</p>
-        </div>
-      )}
 
       {isMobile && isEmbed && !hidePlayerControls && showExpandView && !isSponsored && (
         <div

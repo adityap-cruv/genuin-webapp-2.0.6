@@ -405,6 +405,7 @@ const SharedActions = memo(function SharedActions({
   isActive,
   onOctoOpen,
   linkoutThumbnail,
+  isDesktop,
 }: {
   postDetails: PostDetailsType;
   defaultOpenCommentDialog: boolean;
@@ -414,9 +415,8 @@ const SharedActions = memo(function SharedActions({
   isActive: boolean;
   linkoutThumbnail?: string | null;
   onOctoOpen?: () => void;
+  isDesktop: boolean;
 }) {
-  const { openContentType, hasContentType, toggleContentType, setContentTypeState } = useSheetState();
-
   const { video, group, community } = postDetails;
   if (!video || !community || !group) return null;
 
@@ -459,16 +459,13 @@ const SharedActions = memo(function SharedActions({
         showLinkout={false}
         actionWrapper={{
           OCTO: (defaultNode) => {
+            if (isDesktop) return defaultNode;
             return (
               <div
                 key="octo-action"
                 onClick={(e) => {
                   e.stopPropagation();
-                  // Reset the ref tracking state before opening
                   onOctoOpen?.();
-                  // Always open sheet in panel-view state
-                  openContentType("octo", "inside", "panel-view");
-                  setContentTypeState("octo", "panel-view");
                 }}>
                 {defaultNode}
               </div>
@@ -561,7 +558,7 @@ export function ExpandViewDetails({
   const { brand, engagement } = useEmbedConfigs();
   const isOctoEnabled = engagement.engagementTools.octo;
   const viewportHeight = useViewportHeight();
-  const { isMobile } = useDeviceDetectMediaQuery();
+  const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isOctoSwipeBlocked, setIsOctoSwipeBlocked] = useState(false);
   const { getContentTypeState } = useSheetState();
@@ -602,32 +599,34 @@ export function ExpandViewDetails({
           )}
           onClick={(e) => e.stopPropagation()}>
           <div className="gencl:z-20">
-            <OctoExpandSheet
-              ref={octoExpandSheetRef}
-              isActive={isActive}
-              videoId={video.id}
-              videoSlug={video.slug}
-              isMobile={isMobile}
-              viewportHeight={viewportHeight}
-              onSwipeBlockChange={setIsOctoSwipeBlocked}
-            />
-
-            {/**
-             * If the brand is US Weekly, we do not show the user profile in expand view.
-             */}
-            {!brand.isUsWeekly && (
-              <AdaptiveUserProfile
-                postDetails={postDetails}
-                type={brandLayoutType}
-                {...(brandLayoutType === "iheart" && {
-                  isExpanded,
-                  onExpand,
-                })}
-                websiteType={websiteType}
+            {!isDesktop && (
+              <OctoExpandSheet
+                ref={octoExpandSheetRef}
                 isActive={isActive}
+                videoId={video.id}
+                videoSlug={video.slug}
+                isMobile={isMobile}
+                viewportHeight={viewportHeight}
+                onSwipeBlockChange={setIsOctoSwipeBlocked}
               />
             )}
           </div>
+
+          {/**
+           * If the brand is US Weekly, we do not show the user profile in expand view.
+           */}
+          {!brand.isUsWeekly && (
+            <AdaptiveUserProfile
+              postDetails={postDetails}
+              type={brandLayoutType}
+              {...(brandLayoutType === "iheart" && {
+                isExpanded,
+                onExpand,
+              })}
+              websiteType={websiteType}
+              isActive={isActive}
+            />
+          )}
 
           {/* NOT NEEDED AS PER 2.0.5, if you want to make any changes for DynamicSheet contact devtejot@begenuin.com */}
           {/* <DynamicSheet
@@ -728,8 +727,9 @@ export function ExpandViewDetails({
             onReactionStateChange={onReactionStateChange}
             onCommentCountChange={onCommentCountChange}
             isActive={isActive}
-            onOctoOpen={() => octoExpandSheetRef.current?.onActionOpen()}
+            onOctoOpen={() => octoExpandSheetRef.current?.onActionToggle()}
             linkoutThumbnail={video.linkouts?.[0]?.links?.find((l: any) => l.image)?.image}
+            isDesktop={isDesktop}
           />
         )}
       </div>

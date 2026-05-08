@@ -78,129 +78,6 @@ const EmbedHeader = lazy(() =>
 // Lazy load EmbedItem
 const EmbedItem = lazy(() => import("./embed-tile-item").then((m) => ({ default: m.EmbedItem })));
 
-/** Ad configs used to inject between videos in expand-view only. */
-const EXPAND_VIEW_AD_CONFIGS = [
-  {
-    videoSource: "https://vz-8bbc7bbf-a1e.b-cdn.net/738f9e12-141d-4c56-8357-16b71a68debd/play_360p.mp4",
-    adUrl: "https://media.begenuin.com/ad-sdk/test-creatives/finance.xml",
-    logo: "https://media.begenuin.com/ad-sdk/test-creatives/splitero.webp",
-    primaryColor: "#F97316",
-  },
-  {
-    videoSource: "https://vz-8bbc7bbf-a1e.b-cdn.net/2f4ed7d2-b4db-4925-b1e5-3d7a314a0307/play_360p.mp4",
-    adUrl: "https://media.begenuin.com/ad-sdk/test-creatives/consumerserivce.xml",
-    logo: "https://media.begenuin.com/ad-sdk/test-creatives/airtasker.webp",
-    primaryColor: "#061257",
-  },
-  {
-    videoSource: "https://vz-8bbc7bbf-a1e.b-cdn.net/4b01ccd6-4da4-4128-b17d-26714707fd69/play_360p.mp4",
-    adUrl: "https://media.begenuin.com/ad-sdk/test-creatives/foodandgroceryads.xml",
-    logo: "https://media.begenuin.com/ad-sdk/test-creatives/impossiblefoods.webp",
-    primaryColor: "#E10600",
-  },
-  {
-    videoSource: "https://vz-8bbc7bbf-a1e.b-cdn.net/09c2567e-73bd-4aca-9348-987da7c7cd20/play_360p.mp4",
-    adUrl: "https://media.begenuin.com/ad-sdk/test-creatives/soda.xml",
-    logo: "https://media.begenuin.com/ad-sdk/test-creatives/skypop.webp",
-    primaryColor: "#061257",
-  },
-] as const;
-
-/** Creates a synthetic ad feed item for injection between videos in expand-view. */
-function createInjectableAdItem(
-  videoSource: string,
-  adUrl: string,
-  logo: string,
-  primaryColor: string,
-  idx: number
-): PostDetailsType {
-  return {
-    type: "ads",
-    adTagObject: {
-      display_ad: null,
-      native_ad: null,
-      video_ad: {
-        url: adUrl,
-        ads_url: adUrl,
-        // platform: "aniview",
-        cpm: 0.001,
-        // advertiserDetails: {
-        //   logo,
-        //   primaryColor,
-        // },
-        contentVideo: {
-          url: videoSource,
-          autoplay: true,
-          loop: true,
-          muted: true,
-          objectFit: "contain",
-        },
-      },
-      order: ["video_ad", "display_ad", "house_ad"],
-    },
-    video: {
-      id: `injected-ad-${idx}`,
-      type: "video",
-      source: videoSource,
-      adUrl,
-      adsPlatform: "aniview",
-      createdAt: null,
-      commentCount: 0,
-      viewCount: 0,
-      shareUrl: "",
-      attachedLink: null,
-      isSparked: false,
-      isWatched: false,
-      sparkCount: 0,
-      thumbnail: "",
-      thumbnailM: null,
-      description: null,
-      descritptionText: null,
-      slug: `injected-ad-${idx}`,
-      linkoutId: null,
-      clickableUrl: null,
-      linkouts: [],
-      isPinned: false,
-      thumbnailSprite: null,
-      cardLayoutId: null,
-      videoLayoutId: null,
-      duration: null,
-      attributes: null,
-      placement_card_layout_id: null,
-      placement_video_layout_id: null,
-      placement_card_section_layout_id: null,
-    },
-  } as PostDetailsType;
-}
-
-/**
- * Interleaves synthetic ad items between every real video item.
- * Ads are not inserted after existing ad items, overlay slides, or end cards.
- * The ad URL is selected randomly from EXPAND_VIEW_AD_CONFIGS on each call.
- */
-function injectAdsForExpandView(feed: PostDetailsType[]): PostDetailsType[] {
-  const result: PostDetailsType[] = [];
-  let adCounter = 0;
-
-  for (let i = 0; i < feed.length; i++) {
-    const item = feed[i]!;
-    result.push(item);
-
-    const isAlreadyAd = (item as { type?: string }).type === "ads";
-    const isSpecialSlide = item.video?.type === "complete" || item.video?.type === "overlay";
-
-    if (!isAlreadyAd && !isSpecialSlide) {
-      const config = EXPAND_VIEW_AD_CONFIGS[Math.floor(Math.random() * EXPAND_VIEW_AD_CONFIGS.length)]!;
-      result.push(
-        createInjectableAdItem(config.videoSource, config.adUrl, config.logo, config.primaryColor, adCounter)
-      );
-      adCounter++;
-    }
-  }
-
-  return result;
-}
-
 const embedVariants = cva("gencl:rounded-md gencl:overflow-auto", {
   variants: {
     variant: {
@@ -329,13 +206,6 @@ export function Embed({
       ? videos.filter((post) => post.video?.type !== "overlay")
       : videos;
   }, [videos, isDesktop]);
-
-  // Expand-view feed: inject synthetic ads only for the selected placements/embeds.
-  // All other embeds pass filteredPost through unchanged.
-  const expandViewFeed = useMemo(
-    () => (config.brand.shouldInjectExpandViewAds ? injectAdsForExpandView(filteredPost) : filteredPost),
-    [filteredPost, config.brand.shouldInjectExpandViewAds]
-  );
 
   // Extract video titles from postDetails
   const sectionList = useMemo(() => filteredPost.map((videoData) => videoData.section || null), [filteredPost]);
@@ -796,7 +666,7 @@ export function Embed({
       </EmbedManagerProvider>
       {config.expandViewConfig.enable && (
         <ExpandViewLoader
-          videos={expandViewFeed}
+          videos={filteredPost}
           isSectioned={isSectioned}
           pageSession={pageSession}
           hasNextPage={!!hasNextPage}

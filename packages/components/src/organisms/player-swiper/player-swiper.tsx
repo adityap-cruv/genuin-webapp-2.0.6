@@ -127,7 +127,6 @@ export function PlayerList({
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
   const { isIpad } = useDeviceDetection();
   const { track, EventName } = useAnalytics();
-  const { value, toggle } = useBoolean(isDesktop && !isIpad);
   const {
     engagement: {
       engagementTools: { comment: showCommentBox, octo: isOctoToolEnabled },
@@ -740,8 +739,8 @@ a swiper inside another swiper.
                 videoSlug={filteredPost[activeIndex].video?.slug ?? ""}
                 videoType={filteredPost[activeIndex].video?.videoType ?? VideoTypes.Content}
                 className="gencl:h-full"
-                showCloseButton={value}
-                onClose={toggle}
+                showCloseButton={isCommentOpen}
+                onClose={toggleComment}
                 onCommentCountChange={onCommentCountChange}
                 shareUrl={filteredPost[activeIndex].video?.shareUrl ?? ""}
               />
