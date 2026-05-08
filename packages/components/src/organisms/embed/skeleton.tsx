@@ -12,6 +12,8 @@ import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config
 import { useEmbedDimensions } from "@genuin/components/hooks/embed/use-embed-dimensions";
 import { EmbedSwiper } from "@genuin/components/molecules/embed-swiper";
 
+import { getSlidesPerView } from "../../molecules/embed-swiper/utils";
+
 import { NavigationButtons } from "./navigation-buttons";
 
 import "swiper/css";
@@ -135,7 +137,15 @@ export function SdkSkeleton({
           forFeed={config.view.isFeed}
           aspectRatio={config.dimensions.aspectRatio}
           spaceBetweenVideos={spaceBetweenVideos}
-          slidesPerView={1}
+          slidesPerView={
+            getSlidesPerView(
+              config.view.isFeed ? availableHeight - spaceBetweenVideos : availableHeight + spaceBetweenVideos,
+              containerWidth,
+              config.view.isFeed,
+              config.dimensions.aspectRatio,
+              config.embedSwiperConfigs.useWindowSwiperMode
+            ) ?? 1
+          }
           containerDimensions={{
             height: config.view.isFeed ? availableHeight - spaceBetweenVideos : availableHeight + spaceBetweenVideos,
             width: containerWidth || 0,
@@ -164,6 +174,7 @@ export function SdkSkeleton({
         onNext={() => {}}
         isIheartLayout={config.view.brandLayoutType === "iheart"}
         isNavigationControlEnabled={config.view.isNavigationControlEnabled ?? false}
+        hideNavButtons={true}
       />
     </div>
   );

@@ -29,15 +29,16 @@ const BRAND_FEATURE_IDS = {
       "69de824b41254f559233a8b1",
       "69de814d6778217d372a2308",
       "69de834da5228bc03bca779b",
+      "69e22226dd5806e4fb990a48",
     ]),
     embedIds: new Set<string>([]),
   },
   adInjection: {
-    placementIds: new Set(["69e22226dd5806e4fb990a48"]),
+    placementIds: new Set(["69e22226dd5806e4fb990a48", "69fdb9cc45fa9f171bd1ab70"]),
     embedIds: new Set<string>([]),
   },
   autoExpand: {
-    placementIds: new Set<string>(["69faddecc002c7c205f3ad6a"]),
+    placementIds: new Set<string>(["69faddecc002c7c205f3ad6a", "69fdb9cc45fa9f171bd1ab70"]),
     embedIds: new Set<string>([]),
   },
   expandOnInteraction: {
@@ -46,6 +47,7 @@ const BRAND_FEATURE_IDS = {
       "69de7b51ede71540a7f10fd7",
       "69de814d6778217d372a2308",
       "69faddecc002c7c205f3ad6a",
+      "69fdb9cc45fa9f171bd1ab70",
     ]),
     embedIds: new Set(["69c38273686a088a80a25ea2"]),
   },
