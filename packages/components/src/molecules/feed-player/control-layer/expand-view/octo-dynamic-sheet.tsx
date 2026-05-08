@@ -150,7 +150,7 @@ export function OctoDynamicSheet({
       className={octoClassName(octoSheetState)}
       contentClassName="gencl:bg-transparent"
       footerClassName={octoFooterClassName(octoSheetState)}
-      headerClassName="gencl:text-body-1-semi-bold!">
+      headerClassName="gencl:text-body-1-semi-bold! gencl:p-2!">
       <OctoPanel
         videoId={videoId}
         videoSlug={videoSlug}

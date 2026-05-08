@@ -17,9 +17,11 @@ const TRANSITION_MS = 300;
 export const AnimatedMuteIcon = ({
   shouldAnimate,
   enableVolumeSlider = true,
+  alwaysLarge = false,
 }: {
   shouldAnimate: boolean;
   enableVolumeSlider?: boolean;
+  alwaysLarge?: boolean;
 }) => {
   const { volume, setVolume } = useBaseContext();
   const { toggleMuted, muted } = usePlayerContext();
@@ -128,7 +130,11 @@ export const AnimatedMuteIcon = ({
       )}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}>
-      <div className="gencl:flex gencl:size-9 gencl:sm:size-12! gencl:flex-shrink-0 gencl:items-center gencl:justify-center">
+      <div
+        className={cn(
+          "gencl:flex gencl:flex-shrink-0 gencl:items-center gencl:justify-center",
+          alwaysLarge ? "gencl:size-12" : "gencl:size-9 gencl:sm:size-12!"
+        )}>
         {!muted ? (
           <UnmuteIcon theme="dark" size="md" className="gencl:sm:size-6!" />
         ) : (

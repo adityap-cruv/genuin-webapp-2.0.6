@@ -351,7 +351,7 @@ function DynamicSheet({
           "gencl:z-50 gencl:select-none",
           isContainerMode && "gencl:z-[999]",
           "gencl:flex gencl:flex-col gencl:overflow-hidden gencl:pointer-events-auto",
-          "gencl:rounded-2xl gencl:will-change-[transform,height]",
+          "gencl:rounded-xl gencl:will-change-[transform,height]",
           !disableDragAndSwipe && "gencl:cursor-grab gencl:active:cursor-grabbing",
           isDarkTheme ? "gencl:bg-black/50 gencl:backdrop-blur-sm" : "gencl:bg-white",
           className

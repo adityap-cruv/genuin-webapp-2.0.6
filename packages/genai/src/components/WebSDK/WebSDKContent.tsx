@@ -787,7 +787,7 @@ export function WebSDKContent() {
     return (
         <div ref={rootContainerRef} className={`gai:flex gai:h-full gai:flex-col ${backgroundClass}`}>
             {allowAutoPrompt && (
-                <div ref={scrollContainerRef} className={scrollContainerClasses}>
+                <div ref={scrollContainerRef} className={shouldHideContent ? 'gai:hidden' : scrollContainerClasses}>
                     <div className={contentWrapperClasses}>
                         {!shouldHideContent && currentSession ? (
                             <Chat />

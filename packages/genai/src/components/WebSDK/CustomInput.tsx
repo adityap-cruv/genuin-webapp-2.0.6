@@ -167,11 +167,11 @@ export function CustomInput({
         .join(' ');
     const showCountdownPrompt = allowAutoPrompt && shouldShowCompactPrompt && showCountdownTimer;
     const inputContainerClassName = [
-        'gai:flex gai:flex-1 gai:min-w-0 gai:w-full gai:max-w-[404px] gai:rounded-[24px] gai:box-border',
+        'gai:flex gai:flex-1 gai:min-w-0 gai:w-full gai:max-w-[404px] gai:rounded-[8px] gai:box-border',
         isCompactMode ? 'gai:bg-white' : 'gai:bg-[#EFF3FF]',
         showCountdownPrompt
-            ? 'gai:flex-col gai:items-stretch gai:gap-2 gai:px-4 gai:py-3 gai:min-h-[64px]'
-            : 'gai:items-center gai:gap-4 gai:p-1.5 gai:min-h-[44px]',
+            ? 'gai:flex-col gai:items-stretch gai:gap-2 gai:px-3 gai:py-2 gai:min-h-[64px]'
+            : 'gai:items-center gai:gap-4 gai:px-2 gai:py-1 gai:min-h-[44px]',
         shouldPreventFocus && 'gai:cursor-pointer',
     ]
         .filter(Boolean)
@@ -198,11 +198,11 @@ export function CustomInput({
                                 {showCountdownPrompt ? (
                                     <>
                                         <div className='gai:flex gai:min-w-0 gai:flex-1 gai:overflow-hidden'>
-                                            <span className='gai:line-clamp-3 gai:text-xs gai:font-semibold gai:text-secondary-gray-900 gai:md:text-sm'>
+                                            <span className='gai:line-clamp-2 gai:text-xs gai:font-semibold gai:text-secondary-gray-900 gai:md:text-sm'>
                                                 {displayPrompt}
                                             </span>
                                         </div>
-                                        <div className='gai:flex gai:items-center gai:justify-between'>
+                                        <div className='gai:flex gai:items-center gai:justify-end gai:gap-2'>
                                             <span className='gai:text-[10px] gai:font-medium gai:text-secondary-gray-500 gai:md:text-xs'>
                                                 Prompting in...
                                             </span>
@@ -218,8 +218,8 @@ export function CustomInput({
                                     </>
                                 ) : (
                                     <>
-                                        <div className='gai:flex gai:min-w-0 gai:flex-1 gai:flex-col gai:gap-1 gai:overflow-hidden gai:pl-4'>
-                                            <span className='gai:text-[9px] gai:font-medium gai:tracking-wide gai:text-secondary-gray-700 gai:uppercase gai:md:text-[10px]'>
+                                        <div className='gai:flex gai:min-w-0 gai:flex-1 gai:flex-col gai:overflow-hidden'>
+                                            <span className='gai:text-[9px] gai:font-medium gai:tracking-wide gai:text-secondary-gray-700 gai:md:text-[10px]'>
                                                 Suggested
                                             </span>
                                             {isLoading ? (
@@ -227,7 +227,7 @@ export function CustomInput({
                                                     Loading...
                                                 </span>
                                             ) : (
-                                                <span className='gai:line-clamp-2 gai:text-xs gai:font-semibold gai:text-secondary-gray-900 gai:md:text-sm'>
+                                                <span className='gai:line-clamp-1 gai:text-xs gai:font-semibold gai:text-secondary-gray-900 gai:md:text-sm'>
                                                     {displayPrompt}
                                                 </span>
                                             )}
@@ -301,7 +301,7 @@ export function CustomInput({
                                     }
                                     size={'icon'}
                                     onClick={handleOnClick}
-                                    className='gai:h-9 gai:w-9 gai:flex-shrink-0 gai:cursor-pointer gai:rounded-full'
+                                    className={`gai:flex-shrink-0 gai:cursor-pointer gai:rounded-full ${isCompactMode ? 'gai:h-9 gai:w-9' : 'gai:h-8 gai:w-8'}`}
                                 >
                                     {creatingSession ? (
                                         <Spinner size='sm' color='secondary' />

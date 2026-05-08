@@ -507,7 +507,7 @@ const ItemComponent: React.FC<ItemProps> = ({
                         })()}
                     </div>
 
-                    <div className='gai:flex gai:w-full gai:flex-col gai:gap-2'>
+                    <div className='gai:flex gai:w-full gai:flex-col gai:gap-4'>
                         {event.contentSequence?.map(contentType => {
                             switch (contentType) {
                                 case 'koah_ads': {

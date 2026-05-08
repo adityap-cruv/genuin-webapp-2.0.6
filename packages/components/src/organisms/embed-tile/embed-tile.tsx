@@ -355,6 +355,7 @@ function EmbedPlayer({ postDetails, isActive = false, index, itemSize, pageSessi
               onCommentCountChange={undefined}
               layoutType={layoutType}
               containerWidth={itemSize.width}
+              adType={postDetails.video?.adUrl ? "in-stream" : "in-feed"}
             />
           </Suspense>
         )}

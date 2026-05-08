@@ -31,7 +31,7 @@ export function Ad({ className, adType, ...restProps }: AdProps) {
           adType === "in-stream" ? "gencl:top-10" : "gencl:top-4"
         )}
         onClick={(e) => e.stopPropagation()}>
-        <AnimatedMuteIcon shouldAnimate={muted} enableVolumeSlider={false} />
+        <AnimatedMuteIcon shouldAnimate={muted} enableVolumeSlider={false} alwaysLarge />
       </div>
     </div>
   );

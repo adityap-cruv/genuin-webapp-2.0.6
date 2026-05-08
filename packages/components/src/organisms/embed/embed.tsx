@@ -654,7 +654,7 @@ export function Embed({
             </div>
           )
         )}
-        {/* {isIheartLayout && embedData.style === "feed" && (
+        {isIheartLayout && embedData.style === "feed" && (
           <NavigationButtonsWithContext
             totalSlides={totalSlides}
             isIheartLayout={true}
@@ -662,7 +662,7 @@ export function Embed({
             embedVariant={embedVariant}
             setSlidesOffsetBefore={setSlidesOffsetBefore}
           />
-        )} */}
+        )}
       </EmbedManagerProvider>
       {config.expandViewConfig.enable && (
         <ExpandViewLoader

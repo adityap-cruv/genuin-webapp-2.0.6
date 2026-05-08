@@ -18,6 +18,7 @@ import { usePlayerContext } from "../context/context";
 import type { ControlLayerPropsType } from "./control-layer.types";
 import { Controls } from "./controls";
 import { VideoEditActionButtons } from "./controls/control-buttons";
+import type { ExpandViewDetailsRef } from "./expand-view/expand-view-details";
 import { PlayingState } from "./playing-state";
 import { Scrubber } from "./scrubber";
 
@@ -71,8 +72,11 @@ export function Default({
   const embedConfig = useEmbedConfigs();
   const { user } = useAuthContext();
   const brandLayoutType = embedConfig.view.brandLayoutType;
-  const { sheetState } = useSheetState();
+  const { sheetState, resetSheet } = useSheetState();
   const isSheetOpen = sheetState === "panel-view" || sheetState === "full-view";
+
+  // TODO: THIS IS NOT GOOD APPROACH - WILL HAVE TO CHANGE IT
+  const expandViewRef = React.useRef<ExpandViewDetailsRef>(null);
 
   // Ref to programmatically trigger reaction button click
   const reactionButtonRef = React.useRef<HTMLButtonElement>(null);
@@ -111,6 +115,12 @@ export function Default({
     (e: React.MouseEvent) => {
       e.stopPropagation();
 
+      if (isSheetOpen) {
+        expandViewRef.current?.closeSheet();
+        resetSheet();
+        return;
+      }
+
       if (postDetails.video?.clickableUrl) {
         window.open(postDetails.video.clickableUrl ?? undefined, "_blank");
         return;
@@ -146,6 +156,8 @@ export function Default({
       }
     },
     [
+      isSheetOpen,
+      resetSheet,
       muted,
       togglePlay,
       toggleMuted,
@@ -197,6 +209,7 @@ export function Default({
           {(showExpandView || isMobile || isTablet) && expandViewDetails && (
             <Suspense fallback={null}>
               <ExpandViewDetails
+                ref={expandViewRef}
                 postDetails={postDetails}
                 isActive={isActive}
                 onCommunityJoinStatusChange={onCommunityJoinStatusChange}
@@ -318,6 +331,7 @@ export function Default({
             {(showExpandView || isMobile || isTablet) && expandViewDetails ? (
               <Suspense fallback={null}>
                 <ExpandViewDetails
+                  ref={expandViewRef}
                   postDetails={postDetails}
                   isActive={isActive}
                   onCommunityJoinStatusChange={onCommunityJoinStatusChange}

@@ -3,7 +3,19 @@ import { Avatar } from "@genuin/ui/avatar";
 import { Image } from "@genuin/ui/components/image";
 import { cn, getFormattedDuration, getMonthYear } from "@genuin/ui/utils";
 import type { VariantProps } from "class-variance-authority";
-import { useMemo, memo, useEffect, useState, type ComponentProps, useCallback, useRef, lazy, Suspense } from "react";
+import {
+  useMemo,
+  memo,
+  useEffect,
+  useState,
+  type ComponentProps,
+  useCallback,
+  useRef,
+  lazy,
+  Suspense,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 
 import { VideoTypes } from "@genuin/components/context";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
@@ -62,6 +74,10 @@ type ExpandViewProps = ComponentProps<"div"> & {
   isActive: boolean;
 } & ExpandViewCallbacks &
   VariantProps<typeof controlLayerVariant>;
+
+export type ExpandViewDetailsRef = {
+  closeSheet: () => void;
+};
 
 /**
  * Hook to get layout configuration and shared logic
@@ -446,7 +462,7 @@ const SharedActions = memo(function SharedActions({
     <Suspense fallback={null}>
       <Actions
         onClick={(e) => e.stopPropagation()}
-        className="gencl:sm:hidden!"
+        className="gencl:sm:hidden! gencl:gap-2!"
         variant="mobile"
         theme="dark"
         contentId={video.id}
@@ -527,18 +543,21 @@ const SharedActions = memo(function SharedActions({
   );
 });
 
-export function ExpandViewDetails({
-  className,
-  postDetails,
-  isActive,
-  variant,
-  onGroupJoinStatusChange,
-  onGroupSubscriptionChange,
-  onCommunityJoinStatusChange,
-  onReactionStateChange,
-  onCommentCountChange,
-  ...restProps
-}: ExpandViewProps) {
+export const ExpandViewDetails = forwardRef<ExpandViewDetailsRef, ExpandViewProps>(function ExpandViewDetails(
+  {
+    className,
+    postDetails,
+    isActive,
+    variant,
+    onGroupJoinStatusChange,
+    onGroupSubscriptionChange,
+    onCommunityJoinStatusChange,
+    onReactionStateChange,
+    onCommentCountChange,
+    ...restProps
+  }: ExpandViewProps,
+  ref
+) {
   const {
     brandLayoutType,
     defaultOpenCommentDialog,
@@ -572,6 +591,15 @@ export function ExpandViewDetails({
   const onExpand = useCallback(() => {
     setIsExpanded((prev) => !prev);
   }, []);
+
+  // TODO: THIS IS NOT GOOD APPROACH - WILL HAVE TO CHANGE IT
+  useImperativeHandle(
+    ref,
+    () => ({
+      closeSheet: () => octoExpandSheetRef.current?.onActionToggle(),
+    }),
+    []
+  );
 
   const { video } = postDetails;
   if (!video) return null;
@@ -788,4 +816,4 @@ export function ExpandViewDetails({
       )}
     </div>
   );
-}
+});
