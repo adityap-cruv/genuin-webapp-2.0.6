@@ -2,14 +2,15 @@
 // Kept for reference; not invoked by any build script.
 // Converted from rollup.config.js (CJS) to ESM to comply with the repo's ESM-only rule.
 
-import typescript from "@rollup/plugin-typescript";
-import resolve from "@rollup/plugin-node-resolve";
-import commonjs from "@rollup/plugin-commonjs";
-import terser from "@rollup/plugin-terser";
-import postcss from "rollup-plugin-postcss";
-import replace from "@rollup/plugin-replace";
-import json from "@rollup/plugin-json";
 import { createRequire } from "module";
+
+import commonjs from "@rollup/plugin-commonjs";
+import json from "@rollup/plugin-json";
+import resolve from "@rollup/plugin-node-resolve";
+import replace from "@rollup/plugin-replace";
+import terser from "@rollup/plugin-terser";
+import typescript from "@rollup/plugin-typescript";
+import postcss from "rollup-plugin-postcss";
 
 const require = createRequire(import.meta.url);
 const packageJson = require("./package.json");

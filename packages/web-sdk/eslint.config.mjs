@@ -1,12 +1,14 @@
 // ESLint config for web-sdk — uses React preset only (no Next.js).
 // All rules are defined in packages/eslint-config.
 
+import globals from "globals";
+
 import sharedConfig from "../eslint-config/library.js";
 
 export default [
   ...sharedConfig,
   {
-    ignores: ["dist/**", "build/**"],
+    ignores: ["dist/**", "build/**", "examples/**"],
   },
   {
     settings: {
@@ -19,6 +21,12 @@ export default [
         },
       },
       "import/internal-regex": "^@/",
+    },
+  },
+  {
+    files: ["vite.config.mjs", "vite.config.js", "rollup.config.mjs", "rollup.config.js"],
+    languageOptions: {
+      globals: globals.node,
     },
   },
   {

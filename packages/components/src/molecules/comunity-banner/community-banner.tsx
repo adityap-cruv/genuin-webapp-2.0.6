@@ -13,7 +13,7 @@ export function CommunityBanner({
   return (
     <div
       className={cn(
-        "gencl:max-w-4xl gencl:mx-auto gencl:aspect-[5/1] gencl:sm:h-40! gencl:bg-secondary-300 gencl:rounded-none gencl:overflow-hidden gencl:sm:rounded-b-lg!",
+        "gencl:max-w-4xl gencl:mx-auto gencl:aspect-[5/1] gencl:bg-secondary-300 gencl:rounded-lg gencl:overflow-hidden",
         className
       )}>
       <Image src={src} className="gencl:w-full gencl:h-full" alt={undefined} {...restProps} />

@@ -29,11 +29,6 @@ const REQUIRED_STYLES: StyleRequirement[] = [
     selector: 'link[rel="stylesheet"]',
     check: (el: Element) => (el as HTMLLinkElement).href?.includes("gen_ad.min.css") || false,
   },
-  {
-    name: "gen-ad",
-    selector: 'link[rel="stylesheet"]',
-    check: (el: Element) => (el as HTMLLinkElement).href?.includes("gen_ad.min.css") || false,
-  },
 ] as const;
 
 /**

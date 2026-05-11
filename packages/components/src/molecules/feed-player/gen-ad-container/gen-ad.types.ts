@@ -43,7 +43,7 @@ export type GenAdVideoConfig = {
 export type GenAdConfig = {
   /** Unique element ID for the ad slot container div. */
   adSlotId: string;
-  brandId?: string;
+  brandDetails?: { brandId: string };
   banner?: GenAdBannerConfig | GenAdBannerConfig[];
   aniview?: GenAdAniviewConfig;
   native?: GenAdNativeConfig | GenAdNativeConfig[];

@@ -37,13 +37,21 @@ function mapVideoAdItem(videoAd: VideoAdItem): GenAdVideoConfig {
   };
 }
 
-export function buildGenAdConfigFromAdTagObject(adTagObj: AdTagObjectType, videoId: string): GenAdConfig | undefined {
+export function buildGenAdConfigFromAdTagObject(
+  adTagObj: AdTagObjectType,
+  videoId: string,
+  brandId?: number
+): GenAdConfig | undefined {
   const hasBanner = !!adTagObj.display_ad;
   const hasVideo = !!adTagObj.video_ad;
   const hasNative = !!adTagObj.native_ad;
   if (!hasBanner && !hasNative && !hasVideo) return undefined;
 
   const config: GenAdConfig = { adSlotId: `genad-slot-${videoId}` };
+
+  if (brandId != null) {
+    config.brandDetails = { brandId: String(brandId) };
+  }
 
   if (adTagObj.display_ad) {
     config.banner = Array.isArray(adTagObj.display_ad)

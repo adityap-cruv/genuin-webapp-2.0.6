@@ -81,10 +81,6 @@ export function CommunityPill({
 
   if (!communityDetails) return null;
 
-  if (!communityDetails) {
-    return null;
-  }
-
   const pill = (
     <Link href={buildPageUrl({ type: "community", slug: communityDetails.slug })}>
       <div className={communityPillVariants({ variant, className })}>

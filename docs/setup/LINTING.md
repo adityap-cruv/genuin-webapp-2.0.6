@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-
 # Linting & ESLint Setup for Genuin Monorepo
 
 ## Shared ESLint Configuration
@@ -280,4 +278,3 @@ Re-enable them incrementally. Prioritise:
 - [ESLint Flat Config Docs](https://eslint.org/docs/latest/use/configure/configuration-files-new)
 - [Prettier Docs](https://prettier.io/docs/en/configuration.html)
 - [TanStack Query ESLint Plugin](https://tanstack.com/query/latest/docs/eslint/eslint-plugin-query)
-  > > > > > > > release/genuin-sdk/2.0.5

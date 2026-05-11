@@ -1,15 +1,15 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import fs from "fs";
 import { resolve } from "path";
 import { fileURLToPath } from "url";
-import fs from "fs";
-import postcss from "postcss";
+import { gzipSync } from "zlib";
+
+import react from "@vitejs/plugin-react";
 import autoprefixer from "autoprefixer";
 import dotenv from "dotenv";
+import postcss from "postcss";
 import postcssNested from "postcss-nested";
-import { visualizer } from "rollup-plugin-visualizer";
+import { defineConfig } from "vite";
 import bundleAnalyzer from "vite-bundle-analyzer";
-import { gzipSync } from "zlib";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 

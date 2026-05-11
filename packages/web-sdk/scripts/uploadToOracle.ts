@@ -35,13 +35,15 @@
  * - Custom endpoint URL for Oracle Cloud regions
  */
 
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import fs from "fs";
 import path from "path";
+
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { confirm, checkbox } from "@inquirer/prompts";
 import chalk from "chalk";
-import dotenv from "dotenv";
 import cliProgress from "cli-progress";
+import dotenv from "dotenv";
+
 import { purgeBunnyCDN } from "./bunnyPurge";
 
 /**

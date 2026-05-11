@@ -1,10 +1,9 @@
 "use client";
 import { cn } from "@genuin/ui/utils";
 import type { ComponentProps } from "react";
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense } from "react";
 
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
-import { useFeedContext } from "@genuin/components/templates/feed/context";
 
 const Comments = lazy(() =>
   import("@genuin/components/molecules/comments/comments").then((m) => ({
@@ -36,20 +35,6 @@ export function PostSidePanel({
   ...restProps
 }: PostSidePanelPropsType) {
   const { video } = postDetails;
-  const { showExpandView } = useFeedContext();
-  const [isAdPlaying, setIsAdPlaying] = useState(false);
-
-  useEffect(() => {
-    const observer = new MutationObserver(() => {
-      setIsAdPlaying(document.documentElement.classList.contains("gen-ad-playing"));
-    });
-    observer.observe(document.documentElement, { attributeFilter: ["class"] });
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    setIsAdPlaying(document.documentElement.classList.contains("gen-ad-playing"));
-  }, [showExpandView]);
 
   if (!video) return null;
 
@@ -57,7 +42,6 @@ export function PostSidePanel({
     <div
       className={cn(
         "gencl:w-full gencl:grid gencl:overflow-auto gencl:max-w-[520px] gencl:gap-4 gencl:grid-rows-[auto_minmax(300px,1fr)] gencl:pb-4",
-        isAdPlaying && "gencl:invisible",
         className
       )}
       {...restProps}>

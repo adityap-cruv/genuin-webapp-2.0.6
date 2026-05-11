@@ -184,8 +184,8 @@ export const FeedPlayer = memo(function FeedPlayer({
         adTagObject.video_ad.ads_url = appendParamsToUrl(adTagObject.video_ad.ads_url);
       }
     }
-    return adTagObject ? buildGenAdConfigFromAdTagObject(adTagObject, videoId) : undefined;
-  }, [adConfig, adTagObject, videoId]);
+    return adTagObject ? buildGenAdConfigFromAdTagObject(adTagObject, videoId, brandDetails?.brand_id) : undefined;
+  }, [adConfig, adTagObject, videoId, brandDetails?.brand_id]);
 
   // When adTagObject/adConfig is present, suppress adUrl from VideoPlayer unless
   // the GenAd waterfall has failed (in which case fall back to adUrl for IMA).

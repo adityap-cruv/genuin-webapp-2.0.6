@@ -105,6 +105,9 @@ type PlayerListPropsType = {
   onCommentCountChange?: ComponentProps<typeof Player>["onCommentCountChange"];
   /** Feed-session identifier from the first feed API page, forwarded to analytics. */
   pageSession?: string | null;
+  isAdFilled?: boolean;
+  onAdFilled?: (type: string, index: number) => void;
+  onAdPlaybackEnd?: (index: number) => void;
 };
 
 // TODO: This component is using feed context, which is not ideal. Remove this dep of FeedContext in future.
@@ -122,11 +125,13 @@ export function PlayerList({
   onGroupSubscriptionChange,
   onCommentCountChange,
   pageSession,
+  isAdFilled = false,
+  onAdFilled,
+  onAdPlaybackEnd,
 }: PlayerListPropsType) {
   const { showExpandView, activeIndex, toggleExpandView } = useFeedContext();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
   const { isIpad } = useDeviceDetection();
-  const { track, EventName } = useAnalytics();
   const {
     engagement: {
       engagementTools: { comment: showCommentBox, octo: isOctoToolEnabled },
@@ -155,7 +160,6 @@ export function PlayerList({
   // if we use directly isTablet from the hook then for desktop it will be true based on useDeviceDetectMediaQuery implementation
   const isTablet = !isMobile && !isDesktop;
   const [adActiveOn, setAdActiveOn] = useState<number>(-1);
-  const isAdFilled = adActiveOn !== -1 && activeIndex === adActiveOn;
 
   // Container dimensions state
   const containerRef = useRef<HTMLDivElement>(null);
@@ -287,14 +291,6 @@ a swiper inside another swiper.
     activeIndex,
     activeSwiper,
   });
-
-  const handleAdFilled = useCallback((type: string, index: number) => {
-    setAdActiveOn(index);
-  }, []);
-
-  const handleAdPlaybackEnd = useCallback((index: number) => {
-    setAdActiveOn(-1);
-  }, []);
 
   const activeVideoId = filteredPost[activeIndex]?.video?.id;
 
@@ -533,8 +529,8 @@ a swiper inside another swiper.
                     setHorizontalSwiper={setHorizontalSwiper}
                     setActiveHorizontalIndex={setActiveHorizontalIndex}
                     setVerticalSwipers={setVerticalSwipers}
-                    onAdFilled={handleAdFilled}
-                    onAdPlaybackEnd={handleAdPlaybackEnd}
+                    onAdFilled={onAdFilled}
+                    onAdPlaybackEnd={onAdPlaybackEnd}
                     pageSession={pageSession}
                   />
                 </Suspense>
@@ -559,8 +555,8 @@ a swiper inside another swiper.
                     onCommentCountChange={onCommentCountChange}
                     totalVideos={totalVideos}
                     isSectioned={isSectioned}
-                    onAdFilled={handleAdFilled}
-                    onAdPlaybackEnd={handleAdPlaybackEnd}
+                    onAdFilled={onAdFilled}
+                    onAdPlaybackEnd={onAdPlaybackEnd ?? (() => {})}
                     pageSession={pageSession}
                   />
                 </Suspense>

@@ -47,34 +47,48 @@ export function useSearchParams(): UseSearchParamsReturn {
     // Handle URL changes made by browser extensions or direct URL manipulation
     window.addEventListener("hashchange", updateSearchParams);
 
-    // Create a proxy for the history.pushState method to detect programmatic URL changes
-    const originalPushState = window.history.pushState;
-    window.history.pushState = function (...args) {
-      // Call the original method
-      const result = originalPushState.apply(this, args);
-      // Trigger our update when pushState is called
-      updateSearchParams();
-      return result;
-    };
+    // Listen for programmatic URL changes via a custom event dispatched by the shared proxy.
+    // Using a custom event (rather than calling setSearchParams directly inside the patched
+    // pushState/replaceState) ensures that the React state update is never triggered
+    // synchronously inside a pushState call, which would cause React 19 to throw
+    // "useInsertionEffect must not schedule updates" when pushState is called during
+    // a useInsertionEffect phase.
+    window.addEventListener("genuin:urlchange", updateSearchParams);
 
-    // Create a proxy for the history.replaceState method as well
-    const originalReplaceState = window.history.replaceState;
-    window.history.replaceState = function (...args) {
-      // Call the original method
-      const result = originalReplaceState.apply(this, args);
-      // Trigger our update when replaceState is called
-      updateSearchParams();
-      return result;
-    };
+    // Install the shared history proxy only once per page load.
+    // Multiple hook instances each listen via the custom event above so we do not
+    // stack proxy layers (which previously corrupted cleanup order).
+    if (!(window.history.pushState as { __genuinPatched?: boolean }).__genuinPatched) {
+      const originalPushState = window.history.pushState;
+      const patchedPushState = function (this: History, ...args: Parameters<typeof History.prototype.pushState>) {
+        const result = originalPushState.apply(this, args);
+        // Use queueMicrotask so that setSearchParams is never called synchronously
+        // inside a pushState invocation. This prevents React 19 from throwing
+        // "useInsertionEffect must not schedule updates" when pushState happens to
+        // be called while React is running a useInsertionEffect phase.
+        queueMicrotask(() => window.dispatchEvent(new Event("genuin:urlchange")));
+        return result;
+      };
+      (patchedPushState as { __genuinPatched?: boolean }).__genuinPatched = true;
+      window.history.pushState = patchedPushState;
+
+      const originalReplaceState = window.history.replaceState;
+      const patchedReplaceState = function (this: History, ...args: Parameters<typeof History.prototype.replaceState>) {
+        const result = originalReplaceState.apply(this, args);
+        queueMicrotask(() => window.dispatchEvent(new Event("genuin:urlchange")));
+        return result;
+      };
+      (patchedReplaceState as { __genuinPatched?: boolean }).__genuinPatched = true;
+      window.history.replaceState = patchedReplaceState;
+    }
 
     return () => {
-      // Clean up event listeners
+      // Clean up only the event listeners owned by this hook instance.
+      // The shared history proxy is intentionally left in place so that other
+      // mounted instances (and future mounts) keep receiving URL change events.
       window.removeEventListener("popstate", updateSearchParams);
       window.removeEventListener("hashchange", updateSearchParams);
-
-      // Restore original history methods
-      window.history.pushState = originalPushState;
-      window.history.replaceState = originalReplaceState;
+      window.removeEventListener("genuin:urlchange", updateSearchParams);
     };
   }, []);
 

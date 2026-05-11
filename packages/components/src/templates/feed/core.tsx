@@ -1,6 +1,6 @@
 "use client";
 import { cn } from "@genuin/ui/utils";
-import { useCallback, useEffect, memo, lazy, Suspense } from "react";
+import { useCallback, useEffect, useState, memo, lazy, Suspense } from "react";
 
 import { useBaseContext } from "@genuin/components/context";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
@@ -108,6 +108,8 @@ export const FeedViewCore = memo(function FeedViewCore({
     pageSession,
   } = feedData;
   const { setActiveIndex, activeIndex, showExpandView } = useFeedContext();
+  const [adActiveOn, setAdActiveOn] = useState<number>(-1);
+  const isAdFilled = adActiveOn !== -1 && activeIndex === adActiveOn;
   const { hideGestureOverlay } = useGestureOverlayManager();
   const { handleSwipeCount, dialogType, shouldShowDialog, closeDialog } = useInterruptionManager();
   const { canGoBack } = useRouter();
@@ -228,6 +230,14 @@ export const FeedViewCore = memo(function FeedViewCore({
     [queryKey]
   );
 
+  const handleAdFilled = useCallback((_type: string, index: number) => {
+    setAdActiveOn(index);
+  }, []);
+
+  const handleAdPlaybackEnd = useCallback((_index: number) => {
+    setAdActiveOn(-1);
+  }, []);
+
   const handleActiveIndexChange = useCallback(
     (newIndex: number) => {
       onActiveIndexChange?.(newIndex);
@@ -273,6 +283,9 @@ export const FeedViewCore = memo(function FeedViewCore({
     disableSwiper,
     theme,
     pageSession,
+    isAdFilled,
+    onAdFilled: handleAdFilled,
+    onAdPlaybackEnd: handleAdPlaybackEnd,
   };
 
   const skeletonTheme = variant === "page" ? "light" : theme;
@@ -320,15 +333,17 @@ export const FeedViewCore = memo(function FeedViewCore({
             <PlayerList isSectioned={isSectioned} totalVideos={totalVideos} {...playerListProps} />
           </Suspense>
           {showSidePanel && (
-            <Suspense fallback={<FeedSkeleton variant="side-panel" theme={skeletonTheme} />}>
-              <PostSidePanel
-                onGroupJoinStatusChange={handleGroupJoinStatusChange}
-                onGroupSubscriptionChange={handleGroupSubscriptionChange}
-                onCommunityJoinStatusChange={handleCommunityJoinStatusChange}
-                onCommentCountChange={handleCommentCountChange}
-                postDetails={videos?.[activeIndex] as PostDetailsType}
-              />
-            </Suspense>
+            <div className={cn("gencl:contents", { "gencl:invisible gencl:pointer-events-none": isAdFilled })}>
+              <Suspense fallback={<FeedSkeleton variant="side-panel" theme={skeletonTheme} />}>
+                <PostSidePanel
+                  onGroupJoinStatusChange={handleGroupJoinStatusChange}
+                  onGroupSubscriptionChange={handleGroupSubscriptionChange}
+                  onCommunityJoinStatusChange={handleCommunityJoinStatusChange}
+                  onCommentCountChange={handleCommentCountChange}
+                  postDetails={videos?.[activeIndex] as PostDetailsType}
+                />
+              </Suspense>
+            </div>
           )}
           {/* For Interruption */}
           {shouldShowDialog && (

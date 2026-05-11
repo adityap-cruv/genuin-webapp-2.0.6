@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@genuin/web-sdk": ["../../src/index.ts"],
+      "@genuin/ui": ["../../../ui/src"],
+      "@genuin/ui/*": ["../../../ui/src/*"],
+      "@genuin/components": ["../../../components/src"],
+      "@genuin/components/*": ["../../../components/src/*"],
+      "@/*": ["../../src/*"]
+    }
+  },
+  "include": ["./**/*"]
+}
