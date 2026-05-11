@@ -1,5 +1,5 @@
 export class CallbackQueueManager {
-  private queue: { callback: () => void; config: any }[] = []
+  private queue: { callback: () => void; config: any }[] = [];
 
   /**
    * Adds a callback to the queue if its config is unique.
@@ -7,14 +7,12 @@ export class CallbackQueueManager {
    * @param config - The configuration associated with the callback for uniqueness check.
    */
   enqueue(callback: () => void, config?: any): void {
-    const configString = JSON.stringify(config || {})
-    const isUnique = !this.queue.some(
-      (item) => JSON.stringify(item.config || {}) === configString,
-    )
+    const configString = JSON.stringify(config || {});
+    const isUnique = !this.queue.some((item) => JSON.stringify(item.config || {}) === configString);
     if (isUnique) {
-      this.queue.push({ callback, config })
+      this.queue.push({ callback, config });
     } else {
-      console.log('Duplicate config found, skipping enqueue:', config)
+      console.log("Duplicate config found, skipping enqueue:", config);
     }
   }
 
@@ -24,18 +22,18 @@ export class CallbackQueueManager {
   executeAllCallbacks(): void {
     this.queue.forEach((item) => {
       try {
-        item.callback()
+        item.callback();
       } catch (error) {
-        console.error('Error executing callback:', error)
+        console.error("Error executing callback:", error);
       }
-    })
-    this.queue = []
+    });
+    this.queue = [];
   }
 
   /**
    * Destroys the callback queue by clearing all queued callbacks without executing them.
    */
   destroy(): void {
-    this.queue = []
+    this.queue = [];
   }
 }

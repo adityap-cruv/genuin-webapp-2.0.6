@@ -3,7 +3,7 @@
  * Logs analytics events to the console (useful for debugging)
  */
 
-import type { Middleware } from '../types/middleware'
+import type { Middleware } from "../types/middleware";
 
 /**
  * Logging options
@@ -13,90 +13,84 @@ export interface LoggingOptions {
    * Whether to log events
    * @default true
    */
-  enabled?: boolean
+  enabled?: boolean;
 
   /**
    * Whether to use console.group for better formatting
    * @default true
    */
-  useGroups?: boolean
+  useGroups?: boolean;
 
   /**
    * Whether to log payload
    * @default true
    */
-  logPayload?: boolean
+  logPayload?: boolean;
 
   /**
    * Whether to log context
    * @default false
    */
-  logContext?: boolean
+  logContext?: boolean;
 
   /**
    * Log level
    * @default 'log'
    */
-  logLevel?: 'log' | 'info' | 'debug' | 'warn'
+  logLevel?: "log" | "info" | "debug" | "warn";
 }
 
 /**
  * Creates logging middleware that logs events to console
  */
 export function createLoggingMiddleware(options: LoggingOptions = {}): Middleware {
-  const {
-    enabled = true,
-    useGroups = true,
-    logPayload = true,
-    logContext = false,
-    logLevel = 'log',
-  } = options
+  const { enabled = true, useGroups = true, logPayload = true, logContext = false, logLevel = "log" } = options;
 
   return async (event, next, middlewareContext) => {
     if (!enabled || !middlewareContext.debug) {
-      await next()
-      return
+      await next();
+      return;
     }
 
-    const logFn = console[logLevel] || console.log
-    const timestamp = new Date(event.timestamp).toISOString()
+    const logFn = console[logLevel] || console.log;
+    const timestamp = new Date(event.timestamp).toISOString();
 
     if (useGroups && console.groupCollapsed) {
-      console.groupCollapsed(`📊 [Analytics] ${event.name} - ${timestamp}`)
+      console.groupCollapsed(`📊 [Analytics] ${event.name} - ${timestamp}`);
 
       if (logPayload) {
-        console.log('Payload:', event.payload)
+        console.log("Payload:", event.payload);
       }
 
       if (logContext && event.context) {
-        console.log('Context:', event.context)
+        console.log("Context:", event.context);
       }
 
       if (event.priority) {
-        console.log('Priority:', event.priority)
+        console.log("Priority:", event.priority);
       }
 
-      console.groupEnd()
+      console.groupEnd();
     } else {
-      const parts = [`📊 [Analytics] ${event.name} - ${timestamp}`]
+      const parts = [`📊 [Analytics] ${event.name} - ${timestamp}`];
 
       if (logPayload) {
-        parts.push('\nPayload:', JSON.stringify(event.payload, null, 2))
+        parts.push("\nPayload:", JSON.stringify(event.payload, null, 2));
       }
 
       if (logContext && event.context) {
-        parts.push('\nContext:', JSON.stringify(event.context, null, 2))
+        parts.push("\nContext:", JSON.stringify(event.context, null, 2));
       }
 
-      logFn(...parts)
+      logFn(...parts);
     }
 
     // Continue to next middleware
-    await next()
-  }
+    await next();
+  };
 }
 
 /**
  * Default logging middleware
  */
-export const loggingMiddleware = createLoggingMiddleware()
+export const loggingMiddleware = createLoggingMiddleware();

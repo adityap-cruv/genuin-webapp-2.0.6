@@ -1,106 +1,106 @@
 export interface BrandTheme {
-  colors: Record<string, string>
-  theme: 'light' | 'dark'
+  colors: Record<string, string>;
+  theme: "light" | "dark";
 }
 
 export class ThemeManager {
-  private static instance: ThemeManager
-  private currentTheme: BrandTheme | null = null
+  private static instance: ThemeManager;
+  private currentTheme: BrandTheme | null = null;
 
   private constructor() {}
 
   static getInstance(): ThemeManager {
     if (!ThemeManager.instance) {
-      ThemeManager.instance = new ThemeManager()
+      ThemeManager.instance = new ThemeManager();
     }
-    return ThemeManager.instance
+    return ThemeManager.instance;
   }
 
   /**
    * Apply brand colors to container (like legacy SDK)
    */
   applyBrandColors(container: HTMLElement, brandColors?: any): void {
-    if (!brandColors) return
+    if (!brandColors) return;
 
     try {
-      const parsedColors = this.parseColors(brandColors)
+      const parsedColors = this.parseColors(brandColors);
 
       // Apply CSS custom properties to container
       Object.keys(parsedColors).forEach((key) => {
         if (parsedColors[key]) {
-          container.style.setProperty(key, parsedColors[key])
+          container.style.setProperty(key, parsedColors[key]);
           // Apply CSS custom properties to shadow root container
-          const shadowRoot = container.shadowRoot
+          const shadowRoot = container.shadowRoot;
           if (shadowRoot) {
-            const rootContainer = shadowRoot.getElementById(container.id)
+            const rootContainer = shadowRoot.getElementById(container.id);
             if (rootContainer) {
-              rootContainer.style.setProperty(key, parsedColors[key])
+              rootContainer.style.setProperty(key, parsedColors[key]);
             }
           }
         }
-      })
+      });
 
       // Store theme for later use
       this.currentTheme = {
         colors: parsedColors,
         theme: this.detectTheme(parsedColors),
-      }
+      };
     } catch (error) {
-      console.warn('Failed to apply brand colors:', error)
+      console.warn("Failed to apply brand colors:", error);
     }
   }
 
   parseColors(colors: any) {
-    const parsedColors: Record<string, string> = {}
-    const categoryColors = colors['primary']
+    const parsedColors: Record<string, string> = {};
+    const categoryColors = colors["primary"];
 
     if (categoryColors) {
       for (const shade in categoryColors) {
-        const colorCode = categoryColors[shade]
-        const parsedShade = shade.split('_')[1]
+        const colorCode = categoryColors[shade];
+        const parsedShade = shade.split("_")[1];
         if (parsedShade) {
-          parsedColors[`--gencl-color-primary-${parsedShade}`] = colorCode
+          parsedColors[`--gencl-color-primary-${parsedShade}`] = colorCode;
         } else {
-          parsedColors[`--gencl-color-primary`] = colorCode
+          parsedColors[`--gencl-color-primary`] = colorCode;
         }
       }
     }
 
-    return parsedColors
+    return parsedColors;
   }
 
   /**
    * Apply theme classes to container
    */
   applyTheme(container: HTMLElement, customization?: any): void {
-    if (!customization) return
+    if (!customization) return;
 
     // Handle dark theme
-    if (customization.theme === 'dark') {
-      container.classList.add('dark')
+    if (customization.theme === "dark") {
+      container.classList.add("dark");
     }
 
     // For existing dark mode users (legacy support)
-    if (container.classList.contains('gen-sdk-dark')) {
-      container.classList.add('dark')
+    if (container.classList.contains("gen-sdk-dark")) {
+      container.classList.add("dark");
     }
 
     // Apply brand colors if available
     if (customization.brandColors) {
       Object.keys(customization.brandColors).forEach((key) => {
-        container.style.setProperty(key, customization.brandColors[key])
-      })
+        container.style.setProperty(key, customization.brandColors[key]);
+      });
     }
   }
 
   /**
    * Detect if theme should be light or dark based on colors
    */
-  private detectTheme(colors: Record<string, string>): 'light' | 'dark' {
+  private detectTheme(colors: Record<string, string>): "light" | "dark" {
     // Simple heuristic - check if background is dark
-    const bgColor = colors['--background'] || colors['--bg'] || '#ffffff'
-    const brightness = this.getBrightness(bgColor)
-    return brightness < 128 ? 'dark' : 'light'
+    const bgColor = colors["--background"] || colors["--bg"] || "#ffffff";
+    const brightness = this.getBrightness(bgColor);
+    return brightness < 128 ? "dark" : "light";
   }
 
   /**
@@ -108,29 +108,29 @@ export class ThemeManager {
    */
   private getBrightness(color: string): number {
     // Remove # if present
-    const hex = color.replace('#', '')
+    const hex = color.replace("#", "");
 
     // Convert to RGB
-    const r = parseInt(hex.substr(0, 2), 16)
-    const g = parseInt(hex.substr(2, 2), 16)
-    const b = parseInt(hex.substr(4, 2), 16)
+    const r = parseInt(hex.substr(0, 2), 16);
+    const g = parseInt(hex.substr(2, 2), 16);
+    const b = parseInt(hex.substr(4, 2), 16);
 
     // Calculate brightness using luminance formula
-    return (r * 299 + g * 587 + b * 114) / 1000
+    return (r * 299 + g * 587 + b * 114) / 1000;
   }
 
   /**
    * Get current theme
    */
   getCurrentTheme(): BrandTheme | null {
-    return this.currentTheme
+    return this.currentTheme;
   }
 
   /**
    * Reset theme
    */
   reset(): void {
-    this.currentTheme = null
+    this.currentTheme = null;
   }
 
   /**
@@ -146,8 +146,8 @@ export class ThemeManager {
         show_view_loop_button: false,
         show_share_icon: false,
         show_comments_section: false,
-      }
+      };
     }
-    return customization
+    return customization;
   }
 }

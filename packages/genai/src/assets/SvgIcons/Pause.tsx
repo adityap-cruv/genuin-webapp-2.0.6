@@ -8,4 +8,3 @@ const Pause = (props: SVGProps<SVGSVGElement>) => (
 );
 
 export default Pause;
-

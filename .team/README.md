@@ -202,10 +202,10 @@ This fails the build if someone edited `.github/` or `.claude/` directly.
 
 ## Scripts Reference
 
-| Script    | Command                           | What it does                                                |
-| --------- | --------------------------------- | ----------------------------------------------------------- |
-| `ai:sync` | `node scripts/sync-ai-config.mjs` | One-shot sync of all `.team/` → `.github/` + `.claude/`     |
-| `ai:fetch` | `node scripts/fetch-skills.mjs`   | Downloads remote skills listed in `skills.registry.json`    |
+| Script     | Command                           | What it does                                             |
+| ---------- | --------------------------------- | -------------------------------------------------------- |
+| `ai:sync`  | `node scripts/sync-ai-config.mjs` | One-shot sync of all `.team/` → `.github/` + `.claude/`  |
+| `ai:fetch` | `node scripts/fetch-skills.mjs`   | Downloads remote skills listed in `skills.registry.json` |
 
 ---
 

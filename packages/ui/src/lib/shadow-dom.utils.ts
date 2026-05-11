@@ -23,16 +23,12 @@ export function getRootContainer(): HTMLElement | ShadowRoot | null {
   }
 
   // Overlay host (carousel / feed / PiP modes)
-  const overlayHost = document.querySelector<HTMLElement>(
-    "[data-genuin-overlay-host]",
-  );
+  const overlayHost = document.querySelector<HTMLElement>("[data-genuin-overlay-host]");
 
   const overlayShadowRoot = overlayHost?.shadowRoot;
 
   if (overlayShadowRoot) {
-    const portalContainer = overlayShadowRoot.querySelector<HTMLElement>(
-      "[data-portal-container]",
-    );
+    const portalContainer = overlayShadowRoot.querySelector<HTMLElement>("[data-portal-container]");
 
     return portalContainer ?? overlayShadowRoot;
   }

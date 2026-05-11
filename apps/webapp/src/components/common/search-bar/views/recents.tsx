@@ -1,21 +1,18 @@
-import { useQuery } from '@tanstack/react-query'
-import Link from 'next/link'
-import { useEffect, type ReactNode } from 'react'
+import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
+import { useEffect, type ReactNode } from "react";
 
-import { CustomAvatar } from '@components/custom/custom-avatar'
-import { CloseIcon } from '@icons/close-icon'
-import { IcLoop } from '@icons/ic-loop'
-import { SearchIcon } from '@icons/search-icon'
-import { PATH_NAME } from '@lib/utils/constants/path'
-import Analytics from '@services/analytics'
+import { CustomAvatar } from "@components/custom/custom-avatar";
+import { CloseIcon } from "@icons/close-icon";
+import { IcLoop } from "@icons/ic-loop";
+import { SearchIcon } from "@icons/search-icon";
+import { PATH_NAME } from "@lib/utils/constants/path";
+import Analytics from "@services/analytics";
 
-import { deleteRecent, fetchRecents } from '../api'
-import { useSearchBarStore } from '../store'
+import { deleteRecent, fetchRecents } from "../api";
+import { useSearchBarStore } from "../store";
 
-
-
-import { ItemShimmer } from './item-shimmer'
-
+import { ItemShimmer } from "./item-shimmer";
 
 export function Recents() {
   const {
@@ -24,109 +21,109 @@ export function Recents() {
     refetch,
   } = useQuery({
     queryFn: async () => await fetchRecents(),
-    queryKey: ['recent', 'search'],
+    queryKey: ["recent", "search"],
     retry(failureCount, error) {
-      return false
+      return false;
     },
-  })
+  });
 
   useEffect(() => {
     if (list && list?.length !== 0) {
       void Analytics.track({
-        eventName: 'Check Recent Search',
+        eventName: "Check Recent Search",
         properties: {},
-      })
+      });
     }
-  }, [list])
+  }, [list]);
 
   async function deleteClickHandler(id?: string, all?: boolean) {
-    const response = await deleteRecent(id, all)
+    const response = await deleteRecent(id, all);
     // TODO: What should we do in case of failure in deletion api.
-    if (response) void refetch()
+    if (response) void refetch();
     void Analytics.track({
-      eventName: 'Clear Recent Search',
+      eventName: "Clear Recent Search",
       properties: {},
-    })
+    });
   }
 
-  if (isLoading) return <ItemShimmer count={10} />
+  if (isLoading) return <ItemShimmer count={10} />;
   if (list && list.length !== 0)
     return (
       <div className="h-full w-full overflow-auto px-3 py-4">
         <span className="flex justify-between px-3">
           <p className="text-title-3-bold">Recent</p>
           <p
-            className="cursor-pointer text-body-1-bold text-tertiary"
+            className="text-body-1-bold text-tertiary cursor-pointer"
             onClick={(e) => {
               // TODO: This api is not working ask sanket.
-              void deleteClickHandler(undefined, true)
+              void deleteClickHandler(undefined, true);
             }}>
             Clear all
           </p>
         </span>
         {list.map((item, index) => {
-          if (item.type === 'text' && item.text)
+          if (item.type === "text" && item.text)
             return (
               <TextItem
                 key={item.id}
                 avatar={
-                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-tertiary-300">
-                    <SearchIcon className="h-5 w-5 stroke-tertiary" />
+                  <div className="border-tertiary-300 flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border">
+                    <SearchIcon className="stroke-tertiary h-5 w-5" />
                   </div>
                 }
                 title={item.text}
                 subtitle=""
                 deletionHandler={() => {
-                  void deleteClickHandler(item.id)
+                  void deleteClickHandler(item.id);
                 }}
               />
-            )
-          if (item.type === 'community' && item.community)
+            );
+          if (item.type === "community" && item.community)
             return (
               <ListItem
                 key={item.id}
                 avatar={
                   <CustomAvatar
                     className="h-12 w-12"
-                    fallbackString={item.community.name ?? ''}
-                    imageUrl={item.community.dp_m ?? item.community.dp ?? ''}
+                    fallbackString={item.community.name ?? ""}
+                    imageUrl={item.community.dp_m ?? item.community.dp ?? ""}
                     isAvatar={false}
                   />
                 }
-                subtitle={`Community • ${item.community.description ?? ''}`}
-                title={item.community.name ?? ''}
+                subtitle={`Community • ${item.community.description ?? ""}`}
+                title={item.community.name ?? ""}
                 urlToGo={PATH_NAME.community(item.community.slug)}
                 deletionHandler={() => {
-                  void deleteClickHandler(item.id)
+                  void deleteClickHandler(item.id);
                 }}
               />
-            )
-          if (item.type === 'loop' && item.loop)
+            );
+          if (item.type === "loop" && item.loop)
             return (
               <ListItem
                 key={item.id}
                 avatar={
-                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-tertiary-300">
-                    <IcLoop className="h-5 w-5 stroke-tertiary" />
+                  <div className="border-tertiary-300 flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border">
+                    <IcLoop className="stroke-tertiary h-5 w-5" />
                   </div>
                 }
                 subtitle={`Group • ${item.loop.group.group_description}`}
-                title={item.loop.group.group_name ?? ''}
-                urlToGo={PATH_NAME.loop(item.loop.slug ? item.loop.slug : (item.loop?.group?.slug ?? ''))}
+                title={item.loop.group.group_name ?? ""}
+                urlToGo={PATH_NAME.loop(item.loop.slug ? item.loop.slug : (item.loop?.group?.slug ?? ""))}
                 deletionHandler={() => {
-                  void deleteClickHandler(item.id)
+                  void deleteClickHandler(item.id);
                 }}
               />
-            )
-          if (item.type === 'user' && item.user)
+            );
+          if (item.type === "user" && item.user)
             return (
               <ListItem
                 key={index}
                 avatar={
                   <CustomAvatar
                     isAvatar={item.user.is_avatar}
-                    fallbackString={item.user.name ?? ''}
-                    imageUrl={item.user.profile_image_m ?? item.user.profile_image ?? ''}
+                    fallbackString={item.user.name ?? ""}
+                    imageUrl={item.user.profile_image_m ?? item.user.profile_image ?? ""}
                     className="h-12 w-12"
                   />
                 }
@@ -134,84 +131,84 @@ export function Recents() {
                 subtitle={`@${item.user.nickname}`}
                 urlToGo={PATH_NAME.profile(item.user.nickname)}
                 deletionHandler={() => {
-                  void deleteClickHandler(item.id)
+                  void deleteClickHandler(item.id);
                 }}
               />
-            )
-          return <></>
+            );
+          return <></>;
         })}
       </div>
-    )
+    );
 
-  return <div className="p-6 text-body-1-demi text-tertiary">Try searching for communities, topics, or keywords</div>
+  return <div className="text-body-1-demi text-tertiary p-6">Try searching for communities, topics, or keywords</div>;
 }
 
 type ItemProps = {
-  title: string
-  subtitle: string
-  avatar: ReactNode
-  deletionHandler: () => void
-}
+  title: string;
+  subtitle: string;
+  avatar: ReactNode;
+  deletionHandler: () => void;
+};
 
 function ListItem({
-  subtitle = '',
-  title = '',
+  subtitle = "",
+  title = "",
   urlToGo,
   avatar: Avatar,
   deletionHandler,
 }: ItemProps & { urlToGo: string }) {
   return (
-    <Link href={urlToGo} className="flex items-center gap-x-3 rounded-md px-3 py-2 hover:bg-tertiary-200">
+    <Link href={urlToGo} className="hover:bg-tertiary-200 flex items-center gap-x-3 rounded-md px-3 py-2">
       {Avatar}
       <span className="relative h-full w-full">
-        {title && <p className="line-clamp-1 break-all text-body-1-bold">{title}</p>}
-        {subtitle && <p className="line-clamp-1 break-all text-cap-1-demi">{subtitle}</p>}
+        {title && <p className="text-body-1-bold line-clamp-1 break-all">{title}</p>}
+        {subtitle && <p className="text-cap-1-demi line-clamp-1 break-all">{subtitle}</p>}
         <CloseIcon
-          className="absolute right-0 top-1/2 z-10 h-4 w-4 -translate-y-1/2"
+          className="absolute top-1/2 right-0 z-10 h-4 w-4 -translate-y-1/2"
           onClick={(e) => {
-            e.stopPropagation()
-            deletionHandler()
+            e.stopPropagation();
+            deletionHandler();
             void Analytics.track({
-              eventName: 'Keyword Search Cancel',
+              eventName: "Keyword Search Cancel",
               properties: {},
-            })
+            });
           }}
         />
       </span>
     </Link>
-  )
+  );
 }
 
-function TextItem({ subtitle = '', title = '', avatar: Avatar, deletionHandler }: ItemProps) {
-  const { setKeyword } = useSearchBarStore()
+function TextItem({ subtitle = "", title = "", avatar: Avatar, deletionHandler }: ItemProps) {
+  const { setKeyword } = useSearchBarStore();
 
   return (
     <div
       onClick={(e) => {
-        e.stopPropagation()
+        e.stopPropagation();
         if (title) {
           // for updating search-input box find a better way to do it.
-          ;(document.getElementById('search-input') as HTMLInputElement).value = title
-          setKeyword(title)
+          (document.getElementById("search-input") as HTMLInputElement).value = title;
+          setKeyword(title);
         }
       }}
-      className="flex items-center gap-x-3 rounded-md px-3 py-2 hover:bg-tertiary-200">
+      className="hover:bg-tertiary-200 flex items-center gap-x-3 rounded-md px-3 py-2">
       {Avatar}
       <span className="relative h-full w-full">
-        {title && <p className="line-clamp-1 break-all text-body-1-bold">{title}</p>}
-        {subtitle && <p className="line-clamp-1 break-all text-cap-1-demi">{subtitle}</p>}
+        {title && <p className="text-body-1-bold line-clamp-1 break-all">{title}</p>}
+        {subtitle && <p className="text-cap-1-demi line-clamp-1 break-all">{subtitle}</p>}
         <CloseIcon
-          className="absolute right-0 top-1/2 z-10 h-4 w-4 -translate-y-1/2 cursor-pointer"
+          className="absolute top-1/2 right-0 z-10 h-4 w-4 -translate-y-1/2 cursor-pointer"
           onClick={(e) => {
-            e.stopPropagation()
-            deletionHandler()
+            e.stopPropagation();
+            deletionHandler();
             void Analytics.track({
-              eventName: 'Keyword Search Cancel',
+              eventName: "Keyword Search Cancel",
               properties: {},
-            })
+            });
           }}
         />
       </span>
     </div>
-  )
+  );
 }

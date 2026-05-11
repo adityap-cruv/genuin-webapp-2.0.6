@@ -29,16 +29,19 @@ description: Read-only code review against project conventions. Use for general 
 ## What to Check
 
 ### Correctness
+
 - Does the logic match the intent? Are null/undefined cases handled?
 - Are async operations properly awaited?
 - Are error cases returned as `{ data, error }`, not thrown?
 
 ### TypeScript
+
 - Is `any` used without a justification comment?
 - Are types specific, or are they vague (`object`, `Record<string, any>`)?
 - Are `useRef` calls initialized (`useRef<T>(null)`)?
 
 ### Project Conventions
+
 - **Monorepo:** No cross-imports between `apps/`. Shared code belongs in `packages/`.
 - **Atomic design:** UI primitives (`packages/ui`), business components (`packages/components`),
   app-specific code in `apps/webapp`. Nothing mixed up.
@@ -49,22 +52,26 @@ description: Read-only code review against project conventions. Use for general 
 - **Components:** No `React.FC`. Server Components by default; `'use client'` only when needed.
 
 ### Error Handling
+
 - Empty `catch` blocks?
 - Raw strings thrown instead of typed errors?
 - API boundaries returning raw throws instead of `{ data, error }`?
 
 ### Security
+
 - `dangerouslySetInnerHTML` without DOMPurify sanitisation?
 - Unvalidated external data (missing Zod)?
 - Auth tokens in `localStorage` instead of `httpOnly` cookies?
 - Hardcoded secrets or environment-specific URLs?
 
 ### Tests
+
 - Are there tests? Do they cover the important behaviour, not just happy path?
 - Test files colocated next to source (`feature.ts` → `feature.test.ts`)?
 - Any `page.waitForTimeout()` in Playwright tests?
 
 ### Performance (flag, don't fix)
+
 - Obvious N+1 patterns in data fetching?
 - Missing memoization on components passed expensive props?
 - Unnecessarily large client bundles from missing `dynamic()`?

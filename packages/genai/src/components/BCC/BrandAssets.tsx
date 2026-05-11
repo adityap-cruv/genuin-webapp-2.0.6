@@ -2,7 +2,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type { BrandAssetsJsonData } from '@/types';
 
 const BrandAssets = ({ jsonData }: { jsonData: BrandAssetsJsonData; messageId?: string }) => {
-    console.log("jsonData", jsonData);
+    console.log('jsonData', jsonData);
     if (!jsonData || Object.keys(jsonData).length === 0) {
         return (
             <>

@@ -9,19 +9,19 @@
  */
 export function calculateSlideDimensions({
   containerDimension,
-  dimensionType = 'height',
+  dimensionType = "height",
   aspectRatio = 9 / 16,
   slidesPerView = 1,
 }: {
   containerDimension: number;
-  dimensionType?: 'height' | 'width';
+  dimensionType?: "height" | "width";
   aspectRatio?: number;
   slidesPerView?: number;
 }) {
   let slideHeight: number;
   let slideWidth: number;
 
-  if (dimensionType === 'height') {
+  if (dimensionType === "height") {
     // Container height is the constraint
     slideHeight = containerDimension / slidesPerView;
     slideWidth = slideHeight * aspectRatio;

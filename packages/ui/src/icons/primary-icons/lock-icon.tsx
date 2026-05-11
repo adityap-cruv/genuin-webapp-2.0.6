@@ -11,8 +11,7 @@ export function LockIcon({ className, ...restProps }: SVGIconsProps) {
       viewBox="0 0 24 24"
       fill="none"
       className={cn("gencl:stroke-black", className)}
-      {...restProps}
-    >
+      {...restProps}>
       <rect
         x="5"
         y="11"

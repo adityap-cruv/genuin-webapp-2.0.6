@@ -1,1 +1,1 @@
-export * from './community-privacy-info'
+export * from "./community-privacy-info";

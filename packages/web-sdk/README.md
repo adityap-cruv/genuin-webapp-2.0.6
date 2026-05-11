@@ -114,7 +114,6 @@ npm run purge:bunny:prod sdk sdk/2.0.0
 AWS Credentials Setup:
 
 1. Option 1 - AWS CLI Configuration (Recommended):
-
    - Configure your AWS credentials using `aws configure`
    - Leave `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` empty in environment files
    - The script will automatically use your AWS CLI credentials
@@ -176,18 +175,15 @@ npm run dev:prod    # Runs development server with Production configuration
 ### Important Notes
 
 1. Version Management:
-
    - Development builds skip version management
    - QA and Production builds will prompt for version updates
    - Versioning is now managed through package.json using npm version management
 
 2. Build Output:
-
    - Development: Generates unminified `dist/gen_sdk.js` with sourcemaps
    - QA/Production: Generates minified `dist/gen_sdk.min.js` without sourcemaps
 
 3. Environment Variables:
-
    - Each environment uses its own `.env` file
    - Common variables are always loaded from `.env.common`
    - Environment-specific variables override common variables
@@ -213,6 +209,7 @@ The SDK now uses npm version management instead of separate version files. The v
    ```
 
 ### Configure Index.html
+
 To configure your `index.html` for embedding the Genuin Web SDK, refer to the provided example files in the repository:
 
 - **`index.html.example`**: Use this as a template if you want to embed a single instance of the SDK on your web page.
@@ -221,9 +218,9 @@ To configure your `index.html` for embedding the Genuin Web SDK, refer to the pr
 ### Choosing the Right Example
 
 - **Single Embed**:
-   If your application only requires one SDK embed, start with `index.html.example`. This file demonstrates the minimal setup needed for a single integration.
+  If your application only requires one SDK embed, start with `index.html.example`. This file demonstrates the minimal setup needed for a single integration.
 - **Multiple Embeds**:
-   If you plan to have more than one SDK embed on the same page (for example, multiple widgets or components), use `index.multi.html.example`. This example shows how to initialize and configure several SDK instances independently. Note: The multi-embed approach also works for single embeds, so you can use it for both cases if you prefer a unified setup.
+  If you plan to have more than one SDK embed on the same page (for example, multiple widgets or components), use `index.multi.html.example`. This example shows how to initialize and configure several SDK instances independently. Note: The multi-embed approach also works for single embeds, so you can use it for both cases if you prefer a unified setup.
 
 ### Steps to Configure
 

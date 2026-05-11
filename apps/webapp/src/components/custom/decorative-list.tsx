@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState, type ComponentProps } from 'react'
+import { useEffect, useRef, useState, type ComponentProps } from "react";
 
-import { useGenuinOptions } from '@lib/stores/genuin-options'
-import { cn } from '@lib/utils'
+import { useGenuinOptions } from "@lib/stores/genuin-options";
+import { cn } from "@lib/utils";
 
-type Props = ComponentProps<'ul'>
+type Props = ComponentProps<"ul">;
 
 // TODO: refactor use of is mobile and issafari.
 /**
@@ -12,24 +12,24 @@ type Props = ComponentProps<'ul'>
  * @returns
  */
 export function DecorativeList({ children, className, ...props }: Props) {
-  const { isMobile, isSafari } = useGenuinOptions((state) => ({ isMobile: state.isMobile, isSafari: state.isSafari }))
-  const [lastLiHeight, setLastLiHeight] = useState(0)
-  const ul = useRef<HTMLUListElement>(null)
+  const { isMobile, isSafari } = useGenuinOptions((state) => ({ isMobile: state.isMobile, isSafari: state.isSafari }));
+  const [lastLiHeight, setLastLiHeight] = useState(0);
+  const ul = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
     function onChange() {
-      const li = ul.current?.querySelector('li:last-child')
+      const li = ul.current?.querySelector("li:last-child");
       if (li) {
-        const height = getComputedStyle(li).height
-        setLastLiHeight(+height.substring(0, height.length - 2))
+        const height = getComputedStyle(li).height;
+        setLastLiHeight(+height.substring(0, height.length - 2));
       }
     }
-    const obs = new ResizeObserver(onChange)
-    if (ul.current) obs.observe(ul.current)
+    const obs = new ResizeObserver(onChange);
+    if (ul.current) obs.observe(ul.current);
     return () => {
-      obs.disconnect()
-    }
-  }, [ul])
+      obs.disconnect();
+    };
+  }, [ul]);
   return (
     <>
       <style>
@@ -54,20 +54,20 @@ export function DecorativeList({ children, className, ...props }: Props) {
               `}
       </style>
       <ul
-        className={cn('custom-list', className)}
+        className={cn("custom-list", className)}
         ref={ul}
         style={{
-          borderLeft: '2px solid',
-          marginLeft: '22px',
-          position: 'relative',
-          height: 'fit-content',
-          paddingLeft: '0.87em',
+          borderLeft: "2px solid",
+          marginLeft: "22px",
+          position: "relative",
+          height: "fit-content",
+          paddingLeft: "0.87em",
           borderImage: `linear-gradient(to bottom, var(--tertiary-200) calc(100% - ${lastLiHeight / 2}px - ${
-            isSafari ? (isMobile ? '18px' : '25px') : '9.5px'
+            isSafari ? (isMobile ? "18px" : "25px") : "9.5px"
           }), transparent 50%) 1`,
         }}>
         {children}
       </ul>
     </>
-  )
+  );
 }

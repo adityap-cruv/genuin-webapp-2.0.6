@@ -1,48 +1,48 @@
 // types.ts
 export type Section = {
-  sectionTitle?: string
-  title: string
-  caption?: string
-}
+  sectionTitle?: string;
+  title: string;
+  caption?: string;
+};
 
 export type Button = {
-  text: string
-  buttonColor?: string
-  visibility?: boolean
-}
+  text: string;
+  buttonColor?: string;
+  visibility?: boolean;
+};
 
 export type HeroSectionType =
   | (Section & {
-      button: Button[]
-      heroImage: string
+      button: Button[];
+      heroImage: string;
     })
-  | undefined
+  | undefined;
 
 export type FeaturesSectionType =
   | (Section & {
-      options: string[]
-      carousalImage: string
+      options: string[];
+      carousalImage: string;
     })
-  | undefined
+  | undefined;
 
 export type TestimonialSectionType =
   | (Section & {
-      caption: string
-      carousalImage: string
+      caption: string;
+      carousalImage: string;
     })
-  | undefined
+  | undefined;
 
 export type CommunitiesSectionType =
   | (Section & {
-      carousalImage: string
+      carousalImage: string;
     })
-  | undefined
+  | undefined;
 
 export type GetStartedSectionType =
   | (Section & {
-      visibility?: boolean
-      caption: string
-      carousalImage: string
-      button: Button[]
+      visibility?: boolean;
+      caption: string;
+      carousalImage: string;
+      button: Button[];
     })
-  | undefined
+  | undefined;

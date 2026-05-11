@@ -10,6 +10,7 @@ Successfully implemented vendor chunk splitting for the Genuin Web SDK with opti
 **Solution**: Keep React and React-DOM in the main bundle while splitting all other vendor libraries
 
 ### Why This Works
+
 - React's `createContext` API requires consistent module instance across all components
 - Vendor chunk loading can introduce timing issues where React modules aren't fully initialized when components execute
 - Main bundle ensures React is available synchronously for all component code
@@ -17,6 +18,7 @@ Successfully implemented vendor chunk splitting for the Genuin Web SDK with opti
 ## 📊 Performance Results
 
 ### Chunk Distribution (Current Build)
+
 ```
 Main Bundle:
 - genuin-sdk.js (entry): 0.51 kB
@@ -38,6 +40,7 @@ Application Chunks:
 ```
 
 ### Total Optimization Benefits
+
 - **7 vendor chunks**: Successfully separated major third-party libraries
 - **Lazy loading**: Application chunks load only when needed
 - **Caching**: Vendor chunks cache independently from application code
@@ -46,20 +49,22 @@ Application Chunks:
 ## 🔧 Technical Implementation
 
 ### Vite Configuration Strategy
+
 ```javascript
 manualChunks: (id) => {
   // React & React-DOM: Stay in main bundle (prevents createContext errors)
   // ❌ No vendor-react chunk
 
   // Other vendor libraries: Separated by category
-  if (id.includes('@tanstack/react-query')) return 'vendor-react-query'
-  if (id.includes('@radix-ui/')) return 'vendor-radix'
-  if (id.includes('react-hook-form')) return 'vendor-forms'
+  if (id.includes("@tanstack/react-query")) return "vendor-react-query";
+  if (id.includes("@radix-ui/")) return "vendor-radix";
+  if (id.includes("react-hook-form")) return "vendor-forms";
   // ... other vendor chunks
-}
+};
 ```
 
 ### Module Resolution
+
 ```javascript
 resolve: {
   alias: {
@@ -73,12 +78,14 @@ resolve: {
 ## 🚀 Loading Strategy
 
 ### Chunk Loading Order
+
 1. **genuin-sdk.js** (entry point, 0.51 kB) - loads immediately
 2. **index-B0cSzIHl.js** (727 kB with React) - loads core functionality
 3. **Vendor chunks** - load as dependencies are imported
 4. **Application chunks** - lazy load based on embed type
 
 ### Error Prevention
+
 - React stays in main bundle → no createContext timing issues
 - Proper module aliases → consistent React instances
 - Enhanced loader debugging → better error visibility
@@ -86,16 +93,19 @@ resolve: {
 ## 📈 Performance vs Reliability Trade-offs
 
 ### What We Gained
+
 ✅ **Vendor caching**: 7 separate vendor chunks cache independently
 ✅ **Lazy loading**: Application chunks load on-demand
 ✅ **Bundle optimization**: Most vendor code separated from core logic
 ✅ **Network efficiency**: Parallel chunk downloads
 
 ### What We Sacrificed
+
 ⚖️ **Main bundle size**: 727 kB (includes React) vs potential smaller size
 ⚖️ **React caching**: React updates require main bundle re-download
 
 ### Why This Is Optimal
+
 - **Reliability first**: No runtime errors from module timing issues
 - **Still highly optimized**: 90%+ of vendor code properly separated
 - **Future-proof**: Works with React 19 and all createContext patterns
@@ -104,12 +114,14 @@ resolve: {
 ## 🔍 Verification
 
 ### Build Success
+
 - ✅ No build errors or warnings
 - ✅ All vendor chunks generated correctly
 - ✅ Source maps working properly
 - ✅ Both ES and IIFE formats building
 
 ### Runtime Safety
+
 - ✅ No createContext errors in browser
 - ✅ React modules properly initialized
 - ✅ All component contexts working

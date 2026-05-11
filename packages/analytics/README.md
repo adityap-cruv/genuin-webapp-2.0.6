@@ -24,41 +24,41 @@ pnpm add @genuin/analytics
 ### Basic Usage (Vanilla JS/TS)
 
 ```typescript
-import { AnalyticsClient, RudderstackProvider } from '@genuin/analytics'
+import { AnalyticsClient, RudderstackProvider } from "@genuin/analytics";
 
 // Create analytics client
 const analytics = new AnalyticsClient({
   providers: [
     new RudderstackProvider({
-      writeKey: 'YOUR_WRITE_KEY',
-      dataplaneUrl: 'https://your-dataplane-url.com',
-    })
+      writeKey: "YOUR_WRITE_KEY",
+      dataplaneUrl: "https://your-dataplane-url.com",
+    }),
   ],
   defaultPayload: {
     brand_id: 123,
-    user_id: 'user-456',
-    channel: 'web sdk',
-    environment: 'production',
+    user_id: "user-456",
+    channel: "web sdk",
+    environment: "production",
   },
   debug: true,
-})
+});
 
 // Track events
-await analytics.track('Video Started', {
-  video_id: 'video-123',
+await analytics.track("Video Started", {
+  video_id: "video-123",
   video_length: 120,
-})
+});
 
 // Identify users
-await analytics.identify('user-456', {
-  name: 'John Doe',
-  email: 'john@example.com',
-})
+await analytics.identify("user-456", {
+  name: "John Doe",
+  email: "john@example.com",
+});
 
 // Track page views
-await analytics.page('Home Page', {
-  path: '/',
-})
+await analytics.page("Home Page", {
+  path: "/",
+});
 ```
 
 ### React Usage
@@ -177,21 +177,21 @@ const analytics = new AnalyticsClient({
 Main client for tracking analytics events.
 
 ```typescript
-const client = new AnalyticsClient(config)
+const client = new AnalyticsClient(config);
 
 // Methods
-await client.initialize()
-await client.track(eventName, payload, options)
-await client.identify(userId, traits)
-await client.page(pageName, properties)
-await client.group(groupId, traits)
+await client.initialize();
+await client.track(eventName, payload, options);
+await client.identify(userId, traits);
+await client.page(pageName, properties);
+await client.group(groupId, traits);
 
-client.setDefaultPayload(payload)
-client.updateDefaultPayload(partialPayload)
-client.use(middleware)
-client.isReady()
-client.getMetrics()
-client.destroy()
+client.setDefaultPayload(payload);
+client.updateDefaultPayload(partialPayload);
+client.use(middleware);
+client.isReady();
+client.getMetrics();
+client.destroy();
 ```
 
 ### RudderstackProvider
@@ -200,13 +200,13 @@ Provider for Rudderstack analytics.
 
 ```typescript
 const provider = new RudderstackProvider({
-  writeKey: 'YOUR_WRITE_KEY',
-  dataplaneUrl: 'https://your-dataplane.com',
+  writeKey: "YOUR_WRITE_KEY",
+  dataplaneUrl: "https://your-dataplane.com",
   loadOptions: {
-    storage: { type: 'localStorage' },
-    plugins: ['DeviceModeDestinations'],
+    storage: { type: "localStorage" },
+    plugins: ["DeviceModeDestinations"],
   },
-})
+});
 ```
 
 ### ConsoleProvider
@@ -218,8 +218,8 @@ const provider = new ConsoleProvider({
   useColors: true,
   showTimestamps: true,
   prettyPrint: true,
-  logLevel: 'log',
-})
+  logLevel: "log",
+});
 ```
 
 ### React Hooks
@@ -247,32 +247,26 @@ track(EventNames.VIDEO_STARTED, { ... })
 ## Utilities
 
 ```typescript
-import {
-  BrowserDetector,
-  DeviceDetector,
-  URLParser,
-  SessionManager,
-  DeviceIdManager,
-} from '@genuin/analytics'
+import { BrowserDetector, DeviceDetector, URLParser, SessionManager, DeviceIdManager } from "@genuin/analytics";
 
 // Browser detection
-const browser = BrowserDetector.detect()
-const isChrome = BrowserDetector.isChrome()
+const browser = BrowserDetector.detect();
+const isChrome = BrowserDetector.isChrome();
 
 // Device detection
-const device = DeviceDetector.detect()
-const isMobile = DeviceDetector.isMobile()
-const os = DeviceDetector.getOS()
+const device = DeviceDetector.detect();
+const isMobile = DeviceDetector.isMobile();
+const os = DeviceDetector.getOS();
 
 // URL parsing
-const path = URLParser.getPath()
-const queryParams = URLParser.getQueryParams()
+const path = URLParser.getPath();
+const queryParams = URLParser.getQueryParams();
 
 // Session management
-const sessionId = SessionManager.getSessionId()
+const sessionId = SessionManager.getSessionId();
 
 // Device ID
-const deviceId = DeviceIdManager.getDeviceId()
+const deviceId = DeviceIdManager.getDeviceId();
 ```
 
 ## License

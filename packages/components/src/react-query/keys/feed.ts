@@ -10,20 +10,14 @@ import { baseQueryKey } from "./base";
  * @param options - Optional filter options for the feed
  * @returns QueryKey array
  */
-export function getQueryKeyForFeed(
-  feedType: FeedType,
-  options?: Record<string, any>
-): QueryKey {
+export function getQueryKeyForFeed(feedType: FeedType, options?: Record<string, any>): QueryKey {
   // Convert options object to an array of strings in the format "key-value"
   // This ensures proper cache key serialization for React Query
   const optionsArray = options
     ? Object.entries(options).map(([key, value]) => {
         // Handle complex values (objects, arrays) by stringifying them
         // Primitive values are converted directly to strings
-        const stringValue =
-          typeof value === "object" && value !== null
-            ? JSON.stringify(value)
-            : String(value);
+        const stringValue = typeof value === "object" && value !== null ? JSON.stringify(value) : String(value);
         // Format: "key-value" (e.g., "category-tech", "filter-{\"active\":true}")
         return `${key}-${stringValue}`;
       })
@@ -41,7 +35,7 @@ export function getQueryKeyForFeed(
  * @example
  * // Match all feed queries
  * getPartialQueryKeyForFeed()
- * 
+ *
  * // Match all HOME feed queries
  * getPartialQueryKeyForFeed('HOME')
  */

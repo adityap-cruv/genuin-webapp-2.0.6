@@ -61,12 +61,7 @@ export const WithSteps: Story = {
 
     return (
       <div className="w-[300px]">
-        <Slider
-          value={value}
-          onValueChange={setValue}
-          step={25}
-          className="w-full"
-        />
+        <Slider value={value} onValueChange={setValue} step={25} className="w-full" />
         <div className="mt-2 flex justify-between text-xs text-gray-500">
           <span>0%</span>
           <span>25%</span>
@@ -99,13 +94,7 @@ export const CustomRange: Story = {
 
     return (
       <div className="w-[300px]">
-        <Slider
-          value={value}
-          onValueChange={setValue}
-          min={-50}
-          max={50}
-          className="w-full"
-        />
+        <Slider value={value} onValueChange={setValue} min={-50} max={50} className="w-full" />
         <div className="mt-2 flex justify-between text-xs text-gray-500">
           <span>-50</span>
           <span>-25</span>
@@ -125,12 +114,7 @@ export const Vertical: Story = {
 
     return (
       <div className="h-[200px]">
-        <Slider
-          value={value}
-          onValueChange={setValue}
-          orientation="vertical"
-          className="h-full"
-        />
+        <Slider value={value} onValueChange={setValue} orientation="vertical" className="h-full" />
       </div>
     );
   },

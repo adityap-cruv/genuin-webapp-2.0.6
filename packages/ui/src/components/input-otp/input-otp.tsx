@@ -27,13 +27,7 @@ function InputOTP({
 }
 
 function InputOTPGroup({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="input-otp-group"
-      className={cn("gencl:flex gencl:items-center", className)}
-      {...props}
-    />
-  );
+  return <div data-slot="input-otp-group" className={cn("gencl:flex gencl:items-center", className)} {...props} />;
 }
 
 function InputOTPSlot({
@@ -54,12 +48,9 @@ function InputOTPSlot({
         "gencl:relative gencl:flex gencl:h-9 gencl:w-9 gencl:items-center gencl:justify-center gencl:border-y gencl:border-r gencl:shadow-xs gencl:transition-all gencl:outline-none gencl:first:rounded-l-md gencl:last:rounded-r-md gencl:data-[active=true]:z-10",
         className
       )}
-      {...props}
-    >
+      {...props}>
       {/* Show dot when no character is entered */}
-      {!char && (
-        <div className="gencl:h-2 gencl:w-2 gencl:rounded-full gencl:bg-secondary-500" />
-      )}
+      {!char && <div className="gencl:h-2 gencl:w-2 gencl:rounded-full gencl:bg-secondary-500" />}
       {char && <p>{char}</p>}
       {hasFakeCaret && (
         <div className="gencl:pointer-events-none gencl:absolute gencl:inset-0 gencl:flex gencl:items-center gencl:justify-center">

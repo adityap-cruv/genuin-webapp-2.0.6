@@ -32,7 +32,7 @@ export function useSearchParams(): UseSearchParamsReturn {
     if (typeof window === "undefined") return;
 
     let lastSearchParams = window.location.search;
-    
+
     const updateSearchParams = () => {
       // Only update if the search params have actually changed
       if (window.location.search !== lastSearchParams) {
@@ -43,7 +43,7 @@ export function useSearchParams(): UseSearchParamsReturn {
 
     // Listen for popstate events (back/forward navigation)
     window.addEventListener("popstate", updateSearchParams);
-    
+
     // Handle URL changes made by browser extensions or direct URL manipulation
     window.addEventListener("hashchange", updateSearchParams);
 
@@ -82,32 +82,29 @@ export function useSearchParams(): UseSearchParamsReturn {
    * Add new search parameters to the current URL
    * @param params - Object with key-value pairs to add. Values can be string or string[]
    */
-  const addSearchParams = useCallback(
-    (params: Record<string, string | string[]>) => {
-      if (typeof window === "undefined") return;
+  const addSearchParams = useCallback((params: Record<string, string | string[]>) => {
+    if (typeof window === "undefined") return;
 
-      const url = new URL(window.location.href);
-      const urlSearchParams = url.searchParams;
+    const url = new URL(window.location.href);
+    const urlSearchParams = url.searchParams;
 
-      Object.entries(params).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          // Remove existing values for this key first
-          urlSearchParams.delete(key);
-          // Add all values in the array
-          value.forEach((val) => urlSearchParams.append(key, val));
-        } else {
-          urlSearchParams.set(key, value);
-        }
-      });
+    Object.entries(params).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        // Remove existing values for this key first
+        urlSearchParams.delete(key);
+        // Add all values in the array
+        value.forEach((val) => urlSearchParams.append(key, val));
+      } else {
+        urlSearchParams.set(key, value);
+      }
+    });
 
-      const newUrl = `${url.pathname}${urlSearchParams.toString() ? "?" + urlSearchParams.toString() : ""}${url.hash}`;
+    const newUrl = `${url.pathname}${urlSearchParams.toString() ? "?" + urlSearchParams.toString() : ""}${url.hash}`;
 
-      // Update URL without page reload
-      // Our proxied pushState method will handle updating the searchParams state
-      window.history.pushState(null, "", newUrl);
-    },
-    []
-  );
+    // Update URL without page reload
+    // Our proxied pushState method will handle updating the searchParams state
+    window.history.pushState(null, "", newUrl);
+  }, []);
 
   /**
    * Remove search parameters from the current URL
@@ -140,35 +137,31 @@ export function useSearchParams(): UseSearchParamsReturn {
    * - Returns string[] if multiple values exist
    * - Returns null if key doesn't exist
    */
-  const getSearchParams = useCallback(
-    (key: string): string | string[] | null => {
-      if (typeof window === "undefined") return null;
+  const getSearchParams = useCallback((key: string): string | string[] | null => {
+    if (typeof window === "undefined") return null;
 
-      // Always use the current window.location.search to ensure we have the latest values
-      const urlSearchParams = new URLSearchParams(window.location.search);
-      
-      // Check if the key exists before getting all values
-      if (!urlSearchParams.has(key)) {
-        return null;
-      }
-      
-      const values = urlSearchParams.getAll(key);
+    // Always use the current window.location.search to ensure we have the latest values
+    const urlSearchParams = new URLSearchParams(window.location.search);
 
-      // Return appropriate value based on count
-      if (values.length === 0) {
-        return null;
-      } else if (values.length === 1) {
-        return values[0] || null;
-      } else {
-        return values;
-      }
-    },
-    []
-  );
+    // Check if the key exists before getting all values
+    if (!urlSearchParams.has(key)) {
+      return null;
+    }
+
+    const values = urlSearchParams.getAll(key);
+
+    // Return appropriate value based on count
+    if (values.length === 0) {
+      return null;
+    } else if (values.length === 1) {
+      return values[0] || null;
+    } else {
+      return values;
+    }
+  }, []);
 
   return {
-    searchParams:
-      typeof window !== "undefined" ? window.location.search : searchParams,
+    searchParams: typeof window !== "undefined" ? window.location.search : searchParams,
     addSearchParams,
     removeSearchParams,
     getSearchParams,

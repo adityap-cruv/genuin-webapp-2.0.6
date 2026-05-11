@@ -27,7 +27,6 @@ This guide outlines the steps taken to upgrade the Genuin webapp from Next.js 14
 ### 3. React 19 Component Changes
 
 1. **React.FC Deprecated**:
-
    - Converted React.FC components to function declarations
    - Created migration script: `scripts/react-fc-migration.sh`
 
@@ -94,13 +93,13 @@ Updated `tsconfig.json` for React 19:
 Updated custom React type definitions in `types/react.d.ts`:
 
 ```typescript
-declare module 'react' {
+declare module "react" {
   // ReactNode definition for React 19
-  export type ReactNode = React.ReactElement | string | number | boolean | null | undefined | Iterable<ReactNode>
+  export type ReactNode = React.ReactElement | string | number | boolean | null | undefined | Iterable<ReactNode>;
 
   // FC type is deprecated in React 19, providing an alternative
-  export type FC<P = {}> = React.FunctionComponent<P>
-  export type FunctionComponent<P = {}> = (props: P) => React.ReactNode
+  export type FC<P = {}> = React.FunctionComponent<P>;
+  export type FunctionComponent<P = {}> = (props: P) => React.ReactNode;
 }
 ```
 
@@ -117,11 +116,11 @@ Updated Next-Auth configuration for v5:
 Updated middleware structure for Next.js 15 in `middleware.ts`:
 
 ```typescript
-export { auth }
+export { auth };
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
-}
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+};
 ```
 
 ### 10. React.FC Removal
@@ -132,12 +131,12 @@ Refactored components to remove the deprecated `React.FC` type:
 // Before
 const Component: React.FC<Props> = ({ prop1, prop2 }) => {
   // ...
-}
+};
 
 // After
 const Component = ({ prop1, prop2 }: Props) => {
   // ...
-}
+};
 ```
 
 ### 11. React Query Provider

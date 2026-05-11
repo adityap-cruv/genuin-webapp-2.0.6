@@ -29,9 +29,7 @@ export function StatsCell({
   // Show loading if stats are being loaded AND this specific post doesn't have stats yet
   if (isLoading && (!meta?.videoStats || !meta.videoStats[postId])) {
     return (
-      <div
-        className={`gencl:flex gencl:items-center gencl:justify-center ${className}`}
-      >
+      <div className={`gencl:flex gencl:items-center gencl:justify-center ${className}`}>
         <div className="gencl:w-6 gencl:h-3 gencl:bg-secondary-200 gencl:rounded gencl:animate-pulse"></div>
       </div>
     );
@@ -40,9 +38,7 @@ export function StatsCell({
   // If stats are available for this post, show the stat value
   if (stats && typeof stats === "object") {
     return (
-      <div
-        className={`gencl:flex gencl:items-center gencl:justify-center ${className}`}
-      >
+      <div className={`gencl:flex gencl:items-center gencl:justify-center ${className}`}>
         <span className="gencl:text-body-1-medium">{stats[statKey] || 0}</span>
       </div>
     );
@@ -50,9 +46,7 @@ export function StatsCell({
 
   // Fallback: show 0 if no stats available (not loading, but no data)
   return (
-    <div
-      className={`gencl:flex gencl:items-center gencl:justify-center ${className}`}
-    >
+    <div className={`gencl:flex gencl:items-center gencl:justify-center ${className}`}>
       <span className="gencl:text-body-1-medium">0</span>
     </div>
   );

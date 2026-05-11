@@ -33,31 +33,28 @@
  * 2. AWS CLI configuration (recommended)
  */
 
-import fs from 'fs'
-import path from 'path'
+import fs from 'fs';
+import path from 'path';
 
-import {
-  CloudFrontClient,
-  CreateInvalidationCommand,
-} from '@aws-sdk/client-cloudfront'
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
-import { fromIni } from '@aws-sdk/credential-provider-ini'
-import { confirm, checkbox } from '@inquirer/prompts'
-import chalk from 'chalk'
-import cliProgress from 'cli-progress'
-import dotenv from 'dotenv'
+import { CloudFrontClient, CreateInvalidationCommand } from '@aws-sdk/client-cloudfront';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { fromIni } from '@aws-sdk/credential-provider-ini';
+import { confirm, checkbox } from '@inquirer/prompts';
+import chalk from 'chalk';
+import cliProgress from 'cli-progress';
+import dotenv from 'dotenv';
 
 /**
  * Configuration interface for S3 upload settings
  */
 type S3Config = {
-  bucketName: string
-  region: string
-  paths: string[]
-  accessKeyId?: string
-  secretAccessKey?: string
-  distributionId?: string
-}
+    bucketName: string;
+    region: string;
+    paths: string[];
+    accessKeyId?: string;
+    secretAccessKey?: string;
+    distributionId?: string;
+};
 
 /**
  * Loads and validates S3 configuration from environment files
@@ -67,47 +64,44 @@ type S3Config = {
  * @returns {Promise<S3Config | null>} Configuration object or null if invalid
  */
 async function getS3Config(): Promise<S3Config | null> {
-  const NODE_ENV = process.env.NODE_ENV || 'qa'
+    const NODE_ENV = process.env.NODE_ENV || 'qa';
 
-  // Load environment variables in order of priority
-  const commonEnv = dotenv.config({ path: '.env.common' }).parsed || {}
-  const envFile = NODE_ENV === 'production' ? '.env.production' : '.env.qa'
-  const envConfig = dotenv.config({ path: envFile }).parsed || {}
+    // Load environment variables in order of priority
+    const commonEnv = dotenv.config({ path: '.env.common' }).parsed || {};
+    const envFile = NODE_ENV === 'production' ? '.env.production' : '.env.qa';
+    const envConfig = dotenv.config({ path: envFile }).parsed || {};
 
-  // Combine environment variables
-  const combinedEnv = { ...envConfig, ...commonEnv }
+    // Combine environment variables
+    const combinedEnv = { ...envConfig, ...commonEnv };
 
-  const bucketName = combinedEnv.S3_BUCKET_NAME
-  const region = combinedEnv.S3_REGION
-  const paths = combinedEnv.S3_UPLOAD_PATHS?.split(',') || []
-  const distributionId = combinedEnv.CLOUDFRONT_DISTRIBUTION_ID
+    const bucketName = combinedEnv.S3_BUCKET_NAME;
+    const region = combinedEnv.S3_REGION;
+    const paths = combinedEnv.S3_UPLOAD_PATHS?.split(',') || [];
+    const distributionId = combinedEnv.CLOUDFRONT_DISTRIBUTION_ID;
 
-  // Debug information
-  console.log(chalk.blue('\nChecking S3 configuration:'))
-  console.log('Environment:', chalk.yellow(NODE_ENV))
-  console.log('Bucket:', chalk.yellow(bucketName || 'not set'))
-  console.log('Region:', chalk.yellow(region || 'not set'))
-  console.log('Paths:', chalk.yellow(paths.join(', ') || 'not set'))
-  console.log(
-    'CloudFront Distribution:',
-    chalk.yellow(distributionId || 'not set'),
-  )
+    // Debug information
+    console.log(chalk.blue('\nChecking S3 configuration:'));
+    console.log('Environment:', chalk.yellow(NODE_ENV));
+    console.log('Bucket:', chalk.yellow(bucketName || 'not set'));
+    console.log('Region:', chalk.yellow(region || 'not set'));
+    console.log('Paths:', chalk.yellow(paths.join(', ') || 'not set'));
+    console.log('CloudFront Distribution:', chalk.yellow(distributionId || 'not set'));
 
-  // If any required S3 configuration is missing, return null
-  if (!bucketName || !region || paths.length === 0) {
-    console.log(chalk.red('❌ Missing required S3 configuration'))
-    return null
-  }
+    // If any required S3 configuration is missing, return null
+    if (!bucketName || !region || paths.length === 0) {
+        console.log(chalk.red('❌ Missing required S3 configuration'));
+        return null;
+    }
 
-  console.log(chalk.green('✓ S3 configuration found'))
-  return {
-    bucketName,
-    region,
-    paths,
-    accessKeyId: combinedEnv.AWS_ACCESS_KEY_ID || undefined,
-    secretAccessKey: combinedEnv.AWS_SECRET_ACCESS_KEY || undefined,
-    distributionId: combinedEnv.CLOUDFRONT_DISTRIBUTION_ID,
-  }
+    console.log(chalk.green('✓ S3 configuration found'));
+    return {
+        bucketName,
+        region,
+        paths,
+        accessKeyId: combinedEnv.AWS_ACCESS_KEY_ID || undefined,
+        secretAccessKey: combinedEnv.AWS_SECRET_ACCESS_KEY || undefined,
+        distributionId: combinedEnv.CLOUDFRONT_DISTRIBUTION_ID,
+    };
 }
 
 /**
@@ -121,33 +115,31 @@ async function getS3Config(): Promise<S3Config | null> {
  * @returns {Promise<void>}
  */
 async function uploadFile(
-  client: S3Client,
-  bucketName: string,
-  filePath: string,
-  s3Path: string,
-  progressBar: cliProgress.SingleBar,
+    client: S3Client,
+    bucketName: string,
+    filePath: string,
+    s3Path: string,
+    progressBar: cliProgress.SingleBar
 ): Promise<void> {
-  const fileContent = fs.readFileSync(filePath)
-  const fileName = path.basename(filePath)
-  const s3Key = `${s3Path.replace(/^\//, '')}/${fileName}`
+    const fileContent = fs.readFileSync(filePath);
+    const fileName = path.basename(filePath);
+    const s3Key = `${s3Path.replace(/^\//, '')}/${fileName}`;
 
-  const command = new PutObjectCommand({
-    Bucket: bucketName,
-    Key: s3Key,
-    Body: fileContent,
-    ContentType: fileName.endsWith('.js')
-      ? 'application/javascript'
-      : 'text/css',
-  })
+    const command = new PutObjectCommand({
+        Bucket: bucketName,
+        Key: s3Key,
+        Body: fileContent,
+        ContentType: fileName.endsWith('.js') ? 'application/javascript' : 'text/css',
+    });
 
-  try {
-    await client.send(command)
-    progressBar.increment()
-    console.log(chalk.green(`✓ Successfully uploaded ${fileName} to ${s3Key}`))
-  } catch (error) {
-    console.error(chalk.red(`✗ Failed to upload ${fileName} to ${s3Key}`))
-    throw error
-  }
+    try {
+        await client.send(command);
+        progressBar.increment();
+        console.log(chalk.green(`✓ Successfully uploaded ${fileName} to ${s3Key}`));
+    } catch (error) {
+        console.error(chalk.red(`✗ Failed to upload ${fileName} to ${s3Key}`));
+        throw error;
+    }
 }
 
 /**
@@ -159,38 +151,32 @@ async function uploadFile(
  * @returns {Promise<void>}
  */
 async function invalidateCloudFrontCache(
-  client: CloudFrontClient,
-  distributionId: string,
-  paths: string[],
+    client: CloudFrontClient,
+    distributionId: string,
+    paths: string[]
 ): Promise<void> {
-  console.log(chalk.blue('\nInvalidating CloudFront cache...'))
+    console.log(chalk.blue('\nInvalidating CloudFront cache...'));
 
-  try {
-    const invalidationPaths = paths.map((path) => `${path}/*`)
-    const command = new CreateInvalidationCommand({
-      DistributionId: distributionId,
-      InvalidationBatch: {
-        CallerReference: Date.now().toString(),
-        Paths: {
-          Quantity: invalidationPaths.length,
-          Items: invalidationPaths,
-        },
-      },
-    })
+    try {
+        const invalidationPaths = paths.map(path => `${path}/*`);
+        const command = new CreateInvalidationCommand({
+            DistributionId: distributionId,
+            InvalidationBatch: {
+                CallerReference: Date.now().toString(),
+                Paths: {
+                    Quantity: invalidationPaths.length,
+                    Items: invalidationPaths,
+                },
+            },
+        });
 
-    const response = await client.send(command)
-    console.log(
-      chalk.green(`✓ Cache invalidation created: ${response.Invalidation?.Id}`),
-    )
-    console.log(
-      chalk.yellow(
-        'Note: Cache invalidation may take up to 5-10 minutes to complete',
-      ),
-    )
-  } catch (error) {
-    console.error(chalk.red('✗ Failed to invalidate CloudFront cache:'), error)
-    throw error
-  }
+        const response = await client.send(command);
+        console.log(chalk.green(`✓ Cache invalidation created: ${response.Invalidation?.Id}`));
+        console.log(chalk.yellow('Note: Cache invalidation may take up to 5-10 minutes to complete'));
+    } catch (error) {
+        console.error(chalk.red('✗ Failed to invalidate CloudFront cache:'), error);
+        throw error;
+    }
 }
 
 /**
@@ -207,115 +193,86 @@ async function invalidateCloudFrontCache(
  * @returns {Promise<void>}
  */
 export async function uploadBuildsToS3(): Promise<void> {
-  const s3Config = await getS3Config()
+    const s3Config = await getS3Config();
 
-  // If S3 configuration is not found, skip upload silently
-  if (!s3Config) {
-    return
-  }
-
-  const {
-    bucketName,
-    region,
-    paths,
-    accessKeyId,
-    secretAccessKey,
-    distributionId,
-  } = s3Config
-
-  // Prompt user if they want to upload to S3
-  const shouldUpload = await confirm({
-    message: 'Do you want to upload the build files to S3?',
-    default: false,
-  })
-
-  if (!shouldUpload) {
-    return
-  }
-
-  // Prompt user to select paths
-  const selectedPaths = await checkbox<string>({
-    message: 'Select the paths where you want to upload the build files:',
-    choices: paths.map((path) => ({
-      value: path,
-      label: path,
-    })),
-    validate(selected) {
-      return selected.length > 0 || 'You must select at least one path'
-    },
-  })
-
-  // Initialize AWS clients with credentials provider chain
-  const credentials =
-    accessKeyId && secretAccessKey
-      ? { accessKeyId, secretAccessKey }
-      : fromIni()
-
-  const s3Client = new S3Client({ region, credentials })
-  const cloudFrontClient = new CloudFrontClient({ region, credentials })
-
-  const buildFiles = ['dist/gen_sdk.min.js', 'dist/gen-sdk.css']
-  const totalUploads = buildFiles.length * selectedPaths.length
-
-  // Create progress bar
-  const progressBar = new cliProgress.SingleBar({
-    format:
-      'Uploading files |' +
-      chalk.cyan('{bar}') +
-      '| {percentage}% || {value}/{total} Files',
-    barCompleteChar: '\u2588',
-    barIncompleteChar: '\u2591',
-  })
-
-  console.log(chalk.blue('\nStarting S3 upload...'))
-  progressBar.start(totalUploads, 0)
-
-  try {
-    for (const filePath of buildFiles) {
-      if (!fs.existsSync(filePath)) {
-        console.warn(
-          chalk.yellow(`⚠ Warning: ${filePath} does not exist, skipping...`),
-        )
-        progressBar.increment(selectedPaths.length) // Skip progress for missing files
-        continue
-      }
-
-      for (const uploadPath of selectedPaths) {
-        await uploadFile(
-          s3Client,
-          bucketName,
-          filePath,
-          uploadPath,
-          progressBar,
-        )
-      }
+    // If S3 configuration is not found, skip upload silently
+    if (!s3Config) {
+        return;
     }
 
-    progressBar.stop()
-    console.log(chalk.green('\n✓ S3 upload completed successfully!'))
+    const { bucketName, region, paths, accessKeyId, secretAccessKey, distributionId } = s3Config;
 
-    // Invalidate CloudFront cache if distribution ID is provided
-    if (distributionId) {
-      await invalidateCloudFrontCache(
-        cloudFrontClient,
-        distributionId,
-        selectedPaths,
-      )
-    } else {
-      console.log(
-        chalk.yellow(
-          '\n⚠ No CloudFront distribution ID provided, skipping cache invalidation',
-        ),
-      )
+    // Prompt user if they want to upload to S3
+    const shouldUpload = await confirm({
+        message: 'Do you want to upload the build files to S3?',
+        default: false,
+    });
+
+    if (!shouldUpload) {
+        return;
     }
-  } catch (error) {
-    progressBar.stop()
-    console.error(chalk.red('\n✗ Upload process failed:'), error)
-    process.exit(1)
-  }
+
+    // Prompt user to select paths
+    const selectedPaths = await checkbox<string>({
+        message: 'Select the paths where you want to upload the build files:',
+        choices: paths.map(path => ({
+            value: path,
+            label: path,
+        })),
+        validate(selected) {
+            return selected.length > 0 || 'You must select at least one path';
+        },
+    });
+
+    // Initialize AWS clients with credentials provider chain
+    const credentials = accessKeyId && secretAccessKey ? { accessKeyId, secretAccessKey } : fromIni();
+
+    const s3Client = new S3Client({ region, credentials });
+    const cloudFrontClient = new CloudFrontClient({ region, credentials });
+
+    const buildFiles = ['dist/gen_sdk.min.js', 'dist/gen-sdk.css'];
+    const totalUploads = buildFiles.length * selectedPaths.length;
+
+    // Create progress bar
+    const progressBar = new cliProgress.SingleBar({
+        format: 'Uploading files |' + chalk.cyan('{bar}') + '| {percentage}% || {value}/{total} Files',
+        barCompleteChar: '\u2588',
+        barIncompleteChar: '\u2591',
+    });
+
+    console.log(chalk.blue('\nStarting S3 upload...'));
+    progressBar.start(totalUploads, 0);
+
+    try {
+        for (const filePath of buildFiles) {
+            if (!fs.existsSync(filePath)) {
+                console.warn(chalk.yellow(`⚠ Warning: ${filePath} does not exist, skipping...`));
+                progressBar.increment(selectedPaths.length); // Skip progress for missing files
+                continue;
+            }
+
+            for (const uploadPath of selectedPaths) {
+                await uploadFile(s3Client, bucketName, filePath, uploadPath, progressBar);
+            }
+        }
+
+        progressBar.stop();
+        console.log(chalk.green('\n✓ S3 upload completed successfully!'));
+
+        // Invalidate CloudFront cache if distribution ID is provided
+        if (distributionId) {
+            await invalidateCloudFrontCache(cloudFrontClient, distributionId, selectedPaths);
+        } else {
+            console.log(chalk.yellow('\n⚠ No CloudFront distribution ID provided, skipping cache invalidation'));
+        }
+    } catch (error) {
+        progressBar.stop();
+        console.error(chalk.red('\n✗ Upload process failed:'), error);
+        process.exit(1);
+    }
 }
 
 // Run the upload if this script is called directly
 if (require.main === module) {
-  uploadBuildsToS3().catch(console.error)
+    uploadBuildsToS3().catch(console.error);
 }

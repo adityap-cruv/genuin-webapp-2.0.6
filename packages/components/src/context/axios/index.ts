@@ -1,9 +1,4 @@
-export {
-  AxiosContext,
-  useAxiosInstance,
-  useAxiosContext,
-  type AxiosContextType,
-} from "./context";
+export { AxiosContext, useAxiosInstance, useAxiosContext, type AxiosContextType } from "./context";
 
 export { AxiosProvider } from "./provider";
 

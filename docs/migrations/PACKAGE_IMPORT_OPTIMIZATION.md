@@ -33,7 +33,7 @@ experimental: {
 Without optimization:
 
 ```typescript
-import { Button, Card, Input } from 'ui-library';
+import { Button, Card, Input } from "ui-library";
 // ^ This might import the entire library even if you're only using a few components
 ```
 
@@ -41,9 +41,9 @@ With optimization:
 
 ```typescript
 // Automatically transformed at build time to:
-import { Button } from 'ui-library/button';
-import { Card } from 'ui-library/card';
-import { Input } from 'ui-library/input';
+import { Button } from "ui-library/button";
+import { Card } from "ui-library/card";
+import { Input } from "ui-library/input";
 ```
 
 ## Recommended Additional Libraries for Optimization
@@ -51,7 +51,6 @@ import { Input } from 'ui-library/input';
 Consider adding these libraries to our `optimizePackageImports` configuration:
 
 1. Common UI component libraries:
-
    - `@mui/material`
    - `@mui/icons-material`
    - `@heroicons/react`
@@ -60,7 +59,6 @@ Consider adding these libraries to our `optimizePackageImports` configuration:
    - `react-icons`
 
 2. Data/state management libraries with component imports:
-
    - `react-table`
    - `react-hook-form`
    - `swr`
@@ -117,8 +115,8 @@ To measure the impact of package import optimization, enable the bundle analyzer
 
 ```javascript
 // next.config.js
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true',
+const withBundleAnalyzer = require("@next/bundle-analyzer")({
+  enabled: process.env.ANALYZE === "true",
 });
 
 module.exports = withBundleAnalyzer({

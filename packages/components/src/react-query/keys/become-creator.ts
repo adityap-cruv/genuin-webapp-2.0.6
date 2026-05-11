@@ -5,6 +5,6 @@ import { baseQueryKey } from "./base";
  * No need to pass dynamic values as it is a static data and will be same for one user.
  * @returns
  */
-export function getQueryKeyForksCbStatus(id : string) {
-  return [...baseQueryKey ,'ksCbStatus', id]
+export function getQueryKeyForksCbStatus(id: string) {
+  return [...baseQueryKey, "ksCbStatus", id];
 }

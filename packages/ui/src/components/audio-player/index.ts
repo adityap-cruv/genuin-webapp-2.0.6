@@ -1,2 +1,2 @@
 export * from "./audio-player";
-export * from "./waveform-renderer"
+export * from "./waveform-renderer";

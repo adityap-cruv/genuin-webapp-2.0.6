@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from "zod";
 
 const memberSchema = z.object({
   member_id: z.string(),
@@ -11,7 +11,7 @@ const memberSchema = z.object({
   profile_image_s: z.string().nullish(),
   profile_image_m: z.string().nullish(),
   profile_image_l: z.string().nullish(),
-})
+});
 
 // Define the schema for the group in the object
 const groupSchema = z.object({
@@ -35,7 +35,7 @@ const groupSchema = z.object({
   dp_m: z.string().nullish(),
   dp_l: z.string().nullish(),
   members: z.array(memberSchema),
-})
+});
 
 // Define the schema for the latest message
 const latestMessageSchema = z.object({
@@ -50,7 +50,7 @@ const latestMessageSchema = z.object({
   thumbnail_url_s: z.string().nullish(),
   thumbnail_url_m: z.string().nullish(),
   thumbnail_url_l: z.string().nullish(),
-})
+});
 
 // Define the main schema for the provided object
 const LoopSchema = z.object({
@@ -69,7 +69,7 @@ const LoopSchema = z.object({
   is_view_allowed: z.boolean().default(true),
   latest_messages: z.array(latestMessageSchema),
   group: groupSchema,
-})
+});
 
 const BrandUserSchema = z
   .object({
@@ -77,7 +77,7 @@ const BrandUserSchema = z
     brand_slug: z.string(),
     brand_user_logo: z.number(),
   })
-  .nullish()
+  .nullish();
 
 const ProfileSchema = z.object({
   id: z.number(),
@@ -93,7 +93,7 @@ const ProfileSchema = z.object({
   profile_image_m: z.string().nullish(), // `profile_image_m` should be a valid URL
   profile_image_l: z.string().nullish(), // `profile_image_l` should be a valid URL
   brand: BrandUserSchema.optional(),
-})
+});
 
 const BrandTypeSchema = z
   .object({
@@ -108,7 +108,7 @@ const BrandTypeSchema = z
     brand_system_user_id: z.string().nullable(),
     brand_slug: z.string(),
   })
-  .nullish()
+  .nullish();
 
 const CommunitySchema = z.object({
   brand: BrandTypeSchema.optional(),
@@ -133,7 +133,7 @@ const CommunitySchema = z.object({
     .nullish(),
   share_url: z.string(),
   type: z.number().nullish(),
-})
+});
 
 const metaDataSchema = z.object({
   contains_external_videos: z.boolean().default(false),
@@ -141,7 +141,7 @@ const metaDataSchema = z.object({
   resolution: z.string().nullish(),
   duration: z.string().nullish(),
   size: z.string().nullish(),
-})
+});
 
 // Define the schema for the owner of the message
 const ownerSchema = z.object({
@@ -155,7 +155,7 @@ const ownerSchema = z.object({
   profile_image_s: z.string().nullish(),
   profile_image_m: z.string().nullish(),
   profile_image_l: z.string().nullish(),
-})
+});
 
 const VideoSchema = z.object({
   chat_id: z.string(),
@@ -176,24 +176,24 @@ const VideoSchema = z.object({
   is_ai_generated: z.boolean().default(false),
   meta_data: metaDataSchema,
   owner: ownerSchema,
-})
+});
 
-const RankingSchema = z.array(z.enum(['videos', 'loops', 'people', 'communities']))
-const communitiesSchema = z.array(CommunitySchema).nullish()
-const loopsSchema = z.array(LoopSchema).nullish()
-const peopleSchema = z.array(ProfileSchema).nullish()
-const videosSchema = z.array(VideoSchema).nullish()
+const RankingSchema = z.array(z.enum(["videos", "loops", "people", "communities"]));
+const communitiesSchema = z.array(CommunitySchema).nullish();
+const loopsSchema = z.array(LoopSchema).nullish();
+const peopleSchema = z.array(ProfileSchema).nullish();
+const videosSchema = z.array(VideoSchema).nullish();
 
-export type CommunitiesResType = z.infer<typeof communitiesSchema>
+export type CommunitiesResType = z.infer<typeof communitiesSchema>;
 
-export type LoopsResType = z.infer<typeof loopsSchema>
-export type LoopResType = z.infer<typeof LoopSchema>
+export type LoopsResType = z.infer<typeof loopsSchema>;
+export type LoopResType = z.infer<typeof LoopSchema>;
 
-export type PeopleResType = z.infer<typeof peopleSchema>
+export type PeopleResType = z.infer<typeof peopleSchema>;
 
-export type VideosResType = z.infer<typeof videosSchema>
+export type VideosResType = z.infer<typeof videosSchema>;
 
-export type RankingResType = z.infer<typeof RankingSchema>
+export type RankingResType = z.infer<typeof RankingSchema>;
 
 const TopResponseSchema = z.object({
   ranking: RankingSchema,
@@ -201,14 +201,13 @@ const TopResponseSchema = z.object({
   loops: loopsSchema,
   people: peopleSchema,
   videos: videosSchema,
-})
+});
 
 function validateTopResponse(data: any) {
   try {
-    return TopResponseSchema.parse(data)
+    return TopResponseSchema.parse(data);
   } catch (e) {
-     
-    console.log('Validataion error::', e)
-    throw new Error('Something went wront with search api.')
+    console.log("Validataion error::", e);
+    throw new Error("Something went wront with search api.");
   }
 }

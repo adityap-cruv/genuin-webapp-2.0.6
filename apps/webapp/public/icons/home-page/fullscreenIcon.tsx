@@ -1,6 +1,6 @@
-import { type ComponentProps } from 'react'
+import { type ComponentProps } from "react";
 
-type Props = ComponentProps<'svg'>
+type Props = ComponentProps<"svg">;
 export function CustomFullscreenIcon({ ...props }: Props) {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="black" xmlns="http://www.w3.org/2000/svg" {...props}>
@@ -17,5 +17,5 @@ export function CustomFullscreenIcon({ ...props }: Props) {
         </clipPath>
       </defs>
     </svg>
-  )
+  );
 }

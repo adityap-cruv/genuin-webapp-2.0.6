@@ -1,5 +1,5 @@
-import base from './base.js';
-import reactInternal from './react-internal.js';
+import base from "./base.js";
+import reactInternal from "./react-internal.js";
 
 /**
  * ESLint configuration for React library packages (ui, components, web-sdk).
@@ -13,18 +13,18 @@ export default [
   {
     rules: {
       // Library packages don't configure parserOptions.project for typed linting.
-      '@typescript-eslint/no-misused-promises': 'off',
+      "@typescript-eslint/no-misused-promises": "off",
 
       // Allow console.warn/error for surfacing real issues; flag console.log as debug noise.
-      'no-console': ['warn', { allow: ['warn', 'error'] }],
+      "no-console": ["warn", { allow: ["warn", "error"] }],
 
       // Flag unused vars as errors; _-prefixed names opt out intentionally.
-      '@typescript-eslint/no-unused-vars': [
-        'error',
+      "@typescript-eslint/no-unused-vars": [
+        "error",
         {
-          varsIgnorePattern: '^_',
-          argsIgnorePattern: '^_',
-          caughtErrorsIgnorePattern: '^_',
+          varsIgnorePattern: "^_",
+          argsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
         },
       ],
     },

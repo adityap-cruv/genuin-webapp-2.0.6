@@ -1,5 +1,4 @@
-const FALLBACK_GENAI_ASSETS_BASE_URL =
-    'https://media.begenuin.com/webapp_assets/assets/genai/';
+const FALLBACK_GENAI_ASSETS_BASE_URL = 'https://media.begenuin.com/webapp_assets/assets/genai/';
 
 const memoisedBaseUrl = (() => {
     const envValue = import.meta.env.VITE_GENAI_ASSETS_BASE_URL;
@@ -51,10 +50,7 @@ function normaliseLottieAssets(rawData: LottieJson, imagesBaseUrl: string): Lott
                   return assetCandidate;
               }
 
-              const assetFolder =
-                  typeof asset.u === 'string' && asset.u.length > 0
-                      ? asset.u
-                      : '';
+              const assetFolder = typeof asset.u === 'string' && asset.u.length > 0 ? asset.u : '';
               const combined = sanitiseAssetPath(`${assetFolder}${path}`);
               const absoluteUrl = new URL(combined, imagesBaseUrl).toString();
 
@@ -80,18 +76,12 @@ function resolveAnimationUrl(relativePath: string) {
     return new URL(relativePath, memoisedBaseUrl).toString();
 }
 
-export function getCachedRemoteLottie(
-    animationPath: string,
-    imagesPath: string,
-): LottieJson | null {
+export function getCachedRemoteLottie(animationPath: string, imagesPath: string): LottieJson | null {
     const key = buildCacheKey(animationPath, imagesPath);
     return lottieCache.get(key) ?? null;
 }
 
-export async function loadRemoteLottie(
-    animationPath: string,
-    imagesPath: string,
-): Promise<LottieJson> {
+export async function loadRemoteLottie(animationPath: string, imagesPath: string): Promise<LottieJson> {
     const key = buildCacheKey(animationPath, imagesPath);
 
     if (lottieCache.has(key)) {

@@ -1,4 +1,4 @@
-import { generateEmbedSkeletonHTML } from '../utils/skeleton-html'
+import { generateEmbedSkeletonHTML } from "../utils/skeleton-html";
 
 // Error view function
 export function loadErrorView(container: HTMLElement): void {
@@ -19,21 +19,18 @@ export function loadErrorView(container: HTMLElement): void {
         <p style="margin: 0; font-size: 14px;">Please check your configuration and try again.</p>
       </div>
     </div>
-  `
+  `;
 }
 
 // Loading view function - uses HTML/CSS skeleton (no React)
-export function renderEmbedSkeleton(
-  container: HTMLElement,
-  theme?: 'dark' | 'light',
-): void {
+export function renderEmbedSkeleton(container: HTMLElement, theme?: "dark" | "light"): void {
   // Use HTML/CSS skeleton instead of React for faster initial load
-  const websiteType = container.getAttribute('data-website-type')
-  const isDesktop = window.innerWidth >= 768 // Simple desktop detection
+  const websiteType = container.getAttribute("data-website-type");
+  const isDesktop = window.innerWidth >= 768; // Simple desktop detection
 
   container.innerHTML = generateEmbedSkeletonHTML({
     theme,
     websiteType,
     isDesktop,
-  })
+  });
 }

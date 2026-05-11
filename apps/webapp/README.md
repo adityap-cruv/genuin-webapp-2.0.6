@@ -88,17 +88,14 @@ Shared dependencies are managed at the root level. Project-specific dependencies
 ### Common Issues
 
 1. **Dependency Conflicts**
-
    - Run `pnpm install` to resolve conflicts
    - Check for version mismatches in `package.json` files
 
 2. **Build Failures**
-
    - Clear Turborepo cache: `pnpm turbo clean`
    - Rebuild: `pnpm build`
 
 3. **TypeScript Errors**
-
    - Run `pnpm typecheck` to check for type errors
    - Ensure all dependencies are properly typed
 
@@ -135,7 +132,6 @@ Shared dependencies are managed at the root level. Project-specific dependencies
    ```
 
 2. **Making Changes**
-
    - Create feature branches from `main`
    - Follow conventional commits
    - Run tests before pushing

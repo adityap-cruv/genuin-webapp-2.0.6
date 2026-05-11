@@ -13,8 +13,15 @@ interface WebSDKPresetPromptsProps {
 }
 
 export function WebSDKPresetPrompts({ setIsSuggestionsOpen, onClose }: WebSDKPresetPromptsProps) {
-    const { enteredInChatMode, showAllObjectives, textAreaRef, ipInfo, currentAgent, suggestedPrompts, isLoadingSuggestedPrompts } =
-        useAgentsContext();
+    const {
+        enteredInChatMode,
+        showAllObjectives,
+        textAreaRef,
+        ipInfo,
+        currentAgent,
+        suggestedPrompts,
+        isLoadingSuggestedPrompts,
+    } = useAgentsContext();
     const { setInput } = useInputContext();
     const { analytics } = useOctoAnalytics();
     const { track } = useRudderEvents();
@@ -78,14 +85,14 @@ export function WebSDKPresetPrompts({ setIsSuggestionsOpen, onClose }: WebSDKPre
 
     return (
         <div ref={suggestionsRef} className={containerClasses}>
-            <div className="gai:px-4 gai:pt-3 gai:pb-2 gai:font-body-1-bold gai:text-secondary-gray-800">
+            <div className='gai:px-4 gai:pt-3 gai:pb-2 gai:font-body-1-bold gai:text-secondary-gray-800'>
                 Suggested prompts
             </div>
             {suggestedPrompts.map((prompt, index) => (
                 <div
                     key={index}
                     className={itemClasses}
-                    onMouseDown={(e) => {
+                    onMouseDown={e => {
                         e.preventDefault();
                         e.stopPropagation();
                         trackEvent(prompt);

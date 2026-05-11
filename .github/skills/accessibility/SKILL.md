@@ -111,12 +111,7 @@ Minimum contrast ratios (WCAG AA):
 ```tsx
 <div>
   <label htmlFor="email">Email address</label>
-  <input
-    id="email"
-    type="email"
-    aria-describedby={error ? "email-error" : undefined}
-    aria-invalid={!!error}
-  />
+  <input id="email" type="email" aria-describedby={error ? "email-error" : undefined} aria-invalid={!!error} />
   {error && (
     <span id="email-error" role="alert">
       {error}

@@ -1,6 +1,6 @@
-import { type ComponentProps } from 'react'
+import { type ComponentProps } from "react";
 
-type Props = ComponentProps<'svg'>
+type Props = ComponentProps<"svg">;
 export function AddIcon({ ...props }: Props) {
   return (
     <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
@@ -16,5 +16,5 @@ export function AddIcon({ ...props }: Props) {
         />
       </g>
     </svg>
-  )
+  );
 }

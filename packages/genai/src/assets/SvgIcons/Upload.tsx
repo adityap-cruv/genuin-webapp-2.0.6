@@ -13,4 +13,3 @@ const Upload = (props: SVGProps<SVGSVGElement>) => (
 );
 
 export default Upload;
-

@@ -1,6 +1,6 @@
-import { type ComponentProps } from 'react'
+import { type ComponentProps } from "react";
 
-type Props = ComponentProps<'svg'>
+type Props = ComponentProps<"svg">;
 export function TrophyIcon({ ...props }: Props) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" {...props} stroke="black">
@@ -24,5 +24,5 @@ export function TrophyIcon({ ...props }: Props) {
         strokeLinejoin="round"
       />
     </svg>
-  )
+  );
 }

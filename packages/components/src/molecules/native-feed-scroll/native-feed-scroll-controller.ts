@@ -243,18 +243,12 @@ export class NativeFeedScrollController implements NativeFeedScrollInstance {
     if (this._slides.length === 1) return 0;
 
     // Get current scroll position
-    const scrollTop = this._isWindowMode
-      ? window.scrollY || window.pageYOffset
-      : this._container.scrollTop;
+    const scrollTop = this._isWindowMode ? window.scrollY || window.pageYOffset : this._container.scrollTop;
 
     // Get total scrollable distance
-    const scrollHeight = this._isWindowMode
-      ? document.documentElement.scrollHeight
-      : this._container.scrollHeight;
+    const scrollHeight = this._isWindowMode ? document.documentElement.scrollHeight : this._container.scrollHeight;
 
-    const clientHeight = this._isWindowMode
-      ? window.innerHeight
-      : this._container.clientHeight;
+    const clientHeight = this._isWindowMode ? window.innerHeight : this._container.clientHeight;
 
     // Calculate maximum scroll position
     const maxScroll = scrollHeight - clientHeight;
@@ -277,9 +271,7 @@ export class NativeFeedScrollController implements NativeFeedScrollInstance {
    */
   init(container: HTMLElement | null, config: NativeFeedScrollConfig): void {
     if (!container) {
-      throw new Error(
-        "NativeFeedScrollController: Container element is required"
-      );
+      throw new Error("NativeFeedScrollController: Container element is required");
     }
 
     this._container = container;
@@ -339,9 +331,7 @@ export class NativeFeedScrollController implements NativeFeedScrollInstance {
    */
   updateConfig(config: Partial<NativeFeedScrollConfig>): void {
     if (!this._config) {
-      console.warn(
-        "NativeFeedScrollController: Cannot update config before initialization"
-      );
+      console.warn("NativeFeedScrollController: Cannot update config before initialization");
       return;
     }
     this._config = { ...this._config, ...config };
@@ -355,18 +345,12 @@ export class NativeFeedScrollController implements NativeFeedScrollInstance {
    * @param speed - Animation duration in milliseconds (default: 300, 0 for instant)
    * @param runCallbacks - Whether to fire event callbacks (default: true)
    */
-  slideTo(
-    index: number,
-    speed: number = 300,
-    runCallbacks: boolean = true
-  ): void {
+  slideTo(index: number, speed: number = 300, runCallbacks: boolean = true): void {
     if (!this._container || !this._config) return;
 
     // Validate index bounds
     if (index < 0 || index >= this._slides.length) {
-      console.warn(
-        `NativeFeedScrollController: Index ${index} out of bounds (0-${this._slides.length - 1})`
-      );
+      console.warn(`NativeFeedScrollController: Index ${index} out of bounds (0-${this._slides.length - 1})`);
       return;
     }
 
@@ -374,11 +358,7 @@ export class NativeFeedScrollController implements NativeFeedScrollInstance {
     if (!targetSlide) return;
 
     // Respect user's reduced motion preference if configured
-    const effectiveSpeed =
-      this._config.respectReducedMotion !== false &&
-      this._getPrefersReducedMotion()
-        ? 0
-        : speed;
+    const effectiveSpeed = this._config.respectReducedMotion !== false && this._getPrefersReducedMotion() ? 0 : speed;
 
     // Calculate the target scroll position to center the slide in viewport
     const slideRect = targetSlide.getBoundingClientRect();
@@ -393,8 +373,7 @@ export class NativeFeedScrollController implements NativeFeedScrollInstance {
       const slideTopRelativeToDocument = slideRect.top + currentScrollY;
 
       // Center the slide in the viewport
-      const targetScrollY =
-        slideTopRelativeToDocument - viewportHeight / 2 + slideRect.height / 2;
+      const targetScrollY = slideTopRelativeToDocument - viewportHeight / 2 + slideRect.height / 2;
 
       // Perform window scroll
       window.scrollTo({
@@ -405,18 +384,13 @@ export class NativeFeedScrollController implements NativeFeedScrollInstance {
       // Container mode: Scroll the container to the slide
       const containerRect = this._container.getBoundingClientRect();
       const currentScrollTop = this._container.scrollTop;
-      const containerHeight =
-        this._config.containerHeight || containerRect.height;
+      const containerHeight = this._config.containerHeight || containerRect.height;
 
       // Calculate slide's top position relative to container's scroll position
-      const slideTopRelativeToContainer =
-        slideRect.top - containerRect.top + currentScrollTop;
+      const slideTopRelativeToContainer = slideRect.top - containerRect.top + currentScrollTop;
 
       // Center the slide in the viewport
-      const targetScrollTop =
-        slideTopRelativeToContainer -
-        containerHeight / 2 +
-        slideRect.height / 2;
+      const targetScrollTop = slideTopRelativeToContainer - containerHeight / 2 + slideRect.height / 2;
 
       // Perform container scroll
       this._container.scrollTo({
@@ -504,10 +478,7 @@ export class NativeFeedScrollController implements NativeFeedScrollInstance {
    * @param options - Configuration object with index and direction
    * @returns Percentage of slide visible (0-100)
    */
-  getSlideVisibilityPercentage(options: {
-    index: number;
-    dir: "vertical" | "horizontal";
-  }): number {
+  getSlideVisibilityPercentage(options: { index: number; dir: "vertical" | "horizontal" }): number {
     const slide = this._slides[options.index];
     if (!this._container || !slide) {
       return 0;
@@ -557,9 +528,7 @@ export class NativeFeedScrollController implements NativeFeedScrollInstance {
   getVisibilityPercentageByIndex(index: number): number {
     // Validate index bounds
     if (index < 0 || index >= this._slides.length) {
-      console.warn(
-        `NativeFeedScrollController: Index ${index} out of bounds (0-${this._slides.length - 1})`
-      );
+      console.warn(`NativeFeedScrollController: Index ${index} out of bounds (0-${this._slides.length - 1})`);
       return 0;
     }
 
@@ -715,8 +684,7 @@ export class NativeFeedScrollController implements NativeFeedScrollInstance {
     if (!this._container) return;
 
     // Set carousel role description (use custom if provided)
-    const roleDescription =
-      this._config?.containerRoleDescriptionMessage || "carousel";
+    const roleDescription = this._config?.containerRoleDescriptionMessage || "carousel";
     this._container.setAttribute("aria-roledescription", roleDescription);
 
     // Set ARIA label if provided
@@ -803,10 +771,7 @@ export class NativeFeedScrollController implements NativeFeedScrollInstance {
     // Add boundary messages if configured
     if (this._activeIndex === 0 && this._config?.firstSlideMessage) {
       message += `. ${this._config.firstSlideMessage}`;
-    } else if (
-      this._activeIndex === totalSlides - 1 &&
-      this._config?.lastSlideMessage
-    ) {
+    } else if (this._activeIndex === totalSlides - 1 && this._config?.lastSlideMessage) {
       message += `. ${this._config.lastSlideMessage}`;
     }
 
@@ -891,8 +856,7 @@ export class NativeFeedScrollController implements NativeFeedScrollInstance {
             // Always update activeIndex immediately for accurate state
             // Throttling is only applied to event firing, not calculation
             const currentTime = performance.now();
-            const timeSinceLastChange =
-              currentTime - this._lastActiveIndexChangeTime;
+            const timeSinceLastChange = currentTime - this._lastActiveIndexChangeTime;
 
             if (process.env.NODE_ENV === "development") {
               console.log(
@@ -900,9 +864,7 @@ export class NativeFeedScrollController implements NativeFeedScrollInstance {
                 this._activeIndex,
                 "to",
                 validatedIndex,
-                this._isHighVelocityScrolling
-                  ? "(high velocity mode)"
-                  : "(normal velocity)"
+                this._isHighVelocityScrolling ? "(high velocity mode)" : "(normal velocity)"
               );
             }
 
@@ -912,9 +874,7 @@ export class NativeFeedScrollController implements NativeFeedScrollInstance {
             // Throttle event firing during high-velocity scrolling to prevent spam
             // But always update the internal state for accuracy
             const shouldFireEvents =
-              !this._isHighVelocityScrolling ||
-              timeSinceLastChange >=
-                this.MIN_HIGH_VELOCITY_INDEX_CHANGE_INTERVAL;
+              !this._isHighVelocityScrolling || timeSinceLastChange >= this.MIN_HIGH_VELOCITY_INDEX_CHANGE_INTERVAL;
 
             if (shouldFireEvents) {
               this._lastActiveIndexChangeTime = currentTime;
@@ -982,11 +942,7 @@ export class NativeFeedScrollController implements NativeFeedScrollInstance {
     // This can happen during initialization or rapid updates
     if (proposedVisibility === undefined) {
       if (process.env.NODE_ENV === "development") {
-        console.log(
-          "[Validation] No visibility data for index",
-          proposedIndex,
-          "- trusting calculation"
-        );
+        console.log("[Validation] No visibility data for index", proposedIndex, "- trusting calculation");
       }
       return proposedIndex;
     }
@@ -1049,18 +1005,14 @@ export class NativeFeedScrollController implements NativeFeedScrollInstance {
     if (!this._container) return;
 
     // Get direct children of the wrapper div (flex container)
-    const wrapper = this._container.querySelector(
-      ".gencl\\:flex.gencl\\:flex-col"
-    );
+    const wrapper = this._container.querySelector(".gencl\\:flex.gencl\\:flex-col");
     if (!wrapper) {
       this._slides = [];
       return;
     }
 
     // Convert children to array and filter out non-element nodes
-    this._slides = Array.from(wrapper.children).filter(
-      (child): child is HTMLElement => child instanceof HTMLElement
-    );
+    this._slides = Array.from(wrapper.children).filter((child): child is HTMLElement => child instanceof HTMLElement);
 
     // Add ARIA attributes to each slide for accessibility
     this._slides.forEach((slide, index) => {
@@ -1168,66 +1120,43 @@ export class NativeFeedScrollController implements NativeFeedScrollInstance {
 
       // Enhancement: Apply unified directional bias and velocity prediction
       // This logic integrates both directional bias and velocity prediction without early returns
-      const isHighVelocity =
-        this._scrollVelocity > this.HIGH_VELOCITY_THRESHOLD;
+      const isHighVelocity = this._scrollVelocity > this.HIGH_VELOCITY_THRESHOLD;
 
       if (this._scrollDirection === "up" && this._activeIndex > 0) {
         // Backward scrolling: Check if previous slide has reasonable visibility
         const previousIndex = this._activeIndex - 1;
         const previousVisibility = this._intersectionRatios.get(previousIndex);
-        const currentVisibility =
-          this._intersectionRatios.get(this._activeIndex) || 0;
+        const currentVisibility = this._intersectionRatios.get(this._activeIndex) || 0;
 
         // For high velocity: Use lower threshold (35%) for more responsive feel
         // For normal velocity: Use standard threshold (45%)
-        const backwardThreshold = isHighVelocity
-          ? 0.35
-          : this.BACKWARD_SCROLL_VISIBILITY_THRESHOLD;
+        const backwardThreshold = isHighVelocity ? 0.35 : this.BACKWARD_SCROLL_VISIBILITY_THRESHOLD;
 
         // Apply hysteresis: previous slide must have visibility DELTA higher than current
         // This prevents oscillation at boundaries
-        const hysteresisThreshold = Math.max(
-          backwardThreshold,
-          currentVisibility - this.HYSTERESIS_DELTA
-        );
+        const hysteresisThreshold = Math.max(backwardThreshold, currentVisibility - this.HYSTERESIS_DELTA);
 
         // If previous slide has sufficient visibility (with hysteresis), prefer it
-        if (
-          previousVisibility !== undefined &&
-          previousVisibility > hysteresisThreshold
-        ) {
+        if (previousVisibility !== undefined && previousVisibility > hysteresisThreshold) {
           mostVisibleIndex = previousIndex;
           maxVisibility = previousVisibility;
         }
-      } else if (
-        this._scrollDirection === "down" &&
-        this._activeIndex < this._slides.length - 1
-      ) {
+      } else if (this._scrollDirection === "down" && this._activeIndex < this._slides.length - 1) {
         // Forward scrolling: Check if next slide dominates visibility
         const nextIndex = this._activeIndex + 1;
         const nextVisibility = this._intersectionRatios.get(nextIndex);
-        const currentVisibility =
-          this._intersectionRatios.get(this._activeIndex) || 0;
+        const currentVisibility = this._intersectionRatios.get(this._activeIndex) || 0;
 
         // For high velocity: Use lower threshold (45%) for more responsive feel
         // For normal velocity: Use standard threshold (50%)
-        const forwardThreshold = isHighVelocity
-          ? 0.45
-          : this.FORWARD_SCROLL_VISIBILITY_THRESHOLD;
+        const forwardThreshold = isHighVelocity ? 0.45 : this.FORWARD_SCROLL_VISIBILITY_THRESHOLD;
 
         // Apply hysteresis: next slide must have visibility DELTA higher than current
         // This prevents oscillation at boundaries
-        const hysteresisThreshold = Math.max(
-          forwardThreshold,
-          currentVisibility - this.HYSTERESIS_DELTA
-        );
+        const hysteresisThreshold = Math.max(forwardThreshold, currentVisibility - this.HYSTERESIS_DELTA);
 
         // Only switch to next slide if it has sufficient visibility (with hysteresis)
-        if (
-          nextVisibility !== undefined &&
-          nextVisibility > hysteresisThreshold &&
-          nextVisibility > maxVisibility
-        ) {
+        if (nextVisibility !== undefined && nextVisibility > hysteresisThreshold && nextVisibility > maxVisibility) {
           mostVisibleIndex = nextIndex;
           maxVisibility = nextVisibility;
         }
@@ -1245,8 +1174,7 @@ export class NativeFeedScrollController implements NativeFeedScrollInstance {
 
         // Calculate visibility ratio (0-1)
         const slideHeight = slideRect.height;
-        const visibilityRatio =
-          slideHeight > 0 ? visibleHeight / slideHeight : 0;
+        const visibilityRatio = slideHeight > 0 ? visibleHeight / slideHeight : 0;
 
         // Update most visible slide if this one has higher visibility
         if (visibilityRatio > maxVisibility) {
@@ -1310,8 +1238,7 @@ export class NativeFeedScrollController implements NativeFeedScrollInstance {
       const deltaScroll = currentScrollTop - this._lastScrollTop;
 
       // Calculate velocity in pixels per millisecond
-      this._scrollVelocity =
-        deltaTime > 0 ? Math.abs(deltaScroll) / deltaTime : 0;
+      this._scrollVelocity = deltaTime > 0 ? Math.abs(deltaScroll) / deltaTime : 0;
 
       // Determine scroll direction IMMEDIATELY
       if (deltaScroll > 0) {
@@ -1339,9 +1266,7 @@ export class NativeFeedScrollController implements NativeFeedScrollInstance {
     // High velocity: shorter debounce for responsive feel
     // Low velocity: longer debounce to prevent jitter
     const debounceDelay =
-      this._scrollVelocity > this.HIGH_VELOCITY_THRESHOLD
-        ? this.HIGH_VELOCITY_DEBOUNCE
-        : this.LOW_VELOCITY_DEBOUNCE;
+      this._scrollVelocity > this.HIGH_VELOCITY_THRESHOLD ? this.HIGH_VELOCITY_DEBOUNCE : this.LOW_VELOCITY_DEBOUNCE;
 
     // Set new debounce timer with adaptive delay
     this._scrollDebounceTimer = setTimeout(() => {
@@ -1399,10 +1324,7 @@ export class NativeFeedScrollController implements NativeFeedScrollInstance {
     if (!this._config) return;
 
     if (process.env.NODE_ENV === "development") {
-      console.log(
-        "[ActiveIndexChange] Firing callbacks and events for index:",
-        this._activeIndex
-      );
+      console.log("[ActiveIndexChange] Firing callbacks and events for index:", this._activeIndex);
     }
 
     // Announce slide change to screen readers

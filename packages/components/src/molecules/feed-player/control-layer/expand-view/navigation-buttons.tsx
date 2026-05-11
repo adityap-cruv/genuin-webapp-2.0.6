@@ -23,8 +23,7 @@ const NavigationButtons = ({
           "gencl:flex-shrink-0 gencl:rounded-full gencl:bg-white/10 gencl:p-3 gencl:hover:bg-white/20",
           !enablePreviousButton ? "gencl:opacity-40" : undefined
         )}
-        onClick={onClickOnPreviousButton}
-      >
+        onClick={onClickOnPreviousButton}>
         <ChevronUp className="gencl:h-8 gencl:w-8" />
       </Button>
 
@@ -34,8 +33,7 @@ const NavigationButtons = ({
           "gencl:flex-shrink-0 gencl:rounded-full gencl:bg-white/10 gencl:p-3 gencl:hover:bg-white/20",
           !enableNextButton ? "gencl:opacity-40" : undefined
         )}
-        onClick={onClickOnNextButton}
-      >
+        onClick={onClickOnNextButton}>
         <ChevronDown className="gencl:h-8 gencl:w-8" />
       </Button>
     </>

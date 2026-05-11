@@ -9,12 +9,7 @@ type UseVideoThumbnailsProps = {
   onThumbnailsReady?: (isReady: boolean) => void;
 };
 
-export function useVideoThumbnails({
-  count,
-  width,
-  height,
-  onThumbnailsReady,
-}: UseVideoThumbnailsProps) {
+export function useVideoThumbnails({ count, width, height, onThumbnailsReady }: UseVideoThumbnailsProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [thumbnails, setThumbnails] = useState<string[]>([]);
@@ -55,17 +50,7 @@ export function useVideoThumbnails({
       return new Promise((resolve) => {
         const onSeeked = () => {
           context.clearRect(0, 0, width, height);
-          context.drawImage(
-            video,
-            sx,
-            sy,
-            sWidth,
-            sHeight,
-            0,
-            0,
-            width,
-            height
-          );
+          context.drawImage(video, sx, sy, sWidth, sHeight, 0, 0, width, height);
           const dataUrl = canvas.toDataURL("image/png");
           video.removeEventListener("seeked", onSeeked);
           resolve(dataUrl);

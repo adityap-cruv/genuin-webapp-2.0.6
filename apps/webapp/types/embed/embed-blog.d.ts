@@ -1,13 +1,13 @@
 export type BlogSectionType =
   | {
-      image: string
+      image: string;
       blogContent: Array<{
-        title: string
-        description: string
-      }>
+        title: string;
+        description: string;
+      }>;
       popularBlogs: Array<{
-        blog: string
-        videos: string
-      }>
+        blog: string;
+        videos: string;
+      }>;
     }
-  | undefined
+  | undefined;

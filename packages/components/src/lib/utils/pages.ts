@@ -35,12 +35,7 @@ type BuildPageUrlOptions = {
  * @param param0.asRoutePattern - When true, returns wouter route patterns (e.g., "/profile/:id") instead of actual URLs.
  * @returns The constructed URL for the specified page or wouter route pattern.
  */
-export function buildPageUrl({
-  type,
-  slug,
-  searchParams,
-  asRoutePattern = false,
-}: BuildPageUrlOptions): string {
+export function buildPageUrl({ type, slug, searchParams, asRoutePattern = false }: BuildPageUrlOptions): string {
   let basePath: string;
 
   switch (type) {

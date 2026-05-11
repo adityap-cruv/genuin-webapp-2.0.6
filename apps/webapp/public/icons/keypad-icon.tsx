@@ -1,6 +1,6 @@
-import { type ComponentProps } from 'react'
+import { type ComponentProps } from "react";
 
-type Props = ComponentProps<'svg'>
+type Props = ComponentProps<"svg">;
 export function KeypadIcon({ ...props }: Props) {
   return (
     <svg {...props} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -15,5 +15,5 @@ export function KeypadIcon({ ...props }: Props) {
       <circle cx="11.8186" cy="6.09133" r="1.27273" />
       <circle cx="11.8186" cy="9.90896" r="1.27273" />
     </svg>
-  )
+  );
 }

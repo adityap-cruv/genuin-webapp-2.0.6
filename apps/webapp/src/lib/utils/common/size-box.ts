@@ -1,5 +1,5 @@
-import { HEIGHT_OF_HEADER } from '@/lib/constants'
-import { type VideoSizeBoxType, type SizeBoxesType, type ModalSizeBoxType } from '@lib/stores/genuin-options'
+import { HEIGHT_OF_HEADER } from "@/lib/constants";
+import { type VideoSizeBoxType, type SizeBoxesType, type ModalSizeBoxType } from "@lib/stores/genuin-options";
 
 /**
  *
@@ -22,24 +22,24 @@ export function getSizeBoxes(isMobile: boolean, showNavbar: boolean, showIHeartD
       height: -1,
       width: -1,
     },
-  }
+  };
 
   if (isMobile) {
-    let windowHeight = window.innerHeight
+    let windowHeight = window.innerHeight;
     if (showIHeartDemo) {
-      windowHeight -= 75
+      windowHeight -= 75;
     }
-    const windowWidth = window.innerWidth
+    const windowWidth = window.innerWidth;
     sizes = {
       default: { height: windowHeight, width: windowWidth },
       modal: { height: windowHeight, width: windowWidth, player: { height: windowHeight, width: windowWidth } },
-    }
+    };
   } else {
-    sizes.default = getSizeDesktop(showNavbar, showIHeartDemo)
-    sizes.modal = getSizeModal(showIHeartDemo)
+    sizes.default = getSizeDesktop(showNavbar, showIHeartDemo);
+    sizes.modal = getSizeModal(showIHeartDemo);
   }
 
-  return sizes
+  return sizes;
 }
 
 /**
@@ -49,22 +49,22 @@ export function getSizeBoxes(isMobile: boolean, showNavbar: boolean, showIHeartD
  * @returns
  */
 function getSizeDesktop(considerNavbar: boolean, iHeartDemo: boolean): VideoSizeBoxType {
-  const windowHeight = considerNavbar ? window.innerHeight - HEIGHT_OF_HEADER : window.innerHeight
-  const windowWidth = window.innerWidth
-  let videoWidth = (windowHeight * 9) / 16
+  const windowHeight = considerNavbar ? window.innerHeight - HEIGHT_OF_HEADER : window.innerHeight;
+  const windowWidth = window.innerWidth;
+  let videoWidth = (windowHeight * 9) / 16;
 
   if (videoWidth > windowWidth || windowWidth < 400) {
-    videoWidth = windowWidth
+    videoWidth = windowWidth;
   }
-  return { height: windowHeight, width: videoWidth }
+  return { height: windowHeight, width: videoWidth };
 }
 
 function getSizeModal(showIHeartDemo: boolean): ModalSizeBoxType {
-  const windowHeight = window.innerHeight
+  const windowHeight = window.innerHeight;
 
-  const playerHeight = windowHeight * 0.9
-  const playerWidth = playerHeight * (9 / 16)
-  const modalWidth = playerWidth * 2
+  const playerHeight = windowHeight * 0.9;
+  const playerWidth = playerHeight * (9 / 16);
+  const modalWidth = playerWidth * 2;
 
-  return { height: playerHeight, width: modalWidth, player: { height: playerHeight, width: playerWidth } }
+  return { height: playerHeight, width: modalWidth, player: { height: playerHeight, width: playerWidth } };
 }

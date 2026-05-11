@@ -64,7 +64,7 @@ export const CustomColor: Story = {
 
 export const LoaderGroup: Story = {
   render: () => (
-    <div className="flex gap-4 items-center">
+    <div className="flex items-center gap-4">
       <Loader size="xs" />
       <Loader size="sm" />
       <Loader size="md" />

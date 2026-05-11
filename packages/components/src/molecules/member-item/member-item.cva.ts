@@ -1,25 +1,21 @@
 import { cva } from "class-variance-authority";
 
 // Common styles for interactive variants
-const INTERACTIVE_STYLES =
-  "gencl:cursor-pointer gencl:hover:bg-secondary-50 gencl:rounded-md gencl:transition-colors";
+const INTERACTIVE_STYLES = "gencl:cursor-pointer gencl:hover:bg-secondary-50 gencl:rounded-md gencl:transition-colors";
 
-export const memberItemVariants = cva(
-  "gencl:flex gencl:gap-2 gencl:overflow-hidden",
-  {
-    variants: {
-      variant: {
-        default: `gencl:p-3 ${INTERACTIVE_STYLES}`,
-        suggestion: `gencl:p-3 ${INTERACTIVE_STYLES}`,
-        recent: `gencl:w-full gencl:min-w-0 ${INTERACTIVE_STYLES}`,
-        profile: "gencl:flex-col gencl:items-center gencl:w-fit gencl:gap-0",
-      },
+export const memberItemVariants = cva("gencl:flex gencl:gap-2 gencl:overflow-hidden", {
+  variants: {
+    variant: {
+      default: `gencl:p-3 ${INTERACTIVE_STYLES}`,
+      suggestion: `gencl:p-3 ${INTERACTIVE_STYLES}`,
+      recent: `gencl:w-full gencl:min-w-0 ${INTERACTIVE_STYLES}`,
+      profile: "gencl:flex-col gencl:items-center gencl:w-fit gencl:gap-0",
     },
-    defaultVariants: {
-      variant: "default",
-    },
-  }
-);
+  },
+  defaultVariants: {
+    variant: "default",
+  },
+});
 
 export const memberItemUsernameVariants = cva("", {
   variants: {
@@ -49,22 +45,19 @@ export const memberItemNameVariants = cva("gencl:line-clamp-1", {
   },
 });
 
-export const memberItemBioVariants = cva(
-  "gencl:text-body-2-medium gencl:text-secondary-600 gencl:line-clamp-1",
-  {
-    variants: {
-      variant: {
-        default: "",
-        suggestion: "",
-        recent: "",
-        profile: "",
-      },
+export const memberItemBioVariants = cva("gencl:text-body-2-medium gencl:text-secondary-600 gencl:line-clamp-1", {
+  variants: {
+    variant: {
+      default: "",
+      suggestion: "",
+      recent: "",
+      profile: "",
     },
-    defaultVariants: {
-      variant: "default",
-    },
-  }
-);
+  },
+  defaultVariants: {
+    variant: "default",
+  },
+});
 
 export const memberItemAvatarVariants = cva("", {
   variants: {

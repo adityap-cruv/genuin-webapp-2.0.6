@@ -1,6 +1,6 @@
-import { type ComponentProps } from 'react'
+import { type ComponentProps } from "react";
 
-type Props = ComponentProps<'svg'>
+type Props = ComponentProps<"svg">;
 export function PlayStoreIcon({ ...props }: Props) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" {...props}>
@@ -72,5 +72,5 @@ export function PlayStoreIcon({ ...props }: Props) {
         </linearGradient>
       </defs>
     </svg>
-  )
+  );
 }

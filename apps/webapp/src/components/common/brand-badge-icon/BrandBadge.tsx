@@ -1,38 +1,38 @@
 // Import necessary libraries and modules
-import { cva } from 'class-variance-authority'
-import cn from 'classnames'
-import React from 'react'
+import { cva } from "class-variance-authority";
+import cn from "classnames";
+import React from "react";
 
 // Define the properties for the BrandBadge component
 interface BrandBadgeProps {
-  variant?: 'light' | 'primary' | 'dark' // Optional variant prop to determine the color scheme
-  className?: string // Optional className prop to apply additional custom classes
+  variant?: "light" | "primary" | "dark"; // Optional variant prop to determine the color scheme
+  className?: string; // Optional className prop to apply additional custom classes
 }
 
 // Define the class variance authority (cva) for the BrandBadge component
-const textClasses = cva('', {
+const textClasses = cva("", {
   variants: {
     variant: {
-      light: 'text-monochrome-white bg-monochrome-white/20', // Light variant classes
-      primary: 'text-primary', // Primary variant class
-      dark: 'bg-tertiary-200', // Dark variant class
+      light: "text-monochrome-white bg-monochrome-white/20", // Light variant classes
+      primary: "text-primary", // Primary variant class
+      dark: "bg-tertiary-200", // Dark variant class
     },
   },
   defaultVariants: {
-    variant: 'primary', // Default variant is 'primary'
+    variant: "primary", // Default variant is 'primary'
   },
-})
+});
 
 // Define the BrandBadge component (updated for React 19)
-function BrandBadge({ variant = 'primary', className }: BrandBadgeProps) {
+function BrandBadge({ variant = "primary", className }: BrandBadgeProps) {
   return (
     // Container div with flexbox properties and additional custom classes
     <div className={`flex items-center gap-1 ${className}`}>
       {/* Paragraph element with variant-specific and additional classes */}
-      <p className={cn(textClasses({ variant }), 'rounded-full px-2 py-1 text-cap-1-demi')}>Brand</p>
+      <p className={cn(textClasses({ variant }), "text-cap-1-demi rounded-full px-2 py-1")}>Brand</p>
     </div>
-  )
+  );
 }
 
 // Export the BrandBadge component as the default export
-export default BrandBadge
+export default BrandBadge;

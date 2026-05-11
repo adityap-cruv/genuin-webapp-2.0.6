@@ -19,7 +19,7 @@ export function useDeviceDetection() {
       const model = device?.model;
       return model?.toLowerCase() === "ipad";
     } catch {
-       // Fallback: plain UA parsing
+      // Fallback: plain UA parsing
       return parser?.getResult().device.model?.toLowerCase() === "ipad";
     }
   };

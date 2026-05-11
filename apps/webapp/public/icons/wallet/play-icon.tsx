@@ -1,6 +1,6 @@
-import { type ComponentProps } from 'react'
+import { type ComponentProps } from "react";
 
-type Props = ComponentProps<'svg'>
+type Props = ComponentProps<"svg">;
 export function PlayIconRound({ ...props }: Props) {
   return (
     <svg stroke="black" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
@@ -18,5 +18,5 @@ export function PlayIconRound({ ...props }: Props) {
         strokeLinejoin="round"
       />
     </svg>
-  )
+  );
 }

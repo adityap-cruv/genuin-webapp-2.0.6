@@ -1,12 +1,12 @@
-import { type ComponentProps } from 'react'
+import { type ComponentProps } from "react";
 
 // Define the Props type which extends the default SVG properties and includes optional className and strokeClassName
-type Props = ComponentProps<'svg'> & { className?: string; strokeClassName?: string }
+type Props = ComponentProps<"svg"> & { className?: string; strokeClassName?: string };
 
 // BurgerIcon component renders a burger menu icon using SVG
 export function BurgerIcon({
-  className = 'stroke-monochrome-black', // Default class for the SVG element
-  strokeClassName = 'stroke-monochrome-black', // Default class for the stroke of the paths
+  className = "stroke-monochrome-black", // Default class for the SVG element
+  strokeClassName = "stroke-monochrome-black", // Default class for the stroke of the paths
   ...props // Spread the remaining props to the SVG element
 }: Props) {
   return (
@@ -47,5 +47,5 @@ export function BurgerIcon({
         className={strokeClassName} // Apply the strokeClassName to the path
       />
     </svg>
-  )
+  );
 }

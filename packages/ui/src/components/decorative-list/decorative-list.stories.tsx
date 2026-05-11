@@ -11,12 +11,7 @@ interface LinkProps {
   className?: string; // Added className to allow styling if needed by stories
 }
 const Link = ({ href, title, children, className }: LinkProps) => (
-  <a
-    href={href}
-    title={title}
-    className={className}
-    style={{ textDecoration: "none" }}
-  >
+  <a href={href} title={title} className={className} style={{ textDecoration: "none" }}>
     {children}
   </a>
 );
@@ -32,8 +27,7 @@ const meta: Meta<typeof DecorativeList> = {
   argTypes: {
     children: {
       control: "text", // Or 'object' if more complex ReactNode is needed for control
-      description:
-        "The content of the list, expected to be <li> elements or components rendering them.",
+      description: "The content of the list, expected to be <li> elements or components rendering them.",
     },
     className: {
       control: "text",
@@ -70,11 +64,8 @@ export const WithCustomStyledChildren: Story = {
     children: (
       <>
         <div className="gencl:h-2 gencl:w-full" />
-        <Link
-          href={PATH_NAME.loop(loop.slug)}
-          title={loop.name ?? "Genuin Loop"}
-        >
-          <li className="gencl:relative gencl:flex gencl:h-full gencl:w-full gencl:items-center gencl:justify-between gencl:rounded-md gencl:border gencl:border-tertiary-200 gencl:bg-monochrome-white gencl:p-4 ">
+        <Link href={PATH_NAME.loop(loop.slug)} title={loop.name ?? "Genuin Loop"}>
+          <li className="gencl:relative gencl:flex gencl:h-full gencl:w-full gencl:items-center gencl:justify-between gencl:rounded-md gencl:border gencl:border-tertiary-200 gencl:bg-monochrome-white gencl:p-4">
             <p className="gencl:line-clamp-2 gencl:w-full gencl:break-words gencl:pr-2 gencl:text-body-1-demi">
               {loop?.name}
             </p>
@@ -84,7 +75,7 @@ export const WithCustomStyledChildren: Story = {
           </li>
         </Link>
         <Link href={PATH_NAME.loop("another-loop")} title="Another Loop Group">
-          <li className="gencl:relative gencl:mt-2 gencl:flex gencl:h-full gencl:w-full gencl:items-center gencl:justify-between gencl:rounded-md gencl:border gencl:border-tertiary-200 gencl:bg-monochrome-white gencl:p-4 ">
+          <li className="gencl:relative gencl:mt-2 gencl:flex gencl:h-full gencl:w-full gencl:items-center gencl:justify-between gencl:rounded-md gencl:border gencl:border-tertiary-200 gencl:bg-monochrome-white gencl:p-4">
             <p className="gencl:line-clamp-2 gencl:w-full gencl:break-words gencl:pr-2 gencl:text-body-1-demi">
               Another Item in the List
             </p>
@@ -108,11 +99,8 @@ export const OriginalWithCustomChildren: Story = {
     children: (
       <>
         <div className="gencl:h-2 gencl:w-full" />
-        <Link
-          href={PATH_NAME.loop(loop.slug)}
-          title={loop.name ?? "Genuin Loop"}
-        >
-          <li className="gencl:relative gencl:flex gencl:h-full gencl:w-full gencl:items-center gencl:justify-between gencl:rounded-md gencl:border gencl:border-tertiary-200 gencl:bg-monochrome-white gencl:p-4 ">
+        <Link href={PATH_NAME.loop(loop.slug)} title={loop.name ?? "Genuin Loop"}>
+          <li className="gencl:relative gencl:flex gencl:h-full gencl:w-full gencl:items-center gencl:justify-between gencl:rounded-md gencl:border gencl:border-tertiary-200 gencl:bg-monochrome-white gencl:p-4">
             <p className="gencl:line-clamp-2 gencl:w-full gencl:break-words gencl:pr-2 gencl:text-body-1-demi">
               {loop?.name}
             </p>

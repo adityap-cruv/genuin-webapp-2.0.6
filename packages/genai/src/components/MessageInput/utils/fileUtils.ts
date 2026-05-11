@@ -37,4 +37,3 @@ export const ALLOWED_TYPES = {
     'text/csv': '.csv',
     'video/mp4': '.mp4',
 } as const;
-

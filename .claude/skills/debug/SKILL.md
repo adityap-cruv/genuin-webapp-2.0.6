@@ -113,34 +113,34 @@ These cover the majority of bugs. Before diving deep, rule them out:
 
 Check these first for bugs that only appear in certain packages or after adding a dependency:
 
-| Pattern                       | What to check                                                             |
-| ----------------------------- | ------------------------------------------------------------------------- |
-| **Turborepo stale cache**     | Run `pnpm turbo clean` then rebuild — stale output causes phantom errors  |
-| **Package not built**         | Run `pnpm build` from root before debugging cross-package imports         |
-| **Missing `workspace:*`**     | A package referencing an internal dep by version number resolves to a published (outdated) version — fix to `workspace:*` |
-| **Cross-app import**          | `apps/webapp` importing from `apps/web-sdk` or vice versa is not allowed — shared code must be in `packages/` |
-| **pnpm resolution**           | After adding a new package, run `pnpm install` from root — not from the package dir |
+| Pattern                   | What to check                                                                                                             |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **Turborepo stale cache** | Run `pnpm turbo clean` then rebuild — stale output causes phantom errors                                                  |
+| **Package not built**     | Run `pnpm build` from root before debugging cross-package imports                                                         |
+| **Missing `workspace:*`** | A package referencing an internal dep by version number resolves to a published (outdated) version — fix to `workspace:*` |
+| **Cross-app import**      | `apps/webapp` importing from `apps/web-sdk` or vice versa is not allowed — shared code must be in `packages/`             |
+| **pnpm resolution**       | After adding a new package, run `pnpm install` from root — not from the package dir                                       |
 
 ---
 
 ## Next.js 15 App Router patterns
 
-| Pattern                            | What to check                                                            |
-| ---------------------------------- | ------------------------------------------------------------------------ |
-| **Async `params` / `searchParams`**| In Next.js 15 these are Promises — `const { id } = await params` not `params.id` directly |
-| **Hook in Server Component**       | `useState`, `useEffect`, `useContext` etc. cannot be used without `'use client'` |
-| **Route Handler not caching**      | `GET` handlers are no longer cached by default in Next.js 15 — this is expected behaviour, not a bug |
-| **Middleware not running**         | Check `apps/webapp/middleware.ts` matcher — the pattern must match the route exactly |
-| **`auth()` returning null**        | Call `auth()` from `apps/webapp/auth.ts` — not from `next-auth` directly |
+| Pattern                             | What to check                                                                                        |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Async `params` / `searchParams`** | In Next.js 15 these are Promises — `const { id } = await params` not `params.id` directly            |
+| **Hook in Server Component**        | `useState`, `useEffect`, `useContext` etc. cannot be used without `'use client'`                     |
+| **Route Handler not caching**       | `GET` handlers are no longer cached by default in Next.js 15 — this is expected behaviour, not a bug |
+| **Middleware not running**          | Check `apps/webapp/middleware.ts` matcher — the pattern must match the route exactly                 |
+| **`auth()` returning null**         | Call `auth()` from `apps/webapp/auth.ts` — not from `next-auth` directly                             |
 
 ---
 
 ## Tailwind v4 patterns
 
-| Symptom                  | Cause                                                                    |
-| ------------------------ | ------------------------------------------------------------------------ |
-| Class applies in v3 but not v4 | Class was renamed — check the table below                          |
-| `theme()` function not resolving | `theme()` is deprecated in v4 — use CSS variables instead         |
+| Symptom                          | Cause                                                     |
+| -------------------------------- | --------------------------------------------------------- |
+| Class applies in v3 but not v4   | Class was renamed — check the table below                 |
+| `theme()` function not resolving | `theme()` is deprecated in v4 — use CSS variables instead |
 
 Renamed utilities to check:
 
@@ -157,11 +157,11 @@ Renamed utilities to check:
 
 ## Auth (NextAuth v5) patterns
 
-| Pattern                      | What to check                                                            |
-| ---------------------------- | ------------------------------------------------------------------------ |
-| **Session null in Server Component** | Use `auth()` from `apps/webapp/auth.ts`, not from `next-auth`  |
-| **`NEXTAUTH_SECRET` missing**| NextAuth v5 requires this env var — check root `.env`                   |
-| **Auth config not found**    | Config lives in `apps/webapp/auth.ts` and `apps/webapp/auth.config.ts`  |
+| Pattern                              | What to check                                                          |
+| ------------------------------------ | ---------------------------------------------------------------------- |
+| **Session null in Server Component** | Use `auth()` from `apps/webapp/auth.ts`, not from `next-auth`          |
+| **`NEXTAUTH_SECRET` missing**        | NextAuth v5 requires this env var — check root `.env`                  |
+| **Auth config not found**            | Config lives in `apps/webapp/auth.ts` and `apps/webapp/auth.config.ts` |
 
 ---
 

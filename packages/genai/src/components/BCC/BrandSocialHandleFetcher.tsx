@@ -119,7 +119,6 @@ const BrandSocialHandleFetcher = ({ jsonData, messageId }: BrandSocialHandleFetc
             } else {
                 toast.error(response.data.message);
             }
-             
         } catch (error) {
             toast.error('Failed to insert social handle');
         } finally {

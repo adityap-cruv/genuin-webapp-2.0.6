@@ -1,6 +1,6 @@
-import type { ComponentProps } from 'react'
+import type { ComponentProps } from "react";
 
-export function PipIcon({ className, ...restProps }: ComponentProps<'svg'>) {
+export function PipIcon({ className, ...restProps }: ComponentProps<"svg">) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -18,5 +18,5 @@ export function PipIcon({ className, ...restProps }: ComponentProps<'svg'>) {
         strokeLinecap="round"
       />
     </svg>
-  )
+  );
 }

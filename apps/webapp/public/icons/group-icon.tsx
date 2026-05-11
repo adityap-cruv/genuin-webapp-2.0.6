@@ -1,8 +1,8 @@
-import { type ComponentProps } from 'react'
+import { type ComponentProps } from "react";
 
-import { cn } from '@/lib/utils'
+import { cn } from "@/lib/utils";
 
-export function GroupIcon({ className, ...restProps }: ComponentProps<'svg'>) {
+export function GroupIcon({ className, ...restProps }: ComponentProps<"svg">) {
   return (
     <svg
       className={cn(className)}
@@ -19,5 +19,5 @@ export function GroupIcon({ className, ...restProps }: ComponentProps<'svg'>) {
         fill="white"
       />
     </svg>
-  )
+  );
 }

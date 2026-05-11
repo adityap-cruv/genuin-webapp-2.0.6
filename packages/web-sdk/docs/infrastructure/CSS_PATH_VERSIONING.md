@@ -7,10 +7,12 @@ The Web SDK now supports versioned CSS paths to allow different SDK versions to 
 ## How It Works
 
 ### Default Behavior
+
 - **Default CSS Path**: `/sdk/assets/web-sdk.css`
 - When no version is specified, the CSS loads from the standard path
 
 ### Versioned Behavior
+
 - **Versioned CSS Path**: `/sdk/{version}/assets/web-sdk.css`
 - When a version is specified, the CSS loads from a version-specific subdirectory
 
@@ -31,12 +33,14 @@ npm run deploy:prod
 The deployment process includes these prompts:
 
 1. **Version Bump Prompt** (existing)
+
    ```
    Do you want to bump the version? (y/n):
    ```
 
 2. **CSS Path Selection Prompt** (new)
-   ```
+
+   ````
    === CSS Path Configuration ===
    Select CSS path for this deployment:
    1. /sdk/assets/ (default)
@@ -48,31 +52,38 @@ The deployment process includes these prompts:
 
    Select path (1-6):
    ```### Examples
+   ````
 
 **Example 1: Default Path**
+
 - Selection: `1` (/sdk/assets/)
 - Result: CSS loads from `https://media.begenuin.com/sdk/assets/web-sdk.css`
 
 **Example 2: Version 2.0.0**
+
 - Selection: `6` (/sdk/2.0.0/assets/)
 - Result: CSS loads from `https://media.begenuin.com/sdk/2.0.0/assets/web-sdk.css`
 
 **Example 3: Multi-v2 Version**
+
 - Selection: `4` (/sdk/multi-v2/assets/)
 - Result: CSS loads from `https://media.begenuin.com/sdk/multi-v2/assets/web-sdk.css`
 
 ## Technical Implementation
 
 ### Environment Configuration
+
 - Available paths are defined in `.env.common` as `S3_UPLOAD_PATHS`
 - Current paths: `/sdk,/sdk/v1,/sdk/multi,/sdk/multi-v2,/sdk/v2,/sdk/2.0.0`
 - The deployment script reads these paths and presents them as selectable options
 
 ### Environment Variable
+
 - The CSS path version is stored in `SDK_VERSION_PATH` environment variable
 - This variable is set during the deployment process and used during build
 
 ### Build Process
+
 1. `npmVersionManager.ts` reads available paths from `S3_UPLOAD_PATHS`
 2. Presents numbered selection menu to user
 3. If a versioned path is selected, sets `SDK_VERSION_PATH` environment variable
@@ -83,6 +94,7 @@ The deployment process includes these prompts:
    - `__SDK_VERSION_PATH__` → version path (or empty for default)
 
 ### File Processing
+
 - **Source**: `src/loader.js` with placeholders
 - **Output**: `dist/gen_sdk.js` or `dist/gen_sdk.min.js` with resolved URLs
 - **CSS URL Pattern**: `{MEDIA_BASE_URL}/sdk{VERSION_PATH}/assets/web-sdk.css`
@@ -90,11 +102,13 @@ The deployment process includes these prompts:
 ## Deployment Strategy
 
 ### Recommended Workflow
+
 1. Deploy CSS assets to versioned S3 paths first
 2. Run deployment with matching version path
 3. Verify CSS loads correctly from the versioned path
 
 ### S3 Structure
+
 ```
 s3://bucket/sdk/
 ├── assets/                    # Default path (option 1)
@@ -127,6 +141,7 @@ s3://bucket/sdk/
 ## Migration
 
 Existing deployments are unaffected:
+
 - No changes required for current implementations
 - Default behavior remains the same
 - Version paths are opt-in during deployment

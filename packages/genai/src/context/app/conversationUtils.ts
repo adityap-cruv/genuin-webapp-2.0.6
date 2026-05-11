@@ -5,7 +5,12 @@ import type { CarousalMetadata, ChatHistoryEvent } from '@/types';
  * Parses agent message which comes as a JSON string from the API
  * Returns the parsed message object with content, function_name, and function_response
  */
-function parseAgentMessage(message: string): { content: string; function_name?: string | null; function_response?: any | null; carousel_metadata?: CarousalMetadata | null } {
+function parseAgentMessage(message: string): {
+    content: string;
+    function_name?: string | null;
+    function_response?: any | null;
+    carousel_metadata?: CarousalMetadata | null;
+} {
     try {
         const parsed = JSON.parse(message);
         return {
@@ -31,7 +36,7 @@ export function convertChatHistoryV2ToEvents(history: ChatHistoryItem[]): ChatHi
     for (const item of history) {
         // Use empty string for first message instead of null so it passes the parent_id !== null check in Chat component
         const parentId = previousEventId !== null ? previousEventId : '';
-        
+
         if (item.author === 'user') {
             // Create a separate event for user message
             events.push({
@@ -59,7 +64,7 @@ export function convertChatHistoryV2ToEvents(history: ChatHistoryItem[]): ChatHi
                 created_at: item.timestamp,
                 isCompleted: true,
             };
-            
+
             // Add carousel_metadata if kws is present
             if (parsedMessage.carousel_metadata) {
                 agentEvent.carousel_metadata = {
@@ -72,7 +77,7 @@ export function convertChatHistoryV2ToEvents(history: ChatHistoryItem[]): ChatHi
                     video_ids: parsedMessage.carousel_metadata.video_ids,
                 };
             }
-            
+
             events.push(agentEvent);
             previousEventId = item.id;
         }

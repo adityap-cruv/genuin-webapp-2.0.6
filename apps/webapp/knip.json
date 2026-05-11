@@ -17,10 +17,7 @@
     "src/services/**/*.{ts,tsx}",
     "src/types/**/*.{ts,tsx}"
   ],
-  "ignore": [
-    "src/types/svg.d.ts",
-    "src/lib/utils/ssai/urlParamResolver.js"
-  ],
+  "ignore": ["src/types/svg.d.ts", "src/lib/utils/ssai/urlParamResolver.js"],
   "ignoreDependencies": [
     "@auth/core",
     "sharp",

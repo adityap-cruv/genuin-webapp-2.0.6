@@ -1,21 +1,21 @@
-import { cva, type VariantProps } from 'class-variance-authority'
-import { type ComponentProps } from 'react'
+import { cva, type VariantProps } from "class-variance-authority";
+import { type ComponentProps } from "react";
 
-import { cn } from '@/lib/utils'
+import { cn } from "@/lib/utils";
 
 // Define the unmuteVariant function using cva to handle different styles based on props
-const unmuteVariant = cva('', {
+const unmuteVariant = cva("", {
   variants: {
     variant: {
-      light: 'fill-monochrome-white', // Light variant style
-      dark: 'fill-monochrome-black', // Dark variant style
+      light: "fill-monochrome-white", // Light variant style
+      dark: "fill-monochrome-black", // Dark variant style
     },
   },
-})
+});
 
-type Props = ComponentProps<'svg'> & VariantProps<typeof unmuteVariant> & { variant?: 'light' | 'dark' | null }
+type Props = ComponentProps<"svg"> & VariantProps<typeof unmuteVariant> & { variant?: "light" | "dark" | null };
 
-export function UnmuteIcon({ variant = 'dark', className, ...restProps }: Props) {
+export function UnmuteIcon({ variant = "dark", className, ...restProps }: Props) {
   return (
     <svg
       width="24"
@@ -38,5 +38,5 @@ export function UnmuteIcon({ variant = 'dark', className, ...restProps }: Props)
         className={cn(unmuteVariant({ variant }))}
       />
     </svg>
-  )
+  );
 }

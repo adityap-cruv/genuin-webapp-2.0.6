@@ -1,6 +1,6 @@
-import { type ComponentProps } from 'react'
+import { type ComponentProps } from "react";
 
-type Props = ComponentProps<'svg'>
+type Props = ComponentProps<"svg">;
 
 export function RepostIcon({ ...props }: Props) {
   return (
@@ -29,5 +29,5 @@ export function RepostIcon({ ...props }: Props) {
       <path d="M16 11.6667V19.6667" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
       <path d="M12 15.6667H20" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
-  )
+  );
 }

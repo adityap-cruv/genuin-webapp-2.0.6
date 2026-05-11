@@ -1,6 +1,6 @@
-import { type ComponentProps } from 'react'
+import { type ComponentProps } from "react";
 
-type Props = ComponentProps<'svg'>
+type Props = ComponentProps<"svg">;
 
 export function CommunityDiscussion02({ ...props }: Props) {
   return (
@@ -231,5 +231,5 @@ export function CommunityDiscussion02({ ...props }: Props) {
       <path d="M314.291 93.2082C313.825 107.939 300.325 117.553 288.066 117.398C263.393 117.243 253.462 88.4012 270.531 73.5149C287.135 59.4039 314.911 69.7933 314.291 93.2082ZM293.652 69.1731C279.842 66.2268 266.186 75.0654 264.014 88.8662C261.376 104.838 276.428 120.499 296.135 114.297C318.17 107.629 318.48 74.2902 293.652 69.1731Z" />
       <ellipse cx="202.559" cy="248.03" rx="7.67591" ry="7.67045" stroke="white" strokeWidth="1.70576" />
     </svg>
-  )
+  );
 }

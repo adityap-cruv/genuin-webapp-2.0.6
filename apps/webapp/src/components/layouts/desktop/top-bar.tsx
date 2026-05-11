@@ -1,47 +1,47 @@
-'use client'
-import Link from 'next/link'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useSession, signOut } from 'next-auth/react'
-import { useEffect, useState } from 'react'
-import { formatPhoneNumberIntl } from 'react-phone-number-input'
-import { useShallow } from 'zustand/react/shallow'
+"use client";
+import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSession, signOut } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { formatPhoneNumberIntl } from "react-phone-number-input";
+import { useShallow } from "zustand/react/shallow";
 
-import GetAppButton from '@/components/common/actions/get-app-button'
-import { usePlayerControlStore } from '@/components/common/player/player-control-store'
-import { WalletAmountBadge } from '@/components/common/wallet/wallet-amount-badge'
-import { CustomImage } from '@/components/custom/custom-image'
-import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
-import { Loader } from '@/components/ui/loader'
-import { Shimmer } from '@/components/ui/shimmer'
-import { AuthenticationModal } from '@components/common/modals/authentication'
-import { SearchBar } from '@components/common/search-bar'
-import { CustomAvatar } from '@components/custom/custom-avatar'
-import { AppLogo } from '@components/ui/app-logo'
-import { Button } from '@components/ui/button'
-import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
-import { LogoutIcon } from '@icons/logout'
-import { SettingIcon } from '@icons/settings'
-import { removeAllAuthToken } from '@lib/api/instance'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
-import { PATH_NAME } from '@lib/utils/constants/path'
+import GetAppButton from "@/components/common/actions/get-app-button";
+import { usePlayerControlStore } from "@/components/common/player/player-control-store";
+import { WalletAmountBadge } from "@/components/common/wallet/wallet-amount-badge";
+import { CustomImage } from "@/components/custom/custom-image";
+import { useIHeartDemoStates } from "@/components/providers/iheart-demo-provider";
+import { Loader } from "@/components/ui/loader";
+import { Shimmer } from "@/components/ui/shimmer";
+import { AuthenticationModal } from "@components/common/modals/authentication";
+import { SearchBar } from "@components/common/search-bar";
+import { CustomAvatar } from "@components/custom/custom-avatar";
+import { AppLogo } from "@components/ui/app-logo";
+import { Button } from "@components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@components/ui/popover";
+import { LogoutIcon } from "@icons/logout";
+import { SettingIcon } from "@icons/settings";
+import { removeAllAuthToken } from "@lib/api/instance";
+import { useGenuinOptions } from "@lib/stores/genuin-options";
+import { PATH_NAME } from "@lib/utils/constants/path";
 
-import { IHeartDemo } from './iheart-demo'
+import { IHeartDemo } from "./iheart-demo";
 
 export function TopBar({
   showUserTick = true,
   showSearchBar = true,
 }: {
-  showUserTick?: boolean
-  showSearchBar?: boolean
+  showUserTick?: boolean;
+  showSearchBar?: boolean;
 }) {
-  const { config, isLoading, webCTA } = useGenuinOptions()
+  const { config, isLoading, webCTA } = useGenuinOptions();
   const { isFullScreen } = usePlayerControlStore(
     useShallow((state) => ({
       isFullScreen: state.isFullScreen,
     }))
-  )
-  const { renderIn, shouldShowIHeartDemo } = useIHeartDemoStates()
-  const showIHeartDemo = renderIn === 'root' && shouldShowIHeartDemo
+  );
+  const { renderIn, shouldShowIHeartDemo } = useIHeartDemoStates();
+  const showIHeartDemo = renderIn === "root" && shouldShowIHeartDemo;
   return (
     <>
       <div className="border-monochrome-9 bg-monochrome-white z-40 flex h-[76px] w-full justify-center border-b sm:flex">
@@ -84,7 +84,7 @@ export function TopBar({
               {showSearchBar && <SearchBar.desktop />}
               <WalletAmountBadge type="dark" />
 
-              {(webCTA === 'app' || webCTA === 'both') && (
+              {(webCTA === "app" || webCTA === "both") && (
                 <GetAppButton
                   buttonText="Get App"
                   className="text-new-para-2 text-primary h-8 flex-shrink-0 px-4 py-3 text-[15px] font-semibold"
@@ -92,56 +92,56 @@ export function TopBar({
                   size="custom"
                 />
               )}
-              {webCTA !== 'app' && showUserTick && <UserTick />}
+              {webCTA !== "app" && showUserTick && <UserTick />}
             </div>
           </nav>
         )}
       </div>
     </>
-  )
+  );
 }
 
 function UserTick() {
-  const { data, status } = useSession()
-  const router = useRouter()
-  const pathName = usePathname()
-  const searchParams = useSearchParams()
-  const [loadingAuthData, setLoadingAuthData] = useState(false)
+  const { data, status } = useSession();
+  const router = useRouter();
+  const pathName = usePathname();
+  const searchParams = useSearchParams();
+  const [loadingAuthData, setLoadingAuthData] = useState(false);
 
   useEffect(() => {
-    const code = searchParams.get('code')
-    const provider = searchParams.get('provider')
+    const code = searchParams.get("code");
+    const provider = searchParams.get("provider");
     if (code && provider) {
-      setLoadingAuthData(true)
+      setLoadingAuthData(true);
     } else {
-      setLoadingAuthData(false)
+      setLoadingAuthData(false);
     }
-  }, [searchParams])
+  }, [searchParams]);
 
-  if (status === 'unauthenticated' || status === 'loading')
+  if (status === "unauthenticated" || status === "loading")
     return (
       <Button
-        disabled={status === 'loading' || loadingAuthData}
+        disabled={status === "loading" || loadingAuthData}
         className="h-8 gap-2 px-4"
         onClick={() => {
-          AuthenticationModal.open()
+          AuthenticationModal.open();
         }}>
-        {(status === 'loading' || loadingAuthData) && (
+        {(status === "loading" || loadingAuthData) && (
           <Loader size="sm" className="fill-monochrome-white stroke-monochrome-white" />
         )}
         <p className="text-title-3-demi text-monochrome-white min-w-max text-[15px]">Log in</p>
       </Button>
-    )
+    );
 
-  if (status === 'authenticated')
+  if (status === "authenticated")
     return (
       <Popover>
         <PopoverTrigger>
           <div className="flex rounded-full">
             <CustomAvatar
               className="h-[40px] w-[40px]"
-              fallbackString={data.user.name ?? ''}
-              imageUrl={data.user.image ?? ''}
+              fallbackString={data.user.name ?? ""}
+              imageUrl={data.user.image ?? ""}
               isAvatar={data.user.isAvatar}
             />
           </div>
@@ -154,25 +154,25 @@ function UserTick() {
           <div className="my-2 flex items-center gap-2">
             <CustomAvatar
               className="h-12 w-12"
-              fallbackString={data.user.name ?? ''}
-              imageUrl={data.user.image ?? ''}
+              fallbackString={data.user.name ?? ""}
+              imageUrl={data.user.image ?? ""}
               isAvatar={data.user.isAvatar}
             />
             <div>
               <p className="text-title-3-bold line-clamp-1 break-words break-all">
                 {data.user.usernameSet
-                  ? '@' + data.user.nickname
+                  ? "@" + data.user.nickname
                   : data.user.email
                     ? data.user.email
                     : formatPhoneNumberIntl(
-                        data.user.phoneNumber?.startsWith('+') ? data.user.phoneNumber : `+${data.user.phoneNumber}`
+                        data.user.phoneNumber?.startsWith("+") ? data.user.phoneNumber : `+${data.user.phoneNumber}`
                       )}
               </p>
               {!data.user?.isBrandSystemUser && (
                 <p
                   className="text-body-1-demi text-monochrome-6 hover:cursor-pointer"
                   onClick={() => {
-                    router.push(PATH_NAME.settings('edit'))
+                    router.push(PATH_NAME.settings("edit"));
 
                     // if (!pathName.includes('settings')) {
                     //   localStorage.setItem('previous_path', pathName)
@@ -187,12 +187,12 @@ function UserTick() {
           <div className="flex flex-col gap-3 p-4">
             {!data.user?.isBrandSystemUser && (
               <>
-                <Link href={PATH_NAME.settings('edit')}>
+                <Link href={PATH_NAME.settings("edit")}>
                   <div
                     className="flex items-center gap-2"
                     onClick={() => {
-                      if (!pathName.includes('settings')) {
-                        localStorage.setItem('previous_path', pathName)
+                      if (!pathName.includes("settings")) {
+                        localStorage.setItem("previous_path", pathName);
                       }
                     }}>
                     <SettingIcon isActive />
@@ -206,9 +206,9 @@ function UserTick() {
               className="flex cursor-pointer items-center gap-2"
               onClick={() => {
                 // Clear the user data in the Zustand store
-                useGenuinOptions.getState().clearUserData()
-                void signOut({ callbackUrl: `${window.location.pathname}${window.location.search}`, redirect: true })
-                removeAllAuthToken()
+                useGenuinOptions.getState().clearUserData();
+                void signOut({ callbackUrl: `${window.location.pathname}${window.location.search}`, redirect: true });
+                removeAllAuthToken();
               }}>
               <LogoutIcon className="stroke-secondary h-6 w-6" />
               <p className="text-body-1-demi">Log out</p>
@@ -216,5 +216,5 @@ function UserTick() {
           </div>
         </PopoverContent>
       </Popover>
-    )
+    );
 }

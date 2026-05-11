@@ -1,10 +1,8 @@
 import fs from "fs";
 import chalk from "chalk";
 
-const desktopReportPath =
-  "./packages/web-sdk/dist/lighthouse-result-desktop.json";
-const mobileReportPath =
-  "./packages/web-sdk/dist/lighthouse-result-mobile.json";
+const desktopReportPath = "./packages/web-sdk/dist/lighthouse-result-desktop.json";
+const mobileReportPath = "./packages/web-sdk/dist/lighthouse-result-mobile.json";
 
 // Tolerance percentages (e.g. 0.05 = 5%)
 const COMMON_TOLERANCE = 0.01;
@@ -52,14 +50,12 @@ function checkScore(name, score, threshold, tolerance) {
   const adjustedThreshold = threshold - tolerance;
   const scoreColor = scoreValue >= thresholdValue ? chalk.green : chalk.yellow;
   console.log(
-    `   ${chalk.cyan(name)}: ${scoreColor(scoreValue + "/100")} ${chalk.gray("must be ≥ " + thresholdValue + " (" + (tolerance * 100) + "% TOLERANCE)")}`,
+    `   ${chalk.cyan(name)}: ${scoreColor(scoreValue + "/100")} ${chalk.gray("must be ≥ " + thresholdValue + " (" + tolerance * 100 + "% TOLERANCE)")}`
   );
 
   if (score < adjustedThreshold) {
     console.error(
-      chalk.red(
-        `\n❌ ${name} score too low: ${scoreValue} (minimum: ${Math.round(adjustedThreshold * 100)})`,
-      ),
+      chalk.red(`\n❌ ${name} score too low: ${scoreValue} (minimum: ${Math.round(adjustedThreshold * 100)})`)
     );
     hasFailed = true;
   }
@@ -73,7 +69,7 @@ function checkBootupTime(report, threshold, tolerance, label) {
   const color = totalMs <= threshold ? chalk.green : chalk.yellow;
 
   console.log(
-    `   ${chalk.cyan("JS Bootup Time (CPU)")}: ${color(Math.round(totalMs) + "ms")} ${chalk.gray("must be ≤ " + threshold + "ms")}`,
+    `   ${chalk.cyan("JS Bootup Time (CPU)")}: ${color(Math.round(totalMs) + "ms")} ${chalk.gray("must be ≤ " + threshold + "ms")}`
   );
 
   if (totalMs > adjustedThreshold) {
@@ -85,16 +81,14 @@ function checkBootupTime(report, threshold, tolerance, label) {
       subItems.forEach((sub) => {
         const subMs = Math.round(sub.duration ?? sub.value ?? 0);
         const subColor = subMs > 500 ? chalk.red : chalk.gray;
-        console.log(
-          `         ${subColor("→ " + sub.label + ": " + subMs + "ms")}`,
-        );
+        console.log(`         ${subColor("→ " + sub.label + ": " + subMs + "ms")}`);
       });
     });
 
     console.error(
       chalk.red(
-        `\n❌ [${label}] JS Bootup Time too high: ${Math.round(totalMs)}ms (max: ${Math.round(adjustedThreshold)}ms)`,
-      ),
+        `\n❌ [${label}] JS Bootup Time too high: ${Math.round(totalMs)}ms (max: ${Math.round(adjustedThreshold)}ms)`
+      )
     );
     hasFailed = true;
   }
@@ -108,7 +102,7 @@ function checkMainthreadWork(report, threshold, tolerance, label) {
   const color = totalMs <= threshold ? chalk.green : chalk.yellow;
 
   console.log(
-    `   ${chalk.cyan("Main Thread CPU Work")}: ${color(Math.round(totalMs) + "ms")} ${chalk.gray("must be ≤ " + threshold + "ms")}`,
+    `   ${chalk.cyan("Main Thread CPU Work")}: ${color(Math.round(totalMs) + "ms")} ${chalk.gray("must be ≤ " + threshold + "ms")}`
   );
 
   if (totalMs > adjustedThreshold) {
@@ -116,15 +110,13 @@ function checkMainthreadWork(report, threshold, tolerance, label) {
     items.forEach((item) => {
       const categoryMs = Math.round(item.duration);
       const categoryColor = categoryMs > 1000 ? chalk.red : chalk.gray;
-      console.log(
-        `      ${categoryColor("→ " + item.groupLabel + ": " + categoryMs + "ms")}`,
-      );
+      console.log(`      ${categoryColor("→ " + item.groupLabel + ": " + categoryMs + "ms")}`);
     });
 
     console.error(
       chalk.red(
-        `\n❌ [${label}] Main Thread Work too high: ${Math.round(totalMs)}ms (max: ${Math.round(adjustedThreshold)}ms)`,
-      ),
+        `\n❌ [${label}] Main Thread Work too high: ${Math.round(totalMs)}ms (max: ${Math.round(adjustedThreshold)}ms)`
+      )
     );
     hasFailed = true;
   }
@@ -136,7 +128,7 @@ function checkLongTasks(report, threshold, label) {
 
   if (!audit || !audit.details?.items) {
     console.log(
-      `   ${chalk.cyan("Long Tasks (CPU spikes)")}: ${chalk.green("0 tasks")} ${chalk.gray("none detected")}`,
+      `   ${chalk.cyan("Long Tasks (CPU spikes)")}: ${chalk.green("0 tasks")} ${chalk.gray("none detected")}`
     );
     return;
   }
@@ -146,7 +138,7 @@ function checkLongTasks(report, threshold, label) {
   const color = count <= threshold ? chalk.green : chalk.yellow;
 
   console.log(
-    `   ${chalk.cyan("Long Tasks (CPU spikes)")}: ${color(count + " tasks")} ${chalk.gray("must be ≤ " + threshold)}`,
+    `   ${chalk.cyan("Long Tasks (CPU spikes)")}: ${color(count + " tasks")} ${chalk.gray("must be ≤ " + threshold)}`
   );
 
   if (count > threshold) {
@@ -156,11 +148,7 @@ function checkLongTasks(report, threshold, label) {
       console.log(`      ${taskColor("→ " + duration + "ms spike")}`);
     });
 
-    console.error(
-      chalk.red(
-        `\n❌ [${label}] Too many long tasks: ${count} (max: ${threshold})`,
-      ),
-    );
+    console.error(chalk.red(`\n❌ [${label}] Too many long tasks: ${count} (max: ${threshold})`));
     hasFailed = true;
   }
 }
@@ -168,18 +156,14 @@ function checkLongTasks(report, threshold, label) {
 // Helper function to check metric, whose value is in milliseconds
 function checkMetric(name, value, threshold, tolerance) {
   const roundedValue = Math.round(value);
-  const adjustedThreshold = threshold + (threshold * tolerance);
+  const adjustedThreshold = threshold + threshold * tolerance;
   const metricColor = roundedValue <= threshold ? chalk.green : chalk.yellow;
   console.log(
-    `   ${chalk.cyan(name)}: ${metricColor(roundedValue + "ms")} ${chalk.gray("must be ≤ " + threshold + "ms (" + (tolerance * 100) + "% TOLERANCE)")}`,
+    `   ${chalk.cyan(name)}: ${metricColor(roundedValue + "ms")} ${chalk.gray("must be ≤ " + threshold + "ms (" + tolerance * 100 + "% TOLERANCE)")}`
   );
 
   if (roundedValue > adjustedThreshold) {
-    console.error(
-      chalk.red(
-        `\n❌ ${name} too high: ${roundedValue}ms (maximum: ${Math.round(adjustedThreshold)}ms)`,
-      ),
-    );
+    console.error(chalk.red(`\n❌ ${name} too high: ${roundedValue}ms (maximum: ${Math.round(adjustedThreshold)}ms)`));
     hasFailed = true;
   }
 }
@@ -197,9 +181,7 @@ function loadReport(reportPath, label) {
   try {
     report = JSON.parse(fs.readFileSync(reportPath, "utf-8"));
   } catch (error) {
-    console.error(
-      chalk.red(`❌ Failed to read ${label} report file: ${error.message}`),
-    );
+    console.error(chalk.red(`❌ Failed to read ${label} report file: ${error.message}`));
     hasFailed = true;
     return null;
   }
@@ -213,37 +195,22 @@ function loadReport(reportPath, label) {
   return report;
 }
 
-function checkReport(
-  report,
-  thresholds,
-  tolerance,
-  label,
-  specificTolerance = {},
-) {
-  console.log(
-    chalk.cyan.bold(
-      `\n📊 Lighthouse Results (${label}) [${tolerance * 100}% tolerance]:`,
-    ),
-  );
+function checkReport(report, thresholds, tolerance, label, specificTolerance = {}) {
+  console.log(chalk.cyan.bold(`\n📊 Lighthouse Results (${label}) [${tolerance * 100}% tolerance]:`));
 
   // Check category scores
-  checkScore(
-    "Performance(Min Score = 70)",
-    report.categories.performance.score,
-    thresholds.performance,
-    tolerance,
-  );
+  checkScore("Performance(Min Score = 70)", report.categories.performance.score, thresholds.performance, tolerance);
   checkScore(
     "Accessibility (Min Score = 85)",
     report.categories.accessibility.score,
     thresholds.accessibility,
-    tolerance,
+    tolerance
   );
   checkScore(
     "Best Practices (Min Score = 85)",
     report.categories["best-practices"].score,
     thresholds.bestPractices,
-    tolerance,
+    tolerance
   );
   checkScore("SEO (Min Score = 80)", report.categories.seo.score, thresholds.seo, tolerance);
 
@@ -252,25 +219,20 @@ function checkReport(
     "FCP (Min Score = 2.5s)",
     report.audits["first-contentful-paint"].numericValue,
     thresholds.fcp,
-    tolerance,
+    tolerance
   );
   checkMetric(
     "LCP (Min Score = 3.5s)",
     report.audits["largest-contentful-paint"].numericValue,
     thresholds.lcp,
-    tolerance,
+    tolerance
   );
-  checkMetric(
-    "TBT (Min Score = 350ms)",
-    report.audits["total-blocking-time"].numericValue,
-    thresholds.tbt,
-    tolerance,
-  );
+  checkMetric("TBT (Min Score = 350ms)", report.audits["total-blocking-time"].numericValue, thresholds.tbt, tolerance);
   checkMetric(
     "Speed Index (Min Score = 4.0s)",
     report.audits["speed-index"].numericValue,
     thresholds.speedIndex,
-    specificTolerance.speedIndex ?? tolerance,
+    specificTolerance.speedIndex ?? tolerance
   );
   checkBootupTime(report, thresholds.bootupTime, tolerance, label);
   checkMainthreadWork(report, thresholds.mainthreadWork, tolerance, label);
@@ -282,15 +244,11 @@ function checkReport(
 
   const clsColor = cls <= thresholds.cls ? chalk.green : chalk.yellow;
   console.log(
-    `   ${chalk.cyan("CLS (Min Score = 0.1)")}: ${clsColor(cls)} ${chalk.gray("must be ≤ " + thresholds.cls + " (" + tolerance * 100 + "% TOLERANCE)")}`,
+    `   ${chalk.cyan("CLS (Min Score = 0.1)")}: ${clsColor(cls)} ${chalk.gray("must be ≤ " + thresholds.cls + " (" + tolerance * 100 + "% TOLERANCE)")}`
   );
 
   if (cls > adjustedClsThreshold) {
-    console.error(
-      chalk.red(
-        `\n❌ [${label}] CLS too high: ${cls} (maximum: ${adjustedClsThreshold.toFixed(4)})`,
-      ),
-    );
+    console.error(chalk.red(`\n❌ [${label}] CLS too high: ${cls} (maximum: ${adjustedClsThreshold.toFixed(4)})`));
     hasFailed = true;
   }
 }
@@ -311,16 +269,8 @@ if (mobileReport) {
 
 // Single exit point collects ALL failures before blocking the push
 if (hasFailed) {
-  console.error(
-    chalk.red.bold(
-      "\n Lighthouse checks failed push blocked. Fix the above issues and try again.\n",
-    ),
-  );
+  console.error(chalk.red.bold("\n Lighthouse checks failed push blocked. Fix the above issues and try again.\n"));
   process.exit(1);
 }
 
-console.log(
-  chalk.green.bold(
-    "\n All Lighthouse checks passed for both Desktop and Mobile!\n",
-  ),
-);
+console.log(chalk.green.bold("\n All Lighthouse checks passed for both Desktop and Mobile!\n"));

@@ -1,6 +1,6 @@
-import { type ComponentProps } from 'react'
+import { type ComponentProps } from "react";
 
-type Props = ComponentProps<'svg'>
+type Props = ComponentProps<"svg">;
 
 export function CommentIcon({ ...props }: Props) {
   return (
@@ -15,5 +15,5 @@ export function CommentIcon({ ...props }: Props) {
         />
       </g>
     </svg>
-  )
+  );
 }

@@ -6,9 +6,7 @@ import { useEffect, useState } from "react";
  * @returns boolean - true if document is visible, false if hidden
  */
 export function useDocumentVisibilityState(): boolean {
-  const [isVisible, setIsVisible] = useState<boolean>(
-    typeof document !== "undefined" ? !document.hidden : true
-  );
+  const [isVisible, setIsVisible] = useState<boolean>(typeof document !== "undefined" ? !document.hidden : true);
 
   useEffect(() => {
     const handleVisibilityChange = () => {

@@ -21,17 +21,11 @@ const MAX_CHUNK_COUNT = 90;
 const TOLERANCE_PERCENT = 1;
 
 const MAX_GZIP_SIZE_BYTES = MAX_GZIP_SIZE_KB * 1024;
-const MAX_GZIP_SIZE_WITH_TOLERANCE =
-  MAX_GZIP_SIZE_BYTES * (1 + TOLERANCE_PERCENT / 100);
+const MAX_GZIP_SIZE_WITH_TOLERANCE = MAX_GZIP_SIZE_BYTES * (1 + TOLERANCE_PERCENT / 100);
 
-const MAX_CHUNK_COUNT_TOLERANCE = Math.round(
-  MAX_CHUNK_COUNT * (1 + TOLERANCE_PERCENT / 100),
-);
+const MAX_CHUNK_COUNT_TOLERANCE = Math.round(MAX_CHUNK_COUNT * (1 + TOLERANCE_PERCENT / 100));
 
-const BUNDLE_FILE = path.join(
-  ROOT,
-  "packages/web-sdk/dist/bundle-size-report.json"
-);
+const BUNDLE_FILE = path.join(ROOT, "packages/web-sdk/dist/bundle-size-report.json");
 
 const bytesToKB = (bytes) => (bytes / 1024).toFixed(2);
 
@@ -46,21 +40,15 @@ function readBundleFile() {
   return new Promise((resolve) => {
     buildProcess.on("close", (code) => {
       if (code === 0) {
-        console.log(
-          chalk.green("✅ Bundle size report generated successfully\n")
-        );
+        console.log(chalk.green("✅ Bundle size report generated successfully\n"));
         if (fs.existsSync(BUNDLE_FILE)) {
           resolve(JSON.parse(fs.readFileSync(BUNDLE_FILE, "utf-8")));
         } else {
-          console.error(
-            chalk.red("❌ Bundle file still not found after build")
-          );
+          console.error(chalk.red("❌ Bundle file still not found after build"));
           process.exit(1);
         }
       } else {
-        console.error(
-          chalk.red("❌ Build failed, cannot generate bundle size report")
-        );
+        console.error(chalk.red("❌ Build failed, cannot generate bundle size report"));
         process.exit(1);
       }
     });
@@ -88,34 +76,21 @@ function calculateBundleStats(bundleData) {
     return null;
   }
 
-  const invalidChunks = chunks.filter(
-    (item) => typeof item.sizeBytes !== "number",
-  );
+  const invalidChunks = chunks.filter((item) => typeof item.sizeBytes !== "number");
   if (invalidChunks.length > 0) {
     console.error(chalk.red("❌ Invalid chunk data found in bundle report"));
     invalidChunks.forEach((chunk) => {
-      console.error(
-        chalk.red(
-          `   - ${chunk.file} has invalid sizeBytes: ${chunk.sizeBytes}`,
-        ),
-      );
+      console.error(chalk.red(`   - ${chunk.file} has invalid sizeBytes: ${chunk.sizeBytes}`));
       process.exit(1);
     });
   }
 
-  const totalUncompressedBytes = chunks.reduce(
-    (sum, item) => sum + item.sizeBytes,
-    0,
-  );
+  const totalUncompressedBytes = chunks.reduce((sum, item) => sum + item.sizeBytes, 0);
 
   const avgChunkSizeBytes = totalUncompressedBytes / chunks.length;
 
-  const smallChunks = chunks.filter(
-    (item) => item.sizeBytes / 1024 < SMALL_CHUNK_THRESHOLD_KB,
-  );
-  const largeChunks = chunks.filter(
-    (item) => item.sizeBytes / 1024 > LARGE_CHUNK_THRESHOLD_KB,
-  );
+  const smallChunks = chunks.filter((item) => item.sizeBytes / 1024 < SMALL_CHUNK_THRESHOLD_KB);
+  const largeChunks = chunks.filter((item) => item.sizeBytes / 1024 > LARGE_CHUNK_THRESHOLD_KB);
 
   return {
     totalChunks: chunks.length,
@@ -128,14 +103,12 @@ function calculateBundleStats(bundleData) {
 
 function checkChunkCount(chunkCount) {
   console.log(
-    `${chalk.cyan("Total Chunks:")} ${chunkCount} | ${chalk.cyan("Maximum Allowed:")} ${MAX_CHUNK_COUNT_TOLERANCE}`,
+    `${chalk.cyan("Total Chunks:")} ${chunkCount} | ${chalk.cyan("Maximum Allowed:")} ${MAX_CHUNK_COUNT_TOLERANCE}`
   );
 
   if (chunkCount > MAX_CHUNK_COUNT_TOLERANCE) {
     const excess = chunkCount - MAX_CHUNK_COUNT_TOLERANCE;
-    console.log(
-      chalk.red(`⚠️  WARNING: Chunk count exceeded by ${excess} chunks`)
-    );
+    console.log(chalk.red(`⚠️  WARNING: Chunk count exceeded by ${excess} chunks`));
     return false;
   } else {
     console.log(chalk.green(`✅ Chunk count within limit`));
@@ -148,18 +121,10 @@ function printBundleStats(stats) {
     return;
   }
 
-  console.log(
-    `${chalk.cyan("Total Size (uncompressed):")} ${bytesToKB(stats.totalUncompressedBytes)} KB`
-  );
-  console.log(
-    `${chalk.cyan("Average Chunk Size:")} ${bytesToKB(stats.avgChunkSizeBytes)} KB`
-  );
-  console.log(
-    `${chalk.cyan("Small chunks")} (<${SMALL_CHUNK_THRESHOLD_KB}KB): ${stats.smallChunksCount}`
-  );
-  console.log(
-    `${chalk.cyan("Large chunks")} (>${LARGE_CHUNK_THRESHOLD_KB}KB): ${stats.largeChunksCount}`
-  );
+  console.log(`${chalk.cyan("Total Size (uncompressed):")} ${bytesToKB(stats.totalUncompressedBytes)} KB`);
+  console.log(`${chalk.cyan("Average Chunk Size:")} ${bytesToKB(stats.avgChunkSizeBytes)} KB`);
+  console.log(`${chalk.cyan("Small chunks")} (<${SMALL_CHUNK_THRESHOLD_KB}KB): ${stats.smallChunksCount}`);
+  console.log(`${chalk.cyan("Large chunks")} (>${LARGE_CHUNK_THRESHOLD_KB}KB): ${stats.largeChunksCount}`);
 }
 
 function printLargestFiles(bundleData, limit = 5) {
@@ -170,9 +135,7 @@ function printLargestFiles(bundleData, limit = 5) {
     .sort((a, b) => b.gzipSizeBytes - a.gzipSizeBytes)
     .slice(0, limit)
     .forEach((item, i) => {
-      console.log(
-        `  ${i + 1}. ${item.file}: ${bytesToKB(item.gzipSizeBytes)} KB`
-      );
+      console.log(`  ${i + 1}. ${item.file}: ${bytesToKB(item.gzipSizeBytes)} KB`);
     });
 
   console.log("");

@@ -68,12 +68,14 @@ The system constructs purge URLs based on:
 3. **Wildcard Pattern**: Appends `/*` to purge all files under each path
 
 Examples:
+
 - Upload path: `sdk/2.0.0` → Purge URL: `https://media.qa.begenuin.com/sdk/2.0.0/*`
 - Upload path: `sdk` → Purge URL: `https://media.qa.begenuin.com/sdk/*`
 
 ### Rate Limiting
 
 To comply with Bunny CDN's rate limits:
+
 - Requests are processed in batches of 10 URLs
 - 200ms delay between batches
 - Comprehensive error handling for failed requests
@@ -124,9 +126,11 @@ The implementation mirrors the backend's `invalidateBunnyCDN` function for consi
 ### Common Issues
 
 1. **Missing API Key**
+
    ```
    ❌ Missing required Bunny CDN configuration
    ```
+
    Solution: Add `BUNNY_API_KEY` to your `.env` file
 
 2. **Rate Limit Errors**
@@ -140,6 +144,7 @@ The implementation mirrors the backend's `invalidateBunnyCDN` function for consi
 ### Debug Information
 
 The scripts provide comprehensive logging:
+
 - Configuration validation
 - URL construction details
 - Individual purge request results
@@ -148,6 +153,7 @@ The scripts provide comprehensive logging:
 ### Verification
 
 To verify successful purging:
+
 1. Check the console output for success confirmations
 2. Test SDK loading from CDN URLs to confirm cache refresh
 3. Monitor Bunny CDN dashboard for purge statistics

@@ -15,22 +15,22 @@ The `GenuinSDK` is the primary singleton class that orchestrates the entire SDK 
 ```typescript
 export class GenuinSDK {
   // Singleton instance
-  private static instance: GenuinSDK
+  private static instance: GenuinSDK;
 
   // Core managers (all singletons)
-  private configManager: ConfigManager
-  private eventManager: EventManager
-  private errorHandler: ErrorHandler
-  private tokenManager: TokenManager
-  private themeManager: ThemeManager
-  private brandDetailsManager: BrandDetailsManager
-  private embedDetailsManager: EmbedDetailsManager
-  private callbackQueueManager: CallbackQueueManager
-  private placementManager: PlacementManager
+  private configManager: ConfigManager;
+  private eventManager: EventManager;
+  private errorHandler: ErrorHandler;
+  private tokenManager: TokenManager;
+  private themeManager: ThemeManager;
+  private brandDetailsManager: BrandDetailsManager;
+  private embedDetailsManager: EmbedDetailsManager;
+  private callbackQueueManager: CallbackQueueManager;
+  private placementManager: PlacementManager;
 
   // SDK state
-  private isInitialized = false
-  private sdkElements: SDKElementsType = {}
+  private isInitialized = false;
+  private sdkElements: SDKElementsType = {};
 }
 ```
 
@@ -52,15 +52,15 @@ All core managers follow the singleton pattern and handle specific domains:
 
 ```typescript
 export class EventManager {
-  private static instance: EventManager
-  private listeners: Map<SDKEventType, Set<EventListener>> = new Map()
-  private eventHistory: SDKEvent[] = []
+  private static instance: EventManager;
+  private listeners: Map<SDKEventType, Set<EventListener>> = new Map();
+  private eventHistory: SDKEvent[] = [];
 
   // Core methods
-  on(eventType: SDKEventType, listener: EventListener)
-  off(eventType: SDKEventType, listener: EventListener)
-  emit(eventType: SDKEventType, payload?: any)
-  onAll(listener: EventListener)
+  on(eventType: SDKEventType, listener: EventListener);
+  off(eventType: SDKEventType, listener: EventListener);
+  emit(eventType: SDKEventType, payload?: any);
+  onAll(listener: EventListener);
 }
 ```
 
@@ -75,11 +75,11 @@ export class EventManager {
 
 ```typescript
 enum SDKEventType {
-  EMBED_LOADED = 'embed:loaded',
-  SDK_AUTHENTICATE_USER = 'sdk:authenticateUser',
-  SDK_UPDATE_CONTEXTUAL_PARAMS = 'sdk:updateContextualParams',
-  SDK_UPDATE_START_VIDEO_SLUG = 'sdk:updateStartVideoSlug',
-  SDK_EMBED_PROVIDER_READY = 'sdk:embedProviderReady',
+  EMBED_LOADED = "embed:loaded",
+  SDK_AUTHENTICATE_USER = "sdk:authenticateUser",
+  SDK_UPDATE_CONTEXTUAL_PARAMS = "sdk:updateContextualParams",
+  SDK_UPDATE_START_VIDEO_SLUG = "sdk:updateStartVideoSlug",
+  SDK_EMBED_PROVIDER_READY = "sdk:embedProviderReady",
   // ... and more
 }
 ```
@@ -90,14 +90,14 @@ enum SDKEventType {
 
 ```typescript
 export class APIService {
-  private static instance: APIService
+  private static instance: APIService;
 
   // Core API methods
-  fetchBrandDetails(apiKey: string)
-  fetchEmbedData(embedId: string)
-  getPlacementData(placementId: string)
-  getAuthenticatedUserDetails(token, brandId, userParams)
-  getMiniProfile()
+  fetchBrandDetails(apiKey: string);
+  fetchEmbedData(embedId: string);
+  getPlacementData(placementId: string);
+  getAuthenticatedUserDetails(token, brandId, userParams);
+  getMiniProfile();
 }
 ```
 
@@ -126,15 +126,15 @@ These managers extend the API layer with caching and domain-specific logic:
 
 ```typescript
 export class BrandDetailsManager {
-  private brandDetailsList: Record<string, BrandDetailsConfigType> = {}
+  private brandDetailsList: Record<string, BrandDetailsConfigType> = {};
 
   async getBrandDetails(apiKey: string) {
     if (this.brandDetailsList[apiKey]) {
-      return this.brandDetailsList[apiKey] // Cache hit
+      return this.brandDetailsList[apiKey]; // Cache hit
     }
-    const brandDetails = await apiService.fetchBrandDetails(apiKey)
-    this.brandDetailsList[apiKey] = brandDetails // Cache
-    return brandDetails
+    const brandDetails = await apiService.fetchBrandDetails(apiKey);
+    this.brandDetailsList[apiKey] = brandDetails; // Cache
+    return brandDetails;
   }
 }
 ```
@@ -145,15 +145,15 @@ export class BrandDetailsManager {
 
 ```typescript
 export class EmbedDetailsManager {
-  private embedDetailsList: Record<string, EmbedDataType> = {}
+  private embedDetailsList: Record<string, EmbedDataType> = {};
 
   async getEmbedDetails(embedId: string, brandDetails) {
     if (this.embedDetailsList[embedId]) {
-      return this.embedDetailsList[embedId]
+      return this.embedDetailsList[embedId];
     }
-    const embedDetails = await apiService.fetchEmbedData(embedId)
-    this.embedDetailsList[embedId] = embedDetails
-    return embedDetails
+    const embedDetails = await apiService.fetchEmbedData(embedId);
+    this.embedDetailsList[embedId] = embedDetails;
+    return embedDetails;
   }
 }
 ```
@@ -190,16 +190,16 @@ export class TokenManager {
 
 ```typescript
 export class PlacementManager {
-  private placements: Map<string, EmbedDataType> = new Map()
+  private placements: Map<string, EmbedDataType> = new Map();
 
   async getPlacementData(placementId: string, styleId: string) {
     if (this.placements.has(placementId)) {
-      return this.placements.get(placementId)
+      return this.placements.get(placementId);
     }
-    const placementData = await apiService.getPlacementData(placementId)
-    const parsedData = parsePlacementToEmbedData(placementData, styleId)
-    this.placements.set(placementId, parsedData)
-    return parsedData
+    const placementData = await apiService.getPlacementData(placementId);
+    const parsedData = parsePlacementToEmbedData(placementData, styleId);
+    this.placements.set(placementId, parsedData);
+    return parsedData;
   }
 }
 ```
@@ -379,22 +379,22 @@ This example shows how to initialize the SDK, authenticate a user, and listen fo
 ```javascript
 // 1. Initialize the SDK with configuration
 window.genuin.init({
-  apiKey: 'YOUR_API_KEY',
-  embedId: 'YOUR_EMBED_ID',
-  token: 'USER_AUTH_TOKEN',
-})
+  apiKey: "YOUR_API_KEY",
+  embedId: "YOUR_EMBED_ID",
+  token: "USER_AUTH_TOKEN",
+});
 
 // 2. Define a listener function to handle successful authentication
 const handleAuthSuccess = (event) => {
-  console.log('Authentication successful:', event.payload)
+  console.log("Authentication successful:", event.payload);
   // You can now update your UI, e.g., show a personalized welcome message
-  const user = event.payload
-  document.getElementById('user-greeting').innerText = `Welcome, ${user.name}!`
-}
+  const user = event.payload;
+  document.getElementById("user-greeting").innerText = `Welcome, ${user.name}!`;
+};
 
 // 3. Subscribe to the 'auth:success' event
 // The SDK will emit this event after the user is successfully authenticated via the token.
-window.genuin.on('auth:success', handleAuthSuccess)
+window.genuin.on("auth:success", handleAuthSuccess);
 
 // 4. To prevent memory leaks, it's good practice to clean up the listener
 //    when it's no longer needed.
@@ -406,39 +406,36 @@ window.genuin.on('auth:success', handleAuthSuccess)
 For React applications, the `useSDK` hook provides a convenient and idiomatic way to interact with the SDK from within your components.
 
 ```jsx
-import React, { useEffect, useState } from 'react'
-import { useSDK, SDKEventType } from '@genuin/web-sdk' // Assuming this is the package name
+import React, { useEffect, useState } from "react";
+import { useSDK, SDKEventType } from "@genuin/web-sdk"; // Assuming this is the package name
 
 const UserProfile = () => {
-  const sdk = useSDK() // Access the SDK instance
-  const [user, setUser] = useState(null)
+  const sdk = useSDK(); // Access the SDK instance
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     // Ensure the SDK instance is available before proceeding
     if (!sdk) {
-      return
+      return;
     }
 
     // Define the listener for authentication success
     const handleAuthSuccess = (event) => {
-      console.log('Authenticated user:', event.payload)
-      setUser(event.payload) // Update component state with user data
-    }
+      console.log("Authenticated user:", event.payload);
+      setUser(event.payload); // Update component state with user data
+    };
 
     // The 'on' method returns an unsubscribe function, which is perfect for useEffect's cleanup
-    const unsubscribe = sdk.on(
-      SDKEventType.AUTHENTICATION_SUCCESS,
-      handleAuthSuccess,
-    )
+    const unsubscribe = sdk.on(SDKEventType.AUTHENTICATION_SUCCESS, handleAuthSuccess);
 
     // The cleanup function in useEffect will be called automatically when the component unmounts
     return () => {
-      unsubscribe()
-    }
-  }, [sdk]) // The effect re-runs if the SDK instance changes
+      unsubscribe();
+    };
+  }, [sdk]); // The effect re-runs if the SDK instance changes
 
   if (!user) {
-    return <div>Loading user profile...</div>
+    return <div>Loading user profile...</div>;
   }
 
   return (
@@ -446,10 +443,10 @@ const UserProfile = () => {
       <h1>Welcome, {user.name}!</h1>
       <p>Email: {user.email}</p>
     </div>
-  )
-}
+  );
+};
 
-export default UserProfile
+export default UserProfile;
 ```
 
 ### Benefits of This Architecture
@@ -471,18 +468,18 @@ The SDK provides both modern ES module exports and legacy global APIs:
 
 ```typescript
 // Modern API
-export { GenuinSDK } from './sdk'
-export const Genuin = GenuinSDK.getInstance()
+export { GenuinSDK } from "./sdk";
+export const Genuin = GenuinSDK.getInstance();
 
 // Global API for browser
-if (typeof window !== 'undefined') {
-  window.GenuinSDK = Genuin
+if (typeof window !== "undefined") {
+  window.GenuinSDK = Genuin;
   window.genuin = {
     SDK: Genuin,
     on: Genuin.on.bind(Genuin),
     init: (config) => Genuin.newInit(config),
     // ...
-  }
+  };
 }
 ```
 

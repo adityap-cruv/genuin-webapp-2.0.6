@@ -26,7 +26,7 @@ const deriveRenderPayloads = (metadata: ToolMetadataPayload | undefined): Invent
 
     if (Array.isArray(inventoryItems) && inventoryItems.length > 0) {
         const payloads = inventoryItems
-            .map((item) => {
+            .map(item => {
                 const templateId = item?.template_id ?? fallbackTemplateId;
                 const inventoryId = item?.inventory_id;
                 const brandId = item?.brand_id ?? fallbackBrandId;
@@ -107,10 +107,12 @@ const InventoryWidget = ({ metadata }: InventoryWidgetProps) => {
                     return;
                 }
 
-                setIframeHeights((prev) => {
+                setIframeHeights(prev => {
                     const next = [...prev];
                     const hasOverflow = contentHeight > defaultIframeHeight;
-                    const heightWithPadding = hasOverflow ? contentHeight + overflowPadding : Math.max(contentHeight, defaultIframeHeight);
+                    const heightWithPadding = hasOverflow
+                        ? contentHeight + overflowPadding
+                        : Math.max(contentHeight, defaultIframeHeight);
                     next[index] = heightWithPadding;
                     return next;
                 });
@@ -118,7 +120,7 @@ const InventoryWidget = ({ metadata }: InventoryWidgetProps) => {
                 console.error('[InventoryWidget] Unable to resize iframe', err);
             }
         },
-        [defaultIframeHeight, overflowPadding],
+        [defaultIframeHeight, overflowPadding]
     );
 
     useEffect(() => {
@@ -137,9 +139,12 @@ const InventoryWidget = ({ metadata }: InventoryWidgetProps) => {
                     throw new Error('Missing inventory details');
                 }
 
-                const responses = await Promise.all(renderPayloads.map((payload) => renderInventoryWidget(payload)));
+                const responses = await Promise.all(renderPayloads.map(payload => renderInventoryWidget(payload)));
                 if (!isActive) return;
-                const htmlSnippets = responses.map((response) => extractHtml(response)).filter(Boolean).slice(0, 2);
+                const htmlSnippets = responses
+                    .map(response => extractHtml(response))
+                    .filter(Boolean)
+                    .slice(0, 2);
 
                 if (htmlSnippets.length === 0) {
                     setError('Unable to load inventory widget.');
@@ -183,7 +188,7 @@ const InventoryWidget = ({ metadata }: InventoryWidgetProps) => {
                 </div>
             ) : error ? (
                 <div className='gai:overflow-hidden gai:rounded-xl gai:border gai:border-secondary-gray-200 gai:bg-white'>
-                    <div className='gai:flex gai:h-[320px] gai:w-full gai:items-center gai:justify-center gai:px-4 gai:text-center gai:text-secondary-gray-600 gai:text-sm'>
+                    <div className='gai:flex gai:h-[320px] gai:w-full gai:items-center gai:justify-center gai:px-4 gai:text-center gai:text-sm gai:text-secondary-gray-600'>
                         {error}
                     </div>
                 </div>
@@ -212,7 +217,7 @@ const InventoryWidget = ({ metadata }: InventoryWidgetProps) => {
                 </div>
             ) : (
                 <div className='gai:overflow-hidden gai:rounded-xl gai:border gai:border-secondary-gray-200 gai:bg-white'>
-                    <div className='gai:flex gai:h-[320px] gai:w-full gai:items-center gai:justify-center gai:px-4 gai:text-center gai:text-secondary-gray-600 gai:text-sm'>
+                    <div className='gai:flex gai:h-[320px] gai:w-full gai:items-center gai:justify-center gai:px-4 gai:text-center gai:text-sm gai:text-secondary-gray-600'>
                         Inventory widget is unavailable.
                     </div>
                 </div>

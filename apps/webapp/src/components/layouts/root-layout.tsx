@@ -1,19 +1,19 @@
-import { type Viewport } from 'next'
-import { type ComponentProps, type ReactNode } from 'react'
+import { type Viewport } from "next";
+import { type ComponentProps, type ReactNode } from "react";
 
-import { cn } from '@lib/utils'
+import { cn } from "@lib/utils";
 
-import { PageViewTracker } from './page-view-tracker'
-import { RedirectToHTTPS } from './redirect-to-https'
+import { PageViewTracker } from "./page-view-tracker";
+import { RedirectToHTTPS } from "./redirect-to-https";
 
-type Props = ComponentProps<'body'> & {
-  brandColors?: any
-  favicon?: string
-  subdomain?: string
-  children: ReactNode
-  noIndex?: boolean
-  isIheartDemo?: boolean
-}
+type Props = ComponentProps<"body"> & {
+  brandColors?: any;
+  favicon?: string;
+  subdomain?: string;
+  children: ReactNode;
+  noIndex?: boolean;
+  isIheartDemo?: boolean;
+};
 
 export function RootHTML({
   brandColors,
@@ -29,8 +29,8 @@ export function RootHTML({
   return (
     <html lang="en">
       <head>
-        <link rel="icon" type="image/x-icon" href={favicon ?? '/favicon.svg'} />
-        <link rel="mask-icon" href={favicon ?? '/favicon.svg'} />
+        <link rel="icon" type="image/x-icon" href={favicon ?? "/favicon.svg"} />
+        <link rel="mask-icon" href={favicon ?? "/favicon.svg"} />
         <meta rel="x-brand-id" content={subdomain} />
         {noIndex && <meta name="robots" content="noindex" />}
       </head>
@@ -40,7 +40,7 @@ export function RootHTML({
           ...style,
           ...(isIheartDemo ? { fontFamily: "'Helvetica Neue',Helvetica,Arial,sans-serif" } : {}),
         }}
-        className={cn('text-secondary fixed h-full w-full md:h-screen', className)}
+        className={cn("text-secondary fixed h-full w-full md:h-screen", className)}
         {...props}>
         {children}
         {/* PageViewTracker logs pageviews on every route change */}
@@ -48,15 +48,15 @@ export function RootHTML({
         <RedirectToHTTPS />
       </body>
     </html>
-  )
+  );
 }
 
 export function getViewport(): Viewport {
   return {
-    height: 'device-height',
-    width: 'device-width',
+    height: "device-height",
+    width: "device-width",
     initialScale: 1,
     maximumScale: 1,
     userScalable: false,
-  }
+  };
 }

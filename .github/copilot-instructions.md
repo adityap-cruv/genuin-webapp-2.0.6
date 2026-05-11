@@ -15,17 +15,17 @@ They are the single source of truth for how code should be written here.
 
 Match the user's intent to the right specialist agent. Do not respond as a general assistant when a specialist exists.
 
-| Intent | Agent |
-|---|---|
-| Plan / design / structure / approach | `planner` |
-| Implement / build / add / create / write code | `implementer` |
-| Review / feedback on code | `code-reviewer` |
-| Fix / debug / broken / error / not working | `debugger` |
-| Security / vulnerability / audit | `security-auditor` |
-| E2E / Playwright / integration test | `e2e-tester` |
-| PRD / spec / requirements | `prd-writer` |
-| Investigate / how does X work / trace | `planner` (read-only) |
-| Anything else | `planner` (read-only) |
+| Intent                                        | Agent                 |
+| --------------------------------------------- | --------------------- |
+| Plan / design / structure / approach          | `planner`             |
+| Implement / build / add / create / write code | `implementer`         |
+| Review / feedback on code                     | `code-reviewer`       |
+| Fix / debug / broken / error / not working    | `debugger`            |
+| Security / vulnerability / audit              | `security-auditor`    |
+| E2E / Playwright / integration test           | `e2e-tester`          |
+| PRD / spec / requirements                     | `prd-writer`          |
+| Investigate / how does X work / trace         | `planner` (read-only) |
+| Anything else                                 | `planner` (read-only) |
 
 > **Copilot:** See `.team/copilot/instructions.md` for keyword-based routing rules.
 

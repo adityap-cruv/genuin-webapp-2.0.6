@@ -1,81 +1,79 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-import { useShallow } from 'zustand/react/shallow'
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
 
-import { CustomImage } from '@/components/custom/custom-image'
-import { Button } from '@components/ui/button'
-import { Checkbox } from '@components/ui/checkbox'
-import { Form, FormControl, FormField, FormItem, FormLabel } from '@components/ui/form'
-import { Loader } from '@components/ui/loader'
-import { GenuinIcon } from '@icons/genuin-icon'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { CustomImage } from "@/components/custom/custom-image";
+import { Button } from "@components/ui/button";
+import { Checkbox } from "@components/ui/checkbox";
+import { Form, FormControl, FormField, FormItem, FormLabel } from "@components/ui/form";
+import { Loader } from "@components/ui/loader";
+import { GenuinIcon } from "@icons/genuin-icon";
+import { useGenuinOptions } from "@lib/stores/genuin-options";
 
-import { getBrandGuidelines, acceptBrandGuidelines } from '../api/auth'
-import { ModalShell } from '../modal-shell'
+import { getBrandGuidelines, acceptBrandGuidelines } from "../api/auth";
+import { ModalShell } from "../modal-shell";
 
-import { type ScreenProps } from '.'
-
-
+import { type ScreenProps } from ".";
 
 const FormSchema = z.object({
   mobile: z.boolean().default(false).optional(),
-})
+});
 
 interface Guideline {
-  title: string
-  description: string
+  title: string;
+  description: string;
 }
 
-type GuidelineProps = ScreenProps
+type GuidelineProps = ScreenProps;
 
 export function Guidelines({ onNext }: GuidelineProps) {
-  const [isLoading, setIsLoading] = useState(false)
-  const [guidelines, setGuidelines] = useState<Guideline[] | null>(null)
+  const [isLoading, setIsLoading] = useState(false);
+  const [guidelines, setGuidelines] = useState<Guideline[] | null>(null);
   const { brandLogo, brandId, user } = useGenuinOptions(
     useShallow((state) => ({
       brandLogo: state.brandWebLogo,
       brandId: state.brandId,
       user: state.user,
     }))
-  )
+  );
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       mobile: false,
     },
-  })
-  const { isDirty } = form.formState
+  });
+  const { isDirty } = form.formState;
 
   useEffect(() => {
     async function fetchGuidelines() {
       void getBrandGuidelines({ brandId, idDefault: false }).then((res) => {
         if (res.code === 200) {
-          setGuidelines(res.data)
+          setGuidelines(res.data);
         }
-      })
+      });
     }
 
-    void fetchGuidelines()
-  }, [])
+    void fetchGuidelines();
+  }, []);
 
   async function onSubmit() {
-    setIsLoading(true)
-    const answer = await acceptBrandGuidelines()
+    setIsLoading(true);
+    const answer = await acceptBrandGuidelines();
     if (answer) {
       if (!user?.hasTopics) {
-        onNext('CATEGORY_SELECTION')
+        onNext("CATEGORY_SELECTION");
       } else if (!user?.usernameSet) {
-        onNext('USERNAME_INPUT')
+        onNext("USERNAME_INPUT");
       } else {
-        onNext()
+        onNext();
       }
     } else {
-      form.setError('root', { message: 'Please try again.' })
+      form.setError("root", { message: "Please try again." });
     }
-    setIsLoading(false)
+    setIsLoading(false);
   }
 
   if (!guidelines) {
@@ -83,7 +81,7 @@ export function Guidelines({ onNext }: GuidelineProps) {
       <ModalShell>
         <Loader size="md" />
       </ModalShell>
-    )
+    );
   }
 
   return (
@@ -105,7 +103,7 @@ export function Guidelines({ onNext }: GuidelineProps) {
             <p className="text-body-1-bold">
               {index + 1}. {guideline.title}
             </p>
-            <p className="ml-4 text-body-1-med">{guideline.description}</p>
+            <p className="text-body-1-med ml-4">{guideline.description}</p>
           </div>
         ))}
       </div>
@@ -116,11 +114,11 @@ export function Guidelines({ onNext }: GuidelineProps) {
               control={form.control}
               name="mobile"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-start gap-2 space-x-3 space-y-0 rounded-lg border border-tertiary-300 p-3 sm:w-full">
+                <FormItem className="border-tertiary-300 flex flex-row items-start gap-2 space-y-0 space-x-3 rounded-lg border p-3 sm:w-full">
                   <FormControl>
                     <Checkbox
                       checked={field.value}
-                      className={`rounded-full border border-tertiary-300 ${isDirty && 'bg-supplementary-red'}`}
+                      className={`border-tertiary-300 rounded-full border ${isDirty && "bg-supplementary-red"}`}
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
@@ -138,7 +136,7 @@ export function Guidelines({ onNext }: GuidelineProps) {
               )}
             </Button>
             {form.formState.errors.root && (
-              <p className="flex items-center justify-center pt-2 text-center text-body-1-demi text-supplementary-red">
+              <p className="text-body-1-demi text-supplementary-red flex items-center justify-center pt-2 text-center">
                 {form.formState.errors.root.message}
               </p>
             )}
@@ -146,5 +144,5 @@ export function Guidelines({ onNext }: GuidelineProps) {
         </Form>
       </div>
     </ModalShell>
-  )
+  );
 }

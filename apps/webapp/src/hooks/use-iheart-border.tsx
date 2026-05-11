@@ -1,23 +1,23 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from "react";
 
 export const useIheartBorderState = (condition: boolean, duration = 5000) => {
-  const [showBorder, setShowBorder] = useState(false)
+  const [showBorder, setShowBorder] = useState(false);
 
   useEffect(() => {
     if (condition) {
-      setShowBorder(true)
+      setShowBorder(true);
 
       const timer = setTimeout(() => {
-        setShowBorder(false)
-      }, duration)
+        setShowBorder(false);
+      }, duration);
 
       return () => {
-        clearTimeout(timer)
-      }
+        clearTimeout(timer);
+      };
     } else {
-      setShowBorder(false)
+      setShowBorder(false);
     }
-  }, [condition, duration])
+  }, [condition, duration]);
 
-  return showBorder
-}
+  return showBorder;
+};

@@ -30,11 +30,7 @@ function getAriaLabelForAction(action: string | null): string {
   }
 }
 
-export function PlayingState({
-  className,
-  showOnlyPlayAction = false,
-  ...restProps
-}: PlayingStateProps) {
+export function PlayingState({ className, showOnlyPlayAction = false, ...restProps }: PlayingStateProps) {
   const { playingState, buttonAction, pausedBySystem } = usePlayerContext();
 
   // System pause UI must remain stable across active/index/src transitions.

@@ -2,6 +2,7 @@
 name: security-audit
 description: Auditing code for security vulnerabilities and reviewing auth changes (read-only)
 ---
+
 # Skill: Security Audit
 
 Use this skill when auditing code for security vulnerabilities, reviewing auth changes,

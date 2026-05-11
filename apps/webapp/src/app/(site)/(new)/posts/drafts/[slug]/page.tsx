@@ -1,10 +1,10 @@
-import { CreatePost } from '@genuin/components/organisms/create-post'
+import { CreatePost } from "@genuin/components/organisms/create-post";
 
 interface Props {
-  params: Promise<{ slug: string }>
+  params: Promise<{ slug: string }>;
 }
 
 export default async function Page({ params }: Props) {
-  const param = await params
-  return <CreatePost draftId={param.slug} />
+  const param = await params;
+  return <CreatePost draftId={param.slug} />;
 }

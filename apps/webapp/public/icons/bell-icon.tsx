@@ -1,29 +1,29 @@
 // Import necessary types and functions from React and class-variance-authority
-import { cva, type VariantProps } from 'class-variance-authority'
-import { type ComponentProps } from 'react'
+import { cva, type VariantProps } from "class-variance-authority";
+import { type ComponentProps } from "react";
 
 // Define the bellVariant function using cva to handle different styles based on props
-const bellVariant = cva('', {
+const bellVariant = cva("", {
   variants: {
     variant: {
-      light: 'stroke-monochrome-white', // Light variant style
-      primary: 'stroke-primary', // Primary variant style
-      dark: 'stroke-secondary', // Dark variant style
+      light: "stroke-monochrome-white", // Light variant style
+      primary: "stroke-primary", // Primary variant style
+      dark: "stroke-secondary", // Dark variant style
     },
     size: {
-      sm: 'w-6 h-6', // Small size style
-      md: 'w-8 h-8', // Medium size style
+      sm: "w-6 h-6", // Small size style
+      md: "w-8 h-8", // Medium size style
     },
   },
-})
+});
 
 // Define the Props type for the BellIcon component
 type Props = Readonly<
-  ComponentProps<'svg'> & VariantProps<typeof bellVariant> & { variant?: 'light' | 'primary' | 'dark' | null }
->
+  ComponentProps<"svg"> & VariantProps<typeof bellVariant> & { variant?: "light" | "primary" | "dark" | null }
+>;
 
 // BellIcon component definition
-export function BellIcon({ variant = 'dark', size = 'md', ...props }: Readonly<Props>) {
+export function BellIcon({ variant = "dark", size = "md", ...props }: Readonly<Props>) {
   return (
     <svg
       className={bellVariant({ variant, size })} // Apply styles based on variant and size props
@@ -59,5 +59,5 @@ export function BellIcon({ variant = 'dark', size = 'md', ...props }: Readonly<P
       {/* Define the small circle at the top of the bell */}
       <circle cx="12.1266" cy="2.5" r="1" stroke="white" className={bellVariant({ variant })} />
     </svg>
-  )
+  );
 }

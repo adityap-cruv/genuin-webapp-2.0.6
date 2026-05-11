@@ -1,9 +1,9 @@
-import { type ReactNode } from 'react'
+import { type ReactNode } from "react";
 
-import { Shimmer } from '@components/ui/shimmer'
+import { Shimmer } from "@components/ui/shimmer";
 
 export function ItemShimmer({ count = 4 }: { count?: number }) {
-  const compArr: ReactNode[] = []
+  const compArr: ReactNode[] = [];
 
   for (let i = 0; i < count; i++) {
     compArr.push(
@@ -14,7 +14,7 @@ export function ItemShimmer({ count = 4 }: { count?: number }) {
           <Shimmer className="h-4 w-full pt-2" />
         </span>
       </div>
-    )
+    );
   }
-  return <div className="flex w-full flex-col gap-y-4 overflow-auto p-6">{compArr}</div>
+  return <div className="flex w-full flex-col gap-y-4 overflow-auto p-6">{compArr}</div>;
 }

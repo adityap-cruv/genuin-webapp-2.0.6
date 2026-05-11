@@ -62,9 +62,8 @@ interface LeftButtonsProps {
 // };
 
 export const LeftButtons = ({ onUploadClick, isUploadingFiles }: LeftButtonsProps) => {
-    const { brand_id } =
-        useAgentsContext();
-    
+    const { brand_id } = useAgentsContext();
+
     const [isAddPopoverOpen, setIsAddPopoverOpen] = useState(false);
     return (
         <div className='gai:flex gai:items-center gai:gap-2'>

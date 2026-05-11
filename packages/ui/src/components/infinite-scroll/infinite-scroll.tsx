@@ -48,15 +48,11 @@ export const InfiniteScroll = ({
       (entries) => {
         const lastEntry = entries[0];
 
-        if (
-          lastEntry &&
-          lastEntry.isIntersecting &&
-          lastEntry.intersectionRatio >= 0.95
-        ) {
+        if (lastEntry && lastEntry.isIntersecting && lastEntry.intersectionRatio >= 0.95) {
           callNextPage();
         }
       },
-      { threshold: 0.95 },
+      { threshold: 0.95 }
     );
 
     observer.observe(sentinelElement);

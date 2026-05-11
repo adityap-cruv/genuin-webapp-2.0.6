@@ -1,25 +1,25 @@
 export type SearchTopSection =
   | {
-      searchInputText: string
-      searchResultText: string
-      button: SearchButton[]
-      searchItemType: number
-      searchItemsTop: SearchItem[]
-      searchItemsBottom: SearchItem[]
+      searchInputText: string;
+      searchResultText: string;
+      button: SearchButton[];
+      searchItemType: number;
+      searchItemsTop: SearchItem[];
+      searchItemsBottom: SearchItem[];
     }
-  | undefined
+  | undefined;
 
 export type SearchButton = {
-  text: string
-  variant: any
-}
+  text: string;
+  variant: any;
+};
 
 export type SearchItem = {
-  image: string | null
-  title: string
-  caption: string
-  price: string
-  time: string
-  highlightedText?: string
-  button?: SearchButton[]
-}
+  image: string | null;
+  title: string;
+  caption: string;
+  price: string;
+  time: string;
+  highlightedText?: string;
+  button?: SearchButton[];
+};

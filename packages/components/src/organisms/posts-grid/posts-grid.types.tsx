@@ -1,9 +1,6 @@
 import type { ComponentProps } from "react";
 
-import type {
-  PostTile,
-  PostTileDataType,
-} from "@genuin/components/molecules/post-tile";
+import type { PostTile, PostTileDataType } from "@genuin/components/molecules/post-tile";
 
 export type PostsGridProps = {
   postTileVariant?: ComponentProps<typeof PostTile>["variant"];

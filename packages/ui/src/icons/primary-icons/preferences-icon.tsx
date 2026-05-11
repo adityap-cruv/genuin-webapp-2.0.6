@@ -2,21 +2,8 @@ import type { SVGIconsProps } from "../type";
 
 export function PreferencesIcon({ ...restProps }: SVGIconsProps) {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      {...restProps}
-    >
-      <path
-        d="M5.55739 7.38281H2"
-        stroke="#1D1F20"
-        strokeWidth="1.125"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" {...restProps}>
+      <path d="M5.55739 7.38281H2" stroke="#1D1F20" strokeWidth="1.125" strokeLinecap="round" strokeLinejoin="round" />
       <path
         d="M21.9974 7.38281H10.1406"
         stroke="#1D1F20"
@@ -24,13 +11,7 @@ export function PreferencesIcon({ ...restProps }: SVGIconsProps) {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <path
-        d="M13.8577 16.7422H2"
-        stroke="#1D1F20"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      <path d="M13.8577 16.7422H2" stroke="#1D1F20" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
       <path
         d="M22.0008 16.7422H18.4453"
         stroke="#1D1F20"

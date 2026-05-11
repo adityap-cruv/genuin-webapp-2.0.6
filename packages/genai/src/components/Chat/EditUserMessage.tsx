@@ -9,14 +9,9 @@ interface EditUserMessageProps {
     onSubmit: () => void;
 }
 
-export const EditUserMessage: React.FC<EditUserMessageProps> = ({
-    value,
-    onChange,
-    onCancel,
-    onSubmit,
-}) => {
+export const EditUserMessage: React.FC<EditUserMessageProps> = ({ value, onChange, onCancel, onSubmit }) => {
     return (
-        <div className='gai:flex gai:flex-col gai:gap-2 gai:w-full'>
+        <div className='gai:flex gai:w-full gai:flex-col gai:gap-2'>
             <textarea
                 className='gai:max-h-[160px] gai:w-full gai:resize-none gai:overflow-y-auto gai:border-0 gai:bg-transparent gai:text-secondary-gray-900 gai:outline-0'
                 rows={3}
@@ -24,25 +19,13 @@ export const EditUserMessage: React.FC<EditUserMessageProps> = ({
                 onChange={e => onChange(e.target.value)}
             />
             <div className='gai:flex gai:justify-end gai:gap-2'>
-                <Button
-                    variant='outline'
-                    size='sm'
-                    className='gai:h-8 gai:px-3'
-                    onClick={onCancel}
-                >
+                <Button variant='outline' size='sm' className='gai:h-8 gai:px-3' onClick={onCancel}>
                     Cancel
                 </Button>
-                <Button
-                    size='sm'
-                    className='gai:h-8 gai:px-3'
-                    onClick={onSubmit}
-                    disabled={!value.trim()}
-                >
+                <Button size='sm' className='gai:h-8 gai:px-3' onClick={onSubmit} disabled={!value.trim()}>
                     Send
                 </Button>
             </div>
         </div>
     );
 };
-
-

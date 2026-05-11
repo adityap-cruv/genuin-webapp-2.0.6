@@ -7,9 +7,7 @@ import { defineConfig } from "vitest/config";
 const dirname =
   typeof __dirname !== "undefined"
     ? __dirname
-    : path.dirname(
-        typeof require !== "undefined" ? require.main?.filename || "" : ""
-      );
+    : path.dirname(typeof require !== "undefined" ? require.main?.filename || "" : "");
 
 // More info at: https://storybook.js.org/docs/writing-tests/test-addon
 export default defineConfig({

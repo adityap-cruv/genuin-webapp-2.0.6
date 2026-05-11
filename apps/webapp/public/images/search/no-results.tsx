@@ -1,6 +1,6 @@
-import { type ComponentProps } from 'react'
+import { type ComponentProps } from "react";
 
-type Props = ComponentProps<'svg'>
+type Props = ComponentProps<"svg">;
 
 export function ImgNoResults({ ...props }: Props) {
   return (
@@ -266,5 +266,5 @@ export function ImgNoResults({ ...props }: Props) {
         fill="var(--tertiary)"
       />
     </svg>
-  )
+  );
 }

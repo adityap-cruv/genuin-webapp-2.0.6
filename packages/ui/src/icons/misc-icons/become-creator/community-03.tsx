@@ -1,6 +1,6 @@
-import { type ComponentProps } from 'react'
+import { type ComponentProps } from "react";
 
-type Props = ComponentProps<'svg'>
+type Props = ComponentProps<"svg">;
 
 export function CommunityDiscussion03({ ...props }: Props) {
   return (
@@ -138,5 +138,5 @@ export function CommunityDiscussion03({ ...props }: Props) {
         fill="#191919"
       />
     </svg>
-  )
+  );
 }

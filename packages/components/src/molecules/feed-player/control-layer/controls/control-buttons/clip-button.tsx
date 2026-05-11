@@ -14,8 +14,7 @@ export const ClipButton: React.FC<ClipButtonProps> = ({ onClick }) => {
       onClick={(e) => {
         e.stopPropagation();
         onClick();
-      }}
-    >
+      }}>
       <TrimIcon />
     </div>
   );

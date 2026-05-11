@@ -80,7 +80,7 @@ const nextConfig = {
     // Existing experimental features...
 
     // Enable React Compiler for production builds only
-    ...(process.env.NODE_ENV === 'production' && {
+    ...(process.env.NODE_ENV === "production" && {
       reactCompiler: true,
     }),
   },

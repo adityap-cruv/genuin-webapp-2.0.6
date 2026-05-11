@@ -2,8 +2,8 @@
  * Configuration types
  */
 
-import type { AnalyticsProvider } from './provider'
-import type { EventPayload } from './events'
+import type { AnalyticsProvider } from "./provider";
+import type { EventPayload } from "./events";
 
 /**
  * Queue configuration
@@ -13,38 +13,38 @@ export interface QueueConfig {
    * Maximum number of events to queue
    * @default 100
    */
-  maxSize?: number
+  maxSize?: number;
 
   /**
    * Maximum age of events in milliseconds
    * Events older than this will be expired
    * @default 300000 (5 minutes)
    */
-  maxAge?: number
+  maxAge?: number;
 
   /**
    * Queue strategy
    * @default 'fifo'
    */
-  strategy?: 'fifo' | 'lifo' | 'priority'
+  strategy?: "fifo" | "lifo" | "priority";
 
   /**
    * Whether to persist queue to localStorage
    * @default false
    */
-  persist?: boolean
+  persist?: boolean;
 
   /**
    * Key to use for localStorage persistence
    * @default 'genuin-analytics-queue'
    */
-  persistKey?: string
+  persistKey?: string;
 
   /**
    * Debounce time for saving to localStorage (ms)
    * @default 1000
    */
-  persistDebounce?: number
+  persistDebounce?: number;
 }
 
 /**
@@ -55,37 +55,37 @@ export interface ValidationConfig {
    * Whether to enable validation
    * @default true in development, false in production
    */
-  enabled?: boolean
+  enabled?: boolean;
 
   /**
    * Whitelist of allowed event names
    * If set, only these events will be tracked
    */
-  whitelist?: string[]
+  whitelist?: string[];
 
   /**
    * Blacklist of disallowed event names
    * These events will never be tracked
    */
-  blacklist?: string[]
+  blacklist?: string[];
 
   /**
    * Whether to throw errors on validation failure
    * @default true in development, false in production
    */
-  throwOnError?: boolean
+  throwOnError?: boolean;
 
   /**
    * Whether to log warnings on validation failure
    * @default true
    */
-  logWarnings?: boolean
+  logWarnings?: boolean;
 }
 
 /**
  * Merge strategy for payloads
  */
-export type MergeStrategy = 'deep' | 'shallow' | 'override' | 'additive'
+export type MergeStrategy = "deep" | "shallow" | "override" | "additive";
 
 /**
  * Merge rule for specific events
@@ -94,18 +94,18 @@ export interface MergeRule {
   /**
    * Merge strategy to use
    */
-  strategy: MergeStrategy
+  strategy: MergeStrategy;
 
   /**
    * Which payload takes priority in conflicts
    * @default 'event'
    */
-  priority?: 'default' | 'event'
+  priority?: "default" | "event";
 
   /**
    * Optional transformation function
    */
-  transform?: (payload: EventPayload) => EventPayload
+  transform?: (payload: EventPayload) => EventPayload;
 }
 
 /**
@@ -116,12 +116,12 @@ export interface MergeConfig {
    * Default merge strategy
    * @default 'deep'
    */
-  defaultStrategy?: MergeStrategy
+  defaultStrategy?: MergeStrategy;
 
   /**
    * Event-specific merge rules
    */
-  rules?: Map<string, MergeRule>
+  rules?: Map<string, MergeRule>;
 }
 
 /**
@@ -132,30 +132,30 @@ export interface SanitizationConfig {
    * Whether to remove null values
    * @default true
    */
-  removeNull?: boolean
+  removeNull?: boolean;
 
   /**
    * Whether to remove undefined values
    * @default true
    */
-  removeUndefined?: boolean
+  removeUndefined?: boolean;
 
   /**
    * Whether to remove empty strings
    * @default false
    */
-  removeEmptyStrings?: boolean
+  removeEmptyStrings?: boolean;
 
   /**
    * List of sensitive keys to remove
    */
-  sensitiveKeys?: string[]
+  sensitiveKeys?: string[];
 
   /**
    * Whether to trim string values
    * @default true
    */
-  trimStrings?: boolean
+  trimStrings?: boolean;
 }
 
 /**
@@ -165,42 +165,42 @@ export interface AnalyticsConfig {
   /**
    * List of analytics providers to use
    */
-  providers: AnalyticsProvider[]
+  providers: AnalyticsProvider[];
 
   /**
    * Default payload to merge with all events
    */
-  defaultPayload?: EventPayload
+  defaultPayload?: EventPayload;
 
   /**
    * Queue configuration
    */
-  queue?: QueueConfig
+  queue?: QueueConfig;
 
   /**
    * Validation configuration
    */
-  validation?: ValidationConfig
+  validation?: ValidationConfig;
 
   /**
    * Merge configuration
    */
-  merge?: MergeConfig
+  merge?: MergeConfig;
 
   /**
    * Sanitization configuration
    */
-  sanitization?: SanitizationConfig
+  sanitization?: SanitizationConfig;
 
   /**
    * Whether to enable debug logging
    * @default false
    */
-  debug?: boolean
+  debug?: boolean;
 
   /**
    * Whether to automatically initialize on creation
    * @default true
    */
-  autoInitialize?: boolean
+  autoInitialize?: boolean;
 }

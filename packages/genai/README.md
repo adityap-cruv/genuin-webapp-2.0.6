@@ -157,7 +157,7 @@ GenAISDK.init({
     userId: 'user-123',
     brandId: 456,
     view: 'dialog',
-    isMaya: false  // Normal mode - shows all agents
+    isMaya: false, // Normal mode - shows all agents
 });
 ```
 
@@ -168,7 +168,7 @@ GenAISDK.init({
     userId: 'user-123',
     brandId: 456,
     view: 'dialog',
-    isMaya: true  // Maya-only mode - shows only Maya agent
+    isMaya: true, // Maya-only mode - shows only Maya agent
 });
 ```
 
@@ -177,13 +177,14 @@ GenAISDK.init({
 To switch from normal mode to Maya-only mode (or vice versa), you can use either approach:
 
 **Option 1: Re-initialize with `init()`**
+
 ```javascript
 // First initialization - normal mode
 GenAISDK.init({
     userId: 'user-123',
     brandId: 456,
     view: 'dialog',
-    isMaya: false
+    isMaya: false,
 });
 
 // Later, switch to Maya-only mode
@@ -191,29 +192,34 @@ GenAISDK.init({
     userId: 'user-123',
     brandId: 456,
     view: 'dialog',
-    isMaya: true  // Old instance is automatically unmounted
+    isMaya: true, // Old instance is automatically unmounted
 });
 ```
 
 **Option 2: Use `genai:openDialog` event with `isMaya` in detail**
+
 ```javascript
 // Initialize SDK first
 GenAISDK.init({
     userId: 'user-123',
     brandId: 456,
     view: 'dialog',
-    isMaya: false
+    isMaya: false,
 });
 
 // Later, switch modes using event
-window.dispatchEvent(new CustomEvent('genai:openDialog', {
-    detail: { isMaya: true }  // Switch to Maya-only mode
-}));
+window.dispatchEvent(
+    new CustomEvent('genai:openDialog', {
+        detail: { isMaya: true }, // Switch to Maya-only mode
+    })
+);
 
 // Or switch back to normal mode
-window.dispatchEvent(new CustomEvent('genai:openDialog', {
-    detail: { isMaya: false }  // Switch to normal mode
-}));
+window.dispatchEvent(
+    new CustomEvent('genai:openDialog', {
+        detail: { isMaya: false }, // Switch to normal mode
+    })
+);
 ```
 
 **React Integration Example**
@@ -231,11 +237,13 @@ export const GenAIDialog = ({ isMayaMode = false }) => {
 
     const initGenAISDK = () => {
         if (!scriptLoaded || !window.GenAISDK) return;
-        
+
         // Check if mode has changed
         if (initializedRef.current && currentModeRef.current !== isMayaMode) {
             // Mode switch detected - SDK will handle unmounting automatically
-            console.log(`Switching from ${currentModeRef.current ? 'Maya' : 'Normal'} to ${isMayaMode ? 'Maya' : 'Normal'} mode`);
+            console.log(
+                `Switching from ${currentModeRef.current ? 'Maya' : 'Normal'} to ${isMayaMode ? 'Maya' : 'Normal'} mode`
+            );
         }
 
         window.GenAISDK.init({
@@ -245,7 +253,7 @@ export const GenAIDialog = ({ isMayaMode = false }) => {
             draggable: true,
             userEmail: user?.email || '',
             userUUID: brand?.master_user_uuid || '',
-            isMaya: isMayaMode
+            isMaya: isMayaMode,
         });
 
         initializedRef.current = true;
@@ -288,14 +296,18 @@ The SDK provides both incoming and outgoing events for seamless integration:
 window.dispatchEvent(new Event('genai:openDialog'));
 
 // Reopen the dialog with isMaya configuration
-window.dispatchEvent(new CustomEvent('genai:openDialog', {
-    detail: { isMaya: true }  // or false for normal mode
-}));
+window.dispatchEvent(
+    new CustomEvent('genai:openDialog', {
+        detail: { isMaya: true }, // or false for normal mode
+    })
+);
 
 // Reopen the dialog with isMaya configuration
-window.dispatchEvent(new CustomEvent('genai:openDialog', {
-    detail: { isMaya: true }  // or false for normal mode
-}));
+window.dispatchEvent(
+    new CustomEvent('genai:openDialog', {
+        detail: { isMaya: true }, // or false for normal mode
+    })
+);
 ```
 
 **Outgoing Events (Listen to SDK Actions):**

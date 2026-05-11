@@ -83,9 +83,7 @@ import { useState, useEffect } from "react";
 function useViewportHeight() {
   // Initialize with current viewport height
   // Use lazy initialization to avoid SSR issues
-  const [height, setHeight] = useState(
-    window?.visualViewport?.height || window?.innerHeight,
-  );
+  const [height, setHeight] = useState(window?.visualViewport?.height || window?.innerHeight);
 
   useEffect(() => {
     /**

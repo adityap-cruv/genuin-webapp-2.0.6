@@ -1,35 +1,34 @@
-import { Lock } from 'lucide-react'
-import { useState } from 'react'
+import { Lock } from "lucide-react";
+import { useState } from "react";
 
-import { LoopPrivacyInfo } from '@components/common/loop-privacy-info'
-import { NoSearchResults } from '@components/common/no-search-results'
-import { CustomAvatar } from '@components/custom/custom-avatar'
-import { DecorativeList } from '@components/custom/decorative-list'
-import { Button } from '@components/ui/button'
-import { Loader } from '@components/ui/loader'
-import { EarthIcon } from '@icons/earth-icon'
-import { RepostIcon } from '@icons/player-controls/repost-icon'
-import { cn } from '@lib/utils'
+import { LoopPrivacyInfo } from "@components/common/loop-privacy-info";
+import { NoSearchResults } from "@components/common/no-search-results";
+import { CustomAvatar } from "@components/custom/custom-avatar";
+import { DecorativeList } from "@components/custom/decorative-list";
+import { Button } from "@components/ui/button";
+import { Loader } from "@components/ui/loader";
+import { EarthIcon } from "@icons/earth-icon";
+import { RepostIcon } from "@icons/player-controls/repost-icon";
+import { cn } from "@lib/utils";
 
-import { repostVideo } from './api'
-import { type RepostCommunityType } from './schema'
-import { useRepostModalStore } from './state'
-
+import { repostVideo } from "./api";
+import { type RepostCommunityType } from "./schema";
+import { useRepostModalStore } from "./state";
 
 export function Body() {
   const { data, filteredData, searchString } = useRepostModalStore((state) => ({
     data: state.repostCommunityData,
     filteredData: state.filteredRepostCommunityData,
     searchString: state.searchStr,
-  }))
-  const dataToRender = filteredData ?? data
+  }));
+  const dataToRender = filteredData ?? data;
 
   if (!dataToRender || dataToRender.length === 0) {
     return (
       <div className="flex h-full w-full items-center justify-center">
         <NoSearchResults forKeyword={searchString} />
       </div>
-    )
+    );
   }
 
   return (
@@ -39,10 +38,10 @@ export function Body() {
           <div key={item.community_id}>
             <CommunityCard communityInfo={item} />
           </div>
-        )
+        );
       })}
     </div>
-  )
+  );
 }
 
 function CommunityCard({ communityInfo }: { communityInfo: RepostCommunityType }) {
@@ -51,34 +50,34 @@ function CommunityCard({ communityInfo }: { communityInfo: RepostCommunityType }
       <div className="flex items-center justify-between">
         <span className="flex gap-x-3">
           <CustomAvatar
-            fallbackString={communityInfo.name ?? ''}
-            imageUrl={communityInfo.dp_m ?? communityInfo.dp ?? ''}
+            fallbackString={communityInfo.name ?? ""}
+            imageUrl={communityInfo.dp_m ?? communityInfo.dp ?? ""}
             isAvatar={false}
             className="h-10 w-10"
           />
           <span className="flex flex-col items-start justify-center">
-            <p className="line-clamp-1 break-all text-body-1-bold">{communityInfo.name}</p>
+            <p className="text-body-1-bold line-clamp-1 break-all">{communityInfo.name}</p>
             <span className="flex items-center justify-center gap-1">
-              {communityInfo.type === 'PUBLIC' ? (
-                <EarthIcon className="h-4 w-4 stroke-tertiary" />
+              {communityInfo.type === "PUBLIC" ? (
+                <EarthIcon className="stroke-tertiary h-4 w-4" />
               ) : (
-                <Lock className="h-4 w-4 stroke-tertiary" />
+                <Lock className="stroke-tertiary h-4 w-4" />
               )}
-              <p className="line-clamp-1 break-all text-cap-1-med text-tertiary">
-                {communityInfo.type === 'PUBLIC' ? 'Public' : 'Private'}
+              <p className="text-cap-1-med text-tertiary line-clamp-1 break-all">
+                {communityInfo.type === "PUBLIC" ? "Public" : "Private"}
               </p>
             </span>
           </span>
         </span>
         {/* TODO: check if any link must be put here. */}
-        <div className="flex items-center gap-0.5 rounded-full border border-tertiary-200 bg-tertiary-100 px-1 py-0.5">
+        <div className="border-tertiary-200 bg-tertiary-100 flex items-center gap-0.5 rounded-full border px-1 py-0.5">
           <CustomAvatar
-            fallbackString={communityInfo.brand.name ?? ''}
+            fallbackString={communityInfo.brand.name ?? ""}
             imageUrl={communityInfo.brand.logo}
             isAvatar={false}
             className="h-4 w-4"
           />
-          <p className="line-clamp-1 max-w-[80px] break-all text-cap-1-demi">{communityInfo.brand.name}</p>
+          <p className="text-cap-1-demi line-clamp-1 max-w-[80px] break-all">{communityInfo.brand.name}</p>
         </div>
       </div>
       <DecorativeList className="pt-4">
@@ -86,57 +85,60 @@ function CommunityCard({ communityInfo }: { communityInfo: RepostCommunityType }
           return (
             <li
               key={index}
-              className="relative mb-4 flex w-full items-center justify-between rounded-lg border border-tertiary-200 bg-tertiary-100 px-4 py-3">
+              className="border-tertiary-200 bg-tertiary-100 relative mb-4 flex w-full items-center justify-between rounded-lg border px-4 py-3">
               <span>
-                <p className="line-clamp-1 break-all text-body-1-demi">{item.group.group_name}</p>
-                <LoopPrivacyInfo accessTypeId={item.actions[0]?.access_type_id ?? 0} actionId={item.actions[0]?.action_id ?? 0} />
+                <p className="text-body-1-demi line-clamp-1 break-all">{item.group.group_name}</p>
+                <LoopPrivacyInfo
+                  accessTypeId={item.actions[0]?.access_type_id ?? 0}
+                  actionId={item.actions[0]?.action_id ?? 0}
+                />
               </span>
               <RepostButton destinationId={item.chat_id} />
             </li>
-          )
+          );
         })}
       </DecorativeList>
     </>
-  )
+  );
 }
 
 function RepostButton({ destinationId }: { destinationId: string }) {
   const [status, setStatus] = useState<{ repostStatus: boolean; isLoading: boolean }>({
     repostStatus: false,
     isLoading: false,
-  })
-  const sourceVideoId = useRepostModalStore().videoId
+  });
+  const sourceVideoId = useRepostModalStore().videoId;
   return (
     <Button
       onClick={async () => {
         setStatus((x) => {
-          x.isLoading = true
-          return { ...x }
-        })
-        const ans = await repostVideo(destinationId, sourceVideoId)
+          x.isLoading = true;
+          return { ...x };
+        });
+        const ans = await repostVideo(destinationId, sourceVideoId);
         setStatus((x) => {
-          x.isLoading = false
-          x.repostStatus = ans
-          return { ...x }
-        })
+          x.isLoading = false;
+          x.repostStatus = ans;
+          return { ...x };
+        });
       }}
-      variant={status.repostStatus ? 'default' : 'outline'}
+      variant={status.repostStatus ? "default" : "outline"}
       className={cn(
-        'gap-x-1 whitespace-nowrap border-primary p-0 text-body-1-demi',
-        status.repostStatus && 'cursor-not-allowed bg-tertiary hover:bg-tertiary'
+        "border-primary text-body-1-demi gap-x-1 p-0 whitespace-nowrap",
+        status.repostStatus && "bg-tertiary hover:bg-tertiary cursor-not-allowed"
       )}>
       {status.isLoading ? (
         <div className="flex w-20 items-center justify-center px-4 py-2">
           <Loader size="sm" />
         </div>
       ) : (
-        <span className="flex gap-x-1 py-2 pl-2 pr-4">
-          <RepostIcon className={cn('h-5 w-5 stroke-primary', status.repostStatus && 'stroke-monochrome-white')} />
-          <p className={cn('text-primary', status.repostStatus && 'text-monochrome-white')}>
-            {status.repostStatus ? 'Reposted' : 'Repost'}
+        <span className="flex gap-x-1 py-2 pr-4 pl-2">
+          <RepostIcon className={cn("stroke-primary h-5 w-5", status.repostStatus && "stroke-monochrome-white")} />
+          <p className={cn("text-primary", status.repostStatus && "text-monochrome-white")}>
+            {status.repostStatus ? "Reposted" : "Repost"}
           </p>
         </span>
       )}
     </Button>
-  )
+  );
 }

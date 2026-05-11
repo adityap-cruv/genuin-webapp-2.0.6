@@ -106,11 +106,7 @@ const AgentTextContent: React.FC<AgentTextContentProps> = ({
     // Default: render markdown content
     return (
         <div className='markdown-content'>
-            <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                rehypePlugins={[rehypeRaw]}
-                components={Markdown}
-            >
+            <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]} components={Markdown}>
                 {displayText || (event.isCompleted ? normalizedContent : '')}
             </ReactMarkdown>
             {isAnimating || !hasFinished ? (

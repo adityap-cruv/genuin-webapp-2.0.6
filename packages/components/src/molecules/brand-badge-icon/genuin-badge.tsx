@@ -44,21 +44,12 @@ type GenuinBadgeProps = {
 } & VariantProps<typeof badgeVariants>;
 
 // Define the GenuinBadge component
-const GenuinBadge: React.FC<GenuinBadgeProps> = ({
-  size,
-  variant,
-  className,
-}) => {
+const GenuinBadge: React.FC<GenuinBadgeProps> = ({ size, variant, className }) => {
   return (
     // Container div with flexbox properties and additional custom classes
     <div className={cn("gencl:flex gencl:items-center gencl:gap-1", className)}>
       {/* Span element with variant-specific and additional classes */}
-      <span
-        className={cn(
-          "gencl:h-1 gencl:w-1 gencl:rounded-full",
-          spanVariants({ variant })
-        )}
-      ></span>
+      <span className={cn("gencl:h-1 gencl:w-1 gencl:rounded-full", spanVariants({ variant }))}></span>
       {/* GenuinIcon component with size and variant-specific classes */}
       <GenuinIcon className={badgeVariants({ size, variant })} />
     </div>

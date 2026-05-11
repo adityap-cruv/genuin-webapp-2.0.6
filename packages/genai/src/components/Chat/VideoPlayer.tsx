@@ -107,7 +107,7 @@ const VideoPlayer = ({ videoUrl, thumbnailUrl }: VideoPlayerProps) => {
                                 {isPlaying ? (
                                     <Pause width='16' height='16' className='gai:text-white' />
                                 ) : (
-                                    <Play className='gai:text-white gai:scale-[0.9]' />
+                                    <Play className='gai:scale-[0.9] gai:text-white' />
                                 )}
                             </button>
 
@@ -120,7 +120,11 @@ const VideoPlayer = ({ videoUrl, thumbnailUrl }: VideoPlayerProps) => {
                                     backdropFilter: 'blur(1.5px)',
                                 }}
                             >
-                                {isMuted ? <VolumeOff className='gai:text-white' /> : <VolumeOn className='gai:text-white' />}
+                                {isMuted ? (
+                                    <VolumeOff className='gai:text-white' />
+                                ) : (
+                                    <VolumeOn className='gai:text-white' />
+                                )}
                             </button>
                         </div>
                     </div>
@@ -137,7 +141,7 @@ const VideoPlayer = ({ videoUrl, thumbnailUrl }: VideoPlayerProps) => {
                             boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
                         }}
                     >
-                        <Play className='gai:text-white gai:scale-[1.8]' />
+                        <Play className='gai:scale-[1.8] gai:text-white' />
                     </button>
                 )}
 

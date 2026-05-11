@@ -90,13 +90,11 @@ graph TD
 In `packages/web-sdk/src/sdk/react-utils.tsx`, providers are eagerly imported:
 
 ```typescript
-import { AuthProvider } from '@genuin/components/context/auth'
-import { BaseContextProvider } from '@genuin/components/context/base'
-import { EmbedProvider } from '@genuin/components/context/embed'
+import { AuthProvider } from "@genuin/components/context/auth";
+import { BaseContextProvider } from "@genuin/components/context/base";
+import { EmbedProvider } from "@genuin/components/context/embed";
 // ... etc
 ```
-
-
 
 ### Solution:
 
@@ -135,13 +133,11 @@ import { EmbedProvider } from '@genuin/components/context/embed'
 UI components are eagerly imported:
 
 ```typescript
-import { Loader } from '@genuin/ui/components/loader'
-import { Toaster } from '@genuin/ui'
-import { Skeleton } from '@genuin/ui/components/skeleton'
-import { FeedSkeleton } from '@genuin/components/templates/feed'
+import { Loader } from "@genuin/ui/components/loader";
+import { Toaster } from "@genuin/ui";
+import { Skeleton } from "@genuin/ui/components/skeleton";
+import { FeedSkeleton } from "@genuin/components/templates/feed";
 ```
-
-
 
 ### Solution:
 
@@ -236,23 +232,23 @@ From local build analysis:
 2. **Break up large vendor chunks** in `vite.config.mjs` with size-aware splitting:
 
 - **vendor-forms (684KB → 3 chunks ~200KB each)**:
-    - `vendor-forms-core` (react-hook-form core ~150KB)
-    - `vendor-forms-validation` (zod ~100KB)
-    - `vendor-forms-inputs` (input-otp, react-phone-number-input ~150KB)
+  - `vendor-forms-core` (react-hook-form core ~150KB)
+  - `vendor-forms-validation` (zod ~100KB)
+  - `vendor-forms-inputs` (input-otp, react-phone-number-input ~150KB)
 - **vendor-animation (492KB → 2-3 chunks ~150-200KB each)**:
-    - `vendor-animation-motion` (motion library ~200KB)
-    - `vendor-animation-carousel` (swiper, embla-carousel ~200KB)
-    - `vendor-animation-player` (openplayerjs ~100KB, merge with carousel if <150KB)
+  - `vendor-animation-motion` (motion library ~200KB)
+  - `vendor-animation-carousel` (swiper, embla-carousel ~200KB)
+  - `vendor-animation-player` (openplayerjs ~100KB, merge with carousel if <150KB)
 - **vendor-external (255KB → keep as-is or split if needed)**:
-    - Keep as single chunk if <300KB, or split into analytics vs. other
+  - Keep as single chunk if <300KB, or split into analytics vs. other
 
 3. **Optimize feed chunk (914KB → 3-4 chunks ~200-300KB each)**:
 
 - Split feed into logical parts:
-    - `feed-core` (~250KB - main feed logic)
-    - `feed-comments` (~200KB - comment system)
-    - `feed-interactions` (~200KB - likes, shares, follows)
-    - `feed-media` (~250KB - video/audio players if not in vendor-animation)
+  - `feed-core` (~250KB - main feed logic)
+  - `feed-comments` (~200KB - comment system)
+  - `feed-interactions` (~200KB - likes, shares, follows)
+  - `feed-media` (~250KB - video/audio players if not in vendor-animation)
 - Use dynamic imports for feed sub-components
 
 4. **Merge tiny chunks**:
@@ -487,25 +483,26 @@ Vite config creates vendor chunks, but they're still eagerly loaded because prov
 - Runtime verification: confirmed production preview loads `gen_sdk.js` + `genuin-sdk` and immediately requests many `/dist/chunks/*` files on `genuin.init()` (eager embed initialization is causing early dynamic import execution).
 
 - Files/scripts added or updated during this effort:
-    - `packages/web-sdk/scripts/measure-baseline.ts` (new)
-    - `packages/web-sdk/scripts/analyze-chunks.ts` (new)
-    - `packages/web-sdk/scripts/validate-chunk-sizes.ts` (new)
-    - `packages/web-sdk/docs/performance/PERFORMANCE_BASELINE.md` (generated)
-    - `packages/web-sdk/docs/performance/CHUNK_ANALYSIS.md` (generated)
-    - `packages/web-sdk/vite.config.mjs` (manual chunking/tuning)
-    - `packages/web-sdk/src/index.ts` (selective exports, lazy CSS import)
-    - `packages/web-sdk/src/sdk/react-utils.tsx` (dynamic provider imports)
-    - small performance markers added to `packages/web-sdk/src/loader.js` and SDK entry files
-    - commit: `a24f4043` contains the main lazy-loading and build config changes
+  - `packages/web-sdk/scripts/measure-baseline.ts` (new)
+  - `packages/web-sdk/scripts/analyze-chunks.ts` (new)
+  - `packages/web-sdk/scripts/validate-chunk-sizes.ts` (new)
+  - `packages/web-sdk/docs/performance/PERFORMANCE_BASELINE.md` (generated)
+  - `packages/web-sdk/docs/performance/CHUNK_ANALYSIS.md` (generated)
+  - `packages/web-sdk/vite.config.mjs` (manual chunking/tuning)
+  - `packages/web-sdk/src/index.ts` (selective exports, lazy CSS import)
+  - `packages/web-sdk/src/sdk/react-utils.tsx` (dynamic provider imports)
+  - small performance markers added to `packages/web-sdk/src/loader.js` and SDK entry files
+  - commit: `a24f4043` contains the main lazy-loading and build config changes
 
 - Immediate next actions (recommended):
-    1. Run a bundle visualizer on a production build to get module-level breakdown of the large `index`/`feed`/`standard-wall` chunks.
-    2. Implement runtime deferral so `initializeAllEmbeds()` does not eagerly render embeds on `genuin.init()` (use IntersectionObserver or explicit render), then move provider/UI imports behind that path.
-    3. Split `vendor-forms-inputs` and other oversized vendor chunks into smaller manual chunks in `vite.config.mjs`, re-run `analyze:chunks` and `validate:chunks`.
+  1. Run a bundle visualizer on a production build to get module-level breakdown of the large `index`/`feed`/`standard-wall` chunks.
+  2. Implement runtime deferral so `initializeAllEmbeds()` does not eagerly render embeds on `genuin.init()` (use IntersectionObserver or explicit render), then move provider/UI imports behind that path.
+  3. Split `vendor-forms-inputs` and other oversized vendor chunks into smaller manual chunks in `vite.config.mjs`, re-run `analyze:chunks` and `validate:chunks`.
 
 ## Latest Updates (as of Dec 31, 2025)
 
 ### Phase 4: Intersection Observer (Completed)
+
 - **Goal**: Defer rendering until embed visible.
 - **Implementation**:
   - `IntersectionObserver` added in `genuin-sdk.ts`.
@@ -513,6 +510,7 @@ Vite config creates vendor chunks, but they're still eagerly loaded because prov
   - Initial load now only renders `dom-utils.ts` skeleton.
 
 ### Phase 5: React Decoupling (Completed)
+
 - **Goal**: Remove React and React-DOM from the main initialization bundle (`index` / entry).
 - **Implementation**:
   - Created `src/sdk/dom-utils.ts` (pure DOM logic for skeleton/error views).
@@ -524,6 +522,7 @@ Vite config creates vendor chunks, but they're still eagerly loaded because prov
   - **Issue**: A shared `index` chunk of ~632KB remains, which is likely non-React dependencies of `src/core`. Investigation required.
 
 ### Phase 6: Component Chunk Optimization (In Progress)
+
 - **Vendor Splitting**:
   - Split `vendor-forms-inputs` into `vendor-forms-phone` (~550KB) and `vendor-forms-otp` (~11KB).
 - **Next Steps**:
@@ -567,8 +566,8 @@ Vite config creates vendor chunks, but they're still eagerly loaded because prov
    **Approach 3: Vite config chunk splitting** ❌ FAILED
    - Added manual chunk configuration to force form components into separate `ui-forms` chunk:
      ```javascript
-     if (id.includes('@genuin/ui') && id.includes('/form')) {
-       return 'ui-forms';
+     if (id.includes("@genuin/ui") && id.includes("/form")) {
+       return "ui-forms";
      }
      ```
    - Excluded form components from `app-ui-components` bundle
@@ -604,6 +603,7 @@ import { Toast } from "@genuin/ui/components/toaster";
 ```
 
 **Impact**:
+
 - **Files to update**: 58+ files in `packages/components/src`
 - **Benefit**: Proper tree-shaking, vendor-forms only loads when form components are actually used
 - **Bundle size reduction**: ~121KB deferred from initial load
@@ -612,12 +612,14 @@ import { Toast } from "@genuin/ui/components/toaster";
 **Status**: Pending user approval to proceed with Option 2
 
 **Key Learnings**:
+
 1. Barrel exports are convenient but prevent effective tree-shaking
 2. Chunk splitting configuration cannot overcome barrel export limitations
 3. Direct imports are the only reliable way to achieve proper tree-shaking
 4. This is a known limitation of JavaScript module bundlers (Webpack, Rollup, Vite)
 
 **Files Modified During Investigation**:
+
 - `packages/ui/src/components/index.ts` (removed form export - reverted)
 - `packages/web-sdk/vite.config.mjs` (added ui-forms chunk splitting)
 - `packages/components/src/molecules/comment-input.tsx` (lazy-loaded MentionInput)

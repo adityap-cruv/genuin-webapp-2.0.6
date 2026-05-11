@@ -1,9 +1,6 @@
 import z from "zod";
 
-import {
-  mapCommunityUserRole,
-  mapGroupJoinStatus,
-} from "@genuin/components/lib/utils";
+import { mapCommunityUserRole, mapGroupJoinStatus } from "@genuin/components/lib/utils";
 import type { CommunityUserRole } from "@genuin/components/types/post";
 import type { GroupUserStatusType } from "@genuin/components/types/roles";
 
@@ -143,9 +140,7 @@ export type CommunityType = {
   shareUrl: string;
 };
 
-export function parseCommunityResponse(
-  input: z.infer<typeof CommunityListSchema>
-): CommunityType[] {
+export function parseCommunityResponse(input: z.infer<typeof CommunityListSchema>): CommunityType[] {
   return input.map<CommunityType>((community) => {
     return {
       id: community.community_id,
@@ -163,10 +158,7 @@ export function parseCommunityResponse(
             slug: community.brand.brand_slug,
           }
         : undefined,
-      role: mapCommunityUserRole(
-        community.logged_in_user_role,
-        community.is_community_join_requested
-      ),
+      role: mapCommunityUserRole(community.logged_in_user_role, community.is_community_join_requested),
       loops: parseGroupResponse(community.loops),
       handle: community.handle,
       shareUrl: community.share_url ?? "",
@@ -174,9 +166,7 @@ export function parseCommunityResponse(
   });
 }
 
-export function parseGroupResponse(
-  loops: Array<z.infer<typeof loopSchema>>
-): LoopType[] {
+export function parseGroupResponse(loops: Array<z.infer<typeof loopSchema>>): LoopType[] {
   return loops.map((loop) => {
     return {
       id: loop.chat_id,
@@ -198,9 +188,7 @@ export function parseGroupResponse(
   });
 }
 
-export function parseVideoResponse(
-  messages: Array<z.infer<typeof messageSchema>>
-): VideoType[] {
+export function parseVideoResponse(messages: Array<z.infer<typeof messageSchema>>): VideoType[] {
   return messages.map((message) => {
     return {
       id: message.message_id,

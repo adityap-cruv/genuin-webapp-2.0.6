@@ -8,8 +8,6 @@ import type { Agent, AgentPreset } from '@/types';
 import { Button } from '../ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger } from '../ui/select';
 
-
-
 const Objectives = () => {
     const {
         agents,

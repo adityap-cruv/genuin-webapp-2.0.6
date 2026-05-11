@@ -1,12 +1,12 @@
-'use client'
-import { Button } from '@genuin/ui/button'
-import { useEffect } from 'react'
+"use client";
+import { Button } from "@genuin/ui/button";
+import { useEffect } from "react";
 
 export default function Error({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   useEffect(() => {
     // Log the error to an error reporting service
-    console.error(error)
-  }, [error])
+    console.error(error);
+  }, [error]);
 
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 text-center">
@@ -16,5 +16,5 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
         Try again
       </Button>
     </div>
-  )
+  );
 }

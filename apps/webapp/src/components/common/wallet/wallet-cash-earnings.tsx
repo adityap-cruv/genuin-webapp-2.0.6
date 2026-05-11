@@ -1,26 +1,26 @@
-'use client'
-import { BackIcon } from '@icons/back-icon'
-import { BillStreamlineIcon } from '@icons/wallet/bill-streamline'
+"use client";
+import { BackIcon } from "@icons/back-icon";
+import { BillStreamlineIcon } from "@icons/wallet/bill-streamline";
 
-import { useWalletStore } from './store'
+import { useWalletStore } from "./store";
 
 export const WalletCashEarningsCard = () => {
-  const { setCurrentCardView, currentCardView, walletDetails } = useWalletStore()
-  const cashAmount = walletDetails?.cash_balance
+  const { setCurrentCardView, currentCardView, walletDetails } = useWalletStore();
+  const cashAmount = walletDetails?.cash_balance;
 
   return (
     <div
-      className={`rounded-2xl border border-[#F4F4F4] bg-monochrome-white p-4 text-left sm:p-6 ${
-        currentCardView === 'Cash' && 'sm:border-[#77CE1A] sm:bg-[#77ce1a1a]'
+      className={`bg-monochrome-white rounded-2xl border border-[#F4F4F4] p-4 text-left sm:p-6 ${
+        currentCardView === "Cash" && "sm:border-[#77CE1A] sm:bg-[#77ce1a1a]"
       }`}
       onClick={() => {
-        setCurrentCardView('Cash')
+        setCurrentCardView("Cash");
       }}>
       <div className="mb-2 flex justify-between">
         <BillStreamlineIcon className="h-8 stroke-[#77CE1A]" />
-        <div className="flex items-center gap-2 text-title-2-bold text-secondary sm:text-title-1-bold">
+        <div className="text-title-2-bold text-secondary sm:text-title-1-bold flex items-center gap-2">
           ${(cashAmount / 100).toFixed(2)}
-          <BackIcon className="h-3.5 rotate-180 fill-secondary-300" />
+          <BackIcon className="fill-secondary-300 h-3.5 rotate-180" />
         </div>
       </div>
 
@@ -29,5 +29,5 @@ export const WalletCashEarningsCard = () => {
         Real cash by completing challenges
       </p>
     </div>
-  )
-}
+  );
+};

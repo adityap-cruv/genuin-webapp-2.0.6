@@ -1,10 +1,7 @@
 /**
  * Type definition for event listeners that receive context
  */
-type EventListener<TContext, TEventData = any> = (
-  eventData: TEventData,
-  context: TContext
-) => void;
+type EventListener<TContext, TEventData = any> = (eventData: TEventData, context: TContext) => void;
 
 /**
  * Generic event manager singleton class that maintains typed context
@@ -12,8 +9,7 @@ type EventListener<TContext, TEventData = any> = (
  */
 export class EventManager<TContext, TEventNames extends string = string> {
   private static instance: EventManager<any, any> | null = null;
-  private listeners: Map<TEventNames, Set<EventListener<TContext, any>>> =
-    new Map();
+  private listeners: Map<TEventNames, Set<EventListener<TContext, any>>> = new Map();
   private context: TContext;
 
   /**
@@ -34,9 +30,7 @@ export class EventManager<TContext, TEventNames extends string = string> {
   ): EventManager<TContext, TEventNames> {
     if (!EventManager.instance) {
       if (!initialContext) {
-        throw new Error(
-          "EventManager: initialContext is required for first instantiation"
-        );
+        throw new Error("EventManager: initialContext is required for first instantiation");
       }
       EventManager.instance = new EventManager(initialContext);
     }
@@ -55,10 +49,7 @@ export class EventManager<TContext, TEventNames extends string = string> {
    * @param eventType - The type/name of the event
    * @param listener - The listener function that will receive event data and context
    */
-  on<TEventData = any>(
-    eventType: TEventNames,
-    listener: EventListener<TContext, TEventData>
-  ): void {
+  on<TEventData = any>(eventType: TEventNames, listener: EventListener<TContext, TEventData>): void {
     if (!this.listeners.has(eventType)) {
       this.listeners.set(eventType, new Set());
     }
@@ -70,10 +61,7 @@ export class EventManager<TContext, TEventNames extends string = string> {
    * @param eventType - The type/name of the event
    * @param listener - The listener function to remove
    */
-  off<TEventData = any>(
-    eventType: TEventNames,
-    listener: EventListener<TContext, TEventData>
-  ): void {
+  off<TEventData = any>(eventType: TEventNames, listener: EventListener<TContext, TEventData>): void {
     const eventListeners = this.listeners.get(eventType);
     if (eventListeners) {
       eventListeners.delete(listener);
@@ -122,9 +110,7 @@ export class EventManager<TContext, TEventNames extends string = string> {
    * Supports both partial updates and full replacements via function
    * @param contextUpdate - Partial context to merge or function to compute new context
    */
-  updateContext(
-    contextUpdate: Partial<TContext> | ((currentContext: TContext) => TContext)
-  ): void {
+  updateContext(contextUpdate: Partial<TContext> | ((currentContext: TContext) => TContext)): void {
     if (typeof contextUpdate === "function") {
       this.context = contextUpdate(this.context);
     } else {

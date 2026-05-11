@@ -1,16 +1,15 @@
- 
-'use client'
-import React, { createContext, useContext, useEffect } from 'react'
-import { UAParser } from 'ua-parser-js'
+"use client";
+import React, { createContext, useContext, useEffect } from "react";
+import { UAParser } from "ua-parser-js";
 
-import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { useGenuinOptions } from "@lib/stores/genuin-options";
 
-import keyParamMapping from './keyParamMapping'
+import keyParamMapping from "./keyParamMapping";
 // Base Resolver class
 class BaseResolver {
   constructor() {
     // Initialize an empty object to store key-param mappings
-    this.keyParamMapping = keyParamMapping
+    this.keyParamMapping = keyParamMapping;
   }
 
   /**
@@ -28,17 +27,17 @@ class BaseResolver {
    * setKeyValue('device.os', 'iOS')
    */
   setKeyValue(keyPath, value) {
-    const keys = keyPath.split('.')
-    let current = this.keyParamMapping
+    const keys = keyPath.split(".");
+    let current = this.keyParamMapping;
     for (let i = 0; i < keys.length - 1; i++) {
-      if (!current[keys[i]]) current[keys[i]] = {}
-      current = current[keys[i]]
+      if (!current[keys[i]]) current[keys[i]] = {};
+      current = current[keys[i]];
     }
     current[keys[keys.length - 1]] = {
       value,
       param: current[keys[keys.length - 1]]?.param,
       macros: current[keys[keys.length - 1]]?.macros,
-    }
+    };
   }
 
   /**
@@ -56,8 +55,8 @@ class BaseResolver {
    * handleError('device.os', new Error('Failed to resolve OS'))
    */
   handleError(keyPath, error) {
-    console.error(`Error resolving ${keyPath}:`, error.message)
-    this.setKeyValue(keyPath, 'Unknown')
+    console.error(`Error resolving ${keyPath}:`, error.message);
+    this.setKeyValue(keyPath, "Unknown");
   }
 
   /**
@@ -76,9 +75,9 @@ class BaseResolver {
    */
   async safeExecute(keyPath, func) {
     try {
-      await func()
+      await func();
     } catch (error) {
-      this.handleError(keyPath, error)
+      this.handleError(keyPath, error);
     }
   }
 
@@ -97,8 +96,8 @@ class BaseResolver {
    * const os = getFromUserAgent(/(Windows|Mac OS X|Android|iOS|Linux)/i)
    */
   getFromUserAgent(regex) {
-    const match = navigator.userAgent.match(regex)
-    return match ? match[1] : 'Unknown'
+    const match = navigator.userAgent.match(regex);
+    return match ? match[1] : "Unknown";
   }
 }
 
@@ -110,14 +109,14 @@ class BaseResolver {
  */
 class DeviceResolver extends BaseResolver {
   constructor() {
-    super()
+    super();
     // Implement Singleton pattern
     if (DeviceResolver.instance) {
-      return DeviceResolver.instance
+      return DeviceResolver.instance;
     }
-    DeviceResolver.instance = this
+    DeviceResolver.instance = this;
     // Initialize UAParser and store the result
-    this.uaParserResult = new UAParser().getResult()
+    this.uaParserResult = new UAParser().getResult();
 
     // Define resolvers for various device properties
     this.resolvers = {
@@ -137,7 +136,7 @@ class DeviceResolver extends BaseResolver {
       flashver: this.resolveFlashVersion.bind(this),
       lmt: this.resolveLMT.bind(this),
       dnt: this.resolveDNT.bind(this),
-    }
+    };
   }
 
   // Resolver methods
@@ -150,7 +149,7 @@ class DeviceResolver extends BaseResolver {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolveUA() {
-    this.setKeyValue('device.ua', navigator.userAgent)
+    this.setKeyValue("device.ua", navigator.userAgent);
   }
 
   /**
@@ -170,7 +169,7 @@ class DeviceResolver extends BaseResolver {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolveDeviceType() {
-    const ua = navigator.userAgent.toLowerCase()
+    const ua = navigator.userAgent.toLowerCase();
     const types = [
       { regex: /tablet|ipad/, value: 5 },
       { regex: /mobi/, value: 4 },
@@ -179,9 +178,9 @@ class DeviceResolver extends BaseResolver {
       { regex: /set[-\s]?top|xbox|roku|firetv/, value: 7 },
       { regex: /iot|fridge|thermostat|wear/, value: 6 },
       { regex: /digital[-\s]?signage|billboard|ooh/, value: 8 },
-    ]
-    const deviceType = types.find((type) => type.regex.test(ua))?.value ?? 0
-    this.setKeyValue('device.devicetype', deviceType)
+    ];
+    const deviceType = types.find((type) => type.regex.test(ua))?.value ?? 0;
+    this.setKeyValue("device.devicetype", deviceType);
   }
 
   /**
@@ -192,7 +191,7 @@ class DeviceResolver extends BaseResolver {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolvePxRatio() {
-    this.setKeyValue('device.pxratio', parseFloat(window.devicePixelRatio.toFixed(2)) || 1.0)
+    this.setKeyValue("device.pxratio", parseFloat(window.devicePixelRatio.toFixed(2)) || 1.0);
   }
 
   /**
@@ -203,8 +202,8 @@ class DeviceResolver extends BaseResolver {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolveDimensions() {
-    this.setKeyValue('device.h', window.screen.height)
-    this.setKeyValue('device.w', window.screen.width)
+    this.setKeyValue("device.h", window.screen.height);
+    this.setKeyValue("device.w", window.screen.width);
   }
 
   /**
@@ -215,7 +214,7 @@ class DeviceResolver extends BaseResolver {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolveJS() {
-    this.setKeyValue('device.js', 1)
+    this.setKeyValue("device.js", 1);
   }
 
   /**
@@ -226,7 +225,7 @@ class DeviceResolver extends BaseResolver {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolveLanguage() {
-    this.setKeyValue('device.language', navigator.language)
+    this.setKeyValue("device.language", navigator.language);
   }
 
   /**
@@ -244,16 +243,16 @@ class DeviceResolver extends BaseResolver {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolveConnectionType() {
-    const conn = navigator.connection
+    const conn = navigator.connection;
     const types = {
-      '4g': 6,
-      '3g': 5,
-      '2g': 4,
-      'slow-2g': 3,
+      "4g": 6,
+      "3g": 5,
+      "2g": 4,
+      "slow-2g": 3,
       wifi: 2,
       ethernet: 1,
-    }
-    this.setKeyValue('device.connectiontype', conn ? types[conn.effectiveType] || 3 : 3)
+    };
+    this.setKeyValue("device.connectiontype", conn ? types[conn.effectiveType] || 3 : 3);
   }
 
   /**
@@ -264,8 +263,8 @@ class DeviceResolver extends BaseResolver {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolveMake() {
-    const deviceVendor = this.uaParserResult.device?.vendor ?? 'Unknown'
-    this.setKeyValue('device.make', deviceVendor)
+    const deviceVendor = this.uaParserResult.device?.vendor ?? "Unknown";
+    this.setKeyValue("device.make", deviceVendor);
   }
 
   /**
@@ -276,8 +275,8 @@ class DeviceResolver extends BaseResolver {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolveModel() {
-    const deviceModel = this.uaParserResult.device?.model ?? 'Unknown'
-    this.setKeyValue('device.model', deviceModel)
+    const deviceModel = this.uaParserResult.device?.model ?? "Unknown";
+    this.setKeyValue("device.model", deviceModel);
   }
 
   /**
@@ -288,8 +287,8 @@ class DeviceResolver extends BaseResolver {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolveOS() {
-    this.setKeyValue('device.os', this.uaParserResult.os?.name ?? 'Unknown')
-    this.setKeyValue('device.osv', this.uaParserResult.os?.version ?? 'Unknown')
+    this.setKeyValue("device.os", this.uaParserResult.os?.name ?? "Unknown");
+    this.setKeyValue("device.osv", this.uaParserResult.os?.version ?? "Unknown");
   }
 
   /**
@@ -301,28 +300,28 @@ class DeviceResolver extends BaseResolver {
    */
   async resolveGeolocation() {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/goservices/data/ip_info`)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/goservices/data/ip_info`);
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const data = await response.json()
+      const data = await response.json();
       if (data) {
         if (data.location) {
-          const [latitude, longitude] = data.location.split(',')
-          this.setKeyValue('device.geo.lat', parseFloat(latitude))
-          this.setKeyValue('device.geo.lon', parseFloat(longitude))
+          const [latitude, longitude] = data.location.split(",");
+          this.setKeyValue("device.geo.lat", parseFloat(latitude));
+          this.setKeyValue("device.geo.lon", parseFloat(longitude));
         }
-        this.setKeyValue('device.ip', data.ip || 'Unknown')
-        this.setKeyValue('device.geo.region', data.region || 'Unknown')
-        this.setKeyValue('device.geo.city', data.city || 'Unknown')
-        this.setKeyValue('device.geo.zip', data.postal || 'Unknown')
-        this.setKeyValue('device.geo.country', data.country || 'Unknown')
-        this.setKeyValue('device.geo.type', 2)
+        this.setKeyValue("device.ip", data.ip || "Unknown");
+        this.setKeyValue("device.geo.region", data.region || "Unknown");
+        this.setKeyValue("device.geo.city", data.city || "Unknown");
+        this.setKeyValue("device.geo.zip", data.postal || "Unknown");
+        this.setKeyValue("device.geo.country", data.country || "Unknown");
+        this.setKeyValue("device.geo.type", 2);
       } else {
-        throw new Error('Invalid geolocation data from API')
+        throw new Error("Invalid geolocation data from API");
       }
     } catch (error) {
-      this.handleError('device.geo', error)
+      this.handleError("device.geo", error);
     }
   }
 
@@ -334,7 +333,7 @@ class DeviceResolver extends BaseResolver {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolveGeofetch() {
-    this.setKeyValue('device.geofetch', 'geolocation' in navigator ? 1 : 0)
+    this.setKeyValue("device.geofetch", "geolocation" in navigator ? 1 : 0);
   }
 
   /**
@@ -346,10 +345,10 @@ class DeviceResolver extends BaseResolver {
    */
   // TODO: Find better way to identify PPI
   resolvePPI() {
-    const diagPixels = Math.sqrt(screen.width ** 2 + screen.height ** 2)
-    const diagInches = 6 // Approximate
-    const ppi = Math.round((diagPixels / diagInches) * (window.devicePixelRatio || 1))
-    this.setKeyValue('device.ppi', ppi || 'Unknown')
+    const diagPixels = Math.sqrt(screen.width ** 2 + screen.height ** 2);
+    const diagInches = 6; // Approximate
+    const ppi = Math.round((diagPixels / diagInches) * (window.devicePixelRatio || 1));
+    this.setKeyValue("device.ppi", ppi || "Unknown");
   }
 
   /**
@@ -360,8 +359,8 @@ class DeviceResolver extends BaseResolver {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolveFlashVersion() {
-    const flashPlugin = Array.from(navigator.plugins || []).find((plugin) => plugin.name.includes('Shockwave Flash'))
-    this.setKeyValue('device.flashver', flashPlugin ? flashPlugin.description.split(' ')[2] : 'Unknown')
+    const flashPlugin = Array.from(navigator.plugins || []).find((plugin) => plugin.name.includes("Shockwave Flash"));
+    this.setKeyValue("device.flashver", flashPlugin ? flashPlugin.description.split(" ")[2] : "Unknown");
   }
 
   /**
@@ -372,7 +371,7 @@ class DeviceResolver extends BaseResolver {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolveLMT() {
-    this.setKeyValue('device.lmt', navigator.doNotTrack === '1' || window.doNotTrack === '1' ? 1 : 0)
+    this.setKeyValue("device.lmt", navigator.doNotTrack === "1" || window.doNotTrack === "1" ? 1 : 0);
   }
 
   /**
@@ -383,7 +382,7 @@ class DeviceResolver extends BaseResolver {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolveDNT() {
-    this.setKeyValue('device.dnt', navigator.doNotTrack === '1' || window.doNotTrack === '1' ? 1 : 0)
+    this.setKeyValue("device.dnt", navigator.doNotTrack === "1" || window.doNotTrack === "1" ? 1 : 0);
   }
 
   /**
@@ -395,7 +394,7 @@ class DeviceResolver extends BaseResolver {
    */
   async resolve() {
     for (const [key, resolver] of Object.entries(this.resolvers)) {
-      await this.safeExecute(`device.${key}`, resolver)
+      await this.safeExecute(`device.${key}`, resolver);
     }
   }
 }
@@ -408,15 +407,15 @@ class DeviceResolver extends BaseResolver {
  */
 class SiteResolver extends BaseResolver {
   constructor() {
-    super()
+    super();
     // Implement Singleton pattern
     if (SiteResolver.instance) {
-      return SiteResolver.instance
+      return SiteResolver.instance;
     }
-    SiteResolver.instance = this
+    SiteResolver.instance = this;
 
     // Initialize configuration object for integration-provided values
-    this.config = {}
+    this.config = {};
 
     // Define resolvers for various site properties
     this.resolvers = {
@@ -435,12 +434,12 @@ class SiteResolver extends BaseResolver {
       // TODO: do it when we have support from this from backend
       // content: this.resolveContent.bind(this),
       // keywords: this.resolveKeywords.bind(this),
-    }
+    };
   }
 
   // Method to set configuration values provided by website integration
   setConfig(config) {
-    this.config = { ...this.config, ...config }
+    this.config = { ...this.config, ...config };
   }
 
   // Resolver methods
@@ -453,8 +452,8 @@ class SiteResolver extends BaseResolver {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolveDomain() {
-    this.setKeyValue('site.domain', window.location.hostname)
-    this.setKeyValue('site.id', window.location.hostname)
+    this.setKeyValue("site.domain", window.location.hostname);
+    this.setKeyValue("site.id", window.location.hostname);
   }
 
   /**
@@ -466,7 +465,7 @@ class SiteResolver extends BaseResolver {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolveCat() {
-    this.setKeyValue('site.cat', this.config.cat || [])
+    this.setKeyValue("site.cat", this.config.cat || []);
   }
 
   /**
@@ -478,7 +477,7 @@ class SiteResolver extends BaseResolver {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolveSectionCat() {
-    this.setKeyValue('site.sectioncat', this.config.sectioncat || [])
+    this.setKeyValue("site.sectioncat", this.config.sectioncat || []);
   }
 
   /**
@@ -490,7 +489,7 @@ class SiteResolver extends BaseResolver {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolvePageCat() {
-    this.setKeyValue('site.pagecat', this.config.pagecat || [])
+    this.setKeyValue("site.pagecat", this.config.pagecat || []);
   }
 
   /**
@@ -502,7 +501,7 @@ class SiteResolver extends BaseResolver {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolvePage() {
-    this.setKeyValue('site.page', window.location.href)
+    this.setKeyValue("site.page", window.location.href);
   }
 
   /**
@@ -514,7 +513,7 @@ class SiteResolver extends BaseResolver {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolveRef() {
-    this.setKeyValue('site.ref', document.referrer || '')
+    this.setKeyValue("site.ref", document.referrer || "");
   }
 
   /**
@@ -526,8 +525,8 @@ class SiteResolver extends BaseResolver {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolveSearch() {
-    const searchParams = new URLSearchParams(window.location.search)
-    this.setKeyValue('site.search', searchParams.get('q') ?? 'Unknown')
+    const searchParams = new URLSearchParams(window.location.search);
+    this.setKeyValue("site.search", searchParams.get("q") ?? "Unknown");
   }
 
   /**
@@ -539,7 +538,7 @@ class SiteResolver extends BaseResolver {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolveMobile() {
-    this.setKeyValue('site.mobile', 1)
+    this.setKeyValue("site.mobile", 1);
   }
 
   /**
@@ -551,7 +550,7 @@ class SiteResolver extends BaseResolver {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolvePrivacyPolicy() {
-    this.setKeyValue('site.privacypolicy', 1)
+    this.setKeyValue("site.privacypolicy", 1);
   }
 
   /**
@@ -563,7 +562,7 @@ class SiteResolver extends BaseResolver {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolvePublisherDomain() {
-    this.setKeyValue('site.publisher.domain', window.location.hostname)
+    this.setKeyValue("site.publisher.domain", window.location.hostname);
   }
 
   /**
@@ -575,8 +574,8 @@ class SiteResolver extends BaseResolver {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolvePublisherName() {
-    const { config } = useGenuinOptions.getState()
-    this.setKeyValue('site.publisher.name', config?.name ?? 'begenuin')
+    const { config } = useGenuinOptions.getState();
+    this.setKeyValue("site.publisher.name", config?.name ?? "begenuin");
   }
 
   /**
@@ -588,7 +587,7 @@ class SiteResolver extends BaseResolver {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolveContent() {
-    this.setKeyValue('site.content', this.config.content || {})
+    this.setKeyValue("site.content", this.config.content || {});
   }
 
   /**
@@ -600,19 +599,19 @@ class SiteResolver extends BaseResolver {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolveKeywords() {
-    const metaKeywords = this.getMetaKeywords()
-    const ogKeywords = this.getOgKeywords()
-    const configKeywords = this.config.keywords || ''
+    const metaKeywords = this.getMetaKeywords();
+    const ogKeywords = this.getOgKeywords();
+    const configKeywords = this.config.keywords || "";
 
     // Combine all keywords, remove duplicates, and filter out empty strings
     const combinedKeywords = [
-      ...new Set([...metaKeywords.split(','), ...ogKeywords.split(','), ...configKeywords.split(',')]),
+      ...new Set([...metaKeywords.split(","), ...ogKeywords.split(","), ...configKeywords.split(",")]),
     ]
       .map((keyword) => keyword.trim())
-      .filter((keyword) => keyword !== '')
-      .join(',')
+      .filter((keyword) => keyword !== "")
+      .join(",");
 
-    this.setKeyValue('site.keywords', combinedKeywords)
+    this.setKeyValue("site.keywords", combinedKeywords);
   }
 
   /**
@@ -620,8 +619,8 @@ class SiteResolver extends BaseResolver {
    * @returns {string} Comma-separated list of keywords
    */
   getMetaKeywords() {
-    const metaTag = document.querySelector('meta[name="keywords"]')
-    return metaTag ? metaTag.getAttribute('content') ?? '' : ''
+    const metaTag = document.querySelector('meta[name="keywords"]');
+    return metaTag ? (metaTag.getAttribute("content") ?? "") : "";
   }
 
   /**
@@ -629,8 +628,8 @@ class SiteResolver extends BaseResolver {
    * @returns {string} Comma-separated list of keywords
    */
   getOgKeywords() {
-    const ogTag = document.querySelector('meta[property="og:keywords"]')
-    return ogTag ? ogTag.getAttribute('content') ?? '' : ''
+    const ogTag = document.querySelector('meta[property="og:keywords"]');
+    return ogTag ? (ogTag.getAttribute("content") ?? "") : "";
   }
 
   /**
@@ -642,7 +641,7 @@ class SiteResolver extends BaseResolver {
    */
   async resolve() {
     for (const [key, resolver] of Object.entries(this.resolvers)) {
-      await this.safeExecute(`site.${key}`, resolver)
+      await this.safeExecute(`site.${key}`, resolver);
     }
   }
 
@@ -655,15 +654,15 @@ class SiteResolver extends BaseResolver {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   validateResolvedSite() {
-    const required = ['id', 'name', 'domain', 'page']
+    const required = ["id", "name", "domain", "page"];
     for (const field of required) {
       if (!this.keyParamMapping.site[field]?.value) {
-        console.error(`Missing required field: site.${field}`)
-        return false
+        console.error(`Missing required field: site.${field}`);
+        return false;
       }
     }
     // Add more validation logic here if needed
-    return true
+    return true;
   }
 }
 
@@ -675,15 +674,15 @@ class SiteResolver extends BaseResolver {
  */
 class UserResolver extends BaseResolver {
   constructor() {
-    super()
+    super();
     // Implement Singleton pattern
     if (UserResolver.instance) {
-      return UserResolver.instance
+      return UserResolver.instance;
     }
-    UserResolver.instance = this
+    UserResolver.instance = this;
 
     // Initialize configuration object for integration-provided values
-    this.config = {}
+    this.config = {};
 
     // Define resolvers for user properties
     this.resolvers = {
@@ -691,12 +690,12 @@ class UserResolver extends BaseResolver {
       // TODO: do it when we have support from this from backend
       // keywords: this.resolveKeywords.bind(this),
       // kwarray: this.resolveKwarray.bind(this),
-    }
+    };
   }
 
   // Method to set configuration values provided by integration
   setConfig(config) {
-    this.config = { ...this.config, ...config }
+    this.config = { ...this.config, ...config };
   }
 
   /**
@@ -709,17 +708,17 @@ class UserResolver extends BaseResolver {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolveGeo() {
-    const deviceResolver = new DeviceResolver()
-    const deviceGeo = deviceResolver.keyParamMapping.device.geo
+    const deviceResolver = new DeviceResolver();
+    const deviceGeo = deviceResolver.keyParamMapping.device.geo;
     // Map device geo attributes to user geo
     const geoMapping = {
-      lat: 'lat',
-      lon: 'lon',
-      type: 'type',
-      country: 'country',
-      region: 'region',
-      city: 'city',
-      zip: 'zip',
+      lat: "lat",
+      lon: "lon",
+      type: "type",
+      country: "country",
+      region: "region",
+      city: "city",
+      zip: "zip",
       // TODO: do these ones when we can have support for it
       // accuracy: 'accuracy',
       // lastfix: 'lastfix',
@@ -727,11 +726,11 @@ class UserResolver extends BaseResolver {
       // regionfips104: 'regionfips104',
       // metro: 'metro',
       // utcoffset: 'utcoffset',
-    }
+    };
 
     for (const [userKey, deviceKey] of Object.entries(geoMapping)) {
       if (deviceGeo[deviceKey] && deviceGeo[deviceKey].value !== null) {
-        this.setKeyValue(`user.geo.${userKey}`, deviceGeo[deviceKey].value)
+        this.setKeyValue(`user.geo.${userKey}`, deviceGeo[deviceKey].value);
       }
     }
   }
@@ -746,15 +745,15 @@ class UserResolver extends BaseResolver {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolveKeywords() {
-    const configKeywords = this.config.keywords || ''
+    const configKeywords = this.config.keywords || "";
     // You can add more sources of keywords here in the future
 
-    const combinedKeywords = [...new Set(configKeywords.split(','))]
+    const combinedKeywords = [...new Set(configKeywords.split(","))]
       .map((keyword) => keyword.trim())
-      .filter((keyword) => keyword !== '')
-      .join(',')
+      .filter((keyword) => keyword !== "")
+      .join(",");
 
-    this.setKeyValue('user.keywords', combinedKeywords)
+    this.setKeyValue("user.keywords", combinedKeywords);
   }
 
   /**
@@ -767,12 +766,12 @@ class UserResolver extends BaseResolver {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolveKwarray() {
-    const keywords = this.keyParamMapping.user.keywords.value || ''
+    const keywords = this.keyParamMapping.user.keywords.value || "";
     const kwarray = keywords
-      .split(',')
+      .split(",")
       .map((kw) => kw.trim())
-      .filter((kw) => kw !== '')
-    this.setKeyValue('user.kwarray', kwarray)
+      .filter((kw) => kw !== "");
+    this.setKeyValue("user.kwarray", kwarray);
   }
 
   /**
@@ -784,7 +783,7 @@ class UserResolver extends BaseResolver {
    */
   async resolve() {
     for (const [key, resolver] of Object.entries(this.resolvers)) {
-      await this.safeExecute(`user.${key}`, resolver)
+      await this.safeExecute(`user.${key}`, resolver);
     }
   }
 }
@@ -793,17 +792,17 @@ class UserResolver extends BaseResolver {
 class MainResolver {
   constructor() {
     // Initialize individual resolvers
-    this.deviceResolver = new DeviceResolver()
-    this.siteResolver = new SiteResolver()
-    this.userResolver = new UserResolver()
+    this.deviceResolver = new DeviceResolver();
+    this.siteResolver = new SiteResolver();
+    this.userResolver = new UserResolver();
   }
 
   /**
    * Resolves all properties from all resolvers
    */
   async resolveAll() {
-    await Promise.all([this.deviceResolver.resolve(), this.siteResolver.resolve()])
-    await this.userResolver.resolve()
+    await Promise.all([this.deviceResolver.resolve(), this.siteResolver.resolve()]);
+    await this.userResolver.resolve();
   }
 
   /**
@@ -812,7 +811,7 @@ class MainResolver {
    * @returns {string} - The updated URL with resolved parameters
    */
   updateUrlWithParams(url) {
-    const urlObj = new URL(url)
+    const urlObj = new URL(url);
 
     /**
      * Recursively traverses a JSON object and replaces URL macros with their corresponding values.
@@ -830,39 +829,39 @@ class MainResolver {
       // Iterate over each key in the object
       for (const key in obj) {
         // Check if the value is an object and not null
-        if (typeof obj[key] === 'object' && obj[key] !== null) {
+        if (typeof obj[key] === "object" && obj[key] !== null) {
           // If the value is an array, recursively call traverseJson for each item
           if (Array.isArray(obj[key])) {
             obj[key].forEach((item) => {
-              traverseJson(item)
-            })
+              traverseJson(item);
+            });
             // If the value contains 'param' and 'value' properties and the value is not null or 'Unknown'
           } else if (
-            'param' in obj[key] &&
-            'value' in obj[key] &&
+            "param" in obj[key] &&
+            "value" in obj[key] &&
             obj[key].value !== null &&
-            obj[key].value !== 'Unknown'
+            obj[key].value !== "Unknown"
           ) {
             // If the macros property exists in the URL's search string, replace the macro with the value
             if (obj[key].macros && urlObj.search.includes(obj[key].macros)) {
-              urlObj.search = urlObj.search.replace(obj[key].macros, obj[key].value)
+              urlObj.search = urlObj.search.replace(obj[key].macros, obj[key].value);
             }
             // If the value is an object, recursively call traverseJson
           } else {
-            traverseJson(obj[key])
+            traverseJson(obj[key]);
           }
         }
       }
-    }
+    };
 
     // Combine all mappings from different resolvers
     const allMappings = {
       device: this.deviceResolver.keyParamMapping.device,
       site: this.siteResolver.keyParamMapping.site,
       user: this.userResolver.keyParamMapping.user,
-    }
-    traverseJson(allMappings)
-    return urlObj.toString()
+    };
+    traverseJson(allMappings);
+    return urlObj.toString();
   }
 
   /**
@@ -870,44 +869,44 @@ class MainResolver {
    * @returns {object} - An object containing all resolved parameters
    */
   getResolvedParams() {
-    const resolvedParams = {}
+    const resolvedParams = {};
 
-    const traverseJson = (obj, parentKey = '') => {
+    const traverseJson = (obj, parentKey = "") => {
       for (const key in obj) {
-        if (typeof obj[key] === 'object' && obj[key] !== null) {
+        if (typeof obj[key] === "object" && obj[key] !== null) {
           if (Array.isArray(obj[key])) {
             obj[key].forEach((item) => {
-              traverseJson(item, `${parentKey}${key}.`)
-            })
+              traverseJson(item, `${parentKey}${key}.`);
+            });
           } else if (
-            'param' in obj[key] &&
-            'value' in obj[key] &&
+            "param" in obj[key] &&
+            "value" in obj[key] &&
             obj[key].value !== null &&
-            obj[key].value !== 'Unknown'
+            obj[key].value !== "Unknown"
           ) {
-            resolvedParams[`${parentKey}${key}`] = obj[key].value
+            resolvedParams[`${parentKey}${key}`] = obj[key].value;
           } else {
-            traverseJson(obj[key], `${parentKey}${key}.`)
+            traverseJson(obj[key], `${parentKey}${key}.`);
           }
         }
       }
-    }
+    };
 
     // Combine all mappings from different resolvers
     const allMappings = {
       device: this.deviceResolver.keyParamMapping.device,
       site: this.siteResolver.keyParamMapping.site,
       user: this.userResolver.keyParamMapping.user,
-    }
-    traverseJson(allMappings)
-    return resolvedParams
+    };
+    traverseJson(allMappings);
+    return resolvedParams;
   }
 
   /**
    * Main execution method
    */
   async main() {
-    await this.resolveAll()
+    await this.resolveAll();
   }
 }
 
@@ -915,7 +914,7 @@ class MainResolver {
 const UrlParamContext = createContext({
   resolvedParams: {},
   appendParamsToUrl: (url) => url,
-})
+});
 
 /**
  * UrlParamProvider component that provides URL parameters context to its children.
@@ -932,32 +931,32 @@ const UrlParamContext = createContext({
  * </UrlParamProvider>
  */
 export const UrlParamProvider = ({ children }) => {
-  const resolvedParamsRef = React.useRef({})
-  const resolverRef = React.useRef(null)
+  const resolvedParamsRef = React.useRef({});
+  const resolverRef = React.useRef(null);
 
   useEffect(() => {
-    const resolverInstance = new MainResolver()
+    const resolverInstance = new MainResolver();
     const resolveUrlParams = async () => {
-      await resolverInstance.main()
-      const params = resolverInstance.getResolvedParams()
-      resolvedParamsRef.current = params
-      resolverRef.current = resolverInstance
-    }
-    resolveUrlParams().catch(console.error)
-  }, [])
+      await resolverInstance.main();
+      const params = resolverInstance.getResolvedParams();
+      resolvedParamsRef.current = params;
+      resolverRef.current = resolverInstance;
+    };
+    resolveUrlParams().catch(console.error);
+  }, []);
 
   const appendParamsToUrl = (url) => {
     if (resolverRef.current) {
-      return resolverRef.current.updateUrlWithParams(url)
+      return resolverRef.current.updateUrlWithParams(url);
     }
-    return url
-  }
+    return url;
+  };
 
   return (
     <UrlParamContext.Provider value={{ resolvedParams: resolvedParamsRef.current, appendParamsToUrl }}>
       {children}
     </UrlParamContext.Provider>
-  )
-}
+  );
+};
 
-export const useUrlParams = () => useContext(UrlParamContext)
+export const useUrlParams = () => useContext(UrlParamContext);

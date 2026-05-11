@@ -1,27 +1,27 @@
 // Import necessary modules and types from React and class-variance-authority
-import { cva, type VariantProps } from 'class-variance-authority'
-import { type ComponentProps } from 'react'
+import { cva, type VariantProps } from "class-variance-authority";
+import { type ComponentProps } from "react";
 
-import { cn } from '@lib/utils'
+import { cn } from "@lib/utils";
 
 // Define the searchVariant function using cva to handle different styles based on props
-const searchVariant = cva('', {
+const searchVariant = cva("", {
   variants: {
     variant: {
-      light: 'stroke-monochrome-black', // Light variant style
-      transparent: 'stroke-monochrome-white', // Transparent variant style
-      dark: 'stroke-monochrome-white', // Dark variant style
+      light: "stroke-monochrome-black", // Light variant style
+      transparent: "stroke-monochrome-white", // Transparent variant style
+      dark: "stroke-monochrome-white", // Dark variant style
     },
   },
-})
+});
 
 // Define the Props type for the SearchIcon component
 type Props = Readonly<
-  ComponentProps<'svg'> & VariantProps<typeof searchVariant> & { variant?: 'light' | 'transparent' | 'dark' | null }
->
+  ComponentProps<"svg"> & VariantProps<typeof searchVariant> & { variant?: "light" | "transparent" | "dark" | null }
+>;
 
 // Define the SearchIcon functional component
-export function SearchIcon({ variant = 'light', className, ...props }: Readonly<Props>) {
+export function SearchIcon({ variant = "light", className, ...props }: Readonly<Props>) {
   return (
     // SVG element representing the search icon
     <svg
@@ -44,5 +44,5 @@ export function SearchIcon({ variant = 'light', className, ...props }: Readonly<
         strokeWidth="1.5"
       />
     </svg>
-  )
+  );
 }

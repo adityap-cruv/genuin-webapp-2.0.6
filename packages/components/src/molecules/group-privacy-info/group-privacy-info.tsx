@@ -1,12 +1,6 @@
 import { CommunityIcon, PublicIcon, GroupIcon } from "@genuin/ui/icons";
 
-export function GroupPrivacyInfo({
-  actionId,
-  accessTypeId,
-}: {
-  actionId: number;
-  accessTypeId: number;
-}) {
+export function GroupPrivacyInfo({ actionId, accessTypeId }: { actionId: number; accessTypeId: number }) {
   if (actionId === 3 && accessTypeId === 5) {
     return (
       <div className="gencl:flex gencl:gap-1">

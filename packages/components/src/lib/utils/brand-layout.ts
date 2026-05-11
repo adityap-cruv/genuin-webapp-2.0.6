@@ -6,15 +6,12 @@ export type BrandType = "default" | "iheart" | "ted" | "grubhub" | "walmart";
 /**
  * Get brand type based on card layout ID and video layout ID
  * Based on the layout configuration table
- * 
+ *
  * @param cardLayoutId - The card layout identifier
  * @param videoLayoutId - The video layout identifier (optional)
  * @returns BrandType - The determined brand type
  */
-export function getBrandType(
-  cardLayoutId?: number | null,
-  videoLayoutId?: number | null
-): BrandType {
+export function getBrandType(cardLayoutId?: number | null, videoLayoutId?: number | null): BrandType {
   // Convert null to undefined for easier handling
   const cardId = cardLayoutId ?? undefined;
   const videoId = videoLayoutId ?? undefined;

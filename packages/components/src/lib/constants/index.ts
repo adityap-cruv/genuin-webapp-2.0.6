@@ -27,14 +27,12 @@ export const PROTECTED_ROUTES = ["settings", "wallet"];
 /**
  * URL to the app store for downloading the app.
  */
-export const URL_TO_APP_STORE =
-  "https://apps.apple.com/US/app/id1511177838?mt=8";
+export const URL_TO_APP_STORE = "https://apps.apple.com/US/app/id1511177838?mt=8";
 
 /**
  * URL to the play store for downloading the app.
  */
-export const URL_TO_PLAY_STORE =
-  "https://play.google.com/store/apps/details?id=com.begenuin.begenuin";
+export const URL_TO_PLAY_STORE = "https://play.google.com/store/apps/details?id=com.begenuin.begenuin";
 
 /**
  * Key for storing recent communities in local storage.

@@ -22,12 +22,12 @@ you implement.
 
 ## Package placement
 
-| What you're building                        | Where it goes                              |
-| ------------------------------------------- | ------------------------------------------ |
-| UI primitive (button, input, badge, etc.)   | `packages/ui` — atoms, Radix-based         |
+| What you're building                        | Where it goes                               |
+| ------------------------------------------- | ------------------------------------------- |
+| UI primitive (button, input, badge, etc.)   | `packages/ui` — atoms, Radix-based          |
 | Business component (feed card, form, modal) | `packages/components` — molecules/organisms |
-| Shared utility / helper                     | `packages/utils`                           |
-| App-specific component, page, or feature    | `apps/webapp/src/`                         |
+| Shared utility / helper                     | `packages/utils`                            |
+| App-specific component, page, or feature    | `apps/webapp/src/`                          |
 
 **Internal deps:** always `"@genuin/ui": "workspace:*"` — never a version number.  
 **Never put shared components in `apps/`** — they won't be available to `packages/web-sdk`.

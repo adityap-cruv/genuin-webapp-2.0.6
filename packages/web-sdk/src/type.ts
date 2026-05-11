@@ -1,4 +1,9 @@
-import type { EmbedDataType, ActionType, ContextualParamsType, PlacementDataResponse } from "@genuin/components/context/embed/embed.types";
+import type {
+  EmbedDataType,
+  ActionType,
+  ContextualParamsType,
+  PlacementDataResponse,
+} from "@genuin/components/context/embed/embed.types";
 import type { BrandDetailsConfigType } from "@genuin/components/types/brand";
 
 type AuthUserParams = {

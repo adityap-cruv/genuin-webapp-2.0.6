@@ -8,12 +8,9 @@ import { PostsGrid } from "./index"; // Assuming the component is in index.ts
 const FAKE_POSTS: PostTileDataType[] = Array.from({ length: 20 }, (_, i) => ({
   postId: (i + 1).toString(),
   title: `Post Title ${i + 1}`,
-  imageUrl:
-    "https://media.qa.begenuin.com/uploads/thumbnails/1691038031235.png",
+  imageUrl: "https://media.qa.begenuin.com/uploads/thumbnails/1691038031235.png",
   author: `Author ${i + 1}`,
-  date: new Date(Date.now() - i * 24 * 60 * 60 * 1000)
-    .toISOString()
-    .split("T")[0], // Generates dates decrementing from today
+  date: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString().split("T")[0], // Generates dates decrementing from today
   isPinned: i < 5,
   linkouts: Math.random() > 0.5 ? "https://example.com" : undefined,
   stats: {

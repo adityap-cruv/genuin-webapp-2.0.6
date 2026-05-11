@@ -3,9 +3,9 @@
  * Analytics provider implementation for Rudderstack
  */
 
-import { BaseProvider } from './base-provider'
-import { ProviderStatus } from '../types/provider'
-import type { ProviderConfig, UserTraits, PageProperties, GroupTraits } from '../types/provider'
+import { BaseProvider } from "./base-provider";
+import { ProviderStatus } from "../types/provider";
+import type { ProviderConfig, UserTraits, PageProperties, GroupTraits } from "../types/provider";
 
 /**
  * Rudderstack-specific configuration
@@ -14,37 +14,37 @@ export interface RudderstackConfig extends ProviderConfig {
   /**
    * Rudderstack write key
    */
-  writeKey: string
+  writeKey: string;
 
   /**
    * Rudderstack dataplane URL
    */
-  dataplaneUrl: string
+  dataplaneUrl: string;
 
   /**
    * Options passed to rudderanalytics.load()
    */
   loadOptions?: {
     storage?: {
-      type?: 'localStorage' | 'sessionStorage' | 'cookie'
-      cookie?: Record<string, any>
-      entries?: Record<string, any>
-    }
-    plugins?: string[]
-    integrations?: Record<string, boolean>
-    [key: string]: any
-  }
+      type?: "localStorage" | "sessionStorage" | "cookie";
+      cookie?: Record<string, any>;
+      entries?: Record<string, any>;
+    };
+    plugins?: string[];
+    integrations?: Record<string, boolean>;
+    [key: string]: any;
+  };
 
   /**
    * Whether to use modern or legacy SDK bundle
    * @default 'modern'
    */
-  sdkVersion?: 'modern' | 'legacy'
+  sdkVersion?: "modern" | "legacy";
 
   /**
    * Custom CDN URL (optional)
    */
-  cdnUrl?: string
+  cdnUrl?: string;
 }
 
 /**
@@ -52,47 +52,47 @@ export interface RudderstackConfig extends ProviderConfig {
  */
 const DEFAULT_LOAD_OPTIONS = {
   storage: {
-    type: 'localStorage' as const,
+    type: "localStorage" as const,
     cookie: {},
     entries: {
-      userId: { type: 'localStorage' },
-      anonymousId: { type: 'localStorage' },
-      sessionInfo: { type: 'localStorage' },
-      userTraits: { type: 'localStorage' },
-      initialReferrer: { type: 'localStorage' },
-      groupId: { type: 'localStorage' },
-      groupTraits: { type: 'localStorage' },
-      initialReferringDomain: { type: 'localStorage' },
-      authToken: { type: 'localStorage' },
+      userId: { type: "localStorage" },
+      anonymousId: { type: "localStorage" },
+      sessionInfo: { type: "localStorage" },
+      userTraits: { type: "localStorage" },
+      initialReferrer: { type: "localStorage" },
+      groupId: { type: "localStorage" },
+      groupTraits: { type: "localStorage" },
+      initialReferringDomain: { type: "localStorage" },
+      authToken: { type: "localStorage" },
     },
   },
-  plugins: ['DeviceModeDestinations'],
+  plugins: ["DeviceModeDestinations"],
   integrations: {
     All: false,
-    'Google Analytics': false,
+    "Google Analytics": false,
   },
-}
+};
 
 /**
  * RudderstackProvider handles analytics tracking via Rudderstack
  */
 export class RudderstackProvider extends BaseProvider {
-  readonly id = 'rudderstack'
-  readonly name = 'Rudderstack'
+  readonly id = "rudderstack";
+  readonly name = "Rudderstack";
 
-  private sdk: any = null
-  private rudderstackConfig: RudderstackConfig
+  private sdk: any = null;
+  private rudderstackConfig: RudderstackConfig;
 
   constructor(config: RudderstackConfig) {
-    super(config)
-    this.rudderstackConfig = config
+    super(config);
+    this.rudderstackConfig = config;
 
     // Validate required config
     if (!config.writeKey) {
-      throw new Error('[RudderstackProvider] writeKey is required')
+      throw new Error("[RudderstackProvider] writeKey is required");
     }
     if (!config.dataplaneUrl) {
-      throw new Error('[RudderstackProvider] dataplaneUrl is required')
+      throw new Error("[RudderstackProvider] dataplaneUrl is required");
     }
   }
 
@@ -101,70 +101,62 @@ export class RudderstackProvider extends BaseProvider {
    */
   async initialize(_config: ProviderConfig = {}): Promise<void> {
     if (this.initPromise) {
-      return this.initPromise
+      return this.initPromise;
     }
 
     if (this.isInitialized()) {
-      return Promise.resolve()
+      return Promise.resolve();
     }
 
-    this.setStatus(ProviderStatus.INITIALIZING)
+    this.setStatus(ProviderStatus.INITIALIZING);
 
-    this.initPromise = this._initialize()
-    return this.initPromise
+    this.initPromise = this._initialize();
+    return this.initPromise;
   }
 
   private async _initialize(): Promise<void> {
     try {
-      if (typeof window === 'undefined') {
-        throw new Error('[RudderstackProvider] Window object not available (non-browser environment)')
+      if (typeof window === "undefined") {
+        throw new Error("[RudderstackProvider] Window object not available (non-browser environment)");
       }
 
       // Load Rudderstack SDK from CDN
-      await this.loadSDK()
+      await this.loadSDK();
 
       // Get SDK instance
-      this.sdk = (window as any).rudderanalytics
+      this.sdk = (window as any).rudderanalytics;
 
       if (!this.sdk) {
-        throw new Error('[RudderstackProvider] Rudderstack SDK failed to load')
+        throw new Error("[RudderstackProvider] Rudderstack SDK failed to load");
       }
 
       // Merge load options
       const loadOptions = {
         ...DEFAULT_LOAD_OPTIONS,
         ...this.rudderstackConfig.loadOptions,
-      }
+      };
 
       // Initialize Rudderstack
-      this.sdk.load(
-        this.rudderstackConfig.writeKey,
-        this.rudderstackConfig.dataplaneUrl,
-        loadOptions
-      )
+      this.sdk.load(this.rudderstackConfig.writeKey, this.rudderstackConfig.dataplaneUrl, loadOptions);
 
       // Wait for SDK to be ready
-      await this.waitForReady()
+      await this.waitForReady();
 
-      this.setStatus(ProviderStatus.READY)
+      this.setStatus(ProviderStatus.READY);
 
       // Process any queued events
-      await this.processQueue()
+      await this.processQueue();
     } catch (error) {
-      this.setStatus(ProviderStatus.ERROR)
-      this.handleError(error as Error, 'initialization')
-      throw error
+      this.setStatus(ProviderStatus.ERROR);
+      this.handleError(error as Error, "initialization");
+      throw error;
     }
   }
 
   /**
    * Track an analytics event
    */
-  async track(
-    eventName: string,
-    payload: Record<string, any>,
-    context?: Record<string, any>
-  ): Promise<void> {
+  async track(eventName: string, payload: Record<string, any>, context?: Record<string, any>): Promise<void> {
     if (!this.isInitialized()) {
       // Queue event if not initialized
       this.queueEvent({
@@ -172,22 +164,22 @@ export class RudderstackProvider extends BaseProvider {
         payload,
         context,
         timestamp: Date.now(),
-      })
-      return
+      });
+      return;
     }
 
     try {
       // Map context to Rudderstack options format
-      const options = this.mapContextToOptions(context)
+      const options = this.mapContextToOptions(context);
 
       // Call Rudderstack track
-      this.sdk.track(eventName, payload, options)
+      this.sdk.track(eventName, payload, options);
 
-      this.metrics.eventsSent++
+      this.metrics.eventsSent++;
     } catch (error) {
-      this.metrics.eventsFailed++
-      this.handleError(error as Error, `track: ${eventName}`)
-      throw error
+      this.metrics.eventsFailed++;
+      this.handleError(error as Error, `track: ${eventName}`);
+      throw error;
     }
   }
 
@@ -196,16 +188,16 @@ export class RudderstackProvider extends BaseProvider {
    */
   async identify(userId: string, traits?: UserTraits): Promise<void> {
     if (!this.isInitialized()) {
-      console.warn('[RudderstackProvider] Cannot identify: not initialized')
-      return
+      console.warn("[RudderstackProvider] Cannot identify: not initialized");
+      return;
     }
 
     try {
-      this.sdk.identify(userId, traits || {})
-      this.metrics.identifyCalls++
+      this.sdk.identify(userId, traits || {});
+      this.metrics.identifyCalls++;
     } catch (error) {
-      this.handleError(error as Error, 'identify')
-      throw error
+      this.handleError(error as Error, "identify");
+      throw error;
     }
   }
 
@@ -214,16 +206,16 @@ export class RudderstackProvider extends BaseProvider {
    */
   async page(pageName: string, properties?: PageProperties): Promise<void> {
     if (!this.isInitialized()) {
-      console.warn('[RudderstackProvider] Cannot track page: not initialized')
-      return
+      console.warn("[RudderstackProvider] Cannot track page: not initialized");
+      return;
     }
 
     try {
-      this.sdk.page(pageName, properties || {})
-      this.metrics.pageCalls++
+      this.sdk.page(pageName, properties || {});
+      this.metrics.pageCalls++;
     } catch (error) {
-      this.handleError(error as Error, 'page')
-      throw error
+      this.handleError(error as Error, "page");
+      throw error;
     }
   }
 
@@ -232,15 +224,15 @@ export class RudderstackProvider extends BaseProvider {
    */
   async group(groupId: string, traits?: GroupTraits): Promise<void> {
     if (!this.isInitialized()) {
-      console.warn('[RudderstackProvider] Cannot group: not initialized')
-      return
+      console.warn("[RudderstackProvider] Cannot group: not initialized");
+      return;
     }
 
     try {
-      this.sdk.group(groupId, traits || {})
+      this.sdk.group(groupId, traits || {});
     } catch (error) {
-      this.handleError(error as Error, 'group')
-      throw error
+      this.handleError(error as Error, "group");
+      throw error;
     }
   }
 
@@ -250,14 +242,14 @@ export class RudderstackProvider extends BaseProvider {
   destroy(): void {
     if (this.sdk && this.sdk.reset) {
       try {
-        this.sdk.reset()
+        this.sdk.reset();
       } catch (error) {
-        console.error('[RudderstackProvider] Error resetting SDK:', error)
+        console.error("[RudderstackProvider] Error resetting SDK:", error);
       }
     }
 
-    this.sdk = null
-    super.destroy()
+    this.sdk = null;
+    super.destroy();
   }
 
   /**
@@ -266,99 +258,89 @@ export class RudderstackProvider extends BaseProvider {
   private async loadSDK(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       // Check if already loaded
-      if (typeof window !== 'undefined' && (window as any).rudderanalytics) {
-        resolve()
-        return
+      if (typeof window !== "undefined" && (window as any).rudderanalytics) {
+        resolve();
+        return;
       }
 
       try {
         // Create rudderanalytics stub methods to queue events before SDK loads
-        const rudderanalytics = ((window as any).rudderanalytics = [] as any)
+        const rudderanalytics = ((window as any).rudderanalytics = [] as any);
 
         // Methods to stub
         const methods = [
-          'load',
-          'page',
-          'track',
-          'identify',
-          'alias',
-          'group',
-          'ready',
-          'reset',
-          'getAnonymousId',
-          'setAnonymousId',
-          'getUserId',
-          'getUserTraits',
-          'getGroupId',
-          'getGroupTraits',
-          'startSession',
-          'endSession',
-          'getSessionId',
-        ]
+          "load",
+          "page",
+          "track",
+          "identify",
+          "alias",
+          "group",
+          "ready",
+          "reset",
+          "getAnonymousId",
+          "setAnonymousId",
+          "getUserId",
+          "getUserTraits",
+          "getGroupId",
+          "getGroupTraits",
+          "startSession",
+          "endSession",
+          "getSessionId",
+        ];
 
         // Create stub for each method to queue calls
         for (let i = 0; i < methods.length; i++) {
-          const method = methods[i]
-          if (!method) continue // Guard against undefined
+          const method = methods[i];
+          if (!method) continue; // Guard against undefined
 
           rudderanalytics[method] = (function (methodName: string) {
             return function () {
-              rudderanalytics.push(
-                [methodName].concat(Array.prototype.slice.call(arguments))
-              )
-            }
-          })(method)
+              rudderanalytics.push([methodName].concat(Array.prototype.slice.call(arguments)));
+            };
+          })(method);
         }
 
         // Determine SDK URL
-        const sdkVersion = this.rudderstackConfig.sdkVersion || 'modern'
-        const cdnUrl =
-          this.rudderstackConfig.cdnUrl ||
-          `https://cdn.rudderlabs.com/v3/${sdkVersion}/rsa.min.js`
+        const sdkVersion = this.rudderstackConfig.sdkVersion || "modern";
+        const cdnUrl = this.rudderstackConfig.cdnUrl || `https://cdn.rudderlabs.com/v3/${sdkVersion}/rsa.min.js`;
 
         // Load the actual SDK script
-        const script = document.createElement('script')
-        script.type = 'text/javascript'
-        script.async = true
-        script.src = cdnUrl
+        const script = document.createElement("script");
+        script.type = "text/javascript";
+        script.async = true;
+        script.src = cdnUrl;
 
         script.onload = () => {
-          resolve()
-        }
+          resolve();
+        };
 
         script.onerror = () => {
           // Fallback to legacy bundle if modern fails
-          if (sdkVersion === 'modern') {
-            const legacyScript = document.createElement('script')
-            legacyScript.type = 'text/javascript'
-            legacyScript.async = true
-            legacyScript.src = 'https://cdn.rudderlabs.com/v3/legacy/rsa.min.js'
+          if (sdkVersion === "modern") {
+            const legacyScript = document.createElement("script");
+            legacyScript.type = "text/javascript";
+            legacyScript.async = true;
+            legacyScript.src = "https://cdn.rudderlabs.com/v3/legacy/rsa.min.js";
 
             legacyScript.onload = () => {
-              resolve()
-            }
+              resolve();
+            };
 
             legacyScript.onerror = () => {
-              reject(
-                new Error(
-                  '[RudderstackProvider] Failed to load Rudderstack SDK from CDN (modern and legacy)'
-                )
-              )
-            }
+              reject(new Error("[RudderstackProvider] Failed to load Rudderstack SDK from CDN (modern and legacy)"));
+            };
 
-            document.head.appendChild(legacyScript)
+            document.head.appendChild(legacyScript);
           } else {
-            reject(
-              new Error('[RudderstackProvider] Failed to load Rudderstack SDK from CDN')
-            )
+            reject(new Error("[RudderstackProvider] Failed to load Rudderstack SDK from CDN"));
           }
-        }
+        };
 
-        document.head.appendChild(script)
+        document.head.appendChild(script);
       } catch (error) {
-        reject(error)
+        reject(error);
       }
-    })
+    });
   }
 
   /**
@@ -368,15 +350,15 @@ export class RudderstackProvider extends BaseProvider {
     return new Promise<void>((resolve) => {
       if (this.sdk && this.sdk.ready) {
         this.sdk.ready(() => {
-          resolve()
-        })
+          resolve();
+        });
       } else {
         // Fallback timeout
         setTimeout(() => {
-          resolve()
-        }, 5000)
+          resolve();
+        }, 5000);
       }
-    })
+    });
   }
 
   /**
@@ -384,40 +366,40 @@ export class RudderstackProvider extends BaseProvider {
    */
   private mapContextToOptions(context?: Record<string, any>): Record<string, any> {
     if (!context) {
-      return {}
+      return {};
     }
 
-    const options: Record<string, any> = {}
+    const options: Record<string, any> = {};
 
     // Map device context to OS field
     if (context.device) {
-      const device = context.device
+      const device = context.device;
       if (device.os) {
         options.os = {
           name: device.os.name,
           version: device.os.version,
-        }
+        };
       }
       if (device.browser) {
         options.browser = {
           name: device.browser.name,
           version: device.browser.version,
-        }
+        };
       }
     }
 
     // Map page context
     if (context.page) {
-      options.page = { ...context.page }
+      options.page = { ...context.page };
     }
 
     // Map any additional context fields
     Object.keys(context).forEach((key) => {
-      if (key !== 'device' && key !== 'page' && key !== 'user' && key !== 'session') {
-        options[key] = context[key]
+      if (key !== "device" && key !== "page" && key !== "user" && key !== "session") {
+        options[key] = context[key];
       }
-    })
+    });
 
-    return options
+    return options;
   }
 }

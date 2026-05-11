@@ -1,6 +1,9 @@
 const ThinkingIndicator = () => (
     <div className='gai:mb-3 gai:flex gai:flex-col gai:gap-1.5'>
-        <span className='gai:mb-1 gai:font-body-2-med gai:text-secondary-gray-600' style={{ fontSize: '14px', color: '#6b7280' }}>
+        <span
+            className='gai:mb-1 gai:font-body-2-med gai:text-secondary-gray-600'
+            style={{ fontSize: '14px', color: '#6b7280' }}
+        >
             Thinking...
         </span>
         <div className='gai:flex gai:w-full gai:flex-col gai:gap-1.5'>
@@ -77,4 +80,3 @@ const ThinkingIndicator = () => (
 );
 
 export default ThinkingIndicator;
-

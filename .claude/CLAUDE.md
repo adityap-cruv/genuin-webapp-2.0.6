@@ -15,17 +15,17 @@ They are the single source of truth for how code should be written here.
 
 Match the user's intent to the right specialist agent. Do not respond as a general assistant when a specialist exists.
 
-| Intent | Agent |
-|---|---|
-| Plan / design / structure / approach | `planner` |
-| Implement / build / add / create / write code | `implementer` |
-| Review / feedback on code | `code-reviewer` |
-| Fix / debug / broken / error / not working | `debugger` |
-| Security / vulnerability / audit | `security-auditor` |
-| E2E / Playwright / integration test | `e2e-tester` |
-| PRD / spec / requirements | `prd-writer` |
-| Investigate / how does X work / trace | `planner` (read-only) |
-| Anything else | `planner` (read-only) |
+| Intent                                        | Agent                 |
+| --------------------------------------------- | --------------------- |
+| Plan / design / structure / approach          | `planner`             |
+| Implement / build / add / create / write code | `implementer`         |
+| Review / feedback on code                     | `code-reviewer`       |
+| Fix / debug / broken / error / not working    | `debugger`            |
+| Security / vulnerability / audit              | `security-auditor`    |
+| E2E / Playwright / integration test           | `e2e-tester`          |
+| PRD / spec / requirements                     | `prd-writer`          |
+| Investigate / how does X work / trace         | `planner` (read-only) |
+| Anything else                                 | `planner` (read-only) |
 
 > **Copilot:** See `.team/copilot/instructions.md` for keyword-based routing rules.
 
@@ -191,33 +191,33 @@ If any section is unclear or incomplete, please ask for clarification or suggest
 Read the user's intent and activate the first matching agent via the Agent tool.
 The sub-agent responds directly — do not summarise or filter its output.
 
-| User intent | Agent to activate |
-|---|---|
-| Investigate / "how does X work" / "why is" / "what's happening" | `planner` (read-only) |
-| Fix / broken / error / not working / failing | `debugger` |
-| Plan / design / structure / approach / where to put | `planner` |
-| Implement / build / add / create / write code | `implementer` |
-| Code review / check this / feedback on code | `code-reviewer` |
-| TypeScript review / type safety / PR review | `typescript-reviewer` |
-| Architecture / monorepo / package placement / ADR | `architect` |
-| Security / vulnerability / audit / is this safe | `security-auditor` |
-| E2E / Playwright / integration test | `e2e-tester` |
-| PRD / spec / requirements | `prd-writer` |
-| **Anything else (default)** | `planner` in read-only mode |
+| User intent                                                     | Agent to activate           |
+| --------------------------------------------------------------- | --------------------------- |
+| Investigate / "how does X work" / "why is" / "what's happening" | `planner` (read-only)       |
+| Fix / broken / error / not working / failing                    | `debugger`                  |
+| Plan / design / structure / approach / where to put             | `planner`                   |
+| Implement / build / add / create / write code                   | `implementer`               |
+| Code review / check this / feedback on code                     | `code-reviewer`             |
+| TypeScript review / type safety / PR review                     | `typescript-reviewer`       |
+| Architecture / monorepo / package placement / ADR               | `architect`                 |
+| Security / vulnerability / audit / is this safe                 | `security-auditor`          |
+| E2E / Playwright / integration test                             | `e2e-tester`                |
+| PRD / spec / requirements                                       | `prd-writer`                |
+| **Anything else (default)**                                     | `planner` in read-only mode |
 
 **Skill loading** — also load the matching skill before responding:
 
-| User's goal | Skill to load |
-|---|---|
-| Investigating or fixing a bug | `.claude/skills/debug/SKILL.md` |
-| Writing or fixing Playwright / E2E tests | `.claude/skills/e2e-testing/SKILL.md` |
-| Auditing or improving accessibility (WCAG) | `.claude/skills/accessibility/SKILL.md` |
-| Auditing or improving performance | `.claude/skills/performance/SKILL.md` |
-| Security audit | `.claude/skills/security-audit/SKILL.md` |
-| Restructuring or cleaning up existing code | `.claude/skills/refactor/SKILL.md` |
-| Writing a PRD or feature spec | `.claude/skills/prd-writer/SKILL.md` |
-| Writing unit or integration tests with Vitest | `.claude/skills/test-runner/SKILL.md` |
-| Building React components or frontend UI | `.claude/skills/frontend-patterns/SKILL.md` |
+| User's goal                                   | Skill to load                               |
+| --------------------------------------------- | ------------------------------------------- |
+| Investigating or fixing a bug                 | `.claude/skills/debug/SKILL.md`             |
+| Writing or fixing Playwright / E2E tests      | `.claude/skills/e2e-testing/SKILL.md`       |
+| Auditing or improving accessibility (WCAG)    | `.claude/skills/accessibility/SKILL.md`     |
+| Auditing or improving performance             | `.claude/skills/performance/SKILL.md`       |
+| Security audit                                | `.claude/skills/security-audit/SKILL.md`    |
+| Restructuring or cleaning up existing code    | `.claude/skills/refactor/SKILL.md`          |
+| Writing a PRD or feature spec                 | `.claude/skills/prd-writer/SKILL.md`        |
+| Writing unit or integration tests with Vitest | `.claude/skills/test-runner/SKILL.md`       |
+| Building React components or frontend UI      | `.claude/skills/frontend-patterns/SKILL.md` |
 
 ---
 

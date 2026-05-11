@@ -51,24 +51,12 @@ export const CustomAvatarUrl: Story = {
 
 export const AllSizes: Story = {
   render: (args) => {
-    const {
-      isAvatar = false,
-      imageUrl = "https://randomuser.me/api/portraits/women/44.jpg",
-      alt = "User",
-    } = args;
+    const { isAvatar = false, imageUrl = "https://randomuser.me/api/portraits/women/44.jpg", alt = "User" } = args;
     return (
       <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
-        {(["xs", "sm", "md", "lg", "xl", "2xl", "3xl", "4xl"] as const).map(
-          (size) => (
-            <Avatar
-              key={size}
-              size={size}
-              isAvatar={isAvatar}
-              imageUrl={imageUrl}
-              alt={`${alt} ${size}`}
-            />
-          )
-        )}
+        {(["xs", "sm", "md", "lg", "xl", "2xl", "3xl", "4xl"] as const).map((size) => (
+          <Avatar key={size} size={size} isAvatar={isAvatar} imageUrl={imageUrl} alt={`${alt} ${size}`} />
+        ))}
       </div>
     );
   },

@@ -5,4 +5,4 @@ export const queryUtils = {
   get: (key: string) => queryUtils._getParams().get(key),
   has: (key: string) => queryUtils._getParams().has(key),
   getMultiple: (key: string) => queryUtils._getParams().getAll(key),
-}
+};

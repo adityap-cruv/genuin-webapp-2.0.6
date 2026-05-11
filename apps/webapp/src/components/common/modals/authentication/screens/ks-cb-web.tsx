@@ -1,19 +1,18 @@
-import Image from 'next/image'
-import Link from 'next/link'
-import { QRCode } from 'react-qrcode-logo'
+import Image from "next/image";
+import Link from "next/link";
+import { QRCode } from "react-qrcode-logo";
 
-import { GenuinIcon } from '@icons/genuin-icon'
-import imageAppStore from '@icons/ks-cb-flow/app-store-tab.svg'
-import imagePlayStore from '@icons/ks-cb-flow/play-store-tab.svg'
-import { URL_TO_APP_STORE, URL_TO_PLAY_STORE } from '@lib/constants'
-import { PATH_NAME } from '@lib/utils/constants/path'
+import { GenuinIcon } from "@icons/genuin-icon";
+import imageAppStore from "@icons/ks-cb-flow/app-store-tab.svg";
+import imagePlayStore from "@icons/ks-cb-flow/play-store-tab.svg";
+import { URL_TO_APP_STORE, URL_TO_PLAY_STORE } from "@lib/constants";
+import { PATH_NAME } from "@lib/utils/constants/path";
 
-
-import { KsCbSlides } from '../components/ks-cb-slides'
-import { ModalShell } from '../modal-shell'
+import { KsCbSlides } from "../components/ks-cb-slides";
+import { ModalShell } from "../modal-shell";
 
 const logoImageDataUrl =
-  "data:image/svg+xml,%3Csvg width='200' height='200' viewBox='0 0 200 200' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M100 0C44.7783 0 0.222931 44.3332 0.000709297 99.5552C-0.165957 144.333 29.0562 182.333 69.5005 195.277C88.5004 201.333 109.334 192.777 117.834 174.722C120.5 169.055 122 162.722 122 155.999V154.111C122 152.388 120.278 151.166 118.667 151.777C112.5 153.999 105.834 155.166 98.8892 154.999C68.8893 154.388 44.7228 129.444 45.0005 99.4441C45.2783 69.3331 69.8338 44.9998 100 44.9998C130.389 44.9998 155 69.6109 155 99.9996V155.999C155 167.277 152.556 177.999 148.222 187.61C179.111 170.611 200 137.722 200 99.9996C200 44.7776 155.222 0 100 0Z' fill='%230645FF'/%3E%3C/svg%3E"
+  "data:image/svg+xml,%3Csvg width='200' height='200' viewBox='0 0 200 200' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M100 0C44.7783 0 0.222931 44.3332 0.000709297 99.5552C-0.165957 144.333 29.0562 182.333 69.5005 195.277C88.5004 201.333 109.334 192.777 117.834 174.722C120.5 169.055 122 162.722 122 155.999V154.111C122 152.388 120.278 151.166 118.667 151.777C112.5 153.999 105.834 155.166 98.8892 154.999C68.8893 154.388 44.7228 129.444 45.0005 99.4441C45.2783 69.3331 69.8338 44.9998 100 44.9998C130.389 44.9998 155 69.6109 155 99.9996V155.999C155 167.277 152.556 177.999 148.222 187.61C179.111 170.611 200 137.722 200 99.9996C200 44.7776 155.222 0 100 0Z' fill='%230645FF'/%3E%3C/svg%3E";
 
 export function KsToCbWeb() {
   return (
@@ -22,7 +21,7 @@ export function KsToCbWeb() {
       <div
         className="flex max-h-40 w-full items-center rounded-lg bg-[#F8F8F8] px-4 py-3"
         style={{
-          background: 'linear-gradient(30deg, #E9CAF4 5%, #F8F8F8 50%, #ADDAFF 100%)',
+          background: "linear-gradient(30deg, #E9CAF4 5%, #F8F8F8 50%, #ADDAFF 100%)",
         }}>
         <div className="flex w-[65%] flex-col gap-2">
           <p className="text-cap-1-bold">
@@ -32,7 +31,7 @@ export function KsToCbWeb() {
             <p className="text-cap-1-med">Download the</p>
             <div>
               <Link href={{ pathname: PATH_NAME.home() }}>
-                <GenuinIcon.logo className="mr-2 h-4 w-16 fill-new-off-black" />
+                <GenuinIcon.logo className="fill-new-off-black mr-2 h-4 w-16" />
               </Link>
             </div>
             <p className="text-cap-1-med">app.</p>
@@ -47,7 +46,7 @@ export function KsToCbWeb() {
           </div>
         </div>
         <div className="flex w-[35%] flex-col items-center justify-center">
-          <div className="h-1 w-[100px] rounded-t-md bg-monochrome-white "></div>
+          <div className="bg-monochrome-white h-1 w-[100px] rounded-t-md"></div>
           <QRCode
             value="https://qabegenuin.page.link/a7Td"
             size={80}
@@ -59,17 +58,17 @@ export function KsToCbWeb() {
             logoOpacity={1}
             logoPaddingStyle="circle"
             removeQrCodeBehindLogo={true}
-            style={{ borderRadius: '100px' }}
+            style={{ borderRadius: "100px" }}
           />
           <div
-            className="w-[100px] rounded-b-md bg-monochrome-white p-0.5 pt-0 text-center"
+            className="bg-monochrome-white w-[100px] rounded-b-md p-0.5 pt-0 text-center"
             style={{
-              fontSize: '10px',
+              fontSize: "10px",
             }}>
             Scan to download
           </div>
         </div>
       </div>
     </ModalShell>
-  )
+  );
 }

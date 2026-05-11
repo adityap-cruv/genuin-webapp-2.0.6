@@ -8,7 +8,7 @@ import type {
     BrandGuidelinesData,
     BrandIndustryTypeData,
     BrandPersonaData,
-    GuidelineItem
+    GuidelineItem,
 } from '@/types';
 
 import type {
@@ -20,7 +20,7 @@ import type {
     StartChatResponse,
     StopChatResponse,
     SuggestedPromptsResponse,
-    VideoSuggestedPromptsResponse
+    VideoSuggestedPromptsResponse,
 } from './apiTypes';
 
 const api = axios.create({
@@ -28,8 +28,8 @@ const api = axios.create({
     // baseURL: import.meta.env.VITE_API_URL + '/agents',
     baseURL: import.meta.env.VITE_API_URL,
     headers: {
-        "ngrok-skip-browser-warning": "true"
-    }
+        'ngrok-skip-browser-warning': 'true',
+    },
 });
 
 const bccApi = axios.create({
@@ -130,7 +130,6 @@ const routes = {
     getCaptions: `/ds-backend/api/v1/ai-director/captions`,
 };
 
-
 export async function getBrandAgentId(
     brand_id: number,
     options?: {
@@ -156,8 +155,12 @@ export async function getBrandAgentId(
     });
 }
 
-
-export async function getVideoSuggestedPrompts(params: { video_id: string; includeCarouselMetadata: boolean; includeAgentResponse: boolean; user_journey?: string | null }) {
+export async function getVideoSuggestedPrompts(params: {
+    video_id: string;
+    includeCarouselMetadata: boolean;
+    includeAgentResponse: boolean;
+    user_journey?: string | null;
+}) {
     return api
         .post<VideoSuggestedPromptsResponse>(routes.getVideoSuggestedPrompts, {
             video_id: params.video_id,
@@ -167,7 +170,6 @@ export async function getVideoSuggestedPrompts(params: { video_id: string; inclu
         })
         .then(res => res.data);
 }
-
 
 export async function getSubAgentsV2(brand_id: number): Promise<GetAgentsV2Response> {
     console.log('getSubAgentsV2', brand_id);
@@ -185,7 +187,11 @@ export async function getSubAgentsV2(brand_id: number): Promise<GetAgentsV2Respo
         });
 }
 
-export async function createSessionV2(payload: {user_id: string, brand_id:number,agent_type:AgentType}): Promise<CreateSessionV2Response> {
+export async function createSessionV2(payload: {
+    user_id: string;
+    brand_id: number;
+    agent_type: AgentType;
+}): Promise<CreateSessionV2Response> {
     return api
         .post(routes.createSessionV2, payload)
         .then(res => {
@@ -199,8 +205,8 @@ export async function createSessionV2(payload: {user_id: string, brand_id:number
 export async function getSessionsV2(brand_id: number, is_maya: boolean): Promise<GetSessionsV2Response> {
     const params: Record<string, any> = {
         brand_id,
-    }
-    if(is_maya) {
+    };
+    if (is_maya) {
         params.agent_type = 'maya';
         params.brand_id = 99;
     }
@@ -756,16 +762,15 @@ export async function getCaptions(params: { brand_id: number }) {
         });
 }
 
-
 export async function insertExistingBrandAsConsumerBrand(brand: BrandConsumerBrand) {
     const token = userContext.getToken();
-    if(!token) return Promise.reject(new Error('Token not found'));
+    if (!token) return Promise.reject(new Error('Token not found'));
     const preparedPayload = {
         brand_id: brand.id,
         cpm: brand.earnings,
         website: brand.website,
         start_date: new Date().toISOString(),
-        socials: brand.socials.map(s=>({
+        socials: brand.socials.map(s => ({
             platform: s.platform,
             handle: s.username,
         })),
@@ -788,20 +793,22 @@ export async function insertNewBrandAsConsumerBrand(brand: BrandConsumerBrand) {
     const token = userContext.getToken();
     const brand_id = userContext.getBrandId();
     const userId = userContext.getUserId();
-    if(!token || !brand_id || !userId) return Promise.reject(new Error('Either token, brand id, or user id is not set'));
+    if (!token || !brand_id || !userId)
+        return Promise.reject(new Error('Either token, brand id, or user id is not set'));
     const preparedPayload = {
         cpm: brand.earnings,
         brand_name: brand.brand_name,
         brand_url: brand.website,
-        email_id: brand.contact_email || brand.brand_name.toLocaleLowerCase().replace(/ /g, '_') + '@creatives.begenuin.com',
-        socials: brand.socials.map(s=>({
+        email_id:
+            brand.contact_email || brand.brand_name.toLocaleLowerCase().replace(/ /g, '_') + '@creatives.begenuin.com',
+        socials: brand.socials.map(s => ({
             platform: s.platform,
             handle: s.username,
         })),
         start_date: new Date().toISOString(),
         logged_in_user_id: userId,
         parent_brand_id: brand_id,
-        add_user_as_admin: []
+        add_user_as_admin: [],
     };
     return bccApi
         .post(routes.insertNewBrandAsConsumerBrand, preparedPayload, {

@@ -32,13 +32,13 @@ before any code is written. You do not write code. You explore, reason, and plan
 
 Before planning where to put new code, apply these rules:
 
-| What you're building                        | Where it goes                              |
-| ------------------------------------------- | ------------------------------------------ |
-| UI primitive (button, input, badge)         | `packages/ui` — atoms, Radix-based         |
+| What you're building                        | Where it goes                               |
+| ------------------------------------------- | ------------------------------------------- |
+| UI primitive (button, input, badge)         | `packages/ui` — atoms, Radix-based          |
 | Business component (feed card, modal, form) | `packages/components` — molecules/organisms |
-| Shared utility / helper                     | `packages/utils`                           |
-| App-only component or page                  | `apps/webapp/src/`                         |
-| Embeddable component reused in web-sdk      | `packages/components` (not apps/)          |
+| Shared utility / helper                     | `packages/utils`                            |
+| App-only component or page                  | `apps/webapp/src/`                          |
+| Embeddable component reused in web-sdk      | `packages/components` (not apps/)           |
 
 **Internal package dependencies** always use `workspace:*`. Never use a version number
 for packages within this repo.

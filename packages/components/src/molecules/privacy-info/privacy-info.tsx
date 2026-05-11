@@ -6,24 +6,15 @@ type PrivacyInfoProps = ComponentProps<"div"> & {
   label?: string; // Optional label if needed later
 };
 
-export function PrivacyInfo({
-  isPrivate,
-  className = "",
-  ...rest
-}: PrivacyInfoProps) {
+export function PrivacyInfo({ isPrivate, className = "", ...rest }: PrivacyInfoProps) {
   return (
-    <div
-      className={`gencl:flex gencl:items-center gencl:gap-1 ${className}`}
-      {...rest}
-    >
+    <div className={`gencl:flex gencl:items-center gencl:gap-1 ${className}`} {...rest}>
       {isPrivate ? (
         <LockIcon className="gencl:size-4 gencl:fill-secondary-300" />
       ) : (
         <PublicIcon className="gencl:size-4 gencl:stroke-secondary-300" />
       )}
-      <p className="gencl:text-secondary-300">
-        {isPrivate ? "Private" : "Public"}
-      </p>
+      <p className="gencl:text-secondary-300">{isPrivate ? "Private" : "Public"}</p>
     </div>
   );
 }

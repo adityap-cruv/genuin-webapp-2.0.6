@@ -1,26 +1,26 @@
-'use client'
-import { BackIcon } from '@icons/back-icon'
-import { DiscountCouponIcon } from '@icons/wallet/discount-coupon-icon'
+"use client";
+import { BackIcon } from "@icons/back-icon";
+import { DiscountCouponIcon } from "@icons/wallet/discount-coupon-icon";
 
-import { useWalletStore } from './store'
+import { useWalletStore } from "./store";
 
 export const WalletRewardCreditsCard = () => {
-  const { setCurrentCardView, currentCardView, walletDetails } = useWalletStore()
-  const rewardAmount = walletDetails?.point_balance
+  const { setCurrentCardView, currentCardView, walletDetails } = useWalletStore();
+  const rewardAmount = walletDetails?.point_balance;
   return (
     <div
-      className={`rounded-2xl border border-[#F5F5F5] bg-monochrome-white p-4 text-left sm:p-6 ${
-        currentCardView === 'Reward' && 'sm:border-[#507CFF] sm:bg-[#E6ECFF]'
+      className={`bg-monochrome-white rounded-2xl border border-[#F5F5F5] p-4 text-left sm:p-6 ${
+        currentCardView === "Reward" && "sm:border-[#507CFF] sm:bg-[#E6ECFF]"
       }`}
       onClick={() => {
-        setCurrentCardView('Reward')
+        setCurrentCardView("Reward");
       }}>
       <div className="mb-2 flex justify-between">
         {/* <Image src={DiscountCoupon} alt="DiscountCoupon" /> */}
         <DiscountCouponIcon className="h-8 stroke-[#507CFF]" />
-        <div className="flex items-center gap-2 text-title-2-bold text-secondary sm:text-title-1-bold">
+        <div className="text-title-2-bold text-secondary sm:text-title-1-bold flex items-center gap-2">
           ${(rewardAmount / 100).toFixed(2)}
-          <BackIcon className="h-3.5 rotate-180 fill-secondary-300" />
+          <BackIcon className="fill-secondary-300 h-3.5 rotate-180" />
         </div>
       </div>
 
@@ -29,5 +29,5 @@ export const WalletRewardCreditsCard = () => {
         From engaging with content in communities
       </p>
     </div>
-  )
-}
+  );
+};

@@ -15,7 +15,7 @@ export const UploadedFilesList = ({ files, onRemove }: UploadedFilesListProps) =
     }
 
     return (
-        <div className='gai:flex gai:w-full gai:overflow-auto gai:gap-3 gai:pb-2'>
+        <div className='gai:flex gai:w-full gai:gap-3 gai:overflow-auto gai:pb-2'>
             {files.map(file => (
                 <AttachmentCard
                     key={file.id}
@@ -38,4 +38,3 @@ export const UploadedFilesList = ({ files, onRemove }: UploadedFilesListProps) =
         </div>
     );
 };
-

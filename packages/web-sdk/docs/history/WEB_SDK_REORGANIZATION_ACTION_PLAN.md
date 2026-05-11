@@ -1,9 +1,11 @@
 # Web SDK Reorganization Action Plan
 
 ## 📋 Overview
+
 The web-sdk package currently contains a mix of legacy components and new architecture. The goal is to eliminate redundant files and reorganize the structure to fully leverage shared components from `@genuin/components` and `@genuin/ui` packages, while maintaining the single JS file entry point with lazy loading capabilities.
 
 ## 🎯 Goals
+
 - [ ] Eliminate duplicate components that exist in shared packages
 - [ ] Reorganize directory structure for better maintainability
 - [ ] Maintain single JS file entry point with lazy loading
@@ -13,11 +15,13 @@ The web-sdk package currently contains a mix of legacy components and new archit
 ## 📊 Current Architecture Analysis
 
 ### Entry Point Flow
+
 - **Main Entry**: `packages/web-sdk/src/index.ts` - Exposes SDK API methods (`init`, `update`)
 - **Current Router**: Uses `packages/web-sdk/src/views/loader.tsx` (legacy) which conditionally calls `packages/web-sdk/src/views/new-loader.tsx`
 - **New Approach**: `packages/web-sdk/src/views/new-loader.tsx` uses shared components from `@genuin/components` and `@genuin/ui`
 
 ### Dependencies Status
+
 - [x] Already added: `@genuin/components: "workspace:*"` and `@genuin/ui: "workspace:*"`
 
 ---
@@ -27,6 +31,7 @@ The web-sdk package currently contains a mix of legacy components and new archit
 ### Phase 1: Remove Redundant Components and Files
 
 #### 1.1 Delete Duplicate UI Components
+
 > **Components that exist in `@genuin/ui`**
 
 - [ ] **Delete** `src/components/button.tsx` → Use `@genuin/ui` Button
@@ -39,6 +44,7 @@ The web-sdk package currently contains a mix of legacy components and new archit
 - [ ] **Delete** `src/components/ui/` (entire folder) → All covered by `@genuin/ui`
 
 **Commands to run:**
+
 ```bash
 cd packages/web-sdk
 rm src/components/button.tsx
@@ -52,6 +58,7 @@ rm -rf src/components/ui/
 ```
 
 #### 1.2 Delete Duplicate Business Components
+
 > **Components that exist in `@genuin/components`**
 
 - [ ] **Delete** `src/components/authentication/` → Use `@genuin/components` AuthenticationModal
@@ -67,6 +74,7 @@ rm -rf src/components/ui/
 - [ ] **Delete** `src/components/community-tile.tsx` → Use `@genuin/components` CommunityCard
 
 **Commands to run:**
+
 ```bash
 cd packages/web-sdk
 rm -rf src/components/authentication/
@@ -90,6 +98,7 @@ rm src/components/community-tile.tsx
 - [ ] **Delete** `src/views/floating/` → Use `@genuin/components` Embed with floating style
 
 **Commands to run:**
+
 ```bash
 cd packages/web-sdk
 rm src/views/loader.tsx
@@ -99,33 +108,39 @@ rm -rf src/views/floating/
 ```
 
 #### 1.3.1 CSS Strategy - UPDATED Analysis
+
 > **✅ MAJOR INSIGHT: Shared components handle their own CSS isolation!**
 
 **Shared Components CSS Architecture (webapp evidence):**
+
 - **Webapp imports**: `import '@genuin/components/styles'` in layout.tsx
 - **CSS class prefix**: Shared components use `gencl:` prefix (Genuin Components Library)
 - **Standardized variables**: Same CSS variables (`:root` with `--primary`, `--secondary`, etc.)
 - **No isolation conflicts**: Designed to work in any environment (webapp and embedded)
 
 **Current Legacy SDK CSS:**
+
 - `src/views/main.css` → Contains legacy `.gen-sdk-class` scoping and redundant styles
 - `src/views/output.css` → Generated file from main.css via Tailwind
 - **Most styles now redundant** → Covered by shared component CSS
 
 **REVISED CSS Strategy - Safe to Delete:**
+
 - [ ] **DELETE** `src/views/main.css` → **Shared components handle styling**
 - [ ] **DELETE** `src/views/output.css` → **Generated file, no longer needed**
 - [ ] **DELETE** `src/components/authentication/css/date-picker.css` → **Covered by shared components**
 - [ ] **DELETE** `src/components/search-bar/hide-swiper.module.css` → **Covered by shared components**
 
 **Why This Works:**
+
 1. **Shared components are self-contained** → Include their own CSS isolation
 2. **CSS variables standardized** → Same theming system across webapp/web-sdk
 3. **`gencl:` prefixing** → Built-in conflict prevention for embedded environments
 4. **Proven in webapp** → Already works without legacy SDK CSS classes
 
 **Updated Commands:**
-```bash
+
+````bash
 cd packages/web-sdk
 # Safe to delete - shared components handle CSS
 rm src/views/main.css
@@ -151,15 +166,17 @@ rm src/context/base.tsx
 rm src/context/brand-details.tsx
 rm src/context/react-query.tsx
 # Keep floating.tsx and size.tsx if they contain SDK-specific logic
-```
+````
 
 #### 1.5 Delete Legacy Router and Pages
+
 > **Delete if using shared components for routing**
 
 - [ ] **Review and Delete** `src/router/` (entire folder) → Use `@genuin/components` routing if available
 - [ ] **Review and Delete** `src/pages/` (entire folder) → Use `@genuin/components` page components
 
 **Commands to run after review:**
+
 ```bash
 cd packages/web-sdk
 # Only run these after confirming shared components provide routing
@@ -181,12 +198,14 @@ rm -rf src/pages/
 - [ ] **Keep** `src/analytics/` (analytics integration)
 
 **Commands to run:**
+
 ```bash
 cd packages/web-sdk
 mv src/views/new-loader.tsx src/views/embed-loader.tsx
 ```
 
 **Target Structure After Cleanup:**
+
 ```
 src/
 ├── index.ts                              # Main entry point (keep)
@@ -217,6 +236,7 @@ src/
 - [ ] **Simplify** to always use shared components approach
 
 **Changes needed in `src/index.ts`:**
+
 ```typescript
 // Replace import
 - import { loadEmbedView } from './views/loader'
@@ -235,6 +255,7 @@ src/
 - [ ] **Let** `@genuin/components` handle their own dependencies
 
 **Template for updated `src/views/embed-loader.tsx`:**
+
 ```typescript
 import { AuthUser, EmbedDataType } from '@/type'
 import { getKsCbRequestStatus } from '@/utils/auth'
@@ -301,18 +322,19 @@ export function loadEmbedView(
 - [ ] **Test** development vs production builds
 
 **Changes needed in `rollup.config.mjs`:**
+
 ```javascript
 export default {
-  input: 'src/index.ts',
+  input: "src/index.ts",
   external: (id) => {
     // During development, externalize shared packages
-    if (process.env.NODE_ENV === 'development') {
-      return id.includes('@genuin/components') || id.includes('@genuin/ui')
+    if (process.env.NODE_ENV === "development") {
+      return id.includes("@genuin/components") || id.includes("@genuin/ui");
     }
     // In production, bundle everything for single file output
-    return false
-  }
-}
+    return false;
+  },
+};
 ```
 
 #### 3.2 Update Package Scripts
@@ -322,6 +344,7 @@ export default {
 - [ ] **Test** all scripts after reorganization
 
 **Recommended scripts in `package.json`:**
+
 ```json
 {
   "scripts": {
@@ -343,6 +366,7 @@ export default {
 - [ ] **Keep** SDK-specific dependencies (analytics, build tools, etc.)
 
 **Dependencies to review for removal:**
+
 - Any UI component libraries that duplicate `@genuin/ui` functionality
 - Styling libraries if handled by shared packages
 - React context libraries if using shared contexts
@@ -355,6 +379,7 @@ export default {
 - [ ] **Run** type checking after updates
 
 **Search and replace patterns:**
+
 ```bash
 # Find files that import deleted components
 grep -r "from.*components/button" src/
@@ -372,6 +397,7 @@ grep -r "from.*components/loader" src/
 - [ ] **Test** lazy loading still works
 
 **Commands to run:**
+
 ```bash
 cd packages/web-sdk
 pnpm clean
@@ -396,6 +422,7 @@ ls -la dist/
 - [ ] **Verify** environment-specific configurations
 
 **Commands to run:**
+
 ```bash
 cd packages/web-sdk
 npm run build        # Development
@@ -415,16 +442,19 @@ npm run build:prod   # Production
 ## 🛡️ Risk Mitigation
 
 ### Pre-Implementation
+
 - [ ] **Create backup** of current working version
 - [ ] **Document** current working functionality
 - [ ] **Set up** rollback plan
 
 ### During Implementation
+
 - [ ] **Test each phase** individually before proceeding
 - [ ] **Keep commits small** and atomic
 - [ ] **Maintain running build** after each major change
 
 ### Post-Implementation
+
 - [ ] **Run full test suite** on all environments
 - [ ] **Document** any breaking changes
 - [ ] **Update** deployment documentation if needed
@@ -434,17 +464,20 @@ npm run build:prod   # Production
 ## 📈 Expected Outcomes
 
 ### Performance Improvements
+
 - [ ] **Reduced bundle size** by eliminating duplicate code
 - [ ] **Faster load times** through better tree shaking
 - [ ] **Improved caching** through shared component reuse
 
 ### Development Benefits
+
 - [ ] **Improved maintainability** by using shared components
 - [ ] **Consistent UI/UX** across webapp and web-sdk
 - [ ] **Simplified development** with fewer component variations
 - [ ] **Better type safety** through shared type definitions
 
 ### Quality Improvements
+
 - [ ] **Reduced technical debt** from duplicate components
 - [ ] **Better test coverage** through shared component tests
 - [ ] **Improved documentation** through shared component docs
@@ -454,33 +487,39 @@ npm run build:prod   # Production
 ## 📝 Notes and Considerations
 
 ### Critical Points
+
 - Maintain backward compatibility of public SDK API (`window.genuin.init`, `window.genuin.update`)
 - Ensure all embed styles continue to work (standard, carousel, feed, floating)
 - Preserve analytics functionality and tracking
 - Keep error handling and boundaries for SDK-specific scenarios
 
 ### CSS Strategy - Updated Considerations
+
 **✅ Major Discovery: Shared components are CSS-complete and embed-ready!**
 
 **Evidence from webapp analysis:**
+
 1. **Self-contained styling**: `@genuin/components/styles` import provides all needed CSS
 2. **Embedded-safe prefixing**: Uses `gencl:` classes designed to avoid conflicts
 3. **Standardized theming**: Same CSS variables across webapp and web-sdk
 4. **No legacy scoping needed**: `.gen-sdk-class` is redundant with shared component architecture
 
 **Implications for web-sdk:**
+
 - **Legacy CSS files can be safely deleted** → Shared components handle all styling
 - **No special SDK isolation needed** → `gencl:` prefixing prevents conflicts
 - **Simpler build process** → No need for SDK-specific CSS generation
 - **Consistent theming** → Same variables work across delivery methods
 
 **Migration Benefits:**
+
 1. **Eliminated duplicate styling** → Single source of truth in shared packages
 2. **Reduced bundle size** → No redundant CSS in web-sdk
 3. **Simplified maintenance** → CSS changes only in shared packages
 4. **Guaranteed consistency** → Same styles across webapp and web-sdk
 
 ### Future Enhancements
+
 - Consider lazy loading of shared components for even better performance
 - Implement proper SDK versioning strategy with shared components
 - Set up automated testing pipeline for web-sdk specific functionality
@@ -491,6 +530,7 @@ npm run build:prod   # Production
 ## ✅ Completion Checklist
 
 ### Phase 1 Complete
+
 - [ ] All duplicate UI components removed
 - [ ] All duplicate business components removed
 - [ ] Legacy view files deleted
@@ -498,28 +538,33 @@ npm run build:prod   # Production
 - [ ] Legacy router/pages removed
 
 ### Phase 2 Complete
+
 - [ ] Directory structure reorganized
 - [ ] Main entry point updated
 - [ ] Embed loader updated and expanded
 - [ ] File naming conventions updated
 
 ### Phase 3 Complete
+
 - [ ] Rollup configuration updated
 - [ ] Package scripts verified
 - [ ] Build process tested
 
 ### Phase 4 Complete
+
 - [ ] Unused dependencies removed
 - [ ] Import statements updated
 - [ ] Type checking passes
 
 ### Phase 5 Complete
+
 - [ ] Build testing passed
 - [ ] Functionality testing passed
 - [ ] Environment testing passed
 - [ ] Integration testing passed
 
 ### Final Validation
+
 - [ ] All expected outcomes achieved
 - [ ] No breaking changes to public API
 - [ ] Performance improvements verified

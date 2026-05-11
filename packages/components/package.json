@@ -1,6 +1,9 @@
 {
   "name": "@genuin/components",
-  "sideEffects": ["**/*.css", "dist/index.css"],
+  "sideEffects": [
+    "**/*.css",
+    "dist/index.css"
+  ],
   "private": true,
   "description": "Genuin's components",
   "authors": "Genuin Inc.",
@@ -97,6 +100,9 @@
     "deploy:storybook:prod": "npm run build-storybook && npm run publish:storybook:oracle:prod"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,mjs}": ["eslint --fix", "prettier --write"]
+    "*.{ts,tsx,js,mjs}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
   }
 }

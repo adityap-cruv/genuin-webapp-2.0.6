@@ -11,30 +11,19 @@ export type SelectedMention = {
  * @param selectedMentions - The list of mentions to include in the conversion.
  * @returns An array of strings and objects representing the comment text and mentions.
  */
-export const convertCommentTextToArray = (
-  commentText: string,
-  selectedMentions: SelectedMention[]
-) => {
+export const convertCommentTextToArray = (commentText: string, selectedMentions: SelectedMention[]) => {
   const result: Array<string | object> = [];
   const words = commentText.split(" ");
   let lastIndex = 0;
 
   words.forEach((word, index) => {
-    const matchedMention = selectedMentions.find(
-      (mention) => mention.handle === word.trim()
-    );
+    const matchedMention = selectedMentions.find((mention) => mention.handle === word.trim());
 
     if (matchedMention) {
-      const textBefore = commentText.slice(
-        lastIndex,
-        commentText.indexOf(word, lastIndex)
-      );
+      const textBefore = commentText.slice(lastIndex, commentText.indexOf(word, lastIndex));
       if (textBefore.trim()) {
         result.push(textBefore);
-      } else if (
-        result.length > 0 &&
-        typeof result[result.length - 1] === "object"
-      ) {
+      } else if (result.length > 0 && typeof result[result.length - 1] === "object") {
         result.push(" ");
       }
 

@@ -20,8 +20,7 @@ const meta: Meta<typeof Image> = {
     aspectRatio: {
       control: "select",
       options: ["auto", "square", "video", "portrait", "landscape"],
-      description:
-        "Defines the aspect ratio of the image. The image will be cropped to fit.",
+      description: "Defines the aspect ratio of the image. The image will be cropped to fit.",
     },
     radius: {
       control: "select",
@@ -31,13 +30,11 @@ const meta: Meta<typeof Image> = {
     scale: {
       control: "select",
       options: [0, 0.5, 0.75, 0.9, 0.95, 1, 1.05, 1.1, 1.25, 1.5],
-      description:
-        "CSS transform scale factor for the image. Select a predefined scale value.",
+      description: "CSS transform scale factor for the image. Select a predefined scale value.",
     },
     useWebp: {
       control: "boolean",
-      description:
-        "Whether to attempt to convert the image source to WebP format.",
+      description: "Whether to attempt to convert the image source to WebP format.",
       defaultValue: true,
     },
     className: {

@@ -1,4 +1,3 @@
-
 import { Skeleton } from "@genuin/ui/components/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@genuin/ui/components/table";
 import React from "react";
@@ -27,11 +26,7 @@ interface SkeletonTableProps {
  * @param rows - Number of skeleton rows to display (default: 5).
  * @param showPagination - Whether to show the pagination skeleton (default: true).
  */
-export function SkeletonTable({
-  columns,
-  rows = 5,
-  showPagination = true,
-}: SkeletonTableProps) {
+export function SkeletonTable({ columns, rows = 5, showPagination = true }: SkeletonTableProps) {
   return (
     <div className="gencl:mx-auto gencl:py-2">
       <div className="gencl:w-full">

@@ -13,7 +13,7 @@ export type PendingActionType =
   | "join-group"
   | "subscribe-group"
   | "become-a-creator"
-  | 'iheart-follow'
+  | "iheart-follow";
 
 export interface PendingActionData {
   action: PendingActionType;

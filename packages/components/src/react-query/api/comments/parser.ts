@@ -7,22 +7,14 @@ export function parseComments(data: CommentsResponseType): CommentListType {
       memberId: comment.owner.member_id,
       nickname: comment.owner.nickname,
       isAvatar: comment.owner.is_avatar,
-      profileImage:
-        comment.owner.profile_image_s ??
-        comment.owner.profile_image_m ??
-        comment.owner.profile_image,
+      profileImage: comment.owner.profile_image_s ?? comment.owner.profile_image_m ?? comment.owner.profile_image,
       name: comment.owner.name ?? null,
       bio: comment.owner.bio ?? null,
     },
     chatId: comment.chat_id,
     conversationId: comment.conversation_id,
     commentId: comment.comment_id,
-    type:
-      Number(comment.type) === 1
-        ? "video"
-        : Number(comment.type) === 2
-          ? "audio"
-          : "text",
+    type: Number(comment.type) === 1 ? "video" : Number(comment.type) === 2 ? "audio" : "text",
     audioUrl: comment.url ?? null,
     videoUrlM3u8: comment.video_url_m3u8 ?? comment.url ?? null,
     thumbnail: comment.thumbnail ?? null,
@@ -30,9 +22,7 @@ export function parseComments(data: CommentsResponseType): CommentListType {
     duration: comment.duration ? Number(comment.duration) : null,
     metaData: comment.meta_data
       ? {
-          duration: comment.meta_data.duration
-            ? Number(comment.meta_data.duration)
-            : null,
+          duration: comment.meta_data.duration ? Number(comment.meta_data.duration) : null,
         }
       : null,
     createdAt: comment.created_at ?? null,

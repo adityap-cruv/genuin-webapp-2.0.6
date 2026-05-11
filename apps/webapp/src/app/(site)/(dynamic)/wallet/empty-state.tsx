@@ -1,17 +1,17 @@
-'use client'
-import Image from 'next/image'
+"use client";
+import Image from "next/image";
 
-import { AuthenticationModal } from '@/components/common/modals/authentication'
-import { BackIcon } from '@icons/back-icon'
-import icBack from '@icons/icBack.svg'
-import { QuestionMarkIcon } from '@icons/question-mark-icon'
-import { BillStreamlineIcon } from '@icons/wallet/bill-streamline'
-import { DiscountCouponIcon } from '@icons/wallet/discount-coupon-icon'
+import { AuthenticationModal } from "@/components/common/modals/authentication";
+import { BackIcon } from "@icons/back-icon";
+import icBack from "@icons/icBack.svg";
+import { QuestionMarkIcon } from "@icons/question-mark-icon";
+import { BillStreamlineIcon } from "@icons/wallet/bill-streamline";
+import { DiscountCouponIcon } from "@icons/wallet/discount-coupon-icon";
 
 export const EmptyState = {
   mobile: Mobile,
   desktop: Desktop,
-}
+};
 
 function Desktop() {
   return (
@@ -22,7 +22,7 @@ function Desktop() {
           <QuestionMarkIcon
             className="stroke-monochrome-white/60 cursor-pointer"
             onClick={() => {
-              AuthenticationModal.open(undefined, 'WALLET_HOW_IT_WORKS')
+              AuthenticationModal.open(undefined, "WALLET_HOW_IT_WORKS");
             }}
           />
         </div>
@@ -65,7 +65,7 @@ function Desktop() {
           <div
             className="bg-monochrome-white flex flex-col items-center gap-2 rounded-2xl p-6 text-center"
             style={{
-              boxShadow: '0px 4px 60px 0px rgba(0, 0, 0, 0.05)',
+              boxShadow: "0px 4px 60px 0px rgba(0, 0, 0, 0.05)",
             }}>
             <div className="relative h-12 w-12">
               <div className="border-monochrome-white bg-red absolute left-4 z-10 h-12 w-12 rounded-full border-2" />
@@ -80,7 +80,7 @@ function Desktop() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 function Mobile() {
@@ -96,7 +96,7 @@ function Mobile() {
             <QuestionMarkIcon
               className="stroke-monochrome-white cursor-pointer"
               onClick={() => {
-                AuthenticationModal.open(undefined, 'WALLET_HOW_IT_WORKS')
+                AuthenticationModal.open(undefined, "WALLET_HOW_IT_WORKS");
               }}
             />
           </div>
@@ -113,7 +113,7 @@ function Mobile() {
             <div
               className="bg-monochrome-white flex flex-col items-center gap-2 rounded-2xl p-6 text-center"
               style={{
-                boxShadow: '0px 4px 60px 0px rgba(0, 0, 0, 0.05)',
+                boxShadow: "0px 4px 60px 0px rgba(0, 0, 0, 0.05)",
               }}>
               <div className="relative h-12 w-12">
                 <div className="border-monochrome-white bg-red absolute left-4 z-10 h-12 w-12 rounded-full border-2" />
@@ -163,5 +163,5 @@ function Mobile() {
         </div>
       </div>
     </>
-  )
+  );
 }

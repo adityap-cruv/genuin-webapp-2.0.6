@@ -74,18 +74,18 @@ apps/webapp/e2e/pages/<PageName>.page.ts
 ### Template
 
 ```ts
-import { type Page, expect } from '@playwright/test';
+import { type Page, expect } from "@playwright/test";
 
 export class LoginPage {
-  private readonly emailInput = this.page.getByTestId('login-email');
-  private readonly passwordInput = this.page.getByTestId('login-password');
-  private readonly submitButton = this.page.getByTestId('login-submit');
-  private readonly errorMessage = this.page.getByTestId('login-error');
+  private readonly emailInput = this.page.getByTestId("login-email");
+  private readonly passwordInput = this.page.getByTestId("login-password");
+  private readonly submitButton = this.page.getByTestId("login-submit");
+  private readonly errorMessage = this.page.getByTestId("login-error");
 
   constructor(private readonly page: Page) {}
 
   async goto() {
-    await this.page.goto('/login');
+    await this.page.goto("/login");
   }
 
   async fillEmail(email: string) {
@@ -116,15 +116,15 @@ export class LoginPage {
 ## Test file structure
 
 ```ts
-import { test } from '@playwright/test';
-import { LoginPage } from './pages/Login.page';
+import { test } from "@playwright/test";
+import { LoginPage } from "./pages/Login.page";
 
 // What this file covers:
 // 1. Successful login redirects to dashboard
 // 2. Invalid credentials show error message
 // 3. Empty form shows validation errors
 
-test.describe('login flow', () => {
+test.describe("login flow", () => {
   let loginPage: LoginPage;
 
   test.beforeEach(async ({ page }) => {
@@ -132,18 +132,18 @@ test.describe('login flow', () => {
     await loginPage.goto();
   });
 
-  test('redirects to dashboard on valid credentials', async () => {
+  test("redirects to dashboard on valid credentials", async () => {
     await loginPage.fillEmail(process.env.E2E_USER_EMAIL!);
     await loginPage.fillPassword(process.env.E2E_USER_PASSWORD!);
     await loginPage.submit();
-    await loginPage.expectRedirectedTo('/dashboard');
+    await loginPage.expectRedirectedTo("/dashboard");
   });
 
-  test('shows error on invalid credentials', async () => {
-    await loginPage.fillEmail('wrong@example.com');
-    await loginPage.fillPassword('wrong-password');
+  test("shows error on invalid credentials", async () => {
+    await loginPage.fillEmail("wrong@example.com");
+    await loginPage.fillPassword("wrong-password");
     await loginPage.submit();
-    await loginPage.expectErrorVisible('Invalid email or password');
+    await loginPage.expectErrorVisible("Invalid email or password");
   });
 });
 ```
@@ -171,15 +171,15 @@ storage state to inject a pre-authenticated session once:
 
 ```ts
 // apps/webapp/e2e/auth.setup.ts — runs once before authenticated tests
-import { test as setup } from '@playwright/test';
+import { test as setup } from "@playwright/test";
 
-setup('authenticate', async ({ page }) => {
-  await page.goto('/login');
-  await page.getByTestId('login-email').fill(process.env.E2E_USER_EMAIL!);
-  await page.getByTestId('login-password').fill(process.env.E2E_USER_PASSWORD!);
-  await page.getByTestId('login-submit').click();
-  await page.waitForURL('/dashboard');
-  await page.context().storageState({ path: 'e2e/.auth/user.json' });
+setup("authenticate", async ({ page }) => {
+  await page.goto("/login");
+  await page.getByTestId("login-email").fill(process.env.E2E_USER_EMAIL!);
+  await page.getByTestId("login-password").fill(process.env.E2E_USER_PASSWORD!);
+  await page.getByTestId("login-submit").click();
+  await page.waitForURL("/dashboard");
+  await page.context().storageState({ path: "e2e/.auth/user.json" });
 });
 ```
 
@@ -195,6 +195,7 @@ setup('authenticate', async ({ page }) => {
 Add `e2e/.auth/` to `.gitignore` — these files contain session tokens.
 
 Credentials must come from environment variables. Required env vars:
+
 - `E2E_USER_EMAIL` — test account email
 - `E2E_USER_PASSWORD` — test account password
 

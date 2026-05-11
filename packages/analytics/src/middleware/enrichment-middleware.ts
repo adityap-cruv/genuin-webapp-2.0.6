@@ -3,8 +3,8 @@
  * Automatically enriches events with computed fields
  */
 
-import type { Middleware } from '../types/middleware'
-import { BrowserDetector, DeviceDetector, URLParser, SessionManager, DeviceIdManager } from '../utils'
+import type { Middleware } from "../types/middleware";
+import { BrowserDetector, DeviceDetector, URLParser, SessionManager, DeviceIdManager } from "../utils";
 
 /**
  * Enrichment options
@@ -14,31 +14,31 @@ export interface EnrichmentOptions {
    * Add session information
    * @default true
    */
-  addSession?: boolean
+  addSession?: boolean;
 
   /**
    * Add device ID
    * @default true
    */
-  addDeviceId?: boolean
+  addDeviceId?: boolean;
 
   /**
    * Add page context
    * @default true
    */
-  addPageContext?: boolean
+  addPageContext?: boolean;
 
   /**
    * Add device context
    * @default true
    */
-  addDeviceContext?: boolean
+  addDeviceContext?: boolean;
 
   /**
    * Use iframe-aware device ID
    * @default false
    */
-  iframeAware?: boolean
+  iframeAware?: boolean;
 }
 
 /**
@@ -51,49 +51,47 @@ export function createEnrichmentMiddleware(options: EnrichmentOptions = {}): Mid
     addPageContext = true,
     addDeviceContext = true,
     iframeAware = false,
-  } = options
+  } = options;
 
   return async (event, next, _context) => {
     // Add session information
     if (addSession) {
-      const session = SessionManager.getSession()
-      event.context = event.context || {}
+      const session = SessionManager.getSession();
+      event.context = event.context || {};
       event.context.session = {
         sessionId: session.sessionId,
         startTime: session.startTime,
         lastActivityTime: session.lastActivityTime,
         isNewSession: SessionManager.isNewSession(),
-      }
+      };
     }
 
     // Add device ID
     if (addDeviceId) {
-      const deviceId = iframeAware
-        ? DeviceIdManager.getDeviceIdIframeAware()
-        : DeviceIdManager.getDeviceId()
+      const deviceId = iframeAware ? DeviceIdManager.getDeviceIdIframeAware() : DeviceIdManager.getDeviceId();
 
-      event.payload.device_id = event.payload.device_id || deviceId
+      event.payload.device_id = event.payload.device_id || deviceId;
     }
 
     // Add page context
     if (addPageContext) {
-      event.context = event.context || {}
+      event.context = event.context || {};
       event.context.page = {
         url: URLParser.getCurrentURL(),
         path: URLParser.getPath(),
         title: URLParser.getTitle(),
         referrer: URLParser.getReferrer(),
         queryParams: URLParser.getQueryParams(),
-      }
+      };
     }
 
     // Add device context
     if (addDeviceContext) {
-      const deviceInfo = DeviceDetector.detect()
-      const osInfo = DeviceDetector.getOS()
-      const browserInfo = BrowserDetector.detect()
+      const deviceInfo = DeviceDetector.detect();
+      const osInfo = DeviceDetector.getOS();
+      const browserInfo = BrowserDetector.detect();
 
-      event.context = event.context || {}
+      event.context = event.context || {};
       event.context.device = {
         type: deviceInfo.type,
         model: deviceInfo.model,
@@ -105,15 +103,15 @@ export function createEnrichmentMiddleware(options: EnrichmentOptions = {}): Mid
           name: osInfo.name,
           version: osInfo.version,
         },
-      }
+      };
     }
 
     // Continue to next middleware
-    await next()
-  }
+    await next();
+  };
 }
 
 /**
  * Default enrichment middleware with all options enabled
  */
-export const enrichmentMiddleware = createEnrichmentMiddleware()
+export const enrichmentMiddleware = createEnrichmentMiddleware();

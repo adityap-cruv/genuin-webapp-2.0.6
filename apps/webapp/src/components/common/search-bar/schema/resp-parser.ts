@@ -1,4 +1,4 @@
-import { type PeopleType, type CommunityType, type VideoType } from '../views/tabs/index'
+import { type PeopleType, type CommunityType, type VideoType } from "../views/tabs/index";
 
 import {
   type PeopleResType,
@@ -6,7 +6,7 @@ import {
   type VideosResType,
   type LoopsResType,
   type RankingResType,
-} from './top-resp'
+} from "./top-resp";
 
 export function parseCommunities(communities: CommunitiesResType) {
   return communities?.map<CommunityType>((item) => ({
@@ -32,11 +32,11 @@ export function parseCommunities(communities: CommunitiesResType) {
           brand_slug: item.brand.brand_slug,
         }
       : null,
-  }))
+  }));
 }
 
 export function parseLoops(loops: LoopsResType): LoopsResType {
-  return loops
+  return loops;
 }
 
 export function parsePeople(people: PeopleResType) {
@@ -55,8 +55,8 @@ export function parsePeople(people: PeopleResType) {
             brand_user_logo: item.brand.brand_user_logo,
           }
         : null,
-    }
-  })
+    };
+  });
 }
 
 export function parseVideos(videos: VideosResType) {
@@ -65,14 +65,14 @@ export function parseVideos(videos: VideosResType) {
       id: item.message_id,
       slug: item.slug,
       owner: { isAvatar: item.owner.is_avatar, profileImage: item.owner.profile_image, userName: item.owner.username },
-       
-      thumbnail: (item.thumbnail_url_l ? item.thumbnail_url_l : item.thumbnail_url) || '',
+
+      thumbnail: (item.thumbnail_url_l ? item.thumbnail_url_l : item.thumbnail_url) || "",
       // TODO: What should be description
-      description: '',
-    }
-  })
+      description: "",
+    };
+  });
 }
 
 export function parseRankings(rankings: RankingResType) {
-  return rankings.filter((value, index, arr) => value !== 'videos')
+  return rankings.filter((value, index, arr) => value !== "videos");
 }

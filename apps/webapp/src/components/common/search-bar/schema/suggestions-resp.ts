@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from "zod";
 
 // Create a Zod schema for the loop object
 const loopSchema = z.object({
@@ -23,14 +23,14 @@ const loopSchema = z.object({
     .nullish(),
   share_url: z.string(),
   slug: z.string().nullish(),
-})
+});
 
 const BrandUserSchema = z
   .object({
     brand_id: z.number(),
     brand_slug: z.string(),
   })
-  .nullish()
+  .nullish();
 
 // Create a Zod schema for the user object
 const userSchema = z.object({
@@ -44,7 +44,7 @@ const userSchema = z.object({
   profile_image_m: z.string().nullish(),
   profile_image_l: z.string().nullish(),
   brand: BrandUserSchema.optional(),
-})
+});
 
 const BrandSchema = z
   .object({
@@ -58,7 +58,7 @@ const BrandSchema = z
     brand_system_user_id: z.string(),
     brand_slug: z.string(),
   })
-  .nullish()
+  .nullish();
 
 // Create a Zod schema for the community object
 const communitySchema = z.object({
@@ -75,31 +75,30 @@ const communitySchema = z.object({
   dp_m: z.string().nullish(),
   dp_l: z.string().nullish(),
   type: z.number().nullish(),
-})
+});
 
 // Create a Zod schema for each element in the array
 const SuggestionsResSchema = z.array(
   z.object({
     type: z.number().transform((val) => {
-      if (val === 1) return 'video'
-      if (val === 2) return 'user'
-      if (val === 3) return 'community'
-      if (val === 4) return 'loop'
+      if (val === 1) return "video";
+      if (val === 2) return "user";
+      if (val === 3) return "community";
+      if (val === 4) return "loop";
     }),
     loop: loopSchema.nullish(),
     community: communitySchema.nullish(),
     user: userSchema.nullish(),
     match_score: z.number(),
   })
-)
+);
 
 export function validateSuggestionsResp(data: any) {
   try {
-    return SuggestionsResSchema.parse(data)
+    return SuggestionsResSchema.parse(data);
   } catch (e) {
-     
-    console.log('error::', e)
-    throw new Error('Something went wrong suggestions validation.')
+    console.log("error::", e);
+    throw new Error("Something went wrong suggestions validation.");
   }
 }
 
@@ -107,11 +106,11 @@ const RecentsRespSchema = z.array(
   z.object({
     id: z.string(),
     type: z.number().transform((item) => {
-      if (item === 1) return 'text'
-      if (item === 2) return 'user'
-      if (item === 3) return 'community'
-      if (item === 4) return 'loop'
-      if (item === 5) return 'video'
+      if (item === 1) return "text";
+      if (item === 2) return "user";
+      if (item === 3) return "community";
+      if (item === 4) return "loop";
+      if (item === 5) return "video";
     }),
     brand_id: z.number().nullish(),
     text: z.string().nullish(),
@@ -120,14 +119,13 @@ const RecentsRespSchema = z.array(
     community: communitySchema.nullish(),
     user: userSchema.nullish(),
   })
-)
+);
 
 export function validateRecentsResp(data: any) {
   try {
-    return RecentsRespSchema.parse(data)
+    return RecentsRespSchema.parse(data);
   } catch (e) {
-     
-    console.log('error in validation::', e)
-    throw new Error('Something went wrong...')
+    console.log("error in validation::", e);
+    throw new Error("Something went wrong...");
   }
 }

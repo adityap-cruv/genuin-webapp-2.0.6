@@ -1,24 +1,24 @@
-import { cva, type VariantProps } from 'class-variance-authority'
-import { type ComponentProps } from 'react'
+import { cva, type VariantProps } from "class-variance-authority";
+import { type ComponentProps } from "react";
 
-import { cn } from '@/lib/utils'
+import { cn } from "@/lib/utils";
 
 // Define the muteVariant function using cva to handle different styles based on props
-const muteVariant = cva('', {
+const muteVariant = cva("", {
   variants: {
     variant: {
-      dark: 'fill-monochrome-black', // Light variant style
-      transparent: 'fill-monochrome-white', // Transparent variant style
-      light: 'fill-monochrome-white', // Dark variant style
+      dark: "fill-monochrome-black", // Light variant style
+      transparent: "fill-monochrome-white", // Transparent variant style
+      light: "fill-monochrome-white", // Dark variant style
     },
   },
-})
+});
 
 // Define the Props type for the MuteIcon component
-type Props = ComponentProps<'svg'> &
-  VariantProps<typeof muteVariant> & { variant?: 'light' | 'transparent' | 'dark' | null }
+type Props = ComponentProps<"svg"> &
+  VariantProps<typeof muteVariant> & { variant?: "light" | "transparent" | "dark" | null };
 
-export function MuteIcon({ variant = 'dark', className, ...restProps }: Props) {
+export function MuteIcon({ variant = "dark", className, ...restProps }: Props) {
   return (
     <svg
       width="24"
@@ -37,5 +37,5 @@ export function MuteIcon({ variant = 'dark', className, ...restProps }: Props) {
         className={cn(muteVariant({ variant }), className)}
       />
     </svg>
-  )
+  );
 }

@@ -1,12 +1,6 @@
 {
   "extends": "@genuin/typescript-config/base.json",
   "compilerOptions": {},
-  "exclude": [
-    "apps/webapp",
-    "apps/legacy-webapp",
-    "packages",
-    "scripts",
-    "node_modules"
-  ],
+  "exclude": ["apps/webapp", "apps/legacy-webapp", "packages", "scripts", "node_modules"],
   "files": []
 }

@@ -4,7 +4,6 @@ import { useOctoAnalytics } from '@/context/analytics';
 import { useAgentsContext } from '@/context/app/context';
 import type { CarousalMetadata } from '@/types';
 
-
 import { Skeleton } from '../ui/skeleton';
 
 const generateRandomId = () => Math.floor(Math.random() * 1000) + 1;
@@ -25,10 +24,7 @@ declare global {
             init: (config: Record<string, unknown>) => void;
             destroy: () => void;
             update?: (config: Record<string, unknown>) => Promise<void> | void;
-            onInternal?: (
-                eventName: string,
-                listener: GenuinEventListener
-            ) => (() => void) | void;
+            onInternal?: (eventName: string, listener: GenuinEventListener) => (() => void) | void;
             offInternal?: (eventName: string, listener: GenuinEventListener) => void;
         };
     }
@@ -55,7 +51,7 @@ const GenuinEmbed = ({
         parentOctoPanelId,
     } = useAgentsContext();
     const { analytics } = useOctoAnalytics();
-    const currentSession = sessions.find((s) => s.id === currentSessionId);
+    const currentSession = sessions.find(s => s.id === currentSessionId);
 
     const containerRef = useRef<HTMLDivElement>(null);
     const wrapperRef = useRef<HTMLDivElement>(null);
@@ -141,13 +137,7 @@ const GenuinEmbed = ({
         // NO CLEANUP - Let React's normal unmounting handle it
         // The web-sdk's own cleanup in react-utils.tsx will handle React roots properly
         // Prevents cascade destroy when dependencies change during re-renders
-    }, [
-        carousalMetadata,
-        isSdkLoaded,
-        parentWebSdkInstanceId,
-        view,
-        analytics,
-    ]);
+    }, [carousalMetadata, isSdkLoaded, parentWebSdkInstanceId, view, analytics]);
 
     useEffect(() => {
         if (!isInitializedRef.current) return;
@@ -164,7 +154,7 @@ const GenuinEmbed = ({
 
         const allowedVideoIds = new Set(metadataVideoIds);
 
-        const handleVideoClicked: GenuinEventListener = (event) => {
+        const handleVideoClicked: GenuinEventListener = event => {
             const videoId: string | undefined = event?.payload?.videoId;
             if (!videoId || !allowedVideoIds.has(videoId)) {
                 return;
@@ -194,10 +184,7 @@ const GenuinEmbed = ({
             });
 
             const domOctoId = containerRef.current?.getAttribute('data-octo-panel-id') ?? undefined;
-            const sourceInstanceId =
-                parentOctoPanelId ??
-                domOctoId ??
-                (childInstanceIdRef.current ?? undefined);
+            const sourceInstanceId = parentOctoPanelId ?? domOctoId ?? childInstanceIdRef.current ?? undefined;
 
             try {
                 const maybePromise = window.genuin.update?.({
@@ -268,20 +255,20 @@ const GenuinEmbed = ({
         !currentSession?.thinking
     ) {
         return (
-            <div className="gai:py-3" ref={containerRef}>
+            <div className='gai:py-3' ref={containerRef}>
                 <div
-                    className="gai:mb-2 gai:flex gai:flex-col gai:flex-wrap gai:md:flex-row gai:md:justify-between"
+                    className='gai:mb-2 gai:flex gai:flex-col gai:flex-wrap gai:md:flex-row gai:md:justify-between'
                     style={{ width: '100%' }}
                 >
-                    <div className="gai:flex gai:flex-col gai:gap-2">
-                        <Skeleton className="gai:h-[24px] gai:w-[120px]" />
-                        <Skeleton className="gai:hidden gai:h-[18px] gai:w-[150px] gai:md:block" />
+                    <div className='gai:flex gai:flex-col gai:gap-2'>
+                        <Skeleton className='gai:h-[24px] gai:w-[120px]' />
+                        <Skeleton className='gai:hidden gai:h-[18px] gai:w-[150px] gai:md:block' />
                     </div>
-                    <Skeleton className="gai:h-[36px] gai:w-[80px] gai:md:self-end" />
+                    <Skeleton className='gai:h-[36px] gai:w-[80px] gai:md:self-end' />
                 </div>
-                <div className="gai:flex gai:gap-2 gai:overflow-auto" style={{ width: '100%' }}>
+                <div className='gai:flex gai:gap-2 gai:overflow-auto' style={{ width: '100%' }}>
                     {Array.from({ length: window.innerWidth < 768 ? 4 : 7 }).map((_, index) => (
-                        <Skeleton key={index} className="gai:h-[150px] gai:w-full gai:md:h-[250px]" />
+                        <Skeleton key={index} className='gai:h-[150px] gai:w-full gai:md:h-[250px]' />
                     ))}
                 </div>
             </div>
@@ -302,12 +289,12 @@ const GenuinEmbed = ({
               : {};
 
     return (
-        <div className="gai:flex gai:w-full gai:flex-col gai:pt-3" ref={wrapperRef}>
+        <div className='gai:flex gai:w-full gai:flex-col gai:pt-3' ref={wrapperRef}>
             <div
                 ref={containerRef}
                 id={sdkId}
                 {...(view === 'web-sdk' && { 'data-web-sdk-nested': 'true' })}
-                className="gen-sdk-class gai:h-[300px] gai:w-full gai:md:h-[250px]"
+                className='gen-sdk-class gai:h-[300px] gai:w-full gai:md:h-[250px]'
                 {...dataAttributes}
                 style={{ width: `${containerWidth}px` }}
             />

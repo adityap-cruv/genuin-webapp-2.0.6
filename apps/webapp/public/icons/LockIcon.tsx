@@ -1,6 +1,6 @@
-import { type ComponentProps } from 'react'
+import { type ComponentProps } from "react";
 
-type Props = ComponentProps<'svg'>
+type Props = ComponentProps<"svg">;
 
 export function LockIcon({ ...props }: Props) {
   return (
@@ -35,5 +35,5 @@ export function LockIcon({ ...props }: Props) {
         />
       </g>
     </svg>
-  )
+  );
 }

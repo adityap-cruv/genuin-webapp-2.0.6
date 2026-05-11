@@ -17,12 +17,9 @@ const buttonVariants = cva(
       theme: {
         primary:
           "gencl:bg-primary gencl:text-white! gencl:shadow-xs gencl:hover:bg-primary-600 gencl:[&_svg]:stroke-white",
-        secondary:
-          "gencl:bg-secondary-50 gencl:text-black! gencl:hover:bg-secondary-100",
-        secondaryDark:
-          "gencl:bg-secondary-800 gencl:text-white gencl:hover:bg-secondary-600",
-        outline:
-          "gencl:border gencl:border-secondary-150 gencl:hover:bg-secondary-50 gencl:bg-white",
+        secondary: "gencl:bg-secondary-50 gencl:text-black! gencl:hover:bg-secondary-100",
+        secondaryDark: "gencl:bg-secondary-800 gencl:text-white gencl:hover:bg-secondary-600",
+        outline: "gencl:border gencl:border-secondary-150 gencl:hover:bg-secondary-50 gencl:bg-white",
         text: "gencl:text-primary",
         custom: "",
         navigation:
@@ -34,7 +31,7 @@ const buttonVariants = cva(
         xs: "gencl:size-6",
         sm: "gencl:h-9 gencl:rounded-lg gencl:gap-1.5 gencl:text-body-1-semi-bold",
         md: "gencl:h-10",
-        xl : "gencl:h-11",
+        xl: "gencl:h-11",
         lg: "gencl:h-12",
       },
       shape: {
@@ -84,8 +81,7 @@ const buttonVariants = cva(
       {
         theme: "overlay",
         size: "sm",
-        class:
-          "gencl:size-8 gencl:rounded-full gencl:p-0.5! gencl:bg-black/40 gencl:backdrop-blur-[1px]",
+        class: "gencl:size-8 gencl:rounded-full gencl:p-0.5! gencl:bg-black/40 gencl:backdrop-blur-[1px]",
       },
       {
         theme: "overlay",
@@ -107,23 +103,11 @@ export type ButtonPropsType = React.ComponentProps<"button"> &
     asChild?: boolean;
   };
 
-function Button({
-  className,
-  theme,
-  size,
-  shape,
-  variant,
-  asChild = false,
-  ...props
-}: ButtonPropsType) {
+function Button({ className, theme, size, shape, variant, asChild = false, ...props }: ButtonPropsType) {
   const Comp = asChild ? Slot : "button";
 
   return (
-    <Comp
-      data-slot="button"
-      className={cn(buttonVariants({ theme, size, variant, shape }), className)}
-      {...props}
-    />
+    <Comp data-slot="button" className={cn(buttonVariants({ theme, size, variant, shape }), className)} {...props} />
   );
 }
 

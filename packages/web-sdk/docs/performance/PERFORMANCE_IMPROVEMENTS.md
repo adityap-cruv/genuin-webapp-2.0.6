@@ -9,21 +9,25 @@ This document tracks performance improvements achieved through lazy loading and 
 ## Optimization Changes Implemented
 
 ### Phase 1: Metrics Infrastructure ✅
+
 - Created comprehensive metrics collection utility
 - Added performance markers throughout SDK lifecycle
 - Created baseline measurement and analysis scripts
 
 ### Phase 2: Lazy Load React Providers ✅
+
 - Converted all provider imports to dynamic imports
 - Providers now load only when embed is rendered
 - Deferred ~100-200KB of provider code
 
 ### Phase 3: Lazy Load UI Components ✅
+
 - UI components lazy loaded via dynamic imports
 - Created lightweight HTML/CSS skeletons for initial load
 - Deferred ~100-200KB of UI component code
 
 ### Phase 4: Chunk Size Optimization ✅
+
 - Optimized index.ts (lazy CSS, selective exports)
 - Split vendor-forms into 3 chunks (~200KB each)
 - Split vendor-animation into 3 chunks (~150-200KB each)
@@ -32,22 +36,26 @@ This document tracks performance improvements achieved through lazy loading and 
 - Set chunk size warning limit to 300KB
 
 ### Phase 5: Optimize Vendor Chunk Loading ✅
+
 - Analytics (RudderStack) lazy loaded via AnalyticsProvider
 - All vendor chunks now load only when providers are needed
 
 ### Phase 6: Core SDK Optimization ✅
-- Optimized index.ts exports (selective instead of export *)
+
+- Optimized index.ts exports (selective instead of export \*)
 - Lazy loaded CSS import
 - Reduced core bundle size
 
 ## Before/After Comparison
 
 ### Initial Bundle Size
+
 - **Before:** TBD (measure with baseline script)
 - **After:** TBD (measure after optimization)
 - **Target:** <150KB
 
 ### Chunk Sizes
+
 - **Index Chunk:**
   - Before: ~1.0MB uncompressed
   - After: TBD
@@ -59,6 +67,7 @@ This document tracks performance improvements achieved through lazy loading and 
   - Target: <300KB per chunk
 
 ### Loading Behavior
+
 - **Before:** All chunks loaded on `genuin.init()`
 - **After:** Only core SDK + loader on init, everything else lazy loaded
 - **Target:** <200KB total on init
@@ -66,16 +75,19 @@ This document tracks performance improvements achieved through lazy loading and 
 ## Measurement Instructions
 
 1. **Generate Baseline:**
+
    ```bash
    npm run measure:baseline
    ```
 
 2. **Analyze Chunks:**
+
    ```bash
    npm run analyze:chunks
    ```
 
 3. **Validate Chunk Sizes:**
+
    ```bash
    npm run validate:chunks
    ```
@@ -102,4 +114,3 @@ This document tracks performance improvements achieved through lazy loading and 
 3. Measure improvements
 4. Update this document with actual metrics
 5. Validate all features work correctly
-

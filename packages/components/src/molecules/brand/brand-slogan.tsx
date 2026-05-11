@@ -14,8 +14,7 @@ export function BrandSlogan({ ...props }: BrandSloganProps) {
   const { image, text, font } = brandDetails.slogan;
 
   // Check if we have valid content to display
-  const hasValidImage =
-    image && typeof image === "string" && image.trim() !== "";
+  const hasValidImage = image && typeof image === "string" && image.trim() !== "";
   const hasValidText = text && typeof text === "string" && text.trim() !== "";
   // If neither image nor text is valid, don't render anything
   if (!hasValidImage && !hasValidText) {
@@ -39,8 +38,7 @@ export function BrandSlogan({ ...props }: BrandSloganProps) {
           style={{
             fontWeight: font?.weight?.trim() || "",
             fontFamily: font?.style?.trim() || "inherit",
-          }}
-        >
+          }}>
           {text}
         </p>
       )}

@@ -68,7 +68,7 @@ const BrandIndustryType: React.FC<BrandIndustryTypeProps> = ({ jsonData }) => {
     // };
 
     // Helper function to safely get string value
-     
+
     const getStringValue = (value: any): string | undefined => {
         if (typeof value === 'string') {
             return value;

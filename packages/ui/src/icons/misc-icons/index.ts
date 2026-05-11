@@ -1,2 +1,2 @@
-export * from "./become-creator"
-export * from "./genuin-logo"
+export * from "./become-creator";
+export * from "./genuin-logo";

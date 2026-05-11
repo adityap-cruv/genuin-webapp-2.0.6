@@ -24,12 +24,7 @@ function findOpenPlayerJsRoot() {
       const entries = fs.readdirSync(pnpmDir);
       for (const e of entries) {
         if (e.startsWith("openplayerjs@")) {
-          const candidate = path.join(
-            pnpmDir,
-            e,
-            "node_modules",
-            "openplayerjs"
-          );
+          const candidate = path.join(pnpmDir, e, "node_modules", "openplayerjs");
           if (fs.existsSync(candidate)) return candidate;
         }
       }
@@ -79,9 +74,7 @@ function replaceFile(sourcePath, targetPath, fileName) {
 (function main() {
   const openPlayerRoot = findOpenPlayerJsRoot();
   if (!openPlayerRoot) {
-    console.warn(
-      "openplayerjs not found in node_modules; skipping postinstall patch."
-    );
+    console.warn("openplayerjs not found in node_modules; skipping postinstall patch.");
     return;
   }
 
@@ -89,13 +82,7 @@ function replaceFile(sourcePath, targetPath, fileName) {
 
   // Define target paths
   const targetPlayerJs = path.join(openPlayerRoot, "dist", "esm", "player.js");
-  const targetAdsJs = path.join(
-    openPlayerRoot,
-    "dist",
-    "esm",
-    "media",
-    "ads.js"
-  );
+  const targetAdsJs = path.join(openPlayerRoot, "dist", "esm", "media", "ads.js");
 
   let success = true;
 

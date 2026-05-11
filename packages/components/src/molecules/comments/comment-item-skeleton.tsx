@@ -12,7 +12,7 @@ export function CommentsItemSkeleton() {
       <div className="gencl:w-full gencl:flex gencl:flex-col gencl:justify-center gencl:gap-2">
         <Skeleton className="gencl:w-full gencl:h-3 gencl:rounded-md gencl:mt-1.5" />
         <Skeleton className="gencl:w-full gencl:h-3 gencl:rounded-md" />
-        <Skeleton className="gencl:w-4 gencl:h-5  gencl:rounded-md" />
+        <Skeleton className="gencl:w-4 gencl:h-5 gencl:rounded-md" />
       </div>
     </div>
   );

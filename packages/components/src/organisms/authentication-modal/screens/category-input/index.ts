@@ -1,1 +1,1 @@
-export * from "./category-input"
+export * from "./category-input";

@@ -13,8 +13,15 @@ const PresetPrompts = ({
     setIsSuggestionsOpen: (isSuggestionsOpen: boolean) => void;
     onClose?: () => void;
 }) => {
-    const { enteredInChatMode, showAllObjectives, textAreaRef, ipInfo, currentAgent, suggestedPrompts, isLoadingSuggestedPrompts } =
-        useAgentsContext();
+    const {
+        enteredInChatMode,
+        showAllObjectives,
+        textAreaRef,
+        ipInfo,
+        currentAgent,
+        suggestedPrompts,
+        isLoadingSuggestedPrompts,
+    } = useAgentsContext();
     const { track } = useRudderEvents();
     const { setInput } = useInputContext();
     const suggestionsRef = useRef<HTMLDivElement>(null);
@@ -53,7 +60,7 @@ const PresetPrompts = ({
         return (
             <div
                 ref={suggestionsRef}
-                className={`gai:absolute gai:z-21 gai:right-0 ${showAllObjectives ? 'gai:top-full gai:bottom-auto gai:mt-3' : 'gai:bottom-full gai:mb-3'} gai:left-0 ${enteredInChatMode ? 'gai:bg-utility-white' : 'gai:bg-primary-50'}`}
+                className={`gai:absolute gai:right-0 gai:z-21 ${showAllObjectives ? 'gai:top-full gai:bottom-auto gai:mt-3' : 'gai:bottom-full gai:mb-3'} gai:left-0 ${enteredInChatMode ? 'gai:bg-utility-white' : 'gai:bg-primary-50'}`}
             >
                 <PresetPromptsSkeleton />
             </div>
@@ -67,12 +74,12 @@ const PresetPrompts = ({
     return (
         <div
             ref={suggestionsRef}
-            className={`gai:absolute gai:z-21 gai:right-0 ${showAllObjectives ? 'gai:top-full gai:bottom-auto gai:mt-3' : 'gai:bottom-full gai:mb-3'} gai:left-0 ${enteredInChatMode ? 'gai:bg-utility-white' : 'gai:bg-primary-50'}`}
+            className={`gai:absolute gai:right-0 gai:z-21 ${showAllObjectives ? 'gai:top-full gai:bottom-auto gai:mt-3' : 'gai:bottom-full gai:mb-3'} gai:left-0 ${enteredInChatMode ? 'gai:bg-utility-white' : 'gai:bg-primary-50'}`}
         >
             {suggestedPrompts.map((prompt, index) => (
                 <div
                     key={index}
-                    className={`gai:cursor-pointer gai:border-b gai:border-b-secondary-gray-150 gai:px-4 gai:py-3 gai:font-body-1-med gai:text-secondary-gray-700 gai:last:border-b-0 gai:first:rounded-t-xl gai:last:rounded-b-xl ${enteredInChatMode ? 'gai:hover:bg-primary-50' : 'gai:hover:bg-primary-100'}`}
+                    className={`gai:cursor-pointer gai:border-b gai:border-b-secondary-gray-150 gai:px-4 gai:py-3 gai:font-body-1-med gai:text-secondary-gray-700 gai:first:rounded-t-xl gai:last:rounded-b-xl gai:last:border-b-0 ${enteredInChatMode ? 'gai:hover:bg-primary-50' : 'gai:hover:bg-primary-100'}`}
                     onClick={() => {
                         trackEvent(prompt);
                         setInput(prompt);

@@ -3,38 +3,30 @@ import { type ComponentProps } from "react";
 
 import { cn } from "@genuin/ui/lib/utils";
 
-const loaderVariant = cva(
-  "gencl:animate-spin gencl:rounded-full gencl:stroke-primary",
-  {
-    variants: {
-      size: {
-        xs: "gencl:h-4 gencl:w-4",
-        sm: "gencl:h-5 gencl:w-5",
-        md: "gencl:h-7 gencl:w-7",
-        lg: "gencl:h-9 gencl:w-9",
-        xl: "gencl:h-11 gencl:w-11",
-      },
-      strokeColor: {
-        primary: "gencl:stroke-primary",
-        white: "gencl:stroke-white",
-        black: "gencl:stroke-black",
-      },
+const loaderVariant = cva("gencl:animate-spin gencl:rounded-full gencl:stroke-primary", {
+  variants: {
+    size: {
+      xs: "gencl:h-4 gencl:w-4",
+      sm: "gencl:h-5 gencl:w-5",
+      md: "gencl:h-7 gencl:w-7",
+      lg: "gencl:h-9 gencl:w-9",
+      xl: "gencl:h-11 gencl:w-11",
     },
-    defaultVariants: {
-      size: "sm",
-      strokeColor: "primary",
+    strokeColor: {
+      primary: "gencl:stroke-primary",
+      white: "gencl:stroke-white",
+      black: "gencl:stroke-black",
     },
-  }
-);
+  },
+  defaultVariants: {
+    size: "sm",
+    strokeColor: "primary",
+  },
+});
 
 type Props = ComponentProps<"svg"> & VariantProps<typeof loaderVariant>;
 
-export function Loader({
-  size = "sm",
-  strokeColor,
-  className,
-  ...props
-}: Props) {
+export function Loader({ size = "sm", strokeColor, className, ...props }: Props) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -45,8 +37,7 @@ export function Loader({
       stroke="currentColor"
       strokeWidth="2"
       className={cn(loaderVariant({ size, strokeColor }), className)}
-      {...props}
-    >
+      {...props}>
       <path
         strokeLinecap="round"
         strokeLinejoin="round"

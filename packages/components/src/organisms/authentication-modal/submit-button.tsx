@@ -18,18 +18,8 @@ export function SubmitButton({
 }: SubmitButtonProps) {
   return (
     <div className="gencl:space-y-1">
-      <Button
-        theme="primary"
-        className="gencl:w-full"
-        type={type}
-        disabled={isLoading || disabled}
-        {...rest}
-      >
-        {isLoading ? (
-          <Loader size="sm" strokeColor="white" />
-        ) : (
-          <span>{title}</span>
-        )}
+      <Button theme="primary" className="gencl:w-full" type={type} disabled={isLoading || disabled} {...rest}>
+        {isLoading ? <Loader size="sm" strokeColor="white" /> : <span>{title}</span>}
       </Button>
       {error && <FormMessage error>{error}</FormMessage>}
     </div>

@@ -7,10 +7,15 @@ import AgentsDropdownSkeleton from './skeleton';
 const AgentsDropdown = () => {
     const { agents, setCurrentAgent, currentAgent, enteredInChatMode, isMaya } = useAgentsContext();
 
-
     // Find the current agent object
-    if(isMaya) {
-        agents.push({ type: 'maya' as AgentType, id: 'maya', name: 'Maya', description: 'Maya is a chatbot that can help you with your questions.', image: 'https://ds-dataset-rvc.s3.us-west-2.amazonaws.com/agents/sub_agents/maya.png' });
+    if (isMaya) {
+        agents.push({
+            type: 'maya' as AgentType,
+            id: 'maya',
+            name: 'Maya',
+            description: 'Maya is a chatbot that can help you with your questions.',
+            image: 'https://ds-dataset-rvc.s3.us-west-2.amazonaws.com/agents/sub_agents/maya.png',
+        });
     }
     const currentAgentObj = agents.find(agent => agent.id === currentAgent);
 

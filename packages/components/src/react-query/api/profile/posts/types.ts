@@ -1,7 +1,4 @@
-import type {
-  InfiniteData,
-  UseInfiniteQueryResult,
-} from "@genuin/components/react-query";
+import type { InfiniteData, UseInfiniteQueryResult } from "@genuin/components/react-query";
 
 import type { CommunityType, LoopType } from "./schema";
 
@@ -66,10 +63,7 @@ export type FetchVideosReturnType = {
 /**
  * Will modify the type of UseInfiniteQueryResult to exclude the data field.
  */
-export type InfiniteQueryResultForTreeStructureType<T> = Omit<
-  UseInfiniteQueryResult<InfiniteData<T>>,
-  "data"
->;
+export type InfiniteQueryResultForTreeStructureType<T> = Omit<UseInfiniteQueryResult<InfiniteData<T>>, "data">;
 
 /**
  * Pass the page param type in input.

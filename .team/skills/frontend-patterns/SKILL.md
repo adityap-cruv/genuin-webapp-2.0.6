@@ -95,7 +95,7 @@ export function useToggle(initialValue = false): [boolean, () => void] {
   const [value, setValue] = useState(initialValue);
 
   const toggle = useCallback(() => {
-    setValue(v => !v);
+    setValue((v) => !v);
   }, []);
 
   return [value, toggle];
@@ -120,11 +120,11 @@ export function useDebounce<T>(value: T, delay: number): T {
 }
 
 // Usage with TanStack Query
-const [searchQuery, setSearchQuery] = useState('');
+const [searchQuery, setSearchQuery] = useState("");
 const debouncedQuery = useDebounce(searchQuery, 500);
 
 const { data } = useQuery({
-  queryKey: ['search', debouncedQuery],
+  queryKey: ["search", debouncedQuery],
   queryFn: () => searchApi(debouncedQuery),
   enabled: debouncedQuery.length > 0,
   staleTime: 30_000,
@@ -191,16 +191,16 @@ export function useFeature() {
 ```typescript
 // Query with staleTime
 const { data, isPending, error } = useQuery({
-  queryKey: ['items', filters],
+  queryKey: ["items", filters],
   queryFn: () => fetchItems(filters),
-  staleTime: 60_000,  // 1 minute
+  staleTime: 60_000, // 1 minute
 });
 
 // Mutation
 const { mutate, isPending: isCreating } = useMutation({
   mutationFn: createItem,
   onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['items'] });
+    queryClient.invalidateQueries({ queryKey: ["items"] });
   },
 });
 ```
@@ -254,10 +254,10 @@ export function FilterBar({ onFilterChange }: FilterBarProps) {
 
 ```typescript
 // app/items/actions.ts
-'use server';
+"use server";
 
-import { z } from 'zod';
-import { revalidatePath } from 'next/cache';
+import { z } from "zod";
+import { revalidatePath } from "next/cache";
 
 const CreateItemSchema = z.object({
   name: z.string().min(1).max(200),
@@ -266,8 +266,8 @@ const CreateItemSchema = z.object({
 
 export async function createItemAction(formData: FormData) {
   const result = CreateItemSchema.safeParse({
-    name: formData.get('name'),
-    description: formData.get('description'),
+    name: formData.get("name"),
+    description: formData.get("description"),
   });
 
   if (!result.success) {
@@ -275,7 +275,7 @@ export async function createItemAction(formData: FormData) {
   }
 
   const item = await createItem(result.data);
-  revalidatePath('/items');
+  revalidatePath("/items");
   return { data: item, error: null };
 }
 ```

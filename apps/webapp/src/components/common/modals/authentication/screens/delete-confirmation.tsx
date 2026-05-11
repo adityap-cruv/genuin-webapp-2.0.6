@@ -1,47 +1,44 @@
-'use client'
-import { useRouter } from 'next/navigation'
-import { signOut } from 'next-auth/react'
-import { useState } from 'react'
+"use client";
+import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
+import { useState } from "react";
 
-import { Button } from '@components/ui/button'
-import { Loader } from '@components/ui/loader'
-import { PATH_NAME } from '@lib/utils/constants/path'
+import { Button } from "@components/ui/button";
+import { Loader } from "@components/ui/loader";
+import { PATH_NAME } from "@lib/utils/constants/path";
 
+import { AuthenticationModal } from "..";
+import { deleteUserAccount } from "../api/auth";
+import { ModalShell } from "../modal-shell";
 
-
-import { AuthenticationModal } from '..'
-import { deleteUserAccount } from '../api/auth'
-import { ModalShell } from '../modal-shell'
-
-import { type ScreenProps } from '.'
-
+import { type ScreenProps } from ".";
 
 export function DeleteConfirmation({ onNext }: ScreenProps) {
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState('')
-  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
 
   async function onDelete() {
-    setIsLoading(true)
+    setIsLoading(true);
     await deleteUserAccount()
       .then(async (res) => {
         if (res?.code === 200) {
-          await signOut()
-          onNext()
+          await signOut();
+          onNext();
         } else if (res?.code === 5250) {
-          setError('The Account deletion is not permitted for this user')
+          setError("The Account deletion is not permitted for this user");
         } else {
-          setError('Something went wrong please try again after sometime!')
+          setError("Something went wrong please try again after sometime!");
         }
       })
       .finally(() => {
-        setIsLoading(false)
-      })
+        setIsLoading(false);
+      });
   }
   return (
     <ModalShell>
-      <p className="text-center text-heading-3">Delete account?</p>
-      <p className="text-center text-title-3-med text-tertiary">
+      <p className="text-heading-3 text-center">Delete account?</p>
+      <p className="text-title-3-med text-tertiary text-center">
         Are you sure you want to delete your Genuin account? Your this action can't be reversed.
       </p>
       <div className="flex w-full gap-4">
@@ -50,12 +47,12 @@ export function DeleteConfirmation({ onNext }: ScreenProps) {
           variant="outline"
           className="w-full"
           onClick={() => {
-            router.replace(PATH_NAME.home())
-            AuthenticationModal.close()
+            router.replace(PATH_NAME.home());
+            AuthenticationModal.close();
           }}>
           Cancel
         </Button>
-        <Button variant="default" className="w-full bg-primary hover:bg-primary-700" onClick={onDelete}>
+        <Button variant="default" className="bg-primary hover:bg-primary-700 w-full" onClick={onDelete}>
           {isLoading ? (
             <Loader size="sm" className="fill-monochrome-white stroke-monochrome-white" />
           ) : (
@@ -64,10 +61,10 @@ export function DeleteConfirmation({ onNext }: ScreenProps) {
         </Button>
       </div>
       {error && (
-        <p className="text-text-new-para-2-mobile flex items-center justify-center text-center text-supplementary-red">
+        <p className="text-text-new-para-2-mobile text-supplementary-red flex items-center justify-center text-center">
           {error}
         </p>
       )}
     </ModalShell>
-  )
+  );
 }

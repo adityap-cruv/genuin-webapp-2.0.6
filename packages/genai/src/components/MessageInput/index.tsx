@@ -32,14 +32,8 @@ const MessageInput = () => {
     const [showPresetPrompts, setShowPresetPrompts] = useState(true);
     const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
-    const {
-        uploadedFiles,
-        isUploadingFiles,
-        fileInputRef,
-        triggerFileUpload,
-        handleFileSelect,
-        handleRemoveFile,
-    } = useFileUpload();
+    const { uploadedFiles, isUploadingFiles, fileInputRef, triggerFileUpload, handleFileSelect, handleRemoveFile } =
+        useFileUpload();
 
     useEffect(() => {
         setTextAreaRef(textareaRef.current);
@@ -78,7 +72,7 @@ const MessageInput = () => {
                 onMessageQueued: () => {
                     // Clear input only after message is successfully queued (after session creation if needed)
                     setInput('');
-                }
+                },
             });
             // Clear uploaded files after sending
             // handleSendMessage(currentSessionId, input, "brand_asset_agent");

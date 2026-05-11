@@ -1,12 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-  InputOTPSeparator,
-} from "./input-otp";
+import { InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator } from "./input-otp";
 
 const meta: Meta<typeof InputOTP> = {
   title: "Components/InputOTP",
@@ -74,22 +69,10 @@ export const CustomStyling: Story = {
       <div className="space-y-2">
         <InputOTP maxLength={4} value={value} onChange={setValue}>
           <InputOTPGroup>
-            <InputOTPSlot
-              index={0}
-              className="rounded-md border-2 border-blue-500 w-12 h-12"
-            />
-            <InputOTPSlot
-              index={1}
-              className="rounded-md border-2 border-blue-500 w-12 h-12"
-            />
-            <InputOTPSlot
-              index={2}
-              className="rounded-md border-2 border-blue-500 w-12 h-12"
-            />
-            <InputOTPSlot
-              index={3}
-              className="rounded-md border-2 border-blue-500 w-12 h-12"
-            />
+            <InputOTPSlot index={0} className="h-12 w-12 rounded-md border-2 border-blue-500" />
+            <InputOTPSlot index={1} className="h-12 w-12 rounded-md border-2 border-blue-500" />
+            <InputOTPSlot index={2} className="h-12 w-12 rounded-md border-2 border-blue-500" />
+            <InputOTPSlot index={3} className="h-12 w-12 rounded-md border-2 border-blue-500" />
           </InputOTPGroup>
         </InputOTP>
         <div className="text-sm text-gray-500">Value: {value || "Empty"}</div>

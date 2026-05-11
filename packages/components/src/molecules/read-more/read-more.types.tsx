@@ -1,9 +1,6 @@
 import type { ComponentProps } from "react";
 
-export type ReadMoreTextType =
-  | string
-  | null
-  | Array<Record<string, unknown> | string | null>;
+export type ReadMoreTextType = string | null | Array<Record<string, unknown> | string | null>;
 
 export type ReadMoreProps = {
   /**

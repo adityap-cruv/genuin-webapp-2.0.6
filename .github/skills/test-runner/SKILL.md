@@ -13,11 +13,11 @@ Use this skill when asked to run, fix, or write tests in this project.
 
 This monorepo has two test runners depending on where you are:
 
-| Location          | Runner(s)       | Command              |
-| ----------------- | --------------- | -------------------- |
-| `packages/ui`     | Jest + Vitest   | `pnpm test`          |
-| All other packages | Vitest only    | `pnpm test`          |
-| `apps/webapp`     | No tests yet    | —                    |
+| Location           | Runner(s)     | Command     |
+| ------------------ | ------------- | ----------- |
+| `packages/ui`      | Jest + Vitest | `pnpm test` |
+| All other packages | Vitest only   | `pnpm test` |
+| `apps/webapp`      | No tests yet  | —           |
 
 **`packages/ui` runs both Jest and Vitest** (`jest && vitest run`) because Jest is needed
 for component snapshot tests alongside Vitest for unit tests. Do not remove Jest from
@@ -40,6 +40,7 @@ pnpm vitest run src/feature/feature.test.ts
 ```
 
 Run from the repo root to run all packages at once:
+
 ```bash
 pnpm test          # runs test in all packages via Turborepo
 pnpm turbo clean   # clear cache if tests behave unexpectedly
@@ -60,16 +61,16 @@ pnpm turbo clean   # clear cache if tests behave unexpectedly
 ## Writing conventions
 
 ```ts
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi } from "vitest";
 
-describe('featureName', () => {
-  it('does the expected thing', () => {
+describe("featureName", () => {
+  it("does the expected thing", () => {
     // arrange
     // act
     // assert
   });
 
-  it('handles the error case', () => {
+  it("handles the error case", () => {
     // ...
   });
 });
@@ -100,6 +101,7 @@ describe('Button', () => {
 ```
 
 Query priority (same logic as Playwright):
+
 1. `getByRole` — preferred
 2. `getByLabelText` — for inputs
 3. `getByTestId` — when role/label isn't enough

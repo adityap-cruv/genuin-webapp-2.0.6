@@ -1,19 +1,18 @@
-import Link from 'next/link'
+import Link from "next/link";
 
-import { CustomImage } from '@/components/custom/custom-image'
-import { CustomAvatar } from '@components/custom/custom-avatar'
-import icPlay from '@icons/player-controls/icPlay.svg'
-import { PATH_NAME } from '@lib/utils/constants/path'
+import { CustomImage } from "@/components/custom/custom-image";
+import { CustomAvatar } from "@components/custom/custom-avatar";
+import icPlay from "@icons/player-controls/icPlay.svg";
+import { PATH_NAME } from "@lib/utils/constants/path";
 
-import { useSearchBarStore } from '../../store'
+import { useSearchBarStore } from "../../store";
 
-import { NoResults } from './no-results'
+import { NoResults } from "./no-results";
 
-
-import { type VideoType } from '.'
+import { type VideoType } from ".";
 
 export function Posts({ videos }: { videos?: VideoType[] }) {
-  const { close } = useSearchBarStore()
+  const { close } = useSearchBarStore();
   if (videos)
     return (
       <div className="mb-2 grid grid-cols-2 gap-4 px-2">
@@ -24,8 +23,8 @@ export function Posts({ videos }: { videos?: VideoType[] }) {
             onClick={close}
             className="group/video aspect-reel relative flex w-full items-center justify-center duration-300 hover:cursor-pointer">
             <CustomImage
-              alt={item.description ?? 'video thumbnail'}
-              src={item.thumbnail ?? ''}
+              alt={item.description ?? "video thumbnail"}
+              src={item.thumbnail ?? ""}
               fill
               className="rounded-xl object-fill"
             />
@@ -50,7 +49,7 @@ export function Posts({ videos }: { videos?: VideoType[] }) {
           </Link>
         ))}
       </div>
-    )
+    );
 
-  return <NoResults />
+  return <NoResults />;
 }

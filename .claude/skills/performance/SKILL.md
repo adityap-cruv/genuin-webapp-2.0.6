@@ -69,6 +69,7 @@ Default to Server Components. Client Components ship JavaScript to the browser �
 Server Components do not. Every unnecessary `'use client'` inflates the bundle.
 
 **Audit `'use client'` usage:**
+
 - Is `useState` or `useEffect` actually used? If not, remove `'use client'`
 - Can state be lifted to a smaller child to keep the parent as a Server Component?
 
@@ -79,7 +80,7 @@ Server Components do not. Every unnecessary `'use client'` inflates the bundle.
 
   ```ts
   // Prevent refetch on every mount for stable data
-  useQuery({ queryKey: ['user'], queryFn: fetchUser, staleTime: 5 * 60 * 1000 });
+  useQuery({ queryKey: ["user"], queryFn: fetchUser, staleTime: 5 * 60 * 1000 });
   ```
 
 - **Parallel fetching**: fetch independent data in parallel, not sequentially:
@@ -121,17 +122,17 @@ pnpm why <package-name>
 - Use dynamic imports for large dependencies loaded on interaction:
 
   ```tsx
-  const HeavyComponent = lazy(() => import('./HeavyComponent'));
+  const HeavyComponent = lazy(() => import("./HeavyComponent"));
   ```
 
 - Prefer named imports — tree-shaking only works on named imports:
 
   ```ts
   // Bad — imports the entire library
-  import _ from 'lodash';
+  import _ from "lodash";
 
   // Good — imports only what is needed
-  import debounce from 'lodash/debounce';
+  import debounce from "lodash/debounce";
   ```
 
 - `next.config` already uses `optimizePackageImports` — add any large libraries there
@@ -158,9 +159,9 @@ An N+1 query fetches N items then makes 1 query per item — the most common bac
 
 ```ts
 // Bad — N+1
-const posts = await db.query('SELECT * FROM posts');
+const posts = await db.query("SELECT * FROM posts");
 for (const post of posts) {
-  post.author = await db.query('SELECT * FROM users WHERE id = $1', [post.user_id]);
+  post.author = await db.query("SELECT * FROM users WHERE id = $1", [post.user_id]);
 }
 
 // Good — single JOIN

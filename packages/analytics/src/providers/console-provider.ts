@@ -3,9 +3,9 @@
  * Simple provider that logs events to the console (useful for debugging)
  */
 
-import { BaseProvider } from './base-provider'
-import { ProviderStatus } from '../types/provider'
-import type { ProviderConfig, UserTraits, PageProperties, GroupTraits } from '../types/provider'
+import { BaseProvider } from "./base-provider";
+import { ProviderStatus } from "../types/provider";
+import type { ProviderConfig, UserTraits, PageProperties, GroupTraits } from "../types/provider";
 
 /**
  * Console provider configuration
@@ -15,25 +15,25 @@ export interface ConsoleConfig extends ProviderConfig {
    * Whether to use colored output (if supported)
    * @default true
    */
-  useColors?: boolean
+  useColors?: boolean;
 
   /**
    * Whether to show timestamps
    * @default true
    */
-  showTimestamps?: boolean
+  showTimestamps?: boolean;
 
   /**
    * Whether to pretty-print payloads
    * @default true
    */
-  prettyPrint?: boolean
+  prettyPrint?: boolean;
 
   /**
    * Log level
    * @default 'log'
    */
-  logLevel?: 'log' | 'info' | 'warn' | 'debug'
+  logLevel?: "log" | "info" | "warn" | "debug";
 }
 
 /**
@@ -41,19 +41,19 @@ export interface ConsoleConfig extends ProviderConfig {
  * Useful for development and debugging
  */
 export class ConsoleProvider extends BaseProvider {
-  readonly id = 'console'
-  readonly name = 'Console Logger'
+  readonly id = "console";
+  readonly name = "Console Logger";
 
-  private consoleConfig: Required<ConsoleConfig>
+  private consoleConfig: Required<ConsoleConfig>;
 
   constructor(config: ConsoleConfig = {}) {
-    super(config)
+    super(config);
     this.consoleConfig = {
       useColors: config.useColors ?? true,
       showTimestamps: config.showTimestamps ?? true,
       prettyPrint: config.prettyPrint ?? true,
-      logLevel: config.logLevel ?? 'log',
-    }
+      logLevel: config.logLevel ?? "log",
+    };
   }
 
   /**
@@ -61,53 +61,49 @@ export class ConsoleProvider extends BaseProvider {
    */
   async initialize(_config: ProviderConfig = {}): Promise<void> {
     if (this.isInitialized()) {
-      return Promise.resolve()
+      return Promise.resolve();
     }
 
-    this.setStatus(ProviderStatus.INITIALIZING)
+    this.setStatus(ProviderStatus.INITIALIZING);
 
     // Console provider is immediately ready
-    this.setStatus(ProviderStatus.READY)
+    this.setStatus(ProviderStatus.READY);
 
     // Process any queued events
-    await this.processQueue()
+    await this.processQueue();
 
-    return Promise.resolve()
+    return Promise.resolve();
   }
 
   /**
    * Track an analytics event
    */
-  async track(
-    eventName: string,
-    payload: Record<string, any>,
-    context?: Record<string, any>
-  ): Promise<void> {
+  async track(eventName: string, payload: Record<string, any>, context?: Record<string, any>): Promise<void> {
     if (!this.isInitialized()) {
       this.queueEvent({
         name: eventName,
         payload,
         context,
         timestamp: Date.now(),
-      })
-      return
+      });
+      return;
     }
 
-    const timestamp = this.consoleConfig.showTimestamps ? new Date().toISOString() : null
-    const prefix = this.getPrefix('TRACK', timestamp)
+    const timestamp = this.consoleConfig.showTimestamps ? new Date().toISOString() : null;
+    const prefix = this.getPrefix("TRACK", timestamp);
 
     if (this.consoleConfig.prettyPrint) {
-      console.groupCollapsed(`${prefix} ${eventName}`)
-      console.log('Payload:', payload)
+      console.groupCollapsed(`${prefix} ${eventName}`);
+      console.log("Payload:", payload);
       if (context) {
-        console.log('Context:', context)
+        console.log("Context:", context);
       }
-      console.groupEnd()
+      console.groupEnd();
     } else {
-      this.log(`${prefix} ${eventName}`, { payload, context })
+      this.log(`${prefix} ${eventName}`, { payload, context });
     }
 
-    this.metrics.eventsSent++
+    this.metrics.eventsSent++;
   }
 
   /**
@@ -115,23 +111,23 @@ export class ConsoleProvider extends BaseProvider {
    */
   async identify(userId: string, traits?: UserTraits): Promise<void> {
     if (!this.isInitialized()) {
-      return
+      return;
     }
 
-    const timestamp = this.consoleConfig.showTimestamps ? new Date().toISOString() : null
-    const prefix = this.getPrefix('IDENTIFY', timestamp)
+    const timestamp = this.consoleConfig.showTimestamps ? new Date().toISOString() : null;
+    const prefix = this.getPrefix("IDENTIFY", timestamp);
 
     if (this.consoleConfig.prettyPrint) {
-      console.groupCollapsed(`${prefix} ${userId}`)
+      console.groupCollapsed(`${prefix} ${userId}`);
       if (traits) {
-        console.log('Traits:', traits)
+        console.log("Traits:", traits);
       }
-      console.groupEnd()
+      console.groupEnd();
     } else {
-      this.log(`${prefix} ${userId}`, { traits })
+      this.log(`${prefix} ${userId}`, { traits });
     }
 
-    this.metrics.identifyCalls++
+    this.metrics.identifyCalls++;
   }
 
   /**
@@ -139,23 +135,23 @@ export class ConsoleProvider extends BaseProvider {
    */
   async page(pageName: string, properties?: PageProperties): Promise<void> {
     if (!this.isInitialized()) {
-      return
+      return;
     }
 
-    const timestamp = this.consoleConfig.showTimestamps ? new Date().toISOString() : null
-    const prefix = this.getPrefix('PAGE', timestamp)
+    const timestamp = this.consoleConfig.showTimestamps ? new Date().toISOString() : null;
+    const prefix = this.getPrefix("PAGE", timestamp);
 
     if (this.consoleConfig.prettyPrint) {
-      console.groupCollapsed(`${prefix} ${pageName}`)
+      console.groupCollapsed(`${prefix} ${pageName}`);
       if (properties) {
-        console.log('Properties:', properties)
+        console.log("Properties:", properties);
       }
-      console.groupEnd()
+      console.groupEnd();
     } else {
-      this.log(`${prefix} ${pageName}`, { properties })
+      this.log(`${prefix} ${pageName}`, { properties });
     }
 
-    this.metrics.pageCalls++
+    this.metrics.pageCalls++;
   }
 
   /**
@@ -163,20 +159,20 @@ export class ConsoleProvider extends BaseProvider {
    */
   async group(groupId: string, traits?: GroupTraits): Promise<void> {
     if (!this.isInitialized()) {
-      return
+      return;
     }
 
-    const timestamp = this.consoleConfig.showTimestamps ? new Date().toISOString() : null
-    const prefix = this.getPrefix('GROUP', timestamp)
+    const timestamp = this.consoleConfig.showTimestamps ? new Date().toISOString() : null;
+    const prefix = this.getPrefix("GROUP", timestamp);
 
     if (this.consoleConfig.prettyPrint) {
-      console.groupCollapsed(`${prefix} ${groupId}`)
+      console.groupCollapsed(`${prefix} ${groupId}`);
       if (traits) {
-        console.log('Traits:', traits)
+        console.log("Traits:", traits);
       }
-      console.groupEnd()
+      console.groupEnd();
     } else {
-      this.log(`${prefix} ${groupId}`, { traits })
+      this.log(`${prefix} ${groupId}`, { traits });
     }
   }
 
@@ -184,38 +180,39 @@ export class ConsoleProvider extends BaseProvider {
    * Get formatted prefix for log messages
    */
   private getPrefix(type: string, timestamp: string | null): string {
-    const parts: string[] = []
+    const parts: string[] = [];
 
-    if (this.consoleConfig.useColors && typeof window !== 'undefined') {
+    if (this.consoleConfig.useColors && typeof window !== "undefined") {
       // Browser environment - use emojis
-      const emoji = {
-        TRACK: '📊',
-        IDENTIFY: '👤',
-        PAGE: '📄',
-        GROUP: '👥',
-      }[type] || '📝'
-      parts.push(emoji)
+      const emoji =
+        {
+          TRACK: "📊",
+          IDENTIFY: "👤",
+          PAGE: "📄",
+          GROUP: "👥",
+        }[type] || "📝";
+      parts.push(emoji);
     }
 
-    parts.push(`[Analytics ${type}]`)
+    parts.push(`[Analytics ${type}]`);
 
     if (timestamp) {
-      parts.push(`[${timestamp}]`)
+      parts.push(`[${timestamp}]`);
     }
 
-    return parts.join(' ')
+    return parts.join(" ");
   }
 
   /**
    * Log using the configured log level
    */
   private log(message: string, data?: any): void {
-    const logFn = console[this.consoleConfig.logLevel] || console.log
+    const logFn = console[this.consoleConfig.logLevel] || console.log;
 
     if (data) {
-      logFn(message, data)
+      logFn(message, data);
     } else {
-      logFn(message)
+      logFn(message);
     }
   }
 }

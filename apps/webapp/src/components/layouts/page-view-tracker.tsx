@@ -1,10 +1,10 @@
 // src/components/layouts/PageViewTracker.tsx
 
-'use client'
+"use client";
 
-import { usePageViewTracking } from '@/services/analytics'
+import { usePageViewTracking } from "@/services/analytics";
 
 export function PageViewTracker() {
-  usePageViewTracking()
-  return null
+  usePageViewTracking();
+  return null;
 }

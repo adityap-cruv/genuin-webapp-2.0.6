@@ -5,5 +5,5 @@ export function getQueryKeyForComments(videoId: string) {
 }
 
 export function getQueryKeyForMentions(chatId: string, queryString: string) {
-  return [...baseQueryKey, 'mentions', chatId, queryString];
+  return [...baseQueryKey, "mentions", chatId, queryString];
 }

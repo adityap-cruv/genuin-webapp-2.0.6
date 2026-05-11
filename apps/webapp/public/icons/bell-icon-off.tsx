@@ -1,36 +1,36 @@
 // Import necessary modules and types from React and class-variance-authority
-import { cva, type VariantProps } from 'class-variance-authority'
-import { type ComponentProps } from 'react'
+import { cva, type VariantProps } from "class-variance-authority";
+import { type ComponentProps } from "react";
 
 // Define the bellVariant function using cva to handle different styles based on props
-const bellVariant = cva('', {
+const bellVariant = cva("", {
   variants: {
     variant: {
-      light: '',
-      transparent: 'stroke-primary',
-      dark: '',
+      light: "",
+      transparent: "stroke-primary",
+      dark: "",
     },
     type: {
-      stroke: '',
-      fill: '',
+      stroke: "",
+      fill: "",
     },
   },
   compoundVariants: [
-    { variant: 'light', type: 'stroke', className: 'stroke-primary' },
-    { variant: 'light', type: 'fill', className: 'fill-primary' },
+    { variant: "light", type: "stroke", className: "stroke-primary" },
+    { variant: "light", type: "fill", className: "fill-primary" },
 
-    { variant: 'dark', type: 'stroke', className: 'stroke-monochrome-black' },
-    { variant: 'dark', type: 'fill', className: 'fill-monochrome-black' },
+    { variant: "dark", type: "stroke", className: "stroke-monochrome-black" },
+    { variant: "dark", type: "fill", className: "fill-monochrome-black" },
   ],
-})
+});
 
 // Define the Props type for the BellIconOff component
 type Props = Readonly<
-  ComponentProps<'svg'> & VariantProps<typeof bellVariant> & { variant?: 'light' | 'transparent' | 'dark' | null }
->
+  ComponentProps<"svg"> & VariantProps<typeof bellVariant> & { variant?: "light" | "transparent" | "dark" | null }
+>;
 
 // Define the BellIconOff functional component
-export function BellIconOff({ variant = 'light', ...props }: Readonly<Props>) {
+export function BellIconOff({ variant = "light", ...props }: Readonly<Props>) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 18 18" fill="none" {...props}>
       <path
@@ -38,32 +38,32 @@ export function BellIconOff({ variant = 'light', ...props }: Readonly<Props>) {
         strokeWidth="1.125"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className={bellVariant({ variant, type: 'stroke' })}
+        className={bellVariant({ variant, type: "stroke" })}
       />
       <path
         fillRule="evenodd"
         clipRule="evenodd"
         d="M7.5831 13.874C7.5831 14.7025 8.26318 15.374 9.1021 15.374C9.94102 15.374 10.6211 14.7025 10.6211 13.874"
-        className={bellVariant({ variant, type: 'fill' })}
+        className={bellVariant({ variant, type: "fill" })}
       />
       <path
         d="M7.5831 13.874C7.5831 14.7025 8.26318 15.374 9.1021 15.374C9.94102 15.374 10.6211 14.7025 10.6211 13.874"
         strokeWidth="1.125"
-        className={bellVariant({ variant, type: 'stroke' })}
+        className={bellVariant({ variant, type: "stroke" })}
       />
       <circle
         cx="9.09766"
         cy="1.875"
         r="0.75"
         strokeWidth="0.75"
-        className={bellVariant({ variant, type: 'stroke' })}
+        className={bellVariant({ variant, type: "stroke" })}
       />
       <path
         d="M1.125 15.75L16.5 1.5"
         strokeWidth="1.125"
         strokeLinecap="round"
-        className={bellVariant({ variant, type: 'stroke' })}
+        className={bellVariant({ variant, type: "stroke" })}
       />
     </svg>
-  )
+  );
 }

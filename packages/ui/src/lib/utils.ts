@@ -13,10 +13,7 @@ export function isValidHTTPS(link: string) {
  * Opens a URL with maximum compatibility across browsers and iOS.
  * Uses a programmatic <a> tag click to bypass popup blockers reliably.
  */
-export function openUrlInNewTab(
-  url: string,
-  target: "_blank" | "_self" = "_blank",
-): void {
+export function openUrlInNewTab(url: string, target: "_blank" | "_self" = "_blank"): void {
   // Create a temporary anchor element
   const anchor = document.createElement("a");
   anchor.href = url;
@@ -116,7 +113,7 @@ export function getUrlForReaction(
   reaction: string,
   isReacted: boolean,
   forComment: boolean = false,
-  theme: string = "light",
+  theme: string = "light"
 ) {
   return `https://media.begenuin.com/webapp_assets/reactions/${reaction}/${theme === "dark" ? "dark/" : ""}${forComment ? "comment_" : "feed_"}${
     isReacted ? "selected" : "unselected"
@@ -173,8 +170,7 @@ export const abbreviateNumber = (value: number): string => {
     suffixNum++;
   }
 
-  const rounded =
-    shortValue % 1 !== 0 ? shortValue.toFixed(1) : shortValue.toString();
+  const rounded = shortValue % 1 !== 0 ? shortValue.toFixed(1) : shortValue.toString();
   const result = (value < 0 ? "-" : "") + rounded + suffixes[suffixNum];
   return result;
 };
@@ -229,9 +225,7 @@ export function convertISOToLocalDateFormate(isoString: string): string {
 // }
 
 export function checkAndAppendHttps(link: string): string {
-  return link?.startsWith("http") || link?.startsWith("https")
-    ? link
-    : "https://" + link;
+  return link?.startsWith("http") || link?.startsWith("https") ? link : "https://" + link;
 }
 
 /**
@@ -292,16 +286,10 @@ export function getMonthYear(timestamp: number): string {
   const date = new Date(timestampMs);
   const now = new Date();
 
-  const dateOnly = new Date(
-    date.getFullYear(),
-    date.getMonth(),
-    date.getDate(),
-  );
+  const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
   const todayOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-  const diffDays = Math.floor(
-    (todayOnly.getTime() - dateOnly.getTime()) / (1000 * 60 * 60 * 24),
-  );
+  const diffDays = Math.floor((todayOnly.getTime() - dateOnly.getTime()) / (1000 * 60 * 60 * 24));
 
   if (diffDays === 0) return "Today";
   if (diffDays === 1) return "Yesterday";
@@ -396,11 +384,7 @@ export function getGenclStyles(): Record<string, string> {
     });
 
   // Additional check for known CSS variable patterns
-  const cssVarPatterns = [
-    "--gencl-color-primary",
-    "--gencl-color-secondary",
-    "--gencl-color-tertiary",
-  ];
+  const cssVarPatterns = ["--gencl-color-primary", "--gencl-color-secondary", "--gencl-color-tertiary"];
 
   // Try all patterns with different variants (100, 200, 300, etc.)
   for (const baseVar of cssVarPatterns) {
@@ -458,19 +442,10 @@ export function getAspectRatio(ratio?: string): {
   let height = 16;
   if (ratio) {
     const parts = ratio.split(":");
-    if (
-      parts.length === 2 &&
-      parts[0] !== undefined &&
-      parts[1] !== undefined
-    ) {
+    if (parts.length === 2 && parts[0] !== undefined && parts[1] !== undefined) {
       const parsedWidth = parseInt(parts[0] as string, 10);
       const parsedHeight = parseInt(parts[1] as string, 10);
-      if (
-        !isNaN(parsedWidth) &&
-        !isNaN(parsedHeight) &&
-        parsedWidth > 0 &&
-        parsedHeight > 0
-      ) {
+      if (!isNaN(parsedWidth) && !isNaN(parsedHeight) && parsedWidth > 0 && parsedHeight > 0) {
         width = parsedWidth;
         height = parsedHeight;
       }
@@ -558,10 +533,8 @@ export function getTabindexElementsInViewport(container?: HTMLElement | null) {
       inBounds =
         rect.top >= 0 &&
         rect.left >= 0 &&
-        rect.bottom <=
-          (window.innerHeight || document.documentElement.clientHeight) &&
-        rect.right <=
-          (window.innerWidth || document.documentElement.clientWidth);
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth);
     }
 
     return hasSize && isVisible && inBounds;

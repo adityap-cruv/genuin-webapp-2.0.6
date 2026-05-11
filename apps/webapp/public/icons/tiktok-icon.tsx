@@ -1,6 +1,6 @@
-import { type ComponentProps } from 'react'
+import { type ComponentProps } from "react";
 
-type Props = ComponentProps<'svg'>
+type Props = ComponentProps<"svg">;
 
 export function TikTokIcon({ ...props }: Props) {
   return (
@@ -22,5 +22,5 @@ export function TikTokIcon({ ...props }: Props) {
         />
       </g>
     </svg>
-  )
+  );
 }

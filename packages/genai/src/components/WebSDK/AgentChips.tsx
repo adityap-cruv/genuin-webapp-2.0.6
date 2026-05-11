@@ -10,7 +10,7 @@ interface AgentChipsProps {
 
 export function AgentChips({ agents, currentAgentId, onSelectAgent }: AgentChipsProps) {
     return (
-        <div className='gai:flex gai:items-center gai:gap-2 gai:overflow-x-auto gai:scrollbar-hide'>
+        <div className='gai:scrollbar-hide gai:flex gai:items-center gai:gap-2 gai:overflow-x-auto'>
             {/* Agent chips */}
             {agents.map(agent => {
                 const isSelected = agent.id === currentAgentId;
@@ -18,13 +18,13 @@ export function AgentChips({ agents, currentAgentId, onSelectAgent }: AgentChips
                     <div
                         key={agent.id}
                         onClick={() => onSelectAgent(agent.id)}
-                        className='gai:flex gai:flex-shrink-0 gai:cursor-pointer gai:items-center gai:gap-1 gai:rounded-full gai:border gai:border-primary-100 gai:bg-white gai:transition-colors hover:gai:bg-primary-50'
+                        className='hover:gai:bg-primary-50 gai:flex gai:flex-shrink-0 gai:cursor-pointer gai:items-center gai:gap-1 gai:rounded-full gai:border gai:border-primary-100 gai:bg-white gai:transition-colors'
                         style={{
                             maxWidth: '156px',
                             paddingTop: '2px',
                             paddingBottom: '2px',
                             paddingLeft: '4px',
-                            paddingRight: isSelected ? '4px' : '8px'
+                            paddingRight: isSelected ? '4px' : '8px',
                         }}
                     >
                         <img
@@ -37,10 +37,10 @@ export function AgentChips({ agents, currentAgentId, onSelectAgent }: AgentChips
                         </span>
                         {isSelected && (
                             <button
-                                onClick={(e) => {
+                                onClick={e => {
                                     e.stopPropagation();
                                 }}
-                                className='gai:flex gai:h-5 gai:w-5 gai:flex-shrink-0 gai:items-center gai:justify-center gai:text-secondary-gray-600 gai:transition-colors hover:gai:text-secondary-gray-900'
+                                className='hover:gai:text-secondary-gray-900 gai:flex gai:h-5 gai:w-5 gai:flex-shrink-0 gai:items-center gai:justify-center gai:text-secondary-gray-600 gai:transition-colors'
                                 title={`Selected ${agent.name}`}
                             >
                                 <X className='gai:h-5 gai:w-5' />

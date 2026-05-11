@@ -184,7 +184,7 @@ const BrandCTKWs: React.FC<BrandCTKWsProps> = ({ jsonData, messageId }) => {
             metadata: {
                 context: JSON.stringify(context),
                 to_regenerate: JSON.stringify(regeneratingCategories),
-            }
+            },
         });
     };
 

@@ -2,54 +2,54 @@
  * Analytics React Hooks
  */
 
-import { useContext, useEffect, useMemo } from 'react'
-import { AnalyticsContext } from './analytics-context'
-import type { AnalyticsContextValue } from './analytics-context'
+import { useContext, useEffect, useMemo } from "react";
+import { AnalyticsContext } from "./analytics-context";
+import type { AnalyticsContextValue } from "./analytics-context";
 
 /**
  * Hook to access analytics context
  * @throws Error if used outside AnalyticsProvider
  */
 export function useAnalytics(): AnalyticsContextValue {
-  const context = useContext(AnalyticsContext)
+  const context = useContext(AnalyticsContext);
 
   if (!context) {
-    throw new Error('useAnalytics must be used within AnalyticsProvider')
+    throw new Error("useAnalytics must be used within AnalyticsProvider");
   }
 
-  return context
+  return context;
 }
 
 /**
  * Hook to get track function
  */
 export function useTrack() {
-  const { track } = useAnalytics()
-  return track
+  const { track } = useAnalytics();
+  return track;
 }
 
 /**
  * Hook to get identify function
  */
 export function useIdentify() {
-  const { identify } = useAnalytics()
-  return identify
+  const { identify } = useAnalytics();
+  return identify;
 }
 
 /**
  * Hook to get page function
  */
 export function usePage() {
-  const { page } = useAnalytics()
-  return page
+  const { page } = useAnalytics();
+  return page;
 }
 
 /**
  * Hook to get group function
  */
 export function useGroup() {
-  const { group } = useAnalytics()
-  return group
+  const { group } = useAnalytics();
+  return group;
 }
 
 /**
@@ -66,32 +66,32 @@ export function usePageTracking(
      * Whether to track on mount
      * @default true
      */
-    trackOnMount?: boolean
+    trackOnMount?: boolean;
     /**
      * Whether to track on pageName change
      * @default true
      */
-    trackOnChange?: boolean
+    trackOnChange?: boolean;
   } = {}
 ) {
-  const { page, isReady } = useAnalytics()
-  const { trackOnMount = true, trackOnChange = true } = options
+  const { page, isReady } = useAnalytics();
+  const { trackOnMount = true, trackOnChange = true } = options;
 
   useEffect(() => {
-    if (!isReady) return
+    if (!isReady) return;
 
-    const name = pageName || (typeof document !== 'undefined' ? document.title : '')
+    const name = pageName || (typeof document !== "undefined" ? document.title : "");
     const props = properties || {
-      path: typeof window !== 'undefined' ? window.location.pathname : '',
-      url: typeof window !== 'undefined' ? window.location.href : '',
-    }
+      path: typeof window !== "undefined" ? window.location.pathname : "",
+      url: typeof window !== "undefined" ? window.location.href : "",
+    };
 
     if (trackOnMount || trackOnChange) {
       page(name, props).catch((error) => {
-        console.error('[usePageTracking] Failed to track page:', error)
-      })
+        console.error("[usePageTracking] Failed to track page:", error);
+      });
     }
-  }, [pageName, page, isReady, trackOnMount, trackOnChange, properties])
+  }, [pageName, page, isReady, trackOnMount, trackOnChange, properties]);
 }
 
 /**
@@ -99,21 +99,21 @@ export function usePageTracking(
  * Useful for creating type-safe event constants
  */
 export function useEventNames<T extends Record<string, string>>(eventNames: T): T {
-  return useMemo(() => eventNames, [eventNames])
+  return useMemo(() => eventNames, [eventNames]);
 }
 
 /**
  * Hook to check if analytics is ready
  */
 export function useAnalyticsReady(): boolean {
-  const { isReady } = useAnalytics()
-  return isReady
+  const { isReady } = useAnalytics();
+  return isReady;
 }
 
 /**
  * Hook to get analytics client instance
  */
 export function useAnalyticsClient() {
-  const { client } = useAnalytics()
-  return client
+  const { client } = useAnalytics();
+  return client;
 }

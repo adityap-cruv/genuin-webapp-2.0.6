@@ -1,6 +1,6 @@
-import { type ComponentProps } from 'react'
+import { type ComponentProps } from "react";
 
-type Props = ComponentProps<'svg'>
+type Props = ComponentProps<"svg">;
 export function EmailIcon({ ...props }: Props) {
   return (
     <svg {...props} xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill="none">
@@ -12,5 +12,5 @@ export function EmailIcon({ ...props }: Props) {
       />
       <path d="M15.2593 1.23755L8.10742 8.38942" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
-  )
+  );
 }

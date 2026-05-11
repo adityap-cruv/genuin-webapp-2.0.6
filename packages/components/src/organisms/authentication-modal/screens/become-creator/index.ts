@@ -1,1 +1,1 @@
-export * from "./become-creator"
+export * from "./become-creator";

@@ -14,12 +14,7 @@ function Slider({
   ...props
 }: React.ComponentProps<typeof SliderPrimitive.Root>) {
   const _values = React.useMemo(
-    () =>
-      Array.isArray(value)
-        ? value
-        : Array.isArray(defaultValue)
-          ? defaultValue
-          : [min, max],
+    () => (Array.isArray(value) ? value : Array.isArray(defaultValue) ? defaultValue : [min, max]),
     [value, defaultValue, min, max]
   );
 
@@ -34,14 +29,12 @@ function Slider({
         "gencl:relative gencl:flex gencl:w-full gencl:touch-none gencl:items-center gencl:select-none gencl:data-[disabled]:opacity-50 gencl:data-[orientation=vertical]:h-full gencl:data-[orientation=vertical]:min-h-44 gencl:data-[orientation=vertical]:w-auto gencl:data-[orientation=vertical]:flex-col",
         className
       )}
-      {...props}
-    >
+      {...props}>
       <SliderPrimitive.Track
         data-slot="slider-track"
         className={cn(
           "gencl:bg-secondary-100 gencl:relative gencl:grow gencl:overflow-hidden gencl:rounded-full gencl:data-[orientation=horizontal]:h-1.5 gencl:data-[orientation=horizontal]:w-full gencl:data-[orientation=vertical]:h-full gencl:data-[orientation=vertical]:w-1.5"
-        )}
-      >
+        )}>
         <SliderPrimitive.Range
           data-slot="slider-range"
           className={cn(

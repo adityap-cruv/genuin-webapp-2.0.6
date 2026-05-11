@@ -1,6 +1,6 @@
-import { type ComponentProps } from 'react'
+import { type ComponentProps } from "react";
 
-type Props = ComponentProps<'svg'>
+type Props = ComponentProps<"svg">;
 export function ClaimBrandProfileIcon({ ...props }: Props) {
   return (
     <svg width="300" height="300" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
@@ -110,5 +110,5 @@ export function ClaimBrandProfileIcon({ ...props }: Props) {
         fill="#191919"
       />
     </svg>
-  )
+  );
 }

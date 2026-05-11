@@ -5,6 +5,7 @@ This document outlines the step-by-step process to optimize dependency managemen
 ## Overview
 
 The goal is to improve dependency management by:
+
 - Implementing peerDependencies for shared packages
 - Centralizing common dependencies at the root level
 - Optimizing dependency hoisting with pnpm
@@ -25,6 +26,7 @@ The goal is to improve dependency management by:
 **Status**: ✅ DONE
 
 **Tasks**:
+
 - [x] Update root `package.json` to include shared dependencies.
 - [x] Add React ecosystem dependencies (e.g., `react`, `react-dom`).
 - [x] Add common UI library dependencies (e.g., Radix UI components like `@radix-ui/react-accordion`, `@radix-ui/react-slot`, etc.).
@@ -33,6 +35,7 @@ The goal is to improve dependency management by:
 - Note: This can be an iterative process; some dependencies might be identified for centralization later.
 
 **Commands (Examples - refer to final root `package.json` for complete list)**:
+
 ```bash
 # Add shared dependencies to root
 pnpm add react@^19.1.0 react-dom@^19.1.0 -w
@@ -43,6 +46,7 @@ pnpm add @tanstack/react-query@^5.76.1 -w
 ```
 
 **Validation**:
+
 - [x] Verify all intended shared dependencies are installed at root level.
 - [x] Run `pnpm build` to ensure no breaking changes.
 - [x] Check that workspace packages can still access these dependencies (implicitly via hoisting or explicitly via peerDependencies).
@@ -56,6 +60,7 @@ pnpm add @tanstack/react-query@^5.76.1 -w
 **Status**: ✅ Completed
 
 **Tasks**:
+
 - [x] Add peerDependencies section to `packages/ui/package.json`
 - [x] Remove redundant dependencies from dependencies section
 - [x] Add minimal devDependencies for development
@@ -63,6 +68,7 @@ pnpm add @tanstack/react-query@^5.76.1 -w
 
 **File Changes**:
 Update `packages/ui/package.json`:
+
 ```json
 {
   "peerDependencies": {
@@ -89,6 +95,7 @@ Update `packages/ui/package.json`:
 ```
 
 **Validation**:
+
 - [x] Run `pnpm build` in packages/ui (or relevant build script like `build:styles`)
 - [x] Verify Storybook still works
 - [x] Check that consuming packages can import UI components
@@ -98,12 +105,14 @@ Update `packages/ui/package.json`:
 **Status**: ✅ Completed
 
 **Tasks**:
+
 - [x] Add peerDependencies for React ecosystem
 - [x] Ensure proper workspace dependencies
 - [x] Test component package builds
 
 **File Changes**:
 Update `packages/components/package.json`:
+
 ```json
 {
   "peerDependencies": {
@@ -118,6 +127,7 @@ Update `packages/components/package.json`:
 ```
 
 **Validation**:
+
 - [x] Build components package successfully
 - [x] Verify UI components are properly imported
 - [x] Test that webapp can use components
@@ -131,6 +141,7 @@ Update `packages/components/package.json`:
 **Status**: ✅ Completed
 
 **Tasks**:
+
 - [x] Implement peerDependencies for React
 - [x] Add peerDependenciesMeta for optional dependencies
 - [x] Keep SDK-specific dependencies only
@@ -138,6 +149,7 @@ Update `packages/components/package.json`:
 
 **File Changes**:
 Update `packages/web-sdk/package.json`:
+
 ```json
 {
   "peerDependencies": {
@@ -162,6 +174,7 @@ Update `packages/web-sdk/package.json`:
 ```
 
 **Validation**:
+
 - [x] Build web-sdk successfully
 - [x] Test SDK in development environment
 - [x] Verify bundle size optimization
@@ -176,12 +189,14 @@ Update `packages/web-sdk/package.json`:
 **Status**: ✅ Completed
 
 **Tasks**:
+
 - [x] Add peerDependencies for ESLint ecosystem
 - [x] Set optional peerDependencies where appropriate
 - [x] Test ESLint configuration across packages
 
 **File Changes**:
 Update `packages/eslint-config/package.json`:
+
 ```json
 {
   "peerDependencies": {
@@ -199,6 +214,7 @@ Update `packages/eslint-config/package.json`:
 ```
 
 **Validation**:
+
 - [x] Test ESLint configuration in all packages
 - [x] Verify TypeScript compilation works
 - [x] Check Tailwind configuration is properly applied
@@ -208,11 +224,13 @@ Update `packages/eslint-config/package.json`:
 **Status**: ✅ Completed
 
 **Tasks**:
+
 - [x] Add TypeScript as peerDependency
 - [x] Test TypeScript configuration inheritance
 
 **File Changes**:
 Update `packages/typescript-config/package.json`:
+
 ```json
 {
   "peerDependencies": {
@@ -222,6 +240,7 @@ Update `packages/typescript-config/package.json`:
 ```
 
 **Validation**:
+
 - [x] Test TypeScript compilation works
 
 ### 4.3 Update tailwind-config package
@@ -229,11 +248,13 @@ Update `packages/typescript-config/package.json`:
 **Status**: ✅ Completed
 
 **Tasks**:
+
 - [x] Add Tailwind as peerDependency
 - [x] Test configuration sharing
 
 **File Changes**:
 Update `packages/tailwind-config/package.json`:
+
 ```json
 {
   "peerDependencies": {
@@ -243,6 +264,7 @@ Update `packages/tailwind-config/package.json`:
 ```
 
 **Validation**:
+
 - [x] Check Tailwind configuration is properly applied
 
 ---
@@ -254,12 +276,14 @@ Update `packages/tailwind-config/package.json`:
 **Status**: ✅ Completed
 
 **Tasks**:
+
 - [x] Create or update `.npmrc` in the root directory.
 - [x] Set `shamefully-hoist=false` to prevent aggressive hoisting by default and encourage explicit dependency declarations.
 - [x] Configure `public-hoist-pattern[]` to explicitly hoist specific common dependencies or those known to cause issues if not hoisted (e.g., React, Radix UI). This makes them available as if they were direct dependencies to all workspace packages, simplifying imports and ensuring single versions.
 
 **File Changes**:
 Create or update `.npmrc` in the project root:
+
 ```ini
 shamefully-hoist=false
 public-hoist-pattern[]=*@radix-ui*
@@ -277,6 +301,7 @@ public-hoist-pattern[]=*@sentry*
 ```
 
 **Validation**:
+
 - [x] Run `pnpm install` to apply new configuration.
 - [x] Verify dependency hoisting is working as expected (e.g., by checking `node_modules/.pnpm` or observing if packages can resolve hoisted dependencies).
 - [x] Check that all packages can access hoisted dependencies correctly.
@@ -291,6 +316,7 @@ public-hoist-pattern[]=*@sentry*
 **Status**: ✅ Completed
 
 **Tasks**:
+
 - [x] Remove dependencies now available from root (due to hoisting or being peer dependencies of shared local packages).
 - [x] Keep only app-specific direct dependencies.
 - [x] Add necessary app-specific `devDependencies` (e.g., `critters`).
@@ -298,6 +324,7 @@ public-hoist-pattern[]=*@sentry*
 
 **File Changes**:
 Update `apps/webapp/package.json` to focus on app-specific dependencies:
+
 ```json
 {
   "dependencies": {
@@ -311,13 +338,14 @@ Update `apps/webapp/package.json` to focus on app-specific dependencies:
     // ... other app-specific dependencies ...
   },
   "devDependencies": {
-    "critters": "^0.0.22", // Example of an app-specific dev dependency
+    "critters": "^0.0.22" // Example of an app-specific dev dependency
     // ... other app-specific devDependencies ...
   }
 }
 ```
 
 **Validation**:
+
 - [x] Build webapp successfully (`pnpm --filter @genuin/webapp build`).
 - [x] Test all webapp functionality.
 - [x] Verify no missing dependencies at runtime or build time.
@@ -332,12 +360,14 @@ Update `apps/webapp/package.json` to focus on app-specific dependencies:
 **Status**: ✅ Completed
 
 **Tasks**:
+
 - [x] Install `syncpack` for dependency version synchronization across the monorepo.
 - [x] Add `npm-check-updates` for easier version management and updates.
 - [x] Install `depcheck` for identifying unused dependencies within packages.
 - [x] Install `chalk` for better script output.
 
 **Commands**:
+
 ```bash
 pnpm add -Dw syncpack@^13.0.0
 pnpm add -Dw npm-check-updates@^17.0.0
@@ -350,12 +380,14 @@ pnpm add -Dw chalk@^5.3.0
 **Status**: ✅ Completed
 
 **Tasks**:
+
 - [x] Add dependency checking scripts to root package.json
 - [x] Create dependency validation workflow
 - [x] Test all validation scripts
 
 **File Changes**:
 Update root `package.json` scripts:
+
 ```json
 {
   "scripts": {
@@ -373,31 +405,34 @@ Update root `package.json` scripts:
 **Status**: ✅ Completed
 
 **Tasks**:
+
 - [x] Create TypeScript validation script
 - [x] Add to project scripts
 - [x] Test validation functionality
 
 **File Changes**:
 Create `scripts/validate-dependencies.ts`:
+
 ```typescript
-import { execSync } from 'child_process'
+import { execSync } from "child_process";
 
 function validateWorkspaceDependencies() {
-  console.log('🔍 Validating workspace dependencies...')
+  console.log("🔍 Validating workspace dependencies...");
 
   try {
-    execSync('pnpm exec syncpack list-mismatches', { stdio: 'inherit' })
-    console.log('✅ All dependencies are synchronized')
+    execSync("pnpm exec syncpack list-mismatches", { stdio: "inherit" });
+    console.log("✅ All dependencies are synchronized");
   } catch (error) {
-    console.error('❌ Dependency mismatches found')
-    process.exit(1)
+    console.error("❌ Dependency mismatches found");
+    process.exit(1);
   }
 }
 
-validateWorkspaceDependencies()
+validateWorkspaceDependencies();
 ```
 
 **Validation**:
+
 - [x] Run `pnpm deps:check` successfully.
 - [x] Run `pnpm deps:validate` without errors.
 - [x] Test dependency update workflow (`pnpm deps:update`).
@@ -407,12 +442,13 @@ validateWorkspaceDependencies()
 **Status**: ✅ DONE
 
 **Tasks**:
+
 - [x] Create or update `.depcheckrc.json` in the root directory.
 - [x] Add dependencies to the `ignores` list that are:
-    - Intentionally hoisted from the root (e.g., React, Radix UI, Tailwind utilities).
-    - Monorepo-level tooling (e.g., ESLint configs, Prettier, Storybook, Vite, Turbo).
-    - Type definitions that `depcheck` might incorrectly flag.
-    - Dev tools installed at the root for managing the monorepo (e.g., `syncpack`, `ncu`, `depcheck` itself).
+  - Intentionally hoisted from the root (e.g., React, Radix UI, Tailwind utilities).
+  - Monorepo-level tooling (e.g., ESLint configs, Prettier, Storybook, Vite, Turbo).
+  - Type definitions that `depcheck` might incorrectly flag.
+  - Dev tools installed at the root for managing the monorepo (e.g., `syncpack`, `ncu`, `depcheck` itself).
 - [x] Configure `ignorePatterns` for directories like `node_modules`, `dist`, build outputs, etc.
 - [x] List `specials` parsers for tools like ESLint, Prettier, Webpack, etc., to help `depcheck` understand their configuration files.
 
@@ -420,28 +456,50 @@ validateWorkspaceDependencies()
 
 **File Changes (Conceptual - actual file will be more extensive)**:
 Create `.depcheckrc.json` in the project root:
+
 ```json
 {
   "ignores": [
-    "react", "react-dom", "next", "@radix-ui/*", // Hoisted UI libs
-    "eslint", "@typescript-eslint/*", "prettier", // Linters/Formatters
-    "storybook", "@storybook/*", "vite", "turbo", // Tooling
-    "@types/node", "@types/react", // Common type definitions
-    "syncpack", "npm-check-updates", "depcheck", "chalk" // Root dev tools
+    "react",
+    "react-dom",
+    "next",
+    "@radix-ui/*", // Hoisted UI libs
+    "eslint",
+    "@typescript-eslint/*",
+    "prettier", // Linters/Formatters
+    "storybook",
+    "@storybook/*",
+    "vite",
+    "turbo", // Tooling
+    "@types/node",
+    "@types/react", // Common type definitions
+    "syncpack",
+    "npm-check-updates",
+    "depcheck",
+    "chalk" // Root dev tools
     // ... many more specific ignores based on project setup ...
   ],
   "ignorePatterns": [
-    "node_modules", ".dist", "build"
+    "node_modules",
+    ".dist",
+    "build"
     // ... other patterns ...
   ],
   "specials": [
-    "eslint", "prettier", "babel", "webpack", "next", "storybook", "turbo"
+    "eslint",
+    "prettier",
+    "babel",
+    "webpack",
+    "next",
+    "storybook",
+    "turbo"
     // ... other specials ...
   ]
 }
 ```
 
 **Verification**:
+
 - [x] Run `pnpm deps:unused` (or `depcheck`) at the root. It should report no (or very few, well-understood) unused dependencies.
 - [x] Iterate on `.depcheckrc.json` if necessary to refine ignores.
 
@@ -450,16 +508,18 @@ Create `.depcheckrc.json` in the project root:
 **Status**: ✅ DONE
 
 **Tasks**:
+
 - [x] Run `pnpm install` and carefully review any peer dependency warnings.
 - [x] Address valid warnings by:
-    - Adding missing peer dependencies to the `peerDependencies` section of the package that requires them.
-    - Ensuring the version constraints are compatible with the versions provided by the root or other packages.
-    - Installing the peer dependency directly in the package if it's a specific requirement not met by hoisting (less common with good root centralization).
+  - Adding missing peer dependencies to the `peerDependencies` section of the package that requires them.
+  - Ensuring the version constraints are compatible with the versions provided by the root or other packages.
+  - Installing the peer dependency directly in the package if it's a specific requirement not met by hoisting (less common with good root centralization).
 - [x] For false positives or manageable warnings (e.g., a tool expecting an older version of ESLint but working fine), document them if necessary.
 
 **Rationale**: Ensures all packages have their required peer dependencies met or explicitly acknowledged, preventing runtime errors and ensuring compatibility.
 
 **Verification**:
+
 - [x] `pnpm install` runs without unexpected or critical peer dependency warnings.
 - [x] Applications and packages function correctly, indicating peer dependencies are resolved.
 
@@ -472,6 +532,7 @@ Create `.depcheckrc.json` in the project root:
 **Status**: ✅ DONE
 
 **Tasks**:
+
 - [x] Test all package builds individually
 - [x] Test monorepo build process
 - [x] Verify development workflow
@@ -479,6 +540,7 @@ Create `.depcheckrc.json` in the project root:
 - [x] Validate bundle sizes (as applicable, or note if not a primary focus for this refactor)
 
 **Testing Commands**:
+
 ```bash
 # Test individual package builds
 pnpm --filter @genuin/ui build
@@ -501,12 +563,14 @@ pnpm deps:validate
 **Status**: ✅ DONE
 
 **Tasks**:
+
 - [x] Compare bundle sizes before/after optimization (if data available/relevant)
 - [x] Measure build time improvements (if data available/relevant)
 - [x] Verify dependency deduplication (primarily through pnpm's mechanisms and lack of issues)
 - [x] Test memory usage during builds (if data available/relevant)
 
 **Validation Checklist**:
+
 - [x] Webapp bundle size reduced or stable with no unexpected increases.
 - [x] Web SDK bundle size optimized or stable.
 - [x] No duplicate major dependencies causing issues in node_modules (pnpm handles this well).
@@ -522,6 +586,7 @@ pnpm deps:validate
 **Status**: ✅ DONE
 
 **Tasks**:
+
 - [x] Update README files in affected packages (Root README updated).
 - [x] Document new dependency management approach (Added section to root README).
 - [x] Update development workflow documentation (Covered by new scripts and README section).
@@ -532,6 +597,7 @@ pnpm deps:validate
 **Status**: ✅ DONE
 
 **Tasks**:
+
 - [x] Remove backup files if created (User confirmed not needed).
 - [x] Clean up unused dependencies (Reviewed, and local workspace dependencies set to `workspace:*`).
 - [x] Update .gitignore if needed (User confirmed not needed).
@@ -544,6 +610,7 @@ pnpm deps:validate
 If issues arise during implementation:
 
 1. **Immediate Rollback**:
+
    ```bash
    git checkout main
    pnpm install

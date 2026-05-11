@@ -17,7 +17,6 @@ React Server Components allow parts of our application to render on the server, 
 
 1. **Keep Components Server-First**: Design components to be server components by default unless they need client interactivity
 2. **Use `use client` Directive Sparingly**: Only add it when component needs:
-
    - React hooks (`useState`, `useEffect`, etc.)
    - Browser-only APIs
    - Event listeners
@@ -33,7 +32,7 @@ async function ProductList() {
 
   return (
     <div>
-      {products.map(product => (
+      {products.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}
     </div>

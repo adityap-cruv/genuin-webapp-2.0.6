@@ -1,30 +1,29 @@
-import { SearchIcon } from 'lucide-react'
-import { useDebouncedCallback } from 'use-debounce'
+import { SearchIcon } from "lucide-react";
+import { useDebouncedCallback } from "use-debounce";
 
-import { Input } from '@components/ui/input'
+import { Input } from "@components/ui/input";
 
-import { useRepostModalStore } from './state'
-
+import { useRepostModalStore } from "./state";
 
 export function SearchInput() {
-  const { data, search } = useRepostModalStore((state) => ({ data: state.repostCommunityData, search: state.search }))
+  const { data, search } = useRepostModalStore((state) => ({ data: state.repostCommunityData, search: state.search }));
   const setKeyword = useDebouncedCallback((value) => {
-    search(value)
-  }, 400)
+    search(value);
+  }, 400);
 
   if (data)
     return (
       <div className="relative mb-2">
         <Input
           onChange={(e) => {
-            setKeyword(e.target.value)
+            setKeyword(e.target.value);
           }}
-          className="w-full rounded-full border-none bg-tertiary-200 pl-10 pr-2"
+          className="bg-tertiary-200 w-full rounded-full border-none pr-2 pl-10"
           autoFocus
         />
-        <span className="absolute left-3 top-0 flex h-full items-center">
-          <SearchIcon className="w-5 stroke-tertiary stroke-2" />
+        <span className="absolute top-0 left-3 flex h-full items-center">
+          <SearchIcon className="stroke-tertiary w-5 stroke-2" />
         </span>
       </div>
-    )
+    );
 }

@@ -17,4 +17,3 @@ const Verified = (props: SVGProps<SVGSVGElement>) => (
 );
 
 export default Verified;
-

@@ -15,12 +15,7 @@ const cachedPropertyRulesFromUrl = new Map<string, Set<string>>();
 const pendingUrlFetches = new Map<string, Promise<void>>();
 
 type CssWithRegisterProperty = typeof CSS & {
-  registerProperty?: (definition: {
-    name: string;
-    syntax: string;
-    inherits: boolean;
-    initialValue?: string;
-  }) => void;
+  registerProperty?: (definition: { name: string; syntax: string; inherits: boolean; initialValue?: string }) => void;
 };
 
 // ---------------------------------------------------------------------------
@@ -41,18 +36,14 @@ function collectPropertyAtRulesFromCssText(cssText: string): string[] {
   return propertyRules;
 }
 
-function collectPropertyAtRulesFromCssRuleList(
-  cssRules: CSSRuleList,
-  collector: Set<string>,
-): void {
+function collectPropertyAtRulesFromCssRuleList(cssRules: CSSRuleList, collector: Set<string>): void {
   Array.from(cssRules).forEach((cssRule) => {
     const cssText = (cssRule.cssText || "").trim();
     if (cssText.startsWith("@property ")) {
       collector.add(cssText);
     }
 
-    const nestedCssRules = (cssRule as CSSRule & { cssRules?: CSSRuleList })
-      .cssRules;
+    const nestedCssRules = (cssRule as CSSRule & { cssRules?: CSSRuleList }).cssRules;
     if (nestedCssRules) {
       collectPropertyAtRulesFromCssRuleList(nestedCssRules, collector);
     }
@@ -118,9 +109,7 @@ function registerPropertyGlobally(propertyRule: string): void {
   const syntax = stripCssStringQuotes(rawSyntax);
 
   const rawInitialValue = descriptors.get("initial-value");
-  const initialValue = rawInitialValue
-    ? stripCssStringQuotes(rawInitialValue)
-    : undefined;
+  const initialValue = rawInitialValue ? stripCssStringQuotes(rawInitialValue) : undefined;
 
   try {
     cssApi.registerProperty({
@@ -159,9 +148,7 @@ async function fetchPropertyRulesFromCssUrl(cssUrl: string): Promise<void> {
 
       const cssText = await response.text();
       const rules = new Set<string>();
-      collectPropertyAtRulesFromCssText(cssText).forEach((rule) =>
-        rules.add(rule),
-      );
+      collectPropertyAtRulesFromCssText(cssText).forEach((rule) => rules.add(rule));
       cachedPropertyRulesFromUrl.set(resolvedUrl, rules);
     } catch {
       // Ignore fetch failures (CORS / network).
@@ -185,25 +172,20 @@ async function fetchPropertyRulesFromCssUrl(cssUrl: string): Promise<void> {
  * Must be awaited before React renders into the shadow root so that custom
  * properties have their initial values and inheritance available on first render.
  */
-export async function hoistTailwindPropertyAtRulesFromShadowRoot(
-  shadowRoot: ShadowRoot,
-): Promise<void> {
+export async function hoistTailwindPropertyAtRulesFromShadowRoot(shadowRoot: ShadowRoot): Promise<void> {
   const discoveredPropertyRules = new Set<string>();
 
   // Collect from inline <style> elements.
   Array.from(shadowRoot.querySelectorAll("style")).forEach((styleElement) => {
-    collectPropertyAtRulesFromCssText(styleElement.textContent || "").forEach(
-      (rule) => discoveredPropertyRules.add(rule),
+    collectPropertyAtRulesFromCssText(styleElement.textContent || "").forEach((rule) =>
+      discoveredPropertyRules.add(rule)
     );
   });
 
   // Collect from same-origin linked stylesheets (cross-origin throws).
   Array.from(shadowRoot.styleSheets).forEach((styleSheet) => {
     try {
-      collectPropertyAtRulesFromCssRuleList(
-        (styleSheet as CSSStyleSheet).cssRules,
-        discoveredPropertyRules,
-      );
+      collectPropertyAtRulesFromCssRuleList((styleSheet as CSSStyleSheet).cssRules, discoveredPropertyRules);
     } catch {
       // Cross-origin – handled by URL fetch below.
     }

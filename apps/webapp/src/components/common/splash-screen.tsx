@@ -1,4 +1,4 @@
-import { Loader } from '@components/ui/loader'
+import { Loader } from "@components/ui/loader";
 
 export function SplashScreen() {
   return (
@@ -6,5 +6,5 @@ export function SplashScreen() {
       {/* <GenuinIcon.icon className="h-10 w-10 fill-primary" /> */}
       <Loader size="md" />
     </main>
-  )
+  );
 }

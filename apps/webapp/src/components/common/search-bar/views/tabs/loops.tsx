@@ -1,18 +1,17 @@
-import Image from 'next/image'
-import Link from 'next/link'
+import Image from "next/image";
+import Link from "next/link";
 
-import { CustomImage } from '@/components/custom/custom-image'
-import { CustomAvatar } from '@components/custom/custom-avatar'
-import icLock from '@icons/icLock.svg'
-import icPlay from '@icons/player-controls/icPlay.svg'
-import { abbreviateNumber, getTimeAgo } from '@lib/utils'
-import { PATH_NAME } from '@lib/utils/constants/path'
+import { CustomImage } from "@/components/custom/custom-image";
+import { CustomAvatar } from "@components/custom/custom-avatar";
+import icLock from "@icons/icLock.svg";
+import icPlay from "@icons/player-controls/icPlay.svg";
+import { abbreviateNumber, getTimeAgo } from "@lib/utils";
+import { PATH_NAME } from "@lib/utils/constants/path";
 
-import { type LoopResType } from '../../schema/top-resp'
-import { useSearchBarStore } from '../../store'
+import { type LoopResType } from "../../schema/top-resp";
+import { useSearchBarStore } from "../../store";
 
-import { NoResults } from './no-results'
-
+import { NoResults } from "./no-results";
 
 export function Loops({ loops }: { loops?: LoopResType[] }) {
   if (loops)
@@ -22,54 +21,54 @@ export function Loops({ loops }: { loops?: LoopResType[] }) {
           <LoopItem key={item.chat_id} loop={item} />
         ))}
       </div>
-    )
+    );
 
-  return <NoResults />
+  return <NoResults />;
 }
 
 export function LoopItem({ loop }: { loop: LoopResType }) {
-  const { close } = useSearchBarStore()
+  const { close } = useSearchBarStore();
   function getCollaboratorsCountString(count: any) {
-    let str = ' + '
-    if (!count) return
+    let str = " + ";
+    if (!count) return;
     if (count === 1) {
-      str += abbreviateNumber(count) + ' Other'
+      str += abbreviateNumber(count) + " Other";
     } else {
-      str += abbreviateNumber(count) + ' Others'
+      str += abbreviateNumber(count) + " Others";
     }
-    return str
+    return str;
   }
 
   function Members() {
-    const members = loop.group.members
+    const members = loop.group.members;
     return (
       <>
         {members[0] && (
           <CustomAvatar
             className="border-tertiary-100 z-[3] h-6 w-6 border-2 bg-red-50"
-            imageUrl={members[0].profile_image_s ?? members[0].profile_image ?? ''}
+            imageUrl={members[0].profile_image_s ?? members[0].profile_image ?? ""}
             isAvatar={members[0].is_avatar}
-            fallbackString={members[0].name ?? ''}
+            fallbackString={members[0].name ?? ""}
           />
         )}
         {members.length !== 0 && members[1] && (
           <CustomAvatar
             className="border-tertiary-100 absolute left-3 z-[2] h-6 w-6 border-2 bg-red-50"
-            imageUrl={members[1].profile_image_s ?? members[1].profile_image ?? ''}
+            imageUrl={members[1].profile_image_s ?? members[1].profile_image ?? ""}
             isAvatar={members[1].is_avatar}
-            fallbackString={members[1].name ?? ''}
+            fallbackString={members[1].name ?? ""}
           />
         )}
         {members.length !== 0 && members[2] && (
           <CustomAvatar
             className="border-tertiary-100 absolute left-6 h-6 w-6 border-2 bg-red-50"
-            imageUrl={members[2].profile_image_s ?? members[2].profile_image ?? ''}
+            imageUrl={members[2].profile_image_s ?? members[2].profile_image ?? ""}
             isAvatar={members[2].is_avatar}
-            fallbackString={members[2].name ?? ''}
+            fallbackString={members[2].name ?? ""}
           />
         )}
       </>
-    )
+    );
   }
 
   return (
@@ -99,8 +98,8 @@ export function LoopItem({ loop }: { loop: LoopResType }) {
                 </div>
                 <p
                   className={`text-body-1-med text-secondary-300 ml-1 line-clamp-1 ${
-                    loop.group.members.length !== 1 && 'ml-7'
-                  } ${loop.group.members.length === 3 && 'ml-6'}`}>
+                    loop.group.members.length !== 1 && "ml-7"
+                  } ${loop.group.members.length === 3 && "ml-6"}`}>
                   {loop.group.members[0]?.username}
                   {getCollaboratorsCountString(loop.group.members.length - 1)}
                 </p>
@@ -129,33 +128,33 @@ export function LoopItem({ loop }: { loop: LoopResType }) {
         <RenderedImages videos={loop.latest_messages} slug={loop.slug} />
       )}
     </div>
-  )
+  );
 }
 
 function RenderedImages({ videos, slug }: { videos: any[]; slug: string }) {
-  const videosLength = videos.length
+  const videosLength = videos.length;
   const transformValues: any = {
     1: [50],
     2: [48, 52],
     3: [46, 50, 54],
-  }
+  };
 
   const rightValues: any = {
     1: [20],
     2: [24, 16],
     3: [28, 20, 12],
-  }
+  };
 
   const opacitValues: any = {
     1: [1],
     2: [1, 0.5],
     3: [1, 0.66, 0.4],
-  }
+  };
 
   return videos.map((item: any, index: number) => {
     return (
       <Link
-        href={{ pathname: PATH_NAME.loop(slug), query: 'show_videos=1' }}
+        href={{ pathname: PATH_NAME.loop(slug), query: "show_videos=1" }}
         key={index}
         className="group/video aspect-reel absolute top-[50%] flex h-[90%] items-center justify-center rounded hover:cursor-pointer"
         style={{
@@ -169,6 +168,6 @@ function RenderedImages({ videos, slug }: { videos: any[]; slug: string }) {
           <Image src={icPlay} alt="play" className="absolute" height={16} width={16} />
         </div>
       </Link>
-    )
-  })
+    );
+  });
 }

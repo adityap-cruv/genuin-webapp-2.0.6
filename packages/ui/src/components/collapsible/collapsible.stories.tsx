@@ -3,11 +3,7 @@ import React from "react";
 
 import { Button } from "@genuin/ui/components/button";
 
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "./collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./collapsible";
 
 export default {
   title: "Components/Collapsible",
@@ -20,18 +16,15 @@ export default {
     },
     defaultOpen: {
       control: "boolean",
-      description:
-        "The initial open state of the collapsible when uncontrolled.",
+      description: "The initial open state of the collapsible when uncontrolled.",
     },
     disabled: {
       control: "boolean",
-      description:
-        "When true, prevents the user from interacting with the collapsible.",
+      description: "When true, prevents the user from interacting with the collapsible.",
     },
     onOpenChange: {
       action: "onOpenChange",
-      description:
-        "Event handler called when the open state of the collapsible changes.",
+      description: "Event handler called when the open state of the collapsible changes.",
     },
   },
 } as Meta;
@@ -40,15 +33,9 @@ export function CollapsibleDemo() {
   const [isOpen, setIsOpen] = React.useState(false);
 
   return (
-    <Collapsible
-      open={isOpen}
-      onOpenChange={setIsOpen}
-      className="gencl:w-[350px] gencl:space-y-2"
-    >
+    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="gencl:w-[350px] gencl:space-y-2">
       <div className="gencl:flex gencl:items-center gencl:justify-between gencl:space-x-4 gencl:px-4">
-        <h4 className="gencl:text-sm gencl:font-semibold">
-          @peduarte starred 3 repositories
-        </h4>
+        <h4 className="gencl:text-sm gencl:font-semibold">@peduarte starred 3 repositories</h4>
         <CollapsibleTrigger asChild>
           <Button size="sm">
             <p className="gencl:h-4 gencl:w-4">upd</p>

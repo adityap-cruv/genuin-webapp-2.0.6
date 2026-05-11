@@ -1,7 +1,7 @@
-import { cn } from '@lib/utils'
+import { cn } from "@lib/utils";
 
 function Shimmer({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn('animate-pulse rounded-md bg-tertiary-200', className)} {...props} />
+  return <div className={cn("bg-tertiary-200 animate-pulse rounded-md", className)} {...props} />;
 }
 
-export { Shimmer }
+export { Shimmer };

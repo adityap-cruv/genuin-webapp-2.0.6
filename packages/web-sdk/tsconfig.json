@@ -7,11 +7,7 @@
     "target": "ES2020",
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "lib": [
-      "ES2020",
-      "DOM",
-      "DOM.Iterable"
-    ],
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
     // Allow JavaScript files and skip lib checking for faster builds
     "allowJs": true,
     "skipLibCheck": true,
@@ -51,29 +47,15 @@
     // (deprecated in TS 5+; paths works standalone). Project references (below)
     // still enforce correct compilation order and isolation.
     "paths": {
-      "@genuin/ui": [
-        "../ui/src"
-      ],
-      "@genuin/ui/*": [
-        "../ui/src/*"
-      ],
-      "@genuin/components": [
-        "../components/src"
-      ],
-      "@genuin/components/*": [
-        "../components/src/*"
-      ],
-      "@/*": [
-        "./src/*"
-      ]
+      "@genuin/ui": ["../ui/src"],
+      "@genuin/ui/*": ["../ui/src/*"],
+      "@genuin/components": ["../components/src"],
+      "@genuin/components/*": ["../components/src/*"],
+      "@/*": ["./src/*"]
     },
     "resolveJsonModule": true
   },
-  "include": [
-    "src/**/*",
-    "*.ts",
-    "*.tsx"
-  ],
+  "include": ["src/**/*", "*.ts", "*.tsx"],
   "exclude": [
     "node_modules",
     "dist",
@@ -86,8 +68,5 @@
     "coverage",
     ".turbo"
   ],
-  "references": [
-    { "path": "../ui" },
-    { "path": "../components" }
-  ]
+  "references": [{ "path": "../ui" }, { "path": "../components" }]
 }

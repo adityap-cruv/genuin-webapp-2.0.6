@@ -23,23 +23,23 @@
  * with appropriate delays between batches.
  */
 
-import chalk from 'chalk'
-import dotenv from 'dotenv'
+import chalk from "chalk";
+import dotenv from "dotenv";
 
 /**
  * Configuration interface for Bunny CDN purge settings
  */
 type BunnyConfig = {
-  apiKey: string
-  mediaBaseUrl: string
-}
+  apiKey: string;
+  mediaBaseUrl: string;
+};
 
 /**
  * File path information for purge operations
  */
 type FilePath = {
-  Key: string
-}
+  Key: string;
+};
 
 /**
  * Loads and validates Bunny CDN configuration from environment files
@@ -47,36 +47,36 @@ type FilePath = {
  * @returns {Promise<BunnyConfig | null>} Configuration object or null if invalid
  */
 async function getBunnyConfig(): Promise<BunnyConfig | null> {
-  const NODE_ENV = process.env.NODE_ENV || 'qa'
+  const NODE_ENV = process.env.NODE_ENV || "qa";
 
   // Load environment variables in order of priority
-  const commonEnv = dotenv.config({ path: '.env.common' }).parsed || {}
-  const envFile = NODE_ENV === 'production' ? '.env.production' : '.env.qa'
-  const envConfig = dotenv.config({ path: envFile }).parsed || {}
+  const commonEnv = dotenv.config({ path: ".env.common" }).parsed || {};
+  const envFile = NODE_ENV === "production" ? ".env.production" : ".env.qa";
+  const envConfig = dotenv.config({ path: envFile }).parsed || {};
 
   // Combine environment variables
-  const combinedEnv = { ...envConfig, ...commonEnv }
+  const combinedEnv = { ...envConfig, ...commonEnv };
 
-  const apiKey = combinedEnv.BUNNY_API_KEY
-  const mediaBaseUrl = combinedEnv.MEDIA_BASE_URL
+  const apiKey = combinedEnv.BUNNY_API_KEY;
+  const mediaBaseUrl = combinedEnv.MEDIA_BASE_URL;
 
   // Debug information
-  console.log(chalk.blue('\nChecking Bunny CDN configuration:'))
-  console.log('Environment:', chalk.yellow(NODE_ENV))
-  console.log('API Key:', chalk.yellow(apiKey ? 'set' : 'not set'))
-  console.log('Media Base URL:', chalk.yellow(mediaBaseUrl || 'not set'))
+  console.log(chalk.blue("\nChecking Bunny CDN configuration:"));
+  console.log("Environment:", chalk.yellow(NODE_ENV));
+  console.log("API Key:", chalk.yellow(apiKey ? "set" : "not set"));
+  console.log("Media Base URL:", chalk.yellow(mediaBaseUrl || "not set"));
 
   // If any required configuration is missing, return null
   if (!apiKey || !mediaBaseUrl) {
-    console.log(chalk.red('❌ Missing required Bunny CDN configuration'))
-    return null
+    console.log(chalk.red("❌ Missing required Bunny CDN configuration"));
+    return null;
   }
 
-  console.log(chalk.green('✓ Bunny CDN configuration found'))
+  console.log(chalk.green("✓ Bunny CDN configuration found"));
   return {
     apiKey,
     mediaBaseUrl,
-  }
+  };
 }
 
 /**
@@ -86,17 +86,14 @@ async function getBunnyConfig(): Promise<BunnyConfig | null> {
  * @param {string} mediaBaseUrl - Base CDN URL
  * @returns {string[]} Array of full URLs to purge
  */
-function constructPurgeUrls(
-  uploadPaths: string[],
-  mediaBaseUrl: string,
-): string[] {
+function constructPurgeUrls(uploadPaths: string[], mediaBaseUrl: string): string[] {
   return uploadPaths.map((path) => {
     // Remove leading slash if present
-    const cleanPath = path.replace(/^\//, '')
+    const cleanPath = path.replace(/^\//, "");
 
     // Construct the full URL with wildcard for all files under the path
-    return `${mediaBaseUrl}/${cleanPath}/*`
-  })
+    return `${mediaBaseUrl}/${cleanPath}/*`;
+  });
 }
 
 /**
@@ -108,28 +105,26 @@ function constructPurgeUrls(
  */
 async function purgeSingleUrl(url: string, apiKey: string): Promise<boolean> {
   try {
-    const purgeUrl = `https://api.bunny.net/purge?async=false&url=${encodeURIComponent(url)}`
+    const purgeUrl = `https://api.bunny.net/purge?async=false&url=${encodeURIComponent(url)}`;
 
     const response = await fetch(purgeUrl, {
-      method: 'POST',
+      method: "POST",
       headers: {
         AccessKey: apiKey,
       },
-    })
+    });
 
     if (response.ok) {
-      console.log(chalk.green(`✓ Purged: ${url} - Status: ${response.status}`))
-      return true
+      console.log(chalk.green(`✓ Purged: ${url} - Status: ${response.status}`));
+      return true;
     } else {
-      console.error(
-        chalk.red(`✗ Failed to purge: ${url} - Status: ${response.status}`),
-      )
-      return false
+      console.error(chalk.red(`✗ Failed to purge: ${url} - Status: ${response.status}`));
+      return false;
     }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error)
-    console.error(chalk.red(`✗ Error purging: ${url} - ${errorMessage}`))
-    return false
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error(chalk.red(`✗ Error purging: ${url} - ${errorMessage}`));
+    return false;
   }
 }
 
@@ -141,48 +136,38 @@ async function purgeSingleUrl(url: string, apiKey: string): Promise<boolean> {
  * @returns {Promise<void>}
  */
 async function purgeBunnyUrls(urls: string[], apiKey: string): Promise<void> {
-  console.log(chalk.blue('\nStarting Bunny CDN purge...'))
-  console.log(chalk.gray(`URLs to purge: ${urls.length}`))
+  console.log(chalk.blue("\nStarting Bunny CDN purge..."));
+  console.log(chalk.gray(`URLs to purge: ${urls.length}`));
 
-  let successful = 0
-  const batchSize = 10 // Process in batches to respect rate limits
-  const batches: string[][] = []
+  let successful = 0;
+  const batchSize = 10; // Process in batches to respect rate limits
+  const batches: string[][] = [];
 
   // Split URLs into batches
   for (let i = 0; i < urls.length; i += batchSize) {
-    batches.push(urls.slice(i, i + batchSize))
+    batches.push(urls.slice(i, i + batchSize));
   }
 
-  console.log(
-    chalk.blue(
-      `Processing ${batches.length} batches of up to ${batchSize} URLs each...`,
-    ),
-  )
+  console.log(chalk.blue(`Processing ${batches.length} batches of up to ${batchSize} URLs each...`));
 
   // Process each batch
   for (let i = 0; i < batches.length; i++) {
-    const batch = batches[i]
-    console.log(chalk.blue(`\nProcessing batch ${i + 1}/${batches.length}...`))
+    const batch = batches[i];
+    console.log(chalk.blue(`\nProcessing batch ${i + 1}/${batches.length}...`));
 
     // Process all URLs in the current batch concurrently
-    const batchResults = await Promise.all(
-      batch.map((url) => purgeSingleUrl(url, apiKey)),
-    )
+    const batchResults = await Promise.all(batch.map((url) => purgeSingleUrl(url, apiKey)));
 
-    successful += batchResults.filter((result) => result).length
+    successful += batchResults.filter((result) => result).length;
 
     // Add delay between batches to respect rate limits (except for the last batch)
     if (i < batches.length - 1) {
-      console.log(chalk.gray('Waiting 200ms before next batch...'))
-      await new Promise((resolve) => setTimeout(resolve, 200))
+      console.log(chalk.gray("Waiting 200ms before next batch..."));
+      await new Promise((resolve) => setTimeout(resolve, 200));
     }
   }
 
-  console.log(
-    chalk.green(
-      `\n✓ Bunny CDN purge completed: ${successful}/${urls.length} successful`,
-    ),
-  )
+  console.log(chalk.green(`\n✓ Bunny CDN purge completed: ${successful}/${urls.length} successful`));
 }
 
 /**
@@ -192,36 +177,32 @@ async function purgeBunnyUrls(urls: string[], apiKey: string): Promise<void> {
  * @returns {Promise<void>}
  */
 export async function purgeBunnyCDN(uploadPaths: string[]): Promise<void> {
-  const bunnyConfig = await getBunnyConfig()
+  const bunnyConfig = await getBunnyConfig();
 
   // If Bunny CDN configuration is not found, skip purge silently
   if (!bunnyConfig) {
-    console.log(
-      chalk.yellow('⚠ Bunny CDN not configured, skipping cache purge'),
-    )
-    return
+    console.log(chalk.yellow("⚠ Bunny CDN not configured, skipping cache purge"));
+    return;
   }
 
-  const { apiKey, mediaBaseUrl } = bunnyConfig
+  const { apiKey, mediaBaseUrl } = bunnyConfig;
 
   if (uploadPaths.length === 0) {
-    console.log(
-      chalk.yellow('⚠ No upload paths provided, skipping Bunny CDN purge'),
-    )
-    return
+    console.log(chalk.yellow("⚠ No upload paths provided, skipping Bunny CDN purge"));
+    return;
   }
 
   // Construct full URLs to purge
-  const urlsToPurge = constructPurgeUrls(uploadPaths, mediaBaseUrl)
+  const urlsToPurge = constructPurgeUrls(uploadPaths, mediaBaseUrl);
 
-  console.log(chalk.blue('\nBunny CDN purge URLs:'))
-  urlsToPurge.forEach((url) => console.log(chalk.gray(`  • ${url}`)))
+  console.log(chalk.blue("\nBunny CDN purge URLs:"));
+  urlsToPurge.forEach((url) => console.log(chalk.gray(`  • ${url}`)));
 
   try {
-    await purgeBunnyUrls(urlsToPurge, apiKey)
+    await purgeBunnyUrls(urlsToPurge, apiKey);
   } catch (error) {
-    console.error(chalk.red('\n✗ Bunny CDN purge process failed:'), error)
-    throw error
+    console.error(chalk.red("\n✗ Bunny CDN purge process failed:"), error);
+    throw error;
   }
 }
 
@@ -233,32 +214,30 @@ export async function purgeBunnyCDN(uploadPaths: string[]): Promise<void> {
  * @returns {Promise<void>}
  */
 export async function invalidateBunnyCDN(filePaths: FilePath[]): Promise<void> {
-  const bunnyConfig = await getBunnyConfig()
+  const bunnyConfig = await getBunnyConfig();
 
   if (!bunnyConfig) {
-    console.log(
-      chalk.yellow('⚠ Bunny CDN not configured, skipping cache invalidation'),
-    )
-    return
+    console.log(chalk.yellow("⚠ Bunny CDN not configured, skipping cache invalidation"));
+    return;
   }
 
-  const { apiKey, mediaBaseUrl } = bunnyConfig
+  const { apiKey, mediaBaseUrl } = bunnyConfig;
 
   try {
     // Convert file paths to full URLs
     const itemsToInvalidate = filePaths.map((fp) => {
-      if (fp.Key.startsWith('http')) {
-        return fp.Key
+      if (fp.Key.startsWith("http")) {
+        return fp.Key;
       }
-      return `${mediaBaseUrl}/${fp.Key.replace(/^\//, '')}`
-    })
+      return `${mediaBaseUrl}/${fp.Key.replace(/^\//, "")}`;
+    });
 
-    await purgeBunnyUrls(itemsToInvalidate, apiKey)
+    await purgeBunnyUrls(itemsToInvalidate, apiKey);
   } catch (error) {
-    console.error(chalk.red('Failed to invalidate Bunny CDN cache:'), error)
-    throw error
+    console.error(chalk.red("Failed to invalidate Bunny CDN cache:"), error);
+    throw error;
   }
 }
 
 // Export all functions for external use
-export { getBunnyConfig, constructPurgeUrls, purgeSingleUrl, purgeBunnyUrls }
+export { getBunnyConfig, constructPurgeUrls, purgeSingleUrl, purgeBunnyUrls };

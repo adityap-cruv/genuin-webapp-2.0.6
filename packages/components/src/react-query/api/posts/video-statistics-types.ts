@@ -19,9 +19,7 @@ export interface VideoStatisticsResponse {
   data: Record<string, VideoStats>;
 }
 
-export function validateVideoStatisticsResponse(
-  apiResponse: any
-): VideoStatisticsResponse {
+export function validateVideoStatisticsResponse(apiResponse: any): VideoStatisticsResponse {
   if (!apiResponse || typeof apiResponse !== "object") {
     throw new Error("Invalid response data");
   }

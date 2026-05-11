@@ -1,16 +1,16 @@
-import { z } from 'zod'
+import { z } from "zod";
 
 const Group = z.object({
   group_id: z.string(),
   group_name: z.string().nullish(),
   group_description: z.string().nullish(),
   tags: z.string().nullish(),
-})
+});
 
 const Action = z.object({
   action_id: z.number(),
   access_type_id: z.number(),
-})
+});
 
 const Chat = z.object({
   id: z.number(),
@@ -19,7 +19,7 @@ const Chat = z.object({
   slug: z.string(),
   group: Group,
   actions: z.array(Action),
-})
+});
 
 const Brand = z.object({
   brand_id: z.number(),
@@ -31,7 +31,7 @@ const Brand = z.object({
   favicon: z.string(),
   brand_system_user_id: z.string(),
   brand_slug: z.string(),
-})
+});
 
 const CommunitySchema = z.object({
   community_id: z.string(),
@@ -50,22 +50,21 @@ const CommunitySchema = z.object({
   chats: z.array(Chat),
   brand: Brand,
   type: z.number().transform((item) => {
-    return item === 1 ? 'PUBLIC' : 'PRIVATE'
+    return item === 1 ? "PUBLIC" : "PRIVATE";
   }),
-})
+});
 
-const CommunityListSchema = z.array(CommunitySchema)
+const CommunityListSchema = z.array(CommunitySchema);
 
-export type RepostCommunityType = z.infer<typeof CommunitySchema>
+export type RepostCommunityType = z.infer<typeof CommunitySchema>;
 
-export type RepostCommunityListType = z.infer<typeof CommunityListSchema>
+export type RepostCommunityListType = z.infer<typeof CommunityListSchema>;
 
 export function validateRepostCommunityListData(data: any) {
   try {
-    return CommunityListSchema.parse(data)
+    return CommunityListSchema.parse(data);
   } catch (e) {
-     
-    console.log('error i validation of repost api data::', e)
-    throw new Error('Something went wrong::')
+    console.log("error i validation of repost api data::", e);
+    throw new Error("Something went wrong::");
   }
 }

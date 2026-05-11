@@ -45,9 +45,7 @@ export const WithHelper: Story = {
   render: () => (
     <div className="space-y-1">
       <Label htmlFor="username">Username</Label>
-      <p className="text-xs text-gray-500">
-        Enter your username or email address
-      </p>
+      <p className="text-xs text-gray-500">Enter your username or email address</p>
     </div>
   ),
 };

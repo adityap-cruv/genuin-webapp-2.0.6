@@ -1,21 +1,21 @@
-import { cva, type VariantProps } from 'class-variance-authority'
-import { type ComponentProps } from 'react'
+import { cva, type VariantProps } from "class-variance-authority";
+import { type ComponentProps } from "react";
 
-import { cn } from '@/lib/utils'
+import { cn } from "@/lib/utils";
 
-const facebookVariant = cva('', {
+const facebookVariant = cva("", {
   variants: {
     variant: {
-      dark: 'stroke-monochrome-black',
-      light: 'stroke-monochrome-white',
+      dark: "stroke-monochrome-black",
+      light: "stroke-monochrome-white",
     },
   },
-})
+});
 
-type FacebookIconPropsType = ComponentProps<'svg'> &
-  VariantProps<typeof facebookVariant> & { variant?: 'light' | 'dark' | null }
+type FacebookIconPropsType = ComponentProps<"svg"> &
+  VariantProps<typeof facebookVariant> & { variant?: "light" | "dark" | null };
 
-export function FacebookIcon({ variant = 'dark', className, ...restProps }: FacebookIconPropsType) {
+export function FacebookIcon({ variant = "dark", className, ...restProps }: FacebookIconPropsType) {
   return (
     <svg
       className={cn(facebookVariant({ variant }), className)}
@@ -32,5 +32,5 @@ export function FacebookIcon({ variant = 'dark', className, ...restProps }: Face
         strokeLinejoin="round"
       />
     </svg>
-  )
+  );
 }

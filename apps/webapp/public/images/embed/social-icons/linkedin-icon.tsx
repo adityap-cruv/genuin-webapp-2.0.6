@@ -1,20 +1,20 @@
-import { cva, type VariantProps } from 'class-variance-authority'
-import { type ComponentProps } from 'react'
+import { cva, type VariantProps } from "class-variance-authority";
+import { type ComponentProps } from "react";
 
-import { cn } from '@/lib/utils'
+import { cn } from "@/lib/utils";
 
-const iconVariant = cva('', {
+const iconVariant = cva("", {
   variants: {
     variant: {
-      dark: 'stroke-monochrome-black',
-      light: 'stroke-monochrome-white',
+      dark: "stroke-monochrome-black",
+      light: "stroke-monochrome-white",
     },
   },
-})
+});
 
-type IconPropsType = ComponentProps<'svg'> & VariantProps<typeof iconVariant> & { variant?: 'light' | 'dark' | null }
+type IconPropsType = ComponentProps<"svg"> & VariantProps<typeof iconVariant> & { variant?: "light" | "dark" | null };
 
-export function LinkedInIcon({ variant = 'dark', className, ...props }: IconPropsType) {
+export function LinkedInIcon({ variant = "dark", className, ...props }: IconPropsType) {
   return (
     <svg
       className={cn(iconVariant({ variant }), className)}
@@ -44,5 +44,5 @@ export function LinkedInIcon({ variant = 'dark', className, ...props }: IconProp
         </clipPath>
       </defs>
     </svg>
-  )
+  );
 }

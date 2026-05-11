@@ -8,4 +8,3 @@ const VolumeOff = (props: SVGProps<SVGSVGElement>) => (
 );
 
 export default VolumeOff;
-

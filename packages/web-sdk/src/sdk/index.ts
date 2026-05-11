@@ -1,1 +1,1 @@
-export { GenuinSDK, Genuin } from './genuin-sdk'
+export { GenuinSDK, Genuin } from "./genuin-sdk";

@@ -1,60 +1,56 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { isValidPhoneNumber } from 'react-phone-number-input'
-import { z } from 'zod'
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import { z } from "zod";
 
-import { Button } from '@components/ui/button'
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@components/ui/form'
-import { Loader } from '@components/ui/loader'
-import { PhoneInput } from '@components/ui/phone-input'
-import { cn } from '@lib/utils'
+import { Button } from "@components/ui/button";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@components/ui/form";
+import { Loader } from "@components/ui/loader";
+import { PhoneInput } from "@components/ui/phone-input";
+import { cn } from "@lib/utils";
 
-import { sendOtp } from '../api/auth'
-import { ModalShell } from '../modal-shell'
-import { useAuthenticationModalStore } from '../store'
+import { sendOtp } from "../api/auth";
+import { ModalShell } from "../modal-shell";
+import { useAuthenticationModalStore } from "../store";
 
-
-
-
-import { type ScreenProps } from '.'
-
+import { type ScreenProps } from ".";
 
 const formSchema = z.object({
   phone: z.string(),
-})
+});
 
 export function EditNumber({ onNext }: ScreenProps) {
-  const { formData, setFormData } = useAuthenticationModalStore()
-  const [isLoading, setIsLoading] = useState(false)
+  const { formData, setFormData } = useAuthenticationModalStore();
+  const [isLoading, setIsLoading] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    mode: 'onSubmit',
-    criteriaMode: 'firstError',
+    mode: "onSubmit",
+    criteriaMode: "firstError",
     defaultValues: {
       phone: formData.phoneNumber,
     },
-  })
+  });
 
   async function onSubmit() {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const response = await sendOtp({ phoneNumber: formData.phoneNumber, isUpdate: true })
+      const response = await sendOtp({ phoneNumber: formData.phoneNumber, isUpdate: true });
       if (response.codeSent) {
-        onNext()
+        onNext();
       } else {
-        form.control.setError('phone', { message: response.message })
+        form.control.setError("phone", { message: response.message });
       }
     } catch (e) {
-      form.control.setError('root', { message: 'Something went wrong. Please try again!' })
+      form.control.setError("root", { message: "Something went wrong. Please try again!" });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
   return (
     <ModalShell>
-      <p className="text-center text-title-1-demi sm:text-heading-3">Phone</p>
+      <p className="text-title-1-demi sm:text-heading-3 text-center">Phone</p>
       <div className="w-full">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -66,26 +62,26 @@ export function EditNumber({ onNext }: ScreenProps) {
                   <FormItem className="sm:w-full">
                     <FormControl>
                       <PhoneInput
-                        value={'+1' as string & { __tag: 'E164Number' }}
+                        value={"+1" as string & { __tag: "E164Number" }}
                         international
                         className="w-full"
                         onChange={(value) => {
-                          setFormData({ phoneNumber: value })
+                          setFormData({ phoneNumber: value });
                         }}
                       />
                     </FormControl>
-                    <FormMessage className={cn('!text-cap-1-med text-tertiary')}>
+                    <FormMessage className={cn("!text-cap-1-med text-tertiary")}>
                       Verifying your phone number helps secure your account.
                     </FormMessage>
                   </FormItem>
-                )
+                );
               }}
             />
             <Button
               type="submit"
               variant="default"
               className="w-full"
-              disabled={!isValidPhoneNumber(formData.phoneNumber ?? '') || isLoading}>
+              disabled={!isValidPhoneNumber(formData.phoneNumber ?? "") || isLoading}>
               {isLoading ? (
                 <Loader size="sm" className="fill-monochrome-white stroke-monochrome-white" />
               ) : (
@@ -96,10 +92,10 @@ export function EditNumber({ onNext }: ScreenProps) {
         </Form>
       </div>
       {form.formState.errors.root && (
-        <p className="flex items-center justify-center text-center text-title-3-med text-supplementary-red">
+        <p className="text-title-3-med text-supplementary-red flex items-center justify-center text-center">
           {form.formState.errors.root.message}
         </p>
       )}
     </ModalShell>
-  )
+  );
 }

@@ -7,10 +7,7 @@ import { baseQueryKey } from "./base";
  * @param userName - The username for which to get the profile details query key.
  * @returns
  */
-export function getQueryKeyForProfileDetails(
-  userName: string,
-  forBrand: boolean
-): QueryKey {
+export function getQueryKeyForProfileDetails(userName: string, forBrand: boolean): QueryKey {
   return [...baseQueryKey, forBrand ? "brand" : "profile", "details", userName];
 }
 
@@ -22,17 +19,8 @@ export function getQueryKeyForProfileDetails(
  * @param {boolean} forBrand - Determines if the key is for a brand or profile.
  * @returns {QueryKey} The generated query key.
  */
-export function getQueryKeyForProfileCommunities(
-  id: string,
-  forBrand: boolean
-): QueryKey {
-  return [
-    ...baseQueryKey,
-    forBrand ? "brand" : "profile",
-    "communities",
-    "list",
-    id,
-  ];
+export function getQueryKeyForProfileCommunities(id: string, forBrand: boolean): QueryKey {
+  return [...baseQueryKey, forBrand ? "brand" : "profile", "communities", "list", id];
 }
 
 /**
@@ -43,17 +31,8 @@ export function getQueryKeyForProfileCommunities(
  * @param {boolean} forBrand - Determines if the key is for a brand or profile.
  * @returns {QueryKey} The generated query key.
  */
-export function getQueryKeyForProfileLoops(
-  communityId: string,
-  forBrand: boolean
-): QueryKey {
-  return [
-    ...baseQueryKey,
-    forBrand ? "brand" : "profile",
-    "communities",
-    "loops",
-    communityId,
-  ];
+export function getQueryKeyForProfileLoops(communityId: string, forBrand: boolean): QueryKey {
+  return [...baseQueryKey, forBrand ? "brand" : "profile", "communities", "loops", communityId];
 }
 
 /**
@@ -65,37 +44,14 @@ export function getQueryKeyForProfileLoops(
  * @param {boolean} forBrand - Determines if the key is for a brand or profile.
  * @returns {QueryKey} The generated query key.
  */
-export function getQueryKeyForProfileVideos(
-  communityId: string,
-  loopId: string,
-  forBrand: boolean
-): QueryKey {
-  return [
-    ...baseQueryKey,
-    forBrand ? "brand" : "profile",
-    "communities",
-    "loops",
-    "videos",
-    communityId,
-    loopId,
-  ];
+export function getQueryKeyForProfileVideos(communityId: string, loopId: string, forBrand: boolean): QueryKey {
+  return [...baseQueryKey, forBrand ? "brand" : "profile", "communities", "loops", "videos", communityId, loopId];
 }
 
 /**
  * Returns a QueryKey for fetching profile groups.
  * It works for both brand and profile.
  */
-export function getQueryKeyForProfileFeed(
-  profileId: string,
-  forBrand: boolean,
-  videoId: string
-) {
-  return [
-    ...baseQueryKey,
-    "profile",
-    "feed",
-    profileId,
-    videoId,
-    forBrand ? "brand" : "profile",
-  ];
+export function getQueryKeyForProfileFeed(profileId: string, forBrand: boolean, videoId: string) {
+  return [...baseQueryKey, "profile", "feed", profileId, videoId, forBrand ? "brand" : "profile"];
 }

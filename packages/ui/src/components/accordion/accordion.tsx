@@ -29,20 +29,14 @@ const AccordionItem = ({ className, value, ...props }: AccordionItemProps) => (
 );
 AccordionItem.displayName = "AccordionItem";
 
-const AccordionTrigger = ({
-  className,
-  children,
-  openCloseIcon,
-  ...props
-}: AccordionTriggerProps) => (
+const AccordionTrigger = ({ className, children, openCloseIcon, ...props }: AccordionTriggerProps) => (
   <AccordionPrimitive.Header className="gencl:flex">
     <AccordionPrimitive.Trigger
       className={cn(
         "gencl:flex gencl:flex-1 gencl:items-center gencl:justify-between gencl:py-4 gencl:transition-all hover:gencl:underline gencl:[&[data-state=open]>svg]:rotate-180 gencl:cursor-pointer",
         className
       )}
-      {...props}
-    >
+      {...props}>
       {children}
       {openCloseIcon ? (
         openCloseIcon
@@ -54,15 +48,10 @@ const AccordionTrigger = ({
 );
 AccordionTrigger.displayName = AccordionPrimitive.Trigger.displayName;
 
-const AccordionContent = ({
-  className,
-  children,
-  ...props
-}: AccordionContentProps) => (
+const AccordionContent = ({ className, children, ...props }: AccordionContentProps) => (
   <AccordionPrimitive.Content
     className="gencl:overflow-hidden gencl:transition-all data-[state=closed]:gencl:animate-accordion-up gencl:data-[state=open]:animate-accordion-down"
-    {...props}
-  >
+    {...props}>
     <div className={cn("gencl:pb-4 gencl:pt-0", className)}>{children}</div>
   </AccordionPrimitive.Content>
 );

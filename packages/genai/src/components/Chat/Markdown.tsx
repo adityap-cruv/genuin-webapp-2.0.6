@@ -38,7 +38,7 @@ const MarkdownComponents: Components = {
     a: ({ children, href }) => (
         <a
             href={href}
-            className='gai:hover:decoration-blue-600 gai:text-blue-600 gai:underline gai:decoration-blue-600/30 gai:underline-offset-2 gai:transition-colors'
+            className='gai:text-blue-600 gai:underline gai:decoration-blue-600/30 gai:underline-offset-2 gai:transition-colors gai:hover:decoration-blue-600'
             target='_blank'
             rel='noopener noreferrer'
         >

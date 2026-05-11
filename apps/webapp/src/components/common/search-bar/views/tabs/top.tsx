@@ -1,56 +1,55 @@
-import { ChevronLeft, ChevronRight } from 'lucide-react'
-import Link from 'next/link'
-import { useState } from 'react'
-import { type ReactNode } from 'react'
-import { Swiper, SwiperSlide, useSwiper } from 'swiper/react'
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+import { type ReactNode } from "react";
+import { Swiper, SwiperSlide, useSwiper } from "swiper/react";
 
+import { CustomAvatar } from "@components/custom/custom-avatar";
+import { Button } from "@components/ui/button";
+import { PATH_NAME } from "@lib/utils/constants/path";
 
-import { CustomAvatar } from '@components/custom/custom-avatar'
-import { Button } from '@components/ui/button'
-import { PATH_NAME } from '@lib/utils/constants/path'
+import { type RankingResType, type LoopResType } from "../../schema/top-resp";
+import { useSearchBarStore } from "../../store";
 
-import { type RankingResType, type LoopResType } from '../../schema/top-resp'
-import { useSearchBarStore } from '../../store'
+import { CommunityTile } from "./communities";
+import { LoopItem } from "./loops";
+import { NoResults } from "./no-results";
+import { Posts } from "./posts";
 
-import { CommunityTile } from './communities'
-import { LoopItem } from './loops'
-import { NoResults } from './no-results'
-import { Posts } from './posts'
-
-import { type VideoType, type CommunityType, type PeopleType } from '.'
+import { type VideoType, type CommunityType, type PeopleType } from ".";
 
 type Props = Partial<{
-  communities: CommunityType[]
-  loops: LoopResType[]
-  people: PeopleType[]
-  ranking: RankingResType
-  videos: VideoType[]
-}>
+  communities: CommunityType[];
+  loops: LoopResType[];
+  people: PeopleType[];
+  ranking: RankingResType;
+  videos: VideoType[];
+}>;
 
 export function Top({ communities, loops, people, ranking, videos }: Props) {
-  const compoArr: ReactNode[] = []
+  const compoArr: ReactNode[] = [];
 
   ranking?.forEach((item, _, __) => {
-    if (item === 'communities' && communities) compoArr.push(<CommunityView communities={communities} />)
-    if (item === 'loops' && loops && loops.length !== 0) compoArr.push(<LoopView loops={loops} />)
-    if (item === 'people' && people) compoArr.push(<PeopleView people={people} />)
-  })
-  if (videos) compoArr.push(<VideoView videos={videos} />)
-  if (compoArr.length !== 0) return <div className="flex flex-col gap-y-4 pb-16 pt-4 sm:py-4">{compoArr}</div>
+    if (item === "communities" && communities) compoArr.push(<CommunityView communities={communities} />);
+    if (item === "loops" && loops && loops.length !== 0) compoArr.push(<LoopView loops={loops} />);
+    if (item === "people" && people) compoArr.push(<PeopleView people={people} />);
+  });
+  if (videos) compoArr.push(<VideoView videos={videos} />);
+  if (compoArr.length !== 0) return <div className="flex flex-col gap-y-4 pt-4 pb-16 sm:py-4">{compoArr}</div>;
 
-  return <NoResults />
+  return <NoResults />;
 }
 
 function CommunityView({ communities }: { communities: CommunityType[] }) {
-  const { setView } = useSearchBarStore()
+  const { setView } = useSearchBarStore();
   return (
     <span>
       <span className="flex justify-between px-4 pb-1">
         <p className="text-title-3-bold">Communities</p>
         <p
-          className="cursor-pointer text-body-1-demi text-tertiary"
+          className="text-body-1-demi text-tertiary cursor-pointer"
           onClick={() => {
-            setView('TABS', 'COMMUNITIES')
+            setView("TABS", "COMMUNITIES");
           }}>
           See all
         </p>
@@ -81,54 +80,54 @@ function CommunityView({ communities }: { communities: CommunityType[] }) {
         )}
       </div>
     </span>
-  )
+  );
 }
 
 function SlideButtons() {
-  const slider = useSwiper()
-  const [status, setStatus] = useState({ isStart: true, isEnd: slider.slides.length === 1 })
+  const slider = useSwiper();
+  const [status, setStatus] = useState({ isStart: true, isEnd: slider.slides.length === 1 });
   return (
     <>
       {!status.isStart && (
-        <div className="absolute left-2 top-1/2 z-50 -translate-y-1/2">
+        <div className="absolute top-1/2 left-2 z-50 -translate-y-1/2">
           <Button
-            className="h-10 w-10 rounded-full bg-monochrome-white/80 drop-shadow-circle-shadow hover:bg-monochrome-white hover:shadow-md"
+            className="bg-monochrome-white/80 drop-shadow-circle-shadow hover:bg-monochrome-white h-10 w-10 rounded-full hover:shadow-md"
             size="custom"
             onClick={() => {
-              slider.slidePrev()
-              setStatus({ isEnd: slider.isEnd, isStart: slider.isBeginning })
+              slider.slidePrev();
+              setStatus({ isEnd: slider.isEnd, isStart: slider.isBeginning });
             }}>
-            <ChevronLeft className="h-7 stroke-monochrome-black  stroke-[2px]" />
+            <ChevronLeft className="stroke-monochrome-black h-7 stroke-[2px]" />
           </Button>
         </div>
       )}
       {!status.isEnd && (
-        <div className="absolute right-2 top-1/2 z-50 -translate-y-1/2">
+        <div className="absolute top-1/2 right-2 z-50 -translate-y-1/2">
           <Button
-            className="h-10 w-10 rounded-full bg-monochrome-white/80 drop-shadow-circle-shadow hover:bg-monochrome-white hover:shadow-md"
+            className="bg-monochrome-white/80 drop-shadow-circle-shadow hover:bg-monochrome-white h-10 w-10 rounded-full hover:shadow-md"
             size="custom"
             onClick={() => {
-              slider.slideNext()
-              setStatus({ isEnd: slider.isEnd, isStart: slider.isBeginning })
+              slider.slideNext();
+              setStatus({ isEnd: slider.isEnd, isStart: slider.isBeginning });
             }}>
-            <ChevronRight className="h-7 stroke-monochrome-black  stroke-[2px]" />
+            <ChevronRight className="stroke-monochrome-black h-7 stroke-[2px]" />
           </Button>
         </div>
       )}
     </>
-  )
+  );
 }
 
 function LoopView({ loops }: { loops: LoopResType[] }) {
-  const { setView } = useSearchBarStore()
+  const { setView } = useSearchBarStore();
   return (
     <span>
       <span className="flex justify-between px-4 pb-2">
         <p className="text-title-3-bold">Groups</p>
         <p
-          className="cursor-pointer text-body-1-demi text-tertiary"
+          className="text-body-1-demi text-tertiary cursor-pointer"
           onClick={() => {
-            setView('TABS', 'LOOPS')
+            setView("TABS", "LOOPS");
           }}>
           See all
         </p>
@@ -159,19 +158,19 @@ function LoopView({ loops }: { loops: LoopResType[] }) {
         )}
       </div>
     </span>
-  )
+  );
 }
 
 function PeopleView({ people }: { people: PeopleType[] }) {
-  const { setView, close } = useSearchBarStore()
+  const { setView, close } = useSearchBarStore();
   return (
     <span>
       <span className="flex justify-between px-4 pb-2">
         <p className="text-title-3-bold">People</p>
         <p
-          className="cursor-pointer text-body-1-demi text-tertiary"
+          className="text-body-1-demi text-tertiary cursor-pointer"
           onClick={() => {
-            setView('TABS', 'PEOPLE')
+            setView("TABS", "PEOPLE");
           }}>
           See all
         </p>
@@ -185,35 +184,35 @@ function PeopleView({ people }: { people: PeopleType[] }) {
               className="flex w-fit flex-col items-center gap-y-1"
               key={person.id}>
               <CustomAvatar
-                fallbackString={person.name ?? ''}
-                imageUrl={person.profileImage ?? ''}
+                fallbackString={person.name ?? ""}
+                imageUrl={person.profileImage ?? ""}
                 isAvatar={person.isAvatar}
                 className="h-16 w-16"
               />
-              <p className="line-clamp-1 break-all text-cap-1-demi">{`@${person.userName}`}</p>
+              <p className="text-cap-1-demi line-clamp-1 break-all">{`@${person.userName}`}</p>
             </Link>
-          )
+          );
         })}
       </div>
     </span>
-  )
+  );
 }
 
 function VideoView({ videos }: { videos: VideoType[] }) {
-  const { setView } = useSearchBarStore()
+  const { setView } = useSearchBarStore();
   return (
     <span>
       <span className="flex justify-between px-4 pb-2">
         <p className="text-title-3-bold">Posts</p>
         <p
-          className="cursor-pointer text-body-1-demi text-tertiary"
+          className="text-body-1-demi text-tertiary cursor-pointer"
           onClick={() => {
-            setView('TABS', 'POSTS')
+            setView("TABS", "POSTS");
           }}>
           See all
         </p>
       </span>
       <Posts videos={videos} />
     </span>
-  )
+  );
 }

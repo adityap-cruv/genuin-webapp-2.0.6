@@ -1,31 +1,31 @@
 // Import necessary modules and types from React and class-variance-authority
-import { cva, type VariantProps } from 'class-variance-authority'
-import { type ComponentProps } from 'react'
+import { cva, type VariantProps } from "class-variance-authority";
+import { type ComponentProps } from "react";
 
 // Define the closeVariant function using cva to handle different styles based on props
-const closeVariant = cva('', {
+const closeVariant = cva("", {
   variants: {
     variant: {
-      light: 'stroke-monochrome-white', // Light variant style
-      transparent: 'stroke-monochrome-black', // Transparent variant style
-      dark: 'stroke-monochrome-black', // Dark variant style
+      light: "stroke-monochrome-white", // Light variant style
+      transparent: "stroke-monochrome-black", // Transparent variant style
+      dark: "stroke-monochrome-black", // Dark variant style
     },
     size: {
-      sm: 'w-4 h-4', // Small size style (16px)
-      md: 'w-6 h-6', // Medium size style (24px)
-      lg: 'w-8 h-8', // Large size style (32px)
+      sm: "w-4 h-4", // Small size style (16px)
+      md: "w-6 h-6", // Medium size style (24px)
+      lg: "w-8 h-8", // Large size style (32px)
     },
   },
-})
+});
 
 // Define the Props type for the CloseIcon component
 type Props = Readonly<
-  ComponentProps<'svg'> &
-    VariantProps<typeof closeVariant> & { variant?: 'light' | 'transparent' | 'dark' | null; size?: 'sm' | 'md' | 'lg' }
->
+  ComponentProps<"svg"> &
+    VariantProps<typeof closeVariant> & { variant?: "light" | "transparent" | "dark" | null; size?: "sm" | "md" | "lg" }
+>;
 
 // Define the CloseIcon functional component
-export function CloseIcon({ variant = 'dark', size = 'md', ...props }: Readonly<Props>) {
+export function CloseIcon({ variant = "dark", size = "md", ...props }: Readonly<Props>) {
   return (
     // SVG element representing the close icon
     <svg
@@ -54,5 +54,5 @@ export function CloseIcon({ variant = 'dark', size = 'md', ...props }: Readonly<
         className={closeVariant({ variant })} // Apply styles based on variant prop
       />
     </svg>
-  )
+  );
 }

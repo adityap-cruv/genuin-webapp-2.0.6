@@ -4,13 +4,7 @@
 // Usage: node sync-ai-config.mjs [--dry-run]
 // Add to package.json: "ai:sync": "node sync-ai-config.mjs"
 
-import {
-  readFileSync,
-  writeFileSync,
-  mkdirSync,
-  readdirSync,
-  existsSync,
-} from "fs";
+import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 
@@ -84,9 +78,7 @@ function read(file) {
 
 function write(filePath, content) {
   if (DRY_RUN) {
-    const existing = existsSync(filePath)
-      ? readFileSync(filePath, "utf-8")
-      : null;
+    const existing = existsSync(filePath) ? readFileSync(filePath, "utf-8") : null;
     if (existing === content) {
       console.log(`  ✔  (unchanged) ${filePath}`);
     } else {
@@ -128,9 +120,7 @@ function safeRead(filePath) {
 }
 
 function readDir(dir) {
-  return existsSync(dir)
-    ? readdirSync(dir).filter((f) => !f.startsWith("."))
-    : [];
+  return existsSync(dir) ? readdirSync(dir).filter((f) => !f.startsWith(".")) : [];
 }
 
 // ─── Load agent tools & descriptions from agents.config.json ─────────
@@ -156,18 +146,12 @@ if (existsSync(agentConfigPath)) {
     console.warn(`   Details: ${err.message}`);
   }
 } else {
-  console.warn(
-    "⚠️  .team/agents.config.json not found — using built-in defaults for agent tools/descriptions.",
-  );
-  console.warn(
-    "   Create it to manage agent config outside this script. See README for format.",
-  );
+  console.warn("⚠️  .team/agents.config.json not found — using built-in defaults for agent tools/descriptions.");
+  console.warn("   Create it to manage agent config outside this script. See README for format.");
 }
 
 function getAgentTools(name) {
-  return agentConfig[name]?.tools
-    ? JSON.stringify(agentConfig[name].tools)
-    : DEFAULT_AGENT_TOOLS;
+  return agentConfig[name]?.tools ? JSON.stringify(agentConfig[name].tools) : DEFAULT_AGENT_TOOLS;
 }
 
 function getAgentDescription(name) {
@@ -189,10 +173,7 @@ const claudeDelta = safeRead(claudePath);
 
 // Copilot → .github/copilot-instructions.md
 const copilotParts = [base, copilotDelta].filter(Boolean);
-write(
-  join(githubDir, "copilot-instructions.md"),
-  copilotParts.join("\n\n---\n\n"),
-);
+write(join(githubDir, "copilot-instructions.md"), copilotParts.join("\n\n---\n\n"));
 
 // Claude → .claude/CLAUDE.md
 const claudeParts = [base, claudeDelta].filter(Boolean);
@@ -214,7 +195,7 @@ for (const file of readDir(agentsDir)) {
   // Copilot: .github/agents/<n>.agent.md  (requires frontmatter with tools)
   write(
     join(githubDir, "agents", `${name}.agent.md`),
-    `---\nname: ${name}\ndescription: ${description}\ntools: ${tools}\n---\n\n${content}\n`,
+    `---\nname: ${name}\ndescription: ${description}\ntools: ${tools}\n---\n\n${content}\n`
   );
 
   // Claude: .claude/agents/<n>.md
@@ -263,9 +244,7 @@ if (existsSync(guardrailsPath)) {
   write(join(claudeDir, "guardrails.json"), guardrailsContent);
   console.log("✅ Guardrails synced");
 } else {
-  console.warn(
-    "⚠️  .team/hooks/guardrails.json not found — skipping guardrails sync.",
-  );
+  console.warn("⚠️  .team/hooks/guardrails.json not found — skipping guardrails sync.");
 }
 
 // ─── 5. Hooks (GitHub only) ──────────────────────────────────────────────────
@@ -298,15 +277,11 @@ if (existsSync(claudeSettingsPath)) {
 const aiContextPath = join(teamDir, "docs", "ai-context.md");
 
 if (!existsSync(aiContextPath)) {
-  console.warn(
-    "⚠️  .team/docs/ai-context.md not found — Claude will start sessions without project context.",
-  );
+  console.warn("⚠️  .team/docs/ai-context.md not found — Claude will start sessions without project context.");
 } else {
   const aiContextContent = read(aiContextPath).trim();
   if (aiContextContent.length < 100) {
-    console.warn(
-      "⚠️  .team/docs/ai-context.md looks empty — fill it in so Claude has project context.",
-    );
+    console.warn("⚠️  .team/docs/ai-context.md looks empty — fill it in so Claude has project context.");
   } else {
     console.log("✅ ai-context.md present");
   }

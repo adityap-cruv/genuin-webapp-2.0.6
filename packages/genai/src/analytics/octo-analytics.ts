@@ -230,9 +230,8 @@ export class OctoAnalytics {
      */
     private getSDKVersion(): string {
         // Try to get from window.GenAISDK if available
-         
+
         if (typeof window !== 'undefined' && (window as any).GenAISDK?.version) {
-             
             return (window as any).GenAISDK.version;
         }
         return '1.0.0'; // Default fallback

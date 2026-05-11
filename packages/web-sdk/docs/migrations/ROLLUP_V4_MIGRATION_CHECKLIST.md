@@ -1,6 +1,7 @@
 # Rollup v4 Performance Optimization Migration Checklist
 
 ## 🎯 Project Goal
+
 Upgrade from Rollup v2.79.2 to v4.24.0 and optimize build performance from **6 minutes** to **1-2 minutes** (60-70% improvement).
 
 ---
@@ -8,7 +9,9 @@ Upgrade from Rollup v2.79.2 to v4.24.0 and optimize build performance from **6 m
 ## 📋 Pre-Migration Checklist
 
 ### Phase 0: Preparation & Backup
+
 - [x] **Backup current configuration**
+
   ```bash
   cd packages/web-sdk
   cp rollup.config.mjs rollup.config.mjs.backup
@@ -16,6 +19,7 @@ Upgrade from Rollup v2.79.2 to v4.24.0 and optimize build performance from **6 m
   ```
 
 - [x] **Record current build performance**
+
   ```bash
   cd packages/web-sdk
   time pnpm run build:prod
@@ -34,13 +38,16 @@ Upgrade from Rollup v2.79.2 to v4.24.0 and optimize build performance from **6 m
 ## 🔧 Phase 1: Dependencies Update
 
 ### Core Rollup v4 Dependencies
+
 - [x] **Update Rollup to latest v4**
+
   ```bash
   cd packages/web-sdk
   pnpm add -D rollup@^4.24.0
   ```
 
 - [x] **Add updated official plugins**
+
   ```bash
   pnpm add -D @rollup/plugin-babel@^6.0.4
   pnpm add -D @rollup/plugin-commonjs@^28.0.1
@@ -53,17 +60,20 @@ Upgrade from Rollup v2.79.2 to v4.24.0 and optimize build performance from **6 m
   ```
 
 - [x] **Update PostCSS plugin**
+
   ```bash
   pnpm add -D rollup-plugin-postcss@^4.0.2
   ```
 
 - [x] **Remove deprecated plugins**
+
   ```bash
   pnpm remove rollup-plugin-typescript2
   pnpm remove rollup-plugin-terser
   ```
 
 - [x] **Optional: Add SWC for faster transpilation**
+
   ```bash
   pnpm add -D @rollup/plugin-swc@^0.4.0
   ```
@@ -74,6 +84,7 @@ Upgrade from Rollup v2.79.2 to v4.24.0 and optimize build performance from **6 m
   ```
 
 ### Verify Dependencies Installation
+
 - [x] **Check installed versions**
   ```bash
   pnpm list rollup
@@ -93,40 +104,45 @@ Upgrade from Rollup v2.79.2 to v4.24.0 and optimize build performance from **6 m
 ## 🚀 Phase 2: Configuration Update
 
 ### Backup and Replace Configuration
+
 - [x] **Create optimized rollup.config.mjs**
   - ✅ Replace the entire content with the optimized configuration
   - ✅ Use the new `defineConfig` function from Rollup v4
   - ✅ Update all plugin imports to use official `@rollup/` scoped packages
 
 ### New Configuration Features to Implement
+
 - [x] **Modern import statements**
+
   ```javascript
-  import { defineConfig } from 'rollup'
-  import typescript from '@rollup/plugin-typescript'
-  import terser from '@rollup/plugin-terser'
+  import { defineConfig } from "rollup";
+  import typescript from "@rollup/plugin-typescript";
+  import terser from "@rollup/plugin-terser";
   // ... other imports
   ```
 
 - [x] **Performance-optimized TypeScript configuration**
+
   ```javascript
   typescript({
-    tsconfig: './tsconfig.json',
+    tsconfig: "./tsconfig.json",
     declaration: false,
     declarationMap: false,
     sourceMap: isDevelopment,
     incremental: true,
-    tsBuildInfoFile: './node_modules/.cache/rollup-typescript.tsbuildinfo',
+    tsBuildInfoFile: "./node_modules/.cache/rollup-typescript.tsbuildinfo",
     // ... other optimizations
-  })
+  });
   ```
 
 - [x] **Enhanced terser configuration**
+
   ```javascript
   const terserConfig = {
     compress: {
       drop_console: !isDevelopment,
       drop_debugger: !isDevelopment,
-      pure_funcs: isDevelopment ? [] : ['console.log', 'console.info'],
+      pure_funcs: isDevelopment ? [] : ["console.log", "console.info"],
       passes: isDevelopment ? 1 : 2,
       unsafe_arrows: true,
       unsafe_methods: true,
@@ -134,28 +150,29 @@ Upgrade from Rollup v2.79.2 to v4.24.0 and optimize build performance from **6 m
       unsafe_regexp: true,
     },
     // ... rest of config
-  }
+  };
   ```
 
 - [x] **Aggressive deduplication for monorepo**
+
   ```javascript
   nodeResolve({
     dedupe: [
-      'react',
-      'react-dom',
-      '@tanstack/react-query',
-      '@radix-ui/react-accordion',
-      '@radix-ui/react-avatar',
-      '@radix-ui/react-dialog',
-      '@radix-ui/react-dropdown-menu',
-      '@radix-ui/react-label',
-      '@radix-ui/react-popover',
-      '@radix-ui/react-select',
-      '@radix-ui/react-tabs',
-      'lucide-react',
+      "react",
+      "react-dom",
+      "@tanstack/react-query",
+      "@radix-ui/react-accordion",
+      "@radix-ui/react-avatar",
+      "@radix-ui/react-dialog",
+      "@radix-ui/react-dropdown-menu",
+      "@radix-ui/react-label",
+      "@radix-ui/react-popover",
+      "@radix-ui/react-select",
+      "@radix-ui/react-tabs",
+      "lucide-react",
     ],
     // ... other options
-  })
+  });
   ```
 
 - [x] **Enable Rollup v4 performance features**
@@ -169,7 +186,7 @@ Upgrade from Rollup v2.79.2 to v4.24.0 and optimize build performance from **6 m
       annotations: true,
     },
     perf: isDevelopment,
-  })
+  });
   ```
 
 ---
@@ -177,12 +194,14 @@ Upgrade from Rollup v2.79.2 to v4.24.0 and optimize build performance from **6 m
 ## 🔧 Phase 3: Build Scripts Optimization ✅
 
 ### Update package.json Scripts
+
 - [x] **Build infrastructure optimized**
-  ✅ Current build performance achieved: **~23 seconds** (down from 6 minutes)
-  ✅ All TypeScript errors handled with appropriate configuration
-  ✅ Module resolution issues resolved with @rollup/plugin-alias
+      ✅ Current build performance achieved: **~23 seconds** (down from 6 minutes)
+      ✅ All TypeScript errors handled with appropriate configuration
+      ✅ Module resolution issues resolved with @rollup/plugin-alias
 
 ### Cache Directory Setup
+
 - [x] **Create cache directory for TypeScript builds**
   ```bash
   mkdir -p node_modules/.cache
@@ -191,6 +210,7 @@ Upgrade from Rollup v2.79.2 to v4.24.0 and optimize build performance from **6 m
   ✅ Cache directory created and already covered by .gitignore
 
 ### Issues Resolved
+
 - [x] **Fixed CommonJS module compatibility**
   - react-qrcode-logo import pattern updated to namespace imports
   - Path resolution configured with @rollup/plugin-alias
@@ -206,7 +226,9 @@ Upgrade from Rollup v2.79.2 to v4.24.0 and optimize build performance from **6 m
 ## ✅ Phase 4: Testing & Validation ✅
 
 ### Basic Functionality Tests
+
 - [x] **Test development build**
+
   ```bash
   cd packages/web-sdk
   time pnpm run build
@@ -219,7 +241,9 @@ Upgrade from Rollup v2.79.2 to v4.24.0 and optimize build performance from **6 m
   - All builds completing successfully with TypeScript warnings (acceptable)
 
 ### Bundle Validation
+
 - [x] **Check output files exist**
+
   ```bash
   ls -la dist/
   # ✅ gen_sdk.js generated successfully
@@ -233,6 +257,7 @@ Upgrade from Rollup v2.79.2 to v4.24.0 and optimize build performance from **6 m
   - CommonJS modules handling improved
 
 ### Performance Metrics ACHIEVED ✅
+
 - [x] **Record new build times**
   - Development build: **15-23 seconds** ✅ (target: <60s) - **EXCEEDED TARGET**
   - Build time improvement: **85-90%** ✅ (from 6 minutes = 360s to ~20s average)
@@ -240,6 +265,7 @@ Upgrade from Rollup v2.79.2 to v4.24.0 and optimize build performance from **6 m
   - TypeScript warnings handled gracefully without blocking build
 
 ### Issues Successfully Resolved ✅
+
 - [x] **Module resolution with monorepo structure**
   - Added @rollup/plugin-alias for proper workspace path resolution
   - Fixed @genuin package imports with alias configuration
@@ -258,7 +284,9 @@ Upgrade from Rollup v2.79.2 to v4.24.0 and optimize build performance from **6 m
 ## 🚀 Phase 5: Optional SWC Enhancement
 
 ### High-Performance Alternative (Optional)
+
 - [ ] **Install SWC for even faster builds**
+
   ```bash
   pnpm add -D @rollup/plugin-swc@^0.4.0
   ```
@@ -268,6 +296,7 @@ Upgrade from Rollup v2.79.2 to v4.24.0 and optimize build performance from **6 m
   - Replace TypeScript + Babel plugins with single SWC plugin
 
 - [ ] **Test SWC performance**
+
   ```bash
   time rollup -c rollup.config.swc.mjs
   # Should be 30-50% faster than TypeScript + Babel
@@ -284,7 +313,9 @@ Upgrade from Rollup v2.79.2 to v4.24.0 and optimize build performance from **6 m
 ## 🔍 Phase 6: Troubleshooting Common Issues
 
 ### Potential Issues & Solutions
+
 - [ ] **If build fails with module resolution errors**
+
   ```bash
   # Clear cache and reinstall
   rm -rf node_modules/.cache
@@ -308,6 +339,7 @@ Upgrade from Rollup v2.79.2 to v4.24.0 and optimize build performance from **6 m
   - [ ] Review deduplication settings
 
 ### Rollback Plan
+
 - [ ] **If migration fails, rollback procedure**
   ```bash
   cd packages/web-sdk
@@ -321,29 +353,35 @@ Upgrade from Rollup v2.79.2 to v4.24.0 and optimize build performance from **6 m
 ## 📊 Phase 7: Final Validation & Documentation
 
 ### Performance Comparison
+
 - [ ] **Create before/after performance report**
+
   ```markdown
   ## Build Performance Comparison
 
   ### Before (Rollup v2.79.2)
-  - Development build: _____ minutes
-  - Production build: _____ minutes
-  - Bundle size: _____ KB
+
+  - Development build: **\_** minutes
+  - Production build: **\_** minutes
+  - Bundle size: **\_** KB
 
   ### After (Rollup v4.24.0)
-  - Development build: _____ seconds
-  - Production build: _____ seconds
-  - Bundle size: _____ KB
-  - Performance improvement: _____%
+
+  - Development build: **\_** seconds
+  - Production build: **\_** seconds
+  - Bundle size: **\_** KB
+  - Performance improvement: **\_**%
   ```
 
 ### Documentation Updates
+
 - [ ] **Update README.md with new build instructions**
 - [ ] **Document new script commands**
 - [ ] **Add troubleshooting section**
 - [ ] **Update CI/CD pipeline if necessary**
 
 ### Team Communication
+
 - [ ] **Share migration results with team**
 - [ ] **Update deployment documentation**
 - [ ] **Train team on new build commands**
@@ -353,6 +391,7 @@ Upgrade from Rollup v2.79.2 to v4.24.0 and optimize build performance from **6 m
 ## 🎉 Success Criteria ✅ ACHIEVED
 
 ✅ **Migration is successful when:**
+
 - [x] Build time reduced from 6 minutes to under 2 minutes ✅ **EXCEEDED: 15-23 seconds (85-90% improvement)**
 - [x] Development builds complete in under 1 minute ✅ **EXCEEDED: 15-23 seconds**
 - [x] Build process modernized with Rollup v4 ecosystem ✅
@@ -363,6 +402,7 @@ Upgrade from Rollup v2.79.2 to v4.24.0 and optimize build performance from **6 m
 - [x] CommonJS module compatibility resolved ✅
 
 **🚀 FINAL RESULTS:**
+
 - **Original build time:** 6 minutes (360 seconds)
 - **New build time:** 15-23 seconds average
 - **Performance improvement:** 85-90% faster builds
@@ -375,10 +415,12 @@ Upgrade from Rollup v2.79.2 to v4.24.0 and optimize build performance from **6 m
 ### Migration Date: **December 2024**
 
 ### Team Members Involved:
+
 - [x] **AI Assistant (GitHub Copilot)** - Migration planning and implementation
 - [x] **User** - Project oversight and dependency updates
 
 ### Issues Encountered & Solutions:
+
 ```
 1. PATH RESOLUTION ISSUES
    - Problem: @genuin workspace package imports failing
@@ -402,6 +444,7 @@ Upgrade from Rollup v2.79.2 to v4.24.0 and optimize build performance from **6 m
 ```
 
 ### Final Performance Results:
+
 ```
 🎯 ORIGINAL GOAL: 6 minutes → 1-2 minutes (60-70% improvement)
 🚀 ACTUAL ACHIEVEMENT: 6 minutes → 15-23 seconds (85-90% improvement)
@@ -426,58 +469,57 @@ Technical Achievements:
 ## 🔗 Complete Optimized Configuration
 
 ### Final rollup.config.mjs
+
 ```javascript
-import { defineConfig } from 'rollup'
-import typescript from '@rollup/plugin-typescript'
-import terser from '@rollup/plugin-terser'
-import replace from '@rollup/plugin-replace'
-import nodeResolve from '@rollup/plugin-node-resolve'
-import commonjs from '@rollup/plugin-commonjs'
-import babel from '@rollup/plugin-babel'
-import postcss from 'rollup-plugin-postcss'
-import url from '@rollup/plugin-url'
-import json from '@rollup/plugin-json'
-import dotenv from 'dotenv'
-import path from 'path'
-import fs from 'fs'
-import { fileURLToPath } from 'url'
+import { defineConfig } from "rollup";
+import typescript from "@rollup/plugin-typescript";
+import terser from "@rollup/plugin-terser";
+import replace from "@rollup/plugin-replace";
+import nodeResolve from "@rollup/plugin-node-resolve";
+import commonjs from "@rollup/plugin-commonjs";
+import babel from "@rollup/plugin-babel";
+import postcss from "rollup-plugin-postcss";
+import url from "@rollup/plugin-url";
+import json from "@rollup/plugin-json";
+import dotenv from "dotenv";
+import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const NODE_ENV = process.env.NODE_ENV || 'development'
-const isDevelopment = NODE_ENV === 'development'
+const NODE_ENV = process.env.NODE_ENV || "development";
+const isDevelopment = NODE_ENV === "development";
 
 // Read package.json for version information
-const packageJson = JSON.parse(
-  fs.readFileSync(path.resolve(process.cwd(), 'package.json'), 'utf-8'),
-)
+const packageJson = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), "package.json"), "utf-8"));
 
 // Version information from package.json
 const versionInfo = {
   version: packageJson.version,
   lastBuildDate: new Date().toISOString(),
   environment: NODE_ENV,
-}
+};
 
 // Load environment variables efficiently
 const loadEnvVars = () => {
-  const commonEnv = dotenv.config({ path: '.env.common' }).parsed || {}
-  const envFile = NODE_ENV === 'production' ? '.env.production' : `.env.${NODE_ENV}`
-  const envConfig = dotenv.config({ path: envFile }).parsed || {}
+  const commonEnv = dotenv.config({ path: ".env.common" }).parsed || {};
+  const envFile = NODE_ENV === "production" ? ".env.production" : `.env.${NODE_ENV}`;
+  const envConfig = dotenv.config({ path: envFile }).parsed || {};
 
   return {
     ...envConfig,
     ...commonEnv,
-  }
-}
+  };
+};
 
-const combinedEnv = loadEnvVars()
+const combinedEnv = loadEnvVars();
 
 // Convert env variables to process.env format
 const processEnvValues = {
-  'process.env.NODE_ENV': JSON.stringify(NODE_ENV),
-  'process.env.BUILD_DATE': JSON.stringify(versionInfo.lastBuildDate),
+  "process.env.NODE_ENV": JSON.stringify(NODE_ENV),
+  "process.env.BUILD_DATE": JSON.stringify(versionInfo.lastBuildDate),
   ...Object.entries(combinedEnv).reduce(
     (acc, [key, value]) => ({
       ...acc,
@@ -485,14 +527,14 @@ const processEnvValues = {
     }),
     {}
   ),
-}
+};
 
 // Optimized Terser configuration
 const terserConfig = {
   compress: {
     drop_console: !isDevelopment,
     drop_debugger: !isDevelopment,
-    pure_funcs: isDevelopment ? [] : ['console.log', 'console.info'],
+    pure_funcs: isDevelopment ? [] : ["console.log", "console.info"],
     passes: isDevelopment ? 1 : 2,
     unsafe_arrows: true,
     unsafe_methods: true,
@@ -509,29 +551,29 @@ const terserConfig = {
   },
   ecma: 2020,
   module: true,
-}
+};
 
 // Generate banner comment
 const getBanner = () => {
   if (isDevelopment) {
-    return '/*! Genuin Web SDK - Development Build */'
+    return "/*! Genuin Web SDK - Development Build */";
   }
-  return `/*! Genuin Web SDK v${versionInfo.version} - ${versionInfo.environment} - Built on ${versionInfo.lastBuildDate} */`
-}
+  return `/*! Genuin Web SDK v${versionInfo.version} - ${versionInfo.environment} - Built on ${versionInfo.lastBuildDate} */`;
+};
 
 export default defineConfig({
-  input: 'src/index.ts',
+  input: "src/index.ts",
 
   output: {
-    file: isDevelopment ? 'dist/gen_sdk.js' : 'dist/gen_sdk.min.js',
-    format: 'iife',
+    file: isDevelopment ? "dist/gen_sdk.js" : "dist/gen_sdk.min.js",
+    format: "iife",
     sourcemap: isDevelopment ? true : false,
-    name: 'GenuinSDK',
+    name: "GenuinSDK",
     globals: {
-      react: 'React',
-      'react-dom': 'ReactDOM',
-      'react/jsx-runtime': 'jsxRuntime',
-      'react-dom/client': 'client',
+      react: "React",
+      "react-dom": "ReactDOM",
+      "react/jsx-runtime": "jsxRuntime",
+      "react-dom/client": "client",
     },
     banner: getBanner(),
     generatedCode: {
@@ -540,55 +582,54 @@ export default defineConfig({
       objectShorthand: true,
     },
     compact: !isDevelopment,
-    interop: 'auto',
+    interop: "auto",
     externalLiveBindings: false,
     freeze: false,
   },
 
-  external: ['react', 'react-dom', 'react/jsx-runtime', 'react-dom/client'],
+  external: ["react", "react-dom", "react/jsx-runtime", "react-dom/client"],
 
   plugins: [
     // Asset handling with optimized settings
     url({
       include: [
-        '**/*.webp',
-        '**/*.png',
-        '**/*.jpg',
-        '**/*.jpeg',
-        '**/*.gif',
-        '**/*.svg',
-        '**/*.ico',
-        '**/*.bmp',
-        '**/*.avif',
+        "**/*.webp",
+        "**/*.png",
+        "**/*.jpg",
+        "**/*.jpeg",
+        "**/*.gif",
+        "**/*.svg",
+        "**/*.ico",
+        "**/*.bmp",
+        "**/*.avif",
       ],
       limit: 8192,
       emitFiles: true,
-      fileName: '[name].[hash][extname]',
-      sourceDir: path.join(__dirname, 'src'),
-      publicPath: '',
+      fileName: "[name].[hash][extname]",
+      sourceDir: path.join(__dirname, "src"),
+      publicPath: "",
     }),
 
     // PostCSS with optimizations
     postcss({
-      extensions: ['.css'],
-      include: [
-        '**/*.css',
-        '../../node_modules/**/*.css',
-        'node_modules/**/*.css',
-      ],
-      extract: !isDevelopment ? 'gen-sdk.css' : false,
+      extensions: [".css"],
+      include: ["**/*.css", "../../node_modules/**/*.css", "node_modules/**/*.css"],
+      extract: !isDevelopment ? "gen-sdk.css" : false,
       minimize: !isDevelopment,
       sourceMap: isDevelopment,
-      use: ['sass'],
+      use: ["sass"],
       plugins: [
-        require('cssnano')({
-          preset: ['default', {
-            discardComments: {
-              removeAll: true,
+        require("cssnano")({
+          preset: [
+            "default",
+            {
+              discardComments: {
+                removeAll: true,
+              },
+              normalizeWhitespace: true,
+              reduceIdents: false,
             },
-            normalizeWhitespace: true,
-            reduceIdents: false,
-          }],
+          ],
         }),
       ],
     }),
@@ -601,18 +642,18 @@ export default defineConfig({
 
     // Modern TypeScript plugin (much faster than typescript2)
     typescript({
-      tsconfig: './tsconfig.json',
+      tsconfig: "./tsconfig.json",
       declaration: false,
       declarationMap: false,
       sourceMap: isDevelopment,
       inlineSources: false,
       // Performance optimizations
       incremental: true,
-      tsBuildInfoFile: './node_modules/.cache/rollup-typescript.tsbuildinfo',
+      tsBuildInfoFile: "./node_modules/.cache/rollup-typescript.tsbuildinfo",
       compilerOptions: {
-        target: 'ES2020',
-        module: 'ESNext',
-        moduleResolution: 'node',
+        target: "ES2020",
+        module: "ESNext",
+        moduleResolution: "node",
         allowSyntheticDefaultImports: true,
         esModuleInterop: true,
         skipLibCheck: true,
@@ -625,39 +666,32 @@ export default defineConfig({
 
     // Node resolution with performance optimizations
     nodeResolve({
-      extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      extensions: [".js", ".jsx", ".ts", ".tsx"],
       browser: true,
       preferBuiltins: false,
       // Aggressive deduplication for faster builds
       dedupe: [
-        'react',
-        'react-dom',
-        '@tanstack/react-query',
-        '@radix-ui/react-accordion',
-        '@radix-ui/react-avatar',
-        '@radix-ui/react-dialog',
-        '@radix-ui/react-dropdown-menu',
-        '@radix-ui/react-label',
-        '@radix-ui/react-popover',
-        '@radix-ui/react-select',
-        '@radix-ui/react-tabs',
-        'lucide-react',
+        "react",
+        "react-dom",
+        "@tanstack/react-query",
+        "@radix-ui/react-accordion",
+        "@radix-ui/react-avatar",
+        "@radix-ui/react-dialog",
+        "@radix-ui/react-dropdown-menu",
+        "@radix-ui/react-label",
+        "@radix-ui/react-popover",
+        "@radix-ui/react-select",
+        "@radix-ui/react-tabs",
+        "lucide-react",
       ],
       // Only resolve workspace packages and allowed externals
-      resolveOnly: [
-        /^@genuin\//,
-        /^@radix-ui\//,
-        /^lucide-react/,
-        /^react-/,
-        /^@tanstack\//,
-        /^@hookform\//,
-      ],
+      resolveOnly: [/^@genuin\//, /^@radix-ui\//, /^lucide-react/, /^react-/, /^@tanstack\//, /^@hookform\//],
     }),
 
     // CommonJS conversion with optimizations
     commonjs({
-      include: ['node_modules/**'],
-      exclude: ['node_modules/react/**', 'node_modules/react-dom/**'],
+      include: ["node_modules/**"],
+      exclude: ["node_modules/react/**", "node_modules/react-dom/**"],
       transformMixedEsModules: true,
       dynamicRequireTargets: [],
       ignoreDynamicRequires: true,
@@ -665,20 +699,26 @@ export default defineConfig({
 
     // Babel with minimal preset for final transformation
     babel({
-      babelHelpers: 'bundled',
-      exclude: 'node_modules/**',
-      extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      babelHelpers: "bundled",
+      exclude: "node_modules/**",
+      extensions: [".js", ".jsx", ".ts", ".tsx"],
       presets: [
-        ['@babel/preset-env', {
-          targets: {
-            browsers: ['> 1%', 'last 2 versions', 'not dead'],
+        [
+          "@babel/preset-env",
+          {
+            targets: {
+              browsers: ["> 1%", "last 2 versions", "not dead"],
+            },
+            modules: false,
+            useBuiltIns: false,
           },
-          modules: false,
-          useBuiltIns: false,
-        }],
-        ['@babel/preset-react', {
-          runtime: 'automatic',
-        }],
+        ],
+        [
+          "@babel/preset-react",
+          {
+            runtime: "automatic",
+          },
+        ],
       ],
       compact: !isDevelopment,
     }),
@@ -691,16 +731,13 @@ export default defineConfig({
 
     // Custom plugin to strip directives (optimized)
     {
-      name: 'strip-directives',
+      name: "strip-directives",
       transform(code, id) {
-        if (!/\.(js|jsx|ts|tsx)$/.test(id)) return null
+        if (!/\.(js|jsx|ts|tsx)$/.test(id)) return null;
 
-        const strippedCode = code.replace(
-          /^[\s\n]*['"]use (client|server)['"];?[\s\n]*/gm,
-          ''
-        )
+        const strippedCode = code.replace(/^[\s\n]*['"]use (client|server)['"];?[\s\n]*/gm, "");
 
-        return strippedCode !== code ? { code: strippedCode, map: null } : null
+        return strippedCode !== code ? { code: strippedCode, map: null } : null;
       },
     },
   ].filter(Boolean),
@@ -716,19 +753,19 @@ export default defineConfig({
   // Optimized warnings
   onwarn(warning, warn) {
     // Suppress common non-critical warnings
-    if (warning.code === 'THIS_IS_UNDEFINED') return
-    if (warning.code === 'CIRCULAR_DEPENDENCY') return
-    if (warning.code === 'UNUSED_EXTERNAL_IMPORT') return
-    warn(warning)
+    if (warning.code === "THIS_IS_UNDEFINED") return;
+    if (warning.code === "CIRCULAR_DEPENDENCY") return;
+    if (warning.code === "UNUSED_EXTERNAL_IMPORT") return;
+    warn(warning);
   },
 
   // Build performance settings
   perf: isDevelopment,
-})
+});
 ```
 
 ---
 
-**Start Date:** ________________
-**Completion Date:** ________________
+**Start Date:** ******\_\_\_\_******
+**Completion Date:** ******\_\_\_\_******
 **Migration Status:** ⏳ In Progress | ✅ Complete | ❌ Failed

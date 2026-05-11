@@ -16,6 +16,5 @@ export const SEARCH_CONFIG = {
  * Shared CSS classes for search modal components
  */
 export const SEARCH_MODAL_CLASSES = {
-  CENTERED_MESSAGE:
-    "gencl:flex gencl:items-center gencl:justify-center gencl:py-6",
+  CENTERED_MESSAGE: "gencl:flex gencl:items-center gencl:justify-center gencl:py-6",
 } as const;

@@ -1,7 +1,7 @@
-import { MainComponent } from './main-component'
+import { MainComponent } from "./main-component";
 
 const DlkPage = () => {
-  return <MainComponent />
-}
+  return <MainComponent />;
+};
 
-export default DlkPage
+export default DlkPage;

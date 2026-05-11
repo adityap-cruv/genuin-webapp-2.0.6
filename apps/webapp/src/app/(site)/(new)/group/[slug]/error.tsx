@@ -1,5 +1,5 @@
-'use client'
+"use client";
 
 export default function Error() {
-  return <div className="py-8 text-center text-red-500">An error occurred loading the group page.</div>
+  return <div className="py-8 text-center text-red-500">An error occurred loading the group page.</div>;
 }

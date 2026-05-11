@@ -1,10 +1,6 @@
 import { z } from "zod";
 
-export const GroupUserStatusSchema = z.union([
-  z.literal("UNJOINED"),
-  z.literal("REQUESTED"),
-  z.literal("JOINED"),
-]);
+export const GroupUserStatusSchema = z.union([z.literal("UNJOINED"), z.literal("REQUESTED"), z.literal("JOINED")]);
 
 /**
  * Group User join status, if user has not joined the group, requested to join, or is an active member.
@@ -18,4 +14,4 @@ export const ksCbRequestStatusSchema = z.union([
   z.literal("Success"),
 ]);
 
-export type ksCbRequestStatusType  = z.infer<typeof ksCbRequestStatusSchema>;
+export type ksCbRequestStatusType = z.infer<typeof ksCbRequestStatusSchema>;

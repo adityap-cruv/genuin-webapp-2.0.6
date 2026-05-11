@@ -1,4 +1,4 @@
-import { create } from 'zustand'
+import { create } from "zustand";
 
 // Define the type for a transaction
 // type Transaction = {
@@ -11,23 +11,23 @@ import { create } from 'zustand'
 // }
 
 type WalletDetailsType = {
-  lifetime_cash_balance: number
-  lifetime_point_balance: number
-  point_balance: number
-  cash_balance: number
-}
+  lifetime_cash_balance: number;
+  lifetime_point_balance: number;
+  point_balance: number;
+  cash_balance: number;
+};
 
 type WalletStoreType = {
-  currentCardView: string
-  setCurrentCardView: (view: string) => void
-  walletDetails: WalletDetailsType
-  setWalletDetails: (walletDetails: WalletDetailsType) => void
-}
+  currentCardView: string;
+  setCurrentCardView: (view: string) => void;
+  walletDetails: WalletDetailsType;
+  setWalletDetails: (walletDetails: WalletDetailsType) => void;
+};
 
 export const useWalletStore = create<WalletStoreType>((set) => ({
-  currentCardView: 'Reward',
+  currentCardView: "Reward",
   setCurrentCardView: (view: string) => {
-    set({ currentCardView: view })
+    set({ currentCardView: view });
   },
   walletDetails: {
     lifetime_cash_balance: 0,
@@ -36,6 +36,6 @@ export const useWalletStore = create<WalletStoreType>((set) => ({
     cash_balance: 0,
   },
   setWalletDetails: (walletDetails) => {
-    set({ walletDetails })
+    set({ walletDetails });
   },
-}))
+}));

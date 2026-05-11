@@ -10,8 +10,8 @@ export type {
   UserTraits,
   PageProperties,
   GroupTraits,
-} from './provider'
-export { ProviderStatus } from './provider'
+} from "./provider";
+export { ProviderStatus } from "./provider";
 
 // Event types
 export type {
@@ -24,8 +24,8 @@ export type {
   EventMetadata,
   AnalyticsEvent,
   QueuedEvent,
-} from './events'
-export { EventPriority } from './events'
+} from "./events";
+export { EventPriority } from "./events";
 
 // Config types
 export type {
@@ -36,7 +36,7 @@ export type {
   MergeConfig,
   SanitizationConfig,
   AnalyticsConfig,
-} from './config'
+} from "./config";
 
 // Payload types
 export type {
@@ -46,11 +46,7 @@ export type {
   ValidationResult,
   ValidationError,
   ValidationWarning,
-} from './payload'
+} from "./payload";
 
 // Middleware types
-export type {
-  MiddlewareContext,
-  Middleware,
-  MiddlewareOptions,
-} from './middleware'
+export type { MiddlewareContext, Middleware, MiddlewareOptions } from "./middleware";

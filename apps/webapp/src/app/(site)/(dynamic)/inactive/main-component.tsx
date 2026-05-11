@@ -1,8 +1,8 @@
-'use client'
-import Image from 'next/image'
+"use client";
+import Image from "next/image";
 
-import errorBg from '@images/error/errorDesktop.svg'
-import imgPuppet from '@images/not-found/puppet.svg'
+import errorBg from "@images/error/errorDesktop.svg";
+import imgPuppet from "@images/not-found/puppet.svg";
 
 const MainComponent = () => {
   return (
@@ -14,13 +14,13 @@ const MainComponent = () => {
         <span className="absolute top-[20%] left-[15%]">
           <p
             className="text-start"
-            style={{ fontSize: '48px', lineHeight: '110%', fontWeight: 700, letterSpacing: '-0.96px' }}>
+            style={{ fontSize: "48px", lineHeight: "110%", fontWeight: 700, letterSpacing: "-0.96px" }}>
             Page not found
           </p>
           <p className="text-title-2-demi pt-6 text-start font-medium">
             The service or webpage you are trying to access is no longer
             <br /> available. If you believe this is an error or have any questions,
-            <br /> please contact{' '}
+            <br /> please contact{" "}
             <a href="mailto: support@begenuin.com" className="text-blue underline">
               support@begenuin.com
             </a>
@@ -48,7 +48,7 @@ const MainComponent = () => {
             <p className="text-new-h2-mobile text-center">Page not found</p>
             <p className="text-body-1-med px-4 pt-6 text-center">
               The service or webpage you are trying to access is no longer available. If you believe this is an error or
-              have any questions, please contact{' '}
+              have any questions, please contact{" "}
               <a href="mailto: support@begenuin.com" className="text-blue underline">
                 support@begenuin.com
               </a>
@@ -62,7 +62,7 @@ const MainComponent = () => {
         </div>
       </div>
     </main>
-  )
-}
+  );
+};
 
-export default MainComponent
+export default MainComponent;

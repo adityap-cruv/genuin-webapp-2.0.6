@@ -1,6 +1,6 @@
-import { type ComponentProps } from 'react'
+import { type ComponentProps } from "react";
 
-type Props = ComponentProps<'svg'>
+type Props = ComponentProps<"svg">;
 export function LogoutIcon({ ...props }: Props) {
   return (
     <svg
@@ -19,5 +19,5 @@ export function LogoutIcon({ ...props }: Props) {
       <path d="M7.3916 13.5L26.3916 13.5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
       <path d="M20.3916 19.5L26.3916 13.5L20.3916 7.5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
-  )
+  );
 }

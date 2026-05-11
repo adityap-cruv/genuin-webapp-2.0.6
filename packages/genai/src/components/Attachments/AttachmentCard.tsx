@@ -59,7 +59,7 @@ const AttachmentCard = ({ name, type, previewUrl, status, className, actions }: 
                     <img
                         src={previewUrl}
                         alt={name}
-                        className='gai:h-full gai:w-full gai:object-contain gai:rounded-2xl'
+                        className='gai:h-full gai:w-full gai:rounded-2xl gai:object-contain'
                         loading='lazy'
                     />
                     {status && status !== 'success' && (
@@ -91,7 +91,7 @@ const AttachmentCard = ({ name, type, previewUrl, status, className, actions }: 
             {!showImagePreview && (
                 <div className='gai:flex gai:flex-1 gai:flex-col gai:gap-1'>
                     <span
-                        className='gai:text-sm gai:font-semibold gai:text-secondary-gray-900 gai:line-clamp-2 gai:max-w-[180px] gai:truncate'
+                        className='gai:line-clamp-2 gai:max-w-[180px] gai:truncate gai:text-sm gai:font-semibold gai:text-secondary-gray-900'
                         title={name || 'Untitled file'}
                     >
                         {name || 'Untitled file'}
@@ -100,10 +100,9 @@ const AttachmentCard = ({ name, type, previewUrl, status, className, actions }: 
                 </div>
             )}
 
-            {actions && <div className='gai:absolute gai:right-1 gai:top-1'>{actions}</div>}
+            {actions && <div className='gai:absolute gai:top-1 gai:right-1'>{actions}</div>}
         </div>
     );
 };
 
 export default AttachmentCard;
-

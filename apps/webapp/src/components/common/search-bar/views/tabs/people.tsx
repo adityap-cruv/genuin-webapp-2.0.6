@@ -1,31 +1,30 @@
-import Link from 'next/link'
+import Link from "next/link";
 
-import BrandBadgeIcon from '@/components/common/brand-badge-icon'
-import { CustomAvatar } from '@components/custom/custom-avatar'
-import { PATH_NAME } from '@lib/utils/constants/path'
+import BrandBadgeIcon from "@/components/common/brand-badge-icon";
+import { CustomAvatar } from "@components/custom/custom-avatar";
+import { PATH_NAME } from "@lib/utils/constants/path";
 
-import { useSearchBarStore } from '../../store'
+import { useSearchBarStore } from "../../store";
 
-import { NoResults } from './no-results'
+import { NoResults } from "./no-results";
 
-import { type PeopleType } from '.'
-
+import { type PeopleType } from ".";
 
 export function People({ people }: { people?: PeopleType[] }) {
-  const { close } = useSearchBarStore((state) => ({ close: state.close }))
+  const { close } = useSearchBarStore((state) => ({ close: state.close }));
   if (people)
     return (
-      <div className="flex flex-col px-2 pb-16 pt-2 sm:py-4">
+      <div className="flex flex-col px-2 pt-2 pb-16 sm:py-4">
         {people.map((item) => {
           return (
             <Link
               onClick={close}
               href={item.brand ? PATH_NAME.brand(item.brand.brand_slug) : PATH_NAME.profile(item.userName)}
               key={item.id}
-              className="flex items-center gap-x-2 rounded-md px-2 py-2 hover:bg-primary-200">
+              className="hover:bg-primary-200 flex items-center gap-x-2 rounded-md px-2 py-2">
               <CustomAvatar
-                fallbackString={item.name ?? ''}
-                imageUrl={item.profileImage ?? ''}
+                fallbackString={item.name ?? ""}
+                imageUrl={item.profileImage ?? ""}
                 isAvatar={item.isAvatar}
                 className="h-12 w-12"
               />
@@ -35,13 +34,13 @@ export function People({ people }: { people?: PeopleType[] }) {
                   {item.brand && <BrandBadgeIcon userLogoType={item.brand?.brand_user_logo} variant="dark" />}
                 </div>
                 {item.name && <p className="text-body-1-demi">{item.name}</p>}
-                {item.bio && <p className="line-clamp-1 text-cap-1-demi text-tertiary">{item.bio}</p>}
+                {item.bio && <p className="text-cap-1-demi text-tertiary line-clamp-1">{item.bio}</p>}
               </span>
             </Link>
-          )
+          );
         })}
       </div>
-    )
+    );
 
-  return <NoResults />
+  return <NoResults />;
 }

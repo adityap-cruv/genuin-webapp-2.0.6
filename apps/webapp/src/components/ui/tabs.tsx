@@ -1,11 +1,11 @@
-'use client'
+"use client";
 
-import * as TabsPrimitive from '@radix-ui/react-tabs'
-import * as React from 'react'
+import * as TabsPrimitive from "@radix-ui/react-tabs";
+import * as React from "react";
 
-import { cn } from '@lib/utils'
+import { cn } from "@lib/utils";
 
-const Tabs = TabsPrimitive.Root
+const Tabs = TabsPrimitive.Root;
 
 const TabsList = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.List>,
@@ -13,11 +13,11 @@ const TabsList = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <TabsPrimitive.List
     ref={ref}
-    className={cn('bg-monochrome-white flex h-10 w-full items-center justify-around', className)}
+    className={cn("bg-monochrome-white flex h-10 w-full items-center justify-around", className)}
     {...props}
   />
-))
-TabsList.displayName = TabsPrimitive.List.displayName
+));
+TabsList.displayName = TabsPrimitive.List.displayName;
 
 const TabsTrigger = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.Trigger>,
@@ -26,18 +26,18 @@ const TabsTrigger = React.forwardRef<
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
-      'border-primary fill-tertiary text-tertiary data-[state=active]:fill-monochrome-black data-[state=active]:text-secondary inline-flex h-full w-full items-center justify-center px-3 py-1.5 whitespace-nowrap transition-all duration-300 outline-none disabled:pointer-events-none disabled:opacity-50 data-[state=active]:border-b-2',
+      "border-primary fill-tertiary text-tertiary data-[state=active]:fill-monochrome-black data-[state=active]:text-secondary inline-flex h-full w-full items-center justify-center px-3 py-1.5 whitespace-nowrap transition-all duration-300 outline-none disabled:pointer-events-none disabled:opacity-50 data-[state=active]:border-b-2",
       className
     )}
     {...props}
   />
-))
-TabsTrigger.displayName = TabsPrimitive.Trigger.displayName
+));
+TabsTrigger.displayName = TabsPrimitive.Trigger.displayName;
 
 const TabsContent = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>
->(({ className, ...props }, ref) => <TabsPrimitive.Content ref={ref} className={cn('h-full', className)} {...props} />)
-TabsContent.displayName = TabsPrimitive.Content.displayName
+>(({ className, ...props }, ref) => <TabsPrimitive.Content ref={ref} className={cn("h-full", className)} {...props} />);
+TabsContent.displayName = TabsPrimitive.Content.displayName;
 
-export { Tabs, TabsList, TabsTrigger, TabsContent }
+export { Tabs, TabsList, TabsTrigger, TabsContent };

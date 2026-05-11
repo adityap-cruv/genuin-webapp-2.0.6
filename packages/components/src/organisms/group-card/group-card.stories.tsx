@@ -290,8 +290,7 @@ export const SuggestionVariant: Story = {
       url: "https://example.com/groups/tech-enthusiasts",
       slug: "tech-enthusiasts",
       role: "UNJOINED",
-      description:
-        "A group for tech enthusiasts to share knowledge and ideas about the latest technologies.",
+      description: "A group for tech enthusiasts to share knowledge and ideas about the latest technologies.",
       stats: {
         members: 1250,
         posts: 346,
@@ -422,8 +421,7 @@ export const SuggestionList: Story = {
           url: "https://example.com/groups/react-developers",
           slug: "react-developers",
           role: "UNJOINED",
-          description:
-            "Community for React developers to share tips and tricks.",
+          description: "Community for React developers to share tips and tricks.",
           stats: { members: 2340, posts: 567, views: 8920 },
         }}
       />
@@ -451,8 +449,7 @@ export const SuggestionList: Story = {
           url: "https://example.com/groups/leadership-circle",
           slug: "leadership-circle",
           role: "REQUESTED",
-          description:
-            "Private group for executive leadership discussions which matters the most",
+          description: "Private group for executive leadership discussions which matters the most",
           stats: { members: 45, posts: 89, views: 1250 },
         }}
         style={{ width: "400px" }}
@@ -659,12 +656,7 @@ export const Skeleton: SkeletonStory = {
     return (
       <div
         style={{ width: "600px" }}
-        className={
-          shouldShowBorder
-            ? "gencl:border gencl:border-secondary-150 gencl:p-4 gencl:rounded-xl"
-            : ""
-        }
-      >
+        className={shouldShowBorder ? "gencl:border gencl:border-secondary-150 gencl:p-4 gencl:rounded-xl" : ""}>
         <GroupCardSkeleton variant={args.variant} className={args.className} />
       </div>
     );

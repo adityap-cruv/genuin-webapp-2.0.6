@@ -1,55 +1,55 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import React, { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
+import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-import { sanitizeInput } from '@/lib/utils'
-import { Button } from '@components/ui/button'
-import { FormField, Form, FormItem, FormControl, FormMessage } from '@components/ui/form'
-import { Input } from '@components/ui/input'
-import { Loader } from '@components/ui/loader'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@components/ui/select'
-import { userContactDetails } from '@lib/api/contact-us'
+import { sanitizeInput } from "@/lib/utils";
+import { Button } from "@components/ui/button";
+import { FormField, Form, FormItem, FormControl, FormMessage } from "@components/ui/form";
+import { Input } from "@components/ui/input";
+import { Loader } from "@components/ui/loader";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@components/ui/select";
+import { userContactDetails } from "@lib/api/contact-us";
 
 const formSchema = z.object({
-  firstName: z.string().trim().min(1, { message: 'First name is required' }),
-  lastName: z.string().trim().min(1, { message: 'Last name is required' }),
-  email: z.string().trim().min(1, { message: 'Email is required' }).email({ message: 'Invalid email format' }),
-  companyName: z.string().trim().min(1, { message: 'Company name is required' }),
-  companyType: z.string().trim().min(1, { message: 'Company type is required' }),
-  country: z.string().trim().min(1, { message: 'Country is required' }),
+  firstName: z.string().trim().min(1, { message: "First name is required" }),
+  lastName: z.string().trim().min(1, { message: "Last name is required" }),
+  email: z.string().trim().min(1, { message: "Email is required" }).email({ message: "Invalid email format" }),
+  companyName: z.string().trim().min(1, { message: "Company name is required" }),
+  companyType: z.string().trim().min(1, { message: "Company type is required" }),
+  country: z.string().trim().min(1, { message: "Country is required" }),
   website: z
     .string()
     .trim()
-    .regex(/^(https?:\/\/)?([\da-z.-]+\.[a-z.]{2,6})([/\w .-]*)*\/?$/, { message: 'Invalid website URL' })
+    .regex(/^(https?:\/\/)?([\da-z.-]+\.[a-z.]{2,6})([/\w .-]*)*\/?$/, { message: "Invalid website URL" })
     .optional(),
   piquedInterest: z.string().trim().optional(),
-  companySize: z.string().trim().min(1, { message: 'companySize is required' }),
-})
+  companySize: z.string().trim().min(1, { message: "companySize is required" }),
+});
 
 export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => void }) {
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      firstName: '',
-      lastName: '',
-      email: '',
-      companyName: '',
-      companyType: '',
-      country: '',
-      website: '',
-      piquedInterest: '',
-      companySize: '',
+      firstName: "",
+      lastName: "",
+      email: "",
+      companyName: "",
+      companyType: "",
+      country: "",
+      website: "",
+      piquedInterest: "",
+      companySize: "",
     },
-    mode: 'onBlur',
-  })
+    mode: "onBlur",
+  });
 
-  const { isValid, isDirty, errors } = form.formState
+  const { isValid, isDirty, errors } = form.formState;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     // console.log(values)
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       const payload = {
         email: sanitizeInput(values.email),
@@ -61,23 +61,23 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
         what_piqued_your_interest_in_genuin_: sanitizeInput(values.piquedInterest),
         country: sanitizeInput(values.country),
         website: sanitizeInput(values.website),
-      }
+      };
 
       const filteredPayload = Object.fromEntries(
-        Object.entries(payload).filter(([_, value]) => value !== '' && value !== 'none')
-      )
-      const { status } = await userContactDetails(filteredPayload)
+        Object.entries(payload).filter(([_, value]) => value !== "" && value !== "none")
+      );
+      const { status } = await userContactDetails(filteredPayload);
       if (status) {
-        setIsLinkSent(true)
+        setIsLinkSent(true);
       } else {
-        throw new Error()
+        throw new Error();
       }
     } catch (e) {
-      form.setError('root', { message: 'Something went wrong.' })
+      form.setError("root", { message: "Something went wrong." });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const renderFormField = (
     name: keyof z.infer<typeof formSchema>,
@@ -95,15 +95,15 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
               maxLength={maxLength}
               type={type}
               placeholder={placeholder}
-              className={`border border-tertiary-200 bg-tertiary-100 text-title-3-med ${
-                errors[name] ? '!border-red' : ''
+              className={`border-tertiary-200 bg-tertiary-100 text-title-3-med border ${
+                errors[name] ? "!border-red" : ""
               }`}
               {...field}
               onKeyPress={
-                name === 'country'
+                name === "country"
                   ? (e) => {
                       if (!/^[a-zA-Z\s]*$/.test(e.key)) {
-                        e.preventDefault()
+                        e.preventDefault();
                       }
                     }
                   : undefined
@@ -114,19 +114,19 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
         </FormItem>
       )}
     />
-  )
+  );
 
   return (
     <div className="flex w-full items-center justify-center">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
           <div className="flex gap-x-4">
-            {renderFormField('firstName', 'First Name', 'text', 25)}
-            {renderFormField('lastName', 'Last Name', 'text', 25)}
+            {renderFormField("firstName", "First Name", "text", 25)}
+            {renderFormField("lastName", "Last Name", "text", 25)}
           </div>
-          {renderFormField('email', 'Email', 'email', 50)}
+          {renderFormField("email", "Email", "email", 50)}
           <div className="flex gap-x-4">
-            {renderFormField('companyName', 'Company Name', 'text', 50)}
+            {renderFormField("companyName", "Company Name", "text", 50)}
             <FormField
               name="companySize"
               control={form.control}
@@ -134,24 +134,24 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
                 <FormItem className="py-1.5 sm:w-full">
                   <FormControl>
                     <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger className="border border-tertiary-200 bg-tertiary-100">
+                      <SelectTrigger className="border-tertiary-200 bg-tertiary-100 border">
                         <SelectValue placeholder="Company Size" />
                       </SelectTrigger>
                       <SelectContent className="bg-monochrome-white">
                         {/* <SelectItem value="none">None</SelectItem> */}
-                        <SelectItem value="<10">{'<'}10</SelectItem>
+                        <SelectItem value="<10">{"<"}10</SelectItem>
                         <SelectItem value="11-99">11-99</SelectItem>
                         <SelectItem value="100-249">100-249</SelectItem>
-                        <SelectItem value=">250">{'>'}250</SelectItem>
+                        <SelectItem value=">250">{">"}250</SelectItem>
                       </SelectContent>
                     </Select>
                   </FormControl>
                   <FormMessage className="!text-cap-1-demi" />
                 </FormItem>
               )}
-            />{' '}
+            />{" "}
           </div>
-          {renderFormField('website', 'Website Url', 'text', 50)}
+          {renderFormField("website", "Website Url", "text", 50)}
           <div className="flex gap-x-4">
             <FormField
               name="companyType"
@@ -160,7 +160,7 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
                 <FormItem className="py-1.5 sm:w-full">
                   <FormControl>
                     <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger className="border border-tertiary-200 bg-tertiary-100">
+                      <SelectTrigger className="border-tertiary-200 bg-tertiary-100 border">
                         <SelectValue placeholder="Company Type" />
                       </SelectTrigger>
                       <SelectContent className="bg-monochrome-white">
@@ -177,13 +177,13 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
                 </FormItem>
               )}
             />
-            {renderFormField('country', 'Country', 'text', 25)}
+            {renderFormField("country", "Country", "text", 25)}
           </div>
-          {renderFormField('piquedInterest', 'What piqued your interest in Genuin', 'text', 150)}
-          <span className="mt-4 flex flex-col gap-y-3 text-title-3-demi">
+          {renderFormField("piquedInterest", "What piqued your interest in Genuin", "text", 150)}
+          <span className="text-title-3-demi mt-4 flex flex-col gap-y-3">
             <Button
               type="submit"
-              className="flex w-full cursor-pointer items-center justify-center rounded-lg bg-new-off-black hover:bg-new-dark-grey"
+              className="bg-new-off-black hover:bg-new-dark-grey flex w-full cursor-pointer items-center justify-center rounded-lg"
               disabled={isLoading || !isValid || !isDirty}>
               {isLoading ? (
                 <Loader size="sm" className="fill-monochrome-white stroke-monochrome-white" />
@@ -191,12 +191,12 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
                 <p>Submit</p>
               )}
             </Button>
-            <p className="mt-0.5 text-left text-para-1-home-m text-new-dark-grey">
+            <p className="text-para-1-home-m text-new-dark-grey mt-0.5 text-left">
               By submitting this form, you agree to receive promotional messages from Genuin about its products and
               services. You can unsubscribe at any time by clicking on the link at the bottom of our emails.
             </p>
             {errors.root && (
-              <p className="flex items-center justify-center text-title-3-med text-supplementary-red">
+              <p className="text-title-3-med text-supplementary-red flex items-center justify-center">
                 {errors.root.message}
               </p>
             )}
@@ -204,5 +204,5 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
         </form>
       </Form>
     </div>
-  )
+  );
 }

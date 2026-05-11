@@ -1,20 +1,20 @@
 // Script to monitor INP (Interaction to Next Paint) in real-time on a webpage.
 (function () {
-  'use strict'
+  "use strict";
 
   // ── Thresholds ─────────────────────────────────────────────────────────────
-  const GOOD_MS = 200
-  const NI_MS = 500
+  const GOOD_MS = 200;
+  const NI_MS = 500;
 
   // ── State ──────────────────────────────────────────────────────────────────
-  let worstINP = 0
-  let totalCount = 0
-  const entries = []
-  const seen = new Map()
+  let worstINP = 0;
+  let totalCount = 0;
+  const entries = [];
+  const seen = new Map();
 
   // ── Panel HTML ─────────────────────────────────────────────────────────────
-  const panel = document.createElement('div')
-  panel.id = '__inp_monitor'
+  const panel = document.createElement("div");
+  panel.id = "__inp_monitor";
   panel.innerHTML = `
     <div id="__inp_header">
       <span id="__inp_title">INP Monitor</span>
@@ -51,10 +51,10 @@
       </div>
       <div id="__inp_footer">Waiting for interactions…</div>
     </div>
-  `
+  `;
 
   // ── Styles ─────────────────────────────────────────────────────────────────
-  const style = document.createElement('style')
+  const style = document.createElement("style");
   style.textContent = `
     #__inp_monitor {
       position: fixed;
@@ -186,109 +186,95 @@
       text-align: center;
     }
     #__inp_monitor.collapsed #__inp_body { display: none; }
-  `
+  `;
 
-  document.head.appendChild(style)
-  document.body.appendChild(panel)
+  document.head.appendChild(style);
+  document.body.appendChild(panel);
 
   // ── Drag ───────────────────────────────────────────────────────────────────
-  const header = panel.querySelector('#__inp_header')
+  const header = panel.querySelector("#__inp_header");
   let dragging = false,
     ox = 0,
-    oy = 0
-  header.addEventListener('mousedown', (e) => {
-    dragging = true
-    ox = e.clientX - panel.getBoundingClientRect().left
-    oy = e.clientY - panel.getBoundingClientRect().top
-  })
-  document.addEventListener('mousemove', (e) => {
-    if (!dragging) return
-    panel.style.left = e.clientX - ox + 'px'
-    panel.style.top = e.clientY - oy + 'px'
-    panel.style.right = 'auto'
-    panel.style.bottom = 'auto'
-  })
-  document.addEventListener('mouseup', () => {
-    dragging = false
-  })
+    oy = 0;
+  header.addEventListener("mousedown", (e) => {
+    dragging = true;
+    ox = e.clientX - panel.getBoundingClientRect().left;
+    oy = e.clientY - panel.getBoundingClientRect().top;
+  });
+  document.addEventListener("mousemove", (e) => {
+    if (!dragging) return;
+    panel.style.left = e.clientX - ox + "px";
+    panel.style.top = e.clientY - oy + "px";
+    panel.style.right = "auto";
+    panel.style.bottom = "auto";
+  });
+  document.addEventListener("mouseup", () => {
+    dragging = false;
+  });
 
   // ── Toggle collapse ────────────────────────────────────────────────────────
-  const toggleBtn = panel.querySelector('#__inp_toggle')
-  toggleBtn.addEventListener('click', () => {
-    const collapsed = panel.classList.toggle('collapsed')
-    toggleBtn.textContent = collapsed ? '+' : '−'
-  })
+  const toggleBtn = panel.querySelector("#__inp_toggle");
+  toggleBtn.addEventListener("click", () => {
+    const collapsed = panel.classList.toggle("collapsed");
+    toggleBtn.textContent = collapsed ? "+" : "−";
+  });
 
   // ── Clear ──────────────────────────────────────────────────────────────────
-  panel.querySelector('#__inp_clear').addEventListener('click', () => {
-    entries.length = 0
-    seen.clear()
-    worstINP = 0
-    totalCount = 0
-    panel.querySelector('#__inp_worst').textContent = '—'
-    panel.querySelector('#__inp_worst').style.color = '#e8e8e8'
-    panel.querySelector('#__inp_rating').textContent = '—'
-    panel.querySelector('#__inp_rating').style.color = '#e8e8e8'
-    panel.querySelector('#__inp_count').textContent = '0'
-    panel.querySelector('#__inp_log').innerHTML = ''
-    panel.querySelector('#__inp_footer').textContent =
-      'Waiting for interactions…'
-  })
+  panel.querySelector("#__inp_clear").addEventListener("click", () => {
+    entries.length = 0;
+    seen.clear();
+    worstINP = 0;
+    totalCount = 0;
+    panel.querySelector("#__inp_worst").textContent = "—";
+    panel.querySelector("#__inp_worst").style.color = "#e8e8e8";
+    panel.querySelector("#__inp_rating").textContent = "—";
+    panel.querySelector("#__inp_rating").style.color = "#e8e8e8";
+    panel.querySelector("#__inp_count").textContent = "0";
+    panel.querySelector("#__inp_log").innerHTML = "";
+    panel.querySelector("#__inp_footer").textContent = "Waiting for interactions…";
+  });
 
   // ── Helpers ────────────────────────────────────────────────────────────────
   function rating(ms) {
-    return ms <= GOOD_MS ? 'good' : ms <= NI_MS ? 'ni' : 'poor'
+    return ms <= GOOD_MS ? "good" : ms <= NI_MS ? "ni" : "poor";
   }
   function ratingLabel(r) {
-    return r === 'good' ? 'GOOD' : r === 'ni' ? 'NI' : 'POOR'
+    return r === "good" ? "GOOD" : r === "ni" ? "NI" : "POOR";
   }
   function ratingColor(r) {
-    return r === 'good' ? '#22c55e' : r === 'ni' ? '#f59e0b' : '#ef4444'
+    return r === "good" ? "#22c55e" : r === "ni" ? "#f59e0b" : "#ef4444";
   }
 
   // ── PerformanceObserver ────────────────────────────────────────────────────
-  if (
-    typeof PerformanceObserver === 'undefined' ||
-    !PerformanceObserver.supportedEntryTypes?.includes('event')
-  ) {
-    panel.querySelector('#__inp_footer').textContent =
-      'Event Timing API not supported in this browser'
-    return
+  if (typeof PerformanceObserver === "undefined" || !PerformanceObserver.supportedEntryTypes?.includes("event")) {
+    panel.querySelector("#__inp_footer").textContent = "Event Timing API not supported in this browser";
+    return;
   }
 
   new PerformanceObserver((list) => {
     for (const raw of list.getEntries()) {
-      const e = raw
-      const id = e.interactionId
-      if (!id) continue 
-      const duration = Math.round(e.duration)
-      const existing = seen.get(id)
+      const e = raw;
+      const id = e.interactionId;
+      if (!id) continue;
+      const duration = Math.round(e.duration);
+      const existing = seen.get(id);
       if (!existing || duration > existing) {
-        seen.set(id, duration)
+        seen.set(id, duration);
       } else {
-        continue
+        continue;
       }
-      const el = e.target ?? null
-      const tag = el?.tagName?.toLowerCase() ?? '?'
-      const elId = el?.id ? '#' + el.id : ''
+      const el = e.target ?? null;
+      const tag = el?.tagName?.toLowerCase() ?? "?";
+      const elId = el?.id ? "#" + el.id : "";
       const cls =
-        typeof el?.className === 'string' && el.className.trim()
-          ? '.' + el.className.trim().split(/\s+/).join('.')
-          : ''
-      const target = elId || tag + cls
+        typeof el?.className === "string" && el.className.trim()
+          ? "." + el.className.trim().split(/\s+/).join(".")
+          : "";
+      const target = elId || tag + cls;
 
-      const inputDelay = Math.max(
-        0,
-        Math.round(e.processingStart - e.startTime),
-      )
-      const processingTime = Math.max(
-        0,
-        Math.round(e.processingEnd - e.processingStart),
-      )
-      const presentationDelay = Math.max(
-        0,
-        Math.round(duration - inputDelay - processingTime),
-      )
+      const inputDelay = Math.max(0, Math.round(e.processingStart - e.startTime));
+      const processingTime = Math.max(0, Math.round(e.processingEnd - e.processingStart));
+      const presentationDelay = Math.max(0, Math.round(duration - inputDelay - processingTime));
 
       const entry = {
         name: e.name,
@@ -297,41 +283,40 @@
         processingTime,
         presentationDelay,
         target,
-      }
-      entries.push(entry)
-      totalCount++
+      };
+      entries.push(entry);
+      totalCount++;
 
-      if (duration > worstINP) worstINP = duration
+      if (duration > worstINP) worstINP = duration;
 
-      const r = rating(worstINP)
+      const r = rating(worstINP);
 
       // Update summary cards
-      panel.querySelector('#__inp_worst').textContent = worstINP + 'ms'
-      panel.querySelector('#__inp_worst').style.color = ratingColor(r)
-      panel.querySelector('#__inp_rating').textContent = ratingLabel(r)
-      panel.querySelector('#__inp_rating').style.color = ratingColor(r)
-      panel.querySelector('#__inp_count').textContent = totalCount
+      panel.querySelector("#__inp_worst").textContent = worstINP + "ms";
+      panel.querySelector("#__inp_worst").style.color = ratingColor(r);
+      panel.querySelector("#__inp_rating").textContent = ratingLabel(r);
+      panel.querySelector("#__inp_rating").style.color = ratingColor(r);
+      panel.querySelector("#__inp_count").textContent = totalCount;
 
       // Add log row
-      const entryR = rating(duration)
-      const row = document.createElement('div')
-      row.className = '__inp_row ' + entryR
+      const entryR = rating(duration);
+      const row = document.createElement("div");
+      row.className = "__inp_row " + entryR;
       row.innerHTML = `
-        <span><span class="__inp_badge ${entryR}">${e.name.replace('pointer', 'ptr').replace('down', '↓').replace('up', '↑')}</span></span>
+        <span><span class="__inp_badge ${entryR}">${e.name.replace("pointer", "ptr").replace("down", "↓").replace("up", "↑")}</span></span>
         <span class="__inp_dur ${entryR}">${duration}ms</span>
         <span class="__inp_muted">${inputDelay}ms</span>
         <span class="__inp_muted">${processingTime}ms</span>
         <span class="__inp_muted">${presentationDelay}ms</span>
-        <span class="__inp_el" title="${target}">${target || '—'}</span>
-      `
-      const log = panel.querySelector('#__inp_log')
-      log.appendChild(row)
-log.scrollTop = log.scrollHeight 
+        <span class="__inp_el" title="${target}">${target || "—"}</span>
+      `;
+      const log = panel.querySelector("#__inp_log");
+      log.appendChild(row);
+      log.scrollTop = log.scrollHeight;
 
-      panel.querySelector('#__inp_footer').textContent =
-        `Last: ${e.name} on ${target || '?'} — ${duration}ms`
+      panel.querySelector("#__inp_footer").textContent = `Last: ${e.name} on ${target || "?"} — ${duration}ms`;
     }
-  }).observe({ type: 'event', buffered: true, durationThreshold: 16 })
+  }).observe({ type: "event", buffered: true, durationThreshold: 16 });
 
-  console.log('[INP Monitor] Running — interact with the page to see readings.')
-})()
+  console.log("[INP Monitor] Running — interact with the page to see readings.");
+})();

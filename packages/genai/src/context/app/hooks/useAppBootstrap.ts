@@ -7,7 +7,6 @@ import type { Agent, AgentType, PendingMessage, Session } from '@/types';
 
 import type { HandleSendMessageParams } from '../provider';
 
-
 interface UseAppBootstrapParams {
     brandId: number;
     userEmail?: string;
@@ -16,14 +15,16 @@ interface UseAppBootstrapParams {
     currentSessionId: string | null;
     userId: string;
     // callbacks
-    setCurrentSessionId: (sessionId: string | null, forceSessionsFetched?: boolean, fetchedSessions?: Session[]) => void;
+    setCurrentSessionId: (
+        sessionId: string | null,
+        forceSessionsFetched?: boolean,
+        fetchedSessions?: Session[]
+    ) => void;
     setSessions: React.Dispatch<React.SetStateAction<Session[]>>;
     setSessionsFetched: (value: boolean) => void;
     setIpInfo: (value: any) => void;
     setAgentsState: React.Dispatch<React.SetStateAction<Agent[]>>;
-    setPendingMessages: React.Dispatch<
-        React.SetStateAction<Array<PendingMessage>>
-    >;
+    setPendingMessages: React.Dispatch<React.SetStateAction<Array<PendingMessage>>>;
     setEnteredInChatMode: (entered: boolean) => void;
     setCurrentAgent: (agentId: string) => void;
     handleSendMessage: (params: HandleSendMessageParams) => Promise<void>;
@@ -112,15 +113,14 @@ export const useAppBootstrap = ({
             if (isWebSdkView) {
                 if (webSdkAgentId) {
                     const matchedAgent = mappedAgents.find(agent => agent.id === webSdkAgentId);
-                    const agentToUse =
-                        matchedAgent || {
-                            type: 'octo_head' as AgentType,
-                            id: webSdkAgentId,
-                            name: 'Octo Head',
-                            description: '',
-                            image: '',
-                            presets: [],
-                        };
+                    const agentToUse = matchedAgent || {
+                        type: 'octo_head' as AgentType,
+                        id: webSdkAgentId,
+                        name: 'Octo Head',
+                        description: '',
+                        image: '',
+                        presets: [],
+                    };
 
                     setAgentsState([agentToUse]);
                     setCurrentAgent(agentToUse.id);
@@ -134,18 +134,20 @@ export const useAppBootstrap = ({
 
             if (sessionsRes.status === 'fulfilled') {
                 const data = sessionsRes.value?.data ?? { sessions: [] };
-                const fetchedSessions = data.sessions.map((s: SessionV2): Session => ({
-                    id: s.id,
-                    name: s.session_name,
-                    updatedAt: s.last_update_time,
-                    agentId: s.agent_id,
-                    status: 'idle',
-                    hasNewName: false,
-                    hasNewMessage: false,
-                    thinking: false,
-                    chat: [],
-                    thinkingSteps: [],
-                }));
+                const fetchedSessions = data.sessions.map(
+                    (s: SessionV2): Session => ({
+                        id: s.id,
+                        name: s.session_name,
+                        updatedAt: s.last_update_time,
+                        agentId: s.agent_id,
+                        status: 'idle',
+                        hasNewName: false,
+                        hasNewMessage: false,
+                        thinking: false,
+                        chat: [],
+                        thinkingSteps: [],
+                    })
+                );
 
                 setSessions(prev => {
                     const existingIds = prev.map(s => s.id);
@@ -164,7 +166,8 @@ export const useAppBootstrap = ({
                 // It will be updated to proper agent ID once agents are loaded
                 const initialAgentSlug = isMaya ? 'maya' : 'bcc_octo_head';
                 const agentId = Array.isArray(agentsResult?.data?.agents)
-                    ? agentsResult.data.agents.find((a: SubAgentV2) => a.agent_name === initialAgentSlug)?.id || initialAgentSlug
+                    ? agentsResult.data.agents.find((a: SubAgentV2) => a.agent_name === initialAgentSlug)?.id ||
+                      initialAgentSlug
                     : initialAgentSlug;
                 const localSession: Session = {
                     id: currentSessionIdProp,

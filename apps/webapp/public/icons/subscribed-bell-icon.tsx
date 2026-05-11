@@ -1,6 +1,6 @@
-import { type ComponentProps } from 'react'
+import { type ComponentProps } from "react";
 
-type Props = ComponentProps<'svg'>
+type Props = ComponentProps<"svg">;
 export function SubscribedBellIcon({ ...props }: Props) {
   return (
     <svg {...props} width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -41,5 +41,5 @@ export function SubscribedBellIcon({ ...props }: Props) {
         // stroke="#D91E18"
       />
     </svg>
-  )
+  );
 }

@@ -19,14 +19,14 @@ The Genuin Web SDK has undergone a comprehensive reorganization to eliminate cod
 
 ### Before vs After
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| **Component Files** | ~80 files | ~30 files | 62% reduction |
-| **Bundle Size** | Larger (duplicated code) | Significantly smaller | Major reduction |
-| **Type Safety** | Partial | Comprehensive | Full coverage |
-| **Code Duplication** | High | Eliminated | 100% deduplication |
-| **Maintainability** | Complex | Simple | Streamlined |
-| **API Surface** | Legacy only | Legacy + Modern | Enhanced |
+| Metric               | Before                   | After                 | Improvement        |
+| -------------------- | ------------------------ | --------------------- | ------------------ |
+| **Component Files**  | ~80 files                | ~30 files             | 62% reduction      |
+| **Bundle Size**      | Larger (duplicated code) | Significantly smaller | Major reduction    |
+| **Type Safety**      | Partial                  | Comprehensive         | Full coverage      |
+| **Code Duplication** | High                     | Eliminated            | 100% deduplication |
+| **Maintainability**  | Complex                  | Simple                | Streamlined        |
+| **API Surface**      | Legacy only              | Legacy + Modern       | Enhanced           |
 
 ### Architecture Evolution
 
@@ -54,6 +54,7 @@ AFTER: Web SDK (Integrated)
 ### ✅ Phase 1: Redundant Component Elimination
 
 #### 1.1 UI Components Removed (→ @genuin/ui)
+
 - `src/components/button.tsx` → `@genuin/ui/Button`
 - `src/components/loader.tsx` → `@genuin/ui/Loader`
 - `src/components/shimmer.tsx` → `@genuin/ui/Skeleton`
@@ -64,6 +65,7 @@ AFTER: Web SDK (Integrated)
 - `src/components/ui/` (entire folder) → `@genuin/ui/*`
 
 #### 1.2 Business Components Removed (→ @genuin/components)
+
 - `src/components/authentication/` → `@genuin/components/AuthenticationModal`
 - `src/components/player/` → `@genuin/components/EmbedPlayer`
 - `src/components/comments/` → `@genuin/components/Comments`
@@ -77,6 +79,7 @@ AFTER: Web SDK (Integrated)
 - `src/components/community-tile.tsx` → `@genuin/components/CommunityCard`
 
 #### 1.3 Legacy Views and Context Removed
+
 - `src/views/loader.tsx` → Replaced by embed-loader bridge
 - `src/views/carousel/` → `@genuin/components/Embed` (carousel style)
 - `src/views/feed/` → `@genuin/components/Embed` (feed style)
@@ -90,12 +93,14 @@ AFTER: Web SDK (Integrated)
 ### ✅ Phase 2: Modern Core Architecture
 
 #### 2.1 Core System (`src/core/`)
+
 - **`SDKProvider.tsx`** - React context provider for SDK state
 - **`ConfigManager.ts`** - Singleton configuration management
 - **`EventManager.ts`** - Type-safe event system with history
 - **`ErrorHandler.ts`** - Categorized error handling
 
 #### 2.2 Modern Embed Components (`src/embed/`)
+
 - **`BaseEmbed.tsx`** - Foundation iframe embed with postMessage
 - **`CommunityEmbed.tsx`** - Community-specific embedding
 - **`LoopEmbed.tsx`** - Loop-specific embedding
@@ -103,12 +108,14 @@ AFTER: Web SDK (Integrated)
 - **`Embed.tsx`** - Generic configurable embed
 
 #### 2.3 SDK Class (`src/sdk/`)
+
 - **`GenuinSDK.ts`** - Main singleton SDK with full API
 - Vanilla JS methods for all embed types
 - Event system integration
 - Cleanup and destroy functionality
 
 #### 2.4 Type System (`src/types/`)
+
 - **`embed.ts`** - Embed configuration interfaces
 - **`events.ts`** - Event type definitions
 - **`config.ts`** - Configuration interfaces
@@ -117,24 +124,28 @@ AFTER: Web SDK (Integrated)
 ### ✅ Phase 3: Legacy Integration & Validation
 
 #### 3.1 Core Validation Logic
+
 - **ConfigManager.validateLegacyConfig()** - embed_id & api_key validation
 - **ConfigManager.validateDivAttributes()** - DOM element validation
 - **Duplicate prevention** - data-initialized attribute checking
 - **Instance ID generation** - Unique IDs like legacy system
 
 #### 3.2 API Integration
+
 - **APIService.fetchBrandDetails()** - `/api/v3/brand/detail` integration
 - **APIService.fetchEmbedData()** - `/api/v3/embed` integration
 - **Preview mode handling** - Special embed_id="preview" logic
 - **Error handling** - Graceful API failure management
 
 #### 3.3 Authentication System
+
 - **TokenManager** - localStorage ACCESS_TOKEN_KEY management
 - **Session restoration** - Existing user session handling
 - **Profile fetching** - Mini profile API integration
 - **Auth failure handling** - Graceful degradation
 
 #### 3.4 Brand Colors & Theming
+
 - **ThemeManager** - Brand color parsing and application
 - **CSS custom properties** - Dynamic brand color injection
 - **Dark mode support** - Theme class management
@@ -143,11 +154,13 @@ AFTER: Web SDK (Integrated)
 ### ✅ Phase 4: Bridge Architecture
 
 #### 4.1 Legacy Compatibility Layer
+
 - **`src/legacy/index.ts`** - Original implementation preserved
 - **`src/views/loader.tsx`** - Bridge connecting legacy and modern
 - **`src/index.ts`** - Unified entry point with both APIs
 
 #### 4.2 Embed Loader Integration
+
 - **`src/views/embed-loader.tsx`** - Modern loader using shared components
 - **RudderStack integration** - Analytics loading in bridge
 - **Error boundary handling** - Comprehensive error management
@@ -161,34 +174,35 @@ AFTER: Web SDK (Integrated)
 ```javascript
 // Original usage still works exactly as before
 window.genuin.init({
-  embed_id: 'your-embed-id',
-  api_key: 'your-api-key'
+  embed_id: "your-embed-id",
+  api_key: "your-api-key",
 });
 
 window.genuin.update({
-  page_context: 'new-page',
+  page_context: "new-page",
   lat: 40.7128,
-  long: -74.0060
+  long: -74.006,
 });
 ```
 
 ### Modern React API (New)
 
 ```tsx
-import { SDKProvider, CommunityEmbed, EmbedStyle } from '@genuin/web-sdk';
+import { SDKProvider, CommunityEmbed, EmbedStyle } from "@genuin/web-sdk";
 
 function App() {
   return (
-    <SDKProvider initialConfig={{
-      apiKey: 'your-api-key',
-      environment: 'production'
-    }}>
+    <SDKProvider
+      initialConfig={{
+        apiKey: "your-api-key",
+        environment: "production",
+      }}>
       <CommunityEmbed
         communityId="123"
         style={EmbedStyle.FEED}
         theme="light"
-        onLoad={() => console.log('Loaded')}
-        onError={(error) => console.error('Error:', error)}
+        onLoad={() => console.log("Loaded")}
+        onError={(error) => console.error("Error:", error)}
       />
     </SDKProvider>
   );
@@ -198,36 +212,36 @@ function App() {
 ### Modern Vanilla JS API (New)
 
 ```javascript
-import { GenuinSDK } from '@genuin/web-sdk';
+import { GenuinSDK } from "@genuin/web-sdk";
 
 // Get SDK instance
 const sdk = GenuinSDK.getInstance();
 
 // Initialize with configuration
 sdk.init({
-  apiKey: 'your-api-key',
-  environment: 'production'
+  apiKey: "your-api-key",
+  environment: "production",
 });
 
 // Create specific embeds
-sdk.createCommunityEmbed('container-1', {
-  communityId: 'community-123',
-  style: 'feed',
-  theme: 'light'
+sdk.createCommunityEmbed("container-1", {
+  communityId: "community-123",
+  style: "feed",
+  theme: "light",
 });
 
-sdk.createLoopEmbed('container-2', {
-  loopId: 'loop-456',
-  style: 'carousel'
+sdk.createLoopEmbed("container-2", {
+  loopId: "loop-456",
+  style: "carousel",
 });
 
 // Event handling
-sdk.on('embed:loaded', (event) => {
-  console.log('Embed loaded:', event.detail);
+sdk.on("embed:loaded", (event) => {
+  console.log("Embed loaded:", event.detail);
 });
 
-sdk.on('embed:error', (event) => {
-  console.error('Embed error:', event.detail);
+sdk.on("embed:error", (event) => {
+  console.error("Embed error:", event.detail);
 });
 
 // Cleanup
@@ -302,6 +316,7 @@ packages/web-sdk/
 ## 📦 Shared Package Integration
 
 ### Dependencies Added
+
 ```json
 {
   "dependencies": {
@@ -314,24 +329,28 @@ packages/web-sdk/
 ### Benefits Realized
 
 #### Code Deduplication
+
 - **50+ component files eliminated**
 - **Single source of truth** for all UI components
 - **Automatic updates** when shared components are improved
 - **Consistent behavior** across webapp and SDK
 
 #### Type Safety
+
 - **Full TypeScript coverage** with strict mode
 - **Shared type definitions** for consistent interfaces
 - **Compile-time error detection** for breaking changes
 - **IntelliSense support** for better developer experience
 
 #### Styling Consistency
+
 - **Shared Tailwind configuration** for consistent design tokens
 - **Automatic CSS isolation** via `gencl:` prefixes
 - **Theme synchronization** between webapp and SDK
 - **Responsive design** handled by shared components
 
 #### Bundle Size Optimization
+
 - **Significant size reduction** through eliminating duplicates
 - **Tree-shaking benefits** from shared package optimizations
 - **Lazy loading** of shared components only when needed
@@ -342,6 +361,7 @@ packages/web-sdk/
 ## 🛠️ Build System & Deployment
 
 ### Build Commands
+
 ```bash
 # Development build
 npm run build:dev
@@ -360,6 +380,7 @@ npm run lint
 ```
 
 ### Build Configuration
+
 - **Rollup.js** for optimized bundling
 - **TypeScript** compilation with strict mode
 - **Environment-specific builds** (dev/qa/prod)
@@ -367,6 +388,7 @@ npm run lint
 - **Tree shaking** for optimal bundle size
 
 ### Deployment Process
+
 1. **Build validation** - TypeScript compilation and linting
 2. **Bundle generation** - Rollup creates `dist/gen_sdk.js`
 3. **S3 publishing** - Via existing deployment scripts
@@ -378,6 +400,7 @@ npm run lint
 ## ⚠️ Current Status & Known Issues
 
 ### ✅ Build Status
+
 - **Compilation**: ✅ Successful (1.7s build time)
 - **Bundle generation**: ✅ `dist/gen_sdk.js` created (315 MB optimized)
 - **Functionality**: ✅ All legacy APIs working
@@ -385,19 +408,24 @@ npm run lint
 - **File count**: ✅ **31 TypeScript files** (**81% reduction** from ~160 original files)
 
 ### 🔧 TypeScript Warnings (Non-Breaking)
+
 Expected warnings from shared package dependencies - these are React type compatibility issues between packages and don't affect functionality:
+
 ```
 Property 'className' does not exist on type 'TabsContentProps'
 Type 'Ref<SVGSVGElement>' incompatibility between packages
 Missing global variable name for external modules
 ```
+
 **Status**: Non-breaking, build successful, functionality preserved
 
 ### ✅ Phase 7: Cleanup & Optimization - COMPLETED
+
 **Timeline**: August 12, 2025
 **Status**: ✅ **SUCCESSFULLY COMPLETED**
 
 #### Achievements:
+
 - ✅ **File Reduction**: Removed ~50 legacy component files (62% reduction)
 - ✅ **Import Resolution**: Fixed all critical import errors from deleted components
 - ✅ **Context Refactoring**: Updated size.tsx, floating.tsx, comment.tsx to work independently
@@ -408,6 +436,7 @@ Missing global variable name for external modules
 - ✅ **Type Safety**: Maintained strict TypeScript compliance with shared packages
 
 #### Technical Fixes Applied:
+
 ```typescript
 // Fixed utils.ts - deprecated problematic function
 export function getRedirectionStatusForPaths(): {
@@ -428,6 +457,7 @@ import { AuthUser } from '@/types/auth'; // Updated path
 ```
 
 ### 🧪 Testing Status
+
 - **Legacy API**: ✅ `window.genuin.init()` working
 - **Modern API**: ✅ `GenuinSDK` methods working
 - **Shared components**: ✅ Rendering correctly
@@ -443,6 +473,7 @@ import { AuthUser } from '@/types/auth'; // Updated path
 ### Phase 7: Cleanup & Optimization (Priority: High) - ✅ COMPLETED
 
 #### 7.1 TypeScript Warning Resolution - ✅ COMPLETED
+
 **Timeline**: August 12, 2025
 **Status**: ✅ **SUCCESSFULLY COMPLETED**
 
@@ -453,6 +484,7 @@ import { AuthUser } from '@/types/auth'; // Updated path
 - ✅ **Completed full typecheck** with no breaking changes
 
 **Final Results**:
+
 ```bash
 # Build completed successfully
 npm run build # 1.7s build time
@@ -460,6 +492,7 @@ find src/ -name "*.ts" -o -name "*.tsx" | wc -l # 31 files (81% reduction)
 ```
 
 #### 7.2 Build Configuration Optimization - ✅ COMPLETED
+
 **Timeline**: August 12, 2025
 **Status**: ✅ **SUCCESSFULLY COMPLETED**
 
@@ -470,6 +503,7 @@ find src/ -name "*.ts" -o -name "*.tsx" | wc -l # 31 files (81% reduction)
 - ✅ **Performance profiling** shows significant improvement
 
 #### 7.3 Documentation Updates - ✅ COMPLETED
+
 **Timeline**: August 12, 2025
 **Status**: ✅ **SUCCESSFULLY COMPLETED**
 
@@ -482,6 +516,7 @@ find src/ -name "*.ts" -o -name "*.tsx" | wc -l # 31 files (81% reduction)
 ### Phase 8: Testing & Validation (Priority: High)
 
 #### 8.1 Comprehensive Testing Suite
+
 **Timeline**: 2-3 days
 **Priority**: High
 
@@ -492,6 +527,7 @@ find src/ -name "*.ts" -o -name "*.tsx" | wc -l # 31 files (81% reduction)
 - [ ] **Performance benchmarks** vs. previous version
 
 #### 8.2 Real-world Validation
+
 **Timeline**: 1 week
 **Priority**: High
 
@@ -502,6 +538,7 @@ find src/ -name "*.ts" -o -name "*.tsx" | wc -l # 31 files (81% reduction)
 - [ ] **Test authentication flows** end-to-end
 
 #### 8.3 Performance Optimization
+
 **Timeline**: 2-3 days
 **Priority**: Medium
 
@@ -514,6 +551,7 @@ find src/ -name "*.ts" -o -name "*.tsx" | wc -l # 31 files (81% reduction)
 ### Phase 9: Developer Experience (Priority: Medium)
 
 #### 9.1 Enhanced Examples
+
 **Timeline**: 2 days
 **Priority**: Medium
 
@@ -524,6 +562,7 @@ find src/ -name "*.ts" -o -name "*.tsx" | wc -l # 31 files (81% reduction)
 - [ ] **Document common use cases** and patterns
 
 #### 9.2 Development Tools
+
 **Timeline**: 1-2 days
 **Priority**: Low
 
@@ -536,6 +575,7 @@ find src/ -name "*.ts" -o -name "*.tsx" | wc -l # 31 files (81% reduction)
 ### Phase 10: Future Enhancements (Priority: Low)
 
 #### 10.1 Modern Web Standards
+
 **Timeline**: 1 week
 **Priority**: Low
 
@@ -546,6 +586,7 @@ find src/ -name "*.ts" -o -name "*.tsx" | wc -l # 31 files (81% reduction)
 - [ ] **Progressive Web App** features
 
 #### 10.2 Advanced Features
+
 **Timeline**: 2 weeks
 **Priority**: Low
 
@@ -556,6 +597,7 @@ find src/ -name "*.ts" -o -name "*.tsx" | wc -l # 31 files (81% reduction)
 - [ ] **Accessibility** improvements (WCAG compliance)
 
 #### 10.3 Developer API Extensions
+
 **Timeline**: 1 week
 **Priority**: Low
 
@@ -571,32 +613,35 @@ find src/ -name "*.ts" -o -name "*.tsx" | wc -l # 31 files (81% reduction)
 
 ### Achieved Metrics
 
-| Metric | Target | Achieved | Status |
-|--------|--------|----------|--------|
-| **Code Reduction** | 40%+ | **81%** | ✅ **Exceeded** |
-| **Build Time** | <10s | 1.7s | ✅ Exceeded |
-| **Bundle Size** | Reduced | Significantly smaller | ✅ Met |
-| **Type Coverage** | 90%+ | 95%+ | ✅ Exceeded |
-| **API Compatibility** | 100% | 100% | ✅ Met |
-| **Component Reuse** | 80%+ | 90%+ | ✅ Exceeded |
-| **File Count** | <120 files | **31 files** | ✅ **Exceeded** |
-| **Critical Errors** | 0 | 0 | ✅ Met |
+| Metric                | Target     | Achieved              | Status          |
+| --------------------- | ---------- | --------------------- | --------------- |
+| **Code Reduction**    | 40%+       | **81%**               | ✅ **Exceeded** |
+| **Build Time**        | <10s       | 1.7s                  | ✅ Exceeded     |
+| **Bundle Size**       | Reduced    | Significantly smaller | ✅ Met          |
+| **Type Coverage**     | 90%+       | 95%+                  | ✅ Exceeded     |
+| **API Compatibility** | 100%       | 100%                  | ✅ Met          |
+| **Component Reuse**   | 80%+       | 90%+                  | ✅ Exceeded     |
+| **File Count**        | <120 files | **31 files**          | ✅ **Exceeded** |
+| **Critical Errors**   | 0          | 0                     | ✅ Met          |
 
 ### Ongoing Metrics to Track
 
 #### Performance Metrics
+
 - [ ] **Bundle size** comparison (before vs after)
 - [ ] **Load time** measurements for different embed types
 - [ ] **Memory usage** profiling for long-running embeds
 - [ ] **Network requests** optimization tracking
 
 #### Quality Metrics
+
 - [ ] **TypeScript error count** (target: 0)
 - [ ] **ESLint warning count** (target: 0)
 - [ ] **Test coverage** percentage (target: 80%+)
 - [ ] **Documentation coverage** (target: 100% public APIs)
 
 #### Developer Experience Metrics
+
 - [ ] **API usage adoption** (modern vs legacy)
 - [ ] **Integration time** for new implementations
 - [ ] **Support ticket reduction** from improved documentation
@@ -609,8 +654,10 @@ find src/ -name "*.ts" -o -name "*.tsx" | wc -l # 31 files (81% reduction)
 ### Common Issues & Solutions
 
 #### Build Failures
+
 **Problem**: TypeScript compilation errors
 **Solution**:
+
 ```bash
 # Clear build cache
 npm run clean
@@ -623,8 +670,10 @@ npm run typecheck
 ```
 
 #### Import Resolution Issues
+
 **Problem**: Cannot resolve shared package imports
 **Solution**:
+
 ```bash
 # Verify workspace links
 pnpm install
@@ -637,16 +686,20 @@ rm -rf node_modules && pnpm install
 ```
 
 #### Runtime Errors in Embeds
+
 **Problem**: Shared components not rendering
 **Solution**:
+
 1. Verify `@genuin/components` and `@genuin/ui` are built
 2. Check browser console for CSS loading errors
 3. Ensure container element has correct attributes
 4. Validate API key and embed_id format
 
 #### Legacy API Not Working
+
 **Problem**: `window.genuin.init` throwing errors
 **Solution**:
+
 1. Verify legacy bridge in `src/views/loader.tsx`
 2. Check that `src/legacy/index.ts` is properly exported
 3. Ensure global variable is attached in main index.ts
@@ -657,18 +710,21 @@ rm -rf node_modules && pnpm install
 ## 📞 Support & Resources
 
 ### Documentation
+
 - **API Reference**: [Link to be added]
 - **Migration Guide**: [Link to be added]
 - **Examples Repository**: `packages/web-sdk/examples/`
 - **TypeScript Definitions**: Available in package
 
 ### Development
+
 - **Source Code**: `packages/web-sdk/src/`
 - **Build Scripts**: See `package.json` scripts section
 - **Testing**: Run `npm test` for validation
 - **Linting**: Run `npm run lint` for code quality
 
 ### Support Channels
+
 - **Internal Documentation**: See monorepo README files
 - **Code Reviews**: Follow standard PR process
 - **Bug Reports**: Use GitHub issues with 'web-sdk' label
@@ -690,6 +746,7 @@ The Web SDK reorganization represents a significant advancement in our codebase 
 ### Phase 7 Cleanup: ✅ COMPLETE - All Objectives Achieved
 
 **What was accomplished:**
+
 - Systematic removal of 50+ legacy component files
 - Complete resolution of TypeScript import errors
 - Successful integration with shared @genuin/components and @genuin/ui packages
@@ -698,6 +755,7 @@ The Web SDK reorganization represents a significant advancement in our codebase 
 - Comprehensive documentation of changes and deprecations
 
 **Technical achievements:**
+
 - Fixed all circular dependency issues
 - Resolved context provider dependencies
 - Corrected authentication system integration
@@ -711,6 +769,6 @@ The new architecture positions the SDK for future enhancements while maintaining
 
 ---
 
-*Last Updated: August 12, 2025*
-*Status: Phase 7 Complete ✅ - **EXCEPTIONAL RESULTS ACHIEVED***
-*Build Status: Successful (1.7s, **31 files - 81% reduction**, 0 critical errors)*
+_Last Updated: August 12, 2025_
+\*Status: Phase 7 Complete ✅ - **EXCEPTIONAL RESULTS ACHIEVED\***
+_Build Status: Successful (1.7s, **31 files - 81% reduction**, 0 critical errors)_

@@ -55,26 +55,26 @@ See the e2e-testing skill for the full Page Object template.
 ## Test file rules
 
 ```ts
-import { test, expect } from '@playwright/test';
-import { LoginPage } from './pages/Login.page';
+import { test, expect } from "@playwright/test";
+import { LoginPage } from "./pages/Login.page";
 
-test.describe('login flow', () => {
-  test('redirects to dashboard on valid credentials', async ({ page }) => {
+test.describe("login flow", () => {
+  test("redirects to dashboard on valid credentials", async ({ page }) => {
     const loginPage = new LoginPage(page);
     await loginPage.goto();
-    await loginPage.fillEmail('user@example.com');
-    await loginPage.fillPassword('correct-password');
+    await loginPage.fillEmail("user@example.com");
+    await loginPage.fillPassword("correct-password");
     await loginPage.submit();
-    await loginPage.expectRedirectedTo('/dashboard');
+    await loginPage.expectRedirectedTo("/dashboard");
   });
 
-  test('shows error on invalid credentials', async ({ page }) => {
+  test("shows error on invalid credentials", async ({ page }) => {
     const loginPage = new LoginPage(page);
     await loginPage.goto();
-    await loginPage.fillEmail('user@example.com');
-    await loginPage.fillPassword('wrong-password');
+    await loginPage.fillEmail("user@example.com");
+    await loginPage.fillPassword("wrong-password");
     await loginPage.submit();
-    await loginPage.expectErrorVisible('Invalid email or password');
+    await loginPage.expectErrorVisible("Invalid email or password");
   });
 });
 ```

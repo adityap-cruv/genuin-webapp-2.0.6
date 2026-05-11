@@ -36,12 +36,7 @@ interface UseSSEHandlerResult {
     cancelStream: (sessionId: string | null | undefined) => void;
 }
 
-export const useSSEHandler = ({
-    onMessage,
-    onError,
-    onSessionCreated,
-}: UseSSEHandlerParams): UseSSEHandlerResult => {
-
+export const useSSEHandler = ({ onMessage, onError, onSessionCreated }: UseSSEHandlerParams): UseSSEHandlerResult => {
     // One AbortController per session
     const abortControllersRef = useRef<Map<string, AbortController>>(new Map());
 
@@ -141,19 +136,19 @@ export const useSSEHandler = ({
                     hasData = true;
                 }
 
-                const fnName = parsed.function_name ?? (parsed as any)["function_name:"];
+                const fnName = parsed.function_name ?? (parsed as any)['function_name:'];
                 if (fnName !== undefined) {
                     messageData.function_name = fnName;
                     hasData = true;
                 }
 
-                const fnResponse = parsed.function_response ?? (parsed as any)["function_response:"];
+                const fnResponse = parsed.function_response ?? (parsed as any)['function_response:'];
                 if (fnResponse !== undefined) {
                     messageData.function_response = fnResponse;
                     hasData = true;
                 }
 
-                const carousel_metadata = parsed.carousel_metadata ?? (parsed as any)["carousel_metadata:"];
+                const carousel_metadata = parsed.carousel_metadata ?? (parsed as any)['carousel_metadata:'];
                 if (carousel_metadata !== undefined) {
                     messageData.carousel_metadata = carousel_metadata;
                     if (isCachedSession) {
@@ -167,9 +162,8 @@ export const useSSEHandler = ({
                 }
 
                 return { isCompleted: parsed.response_completed === true, isError: false };
-
             } catch (err) {
-                console.error("[SSE] JSON parse error", err, jsonStr);
+                console.error('[SSE] JSON parse error', err, jsonStr);
                 return { isCompleted: false, isError: false };
             }
         };
@@ -193,211 +187,215 @@ export const useSSEHandler = ({
      * Used for reconnecting after browser refresh or when loading chat history.
      * Returns whether the stream is completed or not.
      */
-    const connectToStream = useCallback(async (sessionId: string): Promise<{ isCompleted: boolean }> => {
-        // Abort any existing stream for this session
-        const existingController = abortControllersRef.current.get(sessionId);
-        if (existingController) {
-            existingController.abort();
-        }
-
-        const abortController = new AbortController();
-        abortControllersRef.current.set(sessionId, abortController);
-
-        try {
-            const streamUrl = getChatStreamUrl(sessionId);
-
-            const response = await fetch(streamUrl, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                signal: abortController.signal,
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+    const connectToStream = useCallback(
+        async (sessionId: string): Promise<{ isCompleted: boolean }> => {
+            // Abort any existing stream for this session
+            const existingController = abortControllersRef.current.get(sessionId);
+            if (existingController) {
+                existingController.abort();
             }
 
-            if (!response.body) {
-                throw new Error('Response body is null');
-            }
+            const abortController = new AbortController();
+            abortControllersRef.current.set(sessionId, abortController);
 
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder();
-            const { processChunk } = createChunkProcessor(sessionId);
+            try {
+                const streamUrl = getChatStreamUrl(sessionId);
 
-            let buffer = '';
-            let streamCompleted = false;
+                const response = await fetch(streamUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    signal: abortController.signal,
+                });
 
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
 
-                buffer += decoder.decode(value, { stream: true });
-                const parts = buffer.split('\n');
-                buffer = parts.pop() || '';
+                if (!response.body) {
+                    throw new Error('Response body is null');
+                }
 
-                for (const p of parts) {
-                    const result = processChunk(p);
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                const { processChunk } = createChunkProcessor(sessionId);
+
+                let buffer = '';
+                let streamCompleted = false;
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    buffer += decoder.decode(value, { stream: true });
+                    const parts = buffer.split('\n');
+                    buffer = parts.pop() || '';
+
+                    for (const p of parts) {
+                        const result = processChunk(p);
+                        if (result.isCompleted) streamCompleted = true;
+                        if (result.isError) {
+                            // Stream not found or other error - session has no active stream
+                            return { isCompleted: true };
+                        }
+                    }
+                }
+
+                // Process any remaining data in buffer
+                if (buffer.trim()) {
+                    const result = processChunk(buffer);
                     if (result.isCompleted) streamCompleted = true;
                     if (result.isError) {
-                        // Stream not found or other error - session has no active stream
                         return { isCompleted: true };
                     }
                 }
-            }
 
-            // Process any remaining data in buffer
-            if (buffer.trim()) {
-                const result = processChunk(buffer);
-                if (result.isCompleted) streamCompleted = true;
-                if (result.isError) {
-                    return { isCompleted: true };
+                return { isCompleted: streamCompleted };
+            } catch (error: any) {
+                if (error.name !== 'AbortError') {
+                    // Don't call onError for stream reconnection failures - just return completed
+                    console.error('[SSE] Stream connection error:', error.message);
+                }
+                return { isCompleted: true };
+            } finally {
+                const current = abortControllersRef.current.get(sessionId);
+                if (current === abortController) {
+                    abortControllersRef.current.delete(sessionId);
                 }
             }
-
-            return { isCompleted: streamCompleted };
-
-        } catch (error: any) {
-            if (error.name !== "AbortError") {
-                // Don't call onError for stream reconnection failures - just return completed
-                console.error("[SSE] Stream connection error:", error.message);
-            }
-            return { isCompleted: true };
-        } finally {
-            const current = abortControllersRef.current.get(sessionId);
-            if (current === abortController) {
-                abortControllersRef.current.delete(sessionId);
-            }
-        }
-    }, [onMessage]);
+        },
+        [onMessage]
+    );
 
     /**
      * Send a new message using the two-step flow:
      * 1. POST /api/v1/maya/chat/start to create/start the chat session
      * 2. GET /api/v1/maya/chat/stream/{session_id} to receive streaming response
      */
-    const sendSSEMessage = useCallback(async (payload: SSEMessagePayload) => {
-        const sessionKey = payload.session_id || payload.temp_session_id;
+    const sendSSEMessage = useCallback(
+        async (payload: SSEMessagePayload) => {
+            const sessionKey = payload.session_id || payload.temp_session_id;
 
-        if (!sessionKey) {
-            throw new Error("session_id or temp_session_id required");
-        }
-
-        // Abort only previous stream for THIS session
-        const existingController = abortControllersRef.current.get(sessionKey);
-        if (existingController) {
-            existingController.abort();
-        }
-
-        const abortController = new AbortController();
-        abortControllersRef.current.set(sessionKey, abortController);
-
-        try {
-            // Step 1: Call POST /api/v1/maya/chat/start to create session
-            const startPayload: StartChatPayload = {
-                brand_id: payload.brand_id,
-                message: payload.message,
-                agent_id: payload.agent_id || '',
-                agent_type: payload.agent_type,
-                session_id: payload.session_id,
-                user_id: payload.user_id,
-                s3_keys: payload.s3_keys,
-                video_id: payload.video_id,
-                previous_context: payload.previous_context,
-                integration_type: payload.integration_type,
-                integration_id: payload.integration_id,
-                content_order: payload.content_order,
-            };
-
-            console.log('[SSE Handler] Sending to backend:', {
-                integration_type: startPayload.integration_type,
-                integration_id: startPayload.integration_id,
-                content_order: startPayload.content_order,
-                video_id: startPayload.video_id,
-            });
-
-            const startResponse = await startChatSession(startPayload);
-            const { session_id: realSessionId, user_message_id } = startResponse.data;
-
-            // Check if response is cached based on the message field
-            const isCached = startResponse.message?.includes('(cached)') || false;
-            if (isCached) {
-                pendingCachedResponsesRef.current.add(realSessionId);
+            if (!sessionKey) {
+                throw new Error('session_id or temp_session_id required');
             }
 
-            // If this was a new session (temp_session_id), notify about the real session ID
-            if (payload.temp_session_id && realSessionId) {
-                onSessionCreated(payload.temp_session_id, realSessionId);
+            // Abort only previous stream for THIS session
+            const existingController = abortControllersRef.current.get(sessionKey);
+            if (existingController) {
+                existingController.abort();
+            }
 
-                // Move abort controller to real session id
-                const ctrl = abortControllersRef.current.get(payload.temp_session_id);
-                if (ctrl) {
-                    abortControllersRef.current.set(realSessionId, ctrl);
-                    abortControllersRef.current.delete(payload.temp_session_id);
+            const abortController = new AbortController();
+            abortControllersRef.current.set(sessionKey, abortController);
+
+            try {
+                // Step 1: Call POST /api/v1/maya/chat/start to create session
+                const startPayload: StartChatPayload = {
+                    brand_id: payload.brand_id,
+                    message: payload.message,
+                    agent_id: payload.agent_id || '',
+                    agent_type: payload.agent_type,
+                    session_id: payload.session_id,
+                    user_id: payload.user_id,
+                    s3_keys: payload.s3_keys,
+                    video_id: payload.video_id,
+                    previous_context: payload.previous_context,
+                    integration_type: payload.integration_type,
+                    integration_id: payload.integration_id,
+                    content_order: payload.content_order,
+                };
+
+                console.log('[SSE Handler] Sending to backend:', {
+                    integration_type: startPayload.integration_type,
+                    integration_id: startPayload.integration_id,
+                    content_order: startPayload.content_order,
+                    video_id: startPayload.video_id,
+                });
+
+                const startResponse = await startChatSession(startPayload);
+                const { session_id: realSessionId, user_message_id } = startResponse.data;
+
+                // Check if response is cached based on the message field
+                const isCached = startResponse.message?.includes('(cached)') || false;
+                if (isCached) {
+                    pendingCachedResponsesRef.current.add(realSessionId);
+                }
+
+                // If this was a new session (temp_session_id), notify about the real session ID
+                if (payload.temp_session_id && realSessionId) {
+                    onSessionCreated(payload.temp_session_id, realSessionId);
+
+                    // Move abort controller to real session id
+                    const ctrl = abortControllersRef.current.get(payload.temp_session_id);
+                    if (ctrl) {
+                        abortControllersRef.current.set(realSessionId, ctrl);
+                        abortControllersRef.current.delete(payload.temp_session_id);
+                    }
+                }
+
+                // Send initial session info to update UI
+                onMessage({
+                    session_id: realSessionId,
+                    user_message_id: user_message_id,
+                });
+
+                // Step 2: Connect to GET /api/v1/maya/chat/stream/{session_id} for streaming
+                const streamUrl = getChatStreamUrl(realSessionId);
+
+                const response = await fetch(streamUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    signal: abortController.signal,
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                if (!response.body) {
+                    throw new Error('Response body is null');
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                const { processChunk } = createChunkProcessor(realSessionId);
+
+                let buffer = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    buffer += decoder.decode(value, { stream: true });
+                    const parts = buffer.split('\n');
+                    buffer = parts.pop() || '';
+
+                    for (const p of parts) {
+                        processChunk(p);
+                    }
+                }
+
+                // Process any remaining data in buffer
+                if (buffer.trim()) {
+                    processChunk(buffer);
+                }
+            } catch (error: any) {
+                if (error.name !== 'AbortError') {
+                    onError(sessionKey, error.message || 'SSE failed');
+                }
+            } finally {
+                const current = abortControllersRef.current.get(sessionKey);
+                if (current === abortController) {
+                    abortControllersRef.current.delete(sessionKey);
                 }
             }
-
-            // Send initial session info to update UI
-            onMessage({
-                session_id: realSessionId,
-                user_message_id: user_message_id,
-            });
-
-            // Step 2: Connect to GET /api/v1/maya/chat/stream/{session_id} for streaming
-            const streamUrl = getChatStreamUrl(realSessionId);
-
-            const response = await fetch(streamUrl, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                signal: abortController.signal,
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            if (!response.body) {
-                throw new Error('Response body is null');
-            }
-
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder();
-            const { processChunk } = createChunkProcessor(realSessionId);
-
-            let buffer = '';
-
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-
-                buffer += decoder.decode(value, { stream: true });
-                const parts = buffer.split('\n');
-                buffer = parts.pop() || '';
-
-                for (const p of parts) {
-                    processChunk(p);
-                }
-            }
-
-            // Process any remaining data in buffer
-            if (buffer.trim()) {
-                processChunk(buffer);
-            }
-
-        } catch (error: any) {
-            if (error.name !== "AbortError") {
-                onError(sessionKey, error.message || "SSE failed");
-            }
-        } finally {
-            const current = abortControllersRef.current.get(sessionKey);
-            if (current === abortController) {
-                abortControllersRef.current.delete(sessionKey);
-            }
-        }
-    }, [onMessage, onError, onSessionCreated]);
+        },
+        [onMessage, onError, onSessionCreated]
+    );
 
     const cancelStream = useCallback((sessionId: string | null | undefined) => {
         if (!sessionId) return;

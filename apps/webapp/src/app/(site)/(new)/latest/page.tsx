@@ -1,6 +1,6 @@
-import { type Metadata } from 'next'
+import { type Metadata } from "next";
 
-import { Root } from './root'
+import { Root } from "./root";
 
 // type Props = {
 //   searchParams: {
@@ -9,11 +9,11 @@ import { Root } from './root'
 // }
 
 export default function Page() {
-  return <Root />
+  return <Root />;
 }
 
 export function generateMetadata(): Metadata {
   return {
-    title: 'Latest | Welcome to Genuin!',
-  }
+    title: "Latest | Welcome to Genuin!",
+  };
 }

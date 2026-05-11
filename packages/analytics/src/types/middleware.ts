@@ -2,7 +2,7 @@
  * Middleware types
  */
 
-import type { AnalyticsEvent } from './events'
+import type { AnalyticsEvent } from "./events";
 
 /**
  * Context passed to middleware
@@ -11,22 +11,22 @@ export interface MiddlewareContext {
   /**
    * Session ID
    */
-  sessionId?: string
+  sessionId?: string;
 
   /**
    * Device ID
    */
-  deviceId?: string
+  deviceId?: string;
 
   /**
    * Whether running in debug mode
    */
-  debug?: boolean
+  debug?: boolean;
 
   /**
    * Additional context data
    */
-  [key: string]: any
+  [key: string]: any;
 }
 
 /**
@@ -36,7 +36,7 @@ export type Middleware = (
   event: AnalyticsEvent,
   next: () => Promise<void>,
   context: MiddlewareContext
-) => Promise<void>
+) => Promise<void>;
 
 /**
  * Middleware options
@@ -46,10 +46,10 @@ export interface MiddlewareOptions {
    * Priority/order of middleware execution
    * Lower numbers execute first
    */
-  priority?: number
+  priority?: number;
 
   /**
    * Whether middleware is enabled
    */
-  enabled?: boolean
+  enabled?: boolean;
 }

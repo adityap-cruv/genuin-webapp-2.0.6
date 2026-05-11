@@ -1,6 +1,6 @@
-import { type ComponentProps } from 'react'
+import { type ComponentProps } from "react";
 
-type Props = ComponentProps<'svg'>
+type Props = ComponentProps<"svg">;
 export function ShoppingCartIcon({ ...props }: Props) {
   return (
     <svg
@@ -19,5 +19,5 @@ export function ShoppingCartIcon({ ...props }: Props) {
       />
       <rect x="5.28613" y="9.57141" width="18.3571" height="18.3571" rx="3.6" strokeWidth="2" />
     </svg>
-  )
+  );
 }

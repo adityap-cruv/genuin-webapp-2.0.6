@@ -6,7 +6,7 @@
  * Updated for compatibility with Next.js 15 and React 19
  */
 
-import * as Sentry from '@sentry/nextjs'
+import * as Sentry from "@sentry/nextjs";
 
 Sentry.init({
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
@@ -30,18 +30,18 @@ Sentry.init({
 
   // Next.js 15 specific configuration
   // Adjust this for production to avoid excessive telemetry
-  enableTracing: process.env.NODE_ENV === 'production',
+  enableTracing: process.env.NODE_ENV === "production",
 
   // Filter out unwanted transactions
   beforeSendTransaction(event) {
     // Ignore middleware transactions to reduce noise
-    if (event.transaction && event.transaction.startsWith('middleware')) {
-      return null
+    if (event.transaction && event.transaction.startsWith("middleware")) {
+      return null;
     }
     // Ignore internal Next.js transactions for better signal-to-noise ratio
-    if (event.transaction && event.transaction.includes('/_next/')) {
-      return null
+    if (event.transaction && event.transaction.includes("/_next/")) {
+      return null;
     }
-    return event
+    return event;
   },
-})
+});

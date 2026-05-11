@@ -17,9 +17,9 @@ This document describes the recommended approach for resolving and using relativ
       "@components/*": ["./src/components/*"],
       "@lib/*": ["./src/lib/*"],
       "@hooks/*": ["./src/hooks/*"],
-      "@icons/*": ["./src/icons/*"]
-    }
-  }
+      "@icons/*": ["./src/icons/*"],
+    },
+  },
 }
 ```
 
@@ -36,8 +36,6 @@ This document describes the recommended approach for resolving and using relativ
 ```
 
 ---
-
-
 
 ## 2. Components Package (`packages/components`) Path Configuration
 
@@ -58,9 +56,9 @@ This document describes the recommended approach for resolving and using relativ
       "@hooks/*": ["./src/react-query/*"],
       "@types/*": ["./src/types/*"],
       "@context/*": ["./src/context/*"],
-      "@lib/*": ["./src/lib/*"]
-    }
-  }
+      "@lib/*": ["./src/lib/*"],
+    },
+  },
 }
 ```
 
@@ -106,9 +104,9 @@ export function Component() {
       "@genuin/ui": ["../../packages/ui/src"],
       "@genuin/ui/*": ["../../packages/ui/src/*"],
       "@genuin/components": ["../../packages/components/src"],
-      "@genuin/components/*": ["../../packages/components/src/*"]
-    }
-  }
+      "@genuin/components/*": ["../../packages/components/src/*"],
+    },
+  },
 }
 ```
 
@@ -120,7 +118,6 @@ export function Component() {
 ```
 
 ---
-
 
 ## 3. Import Patterns
 
@@ -141,36 +138,36 @@ import { Loader } from "@genuin/ui/loader";
 
 ---
 
-
-
 ## 4. Build Tool Configuration
 
 ### Next.js (webapp)
+
 - In `next.config.js`:
 
 ```js
 const nextConfig = {
   transpilePackages: ["@genuin/ui", "@genuin/components"],
   experimental: {
-    optimizePackageImports: ["@genuin/ui", "@genuin/components"]
+    optimizePackageImports: ["@genuin/ui", "@genuin/components"],
   },
   // Add webpack config for resolving path aliases in external packages
   webpack: (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,
       // Make Next.js aware of the components package's aliases if needed
-      "@templates": require('path').resolve(__dirname, '../../packages/components/src/templates'),
-      "@pages": require('path').resolve(__dirname, '../../packages/components/src/page'),
-      "@organisms": require('path').resolve(__dirname, '../../packages/components/src/organisms'),
-      "@molecules": require('path').resolve(__dirname, '../../packages/components/src/molecules'),
+      "@templates": require("path").resolve(__dirname, "../../packages/components/src/templates"),
+      "@pages": require("path").resolve(__dirname, "../../packages/components/src/page"),
+      "@organisms": require("path").resolve(__dirname, "../../packages/components/src/organisms"),
+      "@molecules": require("path").resolve(__dirname, "../../packages/components/src/molecules"),
       // Add other aliases as needed
     };
     return config;
-  }
+  },
 };
 ```
 
 ### Rollup (web-sdk)
+
 - Ensure Rollup resolves UI package imports correctly, e.g.:
 
 ```js
@@ -183,11 +180,12 @@ resolve({
     "@templates": path.resolve(__dirname, "../../packages/components/src/templates"),
     "@pages": path.resolve(__dirname, "../../packages/components/src/page"),
     // Add other aliases as needed
-  }
-})
+  },
+});
 ```
 
 ### Rollup (web-sdk)
+
 - Ensure Rollup resolves UI package imports correctly, e.g.:
 
 ```js
@@ -195,11 +193,10 @@ resolve({
   extensions: [".js", ".jsx", ".ts", ".tsx"],
   preferBuiltins: false,
   dedupe: ["react", "react-dom"],
-})
+});
 ```
 
 ---
-
 
 ## 5. General Best Practices
 
@@ -211,8 +208,6 @@ resolve({
 - Test imports in all consuming packages after changes.
 
 ---
-
-
 
 ## 6. Example Usage
 
@@ -242,7 +237,6 @@ export function Example() {
 
 ---
 
-
 ## 7. Troubleshooting
 
 - If imports fail, check:
@@ -257,6 +251,7 @@ export function Example() {
 ---
 
 ## 8. References
+
 - [MONOREPO_CONVERSION.md](./MONOREPO_CONVERSION.md)
 - [TAILWIND_V4_MIGRATION_GUIDE.md](../migrations/TAILWIND_V4_MIGRATION_GUIDE.md)
 - [UPGRADE_GUIDE.md](../../apps/webapp/UPGRADE_GUIDE.md)
@@ -264,8 +259,6 @@ export function Example() {
 ---
 
 ---
-
-
 
 ## Progress Log
 

@@ -54,7 +54,7 @@ These problems create friction in AI-assisted workflows and undermine code quali
 As a developer, I want GitHub Copilot to suggest implementations using the "implementer" agent
 so that I get code that follows project conventions without needing to specify styles and patterns.
 
-As a team lead, I want to add a new security guardrail (e.g., "never use eval()") 
+As a team lead, I want to add a new security guardrail (e.g., "never use eval()")
 so that all AI agents across the team immediately enforce it on every prompt.
 
 As an engineer, I want the debugger agent to help me find root causes in failing tests
@@ -113,6 +113,7 @@ so that I cannot accidentally leak credentials via AI-generated code.
 ## 8. Acceptance Criteria
 
 ### Requirement 1: Read configuration from `.team/`
+
 ```
 Given a `.team/` directory with agents/, skills/, instructions.md, and guardrails.json
 When the sync script runs
@@ -120,15 +121,17 @@ Then all files are read without errors and no file is read more than once
 ```
 
 ### Requirement 2: Generate correctly formatted output
+
 ```
 Given a `.team/agents/implementer.md` file
 When the sync script runs
-Then the script writes `.github/agents/implementer.agent.md` with YAML frontmatter 
+Then the script writes `.github/agents/implementer.agent.md` with YAML frontmatter
   listing tools from agents.config.json
 And the script writes `.claude/agents/implementer.md` with no frontmatter
 ```
 
 ### Requirement 3: Combine base + delta instructions
+
 ```
 Given `.team/instructions.md` (500 lines) and `.team/copilot/instructions.md` (delta, 50 lines)
 When the sync script runs
@@ -137,6 +140,7 @@ And the script writes `.claude/CLAUDE.md` with base + claude delta combined
 ```
 
 ### Requirement 4: All agents synced
+
 ```
 Given 7 agent files in `.team/agents/` (planner, implementer, reviewer, debugger, security-auditor, e2e-tester, prd-writer)
 When the sync script runs
@@ -145,6 +149,7 @@ And no agents are missing or duplicated
 ```
 
 ### Requirement 5: Tool restrictions injected
+
 ```
 Given agents.config.json with "planner": { "tools": ["codebase", "search", "usages"] }
 When the sync script runs
@@ -153,6 +158,7 @@ And Claude agents do not contain tool restrictions (Claude reads from codebase c
 ```
 
 ### Requirement 6: Skills copied and tracked
+
 ```
 Given `.team/skills/refactor.md` and `.team/skills/debug/SKILL.md`
 When the sync script runs
@@ -162,15 +168,17 @@ And skills.registry.json is copied unchanged
 ```
 
 ### Requirement 7: Guardrails included
+
 ```
 Given `.team/hooks/guardrails.json` with 20+ rules
 When the sync script runs
-Then guardrails are embedded in the "never", "always", and "requireApproval" sections 
+Then guardrails are embedded in the "never", "always", and "requireApproval" sections
   of generated instructions
 And all agents have access to the same guardrails
 ```
 
 ### Requirement 9: Skip unchanged files
+
 ```
 Given an existing `.github/copilot-instructions.md` with content X
 When the sync script runs and the new content is also X
@@ -179,6 +187,7 @@ And `dryRunChanges` is not incremented
 ```
 
 ### Requirement 10: ChatModes generated
+
 ```
 Given `.team/chatmodes/planning.chatmode.md`
 When the sync script runs
@@ -187,6 +196,7 @@ And Copilot users can use `@planning` in chat
 ```
 
 ### Requirement 11: Pre-commit sync
+
 ```
 Given a change to `.team/instructions.md`
 When the developer commits with `git commit -m "..."`, the pre-commit hook runs sync

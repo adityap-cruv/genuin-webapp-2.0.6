@@ -82,7 +82,7 @@ function processUsers(users) {
     for (const user of users) {
       if (user.active) {
         if (user.email) {
-          user.verified = true;  // mutation!
+          user.verified = true; // mutation!
           results.push(user);
         }
       }
@@ -94,9 +94,7 @@ function processUsers(users) {
 // GOOD: Early returns + immutability + flat
 function processUsers(users) {
   if (!users) return [];
-  return users
-    .filter(user => user.active && user.email)
-    .map(user => ({ ...user, verified: true }));
+  return users.filter((user) => user.active && user.email).map((user) => ({ ...user, verified: true }));
 }
 ```
 
@@ -130,10 +128,14 @@ useEffect(() => {
 
 ```tsx
 // BAD: Using index as key with reorderable list
-{items.map((item, i) => <ListItem key={i} item={item} />)}
+{
+  items.map((item, i) => <ListItem key={i} item={item} />);
+}
 
 // GOOD: Stable unique key
-{items.map(item => <ListItem key={item.id} item={item} />)}
+{
+  items.map((item) => <ListItem key={item.id} item={item} />);
+}
 ```
 
 ### Node.js/Backend Patterns (HIGH)
@@ -165,7 +167,7 @@ When reviewing backend code:
 - **Poor naming** — Single-letter variables (x, tmp, data) in non-trivial contexts
 - **Magic numbers** — Unexplained numeric constants
 - **Inconsistent formatting** — Mixed semicolons, quote styles, indentation
-- **Hardcoded secrets/URLs** — Must use environment variables (NEXT_PUBLIC_* for client)
+- **Hardcoded secrets/URLs** — Must use environment variables (NEXT*PUBLIC*\* for client)
 - **Cross-app imports** — Never import between apps in `apps/`
 
 ## Review Output Format

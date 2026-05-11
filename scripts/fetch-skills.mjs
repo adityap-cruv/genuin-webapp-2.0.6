@@ -103,10 +103,7 @@ async function fetchSkill(skill) {
       signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
     });
   } catch (err) {
-    const reason =
-      err.name === "TimeoutError"
-        ? `timed out after ${FETCH_TIMEOUT_MS / 1000}s`
-        : err.message;
+    const reason = err.name === "TimeoutError" ? `timed out after ${FETCH_TIMEOUT_MS / 1000}s` : err.message;
     return { skill, error: reason };
   }
 
@@ -123,9 +120,7 @@ async function fetchSkill(skill) {
 
   // structural validation instead of fragile string match
   if (!looksLikeSkill(content)) {
-    console.warn(
-      `  ⚠  ${skill.name}: file seems too short or lacks section headings — saving anyway`,
-    );
+    console.warn(`  ⚠  ${skill.name}: file seems too short or lacks section headings — saving anyway`);
   }
 
   const skillDir = join(root, ".team", "skills", skill.name);
@@ -168,12 +163,9 @@ for (const outcome of settled) {
 // ─── Summary ─────────────────────────────────────────────────────────────────
 
 console.log("\n--- fetch-skills summary ---");
-if (results.fetched.length)
-  console.log(`✅ Fetched: ${results.fetched.join(", ")}`);
-if (results.skipped.length)
-  console.log(`⏭  Skipped: ${results.skipped.join(", ")}`);
-if (results.failed.length)
-  console.log(`❌ Failed:  ${results.failed.join(", ")}`);
+if (results.fetched.length) console.log(`✅ Fetched: ${results.fetched.join(", ")}`);
+if (results.skipped.length) console.log(`⏭  Skipped: ${results.skipped.join(", ")}`);
+if (results.failed.length) console.log(`❌ Failed:  ${results.failed.join(", ")}`);
 
 if (results.failed.length > 0) {
   console.log("\nRun sync after fixing errors: node sync-ai-config.mjs");

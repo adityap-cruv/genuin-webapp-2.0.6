@@ -22,8 +22,8 @@ export default defineConfig(() => {
         build: {
             lib: {
                 entry: {
-                    'genai-sdk': path.resolve(__dirname, './src/index.tsx'),     // Module version
-                    'genai-loader': path.resolve(__dirname, './src/loader.js'),  // Script tag version
+                    'genai-sdk': path.resolve(__dirname, './src/index.tsx'), // Module version
+                    'genai-loader': path.resolve(__dirname, './src/loader.js'), // Script tag version
                 },
                 name: 'GenAISDK',
                 fileName: (format, entryName) => {
@@ -79,9 +79,11 @@ export default defineConfig(() => {
                             }
 
                             // Check for Chat component (excluding lazy-loaded widgets)
-                            if (moduleIds.includes('/src/components/Chat/') &&
+                            if (
+                                moduleIds.includes('/src/components/Chat/') &&
                                 !moduleIds.includes('KoahAdWidget') &&
-                                !moduleIds.includes('InventoryWidget')) {
+                                !moduleIds.includes('InventoryWidget')
+                            ) {
                                 return 'chunks/chat-[hash].js';
                             }
                         }

@@ -17,8 +17,7 @@ import { useRudderEvents } from '@/services/analytics/useRudderAnalytics';
 import type { Session } from '@/types';
 
 const Item = ({ session }: { session: Session }) => {
-    const { currentSessionId, setCurrentSessionId, updateSessionName, removeSession, ipInfo } =
-        useAgentsContext();
+    const { currentSessionId, setCurrentSessionId, updateSessionName, removeSession, ipInfo } = useAgentsContext();
     const { track } = useRudderEvents();
 
     const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);

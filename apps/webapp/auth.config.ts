@@ -1,16 +1,16 @@
-import type { NextAuthConfig } from 'next-auth'
-import { headers } from 'next/headers'
+import type { NextAuthConfig } from "next-auth";
+import { headers } from "next/headers";
 
 function checkAndAppendHttps(link: string): string {
-  return link?.startsWith('http') || link?.startsWith('https')
+  return link?.startsWith("http") || link?.startsWith("https")
     ? link
-    : (process.env.NEXT_PUBLIC_CURRENT_ENV === 'local' ? 'http://' : 'https://') + link
+    : (process.env.NEXT_PUBLIC_CURRENT_ENV === "local" ? "http://" : "https://") + link;
 }
 
 export const authConfig = {
   callbacks: {
     session(params: any) {
-      return { user: params.token.user, expires: params.session.expires }
+      return { user: params.token.user, expires: params.session.expires };
     },
     jwt({
       // Always available but with a little difference in value
@@ -24,39 +24,39 @@ export const authConfig = {
       // Available only in the first call once the user signs in. Not available in subsequent calls
       account,
     }: {
-      token: any
-      trigger?: 'signIn' | 'signUp' | 'update' | undefined
-      session?: any
-      user?: any
-      account?: any
+      token: any;
+      trigger?: "signIn" | "signUp" | "update" | undefined;
+      session?: any;
+      user?: any;
+      account?: any;
     }) {
-      if (trigger === 'update') {
-        return session
+      if (trigger === "update") {
+        return session;
       }
-      if (user && trigger === 'signIn') {
-        return { ...token, user }
+      if (user && trigger === "signIn") {
+        return { ...token, user };
       }
-      return token
+      return token;
     },
     authorized({ auth, request }: { auth: any; request: any }) {
-      return !!auth?.user
+      return !!auth?.user;
     },
     async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
-      const headersList = await headers()
-      baseUrl = checkAndAppendHttps(headersList.get('host') ?? 'app.qa.begenuin.com')
-      if (url.startsWith('/')) baseUrl += url
-      return baseUrl
+      const headersList = await headers();
+      baseUrl = checkAndAppendHttps(headersList.get("host") ?? "app.qa.begenuin.com");
+      if (url.startsWith("/")) baseUrl += url;
+      return baseUrl;
     },
   },
   session: {
-    strategy: 'jwt',
+    strategy: "jwt",
   },
   trustHost: true,
   secret: process.env.NEXTAUTH_SECRET,
   pages: {
-    signIn: '/home',
-    error: '/error',
-    signOut: '/home',
+    signIn: "/home",
+    error: "/error",
+    signOut: "/home",
   },
   providers: [], // Add providers with an empty array for now
-} satisfies NextAuthConfig
+} satisfies NextAuthConfig;

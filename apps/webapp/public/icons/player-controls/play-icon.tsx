@@ -1,27 +1,27 @@
-import { cva, type VariantProps } from 'class-variance-authority'
-import { type ComponentProps } from 'react'
+import { cva, type VariantProps } from "class-variance-authority";
+import { type ComponentProps } from "react";
 
-import { cn } from '@/lib/utils'
+import { cn } from "@/lib/utils";
 
 // Define the playVariant function using cva to handle different styles based on props
-const playVariant = cva('', {
+const playVariant = cva("", {
   variants: {
     variant: {
-      dark: 'fill-monochrome-black', // Light variant style
-      transparent: 'fill-monochrome-white', // Transparent variant style
-      light: 'fill-monochrome-white', // Dark variant style
+      dark: "fill-monochrome-black", // Light variant style
+      transparent: "fill-monochrome-white", // Transparent variant style
+      light: "fill-monochrome-white", // Dark variant style
     },
   },
-})
+});
 
 // Define the Props type for the PlayIcon component
-type PlayIconPropsType = ComponentProps<'svg'> &
-  VariantProps<typeof playVariant> & { variant?: 'light' | 'transparent' | 'dark' | null }
+type PlayIconPropsType = ComponentProps<"svg"> &
+  VariantProps<typeof playVariant> & { variant?: "light" | "transparent" | "dark" | null };
 
-export function PlayIcon({ variant = 'dark', className, ...restProps }: PlayIconPropsType) {
+export function PlayIcon({ variant = "dark", className, ...restProps }: PlayIconPropsType) {
   return (
     <svg
-      className={cn('', className)}
+      className={cn("", className)}
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"
@@ -33,5 +33,5 @@ export function PlayIcon({ variant = 'dark', className, ...restProps }: PlayIcon
         className={cn(playVariant({ variant }), className)}
       />
     </svg>
-  )
+  );
 }

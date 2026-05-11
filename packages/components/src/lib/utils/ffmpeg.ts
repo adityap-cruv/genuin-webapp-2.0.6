@@ -1,6 +1,5 @@
 const FFMPEG_URL = "https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/esm/index.js";
-const FFMPEG_UTIL_URL =
-  "https://unpkg.com/@ffmpeg/util@0.12.1/dist/esm/index.js";
+const FFMPEG_UTIL_URL = "https://unpkg.com/@ffmpeg/util@0.12.1/dist/esm/index.js";
 const FFMPEG_CORE_URL = "https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm";
 
 export async function loadFFmpeg(ffmpegRef: any): Promise<void> {
@@ -25,10 +24,7 @@ export async function loadFFmpeg(ffmpegRef: any): Promise<void> {
     const baseURL = FFMPEG_CORE_URL;
     await ffmpeg.load({
       coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, "text/javascript"),
-      wasmURL: await toBlobURL(
-        `${baseURL}/ffmpeg-core.wasm`,
-        "application/wasm"
-      ),
+      wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, "application/wasm"),
     });
 
     console.log("FFmpeg loaded successfully!");
@@ -55,8 +51,7 @@ export async function trimVideo({
 }): Promise<Blob | null> {
   if (!file) throw new Error("No file selected");
   if (!ffmpegRef?.current?.ffmpeg) throw new Error("FFmpeg not loaded");
-  if (startTime >= endTime)
-    throw new Error("Start time must be less than end time");
+  if (startTime >= endTime) throw new Error("Start time must be less than end time");
 
   setProcessing(true);
 
@@ -101,12 +96,7 @@ export async function trimVideo({
   }
 }
 
-export function downloadBlob(
-  blob: Blob,
-  originalName: string,
-  suffix = "trimmed",
-  format = "mp4"
-) {
+export function downloadBlob(blob: Blob, originalName: string, suffix = "trimmed", format = "mp4") {
   const baseName = originalName?.replace(/\.[^/.]+$/, "");
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);

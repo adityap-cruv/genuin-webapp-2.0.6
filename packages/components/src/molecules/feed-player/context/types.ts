@@ -21,6 +21,6 @@ export type VideoTimeStateType = {
 export type SetVideoTimeStateType = (states: VideoTimeStateType) => void;
 
 export type PlaybackSpeedType = {
-  speed : number,
-  isSpeedFromGesture : boolean
-}
+  speed: number;
+  isSpeedFromGesture: boolean;
+};

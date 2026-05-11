@@ -1,29 +1,29 @@
-import { useWalletStore } from './store'
+import { useWalletStore } from "./store";
 
 export const WalletProgressBarCard = () => {
-  const { walletDetails } = useWalletStore()
-  const totalBalance = walletDetails?.point_balance + walletDetails?.cash_balance
-  const rewardWidthPercentage = totalBalance > 0 ? (walletDetails?.point_balance / totalBalance) * 100 : 0
-  const cashWidthPercentage = totalBalance > 0 ? (walletDetails?.cash_balance / totalBalance) * 100 : 0
+  const { walletDetails } = useWalletStore();
+  const totalBalance = walletDetails?.point_balance + walletDetails?.cash_balance;
+  const rewardWidthPercentage = totalBalance > 0 ? (walletDetails?.point_balance / totalBalance) * 100 : 0;
+  const cashWidthPercentage = totalBalance > 0 ? (walletDetails?.cash_balance / totalBalance) * 100 : 0;
 
   return (
-    <div className="flex h-full w-full flex-col justify-between gap-4 rounded-2xl bg-monochrome-white p-4 sm:p-6">
+    <div className="bg-monochrome-white flex h-full w-full flex-col justify-between gap-4 rounded-2xl p-4 sm:p-6">
       <div className="relative h-5 w-full rounded-full">
         {rewardWidthPercentage !== 0 && (
           <div
-            className="absolute h-full border border-e-2 border-monochrome-white bg-[#83A2FF]"
+            className="border-monochrome-white absolute h-full border border-e-2 bg-[#83A2FF]"
             style={{
               width: `${rewardWidthPercentage}%`,
-              borderRadius: cashWidthPercentage === 0 ? '50px' : '50px 25px 25px 50px',
+              borderRadius: cashWidthPercentage === 0 ? "50px" : "50px 25px 25px 50px",
             }}
           />
         )}
         {cashWidthPercentage !== 0 && (
           <div
-            className="absolute right-0 h-full border border-s-2 border-monochrome-white bg-[#77CE1A]"
+            className="border-monochrome-white absolute right-0 h-full border border-s-2 bg-[#77CE1A]"
             style={{
               width: `${cashWidthPercentage}%`,
-              borderRadius: rewardWidthPercentage === 0 ? '50px' : '25px 50px 50px 25px',
+              borderRadius: rewardWidthPercentage === 0 ? "50px" : "25px 50px 50px 25px",
             }}
           />
         )}
@@ -31,7 +31,7 @@ export const WalletProgressBarCard = () => {
       <div className="flex gap-6">
         <div className="flex items-center gap-2">
           <div className="h-2 w-2 rounded-full bg-[#83A2FF] sm:h-3 sm:w-3" />
-          <div className="flex flex-col text-monochrome-black">
+          <div className="text-monochrome-black flex flex-col">
             <span className="text-body-1-demi sm:text-title-2-demi">
               ${(walletDetails?.point_balance / 100).toFixed(2)}
             </span>
@@ -41,7 +41,7 @@ export const WalletProgressBarCard = () => {
 
         <div className="flex items-center gap-2">
           <div className="h-2 w-2 rounded-full bg-[#77CE1A] sm:h-3 sm:w-3" />
-          <div className="flex flex-col text-monochrome-black">
+          <div className="text-monochrome-black flex flex-col">
             <span className="text-body-1-demi sm:text-title-2-demi">
               ${(walletDetails?.cash_balance / 100).toFixed(2)}
             </span>
@@ -50,5 +50,5 @@ export const WalletProgressBarCard = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

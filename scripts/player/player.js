@@ -25,9 +25,7 @@ var __awaiter =
         }
       }
       function step(result) {
-        result.done
-          ? resolve(result.value)
-          : adopt(result.value).then(fulfilled, rejected);
+        result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
       }
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
@@ -36,45 +34,18 @@ var __classPrivateFieldSet =
   (this && this.__classPrivateFieldSet) ||
   function (receiver, state, value, kind, f) {
     if (kind === "m") throw new TypeError("Private method is not writable");
-    if (kind === "a" && !f)
-      throw new TypeError("Private accessor was defined without a setter");
-    if (
-      typeof state === "function"
-        ? receiver !== state || !f
-        : !state.has(receiver)
-    )
-      throw new TypeError(
-        "Cannot write private member to an object whose class did not declare it",
-      );
-    return (
-      kind === "a"
-        ? f.call(receiver, value)
-        : f
-          ? (f.value = value)
-          : state.set(receiver, value),
-      value
-    );
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver))
+      throw new TypeError("Cannot write private member to an object whose class did not declare it");
+    return (kind === "a" ? f.call(receiver, value) : f ? (f.value = value) : state.set(receiver, value), value);
   };
 var __classPrivateFieldGet =
   (this && this.__classPrivateFieldGet) ||
   function (receiver, state, kind, f) {
-    if (kind === "a" && !f)
-      throw new TypeError("Private accessor was defined without a getter");
-    if (
-      typeof state === "function"
-        ? receiver !== state || !f
-        : !state.has(receiver)
-    )
-      throw new TypeError(
-        "Cannot read private member from an object whose class did not declare it",
-      );
-    return kind === "m"
-      ? f
-      : kind === "a"
-        ? f.call(receiver)
-        : f
-          ? f.value
-          : state.get(receiver);
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver))
+      throw new TypeError("Cannot read private member from an object whose class did not declare it");
+    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
   };
 var _Player_controls,
   _Player_adsInstance,
@@ -96,20 +67,13 @@ import Controls from "./controls";
 import Fullscreen from "./controls/fullscreen";
 import Media from "./media";
 import Ads from "./media/ads";
-import {
-  EVENT_OPTIONS,
-  IS_ANDROID,
-  IS_IOS,
-  IS_IPHONE,
-} from "./utils/constants";
+import { EVENT_OPTIONS, IS_ANDROID, IS_IOS, IS_IPHONE } from "./utils/constants";
 import { addEvent, isAudio, isVideo, sanitize } from "./utils/general";
 import { isAutoplaySupported, predictMimeType } from "./utils/media";
 class Player {
   static init() {
     Player.instances = {};
-    const targets = document.querySelectorAll(
-      "video.op-player, audio.op-player",
-    );
+    const targets = document.querySelectorAll("video.op-player, audio.op-player");
     for (let i = 0, total = targets.length; i < total; i++) {
       const target = targets[i];
       const settings = target.getAttribute("data-op-settings");
@@ -208,17 +172,15 @@ class Player {
     __classPrivateFieldSet(
       this,
       _Player_element,
-      element instanceof HTMLMediaElement
-        ? element
-        : document.getElementById(element),
-      "f",
+      element instanceof HTMLMediaElement ? element : document.getElementById(element),
+      "f"
     );
     if (__classPrivateFieldGet(this, _Player_element, "f")) {
       __classPrivateFieldSet(
         this,
         _Player_autoplay,
         __classPrivateFieldGet(this, _Player_element, "f").autoplay || false,
-        "f",
+        "f"
       );
       if (typeof options !== "string" && !Array.isArray(options)) {
         this._mergeOptions(options);
@@ -229,28 +191,17 @@ class Player {
         __classPrivateFieldGet(this, _Player_options, "f").ads &&
         __classPrivateFieldGet(this, _Player_options, "f").ads.src
       ) {
-        __classPrivateFieldSet(
-          this,
-          _Player_ads,
-          __classPrivateFieldGet(this, _Player_options, "f").ads.src,
-          "f",
-        );
+        __classPrivateFieldSet(this, _Player_ads, __classPrivateFieldGet(this, _Player_options, "f").ads.src, "f");
       }
       if (
-        (((_a = __classPrivateFieldGet(this, _Player_options, "f")) === null ||
-        _a === void 0
+        (((_a = __classPrivateFieldGet(this, _Player_options, "f")) === null || _a === void 0
           ? void 0
           : _a.startTime) || 0) > 0
       ) {
         __classPrivateFieldGet(this, _Player_element, "f").currentTime =
           __classPrivateFieldGet(this, _Player_options, "f").startTime || 0;
       }
-      __classPrivateFieldSet(
-        this,
-        _Player_volume,
-        __classPrivateFieldGet(this, _Player_element, "f").volume,
-        "f",
-      );
+      __classPrivateFieldSet(this, _Player_volume, __classPrivateFieldGet(this, _Player_element, "f").volume, "f");
     }
     this._autoplay = this._autoplay.bind(this);
     this._enableKeyBindings = this._enableKeyBindings.bind(this);
@@ -275,9 +226,7 @@ class Player {
         return __classPrivateFieldGet(this, _Player_media, "f").load();
       }
       __classPrivateFieldGet(this, _Player_media, "f").loaded = false;
-      return this.isMedia()
-        ? __classPrivateFieldGet(this, _Player_media, "f").load()
-        : undefined;
+      return this.isMedia() ? __classPrivateFieldGet(this, _Player_media, "f").load() : undefined;
     });
   }
   play() {
@@ -287,19 +236,10 @@ class Player {
         __classPrivateFieldGet(this, _Player_media, "f").loaded = true;
       }
       if (__classPrivateFieldGet(this, _Player_adsInstance, "f")) {
-        __classPrivateFieldGet(this, _Player_adsInstance, "f").playRequested =
-          true;
+        __classPrivateFieldGet(this, _Player_adsInstance, "f").playRequested = true;
         // genuin-mod
-        const mediaPlayPromise = __classPrivateFieldGet(
-          this,
-          _Player_media,
-          "f",
-        ).play();
-        const adsLoadPromise = __classPrivateFieldGet(
-          this,
-          _Player_adsInstance,
-          "f",
-        ).loadPromise;
+        const mediaPlayPromise = __classPrivateFieldGet(this, _Player_media, "f").play();
+        const adsLoadPromise = __classPrivateFieldGet(this, _Player_adsInstance, "f").loadPromise;
         if (adsLoadPromise) {
           adsLoadPromise
             .then(() => {
@@ -340,14 +280,9 @@ class Player {
     if (__classPrivateFieldGet(this, _Player_media, "f")) {
       __classPrivateFieldGet(this, _Player_media, "f").destroy();
     }
-    Object.keys(__classPrivateFieldGet(this, _Player_events, "f")).forEach(
-      (event) => {
-        el.removeEventListener(
-          event,
-          __classPrivateFieldGet(this, _Player_events, "f")[event],
-        );
-      },
-    );
+    Object.keys(__classPrivateFieldGet(this, _Player_events, "f")).forEach((event) => {
+      el.removeEventListener(event, __classPrivateFieldGet(this, _Player_events, "f")[event]);
+    });
     this.getContainer().removeEventListener("keydown", this._enableKeyBindings);
     if (
       __classPrivateFieldGet(this, _Player_autoplay, "f") &&
@@ -367,15 +302,10 @@ class Player {
         this.loader.remove();
       }
     }
-    if (
-      (_a = __classPrivateFieldGet(this, _Player_options, "f")) === null ||
-      _a === void 0
-        ? void 0
-        : _a.onError
-    ) {
+    if ((_a = __classPrivateFieldGet(this, _Player_options, "f")) === null || _a === void 0 ? void 0 : _a.onError) {
       __classPrivateFieldGet(this, _Player_element, "f").removeEventListener(
         "playererror",
-        __classPrivateFieldGet(this, _Player_options, "f").onError,
+        __classPrivateFieldGet(this, _Player_options, "f").onError
       );
     }
     el.controls = true;
@@ -383,8 +313,7 @@ class Player {
     el.removeAttribute("op-live__enabled");
     el.removeAttribute("op-dvr__enabled");
     const parent =
-      __classPrivateFieldGet(this, _Player_options, "f").mode === "fit" &&
-      !isAudio(el)
+      __classPrivateFieldGet(this, _Player_options, "f").mode === "fit" && !isAudio(el)
         ? el.closest(".op-player__fit--wrapper")
         : el.parentElement;
     if (parent && parent.parentNode) {
@@ -435,19 +364,13 @@ class Player {
   }
   addCaptions(args) {
     if (args.default) {
-      const tracks = __classPrivateFieldGet(
-        this,
-        _Player_element,
-        "f",
-      ).querySelectorAll("track");
+      const tracks = __classPrivateFieldGet(this, _Player_element, "f").querySelectorAll("track");
       for (let i = 0, total = tracks.length; i < total; i++) {
         tracks[i].default = false;
       }
     }
     const el = __classPrivateFieldGet(this, _Player_element, "f");
-    let track = el.querySelector(
-      `track[srclang="${args.srclang}"][kind="${args.kind}"]`,
-    );
+    let track = el.querySelector(`track[srclang="${args.srclang}"][kind="${args.kind}"]`);
     if (track) {
       track.src = args.src;
       track.label = args.label;
@@ -478,16 +401,11 @@ class Player {
     __classPrivateFieldGet(this, _Player_element, "f").dispatchEvent(e);
   }
   removeControl(controlName) {
-    __classPrivateFieldGet(this, _Player_customElements, "f").forEach(
-      (item, idx) => {
-        if (item.id === controlName) {
-          __classPrivateFieldGet(this, _Player_customElements, "f").splice(
-            idx,
-            1,
-          );
-        }
-      },
-    );
+    __classPrivateFieldGet(this, _Player_customElements, "f").forEach((item, idx) => {
+      if (item.id === controlName) {
+        __classPrivateFieldGet(this, _Player_customElements, "f").splice(idx, 1);
+      }
+    });
     const e = addEvent("controlschanged");
     __classPrivateFieldGet(this, _Player_element, "f").dispatchEvent(e);
   }
@@ -495,27 +413,18 @@ class Player {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
       try {
-        if (
-          (_a = __classPrivateFieldGet(this, _Player_options, "f")) === null ||
-          _a === void 0
-            ? void 0
-            : _a.onError
-        ) {
+        if ((_a = __classPrivateFieldGet(this, _Player_options, "f")) === null || _a === void 0 ? void 0 : _a.onError) {
           __classPrivateFieldGet(this, _Player_element, "f").addEventListener(
             "playererror",
             __classPrivateFieldGet(this, _Player_options, "f").onError,
-            EVENT_OPTIONS,
+            EVENT_OPTIONS
           );
         }
         if (
           __classPrivateFieldGet(this, _Player_autoplay, "f") &&
           isVideo(__classPrivateFieldGet(this, _Player_element, "f"))
         ) {
-          __classPrivateFieldGet(this, _Player_element, "f").addEventListener(
-            "canplay",
-            this._autoplay,
-            EVENT_OPTIONS,
-          );
+          __classPrivateFieldGet(this, _Player_element, "f").addEventListener("canplay", this._autoplay, EVENT_OPTIONS);
         }
         __classPrivateFieldSet(
           this,
@@ -524,43 +433,25 @@ class Player {
             __classPrivateFieldGet(this, _Player_element, "f"),
             __classPrivateFieldGet(this, _Player_options, "f"),
             __classPrivateFieldGet(this, _Player_autoplay, "f"),
-            Player.customMedia,
+            Player.customMedia
           ),
-          "f",
+          "f"
         );
-        const preload = __classPrivateFieldGet(
-          this,
-          _Player_element,
-          "f",
-        ).getAttribute("preload");
-        if (
-          __classPrivateFieldGet(this, _Player_ads, "f") ||
-          !preload ||
-          preload !== "none"
-        ) {
+        const preload = __classPrivateFieldGet(this, _Player_element, "f").getAttribute("preload");
+        if (__classPrivateFieldGet(this, _Player_ads, "f") || !preload || preload !== "none") {
           yield __classPrivateFieldGet(this, _Player_media, "f").load();
           __classPrivateFieldGet(this, _Player_media, "f").loaded = true;
         }
-        if (
-          !__classPrivateFieldGet(this, _Player_autoplay, "f") &&
-          __classPrivateFieldGet(this, _Player_ads, "f")
-        ) {
+        if (!__classPrivateFieldGet(this, _Player_autoplay, "f") && __classPrivateFieldGet(this, _Player_ads, "f")) {
           const adsOptions =
-            __classPrivateFieldGet(this, _Player_options, "f") &&
-            __classPrivateFieldGet(this, _Player_options, "f").ads
+            __classPrivateFieldGet(this, _Player_options, "f") && __classPrivateFieldGet(this, _Player_options, "f").ads
               ? __classPrivateFieldGet(this, _Player_options, "f").ads
               : undefined;
           __classPrivateFieldSet(
             this,
             _Player_adsInstance,
-            new Ads(
-              this,
-              __classPrivateFieldGet(this, _Player_ads, "f"),
-              false,
-              false,
-              adsOptions,
-            ),
-            "f",
+            new Ads(this, __classPrivateFieldGet(this, _Player_ads, "f"), false, false, adsOptions),
+            "f"
           );
         }
       } catch (e) {
@@ -594,24 +485,15 @@ class Player {
           this.getAd().load();
         } else {
           const adsOptions =
-            __classPrivateFieldGet(this, _Player_options, "f") &&
-            __classPrivateFieldGet(this, _Player_options, "f").ads
+            __classPrivateFieldGet(this, _Player_options, "f") && __classPrivateFieldGet(this, _Player_options, "f").ads
               ? __classPrivateFieldGet(this, _Player_options, "f").ads
               : undefined;
-          const autoplay =
-            !this.activeElement().paused ||
-            __classPrivateFieldGet(this, _Player_canAutoplay, "f");
+          const autoplay = !this.activeElement().paused || __classPrivateFieldGet(this, _Player_canAutoplay, "f");
           __classPrivateFieldSet(
             this,
             _Player_adsInstance,
-            new Ads(
-              this,
-              src,
-              autoplay,
-              __classPrivateFieldGet(this, _Player_canAutoplayMuted, "f"),
-              adsOptions,
-            ),
-            "f",
+            new Ads(this, src, autoplay, __classPrivateFieldGet(this, _Player_canAutoplayMuted, "f"), adsOptions),
+            "f"
           );
         }
       } catch (err) {
@@ -629,12 +511,7 @@ class Player {
       media.forEach((m) => {
         const source = document.createElement("source");
         source.src = m.src;
-        source.type =
-          m.type ||
-          predictMimeType(
-            m.src,
-            __classPrivateFieldGet(this, _Player_element, "f"),
-          );
+        source.type = m.type || predictMimeType(m.src, __classPrivateFieldGet(this, _Player_element, "f"));
         __classPrivateFieldGet(this, _Player_element, "f").appendChild(source);
       });
     } else if (typeof media === "object") {
@@ -663,23 +540,15 @@ class Player {
   _wrapInstance() {
     const wrapper = document.createElement("div");
     wrapper.className = "op-player op-player__keyboard--inactive";
-    wrapper.className += isAudio(
-      __classPrivateFieldGet(this, _Player_element, "f"),
-    )
+    wrapper.className += isAudio(__classPrivateFieldGet(this, _Player_element, "f"))
       ? " op-player__audio"
       : " op-player__video";
     wrapper.tabIndex = 0;
-    __classPrivateFieldGet(this, _Player_element, "f").classList.remove(
-      "op-player",
-    );
+    __classPrivateFieldGet(this, _Player_element, "f").classList.remove("op-player");
     if (__classPrivateFieldGet(this, _Player_element, "f").parentElement) {
-      __classPrivateFieldGet(
-        this,
-        _Player_element,
-        "f",
-      ).parentElement.insertBefore(
+      __classPrivateFieldGet(this, _Player_element, "f").parentElement.insertBefore(
         wrapper,
-        __classPrivateFieldGet(this, _Player_element, "f"),
+        __classPrivateFieldGet(this, _Player_element, "f")
       );
     }
     wrapper.appendChild(__classPrivateFieldGet(this, _Player_element, "f"));
@@ -692,13 +561,9 @@ class Player {
       isVideo(__classPrivateFieldGet(this, _Player_element, "f")) &&
       __classPrivateFieldGet(this, _Player_element, "f").parentElement
     ) {
-      __classPrivateFieldGet(
-        this,
-        _Player_element,
-        "f",
-      ).parentElement.insertBefore(
+      __classPrivateFieldGet(this, _Player_element, "f").parentElement.insertBefore(
         messageContainer,
-        __classPrivateFieldGet(this, _Player_element, "f"),
+        __classPrivateFieldGet(this, _Player_element, "f")
       );
     }
     wrapper.addEventListener(
@@ -708,7 +573,7 @@ class Player {
           wrapper.classList.remove("op-player__keyboard--inactive");
         }
       },
-      EVENT_OPTIONS,
+      EVENT_OPTIONS
     );
     wrapper.addEventListener(
       "click",
@@ -717,7 +582,7 @@ class Player {
           wrapper.classList.add("op-player__keyboard--inactive");
         }
       },
-      EVENT_OPTIONS,
+      EVENT_OPTIONS
     );
     if (
       __classPrivateFieldGet(this, _Player_options, "f").mode === "fill" &&
@@ -742,16 +607,14 @@ class Player {
       let style = "";
       if (__classPrivateFieldGet(this, _Player_options, "f").width) {
         const width =
-          typeof __classPrivateFieldGet(this, _Player_options, "f").width ===
-          "number"
+          typeof __classPrivateFieldGet(this, _Player_options, "f").width === "number"
             ? `${__classPrivateFieldGet(this, _Player_options, "f").width}px`
             : __classPrivateFieldGet(this, _Player_options, "f").width;
         style += `width: ${width} !important;`;
       }
       if (__classPrivateFieldGet(this, _Player_options, "f").height) {
         const height =
-          typeof __classPrivateFieldGet(this, _Player_options, "f").height ===
-          "number"
+          typeof __classPrivateFieldGet(this, _Player_options, "f").height === "number"
             ? `${__classPrivateFieldGet(this, _Player_options, "f").height}px`
             : __classPrivateFieldGet(this, _Player_options, "f").height;
         style += `height: ${height} !important;`;
@@ -762,10 +625,7 @@ class Player {
     }
   }
   _createControls() {
-    if (
-      IS_IPHONE &&
-      isVideo(__classPrivateFieldGet(this, _Player_element, "f"))
-    ) {
+    if (IS_IPHONE && isVideo(__classPrivateFieldGet(this, _Player_element, "f"))) {
       this.getContainer().classList.add("op-player__ios--iphone");
     }
     __classPrivateFieldSet(this, _Player_controls, new Controls(this), "f");
@@ -773,24 +633,22 @@ class Player {
   }
   _createUID() {
     if (__classPrivateFieldGet(this, _Player_element, "f").id) {
-      __classPrivateFieldSet(
-        this,
-        _Player_uid,
-        __classPrivateFieldGet(this, _Player_element, "f").id,
-        "f",
-      );
+      __classPrivateFieldSet(this, _Player_uid, __classPrivateFieldGet(this, _Player_element, "f").id, "f");
       __classPrivateFieldGet(this, _Player_element, "f").removeAttribute("id");
     } else {
       __classPrivateFieldSet(
         this,
         _Player_uid,
         `op_${crypto.getRandomValues(new Uint32Array(1))[0].toString(36).substring(2, 9)}`,
-        "f",
+        "f"
       );
     }
     if (__classPrivateFieldGet(this, _Player_element, "f").parentElement) {
-      __classPrivateFieldGet(this, _Player_element, "f").parentElement.id =
-        __classPrivateFieldGet(this, _Player_uid, "f");
+      __classPrivateFieldGet(this, _Player_element, "f").parentElement.id = __classPrivateFieldGet(
+        this,
+        _Player_uid,
+        "f"
+      );
     }
   }
   _createPlayButton() {
@@ -802,10 +660,8 @@ class Player {
     this.playBtn.className = "op-player__play";
     this.playBtn.tabIndex = 0;
     this.playBtn.title =
-      ((_a = __classPrivateFieldGet(this, _Player_options, "f").labels) ===
-        null || _a === void 0
-        ? void 0
-        : _a.play) || "";
+      ((_a = __classPrivateFieldGet(this, _Player_options, "f").labels) === null || _a === void 0 ? void 0 : _a.play) ||
+      "";
     this.playBtn.innerHTML = `<span>${((_b = __classPrivateFieldGet(this, _Player_options, "f").labels) === null || _b === void 0 ? void 0 : _b.play) || ""}</span>`;
     this.playBtn.setAttribute("aria-pressed", "false");
     this.playBtn.setAttribute("aria-hidden", "false");
@@ -814,29 +670,20 @@ class Player {
     this.loader.tabIndex = -1;
     this.loader.setAttribute("aria-hidden", "true");
     if (__classPrivateFieldGet(this, _Player_element, "f").parentElement) {
-      __classPrivateFieldGet(
-        this,
-        _Player_element,
-        "f",
-      ).parentElement.insertBefore(
+      __classPrivateFieldGet(this, _Player_element, "f").parentElement.insertBefore(
         this.loader,
-        __classPrivateFieldGet(this, _Player_element, "f"),
+        __classPrivateFieldGet(this, _Player_element, "f")
       );
-      __classPrivateFieldGet(
-        this,
-        _Player_element,
-        "f",
-      ).parentElement.insertBefore(
+      __classPrivateFieldGet(this, _Player_element, "f").parentElement.insertBefore(
         this.playBtn,
-        __classPrivateFieldGet(this, _Player_element, "f"),
+        __classPrivateFieldGet(this, _Player_element, "f")
       );
     }
     this.playBtn.addEventListener(
       "click",
       () => {
         if (__classPrivateFieldGet(this, _Player_adsInstance, "f")) {
-          __classPrivateFieldGet(this, _Player_adsInstance, "f").playRequested =
-            this.activeElement().paused;
+          __classPrivateFieldGet(this, _Player_adsInstance, "f").playRequested = this.activeElement().paused;
         }
         if (this.activeElement().paused) {
           this.activeElement().play();
@@ -844,18 +691,14 @@ class Player {
           this.activeElement().pause();
         }
       },
-      EVENT_OPTIONS,
+      EVENT_OPTIONS
     );
   }
   _setEvents() {
     if (isVideo(__classPrivateFieldGet(this, _Player_element, "f"))) {
       __classPrivateFieldGet(this, _Player_events, "f").loadedmetadata = () => {
         const el = this.activeElement();
-        if (
-          __classPrivateFieldGet(this, _Player_options, "f").showLoaderOnInit &&
-          !IS_IOS &&
-          !IS_ANDROID
-        ) {
+        if (__classPrivateFieldGet(this, _Player_options, "f").showLoaderOnInit && !IS_IOS && !IS_ANDROID) {
           this.loader.setAttribute("aria-hidden", "false");
           this.playBtn.setAttribute("aria-hidden", "true");
         } else {
@@ -874,10 +717,7 @@ class Player {
       __classPrivateFieldGet(this, _Player_events, "f").seeking = () => {
         const el = this.activeElement();
         this.playBtn.setAttribute("aria-hidden", "true");
-        this.loader.setAttribute(
-          "aria-hidden",
-          el instanceof Media ? "false" : "true",
-        );
+        this.loader.setAttribute("aria-hidden", el instanceof Media ? "false" : "true");
       };
       __classPrivateFieldGet(this, _Player_events, "f").seeked = () => {
         const el = this.activeElement();
@@ -885,10 +725,7 @@ class Player {
           this.playBtn.setAttribute("aria-hidden", "true");
           this.loader.setAttribute("aria-hidden", "false");
         } else {
-          this.playBtn.setAttribute(
-            "aria-hidden",
-            el instanceof Media ? "false" : "true",
-          );
+          this.playBtn.setAttribute("aria-hidden", el instanceof Media ? "false" : "true");
           this.loader.setAttribute("aria-hidden", "true");
         }
       };
@@ -896,21 +733,18 @@ class Player {
         var _a;
         this.playBtn.classList.add("op-player__play--paused");
         this.playBtn.title =
-          ((_a = __classPrivateFieldGet(this, _Player_options, "f").labels) ===
-            null || _a === void 0
+          ((_a = __classPrivateFieldGet(this, _Player_options, "f").labels) === null || _a === void 0
             ? void 0
             : _a.pause) || "";
         this.loader.setAttribute("aria-hidden", "true");
-        if (
-          __classPrivateFieldGet(this, _Player_options, "f").showLoaderOnInit
-        ) {
+        if (__classPrivateFieldGet(this, _Player_options, "f").showLoaderOnInit) {
           this.playBtn.setAttribute("aria-hidden", "true");
         } else {
           setTimeout(
             () => {
               this.playBtn.setAttribute("aria-hidden", "true");
             },
-            __classPrivateFieldGet(this, _Player_options, "f").hidePlayBtnTimer,
+            __classPrivateFieldGet(this, _Player_options, "f").hidePlayBtnTimer
           );
         }
       };
@@ -923,14 +757,10 @@ class Player {
         const el = this.activeElement();
         this.playBtn.classList.remove("op-player__play--paused");
         this.playBtn.title =
-          ((_a = __classPrivateFieldGet(this, _Player_options, "f").labels) ===
-            null || _a === void 0
+          ((_a = __classPrivateFieldGet(this, _Player_options, "f").labels) === null || _a === void 0
             ? void 0
             : _a.play) || "";
-        if (
-          __classPrivateFieldGet(this, _Player_options, "f").showLoaderOnInit &&
-          Math.round(el.currentTime) === 0
-        ) {
+        if (__classPrivateFieldGet(this, _Player_options, "f").showLoaderOnInit && Math.round(el.currentTime) === 0) {
           this.playBtn.setAttribute("aria-hidden", "true");
           this.loader.setAttribute("aria-hidden", "false");
         } else {
@@ -961,28 +791,19 @@ class Player {
         }
       };
     }
-    Object.keys(__classPrivateFieldGet(this, _Player_events, "f")).forEach(
-      (event) => {
-        __classPrivateFieldGet(this, _Player_element, "f").addEventListener(
-          event,
-          __classPrivateFieldGet(this, _Player_events, "f")[event],
-          EVENT_OPTIONS,
-        );
-      },
-    );
-    this.getContainer().addEventListener(
-      "keydown",
-      this._enableKeyBindings,
-      EVENT_OPTIONS,
-    );
+    Object.keys(__classPrivateFieldGet(this, _Player_events, "f")).forEach((event) => {
+      __classPrivateFieldGet(this, _Player_element, "f").addEventListener(
+        event,
+        __classPrivateFieldGet(this, _Player_events, "f")[event],
+        EVENT_OPTIONS
+      );
+    });
+    this.getContainer().addEventListener("keydown", this._enableKeyBindings, EVENT_OPTIONS);
   }
   _autoplay() {
     if (!__classPrivateFieldGet(this, _Player_processedAutoplay, "f")) {
       __classPrivateFieldSet(this, _Player_processedAutoplay, true, "f");
-      __classPrivateFieldGet(this, _Player_element, "f").removeEventListener(
-        "canplay",
-        this._autoplay,
-      );
+      __classPrivateFieldGet(this, _Player_element, "f").removeEventListener("canplay", this._autoplay);
       isAutoplaySupported(
         __classPrivateFieldGet(this, _Player_element, "f"),
         __classPrivateFieldGet(this, _Player_volume, "f"),
@@ -1002,18 +823,10 @@ class Player {
             const volumeEl = document.createElement("div");
             const action =
               IS_IOS || IS_ANDROID
-                ? (_a = __classPrivateFieldGet(
-                    this,
-                    _Player_options,
-                    "f",
-                  ).labels) === null || _a === void 0
+                ? (_a = __classPrivateFieldGet(this, _Player_options, "f").labels) === null || _a === void 0
                   ? void 0
                   : _a.tap
-                : (_b = __classPrivateFieldGet(
-                      this,
-                      _Player_options,
-                      "f",
-                    ).labels) === null || _b === void 0
+                : (_b = __classPrivateFieldGet(this, _Player_options, "f").labels) === null || _b === void 0
                   ? void 0
                   : _b.click;
             volumeEl.className = "op-player__unmute";
@@ -1023,34 +836,18 @@ class Player {
               "click",
               () => {
                 this.activeElement().muted = false;
-                this.activeElement().volume = __classPrivateFieldGet(
-                  this,
-                  _Player_volume,
-                  "f",
-                );
+                this.activeElement().volume = __classPrivateFieldGet(this, _Player_volume, "f");
                 const event = addEvent("volumechange");
-                __classPrivateFieldGet(
-                  this,
-                  _Player_element,
-                  "f",
-                ).dispatchEvent(event);
+                __classPrivateFieldGet(this, _Player_element, "f").dispatchEvent(event);
                 volumeEl.remove();
               },
-              EVENT_OPTIONS,
+              EVENT_OPTIONS
             );
             const target = this.getContainer();
             target.insertBefore(volumeEl, target.firstChild);
           } else {
-            this.activeElement().muted = __classPrivateFieldGet(
-              this,
-              _Player_element,
-              "f",
-            ).muted;
-            this.activeElement().volume = __classPrivateFieldGet(
-              this,
-              _Player_volume,
-              "f",
-            );
+            this.activeElement().muted = __classPrivateFieldGet(this, _Player_element, "f").muted;
+            this.activeElement().volume = __classPrivateFieldGet(this, _Player_volume, "f");
           }
           if (__classPrivateFieldGet(this, _Player_ads, "f")) {
             const adsOptions =
@@ -1066,9 +863,9 @@ class Player {
                 __classPrivateFieldGet(this, _Player_ads, "f"),
                 __classPrivateFieldGet(this, _Player_canAutoplay, "f"),
                 __classPrivateFieldGet(this, _Player_canAutoplayMuted, "f"),
-                adsOptions,
+                adsOptions
               ),
-              "f",
+              "f"
             );
           } else if (
             __classPrivateFieldGet(this, _Player_canAutoplay, "f") ||
@@ -1076,7 +873,7 @@ class Player {
           ) {
             this.play();
           }
-        },
+        }
       );
     }
   }
@@ -1085,33 +882,18 @@ class Player {
     __classPrivateFieldSet(
       this,
       _Player_options,
-      Object.assign(
-        Object.assign(
-          {},
-          __classPrivateFieldGet(this, _Player_defaultOptions, "f"),
-        ),
-        opts,
-      ),
-      "f",
+      Object.assign(Object.assign({}, __classPrivateFieldGet(this, _Player_defaultOptions, "f")), opts),
+      "f"
     );
-    const complexOptions = Object.keys(
-      __classPrivateFieldGet(this, _Player_defaultOptions, "f"),
-    ).filter(
-      (key) =>
-        key !== "labels" &&
-        typeof __classPrivateFieldGet(this, _Player_defaultOptions, "f")[
-          key
-        ] === "object",
+    const complexOptions = Object.keys(__classPrivateFieldGet(this, _Player_defaultOptions, "f")).filter(
+      (key) => key !== "labels" && typeof __classPrivateFieldGet(this, _Player_defaultOptions, "f")[key] === "object"
     );
     complexOptions.forEach((key) => {
       const currOption = opts[key] || {};
       if (currOption && Object.keys(currOption).length) {
         __classPrivateFieldGet(this, _Player_options, "f")[key] = Object.assign(
-          Object.assign(
-            {},
-            __classPrivateFieldGet(this, _Player_defaultOptions, "f")[key],
-          ),
-          currOption,
+          Object.assign({}, __classPrivateFieldGet(this, _Player_defaultOptions, "f")[key]),
+          currOption
         );
       }
     });
@@ -1124,14 +906,11 @@ class Player {
           Object.keys(current).forEach((k) => {
             const lang = current ? current[k] : null;
             if (lang) {
-              sanitizedLabels = Object.assign(
-                Object.assign({}, sanitizedLabels),
-                {
-                  lang: Object.assign(Object.assign({}, sanitizedLabels.lang), {
-                    [k]: sanitize(lang),
-                  }),
-                },
-              );
+              sanitizedLabels = Object.assign(Object.assign({}, sanitizedLabels), {
+                lang: Object.assign(Object.assign({}, sanitizedLabels.lang), {
+                  [k]: sanitize(lang),
+                }),
+              });
             }
           });
         } else if (current) {
@@ -1141,11 +920,8 @@ class Player {
         }
       });
       __classPrivateFieldGet(this, _Player_options, "f").labels = Object.assign(
-        Object.assign(
-          {},
-          __classPrivateFieldGet(this, _Player_defaultOptions, "f").labels,
-        ),
-        sanitizedLabels,
+        Object.assign({}, __classPrivateFieldGet(this, _Player_defaultOptions, "f").labels),
+        sanitizedLabels
       );
     }
   }
@@ -1155,10 +931,7 @@ class Player {
     const el = this.activeElement();
     const isAd = this.isAd();
     const playerFocused =
-      (_a =
-        document === null || document === void 0
-          ? void 0
-          : document.activeElement) === null || _a === void 0
+      (_a = document === null || document === void 0 ? void 0 : document.activeElement) === null || _a === void 0
         ? void 0
         : _a.classList.contains("op-player");
     switch (key) {
@@ -1210,9 +983,7 @@ class Player {
           const step =
             el.duration !== Infinity
               ? newStep
-              : ((_b = this.getOptions().progress) === null || _b === void 0
-                  ? void 0
-                  : _b.duration) || 0;
+              : ((_b = this.getOptions().progress) === null || _b === void 0 ? void 0 : _b.duration) || 0;
           el.currentTime += key === 37 || key === 74 ? step * -1 : step;
           if (el.currentTime < 0) {
             el.currentTime = 0;
@@ -1225,35 +996,17 @@ class Player {
         break;
       case 38:
       case 40:
-        const newVol =
-          key === 38
-            ? Math.min(el.volume + 0.1, 1)
-            : Math.max(el.volume - 0.1, 0);
+        const newVol = key === 38 ? Math.min(el.volume + 0.1, 1) : Math.max(el.volume - 0.1, 0);
         el.volume = newVol;
         el.muted = !(newVol > 0);
         e.preventDefault();
         e.stopPropagation();
         break;
       case 70:
-        if (
-          isVideo(__classPrivateFieldGet(this, _Player_element, "f")) &&
-          !e.ctrlKey
-        ) {
-          __classPrivateFieldSet(
-            this,
-            _Player_fullscreen,
-            new Fullscreen(this, "", ""),
-            "f",
-          );
-          if (
-            typeof __classPrivateFieldGet(this, _Player_fullscreen, "f")
-              .fullScreenEnabled !== "undefined"
-          ) {
-            __classPrivateFieldGet(
-              this,
-              _Player_fullscreen,
-              "f",
-            ).toggleFullscreen();
+        if (isVideo(__classPrivateFieldGet(this, _Player_element, "f")) && !e.ctrlKey) {
+          __classPrivateFieldSet(this, _Player_fullscreen, new Fullscreen(this, "", ""), "f");
+          if (typeof __classPrivateFieldGet(this, _Player_fullscreen, "f").fullScreenEnabled !== "undefined") {
+            __classPrivateFieldGet(this, _Player_fullscreen, "f").toggleFullscreen();
             e.preventDefault();
             e.stopPropagation();
           }
@@ -1274,9 +1027,7 @@ class Player {
         if (!isAd && e.shiftKey) {
           const elem = el;
           elem.playbackRate =
-            key === 188
-              ? Math.max(elem.playbackRate - 0.25, 0.25)
-              : Math.min(elem.playbackRate + 0.25, 2);
+            key === 188 ? Math.max(elem.playbackRate - 0.25, 0.25) : Math.min(elem.playbackRate + 0.25, 2);
           const target = this.getContainer().querySelector(".op-status>span");
           if (target) {
             target.textContent = `${elem.playbackRate}x`;

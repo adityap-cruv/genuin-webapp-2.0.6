@@ -1,11 +1,5 @@
 "use client";
-import React, {
-  useEffect,
-  useRef,
-  useState,
-  useCallback,
-  type ComponentProps,
-} from "react";
+import React, { useEffect, useRef, useState, useCallback, type ComponentProps } from "react";
 
 import { cn } from "@genuin/ui/lib/utils";
 
@@ -14,12 +8,7 @@ type Props = ComponentProps<"ul"> & { children: React.ReactNode };
 /**
  * Add only <li></li> elements in it.
  */
-export function DecorativeList({
-  children,
-  className,
-  style,
-  ...props
-}: Props) {
+export function DecorativeList({ children, className, style, ...props }: Props) {
   const ulRef = useRef<HTMLUListElement>(null);
   const [stopY, setStopY] = useState(0);
 
@@ -69,8 +58,7 @@ export function DecorativeList({
         position: "relative",
         ...style,
       }}
-      {...props}
-    >
+      {...props}>
       {/* Decorative vertical line */}
       <div
         aria-hidden

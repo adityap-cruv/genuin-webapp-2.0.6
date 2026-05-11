@@ -9,15 +9,15 @@
 
 ## Overview
 
-| Phase | Focus | Package(s) | Error Count | Risk |
-|-------|-------|-----------|-------------|------|
-| [Phase 1](#phase-1-missing-exports--module-resolution) | Missing exports & module resolution | `components`, `ui` | ~15 | Low |
-| [Phase 2](#phase-2-analytics-type-gaps) | Analytics event type gaps | `components` | 2 | Low |
-| [Phase 3](#phase-3-incorrect-function-signatures) | Wrong function argument counts | `components` | ~10 | Low |
-| [Phase 4](#phase-4-simple-type-narrowing--guards) | Branded types, literal string mismatches | `components`, `ui` | ~30 | Low |
-| [Phase 5](#phase-5-undefined-guards--optional-chaining) | `possibly 'undefined'` (TS18048) | `components` | ~336 | Medium |
-| [Phase 6](#phase-6-story--test-file-type-fixes) | Story/test file type errors | `components`, `ui` | ~140 | Low |
-| [Phase 7](#phase-7-web-sdk-specific-errors) | web-sdk module resolution | `web-sdk` | 1 | Low |
+| Phase                                                   | Focus                                    | Package(s)         | Error Count | Risk   |
+| ------------------------------------------------------- | ---------------------------------------- | ------------------ | ----------- | ------ |
+| [Phase 1](#phase-1-missing-exports--module-resolution)  | Missing exports & module resolution      | `components`, `ui` | ~15         | Low    |
+| [Phase 2](#phase-2-analytics-type-gaps)                 | Analytics event type gaps                | `components`       | 2           | Low    |
+| [Phase 3](#phase-3-incorrect-function-signatures)       | Wrong function argument counts           | `components`       | ~10         | Low    |
+| [Phase 4](#phase-4-simple-type-narrowing--guards)       | Branded types, literal string mismatches | `components`, `ui` | ~30         | Low    |
+| [Phase 5](#phase-5-undefined-guards--optional-chaining) | `possibly 'undefined'` (TS18048)         | `components`       | ~336        | Medium |
+| [Phase 6](#phase-6-story--test-file-type-fixes)         | Story/test file type errors              | `components`, `ui` | ~140        | Low    |
+| [Phase 7](#phase-7-web-sdk-specific-errors)             | web-sdk module resolution                | `web-sdk`          | 1           | Low    |
 
 Work through phases in order — later phases depend on type fixes from earlier ones.
 
@@ -41,7 +41,7 @@ error TS2305: Module '"@genuin/components/molecules/read-more"' has no exported 
 
 ```ts
 // packages/components/src/molecules/read-more/index.ts
-export type { ReadMoreTextType } from './read-more'; // add this export
+export type { ReadMoreTextType } from "./read-more"; // add this export
 ```
 
 ---
@@ -79,12 +79,13 @@ cat packages/components/package.json | grep tanstack
 ```
 
 **Fix (TanStack Query v5)**:
+
 ```ts
 // Before
-import { InfiniteData, UseInfiniteQueryResult } from '@tanstack/react-query';
+import { InfiniteData, UseInfiniteQueryResult } from "@tanstack/react-query";
 
 // After — these are exported from v5, but verify exact names:
-import type { InfiniteData, UseInfiniteQueryResult } from '@tanstack/react-query';
+import type { InfiniteData, UseInfiniteQueryResult } from "@tanstack/react-query";
 ```
 
 If the import path is wrong (e.g. a local barrel), fix the barrel file to re-export them.
@@ -100,14 +101,16 @@ error TS2305: Module '"@genuin/ui/icons"' has no exported member 'XIconProps'.
 ```
 
 **Fix option A** — Export from icons:
+
 ```ts
 // packages/ui/src/icons/index.ts
-export type { XIconProps } from './x-icon'; // or wherever XIcon is defined
+export type { XIconProps } from "./x-icon"; // or wherever XIcon is defined
 ```
 
 **Fix option B** — Use a broader type from the icon component:
+
 ```ts
-import type { SVGProps } from 'react';
+import type { SVGProps } from "react";
 type XIconProps = SVGProps<SVGSVGElement>;
 ```
 
@@ -116,6 +119,7 @@ type XIconProps = SVGProps<SVGSVGElement>;
 ### 1.6 — `@storybook/react` module not found in `packages/ui`
 
 **Files**:
+
 - `packages/ui/src/components/radio-input/radio-input.stories.tsx:1`
 - `packages/ui/src/components/tabs/tabs.stories.tsx:1`
 
@@ -140,6 +144,7 @@ error TS2307: Cannot find module 'src/react-query/api/comments'
 ```
 
 **Fix**: Change the import to a relative path or the correct alias:
+
 ```ts
 // Before
 import { ... } from 'src/react-query/api/comments';
@@ -157,6 +162,7 @@ import { ... } from '@genuin/components/react-query/api/comments';
 **Error codes**: TS2740, TS2345
 **Estimated errors fixed**: 2
 **Files**:
+
 - `packages/components/src/context/analytics/emit-analytics-data.ts:16`
 - `packages/components/src/context/analytics/provider.tsx:264`
 
@@ -205,6 +211,7 @@ is not assignable to parameter of type '{ eventName: string; payload: ...; axios
 ```
 
 **Fix**: Pass `axiosInstance` to the call:
+
 ```ts
 // provider.tsx ~line 264
 emitAnalyticsData({
@@ -269,16 +276,16 @@ error TS2322: Type '"join_group"' is not assignable to type '"video" | "subscrib
 ```ts
 // Wherever the action type is defined, e.g. types.ts
 type ActionType =
-  | 'video'
-  | 'subscribe'
-  | 'join_as_collaborator'
-  | 'join_community'
-  | 'comment'
-  | 'repost'
-  | 'spark'
-  | 'report'
-  | 'get_app'
-  | 'join_group';  // <-- add this
+  | "video"
+  | "subscribe"
+  | "join_as_collaborator"
+  | "join_community"
+  | "comment"
+  | "repost"
+  | "spark"
+  | "report"
+  | "get_app"
+  | "join_group"; // <-- add this
 ```
 
 ---
@@ -292,6 +299,7 @@ error TS2322: Type 'string | undefined' is not assignable to type 'string | (str
 ```
 
 **Fix**: Add a null-coalescing fallback or a guard:
+
 ```ts
 // Before
 href={someValue}
@@ -309,6 +317,7 @@ if (!someValue) return null;
 **File**: `packages/components/src/molecules/file-select-dropzone/file-select-dropzone.tsx:67`
 
 **Fix**: Assert non-null or guard:
+
 ```ts
 // Before
 someFunction(maybeString);
@@ -326,6 +335,7 @@ if (maybeString) someFunction(maybeString);
 **File**: `packages/components/src/organisms/create-post/create-post.tsx:470`
 
 **Fix**: The state type is likely too narrow. Widen the state type:
+
 ```ts
 // Before
 const [value, setValue] = useState<null>(null);
@@ -341,6 +351,7 @@ const [value, setValue] = useState<string | null>(null);
 **Files**: `create-post.tsx:549`, `create-post.tsx:703`
 
 **Fix**: Add a guard before use or use non-null assertion if the logic guarantees it is defined:
+
 ```ts
 // Option A — guard
 if (!postData) return;
@@ -355,12 +366,14 @@ const data = postData!;
 ### 4.6 — `player-swiper` — `(prev: any) => any` not assignable to `Record<number, any>`
 
 **Files**:
+
 - `packages/components/src/organisms/player-swiper/non-sectioned-content.tsx:81`
 - `packages/components/src/organisms/player-swiper/sectioned-content.tsx:107`
 
 The setState call is passing a function but the state type is `Record<number, any>` (not a function-accepting overload).
 
 **Fix**: Type the state properly:
+
 ```ts
 // Before (wrong — treated as Record, not a function)
 setState((prev: any) => ({ ...prev, [key]: value }));
@@ -384,6 +397,7 @@ is not assignable to type 'Partial<Record<StatsKeyType, number | { value: number
 The value type inside the record uses `{ value: number | undefined; icon: JSX.Element }` but the type expects `number | { value: number; icon?: ReactNode }`.
 
 **Fix**:
+
 ```ts
 // Ensure value is number (not number | undefined) and icon is optional:
 {
@@ -416,8 +430,9 @@ The API response shape has `brand_user_logo: number` but `MemberDataType` expect
 **File**: `packages/components/src/organisms/authentication-modal/screens/guidelines/guidelines.tsx:47`
 
 **Fix**: Add `"USERNAME_INPUT"` to `StepsType`:
+
 ```ts
-type StepsType = '...' | '...' | 'USERNAME_INPUT';
+type StepsType = "..." | "..." | "USERNAME_INPUT";
 ```
 
 Or if the step name has been renamed, update the call site.
@@ -433,10 +448,11 @@ error TS2345: Argument of type '{ phoneNumber: string; isUpdate: true; }' is not
 ```
 
 **Fix**: Add `isUpdate?: boolean` to `SendOtpProps`:
+
 ```ts
 interface SendOtpProps {
   phoneNumber: string;
-  isUpdate?: boolean;  // <-- add this
+  isUpdate?: boolean; // <-- add this
 }
 ```
 
@@ -451,6 +467,7 @@ error TS2339: Property 'description_text' does not exist on type '{}'.
 ```
 
 The object is typed as `{}`. Widen the type:
+
 ```ts
 // Before
 const postPayload: {} = {};
@@ -474,6 +491,7 @@ error TS2741: Property 'videoType' is missing in type '{ ... }' but required in 
 ```
 
 **Fix**: Pass `videoType` to the component:
+
 ```tsx
 <MentionInput
   // ... existing props
@@ -510,10 +528,11 @@ error TS2345: Argument of type 'number' is not assignable to parameter of type '
 The function call is passing a numeric ID where an Axios instance is expected. This looks like a wrong argument order.
 
 **Fix**: Check the function signature and reorder arguments, or pass the correct `axiosInstance`:
+
 ```ts
 // Likely the axiosInstance comes from context
 const { axiosInstance } = useAxios();
-deleteRecent(axiosInstance, itemId);  // not deleteRecent(itemId, axiosInstance)
+deleteRecent(axiosInstance, itemId); // not deleteRecent(itemId, axiosInstance)
 ```
 
 ---
@@ -527,6 +546,7 @@ error TS2550: Property 'replaceAll' does not exist on type 'string'. Try changin
 ```
 
 **Fix**: Update the `lib` in `packages/components/tsconfig.json`:
+
 ```json
 {
   "compilerOptions": {
@@ -536,12 +556,13 @@ error TS2550: Property 'replaceAll' does not exist on type 'string'. Try changin
 ```
 
 Or use `split().join()` as a fallback if the tsconfig cannot be changed:
+
 ```ts
 // Before
-str.replaceAll('foo', 'bar');
+str.replaceAll("foo", "bar");
 
 // After (ES2019 compatible)
-str.split('foo').join('bar');
+str.split("foo").join("bar");
 ```
 
 ---
@@ -563,6 +584,7 @@ str.split('foo').join('bar');
 All errors reference `owner` being possibly `undefined`. The component probably receives `owner` as an optional prop.
 
 **Fix A — guard at component level** (preferred):
+
 ```tsx
 // owner-info.tsx
 interface OwnerInfoProps {
@@ -570,15 +592,16 @@ interface OwnerInfoProps {
 }
 
 function OwnerInfo({ owner }: OwnerInfoProps) {
-  if (!owner) return null;  // single guard, all 10 errors disappear
+  if (!owner) return null; // single guard, all 10 errors disappear
   // rest of component uses owner safely
 }
 ```
 
 **Fix B — make owner required** (if caller always passes it):
+
 ```ts
 interface OwnerInfoProps {
-  owner: OwnerType;  // remove the ?
+  owner: OwnerType; // remove the ?
 }
 ```
 
@@ -591,10 +614,11 @@ interface OwnerInfoProps {
 All reference `video` possibly undefined.
 
 **Fix**:
+
 ```tsx
 function PostDetails({ postDetails }: PostDetailsProps) {
   const { video } = postDetails;
-  if (!video) return null;  // single guard
+  if (!video) return null; // single guard
   // use video safely below
 }
 ```
@@ -608,12 +632,14 @@ function PostDetails({ postDetails }: PostDetailsProps) {
 References `postDetails.video`, `postDetails.group`, `postDetails.community`.
 
 **Fix**:
+
 ```tsx
 const { video, group, community } = postDetails;
 if (!video || !group || !community) return null;
 ```
 
 Or use optional chaining if partial rendering is acceptable:
+
 ```tsx
 const videoId = postDetails.video?.id;
 ```
@@ -627,6 +653,7 @@ const videoId = postDetails.video?.id;
 All reference `post.video` possibly undefined in a list.
 
 **Fix**:
+
 ```tsx
 // Filter at the top of the render or in the query transformation
 const postsWithVideo = posts.filter((post): post is PostWithVideo => post.video !== undefined);
@@ -634,11 +661,14 @@ const postsWithVideo = posts.filter((post): post is PostWithVideo => post.video 
 ```
 
 Or guard per-item inside the map:
+
 ```tsx
-{posts.map(post => {
-  if (!post.video) return null;
-  return <PostItem key={post.video.id} video={post.video} />;
-})}
+{
+  posts.map((post) => {
+    if (!post.video) return null;
+    return <PostItem key={post.video.id} video={post.video} />;
+  });
+}
 ```
 
 ---
@@ -652,6 +682,7 @@ error TS18048: 'video.video' is possibly 'undefined'.
 ```
 
 **Fix**: Guard before accessing nested `video.video`:
+
 ```ts
 const innerVideo = video.video;
 if (!innerVideo) return;
@@ -663,6 +694,7 @@ if (!innerVideo) return;
 ### 5.6 — `feed-player` domain (~280 errors in 9 files)
 
 The dominant source of TS18048 errors. All are in:
+
 - `control-layer/expand-view/expand-view-details.tsx` (56)
 - `control-layer/embed/iheart/iheart-embed.tsx` (47)
 - `pills/community-hover-card.tsx` (23)
@@ -682,16 +714,18 @@ The dominant source of TS18048 errors. All are in:
 **Step 1** — Check if `video` should really be optional in `PostDetailsType`. If not, make it required.
 
 **Step 2** — If it must stay optional, add a single early return at the top of each component:
+
 ```tsx
 // expand-view-details.tsx
 function ExpandViewDetails({ postDetails }: Props) {
   const { video } = postDetails;
-  if (!video) return null;        // single guard eliminates ~56 errors
+  if (!video) return null; // single guard eliminates ~56 errors
   // access video freely below
 }
 ```
 
 **Step 3** — For components that use `postDetails.video.someNestedField`, similarly check each nesting level once:
+
 ```tsx
 const { video } = postDetails;
 if (!video) return null;
@@ -701,6 +735,7 @@ if (!embed) return null;
 ```
 
 **Step 4** — For hooks (not returning JSX), return early or return a default value:
+
 ```ts
 // use-iheart-playback.ts
 if (!video) return defaultPlaybackState;
@@ -720,6 +755,7 @@ if (!video) return defaultPlaybackState;
 The `AccordionTrigger` component replaced `openIcon`/`closedIcon` with a single `openCloseIcon` prop.
 
 **Fix** (`packages/ui/src/components/accordion/accordion.stories.tsx:194,216`):
+
 ```tsx
 // Before
 <AccordionTrigger openIcon={<ChevronDown />} closedIcon={<ChevronRight />}>
@@ -739,6 +775,7 @@ error TS2322: Type '"default"' is not assignable to type '"xs" | "sm" | "md" | "
 ```
 
 **Fix**:
+
 ```tsx
 // Before
 <Button size="default">
@@ -754,10 +791,9 @@ error TS2322: Type '"default"' is not assignable to type '"xs" | "sm" | "md" | "
 **File**: `packages/ui/src/components/dialog/dialog.stories.tsx:122`
 
 **Fix**: Add the required `type` prop to the story:
+
 ```tsx
-<DialogFooter type="default">
-  {children}
-</DialogFooter>
+<DialogFooter type="default">{children}</DialogFooter>
 ```
 
 ---
@@ -771,8 +807,9 @@ error TS2686: 'React' refers to a UMD global, but the current file is a module.
 ```
 
 **Fix**: Add the import:
+
 ```ts
-import React from 'react';
+import React from "react";
 ```
 
 ---
@@ -786,14 +823,15 @@ error TS2322: Type 'string' is not assignable to type 'string & { __tag: "E164Nu
 ```
 
 **Fix**: Cast to the branded type in the story data:
+
 ```ts
-import type { E164Number } from 'libphonenumber-js';
+import type { E164Number } from "libphonenumber-js";
 
 // Before
-value: '+15551234567'
+value: "+15551234567";
 
 // After
-value: '+15551234567' as E164Number
+value: "+15551234567" as E164Number;
 ```
 
 ---
@@ -808,6 +846,7 @@ Variants `"outline"`, `"secondary"`, `"link"`, `"destructive"` are used but not 
 **Fix option B** — Add the variants back to the `Button` component if they were removed by accident.
 
 Verify the `Button` component to determine which variants are intended:
+
 ```bash
 grep -n "variant" packages/ui/src/components/button/button.tsx
 ```
@@ -823,6 +862,7 @@ error TS7006: Parameter 'args' implicitly has an 'any' type.
 ```
 
 **Fix**:
+
 ```ts
 // Before
 const Template = (args) => <Tabs {...args} />;
@@ -861,6 +901,7 @@ Update mock data types to match `MemberDataType`.
 #### 6.2.4 — `test-data-feed.ts` (8 errors)
 
 This test fixture has stale types. Update to match current `PostData` / `FeedType` definitions:
+
 ```bash
 pnpm tsc --noEmit 2>&1 | grep "test-data-feed"
 ```
@@ -892,18 +933,20 @@ error TS2307: Cannot find module './styles.css' or its corresponding type declar
 ```
 
 **Fix option A** — Add a CSS module declaration file:
+
 ```ts
 // packages/web-sdk/src/styles.d.ts
-declare module '*.css' {
+declare module "*.css" {
   const content: Record<string, string>;
   export default content;
 }
 ```
 
 **Fix option B** — If `styles.css` is not a CSS module but a plain stylesheet, use a side-effect import declaration:
+
 ```ts
 // packages/web-sdk/src/global.d.ts
-declare module './styles.css';
+declare module "./styles.css";
 ```
 
 **Fix option C** — Check if `styles.css` actually exists. If not, generate it during the build step or remove the import.
@@ -932,7 +975,7 @@ cd packages/web-sdk && pnpm tsc --noEmit 2>&1 | grep "error TS" | grep -v "\.\./
 Expected counts after each phase:
 
 | After Phase | `ui` | `components` (source) | `components` (stories) | `web-sdk` own |
-|-------------|------|-----------------------|------------------------|---------------|
+| ----------- | ---- | --------------------- | ---------------------- | ------------- |
 | Baseline    | 21   | 336                   | 118                    | 1             |
 | Phase 1     | 17   | 325                   | 118                    | 1             |
 | Phase 2     | 17   | 323                   | 118                    | 1             |

@@ -1,21 +1,21 @@
-import { cva, type VariantProps } from 'class-variance-authority'
-import { type ComponentProps } from 'react'
+import { cva, type VariantProps } from "class-variance-authority";
+import { type ComponentProps } from "react";
 
-import { cn } from '@/lib/utils'
+import { cn } from "@/lib/utils";
 
-const twitterVariant = cva('', {
+const twitterVariant = cva("", {
   variants: {
     variant: {
-      dark: 'stroke-monochrome-black',
-      light: 'stroke-monochrome-white',
+      dark: "stroke-monochrome-black",
+      light: "stroke-monochrome-white",
     },
   },
-})
+});
 
-type TwitterIconPropsType = ComponentProps<'svg'> &
-  VariantProps<typeof twitterVariant> & { variant?: 'light' | 'dark' | null }
+type TwitterIconPropsType = ComponentProps<"svg"> &
+  VariantProps<typeof twitterVariant> & { variant?: "light" | "dark" | null };
 
-export function TwitterIcon({ variant = 'dark', className, ...restProps }: TwitterIconPropsType) {
+export function TwitterIcon({ variant = "dark", className, ...restProps }: TwitterIconPropsType) {
   return (
     <svg
       className={cn(twitterVariant({ variant }), className)}
@@ -32,5 +32,5 @@ export function TwitterIcon({ variant = 'dark', className, ...restProps }: Twitt
         strokeLinejoin="round"
       />
     </svg>
-  )
+  );
 }

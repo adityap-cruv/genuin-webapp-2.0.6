@@ -1,24 +1,24 @@
-import { cva, type VariantProps } from 'class-variance-authority'
-import { type ComponentProps } from 'react'
+import { cva, type VariantProps } from "class-variance-authority";
+import { type ComponentProps } from "react";
 
-import { cn } from '@/lib/utils'
+import { cn } from "@/lib/utils";
 
-const starVariant = cva('', {
+const starVariant = cva("", {
   variants: {
     variant: {
-      filled: 'fill-yellow-500', // You can adjust the color
-      outlined: 'fill-none stroke-black', // Adjust the stroke for outlined stars
+      filled: "fill-yellow-500", // You can adjust the color
+      outlined: "fill-none stroke-black", // Adjust the stroke for outlined stars
     },
   },
-})
+});
 
-type IconPropsType = ComponentProps<'svg'> &
-  VariantProps<typeof starVariant> & { variant?: 'filled' | 'outlined' | null }
+type IconPropsType = ComponentProps<"svg"> &
+  VariantProps<typeof starVariant> & { variant?: "filled" | "outlined" | null };
 
-export function TestimonialStarIcon({ variant = 'filled', className, ...props }: IconPropsType) {
+export function TestimonialStarIcon({ variant = "filled", className, ...props }: IconPropsType) {
   return (
     <svg
-      className={cn('', className)}
+      className={cn("", className)}
       width="24"
       height="25"
       viewBox="0 0 24 25"
@@ -29,5 +29,5 @@ export function TestimonialStarIcon({ variant = 'filled', className, ...props }:
         className={cn(starVariant({ variant }), className)}
       />
     </svg>
-  )
+  );
 }

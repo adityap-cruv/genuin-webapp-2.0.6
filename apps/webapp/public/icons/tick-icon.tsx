@@ -1,28 +1,28 @@
-import { cva } from 'class-variance-authority'
-import cn from 'classnames'
-import { type ComponentProps } from 'react'
+import { cva } from "class-variance-authority";
+import cn from "classnames";
+import { type ComponentProps } from "react";
 
 // Define the properties for the TickIcon component
-type Props = ComponentProps<'svg'> & {
-  variant?: 'light' | 'primary' | 'dark' // Optional variant prop to determine the color scheme
-}
+type Props = ComponentProps<"svg"> & {
+  variant?: "light" | "primary" | "dark"; // Optional variant prop to determine the color scheme
+};
 
 // Define the class variance authority (cva) for the TickIcon component
-const tickIconClasses = cva('', {
+const tickIconClasses = cva("", {
   variants: {
     variant: {
-      light: 'fill-monochrome-white', // Light variant class
-      primary: 'fill-primary', // Primary variant class
-      dark: 'fill-primary', // Map 'dark' to 'primary' variant class
+      light: "fill-monochrome-white", // Light variant class
+      primary: "fill-primary", // Primary variant class
+      dark: "fill-primary", // Map 'dark' to 'primary' variant class
     },
   },
   defaultVariants: {
-    variant: 'primary', // Default variant is 'primary'
+    variant: "primary", // Default variant is 'primary'
   },
-})
+});
 
 // Define the TickIcon component
-export function TickIcon({ variant = 'primary', className, ...props }: Props) {
+export function TickIcon({ variant = "primary", className, ...props }: Props) {
   return (
     <svg
       width="12"
@@ -41,5 +41,5 @@ export function TickIcon({ variant = 'primary', className, ...props }: Props) {
         </clipPath>
       </defs>
     </svg>
-  )
+  );
 }

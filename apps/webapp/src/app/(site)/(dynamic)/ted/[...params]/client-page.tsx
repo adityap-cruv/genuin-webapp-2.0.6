@@ -1,10 +1,10 @@
-'use client'
-import { useEffect } from 'react'
-import { useShallow } from 'zustand/react/shallow'
+"use client";
+import { useEffect } from "react";
+import { useShallow } from "zustand/react/shallow";
 
-import { Loader } from '@components/ui/loader'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
-import smartAppRedirect from '@lib/utils/redirection'
+import { Loader } from "@components/ui/loader";
+import { useGenuinOptions } from "@lib/stores/genuin-options";
+import smartAppRedirect from "@lib/utils/redirection";
 
 export function RedirectClientPage() {
   const { links } = useGenuinOptions(
@@ -14,23 +14,23 @@ export function RedirectClientPage() {
         playStoreLink: state.config?.integrations?.sdk.android.playstore_link,
       },
     }))
-  )
-  console.log('[RedirectClientPage] links:', links)
+  );
+  console.log("[RedirectClientPage] links:", links);
   useEffect(() => {
     const handleDeepLink = async () => {
       // Update store URLs with appended params
       smartAppRedirect({
-        appStoreUrl: links.appStoreLink ? links.appStoreLink : '',
-        playStoreUrl: links.playStoreLink ? links.playStoreLink : '',
+        appStoreUrl: links.appStoreLink ? links.appStoreLink : "",
+        playStoreUrl: links.playStoreLink ? links.playStoreLink : "",
         timeout: 300,
-      })
-    }
+      });
+    };
 
-    void handleDeepLink()
-  }, [links]) // Remove dependencies so it only runs once on mount
+    void handleDeepLink();
+  }, [links]); // Remove dependencies so it only runs once on mount
   return (
     <div className="flex h-screen w-screen items-center justify-center">
       <Loader size="xl" />
     </div>
-  )
+  );
 }
