@@ -1017,20 +1017,27 @@ export class GenuinSDK {
         element.style.height = "560px";
       }
 
-      // Hide embed on mobile for specific embed ID
+      // Hide embed on mobile for specific embed ID — skip all further init including API calls
       if (
         extractedData.embedId === "69c38273686a088a80a25ea2" &&
         /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
       ) {
+        if (process.env.NODE_ENV !== "production") {
+          console.error(
+            `[Genuin SDK] Embed "${extractedData.embedId}" is intentionally hidden on mobile. No API calls or rendering will occur.`
+          );
+        }
         element.style.height = "0px";
         element.style.width = "0px";
-        const parent = element.parentElement;
-        if (parent) {
-          const headingTitle = parent.querySelector(".heading-title");
-          if (headingTitle instanceof HTMLElement) {
-            headingTitle.hidden = true;
-          }
+        let sectionAncestor: HTMLElement | null = element.parentElement;
+        while (sectionAncestor && sectionAncestor.tagName !== "SECTION") {
+          sectionAncestor = sectionAncestor.parentElement;
         }
+        if (sectionAncestor) {
+          sectionAncestor.style.display = "none";
+        }
+        // Mark as done so initializeAllEmbeds skips it without firing any API calls
+        this.setInitializationStatus(element, "done");
         continue;
       }
 
