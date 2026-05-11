@@ -42,7 +42,7 @@ export function FeedWithData({
       groupIds: embedDetails?.embedData?.customization.community_loop_ids?.map((item) => item.loop_id),
       startVideoSlug: embedDetails?.embedData?.startVideoSlug,
       contextualParams: embedDetails?.embedData?.contextualParams,
-      embed_id: embedDetails?.embedData?.embed_id,
+      embedId: embedDetails?.embedData?.embed_id,
       isInIframe,
       shouldShowMiddlewareOverlay: isMiddlewareOverlayEnabled({
         videoLayoutId: embedDetails?.embedData.placement_video_layout_id,
