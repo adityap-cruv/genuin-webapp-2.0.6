@@ -96,7 +96,7 @@ export const ClipPlayerCTA = ({ postDetails, isActive }: ClipPlayerCTAProps) => 
   );
 
   if (!postDetails.video?.attributes?.slug) return;
-  if (!postDetails.video.linkoutId) return;
+  if (!postDetails.video.linkouts) return;
 
   return (
     <Suspense fallback={null}>

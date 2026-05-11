@@ -175,8 +175,7 @@ export function useEmbedConfigs() {
         Boolean(customization?.heading) ||
         Boolean(customization?.sub_heading) ||
         Boolean(customization?.cta_button?.url),
-      heading:
-        embedData?.placement_id === "69c2812fd98484cf6b83a5ba" ? "Trending Highlights" : customization?.heading || null,
+      heading: customization?.heading,
       subHeading: customization?.sub_heading || null,
       headingTextColor: customization?.heading_text_color,
       subHeadingTextColor: customization?.sub_heading_text_color,
