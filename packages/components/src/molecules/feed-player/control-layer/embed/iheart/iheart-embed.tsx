@@ -1,7 +1,7 @@
 "use client";
 import { Image } from "@genuin/ui/components/image";
 import { cn, getFormattedDuration, getMonthYear } from "@genuin/ui/lib/utils";
-import { useCallback, useEffect, useMemo, useState, useRef, type FC } from "react";
+import React, { useCallback, useEffect, useMemo, useState, useRef } from "react";
 
 import { useBaseContext, useEmbedContext } from "@genuin/components/context";
 import type { GenericData } from "@genuin/components/context/base/feed-context-manager";
@@ -20,7 +20,7 @@ import { OctoExpandSheet } from "../../octo/octo-expand-sheet";
 import { IHeartControls } from "./controls";
 import { IHeartListenLiveButton } from "./listen-live-button";
 
-export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
+export function IHeartControlLayer({
   postDetails,
   className,
   layoutType,
@@ -32,12 +32,11 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
   onMouseEnter,
   onMouseLeave,
   ...restProps
-}) => {
+}: ControlLayerPropsType) {
   const { baseContextManager } = useBaseContext();
   const {
     view: { websiteType },
     brand: { expandOnInteraction },
-    engagement,
     expandViewConfig,
   } = useEmbedConfigs();
   const { isMobile } = useDeviceDetectMediaQuery();
@@ -46,17 +45,14 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
   const { changeActivePlayerType } = useEmbedContext();
   const embedConfigs = useEmbedConfigs();
 
-  // Octo sheet integration
-  const isOctoEnabled = engagement.engagementTools.octo;
-  // const isOctoEnabled = Boolean(embedConfigs.view.isFeed);
-
   const viewportHeight = useViewportHeight();
-  const { getContentTypeState } = useSheetState();
+
+  const { engagement } = useEmbedConfigs();
+  const isOctoEnabled = engagement.engagementTools.octo;
+  const { getContentTypeState, octoVisible } = useSheetState();
   const octoSheetState = getContentTypeState("octo");
   const isActiveOctoSheet = isOctoEnabled && (octoSheetState === "panel-view" || octoSheetState === "full-view");
-
-  // TODO: handle it better way in common state for all the usecases
-  const [isOctoVisible, setIsOctoVisible] = useState(false);
+  const isOctoVisible = octoVisible;
 
   const swipeStartYRef = useRef<number>(0);
 
@@ -134,7 +130,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
   // const debouncedSetPreviewIndex = useDebounceCallback(() => {}, 300);
 
   const handleMouseEnter = useCallback(
-    (e: any) => {
+    (e: React.MouseEvent<HTMLDivElement>) => {
       onMouseEnter?.(e);
       if (embedConfigs.video.videoShouldPreview && index !== undefined && !isVideoWatched) {
         // Set preview index to activate hover preview for this video
@@ -156,7 +152,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
    * only if IHeart
    */
   const handleMouseLeave = useCallback(
-    (e: any) => {
+    (e: React.MouseEvent<HTMLDivElement>) => {
       onMouseLeave?.(e);
 
       if (embedConfigs.video.videoShouldPreview) {
@@ -207,9 +203,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
       return;
     }
 
-    const shouldDisableSwiper = octoSheetState === "panel-view" || octoSheetState === "full-view";
-
-    if (shouldDisableSwiper) {
+    if (isActiveOctoSheet) {
       swiperInstance.disable();
       if (isActive) {
         pause(false);
@@ -220,7 +214,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
         play(false);
       }
     }
-  }, [swiper, isActive, octoSheetState, isOctoEnabled, play, pause]);
+  }, [swiper, isActive, isOctoEnabled, isActiveOctoSheet, expandOnInteraction, play, pause]);
 
   const video = postDetails.video;
   if (!video) return null;
@@ -400,11 +394,10 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
             {/* Octo Sheet */}
             <OctoExpandSheet
               isActive={isActive ?? false}
-              videoId={postDetails.video?.id ?? ""}
-              videoSlug={postDetails.video?.slug ?? ""}
+              videoId={video.id}
+              videoSlug={video.slug}
               isMobile={isMobile}
               viewportHeight={viewportHeight}
-              onVisibilityChange={setIsOctoVisible}
             />
 
             {!isOctoVisible && (
@@ -450,4 +443,4 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
       </div>
     </div>
   );
-};
+}

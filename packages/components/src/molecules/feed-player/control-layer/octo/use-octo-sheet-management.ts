@@ -17,9 +17,17 @@ const OCTO_STATE_PRIORITY: Record<DynamicSheetState, number> = {
 type UseOctoSheetManagementProps = {
   enabled?: boolean;
   isActive: boolean;
+  isOctoEnabled: boolean;
+  shouldShowOcto: boolean;
   octoSheetState: DynamicSheetState;
   setContentTypeState: UseSheetStateReturn["setContentTypeState"];
   resetSheet: UseSheetStateReturn["resetSheet"];
+  /** Global octo-hidden flag read from the event bus via `useSheetState`. */
+  octoHidden: boolean;
+  /** Setter that writes `octoHidden` back to the event bus. */
+  setOctoHidden: (hidden: boolean) => void;
+  /** Setter that writes `octoVisible` back to the event bus so consumers can read it. */
+  setOctoVisible: (visible: boolean) => void;
   variant?: "expand" | "embed";
 };
 
@@ -28,14 +36,19 @@ type UseOctoSheetManagementProps = {
  * Handles sheet opening/closing, state changes, and swipe gestures.
  *
  * @param props - Configuration for Octo sheet management
- * @returns Handlers for Octo sheet events
+ * @returns Handlers for Octo sheet events and derived visibility state
  */
 export function useOctoSheetManagement({
   enabled = true,
   isActive,
+  isOctoEnabled,
+  shouldShowOcto,
   octoSheetState,
   setContentTypeState,
   resetSheet,
+  octoHidden,
+  setOctoHidden,
+  setOctoVisible,
   variant = "expand",
 }: UseOctoSheetManagementProps) {
   const prevOctoSheetStateRef = useRef<DynamicSheetState>(octoSheetState);
@@ -52,6 +65,7 @@ export function useOctoSheetManagement({
       return;
     }
 
+    setOctoHidden(false);
     // Go directly to panel-view when agent response is ready
     setContentTypeState("octo", "panel-view");
   }, [enabled, octoSheetState, setContentTypeState]);
@@ -131,14 +145,13 @@ export function useOctoSheetManagement({
 
   /**
    * Handles close from DynamicSheet (close button or dismiss).
-   * Resets the sheet to default state and dispatches genai:webSdkClose
-   * so the GenAI SDK clears its chat/prompt state for a fresh start.
+   * Resets the sheet to default state and hides the Octo widget.
    */
   const handleOctoSheetClose = useCallback(() => {
     if (!enabled) return;
 
     prevOctoSheetStateRef.current = "default";
-
+    setOctoHidden(true);
     setContentTypeState("octo", "default");
     resetSheet();
   }, [enabled, setContentTypeState, resetSheet]);
@@ -150,6 +163,7 @@ export function useOctoSheetManagement({
   const handleOctoThinkingStarted = useCallback(() => {
     if (!enabled) return;
 
+    setOctoHidden(false);
     if (octoSheetState === "default" || octoSheetState === "default-active") {
       setContentTypeState("octo", "expand-view");
     }
@@ -165,10 +179,11 @@ export function useOctoSheetManagement({
    * Transitions between default and default-active states.
    */
   const handleOctoCountdownActive = useCallback(
-    (isActive: boolean) => {
+    (active: boolean) => {
       if (!enabled) return;
 
-      if (isActive) {
+      if (active) {
+        setOctoHidden(false);
         // Transition to default-active when countdown starts
         if (octoSheetState === "default") {
           setContentTypeState("octo", "default-active");
@@ -195,14 +210,39 @@ export function useOctoSheetManagement({
   }, [enabled, resetSheet]);
 
   /**
-   * Resets ref when Octo action is clicked to ensure proper state tracking.
-   * Called before opening the sheet via action button.
+   * Resets ref and shows Octo when action button is used to open the sheet.
    */
   const handleOctoActionOpen = useCallback(() => {
     if (!enabled) return;
 
+    setOctoHidden(false);
     prevOctoSheetStateRef.current = "default";
   }, [enabled]);
+
+  /**
+   * Toggles Octo visibility via the action button.
+   * If currently hidden, shows it and resets tracking. If visible, hides it and closes the sheet.
+   */
+  const handleOctoActionToggle = useCallback(() => {
+    if (!enabled) return;
+
+    if (octoHidden) {
+      setOctoHidden(false);
+      prevOctoSheetStateRef.current = "default";
+    } else {
+      setOctoHidden(true);
+      prevOctoSheetStateRef.current = "default";
+      setContentTypeState("octo", "default");
+      resetSheet();
+    }
+  }, [enabled, octoHidden, setContentTypeState, resetSheet]);
+
+  /** True when Octo should be rendered and visible to the user. */
+  const isOctoVisible = isOctoEnabled && isActive && shouldShowOcto && !octoHidden;
+
+  useEffect(() => {
+    setOctoVisible(isOctoVisible);
+  }, [isOctoVisible, setOctoVisible]);
 
   return {
     handleOctoExpandRequest,
@@ -213,5 +253,9 @@ export function useOctoSheetManagement({
     handleOctoCountdownActive,
     handleOctoError,
     handleOctoActionOpen,
+    handleOctoActionToggle,
+    /** Aliased to `isOctoHidden` to keep the public return shape stable for existing callers. */
+    isOctoHidden: octoHidden,
+    isOctoVisible,
   };
 }

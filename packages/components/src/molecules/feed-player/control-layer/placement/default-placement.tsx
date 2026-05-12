@@ -1,12 +1,11 @@
 import { Image } from "@genuin/ui/components/image";
 import { CommentIcon, PlayIcon } from "@genuin/ui/icons";
 import { cn, getFormattedDuration, getMonthYear } from "@genuin/ui/lib/utils";
-import { type FC, useMemo, lazy, Suspense } from "react";
+import { useMemo, lazy, Suspense } from "react";
 
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import useViewportHeight from "@genuin/components/hooks/use-screen-height";
-import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
 
 import { DynamicReactionIcon } from "../../../reaction-button";
 import { Stats } from "../../../stats";
@@ -36,21 +35,19 @@ export const processVideoDescription = (description: any) => {
   return description;
 };
 
-export const DefaultPlacement: FC<ControlLayerPropsType> = ({
+export function DefaultPlacement({
   postDetails,
   className,
   isActive,
   onReactionStateChange,
   ...restProps
-}) => {
-  const { contentDisplay, responsive, view, engagement } = useEmbedConfigs();
+}: ControlLayerPropsType) {
+  const { contentDisplay, responsive, engagement } = useEmbedConfigs();
   const { isXs, isMd, isSm, isLg } = responsive;
   const { isMobile } = useDeviceDetectMediaQuery();
   const viewportHeight = useViewportHeight();
+
   const isOctoEnabled = engagement.engagementTools.octo;
-  const { getContentTypeState } = useSheetState();
-  const octoSheetState = getContentTypeState("octo");
-  const isActiveOctoSheet = isOctoEnabled && (octoSheetState === "panel-view" || octoSheetState === "full-view");
   const shouldHideOnSmall = isXs;
   const shouldUseCompactText = isMd;
 
@@ -286,4 +283,4 @@ export const DefaultPlacement: FC<ControlLayerPropsType> = ({
       </div>
     </div>
   );
-};
+}

@@ -59,6 +59,15 @@ export type BaseEventBusContext = {
    */
   systemPaused: boolean;
   hasUserInteractedWithMute: boolean; // To track if user has manually interacted with mute/unmute, to handle browser autoplay policies that require user interaction before unmuting audio.
+  /**
+   * Whether the Octo widget has been explicitly hidden by the user (e.g. via
+   * swipe-down or the action-button toggle). Stored on the global event bus so
+   * any consumer can derive `isOctoVisible` from `useSheetState()` without
+   * requiring an `onStateChange` callback or local `useState<OctoState>`.
+   */
+  octoHidden: boolean;
+  /** Whether the Octo widget is currently visible (enabled, active, not hidden, past delay). */
+  octoVisible: boolean;
   // /**
   //  * Per-content-type sheet states. Each active content type independently tracks its own
   //  * visual state (e.g. "default", "panel-view", "full-view").
@@ -92,8 +101,11 @@ export function createBaseEventBus(initialGlobalPlayingState: boolean = true) {
     globalPlayingState: initialGlobalPlayingState,
     systemPaused: false,
     hasUserInteractedWithMute: false,
+    // TODO: Create different content types for Octo, Linkouts, Comments, etc. rather than lumping them all under "default"
     sheetContentStates: { linkouts: "default" },
     activeSheetContentTypes: ["linkouts"],
     sheetContentPlacements: { linkouts: "inside" },
+    octoHidden: false,
+    octoVisible: false,
   });
 }

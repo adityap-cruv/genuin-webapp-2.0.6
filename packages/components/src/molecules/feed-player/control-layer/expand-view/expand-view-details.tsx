@@ -3,25 +3,14 @@ import { Avatar } from "@genuin/ui/avatar";
 import { Image } from "@genuin/ui/components/image";
 import { cn, getFormattedDuration, getMonthYear } from "@genuin/ui/utils";
 import type { VariantProps } from "class-variance-authority";
-import {
-  useMemo,
-  memo,
-  useEffect,
-  useState,
-  type ComponentProps,
-  useCallback,
-  useRef,
-  lazy,
-  Suspense,
-  forwardRef,
-  useImperativeHandle,
-} from "react";
+import { useMemo, memo, useEffect, useState, type ComponentProps, useCallback, useRef, lazy, Suspense } from "react";
 
 import { VideoTypes } from "@genuin/components/context";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import useViewportHeight from "@genuin/components/hooks/use-screen-height";
+import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
 import { getBaseUrl } from "@genuin/components/lib/utils";
 import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
@@ -37,7 +26,8 @@ import type { controlLayerVariant } from "../control-layer";
 import { IHeartControls } from "../embed/iheart";
 import { ClipPlayerCTA } from "../embed/iheart/clip-player-cta";
 import { getBaseUrlWithouthighlights } from "../embed/iheart/use-iheart-playback";
-import { OctoExpandSheet, type OctoExpandSheetRef } from "../octo/octo-expand-sheet";
+import { OctoExpandSheet } from "../octo/octo-expand-sheet";
+import type { OctoExpandSheetRef } from "../octo/octo-expand-sheet";
 import { Scrubber } from "../scrubber";
 
 import type { ExpandViewCallbacks } from "./types";
@@ -73,10 +63,6 @@ type ExpandViewProps = ComponentProps<"div"> & {
   isActive: boolean;
 } & ExpandViewCallbacks &
   VariantProps<typeof controlLayerVariant>;
-
-export type ExpandViewDetailsRef = {
-  closeSheet: () => void;
-};
 
 /**
  * Hook to get layout configuration and shared logic
@@ -542,21 +528,18 @@ const SharedActions = memo(function SharedActions({
   );
 });
 
-export const ExpandViewDetails = forwardRef<ExpandViewDetailsRef, ExpandViewProps>(function ExpandViewDetails(
-  {
-    className,
-    postDetails,
-    isActive,
-    variant,
-    onGroupJoinStatusChange,
-    onGroupSubscriptionChange,
-    onCommunityJoinStatusChange,
-    onReactionStateChange,
-    onCommentCountChange,
-    ...restProps
-  }: ExpandViewProps,
-  ref
-) {
+export function ExpandViewDetails({
+  className,
+  postDetails,
+  isActive,
+  variant,
+  onGroupJoinStatusChange,
+  onGroupSubscriptionChange,
+  onCommunityJoinStatusChange,
+  onReactionStateChange,
+  onCommentCountChange,
+  ...restProps
+}: ExpandViewProps) {
   const {
     brandLayoutType,
     defaultOpenCommentDialog,
@@ -573,29 +556,31 @@ export const ExpandViewDetails = forwardRef<ExpandViewDetailsRef, ExpandViewProp
     positionIndex,
     videoAutoplay,
   } = useExpandViewConfig(postDetails);
-  const { brand } = useEmbedConfigs();
+  const { brand, engagement } = useEmbedConfigs();
   const viewportHeight = useViewportHeight();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isOctoSwipeBlocked, setIsOctoSwipeBlocked] = useState(false);
-  const [isOctoVisible, setIsOctoVisible] = useState(false);
   const scrubberRef = useRef<HTMLDivElement>(null);
-  const octoExpandSheetRef = useRef<OctoExpandSheetRef>(null);
+  const octoSheetRef = useRef<OctoExpandSheetRef>(null);
+
+  const isOctoEnabled = engagement.engagementTools.octo;
+  const { getContentTypeState, octoVisible } = useSheetState();
+  const octoSheetState = getContentTypeState("octo");
+  const isActiveOctoSheet = isOctoEnabled && (octoSheetState === "panel-view" || octoSheetState === "full-view");
+  const isOctoVisible = octoVisible;
+  const isSwipeBlocked =
+    octoVisible &&
+    (octoSheetState === "default" || octoSheetState === "default-active" || octoSheetState === "expand-view");
+
+  const handleOctoActionToggle = useCallback(() => {
+    octoSheetRef.current?.onActionToggle();
+  }, []);
 
   const { shouldHide, hiddenClassName } = useIHeartScrubberVisibility(showScrubber, brandLayoutType);
 
   const onExpand = useCallback(() => {
     setIsExpanded((prev) => !prev);
   }, []);
-
-  // TODO: THIS IS NOT GOOD APPROACH - WILL HAVE TO CHANGE IT
-  useImperativeHandle(
-    ref,
-    () => ({
-      closeSheet: () => octoExpandSheetRef.current?.onActionToggle(),
-    }),
-    []
-  );
 
   const { video } = postDetails;
   if (!video) return null;
@@ -619,20 +604,18 @@ export const ExpandViewDetails = forwardRef<ExpandViewDetailsRef, ExpandViewProp
           className={cn(
             "gencl:flex gencl:flex-col gencl:gap-4 gencl:sm:gap-2 gencl:w-5/6 gencl:sm:w-full gencl:transition-all",
             brandLayoutType === "ted" || (brandLayoutType === "iheart" && "gencl:gap-3"),
-            isOctoSwipeBlocked && "swiper-no-swiping"
+            isSwipeBlocked && "swiper-no-swiping"
           )}
           onClick={(e) => e.stopPropagation()}>
           <div className="gencl:z-20">
             {!isDesktop && (
               <OctoExpandSheet
-                ref={octoExpandSheetRef}
+                ref={octoSheetRef}
                 isActive={isActive}
                 videoId={video.id}
                 videoSlug={video.slug}
                 isMobile={isMobile}
                 viewportHeight={viewportHeight}
-                onSwipeBlockChange={setIsOctoSwipeBlocked}
-                onVisibilityChange={setIsOctoVisible}
               />
             )}
           </div>
@@ -751,7 +734,7 @@ export const ExpandViewDetails = forwardRef<ExpandViewDetailsRef, ExpandViewProp
           onReactionStateChange={onReactionStateChange}
           onCommentCountChange={onCommentCountChange}
           isActive={isActive}
-          onOctoOpen={() => octoExpandSheetRef.current?.onActionToggle()}
+          onOctoOpen={handleOctoActionToggle}
           linkoutThumbnail={video.linkouts?.[0]?.links?.find((l: any) => l.image)?.image}
           isDesktop={isDesktop}
         />
@@ -811,4 +794,4 @@ export const ExpandViewDetails = forwardRef<ExpandViewDetailsRef, ExpandViewProp
       )}
     </div>
   );
-});
+}

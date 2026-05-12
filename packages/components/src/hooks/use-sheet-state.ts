@@ -48,10 +48,18 @@ export function useSheetState() {
     Partial<Record<SheetContentType, SheetContentPlacement>>
   >(() => baseEventBus.getContext().sheetContentPlacements);
 
+  const [octoHidden, setOctoHiddenState] = useState<boolean>(() => baseEventBus.getContext().octoHidden);
+
+  const [octoVisible, setOctoVisibleState] = useState<boolean>(() => baseEventBus.getContext().octoVisible);
+
   // ── Subscriptions ─────────────────────────────────────────────────────────
 
   useEffect(() => {
-    const onStateChange = (_: unknown, ctx: BaseEventBusContext) => setSheetContentStates(ctx.sheetContentStates);
+    const onStateChange = (_: unknown, ctx: BaseEventBusContext) => {
+      setSheetContentStates(ctx.sheetContentStates);
+      setOctoHiddenState(ctx.octoHidden);
+      setOctoVisibleState(ctx.octoVisible);
+    };
     baseEventBus.on("sheetStateChange", onStateChange);
     return () => baseEventBus.off("sheetStateChange", onStateChange);
   }, [baseEventBus]);
@@ -185,6 +193,28 @@ export function useSheetState() {
     }));
   }, [baseEventBus]);
 
+  /**
+   * Sets the global `octoHidden` flag on the event bus.
+   * Emits via `sheetStateChange` so all `useSheetState` subscribers re-render.
+   */
+  const setOctoHidden = useCallback(
+    (hidden: boolean) => {
+      baseEventBus.emit("sheetStateChange", undefined, (ctx) => ({ ...ctx, octoHidden: hidden }));
+    },
+    [baseEventBus]
+  );
+
+  /**
+   * Sets the global `octoVisible` flag on the event bus.
+   * Emits via `sheetStateChange` so all `useSheetState` subscribers re-render.
+   */
+  const setOctoVisible = useCallback(
+    (visible: boolean) => {
+      baseEventBus.emit("sheetStateChange", undefined, (ctx) => ({ ...ctx, octoVisible: visible }));
+    },
+    [baseEventBus]
+  );
+
   return {
     // Derived global state — "most expanded" across all active types.
     // Kept for backward compat with player.tsx, player-swiper.tsx, link-item-card.tsx.
@@ -199,6 +229,10 @@ export function useSheetState() {
     closeContentType,
     toggleContentType,
     resetSheet,
+    octoHidden,
+    setOctoHidden,
+    octoVisible,
+    setOctoVisible,
   } as const;
 }
 
