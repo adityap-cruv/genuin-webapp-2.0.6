@@ -42,8 +42,10 @@ export function useOctoExpandSheet({ isActive }: UseOctoExpandSheetProps) {
     return () => {
       clearTimeout(timer);
       resetSheet();
+      setOctoHidden(false);
+      setOctoVisible(false);
     };
-  }, [isActive, resetSheet]);
+  }, [isActive, resetSheet, setOctoHidden, setOctoVisible]);
 
   const octoSheetManagement = useOctoSheetManagement({
     isActive,
