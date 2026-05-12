@@ -88,7 +88,10 @@
     "./components/video-player": "./src/components/video-player/index.ts",
     "./icons/misc-icons/become-creator/community-01": "./src/icons/misc-icons/become-creator/community-01.tsx",
     "./icons/misc-icons/become-creator/community-02": "./src/icons/misc-icons/become-creator/community-02.tsx",
-    "./icons/misc-icons/become-creator/community-03": "./src/icons/misc-icons/become-creator/community-03.tsx"
+    "./icons/misc-icons/become-creator/community-03": "./src/icons/misc-icons/become-creator/community-03.tsx",
+    "./components/lottie/lottie-icon": "./src/components/lottie/lottie-icon.tsx",
+    "./components/lottie/lottie-icon.types": "./src/components/lottie/lottie-icon.types.ts",
+    "./components/lottie": "./src/components/lottie/index.ts"
   },
   "scripts": {
     "build": "tsc --build",
