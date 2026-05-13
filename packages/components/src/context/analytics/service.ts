@@ -16,6 +16,7 @@ export type DefaultAnalyticsPayload = {
   brand_id: number | undefined;
   channel: string;
   environment: string;
+  sponsorship_id?: string;
   url?: string;
   path: string;
   query_params: Record<string, string | string[]>;

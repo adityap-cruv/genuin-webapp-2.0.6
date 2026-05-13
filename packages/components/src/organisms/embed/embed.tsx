@@ -157,6 +157,7 @@ export function Embed({
     styleId: embedData.style_id,
     contextualParams: enrichedContextualParams,
     embedId: embedData.embed_id,
+    sponsorship_id: embedData.sponsorship_id,
     isInIframe,
     shouldShowMiddlewareOverlay: isMiddlewareOverlayEnabled({
       videoLayoutId: embedData.placement_video_layout_id,

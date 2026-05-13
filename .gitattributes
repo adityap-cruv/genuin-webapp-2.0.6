@@ -1,0 +1,2 @@
+*.md text eol=lf
+.github/CODEOWNERS text eol=lf -text

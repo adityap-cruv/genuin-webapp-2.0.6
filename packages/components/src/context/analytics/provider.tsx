@@ -127,6 +127,7 @@ export function AnalyticsProvider({
         path: pathname,
         query_params: Object.fromEntries(new URLSearchParams(window.location.search)),
         title: document.title,
+        ...(embedData?.sponsorship_id && { sponsorship_id: embedData.sponsorship_id }),
       };
 
       // SDK embeds carry extra context (embed/placement IDs, layout style) not present in webapp.

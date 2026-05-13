@@ -33,6 +33,7 @@ export function EmbedExpandSectionedView({ videos, pageSession }: EmbedExpandVie
       enabled: isSectioned && !!selectedSection?.id,
       sectionId: selectedSection?.id ?? undefined,
       embedId: embedData.embed_id,
+      sponsorship_id: embedData.sponsorship_id,
       pageSession: pageSession,
       isInIframe,
       shouldShowMiddlewareOverlay: isMiddlewareOverlayEnabled({

@@ -389,6 +389,23 @@ export const VideoPlayer = memo(function VideoPlayer({
             await player.getMedia().play();
           }
         } catch (error) {
+          if (playerShouldPauseOnNotAllowed) {
+            if ((error as any)?.name === "NotAllowedError") {
+              updatePlayerPlayState();
+            }
+          } else if ((error as any)?.name === "NotAllowedError") {
+            // Browser blocked autoplay with sound — mute and retry so the
+            // player never gets stuck in a permanent loading state.
+            updatePlayerMutedState(true);
+            try {
+              await player.play();
+            } catch {
+              // Muted retry also failed; clear loading state to avoid spinner lock.
+              updateLoadingState(false, false);
+            }
+          } else {
+            await player.play();
+          }
           console.warn("Autoplay failed on initialization:", { error });
           if ((error as any)?.name === "NotAllowedError") {
             if (playerShouldPauseOnNotAllowed) {
@@ -408,8 +425,9 @@ export const VideoPlayer = memo(function VideoPlayer({
       adUrl,
       playbackSpeed,
       playerShouldPauseOnNotAllowed,
-      updatePlayerPlayState,
+      updateLoadingState,
       updatePlayerMutedState,
+      updatePlayerPlayState,
     ]
   );
 

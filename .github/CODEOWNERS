@@ -1,0 +1,83 @@
+# Codeowners file for auto-assigning PR reviewers based on changed files
+
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Temporary simple setup - all PRs reviewed by core team
+# CODEOWNERS syntax: ** matches all files recursively
+**                                 @himansu-0x @genuindev @dhairya0210 @Dharmil703 @krunal-begenuin
+
+# Future detailed setup (commented out for now):
+
+# # Main webapp (Next.js 15)
+
+# apps/webapp/ @himanshu-begenuin @devtejot @jimit-shah
+
+#
+
+# # Legacy webapp (being phased out, lower priority)
+
+# apps/legacy-webapp/ @himanshu-begenuin @devtejot
+
+#
+
+# # UI component library (Atoms)
+
+# packages/ui/ @dhairya-patel @hiren-ganatra
+
+#
+
+# # Business components (Molecules/Organisms)
+
+# packages/components/ @dhairya-patel @himanshu-begenuin
+
+#
+
+# # Web SDK (embeddable SDK, critical)
+
+# packages/web-sdk/ @jimit-shah @devtejot @krunal-shah
+
+#
+
+# # Shared utilities
+
+# packages/utils/ @himanshu-begenuin @jimit-shah
+
+#
+
+# # Config packages (shared by all)
+
+# packages/eslint-config/ @himanshu-begenuin @jimit-shah
+
+# packages/tailwind-config/ @himanshu-begenuin @jimit-shah
+
+# packages/typescript-config/ @himanshu-begenuin @jimit-shah
+
+#
+
+# # Root configs and CI/CD
+
+# .github/ @himanshu-begenuin @devtejot @jimit-shah
+
+# .team/ @himanshu-begenuin @devtejot @jimit-shah
+
+# turbo.json @himanshu-begenuin @jimit-shah
+
+# pnpm-workspace.yaml @himanshu-begenuin @jimit-shah
+
+# package.json @himanshu-begenuin @jimit-shah
+
+# tsconfig.json @himanshu-begenuin @jimit-shah
+
+#
+
+# # Documentation
+
+# docs/ @himanshu-begenuin @devtejot
+
+# \*.md @himanshu-begenuin @devtejot
+
+#
+
+# # Root scripts
+
+# scripts/ @himanshu-begenuin @jimit-shah

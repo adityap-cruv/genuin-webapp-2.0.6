@@ -1,0 +1,110 @@
+name: Auto-label PR by changed packages
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  auto-label:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ github.token }}
+          fetch-depth: 0
+
+      - name: Get changed files
+        id: changed-files
+        run: |
+          git fetch --no-tags origin ${{ github.event.pull_request.base.sha }}
+          changed_files=$(git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}")
+          echo "Changed files:\n$changed_files"
+          echo "all_changed_files<<EOF" >> $GITHUB_OUTPUT
+          printf '%s\n' "$changed_files" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Determine labels
+        id: labels
+        env:
+          CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
+        run: |
+          labels=()
+
+          # Check for webapp changes
+          if echo "$CHANGED_FILES" | grep -q "^apps/webapp/"; then
+            labels+=("app:webapp")
+          fi
+
+          # Check for legacy-webapp changes
+          if echo "$CHANGED_FILES" | grep -q "^apps/legacy-webapp/"; then
+            labels+=("app:legacy-webapp")
+          fi
+
+          # Check for UI package changes
+          if echo "$CHANGED_FILES" | grep -q "^packages/ui/"; then
+            labels+=("pkg:ui")
+          fi
+
+          # Check for components package changes
+          if echo "$CHANGED_FILES" | grep -q "^packages/components/"; then
+            labels+=("pkg:components")
+          fi
+
+          # Check for web-sdk package changes
+          if echo "$CHANGED_FILES" | grep -q "^packages/web-sdk/"; then
+            labels+=("pkg:web-sdk")
+          fi
+
+          # Check for utils package changes
+          if echo "$CHANGED_FILES" | grep -q "^packages/utils/"; then
+            labels+=("pkg:utils")
+          fi
+
+          # Check for config packages (eslint, tailwind, typescript)
+          if echo "$CHANGED_FILES" | grep -qE "^packages/(eslint-config|tailwind-config|typescript-config)/"; then
+            labels+=("pkg:config")
+          fi
+
+          # Check for CI/workflow changes
+          if echo "$CHANGED_FILES" | grep -qE "^\.(github|turbo|scripts)/|^(turbo\.json|pnpm-workspace\.yaml)$"; then
+            labels+=("area:ci")
+          fi
+
+          # Check for documentation changes
+          if echo "$CHANGED_FILES" | grep -qE "^docs/|\.md$"; then
+            labels+=("area:docs")
+          fi
+
+          # Check for test changes
+          if echo "$CHANGED_FILES" | grep -q "\.test\.\|\.spec\."; then
+            labels+=("area:tests")
+          fi
+
+          # Check for type definition changes
+          if echo "$CHANGED_FILES" | grep -qE "^packages/.*types/|\.d\.ts$"; then
+            labels+=("area:types")
+          fi
+
+          # Output labels as JSON array
+          labels_json=$(printf '%s\n' "${labels[@]}" | jq -R -s -c 'split("\n") | map(select(length > 0)) | unique')
+          echo "labels=${labels_json}" >> $GITHUB_OUTPUT
+
+      - name: Add labels to PR
+        if: steps.labels.outputs.labels != '[]'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const labels = ${{ steps.labels.outputs.labels }};
+            if (labels.length > 0) {
+              await github.rest.issues.addLabels({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                labels: labels
+              });
+              console.log(`Added labels: ${labels.join(', ')}`);
+            }

@@ -213,6 +213,9 @@ export async function setupMainShadowDOM(container: HTMLElement): Promise<HTMLEl
     await ensureStylesInShadowRoot(shadowRoot);
   }
 
+  // Propagate gen-sdk-class to the inner root so CSS scoping rules apply inside the shadow DOM.
+  root?.classList.add("gen-sdk-class");
+
   return root || container;
 }
 

@@ -172,6 +172,7 @@ async function fetchFeed(
         type: feedTypeToNumber[feedType],
         ...(deviceId && { device_id: deviceId }),
         ...(options?.embedId && { embed_id: options.embedId }),
+        ...(options?.sponsorship_id && { sponsorship_id: options.sponsorship_id }),
         ...(pageParam?.lastVideoId && { last_video_id: pageParam.lastVideoId }),
         ...(pageParam?.pageSession && { page_session: pageParam.pageSession }),
         ...(options?.communityIds?.length && {
@@ -187,6 +188,7 @@ async function fetchFeed(
       requestBody = {
         ...(deviceId && { device_id: deviceId }),
         ...(options?.placementId && { placement_id: options.placementId }),
+        ...(options?.sponsorship_id && { sponsorship_id: options.sponsorship_id }),
         ...(options?.styleId && { style_id: options.styleId }),
         ...(pageParam?.pageSession && { page_session: pageParam.pageSession }),
         ...(pageParam?.lastVideoId
@@ -203,6 +205,7 @@ async function fetchFeed(
       requestBody = {
         ...(deviceId && { device_id: deviceId }),
         ...(options?.placementId && { placement_id: options.placementId }),
+        ...(options?.sponsorship_id && { sponsorship_id: options.sponsorship_id }),
         ...(options?.styleId && { style_id: options.styleId }),
         ...(pageParam?.lastVideoId
           ? { last_video_id: pageParam.lastVideoId }
@@ -221,6 +224,7 @@ async function fetchFeed(
         ...(deviceId && { device_id: deviceId }),
         ...(options?.embedId && { embed_id: options.embedId }),
         ...(options?.placementId && { placement_id: options.placementId }),
+        ...(options?.sponsorship_id && { sponsorship_id: options.sponsorship_id }),
         ...(options?.styleId && { style_id: options.styleId }),
         ...(pageParam?.lastVideoId && { last_video_id: pageParam.lastVideoId }),
         ...(pageParam?.pageSession && { page_session: pageParam.pageSession }),
@@ -240,6 +244,7 @@ async function fetchFeed(
         ...(deviceId && { device_id: deviceId }),
         ...(options?.embedId && { embed_id: options.embedId }),
         ...(options?.placementId && { placement_id: options.placementId }),
+        ...(options?.sponsorship_id && { sponsorship_id: options.sponsorship_id }),
         ...(options?.styleId && { style_id: options.styleId }),
         ...(pageParam?.lastVideoId && { last_video_id: pageParam.lastVideoId }),
         ...(pageParam?.pageSession && { page_session: pageParam.pageSession }),
@@ -320,6 +325,7 @@ type UseFeedOptionsType = {
   isSingleVideo?: boolean;
   initialVideoIds?: string[];
   brandId?: number;
+  sponsorship_id?: string;
 };
 
 /**
