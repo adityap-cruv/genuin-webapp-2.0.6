@@ -56,6 +56,12 @@
     "typecheck": "tsc --noEmit",
     "version:bump": "npx tsx scripts/npmVersionManager.ts",
     "sdk:bs": "npm run build:prod && serve -l 5555",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:doc": "IGNORE_TEST_FAILURES=true playwright test ",
+    "test:update": "playwright test tests/e2e/visual --update-snapshots",
     "lint-staged": "lint-staged"
   },
   "lint-staged": {
@@ -100,6 +106,7 @@
     "@rollup/plugin-typescript": "^12.1.4",
     "@rollup/plugin-url": "^8.0.2",
     "@tailwindcss/postcss": "^4.1.7",
+    "@test2doc/playwright": "^1.7.0",
     "@types/cli-progress": "^3.11.5",
     "@types/node": "^22.15.21",
     "@types/pubsub-js": "^1.8.6",

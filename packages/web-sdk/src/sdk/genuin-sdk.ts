@@ -610,6 +610,11 @@ export class GenuinSDK {
 
       Object.assign(embedDetails.customization, config.live?.live_customization_data || {});
 
+      // init payload sponsorship_id takes priority over embed data.
+      if (config.initSponsorshipId) {
+        embedDetails.sponsorship_id = config.initSponsorshipId;
+      }
+
       config.embedDetails = embedDetails;
     }
 
@@ -767,6 +772,15 @@ export class GenuinSDK {
       }
       if (!embedDetails.video_layout_id && brandDetails.video_layout_id) {
         embedDetails.video_layout_id = brandDetails.video_layout_id;
+      }
+
+      // init payload sponsorship_id takes priority over embed/placement data.
+      // If absent from init but present in embed/placement data, the existing value is kept.
+      // If absent from all sources, the key is omitted entirely.
+      if (config.initSponsorshipId) {
+        embedDetails.sponsorship_id = config.initSponsorshipId;
+      } else if (embedDetails.sponsorship_id && !Array.isArray(embedDetails.sponsorship_id)) {
+        embedDetails.sponsorship_id = [embedDetails.sponsorship_id];
       }
 
       // Store the embed details in the config for later use
@@ -1464,6 +1478,13 @@ export class GenuinSDK {
     }
 
     answerToReturn.disableExpandView = isNested;
+
+    // Carry the init-payload sponsorship_id override so it can take priority
+    // over the value coming from Embed or Placement API data in getEmbedDetails.
+    const initSponsorshipId = configByUser?.sponsorship_id;
+    if (Array.isArray(initSponsorshipId)) {
+      answerToReturn.initSponsorshipId = initSponsorshipId;
+    }
 
     return answerToReturn;
   }

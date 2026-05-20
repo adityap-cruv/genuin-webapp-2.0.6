@@ -1,0 +1,62 @@
+name: E2E Tests — Web SDK
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, labeled]
+
+concurrency:
+  group: e2e-web-sdk-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (contains(github.event.pull_request.labels.*.name, 'run-e2e-all') &&
+       (contains(github.event.pull_request.labels.*.name, 'pkg:web-sdk') ||
+        contains(github.event.pull_request.labels.*.name, 'pkg:ui') ||
+        contains(github.event.pull_request.labels.*.name, 'pkg:components') ||
+        contains(github.event.pull_request.labels.*.name, 'pkg:utils')))
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Create web-sdk env file
+        run: echo "${{ secrets.WEB_SDK_ENV_DEVELOPMENT }}" > packages/web-sdk/.env.development
+
+      - name: Install Playwright system dependencies
+        run: pnpm --filter web-sdk exec playwright install-deps chromium
+
+      - name: Build Web SDK
+        run: pnpm --filter web-sdk build
+        env:
+          NODE_ENV: development
+
+      - name: Run E2E tests
+        run: pnpm --filter web-sdk test
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-sdk-playwright-report
+          path: packages/web-sdk/tests/results/playwright-report/
+          retention-days: 7

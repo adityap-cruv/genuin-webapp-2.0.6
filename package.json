@@ -33,7 +33,12 @@
     "deps:update": "ncu -u && pnpm install",
     "deps:unused": "depcheck",
     "deps:validate": "pnpm deps:check && pnpm deps:unused",
-    "postinstall": "node scripts/postinstall-patch-openplayerjs.js"
+    "test": "concurrently \"pnpm --filter=@genuin/web-sdk test\" \"pnpm --filter=@genuin/webapp test\"",
+    "test:ui": "concurrently \"pnpm --filter=@genuin/web-sdk test:ui\" \"pnpm --filter=@genuin/webapp test:ui\"",
+    "test:headed": "concurrently \"pnpm --filter=@genuin/web-sdk test:headed\" \"pnpm --filter=@genuin/webapp test:headed\"",
+    "test:debug": "concurrently \"pnpm --filter=@genuin/web-sdk test:debug\" \"pnpm --filter=@genuin/webapp test:debug\"",
+    "test:doc":"concurrently \"pnpm --filter=@genuin/web-sdk test:doc\" \"pnpm --filter=@genuin/webapp test:doc\"",
+    "postinstall": "node scripts/postinstall-patch-openplayerjs.js && pnpm exec playwright install"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
@@ -69,6 +74,7 @@
     "@genuin/typescript-config": "workspace:*",
     "@next/eslint-plugin-next": "^15.3.3",
     "@opentelemetry/api": "^1.9.0",
+    "@playwright/test": "^1.58.2",
     "@tailwindcss/cli": "^4.1.7",
     "@tanstack/eslint-plugin-query": "^5.78.0",
     "@types/eslint": "^9.6.1",

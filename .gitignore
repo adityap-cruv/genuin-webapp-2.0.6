@@ -75,5 +75,12 @@ next-env.d.ts
 *.html
 
 packages/web-sdk/stats.json
+# Playwright
+**/test-results/
+**/playwright-report/
+**/test-docs/
+**/.playwright/
+**/.last-run.json           
+**/trace.zip
 
 apps/legacy-webapp

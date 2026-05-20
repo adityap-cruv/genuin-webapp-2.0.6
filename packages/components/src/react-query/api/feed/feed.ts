@@ -29,6 +29,9 @@ const feedTypeToNumber: Record<FeedType, number> = {
   FEED_V1: -1,
 };
 
+// MCC brands support empty sponsorship_id arrays; all others treat [] as unset
+const MCC_BRAND_ID = [3099, 3296, 3180, 2477, 3312];
+
 // TODO: Suggestion unify this api with all the apis for feed in profile/group/community. So that
 // mismatch between response types in the feed apis can be avoided.
 /**
@@ -52,7 +55,17 @@ async function fetchFeed(
   const deviceId = getDeviceId(options?.isInIframe || false)
     ? encodeURI(getDeviceId(options?.isInIframe || false) as string)
     : undefined;
+  const brandId: number =
+    options?.brandId ?? parseInt(String(requestAxiosInstance.defaults.headers["x-brand-id"] ?? "0"), 10);
 
+  // Non-MCC brands: treat empty sponsorship_id array as no sponsorship filter
+  if (
+    !MCC_BRAND_ID.includes(brandId) &&
+    Array.isArray(options?.sponsorship_id) &&
+    options.sponsorship_id.length === 0
+  ) {
+    options.sponsorship_id = undefined;
+  }
   const contextualFeedParamsBody = {
     // Basic context
     ...(options?.contextualParams?.page_context && {
@@ -325,7 +338,7 @@ type UseFeedOptionsType = {
   isSingleVideo?: boolean;
   initialVideoIds?: string[];
   brandId?: number;
-  sponsorship_id?: string;
+  sponsorship_id?: string | string[];
 };
 
 /**

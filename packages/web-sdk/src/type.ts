@@ -94,6 +94,12 @@ export type ConfigByUser = {
    * Parent SDK instance ID for nested child SDK communication.
    */
   parent_instance_id?: string;
+  /*
+   * Overrides the sponsorship_id from Embed or Placement data.
+   * When provided, this value takes priority over any sponsorship_id from the API.
+   * An empty or zero-length array is treated as absent (no override applied).
+   */
+  sponsorship_id?: string[];
 };
 
 export type UpdateConfigByUserType = {
@@ -165,4 +171,9 @@ export type SingleEmbedDataConfig = {
    * Used when a child SDK is nested within a parent SDK instance.
    */
   parentInstanceId?: string;
+  /*
+   * sponsorship_id override from the init payload (ConfigByUser).
+   * Takes priority over the sponsorship_id from Embed or Placement API data.
+   */
+  initSponsorshipId?: string[];
 };

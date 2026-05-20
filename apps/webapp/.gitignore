@@ -68,3 +68,11 @@ next-env.d.ts
 
 # Sentry Config File
 .env.sentry-build-plugin
+
+# Playwright
+tests/test-results/
+tests/playwright-report/
+tests/test-docs/
+.playwright/
+.last-run.json               
+trace.zip

@@ -141,6 +141,88 @@ Shared dependencies are managed at the root level. Project-specific dependencies
    pnpm build
    ```
 
+## Testing
+
+The webapp uses [Playwright](https://playwright.dev/) for end-to-end tests.
+
+### Test Commands
+
+```bash
+# Run all E2E tests
+npm run test
+
+# Run with Playwright UI (interactive)
+npm run test:ui
+
+# Run in headed (visible browser) mode
+npm run test:headed
+
+# Run in debug mode
+npm run test:debug
+
+# Generate test documentation (test2doc)
+npm run test:doc
+```
+
+> **`test:doc`** runs all tests with the [test2doc](https://www.test2doc.com/) reporter enabled. It reads `test.describe()`,`test()` and `test.step()` labels from each spec file and generates `.mdx` documentation files in `tests/test-docs/`. This is useful for sharing a human-readable test summary with QA, product, or management without requiring them to read code.This doc will give a basic understanding of each test case.
+
+### Test Coverage
+
+`render.spec.ts` | Home page renders feed section correctly |
+
+
+### When Tests Fail
+
+1. **Check the test report** — Playwright generates an HTML report after each run:
+   ```bash
+   npx playwright show-report
+   ```
+   > Screenshots and traces for failed tests are saved in `test-results/`.
+
+2. **Use debug mode** — Step through the failing test line by line:
+   ```bash
+   npm run test:debug
+   ```
+
+3. **Use headed mode** — Watch the browser while the test runs:
+   ```bash
+   npm run test:headed
+   ```
+
+4. **Inspect the trace** — Playwright captures a trace on failure. Open it with:
+   ```bash
+   npx playwright show-trace `test-results/<test-folder>/trace.zip
+   ```
+
+5. **Re-run only failed tests**:
+   ```bash
+   npx playwright test --last-failed
+   ```
+
+### FAQ
+
+**Q: Where do I add new E2E tests?**
+Add spec files under `apps/webapp/tests/e2e/`.
+
+**Q: Tests fail with connection refused?**
+Make sure the webapp dev server is running on port `4005` before running tests:
+
+```bash
+pnpm dev
+```
+
+**Q: How do I run only webapp tests from the root?**
+
+```bash
+pnpm --filter=@genuin/webapp test
+```
+
+**Q: Playwright browsers not installed?**
+
+```bash
+pnpm exec playwright install
+```
+
 ## Contributing
 
 1. Create a feature branch

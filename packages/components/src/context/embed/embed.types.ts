@@ -479,7 +479,7 @@ export type EmbedDataType = {
   contextualParams?: SDKConfig["contextualParams"];
   elementId?: string;
   brand_ids?: number[];
-  sponsorship_id?: string;
+  sponsorship_id?: string | string[];
   /**
    * The slug of the video to start with in the embed view.
    */

@@ -41,3 +41,12 @@ temp/
 src/views/output.css
 
 *.zip
+*.zip
+
+# Playwright
+tests/results/test-results/
+tests/results/playwright-report/
+tests/test-docs/
+.playwright/
+.last-run.json               
+trace.zip
