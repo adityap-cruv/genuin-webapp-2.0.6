@@ -1,6 +1,8 @@
 import type { EmbedDataType } from "@genuin/components/context/embed/embed.types";
 import type { BrandDetailsConfigType } from "@genuin/components/context/embed/embed.types";
 
+import type { SingleEmbedDataConfig } from "@/type";
+
 import { apiService } from "./api";
 
 export class EmbedDetailsManager {
@@ -15,15 +17,17 @@ export class EmbedDetailsManager {
     return EmbedDetailsManager.instance;
   }
 
-  public async getEmbedDetails(embedId: string, _brandDetails: BrandDetailsConfigType) {
-    if (this.embedDetailsList[embedId]) {
-      return this.embedDetailsList[embedId];
+  public async getEmbedDetails(config: Partial<SingleEmbedDataConfig>, _brandDetails: BrandDetailsConfigType) {
+    if (!config.embedId) return {} as EmbedDataType;
+    if (this.embedDetailsList[config.embedId]) {
+      return this.embedDetailsList[config.embedId] ?? ({} as EmbedDataType);
     }
 
-    const embedDetails = await apiService.fetchEmbedData(embedId);
+    // Pass full config (including initSponsorshipId) to the API so backend can include/override sponsorshipId
+    const embedDetails = await apiService.fetchEmbedData(config);
 
-    this.embedDetailsList[embedId] = Object.assign(embedDetails, {
-      embed_id: embedId,
+    this.embedDetailsList[config.embedId] = Object.assign(embedDetails, {
+      embed_id: config.embedId,
     });
 
     return embedDetails;

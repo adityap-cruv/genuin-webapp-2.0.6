@@ -480,6 +480,7 @@ export type EmbedDataType = {
   elementId?: string;
   brand_ids?: number[];
   sponsorship_id?: string | string[];
+  rudderstackSponsorshipId?: string;
   /**
    * The slug of the video to start with in the embed view.
    */

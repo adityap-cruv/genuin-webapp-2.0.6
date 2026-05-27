@@ -599,18 +599,18 @@ export class GenuinSDK {
     }
 
     const brandDetails = await this.brandDetailsManager.getBrandDetails(config.apiKey);
+    let embedDetails = { customization: {} } as EmbedDataType;
 
     if (config.embedId) {
-      let embedDetails = { customization: {} } as EmbedDataType;
       if (config.embedId !== "preview") {
-        embedDetails = await this.embedDetailsManager.getEmbedDetails(config.embedId, brandDetails as any);
+        embedDetails = await this.embedDetailsManager.getEmbedDetails(config, brandDetails as any);
       }
 
       embedDetails = { ...embedDetails, ...config.live };
 
       Object.assign(embedDetails.customization, config.live?.live_customization_data || {});
 
-      // init payload sponsorship_id takes priority over embed data.
+      // For live embeds with init sponsorshipIds, pass them directly since backend doesn't return sponsorshipId in live mode
       if (config.initSponsorshipId) {
         embedDetails.sponsorship_id = config.initSponsorshipId;
       }
@@ -624,6 +624,11 @@ export class GenuinSDK {
       if (config.live?.live_customization_data && config.styleId) {
         config.embedDetails = parsePlacementToEmbedData(config.live.live_customization_data, config.styleId);
       }
+    }
+
+    // For live embeds with init sponsorshipIds, pass them directly since backend doesn't return sponsorshipId in live mode
+    if (config.initSponsorshipId) {
+      embedDetails.sponsorship_id = config.initSponsorshipId;
     }
 
     if (config.live?.live_customization_data && config.embedDetails) {
@@ -742,12 +747,12 @@ export class GenuinSDK {
 
     // If embedId is provided, fetch embed details directly
     if (config.embedId) {
-      embedDetails = await this.embedDetailsManager.getEmbedDetails(config.embedId, brandDetails);
+      embedDetails = await this.embedDetailsManager.getEmbedDetails(config, brandDetails);
     }
 
     // If placementId and styleId are provided, fetch placement data and configure it
     if (config.placementId && config.styleId) {
-      embedDetails = await this.placementManager.getPlacementData(config.placementId, config.styleId);
+      embedDetails = await this.placementManager.getPlacementData(config, config.styleId);
 
       if (!embedDetails) throw new Error("No embed details found for placement configuration.");
     } else if (!config.embedId) {
@@ -774,14 +779,18 @@ export class GenuinSDK {
         embedDetails.video_layout_id = brandDetails.video_layout_id;
       }
 
-      // init payload sponsorship_id takes priority over embed/placement data.
-      // If absent from init but present in embed/placement data, the existing value is kept.
-      // If absent from all sources, the key is omitted entirely.
-      if (config.initSponsorshipId) {
-        embedDetails.sponsorship_id = config.initSponsorshipId;
-      } else if (embedDetails.sponsorship_id && !Array.isArray(embedDetails.sponsorship_id)) {
+      // Backend sponsorshipId (from embedDetails/placementDetails API) takes priority over initialized sponsorshipId.
+      // If backend returns a sponsorship_id, convert it to an array and store the single value separately for RudderStack analytics.
+      // If backend doesn't return sponsorship_id, fall back to the initialized sponsorshipId array (if provided).
+      if (embedDetails.sponsorship_id && !Array.isArray(embedDetails.sponsorship_id)) {
+        // Backend returned a single sponsorshipId — store it for RudderStack and convert to array for Feed API
+        embedDetails.rudderstackSponsorshipId = embedDetails.sponsorship_id;
         embedDetails.sponsorship_id = [embedDetails.sponsorship_id];
+      } else if (config.initSponsorshipId) {
+        // Backend didn't return a sponsorshipId, use the initialized array (RudderStack gets undefined, which is acceptable)
+        embedDetails.sponsorship_id = config.initSponsorshipId;
       }
+      // If neither backend nor init provides sponsorship_id, the key is omitted entirely
 
       // Store the embed details in the config for later use
       config.embedDetails = embedDetails;

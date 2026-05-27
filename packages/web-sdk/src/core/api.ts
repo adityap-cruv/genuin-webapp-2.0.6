@@ -5,6 +5,8 @@ import internalStorageManager from "@genuin/components/lib/utils/internal-storag
 import type { AuthUser } from "@genuin/components/types/auth";
 import type { BrandDetailsConfigType } from "@genuin/components/types/brand";
 
+import type { SingleEmbedDataConfig } from "@/type";
+
 import { API_BASE_URL } from "../constants";
 
 import { ErrorHandler, ErrorType } from "./errors";
@@ -73,11 +75,21 @@ export class APIService {
    * Fetch embed configuration data
    * Required for embed customization and display settings
    */
-  async fetchEmbedData(embedId: string): Promise<EmbedDataType> {
+  async fetchEmbedData(config: Partial<SingleEmbedDataConfig>): Promise<EmbedDataType> {
     try {
-      const response = await fetch(`${API_BASE_URL}/goservices/embed?id=${embedId}`, {
-        headers: this.getRequestHeaders(),
-      });
+      // Pass initialized sponsorshipIds to the embed API so backend can prioritize/override them
+      const sponsorshipParams = new URLSearchParams();
+      if (config.initSponsorshipId && config.initSponsorshipId.length > 0) {
+        for (const id of config.initSponsorshipId) {
+          sponsorshipParams.append("sponsorship_id", id);
+        }
+      }
+      const response = await fetch(
+        `${API_BASE_URL}/goservices/embed?id=${config.embedId}${sponsorshipParams.toString() ? `&${sponsorshipParams.toString()}` : ""}`,
+        {
+          headers: this.getRequestHeaders(),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`Embed API failed: ${response.status} ${response.statusText}`);
@@ -90,7 +102,7 @@ export class APIService {
         ErrorType.API_ERROR,
         `Failed to fetch embed data: ${error instanceof Error ? error.message : "Unknown error"}`,
         {
-          embedId,
+          embedId: config.embedId,
           originalError: error instanceof Error ? error : new Error(String(error)),
         }
       );
@@ -102,11 +114,21 @@ export class APIService {
    * Fetch placement configuration data
    * Required for embed customization and display settings
    */
-  async getPlacementData(placementId: string): Promise<PlacementDataResponse> {
+  async getPlacementData(config: Partial<SingleEmbedDataConfig>): Promise<PlacementDataResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/goservices/placement?placement_id=${placementId}`, {
-        headers: this.getRequestHeaders(),
-      });
+      // Pass initialized sponsorshipIds to the placement API so backend can prioritize/override them
+      const sponsorshipParams = new URLSearchParams();
+      if (config.initSponsorshipId && config.initSponsorshipId.length > 0) {
+        for (const id of config.initSponsorshipId) {
+          sponsorshipParams.append("sponsorship_id", id);
+        }
+      }
+      const response = await fetch(
+        `${API_BASE_URL}/goservices/placement?placement_id=${config.placementId}${sponsorshipParams.toString() ? `&${sponsorshipParams.toString()}` : ""}`,
+        {
+          headers: this.getRequestHeaders(),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`Placement API failed: ${response.status} ${response.statusText}`);
@@ -118,7 +140,7 @@ export class APIService {
         ErrorType.API_ERROR,
         `Failed to fetch placement data: ${error instanceof Error ? error.message : "Unknown error"}`,
         {
-          embedId: placementId,
+          embedId: config.placementId,
           originalError: error instanceof Error ? error : new Error(String(error)),
         }
       );
@@ -269,18 +291,6 @@ export class APIService {
   async validateApiKey(apiKey: string): Promise<boolean> {
     try {
       await this.fetchBrandDetails(apiKey);
-      return true;
-    } catch (_error) {
-      return false;
-    }
-  }
-
-  /**
-   * Validate embed ID by checking if it exists
-   */
-  async validateEmbedId(embedId: string): Promise<boolean> {
-    try {
-      await this.fetchEmbedData(embedId);
       return true;
     } catch (_error) {
       return false;
