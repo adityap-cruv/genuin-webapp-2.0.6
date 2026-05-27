@@ -202,7 +202,7 @@ function EmbedHeaderSkeleton({
   const { header, view, contentDisplay } = useEmbedConfigs();
   const { headerHeight } = useEmbedDimensions();
 
-  if (!header.showHeader || (view.isPlacementView && !contentDisplay.showStyleDetails && !header.heading)) return;
+  if (!header.showHeader || (view.isPlacementView && (!contentDisplay.showStyleDetails || !header.heading))) return;
 
   return (
     <div

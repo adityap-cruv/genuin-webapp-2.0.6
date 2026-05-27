@@ -36,7 +36,7 @@ export function EmbedHeader({ className, variant, ...restProps }: EmbedHeaderPro
   const { track, EventName } = useAnalytics();
 
   // Use the header.showHeader property from our organized config
-  if (!header.showHeader || (view.isPlacementView && !contentDisplay.showStyleDetails && !header.heading)) return;
+  if (!header.showHeader || (view.isPlacementView && (!contentDisplay.showStyleDetails || !header.heading))) return;
 
   return (
     <div className={cn(embedHeaderVariants({ variant }), "gencl:p-2")} {...restProps}>

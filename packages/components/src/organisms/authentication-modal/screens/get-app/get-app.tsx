@@ -156,7 +156,11 @@ export function GetApp({ onSubmit, ...props }: GetAppProps) {
               ? brandDetails.integrations.sdk.ios
               : (brandDetails?.integrations.sdk.ios?.appstore_link ?? URL_TO_APP_STORE)
           }>
-          <Image className="gencl:mx-2 gencl:h-10 gencl:w-auto" alt="app store" src={appStoreImage} />
+          <Image
+            className="gencl:mx-2 gencl:h-10 gencl:w-auto"
+            alt="app store"
+            src={appStoreImage as unknown as string}
+          />
         </Link>
         <Link
           href={
@@ -166,7 +170,11 @@ export function GetApp({ onSubmit, ...props }: GetAppProps) {
           }
           target="_blank"
           rel="noopener noreferrer">
-          <Image className="gencl:mx-2 gencl:h-10 gencl:w-auto" src={playStoreImage} alt="play store" />
+          <Image
+            className="gencl:mx-2 gencl:h-10 gencl:w-auto"
+            src={playStoreImage as unknown as string}
+            alt="play store"
+          />
         </Link>
       </div>
     </div>
