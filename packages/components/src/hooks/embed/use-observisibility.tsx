@@ -5,6 +5,8 @@ import { SDKEventEmitter, SDKListenerEventName } from "@genuin/components/lib/sd
 import type * as ObservabilityService from "@genuin/components/lib/utils/observability/service";
 
 import { AnalyticsService, EventName } from "../../context";
+import { buildLayoutIdentity } from "../../context/analytics/build-layout-identity";
+import { useSafeEmbedContext } from "../../context/embed/context";
 import type { EmbedEventContextType, EmbedEventNameType } from "../../context/embed/event-bus";
 import type { EventManager } from "../../lib/utils/event-manager";
 
@@ -30,6 +32,11 @@ async function loadObservabilityUtils() {
 export function useObservability({ embedEventBus, sdkInitTime }: UseObservabilityProps) {
   const observerRef = useRef<PerformanceObserver | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // useObservability runs inside <EmbedContext> but ABOVE <AnalyticsProvider>, so we
+  // cannot use useAnalytics() here. Read embedData directly and attach layout identity
+  // per-call via the shared helper.
+  const embedContext = useSafeEmbedContext();
+  const embedData = embedContext?.embedData;
 
   useEffect(() => {
     // Seed from context so re-mounting the hook doesn't re-fire an already-sent event.
@@ -202,6 +209,7 @@ export function useObservability({ embedEventBus, sdkInitTime }: UseObservabilit
         );
 
         AnalyticsService.track(EventName.EMBED_RENDERED, {
+          ...buildLayoutIdentity(embedData),
           api_details: embedRenderedPayload.api_details,
           resource_details: embedRenderedPayload.resource_details,
           latency: utils.observabilityTracker.getSdkToEmbedTime() - resourceWaitDuration,

@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import {
   useEffect, // Keep useEffect for the initial service initialization call
   useCallback,
+  useMemo,
   useState,
 } from "react";
 
@@ -21,6 +22,7 @@ import type { BrandDetailsConfigType } from "@genuin/components/types/brand";
 import { useBaseContext } from "../base";
 import { useSafeEmbedContext } from "../embed/context";
 
+import { buildLayoutIdentity } from "./build-layout-identity";
 import type { ScreenType } from "./context";
 import { AnalyticsContext, EventName } from "./context";
 import { EmitAnalyticsData } from "./emit-analytics-data";
@@ -127,43 +129,18 @@ export function AnalyticsProvider({
         path: pathname,
         query_params: Object.fromEntries(new URLSearchParams(window.location.search)),
         title: document.title,
-        ...(embedData?.rudderstackSponsorshipId && { sponsorship_id: embedData.rudderstackSponsorshipId }),
+        // sponsorship_id is per-layout — it now flows through buildLayoutIdentity at every
       };
 
-      // SDK embeds carry extra context (embed/placement IDs, layout style) not present in webapp.
-      // Build this supplemental payload separately, then merge it into the base initPayload.
+      // SDK embeds carry shared page-level context not present in webapp.
+      // Layout-specific identity (embed_id, placement_id, embed_style, style_id, etc.)
+      // is intentionally NOT stored in the singleton's defaultPayload — it lives in
+      // `layoutIdentity` below and gets injected per-event by the wrapped `track` callback.
+      // This prevents the multi-layout race where the first-mounted layout's identity
+      // would leak into the second layout's events. See AnalyticsService.initialize().
       if (isWebSDK && (embedData?.embed_id || embedData?.placement_id)) {
-        // Create SDK payload with only non-empty values
+        // Shared, layout-independent payload only.
         const sdkPayload: Record<string, string | undefined> = {};
-        // Payload of embed specific values
-        if (embedData.embed_id) {
-          sdkPayload.embed_id = embedData.embed_id;
-          if (embedData.type) sdkPayload.embed_type = embedData.style;
-          if (embedData.style) sdkPayload.embed_style = embedData.style;
-        }
-
-        // Payload of placement specific values
-        if (embedData.placement_id) {
-          sdkPayload.placement_id = embedData.placement_id;
-          if (embedData.style_id) sdkPayload.style_id = embedData.style_id;
-          if (embedData.feed_type) sdkPayload.feed_style = embedData.feed_type;
-          if (embedData.style) sdkPayload.placement_layout = embedData.style;
-          if (embedData.type) sdkPayload.feed_style = embedData.type.split("_")[0];
-
-          // TODO : from where it should pass?
-          /*
- user_city,
-user_region,
-user_country,
-user_location,
-user_postal,
-user_timezone,
-user_latitude,
-user_longitude
- */
-        }
-
-        // Common payload for embed and placement
         sdkPayload.content_category = "loop";
         sdkPayload.sdk_version = getSdkVersion();
         if (user) {
@@ -299,10 +276,19 @@ user_longitude
     ]
   );
 
+  // Per-layout identity. Lives in this provider's closure so each AnalyticsProvider
+  // instance carries its own embed/placement identity. Injected into every track call
+  // below, replacing the singleton-held identity that caused the multi-layout race.
+  const layoutIdentity = useMemo<Record<string, string | number | undefined>>(
+    () => (isWebSDK ? buildLayoutIdentity(embedData) : {}),
+    [isWebSDK, embedData]
+  );
+
   const track = useCallback(
     async (eventName: EventNameType, payload?: EventPayload) => {
       // Capture current screen at call time; getScreen() is stable ref so it's safe to read here.
       await AnalyticsService.track(eventName, {
+        ...layoutIdentity,
         ...payload,
         event_record_screen: getScreen(),
       });
@@ -311,7 +297,7 @@ user_longitude
         sendVideoCompletedToBackend(payload);
       }
     },
-    [emitAnalyticsEvent, sendVideoCompletedToBackend, getScreen]
+    [emitAnalyticsEvent, sendVideoCompletedToBackend, getScreen, layoutIdentity]
   );
 
   return (

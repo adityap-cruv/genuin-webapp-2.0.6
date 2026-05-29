@@ -15,6 +15,7 @@ import type { PlaybackSpeedType } from "@genuin/components/molecules/feed-player
 import type { BrandDetailsConfigType } from "@genuin/components/types/brand";
 
 import { AnalyticsService, EventName } from "../analytics";
+import { buildLayoutIdentity } from "../analytics/build-layout-identity";
 import { useSafeEmbedContext } from "../embed/context";
 
 import { BaseContext } from "./context";
@@ -237,6 +238,7 @@ export function BaseContextProvider({
             if (!isGenuinElement(attribution.interactionTarget)) return;
 
             AnalyticsService.track(EventName.SDK_PERFORMANCE, {
+              ...buildLayoutIdentity(embedDetails?.embedData),
               performance_details: {
                 // ── Core Metric ──────────────────────────────────────────────
                 metric_name: metric.name, // always "INP"
