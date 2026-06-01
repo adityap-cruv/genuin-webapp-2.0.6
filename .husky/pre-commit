@@ -1,13 +1,6 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-# Auto-sync AI config when .team/ files change
-if git diff --cached --name-only | grep -q "^\.team/"; then
-  echo "🔄 .team/ changed — syncing AI config..."
-  pnpm ai:sync
-  git add .claude/ .github/
-fi
-
 # pnpm lint-staged
 
 # Per-package: ESLint uses each package's local eslint.config.mjs

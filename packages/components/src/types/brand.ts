@@ -9,6 +9,7 @@ export type BrandDetailsConfigType = {
   logo: string;
   created_at: number;
   track_observability_enabled?: boolean;
+  context_keywords?: string[];
   integrations: {
     sdk: {
       web: {

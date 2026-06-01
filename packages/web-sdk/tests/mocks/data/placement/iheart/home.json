@@ -1,0 +1,1806 @@
+{
+    "_comment": "Fixture for POST /goservices/feed/v1/home with placement_id=<iheart_placement_id> (handlers/feed.ts)",
+    "code": 200,
+    "message": "Feed loaded",
+    "data": {
+        "end_of_feed": false,
+        "expiry": 1779430675,
+        "feeds": [
+            {
+                "owner": {
+                    "uuid": "728865a3-6d08-47b1-9a90-4f4ae50a8926",
+                    "name": "iHeart",
+                    "username": "iheart",
+                    "bio": "See what you’ve been hearing all along",
+                    "is_avatar": false,
+                    "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1756928901732.png",
+                    "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1756928901732.png",
+                    "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1756928901732.png",
+                    "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1756928901732.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 1729,
+                        "brand_slug": "iheartmedia",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://iheart.begenuin.com/profile/iheart"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 1729,
+                        "name": "iHeart",
+                        "brand_slug": "iheartmedia",
+                        "brand_web_logo": "https://media.begenuin.com/uploads/brands/web_logo/brandWebLogo_1773644952182.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "iheart"
+                    },
+                    "uuid": "438b6419-c1f9-493c-b5be-4edd3c2c2e8c",
+                    "handle": "jonesyandamandaexertion4",
+                    "slug": "jonesy-and-amanda",
+                    "name": "Jonesy and Amanda",
+                    "description": "Jonesy and Amanda",
+                    "color_code": "#A4E6DA",
+                    "text_color_code": "#49CDB5",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "share_string": "2323d90c8a800f9c",
+                    "brand_id": 1729,
+                    "type": 1,
+                    "share_url": "https://iheart.begenuin.com/community/jonesy-and-amanda",
+                    "no_of_views": 21,
+                    "no_of_members": 1,
+                    "no_of_videos": 2,
+                    "no_of_sparks": 0,
+                    "no_of_groups": 1
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "3b854600-129e-45ee-8f65-9ea3e02b0e2f",
+                    "group_name": "Jonesy and Amanda",
+                    "group_description": "Gold radio page, Jonesy and Amanda podcast page",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#FEC62E",
+                    "text_color_code": "#FD8D00",
+                    "uuid": "1b21c219-2cc6-482e-a2ec-66a14c6c77f3",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "jonesy-and-amanda",
+                    "share_string": "2323d92e8b801401",
+                    "type": 4,
+                    "share_url": "https://iheart.begenuin.com/loop/jonesy-and-amanda?community=2323d90c8a800f9c",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 9,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 21,
+                    "no_of_members": 1,
+                    "no_of_videos": 2,
+                    "no_of_sparks": 0
+                },
+                "score": {
+                    "pop_score": 0,
+                    "rec_score": 0.9999986891936775,
+                    "context_score": 0,
+                    "user_interest_score": 0,
+                    "final_score": 1.9999986891936774
+                },
+                "uuid": "ff609a32-0391-4b1d-92a2-2d99ca075ba8",
+                "video": {
+                    "duration": 47,
+                    "attached_link": null,
+                    "attributes": {
+                        "description": "“Ring My Bell” Sparks “Abundance Frequency” on TikTok",
+                        "image_url": "https://i.iheart.com/v3/url/aHR0cHM6Ly93d3cub21ueWNvbnRlbnQuY29tL2QvcHJvZ3JhbXMvZmEzMjY5NzctM2RlNS00MjgzLTliOGItYWYzNTAwYzU4NjA3L2IwNzcwZDFjLTk3YTctNDdiMy05ZjM4LWFmNDYwMDE3OTNlZS9pbWFnZS5qcGc_dD0xNzY4NDQzNzc1JnNpemU9TGFyZ2U",
+                        "podcast_id": "27242920",
+                        "slug": "239-jonesy-amanda-27242920",
+                        "subtitle": "Jonesy & Amanda",
+                        "title": "Jonesy & Amanda",
+                        "type": "podcast"
+                    },
+                    "clickable_url": null,
+                    "conversation_at": 1779428569000,
+                    "description_data": "[\"Jonesy and Amanda discuss how the song “Ring My Bell” (released in May 1979) has resurfaced on TikTok with claims of an “abundance frequency” that attracts good vibes, wealth, luck, and success. They also mention the rumor that it’s not allowed in casinos because it draws “abundance” and successful energy.\"]",
+                    "description_text": "Jonesy and Amanda discuss how the song “Ring My Bell” (released in May 1979) has resurfaced on TikTok with claims of an “abundance frequency” that attracts good vibes, wealth, luck, and success. They also mention the rumor that it’s not allowed in casinos because it draws “abundance” and successful energy.",
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts": [
+                        {
+                            "cta_link": "https://iheart.com/podcast/27242920",
+                            "cta_text": "Go to Episodes",
+                            "links": [
+                                {
+                                    "image": "",
+                                    "link": "https://iheart.com/podcast/27242920",
+                                    "position": 1,
+                                    "title": "Go to Episodes"
+                                }
+                            ],
+                            "style": 1
+                        }
+                    ],
+                    "linkouts_id": 248274,
+                    "linkouts_inappbrowser": true,
+                    "media_url": "https://media.begenuin.com/temp_video/9799d8bd-beee-48a9-a50c-9f813f249b4a.mp4",
+                    "media_url_m3u8": "https://vz-8bbc7bbf-a1e.b-cdn.net/d930f96f-dad4-46c1-b65b-e6f04e50e965/playlist.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "contains_external_videos": false,
+                        "duration": "47",
+                        "media_type": "video",
+                        "resolution": "1080x1920",
+                        "size": "70747301"
+                    },
+                    "no_of_comments": 0,
+                    "no_of_shares": 0,
+                    "no_of_sparks": 0,
+                    "no_of_views": 0,
+                    "owner": {
+                        "uuid": "728865a3-6d08-47b1-9a90-4f4ae50a8926",
+                        "name": "iHeart",
+                        "username": "iheart",
+                        "bio": "See what you’ve been hearing all along",
+                        "is_avatar": false,
+                        "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1756928901732.png",
+                        "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1756928901732.png",
+                        "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1756928901732.png",
+                        "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1756928901732.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 1729,
+                            "brand_slug": "iheartmedia",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://iheart.begenuin.com/profile/iheart"
+                    },
+                    "share_url": "https://iheart.begenuin.com/video/jonesy-and-amanda-discuss-how-the-song-ring-my?community=2323d90c8a800f9c&loop=2323d92e8b801401",
+                    "slug": "jonesy-and-amanda-discuss-how-the-song-ring-my",
+                    "sprite_image_url": null,
+                    "thumbnail_url": "https://vz-8bbc7bbf-a1e.b-cdn.net/d930f96f-dad4-46c1-b65b-e6f04e50e965/thumbnail.jpg",
+                    "thumbnail_url_l": "https://media.begenuin.com/uploads/thumbnails/l/9799d8bd-beee-48a9-a50c-9f813f249b4a.png",
+                    "thumbnail_url_s": "https://media.begenuin.com/uploads/thumbnails/s/9799d8bd-beee-48a9-a50c-9f813f249b4a.png",
+                    "uuid": "ff609a32-0391-4b1d-92a2-2d99ca075ba8",
+                    "video_summary": null,
+                    "card_layout_id": 2,
+                    "video_layout_id": 2,
+                    "placement_card_layout_id": 2,
+                    "placement_video_layout_id": 2,
+                    "placement_card_section_layout_id": 2,
+                    "source": "overlap"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "728865a3-6d08-47b1-9a90-4f4ae50a8926",
+                    "name": "iHeart",
+                    "username": "iheart",
+                    "bio": "See what you’ve been hearing all along",
+                    "is_avatar": false,
+                    "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1756928901732.png",
+                    "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1756928901732.png",
+                    "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1756928901732.png",
+                    "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1756928901732.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 1729,
+                        "brand_slug": "iheartmedia",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://iheart.begenuin.com/profile/iheart"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 1729,
+                        "name": "iHeart",
+                        "brand_slug": "iheartmedia",
+                        "brand_web_logo": "https://media.begenuin.com/uploads/brands/web_logo/brandWebLogo_1773644952182.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "iheart"
+                    },
+                    "uuid": "0395ad43-f3a4-422e-b235-1013249ae40d",
+                    "handle": "foxsportsradio",
+                    "slug": "fox-sports-radio",
+                    "name": "Fox Sports Radio",
+                    "description": "The Nation's Premiere Sports Line-Up",
+                    "color_code": "#EB6D4A",
+                    "text_color_code": "#D70000",
+                    "dp": "https://media.begenuin.com/uploads/profile_images/community/communityProfile_1760433292932.png",
+                    "dp_s": "https://media.begenuin.com/uploads/profile_images/community/s/communityProfile_1760433292932.png",
+                    "dp_m": "https://media.begenuin.com/uploads/profile_images/community/m/communityProfile_1760433292932.png",
+                    "dp_l": "https://media.begenuin.com/uploads/profile_images/community/l/communityProfile_1760433292932.png",
+                    "share_string": "20f6ca8762800d02",
+                    "brand_id": 1729,
+                    "type": 1,
+                    "share_url": "https://iheart.begenuin.com/community/fox-sports-radio",
+                    "no_of_views": 67572,
+                    "no_of_members": 2,
+                    "no_of_videos": 264,
+                    "no_of_sparks": 1970,
+                    "no_of_groups": 1
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "d570e253-cf3c-46e8-a5fb-b7e55f5fadc2",
+                    "group_name": "Latest Clips",
+                    "group_description": "The Best of Fox Sports Radio",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#EB6D4A",
+                    "text_color_code": "#D70000",
+                    "uuid": "46f70031-7fba-4d15-95d6-dae16b048b89",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "latest-clips-wr7w",
+                    "share_string": "20f6cb20de801437",
+                    "type": 4,
+                    "share_url": "https://iheart.begenuin.com/loop/latest-clips-wr7w?community=20f6ca8762800d02",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 10,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 67572,
+                    "no_of_members": 1,
+                    "no_of_videos": 264,
+                    "no_of_sparks": 1970
+                },
+                "score": {
+                    "pop_score": 7.301780393113253e-07,
+                    "rec_score": 0.9999507346404504,
+                    "context_score": 0,
+                    "user_interest_score": 0,
+                    "final_score": 1.9999507346404504
+                },
+                "uuid": "cdf1b1fd-6af2-4225-9d04-144fa61540fa",
+                "video": {
+                    "duration": 66,
+                    "attached_link": null,
+                    "attributes": {
+                        "description": "Ben Maller Roasts Blake Snell as a “Twitch Streamer in Cosplay”",
+                        "image_url": "https://i.iheart.com/v3/re/assets/images/4732.png",
+                        "slug": "4732",
+                        "station_id": "4732",
+                        "subtitle": "The Nation's Premiere Sports Line-Up",
+                        "title": "Fox Sports Radio",
+                        "type": "station"
+                    },
+                    "clickable_url": null,
+                    "conversation_at": 1779421548000,
+                    "description_data": "[\"Fox Sports Radio host Ben Maller unleashes a blistering 60-second rant on Dodgers left-hander Blake Snell, mocking his injuries, workload, and calling him a Twitch gamer pretending to be an MLB ace.\"]",
+                    "description_text": "Fox Sports Radio host Ben Maller unleashes a blistering 60-second rant on Dodgers left-hander Blake Snell, mocking his injuries, workload, and calling him a Twitch gamer pretending to be an MLB ace.",
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts": [
+                        {
+                            "cta_link": "https://iheart.com/live/4732",
+                            "cta_text": "Listen Live",
+                            "links": [
+                                {
+                                    "image": "",
+                                    "link": "https://iheart.com/live/4732",
+                                    "position": 1,
+                                    "title": "Listen Live"
+                                }
+                            ],
+                            "style": 1
+                        }
+                    ],
+                    "linkouts_id": 248273,
+                    "linkouts_inappbrowser": true,
+                    "media_url": "https://media.begenuin.com/temp_video/a814c325-5ccd-4496-bb1e-13b5ff562945.mp4",
+                    "media_url_m3u8": "https://vz-8bbc7bbf-a1e.b-cdn.net/9ea76907-e2da-4a72-94fc-50a3fcad5e95/playlist.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "contains_external_videos": false,
+                        "duration": "66",
+                        "media_type": "video",
+                        "resolution": "1920x1080",
+                        "size": "48268355"
+                    },
+                    "no_of_comments": 0,
+                    "no_of_shares": 0,
+                    "no_of_sparks": 0,
+                    "no_of_views": 2,
+                    "owner": {
+                        "uuid": "728865a3-6d08-47b1-9a90-4f4ae50a8926",
+                        "name": "iHeart",
+                        "username": "iheart",
+                        "bio": "See what you’ve been hearing all along",
+                        "is_avatar": false,
+                        "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1756928901732.png",
+                        "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1756928901732.png",
+                        "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1756928901732.png",
+                        "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1756928901732.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 1729,
+                            "brand_slug": "iheartmedia",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://iheart.begenuin.com/profile/iheart"
+                    },
+                    "share_url": "https://iheart.begenuin.com/video/fox-sports-radio-host-ben-maller-unleashes-a-r0qb?community=20f6ca8762800d02&loop=20f6cb20de801437",
+                    "slug": "fox-sports-radio-host-ben-maller-unleashes-a-r0qb",
+                    "sprite_image_url": null,
+                    "thumbnail_url": "https://vz-8bbc7bbf-a1e.b-cdn.net/9ea76907-e2da-4a72-94fc-50a3fcad5e95/thumbnail.jpg",
+                    "thumbnail_url_l": "https://media.begenuin.com/uploads/thumbnails/l/a814c325-5ccd-4496-bb1e-13b5ff562945.png",
+                    "thumbnail_url_s": "https://media.begenuin.com/uploads/thumbnails/s/a814c325-5ccd-4496-bb1e-13b5ff562945.png",
+                    "uuid": "cdf1b1fd-6af2-4225-9d04-144fa61540fa",
+                    "video_summary": null,
+                    "card_layout_id": 2,
+                    "video_layout_id": 2,
+                    "placement_card_layout_id": 2,
+                    "placement_video_layout_id": 2,
+                    "placement_card_section_layout_id": 2,
+                    "source": "overlap"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "728865a3-6d08-47b1-9a90-4f4ae50a8926",
+                    "name": "iHeart",
+                    "username": "iheart",
+                    "bio": "See what you’ve been hearing all along",
+                    "is_avatar": false,
+                    "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1756928901732.png",
+                    "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1756928901732.png",
+                    "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1756928901732.png",
+                    "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1756928901732.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 1729,
+                        "brand_slug": "iheartmedia",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://iheart.begenuin.com/profile/iheart"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 1729,
+                        "name": "iHeart",
+                        "brand_slug": "iheartmedia",
+                        "brand_web_logo": "https://media.begenuin.com/uploads/brands/web_logo/brandWebLogo_1773644952182.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "iheart"
+                    },
+                    "uuid": "1159fd1e-dcb7-4f3f-8eb0-37d6d4716b5b",
+                    "handle": "kosf-fm",
+                    "slug": "kosf-fm",
+                    "name": "KOSF-FM",
+                    "description": "KOSF-FM",
+                    "color_code": "#1382CA",
+                    "text_color_code": "#000595",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "share_string": "22cf49f65c000ead",
+                    "brand_id": 1729,
+                    "type": 1,
+                    "share_url": "https://iheart.begenuin.com/community/kosf-fm",
+                    "no_of_views": 161,
+                    "no_of_members": 1,
+                    "no_of_videos": 4,
+                    "no_of_sparks": 3,
+                    "no_of_groups": 1
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "a541669b-4259-49ab-8ede-2270f8a4e838",
+                    "group_name": "KOSF-FM",
+                    "group_description": "KOSF-FM San Fran",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#FEA328",
+                    "text_color_code": "#FD4700",
+                    "uuid": "9429166d-ea3d-4a65-9d6f-bd3f3826a4a3",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "kosf-fm",
+                    "share_string": "22cf4a2392801400",
+                    "type": 4,
+                    "share_url": "https://iheart.begenuin.com/loop/kosf-fm?community=22cf49f65c000ead",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 9,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 161,
+                    "no_of_members": 1,
+                    "no_of_videos": 4,
+                    "no_of_sparks": 3
+                },
+                "score": {
+                    "pop_score": 0,
+                    "rec_score": 0.9998908341374162,
+                    "context_score": 0,
+                    "user_interest_score": 0,
+                    "final_score": 1.9998908341374162
+                },
+                "uuid": "1298807a-7612-4a66-bf85-28ab9c97f1d9",
+                "video": {
+                    "duration": 89,
+                    "attached_link": null,
+                    "attributes": {
+                        "description": "Fresno Serial Killer Speakeasy (and “Jack the Ripper”)",
+                        "image_url": "https://i.iheart.com/v3/url/aHR0cHM6Ly93d3cub21ueWNvbnRlbnQuY29tL2QvcGxheWxpc3QvOThhMjU5OWYtY2Q5Yi00ZjJhLTliZTQtYjIyYzAwZTU4NWYyL2U0MTMyYWFiLWQxMTQtNDY5My04NDAzLWIzZWUwMTFmYTk0Ni9jOGRhYWVmZS1mNTMzLTQ4M2MtYTBmOC1iM2VlMDExZmE5NTcvaW1hZ2UuanBnP3Q9MTc3MDgzMDg0MiZzaXplPUxhcmdl",
+                        "podcast_id": "97330151",
+                        "slug": "1248-morning-drive-w-christie-97330151",
+                        "station_id": "4342",
+                        "subtitle": "Don't miss a minute of 'Morning Drive with Christie Live' every weekday morning from 6 to 10 am on Classic Hits 103.7 in San Francisco!",
+                        "title": "Morning Drive w/Christie Live On Demand",
+                        "type": "podcast"
+                    },
+                    "clickable_url": null,
+                    "conversation_at": 1779412778000,
+                    "description_data": "[\"A police officer in Fresno brings a friend to a serial-killer-themed speakeasy, pitching it as an immersive true-crime “experience” paired with themed cocktails. They debate the idea of taking the trip and end up joking about a drink called “Jack the Ripper,” while the friend pushes back.\"]",
+                    "description_text": "A police officer in Fresno brings a friend to a serial-killer-themed speakeasy, pitching it as an immersive true-crime “experience” paired with themed cocktails. They debate the idea of taking the trip and end up joking about a drink called “Jack the Ripper,” while the friend pushes back.",
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts": [
+                        {
+                            "cta_link": "https://iheart.com/live/4342",
+                            "cta_text": "Go to Episodes",
+                            "links": [
+                                {
+                                    "image": "",
+                                    "link": "https://iheart.com/live/4342",
+                                    "position": 1,
+                                    "title": "Go to Episodes"
+                                }
+                            ],
+                            "style": 1
+                        }
+                    ],
+                    "linkouts_id": 248271,
+                    "linkouts_inappbrowser": true,
+                    "media_url": "https://media.begenuin.com/temp_video/c81c4216-d5f3-4d5a-a71c-1d378ac8113f.mp4",
+                    "media_url_m3u8": "https://vz-8bbc7bbf-a1e.b-cdn.net/442dd24a-74dc-4774-aaf1-c65e9596e7c3/playlist.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "contains_external_videos": false,
+                        "duration": "89",
+                        "media_type": "video",
+                        "resolution": "810x1440",
+                        "size": "74594873"
+                    },
+                    "no_of_comments": 0,
+                    "no_of_shares": 0,
+                    "no_of_sparks": 0,
+                    "no_of_views": 0,
+                    "owner": {
+                        "uuid": "728865a3-6d08-47b1-9a90-4f4ae50a8926",
+                        "name": "iHeart",
+                        "username": "iheart",
+                        "bio": "See what you’ve been hearing all along",
+                        "is_avatar": false,
+                        "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1756928901732.png",
+                        "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1756928901732.png",
+                        "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1756928901732.png",
+                        "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1756928901732.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 1729,
+                            "brand_slug": "iheartmedia",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://iheart.begenuin.com/profile/iheart"
+                    },
+                    "share_url": "https://iheart.begenuin.com/video/a-police-officer-in-fresno-brings-a-friend-to-a?community=22cf49f65c000ead&loop=22cf4a2392801400",
+                    "slug": "a-police-officer-in-fresno-brings-a-friend-to-a",
+                    "sprite_image_url": null,
+                    "thumbnail_url": "https://vz-8bbc7bbf-a1e.b-cdn.net/442dd24a-74dc-4774-aaf1-c65e9596e7c3/thumbnail.jpg",
+                    "thumbnail_url_l": "https://media.begenuin.com/uploads/thumbnails/l/c81c4216-d5f3-4d5a-a71c-1d378ac8113f.png",
+                    "thumbnail_url_s": "https://media.begenuin.com/uploads/thumbnails/s/c81c4216-d5f3-4d5a-a71c-1d378ac8113f.png",
+                    "uuid": "1298807a-7612-4a66-bf85-28ab9c97f1d9",
+                    "video_summary": null,
+                    "card_layout_id": 2,
+                    "video_layout_id": 2,
+                    "placement_card_layout_id": 2,
+                    "placement_video_layout_id": 2,
+                    "placement_card_section_layout_id": 2,
+                    "source": "overlap"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "728865a3-6d08-47b1-9a90-4f4ae50a8926",
+                    "name": "iHeart",
+                    "username": "iheart",
+                    "bio": "See what you’ve been hearing all along",
+                    "is_avatar": false,
+                    "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1756928901732.png",
+                    "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1756928901732.png",
+                    "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1756928901732.png",
+                    "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1756928901732.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 1729,
+                        "brand_slug": "iheartmedia",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://iheart.begenuin.com/profile/iheart"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 1729,
+                        "name": "iHeart",
+                        "brand_slug": "iheartmedia",
+                        "brand_web_logo": "https://media.begenuin.com/uploads/brands/web_logo/brandWebLogo_1773644952182.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "iheart"
+                    },
+                    "uuid": "438b6419-c1f9-493c-b5be-4edd3c2c2e8c",
+                    "handle": "jonesyandamandaexertion4",
+                    "slug": "jonesy-and-amanda",
+                    "name": "Jonesy and Amanda",
+                    "description": "Jonesy and Amanda",
+                    "color_code": "#A4E6DA",
+                    "text_color_code": "#49CDB5",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "share_string": "2323d90c8a800f9c",
+                    "brand_id": 1729,
+                    "type": 1,
+                    "share_url": "https://iheart.begenuin.com/community/jonesy-and-amanda",
+                    "no_of_views": 21,
+                    "no_of_members": 1,
+                    "no_of_videos": 2,
+                    "no_of_sparks": 0,
+                    "no_of_groups": 1
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "3b854600-129e-45ee-8f65-9ea3e02b0e2f",
+                    "group_name": "Jonesy and Amanda",
+                    "group_description": "Gold radio page, Jonesy and Amanda podcast page",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#FEC62E",
+                    "text_color_code": "#FD8D00",
+                    "uuid": "1b21c219-2cc6-482e-a2ec-66a14c6c77f3",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "jonesy-and-amanda",
+                    "share_string": "2323d92e8b801401",
+                    "type": 4,
+                    "share_url": "https://iheart.begenuin.com/loop/jonesy-and-amanda?community=2323d90c8a800f9c",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 9,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 21,
+                    "no_of_members": 1,
+                    "no_of_videos": 2,
+                    "no_of_sparks": 0
+                },
+                "score": {
+                    "pop_score": 7.666869412768916e-06,
+                    "rec_score": 0.9998572229201493,
+                    "context_score": 0,
+                    "user_interest_score": 0,
+                    "final_score": 1.9998572229201494
+                },
+                "uuid": "845c9c5e-c105-43b6-9537-036099bd1774",
+                "video": {
+                    "duration": 32,
+                    "attached_link": null,
+                    "attributes": {
+                        "description": "Ellen DeGeneres Aging Conspiracy",
+                        "image_url": "https://i.iheart.com/v3/url/aHR0cHM6Ly93d3cub21ueWNvbnRlbnQuY29tL2QvcHJvZ3JhbXMvZmEzMjY5NzctM2RlNS00MjgzLTliOGItYWYzNTAwYzU4NjA3L2IwNzcwZDFjLTk3YTctNDdiMy05ZjM4LWFmNDYwMDE3OTNlZS9pbWFnZS5qcGc_dD0xNzY4NDQzNzc1JnNpemU9TGFyZ2U",
+                        "podcast_id": "27242920",
+                        "slug": "239-jonesy-amanda-27242920",
+                        "subtitle": "Jonesy & Amanda",
+                        "title": "Jonesy & Amanda",
+                        "type": "podcast"
+                    },
+                    "clickable_url": null,
+                    "conversation_at": 1779407857000,
+                    "description_data": "[\"Jonesy & Amanda react to audience comments about Ellen DeGeneres’ appearance, joking that she suddenly looks “20 years” older than expected. Is it just internet trolling or a deeper conspiracy?\"]",
+                    "description_text": "Jonesy & Amanda react to audience comments about Ellen DeGeneres’ appearance, joking that she suddenly looks “20 years” older than expected. Is it just internet trolling or a deeper conspiracy?\n\n",
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts": [
+                        {
+                            "cta_link": "https://iheart.com/podcast/27242920",
+                            "cta_text": "Go to Episodes",
+                            "links": [
+                                {
+                                    "image": "",
+                                    "link": "https://iheart.com/podcast/27242920",
+                                    "position": 1,
+                                    "title": "Go to Episodes"
+                                }
+                            ],
+                            "style": 1
+                        }
+                    ],
+                    "linkouts_id": 248270,
+                    "linkouts_inappbrowser": true,
+                    "media_url": "https://media.begenuin.com/temp_video/1150c2ae-c45c-4288-8c27-d82cb3c604f2.mp4",
+                    "media_url_m3u8": "https://vz-8bbc7bbf-a1e.b-cdn.net/181cd5b0-aa89-4349-b7e1-1e519978467f/playlist.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "contains_external_videos": false,
+                        "duration": "32",
+                        "media_type": "video",
+                        "resolution": "1080x1920",
+                        "size": "177200188"
+                    },
+                    "no_of_comments": 0,
+                    "no_of_shares": 0,
+                    "no_of_sparks": 0,
+                    "no_of_views": 21,
+                    "owner": {
+                        "uuid": "728865a3-6d08-47b1-9a90-4f4ae50a8926",
+                        "name": "iHeart",
+                        "username": "iheart",
+                        "bio": "See what you’ve been hearing all along",
+                        "is_avatar": false,
+                        "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1756928901732.png",
+                        "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1756928901732.png",
+                        "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1756928901732.png",
+                        "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1756928901732.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 1729,
+                            "brand_slug": "iheartmedia",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://iheart.begenuin.com/profile/iheart"
+                    },
+                    "share_url": "https://iheart.begenuin.com/video/jonesy-amanda-react-to-audience-comments-about?community=2323d90c8a800f9c&loop=2323d92e8b801401",
+                    "slug": "jonesy-amanda-react-to-audience-comments-about",
+                    "sprite_image_url": null,
+                    "thumbnail_url": "https://vz-8bbc7bbf-a1e.b-cdn.net/181cd5b0-aa89-4349-b7e1-1e519978467f/thumbnail.jpg",
+                    "thumbnail_url_l": "https://media.begenuin.com/uploads/thumbnails/l/1150c2ae-c45c-4288-8c27-d82cb3c604f2.png",
+                    "thumbnail_url_s": "https://media.begenuin.com/uploads/thumbnails/s/1150c2ae-c45c-4288-8c27-d82cb3c604f2.png",
+                    "uuid": "845c9c5e-c105-43b6-9537-036099bd1774",
+                    "video_summary": null,
+                    "card_layout_id": 2,
+                    "video_layout_id": 2,
+                    "placement_card_layout_id": 2,
+                    "placement_video_layout_id": 2,
+                    "placement_card_section_layout_id": 2,
+                    "source": "overlap"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "728865a3-6d08-47b1-9a90-4f4ae50a8926",
+                    "name": "iHeart",
+                    "username": "iheart",
+                    "bio": "See what you’ve been hearing all along",
+                    "is_avatar": false,
+                    "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1756928901732.png",
+                    "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1756928901732.png",
+                    "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1756928901732.png",
+                    "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1756928901732.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 1729,
+                        "brand_slug": "iheartmedia",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://iheart.begenuin.com/profile/iheart"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 1729,
+                        "name": "iHeart",
+                        "brand_slug": "iheartmedia",
+                        "brand_web_logo": "https://media.begenuin.com/uploads/brands/web_logo/brandWebLogo_1773644952182.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "iheart"
+                    },
+                    "uuid": "18056d0a-818b-46ef-b987-540a27fd5942",
+                    "handle": "thesmallzyshowfarmboy432",
+                    "slug": "the-smallzy-show",
+                    "name": "The Smallzy Show",
+                    "description": "The Smallzy Show",
+                    "color_code": "#A482C6",
+                    "text_color_code": "#49058D",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "share_string": "2323d564e6000f99",
+                    "brand_id": 1729,
+                    "type": 1,
+                    "share_url": "https://iheart.begenuin.com/community/the-smallzy-show",
+                    "no_of_views": 20,
+                    "no_of_members": 1,
+                    "no_of_videos": 7,
+                    "no_of_sparks": 1,
+                    "no_of_groups": 1
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "3b05af3c-90fe-4be2-8d34-495c4a7cb11c",
+                    "group_name": "The Smallzy Show",
+                    "group_description": "Kiis radio page, Smallzy Show podcast page",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#FEC62E",
+                    "text_color_code": "#FD8D00",
+                    "uuid": "33a7f948-5af1-4d68-a91b-dbf3e4cffae0",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "the-smallzy-show",
+                    "share_string": "2323d6c305001400",
+                    "type": 4,
+                    "share_url": "https://iheart.begenuin.com/loop/the-smallzy-show?community=2323d564e6000f99",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 9,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 20,
+                    "no_of_members": 1,
+                    "no_of_videos": 7,
+                    "no_of_sparks": 1
+                },
+                "score": {
+                    "pop_score": 6.206513334146266e-06,
+                    "rec_score": 0.9998533228988001,
+                    "context_score": 0,
+                    "user_interest_score": 0,
+                    "final_score": 1.9998533228988
+                },
+                "uuid": "f4509982-4b2e-4d6a-8573-1fdbfe5c0878",
+                "video": {
+                    "duration": 26,
+                    "attached_link": null,
+                    "attributes": {
+                        "description": "Louis Tomlinson Belated Birthday",
+                        "image_url": "https://i.iheart.com/v3/url/aHR0cHM6Ly93d3cub21ueWNvbnRlbnQuY29tL2QvcHJvZ3JhbXMvZmEzMjY5NzctM2RlNS00MjgzLTliOGItYWYzNTAwYzU4NjA3LzQ2MzU5ZmI3LWNkZDMtNDZlNi05NzA4LWIzZDEwMDE1YWYzYy9pbWFnZS5qcGc_dD0xNzY4NTE1MzkxJnNpemU9TGFyZ2U",
+                        "podcast_id": "317631072",
+                        "slug": "239-the-smallzy-show-317631072",
+                        "subtitle": "From Harry Styles to Taylor Swift, Paris Hilton to Ed Sheeran, hear the world's biggest stars join Smallzy for the hottest celebrity interviews, plus his daily debrief on the biggest pop culture stories.",
+                        "title": "The Smallzy Show",
+                        "type": "podcast"
+                    },
+                    "clickable_url": null,
+                    "conversation_at": 1779407286000,
+                    "description_data": "[\"Smallzy chats to Louis Tomlinson about how to avoid looking older...\"]",
+                    "description_text": "Smallzy chats to Louis Tomlinson about how to avoid looking older...",
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts": [
+                        {
+                            "cta_link": "https://iheart.com/podcast/317631072",
+                            "cta_text": "Go to Episodes",
+                            "links": [
+                                {
+                                    "image": "",
+                                    "link": "https://iheart.com/podcast/317631072",
+                                    "position": 1,
+                                    "title": "Go to Episodes"
+                                }
+                            ],
+                            "style": 1
+                        }
+                    ],
+                    "linkouts_id": 248269,
+                    "linkouts_inappbrowser": true,
+                    "media_url": "https://media.begenuin.com/temp_video/32f3e0bc-1d90-4e9c-b287-041afb64ba21.mp4",
+                    "media_url_m3u8": "https://vz-8bbc7bbf-a1e.b-cdn.net/1a150c73-adc9-412a-bc8e-d6f472a16417/playlist.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "contains_external_videos": false,
+                        "duration": "26",
+                        "media_type": "video",
+                        "resolution": "1080x1920",
+                        "size": "40046031"
+                    },
+                    "no_of_comments": 0,
+                    "no_of_shares": 1,
+                    "no_of_sparks": 1,
+                    "no_of_views": 11,
+                    "owner": {
+                        "uuid": "728865a3-6d08-47b1-9a90-4f4ae50a8926",
+                        "name": "iHeart",
+                        "username": "iheart",
+                        "bio": "See what you’ve been hearing all along",
+                        "is_avatar": false,
+                        "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1756928901732.png",
+                        "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1756928901732.png",
+                        "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1756928901732.png",
+                        "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1756928901732.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 1729,
+                            "brand_slug": "iheartmedia",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://iheart.begenuin.com/profile/iheart"
+                    },
+                    "share_url": "https://iheart.begenuin.com/video/smallzy-chats-to-louis-tomlinson-about-how-to?community=2323d564e6000f99&loop=2323d6c305001400",
+                    "slug": "smallzy-chats-to-louis-tomlinson-about-how-to",
+                    "sprite_image_url": null,
+                    "thumbnail_url": "https://vz-8bbc7bbf-a1e.b-cdn.net/1a150c73-adc9-412a-bc8e-d6f472a16417/thumbnail.jpg",
+                    "thumbnail_url_l": "https://media.begenuin.com/uploads/thumbnails/l/32f3e0bc-1d90-4e9c-b287-041afb64ba21.png",
+                    "thumbnail_url_s": "https://media.begenuin.com/uploads/thumbnails/s/32f3e0bc-1d90-4e9c-b287-041afb64ba21.png",
+                    "uuid": "f4509982-4b2e-4d6a-8573-1fdbfe5c0878",
+                    "video_summary": null,
+                    "card_layout_id": 2,
+                    "video_layout_id": 2,
+                    "placement_card_layout_id": 2,
+                    "placement_video_layout_id": 2,
+                    "placement_card_section_layout_id": 2,
+                    "source": "overlap"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "728865a3-6d08-47b1-9a90-4f4ae50a8926",
+                    "name": "iHeart",
+                    "username": "iheart",
+                    "bio": "See what you’ve been hearing all along",
+                    "is_avatar": false,
+                    "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1756928901732.png",
+                    "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1756928901732.png",
+                    "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1756928901732.png",
+                    "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1756928901732.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 1729,
+                        "brand_slug": "iheartmedia",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://iheart.begenuin.com/profile/iheart"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 1729,
+                        "name": "iHeart",
+                        "brand_slug": "iheartmedia",
+                        "brand_web_logo": "https://media.begenuin.com/uploads/brands/web_logo/brandWebLogo_1773644952182.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "iheart"
+                    },
+                    "uuid": "18056d0a-818b-46ef-b987-540a27fd5942",
+                    "handle": "thesmallzyshowfarmboy432",
+                    "slug": "the-smallzy-show",
+                    "name": "The Smallzy Show",
+                    "description": "The Smallzy Show",
+                    "color_code": "#A482C6",
+                    "text_color_code": "#49058D",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "share_string": "2323d564e6000f99",
+                    "brand_id": 1729,
+                    "type": 1,
+                    "share_url": "https://iheart.begenuin.com/community/the-smallzy-show",
+                    "no_of_views": 20,
+                    "no_of_members": 1,
+                    "no_of_videos": 7,
+                    "no_of_sparks": 1,
+                    "no_of_groups": 1
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "3b05af3c-90fe-4be2-8d34-495c4a7cb11c",
+                    "group_name": "The Smallzy Show",
+                    "group_description": "Kiis radio page, Smallzy Show podcast page",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#FEC62E",
+                    "text_color_code": "#FD8D00",
+                    "uuid": "33a7f948-5af1-4d68-a91b-dbf3e4cffae0",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "the-smallzy-show",
+                    "share_string": "2323d6c305001400",
+                    "type": 4,
+                    "share_url": "https://iheart.begenuin.com/loop/the-smallzy-show?community=2323d564e6000f99",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 9,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 20,
+                    "no_of_members": 1,
+                    "no_of_videos": 7,
+                    "no_of_sparks": 1
+                },
+                "score": {
+                    "pop_score": 7.301780393113253e-07,
+                    "rec_score": 0.9998529472400012,
+                    "context_score": 0,
+                    "user_interest_score": 0,
+                    "final_score": 1.9998529472400013
+                },
+                "uuid": "6a481fb3-43b2-48a5-b9f5-f40e37354c52",
+                "video": {
+                    "duration": 88,
+                    "attached_link": null,
+                    "attributes": {
+                        "description": "Play Johnny Cage: Real Signature Moves & Dark Dating",
+                        "image_url": "https://i.iheart.com/v3/url/aHR0cHM6Ly93d3cub21ueWNvbnRlbnQuY29tL2QvcHJvZ3JhbXMvZmEzMjY5NzctM2RlNS00MjgzLTliOGItYWYzNTAwYzU4NjA3LzQ2MzU5ZmI3LWNkZDMtNDZlNi05NzA4LWIzZDEwMDE1YWYzYy9pbWFnZS5qcGc_dD0xNzY4NTE1MzkxJnNpemU9TGFyZ2U",
+                        "podcast_id": "317631072",
+                        "slug": "239-the-smallzy-show-317631072",
+                        "subtitle": "From Harry Styles to Taylor Swift, Paris Hilton to Ed Sheeran, hear the world's biggest stars join Smallzy for the hottest celebrity interviews, plus his daily debrief on the biggest pop culture stories.",
+                        "title": "The Smallzy Show",
+                        "type": "podcast"
+                    },
+                    "clickable_url": null,
+                    "conversation_at": 1779407231000,
+                    "description_data": "[\"Smallzy asks the cast of Mortal Kombat II what their signature moves would be.\"]",
+                    "description_text": "Smallzy asks the cast of Mortal Kombat II what their signature moves would be.",
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts": [
+                        {
+                            "cta_link": "https://iheart.com/podcast/317631072",
+                            "cta_text": "Go to Episodes",
+                            "links": [
+                                {
+                                    "image": "",
+                                    "link": "https://iheart.com/podcast/317631072",
+                                    "position": 1,
+                                    "title": "Go to Episodes"
+                                }
+                            ],
+                            "style": 1
+                        }
+                    ],
+                    "linkouts_id": 248268,
+                    "linkouts_inappbrowser": true,
+                    "media_url": "https://media.begenuin.com/temp_video/325fc9ae-11f5-4d5f-aa2e-647041cbf1af.mp4",
+                    "media_url_m3u8": "https://vz-8bbc7bbf-a1e.b-cdn.net/44ee8784-bcda-43fe-bd6e-2b6b59b99fe7/playlist.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "contains_external_videos": false,
+                        "duration": "88",
+                        "media_type": "video",
+                        "resolution": "1080x1920",
+                        "size": "132836583"
+                    },
+                    "no_of_comments": 0,
+                    "no_of_shares": 0,
+                    "no_of_sparks": 0,
+                    "no_of_views": 2,
+                    "owner": {
+                        "uuid": "728865a3-6d08-47b1-9a90-4f4ae50a8926",
+                        "name": "iHeart",
+                        "username": "iheart",
+                        "bio": "See what you’ve been hearing all along",
+                        "is_avatar": false,
+                        "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1756928901732.png",
+                        "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1756928901732.png",
+                        "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1756928901732.png",
+                        "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1756928901732.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 1729,
+                            "brand_slug": "iheartmedia",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://iheart.begenuin.com/profile/iheart"
+                    },
+                    "share_url": "https://iheart.begenuin.com/video/smallzy-asks-the-cast-of-mortal-kombat-ii-what?community=2323d564e6000f99&loop=2323d6c305001400",
+                    "slug": "smallzy-asks-the-cast-of-mortal-kombat-ii-what",
+                    "sprite_image_url": null,
+                    "thumbnail_url": "https://vz-8bbc7bbf-a1e.b-cdn.net/44ee8784-bcda-43fe-bd6e-2b6b59b99fe7/thumbnail.jpg",
+                    "thumbnail_url_l": "https://media.begenuin.com/uploads/thumbnails/l/325fc9ae-11f5-4d5f-aa2e-647041cbf1af.png",
+                    "thumbnail_url_s": "https://media.begenuin.com/uploads/thumbnails/s/325fc9ae-11f5-4d5f-aa2e-647041cbf1af.png",
+                    "uuid": "6a481fb3-43b2-48a5-b9f5-f40e37354c52",
+                    "video_summary": null,
+                    "card_layout_id": 2,
+                    "video_layout_id": 2,
+                    "placement_card_layout_id": 2,
+                    "placement_video_layout_id": 2,
+                    "placement_card_section_layout_id": 2,
+                    "source": "overlap"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "728865a3-6d08-47b1-9a90-4f4ae50a8926",
+                    "name": "iHeart",
+                    "username": "iheart",
+                    "bio": "See what you’ve been hearing all along",
+                    "is_avatar": false,
+                    "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1756928901732.png",
+                    "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1756928901732.png",
+                    "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1756928901732.png",
+                    "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1756928901732.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 1729,
+                        "brand_slug": "iheartmedia",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://iheart.begenuin.com/profile/iheart"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 1729,
+                        "name": "iHeart",
+                        "brand_slug": "iheartmedia",
+                        "brand_web_logo": "https://media.begenuin.com/uploads/brands/web_logo/brandWebLogo_1773644952182.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "iheart"
+                    },
+                    "uuid": "18056d0a-818b-46ef-b987-540a27fd5942",
+                    "handle": "thesmallzyshowfarmboy432",
+                    "slug": "the-smallzy-show",
+                    "name": "The Smallzy Show",
+                    "description": "The Smallzy Show",
+                    "color_code": "#A482C6",
+                    "text_color_code": "#49058D",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "share_string": "2323d564e6000f99",
+                    "brand_id": 1729,
+                    "type": 1,
+                    "share_url": "https://iheart.begenuin.com/community/the-smallzy-show",
+                    "no_of_views": 20,
+                    "no_of_members": 1,
+                    "no_of_videos": 7,
+                    "no_of_sparks": 1,
+                    "no_of_groups": 1
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "3b05af3c-90fe-4be2-8d34-495c4a7cb11c",
+                    "group_name": "The Smallzy Show",
+                    "group_description": "Kiis radio page, Smallzy Show podcast page",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#FEC62E",
+                    "text_color_code": "#FD8D00",
+                    "uuid": "33a7f948-5af1-4d68-a91b-dbf3e4cffae0",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "the-smallzy-show",
+                    "share_string": "2323d6c305001400",
+                    "type": 4,
+                    "share_url": "https://iheart.begenuin.com/loop/the-smallzy-show?community=2323d564e6000f99",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 9,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 20,
+                    "no_of_members": 1,
+                    "no_of_videos": 7,
+                    "no_of_sparks": 1
+                },
+                "score": {
+                    "pop_score": 1.0952670589669881e-06,
+                    "rec_score": 0.9998518544144042,
+                    "context_score": 0,
+                    "user_interest_score": 0,
+                    "final_score": 1.9998518544144042
+                },
+                "uuid": "547fd69e-4212-41bd-85ef-82753e3fbe66",
+                "video": {
+                    "duration": 42,
+                    "attached_link": null,
+                    "attributes": {
+                        "description": "Cody Simpson on Love, Business, and Getting Drained",
+                        "image_url": "https://i.iheart.com/v3/url/aHR0cHM6Ly93d3cub21ueWNvbnRlbnQuY29tL2QvcHJvZ3JhbXMvZmEzMjY5NzctM2RlNS00MjgzLTliOGItYWYzNTAwYzU4NjA3LzQ2MzU5ZmI3LWNkZDMtNDZlNi05NzA4LWIzZDEwMDE1YWYzYy9pbWFnZS5qcGc_dD0xNzY4NTE1MzkxJnNpemU9TGFyZ2U",
+                        "podcast_id": "317631072",
+                        "slug": "239-the-smallzy-show-317631072",
+                        "subtitle": "From Harry Styles to Taylor Swift, Paris Hilton to Ed Sheeran, hear the world's biggest stars join Smallzy for the hottest celebrity interviews, plus his daily debrief on the biggest pop culture stories.",
+                        "title": "The Smallzy Show",
+                        "type": "podcast"
+                    },
+                    "clickable_url": null,
+                    "conversation_at": 1779407071000,
+                    "description_data": "[\"In a candid conversation about how love and work can shift over time, Cody Simpson reflects on phases where business pressures “use and abuse” you and creatively drain your energy. Cody explains how he got back to where he needed to be.\"]",
+                    "description_text": "In a candid conversation about how love and work can shift over time, Cody Simpson reflects on phases where business pressures “use and abuse” you and creatively drain your energy. Cody explains how he got back to where he needed to be.",
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts": [
+                        {
+                            "cta_link": "https://iheart.com/podcast/317631072",
+                            "cta_text": "Go to Episodes",
+                            "links": [
+                                {
+                                    "image": "",
+                                    "link": "https://iheart.com/podcast/317631072",
+                                    "position": 1,
+                                    "title": "Go to Episodes"
+                                }
+                            ],
+                            "style": 1
+                        }
+                    ],
+                    "linkouts_id": 248267,
+                    "linkouts_inappbrowser": true,
+                    "media_url": "https://media.begenuin.com/temp_video/0729cef9-fe8f-4a38-af26-00715f07f20c.mp4",
+                    "media_url_m3u8": "https://vz-8bbc7bbf-a1e.b-cdn.net/4c63775e-a3e9-48d9-bf56-4f89f10dfde0/playlist.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "contains_external_videos": false,
+                        "duration": "42",
+                        "media_type": "video",
+                        "resolution": "1080x1920",
+                        "size": "62856374"
+                    },
+                    "no_of_comments": 0,
+                    "no_of_shares": 0,
+                    "no_of_sparks": 0,
+                    "no_of_views": 3,
+                    "owner": {
+                        "uuid": "728865a3-6d08-47b1-9a90-4f4ae50a8926",
+                        "name": "iHeart",
+                        "username": "iheart",
+                        "bio": "See what you’ve been hearing all along",
+                        "is_avatar": false,
+                        "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1756928901732.png",
+                        "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1756928901732.png",
+                        "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1756928901732.png",
+                        "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1756928901732.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 1729,
+                            "brand_slug": "iheartmedia",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://iheart.begenuin.com/profile/iheart"
+                    },
+                    "share_url": "https://iheart.begenuin.com/video/in-a-candid-conversation-about-how-love-and-work?community=2323d564e6000f99&loop=2323d6c305001400",
+                    "slug": "in-a-candid-conversation-about-how-love-and-work",
+                    "sprite_image_url": null,
+                    "thumbnail_url": "https://vz-8bbc7bbf-a1e.b-cdn.net/4c63775e-a3e9-48d9-bf56-4f89f10dfde0/thumbnail.jpg",
+                    "thumbnail_url_l": "https://media.begenuin.com/uploads/thumbnails/l/0729cef9-fe8f-4a38-af26-00715f07f20c.png",
+                    "thumbnail_url_s": "https://media.begenuin.com/uploads/thumbnails/s/0729cef9-fe8f-4a38-af26-00715f07f20c.png",
+                    "uuid": "547fd69e-4212-41bd-85ef-82753e3fbe66",
+                    "video_summary": null,
+                    "card_layout_id": 2,
+                    "video_layout_id": 2,
+                    "placement_card_layout_id": 2,
+                    "placement_video_layout_id": 2,
+                    "placement_card_section_layout_id": 2,
+                    "source": "overlap"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "728865a3-6d08-47b1-9a90-4f4ae50a8926",
+                    "name": "iHeart",
+                    "username": "iheart",
+                    "bio": "See what you’ve been hearing all along",
+                    "is_avatar": false,
+                    "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1756928901732.png",
+                    "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1756928901732.png",
+                    "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1756928901732.png",
+                    "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1756928901732.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 1729,
+                        "brand_slug": "iheartmedia",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://iheart.begenuin.com/profile/iheart"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 1729,
+                        "name": "iHeart",
+                        "brand_slug": "iheartmedia",
+                        "brand_web_logo": "https://media.begenuin.com/uploads/brands/web_logo/brandWebLogo_1773644952182.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "iheart"
+                    },
+                    "uuid": "18056d0a-818b-46ef-b987-540a27fd5942",
+                    "handle": "thesmallzyshowfarmboy432",
+                    "slug": "the-smallzy-show",
+                    "name": "The Smallzy Show",
+                    "description": "The Smallzy Show",
+                    "color_code": "#A482C6",
+                    "text_color_code": "#49058D",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "share_string": "2323d564e6000f99",
+                    "brand_id": 1729,
+                    "type": 1,
+                    "share_url": "https://iheart.begenuin.com/community/the-smallzy-show",
+                    "no_of_views": 20,
+                    "no_of_members": 1,
+                    "no_of_videos": 7,
+                    "no_of_sparks": 1,
+                    "no_of_groups": 1
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "3b05af3c-90fe-4be2-8d34-495c4a7cb11c",
+                    "group_name": "The Smallzy Show",
+                    "group_description": "Kiis radio page, Smallzy Show podcast page",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#FEC62E",
+                    "text_color_code": "#FD8D00",
+                    "uuid": "33a7f948-5af1-4d68-a91b-dbf3e4cffae0",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "the-smallzy-show",
+                    "share_string": "2323d6c305001400",
+                    "type": 4,
+                    "share_url": "https://iheart.begenuin.com/loop/the-smallzy-show?community=2323d564e6000f99",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 9,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 20,
+                    "no_of_members": 1,
+                    "no_of_videos": 7,
+                    "no_of_sparks": 1
+                },
+                "score": {
+                    "pop_score": 3.6508901965566267e-07,
+                    "rec_score": 0.9998516563397647,
+                    "context_score": 0,
+                    "user_interest_score": 0,
+                    "final_score": 1.9998516563397648
+                },
+                "uuid": "6c7e6210-df67-4dd6-a420-2b0d1a6e9a3c",
+                "video": {
+                    "duration": 36,
+                    "attached_link": null,
+                    "attributes": {
+                        "description": "Who would young Billie Eilish have camped out to see live?",
+                        "image_url": "https://i.iheart.com/v3/url/aHR0cHM6Ly93d3cub21ueWNvbnRlbnQuY29tL2QvcHJvZ3JhbXMvZmEzMjY5NzctM2RlNS00MjgzLTliOGItYWYzNTAwYzU4NjA3LzQ2MzU5ZmI3LWNkZDMtNDZlNi05NzA4LWIzZDEwMDE1YWYzYy9pbWFnZS5qcGc_dD0xNzY4NTE1MzkxJnNpemU9TGFyZ2U",
+                        "podcast_id": "317631072",
+                        "slug": "239-the-smallzy-show-317631072",
+                        "subtitle": "From Harry Styles to Taylor Swift, Paris Hilton to Ed Sheeran, hear the world's biggest stars join Smallzy for the hottest celebrity interviews, plus his daily debrief on the biggest pop culture stories.",
+                        "title": "The Smallzy Show",
+                        "type": "podcast"
+                    },
+                    "clickable_url": null,
+                    "conversation_at": 1779407042000,
+                    "description_data": "[\"After surprising her fans, Smallzy asks who would young Billie Eilish have camped out to see?\"]",
+                    "description_text": "After surprising her fans, Smallzy asks who would young Billie Eilish have camped out to see?",
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts": [
+                        {
+                            "cta_link": "https://iheart.com/podcast/317631072",
+                            "cta_text": "Go to Episodes",
+                            "links": [
+                                {
+                                    "image": "",
+                                    "link": "https://iheart.com/podcast/317631072",
+                                    "position": 1,
+                                    "title": "Go to Episodes"
+                                }
+                            ],
+                            "style": 1
+                        }
+                    ],
+                    "linkouts_id": 248266,
+                    "linkouts_inappbrowser": true,
+                    "media_url": "https://media.begenuin.com/temp_video/d23f5239-fc48-4345-b04d-f58a3ea18af9.mp4",
+                    "media_url_m3u8": "https://vz-8bbc7bbf-a1e.b-cdn.net/8fa37154-0987-473d-b752-a9f2be300890/playlist.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "contains_external_videos": false,
+                        "duration": "36",
+                        "media_type": "video",
+                        "resolution": "1080x1920",
+                        "size": "54970623"
+                    },
+                    "no_of_comments": 0,
+                    "no_of_shares": 0,
+                    "no_of_sparks": 0,
+                    "no_of_views": 1,
+                    "owner": {
+                        "uuid": "728865a3-6d08-47b1-9a90-4f4ae50a8926",
+                        "name": "iHeart",
+                        "username": "iheart",
+                        "bio": "See what you’ve been hearing all along",
+                        "is_avatar": false,
+                        "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1756928901732.png",
+                        "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1756928901732.png",
+                        "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1756928901732.png",
+                        "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1756928901732.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 1729,
+                            "brand_slug": "iheartmedia",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://iheart.begenuin.com/profile/iheart"
+                    },
+                    "share_url": "https://iheart.begenuin.com/video/after-surprising-her-fans-smallzy-asks-who-would?community=2323d564e6000f99&loop=2323d6c305001400",
+                    "slug": "after-surprising-her-fans-smallzy-asks-who-would",
+                    "sprite_image_url": null,
+                    "thumbnail_url": "https://vz-8bbc7bbf-a1e.b-cdn.net/8fa37154-0987-473d-b752-a9f2be300890/thumbnail.jpg",
+                    "thumbnail_url_l": "https://media.begenuin.com/uploads/thumbnails/l/d23f5239-fc48-4345-b04d-f58a3ea18af9.png",
+                    "thumbnail_url_s": "https://media.begenuin.com/uploads/thumbnails/s/d23f5239-fc48-4345-b04d-f58a3ea18af9.png",
+                    "uuid": "6c7e6210-df67-4dd6-a420-2b0d1a6e9a3c",
+                    "video_summary": null,
+                    "card_layout_id": 2,
+                    "video_layout_id": 2,
+                    "placement_card_layout_id": 2,
+                    "placement_video_layout_id": 2,
+                    "placement_card_section_layout_id": 2,
+                    "source": "overlap"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "728865a3-6d08-47b1-9a90-4f4ae50a8926",
+                    "name": "iHeart",
+                    "username": "iheart",
+                    "bio": "See what you’ve been hearing all along",
+                    "is_avatar": false,
+                    "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1756928901732.png",
+                    "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1756928901732.png",
+                    "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1756928901732.png",
+                    "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1756928901732.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 1729,
+                        "brand_slug": "iheartmedia",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://iheart.begenuin.com/profile/iheart"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 1729,
+                        "name": "iHeart",
+                        "brand_slug": "iheartmedia",
+                        "brand_web_logo": "https://media.begenuin.com/uploads/brands/web_logo/brandWebLogo_1773644952182.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "iheart"
+                    },
+                    "uuid": "18056d0a-818b-46ef-b987-540a27fd5942",
+                    "handle": "thesmallzyshowfarmboy432",
+                    "slug": "the-smallzy-show",
+                    "name": "The Smallzy Show",
+                    "description": "The Smallzy Show",
+                    "color_code": "#A482C6",
+                    "text_color_code": "#49058D",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "share_string": "2323d564e6000f99",
+                    "brand_id": 1729,
+                    "type": 1,
+                    "share_url": "https://iheart.begenuin.com/community/the-smallzy-show",
+                    "no_of_views": 20,
+                    "no_of_members": 1,
+                    "no_of_videos": 7,
+                    "no_of_sparks": 1,
+                    "no_of_groups": 1
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "3b05af3c-90fe-4be2-8d34-495c4a7cb11c",
+                    "group_name": "The Smallzy Show",
+                    "group_description": "Kiis radio page, Smallzy Show podcast page",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#FEC62E",
+                    "text_color_code": "#FD8D00",
+                    "uuid": "33a7f948-5af1-4d68-a91b-dbf3e4cffae0",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "the-smallzy-show",
+                    "share_string": "2323d6c305001400",
+                    "type": 4,
+                    "share_url": "https://iheart.begenuin.com/loop/the-smallzy-show?community=2323d564e6000f99",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 9,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 20,
+                    "no_of_members": 1,
+                    "no_of_videos": 7,
+                    "no_of_sparks": 1
+                },
+                "score": {
+                    "pop_score": 0,
+                    "rec_score": 0.9998516290191248,
+                    "context_score": 0,
+                    "user_interest_score": 0,
+                    "final_score": 1.9998516290191248
+                },
+                "uuid": "1348cb7c-482c-4a92-a0ec-31497e4e81f1",
+                "video": {
+                    "duration": 66,
+                    "attached_link": null,
+                    "attributes": {
+                        "description": "Your brain is a Music Superpower",
+                        "image_url": "https://i.iheart.com/v3/url/aHR0cHM6Ly93d3cub21ueWNvbnRlbnQuY29tL2QvcHJvZ3JhbXMvZmEzMjY5NzctM2RlNS00MjgzLTliOGItYWYzNTAwYzU4NjA3LzQ2MzU5ZmI3LWNkZDMtNDZlNi05NzA4LWIzZDEwMDE1YWYzYy9pbWFnZS5qcGc_dD0xNzY4NTE1MzkxJnNpemU9TGFyZ2U",
+                        "podcast_id": "317631072",
+                        "slug": "239-the-smallzy-show-317631072",
+                        "subtitle": "From Harry Styles to Taylor Swift, Paris Hilton to Ed Sheeran, hear the world's biggest stars join Smallzy for the hottest celebrity interviews, plus his daily debrief on the biggest pop culture stories.",
+                        "title": "The Smallzy Show",
+                        "type": "podcast"
+                    },
+                    "clickable_url": null,
+                    "conversation_at": 1779407038000,
+                    "description_data": "[\"Smallzy and Charlie Puth explore how the brain can act as a powerful tool for creating and identifying notes, using simple instruments (a bell and a keyboard) as a live test.\"]",
+                    "description_text": "Smallzy and Charlie Puth explore how the brain can act as a powerful tool for creating and identifying notes, using simple instruments (a bell and a keyboard) as a live test.",
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts": [
+                        {
+                            "cta_link": "https://iheart.com/podcast/317631072",
+                            "cta_text": "Go to Episodes",
+                            "links": [
+                                {
+                                    "image": "",
+                                    "link": "https://iheart.com/podcast/317631072",
+                                    "position": 1,
+                                    "title": "Go to Episodes"
+                                }
+                            ],
+                            "style": 1
+                        }
+                    ],
+                    "linkouts_id": 248265,
+                    "linkouts_inappbrowser": true,
+                    "media_url": "https://media.begenuin.com/temp_video/bfed2e3a-89f0-4a75-a93d-761c23acfdf5.mp4",
+                    "media_url_m3u8": "https://vz-8bbc7bbf-a1e.b-cdn.net/a45ac412-32d9-46ec-8502-de02593869f4/playlist.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "contains_external_videos": false,
+                        "duration": "66",
+                        "media_type": "video",
+                        "resolution": "1080x1920",
+                        "size": "94647356"
+                    },
+                    "no_of_comments": 0,
+                    "no_of_shares": 0,
+                    "no_of_sparks": 0,
+                    "no_of_views": 0,
+                    "owner": {
+                        "uuid": "728865a3-6d08-47b1-9a90-4f4ae50a8926",
+                        "name": "iHeart",
+                        "username": "iheart",
+                        "bio": "See what you’ve been hearing all along",
+                        "is_avatar": false,
+                        "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1756928901732.png",
+                        "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1756928901732.png",
+                        "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1756928901732.png",
+                        "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1756928901732.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 1729,
+                            "brand_slug": "iheartmedia",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://iheart.begenuin.com/profile/iheart"
+                    },
+                    "share_url": "https://iheart.begenuin.com/video/smallzy-and-charlie-puth-explore-how-the-brain?community=2323d564e6000f99&loop=2323d6c305001400",
+                    "slug": "smallzy-and-charlie-puth-explore-how-the-brain",
+                    "sprite_image_url": null,
+                    "thumbnail_url": "https://vz-8bbc7bbf-a1e.b-cdn.net/a45ac412-32d9-46ec-8502-de02593869f4/thumbnail.jpg",
+                    "thumbnail_url_l": "https://media.begenuin.com/uploads/thumbnails/l/bfed2e3a-89f0-4a75-a93d-761c23acfdf5.png",
+                    "thumbnail_url_s": "https://media.begenuin.com/uploads/thumbnails/s/bfed2e3a-89f0-4a75-a93d-761c23acfdf5.png",
+                    "uuid": "1348cb7c-482c-4a92-a0ec-31497e4e81f1",
+                    "video_summary": null,
+                    "card_layout_id": 2,
+                    "video_layout_id": 2,
+                    "placement_card_layout_id": 2,
+                    "placement_video_layout_id": 2,
+                    "placement_card_section_layout_id": 2,
+                    "source": "overlap"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "728865a3-6d08-47b1-9a90-4f4ae50a8926",
+                    "name": "iHeart",
+                    "username": "iheart",
+                    "bio": "See what you’ve been hearing all along",
+                    "is_avatar": false,
+                    "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1756928901732.png",
+                    "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1756928901732.png",
+                    "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1756928901732.png",
+                    "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1756928901732.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 1729,
+                        "brand_slug": "iheartmedia",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://iheart.begenuin.com/profile/iheart"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 1729,
+                        "name": "iHeart",
+                        "brand_slug": "iheartmedia",
+                        "brand_web_logo": "https://media.begenuin.com/uploads/brands/web_logo/brandWebLogo_1773644952182.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "iheart"
+                    },
+                    "uuid": "18056d0a-818b-46ef-b987-540a27fd5942",
+                    "handle": "thesmallzyshowfarmboy432",
+                    "slug": "the-smallzy-show",
+                    "name": "The Smallzy Show",
+                    "description": "The Smallzy Show",
+                    "color_code": "#A482C6",
+                    "text_color_code": "#49058D",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "share_string": "2323d564e6000f99",
+                    "brand_id": 1729,
+                    "type": 1,
+                    "share_url": "https://iheart.begenuin.com/community/the-smallzy-show",
+                    "no_of_views": 20,
+                    "no_of_members": 1,
+                    "no_of_videos": 7,
+                    "no_of_sparks": 1,
+                    "no_of_groups": 1
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "3b05af3c-90fe-4be2-8d34-495c4a7cb11c",
+                    "group_name": "The Smallzy Show",
+                    "group_description": "Kiis radio page, Smallzy Show podcast page",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#FEC62E",
+                    "text_color_code": "#FD8D00",
+                    "uuid": "33a7f948-5af1-4d68-a91b-dbf3e4cffae0",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "the-smallzy-show",
+                    "share_string": "2323d6c305001400",
+                    "type": 4,
+                    "share_url": "https://iheart.begenuin.com/loop/the-smallzy-show?community=2323d564e6000f99",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 9,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 20,
+                    "no_of_members": 1,
+                    "no_of_videos": 7,
+                    "no_of_sparks": 1
+                },
+                "score": {
+                    "pop_score": 3.6508901965566267e-07,
+                    "rec_score": 0.9998509801539266,
+                    "context_score": 0,
+                    "user_interest_score": 0,
+                    "final_score": 1.9998509801539266
+                },
+                "uuid": "c471803d-5e91-40f2-ad9b-90cfcd928e23",
+                "video": {
+                    "duration": 57,
+                    "attached_link": null,
+                    "attributes": {
+                        "description": "Speak Your Truth: Authenticity Over Distraction",
+                        "image_url": "https://i.iheart.com/v3/url/aHR0cHM6Ly93d3cub21ueWNvbnRlbnQuY29tL2QvcHJvZ3JhbXMvZmEzMjY5NzctM2RlNS00MjgzLTliOGItYWYzNTAwYzU4NjA3LzQ2MzU5ZmI3LWNkZDMtNDZlNi05NzA4LWIzZDEwMDE1YWYzYy9pbWFnZS5qcGc_dD0xNzY4NTE1MzkxJnNpemU9TGFyZ2U",
+                        "podcast_id": "317631072",
+                        "slug": "239-the-smallzy-show-317631072",
+                        "subtitle": "From Harry Styles to Taylor Swift, Paris Hilton to Ed Sheeran, hear the world's biggest stars join Smallzy for the hottest celebrity interviews, plus his daily debrief on the biggest pop culture stories.",
+                        "title": "The Smallzy Show",
+                        "type": "podcast"
+                    },
+                    "clickable_url": null,
+                    "conversation_at": 1779406943000,
+                    "description_data": "[\"A conversation with an Zayn Malik on how getting older can make you more authentic and why being true to yourself matters in any creative work, from painting to music. Smallzy and Zane discuss how even when music feels like a distraction, it can reward you with speaking your truth (while still keeping “a little mystery”).\"]",
+                    "description_text": "A conversation with an Zayn Malik on how getting older can make you more authentic and why being true to yourself matters in any creative work, from painting to music. Smallzy and Zane discuss how even when music feels like a distraction, it can reward you with speaking your truth (while still keeping “a little mystery”).",
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts": [
+                        {
+                            "cta_link": "https://iheart.com/podcast/317631072",
+                            "cta_text": "Go to Episodes",
+                            "links": [
+                                {
+                                    "image": "",
+                                    "link": "https://iheart.com/podcast/317631072",
+                                    "position": 1,
+                                    "title": "Go to Episodes"
+                                }
+                            ],
+                            "style": 1
+                        }
+                    ],
+                    "linkouts_id": 248264,
+                    "linkouts_inappbrowser": true,
+                    "media_url": "https://media.begenuin.com/temp_video/e3f47fb9-5add-46f6-b423-79d26a681181.mp4",
+                    "media_url_m3u8": "https://vz-8bbc7bbf-a1e.b-cdn.net/d1fc82fc-de0d-4d1d-972b-a3964664e09e/playlist.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "contains_external_videos": false,
+                        "duration": "57",
+                        "media_type": "video",
+                        "resolution": "1080x1920",
+                        "size": "69380365"
+                    },
+                    "no_of_comments": 0,
+                    "no_of_shares": 0,
+                    "no_of_sparks": 0,
+                    "no_of_views": 1,
+                    "owner": {
+                        "uuid": "728865a3-6d08-47b1-9a90-4f4ae50a8926",
+                        "name": "iHeart",
+                        "username": "iheart",
+                        "bio": "See what you’ve been hearing all along",
+                        "is_avatar": false,
+                        "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1756928901732.png",
+                        "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1756928901732.png",
+                        "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1756928901732.png",
+                        "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1756928901732.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 1729,
+                            "brand_slug": "iheartmedia",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://iheart.begenuin.com/profile/iheart"
+                    },
+                    "share_url": "https://iheart.begenuin.com/video/a-conversation-with-an-zayn-malik-on-how-getting?community=2323d564e6000f99&loop=2323d6c305001400",
+                    "slug": "a-conversation-with-an-zayn-malik-on-how-getting",
+                    "sprite_image_url": null,
+                    "thumbnail_url": "https://vz-8bbc7bbf-a1e.b-cdn.net/d1fc82fc-de0d-4d1d-972b-a3964664e09e/thumbnail.jpg",
+                    "thumbnail_url_l": "https://media.begenuin.com/uploads/thumbnails/l/e3f47fb9-5add-46f6-b423-79d26a681181.png",
+                    "thumbnail_url_s": "https://media.begenuin.com/uploads/thumbnails/s/e3f47fb9-5add-46f6-b423-79d26a681181.png",
+                    "uuid": "c471803d-5e91-40f2-ad9b-90cfcd928e23",
+                    "video_summary": null,
+                    "card_layout_id": 2,
+                    "video_layout_id": 2,
+                    "placement_card_layout_id": 2,
+                    "placement_video_layout_id": 2,
+                    "placement_card_section_layout_id": 2,
+                    "source": "overlap"
+                }
+            }
+        ],
+        "has_section": false,
+        "is_ds_feed": false,
+        "no_of_videos": 8554,
+        "page_session": "plc_cmnCcK5O6d6prGGV"
+    }
+}

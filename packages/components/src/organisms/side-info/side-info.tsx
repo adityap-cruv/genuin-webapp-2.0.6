@@ -20,7 +20,7 @@ const sideInfoVariant = cva(
     variants: {
       variant: {
         default:
-          "gencl:max-w-xs gencl:w-full gencl:h-fit gencl:max-h-full gencl:sm:block! gencl:hidden gencl:sticky gencl:top-2",
+          "gencl:max-w-xs gencl:w-full gencl:h-fit gencl:max-h-full gencl:sm:block! gencl:hidden gencl:sticky gencl:top-0",
         mobile: "gencl:w-full",
       },
     },

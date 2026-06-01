@@ -1,6 +1,6 @@
 ---
 name: performance
-description: Auditing and fixing performance issues in React components and the Next.js webapp
+description: Audit and fix performance issues in React components and the Next.js webapp — unnecessary re-renders, memoization (React Compiler-aware), code splitting, bundle size, image/LCP, TanStack Query caching. Use when something is slow, janky, the bundle is too large, or a render is expensive. Do NOT use for general component building (use frontend-patterns) or accessibility (use accessibility).
 ---
 
 # Skill: Performance

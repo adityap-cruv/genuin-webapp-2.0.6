@@ -5,8 +5,8 @@ import { SDKEventEmitter, SDKListenerEventName } from "@genuin/components/lib/sd
 import type * as ObservabilityService from "@genuin/components/lib/utils/observability/service";
 
 import { AnalyticsService, EventName } from "../../context";
-import { buildLayoutIdentity } from "../../context/analytics/build-layout-identity";
 import { useSafeEmbedContext } from "../../context/embed/context";
+import { buildLayoutIdentity } from "../../context/analytics/build-layout-identity";
 import type { EmbedEventContextType, EmbedEventNameType } from "../../context/embed/event-bus";
 import type { EventManager } from "../../lib/utils/event-manager";
 

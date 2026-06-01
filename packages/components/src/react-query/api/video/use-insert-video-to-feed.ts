@@ -9,8 +9,9 @@ import { fetchVideoDetails } from "./video";
 
 type BrandContext =
   | {
-      id: string;
+      id?: string;
       type: string;
+      value?: string;
     }[]
   | undefined;
 

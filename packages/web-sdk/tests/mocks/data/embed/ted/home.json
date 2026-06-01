@@ -1,0 +1,1581 @@
+{
+    "_comment": "Fixture for POST /goservices/feed/v1/home with embed_id=<ted_embed_id> (handlers/feed.ts)",
+    "code": 200,
+    "message": "Feed loaded",
+    "data": {
+        "end_of_feed": false,
+        "expiry": 1779430563,
+        "feeds": [
+            {
+                "owner": {
+                    "uuid": "2ad4c29e-c0e6-43da-8723-a29f7041a859",
+                    "name": "TED",
+                    "username": "ted",
+                    "is_avatar": false,
+                    "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1751519978380.png",
+                    "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1751519978380.png",
+                    "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1751519978380.png",
+                    "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1751519978380.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 2357,
+                        "brand_slug": "ted",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://shorts.ted.com/profile/ted"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 2357,
+                        "name": "TED",
+                        "brand_slug": "ted",
+                        "brand_web_logo": "https://media.begenuin.com/uploads/brands/web_logo/brandWebLogo_1740506504007.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "ted"
+                    },
+                    "uuid": "4290e167-746e-4df7-874f-1ec497c258a2",
+                    "handle": "health",
+                    "slug": "health",
+                    "name": "Health",
+                    "description": "Talks covering all aspects of health and self care.",
+                    "color_code": "#A482C6",
+                    "text_color_code": "#49058D",
+                    "dp": "https://media.begenuin.com/uploads/profile_images/community/communityProfile_1745351625757.png",
+                    "dp_s": "https://media.begenuin.com/uploads/profile_images/community/s/communityProfile_1745351625757.png",
+                    "dp_m": "https://media.begenuin.com/uploads/profile_images/community/m/communityProfile_1745351625757.png",
+                    "dp_l": "https://media.begenuin.com/uploads/profile_images/community/l/communityProfile_1745351625757.png",
+                    "share_string": "1f0dbcb005000dad",
+                    "brand_id": 2357,
+                    "type": 1,
+                    "share_url": "https://shorts.ted.com/community/health",
+                    "no_of_views": 574873,
+                    "no_of_members": 951,
+                    "no_of_videos": 57,
+                    "no_of_sparks": 15515,
+                    "no_of_groups": 1
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "43e4335a-f960-4e43-ad81-1de733631fae",
+                    "group_name": "Be a better human",
+                    "group_description": "TED Talks on physical and mental health, wellness, medicine and more.",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#54C8E8",
+                    "text_color_code": "#0091D1",
+                    "uuid": "0241b5cc-a17e-4ccc-befb-f16b89781d02",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "health",
+                    "share_string": "1e626ab0fc0015bc",
+                    "type": 4,
+                    "share_url": "https://shorts.ted.com/loop/health?community=1f0dbcb005000dad",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 10,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 574873,
+                    "no_of_members": 108,
+                    "no_of_videos": 57,
+                    "no_of_sparks": 15515
+                },
+                "score": {
+                    "pop_score": 0.001242772097356809,
+                    "rec_score": 0.8037616258949396,
+                    "context_score": 0,
+                    "user_interest_score": 0,
+                    "final_score": 68.24124943401793
+                },
+                "uuid": "f70cbf99-3915-489e-b2a5-69e736301fe1",
+                "video": {
+                    "duration": 74,
+                    "attached_link": null,
+                    "clickable_url": null,
+                    "conversation_at": 1750696885000,
+                    "description_data": "[\"How do you reduce your daily stress? Drawing on her years of experience working in the emergency room, Dr Darria Long shares 4 tips to help you prepare and take back control when things feel overwhelming. “When you get out of your own head, you get out of your own way,” she says.\"]",
+                    "description_text": "How do you reduce your daily stress? Drawing on her years of experience working in the emergency room, Dr Darria Long shares 4 tips to help you prepare and take back control when things feel overwhelming. “When you get out of your own head, you get out of your own way,” she says.",
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts": [
+                        {
+                            "links": [
+                                {
+                                    "image": "",
+                                    "link": "https://www.ted.com/talks/darria_long_how_to_manage_your_stress_like_an_er_doctor",
+                                    "position": 1,
+                                    "title": "Check out the full video"
+                                }
+                            ],
+                            "style": 1
+                        }
+                    ],
+                    "linkouts_id": 236890,
+                    "linkouts_inappbrowser": false,
+                    "media_url": "https://media.begenuin.com/temp_video/68187488b750021851ca62ba_1750696881378.mp4",
+                    "media_url_m3u8": "https://vz-8bbc7bbf-a1e.b-cdn.net/255b1d83-b685-4be1-96e8-3d865fca160e/playlist.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "duration": "74",
+                        "resolution": "720x1280",
+                        "size": "12142655"
+                    },
+                    "no_of_comments": 0,
+                    "no_of_shares": 41,
+                    "no_of_sparks": 185,
+                    "no_of_views": 2870,
+                    "owner": {
+                        "uuid": "2ad4c29e-c0e6-43da-8723-a29f7041a859",
+                        "name": "TED",
+                        "username": "ted",
+                        "is_avatar": false,
+                        "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1751519978380.png",
+                        "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1751519978380.png",
+                        "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1751519978380.png",
+                        "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1751519978380.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 2357,
+                            "brand_slug": "ted",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://shorts.ted.com/profile/ted"
+                    },
+                    "share_url": "https://shorts.ted.com/video/how-do-you-reduce-your-daily-stress-drawing-on?community=1f0dbcb005000dad&loop=1e626ab0fc0015bc",
+                    "slug": "how-do-you-reduce-your-daily-stress-drawing-on",
+                    "sprite_image_url": "https://media.begenuin.com/uploads/sprite/68187488b750021851ca62ba_1750696881378.jpeg",
+                    "thumbnail_url": "https://vz-8bbc7bbf-a1e.b-cdn.net/255b1d83-b685-4be1-96e8-3d865fca160e/thumbnail_e9389390.jpg",
+                    "thumbnail_url_l": "https://media.begenuin.com/uploads/thumbnails/l/68187488b750021851ca62ba_1750696881378.png",
+                    "thumbnail_url_s": "https://media.begenuin.com/uploads/thumbnails/s/68187488b750021851ca62ba_1750696881378.png",
+                    "uuid": "f70cbf99-3915-489e-b2a5-69e736301fe1",
+                    "video_summary": null,
+                    "card_layout_id": 3,
+                    "video_layout_id": 3,
+                    "source": "device"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "2ad4c29e-c0e6-43da-8723-a29f7041a859",
+                    "name": "TED",
+                    "username": "ted",
+                    "is_avatar": false,
+                    "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1751519978380.png",
+                    "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1751519978380.png",
+                    "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1751519978380.png",
+                    "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1751519978380.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 2357,
+                        "brand_slug": "ted",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://shorts.ted.com/profile/ted"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 2357,
+                        "name": "TED",
+                        "brand_slug": "ted",
+                        "brand_web_logo": "https://media.begenuin.com/uploads/brands/web_logo/brandWebLogo_1740506504007.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "ted"
+                    },
+                    "uuid": "222bb6b3-8c98-4778-aec1-733bb68fd56e",
+                    "handle": "artanddesign",
+                    "slug": "art-and-design",
+                    "name": "Art and Design",
+                    "description": "Art, artists, architects and more — plus the beautiful things they make.",
+                    "color_code": "#A576A6",
+                    "text_color_code": "#4B004D",
+                    "dp": "https://media.begenuin.com/uploads/profile_images/community/communityProfile_1745351415748.png",
+                    "dp_s": "https://media.begenuin.com/uploads/profile_images/community/s/communityProfile_1745351415748.png",
+                    "dp_m": "https://media.begenuin.com/uploads/profile_images/community/m/communityProfile_1745351415748.png",
+                    "dp_l": "https://media.begenuin.com/uploads/profile_images/community/l/communityProfile_1745351415748.png",
+                    "share_string": "1f0dbf9a21800dae",
+                    "brand_id": 2357,
+                    "type": 1,
+                    "share_url": "https://shorts.ted.com/community/art-and-design",
+                    "no_of_views": 471286,
+                    "no_of_members": 623,
+                    "no_of_videos": 83,
+                    "no_of_sparks": 16634,
+                    "no_of_groups": 1
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "ee0fb1de-4e4b-40de-9c6c-3b88f5b7bede",
+                    "group_name": "Creativity and craft",
+                    "group_description": "TED Talks on art, architecture, design and creativity",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#D6EAFC",
+                    "text_color_code": "#ADD5F9",
+                    "uuid": "b9424878-8fc0-4e5b-bf33-58c84387fb08",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "art-and-design",
+                    "share_string": "1e626a56aa0015bb",
+                    "type": 4,
+                    "share_url": "https://shorts.ted.com/loop/art-and-design?community=1f0dbf9a21800dae",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 10,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 471286,
+                    "no_of_members": 63,
+                    "no_of_videos": 83,
+                    "no_of_sparks": 16634
+                },
+                "score": {
+                    "pop_score": 0.001495050452020016,
+                    "rec_score": 0.8062630917243072,
+                    "context_score": 0,
+                    "user_interest_score": 0,
+                    "final_score": 82.06185063852568
+                },
+                "uuid": "f43a9544-3f31-47db-b027-61a189db3b63",
+                "video": {
+                    "duration": 75,
+                    "attached_link": null,
+                    "clickable_url": null,
+                    "conversation_at": 1751063121000,
+                    "description_data": "[\"If you could go back in the timeline of your life, where and when would you choose to go? For experiential artist Lucas Rizzotto, a tough breakup inspired him to ask this very question — and then he built his own time machine to explore it further.\"]",
+                    "description_text": "If you could go back in the timeline of your life, where and when would you choose to go? For experiential artist Lucas Rizzotto, a tough breakup inspired him to ask this very question — and then he built his own time machine to explore it further.",
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts": [
+                        {
+                            "links": [
+                                {
+                                    "image": "",
+                                    "link": "https://www.ted.com/talks/lucas_rizzotto_why_i_built_my_own_time_machine",
+                                    "position": 1,
+                                    "title": "Check out the full video"
+                                }
+                            ],
+                            "style": 1
+                        }
+                    ],
+                    "linkouts_id": 236932,
+                    "linkouts_inappbrowser": false,
+                    "media_url": "https://media.begenuin.com/temp_video/68187488b750021851ca62f1_1751063117244.mp4",
+                    "media_url_m3u8": "https://vz-8bbc7bbf-a1e.b-cdn.net/9d90b131-b3f0-4d4e-8d62-28a13ed9ac6c/playlist.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "duration": "75",
+                        "resolution": "720x1280",
+                        "size": "13883062"
+                    },
+                    "no_of_comments": 13,
+                    "no_of_shares": 57,
+                    "no_of_sparks": 310,
+                    "no_of_views": 3247,
+                    "owner": {
+                        "uuid": "2ad4c29e-c0e6-43da-8723-a29f7041a859",
+                        "name": "TED",
+                        "username": "ted",
+                        "is_avatar": false,
+                        "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1751519978380.png",
+                        "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1751519978380.png",
+                        "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1751519978380.png",
+                        "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1751519978380.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 2357,
+                            "brand_slug": "ted",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://shorts.ted.com/profile/ted"
+                    },
+                    "share_url": "https://shorts.ted.com/video/if-you-could-go-back-in-the-timeline-of-your-life?community=1f0dbf9a21800dae&loop=1e626a56aa0015bb",
+                    "slug": "if-you-could-go-back-in-the-timeline-of-your-life",
+                    "sprite_image_url": "https://media.begenuin.com/uploads/sprite/68187488b750021851ca62f1_1751063117244.jpeg",
+                    "thumbnail_url": "https://vz-8bbc7bbf-a1e.b-cdn.net/9d90b131-b3f0-4d4e-8d62-28a13ed9ac6c/thumbnail_b69f85a5.jpg",
+                    "thumbnail_url_l": "https://media.begenuin.com/uploads/thumbnails/l/68187488b750021851ca62f1_1751063117244.png",
+                    "thumbnail_url_s": "https://media.begenuin.com/uploads/thumbnails/s/68187488b750021851ca62f1_1751063117244.png",
+                    "uuid": "f43a9544-3f31-47db-b027-61a189db3b63",
+                    "video_summary": null,
+                    "card_layout_id": 3,
+                    "video_layout_id": 3,
+                    "source": "device"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "2ad4c29e-c0e6-43da-8723-a29f7041a859",
+                    "name": "TED",
+                    "username": "ted",
+                    "is_avatar": false,
+                    "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1751519978380.png",
+                    "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1751519978380.png",
+                    "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1751519978380.png",
+                    "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1751519978380.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 2357,
+                        "brand_slug": "ted",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://shorts.ted.com/profile/ted"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 2357,
+                        "name": "TED",
+                        "brand_slug": "ted",
+                        "brand_web_logo": "https://media.begenuin.com/uploads/brands/web_logo/brandWebLogo_1740506504007.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "ted"
+                    },
+                    "uuid": "031a54a6-42d5-43b6-8306-6e2c5ab1d33a",
+                    "handle": "tedbusiness",
+                    "slug": "business",
+                    "name": "Business",
+                    "description": "TED Talks about business, leadership and more",
+                    "color_code": "#A482C6",
+                    "text_color_code": "#49058D",
+                    "dp": "https://media.begenuin.com/uploads/profile_images/community/communityProfile_1745350699154.png",
+                    "dp_s": "https://media.begenuin.com/uploads/profile_images/community/s/communityProfile_1745350699154.png",
+                    "dp_m": "https://media.begenuin.com/uploads/profile_images/community/m/communityProfile_1745350699154.png",
+                    "dp_l": "https://media.begenuin.com/uploads/profile_images/community/l/communityProfile_1745350699154.png",
+                    "share_string": "1f0dcee366000db0",
+                    "brand_id": 2357,
+                    "type": 1,
+                    "share_url": "https://shorts.ted.com/community/business",
+                    "no_of_views": 186711,
+                    "no_of_members": 1215,
+                    "no_of_videos": 75,
+                    "no_of_sparks": 16126,
+                    "no_of_groups": 2
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "c6f6f03a-d53b-451a-8773-a0fa45f72725",
+                    "group_name": "Work smarter",
+                    "group_description": "TED Talks to help you grow in your career, communicate better and grow as a leader",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#A576A6",
+                    "text_color_code": "#4B004D",
+                    "uuid": "497d8f9c-d047-468b-8e2f-354d284a435b",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "business",
+                    "share_string": "1e6269a8910015b9",
+                    "type": 4,
+                    "share_url": "https://shorts.ted.com/loop/business?community=1f0dcee366000db0",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 10,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 186704,
+                    "no_of_members": 179,
+                    "no_of_videos": 71,
+                    "no_of_sparks": 16126
+                },
+                "score": {
+                    "pop_score": 0.0020247984876442023,
+                    "rec_score": 0.9330152195031458,
+                    "context_score": 0,
+                    "user_interest_score": 0,
+                    "final_score": 111.1074129632957
+                },
+                "uuid": "508453da-cf99-4897-bcc3-fd4260edc1c8",
+                "video": {
+                    "duration": 131,
+                    "attached_link": null,
+                    "clickable_url": null,
+                    "conversation_at": 1769620717000,
+                    "description_data": "[\"If the words “Tell me about yourself” make you freeze or overshare, communication consultant Rebecca Okamoto has a few tips that can help. In her TED Talk, she outlines 5 ways to help you introduce yourself — in 20 words or less — so that you can highlight your strengths and leave a good impression, without sounding too promotional.\"]",
+                    "description_text": "If the words “Tell me about yourself” make you freeze or overshare, communication consultant Rebecca Okamoto has a few tips that can help. In her TED Talk, she outlines 5 ways to help you introduce yourself — in 20 words or less — so that you can highlight your strengths and leave a good impression, without sounding too promotional.",
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts": [
+                        {
+                            "links": [
+                                {
+                                    "image": "",
+                                    "link": "https://www.ted.com/talks/rebecca_okamoto_how_to_introduce_yourself_and_get_hired",
+                                    "position": 1,
+                                    "title": "How to introduce yourself — and get hired"
+                                }
+                            ],
+                            "style": 1
+                        }
+                    ],
+                    "linkouts_id": 241403,
+                    "linkouts_inappbrowser": false,
+                    "media_url": "https://media.begenuin.com/temp_video/697241e587fb65fb49278c86_1769620713922.mp4",
+                    "media_url_m3u8": "https://vz-8bbc7bbf-a1e.b-cdn.net/6b6a0863-279c-4459-832e-82ff3578759e/playlist.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "duration": "131",
+                        "resolution": "720x1280",
+                        "size": "10401636"
+                    },
+                    "no_of_comments": 3,
+                    "no_of_shares": 138,
+                    "no_of_sparks": 488,
+                    "no_of_views": 4018,
+                    "owner": {
+                        "uuid": "2ad4c29e-c0e6-43da-8723-a29f7041a859",
+                        "name": "TED",
+                        "username": "ted",
+                        "is_avatar": false,
+                        "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1751519978380.png",
+                        "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1751519978380.png",
+                        "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1751519978380.png",
+                        "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1751519978380.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 2357,
+                            "brand_slug": "ted",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://shorts.ted.com/profile/ted"
+                    },
+                    "share_url": "https://shorts.ted.com/video/if-the-words-tell-me-about-yourself-make-you?community=1f0dcee366000db0&loop=1e6269a8910015b9",
+                    "slug": "if-the-words-tell-me-about-yourself-make-you",
+                    "sprite_image_url": "https://media.begenuin.com/uploads/sprite/697241e587fb65fb49278c86_1769620713922.jpeg",
+                    "thumbnail_url": "https://vz-8bbc7bbf-a1e.b-cdn.net/6b6a0863-279c-4459-832e-82ff3578759e/thumbnail_a1f50a5d.jpg",
+                    "thumbnail_url_l": "https://media.begenuin.com/uploads/thumbnails/l/697241e587fb65fb49278c86_1769620713922.png",
+                    "thumbnail_url_s": "https://media.begenuin.com/uploads/thumbnails/s/697241e587fb65fb49278c86_1769620713922.png",
+                    "uuid": "508453da-cf99-4897-bcc3-fd4260edc1c8",
+                    "video_summary": null,
+                    "card_layout_id": 3,
+                    "video_layout_id": 3,
+                    "source": "device"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "2ad4c29e-c0e6-43da-8723-a29f7041a859",
+                    "name": "TED",
+                    "username": "ted",
+                    "is_avatar": false,
+                    "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1751519978380.png",
+                    "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1751519978380.png",
+                    "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1751519978380.png",
+                    "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1751519978380.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 2357,
+                        "brand_slug": "ted",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://shorts.ted.com/profile/ted"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 2357,
+                        "name": "TED",
+                        "brand_slug": "ted",
+                        "brand_web_logo": "https://media.begenuin.com/uploads/brands/web_logo/brandWebLogo_1740506504007.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "ted"
+                    },
+                    "uuid": "222bb6b3-8c98-4778-aec1-733bb68fd56e",
+                    "handle": "artanddesign",
+                    "slug": "art-and-design",
+                    "name": "Art and Design",
+                    "description": "Art, artists, architects and more — plus the beautiful things they make.",
+                    "color_code": "#A576A6",
+                    "text_color_code": "#4B004D",
+                    "dp": "https://media.begenuin.com/uploads/profile_images/community/communityProfile_1745351415748.png",
+                    "dp_s": "https://media.begenuin.com/uploads/profile_images/community/s/communityProfile_1745351415748.png",
+                    "dp_m": "https://media.begenuin.com/uploads/profile_images/community/m/communityProfile_1745351415748.png",
+                    "dp_l": "https://media.begenuin.com/uploads/profile_images/community/l/communityProfile_1745351415748.png",
+                    "share_string": "1f0dbf9a21800dae",
+                    "brand_id": 2357,
+                    "type": 1,
+                    "share_url": "https://shorts.ted.com/community/art-and-design",
+                    "no_of_views": 471286,
+                    "no_of_members": 623,
+                    "no_of_videos": 83,
+                    "no_of_sparks": 16634,
+                    "no_of_groups": 1
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "ee0fb1de-4e4b-40de-9c6c-3b88f5b7bede",
+                    "group_name": "Creativity and craft",
+                    "group_description": "TED Talks on art, architecture, design and creativity",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#D6EAFC",
+                    "text_color_code": "#ADD5F9",
+                    "uuid": "b9424878-8fc0-4e5b-bf33-58c84387fb08",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "art-and-design",
+                    "share_string": "1e626a56aa0015bb",
+                    "type": 4,
+                    "share_url": "https://shorts.ted.com/loop/art-and-design?community=1f0dbf9a21800dae",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 10,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 471286,
+                    "no_of_members": 63,
+                    "no_of_videos": 83,
+                    "no_of_sparks": 16634
+                },
+                "score": {
+                    "pop_score": 0.0010091134186528262,
+                    "rec_score": 0.8186478870487502,
+                    "context_score": 0,
+                    "user_interest_score": 0,
+                    "final_score": 55.44413322277721
+                },
+                "uuid": "a496e3f2-70d7-4f8f-b552-470340d2299f",
+                "video": {
+                    "duration": 98,
+                    "attached_link": null,
+                    "clickable_url": null,
+                    "conversation_at": 1752876361000,
+                    "description_data": "[\"Jurassic Park isn't just a classic — it completely changed the way visual effects are made. In his TED Talk, Lucasfilm’s Rob Bredow explains how the groundbreaking CGI techniques used by Industrial Light and Magic's artists to bring the iconic dinosaurs to life are still being used today.\"]",
+                    "description_text": "Jurassic Park isn't just a classic — it completely changed the way visual effects are made. In his TED Talk, Lucasfilm’s Rob Bredow explains how the groundbreaking CGI techniques used by Industrial Light and Magic's artists to bring the iconic dinosaurs to life are still being used today.",
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts": [
+                        {
+                            "links": [
+                                {
+                                    "image": "",
+                                    "link": "https://www.ted.com/talks/rob_bredow_the_artist_driven_innovation_behind_the_films_we_love",
+                                    "position": 1,
+                                    "title": "Check out the full video"
+                                }
+                            ],
+                            "style": 1
+                        }
+                    ],
+                    "linkouts_id": 237052,
+                    "linkouts_inappbrowser": false,
+                    "media_url": "https://media.begenuin.com/temp_video/687aa5d512519566eb68f7b4_1752876357261.mp4",
+                    "media_url_m3u8": "https://vz-8bbc7bbf-a1e.b-cdn.net/a83fa832-73a0-4a47-9a4d-cd7b0a23f3de/playlist.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "duration": "98",
+                        "resolution": "720x1280",
+                        "size": "11518064"
+                    },
+                    "no_of_comments": 4,
+                    "no_of_shares": 35,
+                    "no_of_sparks": 215,
+                    "no_of_views": 2194,
+                    "owner": {
+                        "uuid": "2ad4c29e-c0e6-43da-8723-a29f7041a859",
+                        "name": "TED",
+                        "username": "ted",
+                        "is_avatar": false,
+                        "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1751519978380.png",
+                        "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1751519978380.png",
+                        "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1751519978380.png",
+                        "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1751519978380.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 2357,
+                            "brand_slug": "ted",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://shorts.ted.com/profile/ted"
+                    },
+                    "share_url": "https://shorts.ted.com/video/jurassic-park-isnt-just-a-classic-it-completely?community=1f0dbf9a21800dae&loop=1e626a56aa0015bb",
+                    "slug": "jurassic-park-isnt-just-a-classic-it-completely",
+                    "sprite_image_url": "https://media.begenuin.com/uploads/sprite/687aa5d512519566eb68f7b4_1752876357261.jpeg",
+                    "thumbnail_url": "https://vz-8bbc7bbf-a1e.b-cdn.net/a83fa832-73a0-4a47-9a4d-cd7b0a23f3de/thumbnail_0adb2cd2.jpg",
+                    "thumbnail_url_l": "https://media.begenuin.com/uploads/thumbnails/l/687aa5d512519566eb68f7b4_1752876357261.png",
+                    "thumbnail_url_s": "https://media.begenuin.com/uploads/thumbnails/s/687aa5d512519566eb68f7b4_1752876357261.png",
+                    "uuid": "a496e3f2-70d7-4f8f-b552-470340d2299f",
+                    "video_summary": null,
+                    "card_layout_id": 3,
+                    "video_layout_id": 3,
+                    "source": "device"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "2ad4c29e-c0e6-43da-8723-a29f7041a859",
+                    "name": "TED",
+                    "username": "ted",
+                    "is_avatar": false,
+                    "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1751519978380.png",
+                    "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1751519978380.png",
+                    "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1751519978380.png",
+                    "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1751519978380.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 2357,
+                        "brand_slug": "ted",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://shorts.ted.com/profile/ted"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 2357,
+                        "name": "TED",
+                        "brand_slug": "ted",
+                        "brand_web_logo": "https://media.begenuin.com/uploads/brands/web_logo/brandWebLogo_1740506504007.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "ted"
+                    },
+                    "uuid": "537e4ad9-bc3b-4bb0-8513-61b0209e0ee9",
+                    "handle": "personalgrowth",
+                    "slug": "personal-growth",
+                    "name": "Personal Growth",
+                    "description": "TED Talks that help you be a better human",
+                    "color_code": "#A576A6",
+                    "text_color_code": "#4B004D",
+                    "dp": "https://media.begenuin.com/uploads/profile_images/community/communityProfile_1745350607109.png",
+                    "dp_s": "https://media.begenuin.com/uploads/profile_images/community/s/communityProfile_1745350607109.png",
+                    "dp_m": "https://media.begenuin.com/uploads/profile_images/community/m/communityProfile_1745350607109.png",
+                    "dp_l": "https://media.begenuin.com/uploads/profile_images/community/l/communityProfile_1745350607109.png",
+                    "share_string": "1f0dd1ebfb000db1",
+                    "brand_id": 2357,
+                    "type": 1,
+                    "share_url": "https://shorts.ted.com/community/personal-growth",
+                    "no_of_views": 688101,
+                    "no_of_members": 2220,
+                    "no_of_videos": 122,
+                    "no_of_sparks": 23579,
+                    "no_of_groups": 1
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "befb1f5f-51c0-4dab-a503-0bec92ff11ca",
+                    "group_name": "Future you",
+                    "group_description": "TED Talks to inspire you and motivate you to grow into the best version of you",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#54C8E8",
+                    "text_color_code": "#0091D1",
+                    "uuid": "b6ac78a5-6a92-4e5f-9458-d07a119b5915",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "personal-growth",
+                    "share_string": "1e5d09240d801422",
+                    "type": 4,
+                    "share_url": "https://shorts.ted.com/loop/personal-growth?community=1f0dd1ebfb000db1",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 10,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 688101,
+                    "no_of_members": 201,
+                    "no_of_videos": 122,
+                    "no_of_sparks": 23579
+                },
+                "score": {
+                    "pop_score": 0.0011887385279065134,
+                    "rec_score": 0.8062595331891084,
+                    "context_score": 0,
+                    "user_interest_score": 0,
+                    "final_score": 65.28172740204899
+                },
+                "uuid": "2eaf8337-af9b-4abe-b9ab-b0313e715cc9",
+                "video": {
+                    "duration": 56,
+                    "attached_link": null,
+                    "clickable_url": null,
+                    "conversation_at": 1751062600000,
+                    "description_data": "[\"Being able to reimagine yourself beyond what other people see is the toughest task of all — but it’s also the most beautiful, says journalist Mariana Atencio. In her TED Talk, she explains that the best way to feel like you belong is to embrace what makes you special — and to stay curious about what makes others special, too. “Let’s celebrate those imperfections,” she says. “We are all quirky, and unique, and that is what makes us wonderfully human.”\"]",
+                    "description_text": "Being able to reimagine yourself beyond what other people see is the toughest task of all — but it’s also the most beautiful, says journalist Mariana Atencio. In her TED Talk, she explains that the best way to feel like you belong is to embrace what makes you special — and to stay curious about what makes others special, too. “Let’s celebrate those imperfections,” she says. “We are all quirky, and unique, and that is what makes us wonderfully human.”",
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts": [
+                        {
+                            "links": [
+                                {
+                                    "image": "",
+                                    "link": "https://www.ted.com/talks/mariana_atencio_what_makes_you_special",
+                                    "position": 1,
+                                    "title": "Check out the full video"
+                                }
+                            ],
+                            "style": 1
+                        }
+                    ],
+                    "linkouts_id": 236763,
+                    "linkouts_inappbrowser": false,
+                    "media_url": "https://media.begenuin.com/temp_video/6814a158ff3adadaad686133_1751062596249.mp4",
+                    "media_url_m3u8": "https://vz-8bbc7bbf-a1e.b-cdn.net/ce163473-9a51-4c7f-a924-4278b9b8a520/playlist.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "duration": "56",
+                        "resolution": "720x1280",
+                        "size": "11875543"
+                    },
+                    "no_of_comments": 2,
+                    "no_of_shares": 40,
+                    "no_of_sparks": 252,
+                    "no_of_views": 2592,
+                    "owner": {
+                        "uuid": "2ad4c29e-c0e6-43da-8723-a29f7041a859",
+                        "name": "TED",
+                        "username": "ted",
+                        "is_avatar": false,
+                        "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1751519978380.png",
+                        "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1751519978380.png",
+                        "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1751519978380.png",
+                        "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1751519978380.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 2357,
+                            "brand_slug": "ted",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://shorts.ted.com/profile/ted"
+                    },
+                    "share_url": "https://shorts.ted.com/video/being-able-to-reimagine-yourself-beyond-what?community=1f0dd1ebfb000db1&loop=1e5d09240d801422",
+                    "slug": "being-able-to-reimagine-yourself-beyond-what",
+                    "sprite_image_url": "https://media.begenuin.com/uploads/sprite/6814a158ff3adadaad686133_1751062596249.jpeg",
+                    "thumbnail_url": "https://vz-8bbc7bbf-a1e.b-cdn.net/ce163473-9a51-4c7f-a924-4278b9b8a520/thumbnail_14ad8710.jpg",
+                    "thumbnail_url_l": "https://media.begenuin.com/uploads/thumbnails/l/6814a158ff3adadaad686133_1751062596249.png",
+                    "thumbnail_url_s": "https://media.begenuin.com/uploads/thumbnails/s/6814a158ff3adadaad686133_1751062596249.png",
+                    "uuid": "2eaf8337-af9b-4abe-b9ab-b0313e715cc9",
+                    "video_summary": null,
+                    "card_layout_id": 3,
+                    "video_layout_id": 3,
+                    "source": "device"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "2ad4c29e-c0e6-43da-8723-a29f7041a859",
+                    "name": "TED",
+                    "username": "ted",
+                    "is_avatar": false,
+                    "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1751519978380.png",
+                    "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1751519978380.png",
+                    "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1751519978380.png",
+                    "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1751519978380.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 2357,
+                        "brand_slug": "ted",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://shorts.ted.com/profile/ted"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 2357,
+                        "name": "TED",
+                        "brand_slug": "ted",
+                        "brand_web_logo": "https://media.begenuin.com/uploads/brands/web_logo/brandWebLogo_1740506504007.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "ted"
+                    },
+                    "uuid": "537e4ad9-bc3b-4bb0-8513-61b0209e0ee9",
+                    "handle": "personalgrowth",
+                    "slug": "personal-growth",
+                    "name": "Personal Growth",
+                    "description": "TED Talks that help you be a better human",
+                    "color_code": "#A576A6",
+                    "text_color_code": "#4B004D",
+                    "dp": "https://media.begenuin.com/uploads/profile_images/community/communityProfile_1745350607109.png",
+                    "dp_s": "https://media.begenuin.com/uploads/profile_images/community/s/communityProfile_1745350607109.png",
+                    "dp_m": "https://media.begenuin.com/uploads/profile_images/community/m/communityProfile_1745350607109.png",
+                    "dp_l": "https://media.begenuin.com/uploads/profile_images/community/l/communityProfile_1745350607109.png",
+                    "share_string": "1f0dd1ebfb000db1",
+                    "brand_id": 2357,
+                    "type": 1,
+                    "share_url": "https://shorts.ted.com/community/personal-growth",
+                    "no_of_views": 688101,
+                    "no_of_members": 2220,
+                    "no_of_videos": 122,
+                    "no_of_sparks": 23579,
+                    "no_of_groups": 1
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "befb1f5f-51c0-4dab-a503-0bec92ff11ca",
+                    "group_name": "Future you",
+                    "group_description": "TED Talks to inspire you and motivate you to grow into the best version of you",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#54C8E8",
+                    "text_color_code": "#0091D1",
+                    "uuid": "b6ac78a5-6a92-4e5f-9458-d07a119b5915",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "personal-growth",
+                    "share_string": "1e5d09240d801422",
+                    "type": 4,
+                    "share_url": "https://shorts.ted.com/loop/personal-growth?community=1f0dd1ebfb000db1",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 10,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 688101,
+                    "no_of_members": 201,
+                    "no_of_videos": 122,
+                    "no_of_sparks": 23579
+                },
+                "score": {
+                    "pop_score": 0.0019514150588637324,
+                    "rec_score": 0.7760565578962578,
+                    "context_score": 0,
+                    "user_interest_score": 0,
+                    "final_score": 107.0559918776028
+                },
+                "uuid": "c3942794-96e1-47a6-85a7-3e2cc6d8eab7",
+                "video": {
+                    "duration": 82,
+                    "attached_link": null,
+                    "clickable_url": null,
+                    "conversation_at": 1746640626000,
+                    "description_data": "[\"Having your own back is not selfish, says meditation advocate Dan Harris — it makes you better at loving other people. In his TED Talk, he shares how he embarked on a journey of self-discovery and self-care when he realized that his family and friends viewed him as kind of a jerk. After starting practices of loving-kindness meditation and positive self-talk, he started to see a huge improvement in his relationships with everyone — including himself. “As your inner weather gets balmier, because you’ve learned how to high-five your demons, that shows up in your relationships with other people,” he explains. “And because relationships are probably the most important variable when it comes to human flourishing, your inner weather improves even further and up you go.”\"]",
+                    "description_text": "Having your own back is not selfish, says meditation advocate Dan Harris — it makes you better at loving other people. In his TED Talk, he shares how he embarked on a journey of self-discovery and self-care when he realized that his family and friends viewed him as kind of a jerk. After starting practices of loving-kindness meditation and positive self-talk, he started to see a huge improvement in his relationships with everyone — including himself. “As your inner weather gets balmier, because you’ve learned how to high-five your demons, that shows up in your relationships with other people,” he explains. “And because relationships are probably the most important variable when it comes to human flourishing, your inner weather improves even further and up you go.”",
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts": [
+                        {
+                            "links": [
+                                {
+                                    "image": "",
+                                    "link": "https://www.ted.com/talks/dan_harris_the_benefits_of_not_being_a_jerk_to_yourself",
+                                    "position": 1,
+                                    "title": "Check out the full video"
+                                }
+                            ],
+                            "style": 1
+                        }
+                    ],
+                    "linkouts_id": 237010,
+                    "linkouts_inappbrowser": false,
+                    "media_url": "https://media.begenuin.com/temp_video/6818a7f3a020132b8ad99962_1746640623326.mp4",
+                    "media_url_m3u8": "https://vz-8bbc7bbf-a1e.b-cdn.net/db97f29f-3a01-4c25-a953-9a890165c28c/playlist.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "duration": "82",
+                        "resolution": "720x1280",
+                        "size": "8700527"
+                    },
+                    "no_of_comments": 2,
+                    "no_of_shares": 99,
+                    "no_of_sparks": 483,
+                    "no_of_views": 3983,
+                    "owner": {
+                        "uuid": "2ad4c29e-c0e6-43da-8723-a29f7041a859",
+                        "name": "TED",
+                        "username": "ted",
+                        "is_avatar": false,
+                        "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1751519978380.png",
+                        "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1751519978380.png",
+                        "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1751519978380.png",
+                        "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1751519978380.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 2357,
+                            "brand_slug": "ted",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://shorts.ted.com/profile/ted"
+                    },
+                    "share_url": "https://shorts.ted.com/video/having-your-own-back-is-not-selfish-says-67d2?community=1f0dd1ebfb000db1&loop=1e5d09240d801422",
+                    "slug": "having-your-own-back-is-not-selfish-says-67d2",
+                    "sprite_image_url": "https://media.begenuin.com/uploads/sprite/6818a7f3a020132b8ad99962_1746640623326.jpeg",
+                    "thumbnail_url": "https://vz-8bbc7bbf-a1e.b-cdn.net/db97f29f-3a01-4c25-a953-9a890165c28c/thumbnail_1e712a5b.jpg",
+                    "thumbnail_url_l": "https://media.begenuin.com/uploads/thumbnails/l/6818a7f3a020132b8ad99962_1746640623326.png",
+                    "thumbnail_url_s": "https://media.begenuin.com/uploads/thumbnails/s/6818a7f3a020132b8ad99962_1746640623326.png",
+                    "uuid": "c3942794-96e1-47a6-85a7-3e2cc6d8eab7",
+                    "video_summary": null,
+                    "card_layout_id": 3,
+                    "video_layout_id": 3,
+                    "source": "device"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "2ad4c29e-c0e6-43da-8723-a29f7041a859",
+                    "name": "TED",
+                    "username": "ted",
+                    "is_avatar": false,
+                    "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1751519978380.png",
+                    "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1751519978380.png",
+                    "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1751519978380.png",
+                    "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1751519978380.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 2357,
+                        "brand_slug": "ted",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://shorts.ted.com/profile/ted"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 2357,
+                        "name": "TED",
+                        "brand_slug": "ted",
+                        "brand_web_logo": "https://media.begenuin.com/uploads/brands/web_logo/brandWebLogo_1740506504007.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "ted"
+                    },
+                    "uuid": "0e56cdf5-b4e3-40b3-87c9-c32bbb0254ec",
+                    "handle": "societyandculture",
+                    "slug": "society-and-culture",
+                    "name": "Society and Culture",
+                    "description": "Talks about society and culture",
+                    "color_code": "#4A9BBF",
+                    "text_color_code": "#00377F",
+                    "dp": "https://media.begenuin.com/uploads/profile_images/community/communityProfile_1745350863360.png",
+                    "dp_s": "https://media.begenuin.com/uploads/profile_images/community/s/communityProfile_1745350863360.png",
+                    "dp_m": "https://media.begenuin.com/uploads/profile_images/community/m/communityProfile_1745350863360.png",
+                    "dp_l": "https://media.begenuin.com/uploads/profile_images/community/l/communityProfile_1745350863360.png",
+                    "share_string": "1f0dcacc93000daf",
+                    "brand_id": 2357,
+                    "type": 1,
+                    "share_url": "https://shorts.ted.com/community/society-and-culture",
+                    "no_of_views": 232483,
+                    "no_of_members": 772,
+                    "no_of_videos": 118,
+                    "no_of_sparks": 14093,
+                    "no_of_groups": 1
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "c8dc03cf-0515-414b-91a4-7a5e2696139c",
+                    "group_name": "New perspectives",
+                    "group_description": "TED Talks to help you think differently about culture, society, democracy and world events",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#FEC62E",
+                    "text_color_code": "#FD8D00",
+                    "uuid": "75eec821-8695-4528-8e9c-adbb947d2c4b",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "society-and-culture",
+                    "share_string": "1e626a12200015ba",
+                    "type": 4,
+                    "share_url": "https://shorts.ted.com/loop/society-and-culture?community=1f0dcacc93000daf",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 10,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 232483,
+                    "no_of_members": 88,
+                    "no_of_videos": 118,
+                    "no_of_sparks": 14093
+                },
+                "score": {
+                    "pop_score": 0.0009247772393081075,
+                    "rec_score": 0.8055078353171049,
+                    "context_score": 0,
+                    "user_interest_score": 0,
+                    "final_score": 50.82147147795915
+                },
+                "uuid": "ad59a2bb-1439-4c5b-81c5-ce8393886c61",
+                "video": {
+                    "duration": 29,
+                    "attached_link": null,
+                    "clickable_url": null,
+                    "conversation_at": 1750952545000,
+                    "description_data": "[\"Lawyer Bryan Stevenson has dedicated his life to representing the marginalized and wrongly accused and fighting racial discrimination in the US justice system. As human beings, each person’s survival is tied to everyone else’s, he explains in his TED Talk. And we cannot evolve as a society until we deal with inequality. “Ultimately, you judge the character of a society, not by how they treat their rich and the powerful and the privileged,” Stevenson explains, “but by how they treat the poor, the condemned, the incarcerated.”\"]",
+                    "description_text": "Lawyer Bryan Stevenson has dedicated his life to representing the marginalized and wrongly accused and fighting racial discrimination in the US justice system. As human beings, each person’s survival is tied to everyone else’s, he explains in his TED Talk. And we cannot evolve as a society until we deal with inequality. “Ultimately, you judge the character of a society, not by how they treat their rich and the powerful and the privileged,” Stevenson explains, “but by how they treat the poor, the condemned, the incarcerated.”",
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts": [
+                        {
+                            "links": [
+                                {
+                                    "image": "",
+                                    "link": "https://www.ted.com/talks/bryan_stevenson_we_need_to_talk_about_an_injustice",
+                                    "position": 1,
+                                    "title": "Check out the full video"
+                                }
+                            ],
+                            "style": 1
+                        }
+                    ],
+                    "linkouts_id": 236852,
+                    "linkouts_inappbrowser": false,
+                    "media_url": "https://media.begenuin.com/temp_video/68187488b750021851ca6284_1750952540879.mp4",
+                    "media_url_m3u8": "https://vz-8bbc7bbf-a1e.b-cdn.net/dcc5cc1e-50fc-4188-b855-28270cb23245/playlist.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "duration": "29",
+                        "resolution": "720x1280",
+                        "size": "4958271"
+                    },
+                    "no_of_comments": 1,
+                    "no_of_shares": 23,
+                    "no_of_sparks": 126,
+                    "no_of_views": 2189,
+                    "owner": {
+                        "uuid": "2ad4c29e-c0e6-43da-8723-a29f7041a859",
+                        "name": "TED",
+                        "username": "ted",
+                        "is_avatar": false,
+                        "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1751519978380.png",
+                        "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1751519978380.png",
+                        "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1751519978380.png",
+                        "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1751519978380.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 2357,
+                            "brand_slug": "ted",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://shorts.ted.com/profile/ted"
+                    },
+                    "share_url": "https://shorts.ted.com/video/lawyer-bryan-stevenson-has-dedicated-his-life-to?community=1f0dcacc93000daf&loop=1e626a12200015ba",
+                    "slug": "lawyer-bryan-stevenson-has-dedicated-his-life-to",
+                    "sprite_image_url": "https://media.begenuin.com/uploads/sprite/68187488b750021851ca6284_1750952540879.jpeg",
+                    "thumbnail_url": "https://vz-8bbc7bbf-a1e.b-cdn.net/dcc5cc1e-50fc-4188-b855-28270cb23245/thumbnail_16267336.jpg",
+                    "thumbnail_url_l": "https://media.begenuin.com/uploads/thumbnails/l/68187488b750021851ca6284_1750952540879.png",
+                    "thumbnail_url_s": "https://media.begenuin.com/uploads/thumbnails/s/68187488b750021851ca6284_1750952540879.png",
+                    "uuid": "ad59a2bb-1439-4c5b-81c5-ce8393886c61",
+                    "video_summary": null,
+                    "card_layout_id": 3,
+                    "video_layout_id": 3,
+                    "source": "device"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "2ad4c29e-c0e6-43da-8723-a29f7041a859",
+                    "name": "TED",
+                    "username": "ted",
+                    "is_avatar": false,
+                    "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1751519978380.png",
+                    "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1751519978380.png",
+                    "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1751519978380.png",
+                    "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1751519978380.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 2357,
+                        "brand_slug": "ted",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://shorts.ted.com/profile/ted"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 2357,
+                        "name": "TED",
+                        "brand_slug": "ted",
+                        "brand_web_logo": "https://media.begenuin.com/uploads/brands/web_logo/brandWebLogo_1740506504007.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "ted"
+                    },
+                    "uuid": "0e56cdf5-b4e3-40b3-87c9-c32bbb0254ec",
+                    "handle": "societyandculture",
+                    "slug": "society-and-culture",
+                    "name": "Society and Culture",
+                    "description": "Talks about society and culture",
+                    "color_code": "#4A9BBF",
+                    "text_color_code": "#00377F",
+                    "dp": "https://media.begenuin.com/uploads/profile_images/community/communityProfile_1745350863360.png",
+                    "dp_s": "https://media.begenuin.com/uploads/profile_images/community/s/communityProfile_1745350863360.png",
+                    "dp_m": "https://media.begenuin.com/uploads/profile_images/community/m/communityProfile_1745350863360.png",
+                    "dp_l": "https://media.begenuin.com/uploads/profile_images/community/l/communityProfile_1745350863360.png",
+                    "share_string": "1f0dcacc93000daf",
+                    "brand_id": 2357,
+                    "type": 1,
+                    "share_url": "https://shorts.ted.com/community/society-and-culture",
+                    "no_of_views": 232483,
+                    "no_of_members": 772,
+                    "no_of_videos": 118,
+                    "no_of_sparks": 14093,
+                    "no_of_groups": 1
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "c8dc03cf-0515-414b-91a4-7a5e2696139c",
+                    "group_name": "New perspectives",
+                    "group_description": "TED Talks to help you think differently about culture, society, democracy and world events",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#FEC62E",
+                    "text_color_code": "#FD8D00",
+                    "uuid": "75eec821-8695-4528-8e9c-adbb947d2c4b",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "society-and-culture",
+                    "share_string": "1e626a12200015ba",
+                    "type": 4,
+                    "share_url": "https://shorts.ted.com/loop/society-and-culture?community=1f0dcacc93000daf",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 10,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 232483,
+                    "no_of_members": 88,
+                    "no_of_videos": 118,
+                    "no_of_sparks": 14093
+                },
+                "score": {
+                    "pop_score": 0.00807728844944831,
+                    "rec_score": 0.9112957989546503,
+                    "context_score": 0,
+                    "user_interest_score": 0,
+                    "final_score": 442.66549007517074
+                },
+                "uuid": "06292de5-ba65-4305-8467-ecef6eb2d62b",
+                "video": {
+                    "duration": 35,
+                    "attached_link": null,
+                    "clickable_url": null,
+                    "conversation_at": 1766440808000,
+                    "description_data": "[\"Take an eerie yet fascinating tour inside of one of America’s dead malls (maybe even one from your childhood). In his TED Talk, filmmaker Dan Bell explores what these ruins reveal about consumer culture and creativity.\"]",
+                    "description_text": "Take an eerie yet fascinating tour inside of one of America’s dead malls (maybe even one from your childhood). In his TED Talk, filmmaker Dan Bell explores what these ruins reveal about consumer culture and creativity.",
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts_inappbrowser": false,
+                    "media_url": "https://media.begenuin.com/temp_video/6949803180ae16ad59cbb6ff_1766440806528.mp4",
+                    "media_url_m3u8": "https://vz-8bbc7bbf-a1e.b-cdn.net/85ff0adb-e1a2-4748-8af7-4a83f4bb0ca6/playlist.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "duration": "35",
+                        "resolution": "720x1280",
+                        "size": "5046005"
+                    },
+                    "no_of_comments": 10,
+                    "no_of_shares": 40,
+                    "no_of_sparks": 370,
+                    "no_of_views": 21224,
+                    "owner": {
+                        "uuid": "2ad4c29e-c0e6-43da-8723-a29f7041a859",
+                        "name": "TED",
+                        "username": "ted",
+                        "is_avatar": false,
+                        "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1751519978380.png",
+                        "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1751519978380.png",
+                        "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1751519978380.png",
+                        "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1751519978380.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 2357,
+                            "brand_slug": "ted",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://shorts.ted.com/profile/ted"
+                    },
+                    "share_url": "https://shorts.ted.com/video/take-an-eerie-yet-fascinating-tour-inside-of-one?community=1f0dcacc93000daf&loop=1e626a12200015ba",
+                    "slug": "take-an-eerie-yet-fascinating-tour-inside-of-one",
+                    "sprite_image_url": "https://media.begenuin.com/uploads/sprite/6949803180ae16ad59cbb6ff_1766440806528.jpeg",
+                    "thumbnail_url": "https://vz-8bbc7bbf-a1e.b-cdn.net/85ff0adb-e1a2-4748-8af7-4a83f4bb0ca6/thumbnail_4674dc93.jpg",
+                    "thumbnail_url_l": "https://media.begenuin.com/uploads/thumbnails/l/6949803180ae16ad59cbb6ff_1766440806528.png",
+                    "thumbnail_url_s": "https://media.begenuin.com/uploads/thumbnails/s/6949803180ae16ad59cbb6ff_1766440806528.png",
+                    "uuid": "06292de5-ba65-4305-8467-ecef6eb2d62b",
+                    "video_summary": null,
+                    "card_layout_id": 3,
+                    "video_layout_id": 3,
+                    "source": "device"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "2ad4c29e-c0e6-43da-8723-a29f7041a859",
+                    "name": "TED",
+                    "username": "ted",
+                    "is_avatar": false,
+                    "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1751519978380.png",
+                    "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1751519978380.png",
+                    "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1751519978380.png",
+                    "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1751519978380.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 2357,
+                        "brand_slug": "ted",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://shorts.ted.com/profile/ted"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 2357,
+                        "name": "TED",
+                        "brand_slug": "ted",
+                        "brand_web_logo": "https://media.begenuin.com/uploads/brands/web_logo/brandWebLogo_1740506504007.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "ted"
+                    },
+                    "uuid": "4290e167-746e-4df7-874f-1ec497c258a2",
+                    "handle": "health",
+                    "slug": "health",
+                    "name": "Health",
+                    "description": "Talks covering all aspects of health and self care.",
+                    "color_code": "#A482C6",
+                    "text_color_code": "#49058D",
+                    "dp": "https://media.begenuin.com/uploads/profile_images/community/communityProfile_1745351625757.png",
+                    "dp_s": "https://media.begenuin.com/uploads/profile_images/community/s/communityProfile_1745351625757.png",
+                    "dp_m": "https://media.begenuin.com/uploads/profile_images/community/m/communityProfile_1745351625757.png",
+                    "dp_l": "https://media.begenuin.com/uploads/profile_images/community/l/communityProfile_1745351625757.png",
+                    "share_string": "1f0dbcb005000dad",
+                    "brand_id": 2357,
+                    "type": 1,
+                    "share_url": "https://shorts.ted.com/community/health",
+                    "no_of_views": 574873,
+                    "no_of_members": 951,
+                    "no_of_videos": 57,
+                    "no_of_sparks": 15515,
+                    "no_of_groups": 1
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "43e4335a-f960-4e43-ad81-1de733631fae",
+                    "group_name": "Be a better human",
+                    "group_description": "TED Talks on physical and mental health, wellness, medicine and more.",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#54C8E8",
+                    "text_color_code": "#0091D1",
+                    "uuid": "0241b5cc-a17e-4ccc-befb-f16b89781d02",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "health",
+                    "share_string": "1e626ab0fc0015bc",
+                    "type": 4,
+                    "share_url": "https://shorts.ted.com/loop/health?community=1f0dbcb005000dad",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 10,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 574873,
+                    "no_of_members": 108,
+                    "no_of_videos": 57,
+                    "no_of_sparks": 15515
+                },
+                "score": {
+                    "pop_score": 0.0011693886685763396,
+                    "rec_score": 0.7194992553358819,
+                    "context_score": 0,
+                    "user_interest_score": 0,
+                    "final_score": 64.2043676065346
+                },
+                "uuid": "c3f63a46-289f-45e1-ab91-cca1b958f95a",
+                "video": {
+                    "duration": 65,
+                    "attached_link": null,
+                    "clickable_url": null,
+                    "conversation_at": 1738360153000,
+                    "description_data": "[\"This pill-sized robot has the potential to change how doctors see inside your body. In this TED Talk, physician Vivek Kumbhari and engineer Alex Luebke introduce “Pillbot” — a micro-robot that could provide doctors a more direct visualization of your internal organs and potentially spell the end of invasive procedures like endoscopies. Check out their full TED Talk for the entire on-stage demo — including the part where Kumbhari navigates Pillbot *inside* Luebke’s stomach.\"]",
+                    "description_text": "This pill-sized robot has the potential to change how doctors see inside your body. In this TED Talk, physician Vivek Kumbhari and engineer Alex Luebke introduce “Pillbot” — a micro-robot that could provide doctors a more direct visualization of your internal organs and potentially spell the end of invasive procedures like endoscopies. Check out their full TED Talk for the entire on-stage demo — including the part where Kumbhari navigates Pillbot *inside* Luebke’s stomach.",
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts_inappbrowser": false,
+                    "media_url": "https://media.begenuin.com/temp_video/67927d6c92f75cceda8e3bcf_1738360151545.mp4",
+                    "media_url_m3u8": "https://vz-8bbc7bbf-a1e.b-cdn.net/aaf92f05-174e-410e-af6b-f758afb198f6/playlist.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "duration": "65",
+                        "resolution": "360x640",
+                        "size": "2296856"
+                    },
+                    "no_of_comments": 2,
+                    "no_of_shares": 17,
+                    "no_of_sparks": 80,
+                    "no_of_views": 2975,
+                    "owner": {
+                        "uuid": "2ad4c29e-c0e6-43da-8723-a29f7041a859",
+                        "name": "TED",
+                        "username": "ted",
+                        "is_avatar": false,
+                        "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1751519978380.png",
+                        "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1751519978380.png",
+                        "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1751519978380.png",
+                        "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1751519978380.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 2357,
+                            "brand_slug": "ted",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://shorts.ted.com/profile/ted"
+                    },
+                    "share_url": "https://shorts.ted.com/video/this-pill-sized-robot-has-the-potential-to-change?community=1f0dbcb005000dad&loop=1e626ab0fc0015bc",
+                    "slug": "this-pill-sized-robot-has-the-potential-to-change",
+                    "sprite_image_url": "https://media.begenuin.com/uploads/sprite/67927d6c92f75cceda8e3bcf_1738360151545.jpeg",
+                    "thumbnail_url": "https://vz-8bbc7bbf-a1e.b-cdn.net/aaf92f05-174e-410e-af6b-f758afb198f6/thumbnail_786626f5.jpg",
+                    "thumbnail_url_l": "https://media.begenuin.com/uploads/thumbnails/l/67927d6c92f75cceda8e3bcf_1738360151545.png",
+                    "thumbnail_url_s": "https://media.begenuin.com/uploads/thumbnails/s/67927d6c92f75cceda8e3bcf_1738360151545.png",
+                    "uuid": "c3f63a46-289f-45e1-ab91-cca1b958f95a",
+                    "video_summary": null,
+                    "card_layout_id": 3,
+                    "video_layout_id": 3,
+                    "source": "device"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "2ad4c29e-c0e6-43da-8723-a29f7041a859",
+                    "name": "TED",
+                    "username": "ted",
+                    "is_avatar": false,
+                    "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1751519978380.png",
+                    "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1751519978380.png",
+                    "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1751519978380.png",
+                    "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1751519978380.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 2357,
+                        "brand_slug": "ted",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://shorts.ted.com/profile/ted"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 2357,
+                        "name": "TED",
+                        "brand_slug": "ted",
+                        "brand_web_logo": "https://media.begenuin.com/uploads/brands/web_logo/brandWebLogo_1740506504007.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "ted"
+                    },
+                    "uuid": "031a54a6-42d5-43b6-8306-6e2c5ab1d33a",
+                    "handle": "tedbusiness",
+                    "slug": "business",
+                    "name": "Business",
+                    "description": "TED Talks about business, leadership and more",
+                    "color_code": "#A482C6",
+                    "text_color_code": "#49058D",
+                    "dp": "https://media.begenuin.com/uploads/profile_images/community/communityProfile_1745350699154.png",
+                    "dp_s": "https://media.begenuin.com/uploads/profile_images/community/s/communityProfile_1745350699154.png",
+                    "dp_m": "https://media.begenuin.com/uploads/profile_images/community/m/communityProfile_1745350699154.png",
+                    "dp_l": "https://media.begenuin.com/uploads/profile_images/community/l/communityProfile_1745350699154.png",
+                    "share_string": "1f0dcee366000db0",
+                    "brand_id": 2357,
+                    "type": 1,
+                    "share_url": "https://shorts.ted.com/community/business",
+                    "no_of_views": 186711,
+                    "no_of_members": 1215,
+                    "no_of_videos": 75,
+                    "no_of_sparks": 16126,
+                    "no_of_groups": 2
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "c6f6f03a-d53b-451a-8773-a0fa45f72725",
+                    "group_name": "Work smarter",
+                    "group_description": "TED Talks to help you grow in your career, communicate better and grow as a leader",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#A576A6",
+                    "text_color_code": "#4B004D",
+                    "uuid": "497d8f9c-d047-468b-8e2f-354d284a435b",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "business",
+                    "share_string": "1e6269a8910015b9",
+                    "type": 4,
+                    "share_url": "https://shorts.ted.com/loop/business?community=1f0dcee366000db0",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 10,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 186704,
+                    "no_of_members": 179,
+                    "no_of_videos": 71,
+                    "no_of_sparks": 16126
+                },
+                "score": {
+                    "pop_score": 0.0018981116727843864,
+                    "rec_score": 0.8092181854140095,
+                    "context_score": 0,
+                    "user_interest_score": 0,
+                    "final_score": 104.14260288175193
+                },
+                "uuid": "74857205-577c-4301-8a54-9d38661aa5db",
+                "video": {
+                    "duration": 105,
+                    "attached_link": null,
+                    "clickable_url": null,
+                    "conversation_at": 1751495772000,
+                    "description_data": "[\"Taylor Swift isn’t just an international pop superstar — she’s also a savvy business woman says author Kevin Evers. In this episode of Fixable, he joins co-hosts Anne Morriss and Frances Frei to explore how Swift prioritized her fans during her wildly successful Eras Tour and what lessons entrepreneurs can learn from her strategic decision-making. Listen to the full episode wherever you get your podcasts.\"]",
+                    "description_text": "Taylor Swift isn’t just an international pop superstar — she’s also a savvy business woman says author Kevin Evers. In this episode of Fixable, he joins co-hosts Anne Morriss and Frances Frei to explore how Swift prioritized her fans during her wildly successful Eras Tour and what lessons entrepreneurs can learn from her strategic decision-making. Listen to the full episode wherever you get your podcasts.",
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts_inappbrowser": false,
+                    "media_url": "https://media.begenuin.com/temp_video/68657a72c68371e180df6e53_1751495769222.mp4",
+                    "media_url_m3u8": "https://vz-8bbc7bbf-a1e.b-cdn.net/e9105efa-012d-4fb4-a9b1-9a7c418d6f30/playlist.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "duration": "105",
+                        "resolution": "720x1280",
+                        "size": "10085298"
+                    },
+                    "no_of_comments": 4,
+                    "no_of_shares": 46,
+                    "no_of_sparks": 486,
+                    "no_of_views": 4043,
+                    "owner": {
+                        "uuid": "2ad4c29e-c0e6-43da-8723-a29f7041a859",
+                        "name": "TED",
+                        "username": "ted",
+                        "is_avatar": false,
+                        "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1751519978380.png",
+                        "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1751519978380.png",
+                        "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/brandProfileLogo_1751519978380.png",
+                        "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/brandProfileLogo_1751519978380.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 2357,
+                            "brand_slug": "ted",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://shorts.ted.com/profile/ted"
+                    },
+                    "share_url": "https://shorts.ted.com/video/taylor-swift-isnt-just-an-international-pop?community=1f0dcee366000db0&loop=1e6269a8910015b9",
+                    "slug": "taylor-swift-isnt-just-an-international-pop",
+                    "sprite_image_url": "https://media.begenuin.com/uploads/sprite/68657a72c68371e180df6e53_1751495769222.jpeg",
+                    "thumbnail_url": "https://vz-8bbc7bbf-a1e.b-cdn.net/e9105efa-012d-4fb4-a9b1-9a7c418d6f30/thumbnail_cfb02c1c.jpg",
+                    "thumbnail_url_l": "https://media.begenuin.com/uploads/thumbnails/l/68657a72c68371e180df6e53_1751495769222.png",
+                    "thumbnail_url_s": "https://media.begenuin.com/uploads/thumbnails/s/68657a72c68371e180df6e53_1751495769222.png",
+                    "uuid": "74857205-577c-4301-8a54-9d38661aa5db",
+                    "video_summary": null,
+                    "card_layout_id": 3,
+                    "video_layout_id": 3,
+                    "source": "device"
+                }
+            }
+        ],
+        "is_ds_feed": false,
+        "page_session": "emb_4tvAqLztygAttNlL"
+    }
+}

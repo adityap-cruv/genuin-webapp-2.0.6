@@ -1,3 +1,8 @@
+---
+name: prd-writer
+description: Write, update, or review a Product Requirements Document (PRD). Use when asked to draft a spec, feature requirements, user stories, or acceptance criteria. Do NOT use for implementation planning — use the planner agent for that.
+---
+
 # Skill: PRD Writer
 
 Use this skill when asked to write, update, or review a Product Requirements Document (PRD).

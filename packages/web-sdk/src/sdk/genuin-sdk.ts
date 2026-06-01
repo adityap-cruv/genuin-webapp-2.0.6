@@ -33,6 +33,7 @@ import { getRandomNumber, parsePlacementToEmbedData } from "../utils";
 
 import { loadErrorView, renderEmbedSkeleton as loadLoadingView } from "./dom-utils";
 import { loadExpandView } from "./react-utils";
+import { resolveBrandContextFromUrl } from "./sdk-utils";
 
 // Allowed events list - only these events can be listened to
 const ALLOWED_EVENTS = [
@@ -442,6 +443,13 @@ export class GenuinSDK {
         loadGenAdScript();
       }
 
+      // Automatically set brand context from URL pathname if backend provides context keywords.
+      // Matches keywords as case-insensitive substrings of path segments.
+      const resolvedBrandContext = resolveBrandContextFromUrl(brandDetails.context_keywords ?? []);
+      if (resolvedBrandContext) {
+        config.brandContext = resolvedBrandContext;
+      }
+
       // Get embed details based on configuration
       await this.getEmbedDetails(config, brandDetails);
 
@@ -636,6 +644,13 @@ export class GenuinSDK {
         config.embedDetails.customization ?? {},
         config.live.live_customization_data
       );
+    }
+
+    // Automatically set brand context from URL pathname if backend provides context keywords.
+    // Matches keywords as case-insensitive substrings of path segments.
+    const resolvedBrandContext = resolveBrandContextFromUrl(brandDetails.context_keywords ?? []);
+    if (resolvedBrandContext) {
+      config.brandContext = resolvedBrandContext;
     }
 
     this.themeManager.applyBrandColors(element, brandDetails.brand_colors);
@@ -1071,8 +1086,7 @@ export class GenuinSDK {
       const useShadowDOM = extractedData.useShadowDOM !== false;
       const shadowTarget = useShadowDOM ? await setupMainShadowDOM(element) : element;
 
-      // Propagate the resolved flag so downstream consumers (loadNewEmbed, EmbedRoot)
-      // see the same value without re-computing it.
+      // Propagate the resolved flag so downstream consumers see the same value.
       extractedData.useShadowDOM = useShadowDOM;
 
       // Show loading skeleton immediately (inside shadow root when enabled)

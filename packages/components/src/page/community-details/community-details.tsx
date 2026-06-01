@@ -195,36 +195,43 @@ function CommunityDetailsView({ slug }: { slug: string }) {
         metadata={{ type: communityDetails.type }}
         ctas={<div className="gencl:gap-2 gencl:justify-end gencl:flex">{createCtas({ inTopBar: true })}</div>}
       />
-      <div className="gencl:w-full gencl:overflow-auto gencl:h-full gencl:px-0 gencl:sm:px-6!">
-        <div className="gencl:h-auto gencl:relative">
-          <CommunityBanner src={communityDetails?.banner ?? ""} className="gencl:shrink-0" />
-          <Avatar
-            alt={communityDetails?.name ?? ""}
-            imageUrl={communityDetails?.dp_l ?? communityDetails.dp_m ?? communityDetails.dp ?? ""}
-            size="xl"
-            isAvatar={false}
-            className="gencl:absolute gencl:bottom-0 gencl:translate-y-1/2 gencl:left-4 gencl:sm:hidden! gencl:block gencl:border gencl:border-white"
-          />
-        </div>
-        <div className="gencl:flex gencl:pt-10 gencl:sm:pt-6! gencl:gap-6">
-          <div className="gencl:w-full">
-            <Details communityDetails={communityDetails} detailsId={detailsId} ctas={createCtas({})} />
-            {showPrivateCommunityAccess ? (
-              <ComponentErrorState type="PRIVATE_COMMUNITY" className="gencl:my-4" />
-            ) : (
-              <CommunityDetailsTabs
-                slug={slug}
-                className="gencl:pt-3 gencl:sm:pt-6!"
-                communityOwnerId={communityDetails.leader.member_id}
-                value={currentTab}
-                onValueChange={handleTabChange}
-                communityUserRole={communityDetails.logged_in_user_role}
-                aboutComponent={<About communityDetails={communityDetails} admins={admins} variant="mobile" />}
-                ownerInfo={{
-                  userName: communityDetails.leader.nickname,
-                }}
-              />
-            )}
+      <div className="gencl:w-full gencl:overflow-auto gencl:h-full gencl:px-0 gencl:sm:px-6! gencl:sm:pt-6!">
+        <div className="gencl:flex gencl:gap-6">
+          <div className="gencl:flex-1 gencl:flex gencl:justify-center gencl:min-w-0">
+            <div className="gencl:w-full gencl:max-w-7xl">
+              <div className="gencl:h-auto gencl:relative">
+                <CommunityBanner
+                  src={communityDetails?.banner ?? ""}
+                  className="gencl:shrink-0 gencl:rounded-none gencl:sm:rounded-lg!"
+                />
+                <Avatar
+                  alt={communityDetails?.name ?? ""}
+                  imageUrl={communityDetails?.dp_l ?? communityDetails.dp_m ?? communityDetails.dp ?? ""}
+                  size="xl"
+                  isAvatar={false}
+                  className="gencl:absolute gencl:bottom-0 gencl:translate-y-1/2 gencl:left-4 gencl:sm:hidden! gencl:block gencl:border gencl:border-white"
+                />
+              </div>
+              <div className="gencl:pt-10 gencl:sm:pt-6!">
+                <Details communityDetails={communityDetails} detailsId={detailsId} ctas={createCtas({})} />
+                {showPrivateCommunityAccess ? (
+                  <ComponentErrorState type="PRIVATE_COMMUNITY" className="gencl:my-4" />
+                ) : (
+                  <CommunityDetailsTabs
+                    slug={slug}
+                    className="gencl:pt-3 gencl:sm:pt-6!"
+                    communityOwnerId={communityDetails.leader.member_id}
+                    value={currentTab}
+                    onValueChange={handleTabChange}
+                    communityUserRole={communityDetails.logged_in_user_role}
+                    aboutComponent={<About communityDetails={communityDetails} admins={admins} variant="mobile" />}
+                    ownerInfo={{
+                      userName: communityDetails.leader.nickname,
+                    }}
+                  />
+                )}
+              </div>
+            </div>
           </div>
           {isDesktop && <About communityDetails={communityDetails} admins={admins} variant="default" />}
         </div>

@@ -17,8 +17,9 @@ import type { FeedResponseFromGoApi } from "../feed/types";
 
 type BrandContext =
   | {
-      id: string;
+      id?: string;
       type: string;
+      value?: string;
     }[]
   | undefined;
 

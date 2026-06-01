@@ -1,0 +1,1571 @@
+{
+    "_comment": "Fixture for POST /goservices/feed/v1/home with placement_id=<feed_placement_id> (handlers/feed.ts)",
+    "code": 200,
+    "message": "Feed loaded",
+    "data": {
+        "end_of_feed": false,
+        "expiry": 1779430641,
+        "feeds": [
+            {
+                "owner": {
+                    "uuid": "d1505422-34b9-4428-ba41-cee29636e614",
+                    "name": "coldplay",
+                    "username": "coldplay",
+                    "is_avatar": false,
+                    "profile_image": "https://media.begenuin.com/uploads/profile_images/1732269646974_croppedImage.png",
+                    "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/1732269646974_croppedImage.png",
+                    "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/1732269646974_croppedImage.png",
+                    "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/1732269646974_croppedImage.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 2181,
+                        "brand_slug": "coldplay",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://upqcreii.begenuin.com/profile/coldplay"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 2181,
+                        "name": "coldplay",
+                        "brand_slug": "coldplay",
+                        "brand_web_logo": "https://media.begenuin.com/uploads/brands/web_logo/brandWebLogo_1732270088992.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "coldplay"
+                    },
+                    "uuid": "2bb55a0b-7179-49e5-a6a5-36a4e12562c0",
+                    "handle": "coldplayfansunitee",
+                    "slug": "coldplay-fans-unite-fy8y",
+                    "name": "Coldplay Fans Unite 🎶🌍",
+                    "description": "Join millions of Coldplay fans to celebrate music, share concert experiences, and connect with the band's mission of global unity.",
+                    "color_code": "#8DC6E8",
+                    "text_color_code": "#1B8DD1",
+                    "dp": "https://media.begenuin.com/uploads/profile_images/community/2bb55a0b-7179-49e5-a6a5-36a4e12562c0_dp.jpg",
+                    "dp_s": "https://media.begenuin.com/uploads/profile_images/community/s/2bb55a0b-7179-49e5-a6a5-36a4e12562c0_dp.jpg",
+                    "dp_m": "https://media.begenuin.com/uploads/profile_images/community/m/2bb55a0b-7179-49e5-a6a5-36a4e12562c0_dp.jpg",
+                    "dp_l": "https://media.begenuin.com/uploads/profile_images/community/l/2bb55a0b-7179-49e5-a6a5-36a4e12562c0_dp.jpg",
+                    "share_string": "1e6167171c000fde",
+                    "brand_id": 2181,
+                    "type": 1,
+                    "share_url": "https://upqcreii.begenuin.com/community/coldplay-fans-unite-fy8y",
+                    "no_of_views": 413,
+                    "no_of_members": 4,
+                    "no_of_videos": 4,
+                    "no_of_sparks": 0,
+                    "no_of_groups": 2
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "37880c27-753a-48db-bc53-a84bf5ac7ecd",
+                    "group_name": "Music Inspirations 🎸",
+                    "group_description": "Discuss the meaning and inspiration behind Coldplay's songs and albums.",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#4A9BBF",
+                    "text_color_code": "#00377F",
+                    "uuid": "e8bf0a91-161e-48ed-9a3e-170d540edb1d",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "music-inspirations",
+                    "share_string": "1e61671bcc801508",
+                    "type": 4,
+                    "share_url": "https://upqcreii.begenuin.com/loop/music-inspirations?community=1e6167171c000fde",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 10,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 10,
+                    "no_of_members": 1,
+                    "no_of_videos": 2,
+                    "no_of_sparks": 0
+                },
+                "uuid": "dd2e4bbf-b8b9-4bc4-b613-1c15da8074b8",
+                "video": {
+                    "duration": 4,
+                    "attached_link": null,
+                    "clickable_url": null,
+                    "conversation_at": 1738240732000,
+                    "description_data": "[\"One month til Moon Music 🌙❤️ #Coldplay #MoonMusic #behindthesong \"]",
+                    "description_text": "One month til Moon Music 🌙❤️ #Coldplay #MoonMusic #behindthesong ",
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts_inappbrowser": true,
+                    "media_url": "https://media.begenuin.com/temp_video/6790a0dad80abb798df3ecd2_1738240729997.mp4",
+                    "media_url_m3u8": "temp_video/m3u8s/6790a0dad80abb798df3ecd2_1738240729997/output.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "duration": "4",
+                        "resolution": "576x1024",
+                        "size": "951944"
+                    },
+                    "no_of_comments": 300,
+                    "no_of_shares": 1,
+                    "no_of_sparks": 0,
+                    "no_of_views": 6,
+                    "owner": {
+                        "uuid": "d1505422-34b9-4428-ba41-cee29636e614",
+                        "name": "coldplay",
+                        "username": "coldplay",
+                        "is_avatar": false,
+                        "profile_image": "https://media.begenuin.com/uploads/profile_images/1732269646974_croppedImage.png",
+                        "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/1732269646974_croppedImage.png",
+                        "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/1732269646974_croppedImage.png",
+                        "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/1732269646974_croppedImage.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 2181,
+                            "brand_slug": "coldplay",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://upqcreii.begenuin.com/profile/coldplay"
+                    },
+                    "share_url": "https://upqcreii.begenuin.com/video/one-month-til-moon-music-coldplay-moonmusic?community=1e6167171c000fde&loop=1e61671bcc801508",
+                    "slug": "one-month-til-moon-music-coldplay-moonmusic",
+                    "sprite_image_url": "https://media.begenuin.com/uploads/sprite/6790a0dad80abb798df3ecd2_1738240729997.jpeg",
+                    "thumbnail_url": "https://media.begenuin.com/uploads/thumbnails/6790a0dad80abb798df3ecd2_1738240729997.png",
+                    "thumbnail_url_l": "https://media.begenuin.com/uploads/thumbnails/l/6790a0dad80abb798df3ecd2_1738240729997.png",
+                    "thumbnail_url_s": "https://media.begenuin.com/uploads/thumbnails/s/6790a0dad80abb798df3ecd2_1738240729997.png",
+                    "uuid": "dd2e4bbf-b8b9-4bc4-b613-1c15da8074b8",
+                    "video_summary": null,
+                    "card_layout_id": 1,
+                    "video_layout_id": 1,
+                    "placement_card_layout_id": 1,
+                    "placement_video_layout_id": 1,
+                    "placement_card_section_layout_id": 1,
+                    "source": "device"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "d1505422-34b9-4428-ba41-cee29636e614",
+                    "name": "coldplay",
+                    "username": "coldplay",
+                    "is_avatar": false,
+                    "profile_image": "https://media.begenuin.com/uploads/profile_images/1732269646974_croppedImage.png",
+                    "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/1732269646974_croppedImage.png",
+                    "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/1732269646974_croppedImage.png",
+                    "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/1732269646974_croppedImage.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 2181,
+                        "brand_slug": "coldplay",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://upqcreii.begenuin.com/profile/coldplay"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 2181,
+                        "name": "coldplay",
+                        "brand_slug": "coldplay",
+                        "brand_web_logo": "https://media.begenuin.com/uploads/brands/web_logo/brandWebLogo_1732270088992.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "coldplay"
+                    },
+                    "uuid": "01777857-570d-4787-b8aa-353f9d91e515",
+                    "handle": "tourvibes",
+                    "slug": "tour-vibes",
+                    "name": "Tour Vibes",
+                    "description": "Dive into the electrifying world of live music tours and fan experiences.",
+                    "color_code": "#4A9BBF",
+                    "text_color_code": "#00377F",
+                    "dp": "https://media.begenuin.com/uploads/profile_images/community/01777857-570d-4787-b8aa-353f9d91e515_dp.jpg",
+                    "dp_s": "https://media.begenuin.com/uploads/profile_images/community/s/01777857-570d-4787-b8aa-353f9d91e515_dp.jpg",
+                    "dp_m": "https://media.begenuin.com/uploads/profile_images/community/m/01777857-570d-4787-b8aa-353f9d91e515_dp.jpg",
+                    "dp_l": "https://media.begenuin.com/uploads/profile_images/community/l/01777857-570d-4787-b8aa-353f9d91e515_dp.jpg",
+                    "share_string": "1db93b7b7f000e4f",
+                    "brand_id": 2181,
+                    "type": 1,
+                    "share_url": "https://upqcreii.begenuin.com/community/tour-vibes",
+                    "no_of_views": 2107,
+                    "no_of_members": 8,
+                    "no_of_videos": 171,
+                    "no_of_sparks": 0,
+                    "no_of_groups": 21
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "c161c410-1ed9-457d-8202-129bc69ccf22",
+                    "group_name": "Music Videos",
+                    "group_description": "Discuss the artistry behind iconic and upcoming music videos.",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#A576A6",
+                    "text_color_code": "#4B004D",
+                    "uuid": "92f7ed39-f764-4e83-bf82-0b97ca418ad5",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "music-videos-yogn",
+                    "share_string": "1db93c0eb98014a6",
+                    "type": 4,
+                    "share_url": "https://upqcreii.begenuin.com/loop/music-videos-yogn?community=1db93b7b7f000e4f",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 10,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 209,
+                    "no_of_members": 1,
+                    "no_of_videos": 19,
+                    "no_of_sparks": 0
+                },
+                "uuid": "bfd18aef-6ecc-494a-837d-ad91270ea2f3",
+                "video": {
+                    "duration": 20,
+                    "attached_link": "",
+                    "clickable_url": null,
+                    "conversation_at": 1732597950000,
+                    "description_data": null,
+                    "description_text": null,
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts": [
+                        {
+                            "links": [
+                                {
+                                    "image": "",
+                                    "link": "https://youtube.com/shorts/UA4caTg9iOc",
+                                    "position": 1,
+                                    "title": "Find out the full story - click to learn more!"
+                                }
+                            ],
+                            "style": 1
+                        }
+                    ],
+                    "linkouts_id": 16525,
+                    "linkouts_inappbrowser": true,
+                    "media_url": "https://media.begenuin.com/temp_video/6741e95a7cce27345cbb7174_1732597945146.mp4",
+                    "media_url_m3u8": "temp_video/m3u8s/6741e95a7cce27345cbb7174_1732597945146/output.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "duration": "20",
+                        "resolution": "1080x1920",
+                        "size": "9094422"
+                    },
+                    "no_of_comments": 274,
+                    "no_of_shares": 0,
+                    "no_of_sparks": 0,
+                    "no_of_views": 41,
+                    "owner": {
+                        "uuid": "d1505422-34b9-4428-ba41-cee29636e614",
+                        "name": "coldplay",
+                        "username": "coldplay",
+                        "is_avatar": false,
+                        "profile_image": "https://media.begenuin.com/uploads/profile_images/1732269646974_croppedImage.png",
+                        "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/1732269646974_croppedImage.png",
+                        "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/1732269646974_croppedImage.png",
+                        "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/1732269646974_croppedImage.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 2181,
+                            "brand_slug": "coldplay",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://upqcreii.begenuin.com/profile/coldplay"
+                    },
+                    "share_url": "https://upqcreii.begenuin.com/video/1db93c1a2c0014b4?community=1db93b7b7f000e4f&loop=1db93c0eb98014a6",
+                    "slug": "1db93c1a2c0014b4",
+                    "sprite_image_url": "https://media.begenuin.com/uploads/sprite/6741e95a7cce27345cbb7174_1732597945146.jpeg",
+                    "thumbnail_url": "https://media.begenuin.com/uploads/thumbnails/6741e95a7cce27345cbb7174_1732597945146.png",
+                    "thumbnail_url_l": "https://media.begenuin.com/uploads/thumbnails/l/6741e95a7cce27345cbb7174_1732597945146.png",
+                    "thumbnail_url_s": "https://media.begenuin.com/uploads/thumbnails/s/6741e95a7cce27345cbb7174_1732597945146.png",
+                    "uuid": "bfd18aef-6ecc-494a-837d-ad91270ea2f3",
+                    "video_summary": null,
+                    "card_layout_id": 1,
+                    "video_layout_id": 1,
+                    "placement_card_layout_id": 1,
+                    "placement_video_layout_id": 1,
+                    "placement_card_section_layout_id": 1,
+                    "source": "device"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "d1505422-34b9-4428-ba41-cee29636e614",
+                    "name": "coldplay",
+                    "username": "coldplay",
+                    "is_avatar": false,
+                    "profile_image": "https://media.begenuin.com/uploads/profile_images/1732269646974_croppedImage.png",
+                    "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/1732269646974_croppedImage.png",
+                    "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/1732269646974_croppedImage.png",
+                    "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/1732269646974_croppedImage.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 2181,
+                        "brand_slug": "coldplay",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://upqcreii.begenuin.com/profile/coldplay"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 2181,
+                        "name": "coldplay",
+                        "brand_slug": "coldplay",
+                        "brand_web_logo": "https://media.begenuin.com/uploads/brands/web_logo/brandWebLogo_1732270088992.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "coldplay"
+                    },
+                    "uuid": "1d11f5eb-1ee7-4ecf-97bb-6021a5b6e59f",
+                    "handle": "coldplayfansunite",
+                    "slug": "coldplay-fans-unite",
+                    "name": "Coldplay Fans Unite 🎶✨",
+                    "description": "Join millions of Coldplay fans to celebrate their music, concerts, and creative journey.",
+                    "color_code": "#A576A6",
+                    "text_color_code": "#4B004D",
+                    "dp": "https://media.begenuin.com/uploads/profile_images/community/1d11f5eb-1ee7-4ecf-97bb-6021a5b6e59f_dp.jpg",
+                    "dp_s": "https://media.begenuin.com/uploads/profile_images/community/s/1d11f5eb-1ee7-4ecf-97bb-6021a5b6e59f_dp.jpg",
+                    "dp_m": "https://media.begenuin.com/uploads/profile_images/community/m/1d11f5eb-1ee7-4ecf-97bb-6021a5b6e59f_dp.jpg",
+                    "dp_l": "https://media.begenuin.com/uploads/profile_images/community/l/1d11f5eb-1ee7-4ecf-97bb-6021a5b6e59f_dp.jpg",
+                    "share_string": "1e4c83a758800f9d",
+                    "brand_id": 2181,
+                    "type": 1,
+                    "share_url": "https://upqcreii.begenuin.com/community/coldplay-fans-unite",
+                    "no_of_views": 376,
+                    "no_of_members": 2,
+                    "no_of_videos": 14,
+                    "no_of_sparks": 0,
+                    "no_of_groups": 2
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "cef21fe2-7cf8-4220-832d-91822e758d7b",
+                    "group_name": "Concert Chronicles 🎤",
+                    "group_description": "Share experiences and stories from Coldplay concerts around the world.",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#EB6D4A",
+                    "text_color_code": "#D70000",
+                    "uuid": "48f863da-2b5c-4f68-96d3-687717303731",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "concert-chronicles",
+                    "share_string": "1e4c83c4c5001511",
+                    "type": 4,
+                    "share_url": "https://upqcreii.begenuin.com/loop/concert-chronicles?community=1e4c83a758800f9d",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 10,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 342,
+                    "no_of_members": 1,
+                    "no_of_videos": 13,
+                    "no_of_sparks": 0
+                },
+                "uuid": "0d7591ff-25ab-44a3-9ae7-40c03b89866e",
+                "video": {
+                    "duration": 14,
+                    "attached_link": null,
+                    "clickable_url": null,
+                    "conversation_at": 1737539854000,
+                    "description_data": null,
+                    "description_text": null,
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts": [
+                        {
+                            "links": [
+                                {
+                                    "image": "",
+                                    "link": "https://youtube.com/shorts/o2FFZXhDtNU",
+                                    "position": 1,
+                                    "title": "Dive deeper into the details - click here!"
+                                }
+                            ],
+                            "style": 1
+                        }
+                    ],
+                    "linkouts_id": 19200,
+                    "linkouts_inappbrowser": true,
+                    "media_url": "https://media.begenuin.com/temp_video/6790a22bb5ef23d17e20ff76_1737539846784.mp4",
+                    "media_url_m3u8": "temp_video/m3u8s/6790a22bb5ef23d17e20ff76_1737539846784/output.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "duration": "14",
+                        "resolution": "1080x1920",
+                        "size": "8171440"
+                    },
+                    "no_of_comments": 175,
+                    "no_of_shares": 0,
+                    "no_of_sparks": 0,
+                    "no_of_views": 53,
+                    "owner": {
+                        "uuid": "d1505422-34b9-4428-ba41-cee29636e614",
+                        "name": "coldplay",
+                        "username": "coldplay",
+                        "is_avatar": false,
+                        "profile_image": "https://media.begenuin.com/uploads/profile_images/1732269646974_croppedImage.png",
+                        "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/1732269646974_croppedImage.png",
+                        "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/1732269646974_croppedImage.png",
+                        "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/1732269646974_croppedImage.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 2181,
+                            "brand_slug": "coldplay",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://upqcreii.begenuin.com/profile/coldplay"
+                    },
+                    "share_url": "https://upqcreii.begenuin.com/video/1e4c83d63e0014a3?community=1e4c83a758800f9d&loop=1e4c83c4c5001511",
+                    "slug": "1e4c83d63e0014a3",
+                    "sprite_image_url": "https://media.begenuin.com/uploads/sprite/6790a22bb5ef23d17e20ff76_1737539846784.jpeg",
+                    "thumbnail_url": "https://media.begenuin.com/uploads/thumbnails/6790a22bb5ef23d17e20ff76_1737539846784.png",
+                    "thumbnail_url_l": "https://media.begenuin.com/uploads/thumbnails/l/6790a22bb5ef23d17e20ff76_1737539846784.png",
+                    "thumbnail_url_s": "https://media.begenuin.com/uploads/thumbnails/s/6790a22bb5ef23d17e20ff76_1737539846784.png",
+                    "uuid": "0d7591ff-25ab-44a3-9ae7-40c03b89866e",
+                    "video_summary": null,
+                    "card_layout_id": 1,
+                    "video_layout_id": 1,
+                    "placement_card_layout_id": 1,
+                    "placement_video_layout_id": 1,
+                    "placement_card_section_layout_id": 1,
+                    "source": "device"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "d1505422-34b9-4428-ba41-cee29636e614",
+                    "name": "coldplay",
+                    "username": "coldplay",
+                    "is_avatar": false,
+                    "profile_image": "https://media.begenuin.com/uploads/profile_images/1732269646974_croppedImage.png",
+                    "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/1732269646974_croppedImage.png",
+                    "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/1732269646974_croppedImage.png",
+                    "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/1732269646974_croppedImage.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 2181,
+                        "brand_slug": "coldplay",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://upqcreii.begenuin.com/profile/coldplay"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 2181,
+                        "name": "coldplay",
+                        "brand_slug": "coldplay",
+                        "brand_web_logo": "https://media.begenuin.com/uploads/brands/web_logo/brandWebLogo_1732270088992.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "coldplay"
+                    },
+                    "uuid": "01777857-570d-4787-b8aa-353f9d91e515",
+                    "handle": "tourvibes",
+                    "slug": "tour-vibes",
+                    "name": "Tour Vibes",
+                    "description": "Dive into the electrifying world of live music tours and fan experiences.",
+                    "color_code": "#4A9BBF",
+                    "text_color_code": "#00377F",
+                    "dp": "https://media.begenuin.com/uploads/profile_images/community/01777857-570d-4787-b8aa-353f9d91e515_dp.jpg",
+                    "dp_s": "https://media.begenuin.com/uploads/profile_images/community/s/01777857-570d-4787-b8aa-353f9d91e515_dp.jpg",
+                    "dp_m": "https://media.begenuin.com/uploads/profile_images/community/m/01777857-570d-4787-b8aa-353f9d91e515_dp.jpg",
+                    "dp_l": "https://media.begenuin.com/uploads/profile_images/community/l/01777857-570d-4787-b8aa-353f9d91e515_dp.jpg",
+                    "share_string": "1db93b7b7f000e4f",
+                    "brand_id": 2181,
+                    "type": 1,
+                    "share_url": "https://upqcreii.begenuin.com/community/tour-vibes",
+                    "no_of_views": 2107,
+                    "no_of_members": 8,
+                    "no_of_videos": 171,
+                    "no_of_sparks": 0,
+                    "no_of_groups": 21
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "69929f0d-ed3b-442c-bea5-3128bcecae83",
+                    "group_name": "Iconic Venues",
+                    "group_description": "Discuss the world's most legendary concert venues and their histories.",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#A482C6",
+                    "text_color_code": "#49058D",
+                    "uuid": "a5f88be4-c1fe-4596-9118-e5668024570d",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "iconic-venues",
+                    "share_string": "1db93b8c54001412",
+                    "type": 4,
+                    "share_url": "https://upqcreii.begenuin.com/loop/iconic-venues?community=1db93b7b7f000e4f",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 10,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 364,
+                    "no_of_members": 1,
+                    "no_of_videos": 11,
+                    "no_of_sparks": 0
+                },
+                "uuid": "84c0b25d-202d-414c-892d-96d51982dc7b",
+                "video": {
+                    "duration": 46,
+                    "attached_link": "",
+                    "clickable_url": null,
+                    "conversation_at": 1732597888000,
+                    "description_data": null,
+                    "description_text": null,
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts": [
+                        {
+                            "links": [
+                                {
+                                    "image": "",
+                                    "link": "https://youtube.com/shorts/sl-nUpBQA7g",
+                                    "position": 1,
+                                    "title": "Discover more information - click to explore!"
+                                }
+                            ],
+                            "style": 1
+                        }
+                    ],
+                    "linkouts_id": 16462,
+                    "linkouts_inappbrowser": true,
+                    "media_url": "https://media.begenuin.com/temp_video/6741e9ae7cce27345cbb7179_1732597878425.mp4",
+                    "media_url_m3u8": "temp_video/m3u8s/6741e9ae7cce27345cbb7179_1732597878425/output.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "duration": "46",
+                        "resolution": "1080x1920",
+                        "size": "36538888"
+                    },
+                    "no_of_comments": 265,
+                    "no_of_shares": 0,
+                    "no_of_sparks": 0,
+                    "no_of_views": 2,
+                    "owner": {
+                        "uuid": "d1505422-34b9-4428-ba41-cee29636e614",
+                        "name": "coldplay",
+                        "username": "coldplay",
+                        "is_avatar": false,
+                        "profile_image": "https://media.begenuin.com/uploads/profile_images/1732269646974_croppedImage.png",
+                        "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/1732269646974_croppedImage.png",
+                        "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/1732269646974_croppedImage.png",
+                        "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/1732269646974_croppedImage.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 2181,
+                            "brand_slug": "coldplay",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://upqcreii.begenuin.com/profile/coldplay"
+                    },
+                    "share_url": "https://upqcreii.begenuin.com/video/1db93b9fe600142b?community=1db93b7b7f000e4f&loop=1db93b8c54001412",
+                    "slug": "1db93b9fe600142b",
+                    "sprite_image_url": "https://media.begenuin.com/uploads/sprite/6741e9ae7cce27345cbb7179_1732597878425.jpeg",
+                    "thumbnail_url": "https://media.begenuin.com/uploads/thumbnails/6741e9ae7cce27345cbb7179_1732597878425.png",
+                    "thumbnail_url_l": "https://media.begenuin.com/uploads/thumbnails/l/6741e9ae7cce27345cbb7179_1732597878425.png",
+                    "thumbnail_url_s": "https://media.begenuin.com/uploads/thumbnails/s/6741e9ae7cce27345cbb7179_1732597878425.png",
+                    "uuid": "84c0b25d-202d-414c-892d-96d51982dc7b",
+                    "video_summary": null,
+                    "card_layout_id": 1,
+                    "video_layout_id": 1,
+                    "placement_card_layout_id": 1,
+                    "placement_video_layout_id": 1,
+                    "placement_card_section_layout_id": 1,
+                    "source": "device"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "d1505422-34b9-4428-ba41-cee29636e614",
+                    "name": "coldplay",
+                    "username": "coldplay",
+                    "is_avatar": false,
+                    "profile_image": "https://media.begenuin.com/uploads/profile_images/1732269646974_croppedImage.png",
+                    "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/1732269646974_croppedImage.png",
+                    "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/1732269646974_croppedImage.png",
+                    "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/1732269646974_croppedImage.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 2181,
+                        "brand_slug": "coldplay",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://upqcreii.begenuin.com/profile/coldplay"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 2181,
+                        "name": "coldplay",
+                        "brand_slug": "coldplay",
+                        "brand_web_logo": "https://media.begenuin.com/uploads/brands/web_logo/brandWebLogo_1732270088992.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "coldplay"
+                    },
+                    "uuid": "01777857-570d-4787-b8aa-353f9d91e515",
+                    "handle": "tourvibes",
+                    "slug": "tour-vibes",
+                    "name": "Tour Vibes",
+                    "description": "Dive into the electrifying world of live music tours and fan experiences.",
+                    "color_code": "#4A9BBF",
+                    "text_color_code": "#00377F",
+                    "dp": "https://media.begenuin.com/uploads/profile_images/community/01777857-570d-4787-b8aa-353f9d91e515_dp.jpg",
+                    "dp_s": "https://media.begenuin.com/uploads/profile_images/community/s/01777857-570d-4787-b8aa-353f9d91e515_dp.jpg",
+                    "dp_m": "https://media.begenuin.com/uploads/profile_images/community/m/01777857-570d-4787-b8aa-353f9d91e515_dp.jpg",
+                    "dp_l": "https://media.begenuin.com/uploads/profile_images/community/l/01777857-570d-4787-b8aa-353f9d91e515_dp.jpg",
+                    "share_string": "1db93b7b7f000e4f",
+                    "brand_id": 2181,
+                    "type": 1,
+                    "share_url": "https://upqcreii.begenuin.com/community/tour-vibes",
+                    "no_of_views": 2107,
+                    "no_of_members": 8,
+                    "no_of_videos": 171,
+                    "no_of_sparks": 0,
+                    "no_of_groups": 21
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "7a2e73d6-e473-4d82-9a76-fbf961a96b3f",
+                    "group_name": "Meet & Greets",
+                    "group_description": "Tips and tales from fan meet-ups and artist interactions.",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#A482C6",
+                    "text_color_code": "#49058D",
+                    "uuid": "19ce190a-b494-4230-a5a2-68d599c2dd9e",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "meet-greets",
+                    "share_string": "1db93b9daa001424",
+                    "type": 4,
+                    "share_url": "https://upqcreii.begenuin.com/loop/meet-greets?community=1db93b7b7f000e4f",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 10,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 95,
+                    "no_of_members": 1,
+                    "no_of_videos": 5,
+                    "no_of_sparks": 0
+                },
+                "uuid": "941b466a-7768-432a-9058-a3860ae4d9b4",
+                "video": {
+                    "duration": 20,
+                    "attached_link": "",
+                    "clickable_url": null,
+                    "conversation_at": 1732597890000,
+                    "description_data": "[\"first time 🌙 #flifil \"]",
+                    "description_text": "first time 🌙 #flifil ",
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts": [
+                        {
+                            "links": [
+                                {
+                                    "image": "https://media.begenuin.com/uploads/linkouts/380EAA00-E5FC-4CD1-83CF-179634739714.png",
+                                    "link": "https://www.tiktok.com/@coldplay/video/7377777952345296159",
+                                    "position": 1,
+                                    "title": "TikTok · coldplay"
+                                }
+                            ],
+                            "style": 1
+                        }
+                    ],
+                    "linkouts_id": 16466,
+                    "linkouts_inappbrowser": true,
+                    "media_url": "https://media.begenuin.com/temp_video/6741dc68a2fc48450d2fb83a_1732597887407.mp4",
+                    "media_url_m3u8": "temp_video/m3u8s/6741dc68a2fc48450d2fb83a_1732597887407/output.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "duration": "20",
+                        "resolution": "576x1024",
+                        "size": "6200089"
+                    },
+                    "no_of_comments": 282,
+                    "no_of_shares": 0,
+                    "no_of_sparks": 0,
+                    "no_of_views": 0,
+                    "owner": {
+                        "uuid": "d1505422-34b9-4428-ba41-cee29636e614",
+                        "name": "coldplay",
+                        "username": "coldplay",
+                        "is_avatar": false,
+                        "profile_image": "https://media.begenuin.com/uploads/profile_images/1732269646974_croppedImage.png",
+                        "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/1732269646974_croppedImage.png",
+                        "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/1732269646974_croppedImage.png",
+                        "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/1732269646974_croppedImage.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 2181,
+                            "brand_slug": "coldplay",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://upqcreii.begenuin.com/profile/coldplay"
+                    },
+                    "share_url": "https://upqcreii.begenuin.com/video/first-time-flifil?community=1db93b7b7f000e4f&loop=1db93b9daa001424",
+                    "slug": "first-time-flifil",
+                    "sprite_image_url": "https://media.begenuin.com/uploads/sprite/6741dc68a2fc48450d2fb83a_1732597887407.jpeg",
+                    "thumbnail_url": "https://media.begenuin.com/uploads/thumbnails/6741dc68a2fc48450d2fb83a_1732597887407.png",
+                    "thumbnail_url_l": "https://media.begenuin.com/uploads/thumbnails/l/6741dc68a2fc48450d2fb83a_1732597887407.png",
+                    "thumbnail_url_s": "https://media.begenuin.com/uploads/thumbnails/s/6741dc68a2fc48450d2fb83a_1732597887407.png",
+                    "uuid": "941b466a-7768-432a-9058-a3860ae4d9b4",
+                    "video_summary": null,
+                    "card_layout_id": 1,
+                    "video_layout_id": 1,
+                    "placement_card_layout_id": 1,
+                    "placement_video_layout_id": 1,
+                    "placement_card_section_layout_id": 1,
+                    "source": "device"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "d1505422-34b9-4428-ba41-cee29636e614",
+                    "name": "coldplay",
+                    "username": "coldplay",
+                    "is_avatar": false,
+                    "profile_image": "https://media.begenuin.com/uploads/profile_images/1732269646974_croppedImage.png",
+                    "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/1732269646974_croppedImage.png",
+                    "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/1732269646974_croppedImage.png",
+                    "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/1732269646974_croppedImage.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 2181,
+                        "brand_slug": "coldplay",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://upqcreii.begenuin.com/profile/coldplay"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 2181,
+                        "name": "coldplay",
+                        "brand_slug": "coldplay",
+                        "brand_web_logo": "https://media.begenuin.com/uploads/brands/web_logo/brandWebLogo_1732270088992.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "coldplay"
+                    },
+                    "uuid": "01777857-570d-4787-b8aa-353f9d91e515",
+                    "handle": "tourvibes",
+                    "slug": "tour-vibes",
+                    "name": "Tour Vibes",
+                    "description": "Dive into the electrifying world of live music tours and fan experiences.",
+                    "color_code": "#4A9BBF",
+                    "text_color_code": "#00377F",
+                    "dp": "https://media.begenuin.com/uploads/profile_images/community/01777857-570d-4787-b8aa-353f9d91e515_dp.jpg",
+                    "dp_s": "https://media.begenuin.com/uploads/profile_images/community/s/01777857-570d-4787-b8aa-353f9d91e515_dp.jpg",
+                    "dp_m": "https://media.begenuin.com/uploads/profile_images/community/m/01777857-570d-4787-b8aa-353f9d91e515_dp.jpg",
+                    "dp_l": "https://media.begenuin.com/uploads/profile_images/community/l/01777857-570d-4787-b8aa-353f9d91e515_dp.jpg",
+                    "share_string": "1db93b7b7f000e4f",
+                    "brand_id": 2181,
+                    "type": 1,
+                    "share_url": "https://upqcreii.begenuin.com/community/tour-vibes",
+                    "no_of_views": 2107,
+                    "no_of_members": 8,
+                    "no_of_videos": 171,
+                    "no_of_sparks": 0,
+                    "no_of_groups": 21
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "f139bbe9-612e-47b0-ad12-748fb8ab0f2e",
+                    "group_name": "Fan Moments",
+                    "group_description": "Share your unforgettable concert experiences and fan meet stories.",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#A576A6",
+                    "text_color_code": "#4B004D",
+                    "uuid": "7ea427fb-c289-48b3-b7c4-a4f5bcf0cb99",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "fan-moments-c1c6",
+                    "share_string": "1db93c255f0014cf",
+                    "type": 4,
+                    "share_url": "https://upqcreii.begenuin.com/loop/fan-moments-c1c6?community=1db93b7b7f000e4f",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 10,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 314,
+                    "no_of_members": 1,
+                    "no_of_videos": 39,
+                    "no_of_sparks": 0
+                },
+                "uuid": "a8238cfd-ae09-4c2b-878a-f52e8a81b3ef",
+                "video": {
+                    "duration": 31,
+                    "attached_link": "",
+                    "clickable_url": null,
+                    "conversation_at": 1732597987000,
+                    "description_data": "[\"When you meet that special somebody ❤️  @Zerb #coldplay #OnTour #newmusic \"]",
+                    "description_text": "When you meet that special somebody ❤️  @Zerb #coldplay #OnTour #newmusic ",
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts": [
+                        {
+                            "links": [
+                                {
+                                    "image": "https://media.begenuin.com/uploads/linkouts/9A3A2EF9-7F7A-46C9-8E35-3500083E345A.png",
+                                    "link": "https://www.tiktok.com/@coldplay/video/7400755929530060062",
+                                    "position": 1,
+                                    "title": "TikTok · coldplay"
+                                }
+                            ],
+                            "style": 1
+                        }
+                    ],
+                    "linkouts_id": 16561,
+                    "linkouts_inappbrowser": true,
+                    "media_url": "https://media.begenuin.com/temp_video/6741d978a2fc48450d2fb7f3_1732597956745.mp4",
+                    "media_url_m3u8": "temp_video/m3u8s/6741d978a2fc48450d2fb7f3_1732597956745/output.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "duration": "31",
+                        "resolution": "576x1024",
+                        "size": "9977964"
+                    },
+                    "no_of_comments": 287,
+                    "no_of_shares": 0,
+                    "no_of_sparks": 0,
+                    "no_of_views": 136,
+                    "owner": {
+                        "uuid": "d1505422-34b9-4428-ba41-cee29636e614",
+                        "name": "coldplay",
+                        "username": "coldplay",
+                        "is_avatar": false,
+                        "profile_image": "https://media.begenuin.com/uploads/profile_images/1732269646974_croppedImage.png",
+                        "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/1732269646974_croppedImage.png",
+                        "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/1732269646974_croppedImage.png",
+                        "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/1732269646974_croppedImage.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 2181,
+                            "brand_slug": "coldplay",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://upqcreii.begenuin.com/profile/coldplay"
+                    },
+                    "share_url": "https://upqcreii.begenuin.com/video/when-you-meet-that-special-somebody-zerb-coldplay?community=1db93b7b7f000e4f&loop=1db93c255f0014cf",
+                    "slug": "when-you-meet-that-special-somebody-zerb-coldplay",
+                    "sprite_image_url": "https://media.begenuin.com/uploads/sprite/6741d978a2fc48450d2fb7f3_1732597956745.jpeg",
+                    "thumbnail_url": "https://media.begenuin.com/uploads/thumbnails/6741d978a2fc48450d2fb7f3_1732597956745.png",
+                    "thumbnail_url_l": "https://media.begenuin.com/uploads/thumbnails/l/6741d978a2fc48450d2fb7f3_1732597956745.png",
+                    "thumbnail_url_s": "https://media.begenuin.com/uploads/thumbnails/s/6741d978a2fc48450d2fb7f3_1732597956745.png",
+                    "uuid": "a8238cfd-ae09-4c2b-878a-f52e8a81b3ef",
+                    "video_summary": null,
+                    "card_layout_id": 1,
+                    "video_layout_id": 1,
+                    "placement_card_layout_id": 1,
+                    "placement_video_layout_id": 1,
+                    "placement_card_section_layout_id": 1,
+                    "source": "device"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "d1505422-34b9-4428-ba41-cee29636e614",
+                    "name": "coldplay",
+                    "username": "coldplay",
+                    "is_avatar": false,
+                    "profile_image": "https://media.begenuin.com/uploads/profile_images/1732269646974_croppedImage.png",
+                    "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/1732269646974_croppedImage.png",
+                    "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/1732269646974_croppedImage.png",
+                    "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/1732269646974_croppedImage.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 2181,
+                        "brand_slug": "coldplay",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://upqcreii.begenuin.com/profile/coldplay"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 2181,
+                        "name": "coldplay",
+                        "brand_slug": "coldplay",
+                        "brand_web_logo": "https://media.begenuin.com/uploads/brands/web_logo/brandWebLogo_1732270088992.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "coldplay"
+                    },
+                    "uuid": "1d11f5eb-1ee7-4ecf-97bb-6021a5b6e59f",
+                    "handle": "coldplayfansunite",
+                    "slug": "coldplay-fans-unite",
+                    "name": "Coldplay Fans Unite 🎶✨",
+                    "description": "Join millions of Coldplay fans to celebrate their music, concerts, and creative journey.",
+                    "color_code": "#A576A6",
+                    "text_color_code": "#4B004D",
+                    "dp": "https://media.begenuin.com/uploads/profile_images/community/1d11f5eb-1ee7-4ecf-97bb-6021a5b6e59f_dp.jpg",
+                    "dp_s": "https://media.begenuin.com/uploads/profile_images/community/s/1d11f5eb-1ee7-4ecf-97bb-6021a5b6e59f_dp.jpg",
+                    "dp_m": "https://media.begenuin.com/uploads/profile_images/community/m/1d11f5eb-1ee7-4ecf-97bb-6021a5b6e59f_dp.jpg",
+                    "dp_l": "https://media.begenuin.com/uploads/profile_images/community/l/1d11f5eb-1ee7-4ecf-97bb-6021a5b6e59f_dp.jpg",
+                    "share_string": "1e4c83a758800f9d",
+                    "brand_id": 2181,
+                    "type": 1,
+                    "share_url": "https://upqcreii.begenuin.com/community/coldplay-fans-unite",
+                    "no_of_views": 376,
+                    "no_of_members": 2,
+                    "no_of_videos": 14,
+                    "no_of_sparks": 0,
+                    "no_of_groups": 2
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "cef21fe2-7cf8-4220-832d-91822e758d7b",
+                    "group_name": "Concert Chronicles 🎤",
+                    "group_description": "Share experiences and stories from Coldplay concerts around the world.",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#EB6D4A",
+                    "text_color_code": "#D70000",
+                    "uuid": "48f863da-2b5c-4f68-96d3-687717303731",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "concert-chronicles",
+                    "share_string": "1e4c83c4c5001511",
+                    "type": 4,
+                    "share_url": "https://upqcreii.begenuin.com/loop/concert-chronicles?community=1e4c83a758800f9d",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 10,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 342,
+                    "no_of_members": 1,
+                    "no_of_videos": 13,
+                    "no_of_sparks": 0
+                },
+                "uuid": "735228b9-cb16-4d5f-8d89-c661110ac0f2",
+                "video": {
+                    "duration": 27,
+                    "attached_link": null,
+                    "clickable_url": null,
+                    "conversation_at": 1737539853000,
+                    "description_data": null,
+                    "description_text": null,
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts": [
+                        {
+                            "links": [
+                                {
+                                    "image": "",
+                                    "link": "https://youtube.com/shorts/tKohD8HW2xA",
+                                    "position": 1,
+                                    "title": "Uncover all the insights - click here to explore!"
+                                }
+                            ],
+                            "style": 1
+                        }
+                    ],
+                    "linkouts_id": 19198,
+                    "linkouts_inappbrowser": true,
+                    "media_url": "https://media.begenuin.com/temp_video/6790a296b5ef23d17e20ff7b_1737539846784.mp4",
+                    "media_url_m3u8": "temp_video/m3u8s/6790a296b5ef23d17e20ff7b_1737539846784/output.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "duration": "27",
+                        "resolution": "1080x1920",
+                        "size": "14744765"
+                    },
+                    "no_of_comments": 188,
+                    "no_of_shares": 0,
+                    "no_of_sparks": 0,
+                    "no_of_views": 4,
+                    "owner": {
+                        "uuid": "d1505422-34b9-4428-ba41-cee29636e614",
+                        "name": "coldplay",
+                        "username": "coldplay",
+                        "is_avatar": false,
+                        "profile_image": "https://media.begenuin.com/uploads/profile_images/1732269646974_croppedImage.png",
+                        "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/1732269646974_croppedImage.png",
+                        "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/1732269646974_croppedImage.png",
+                        "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/1732269646974_croppedImage.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 2181,
+                            "brand_slug": "coldplay",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://upqcreii.begenuin.com/profile/coldplay"
+                    },
+                    "share_url": "https://upqcreii.begenuin.com/video/1e4c83d324801516?community=1e4c83a758800f9d&loop=1e4c83c4c5001511",
+                    "slug": "1e4c83d324801516",
+                    "sprite_image_url": "https://media.begenuin.com/uploads/sprite/6790a296b5ef23d17e20ff7b_1737539846784.jpeg",
+                    "thumbnail_url": "https://media.begenuin.com/uploads/thumbnails/6790a296b5ef23d17e20ff7b_1737539846784.png",
+                    "thumbnail_url_l": "https://media.begenuin.com/uploads/thumbnails/l/6790a296b5ef23d17e20ff7b_1737539846784.png",
+                    "thumbnail_url_s": "https://media.begenuin.com/uploads/thumbnails/s/6790a296b5ef23d17e20ff7b_1737539846784.png",
+                    "uuid": "735228b9-cb16-4d5f-8d89-c661110ac0f2",
+                    "video_summary": null,
+                    "card_layout_id": 1,
+                    "video_layout_id": 1,
+                    "placement_card_layout_id": 1,
+                    "placement_video_layout_id": 1,
+                    "placement_card_section_layout_id": 1,
+                    "source": "device"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "d1505422-34b9-4428-ba41-cee29636e614",
+                    "name": "coldplay",
+                    "username": "coldplay",
+                    "is_avatar": false,
+                    "profile_image": "https://media.begenuin.com/uploads/profile_images/1732269646974_croppedImage.png",
+                    "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/1732269646974_croppedImage.png",
+                    "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/1732269646974_croppedImage.png",
+                    "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/1732269646974_croppedImage.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 2181,
+                        "brand_slug": "coldplay",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://upqcreii.begenuin.com/profile/coldplay"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 2181,
+                        "name": "coldplay",
+                        "brand_slug": "coldplay",
+                        "brand_web_logo": "https://media.begenuin.com/uploads/brands/web_logo/brandWebLogo_1732270088992.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "coldplay"
+                    },
+                    "uuid": "01777857-570d-4787-b8aa-353f9d91e515",
+                    "handle": "tourvibes",
+                    "slug": "tour-vibes",
+                    "name": "Tour Vibes",
+                    "description": "Dive into the electrifying world of live music tours and fan experiences.",
+                    "color_code": "#4A9BBF",
+                    "text_color_code": "#00377F",
+                    "dp": "https://media.begenuin.com/uploads/profile_images/community/01777857-570d-4787-b8aa-353f9d91e515_dp.jpg",
+                    "dp_s": "https://media.begenuin.com/uploads/profile_images/community/s/01777857-570d-4787-b8aa-353f9d91e515_dp.jpg",
+                    "dp_m": "https://media.begenuin.com/uploads/profile_images/community/m/01777857-570d-4787-b8aa-353f9d91e515_dp.jpg",
+                    "dp_l": "https://media.begenuin.com/uploads/profile_images/community/l/01777857-570d-4787-b8aa-353f9d91e515_dp.jpg",
+                    "share_string": "1db93b7b7f000e4f",
+                    "brand_id": 2181,
+                    "type": 1,
+                    "share_url": "https://upqcreii.begenuin.com/community/tour-vibes",
+                    "no_of_views": 2107,
+                    "no_of_members": 8,
+                    "no_of_videos": 171,
+                    "no_of_sparks": 0,
+                    "no_of_groups": 21
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "69929f0d-ed3b-442c-bea5-3128bcecae83",
+                    "group_name": "Iconic Venues",
+                    "group_description": "Discuss the world's most legendary concert venues and their histories.",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#A482C6",
+                    "text_color_code": "#49058D",
+                    "uuid": "a5f88be4-c1fe-4596-9118-e5668024570d",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "iconic-venues",
+                    "share_string": "1db93b8c54001412",
+                    "type": 4,
+                    "share_url": "https://upqcreii.begenuin.com/loop/iconic-venues?community=1db93b7b7f000e4f",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 10,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 364,
+                    "no_of_members": 1,
+                    "no_of_videos": 11,
+                    "no_of_sparks": 0
+                },
+                "uuid": "67e42128-5a09-4dcf-8bbf-a8bf523765db",
+                "video": {
+                    "duration": 32,
+                    "attached_link": "",
+                    "clickable_url": null,
+                    "conversation_at": 1732597886000,
+                    "description_data": null,
+                    "description_text": null,
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts": [
+                        {
+                            "links": [
+                                {
+                                    "image": "",
+                                    "link": "https://youtube.com/shorts/VKiB2s86hYA",
+                                    "position": 1,
+                                    "title": "Find out the full story - click to learn more!"
+                                }
+                            ],
+                            "style": 1
+                        }
+                    ],
+                    "linkouts_id": 16458,
+                    "linkouts_inappbrowser": true,
+                    "media_url": "https://media.begenuin.com/temp_video/6741e9c57cce27345cbb717d_1732597878405.mp4",
+                    "media_url_m3u8": "temp_video/m3u8s/6741e9c57cce27345cbb717d_1732597878405/output.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "duration": "32",
+                        "resolution": "1080x1920",
+                        "size": "25464291"
+                    },
+                    "no_of_comments": 288,
+                    "no_of_shares": 0,
+                    "no_of_sparks": 0,
+                    "no_of_views": 0,
+                    "owner": {
+                        "uuid": "d1505422-34b9-4428-ba41-cee29636e614",
+                        "name": "coldplay",
+                        "username": "coldplay",
+                        "is_avatar": false,
+                        "profile_image": "https://media.begenuin.com/uploads/profile_images/1732269646974_croppedImage.png",
+                        "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/1732269646974_croppedImage.png",
+                        "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/1732269646974_croppedImage.png",
+                        "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/1732269646974_croppedImage.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 2181,
+                            "brand_slug": "coldplay",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://upqcreii.begenuin.com/profile/coldplay"
+                    },
+                    "share_url": "https://upqcreii.begenuin.com/video/1db93b9c6880142e?community=1db93b7b7f000e4f&loop=1db93b8c54001412",
+                    "slug": "1db93b9c6880142e",
+                    "sprite_image_url": "https://media.begenuin.com/uploads/sprite/6741e9c57cce27345cbb717d_1732597878405.jpeg",
+                    "thumbnail_url": "https://media.begenuin.com/uploads/thumbnails/6741e9c57cce27345cbb717d_1732597878405.png",
+                    "thumbnail_url_l": "https://media.begenuin.com/uploads/thumbnails/l/6741e9c57cce27345cbb717d_1732597878405.png",
+                    "thumbnail_url_s": "https://media.begenuin.com/uploads/thumbnails/s/6741e9c57cce27345cbb717d_1732597878405.png",
+                    "uuid": "67e42128-5a09-4dcf-8bbf-a8bf523765db",
+                    "video_summary": null,
+                    "card_layout_id": 1,
+                    "video_layout_id": 1,
+                    "placement_card_layout_id": 1,
+                    "placement_video_layout_id": 1,
+                    "placement_card_section_layout_id": 1,
+                    "source": "device"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "d1505422-34b9-4428-ba41-cee29636e614",
+                    "name": "coldplay",
+                    "username": "coldplay",
+                    "is_avatar": false,
+                    "profile_image": "https://media.begenuin.com/uploads/profile_images/1732269646974_croppedImage.png",
+                    "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/1732269646974_croppedImage.png",
+                    "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/1732269646974_croppedImage.png",
+                    "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/1732269646974_croppedImage.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 2181,
+                        "brand_slug": "coldplay",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://upqcreii.begenuin.com/profile/coldplay"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 2181,
+                        "name": "coldplay",
+                        "brand_slug": "coldplay",
+                        "brand_web_logo": "https://media.begenuin.com/uploads/brands/web_logo/brandWebLogo_1732270088992.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "coldplay"
+                    },
+                    "uuid": "01777857-570d-4787-b8aa-353f9d91e515",
+                    "handle": "tourvibes",
+                    "slug": "tour-vibes",
+                    "name": "Tour Vibes",
+                    "description": "Dive into the electrifying world of live music tours and fan experiences.",
+                    "color_code": "#4A9BBF",
+                    "text_color_code": "#00377F",
+                    "dp": "https://media.begenuin.com/uploads/profile_images/community/01777857-570d-4787-b8aa-353f9d91e515_dp.jpg",
+                    "dp_s": "https://media.begenuin.com/uploads/profile_images/community/s/01777857-570d-4787-b8aa-353f9d91e515_dp.jpg",
+                    "dp_m": "https://media.begenuin.com/uploads/profile_images/community/m/01777857-570d-4787-b8aa-353f9d91e515_dp.jpg",
+                    "dp_l": "https://media.begenuin.com/uploads/profile_images/community/l/01777857-570d-4787-b8aa-353f9d91e515_dp.jpg",
+                    "share_string": "1db93b7b7f000e4f",
+                    "brand_id": 2181,
+                    "type": 1,
+                    "share_url": "https://upqcreii.begenuin.com/community/tour-vibes",
+                    "no_of_views": 2107,
+                    "no_of_members": 8,
+                    "no_of_videos": 171,
+                    "no_of_sparks": 0,
+                    "no_of_groups": 21
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "ecced41d-2104-4683-a4a0-52b8e192d81a",
+                    "group_name": "Setlist Secrets",
+                    "group_description": "Discuss and predict setlists, surprises, and live performance highlights.",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#D6EAFC",
+                    "text_color_code": "#ADD5F9",
+                    "uuid": "12576065-02f9-433d-b9ad-d4e3f7c4eaa4",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "setlist-secrets",
+                    "share_string": "1db93bef7d00148e",
+                    "type": 4,
+                    "share_url": "https://upqcreii.begenuin.com/loop/setlist-secrets?community=1db93b7b7f000e4f",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 10,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 218,
+                    "no_of_members": 1,
+                    "no_of_videos": 21,
+                    "no_of_sparks": 0
+                },
+                "uuid": "d8c14dd1-c07d-429d-b5b3-1d9ad6cb8af4",
+                "video": {
+                    "duration": 21,
+                    "attached_link": "",
+                    "clickable_url": null,
+                    "conversation_at": 1732597941000,
+                    "description_data": "[\"#FLIFIL \"]",
+                    "description_text": "#FLIFIL ",
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts": [
+                        {
+                            "links": [
+                                {
+                                    "image": "https://media.begenuin.com/uploads/linkouts/AFCD70BE-22CA-4DAC-84D5-946B28213BE5.png",
+                                    "link": "https://www.tiktok.com/@coldplay/video/7379675673801100574",
+                                    "position": 1,
+                                    "title": "TikTok · coldplay"
+                                }
+                            ],
+                            "style": 1
+                        }
+                    ],
+                    "linkouts_id": 16510,
+                    "linkouts_inappbrowser": true,
+                    "media_url": "https://media.begenuin.com/temp_video/6741da3ca2fc48450d2fb80b_1732597929195.mp4",
+                    "media_url_m3u8": "temp_video/m3u8s/6741da3ca2fc48450d2fb80b_1732597929195/output.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "duration": "21",
+                        "resolution": "576x1024",
+                        "size": "8480747"
+                    },
+                    "no_of_comments": 264,
+                    "no_of_shares": 0,
+                    "no_of_sparks": 0,
+                    "no_of_views": 0,
+                    "owner": {
+                        "uuid": "d1505422-34b9-4428-ba41-cee29636e614",
+                        "name": "coldplay",
+                        "username": "coldplay",
+                        "is_avatar": false,
+                        "profile_image": "https://media.begenuin.com/uploads/profile_images/1732269646974_croppedImage.png",
+                        "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/1732269646974_croppedImage.png",
+                        "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/1732269646974_croppedImage.png",
+                        "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/1732269646974_croppedImage.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 2181,
+                            "brand_slug": "coldplay",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://upqcreii.begenuin.com/profile/coldplay"
+                    },
+                    "share_url": "https://upqcreii.begenuin.com/video/flifil?community=1db93b7b7f000e4f&loop=1db93bef7d00148e",
+                    "slug": "flifil",
+                    "sprite_image_url": "https://media.begenuin.com/uploads/sprite/6741da3ca2fc48450d2fb80b_1732597929195.jpeg",
+                    "thumbnail_url": "https://media.begenuin.com/uploads/thumbnails/6741da3ca2fc48450d2fb80b_1732597929195.png",
+                    "thumbnail_url_l": "https://media.begenuin.com/uploads/thumbnails/l/6741da3ca2fc48450d2fb80b_1732597929195.png",
+                    "thumbnail_url_s": "https://media.begenuin.com/uploads/thumbnails/s/6741da3ca2fc48450d2fb80b_1732597929195.png",
+                    "uuid": "d8c14dd1-c07d-429d-b5b3-1d9ad6cb8af4",
+                    "video_summary": null,
+                    "card_layout_id": 1,
+                    "video_layout_id": 1,
+                    "placement_card_layout_id": 1,
+                    "placement_video_layout_id": 1,
+                    "placement_card_section_layout_id": 1,
+                    "source": "device"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "d1505422-34b9-4428-ba41-cee29636e614",
+                    "name": "coldplay",
+                    "username": "coldplay",
+                    "is_avatar": false,
+                    "profile_image": "https://media.begenuin.com/uploads/profile_images/1732269646974_croppedImage.png",
+                    "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/1732269646974_croppedImage.png",
+                    "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/1732269646974_croppedImage.png",
+                    "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/1732269646974_croppedImage.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 2181,
+                        "brand_slug": "coldplay",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://upqcreii.begenuin.com/profile/coldplay"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 2181,
+                        "name": "coldplay",
+                        "brand_slug": "coldplay",
+                        "brand_web_logo": "https://media.begenuin.com/uploads/brands/web_logo/brandWebLogo_1732270088992.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "coldplay"
+                    },
+                    "uuid": "01777857-570d-4787-b8aa-353f9d91e515",
+                    "handle": "tourvibes",
+                    "slug": "tour-vibes",
+                    "name": "Tour Vibes",
+                    "description": "Dive into the electrifying world of live music tours and fan experiences.",
+                    "color_code": "#4A9BBF",
+                    "text_color_code": "#00377F",
+                    "dp": "https://media.begenuin.com/uploads/profile_images/community/01777857-570d-4787-b8aa-353f9d91e515_dp.jpg",
+                    "dp_s": "https://media.begenuin.com/uploads/profile_images/community/s/01777857-570d-4787-b8aa-353f9d91e515_dp.jpg",
+                    "dp_m": "https://media.begenuin.com/uploads/profile_images/community/m/01777857-570d-4787-b8aa-353f9d91e515_dp.jpg",
+                    "dp_l": "https://media.begenuin.com/uploads/profile_images/community/l/01777857-570d-4787-b8aa-353f9d91e515_dp.jpg",
+                    "share_string": "1db93b7b7f000e4f",
+                    "brand_id": 2181,
+                    "type": 1,
+                    "share_url": "https://upqcreii.begenuin.com/community/tour-vibes",
+                    "no_of_views": 2107,
+                    "no_of_members": 8,
+                    "no_of_videos": 171,
+                    "no_of_sparks": 0,
+                    "no_of_groups": 21
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "6babd9ae-b9b7-4a98-9efc-a3b5a7ae3b6a",
+                    "group_name": "Art & Design",
+                    "group_description": "Share your fan art, designs, and creative projects inspired by music.",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#8DC6E8",
+                    "text_color_code": "#1B8DD1",
+                    "uuid": "d4e3777e-a7ad-412e-87f6-b2031197ed20",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "art-design",
+                    "share_string": "1db93c25ee8014e1",
+                    "type": 4,
+                    "share_url": "https://upqcreii.begenuin.com/loop/art-design?community=1db93b7b7f000e4f",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 10,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 74,
+                    "no_of_members": 2,
+                    "no_of_videos": 6,
+                    "no_of_sparks": 0
+                },
+                "uuid": "53c5a93e-3498-4825-a203-99b6179949bd",
+                "video": {
+                    "duration": 27,
+                    "attached_link": "",
+                    "clickable_url": null,
+                    "conversation_at": 1732597990000,
+                    "description_data": "[\"Jonny x WE PRAY 🎸🔥 #jonnybuckland #OnTour #behindthesong #wepray #coldplay \"]",
+                    "description_text": "Jonny x WE PRAY 🎸🔥 #jonnybuckland #OnTour #behindthesong #wepray #coldplay ",
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts": [
+                        {
+                            "links": [
+                                {
+                                    "image": "https://media.begenuin.com/uploads/linkouts/1F48B287-FFCA-40BD-B191-2A85505B17B8.png",
+                                    "link": "https://www.tiktok.com/@coldplay/video/7419751372922440990",
+                                    "position": 1,
+                                    "title": "TikTok · coldplay"
+                                }
+                            ],
+                            "style": 1
+                        }
+                    ],
+                    "linkouts_id": 16577,
+                    "linkouts_inappbrowser": true,
+                    "media_url": "https://media.begenuin.com/temp_video/6741d839a2fc48450d2fb7de_1732597957046.mp4",
+                    "media_url_m3u8": "temp_video/m3u8s/6741d839a2fc48450d2fb7de_1732597957046/output.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "duration": "27",
+                        "resolution": "576x1024",
+                        "size": "4451474"
+                    },
+                    "no_of_comments": 273,
+                    "no_of_shares": 0,
+                    "no_of_sparks": 0,
+                    "no_of_views": 0,
+                    "owner": {
+                        "uuid": "d1505422-34b9-4428-ba41-cee29636e614",
+                        "name": "coldplay",
+                        "username": "coldplay",
+                        "is_avatar": false,
+                        "profile_image": "https://media.begenuin.com/uploads/profile_images/1732269646974_croppedImage.png",
+                        "profile_image_s": "https://media.begenuin.com/uploads/profile_images/s/1732269646974_croppedImage.png",
+                        "profile_image_m": "https://media.begenuin.com/uploads/profile_images/m/1732269646974_croppedImage.png",
+                        "profile_image_l": "https://media.begenuin.com/uploads/profile_images/l/1732269646974_croppedImage.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 2181,
+                            "brand_slug": "coldplay",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://upqcreii.begenuin.com/profile/coldplay"
+                    },
+                    "share_url": "https://upqcreii.begenuin.com/video/jonny-x-we-pray-jonnybuckland-ontour?community=1db93b7b7f000e4f&loop=1db93c25ee8014e1",
+                    "slug": "jonny-x-we-pray-jonnybuckland-ontour",
+                    "sprite_image_url": "https://media.begenuin.com/uploads/sprite/6741d839a2fc48450d2fb7de_1732597957046.jpeg",
+                    "thumbnail_url": "https://media.begenuin.com/uploads/thumbnails/6741d839a2fc48450d2fb7de_1732597957046.png",
+                    "thumbnail_url_l": "https://media.begenuin.com/uploads/thumbnails/l/6741d839a2fc48450d2fb7de_1732597957046.png",
+                    "thumbnail_url_s": "https://media.begenuin.com/uploads/thumbnails/s/6741d839a2fc48450d2fb7de_1732597957046.png",
+                    "uuid": "53c5a93e-3498-4825-a203-99b6179949bd",
+                    "video_summary": null,
+                    "card_layout_id": 1,
+                    "video_layout_id": 1,
+                    "placement_card_layout_id": 1,
+                    "placement_video_layout_id": 1,
+                    "placement_card_section_layout_id": 1,
+                    "source": "device"
+                }
+            }
+        ],
+        "has_section": false,
+        "is_ds_feed": true,
+        "no_of_videos": 20,
+        "page_session": "plc_ntqkGlPDD5EF2qZp"
+    }
+}

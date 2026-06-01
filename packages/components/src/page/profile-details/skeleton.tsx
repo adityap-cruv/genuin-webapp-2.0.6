@@ -5,12 +5,14 @@ import { CommunityListSkeleton } from "@genuin/components/templates/profile-deta
 
 export function ProfileDetailsSkeleton() {
   return (
-    <div className="gencl:w-full gencl:overflow-auto gencl:h-full gencl:sm:p-6! gencl:p-4">
-      <GenericDetailsSkeleton className="gencl:hidden gencl:md:flex!" hasImage={true} hasLinks={true} />
-      <GenericDetailsSkeleton className="gencl:flex gencl:md:hidden!" hasImage={false} hasLinks={false} />
-      <TabsSkeleton noOfTabs={1} className="gencl:pt-6" />
-      <div className="gencl:pt-6">
-        <CommunityListSkeleton />
+    <div className="gencl:w-full gencl:overflow-auto gencl:h-full">
+      <div className="gencl:max-w-7xl gencl:mx-auto gencl:sm:p-6! gencl:p-4">
+        <GenericDetailsSkeleton className="gencl:hidden gencl:md:flex!" hasImage={true} hasLinks={true} />
+        <GenericDetailsSkeleton className="gencl:flex gencl:md:hidden!" hasImage={false} hasLinks={false} />
+        <TabsSkeleton noOfTabs={2} className="gencl:pt-6 gencl:lg:[&>div>:last-child]:hidden!" />
+        <div className="gencl:pt-6">
+          <CommunityListSkeleton />
+        </div>
       </div>
     </div>
   );

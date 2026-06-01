@@ -96,37 +96,41 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
         metadata={{ type: groupDetails.isPrivate ? "PRIVATE" : "PUBLIC" }}
         ctas={<div className="gencl:flex gencl:gap-2 gencl:justify-end">{createCtas({ inTopBar: true })}</div>}
       />
-      <div className="gencl:sm:p-6! gencl:p-0 gencl:flex gencl:h-full gencl:gap-6 gencl:flex-grow gencl:overflow-auto">
-        <div className="gencl:w-full gencl:overflow-auto gencl:flex gencl:flex-col gencl:gap-0 gencl:sm:gap-6!">
-          <GenericDetails
-            id={detailsId}
-            className="gencl:p-4 gencl:pb-0 gencl:sm:p-0!"
-            variant="default"
-            title={groupDetails.name ?? ""}
-            metadata={
-              <GenericDetailsMetadata
-                privacyInfo={{ isPrivate: groupDetails.isPrivate }}
-                stats={{
-                  Members: groupDetails.noOfMembers,
-                  Posts: groupDetails.noOfVideos,
-                }}
+      <div className="gencl:sm:p-6! gencl:p-0 gencl:h-full gencl:flex-grow gencl:overflow-auto">
+        <div className="gencl:flex gencl:gap-6">
+          <div className="gencl:flex-1 gencl:flex gencl:justify-center gencl:min-w-0">
+            <div className="gencl:w-full gencl:max-w-7xl gencl:overflow-auto gencl:flex gencl:flex-col gencl:gap-0 gencl:sm:gap-6!">
+              <GenericDetails
+                id={detailsId}
+                className="gencl:p-4 gencl:pb-0 gencl:sm:p-0!"
+                variant="default"
+                title={groupDetails.name ?? ""}
+                metadata={
+                  <GenericDetailsMetadata
+                    privacyInfo={{ isPrivate: groupDetails.isPrivate }}
+                    stats={{
+                      Members: groupDetails.noOfMembers,
+                      Posts: groupDetails.noOfVideos,
+                    }}
+                  />
+                }
+                description={groupDetails.description ?? ""}
+                ctas={<div className="gencl:gap-2 gencl:flex gencl:items-center">{createCtas({})}</div>}
               />
-            }
-            description={groupDetails.description ?? ""}
-            ctas={<div className="gencl:gap-2 gencl:flex gencl:items-center">{createCtas({})}</div>}
-          />
-          {showPrivateGroupAccess ? (
-            <ComponentErrorState type="PRIVATE_GROUP" className="gencl:my-4" />
-          ) : (
-            <GroupDetailsTabs
-              className="gencl:pb-6"
-              slug={slug}
-              aboutComponent={<About groupDetails={groupDetails} variant="mobile" />}
-              ownerId={groupDetails.owner.id}
-            />
-          )}
+              {showPrivateGroupAccess ? (
+                <ComponentErrorState type="PRIVATE_GROUP" className="gencl:my-4" />
+              ) : (
+                <GroupDetailsTabs
+                  className="gencl:pb-6"
+                  slug={slug}
+                  aboutComponent={<About groupDetails={groupDetails} variant="mobile" />}
+                  ownerId={groupDetails.owner.id}
+                />
+              )}
+            </div>
+          </div>
+          {isDesktop && <About groupDetails={groupDetails} variant="default" />}
         </div>
-        {isDesktop && <About groupDetails={groupDetails} variant="default" />}
       </div>
     </>
   );

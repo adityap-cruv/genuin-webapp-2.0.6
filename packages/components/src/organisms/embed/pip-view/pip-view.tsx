@@ -129,6 +129,7 @@ function PipPlayer({
           src={videoDetails.video?.source}
           poster={videoDetails.video?.thumbnail}
           videoType={videoDetails.video?.videoType ?? VideoTypes.Content}
+          adsPlatform={videoDetails.video?.adsPlatform}
           className="gencl:object-cover gencl:w-full gencl:h-full!"
           adTagObject={(videoDetails as any).adTagObject ?? undefined}
           sponsorshipInfo={videoDetails.sponsored}

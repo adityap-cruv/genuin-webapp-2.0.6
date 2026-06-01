@@ -331,8 +331,9 @@ type UseFeedOptionsType = {
   isInIframe: boolean;
   shouldShowMiddlewareOverlay?: boolean;
   brandContext?: Array<{
-    id: string;
+    id?: string;
     type: string;
+    value?: string;
   }>;
   videoIds?: string[];
   isSingleVideo?: boolean;

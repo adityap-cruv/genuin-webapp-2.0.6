@@ -281,7 +281,7 @@ npm run test:debug
  # Generate test documentation (test2doc)
 npm run test:doc
  # Run a specific test file
-npx playwright test tests/e2e/init/test-case-file-name
+npx playwright test tests/e2e/behavior/test-case-file-name
 ```
 
 > **`test:doc`** runs all tests with the [test2doc](https://www.test2doc.com/) reporter enabled. It reads `test.describe()`,`test()` and `test.step()` labels from each spec file and generates `.mdx` documentation files in `tests/test-docs/`. This is useful for sharing a human-readable test summary with QA, product, or management without requiring them to read code.This doc will give a basic understanding of each test case.

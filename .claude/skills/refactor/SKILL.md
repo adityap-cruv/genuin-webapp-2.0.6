@@ -1,3 +1,8 @@
+---
+name: refactor
+description: Restructure, rename, or clean up existing code without changing observable behaviour. Use when refactoring, simplifying, deduplicating, or reorganising code. Do NOT use for fixing bugs (use the debug skill) or adding features (use the implementer agent).
+---
+
 # Skill: Refactor
 
 Use this skill when restructuring, renaming, or cleaning up existing code without

@@ -1,6 +1,6 @@
 ---
 name: e2e-testing
-description: Writing, fixing, and reviewing Playwright end-to-end and integration tests
+description: Write, fix, and review Playwright end-to-end and integration tests using the Page Object Model. Use when adding or debugging E2E/integration tests, page objects, selectors, or full user-flow tests in apps/webapp/e2e or the web-sdk. Do NOT use for unit or component tests (use test-runner) or for debugging non-test application bugs (use debug).
 ---
 
 # Skill: E2E Testing

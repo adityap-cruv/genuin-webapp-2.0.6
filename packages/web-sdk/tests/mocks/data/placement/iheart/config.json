@@ -1,0 +1,1432 @@
+{
+    "_comment": "Fixture for GET /goservices/placement?placement_id=<iheart_placement_id> (handlers/placement.ts)",
+    "code": "200",
+    "message": "[XXXX]-placement details fetched.",
+    "data": {
+        "__v": 0,
+        "_id": "6901f4c0bc8cdde8e253d1e5",
+        "brand_id": 1729,
+        "community_ids": [],
+        "community_loop_ids": [],
+        "created_at": "2025-10-29T11:04:32.239Z",
+        "environments": {
+            "app": {
+                "configure_view": {
+                    "aspect_ratio": "9:16",
+                    "carousel_style": "default",
+                    "dimensions": {
+                        "auto_fit_height": false,
+                        "height": 600,
+                        "width": 300
+                    },
+                    "enable_style_fallback": false,
+                    "grid_layout": {
+                        "auto_adjust": false,
+                        "column": 2,
+                        "row": 2
+                    },
+                    "heading_text_color": "#000000",
+                    "is_carousel_icon": false,
+                    "is_expanded_view": false,
+                    "is_floating_view": false,
+                    "is_navigation_control_enabled": true,
+                    "is_show_metrics": true,
+                    "is_show_social_interaction_data": true,
+                    "is_show_username": true,
+                    "is_show_video_thumbnail": true,
+                    "is_show_view_count": true,
+                    "links": {
+                        "is_show_links": false
+                    },
+                    "media_play": {
+                        "enable_autoplay": false
+                    },
+                    "scroll_behavior": "free_scroll",
+                    "show_community_share_button": true,
+                    "show_join_community_button": true,
+                    "show_navigation": true,
+                    "show_social_interaction_data": false,
+                    "show_username": false,
+                    "show_video_duration": false,
+                    "social_metrics": "views",
+                    "sub_heading_text_color": "#000000",
+                    "video_crop": false
+                },
+                "expand_view": {
+                    "enable_engagement_tools": {
+                        "comment": true,
+                        "repost": true,
+                        "share": true,
+                        "spark": true
+                    },
+                    "enable_linkout": false,
+                    "enable_redirection_tools": {
+                        "community": false,
+                        "group": false,
+                        "user": false
+                    },
+                    "enable_report": true,
+                    "is_enable_engagement_tools": true,
+                    "is_enable_redirection": false,
+                    "report_options": {
+                        "inappropriate_content": true,
+                        "non_professional_content": true,
+                        "other": true,
+                        "spam": true,
+                        "threatening_violent": true
+                    }
+                },
+                "implementation_guide": {
+                    "is_on_page_context_fetch": true,
+                    "is_real_time_context_fetch": true,
+                    "show_brand_id": true,
+                    "show_community_group_id": true,
+                    "show_custom_context": true,
+                    "show_location": true,
+                    "show_pdp_url": true,
+                    "show_place": true,
+                    "show_posted_by_user": true,
+                    "show_previous_page_context": true,
+                    "show_style_id": true,
+                    "show_time": true,
+                    "show_user_interests": true,
+                    "show_user_segmentation": true
+                }
+            },
+            "web": {
+                "configure_view": {
+                    "aspect_ratio": "1:1",
+                    "card_layout_id": 2,
+                    "carousel_style": "default",
+                    "dimensions": {
+                        "auto_fit_height": false,
+                        "height": 600,
+                        "width": 300
+                    },
+                    "enable_auto_scroll": true,
+                    "enable_style_fallback": false,
+                    "grid_layout": {
+                        "auto_adjust": false,
+                        "column": 2,
+                        "row": 2
+                    },
+                    "heading_text_color": "#212529",
+                    "is_carousel_icon": false,
+                    "is_expanded_view": false,
+                    "is_floating_view": false,
+                    "is_navigation_control_enabled": false,
+                    "is_show_metrics": true,
+                    "is_show_social_interaction_data": true,
+                    "is_show_username": true,
+                    "is_show_video_thumbnail": true,
+                    "is_show_view_count": true,
+                    "links": {
+                        "is_show_links": false
+                    },
+                    "media_play": {
+                        "auto_advance_playback": 0,
+                        "enable_autoplay": true
+                    },
+                    "placement_card_layout_id": 2,
+                    "placement_card_section_layout_id": 2,
+                    "placement_video_layout_id": 2,
+                    "scroll_behavior": "free_scroll",
+                    "show_community_share_button": true,
+                    "show_join_community_button": true,
+                    "show_navigation": true,
+                    "show_social_interaction_data": false,
+                    "show_username": false,
+                    "show_video_duration": false,
+                    "social_metrics": "views",
+                    "sub_heading_text_color": "#707070",
+                    "video_crop": false,
+                    "video_layout_id": 2
+                },
+                "expand_view": {
+                    "enable_engagement_tools": {
+                        "comment": true,
+                        "repost": true,
+                        "share": true,
+                        "spark": true
+                    },
+                    "enable_linkout": false,
+                    "enable_redirection_tools": {
+                        "community": false,
+                        "group": false,
+                        "user": false
+                    },
+                    "enable_report": true,
+                    "is_enable_engagement_tools": true,
+                    "is_enable_redirection": false,
+                    "report_options": {
+                        "inappropriate_content": true,
+                        "non_professional_content": true,
+                        "other": true,
+                        "spam": true,
+                        "threatening_violent": true
+                    }
+                },
+                "implementation_guide": {
+                    "card_layout_id": 2,
+                    "is_on_page_context_fetch": true,
+                    "is_real_time_context_fetch": true,
+                    "placement_card_layout_id": 2,
+                    "placement_card_section_layout_id": 2,
+                    "placement_video_layout_id": 2,
+                    "show_brand_id": true,
+                    "show_community_group_id": true,
+                    "show_custom_context": true,
+                    "show_location": true,
+                    "show_pdp_url": true,
+                    "show_place": true,
+                    "show_posted_by_user": true,
+                    "show_previous_page_context": true,
+                    "show_style_id": true,
+                    "show_time": true,
+                    "show_user_interests": true,
+                    "show_user_segmentation": true,
+                    "video_layout_id": 2
+                }
+            }
+        },
+        "feed_type": "brand",
+        "is_custom": true,
+        "is_live": true,
+        "name": "Mobile Web [Polaris]",
+        "placement_brand_ids": [],
+        "styles": [
+            {
+                "_id": "6901f4c0bc8cdde8e253d1e6",
+                "categories": [
+                    {
+                        "entity_id": "68de8e776f157178a79a2b1c",
+                        "selected": true,
+                        "title": "Music & Radio 🎶",
+                        "topics": [
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "Pop radio stations near me",
+                                        "keyword_id": "68de8e776f157178a79a2b0e",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Best pop playlists",
+                                        "keyword_id": "68de8e776f157178a79a2b0f",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Streaming pop hits free",
+                                        "keyword_id": "68de8e776f157178a79a2b10",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Top pop artist interviews",
+                                        "keyword_id": "68de8e776f157178a79a2b11",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "Pop Music 🎤",
+                                "topic_id": "68de8e776f157178a79a2b0d"
+                            },
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "Hip hop radio online",
+                                        "keyword_id": "68de8e776f157178a79a2b13",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Best rap playlists",
+                                        "keyword_id": "68de8e776f157178a79a2b14",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "New rap albums",
+                                        "keyword_id": "68de8e776f157178a79a2b15",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Freestyle rap stations",
+                                        "keyword_id": "68de8e776f157178a79a2b16",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "Hip Hop & Rap 🎧",
+                                "topic_id": "68de8e776f157178a79a2b12"
+                            },
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "Classic rock streaming",
+                                        "keyword_id": "68de8e776f157178a79a2b18",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Alternative rock playlists",
+                                        "keyword_id": "68de8e776f157178a79a2b19",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "90s rock hits radio",
+                                        "keyword_id": "68de8e776f157178a79a2b1a",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Best guitar rock",
+                                        "keyword_id": "68de8e776f157178a79a2b1b",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "Rock 🎸",
+                                "topic_id": "68de8e776f157178a79a2b17"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "68de8f0f6f157178a79a2b2d",
+                        "selected": true,
+                        "title": "Podcasts 🎙️",
+                        "topics": [
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "Murder mystery",
+                                        "keyword_id": "68de8f0f6f157178a79a2b1f",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Unsolved cases",
+                                        "keyword_id": "68de8f0f6f157178a79a2b20",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Crime investigation episodes",
+                                        "keyword_id": "68de8f0f6f157178a79a2b21",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "True crime live shows",
+                                        "keyword_id": "68de8f0f6f157178a79a2b22",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "True Crime 🔍",
+                                "topic_id": "68de8f0f6f157178a79a2b1e"
+                            },
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "Stand-up comedians",
+                                        "keyword_id": "68de8f0f6f157178a79a2b24",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Daily humor shows",
+                                        "keyword_id": "68de8f0f6f157178a79a2b25",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Funniest comedy sketches",
+                                        "keyword_id": "68de8f0f6f157178a79a2b26",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Improv comedy radio",
+                                        "keyword_id": "68de8f0f6f157178a79a2b27",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "Comedy 😂",
+                                "topic_id": "68de8f0f6f157178a79a2b23"
+                            },
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "Pop culture podcasts",
+                                        "keyword_id": "68de8f0f6f157178a79a2b29",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Storytelling series",
+                                        "keyword_id": "68de8f0f6f157178a79a2b2a",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Documentary podcasts",
+                                        "keyword_id": "68de8f0f6f157178a79a2b2b",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Lifestyle audio stories",
+                                        "keyword_id": "68de8f0f6f157178a79a2b2c",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "Culture & Stories 📚",
+                                "topic_id": "68de8f0f6f157178a79a2b28"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "68de8f6c6f157178a79a2b3c",
+                        "selected": true,
+                        "title": "Live Events 🎫",
+                        "topics": [
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "iHeart music festival tickets",
+                                        "keyword_id": "68de8f6c6f157178a79a2b30",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Live concert streaming",
+                                        "keyword_id": "68de8f6c6f157178a79a2b31",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Local concerts near me",
+                                        "keyword_id": "68de8f6c6f157178a79a2b32",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Festival lineups",
+                                        "keyword_id": "68de8f6c6f157178a79a2b33",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "Concerts 🎵",
+                                "topic_id": "68de8f6c6f157178a79a2b2f"
+                            },
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "Artist interviews",
+                                        "keyword_id": "68de8f6c6f157178a79a2b35",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Behind-the-scenes stories",
+                                        "keyword_id": "68de8f6c6f157178a79a2b36",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Live performance exclusives",
+                                        "keyword_id": "68de8f6c6f157178a79a2b37",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "Backstage Access 🎬",
+                                "topic_id": "68de8f6c6f157178a79a2b34"
+                            },
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "Global music festivals",
+                                        "keyword_id": "68de8f6c6f157178a79a2b39",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Touring schedules",
+                                        "keyword_id": "68de8f6c6f157178a79a2b3a",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Fan experiences",
+                                        "keyword_id": "68de8f6c6f157178a79a2b3b",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "Festivals & Tours 🌍",
+                                "topic_id": "68de8f6c6f157178a79a2b38"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "68de8fc36f157178a79a2b4c",
+                        "selected": true,
+                        "title": "Entertainment News 🌟",
+                        "topics": [
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "Celebrity gossip radio",
+                                        "keyword_id": "68de8fc36f157178a79a2b3f",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Red carpet live coverage",
+                                        "keyword_id": "68de8fc36f157178a79a2b40",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Hollywood behind-the-scenes",
+                                        "keyword_id": "68de8fc36f157178a79a2b41",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Music scandals",
+                                        "keyword_id": "68de8fc36f157178a79a2b42",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "Celebrity Buzz ✨",
+                                "topic_id": "68de8fc36f157178a79a2b3e"
+                            },
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "Latest movie reviews",
+                                        "keyword_id": "68de8fc36f157178a79a2b44",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Streaming TV shows",
+                                        "keyword_id": "68de8fc36f157178a79a2b45",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Hollywood premieres",
+                                        "keyword_id": "68de8fc36f157178a79a2b46",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Actor interviews",
+                                        "keyword_id": "68de8fc36f157178a79a2b47",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "Movies & TV 🎥",
+                                "topic_id": "68de8fc36f157178a79a2b43"
+                            },
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "Viral entertainment news",
+                                        "keyword_id": "68de8fc36f157178a79a2b49",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Social media buzz",
+                                        "keyword_id": "68de8fc36f157178a79a2b4a",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Influencer stories",
+                                        "keyword_id": "68de8fc36f157178a79a2b4b",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "Pop Culture Trends 🔥",
+                                "topic_id": "68de8fc36f157178a79a2b48"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "68de905a6f157178a79a2b5b",
+                        "selected": true,
+                        "title": "Lifestyle & Wellness 🌱",
+                        "topics": [
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "Workout motivation",
+                                        "keyword_id": "68de905a6f157178a79a2b4f",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Meditation podcasts",
+                                        "keyword_id": "68de905a6f157178a79a2b50",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Yoga playlists",
+                                        "keyword_id": "68de905a6f157178a79a2b51",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Healthy lifestyle shows",
+                                        "keyword_id": "68de905a6f157178a79a2b52",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "Health & Fitness 🏋️",
+                                "topic_id": "68de905a6f157178a79a2b4e"
+                            },
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "Mental health awareness",
+                                        "keyword_id": "68de905a6f157178a79a2b54",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Mindfulness music",
+                                        "keyword_id": "68de905a6f157178a79a2b55",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Stress relief tips",
+                                        "keyword_id": "68de905a6f157178a79a2b56",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "Mind & Balance 🧘",
+                                "topic_id": "68de905a6f157178a79a2b53"
+                            },
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "Cooking shows",
+                                        "keyword_id": "68de905a6f157178a79a2b58",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Nutrition podcasts",
+                                        "keyword_id": "68de905a6f157178a79a2b59",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Daily wellness routines",
+                                        "keyword_id": "68de905a6f157178a79a2b5a",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "Food & Living 🍴",
+                                "topic_id": "68de905a6f157178a79a2b57"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "68de90c86f157178a79a2b6b",
+                        "selected": true,
+                        "title": "Sports 🏈",
+                        "topics": [
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "NFL live streams",
+                                        "keyword_id": "68de90c86f157178a79a2b5e",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "NBA podcasts",
+                                        "keyword_id": "68de90c86f157178a79a2b5f",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "College football shows",
+                                        "keyword_id": "68de90c86f157178a79a2b60",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Sports radio talk",
+                                        "keyword_id": "68de90c86f157178a79a2b61",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "Sports Talk 🎙️",
+                                "topic_id": "68de90c86f157178a79a2b5d"
+                            },
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "Daily fantasy sports",
+                                        "keyword_id": "68de90c86f157178a79a2b63",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Sports betting insights",
+                                        "keyword_id": "68de90c86f157178a79a2b64",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Odds & picks podcasts",
+                                        "keyword_id": "68de90c86f157178a79a2b65",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "Fantasy & Betting 🎲",
+                                "topic_id": "68de90c86f157178a79a2b62"
+                            },
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "Game highlights",
+                                        "keyword_id": "68de90c86f157178a79a2b67",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Post-game analysis",
+                                        "keyword_id": "68de90c86f157178a79a2b68",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Player interviews",
+                                        "keyword_id": "68de90c86f157178a79a2b69",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Season recaps",
+                                        "keyword_id": "68de90c86f157178a79a2b6a",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "Highlights & Analysis 📊",
+                                "topic_id": "68de90c86f157178a79a2b66"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "68ee10366f157178a79a2e54",
+                        "selected": true,
+                        "title": "TSA",
+                        "topics": [
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "government shutdown",
+                                "topic_id": "68ee10366f157178a79a2e53"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "68ee10ab6f157178a79a2e57",
+                        "selected": true,
+                        "title": "government shutdown",
+                        "topics": [
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "TSA",
+                                "topic_id": "68ee10ab6f157178a79a2e56"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "Medicaid",
+                                "topic_id": "68ee12906f157178a79a2e5f"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "68ee12536f157178a79a2e5a",
+                        "selected": true,
+                        "title": "relationships",
+                        "topics": [
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "advice",
+                                "topic_id": "68ee12536f157178a79a2e59"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "68ee12766f157178a79a2e5d",
+                        "selected": true,
+                        "title": "Sean Duffy",
+                        "topics": [
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "Transportation Secretary",
+                                "topic_id": "68ee12766f157178a79a2e5c"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "68ee12ab6f157178a79a2e61",
+                        "selected": true,
+                        "title": "body count",
+                        "topics": [
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "dating",
+                                "topic_id": "68ee12ab6f157178a79a2e60"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "68ef7bc46f157178a79a2eca",
+                        "selected": true,
+                        "title": "Teddy Swims",
+                        "topics": [
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "Warped Tour",
+                                "topic_id": "68ef7bc46f157178a79a2ec9"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "Jimmy Fallon",
+                                "topic_id": "68f0974d6f157178a79a2eee"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "mental health",
+                                "topic_id": "68f0975e6f157178a79a2ef5"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "Elvis Duran",
+                                "topic_id": "68f0979f6f157178a79a2f03"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "streaming numbers",
+                                "topic_id": "68f097ac6f157178a79a2f05"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "gender reveal",
+                                "topic_id": "68f097df6f157178a79a2f0d"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "WWE",
+                                "topic_id": "68f0981e6f157178a79a2f13"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "origin story",
+                                "topic_id": "68f0982a6f157178a79a2f17"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "Gracie Abrams",
+                                "topic_id": "68f098506f157178a79a2f1a"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "album release",
+                                "topic_id": "68f098556f157178a79a2f1b"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "Allen Stone",
+                                "topic_id": "68f098756f157178a79a2f1e"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "68efe5296f157178a79a2ecd",
+                        "selected": true,
+                        "title": "Jay Shetty",
+                        "topics": [
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "Selena Gomez",
+                                "topic_id": "68efe5296f157178a79a2ecc"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "phone addiction",
+                                "topic_id": "68f0696a6f157178a79a2edf"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "monk",
+                                "topic_id": "68f0983f6f157178a79a2f18"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "comedy",
+                                "topic_id": "6901aaf26f157178a79a316f"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "68efe5556f157178a79a2ed0",
+                        "selected": true,
+                        "title": "mindset",
+                        "topics": [
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "purpose",
+                                "topic_id": "68efe5556f157178a79a2ecf"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "68efe5576f157178a79a2ed3",
+                        "selected": true,
+                        "title": "humor",
+                        "topics": [
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "Indian aunties",
+                                "topic_id": "68efe5576f157178a79a2ed2"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "68efe5586f157178a79a2ed6",
+                        "selected": true,
+                        "title": "breathwork",
+                        "topics": [
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "mindfulness",
+                                "topic_id": "68efe5586f157178a79a2ed5"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "68efe5996f157178a79a2ed9",
+                        "selected": true,
+                        "title": "Gio Benitez",
+                        "topics": [
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "Titan sub",
+                                "topic_id": "68efe5996f157178a79a2ed8"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "Titanic",
+                                "topic_id": "68efe5a76f157178a79a2ede"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "Tommy DiDario",
+                                "topic_id": "68f097e76f157178a79a2f0e"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "OceanGate",
+                                "topic_id": "68f0981a6f157178a79a2f12"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "Ian Pannell",
+                                "topic_id": "68f0985a6f157178a79a2f1c"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "ABC News",
+                                "topic_id": "68f098846f157178a79a2f20"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "68efe5a06f157178a79a2edc",
+                        "selected": true,
+                        "title": "space tourism",
+                        "topics": [
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "Gio Benitez",
+                                "topic_id": "68efe5a06f157178a79a2edb"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "68f097016f157178a79a2ee1",
+                        "selected": true,
+                        "title": "Cardi B",
+                        "topics": [
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "ice cravings",
+                                "topic_id": "68f097016f157178a79a2ee0"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "pregnancy",
+                                "topic_id": "68f097096f157178a79a2ee3"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "COVID",
+                                "topic_id": "68f097126f157178a79a2ee4"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "Red Sox",
+                                "topic_id": "68f097196f157178a79a2ee5"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "never meet your heroes",
+                                "topic_id": "68f097226f157178a79a2ee6"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "humor",
+                                "topic_id": "68f0972a6f157178a79a2ee7"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "Lizzo",
+                                "topic_id": "68f097316f157178a79a2ee8"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "Bronx",
+                                "topic_id": "68f097366f157178a79a2ee9"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "Am I the Drama",
+                                "topic_id": "68f0973a6f157178a79a2eea"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "family",
+                                "topic_id": "68f0973f6f157178a79a2eeb"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "court",
+                                "topic_id": "68f097436f157178a79a2eec"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "viral moment",
+                                "topic_id": "68f097476f157178a79a2eed"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "68f097546f157178a79a2ef0",
+                        "selected": true,
+                        "title": "digital detox",
+                        "topics": [
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "morning routine",
+                                "topic_id": "68f097546f157178a79a2eef"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "68f097576f157178a79a2ef3",
+                        "selected": true,
+                        "title": "Lenny Kravitz",
+                        "topics": [
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "love letters",
+                                "topic_id": "68f097576f157178a79a2ef2"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "Zoë Kravitz",
+                                "topic_id": "68f097736f157178a79a2ef9"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "songwriting",
+                                "topic_id": "68f097876f157178a79a2efd"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "Let Love Rule",
+                                "topic_id": "68f097956f157178a79a2f01"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "Denzel Washington",
+                                "topic_id": "68f097a66f157178a79a2f04"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "social media",
+                                "topic_id": "68f097b26f157178a79a2f06"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "live performance",
+                                "topic_id": "68f098456f157178a79a2f19"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "awards",
+                                "topic_id": "68f098796f157178a79a2f1f"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "68f097686f157178a79a2ef7",
+                        "selected": true,
+                        "title": "perseverance",
+                        "topics": [
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "creator economy",
+                                "topic_id": "68f097686f157178a79a2ef6"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "68f097826f157178a79a2efb",
+                        "selected": true,
+                        "title": "Jimmy Fallon",
+                        "topics": [
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "Meghan Trainor",
+                                "topic_id": "68f097826f157178a79a2efa"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "live rap",
+                                "topic_id": "68f097cc6f157178a79a2f09"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "Cher",
+                                "topic_id": "68f098656f157178a79a2f1d"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "68f0978e6f157178a79a2eff",
+                        "selected": true,
+                        "title": "Adam Lambert",
+                        "topics": [
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "Cabaret",
+                                "topic_id": "68f0978e6f157178a79a2efe"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "Broadway",
+                                "topic_id": "68f0979b6f157178a79a2f02"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "theater etiquette",
+                                "topic_id": "68f097b76f157178a79a2f07"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "Moana",
+                                "topic_id": "68f097bd6f157178a79a2f08"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "68f097d96f157178a79a2f0b",
+                        "selected": true,
+                        "title": "Titan submersible",
+                        "topics": [
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "OceanGate",
+                                "topic_id": "68f097d96f157178a79a2f0a"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "68f098026f157178a79a2f10",
+                        "selected": true,
+                        "title": "Thanksgiving",
+                        "topics": [
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "Taylor Swift",
+                                "topic_id": "68f098026f157178a79a2f0f"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "68f098256f157178a79a2f15",
+                        "selected": true,
+                        "title": "Tommy DiDario",
+                        "topics": [
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "Gio Benitez",
+                                "topic_id": "68f098256f157178a79a2f14"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "68f0988a6f157178a79a2f22",
+                        "selected": true,
+                        "title": "Christmas",
+                        "topics": [
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "promise",
+                                "topic_id": "68f0988a6f157178a79a2f21"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "68f098936f157178a79a2f25",
+                        "selected": true,
+                        "title": "holiday",
+                        "topics": [
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "Christmas",
+                                "topic_id": "68f098936f157178a79a2f24"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "68f58d5d6f157178a79a3078",
+                        "selected": true,
+                        "title": "Nadya Okamoto",
+                        "topics": [
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "period poverty",
+                                "topic_id": "68f58d5d6f157178a79a3077"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "perimenopause",
+                                "topic_id": "68f58f4d6f157178a79a3082"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "68f58ef06f157178a79a307b",
+                        "selected": true,
+                        "title": "sex education",
+                        "topics": [
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "parents",
+                                "topic_id": "68f58ef06f157178a79a307a"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "schools",
+                                "topic_id": "68f58f166f157178a79a3080"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "policy",
+                                "topic_id": "68f58f186f157178a79a3081"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "68f58f156f157178a79a307e",
+                        "selected": true,
+                        "title": "etymology",
+                        "topics": [
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "vagina",
+                                "topic_id": "68f58f156f157178a79a307d"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "68f58f4e6f157178a79a3084",
+                        "selected": true,
+                        "title": "period poverty",
+                        "topics": [
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "menstrual health",
+                                "topic_id": "68f58f4e6f157178a79a3083"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "68f58f576f157178a79a3087",
+                        "selected": true,
+                        "title": "workplace policy",
+                        "topics": [
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "HR",
+                                "topic_id": "68f58f576f157178a79a3086"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "6901ab086f157178a79a3171",
+                        "selected": true,
+                        "title": "Keyshia Ka'oir",
+                        "topics": [
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "Gucci Mane",
+                                "topic_id": "6901ab086f157178a79a3170"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "6901ab246f157178a79a3174",
+                        "selected": true,
+                        "title": "Gucci Mane",
+                        "topics": [
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "Keyshia Ka'oir",
+                                "topic_id": "6901ab246f157178a79a3173"
+                            },
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "lean addiction",
+                                "topic_id": "6901ab3e6f157178a79a3176"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "6901ab746f157178a79a3178",
+                        "selected": true,
+                        "title": "dog plastic surgery",
+                        "topics": [
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "fake dog testicles",
+                                "topic_id": "6901ab746f157178a79a3177"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "6901ab8c6f157178a79a317b",
+                        "selected": true,
+                        "title": "Danielle Monaro",
+                        "topics": [
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "Elvis Duran",
+                                "topic_id": "6901ab8c6f157178a79a317a"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "6901aba26f157178a79a317e",
+                        "selected": true,
+                        "title": "dopamine",
+                        "topics": [
+                            {
+                                "keywords": [],
+                                "selected": true,
+                                "topic": "learning hack",
+                                "topic_id": "6901aba26f157178a79a317d"
+                            }
+                        ]
+                    }
+                ],
+                "consumer_journey_ids": [
+                    "68a84a47849364666a0bd547",
+                    "68a84a47849364666a0bd548",
+                    "68a84a47849364666a0bd549",
+                    "68a84a47849364666a0bd54a",
+                    "68a84a47849364666a0bd54b"
+                ],
+                "content_mapping": {
+                    "unique_linkout_videos": false,
+                    "unique_videos_to_sections": false
+                },
+                "content_restrictions": {
+                    "pinned_videos": false,
+                    "recommendation_engine": false,
+                    "same_brand_videos": false,
+                    "same_url_linkouts_videos": false
+                },
+                "feed_algorithm": "new_first_watched_last",
+                "is_adaptive_styling_enabled": false,
+                "sections": [],
+                "sub_title": null,
+                "title": ""
+            }
+        ],
+        "type": "feed",
+        "updated_at": "2025-10-29T11:14:08.405Z"
+    }
+}

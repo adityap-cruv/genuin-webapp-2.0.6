@@ -234,21 +234,24 @@ function CommunityMembers({ slug, communityOwnerId }: { slug: string; communityO
     },
     url: buildPageUrl({
       type: member.brand ? "brand" : "profile",
-      slug: member.brand ? member.brand.brand_slug : member.nickname,
+      slug: member.brand ? member.brand.brand_slug : (member.nickname ?? ""),
     }),
-    userName: member.nickname,
+    userName: member.nickname ?? "",
     brand: {
       brandUserLogo: member.brand?.brand_user_logo ?? -1,
       brandId: member.brand?.brand_id ?? 0,
       brandSlug: member.brand?.brand_slug ?? "",
     },
   });
+  // Backend can return null nickname/name; product hasn't decided a fallback,
+  // so drop members with no nickname (no handle, no profile URL to render).
+  const displayableMembers = membersData?.filter((member) => !!member.nickname) ?? [];
 
   // Filter admins (role 1: leader, role 3: moderator)
-  const admins = membersData?.filter((member) => member.role === 1 || member.role === 3) ?? [];
+  const admins = displayableMembers.filter((member) => member.role === 1 || member.role === 3);
 
   // Filter members (role 2: member)
-  const members = membersData?.filter((member) => member.role === 2) ?? [];
+  const members = displayableMembers.filter((member) => member.role === 2);
 
   return (
     <div>

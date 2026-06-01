@@ -32,6 +32,7 @@ export function DetailsPageTopbar({
 }: DetailsPageProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [topBarWidth, setTopBarWidth] = useState<number | undefined>(undefined);
+  const [topBarLeft, setTopBarLeft] = useState<number | undefined>(undefined);
 
   // TODO: Replace this component with <PrivacyInfo/> component.
   function RenderTypeBadge() {
@@ -60,14 +61,22 @@ export function DetailsPageTopbar({
       if (!detailsElement) return;
 
       const updateWidth = () => {
-        setTopBarWidth(detailsElement.offsetWidth);
+        const rect = detailsElement.getBoundingClientRect();
+        const topbarElement = document.getElementById(`${idToTrack}-topbar`);
+        const ancestor = topbarElement?.offsetParent as HTMLElement | null;
+        const ancestorLeft = ancestor?.getBoundingClientRect().left ?? 0;
+        setTopBarWidth(rect.width);
+        setTopBarLeft(rect.left - ancestorLeft);
       };
 
       updateWidth();
 
       observer = new IntersectionObserver(
         ([entry]) => {
-          if (entry) setIsOpen(!entry.isIntersecting);
+          if (entry) {
+            updateWidth();
+            setIsOpen(!entry.isIntersecting);
+          }
         },
         { threshold: 0.1 }
       );
@@ -101,15 +110,17 @@ export function DetailsPageTopbar({
   return (
     <div
       className={cn(
-        "gencl:absolute gencl:z-[-1] gencl:top-0 gencl:h-14 gencl:sm:ml-6 gencl:ml-0 gencl:transition-transform gencl:duration-200 gencl:ease-linear",
+        "gencl:absolute gencl:z-[-1] gencl:top-0 gencl:h-14 gencl:transition-transform gencl:duration-200 gencl:ease-linear",
         "gencl:flex gencl:gap-2 gencl:items-center gencl:justify-between gencl:border-b gencl:border-b-secondary-150 gencl:bg-white",
         className
       )}
       style={{
-        width: `${(topBarWidth || 0) + 10}px`,
+        width: `${topBarWidth ?? 0}px`,
+        left: `${topBarLeft ?? 0}px`,
         transform: `translateY(${isOpen ? "0" : "-100"}%) `,
         zIndex: 2,
       }}
+      id={`${idToTrack}-topbar`}
       {...restProps}>
       <div className="gencl:flex gencl:items-center gencl:gap-2 gencl:w-full">
         {profileImageDetails && (

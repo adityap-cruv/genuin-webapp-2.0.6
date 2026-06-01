@@ -8,7 +8,7 @@
  *
  * @author Genuin Team
  */
-import { test, expect } from '@playwright/test'
+import { test, expect } from './_fixtures/mock'
 
 test.describe('Feature: Webapp Page Rendering', () => {
   test('Scenario: Home page renders feed section', async ({ page }) => {

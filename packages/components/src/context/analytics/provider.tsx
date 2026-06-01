@@ -281,7 +281,7 @@ export function AnalyticsProvider({
   // below, replacing the singleton-held identity that caused the multi-layout race.
   const layoutIdentity = useMemo<Record<string, string | number | undefined>>(
     () => (isWebSDK ? buildLayoutIdentity(embedData) : {}),
-    [isWebSDK, embedData]
+    [isWebSDK, embedData],
   );
 
   const track = useCallback(

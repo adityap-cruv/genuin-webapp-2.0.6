@@ -96,56 +96,58 @@ export function ProfileDetails({ userName, forBrand }: { userName: string; forBr
         }}
         ctas={ctas}
       />
-      <div className="gencl:w-full gencl:overflow-auto gencl:h-full gencl:sm:p-6">
-        <GenericDetails
-          className="gencl:p-4 gencl:sm:p-0!"
-          id={detailsId}
-          variant="profile"
-          handle={{
-            brandUserLogo: profileData.brand?.brand_user_logo,
-            userName: profileData.nickname ?? "",
-          }}
-          stats={{
-            Communities: profileData.no_of_communities,
-            Groups: profileData.no_of_groups,
-            Posts: profileData.videos,
-          }}
-          title={profileData?.name ?? ""}
-          profileImageDetails={{
-            imageUrl: profileData?.profile_image_l ?? profileData.profile_image_m ?? profileData?.profile_image ?? "",
-            isAvatar: profileData.is_avatar,
-            alt: profileData.name ?? "",
-          }}
-          userLogoType={profileData.brand?.brand_user_logo}
-          metadata={
-            <GenericDetailsMetadata
-              handle={{
-                brandUserLogo: profileData.brand?.brand_user_logo,
-                userName: profileData.nickname ?? "",
-              }}
-              stats={{
-                Communities: profileData.no_of_communities,
-                Groups: profileData.no_of_groups,
-                Posts: profileData.videos,
-              }}
-            />
-          }
-          description={profileData.bio}
-          links={{
-            linkedin: profileData.linkedin_id ? profileData.linkedin_url + profileData.linkedin_id : undefined,
-            instagram: profileData.insta_id ? profileData.insta_url + profileData.insta_id : undefined,
-            x: profileData.twitter_id ? profileData.twitter_url + profileData.twitter_id : undefined,
-            tiktok: profileData.tiktok_id ? profileData.tiktok_url + profileData.tiktok_id : undefined,
-            custom: profileData.brand?.website,
-          }}
-          ctas={ctas}
-        />
-        <ProfileDetailsTabs
-          className="gencl:sm:pt-6!"
-          userId={forBrand && profileData.brand ? profileData.brand?.brand_id.toString() : profileData.user_id}
-          forBrand={forBrand}
-          aboutComponent={<About profileDetails={profileData} />}
-        />
+      <div className="gencl:w-full gencl:overflow-auto gencl:h-full">
+        <div className="gencl:max-w-7xl gencl:mx-auto gencl:sm:p-6">
+          <GenericDetails
+            className="gencl:p-4 gencl:sm:p-0!"
+            id={detailsId}
+            variant="profile"
+            handle={{
+              brandUserLogo: profileData.brand?.brand_user_logo,
+              userName: profileData.nickname ?? "",
+            }}
+            stats={{
+              Communities: profileData.no_of_communities,
+              Groups: profileData.no_of_groups,
+              Posts: profileData.videos,
+            }}
+            title={profileData?.name ?? ""}
+            profileImageDetails={{
+              imageUrl: profileData?.profile_image_l ?? profileData.profile_image_m ?? profileData?.profile_image ?? "",
+              isAvatar: profileData.is_avatar,
+              alt: profileData.name ?? "",
+            }}
+            userLogoType={profileData.brand?.brand_user_logo}
+            metadata={
+              <GenericDetailsMetadata
+                handle={{
+                  brandUserLogo: profileData.brand?.brand_user_logo,
+                  userName: profileData.nickname ?? "",
+                }}
+                stats={{
+                  Communities: profileData.no_of_communities,
+                  Groups: profileData.no_of_groups,
+                  Posts: profileData.videos,
+                }}
+              />
+            }
+            description={profileData.bio}
+            links={{
+              linkedin: profileData.linkedin_id ? profileData.linkedin_url + profileData.linkedin_id : undefined,
+              instagram: profileData.insta_id ? profileData.insta_url + profileData.insta_id : undefined,
+              x: profileData.twitter_id ? profileData.twitter_url + profileData.twitter_id : undefined,
+              tiktok: profileData.tiktok_id ? profileData.tiktok_url + profileData.tiktok_id : undefined,
+              custom: profileData.brand?.website,
+            }}
+            ctas={ctas}
+          />
+          <ProfileDetailsTabs
+            className="gencl:sm:pt-6!"
+            userId={forBrand && profileData.brand ? profileData.brand?.brand_id.toString() : profileData.user_id}
+            forBrand={forBrand}
+            aboutComponent={<About profileDetails={profileData} />}
+          />
+        </div>
       </div>
     </>
   );

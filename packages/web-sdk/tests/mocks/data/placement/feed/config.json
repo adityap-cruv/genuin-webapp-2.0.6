@@ -1,0 +1,871 @@
+{
+    "_comment": "Fixture for GET /goservices/placement?placement_id=<feed_placement_id> (handlers/placement.ts)",
+    "code": "200",
+    "message": "[XXXX]-placement details fetched.",
+    "data": {
+        "__v": 0,
+        "_id": "69e74417c389e59d070a4521",
+        "brand_id": 2181,
+        "community_ids": [],
+        "community_loop_ids": [],
+        "created_at": "2026-04-21T09:32:07.835Z",
+        "environment_type": "global",
+        "environments": {
+            "app": {
+                "configure_view": {
+                    "aspect_ratio": "9:16",
+                    "carousel_style": "default",
+                    "dimensions": {
+                        "auto_fit_height": false,
+                        "height": 600,
+                        "width": 300
+                    },
+                    "enable_auto_scroll": false,
+                    "enable_style_fallback": false,
+                    "grid_layout": {
+                        "auto_adjust": false,
+                        "column": 2,
+                        "row": 2
+                    },
+                    "heading_text_color": "#212529",
+                    "is_carousel_icon": false,
+                    "is_expanded_view": false,
+                    "is_floating_view": false,
+                    "is_navigation_control_enabled": true,
+                    "is_show_metrics": true,
+                    "is_show_social_interaction_data": true,
+                    "is_show_username": true,
+                    "is_show_video_thumbnail": true,
+                    "is_show_view_count": true,
+                    "links": {
+                        "is_show_links": false
+                    },
+                    "media_play": {
+                        "auto_advance_playback": 3,
+                        "enable_autoplay": false,
+                        "enable_loop_video": true,
+                        "video_preview_seconds": -1
+                    },
+                    "scroll_behavior": "paging",
+                    "show_community_share_button": true,
+                    "show_join_community_button": true,
+                    "show_navigation": true,
+                    "show_social_interaction_data": false,
+                    "show_style_details": true,
+                    "show_username": false,
+                    "show_video_duration": false,
+                    "social_metrics": "views",
+                    "sub_heading_text_color": "#707070",
+                    "video_crop": true
+                },
+                "expand_view": {
+                    "enable_engagement_tools": {
+                        "comment": true,
+                        "octo": false,
+                        "repost": false,
+                        "share": true,
+                        "spark": true
+                    },
+                    "enable_linkout": false,
+                    "enable_redirection_tools": {
+                        "community": false,
+                        "group": false,
+                        "user": false
+                    },
+                    "enable_report": true,
+                    "is_enable_engagement_tools": true,
+                    "is_enable_redirection": false,
+                    "orientation": "portrait",
+                    "report_options": {
+                        "inappropriate_content": true,
+                        "non_professional_content": true,
+                        "other": true,
+                        "spam": true,
+                        "threatening_violent": true
+                    }
+                },
+                "implementation_guide": {
+                    "is_on_page_context_fetch": true,
+                    "is_real_time_context_fetch": true,
+                    "show_brand_id": true,
+                    "show_community_group_id": true,
+                    "show_custom_context": true,
+                    "show_location": true,
+                    "show_pdp_url": true,
+                    "show_place": true,
+                    "show_posted_by_user": true,
+                    "show_previous_page_context": true,
+                    "show_section_cover": true,
+                    "show_section_sub_title": true,
+                    "show_section_thumbnail": true,
+                    "show_section_title": true,
+                    "show_style_id": true,
+                    "show_style_sub_title": true,
+                    "show_style_title": true,
+                    "show_time": true,
+                    "show_user_interests": true,
+                    "show_user_segmentation": true
+                }
+            },
+            "web": {
+                "configure_view": {
+                    "aspect_ratio": "9:16",
+                    "carousel_style": "default",
+                    "dimensions": {
+                        "auto_fit_height": false,
+                        "height": 600,
+                        "width": 300
+                    },
+                    "enable_auto_scroll": false,
+                    "enable_style_fallback": false,
+                    "grid_layout": {
+                        "auto_adjust": false,
+                        "column": 2,
+                        "row": 2
+                    },
+                    "heading_text_color": "#212529",
+                    "is_carousel_icon": false,
+                    "is_expanded_view": false,
+                    "is_floating_view": false,
+                    "is_navigation_control_enabled": true,
+                    "is_show_metrics": true,
+                    "is_show_social_interaction_data": true,
+                    "is_show_username": true,
+                    "is_show_video_thumbnail": true,
+                    "is_show_view_count": true,
+                    "links": {
+                        "is_show_links": false
+                    },
+                    "media_play": {
+                        "auto_advance_playback": 3,
+                        "enable_autoplay": false,
+                        "enable_loop_video": true,
+                        "video_preview_seconds": -1
+                    },
+                    "scroll_behavior": "paging",
+                    "show_community_share_button": true,
+                    "show_join_community_button": true,
+                    "show_navigation": true,
+                    "show_social_interaction_data": false,
+                    "show_style_details": true,
+                    "show_username": false,
+                    "show_video_duration": false,
+                    "social_metrics": "views",
+                    "sub_heading_text_color": "#707070",
+                    "video_crop": true
+                },
+                "expand_view": {
+                    "enable_engagement_tools": {
+                        "comment": true,
+                        "octo": false,
+                        "repost": false,
+                        "share": true,
+                        "spark": true
+                    },
+                    "enable_linkout": false,
+                    "enable_redirection_tools": {
+                        "community": false,
+                        "group": false,
+                        "user": false
+                    },
+                    "enable_report": true,
+                    "is_enable_engagement_tools": true,
+                    "is_enable_redirection": false,
+                    "orientation": "portrait",
+                    "report_options": {
+                        "inappropriate_content": true,
+                        "non_professional_content": true,
+                        "other": true,
+                        "spam": true,
+                        "threatening_violent": true
+                    }
+                },
+                "implementation_guide": {
+                    "is_on_page_context_fetch": true,
+                    "is_real_time_context_fetch": true,
+                    "show_brand_id": true,
+                    "show_community_group_id": true,
+                    "show_custom_context": true,
+                    "show_location": true,
+                    "show_pdp_url": true,
+                    "show_place": true,
+                    "show_posted_by_user": true,
+                    "show_previous_page_context": true,
+                    "show_section_cover": true,
+                    "show_section_sub_title": true,
+                    "show_section_thumbnail": true,
+                    "show_section_title": true,
+                    "show_style_id": true,
+                    "show_style_sub_title": true,
+                    "show_style_title": true,
+                    "show_time": true,
+                    "show_user_interests": true,
+                    "show_user_segmentation": true
+                }
+            }
+        },
+        "feed_type": "brand",
+        "is_custom": false,
+        "is_live": false,
+        "name": "Feed for test cases dont change",
+        "octo_settings": {
+            "content_order": [
+                "agent_text"
+            ]
+        },
+        "placement_brand_ids": [
+            2181,
+            2291,
+            2288,
+            2287
+        ],
+        "styles": [
+            {
+                "_id": "69e74417c389e59d070a4522",
+                "categories": [
+                    {
+                        "entity_id": "67405823d0073fe6f7c7dd1b",
+                        "selected": true,
+                        "title": "Music and Albums 🎵",
+                        "topics": [
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "Coldplay latest album",
+                                        "keyword_id": "67405823d0073fe6f7c7dd0a",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Music release 2024",
+                                        "keyword_id": "67405823d0073fe6f7c7dd0b",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "New Coldplay songs",
+                                        "keyword_id": "67405823d0073fe6f7c7dd0c",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Coldplay discography",
+                                        "keyword_id": "67405823d0073fe6f7c7dd0d",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Album reviews",
+                                        "keyword_id": "67405823d0073fe6f7c7dd0e",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "Latest Albums 📀",
+                                "topic_id": "67405823d0073fe6f7c7dd09"
+                            },
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "Coldplay song lyrics",
+                                        "keyword_id": "67405823d0073fe6f7c7dd10",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Lyrics meanings",
+                                        "keyword_id": "67405823d0073fe6f7c7dd11",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Song interpretation",
+                                        "keyword_id": "67405823d0073fe6f7c7dd12",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Popular lyrics",
+                                        "keyword_id": "67405823d0073fe6f7c7dd13",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Coldplay hits",
+                                        "keyword_id": "67405823d0073fe6f7c7dd14",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "Song Lyrics 🎶",
+                                "topic_id": "67405823d0073fe6f7c7dd0f"
+                            },
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "Coldplay music videos",
+                                        "keyword_id": "67405823d0073fe6f7c7dd16",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Latest music video",
+                                        "keyword_id": "67405823d0073fe6f7c7dd17",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Video release 2024",
+                                        "keyword_id": "67405823d0073fe6f7c7dd18",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Top music videos",
+                                        "keyword_id": "67405823d0073fe6f7c7dd19",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Visual storytelling",
+                                        "keyword_id": "67405823d0073fe6f7c7dd1a",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "Music Videos 📹",
+                                "topic_id": "67405823d0073fe6f7c7dd15"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "67405823d0073fe6f7c7dd2f",
+                        "selected": true,
+                        "title": "Tour and Concerts 🎤",
+                        "topics": [
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "Coldplay tour 2024",
+                                        "keyword_id": "67405823d0073fe6f7c7dd1e",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Concert schedule",
+                                        "keyword_id": "67405823d0073fe6f7c7dd1f",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Live performances",
+                                        "keyword_id": "67405823d0073fe6f7c7dd20",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Tour locations",
+                                        "keyword_id": "67405823d0073fe6f7c7dd21",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Ticket booking",
+                                        "keyword_id": "67405823d0073fe6f7c7dd22",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "Tour Dates 📅",
+                                "topic_id": "67405823d0073fe6f7c7dd1d"
+                            },
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "Live concert reviews",
+                                        "keyword_id": "67405823d0073fe6f7c7dd24",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Concert photos",
+                                        "keyword_id": "67405823d0073fe6f7c7dd25",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Performance highlights",
+                                        "keyword_id": "67405823d0073fe6f7c7dd26",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Fan experiences",
+                                        "keyword_id": "67405823d0073fe6f7c7dd27",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Concert setlist",
+                                        "keyword_id": "67405823d0073fe6f7c7dd28",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "Concert Highlights 🌟",
+                                "topic_id": "67405823d0073fe6f7c7dd23"
+                            },
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "Coldplay fan events",
+                                        "keyword_id": "67405823d0073fe6f7c7dd2a",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Meet and greet",
+                                        "keyword_id": "67405823d0073fe6f7c7dd2b",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Fan community",
+                                        "keyword_id": "67405823d0073fe6f7c7dd2c",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Event registration",
+                                        "keyword_id": "67405823d0073fe6f7c7dd2d",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Fan experiences",
+                                        "keyword_id": "67405823d0073fe6f7c7dd2e",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "Fan Meetups 🤝",
+                                "topic_id": "67405823d0073fe6f7c7dd29"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "67405823d0073fe6f7c7dd43",
+                        "selected": true,
+                        "title": "Merchandise and Store 🛍️",
+                        "topics": [
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "Coldplay merchandise",
+                                        "keyword_id": "67405823d0073fe6f7c7dd32",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Band t-shirts",
+                                        "keyword_id": "67405823d0073fe6f7c7dd33",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Official store",
+                                        "keyword_id": "67405823d0073fe6f7c7dd34",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Music memorabilia",
+                                        "keyword_id": "67405823d0073fe6f7c7dd35",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Merchandise collection",
+                                        "keyword_id": "67405823d0073fe6f7c7dd36",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "Official Merchandise 🧢",
+                                "topic_id": "67405823d0073fe6f7c7dd31"
+                            },
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "Limited edition Coldplay",
+                                        "keyword_id": "67405823d0073fe6f7c7dd38",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Exclusive merchandise",
+                                        "keyword_id": "67405823d0073fe6f7c7dd39",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Special releases",
+                                        "keyword_id": "67405823d0073fe6f7c7dd3a",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Collector's items",
+                                        "keyword_id": "67405823d0073fe6f7c7dd3b",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Band souvenirs",
+                                        "keyword_id": "67405823d0073fe6f7c7dd3c",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "Limited Edition Items 🎁",
+                                "topic_id": "67405823d0073fe6f7c7dd37"
+                            },
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "Buy Coldplay merch",
+                                        "keyword_id": "67405823d0073fe6f7c7dd3e",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Online store",
+                                        "keyword_id": "67405823d0073fe6f7c7dd3f",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Shopping cart",
+                                        "keyword_id": "67405823d0073fe6f7c7dd40",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Merch delivery",
+                                        "keyword_id": "67405823d0073fe6f7c7dd41",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Coldplay products",
+                                        "keyword_id": "67405823d0073fe6f7c7dd42",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "Online Shopping 🛒",
+                                "topic_id": "67405823d0073fe6f7c7dd3d"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "67405823d0073fe6f7c7dd57",
+                        "selected": true,
+                        "title": "Band and Members 🎸",
+                        "topics": [
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "Coldplay band history",
+                                        "keyword_id": "67405823d0073fe6f7c7dd46",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Formation story",
+                                        "keyword_id": "67405823d0073fe6f7c7dd47",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Band milestones",
+                                        "keyword_id": "67405823d0073fe6f7c7dd48",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Career highlights",
+                                        "keyword_id": "67405823d0073fe6f7c7dd49",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Band evolution",
+                                        "keyword_id": "67405823d0073fe6f7c7dd4a",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "Band History 📜",
+                                "topic_id": "67405823d0073fe6f7c7dd45"
+                            },
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "Chris Martin biography",
+                                        "keyword_id": "67405823d0073fe6f7c7dd4c",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Coldplay band members",
+                                        "keyword_id": "67405823d0073fe6f7c7dd4d",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Band member roles",
+                                        "keyword_id": "67405823d0073fe6f7c7dd4e",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Musician profiles",
+                                        "keyword_id": "67405823d0073fe6f7c7dd4f",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Band lineup",
+                                        "keyword_id": "67405823d0073fe6f7c7dd50",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "Band Members 👥",
+                                "topic_id": "67405823d0073fe6f7c7dd4b"
+                            },
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "Coldplay behind the scenes",
+                                        "keyword_id": "67405823d0073fe6f7c7dd52",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Music production process",
+                                        "keyword_id": "67405823d0073fe6f7c7dd53",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Studio recording",
+                                        "keyword_id": "67405823d0073fe6f7c7dd54",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Band interviews",
+                                        "keyword_id": "67405823d0073fe6f7c7dd55",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Creative process",
+                                        "keyword_id": "67405823d0073fe6f7c7dd56",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "Behind the Scenes 🎬",
+                                "topic_id": "67405823d0073fe6f7c7dd51"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "67405823d0073fe6f7c7dd6b",
+                        "selected": true,
+                        "title": "Philanthropy and Causes 🌍",
+                        "topics": [
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "Coldplay charity projects",
+                                        "keyword_id": "67405823d0073fe6f7c7dd5a",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Philanthropic activities",
+                                        "keyword_id": "67405823d0073fe6f7c7dd5b",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Supporting causes",
+                                        "keyword_id": "67405823d0073fe6f7c7dd5c",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Charity concerts",
+                                        "keyword_id": "67405823d0073fe6f7c7dd5d",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Band donations",
+                                        "keyword_id": "67405823d0073fe6f7c7dd5e",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "Charity Work ❤️",
+                                "topic_id": "67405823d0073fe6f7c7dd59"
+                            },
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "Coldplay environmental efforts",
+                                        "keyword_id": "67405823d0073fe6f7c7dd60",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Sustainability projects",
+                                        "keyword_id": "67405823d0073fe6f7c7dd61",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Green initiatives",
+                                        "keyword_id": "67405823d0073fe6f7c7dd62",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Eco-friendly concerts",
+                                        "keyword_id": "67405823d0073fe6f7c7dd63",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Environmental advocacy",
+                                        "keyword_id": "67405823d0073fe6f7c7dd64",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "Environmental Initiatives 🌱",
+                                "topic_id": "67405823d0073fe6f7c7dd5f"
+                            },
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "Coldplay social impact",
+                                        "keyword_id": "67405823d0073fe6f7c7dd66",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Community projects",
+                                        "keyword_id": "67405823d0073fe6f7c7dd67",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Humanitarian efforts",
+                                        "keyword_id": "67405823d0073fe6f7c7dd68",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Social change",
+                                        "keyword_id": "67405823d0073fe6f7c7dd69",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Band activism",
+                                        "keyword_id": "67405823d0073fe6f7c7dd6a",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "Social Impact Projects 🤲",
+                                "topic_id": "67405823d0073fe6f7c7dd65"
+                            }
+                        ]
+                    },
+                    {
+                        "entity_id": "67405823d0073fe6f7c7dd7f",
+                        "selected": true,
+                        "title": "News and Updates 📰",
+                        "topics": [
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "Coldplay press release",
+                                        "keyword_id": "67405823d0073fe6f7c7dd6e",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Band announcements",
+                                        "keyword_id": "67405823d0073fe6f7c7dd6f",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Official statements",
+                                        "keyword_id": "67405823d0073fe6f7c7dd70",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "News articles",
+                                        "keyword_id": "67405823d0073fe6f7c7dd71",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Media coverage",
+                                        "keyword_id": "67405823d0073fe6f7c7dd72",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "Press Releases 🗞️",
+                                "topic_id": "67405823d0073fe6f7c7dd6d"
+                            },
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "Coldplay interviews",
+                                        "keyword_id": "67405823d0073fe6f7c7dd74",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Band podcasts",
+                                        "keyword_id": "67405823d0073fe6f7c7dd75",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Audio interviews",
+                                        "keyword_id": "67405823d0073fe6f7c7dd76",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Musician talks",
+                                        "keyword_id": "67405823d0073fe6f7c7dd77",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Band discussions",
+                                        "keyword_id": "67405823d0073fe6f7c7dd78",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "Interviews and Podcasts 🎙️",
+                                "topic_id": "67405823d0073fe6f7c7dd73"
+                            },
+                            {
+                                "keywords": [
+                                    {
+                                        "keyword": "Coldplay event news",
+                                        "keyword_id": "67405823d0073fe6f7c7dd7a",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Concert announcements",
+                                        "keyword_id": "67405823d0073fe6f7c7dd7b",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Album release news",
+                                        "keyword_id": "67405823d0073fe6f7c7dd7c",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Band appearances",
+                                        "keyword_id": "67405823d0073fe6f7c7dd7d",
+                                        "selected": true
+                                    },
+                                    {
+                                        "keyword": "Upcoming events",
+                                        "keyword_id": "67405823d0073fe6f7c7dd7e",
+                                        "selected": true
+                                    }
+                                ],
+                                "selected": true,
+                                "topic": "Event Announcements 📢",
+                                "topic_id": "67405823d0073fe6f7c7dd79"
+                            }
+                        ]
+                    }
+                ],
+                "consumer_journey_ids": [
+                    "68a84a47849364666a0bd547",
+                    "68a84a47849364666a0bd548",
+                    "68a84a47849364666a0bd549",
+                    "68a84a47849364666a0bd54a",
+                    "68a84a47849364666a0bd54b"
+                ],
+                "content_mapping": {
+                    "unique_linkout_videos": false,
+                    "unique_videos_to_sections": false
+                },
+                "content_restrictions": {
+                    "pinned_videos": false,
+                    "recommendation_engine": false,
+                    "same_brand_videos": false,
+                    "same_url_linkouts_videos": false
+                },
+                "is_adaptive_styling_enabled": false,
+                "sections": [],
+                "sub_title": null,
+                "title": "Feed"
+            }
+        ],
+        "type": "feed",
+        "updated_at": "2026-04-21T12:03:49.644Z"
+    }
+}

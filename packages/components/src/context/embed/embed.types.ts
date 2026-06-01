@@ -568,8 +568,9 @@ export type EmbedDataType = {
   show_style_details?: boolean;
   social_metrics?: "views";
   brand_context?: Array<{
-    id: string;
+    id?: string;
     type: string;
+    value?: string;
     isFollowed?: boolean;
     activePlayingId?: string | number | undefined;
     activePlayingType?: "episode" | "live" | "station" | "podcast";

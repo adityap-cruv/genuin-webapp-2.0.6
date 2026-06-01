@@ -6,35 +6,39 @@ import { CommunityGroupsSkeleton } from "@genuin/components/templates/community-
 
 export function CommunityDetailsSkeleton() {
   return (
-    <div className="gencl:w-full gencl:overflow-auto gencl:h-full gencl:px-0 gencl:sm:px-6! gencl:relative">
-      <Skeleton className="gencl:w-full gencl:h-15 gencl:sm:h-40!" />
-      <div className="gencl:w-full gencl:h-15 gencl:sm:h-40! gencl:left-6 gencl:top-8 gencl:block gencl:sm:hidden! gencl:absolute">
-        <Skeleton className="gencl:size-14 gencl:rounded-full" />
-      </div>
-      <div className="gencl:flex gencl:pt-10 gencl:sm:pt-6 gencl:gap-6 gencl:px-4 gencl:sm:px-0!">
-        <div style={{ width: "100%" }}>
-          <GenericDetailsSkeleton
-            className="gencl:hidden gencl:md:flex!"
-            variant="default"
-            hasImage={true}
-            hasLinks={true}
-          />
-          <GenericDetailsSkeleton
-            className="gencl:flex gencl:md:hidden!"
-            variant="default"
-            hasImage={false}
-            hasLinks={false}
-          />
-          <TabsSkeleton className="gencl:pt-3 gencl:sm:pt-6!" />
-          <div className="gencl:pt-6">
-            {Array.from({ length: 2 }).map((_, idx) => (
-              <CommunityGroupsSkeleton key={idx} />
-            ))}
+    <div className="gencl:w-full gencl:overflow-auto gencl:h-full gencl:px-0 gencl:md:px-6! gencl:md:pt-6! gencl:relative">
+      <div className="gencl:flex gencl:gap-6">
+        <div className="gencl:flex-1 gencl:flex gencl:justify-center gencl:min-w-0">
+          <div className="gencl:w-full gencl:max-w-7xl">
+            <div className="gencl:relative gencl:h-auto">
+              <Skeleton className="gencl:w-full gencl:aspect-[5/1] gencl:rounded-none gencl:sm:rounded-lg!" />
+              <div className="gencl:absolute gencl:left-4 gencl:bottom-0 gencl:translate-y-1/2 gencl:block gencl:sm:hidden!">
+                <Skeleton className="gencl:size-14 gencl:rounded-full" />
+              </div>
+            </div>
+            <div className="gencl:pt-10 gencl:sm:pt-6!">
+              <GenericDetailsSkeleton
+                className="gencl:hidden gencl:md:flex!"
+                variant="default"
+                hasImage={true}
+                hasLinks={true}
+              />
+              <GenericDetailsSkeleton
+                className="gencl:flex gencl:md:hidden!"
+                variant="default"
+                hasImage={false}
+                hasLinks={false}
+              />
+              <TabsSkeleton noOfTabs={3} className="gencl:pt-3 gencl:sm:pt-6! gencl:lg:[&>div>:last-child]:hidden!" />
+              <div className="gencl:pt-6">
+                <CommunityGroupsSkeleton />
+              </div>
+            </div>
           </div>
         </div>
         {/* Side Info Skeleton */}
-        <div className="gencl:hidden gencl:md:block!" style={{ width: "100%", maxWidth: "384px" }}>
-          <Skeleton className="gencl:w-full gencl:h-100" />
+        <div className="gencl:hidden gencl:lg:block!" style={{ width: "100%", maxWidth: "20rem" }}>
+          <Skeleton className="gencl:w-full gencl:h-[600px]" />
         </div>
       </div>
     </div>

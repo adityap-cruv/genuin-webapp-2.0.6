@@ -68,7 +68,6 @@ export async function ensureStylesInShadowRoot(shadowRoot: ShadowRoot): Promise<
       cssLink.rel = "stylesheet";
       cssLink.href = cssURL;
       shadowRoot.appendChild(cssLink);
-      console.log("✅ Added web-sdk stylesheet from cssUrl to shadow root");
     }
 
     // Fetch all @property rules from the CSS URL and inject them into this
@@ -81,7 +80,7 @@ export async function ensureStylesInShadowRoot(shadowRoot: ShadowRoot): Promise<
     console.warn("⚠️ No cssUrl found in window.genuin. Required styles may not be applied to shadow root.");
   }
 
-  REQUIRED_STYLES.forEach(({ name, selector, check }) => {
+  REQUIRED_STYLES.forEach(({ selector, check }) => {
     // Check if this style type already exists in shadow root
     const existsInShadow = Array.from(shadowRoot.querySelectorAll(selector)).some(check);
 
@@ -93,9 +92,7 @@ export async function ensureStylesInShadowRoot(shadowRoot: ShadowRoot): Promise<
         shadowRoot.appendChild(style.cloneNode(true));
       });
 
-      if (matchingStyles.length > 0) {
-        console.log(`✅ Cloned ${matchingStyles.length} ${name} styles to shadow root`);
-      }
+      // matchingStyles cloned into shadow root
     }
   });
 }
@@ -169,10 +166,15 @@ function copyStylesBetweenShadowRoots(sourceShadowRoot: ShadowRoot, targetShadow
 }
 
 /**
- * Sets up shadow DOM for the main embed container
- * Returns the shadow root that was created or already exists
+ * Sets up shadow DOM for the main embed container.
+ * Returns the inner element that React should mount into.
+ * If the host element has no `id`, one is auto-generated and assigned
  */
 export async function setupMainShadowDOM(container: HTMLElement): Promise<HTMLElement> {
+  if (!container.id) {
+    container.id = `genuin-host-${Math.random().toString(36).slice(2, 9)}`;
+  }
+
   const rootNode = container.getRootNode();
   const isInShadow = rootNode instanceof ShadowRoot;
   let shadowRoot: ShadowRoot | null = null;
@@ -243,6 +245,7 @@ export function getOrCreateOverlayShadowHost(portalKey: string = "default"): {
 
   // Create a new shadow host for this portalKey
   const host = document.createElement("div");
+  host.id = `genuin-overlay-host-${portalKey}`;
   host.setAttribute("data-genuin-overlay-host", "true");
   host.setAttribute("data-portal-key", portalKey);
   host.style.position = "fixed";
@@ -262,7 +265,6 @@ export function getOrCreateOverlayShadowHost(portalKey: string = "default"): {
   const mainShadowHost = doc.querySelector("[data-genuin-host]");
   if (mainShadowHost?.shadowRoot) {
     copyStylesBetweenShadowRoots(mainShadowHost.shadowRoot, shadowRoot);
-    console.log("✅ Copied styles from main shadow root to overlay shadow root");
   }
 
   void ensureStylesInShadowRoot(shadowRoot);
@@ -291,7 +293,6 @@ export function cleanupOverlayShadowHost(portalKey?: string): void {
     // No portalKey provided — called from a global teardown (e.g. React utils cleanup).
     // Remove every overlay shadow host that is currently tracked.
     overlayShadowHostCache.forEach((value, key) => {
-      console.log(key, value.host, value.shadowRoot);
       value.host.remove();
       overlayShadowHostCache.delete(key);
     });
@@ -301,5 +302,4 @@ export function cleanupOverlayShadowHost(portalKey?: string): void {
   if (!cachedShadow) return;
   cachedShadow.host.remove();
   overlayShadowHostCache.delete(portalKey);
-  console.log(`✅ Cleaned up overlay shadow host (key: ${portalKey})`);
 }

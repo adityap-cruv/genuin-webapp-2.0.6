@@ -1,6 +1,6 @@
 ---
 name: security-audit
-description: Auditing code for security vulnerabilities and reviewing auth changes (read-only)
+description: Audit code for security vulnerabilities and review auth/input/secrets changes (read-only) — injection, XSS, dangerouslySetInnerHTML, auth-token storage, CORS/CSP, exposed secrets, unsafe external data at trust boundaries. Use when asked whether code is safe, to review an auth change, or to hunt for vulnerabilities. Do NOT modify files, and never change auth/CORS/CSP without explicit team approval.
 ---
 
 # Skill: Security Audit

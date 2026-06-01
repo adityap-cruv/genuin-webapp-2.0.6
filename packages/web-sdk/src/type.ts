@@ -76,8 +76,9 @@ export type ConfigByUser = {
   errorHandler?: ErrorHandlerFn;
   error_handler?: ErrorHandlerFn;
   brand_context?: Array<{
-    id: string;
+    id?: string;
     type: string;
+    value?: string;
     isFollowed?: boolean;
     activePlayingId?: string | number | undefined;
     activePlayingType?: "episode" | "live" | "station";
@@ -149,8 +150,9 @@ export type SingleEmbedDataConfig = {
   commentId?: string;
   live?: LiveEmbedConfig;
   brandContext?: Array<{
-    id: string;
+    id?: string;
     type: string;
+    value?: string;
   }>;
   theme?: "dark" | "light";
   websiteType?: "legacy" | "polaris";

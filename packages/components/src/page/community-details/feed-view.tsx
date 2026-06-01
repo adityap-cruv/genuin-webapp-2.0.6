@@ -14,6 +14,7 @@ export function CommunityFeedView({ communitySlug }: { communitySlug: string }) 
 
   return (
     <FeedView
+      variant="page"
       startIndex={0}
       feedData={{
         videos: feed,

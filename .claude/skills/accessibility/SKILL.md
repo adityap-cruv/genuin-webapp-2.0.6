@@ -1,6 +1,6 @@
 ---
 name: accessibility
-description: Audit and fix accessibility issues targeting WCAG 2.1 Level AA — semantic HTML, keyboard navigation, focus management, forms, contrast, ARIA, and motion
+description: Audit and fix accessibility to WCAG 2.1 Level AA — semantic HTML, keyboard navigation, focus management, form labels, colour contrast, ARIA, and reduced-motion. Use when reviewing or improving a11y, keyboard support, screen-reader semantics, or contrast. Do NOT use for general UI building (use frontend-patterns) or non-a11y visual/design review.
 ---
 
 # Skill: Accessibility

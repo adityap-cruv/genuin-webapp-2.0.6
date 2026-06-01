@@ -118,29 +118,11 @@ This project is a **Turborepo + pnpm monorepo**. Always reason about placement:
 
 ## Common Patterns
 
-### Frontend Patterns
-
-- **Component Composition**: Build complex UI from simple components (Atomic Design)
-- **Compound Components**: Use Context for compound component state
-- **Custom Hooks**: Reusable stateful logic extracted to hooks
-- **Context for Global State**: React Context API preferred over Zustand
-- **TanStack Query**: Server state management (v5)
-- **Code Splitting**: Lazy load routes and heavy components
-
-### Backend Patterns
-
-- **Route Handlers**: Next.js App Router Route Handlers (not Pages Router API Routes)
-- **Server Actions**: For form submissions and data mutations
-- **Service Layer**: Business logic separate from route handlers
-- **Middleware Pattern**: Next.js middleware for auth/routing
-- **Result Pattern**: `{ data, error }` at API boundaries
-
-### Data Patterns
-
-- **Normalized Database**: Reduce redundancy
-- **Caching with TanStack Query**: `staleTime`/`cacheTime` per query
-- **Incremental Static Regeneration (ISR)**: For semi-static pages
-- **Partial Prerendering (PPR)**: Hybrid static/dynamic
+Don't restate concrete patterns here — defer to the skills: `frontend-patterns` +
+`composition-patterns` (components, hooks, Context, TanStack Query, code splitting),
+`nextjs-server-performance` (RSC/data-fetching, Server Actions, `{ data, error }`), and `nextjs-cache`
+(ISR, PPR, caching). The architect's job is *where* things live and *how* they fit — not the patterns
+themselves.
 
 ## Architecture Decision Records (ADRs)
 

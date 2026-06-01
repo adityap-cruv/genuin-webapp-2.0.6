@@ -1,0 +1,1483 @@
+{
+    "_comment": "Fixture for POST /goservices/feed/v1/home with embed_id=<floating_embed_id> (handlers/feed.ts)",
+    "code": 200,
+    "message": "Feed loaded",
+    "data": {
+        "end_of_feed": false,
+        "expiry": 1779429457,
+        "feeds": [
+            {
+                "owner": {
+                    "uuid": "76e6fb5f-980d-4d99-8ef5-c0093f02e5ee",
+                    "name": "testCompan",
+                    "username": "TestInteraction",
+                    "is_avatar": false,
+                    "profile_image": "https://media.qa.begenuin.com/uploads/profile_images/Walmart_favicon_1765862233.png",
+                    "profile_image_s": "https://media.qa.begenuin.com/uploads/profile_images/s/Walmart_favicon_1765862233.png",
+                    "profile_image_m": "https://media.qa.begenuin.com/uploads/profile_images/m/Walmart_favicon_1765862233.png",
+                    "profile_image_l": "https://media.qa.begenuin.com/uploads/profile_images/l/Walmart_favicon_1765862233.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 3352,
+                        "brand_slug": "testcompany",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://testcompany.qa.begenuin.com/profile/TestInteraction"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 3352,
+                        "name": "testCompan",
+                        "brand_slug": "testcompany",
+                        "brand_web_logo": "https://media.qa.begenuin.com/uploads/brands/web_logo/Walmart_weblogo_1765862233.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "TestInteraction"
+                    },
+                    "uuid": "7efc6f58-4c8f-4ceb-aced-ba0f829d525e",
+                    "handle": "tcomapanyshorts",
+                    "slug": "tcomapany",
+                    "name": "TComapany",
+                    "description": "TO post new shorts",
+                    "color_code": "#8DC6E8",
+                    "text_color_code": "#1B8DD1",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "share_string": "2198b8a88a800f3b",
+                    "brand_id": 3352,
+                    "type": 1,
+                    "share_url": "https://testcompany.qa.begenuin.com/community/tcomapany",
+                    "no_of_views": 0,
+                    "no_of_members": 11,
+                    "no_of_videos": 23,
+                    "no_of_sparks": 5,
+                    "no_of_groups": 2
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "f6a83d72-fa1c-40dd-86d0-dddafef0ca59",
+                    "group_name": "watches",
+                    "group_description": "watches u love",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#A4E6DA",
+                    "text_color_code": "#49CDB5",
+                    "uuid": "362f2b23-2585-46de-bda4-068560f0cbbd",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "watches",
+                    "share_string": "21b260443b801400",
+                    "type": 4,
+                    "share_url": "https://testcompany.qa.begenuin.com/loop/watches?community=2198b8a88a800f3b",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 9,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 0,
+                    "no_of_members": 5,
+                    "no_of_videos": 8,
+                    "no_of_sparks": 1
+                },
+                "score": {
+                    "pop_score": 7.493176526125897e-07,
+                    "rec_score": 0.992863541096159,
+                    "context_score": 0,
+                    "user_interest_score": 0,
+                    "final_score": 630.0019405357748
+                },
+                "uuid": "e0028cf0-2d3d-4dc0-bc78-41bffb343884",
+                "video": {
+                    "duration": 4,
+                    "attached_link": null,
+                    "clickable_url": null,
+                    "conversation_at": 1766728144000,
+                    "description_data": "[\"We just really wanted to show you how big these Deals are 💥 Now thru Oct 12th - what's on your list? ⬇️\"]",
+                    "description_text": "We just really wanted to show you how big these Deals are 💥 Now thru Oct 12th - what's on your list? ⬇️",
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts_inappbrowser": true,
+                    "media_url": "https://media.qa.begenuin.com/temp_video/694e2105317122693dc14d16_1766728141096.mp4",
+                    "media_url_m3u8": "https://vz-eee5e913-a30.b-cdn.net/bdd06aaf-f228-461e-9485-87bf00d57bef/playlist.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "duration": "4",
+                        "resolution": "720x1280",
+                        "size": "464363"
+                    },
+                    "no_of_comments": 0,
+                    "no_of_shares": 0,
+                    "no_of_sparks": 1,
+                    "no_of_views": 0,
+                    "owner": {
+                        "uuid": "76e6fb5f-980d-4d99-8ef5-c0093f02e5ee",
+                        "name": "testCompan",
+                        "username": "TestInteraction",
+                        "is_avatar": false,
+                        "profile_image": "https://media.qa.begenuin.com/uploads/profile_images/Walmart_favicon_1765862233.png",
+                        "profile_image_s": "https://media.qa.begenuin.com/uploads/profile_images/s/Walmart_favicon_1765862233.png",
+                        "profile_image_m": "https://media.qa.begenuin.com/uploads/profile_images/m/Walmart_favicon_1765862233.png",
+                        "profile_image_l": "https://media.qa.begenuin.com/uploads/profile_images/l/Walmart_favicon_1765862233.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 3352,
+                            "brand_slug": "testcompany",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://testcompany.qa.begenuin.com/profile/TestInteraction"
+                    },
+                    "share_url": "https://testcompany.qa.begenuin.com/video/we-just-really-wanted-to-show-you-how-big-these?community=2198b8a88a800f3b&loop=21b260443b801400",
+                    "slug": "we-just-really-wanted-to-show-you-how-big-these",
+                    "sprite_image_url": "https://media.qa.begenuin.com/uploads/sprite/694e2105317122693dc14d16_1766728141096.jpeg",
+                    "thumbnail_url": "https://vz-eee5e913-a30.b-cdn.net/bdd06aaf-f228-461e-9485-87bf00d57bef/thumbnail.jpg",
+                    "thumbnail_url_l": "https://media.qa.begenuin.com/uploads/thumbnails/l/694e2105317122693dc14d16_1766728141096.png",
+                    "thumbnail_url_s": "https://media.qa.begenuin.com/uploads/thumbnails/s/694e2105317122693dc14d16_1766728141096.png",
+                    "uuid": "e0028cf0-2d3d-4dc0-bc78-41bffb343884",
+                    "video_summary": null,
+                    "card_layout_id": 1,
+                    "video_layout_id": 1,
+                    "source": "device"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "76e6fb5f-980d-4d99-8ef5-c0093f02e5ee",
+                    "name": "testCompan",
+                    "username": "TestInteraction",
+                    "is_avatar": false,
+                    "profile_image": "https://media.qa.begenuin.com/uploads/profile_images/Walmart_favicon_1765862233.png",
+                    "profile_image_s": "https://media.qa.begenuin.com/uploads/profile_images/s/Walmart_favicon_1765862233.png",
+                    "profile_image_m": "https://media.qa.begenuin.com/uploads/profile_images/m/Walmart_favicon_1765862233.png",
+                    "profile_image_l": "https://media.qa.begenuin.com/uploads/profile_images/l/Walmart_favicon_1765862233.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 3352,
+                        "brand_slug": "testcompany",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://testcompany.qa.begenuin.com/profile/TestInteraction"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 3352,
+                        "name": "testCompan",
+                        "brand_slug": "testcompany",
+                        "brand_web_logo": "https://media.qa.begenuin.com/uploads/brands/web_logo/Walmart_weblogo_1765862233.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "TestInteraction"
+                    },
+                    "uuid": "7efc6f58-4c8f-4ceb-aced-ba0f829d525e",
+                    "handle": "tcomapanyshorts",
+                    "slug": "tcomapany",
+                    "name": "TComapany",
+                    "description": "TO post new shorts",
+                    "color_code": "#8DC6E8",
+                    "text_color_code": "#1B8DD1",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "share_string": "2198b8a88a800f3b",
+                    "brand_id": 3352,
+                    "type": 1,
+                    "share_url": "https://testcompany.qa.begenuin.com/community/tcomapany",
+                    "no_of_views": 0,
+                    "no_of_members": 11,
+                    "no_of_videos": 23,
+                    "no_of_sparks": 5,
+                    "no_of_groups": 2
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "f6a83d72-fa1c-40dd-86d0-dddafef0ca59",
+                    "group_name": "watches",
+                    "group_description": "watches u love",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#A4E6DA",
+                    "text_color_code": "#49CDB5",
+                    "uuid": "362f2b23-2585-46de-bda4-068560f0cbbd",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "watches",
+                    "share_string": "21b260443b801400",
+                    "type": 4,
+                    "share_url": "https://testcompany.qa.begenuin.com/loop/watches?community=2198b8a88a800f3b",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 9,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 0,
+                    "no_of_members": 5,
+                    "no_of_videos": 8,
+                    "no_of_sparks": 1
+                },
+                "score": {
+                    "pop_score": 0,
+                    "rec_score": 0.992863541096159,
+                    "context_score": 0,
+                    "user_interest_score": 0,
+                    "final_score": 630.0019404555229
+                },
+                "uuid": "52acde62-02b8-45e4-b939-79a4a2f88ba6",
+                "video": {
+                    "duration": 21,
+                    "attached_link": null,
+                    "clickable_url": null,
+                    "conversation_at": 1766728144000,
+                    "description_data": "[\"🚨Merch alert! 🚨 Grab all your Stranger Things rewatch party essentials at the link in bio! @strangerthings.things\"]",
+                    "description_text": "🚨Merch alert! 🚨 Grab all your Stranger Things rewatch party essentials at the link in bio! @strangerthings.things",
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts_inappbrowser": true,
+                    "media_url": "https://media.qa.begenuin.com/temp_video/694e2109bdded1a788e3c027_1766728141114.mp4",
+                    "media_url_m3u8": "https://vz-eee5e913-a30.b-cdn.net/493ae54b-4b9f-4674-8602-31689bf9d34a/playlist.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "duration": "21",
+                        "resolution": "720x1280",
+                        "size": "4358648"
+                    },
+                    "no_of_comments": 0,
+                    "no_of_shares": 0,
+                    "no_of_sparks": 0,
+                    "no_of_views": 0,
+                    "owner": {
+                        "uuid": "76e6fb5f-980d-4d99-8ef5-c0093f02e5ee",
+                        "name": "testCompan",
+                        "username": "TestInteraction",
+                        "is_avatar": false,
+                        "profile_image": "https://media.qa.begenuin.com/uploads/profile_images/Walmart_favicon_1765862233.png",
+                        "profile_image_s": "https://media.qa.begenuin.com/uploads/profile_images/s/Walmart_favicon_1765862233.png",
+                        "profile_image_m": "https://media.qa.begenuin.com/uploads/profile_images/m/Walmart_favicon_1765862233.png",
+                        "profile_image_l": "https://media.qa.begenuin.com/uploads/profile_images/l/Walmart_favicon_1765862233.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 3352,
+                            "brand_slug": "testcompany",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://testcompany.qa.begenuin.com/profile/TestInteraction"
+                    },
+                    "share_url": "https://testcompany.qa.begenuin.com/video/merch-alert-grab-all-your-stranger-things-rewatch?community=2198b8a88a800f3b&loop=21b260443b801400",
+                    "slug": "merch-alert-grab-all-your-stranger-things-rewatch",
+                    "sprite_image_url": "https://media.qa.begenuin.com/uploads/sprite/694e2109bdded1a788e3c027_1766728141114.jpeg",
+                    "thumbnail_url": "https://vz-eee5e913-a30.b-cdn.net/493ae54b-4b9f-4674-8602-31689bf9d34a/thumbnail.jpg",
+                    "thumbnail_url_l": "https://media.qa.begenuin.com/uploads/thumbnails/l/694e2109bdded1a788e3c027_1766728141114.png",
+                    "thumbnail_url_s": "https://media.qa.begenuin.com/uploads/thumbnails/s/694e2109bdded1a788e3c027_1766728141114.png",
+                    "uuid": "52acde62-02b8-45e4-b939-79a4a2f88ba6",
+                    "video_summary": null,
+                    "card_layout_id": 1,
+                    "video_layout_id": 1,
+                    "source": "device"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "76e6fb5f-980d-4d99-8ef5-c0093f02e5ee",
+                    "name": "testCompan",
+                    "username": "TestInteraction",
+                    "is_avatar": false,
+                    "profile_image": "https://media.qa.begenuin.com/uploads/profile_images/Walmart_favicon_1765862233.png",
+                    "profile_image_s": "https://media.qa.begenuin.com/uploads/profile_images/s/Walmart_favicon_1765862233.png",
+                    "profile_image_m": "https://media.qa.begenuin.com/uploads/profile_images/m/Walmart_favicon_1765862233.png",
+                    "profile_image_l": "https://media.qa.begenuin.com/uploads/profile_images/l/Walmart_favicon_1765862233.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 3352,
+                        "brand_slug": "testcompany",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://testcompany.qa.begenuin.com/profile/TestInteraction"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 3352,
+                        "name": "testCompan",
+                        "brand_slug": "testcompany",
+                        "brand_web_logo": "https://media.qa.begenuin.com/uploads/brands/web_logo/Walmart_weblogo_1765862233.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "TestInteraction"
+                    },
+                    "uuid": "7efc6f58-4c8f-4ceb-aced-ba0f829d525e",
+                    "handle": "tcomapanyshorts",
+                    "slug": "tcomapany",
+                    "name": "TComapany",
+                    "description": "TO post new shorts",
+                    "color_code": "#8DC6E8",
+                    "text_color_code": "#1B8DD1",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "share_string": "2198b8a88a800f3b",
+                    "brand_id": 3352,
+                    "type": 1,
+                    "share_url": "https://testcompany.qa.begenuin.com/community/tcomapany",
+                    "no_of_views": 0,
+                    "no_of_members": 11,
+                    "no_of_videos": 23,
+                    "no_of_sparks": 5,
+                    "no_of_groups": 2
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "f6a83d72-fa1c-40dd-86d0-dddafef0ca59",
+                    "group_name": "watches",
+                    "group_description": "watches u love",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#A4E6DA",
+                    "text_color_code": "#49CDB5",
+                    "uuid": "362f2b23-2585-46de-bda4-068560f0cbbd",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "watches",
+                    "share_string": "21b260443b801400",
+                    "type": 4,
+                    "share_url": "https://testcompany.qa.begenuin.com/loop/watches?community=2198b8a88a800f3b",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 9,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 0,
+                    "no_of_members": 5,
+                    "no_of_videos": 8,
+                    "no_of_sparks": 1
+                },
+                "score": {
+                    "pop_score": 0,
+                    "rec_score": 0.992863541096159,
+                    "context_score": 0,
+                    "user_interest_score": 0,
+                    "final_score": 630.0019404555229
+                },
+                "uuid": "b7e72d85-d335-4e40-918d-1df779aa7717",
+                "video": {
+                    "duration": 25,
+                    "attached_link": null,
+                    "clickable_url": null,
+                    "conversation_at": 1766728144000,
+                    "description_data": "[\"POV: you asked Sparky for Halloween costume inspo (👀🍗) and it did not disappoint. Try it yourself in the Walmart app 😉\"]",
+                    "description_text": "POV: you asked Sparky for Halloween costume inspo (👀🍗) and it did not disappoint. Try it yourself in the Walmart app 😉",
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts_inappbrowser": true,
+                    "media_url": "https://media.qa.begenuin.com/temp_video/694e2105e6b46f48a64a66be_1766728141114.mp4",
+                    "media_url_m3u8": "https://vz-eee5e913-a30.b-cdn.net/cab3417a-60dc-4099-9136-0db1ff903f04/playlist.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "duration": "25",
+                        "resolution": "720x1280",
+                        "size": "6303571"
+                    },
+                    "no_of_comments": 0,
+                    "no_of_shares": 0,
+                    "no_of_sparks": 0,
+                    "no_of_views": 0,
+                    "owner": {
+                        "uuid": "76e6fb5f-980d-4d99-8ef5-c0093f02e5ee",
+                        "name": "testCompan",
+                        "username": "TestInteraction",
+                        "is_avatar": false,
+                        "profile_image": "https://media.qa.begenuin.com/uploads/profile_images/Walmart_favicon_1765862233.png",
+                        "profile_image_s": "https://media.qa.begenuin.com/uploads/profile_images/s/Walmart_favicon_1765862233.png",
+                        "profile_image_m": "https://media.qa.begenuin.com/uploads/profile_images/m/Walmart_favicon_1765862233.png",
+                        "profile_image_l": "https://media.qa.begenuin.com/uploads/profile_images/l/Walmart_favicon_1765862233.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 3352,
+                            "brand_slug": "testcompany",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://testcompany.qa.begenuin.com/profile/TestInteraction"
+                    },
+                    "share_url": "https://testcompany.qa.begenuin.com/video/pov-you-asked-sparky-for-halloween-costume-inspo?community=2198b8a88a800f3b&loop=21b260443b801400",
+                    "slug": "pov-you-asked-sparky-for-halloween-costume-inspo",
+                    "sprite_image_url": "https://media.qa.begenuin.com/uploads/sprite/694e2105e6b46f48a64a66be_1766728141114.jpeg",
+                    "thumbnail_url": "https://vz-eee5e913-a30.b-cdn.net/cab3417a-60dc-4099-9136-0db1ff903f04/thumbnail.jpg",
+                    "thumbnail_url_l": "https://media.qa.begenuin.com/uploads/thumbnails/l/694e2105e6b46f48a64a66be_1766728141114.png",
+                    "thumbnail_url_s": "https://media.qa.begenuin.com/uploads/thumbnails/s/694e2105e6b46f48a64a66be_1766728141114.png",
+                    "uuid": "b7e72d85-d335-4e40-918d-1df779aa7717",
+                    "video_summary": null,
+                    "card_layout_id": 1,
+                    "video_layout_id": 1,
+                    "source": "device"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "76e6fb5f-980d-4d99-8ef5-c0093f02e5ee",
+                    "name": "testCompan",
+                    "username": "TestInteraction",
+                    "is_avatar": false,
+                    "profile_image": "https://media.qa.begenuin.com/uploads/profile_images/Walmart_favicon_1765862233.png",
+                    "profile_image_s": "https://media.qa.begenuin.com/uploads/profile_images/s/Walmart_favicon_1765862233.png",
+                    "profile_image_m": "https://media.qa.begenuin.com/uploads/profile_images/m/Walmart_favicon_1765862233.png",
+                    "profile_image_l": "https://media.qa.begenuin.com/uploads/profile_images/l/Walmart_favicon_1765862233.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 3352,
+                        "brand_slug": "testcompany",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://testcompany.qa.begenuin.com/profile/TestInteraction"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 3352,
+                        "name": "testCompan",
+                        "brand_slug": "testcompany",
+                        "brand_web_logo": "https://media.qa.begenuin.com/uploads/brands/web_logo/Walmart_weblogo_1765862233.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "TestInteraction"
+                    },
+                    "uuid": "7efc6f58-4c8f-4ceb-aced-ba0f829d525e",
+                    "handle": "tcomapanyshorts",
+                    "slug": "tcomapany",
+                    "name": "TComapany",
+                    "description": "TO post new shorts",
+                    "color_code": "#8DC6E8",
+                    "text_color_code": "#1B8DD1",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "share_string": "2198b8a88a800f3b",
+                    "brand_id": 3352,
+                    "type": 1,
+                    "share_url": "https://testcompany.qa.begenuin.com/community/tcomapany",
+                    "no_of_views": 0,
+                    "no_of_members": 11,
+                    "no_of_videos": 23,
+                    "no_of_sparks": 5,
+                    "no_of_groups": 2
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "f6a83d72-fa1c-40dd-86d0-dddafef0ca59",
+                    "group_name": "watches",
+                    "group_description": "watches u love",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#A4E6DA",
+                    "text_color_code": "#49CDB5",
+                    "uuid": "362f2b23-2585-46de-bda4-068560f0cbbd",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "watches",
+                    "share_string": "21b260443b801400",
+                    "type": 4,
+                    "share_url": "https://testcompany.qa.begenuin.com/loop/watches?community=2198b8a88a800f3b",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 9,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 0,
+                    "no_of_members": 5,
+                    "no_of_videos": 8,
+                    "no_of_sparks": 1
+                },
+                "score": {
+                    "pop_score": 0,
+                    "rec_score": 0.992863541096159,
+                    "context_score": 0,
+                    "user_interest_score": 0,
+                    "final_score": 630.0019404555229
+                },
+                "uuid": "9ca73d5e-2e03-4c25-8392-8b7da5bed440",
+                "video": {
+                    "duration": 27,
+                    "attached_link": null,
+                    "clickable_url": null,
+                    "conversation_at": 1766728144000,
+                    "description_data": "[\"In Africa, millions of children are going hungry every day. Poverty has left families without enough food to survive. These kids are facing hunger, pain, and an uncertain future. But with your help, we can change their story.\\n\\nYour donation can provide food, hope, and a better tomorrow for these children. Every contribution makes a difference—no matter how small.\\n\\n🙏 Click to donate now and give these kids a chance to grow and thrive. 🙏\\n#HelpFeedAfrica #EndChildHunger #DonateToday #FightPoverty #SaveLives\"]",
+                    "description_text": "In Africa, millions of children are going hungry every day. Poverty has left families without enough food to survive. These kids are facing hunger, pain, and an uncertain future. But with your help, we can change their story.\n\nYour donation can provide food, hope, and a better tomorrow for these children. Every contribution makes a difference—no matter how small.\n\n🙏 Click to donate now and give these kids a chance to grow and thrive. 🙏\n#HelpFeedAfrica #EndChildHunger #DonateToday #FightPoverty #SaveLives",
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts_inappbrowser": true,
+                    "media_url": "https://media.qa.begenuin.com/temp_video/694e20fe3ae5348fdcd6d0a7_1766728141096.mp4",
+                    "media_url_m3u8": "https://vz-eee5e913-a30.b-cdn.net/86c3465f-abbf-40da-a119-43242d5ca407/playlist.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "duration": "27",
+                        "resolution": "360x640",
+                        "size": "2613754"
+                    },
+                    "no_of_comments": 0,
+                    "no_of_shares": 0,
+                    "no_of_sparks": 0,
+                    "no_of_views": 0,
+                    "owner": {
+                        "uuid": "76e6fb5f-980d-4d99-8ef5-c0093f02e5ee",
+                        "name": "testCompan",
+                        "username": "TestInteraction",
+                        "is_avatar": false,
+                        "profile_image": "https://media.qa.begenuin.com/uploads/profile_images/Walmart_favicon_1765862233.png",
+                        "profile_image_s": "https://media.qa.begenuin.com/uploads/profile_images/s/Walmart_favicon_1765862233.png",
+                        "profile_image_m": "https://media.qa.begenuin.com/uploads/profile_images/m/Walmart_favicon_1765862233.png",
+                        "profile_image_l": "https://media.qa.begenuin.com/uploads/profile_images/l/Walmart_favicon_1765862233.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 3352,
+                            "brand_slug": "testcompany",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://testcompany.qa.begenuin.com/profile/TestInteraction"
+                    },
+                    "share_url": "https://testcompany.qa.begenuin.com/video/in-africa-millions-of-children-are-going-hungry?community=2198b8a88a800f3b&loop=21b260443b801400",
+                    "slug": "in-africa-millions-of-children-are-going-hungry",
+                    "sprite_image_url": "https://media.qa.begenuin.com/uploads/sprite/694e20fe3ae5348fdcd6d0a7_1766728141096.jpeg",
+                    "thumbnail_url": "https://vz-eee5e913-a30.b-cdn.net/86c3465f-abbf-40da-a119-43242d5ca407/thumbnail.jpg",
+                    "thumbnail_url_l": "https://media.qa.begenuin.com/uploads/thumbnails/l/694e20fe3ae5348fdcd6d0a7_1766728141096.png",
+                    "thumbnail_url_s": "https://media.qa.begenuin.com/uploads/thumbnails/s/694e20fe3ae5348fdcd6d0a7_1766728141096.png",
+                    "uuid": "9ca73d5e-2e03-4c25-8392-8b7da5bed440",
+                    "video_summary": null,
+                    "card_layout_id": 1,
+                    "video_layout_id": 1,
+                    "source": "device"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "76e6fb5f-980d-4d99-8ef5-c0093f02e5ee",
+                    "name": "testCompan",
+                    "username": "TestInteraction",
+                    "is_avatar": false,
+                    "profile_image": "https://media.qa.begenuin.com/uploads/profile_images/Walmart_favicon_1765862233.png",
+                    "profile_image_s": "https://media.qa.begenuin.com/uploads/profile_images/s/Walmart_favicon_1765862233.png",
+                    "profile_image_m": "https://media.qa.begenuin.com/uploads/profile_images/m/Walmart_favicon_1765862233.png",
+                    "profile_image_l": "https://media.qa.begenuin.com/uploads/profile_images/l/Walmart_favicon_1765862233.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 3352,
+                        "brand_slug": "testcompany",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://testcompany.qa.begenuin.com/profile/TestInteraction"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 3352,
+                        "name": "testCompan",
+                        "brand_slug": "testcompany",
+                        "brand_web_logo": "https://media.qa.begenuin.com/uploads/brands/web_logo/Walmart_weblogo_1765862233.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "TestInteraction"
+                    },
+                    "uuid": "7efc6f58-4c8f-4ceb-aced-ba0f829d525e",
+                    "handle": "tcomapanyshorts",
+                    "slug": "tcomapany",
+                    "name": "TComapany",
+                    "description": "TO post new shorts",
+                    "color_code": "#8DC6E8",
+                    "text_color_code": "#1B8DD1",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "share_string": "2198b8a88a800f3b",
+                    "brand_id": 3352,
+                    "type": 1,
+                    "share_url": "https://testcompany.qa.begenuin.com/community/tcomapany",
+                    "no_of_views": 0,
+                    "no_of_members": 11,
+                    "no_of_videos": 23,
+                    "no_of_sparks": 5,
+                    "no_of_groups": 2
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "f6a83d72-fa1c-40dd-86d0-dddafef0ca59",
+                    "group_name": "watches",
+                    "group_description": "watches u love",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#A4E6DA",
+                    "text_color_code": "#49CDB5",
+                    "uuid": "362f2b23-2585-46de-bda4-068560f0cbbd",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "watches",
+                    "share_string": "21b260443b801400",
+                    "type": 4,
+                    "share_url": "https://testcompany.qa.begenuin.com/loop/watches?community=2198b8a88a800f3b",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 9,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 0,
+                    "no_of_members": 5,
+                    "no_of_videos": 8,
+                    "no_of_sparks": 1
+                },
+                "score": {
+                    "pop_score": 0,
+                    "rec_score": 0.9928635416581377,
+                    "context_score": 0,
+                    "user_interest_score": 0,
+                    "final_score": 630.0018908444118
+                },
+                "uuid": "fde583f6-2ce4-4be7-be05-31bd32f073cf",
+                "video": {
+                    "duration": 14,
+                    "attached_link": null,
+                    "clickable_url": null,
+                    "conversation_at": 1766728145000,
+                    "description_data": "[\"Deals so big you’ll get lost in ‘em. Oct. 7-12.\"]",
+                    "description_text": "Deals so big you’ll get lost in ‘em. Oct. 7-12.",
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts_inappbrowser": true,
+                    "media_url": "https://media.qa.begenuin.com/temp_video/694e211120c747572f3bdb02_1766728141112.mp4",
+                    "media_url_m3u8": "https://vz-eee5e913-a30.b-cdn.net/2bc34bff-1e8c-4de4-aef8-d245bbc9728b/playlist.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "duration": "14",
+                        "resolution": "1080x1920",
+                        "size": "8863374"
+                    },
+                    "no_of_comments": 0,
+                    "no_of_shares": 0,
+                    "no_of_sparks": 0,
+                    "no_of_views": 0,
+                    "owner": {
+                        "uuid": "76e6fb5f-980d-4d99-8ef5-c0093f02e5ee",
+                        "name": "testCompan",
+                        "username": "TestInteraction",
+                        "is_avatar": false,
+                        "profile_image": "https://media.qa.begenuin.com/uploads/profile_images/Walmart_favicon_1765862233.png",
+                        "profile_image_s": "https://media.qa.begenuin.com/uploads/profile_images/s/Walmart_favicon_1765862233.png",
+                        "profile_image_m": "https://media.qa.begenuin.com/uploads/profile_images/m/Walmart_favicon_1765862233.png",
+                        "profile_image_l": "https://media.qa.begenuin.com/uploads/profile_images/l/Walmart_favicon_1765862233.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 3352,
+                            "brand_slug": "testcompany",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://testcompany.qa.begenuin.com/profile/TestInteraction"
+                    },
+                    "share_url": "https://testcompany.qa.begenuin.com/video/deals-so-big-youll-get-lost-in-em-oct-7-12?community=2198b8a88a800f3b&loop=21b260443b801400",
+                    "slug": "deals-so-big-youll-get-lost-in-em-oct-7-12",
+                    "sprite_image_url": "https://media.qa.begenuin.com/uploads/sprite/694e211120c747572f3bdb02_1766728141112.jpeg",
+                    "thumbnail_url": "https://vz-eee5e913-a30.b-cdn.net/2bc34bff-1e8c-4de4-aef8-d245bbc9728b/thumbnail.jpg",
+                    "thumbnail_url_l": "https://media.qa.begenuin.com/uploads/thumbnails/l/694e211120c747572f3bdb02_1766728141112.png",
+                    "thumbnail_url_s": "https://media.qa.begenuin.com/uploads/thumbnails/s/694e211120c747572f3bdb02_1766728141112.png",
+                    "uuid": "fde583f6-2ce4-4be7-be05-31bd32f073cf",
+                    "video_summary": null,
+                    "card_layout_id": 1,
+                    "video_layout_id": 1,
+                    "source": "device"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "76e6fb5f-980d-4d99-8ef5-c0093f02e5ee",
+                    "name": "testCompan",
+                    "username": "TestInteraction",
+                    "is_avatar": false,
+                    "profile_image": "https://media.qa.begenuin.com/uploads/profile_images/Walmart_favicon_1765862233.png",
+                    "profile_image_s": "https://media.qa.begenuin.com/uploads/profile_images/s/Walmart_favicon_1765862233.png",
+                    "profile_image_m": "https://media.qa.begenuin.com/uploads/profile_images/m/Walmart_favicon_1765862233.png",
+                    "profile_image_l": "https://media.qa.begenuin.com/uploads/profile_images/l/Walmart_favicon_1765862233.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 3352,
+                        "brand_slug": "testcompany",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://testcompany.qa.begenuin.com/profile/TestInteraction"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 3352,
+                        "name": "testCompan",
+                        "brand_slug": "testcompany",
+                        "brand_web_logo": "https://media.qa.begenuin.com/uploads/brands/web_logo/Walmart_weblogo_1765862233.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "TestInteraction"
+                    },
+                    "uuid": "7efc6f58-4c8f-4ceb-aced-ba0f829d525e",
+                    "handle": "tcomapanyshorts",
+                    "slug": "tcomapany",
+                    "name": "TComapany",
+                    "description": "TO post new shorts",
+                    "color_code": "#8DC6E8",
+                    "text_color_code": "#1B8DD1",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "share_string": "2198b8a88a800f3b",
+                    "brand_id": 3352,
+                    "type": 1,
+                    "share_url": "https://testcompany.qa.begenuin.com/community/tcomapany",
+                    "no_of_views": 0,
+                    "no_of_members": 11,
+                    "no_of_videos": 23,
+                    "no_of_sparks": 5,
+                    "no_of_groups": 2
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "f6a83d72-fa1c-40dd-86d0-dddafef0ca59",
+                    "group_name": "watches",
+                    "group_description": "watches u love",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#A4E6DA",
+                    "text_color_code": "#49CDB5",
+                    "uuid": "362f2b23-2585-46de-bda4-068560f0cbbd",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "watches",
+                    "share_string": "21b260443b801400",
+                    "type": 4,
+                    "share_url": "https://testcompany.qa.begenuin.com/loop/watches?community=2198b8a88a800f3b",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 9,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 0,
+                    "no_of_members": 5,
+                    "no_of_videos": 8,
+                    "no_of_sparks": 1
+                },
+                "score": {
+                    "pop_score": 0,
+                    "rec_score": 0.9928635416581377,
+                    "context_score": 0,
+                    "user_interest_score": 0,
+                    "final_score": 630.0018908444118
+                },
+                "uuid": "5abe8d7a-0269-4c73-bbaa-946f0c5b7c6a",
+                "video": {
+                    "duration": 38,
+                    "attached_link": null,
+                    "clickable_url": null,
+                    "conversation_at": 1766728145000,
+                    "description_data": "[\"Decor ✔️ \\nDrinks ✔️ \\nWalking Tacos ✔️ \\nGreat People ✔️ \\n\\nGet game day and watch party ready!! ⚽️\"]",
+                    "description_text": "Decor ✔️ \nDrinks ✔️ \nWalking Tacos ✔️ \nGreat People ✔️ \n\nGet game day and watch party ready!! ⚽️",
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts_inappbrowser": true,
+                    "media_url": "https://media.qa.begenuin.com/temp_video/694e20fd9b54bce6a214b32e_1766728141096.mp4",
+                    "media_url_m3u8": "https://vz-eee5e913-a30.b-cdn.net/73774e4e-ce27-40d6-bd19-356f78afef8a/playlist.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "duration": "38",
+                        "resolution": "720x1280",
+                        "size": "8172394"
+                    },
+                    "no_of_comments": 0,
+                    "no_of_shares": 0,
+                    "no_of_sparks": 0,
+                    "no_of_views": 0,
+                    "owner": {
+                        "uuid": "76e6fb5f-980d-4d99-8ef5-c0093f02e5ee",
+                        "name": "testCompan",
+                        "username": "TestInteraction",
+                        "is_avatar": false,
+                        "profile_image": "https://media.qa.begenuin.com/uploads/profile_images/Walmart_favicon_1765862233.png",
+                        "profile_image_s": "https://media.qa.begenuin.com/uploads/profile_images/s/Walmart_favicon_1765862233.png",
+                        "profile_image_m": "https://media.qa.begenuin.com/uploads/profile_images/m/Walmart_favicon_1765862233.png",
+                        "profile_image_l": "https://media.qa.begenuin.com/uploads/profile_images/l/Walmart_favicon_1765862233.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 3352,
+                            "brand_slug": "testcompany",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://testcompany.qa.begenuin.com/profile/TestInteraction"
+                    },
+                    "share_url": "https://testcompany.qa.begenuin.com/video/decor-drinks-walking-tacos-great-people-get-game?community=2198b8a88a800f3b&loop=21b260443b801400",
+                    "slug": "decor-drinks-walking-tacos-great-people-get-game",
+                    "sprite_image_url": "https://media.qa.begenuin.com/uploads/sprite/694e20fd9b54bce6a214b32e_1766728141096.jpeg",
+                    "thumbnail_url": "https://vz-eee5e913-a30.b-cdn.net/73774e4e-ce27-40d6-bd19-356f78afef8a/thumbnail.jpg",
+                    "thumbnail_url_l": "https://media.qa.begenuin.com/uploads/thumbnails/l/694e20fd9b54bce6a214b32e_1766728141096.png",
+                    "thumbnail_url_s": "https://media.qa.begenuin.com/uploads/thumbnails/s/694e20fd9b54bce6a214b32e_1766728141096.png",
+                    "uuid": "5abe8d7a-0269-4c73-bbaa-946f0c5b7c6a",
+                    "video_summary": null,
+                    "card_layout_id": 1,
+                    "video_layout_id": 1,
+                    "source": "device"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "76e6fb5f-980d-4d99-8ef5-c0093f02e5ee",
+                    "name": "testCompan",
+                    "username": "TestInteraction",
+                    "is_avatar": false,
+                    "profile_image": "https://media.qa.begenuin.com/uploads/profile_images/Walmart_favicon_1765862233.png",
+                    "profile_image_s": "https://media.qa.begenuin.com/uploads/profile_images/s/Walmart_favicon_1765862233.png",
+                    "profile_image_m": "https://media.qa.begenuin.com/uploads/profile_images/m/Walmart_favicon_1765862233.png",
+                    "profile_image_l": "https://media.qa.begenuin.com/uploads/profile_images/l/Walmart_favicon_1765862233.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 3352,
+                        "brand_slug": "testcompany",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://testcompany.qa.begenuin.com/profile/TestInteraction"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 3352,
+                        "name": "testCompan",
+                        "brand_slug": "testcompany",
+                        "brand_web_logo": "https://media.qa.begenuin.com/uploads/brands/web_logo/Walmart_weblogo_1765862233.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "TestInteraction"
+                    },
+                    "uuid": "7efc6f58-4c8f-4ceb-aced-ba0f829d525e",
+                    "handle": "tcomapanyshorts",
+                    "slug": "tcomapany",
+                    "name": "TComapany",
+                    "description": "TO post new shorts",
+                    "color_code": "#8DC6E8",
+                    "text_color_code": "#1B8DD1",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "share_string": "2198b8a88a800f3b",
+                    "brand_id": 3352,
+                    "type": 1,
+                    "share_url": "https://testcompany.qa.begenuin.com/community/tcomapany",
+                    "no_of_views": 0,
+                    "no_of_members": 11,
+                    "no_of_videos": 23,
+                    "no_of_sparks": 5,
+                    "no_of_groups": 2
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "f6a83d72-fa1c-40dd-86d0-dddafef0ca59",
+                    "group_name": "watches",
+                    "group_description": "watches u love",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#A4E6DA",
+                    "text_color_code": "#49CDB5",
+                    "uuid": "362f2b23-2585-46de-bda4-068560f0cbbd",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "watches",
+                    "share_string": "21b260443b801400",
+                    "type": 4,
+                    "share_url": "https://testcompany.qa.begenuin.com/loop/watches?community=2198b8a88a800f3b",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 9,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 0,
+                    "no_of_members": 5,
+                    "no_of_videos": 8,
+                    "no_of_sparks": 1
+                },
+                "score": {
+                    "pop_score": 0,
+                    "rec_score": 0.9928635416581377,
+                    "context_score": 0,
+                    "user_interest_score": 0,
+                    "final_score": 630.0018908444118
+                },
+                "uuid": "9ebd80b7-d1bd-4ba6-9d7c-3663665360d5",
+                "video": {
+                    "duration": 28,
+                    "attached_link": null,
+                    "clickable_url": null,
+                    "conversation_at": 1766728145000,
+                    "description_data": "[\"You heard Deals are coming Oct 7-12. Right? We're all hearing this, right?\"]",
+                    "description_text": "You heard Deals are coming Oct 7-12. Right? We're all hearing this, right?",
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts_inappbrowser": true,
+                    "media_url": "https://media.qa.begenuin.com/temp_video/694e210a31375861b5c34eb5_1766728141114.mp4",
+                    "media_url_m3u8": "https://vz-eee5e913-a30.b-cdn.net/cd940eae-4922-4a13-b335-585d6ea1b6b6/playlist.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "duration": "28",
+                        "resolution": "720x1280",
+                        "size": "4724725"
+                    },
+                    "no_of_comments": 0,
+                    "no_of_shares": 0,
+                    "no_of_sparks": 0,
+                    "no_of_views": 0,
+                    "owner": {
+                        "uuid": "76e6fb5f-980d-4d99-8ef5-c0093f02e5ee",
+                        "name": "testCompan",
+                        "username": "TestInteraction",
+                        "is_avatar": false,
+                        "profile_image": "https://media.qa.begenuin.com/uploads/profile_images/Walmart_favicon_1765862233.png",
+                        "profile_image_s": "https://media.qa.begenuin.com/uploads/profile_images/s/Walmart_favicon_1765862233.png",
+                        "profile_image_m": "https://media.qa.begenuin.com/uploads/profile_images/m/Walmart_favicon_1765862233.png",
+                        "profile_image_l": "https://media.qa.begenuin.com/uploads/profile_images/l/Walmart_favicon_1765862233.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 3352,
+                            "brand_slug": "testcompany",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://testcompany.qa.begenuin.com/profile/TestInteraction"
+                    },
+                    "share_url": "https://testcompany.qa.begenuin.com/video/you-heard-deals-are-coming-oct-7-12-right-were?community=2198b8a88a800f3b&loop=21b260443b801400",
+                    "slug": "you-heard-deals-are-coming-oct-7-12-right-were",
+                    "sprite_image_url": "https://media.qa.begenuin.com/uploads/sprite/694e210a31375861b5c34eb5_1766728141114.jpeg",
+                    "thumbnail_url": "https://vz-eee5e913-a30.b-cdn.net/cd940eae-4922-4a13-b335-585d6ea1b6b6/thumbnail.jpg",
+                    "thumbnail_url_l": "https://media.qa.begenuin.com/uploads/thumbnails/l/694e210a31375861b5c34eb5_1766728141114.png",
+                    "thumbnail_url_s": "https://media.qa.begenuin.com/uploads/thumbnails/s/694e210a31375861b5c34eb5_1766728141114.png",
+                    "uuid": "9ebd80b7-d1bd-4ba6-9d7c-3663665360d5",
+                    "video_summary": null,
+                    "card_layout_id": 1,
+                    "video_layout_id": 1,
+                    "source": "device"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "76e6fb5f-980d-4d99-8ef5-c0093f02e5ee",
+                    "name": "testCompan",
+                    "username": "TestInteraction",
+                    "is_avatar": false,
+                    "profile_image": "https://media.qa.begenuin.com/uploads/profile_images/Walmart_favicon_1765862233.png",
+                    "profile_image_s": "https://media.qa.begenuin.com/uploads/profile_images/s/Walmart_favicon_1765862233.png",
+                    "profile_image_m": "https://media.qa.begenuin.com/uploads/profile_images/m/Walmart_favicon_1765862233.png",
+                    "profile_image_l": "https://media.qa.begenuin.com/uploads/profile_images/l/Walmart_favicon_1765862233.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 3352,
+                        "brand_slug": "testcompany",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://testcompany.qa.begenuin.com/profile/TestInteraction"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 3352,
+                        "name": "testCompan",
+                        "brand_slug": "testcompany",
+                        "brand_web_logo": "https://media.qa.begenuin.com/uploads/brands/web_logo/Walmart_weblogo_1765862233.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "TestInteraction"
+                    },
+                    "uuid": "7efc6f58-4c8f-4ceb-aced-ba0f829d525e",
+                    "handle": "tcomapanyshorts",
+                    "slug": "tcomapany",
+                    "name": "TComapany",
+                    "description": "TO post new shorts",
+                    "color_code": "#8DC6E8",
+                    "text_color_code": "#1B8DD1",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "share_string": "2198b8a88a800f3b",
+                    "brand_id": 3352,
+                    "type": 1,
+                    "share_url": "https://testcompany.qa.begenuin.com/community/tcomapany",
+                    "no_of_views": 0,
+                    "no_of_members": 11,
+                    "no_of_videos": 23,
+                    "no_of_sparks": 5,
+                    "no_of_groups": 2
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "f6a83d72-fa1c-40dd-86d0-dddafef0ca59",
+                    "group_name": "watches",
+                    "group_description": "watches u love",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#A4E6DA",
+                    "text_color_code": "#49CDB5",
+                    "uuid": "362f2b23-2585-46de-bda4-068560f0cbbd",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "watches",
+                    "share_string": "21b260443b801400",
+                    "type": 4,
+                    "share_url": "https://testcompany.qa.begenuin.com/loop/watches?community=2198b8a88a800f3b",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 9,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 0,
+                    "no_of_members": 5,
+                    "no_of_videos": 8,
+                    "no_of_sparks": 1
+                },
+                "score": {
+                    "pop_score": 0,
+                    "rec_score": 0.9928635416581377,
+                    "context_score": 0,
+                    "user_interest_score": 0,
+                    "final_score": 630.0018908444118
+                },
+                "uuid": "3fcd252e-d408-4978-989b-d80405444108",
+                "video": {
+                    "duration": 45,
+                    "attached_link": null,
+                    "clickable_url": null,
+                    "conversation_at": 1766728145000,
+                    "description_data": "[\"Austin, we’ll tailgate with you any day 🌭\\n\\nScore your game-day needs from @smashkitchen by @glenpowell at @Walmart and stream new episodes of @chadpowershulu on Tuesdays 🏈\"]",
+                    "description_text": "Austin, we’ll tailgate with you any day 🌭\n\nScore your game-day needs from @smashkitchen by @glenpowell at @Walmart and stream new episodes of @chadpowershulu on Tuesdays 🏈",
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts_inappbrowser": true,
+                    "media_url": "https://media.qa.begenuin.com/temp_video/694e20ee0e8b3bfa9ec295c3_1766728141095.mp4",
+                    "media_url_m3u8": "https://vz-eee5e913-a30.b-cdn.net/fe884149-0b33-428a-935b-7252a74d4135/playlist.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "duration": "45",
+                        "resolution": "720x1280",
+                        "size": "10398909"
+                    },
+                    "no_of_comments": 0,
+                    "no_of_shares": 0,
+                    "no_of_sparks": 0,
+                    "no_of_views": 0,
+                    "owner": {
+                        "uuid": "76e6fb5f-980d-4d99-8ef5-c0093f02e5ee",
+                        "name": "testCompan",
+                        "username": "TestInteraction",
+                        "is_avatar": false,
+                        "profile_image": "https://media.qa.begenuin.com/uploads/profile_images/Walmart_favicon_1765862233.png",
+                        "profile_image_s": "https://media.qa.begenuin.com/uploads/profile_images/s/Walmart_favicon_1765862233.png",
+                        "profile_image_m": "https://media.qa.begenuin.com/uploads/profile_images/m/Walmart_favicon_1765862233.png",
+                        "profile_image_l": "https://media.qa.begenuin.com/uploads/profile_images/l/Walmart_favicon_1765862233.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 3352,
+                            "brand_slug": "testcompany",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://testcompany.qa.begenuin.com/profile/TestInteraction"
+                    },
+                    "share_url": "https://testcompany.qa.begenuin.com/video/austin-well-tailgate-with-you-any-day-score-your?community=2198b8a88a800f3b&loop=21b260443b801400",
+                    "slug": "austin-well-tailgate-with-you-any-day-score-your",
+                    "sprite_image_url": "https://media.qa.begenuin.com/uploads/sprite/694e20ee0e8b3bfa9ec295c3_1766728141095.jpeg",
+                    "thumbnail_url": "https://vz-eee5e913-a30.b-cdn.net/fe884149-0b33-428a-935b-7252a74d4135/thumbnail.jpg",
+                    "thumbnail_url_l": "https://media.qa.begenuin.com/uploads/thumbnails/l/694e20ee0e8b3bfa9ec295c3_1766728141095.png",
+                    "thumbnail_url_s": "https://media.qa.begenuin.com/uploads/thumbnails/s/694e20ee0e8b3bfa9ec295c3_1766728141095.png",
+                    "uuid": "3fcd252e-d408-4978-989b-d80405444108",
+                    "video_summary": null,
+                    "card_layout_id": 1,
+                    "video_layout_id": 1,
+                    "source": "device"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "76e6fb5f-980d-4d99-8ef5-c0093f02e5ee",
+                    "name": "testCompan",
+                    "username": "TestInteraction",
+                    "is_avatar": false,
+                    "profile_image": "https://media.qa.begenuin.com/uploads/profile_images/Walmart_favicon_1765862233.png",
+                    "profile_image_s": "https://media.qa.begenuin.com/uploads/profile_images/s/Walmart_favicon_1765862233.png",
+                    "profile_image_m": "https://media.qa.begenuin.com/uploads/profile_images/m/Walmart_favicon_1765862233.png",
+                    "profile_image_l": "https://media.qa.begenuin.com/uploads/profile_images/l/Walmart_favicon_1765862233.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 3352,
+                        "brand_slug": "testcompany",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://testcompany.qa.begenuin.com/profile/TestInteraction"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 3352,
+                        "name": "testCompan",
+                        "brand_slug": "testcompany",
+                        "brand_web_logo": "https://media.qa.begenuin.com/uploads/brands/web_logo/Walmart_weblogo_1765862233.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "TestInteraction"
+                    },
+                    "uuid": "7efc6f58-4c8f-4ceb-aced-ba0f829d525e",
+                    "handle": "tcomapanyshorts",
+                    "slug": "tcomapany",
+                    "name": "TComapany",
+                    "description": "TO post new shorts",
+                    "color_code": "#8DC6E8",
+                    "text_color_code": "#1B8DD1",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "share_string": "2198b8a88a800f3b",
+                    "brand_id": 3352,
+                    "type": 1,
+                    "share_url": "https://testcompany.qa.begenuin.com/community/tcomapany",
+                    "no_of_views": 0,
+                    "no_of_members": 11,
+                    "no_of_videos": 23,
+                    "no_of_sparks": 5,
+                    "no_of_groups": 2
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "8e9f49bd-4495-4b24-b6c6-edb32a48a0d6",
+                    "group_name": "b n",
+                    "group_description": "vjhv hjcvb",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#A4E6DA",
+                    "text_color_code": "#49CDB5",
+                    "uuid": "5841a526-9f79-4d56-ac7d-5eca6088b2e6",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "b-n",
+                    "share_string": "21a8c849ed001400",
+                    "type": 4,
+                    "share_url": "https://testcompany.qa.begenuin.com/loop/b-n?community=2198b8a88a800f3b",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 9,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 0,
+                    "no_of_members": 2,
+                    "no_of_videos": 15,
+                    "no_of_sparks": 4
+                },
+                "score": {
+                    "pop_score": 7.493176526125897e-07,
+                    "rec_score": 0.9928635506497966,
+                    "context_score": 0,
+                    "user_interest_score": 0,
+                    "final_score": 630.0010971468859
+                },
+                "uuid": "b6f11bc3-8b9d-437e-a2aa-6f095573c7c7",
+                "video": {
+                    "duration": 58,
+                    "attached_link": null,
+                    "clickable_url": null,
+                    "conversation_at": 1766728161000,
+                    "description_data": "[\"Not sure what to wear this homecoming season? All good. Let Clark Atlanta University Student, Joirdyn give you some style inspo!\"]",
+                    "description_text": "Not sure what to wear this homecoming season? All good. Let Clark Atlanta University Student, Joirdyn give you some style inspo!",
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts_inappbrowser": true,
+                    "media_url": "https://media.qa.begenuin.com/temp_video/694e20e45e0adcde20c2da34_1766728159610.mp4",
+                    "media_url_m3u8": "https://vz-eee5e913-a30.b-cdn.net/35ca8d13-f9ab-449c-a5f2-e79086ee09d2/playlist.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "duration": "58",
+                        "resolution": "720x1280",
+                        "size": "10484759"
+                    },
+                    "no_of_comments": 0,
+                    "no_of_shares": 0,
+                    "no_of_sparks": 1,
+                    "no_of_views": 0,
+                    "owner": {
+                        "uuid": "76e6fb5f-980d-4d99-8ef5-c0093f02e5ee",
+                        "name": "testCompan",
+                        "username": "TestInteraction",
+                        "is_avatar": false,
+                        "profile_image": "https://media.qa.begenuin.com/uploads/profile_images/Walmart_favicon_1765862233.png",
+                        "profile_image_s": "https://media.qa.begenuin.com/uploads/profile_images/s/Walmart_favicon_1765862233.png",
+                        "profile_image_m": "https://media.qa.begenuin.com/uploads/profile_images/m/Walmart_favicon_1765862233.png",
+                        "profile_image_l": "https://media.qa.begenuin.com/uploads/profile_images/l/Walmart_favicon_1765862233.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 3352,
+                            "brand_slug": "testcompany",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://testcompany.qa.begenuin.com/profile/TestInteraction"
+                    },
+                    "share_url": "https://testcompany.qa.begenuin.com/video/not-sure-what-to-wear-this-homecoming-season-all?community=2198b8a88a800f3b&loop=21a8c849ed001400",
+                    "slug": "not-sure-what-to-wear-this-homecoming-season-all",
+                    "sprite_image_url": "https://media.qa.begenuin.com/uploads/sprite/694e20e45e0adcde20c2da34_1766728159610.jpeg",
+                    "thumbnail_url": "https://vz-eee5e913-a30.b-cdn.net/35ca8d13-f9ab-449c-a5f2-e79086ee09d2/thumbnail.jpg",
+                    "thumbnail_url_l": "https://media.qa.begenuin.com/uploads/thumbnails/l/694e20e45e0adcde20c2da34_1766728159610.png",
+                    "thumbnail_url_s": "https://media.qa.begenuin.com/uploads/thumbnails/s/694e20e45e0adcde20c2da34_1766728159610.png",
+                    "uuid": "b6f11bc3-8b9d-437e-a2aa-6f095573c7c7",
+                    "video_summary": null,
+                    "card_layout_id": 1,
+                    "video_layout_id": 1,
+                    "source": "device"
+                }
+            },
+            {
+                "owner": {
+                    "uuid": "76e6fb5f-980d-4d99-8ef5-c0093f02e5ee",
+                    "name": "testCompan",
+                    "username": "TestInteraction",
+                    "is_avatar": false,
+                    "profile_image": "https://media.qa.begenuin.com/uploads/profile_images/Walmart_favicon_1765862233.png",
+                    "profile_image_s": "https://media.qa.begenuin.com/uploads/profile_images/s/Walmart_favicon_1765862233.png",
+                    "profile_image_m": "https://media.qa.begenuin.com/uploads/profile_images/m/Walmart_favicon_1765862233.png",
+                    "profile_image_l": "https://media.qa.begenuin.com/uploads/profile_images/l/Walmart_favicon_1765862233.png",
+                    "is_brand_system_user": true,
+                    "brand": {
+                        "brand_id": 3352,
+                        "brand_slug": "testcompany",
+                        "brand_user_logo": 2
+                    },
+                    "share_url": "https://testcompany.qa.begenuin.com/profile/TestInteraction"
+                },
+                "community": {
+                    "brand": {
+                        "brand_id": 3352,
+                        "name": "testCompan",
+                        "brand_slug": "testcompany",
+                        "brand_web_logo": "https://media.qa.begenuin.com/uploads/brands/web_logo/Walmart_weblogo_1765862233.png",
+                        "brand_user_logo": 2,
+                        "brand_handle": "TestInteraction"
+                    },
+                    "uuid": "7efc6f58-4c8f-4ceb-aced-ba0f829d525e",
+                    "handle": "tcomapanyshorts",
+                    "slug": "tcomapany",
+                    "name": "TComapany",
+                    "description": "TO post new shorts",
+                    "color_code": "#8DC6E8",
+                    "text_color_code": "#1B8DD1",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "share_string": "2198b8a88a800f3b",
+                    "brand_id": 3352,
+                    "type": 1,
+                    "share_url": "https://testcompany.qa.begenuin.com/community/tcomapany",
+                    "no_of_views": 0,
+                    "no_of_members": 11,
+                    "no_of_videos": 23,
+                    "no_of_sparks": 5,
+                    "no_of_groups": 2
+                },
+                "type": "loop",
+                "loop": {
+                    "group_id": "8e9f49bd-4495-4b24-b6c6-edb32a48a0d6",
+                    "group_name": "b n",
+                    "group_description": "vjhv hjcvb",
+                    "dp": "",
+                    "dp_s": "",
+                    "dp_m": "",
+                    "dp_l": "",
+                    "color_code": "#A4E6DA",
+                    "text_color_code": "#49CDB5",
+                    "uuid": "5841a526-9f79-4d56-ac7d-5eca6088b2e6",
+                    "settings": {
+                        "discoverable": true
+                    },
+                    "slug": "b-n",
+                    "share_string": "21a8c849ed001400",
+                    "type": 4,
+                    "share_url": "https://testcompany.qa.begenuin.com/loop/b-n?community=2198b8a88a800f3b",
+                    "is_loop_subscriber": false,
+                    "is_subscriber": false,
+                    "actions": [
+                        {
+                            "access_type_id": 5,
+                            "action_id": 3
+                        },
+                        {
+                            "access_type_id": 9,
+                            "action_id": 5
+                        }
+                    ],
+                    "no_of_views": 0,
+                    "no_of_members": 2,
+                    "no_of_videos": 15,
+                    "no_of_sparks": 4
+                },
+                "score": {
+                    "pop_score": 0,
+                    "rec_score": 0.9955412256150381,
+                    "context_score": 0,
+                    "user_interest_score": 0,
+                    "final_score": 393.61769645552295
+                },
+                "uuid": "a9a5a4dd-fbf8-4c1a-8073-7f50c764a211",
+                "video": {
+                    "duration": 14,
+                    "attached_link": null,
+                    "clickable_url": null,
+                    "conversation_at": 1771492888000,
+                    "description_data": "[\"Perfect for fall, the limited-edition ‘Nueva Vida’ collection by @hijadetumadre & Walmart is available online now! Link in bio to shop 🛒\"]",
+                    "description_text": "Perfect for fall, the limited-edition ‘Nueva Vida’ collection by @hijadetumadre & Walmart is available online now! Link in bio to shop 🛒",
+                    "is_pinned": false,
+                    "is_watched": false,
+                    "is_read": false,
+                    "is_sparked": false,
+                    "is_transcribed": false,
+                    "linkouts_inappbrowser": true,
+                    "media_url": "https://media.qa.begenuin.com/temp_video/694e20dc5d551a56db80a7c8_1771492882377.mp4",
+                    "media_url_m3u8": "https://vz-eee5e913-a30.b-cdn.net/438e0f0d-4494-4358-bcd3-3c2c21bf3ea2/playlist.m3u8",
+                    "meta_data": {
+                        "aspect_ratio": "9:16",
+                        "duration": "14",
+                        "resolution": "720x1280",
+                        "size": "5420086"
+                    },
+                    "no_of_comments": 0,
+                    "no_of_shares": 0,
+                    "no_of_sparks": 0,
+                    "no_of_views": 0,
+                    "owner": {
+                        "uuid": "76e6fb5f-980d-4d99-8ef5-c0093f02e5ee",
+                        "name": "testCompan",
+                        "username": "TestInteraction",
+                        "is_avatar": false,
+                        "profile_image": "https://media.qa.begenuin.com/uploads/profile_images/Walmart_favicon_1765862233.png",
+                        "profile_image_s": "https://media.qa.begenuin.com/uploads/profile_images/s/Walmart_favicon_1765862233.png",
+                        "profile_image_m": "https://media.qa.begenuin.com/uploads/profile_images/m/Walmart_favicon_1765862233.png",
+                        "profile_image_l": "https://media.qa.begenuin.com/uploads/profile_images/l/Walmart_favicon_1765862233.png",
+                        "is_brand_system_user": true,
+                        "brand": {
+                            "brand_id": 3352,
+                            "brand_slug": "testcompany",
+                            "brand_user_logo": 2
+                        },
+                        "share_url": "https://testcompany.qa.begenuin.com/profile/TestInteraction"
+                    },
+                    "share_url": "https://testcompany.qa.begenuin.com/video/perfect-for-fall-the-limited-edition-nueva-vida?community=2198b8a88a800f3b&loop=21a8c849ed001400",
+                    "slug": "perfect-for-fall-the-limited-edition-nueva-vida",
+                    "sprite_image_url": "https://media.qa.begenuin.com/uploads/sprite/694e20dc5d551a56db80a7c8_1771492882377.jpeg",
+                    "thumbnail_url": "https://vz-eee5e913-a30.b-cdn.net/438e0f0d-4494-4358-bcd3-3c2c21bf3ea2/thumbnail.jpg",
+                    "thumbnail_url_l": "https://media.qa.begenuin.com/uploads/thumbnails/l/694e20dc5d551a56db80a7c8_1771492882377.png",
+                    "thumbnail_url_s": "https://media.qa.begenuin.com/uploads/thumbnails/s/694e20dc5d551a56db80a7c8_1771492882377.png",
+                    "uuid": "a9a5a4dd-fbf8-4c1a-8073-7f50c764a211",
+                    "video_summary": null,
+                    "card_layout_id": 1,
+                    "video_layout_id": 1,
+                    "source": "device"
+                }
+            }
+        ],
+        "is_ds_feed": false,
+        "page_session": "emb_px62zr6sjhZ5LVGR"
+    }
+}

@@ -58,11 +58,3 @@ jobs:
           name: webapp-playwright-report
           path: apps/webapp/tests/playwright-report/
           retention-days: 7
-
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: webapp-test-results
-          path: apps/webapp/tests/test-results/
-          retention-days: 7

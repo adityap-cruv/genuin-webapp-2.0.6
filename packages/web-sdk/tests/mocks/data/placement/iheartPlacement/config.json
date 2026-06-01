@@ -1,0 +1,258 @@
+{
+    "_comment": "Fixture for GET /goservices/placement?placement_id=<iheartPlacement_placement_id> (handlers/placement.ts)",
+    "code": "200",
+    "message": "[XXXX]-placement details fetched.",
+    "data": {
+        "__v": 0,
+        "_id": "69c2812fd98484cf6b83a5ba",
+        "brand_id": 1729,
+        "community_ids": [
+            "d7de0645-aa21-42ad-8bbc-0173ec2d15a3",
+            "b47d2c47-2c95-4d07-8f92-9a224d67e73d",
+            "90ace4b5-4462-42bb-a3bf-6947d7518001",
+            "bab8707f-0792-4276-b31a-4923bb75f6bc",
+            "8cb46402-f06c-4d38-af5c-e4be68094151"
+        ],
+        "community_loop_ids": [],
+        "created_at": "2026-03-24T12:19:05.54Z",
+        "environment_type": "specific",
+        "environments": {
+            "app": {
+                "configure_view": {
+                    "aspect_ratio": "9:16",
+                    "carousel_style": "default",
+                    "dimensions": {
+                        "auto_fit_height": false,
+                        "height": 600,
+                        "width": 300
+                    },
+                    "enable_auto_scroll": false,
+                    "enable_style_fallback": false,
+                    "grid_layout": {
+                        "auto_adjust": false,
+                        "column": 2,
+                        "row": 2
+                    },
+                    "heading_text_color": "#212529",
+                    "is_carousel_icon": false,
+                    "is_expanded_view": false,
+                    "is_floating_view": false,
+                    "is_navigation_control_enabled": true,
+                    "is_show_metrics": true,
+                    "is_show_social_interaction_data": true,
+                    "is_show_username": true,
+                    "is_show_video_thumbnail": true,
+                    "is_show_view_count": true,
+                    "links": {
+                        "is_show_links": false
+                    },
+                    "media_play": {
+                        "auto_advance_playback": 3,
+                        "enable_autoplay": true,
+                        "enable_loop_video": false,
+                        "video_preview_seconds": -1
+                    },
+                    "scroll_behavior": "paging",
+                    "show_community_share_button": true,
+                    "show_join_community_button": true,
+                    "show_navigation": true,
+                    "show_social_interaction_data": false,
+                    "show_style_details": true,
+                    "show_username": false,
+                    "show_video_duration": false,
+                    "social_metrics": "views",
+                    "sub_heading_text_color": "#707070",
+                    "video_crop": true
+                },
+                "expand_view": {
+                    "enable_engagement_tools": {
+                        "comment": true,
+                        "octo": false,
+                        "repost": false,
+                        "share": true,
+                        "spark": true
+                    },
+                    "enable_linkout": false,
+                    "enable_redirection_tools": {
+                        "community": false,
+                        "group": false,
+                        "user": false
+                    },
+                    "enable_report": true,
+                    "is_enable_engagement_tools": true,
+                    "is_enable_redirection": false,
+                    "orientation": "portrait",
+                    "report_options": {
+                        "inappropriate_content": true,
+                        "non_professional_content": true,
+                        "other": true,
+                        "spam": true,
+                        "threatening_violent": true
+                    }
+                },
+                "implementation_guide": {
+                    "is_on_page_context_fetch": true,
+                    "is_real_time_context_fetch": true,
+                    "show_brand_id": true,
+                    "show_community_group_id": true,
+                    "show_custom_context": true,
+                    "show_location": true,
+                    "show_pdp_url": true,
+                    "show_place": true,
+                    "show_posted_by_user": true,
+                    "show_previous_page_context": true,
+                    "show_section_cover": true,
+                    "show_section_sub_title": true,
+                    "show_section_thumbnail": true,
+                    "show_section_title": true,
+                    "show_style_id": true,
+                    "show_style_sub_title": true,
+                    "show_style_title": true,
+                    "show_time": true,
+                    "show_user_interests": true,
+                    "show_user_segmentation": true
+                }
+            },
+            "web": {
+                "configure_view": {
+                    "aspect_ratio": "9:16",
+                    "card_layout_id": 2,
+                    "carousel_style": "default",
+                    "dimensions": {
+                        "auto_fit_height": false,
+                        "height": 600,
+                        "width": 300
+                    },
+                    "enable_auto_scroll": false,
+                    "enable_style_fallback": false,
+                    "grid_layout": {
+                        "auto_adjust": false,
+                        "column": 2,
+                        "row": 2
+                    },
+                    "heading_text_color": "#212529",
+                    "is_carousel_icon": false,
+                    "is_expanded_view": false,
+                    "is_floating_view": false,
+                    "is_navigation_control_enabled": true,
+                    "is_show_metrics": true,
+                    "is_show_social_interaction_data": true,
+                    "is_show_username": true,
+                    "is_show_video_thumbnail": true,
+                    "is_show_view_count": true,
+                    "links": {
+                        "is_show_links": false
+                    },
+                    "media_play": {
+                        "auto_advance_playback": 5,
+                        "enable_autoplay": true,
+                        "enable_loop_video": false,
+                        "video_preview_seconds": -1
+                    },
+                    "placement_card_layout_id": 2,
+                    "scroll_behavior": "paging",
+                    "show_community_share_button": true,
+                    "show_join_community_button": true,
+                    "show_navigation": true,
+                    "show_social_interaction_data": false,
+                    "show_style_details": false,
+                    "show_username": false,
+                    "show_video_duration": false,
+                    "social_metrics": "views",
+                    "sub_heading_text_color": "#707070",
+                    "video_crop": true,
+                    "video_layout_id": 2
+                },
+                "expand_view": {
+                    "enable_engagement_tools": {
+                        "comment": true,
+                        "octo": false,
+                        "repost": false,
+                        "share": true,
+                        "spark": true
+                    },
+                    "enable_linkout": true,
+                    "enable_redirection_tools": {
+                        "community": false,
+                        "group": false,
+                        "user": false
+                    },
+                    "enable_report": true,
+                    "is_enable_engagement_tools": true,
+                    "is_enable_redirection": false,
+                    "orientation": "portrait",
+                    "report_options": {
+                        "inappropriate_content": true,
+                        "non_professional_content": true,
+                        "other": true,
+                        "spam": true,
+                        "threatening_violent": true
+                    }
+                },
+                "implementation_guide": {
+                    "is_on_page_context_fetch": true,
+                    "is_real_time_context_fetch": true,
+                    "show_brand_id": true,
+                    "show_community_group_id": true,
+                    "show_custom_context": true,
+                    "show_location": true,
+                    "show_pdp_url": true,
+                    "show_place": true,
+                    "show_posted_by_user": true,
+                    "show_previous_page_context": true,
+                    "show_section_cover": true,
+                    "show_section_sub_title": true,
+                    "show_section_thumbnail": true,
+                    "show_section_title": true,
+                    "show_style_id": true,
+                    "show_style_sub_title": true,
+                    "show_style_title": true,
+                    "show_time": true,
+                    "show_user_interests": true,
+                    "show_user_segmentation": true
+                }
+            }
+        },
+        "feed_type": "community",
+        "is_custom": true,
+        "is_live": true,
+        "name": "Web-Article-Page-Carousel",
+        "octo_settings": {
+            "content_order": [
+                "agent_text"
+            ]
+        },
+        "placement_brand_ids": [],
+        "styles": [
+            {
+                "_id": "69c2812fd98484cf6b83a5bb",
+                "categories": [],
+                "consumer_journey_ids": [
+                    "68a84a47849364666a0bd547",
+                    "68a84a47849364666a0bd548",
+                    "68a84a47849364666a0bd549",
+                    "68a84a47849364666a0bd54a",
+                    "68a84a47849364666a0bd54b"
+                ],
+                "content_mapping": {
+                    "feed_algorithm": "new_first_watched_last",
+                    "unique_linkout_videos": false,
+                    "unique_videos_to_sections": false
+                },
+                "content_restrictions": {
+                    "pinned_videos": false,
+                    "recommendation_engine": false,
+                    "same_brand_videos": false,
+                    "same_url_linkouts_videos": false
+                },
+                "feed_algorithm": "new_first_watched_last",
+                "is_adaptive_styling_enabled": false,
+                "sections": [],
+                "sub_title": null,
+                "title": ""
+            }
+        ],
+        "type": "carousel",
+        "updated_at": "2026-04-27T10:10:58.24Z"
+    }
+}

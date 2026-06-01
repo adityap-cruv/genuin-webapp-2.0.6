@@ -1,0 +1,65 @@
+{
+    "_comment": "Fixture for GET /goservices/embed?id=<ted_embed_id> (handlers/embed.ts)",
+    "code": 200,
+    "message": "XXXX-[Embed details]",
+    "data": {
+        "embed_layout": "default",
+        "_id": "68764eb43d0440d31e645f2a",
+        "name": "Web Home Page Carousel",
+        "style": "carousel",
+        "type": "brand_feed",
+        "brand_id": 2357,
+        "is_live": true,
+        "customization": {
+            "dimensions": {
+                "width": 800,
+                "height": 600
+            },
+            "cta_button": {
+                "color": "#023F9A",
+                "text_color": "#FFFFFF"
+            },
+            "enable_engagement_tools": {
+                "repost": false,
+                "spark": true,
+                "comment": true,
+                "share": true,
+                "octo": false
+            },
+            "enable_redirection_tools": {
+                "community": false,
+                "group": false,
+                "user": false
+            },
+            "links": {
+                "is_show_links": true,
+                "position": "overlay"
+            },
+            "show_navigation": false,
+            "carousel_style": "default",
+            "autoplay": true,
+            "feed_display_pref": "default",
+            "heading_text_color": "#212529",
+            "sub_heading_text_color": "#6C757D",
+            "is_carousel_icon": false,
+            "is_floating_view": false,
+            "is_expanded_view": false,
+            "is_show_username": false,
+            "is_show_view_count": false,
+            "is_enable_engagement_tools": true,
+            "show_side_panel": true,
+            "show_join_community_button": true,
+            "show_community_share_button": true,
+            "is_enable_redirection": false,
+            "is_loop_video": false,
+            "is_show_social_interaction_data": false,
+            "community_ids": [],
+            "is_popup_view": true,
+            "video_crop": false,
+            "community_loop_ids": [],
+            "scroll_behavior": "free_scroll",
+            "is_navigation_control_enabled": true,
+            "aspect_ratio": "9:16"
+        }
+    }
+}

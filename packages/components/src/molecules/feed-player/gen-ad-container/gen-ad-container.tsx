@@ -16,7 +16,7 @@ function getAdSource(config: GenAdConfig, provider?: string): string {
   return provider ? (map[provider] ?? "") : (map.video ?? map.display ?? map.native ?? "");
 }
 
-const GEN_AD_SCRIPT_URL = "https://media.begenuin.com/ad-sdk/in-feed/gen_ad.min.js";
+const GEN_AD_SCRIPT_URL = "https://media.begenuin.com/ad-sdk/1.0.0/gen_ad.min.js";
 
 // const GEN_AD_SCRIPT_URL = "http://localhost:4000/dist/gen_ad.min.js";
 

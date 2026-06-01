@@ -182,13 +182,16 @@ Historical records of past reorganization efforts (not active reference material
 
 ---
 
-## `.team/` — AI tool configuration (source of truth)
+## `.claude/` — Claude Code configuration
 
-> These files are the **source** for `.claude/` and `.github/` which are generated
-> by `scripts/sync-ai-config.mjs`. Never edit `.claude/` or `.github/` directly.
+> Authored directly (no sync step, no generator). Claude Code reads these on session start / on
+> demand. See [docs/claude-setup-plan.md](docs/claude-setup-plan.md) for the migration rationale.
 
-| File                                                                   | Purpose                                       |
-| ---------------------------------------------------------------------- | --------------------------------------------- |
-| [.team/instructions.md](.team/instructions.md)                         | Shared coding rules for all AI tools          |
-| [.team/docs/ai-context.md](.team/docs/ai-context.md)                   | React/Next.js patterns, Tailwind v4, env vars |
-| [.team/docs/AI_AGENT_SYSTEM_PRD.md](.team/docs/AI_AGENT_SYSTEM_PRD.md) | AI agent system product requirements          |
+| File                                                     | Purpose                                                       |
+| -------------------------------------------------------- | ------------------------------------------------------------- |
+| [.claude/CLAUDE.md](.claude/CLAUDE.md)                   | Project rules, conventions, guardrails, agent/skill awareness |
+| [.claude/docs/ai-context.md](.claude/docs/ai-context.md) | React/Next.js patterns, Tailwind v4, env vars                 |
+| [.claude/agents/](.claude/agents/)                       | Specialist subagents (planner, implementer, debugger, …)      |
+| [.claude/skills/README.md](.claude/skills/README.md)     | **Skills & agents catalog** — all 16 skills + 9 agents with trigger phrases |
+| [.claude/skills/](.claude/skills/)                       | Domain skills (debug, e2e-testing, frontend-patterns, …)      |
+| [.claude/codebase-map.md](.claude/codebase-map.md)       | Living, team-shared codebase knowledge Claude reads/updates (codebase-memory skill) |

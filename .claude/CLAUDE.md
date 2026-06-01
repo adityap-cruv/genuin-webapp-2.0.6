@@ -5,29 +5,66 @@ They are the single source of truth for how code should be written here.
 
 > **Documentation map**: All docs in this repo are indexed in `docs.md` at the root. Read it to find the right file before guessing a path.
 >
-> **Detailed context** (React/Next.js patterns, Tailwind v4, package specifics, env vars, common issues) lives in `.team/docs/ai-context.md`. Read it when working in those domains.
+> **Detailed context** (React/Next.js patterns, Tailwind v4, package specifics, env vars, common issues) lives in `.claude/docs/ai-context.md`. Read it when working in those domains.
 
 ---
 
-## Agent Routing
+## How to work in this repo (token economy)
 
-**You must follow these routing rules on every prompt. This is not optional.**
+Match effort to the task. Most requests are answered best by working directly — reading the few
+relevant files and responding — not by spinning up extra machinery. Spending a fresh-context
+subagent to fix a one-line bug is wasted tokens.
 
-Match the user's intent to the right specialist agent. Do not respond as a general assistant when a specialist exists.
+- **Inline-first.** Handle the task in the main conversation by default. A small bug, a one-file
+  change, or a focused question needs no subagent.
+- **Spawn a subagent only when it pays for itself:** broad parallel search across many files,
+  genuinely independent parallel work, or work that needs an isolated context.
+- **Skills over agents for guidance.** A skill injects targeted instructions cheaply; a subagent
+  spins up a whole new context window. Reach for the skill first.
+- **Load on demand.** Read a skill, reference file, or agent definition when the task calls for it —
+  not preemptively.
+- **Reuse codebase knowledge.** Before a broad codebase search, check
+  [`.claude/codebase-map.md`](codebase-map.md); after learning something non-obvious, record it there
+  (see the `codebase-memory` skill). Don't re-discover what's already mapped.
+- **Right-size the response.** Small task, small answer.
 
-| Intent                                        | Agent                 |
-| --------------------------------------------- | --------------------- |
-| Plan / design / structure / approach          | `planner`             |
-| Implement / build / add / create / write code | `implementer`         |
-| Review / feedback on code                     | `code-reviewer`       |
-| Fix / debug / broken / error / not working    | `debugger`            |
-| Security / vulnerability / audit              | `security-auditor`    |
-| E2E / Playwright / integration test           | `e2e-tester`          |
-| PRD / spec / requirements                     | `prd-writer`          |
-| Investigate / how does X work / trace         | `planner` (read-only) |
-| Anything else                                 | `planner` (read-only) |
+### Specialist agents & skills (optional — use when they help)
 
-> **Copilot:** See `.team/copilot/instructions.md` for keyword-based routing rules.
+Specialist agents live in `.claude/agents/` and are dispatched by Claude Code's native Agent tool
+based on their `description`. Domain skills live in `.claude/skills/` and are auto-discovered via the
+Skill tool. They are tools, **not mandatory steps** — reach for them when a task genuinely benefits.
+
+| When it helps | Agent / Skill |
+| ------------- | ------------- |
+| A focused implementation plan before a big change | `planner` agent |
+| Building a non-trivial feature across files | `implementer` agent |
+| Finding the root cause of a stubborn bug | `debugger` agent + `debug` skill |
+| Reviewing a meaningful diff | `code-reviewer` / `typescript-reviewer` agent |
+| Package placement / monorepo / system design | `architect` agent |
+| Security review of auth/input/secrets | `security-auditor` agent + `security-audit` skill |
+| Playwright / E2E tests | `e2e-tester` agent + `e2e-testing` skill |
+| Writing a PRD / spec | `prd-writer` agent + `prd-writer` skill |
+| Building React components / frontend UI | `frontend-patterns` skill |
+| Performance / accessibility / refactor / unit tests | `performance` / `accessibility` / `refactor` / `test-runner` skill |
+
+Full catalog of skills + agents with trigger phrases: [.claude/skills/README.md](skills/README.md).
+
+### Orchestration — chain agents for multi-step work
+
+For a substantial, multi-step task (a feature, a cross-file refactor — anything you'd plan before
+coding), run the agents **in sequence**, each handing off to the next:
+
+1. **`grill-me` skill** — *if the request is vague* → lock down requirements first.
+2. **`planner` agent** — produce a file-by-file plan. Present it; get a nod for anything risky.
+3. **`implementer` agent** — build it (types → implementation → tests), following the plan.
+4. **`code-reviewer` / `typescript-reviewer` agent** — review the diff before declaring done.
+5. **`e2e-tester` agent** — only if the feature has a user flow worth covering.
+
+Jump straight to the step that fits — and **a one-line fix needs none of this; do it inline.** The
+chain is for work big enough that the hand-offs save rework, not for every prompt (token economy).
+
+Use `superpowers:brainstorming` before the plan when the *solution* is open-ended; use `grill-me`
+when the solution is clear but the *requirements* aren't.
 
 ---
 
@@ -169,10 +206,34 @@ genuin-webapp-standalone/
 
 ---
 
+## Guardrails
+
+The rules above are the working conventions. A few additional governance and quality rules:
+
+**Testing & accessibility**
+
+- Write tests that are independent — never depend on execution order or shared mutable state.
+- In E2E tests, select by `data-testid` or ARIA role, never by CSS class or tag alone.
+- Add `data-testid` to interactive elements that need to be testable.
+- Associate form inputs with labels via `htmlFor`/`id` or `aria-labelledby`.
+- Never suppress focus outlines without providing a visible replacement.
+- Render interactive content with semantic elements (`<button>`, `<a>`), not bare `<div>`s.
+
+**Requires explicit team approval**
+
+- Deleting or renaming public API surfaces.
+- Changing shared packages in `packages/` that other apps depend on (affects webapp **and** web-sdk).
+- Modifying CI/CD pipeline configuration (`.github/workflows/*`).
+- Adding new external dependencies.
+- Changing authentication or session handling logic.
+- Changing CORS, CSP, or any security-related HTTP headers.
+
+---
+
 ## Additional Resources
 
 - `docs.md` — **documentation map**: index of every doc file in this repo; read this first when looking for a doc or deciding where to put a new one
-- `.team/docs/ai-context.md` — React/Next.js patterns, Tailwind v4, env vars, package specifics, common issues
+- `.claude/docs/ai-context.md` — React/Next.js patterns, Tailwind v4, env vars, package specifics, common issues
 - `apps/webapp/UPGRADE_GUIDE.md` — Next.js 15 and React 19 upgrade details
 - `docs/migrations/TAILWIND_V4_MIGRATION_GUIDE.md` — detailed Tailwind v4 migration steps
 - `docs/setup/NODE_VERSION.md` — Node.js version requirements and setup
@@ -181,103 +242,3 @@ genuin-webapp-standalone/
 ---
 
 If any section is unclear or incomplete, please ask for clarification or suggest improvements.
-
----
-
-## MANDATORY: Agent routing — check before every response
-
-**This is not optional. Do not respond as a general assistant when a specialist agent exists.**
-
-Read the user's intent and activate the first matching agent via the Agent tool.
-The sub-agent responds directly — do not summarise or filter its output.
-
-| User intent                                                     | Agent to activate           |
-| --------------------------------------------------------------- | --------------------------- |
-| Investigate / "how does X work" / "why is" / "what's happening" | `planner` (read-only)       |
-| Fix / broken / error / not working / failing                    | `debugger`                  |
-| Plan / design / structure / approach / where to put             | `planner`                   |
-| Implement / build / add / create / write code                   | `implementer`               |
-| Code review / check this / feedback on code                     | `code-reviewer`             |
-| TypeScript review / type safety / PR review                     | `typescript-reviewer`       |
-| Architecture / monorepo / package placement / ADR               | `architect`                 |
-| Security / vulnerability / audit / is this safe                 | `security-auditor`          |
-| E2E / Playwright / integration test                             | `e2e-tester`                |
-| PRD / spec / requirements                                       | `prd-writer`                |
-| **Anything else (default)**                                     | `planner` in read-only mode |
-
-**Skill loading** — also load the matching skill before responding:
-
-| User's goal                                   | Skill to load                               |
-| --------------------------------------------- | ------------------------------------------- |
-| Investigating or fixing a bug                 | `.claude/skills/debug/SKILL.md`             |
-| Writing or fixing Playwright / E2E tests      | `.claude/skills/e2e-testing/SKILL.md`       |
-| Auditing or improving accessibility (WCAG)    | `.claude/skills/accessibility/SKILL.md`     |
-| Auditing or improving performance             | `.claude/skills/performance/SKILL.md`       |
-| Security audit                                | `.claude/skills/security-audit/SKILL.md`    |
-| Restructuring or cleaning up existing code    | `.claude/skills/refactor/SKILL.md`          |
-| Writing a PRD or feature spec                 | `.claude/skills/prd-writer/SKILL.md`        |
-| Writing unit or integration tests with Vitest | `.claude/skills/test-runner/SKILL.md`       |
-| Building React components or frontend UI      | `.claude/skills/frontend-patterns/SKILL.md` |
-
----
-
-# Claude-Specific Instructions
-
-- Never edit files in `.claude/` or `.github/` directly — they are generated by `scripts/sync-ai-config.mjs`. Edit `.team/` instead.
-- Never respond to a routed request without activating the correct agent via the Agent tool.
-- Never skip loading a skill file for a domain-specific request.
-
----
-
-## Agent routing (Claude Code)
-
-Claude Code activates specialist agents based on the **user's intent**, not exact keywords.
-Read the prompt, understand what the user is trying to accomplish, and activate the right agent.
-Do not respond as a general assistant when a specialist agent exists for the task.
-
-When activating an agent, launch it as a sub-agent with the full user prompt.
-The sub-agent responds directly — do not summarise or filter its output.
-
-Agents available in `.claude/agents/`.
-
----
-
-## Skill loading
-
-Skills are detailed instruction sets for specific domains. Load the relevant skill
-before responding — it contains project-specific conventions that override general
-best practices. Skills are in `.claude/skills/`.
-
-| User's goal                                   | Skill to load                               |
-| --------------------------------------------- | ------------------------------------------- |
-| Investigating or fixing a bug                 | `.claude/skills/debug/SKILL.md`             |
-| Writing or fixing Playwright / E2E tests      | `.claude/skills/e2e-testing/SKILL.md`       |
-| Auditing or improving accessibility (WCAG)    | `.claude/skills/accessibility/SKILL.md`     |
-| Auditing or improving performance             | `.claude/skills/performance/SKILL.md`       |
-| Security audit                                | `.claude/skills/security-audit/SKILL.md`    |
-| Restructuring or cleaning up existing code    | `.claude/skills/refactor/SKILL.md`          |
-| Writing a PRD or feature spec                 | `.claude/skills/prd-writer/SKILL.md`        |
-| Writing unit or integration tests with Vitest | `.claude/skills/test-runner/SKILL.md`       |
-| Building React components or frontend UI      | `.claude/skills/frontend-patterns/SKILL.md` |
-
----
-
-## Multi-agent tasks
-
-For complex tasks that span multiple concerns, activate agents in sequence:
-
-1. **Plan then implement:** activate `planner` first, present the plan, then ask
-   the user to confirm before activating `implementer`.
-2. **Implement then review:** after `implementer` finishes, automatically activate
-   `code-reviewer` on the output before presenting it to the user.
-3. **Implement then test:** after `implementer` finishes a feature with no E2E tests,
-   prompt the user: "Should I also write E2E tests for this flow?"
-
----
-
-## What Claude Code must never do
-
-- Respond to a routed request without activating the correct agent
-- Skip loading a skill file for a domain-specific request
-- Edit files in `.claude/` or `.github/` directly — these are generated by sync
-- Make changes to auth, CORS, CSP, or security headers without flagging approval required

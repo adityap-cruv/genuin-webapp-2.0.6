@@ -8,9 +8,13 @@ if (isDocMode) {
   fs.mkdirSync(testDocsDir, { recursive: true });
 }
 
+const mockPort = Number(process.env.MOCK_SERVER_PORT ?? 4006);
+const mockBaseUrl = `http://localhost:${mockPort}`;
+
 export default defineConfig({
   testDir: "./tests/e2e",
   outputDir: "./tests/test-results",
+  globalSetup: "./tests/mocks/global-setup.ts",
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: isDocMode ? 0 : 1,
@@ -30,7 +34,7 @@ export default defineConfig({
   use: {
     baseURL: "http://localhost:4005",
     trace: isDocMode ? "off" : "on-first-retry",
-    screenshot: isDocMode ? "off" : "only-on-failure",
+    screenshot: isDocMode ? "off" : "on",
   },
   // Allow minor sub-pixel differences between machines and OS render engines.
   expect: {
@@ -73,9 +77,18 @@ export default defineConfig({
     // },
   ],
   webServer: {
-    command: "pnpm run dev",
+    // Load `.env` from repo root (NextAuth secret, encryption keys, etc.)
+    // via env-cmd, but use `--no-override` so the mock-URL env block below
+    // wins over the real API URLs in `.env`.
+    command:
+      "pnpm --filter @genuin/webapp exec env-cmd -f ../../.env --no-override next dev -p 4005",
     url: "http://localhost:4005/home",
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
+    env: {
+      GO_API_URL: mockBaseUrl,
+      NEXT_PUBLIC_GO_API_URL: mockBaseUrl,
+      NEXT_PUBLIC_API_URL: mockBaseUrl,
+    },
   },
 });

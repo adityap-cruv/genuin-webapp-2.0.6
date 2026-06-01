@@ -132,4 +132,4 @@ Lead with code. Keep explanation minimal.
 - Use default exports
 - Use `require()` — ESM only
 - Mark a component `'use client'` when it has no client-side behaviour
-- Modify files in `.github/` or `.claude/` — those are generated
+- Modify CI workflows in `.github/workflows/` without team approval

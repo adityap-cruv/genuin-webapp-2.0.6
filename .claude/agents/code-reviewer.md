@@ -17,6 +17,21 @@ When invoked:
 4. **Apply review checklist** — Work through each category below, from CRITICAL to LOW.
 5. **Report findings** — Use the output format below. Only report issues you are confident about (>80% sure it is a real problem).
 
+## Differential review (use git history)
+
+Review the diff *with awareness of what changed and why* — not files cold. This catches regressions a
+cold read misses.
+
+- **Read the change, not the file.** Focus on what the diff adds, removes, or alters. Pre-existing
+  issues in untouched code are out of scope (except CRITICAL security).
+- **Check the history of touched lines** before flagging: `git log -L<start>,<end>:<file>` or
+  `git blame <file>`. If the change reverts or re-breaks something a prior commit deliberately fixed,
+  that is a high-value finding — call it out with the prior commit.
+- **Trace the blast radius.** For a changed function/type/export, grep its call sites — does the change
+  break a caller, a contract, or the web-sdk consumer of a shared package?
+- **Flag silent behaviour changes** the author may not have intended: a changed default, a removed
+  guard, a narrowed/widened type, an altered error path.
+
 ## Confidence-Based Filtering
 
 **IMPORTANT**: Do not flood the review with noise. Apply these filters:

@@ -12,7 +12,7 @@ type UseUpdateStartVideoSlugParams = {
   queryKey: QueryKey;
   embedData: EmbedDataType | undefined;
   shouldShowMiddlewareOverlay: boolean;
-  brandContext: { id: string; type: string }[] | undefined;
+  brandContext: { id?: string; type: string; value?: string }[] | undefined;
   changeActiveIndex: (index: number) => void;
   setStartIndex: (index: number) => void;
   embedEventBus: ReturnType<typeof createEmbedEventBus>;

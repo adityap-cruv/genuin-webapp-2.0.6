@@ -1,6 +1,6 @@
 ---
 name: test-runner
-description: Running, fixing, and writing unit and integration tests with Vitest and Jest
+description: Run, fix, and write unit and integration tests for this repo with Vitest (and Jest in packages/ui) — colocated test files, mocking, async assertions, coverage. Use when adding or fixing unit/component tests or interpreting test failures. Do NOT use for Playwright E2E tests (use e2e-testing) or debugging non-test runtime bugs (use debug).
 ---
 
 # Skill: Test Runner

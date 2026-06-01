@@ -24,7 +24,6 @@
     "modules:clear": "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
     "components": "npx concurrently \"pnpm --filter @genuin/ui storybook\" \"pnpm --filter @genuin/components storybook\" \"pnpm  --filter @genuin/ui dev:styles\" \"pnpm --filter @genuin/components dev:styles\"",
     "format": "prettier --write \"**/*.{ts,tsx,js,mjs,json,md}\"",
-    "ai:sync": "node scripts/sync-ai-config.mjs",
     "prepare": "husky install",
     "use-correct-node": "nvm install && nvm use",
     "upgrade-node": "nvm install 20.12.0 && nvm alias default 20.12.0 && nvm use 20.12.0",

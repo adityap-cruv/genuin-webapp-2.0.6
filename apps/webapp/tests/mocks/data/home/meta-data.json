@@ -1,0 +1,32 @@
+{
+    "code": 200,
+    "message": "Successfully fetch web meta-data",
+    "data": {
+        "title": "Genuin - Create & Monetize Video Communities |  Retail Media & Commerce Media Solutions",
+        "description": "Unlock the power of Genuin's no-code platform to create and monetize video communities tailored for Retail and Commerce Media. Engage your audience",
+        "preview_image": "https://media.begenuin.com/uploads/brands/preview_image/webPreviewImage_1730781278568.png",
+        "integrations": {
+            "sdk": {
+                "web": {
+                    "enable": true,
+                    "hide_navbar": true
+                },
+                "android": {
+                    "enable": false,
+                    "playstore_link": "https://play.google.com/store/apps/details?id=com.begenuin.begenuin&hl=gsw"
+                },
+                "ios": {
+                    "enable": false,
+                    "appstore_link": "https://apps.apple.com/lt/app/genuin/id1511177838"
+                }
+            },
+            "white_label": {
+                "enable": true,
+                "allowed_domains": [],
+                "test_allowed_domains": []
+            }
+        },
+        "name": "Genuin",
+        "platform_brand_id": 99
+    }
+}

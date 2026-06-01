@@ -12,7 +12,8 @@ const MembersSchema = z.array(
     status: z.number(),
     name: z.string().nullish(),
     bio: z.string().nullish(),
-    nickname: z.string(),
+    // Backend may return `nickname` as null; product hasn't decided a fallback, so keeping it as nullish for now
+    nickname: z.string().nullish(),
     is_avatar: z.boolean(),
     profile_image: z.string(),
     profile_image_s: z.string().nullish(),

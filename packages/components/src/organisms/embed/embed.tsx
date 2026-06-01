@@ -163,9 +163,10 @@ export function Embed({
       videoLayoutId: embedData.placement_video_layout_id,
       cardLayoutId: embedData.placement_card_layout_id,
     }),
-    brandContext: embedData.brand_context?.map(({ id, type }) => ({
+    brandContext: embedData.brand_context?.map(({ id, type, value }) => ({
       id,
       type,
+      value,
     })),
     videoIds: embedData.videoIds,
     initialVideoIds: embedData.initialVideoIds,

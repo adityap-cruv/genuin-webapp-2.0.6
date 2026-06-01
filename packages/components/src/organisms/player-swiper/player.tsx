@@ -237,6 +237,7 @@ export function Player({
                 style={{ height: "inherit" }}
                 onAdPlaybackEnd={handleAdPlaybackEnd}
                 isSponsored={post.video?.cardLayoutId === 7 || post.video?.videoLayoutId === 6}
+                adsPlatform={post.video?.adsPlatform}
                 pageSession={pageSession}
                 playerSize={{
                   height: swiper.height,

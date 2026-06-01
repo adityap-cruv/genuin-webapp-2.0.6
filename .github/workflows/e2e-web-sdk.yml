@@ -41,6 +41,9 @@ jobs:
 
       - name: Create web-sdk env file
         run: echo "${{ secrets.WEB_SDK_ENV_DEVELOPMENT }}" > packages/web-sdk/.env.development
+      
+      - name: Create gen-ai env file
+        run: echo "${{ secrets.GEN_AI_ENV }}" > packages/genai/.env.development
 
       - name: Install Playwright system dependencies
         run: pnpm --filter web-sdk exec playwright install-deps chromium

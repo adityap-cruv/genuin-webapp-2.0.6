@@ -41,6 +41,7 @@ export function VideoPage({ videoId }: { videoId: string }) {
   return (
     <>
       <FeedView
+        variant="page"
         feedData={{
           fetchNextPage: () => {},
           hasNextPage: false,
