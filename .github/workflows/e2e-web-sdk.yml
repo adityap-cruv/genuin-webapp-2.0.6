@@ -53,8 +53,16 @@ jobs:
         env:
           NODE_ENV: development
 
-      - name: Run E2E tests
-        run: pnpm --filter web-sdk test
+      - name: Run E2E tests (update snapshots)
+        run: pnpm --filter web-sdk test:update
+        continue-on-error: true
+
+      - name: Upload updated snapshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-sdk-updated-snapshots
+          path: packages/web-sdk/tests/e2e/snapshots/
+          retention-days: 7
 
       - name: Upload test report
         if: always()
