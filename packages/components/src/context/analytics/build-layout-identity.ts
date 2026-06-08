@@ -20,6 +20,7 @@ export function buildLayoutIdentity(embedData: EmbedDataType | undefined): Recor
 
   if (embedData.brand_id) id.brand_id = embedData.brand_id;
   if (embedData.rudderstackSponsorshipId) id.sponsorship_id = embedData.rudderstackSponsorshipId;
+  if (embedData.cpm_rate != null) id.cpm_rate = embedData.cpm_rate;
 
   if (embedData.embed_id) {
     id.embed_id = embedData.embed_id;

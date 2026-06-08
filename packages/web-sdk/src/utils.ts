@@ -62,6 +62,7 @@ export function parsePlacementToEmbedData(data: PlacementDataResponse, styleId: 
     is_live: data.is_live,
     action: undefined,
     ...(data.sponsorship_id && { sponsorship_id: data.sponsorship_id }),
+    ...(data.cpm_rate != null && { cpm_rate: data.cpm_rate }),
 
     // Map brand_ids from placement_brand_ids
     brand_ids: data.placement_brand_ids,

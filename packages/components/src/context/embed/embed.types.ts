@@ -482,6 +482,11 @@ export type EmbedDataType = {
   sponsorship_id?: string | string[];
   rudderstackSponsorshipId?: string;
   /**
+   * CPM rate (cost per mille) returned by the Embed/Placement API alongside
+   * sponsorship_id. Float. Forwarded to EMBED_VIEWED / PLACEMENT_VIEWED RudderStack events.
+   */
+  cpm_rate?: number;
+  /**
    * The slug of the video to start with in the embed view.
    */
   startVideoSlug?: string;
@@ -856,6 +861,7 @@ export type PlacementDataResponse = {
   brand_id: number;
   community_ids: string[];
   sponsorship_id?: string;
+  cpm_rate?: number;
   community_loop_ids: {
     loop_id: string;
     community_id: string;
