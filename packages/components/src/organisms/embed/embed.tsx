@@ -1,5 +1,5 @@
 "use client";
-import { cn } from "@genuin/ui/lib/utils";
+import { cn, getAspectRatio } from "@genuin/ui/lib/utils";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 import { useMemo, useState, useEffect, useCallback, lazy, Suspense } from "react";
@@ -125,6 +125,10 @@ export function Embed({
   );
 
   const embedAspectRatio = config.dimensions.aspectRatio;
+  // Landscape (e.g. 16:9) carousels must not show the previous-slide peek,
+  // so the slide offset stays at zero for horizontal videos.
+  const { width: aspectWidth, height: aspectHeight } = getAspectRatio(embedAspectRatio);
+  const isLandscapeVideo = aspectWidth > aspectHeight;
   // check that does it is embed or placement
   const isEmbed: boolean = !config.view.isPlacementView;
   const embedVariant = config.embedStyle;
@@ -609,7 +613,9 @@ export function Embed({
                 freeMode={config.view.scrollBehavior === "free_scroll"}
                 centeredSlides={config.view.centeredSlides}
                 centeredSlidesBounds={config.view.centeredSlides}
-                slidesOffsetBefore={config.view.isCarousel && isIheartLayout && !isMobile ? slidesOffsetBefore : 0}
+                slidesOffsetBefore={
+                  config.view.isCarousel && isIheartLayout && !isMobile && !isLandscapeVideo ? slidesOffsetBefore : 0
+                }
                 customHeightFor={{
                   index: filteredPost.findIndex((feed) => feed.video?.type === "overlay"),
                   height: 160,
