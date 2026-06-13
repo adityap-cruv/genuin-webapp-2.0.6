@@ -63,6 +63,12 @@ export function getSlidesPerView(
     }
     // calculating ratio based on calculated width.
     ratio = elementWidth / calculatedWidth;
+    // Landscape (e.g. 16:9) videos must never show a partial next slide (peek).
+    // A fractional ratio is what produces the peek, so clamp to whole slides;
+    // the rendered slides then stretch to fill the row exactly.
+    if (widthRatio > heightRatio) {
+      ratio = Math.max(1, Math.floor(ratio));
+    }
   }
   return ratio;
 }
