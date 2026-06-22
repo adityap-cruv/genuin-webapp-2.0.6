@@ -188,18 +188,18 @@ export function EmbedRoot({
                 <AuthProvider onSignIn={() => {}} onSignOut={() => {}} onUpdateUser={() => {}} user={user}>
                   <UrlParamProvider name={embedData.name}>
                     <VideoElementProvider>
-                      <AppErrorBoundary>
-                        {(attempt: number) => (
-                          <EmbedContent
-                            attempt={attempt}
-                            style={embedData.style}
-                            theme={config.theme}
-                            container={container}
-                            wasLazilyLoaded={wasLazilyLoaded}
-                            isOnlyForExpand={isOnlyForExpand}
-                          />
-                        )}
-                      </AppErrorBoundary>
+                      {/* <AppErrorBoundary> */}
+                      {/* {(attempt: number) => ( */}
+                      <EmbedContent
+                        attempt={1}
+                        style={embedData.style}
+                        theme={config.theme}
+                        container={container}
+                        wasLazilyLoaded={wasLazilyLoaded}
+                        isOnlyForExpand={isOnlyForExpand}
+                      />
+                      {/* )} */}
+                      {/* </AppErrorBoundary> */}
                       {/* {config.useShadowDOM && (
                         <SafeSuspense errorFallback={null} fallback={null}>
                           <LazyToaster />
