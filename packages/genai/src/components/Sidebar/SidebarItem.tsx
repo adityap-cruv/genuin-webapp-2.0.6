@@ -11,13 +11,15 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useAgentsContext } from '@/context/app/context';
-import { deleteSessionV2 } from '@/lib/api';
-import { useRudderEvents } from '@/services/analytics/useRudderAnalytics';
+import { eventBus } from '@/core/events/EventBus';
+import { EVENTS } from '@/core/events/eventRegistry';
+import { useSessionContext } from '@/stores/session/context';
+import { deleteSessionV2 } from '@/services/api';
+import { useRudderEvents } from '@/adapters/analytics/useRudderAnalytics';
 import type { Session } from '@/types';
 
 const Item = ({ session }: { session: Session }) => {
-    const { currentSessionId, setCurrentSessionId, updateSessionName, removeSession, ipInfo } = useAgentsContext();
+    const { currentSessionId, setCurrentSessionId, updateSessionName, removeSession, ipInfo } = useSessionContext();
     const { track } = useRudderEvents();
 
     const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
@@ -122,13 +124,9 @@ const Item = ({ session }: { session: Session }) => {
                                         session_id: session.id,
                                     });
                                 }
-                                window.dispatchEvent(
-                                    new CustomEvent('genai:shareLink', {
-                                        detail: {
-                                            sessionId: session.id,
-                                        },
-                                    })
-                                );
+                                eventBus.emit(EVENTS.SHARE_LINK, {
+                                    sessionId: session.id,
+                                });
                                 toast.success('Copied to clipboard');
                             }}
                             className='gai:font-body-1-med gai:text-secondary-gray-900 gai:focus:bg-primary-50'

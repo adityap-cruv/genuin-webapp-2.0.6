@@ -1,0 +1,49 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./cluster.stories";
+
+<Meta of={Stories} />
+
+# Cluster
+
+## What Cluster is for
+
+`Cluster` is a wrap-friendly flex row for chips, tags, breadcrumbs, and action
+button groups — anything that flows horizontally and should reflow onto
+additional lines when out of horizontal space. Wrap is always on; that's the
+defining intent.
+
+If you need horizontal layout *without* wrap, use
+[`Row`](?path=/docs/layout-row--docs). The two primitives are deliberately
+distinct because the wrap intent is clearer in code and easier for the AI
+generator to target.
+
+## Props
+
+- **`gap`** — Gap between items. Applies in both axes when wrapping. Named DS
+  token. Defaults to `"xs"` (8 px) — the canonical chip-row gap.
+- **`align`** — Vertical alignment of items within a line. One of `start`,
+  `center`, `end`, `baseline`. Defaults to `center`.
+- **`asChild`** — Render as a different element via Radix Slot.
+
+All standard `HTMLDivElement` attributes are forwarded.
+
+## Examples
+
+### Default
+
+<Canvas of={Stories.Default} />
+
+<Controls of={Stories.Default} />
+
+### Many chips wrapping
+
+<Canvas of={Stories.ManyChips} />
+
+### Baseline alignment
+
+<Canvas of={Stories.AlignBaseline} />
+
+### As `<ul>` (`asChild`)
+
+<Canvas of={Stories.AsList} />

@@ -7,7 +7,6 @@ import { RadioGroup, RadioItem } from "@genuin/ui/radio";
 import type { UseMutationResult } from "@tanstack/react-query";
 import type { ComponentProps } from "react";
 import React, { useCallback, useMemo, useState } from "react";
-import { Suspense } from "react";
 
 import { useBaseContext } from "@genuin/components/context";
 import { useAnalytics } from "@genuin/components/context/analytics";
@@ -15,6 +14,7 @@ import type { VideoTypes } from "@genuin/components/context/analytics";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { useReport } from "@genuin/components/react-query/api/report";
 import type { ReportType } from "@genuin/components/react-query/api/report";
 
@@ -150,7 +150,7 @@ export function Report({
     }
 
     return (
-      <Suspense fallback={children}>
+      <SafeSuspense fallback={children} errorFallback={null}>
         <AuthenticationModal
           asChild
           getAppData={{
@@ -164,7 +164,7 @@ export function Report({
           }}>
           {children}
         </AuthenticationModal>
-      </Suspense>
+      </SafeSuspense>
     );
   }
   return (
@@ -176,9 +176,9 @@ export function Report({
       </DialogTrigger>
       <DialogContent className="gencl:max-w-xl gencl:rounded-t-2xl! gencl:sm:rounded-t-none gencl:sm:rounded-2xl! gencl:flex gencl:flex-col gencl:gap-y-4">
         {reportMutation.isSuccess ? (
-          <Suspense fallback={<div>Loading…</div>}>
+          <SafeSuspense fallback={<div>Loading…</div>} errorFallback={null}>
             <Success text="Thanks for your Feedback" description="Our team will review and act on your report." />
-          </Suspense>
+          </SafeSuspense>
         ) : (
           <ReportContent
             reportMutation={reportMutation}

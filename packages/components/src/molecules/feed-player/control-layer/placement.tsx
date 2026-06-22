@@ -1,6 +1,7 @@
-import { type FC, lazy, Suspense } from "react";
+import { type FC, lazy } from "react";
 
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 
 import type { ControlLayerPropsType } from "./control-layer.types";
 
@@ -29,7 +30,7 @@ export const Placement: FC<ControlLayerPropsType> = ({
   switch (brandLayoutType) {
     case "iheart":
       return (
-        <Suspense fallback={null}>
+        <SafeSuspense fallback={null} errorFallback={null}>
           <IHeartControlLayer
             postDetails={postDetails}
             className={className}
@@ -37,13 +38,13 @@ export const Placement: FC<ControlLayerPropsType> = ({
             onReactionStateChange={onReactionStateChange}
             {...restProps}
           />
-        </Suspense>
+        </SafeSuspense>
       );
 
     case "default":
     default:
       return (
-        <Suspense fallback={null}>
+        <SafeSuspense fallback={null} errorFallback={null}>
           <DefaultPlacement
             postDetails={postDetails}
             className={className}
@@ -51,7 +52,7 @@ export const Placement: FC<ControlLayerPropsType> = ({
             onReactionStateChange={onReactionStateChange}
             {...restProps}
           />
-        </Suspense>
+        </SafeSuspense>
       );
   }
 };

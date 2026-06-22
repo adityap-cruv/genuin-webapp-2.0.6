@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hierarchical Tree — dev preview</title>
+    <!--
+      Genuin SDK CDN loader. The bundle exposes `window.genuin` with
+      queued `init/update/...` methods (see packages/web-sdk/src/loader.js)
+      and lazy-loads the SDK chunk on first call. Calling `window.genuin.init()`
+      with no config triggers the SDK's DOM-scan path, which hydrates any
+      `<div id="gen-sdk-*">` whose `data-style-id` / `data-placement-id` /
+      `data-api-key` attributes are populated.
+
+      We use the CDN bundle instead of importing `@genuin/web-sdk` source
+      directly: the in-tree source path drags in `process.env.API_BASE_URL`
+      (and friends) plus transitive `@genuin/components` aliases, and
+      shimming all of that in Vite produced subtle resolution bugs (notably
+      the SDK falling back to Vite's `index.html` for API calls and choking
+      on `Unexpected token '<'`). The published bundle has all env vars
+      and endpoints pre-resolved at build time — same code publishers ship.
+    -->
+    <script src="https://media.begenuin.com/sdk/2.0.6/gen_sdk.min.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./main.tsx"></script>
+  </body>
+</html>

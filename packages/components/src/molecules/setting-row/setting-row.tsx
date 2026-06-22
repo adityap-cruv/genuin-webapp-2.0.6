@@ -2,8 +2,9 @@ import { Switch } from "@genuin/ui/components/switch";
 import { ChevronRightIcon, InstagramIcon, LinkedInIcon, TiktokIcon, TwitterIcon, YouTubeIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
 import { type FC, type MouseEventHandler, type ReactNode, type HTMLAttributes, useState } from "react";
-import { lazy, Suspense } from "react";
+import { lazy } from "react";
 
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import type { StepsType } from "@genuin/components/organisms/authentication-modal/context";
 
 const AuthenticationModal = lazy(() =>
@@ -110,10 +111,10 @@ export const SettingRow: FC<SettingFieldProps> = ({
   return toggle ? (
     Content
   ) : (
-    <Suspense fallback={Content}>
+    <SafeSuspense fallback={Content} errorFallback={null}>
       <AuthenticationModal customStep={modalType} asChild>
         {Content}
       </AuthenticationModal>
-    </Suspense>
+    </SafeSuspense>
   );
 };

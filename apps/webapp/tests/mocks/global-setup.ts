@@ -4,9 +4,9 @@
  * Mock URLs are injected via `webServer.env` in `playwright.config.ts`;
  * this file only owns the server lifecycle.
  */
-import { startMockServer } from './server';
+import "./routes";
+import { startMockServer } from "./server";
 // Side-effect import: registers all default routes before the server accepts traffic.
-import './routes';
 
 const MOCK_PORT = Number(process.env.MOCK_SERVER_PORT ?? 4006);
 

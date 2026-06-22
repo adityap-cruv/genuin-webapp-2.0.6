@@ -1,0 +1,76 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./text.stories";
+
+{/*
+  Design-system narrative for the Text typography primitive.
+*/}
+
+<Meta of={Stories} />
+
+# Text
+
+## When to use Text vs Heading
+
+Reach for `Text` for **paragraph copy, captions, inline runs, and labels** —
+the Body scale (`body-0` at 16 px down to `body-4` at 8 px) covers every
+non-heading typographic slot in the Genuin DS. For section / page titles, use
+[`Heading`](?path=/docs/typography-heading--docs) instead.
+
+`Text` defaults to a `<p>` element. Switch to `<span>` for inline runs inside
+larger paragraphs, to `<label>` when associating with a form control, or to
+`<div>` for wrapped block copy.
+
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `size` | `'body-0' \| 'body-1' \| 'body-2' \| 'body-3' \| 'body-4'` | `'body-1'` | Font size + line-height. |
+| `weight` | `'medium' \| 'semibold' \| 'bold'` | per size | Font weight. Defaults to the canonical Figma weight per size. |
+| `as` | `'p' \| 'span' \| 'div' \| 'label'` | `'p'` | Semantic HTML element. |
+| `align` | `'left' \| 'center' \| 'right'` | `'left'` | Text alignment. |
+| `asChild` | `boolean` | `false` | Render as a different element via Radix Slot. |
+
+All standard `HTMLElement` attributes are forwarded.
+
+## Canonical defaults
+
+| `size` | default `weight` |
+|---|---|
+| `body-0` | semibold |
+| `body-1` | medium |
+| `body-2` | medium |
+| `body-3` | medium |
+| `body-4` | medium |
+
+## Examples
+
+### Default
+
+<Canvas of={Stories.Default} />
+
+<Controls of={Stories.Default} />
+
+### All sizes
+
+<Canvas of={Stories.AllSizes} />
+
+### Weight matrix
+
+<Canvas of={Stories.WeightMatrix} />
+
+### As inline `<span>`
+
+<Canvas of={Stories.AsSpanInline} />
+
+### `asChild` link
+
+<Canvas of={Stories.AsChildLink} />
+
+### Composed with Heading
+
+<Canvas of={Stories.Composition} />
+
+### Alignments
+
+<Canvas of={Stories.Alignments} />

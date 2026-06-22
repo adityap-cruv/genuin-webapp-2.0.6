@@ -23,7 +23,6 @@ const PATH_NAME = { loop: (slug: string) => `/loops/${slug}` };
 const meta: Meta<typeof DecorativeList> = {
   title: "Components/DecorativeList",
   component: DecorativeList,
-  tags: ["autodocs"],
   argTypes: {
     children: {
       control: "text", // Or 'object' if more complex ReactNode is needed for control

@@ -4,7 +4,15 @@ import { EventManager } from "@genuin/components/lib/utils/event-manager";
  * The visual state of the bottom sheet.
  * Matches the DraggableSheetState from @genuin/ui.
  */
-export type SheetState = "default" | "default-active" | "expand-view" | "panel-view" | "full-view";
+export type SheetState =
+  | "pl-xs"
+  | "pl-sml"
+  | "default"
+  | "default-active"
+  | "expand-view"
+  | "panel-view"
+  | "full-view"
+  | "responsive";
 
 /**
  * @deprecated Use `SheetState` instead. Will be removed in a future version.

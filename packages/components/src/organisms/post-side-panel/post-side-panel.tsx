@@ -1,8 +1,9 @@
 "use client";
 import { cn } from "@genuin/ui/utils";
 import type { ComponentProps } from "react";
-import { lazy, Suspense } from "react";
+import { lazy } from "react";
 
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 const Comments = lazy(() =>
@@ -51,7 +52,7 @@ export function PostSidePanel({
         onGroupSubscriptionChange={onGroupSubscriptionChange}
         onCommunityJoinStatusChange={onCommunityJoinStatusChange}
       />
-      <Suspense fallback={null}>
+      <SafeSuspense fallback={null}>
         <Comments
           videoId={video.id}
           loopId={postDetails.group?.id}
@@ -61,7 +62,7 @@ export function PostSidePanel({
           className="gencl:overflow-auto"
           onCommentCountChange={onCommentCountChange}
         />
-      </Suspense>
+      </SafeSuspense>
     </div>
   );
 }

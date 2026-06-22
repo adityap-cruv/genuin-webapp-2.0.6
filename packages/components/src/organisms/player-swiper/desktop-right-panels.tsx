@@ -2,11 +2,12 @@
 
 import { DynamicSheet } from "@genuin/ui";
 import { cn } from "@genuin/ui/lib/utils";
-import { lazy, Suspense } from "react";
+import { lazy } from "react";
 
 import type { VideoTypes } from "@genuin/components/context";
 import { CommentInputBox } from "@genuin/components/molecules/comments/comment-input";
 import { CommentsList } from "@genuin/components/molecules/comments/comments-list";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { setQueryDataForNewComment } from "@genuin/components/react-query/api/comments";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
@@ -61,7 +62,7 @@ export function DesktopRightPanels({
             ? `${linkoutsPanelHeight} gencl:opacity-100`
             : "gencl:flex-none gencl:h-0 gencl:opacity-0 gencl:pointer-events-none"
         )}>
-        <Suspense fallback={null}>
+        <SafeSuspense fallback={null} errorFallback={null}>
           <Linkouts
             linkouts={activePost.video?.linkouts ?? []}
             linkoutId={activePost.video?.linkoutId ?? null}
@@ -72,7 +73,7 @@ export function DesktopRightPanels({
             videoDetails={activePost.video}
             totalVideos={totalVideos}
           />
-        </Suspense>
+        </SafeSuspense>
       </div>
 
       <div
@@ -83,7 +84,7 @@ export function DesktopRightPanels({
             : "gencl:flex-none gencl:h-0 gencl:opacity-0 gencl:pointer-events-none"
         )}>
         {isCommentsPanelVisible && brandLayoutType !== "iheart" && (
-          <Suspense fallback={null}>
+          <SafeSuspense fallback={null} errorFallback={null}>
             <DynamicSheet
               isOpen
               renderMode="inline"
@@ -129,7 +130,7 @@ export function DesktopRightPanels({
                 videoType={activePost.video?.type as VideoTypes}
               />
             </DynamicSheet>
-          </Suspense>
+          </SafeSuspense>
         )}
       </div>
     </div>

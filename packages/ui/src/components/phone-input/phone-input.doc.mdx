@@ -1,0 +1,112 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./phone-input.stories";
+
+{/*
+  Design-system narrative for the phone-input component. Attached to the
+  matching story group via `<Meta of={…}>` so it renders as the
+  "Docs" tab next to the live stories. Layout: narrative intro →
+  live examples + controls → usage guidelines.
+*/}
+
+<Meta of={Stories} />
+
+# Phone Input
+
+## What phone inputs are for
+
+A phone input is a specialized text field for collecting a telephone number, paired with a country selector that determines the calling code and the formatting rules. Phones look like simple numeric strings until you actually try to validate them — at which point you discover that "valid" depends on the user's country, that the same digits mean different things in different regions, that international notation (`+44 20 7946 0958`) and national notation (`020 7946 0958`) are both correct depending on context, and that any hand-rolled `pattern` regex you find on Stack Overflow is wrong for at least 50 countries. The only sane way to handle phone input is to use libphonenumber's per-country rules, which is exactly what the Genuin PhoneInput does — the field formats and validates against `react-phone-number-input` (a libphonenumber-powered library), so you get correct behavior for every country without writing a single regex.
+
+A good phone input is unambiguous about which country the user is entering a number for. It shows the country flag and dialing code prominently, lets the user change country with one click, formats the digits as the user types (so `2025550199` becomes `(202) 555-0199` in real time), stores a single canonical value (E.164 — `+12025550199`) regardless of how the user typed it, and surfaces validation errors close to the field. A bad phone input is a `<input type="tel">` with no country selector, no formatting, and a regex that lies about validity. The Genuin component is designed so callers don't have to think about any of that — give it a value, an onChange, and the user gets a correct, country-aware, autoformatted experience.
+
+## Phone Input in this design system
+
+The PhoneInput component in `@genuin/ui` is a single export that composes four design-system pieces (`Input`, `Button`, `Popover`, `Command`) with `react-phone-number-input` underneath. It renders a country selector on the left (a flag + dropdown chevron, opening a searchable country list in a popover) and a text field on the right that auto-formats numbers in real time.
+
+### Value model
+
+- **`value`** — an E.164 string (e.g., `"+12025550199"`) or empty string. This is the canonical, country-independent representation: `+`, country calling code, then the national number, no spaces, dashes, or parentheses.
+- **`onChange`** — called with the E.164 string whenever the user types, pastes, or changes the country. The component coerces `react-phone-number-input`'s "undefined when invalid" output to an empty string, so the value is always a string — easier to compose with form state.
+- **`defaultCountry="US"`** — the country shown when `value` is empty. The component uses `withCountryCallingCode` and `countryCallingCodeEditable`, so the user can also retype the calling code by hand if they need to switch countries via keyboard.
+
+### Country selector
+
+- A button with the flag + chevron that opens a popover.
+- The popover hosts a `Command` palette: a search input plus a scrollable list of every country, each row showing the flag, the country name, the calling code (`+44`), and a check next to the current selection.
+- Picking a country reformats the value into the new country's national format, preserving the digits.
+- `popoverClassName` lets the host tune the popover's width / styling without overriding internal behaviour.
+
+### Formatting
+
+- As the user types, the national number is formatted live according to the selected country's rules (e.g., spaces, parentheses, hyphens).
+- The component never mangles paste — pasting `+44 20 7946 0958` automatically picks the UK if the country wasn't already correct.
+- The visible text is the formatted national number; the stored value is always E.164. The two are kept in sync so the form data is portable while the UI is friendly.
+
+### Validation
+
+The component intentionally does not display its own validation message. Pair it with the `Form` system — `react-hook-form`'s `Controller` (or `<FormField>`) wraps it, the schema (Zod with `isValidPhoneNumber` from the same package) validates, and `<FormMessage />` renders the error. This matches every other input in the design system.
+
+### Accessibility
+
+The input itself is a real `<input type="tel">` (via the design-system `<Input>`), so all native semantics, labels, and ARIA wiring work as for any other input. The country dropdown is a real `<button>` with a popover and a search field — keyboard users can tab into it, open with Enter / Space, and search by typing. Pair the input with a `<FormLabel>` so the label associates with the *number* field; the country selector inherits its purpose from being inside the same labelled control.
+
+### Customization
+
+`className` reaches the root flex container, `popoverClassName` reaches the country popover, and the rest of the component honours the design system's existing tokens (border, type, focus). Avoid restyling the flag or the formatted output — country selection / formatting are the load-bearing part of the contract.
+
+## Examples
+
+### Default
+
+<Canvas of={Stories.Default} />
+
+<Controls of={Stories.Default} />
+
+### With initial value
+
+<Canvas of={Stories.WithInitialValue} />
+
+### With placeholder
+
+<Canvas of={Stories.WithPlaceholder} />
+
+### Disabled
+
+<Canvas of={Stories.Disabled} />
+
+### With default country
+
+<Canvas of={Stories.WithDefaultCountry} />
+
+### With international value
+
+<Canvas of={Stories.WithInternationalValue} />
+
+## When to use Phone Input
+
+- **Account sign-up and onboarding.** Anywhere a phone number is collected as part of identity verification or contact info.
+- **OTP / 2FA setup.** Pair with a follow-up code-entry input. Always store the E.164 value and validate it before sending the code.
+- **Profile editing.** Phone fields in account / profile screens. Pre-fill `value` from the saved E.164 string; the formatter handles display.
+- **Invitations and contact-collection flows.** Inviting a teammate by phone, collecting a notification number, requesting a callback.
+- **Multi-country apps.** Always — even if your product is currently US-only, the international format keeps you future-proof and accommodates US users entering international relatives, business contacts, etc.
+- **Pair with `react-hook-form` + Zod.** Use the package's own `isValidPhoneNumber` in your schema; the resolver runs it and surfaces errors via `<FormMessage>`.
+- **Always store E.164.** Backend, analytics, downstream services — only the canonical form. Display formatting is presentational.
+
+## How not to use Phone Input
+
+- **Don't roll your own phone validation regex.** Libphonenumber is right; your regex is wrong. The component validates correctly for every country — defer to it.
+- **Don't store the formatted (national) value.** The display string changes per country and per region. Save the E.164 string; format on render.
+- **Don't pair this component with a separate country `<Select>`.** The country selector is already inside the component. Adding a sibling selector creates two competing sources of truth.
+- **Don't strip `+` or the country calling code from the stored value.** Without them, the number is ambiguous — `2025550199` could be a US number or a fragment of a longer one in another country.
+- **Don't ship a phone input without a country selector** (i.e., a plain `Input` with `type="tel"` and your own formatter). It silently breaks for the moment a non-default-country user shows up.
+- **Don't bypass `onChange` to set the value imperatively.** The component is controlled — drive it via `value` + `onChange`. Mutating an internal ref desyncs the formatter and the country selector.
+- **Don't pre-fill `defaultCountry` from a hard-coded value.** Use the user's locale (Accept-Language, IP-derived region, account preference) to set a sensible default. US is fine as the *fallback* when locale isn't known.
+- **Don't pop up the country dropdown automatically on focus.** The dropdown is opened by the user. Auto-opening competes with their typing.
+- **Don't disable the country selector while the input is enabled.** Inconsistent disabled state confuses users — disable both together or neither.
+- **Don't add `pattern`, `maxLength`, or `inputMode` overrides hoping to "tighten" validation.** The component already sets the right input mode and the formatter handles length per country. Overrides will fight the formatter and produce broken behaviour for some countries.
+- **Don't render error messages outside the form system.** Use `<FormMessage>` like every other input. Ad-hoc error nodes won't be wired to `aria-describedby`.
+- **Don't use it for SMS-style codes.** A 6-digit OTP code is not a phone number — use a code-entry component (or a basic `<Input>` with `inputMode="numeric"` and `autoComplete="one-time-code"`).
+- **Don't pre-fill the phone field with a placeholder number.** Real phone-shaped placeholders ("(555) 123-4567") look like real data and confuse users into thinking the field is already filled.
+- **Don't suppress the flag.** The flag is the user's primary cue that the country is selectable. Hiding it leaves only a cryptic `+44` button without obvious affordance.
+- **Don't ship the component without an associated label.** Pair it with `<FormLabel>` (or a native `<label htmlFor>` when not using the form system). Without one, screen readers announce "edit text" and nothing more.
+- **Don't render multiple PhoneInputs without distinct labels.** "Phone 1" / "Phone 2" is confusing — use semantic labels ("Mobile", "Work phone", "Backup contact") so each field's purpose is clear.

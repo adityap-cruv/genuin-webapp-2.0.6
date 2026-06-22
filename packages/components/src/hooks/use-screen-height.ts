@@ -77,13 +77,20 @@ import { useState, useEffect } from "react";
  * @remarks
  * - The hook automatically updates when the browser UI shows/hides (e.g., when scrolling)
  * - Uses `window.visualViewport.height` for accuracy, falls back to `window.innerHeight`
+ * - The on-screen keyboard shrinks the visual viewport, so consumers that size a
+ *   `position: fixed` sheet to this value will hug the keyboard instead of being
+ *   hidden behind it
  * - Each component using this hook will re-render when viewport height changes
  * - The height value is reactive and updates on window resize and orientation change
  */
 function useViewportHeight() {
-  // Initialize with current viewport height
-  // Use lazy initialization to avoid SSR issues
-  const [height, setHeight] = useState(window?.visualViewport?.height || window?.innerHeight);
+  // Initialize with current viewport height. SSR-safe: `window` is
+  // undeclared in Node, so `window?.foo` still throws ReferenceError —
+  // we have to guard `typeof window` first. Initial value on the
+  // server is 0; the effect below corrects it on the client.
+  const [height, setHeight] = useState(() =>
+    typeof window === "undefined" ? 0 : (window.visualViewport?.height ?? window.innerHeight)
+  );
 
   useEffect(() => {
     /**
@@ -91,8 +98,7 @@ function useViewportHeight() {
      * Uses visualViewport API for most accurate measurement
      */
     function updateHeight() {
-      const vh = window.visualViewport?.height || window.innerHeight;
-      setHeight(vh);
+      setHeight(window.visualViewport?.height || window.innerHeight);
     }
 
     // Listen for viewport changes (address bar show/hide, keyboard open/close)

@@ -5,11 +5,12 @@ import { cn } from "@genuin/ui/utils";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 import type { ComponentProps, ReactNode } from "react";
-import { lazy, Suspense } from "react";
+import { lazy } from "react";
 
 import { useAuthContext } from "@genuin/components/context/auth";
 import { useBaseContext } from "@genuin/components/context/base";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { SidebarActions, SideBarBecomeCreator } from "@genuin/components/molecules/sidebar";
 import { PoweredByGenuin } from "@genuin/components/molecules/sidebar";
 import { Category } from "@genuin/components/molecules/sidebar/category";
@@ -91,18 +92,18 @@ function ProxyComponent({ variant }: VariantProps<typeof proxyComponentVariant>)
   return (
     <div className={cn(proxyComponentVariant({ variant }))}>
       {!isAuthenticated && showLogin && (
-        <Suspense fallback={<ProxyItem icon={<LoginIcon size="lg" />} text="Log in" />}>
+        <SafeSuspense fallback={<ProxyItem icon={<LoginIcon size="lg" />} text="Log in" />} errorFallback={null}>
           <AuthenticationModal asChild={false} customStep="SIGNIN" className="gencl:w-full">
             <ProxyItem icon={<LoginIcon size="lg" />} text="Log in" />
           </AuthenticationModal>
-        </Suspense>
+        </SafeSuspense>
       )}
       {showApp && (
-        <Suspense fallback={<ProxyItem icon={<QRIcon size="lg" />} text="Get app" />}>
+        <SafeSuspense fallback={<ProxyItem icon={<QRIcon size="lg" />} text="Get app" />} errorFallback={null}>
           <AuthenticationModal asChild={false} customStep="GET_APP" className="gencl:w-full">
             <ProxyItem icon={<QRIcon size="lg" />} text="Get app" />
           </AuthenticationModal>
-        </Suspense>
+        </SafeSuspense>
       )}
     </div>
   );

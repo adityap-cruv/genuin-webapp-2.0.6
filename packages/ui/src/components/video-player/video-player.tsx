@@ -1,5 +1,6 @@
 "use client";
-import OpenPlayerJS from "openplayerjs";
+
+import type OpenPlayerJS from "openplayerjs";
 import type { ComponentProps } from "react";
 import { memo, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 
@@ -9,6 +10,7 @@ import { Loader } from "@genuin/ui/loader";
 
 import { AdControls } from "./ad-controls";
 import type { AdDataType, VideoPlayerStateRef } from "./ad-controls/use-ad-player";
+import { attachQuartileTracking, createOpenPlayerJS } from "./internals";
 
 // Lazy load AdControls component to reduce initial bundle size
 // const AdControls = lazy(() =>
@@ -17,111 +19,12 @@ import type { AdDataType, VideoPlayerStateRef } from "./ad-controls/use-ad-playe
 //   })),
 // );
 
-const _SAMPLE_AD_TAGS = {
-  SINGLE_REDIRECT_LINEAR:
-    "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_ad_samples&sz=640x480&cust_params=sample_ct%3Dredirectlinear&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&correlator=",
-  SINGLE_REDIRECT_ERROR:
-    "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_ad_samples&sz=640x480&cust_params=sample_ct%3Dredirecterror&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&correlator=",
-  SINGLE_REDIRECT_BROKEN:
-    "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_ad_samples&sz=640x480&cust_params=sample_ct%3Dredirecterror&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&nofb=1&correlator=",
-  SINGLE_VERTICAL_INLINE:
-    "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_vertical_ad_samples&sz=360x640&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&correlator=",
-  SINGLE_VPAID_LINEAR:
-    "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_ad_samples&sz=640x480&cust_params=sample_ct%3Dlinearvpaid2js&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&correlator=",
-  SINGLE_VPAID_NON_LINEAR:
-    "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_ad_samples&sz=640x480&cust_params=sample_ct%3Dnonlinearvpaid2js&ciu_szs=728x90%2C300x250&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&correlator=",
-  VMAP_PRE_ROLL:
-    "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/vmap_ad_samples&sz=640x480&cust_params=sample_ar%3Dpreonly&ciu_szs=300x250%2C728x90&gdfp_req=1&ad_rule=1&output=vmap&unviewed_position_start=1&env=vp&correlator=",
-  VMAP_PRE_ROLL_BUMPER:
-    "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/vmap_ad_samples&sz=640x480&cust_params=sample_ar%3Dpreonlybumper&ciu_szs=300x250&gdfp_req=1&ad_rule=1&output=vmap&unviewed_position_start=1&env=vp&correlator=",
-  MID_ROLE_WITH_2_SKIPPABLE:
-    "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/vmap_skip_ad_samples&sz=640x480&cust_params=sample_ar%3Dmidskiponly&ciu_szs=300x250&gdfp_req=1&ad_rule=1&output=vmap&unviewed_position_start=1&env=vp&cmsid=496&vid=short_onecue&correlator=",
-  ALL_SINGLES:
-    "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/vmap_ad_samples&sz=640x480&cust_params=sample_ar%3Dpremidpost&ciu_szs=300x250&gdfp_req=1&ad_rule=1&output=vmap&unviewed_position_start=1&env=vp&cmsid=496&vid=short_onecue&correlator=",
-  STANDARD_POD_5_WITH_10_SEC:
-    "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/vmap_ad_samples&sz=640x480&cust_params=sample_ar%3Dpremidpostlongpod&ciu_szs=300x250&gdfp_req=1&ad_rule=1&output=vmap&unviewed_position_start=1&env=vp&cmsid=496&vid=short_onecue&correlator=",
-  ALL_WITH_ALL_BUMPERS:
-    "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/vmap_ad_samples&sz=640x480&cust_params=sample_ar%3Dpremidpostpodbumper&ciu_szs=300x250&gdfp_req=1&ad_rule=1&output=vmap&unviewed_position_start=1&env=vp&cmsid=496&vid=short_onecue&correlator=",
-  POST_ROLL_ONLY:
-    "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/vmap_ad_samples&sz=640x480&cust_params=sample_ar%3Dpostonly&ciu_szs=300x250&gdfp_req=1&ad_rule=1&output=vmap&unviewed_position_start=1&env=vp&correlator=",
-  SKIPPABLE_INLINE:
-    "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_preroll_skippable&sz=640x480&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&correlator=",
-} as const;
-
 // Lazy load AdControls component to reduce initial bundle size
 // const AdControls = lazy(() =>
 //   import("./ad-controls/ad-controls").then((module) => ({
 //     default: module.AdControls,
 //   }))
 // );
-
-const hlsConfigs = {
-  // debug: true,
-  /**
-   * Start with lowest quality level to ensure smooth playback start.
-   * ABR will gradually increase quality based on actual bandwidth.
-   */
-  startLevel: 0,
-  /**
-   * Disable capLevelToPlayerSize to prevent jumping to high quality based on player dimensions.
-   * This ensures startLevel is respected for the first fragment.
-   */
-  capLevelToPlayerSize: false,
-  /**
-   * Restrict initial quality - set max to level 1 initially to force low quality start.
-   * This can be adjusted dynamically after playback starts.
-   */
-  maxAutoLevel: 1,
-  /**
-   * Use worker threads for decoding for better performance.
-   */
-  enableWorker: true,
-  /**
-   * Enable Encrypted Media Extensions (EME) if DRM is required.
-   */
-  emeEnabled: true,
-  /**
-   * Low latency mode for quicker playback start and adaptation.
-   */
-  lowLatencyMode: true,
-  /**
-   * Buffer settings optimized for 2-second fragments.
-   */
-  maxBufferLength: 10, // Buffer up to 6 fragments (12 seconds).
-  maxBufferSize: 40 * 1000 * 1000, // Maximum buffer size in bytes (40MB).
-  backBufferLength: 30, // Retain 30 seconds for seamless rewind.
-  /**
-   * Fragment loading optimization.
-   */
-  fragLoadingTimeOut: 7000, // Timeout in milliseconds for loading fragments (reduced for faster failure detection).
-  startFragPrefetch: true, // Prefetch the next fragment to minimize stutters.
-  /**
-   * Prevent HLS.js from probing multiple quality levels on startup.
-   * This stops unnecessary parallel downloads of the same fragment at different qualities.
-   */
-  testBandwidth: false, // Disable initial bandwidth test that loads multiple quality levels
-  /**
-   * Conservative ABR settings to prevent jumping to highest quality immediately.
-   */
-  abrEwmaDefaultEstimate: 300000, // Lower initial bandwidth estimate (300 kbps) to start conservatively.
-  abrBandWidthFactor: 0.8, // More conservative - requires 80% of bandwidth before switching up.
-  abrBandWidthUpFactor: 0.5, // Very conservative upscaling - prevents jumping to 1080p immediately.
-  abrEwmaFastLive: 3, // Slower adaptation for live content.
-  abrEwmaSlowLive: 5, // Even slower for stable quality.
-  abrEwmaFastVoD: 3, // Slower adaptation for VOD content.
-  abrEwmaSlowVoD: 5, // Gradual quality increases.
-  /**
-   * Handle live playback smoothly for low-latency streams.
-   */
-  liveSyncDuration: 2.5, // Keep live playback latency low.
-  liveMaxLatencyDuration: 6, // Maximum latency allowed for live streams.
-  /**
-   * Error recovery and buffer hole handling.
-   */
-  maxLoadingDelay: 4, // Maximum delay for loading retries (seconds).
-  maxBufferHole: 0.5, // Maximum buffer hole tolerance (seconds).
-  highBufferWatchdogPeriod: 2, // Period to check for buffer issues (seconds).
-};
 
 export type PlayerProps = ComponentProps<"video"> & {
   volume?: number;
@@ -135,6 +38,8 @@ export type PlayerProps = ComponentProps<"video"> & {
   enableLazyLoading?: boolean; // Enable lazy loading optimization (default: false)
   isInExpandView?: boolean;
   playerShouldPauseOnNotAllowed?: boolean;
+  /** When false, the player defers claiming a registry entry until it becomes true. Defaults to true. */
+  isActive?: boolean;
   onOpenPlayerReady?: (player: OpenPlayerJS) => void;
   onPlayerLoad?: (player: OpenPlayerJS | null) => void; // Add custom event prop
   onVideoFirstQuartile?: (duration: number, currentTime: number) => void;
@@ -177,6 +82,10 @@ export const VideoPlayer = memo(function VideoPlayer({
   play = true,
   loop = false, // loop prop is now destructured
   adUrl,
+  // Destructure-and-discard so this doesn't leak through `...props`
+  // onto the underlying `<video>` element. Consumed elsewhere via
+  // `useAdPlayer` reading the prop directly.
+  adPlatform: _adPlatform,
   isInFeed = false,
   enableLazyLoading = false, // Default to false for backward compatibility
   isInExpandView,
@@ -245,20 +154,22 @@ export const VideoPlayer = memo(function VideoPlayer({
     videoCompleted: false,
   });
 
-  // Centralized loading state handler that triggers callbacks
+  // Centralized loading state handler that triggers callbacks. The
+  // dedup check uses a ref rather than the `setIsLoading` updater
+  // because the updater runs *during* React's render commit phase —
+  // calling parent setState (`onVideoLoadStart`/`End`) from there
+  // triggers React's "Cannot update a component while rendering a
+  // different component" warning. Setting state + firing callbacks
+  // from this wrapper (which is itself called from event handlers /
+  // effects, never render) keeps the queue pure.
+  const isLoadingRef = useRef(false);
   const updateLoadingState = useCallback(
     (loading: boolean, isPlaying: boolean) => {
-      setIsLoading((prevLoading) => {
-        // Only trigger callbacks when state actually changes
-        if (prevLoading !== loading) {
-          if (loading) {
-            onVideoLoadStart?.(isPlaying);
-          } else {
-            onVideoLoadEnd?.(isPlaying);
-          }
-        }
-        return loading;
-      });
+      if (isLoadingRef.current === loading) return;
+      isLoadingRef.current = loading;
+      setIsLoading(loading);
+      if (loading) onVideoLoadStart?.(isPlaying);
+      else onVideoLoadEnd?.(isPlaying);
     },
     [onVideoLoadStart, onVideoLoadEnd]
   );
@@ -365,9 +276,13 @@ export const VideoPlayer = memo(function VideoPlayer({
         }
       }
 
-      await player.load();
-
+      // Assign the ref BEFORE awaiting load(). If `src` changes while load
+      // is in flight, the cleanup effect needs to be able to destroy this
+      // player instance — otherwise we leak a player that's still wired
+      // to the (now-stale) <video> element.
       playerRef.current = player;
+
+      await player.load();
 
       // Set playback speed and volume after player is initialized
       const media = player.getMedia();
@@ -504,7 +419,10 @@ export const VideoPlayer = memo(function VideoPlayer({
           });
       }
     } catch (error) {
-      // Fallback to content if player state check fails
+      // Fallback to content if player state check fails. Catch the
+      // AbortError that fires when a src swap interrupts the play
+      // promise — the next play call (driven by the registry) will
+      // resolve correctly.
       console.warn("Error checking player state, falling back to content:", error);
       player
         ?.getMedia()
@@ -585,30 +503,15 @@ export const VideoPlayer = memo(function VideoPlayer({
 
     // OpenPlayerJS is patched to disable IMA's native UI; no runtime prototype patching required.
 
-    const player = new OpenPlayerJS(videoRef.current, {
-      controls: {
-        alwaysVisible: false,
-      },
-      mode: "responsive",
-      forceNative: isSafari ? true : !(typeof src === "string" && src.endsWith(".m3u8")), // Safari uses native HLS, others use hls.js
-      showLoaderOnInit: false,
-      hls: hlsConfigs,
+    const player = createOpenPlayerJS(videoRef.current, {
+      // ComponentProps<"video"> widens `src` to include Blob/MediaSource/etc.
+      // (those go through `srcObject`, not `src`). The factory only deals in
+      // string URLs, so coerce here.
+      src: typeof src === "string" ? src : undefined,
+      isSafari,
       startTime,
       startVolume: volume / 100,
-      ads: adUrl
-        ? {
-            src: adUrl,
-            // debug: true,
-            // sdkPath: "https://imasdk.googleapis.com/js/sdkloader/ima3.js",
-            enablePreloading: false,
-            // customClick: isInExpandView
-            //   ? {
-            //       enabled: true,
-            //       label: "Learn More",
-            //     }
-            //   : undefined,
-          }
-        : undefined,
+      adUrl,
     });
 
     // Mark as initialized before calling initializePlayer
@@ -620,7 +523,23 @@ export const VideoPlayer = memo(function VideoPlayer({
       updateLoadingState(true, true);
     }
 
-    void initializePlayer(player, play);
+    // Catch AbortError that can fire from `await player.load()` when
+    // a prior play() is interrupted by the load. The rejection
+    // would otherwise surface as a runtime error overlay in dev and
+    // leave the spinner stuck (since `initializePlayer` never reaches
+    // its post-load code, including `playerRef.current = player`).
+    //
+    // Reset `isPlayerInitialized` so the next render that touches
+    // `play` / `src` re-enters the init path and can retry. Without
+    // this the player would silently never start.
+    void initializePlayer(player, play).catch((err) => {
+      const name = (err as { name?: string })?.name;
+      if (name !== "AbortError") {
+        console.warn("Player initialization failed:", err);
+      }
+      isPlayerInitialized.current = false;
+      updateLoadingState(false, false);
+    });
 
     // Reset videoStartFired when player initializes (new video)
     playerStateRef.current.videoStartFired = false;
@@ -638,12 +557,16 @@ export const VideoPlayer = memo(function VideoPlayer({
     updateLoadingState,
   ]);
 
-  // If adUrl changes after initialization, load the new ad (only in feed context)
+  // If adUrl changes after initialization, load the new ad (only in feed context).
+  // Mirror the init path (see initializePlayer): emit onAdRequested before wiring
+  // listeners and loading, so the GenAd-waterfall-fallback IMA path also reports a
+  // request — otherwise an ad error fires with no preceding "Ad Requested" event.
   useEffect(() => {
     if (!isInFeed) return;
     if (adUrl) {
-      playerRef.current?.loadAd(adUrl);
+      onAdRequestedRef.current?.();
       setupAdEventListenersRef.current?.(playerRef.current!);
+      playerRef.current?.loadAd(adUrl);
     }
   }, [adUrl, isInFeed]);
 
@@ -794,46 +717,15 @@ export const VideoPlayer = memo(function VideoPlayer({
     const videoElement = videoRef.current;
     if (!videoElement) return;
 
-    const handleTimeUpdate = () => {
-      const videlElement = videoRef.current;
-      const duration = videoElement.duration;
-      if (!videlElement || duration === 0 || !duration || duration === Infinity) return;
-      const { firstQuartileFired, midpointFired, thirdQuartileFired, videoWatchedFired } = playerStateRef.current;
-
-      const { currentTime } = videoElement;
-
-      if (!videoWatchedFired && currentTime >= 3) {
-        onVideoWatched?.(duration, currentTime);
-        playerStateRef.current.videoWatchedFired = true;
-      }
-
-      const firstQuartileTime = duration / 4;
-      const midpointTime = duration / 2;
-      const thirdQuartileTime = (duration * 3) / 4;
-
-      if (!firstQuartileFired && currentTime >= firstQuartileTime) {
-        onVideoFirstQuartile?.(duration, currentTime);
-        playerStateRef.current.firstQuartileFired = true;
-      }
-
-      if (!midpointFired && currentTime >= midpointTime) {
-        onVideoMidpoint?.(duration, currentTime);
-        playerStateRef.current.midpointFired = true;
-      }
-
-      if (!thirdQuartileFired && currentTime >= thirdQuartileTime) {
-        onVideoThirdQuartile?.(duration, currentTime);
-        playerStateRef.current.thirdQuartileFired = true;
-      }
-    };
-
-    // videoElement.addEventListener("ended", handleEnded);
-    videoElement.addEventListener("timeupdate", handleTimeUpdate);
+    const detachQuartiles = attachQuartileTracking(videoElement, playerStateRef, {
+      onVideoFirstQuartile,
+      onVideoMidpoint,
+      onVideoThirdQuartile,
+      onVideoWatched,
+    });
 
     return () => {
-      // videoElement.removeEventListener("ended", handleEnded);
-      // Clean up the timeupdate event listener
-      videoElement.removeEventListener("timeupdate", handleTimeUpdate);
+      detachQuartiles();
     };
   }, [src, onVideoFirstQuartile, onVideoMidpoint, onVideoThirdQuartile, onVideoWatched]);
 
@@ -924,24 +816,38 @@ type VideoPosterProps = {
 
 export const VideoPoster = memo(function VideoPoster({ src, className }: VideoPosterProps) {
   const [visible, setVisible] = useState(true);
+  // The poster image bytes still have to download. Until its `onLoad` fires, the
+  // <img> is blank and the dark video container shows through — the "black screen"
+  // before the thumbnail appears. A shimmer placeholder underneath fills that
+  // window and is covered the moment the poster actually paints.
+  const [loaded, setLoaded] = useState(false);
 
   if (!visible) return null;
 
   return (
-    <img
-      src={src}
-      loading="lazy"
-      className={cn(
-        "gencl:absolute gencl:inset-0 gencl:h-full gencl:w-full gencl:object-cover gencl:pointer-events-none",
-        className
+    <>
+      {!loaded && (
+        <div
+          aria-hidden
+          className="gencl:absolute gencl:inset-0 gencl:h-full gencl:w-full gencl:animate-pulse gencl:bg-secondary-900 gencl:pointer-events-none"
+        />
       )}
-      style={{
-        // To manage blink in safari I have added this transform properties.
-        transform: "translate3d(0, 0, 0)",
-        WebkitTransform: "translate3d(0, 0, 0)",
-        // backfaceVisibility: "hidden",
-      }}
-      onError={() => setVisible(false)}
-    />
+      <img
+        src={src}
+        loading="lazy"
+        className={cn(
+          "gencl:absolute gencl:inset-0 gencl:h-full gencl:w-full gencl:object-cover gencl:pointer-events-none",
+          className
+        )}
+        style={{
+          // To manage blink in safari I have added this transform properties.
+          transform: "translate3d(0, 0, 0)",
+          WebkitTransform: "translate3d(0, 0, 0)",
+          // backfaceVisibility: "hidden",
+        }}
+        onLoad={() => setLoaded(true)}
+        onError={() => setVisible(false)}
+      />
+    </>
   );
 });

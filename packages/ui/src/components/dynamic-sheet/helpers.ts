@@ -1,5 +1,18 @@
 import { DYNAMIC_SHEET_STATES, type DynamicSheetState, type HeightValue } from "./types";
 
+/** Sentinel returned by `normalizeHeightToPx` when the height should
+ *  follow content instead of a fixed pixel value (`"auto"` /
+ *  `"fit-content"`). The dynamic-sheet renderer maps this back to CSS
+ *  `height: auto`; snap math treats it as 0 (these states are only
+ *  used when drag-and-snap is disabled). */
+export const AUTO_HEIGHT_SENTINEL = Number.NaN;
+
+export function isAutoHeight(value: HeightValue): boolean {
+  if (typeof value !== "string") return false;
+  const trimmed = value.trim();
+  return trimmed === "auto" || trimmed === "fit-content";
+}
+
 /**
  * Convert a HeightValue to pixels relative to a container height.
  *
@@ -8,6 +21,8 @@ import { DYNAMIC_SHEET_STATES, type DynamicSheetState, type HeightValue } from "
  * - `"50%"`   → percentage of containerHeight
  * - `"200px"` → absolute pixels
  * - `"2rem"`  → rem × 16
+ * - `"auto"` / `"fit-content"` → AUTO_HEIGHT_SENTINEL (NaN); callers
+ *   must check `Number.isNaN(...)` and fall back to CSS `height: auto`.
  */
 export function normalizeHeightToPx(value: HeightValue, containerHeight: number): number {
   if (typeof value === "number") {
@@ -16,6 +31,9 @@ export function normalizeHeightToPx(value: HeightValue, containerHeight: number)
 
   const trimmed = value.trim();
 
+  if (trimmed === "auto" || trimmed === "fit-content") {
+    return AUTO_HEIGHT_SENTINEL;
+  }
   if (trimmed.endsWith("vh")) {
     return (parseFloat(trimmed) / 100) * window.innerHeight;
   }

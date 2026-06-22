@@ -1,11 +1,12 @@
 import { Toaster } from "@genuin/ui";
 import type { ComponentProps } from "react";
-import { useEffect, useState, lazy, Suspense } from "react";
+import { useEffect, useState, lazy } from "react";
 import { Route, Router, Switch } from "wouter";
 
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { useRouter } from "@genuin/components/hooks/use-router";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { BaseLayout } from "@genuin/components/templates/base-layout";
 import { Feed } from "@genuin/components/templates/feed";
 
@@ -89,27 +90,27 @@ export function StandardWall({ startingPath, defaultComponent, baseLayoutVariant
                     })}>
                     {(params) => {
                       return (
-                        <Suspense fallback={null}>
+                        <SafeSuspense fallback={null} errorFallback={null}>
                           <ProfileDetails userName={(params as any).slug} forBrand={false} />
-                        </Suspense>
+                        </SafeSuspense>
                       );
                     }}
                   </Route>
                   <Route path={buildPageUrl({ type: "brand", asRoutePattern: true })}>
                     {(params) => {
                       return (
-                        <Suspense fallback={null}>
+                        <SafeSuspense fallback={null} errorFallback={null}>
                           <ProfileDetails userName={(params as any).slug} forBrand={true} />
-                        </Suspense>
+                        </SafeSuspense>
                       );
                     }}
                   </Route>
                   <Route path={buildPageUrl({ type: "group", asRoutePattern: true })}>
                     {(params) => {
                       return (
-                        <Suspense fallback={null}>
+                        <SafeSuspense fallback={null} errorFallback={null}>
                           <GroupDetailsPage slug={(params as any).slug} />
-                        </Suspense>
+                        </SafeSuspense>
                       );
                     }}
                   </Route>
@@ -120,65 +121,65 @@ export function StandardWall({ startingPath, defaultComponent, baseLayoutVariant
                     })}>
                     {(params) => {
                       return (
-                        <Suspense fallback={null}>
+                        <SafeSuspense fallback={null} errorFallback={null}>
                           <CommunityDetails slug={(params as any).slug} />
-                        </Suspense>
+                        </SafeSuspense>
                       );
                     }}
                   </Route>
                   <Route path={buildPageUrl({ type: "video", asRoutePattern: true })}>
                     {(params) => {
                       return (
-                        <Suspense fallback={null}>
+                        <SafeSuspense fallback={null} errorFallback={null}>
                           <VideoPage videoId={(params as any).slug} />
-                        </Suspense>
+                        </SafeSuspense>
                       );
                     }}
                   </Route>
                   <Route path={buildPageUrl({ type: "settings" })}>
-                    <Suspense fallback={null}>
+                    <SafeSuspense fallback={null} errorFallback={null}>
                       <SettingsPage />
-                    </Suspense>
+                    </SafeSuspense>
                   </Route>
                   <Route path={buildPageUrl({ type: "explore" })}>
-                    <Suspense fallback={null}>
+                    <SafeSuspense fallback={null} errorFallback={null}>
                       <Explore />
-                    </Suspense>
+                    </SafeSuspense>
                   </Route>
                   {/* <Route path={buildPageUrl({ type: "posts-create" })}>
-              <Suspense fallback={null}>
+              <SafeSuspense fallback={null} errorFallback={null}>
                 <CreatePost />
-              </Suspense>
+              </SafeSuspense>
             </Route> */}
                   {/* <Route path={buildPageUrl({ type: "posts" })}>
-              <Suspense fallback={null}>
+              <SafeSuspense fallback={null} errorFallback ={null}>
                 <MyVideos />
-              </Suspense>
+              </SafeSuspense>
             </Route> */}
                   {/* <Route path={buildPageUrl({ type: "post", asRoutePattern: true })}>
               {(params) => {
                 return (
-                  <Suspense fallback={null}>
+                  <SafeSuspense fallback={null} errorFallback ={null}>
                     <CreatePost postId={(params as any).slug} />
-                  </Suspense>
+                  </SafeSuspense>
                 );
               }}
             </Route> */}
                   {/* <Route
-              path={buildPageUrl({ type: "posts-draft", asRoutePattern: true })}
+              path={<buildPageUrl>({ type: "posts-draft", asRoutePattern: true })}
             >
               {(params) => {
                 return (
-                  <Suspense fallback={null}>
+                  <SafeSuspense fallback={null} errorFallback ={null}>
                     <CreatePost draftId={(params as any).slug} />
-                  </Suspense>
+                  </SafeSuspense>
                 );
               }}
             </Route> */}
                   {/* <Route path={"/create-post"}>
-              <Suspense fallback={null}>
+              <SafeSuspense fallback={null} errorFallback ={null}>
                 <CreatePost />
-              </Suspense>
+              </SafeSuspense>
             </Route> */}
                 </Switch>
               </BaseLayout>

@@ -1,8 +1,8 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 
 import { Add, Verified } from '@/assets/SvgIcons/icons';
-import { useAgentsContext } from '@/context/app/context';
-import { updateAgentMessage, insertExistingBrandAsConsumerBrand, insertNewBrandAsConsumerBrand } from '@/lib/api';
+import { useSessionContext } from '@/stores/session/context';
+import { updateAgentMessage, insertExistingBrandAsConsumerBrand, insertNewBrandAsConsumerBrand } from '@/services/api';
 import type { BrandConsumerBrand } from '@/types';
 
 const BrandConsumerBrands = ({
@@ -14,7 +14,7 @@ const BrandConsumerBrands = ({
     existing: BrandConsumerBrand[];
     new: BrandConsumerBrand[];
 }) => {
-    const { updateAgentMessageContent, currentSessionId } = useAgentsContext();
+    const { updateAgentMessageContent, currentSessionId } = useSessionContext();
 
     // Initialize state with proper isNew flags
     const [existingBrands, setExistingBrands] = useState<BrandConsumerBrand[]>(

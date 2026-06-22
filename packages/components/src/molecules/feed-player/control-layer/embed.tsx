@@ -1,6 +1,7 @@
-import { lazy, Suspense, type FC } from "react";
+import { lazy, type FC } from "react";
 
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 
 import type { ControlLayerPropsType } from "./control-layer.types";
 
@@ -32,7 +33,7 @@ export const Embed: FC<ControlLayerPropsType> = ({
   const brandLayoutType = !config.responsive.canShowEngagement ? "responsiveness" : config.view.brandLayoutType;
 
   return (
-    <Suspense fallback={null}>
+    <SafeSuspense fallback={null} errorFallback={null}>
       {(() => {
         switch (brandLayoutType) {
           case "iheart":
@@ -103,6 +104,6 @@ export const Embed: FC<ControlLayerPropsType> = ({
             );
         }
       })()}
-    </Suspense>
+    </SafeSuspense>
   );
 };

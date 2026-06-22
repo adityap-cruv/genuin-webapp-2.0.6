@@ -2,7 +2,7 @@ import { Button as PrimitiveButton } from "@genuin/ui/components/button";
 import { Loader } from "@genuin/ui/components/loader";
 import { cn } from "@genuin/ui/lib/utils";
 import { Toast } from "@genuin/ui/toaster";
-import React, { useCallback, memo, Suspense, lazy } from "react";
+import React, { useCallback, memo, lazy } from "react";
 
 import { useAnalytics } from "@genuin/components/context/analytics";
 import { useAuthContext } from "@genuin/components/context/auth";
@@ -10,6 +10,7 @@ import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config
 import { useRouter } from "@genuin/components/hooks/use-router";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import {
   useJoinCommunityMutation,
   useLeaveCommunityMutation,
@@ -109,7 +110,7 @@ export const JoinCommunityButton = memo(function JoinCommunityButton({
     }
 
     return (
-      <Suspense fallback={null}>
+      <SafeSuspense fallback={null} errorFallback={null}>
         <AuthenticationModal
           getAppData={{
             description: (
@@ -129,7 +130,7 @@ export const JoinCommunityButton = memo(function JoinCommunityButton({
           asChild>
           {button}
         </AuthenticationModal>
-      </Suspense>
+      </SafeSuspense>
     );
   }
 

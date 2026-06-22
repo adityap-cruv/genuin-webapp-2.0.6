@@ -14,6 +14,7 @@ import { EmbedSwiper } from "@genuin/components/molecules/embed-swiper";
 
 import { getSlidesPerView } from "../../molecules/embed-swiper/utils";
 
+import { computeTileSize, ratioToAspect, resolveGridDimensions } from "./grid-view/grid-layout";
 import { NavigationButtons } from "./navigation-buttons";
 
 import "swiper/css";
@@ -58,6 +59,7 @@ export function SdkSkeleton({
 }) {
   const { embedData } = useEmbedContext();
   const config = useEmbedConfigs();
+  const { headerHeight } = useEmbedDimensions();
   const isGridLayout = config.view.isGrid;
   const embedVariant: "carousel" | "feed" = config.view.embedStyle === "feed" ? "feed" : "carousel";
   const skeletonItems = Array(12).fill(null);
@@ -65,10 +67,84 @@ export function SdkSkeleton({
 
   // If variant is grid, render grid skeleton layout
   if (isGridLayout) {
-    const rows = config.view.gridLayout?.row ?? 2;
-    const cols = config.view.gridLayout?.column ?? 2;
+    const rawRows = config.view.gridLayout?.row ?? 2;
+    const rawCols = config.view.gridLayout?.column ?? 2;
     const { width: widthRatio, height: heightRatio } = getAspectRatio(config.dimensions.aspectRatio);
-    // const autoAdjust = config.view.gridLayout?.auto_adjust;
+    const aspect = ratioToAspect(widthRatio, heightRatio);
+    // Mirror GridView exactly: usable height = container minus the grid header.
+    const usableHeight = Math.max(containerHeight - headerHeight, 0);
+
+    // During loading there is no real video count. For a dynamic dimension,
+    // estimate enough placeholder tiles to fill the viewport along that axis so
+    // the skeleton matches the eventual grid shape. Fixed mode is unchanged.
+    let placeholderCount: number;
+    if (rawRows === -1) {
+      const { mode, rows, cols } = resolveGridDimensions(rawRows, rawCols, 1);
+      const { tileHeight } = computeTileSize({ mode, rows, cols, containerWidth, usableHeight, aspect });
+      const visibleRows = tileHeight > 0 ? Math.ceil(containerHeight / tileHeight) + 1 : 2;
+      placeholderCount = cols * Math.max(visibleRows, 1);
+    } else if (rawCols === -1) {
+      const { mode, rows, cols } = resolveGridDimensions(rawRows, rawCols, 1);
+      const { tileWidth } = computeTileSize({ mode, rows, cols, containerWidth, usableHeight, aspect });
+      const visibleCols = tileWidth > 0 ? Math.ceil(containerWidth / tileWidth) + 1 : 2;
+      placeholderCount = rows * Math.max(visibleCols, 1);
+    } else {
+      placeholderCount = Math.max(rawRows * rawCols, 1);
+    }
+
+    const { mode, rows, cols } = resolveGridDimensions(rawRows, rawCols, placeholderCount);
+    // Identical sizing to the rendered GridView so the skeleton tiles match.
+    const { tileWidth, tileHeight } = computeTileSize({
+      mode,
+      rows,
+      cols,
+      containerWidth,
+      usableHeight,
+      aspect,
+    });
+
+    const gridStyle: React.CSSProperties =
+      mode === "dynamic-rows"
+        ? {
+            display: "grid",
+            gridTemplateColumns: `repeat(${cols}, 1fr)`,
+            gridAutoRows: "max-content",
+          }
+        : mode === "dynamic-cols"
+          ? {
+              display: "grid",
+              gridTemplateRows: `repeat(${rows}, 1fr)`,
+              gridAutoFlow: "column",
+              gridAutoColumns: `${Math.max(tileWidth, 0)}px`,
+              height: "100%",
+            }
+          : {
+              display: "grid",
+              gridTemplateColumns: `repeat(${cols}, 1fr)`,
+              gridTemplateRows: `repeat(${rows}, 1fr)`,
+            };
+
+    // Match GridView: fixed mode keeps the aspect-ratio box; dynamic modes size
+    // the cell explicitly so the skeleton tiles equal the rendered tiles.
+    const cellStyle: React.CSSProperties =
+      mode === "fixed"
+        ? { aspectRatio: `${widthRatio} / ${heightRatio}` }
+        : { width: Math.max(tileWidth, 0), height: Math.max(tileHeight, 0) };
+
+    const scrollClass =
+      mode === "dynamic-cols"
+        ? "gencl:overflow-x-auto gencl:overflow-y-hidden"
+        : mode === "dynamic-rows"
+          ? "gencl:overflow-y-auto"
+          : "gencl:overflow-auto";
+
+    // Mirror GridView's scroll wrapper: in dynamic modes the wrapper height is
+    // bounded to usableHeight so the grid's 1fr row tracks resolve to the same
+    // tile height as the rendered grid (a `h-full` wrapper would use the full
+    // container height and make the skeleton tiles taller/wider than reality).
+    const scrollWrapperStyle: React.CSSProperties =
+      mode === "fixed" ? {} : { height: usableHeight };
+
     return (
       <div
         className={cn("gencl:rounded-md", theme === "dark" ? "gencl:bg-secondary-900" : "gencl:bg-secondary-200")}
@@ -77,15 +153,9 @@ export function SdkSkeleton({
           width: Math.max(0, containerWidth || 0),
         }}
         {...restProps}>
-        <div className="gencl:h-full gencl:w-full gencl:overflow-auto">
-          <EmbedHeaderSkeleton variant="grid" theme={theme} />
-          <div
-            className={cn("gencl:w-full gencl:gap-2")}
-            style={{
-              display: "grid",
-              gridTemplateColumns: `repeat(${cols}, 1fr)`,
-              gridTemplateRows: `repeat(${rows}, 1fr)`,
-            }}>
+        <EmbedHeaderSkeleton variant="grid" theme={theme} />
+        <div className={cn("gencl:w-full", scrollClass)} style={scrollWrapperStyle}>
+          <div className={cn("gencl:w-full gencl:gap-2")} style={gridStyle}>
             {Array(rows * cols)
               .fill(0)
               .map((_, index) => (
@@ -96,9 +166,7 @@ export function SdkSkeleton({
                     "gencl:transition-all gencl:duration-300 gencl:ease-in-out",
                     "gencl:cursor-pointer"
                   )}
-                  style={{
-                    aspectRatio: `${widthRatio} / ${heightRatio}`,
-                  }}>
+                  style={cellStyle}>
                   <Skeleton
                     className={cn(
                       "gencl:h-full gencl:w-full",

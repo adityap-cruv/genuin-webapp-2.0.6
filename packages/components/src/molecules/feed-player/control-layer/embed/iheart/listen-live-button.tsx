@@ -5,12 +5,20 @@ import { cn } from "@genuin/ui/lib/utils";
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 
 import { useAnalytics } from "@genuin/components/context";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { SDKEventEmitter, SDKEventName } from "@genuin/components/lib/sdk-event-emitter";
+import { addIheartCtaCampaign } from "@genuin/components/lib/utils/iheart-url";
 import { buildLinkoutsAnalyticsData } from "@genuin/components/organisms/linkouts/build-linkouts-analytics-data";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 import { useIHeartPlayback } from "./use-iheart-playback";
+
+// TODO(temp): Remove this KFI dummy-data redirect. Temporary placement-specific
+// hardcoding — drop once real linkout data is served from the API.
+// Placement whose listen-live click should redirect to the linkout cta_link
+// instead of the constructed iheart.com URL. Mirrors KFI_PLACEMENT_IDS in embed.tsx.
+const KFI_PLACEMENT_IDS = ["6a2be0e245aec54862efd9a5", "6a312de7a01f8b8ab6edde5a"];
 
 // Module-level set deduplicates LINKOUTS_VIEWED tracking across simultaneous
 // instances of the IHeart listen-live button (e.g. embed + expand rendered at the
@@ -35,6 +43,10 @@ export function IHeartListenLiveButton({ className, videoDetails, info }: IHeart
     videoDetails,
   });
   const { brand } = useEmbedConfigs();
+  const embedContext = useSafeEmbedContext();
+  const isKfiPlacement =
+    !!embedContext?.embedData?.placement_id &&
+    KFI_PLACEMENT_IDS.includes(embedContext.embedData.placement_id);
   const { track, EventName } = useAnalytics();
   const analyticsEventData = useMemo(
     () =>
@@ -132,6 +144,21 @@ export function IHeartListenLiveButton({ className, videoDetails, info }: IHeart
   }, [videoDetails?.id, track, EventName.LINKOUTS_VIEWED, analyticsEventData]);
 
   const openClipPlayerLink = useCallback(() => {
+    // For the KFI placement only, honour the linkout's explicit destination
+    // (cta_link) directly instead of constructing an iheart.com URL from the
+    // station/podcast attributes.
+    const ctaLink = videoDetails?.linkouts?.[0]?.cta_link;
+    if (isKfiPlacement && ctaLink) {
+      const url = addIheartCtaCampaign(ctaLink);
+      track(EventName.LINKOUTS_CLICKED, {
+        ...analyticsEventData,
+        linkUrl: url.toString(),
+        linkTitle: videoDetails?.linkouts?.[0]?.cta_text ?? "Listen Live",
+      });
+      window.open(url, "_blank", "noopener,noreferrer");
+      return;
+    }
+
     const episodeId = videoDetails?.attributes?.episode_id ? Number(videoDetails.attributes.episode_id) : undefined;
     const podcastId = videoDetails?.attributes?.podcast_id ? Number(videoDetails.attributes.podcast_id) : undefined;
     const stationId = videoDetails?.attributes?.station_id ? Number(videoDetails.attributes.station_id) : undefined;
@@ -160,13 +187,14 @@ export function IHeartListenLiveButton({ className, videoDetails, info }: IHeart
         (isStation ? stationId : slug) +
         (isFullEpisode ? "/episode/" + episodeId : "")
     );
+    const destinationUrl = addIheartCtaCampaign(url);
     track(EventName.LINKOUTS_CLICKED, {
       ...analyticsEventData,
-      linkUrl: url,
+      linkUrl: destinationUrl.toString(),
       linkTitle: isGoToEpisode ? "Go to Episode" : isFullEpisode ? "Full Episode" : "Listen Live",
     });
-    window.open(url, "_blank", "noopener,noreferrer");
-  }, [videoDetails]);
+    window.open(destinationUrl, "_blank", "noopener,noreferrer");
+  }, [videoDetails, track, EventName.LINKOUTS_CLICKED, analyticsEventData, isGoToEpisode, isKfiPlacement]);
 
   const handleButtonClick = useCallback(
     (e: React.MouseEvent) => {

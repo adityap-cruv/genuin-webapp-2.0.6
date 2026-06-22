@@ -1,10 +1,11 @@
 import { Avatar } from "@genuin/ui/components/avatar";
 import { Button } from "@genuin/ui/components/button";
 import { cn } from "@genuin/ui/lib/utils";
-import { type FC, lazy, Suspense } from "react";
+import { type FC, lazy } from "react";
 
 import { useAuthContext } from "@genuin/components/context/auth";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { SettingRow } from "@genuin/components/molecules/setting-row";
 
 const AuthenticationModal = lazy(() =>
@@ -40,11 +41,13 @@ export const EditProfileSettings: FC = () => {
             className={cn(
               "gencl:absolute gencl:flex gencl:flex-col gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-black/50 gencl:top-0 gencl:left-0 gencl:w-full gencl:h-full gencl:opacity-0 gencl:hover:opacity-0 gencl:lg:hover:opacity-100"
             )}>
-            <Suspense fallback={<p className="gencl:text-white gencl:text-body-2-medium gencl:cursor-pointer">Edit</p>}>
+            <SafeSuspense
+              fallback={<p className="gencl:text-white gencl:text-body-2-medium gencl:cursor-pointer">Edit</p>}
+              errorFallback={null}>
               <AuthenticationModal customStep="EDIT_PROFILE_PICTURE" asChild>
                 <p className="gencl:text-white gencl:text-body-2-medium gencl:cursor-pointer">Edit</p>
               </AuthenticationModal>
-            </Suspense>
+            </SafeSuspense>
 
             {/* <AuthenticationModal customStep="REMOVE_PICTURE" asChild>
             <p className="gencl:text-white gencl:text-body-2-medium gencl:cursor-pointer">
@@ -55,18 +58,19 @@ export const EditProfileSettings: FC = () => {
         </div>
         {!isDesktop && (
           <div>
-            <Suspense
+            <SafeSuspense
               fallback={
                 <Button size="sm" theme="text" color="primary" className="gencl:text-body-1-semi-bold! gencl:text-red">
                   Change Profile Photo
                 </Button>
-              }>
+              }
+              errorFallback={null}>
               <AuthenticationModal customStep="EDIT_PROFILE_PICTURE" asChild>
                 <Button size="sm" theme="text" color="primary" className="gencl:text-body-1-semi-bold! gencl:text-red">
                   Change Profile Photo
                 </Button>
               </AuthenticationModal>
-            </Suspense>
+            </SafeSuspense>
           </div>
         )}
       </div>

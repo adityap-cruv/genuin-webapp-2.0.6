@@ -1,8 +1,10 @@
-import baseConfig from "./vite.config.mjs";
-import { defineConfig, mergeConfig } from "vite";
 import { readFileSync, existsSync } from "fs";
 import { resolve } from "path";
 import { fileURLToPath } from "url";
+
+import { defineConfig, mergeConfig } from "vite";
+
+import baseConfig from "./vite.config.mjs";
 
 // Try to import chalk, fallback to plain console if not available
 let chalk;

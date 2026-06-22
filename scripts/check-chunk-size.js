@@ -8,14 +8,18 @@ const ROOT = execSync("git rev-parse --show-toplevel", {
 }).trim();
 
 // size in kb
-const MAX_GZIP_SIZE_KB = 1600;
+// Raised from 1600 → 1800 after GEN-9262 web-sdk x genai phase-1 (views/ layer +
+// web-sdk integration: 22K+ lines added across 209 files, ~126KB gzip increase).
+const MAX_GZIP_SIZE_KB = 1800;
 
 // Size thresholds in KB
 const SMALL_CHUNK_THRESHOLD_KB = 10;
 const LARGE_CHUNK_THRESHOLD_KB = 30;
 
 // Maximum allowed number of chunks
-const MAX_CHUNK_COUNT = 90;
+// Raised from 90 → 100 after the genai views/ layer (view registry + view-specific shells)
+// was introduced, which added ~8 legitimate new chunks to the bundle.
+const MAX_CHUNK_COUNT = 100;
 
 // Allow 1% over the limit
 const TOLERANCE_PERCENT = 1;

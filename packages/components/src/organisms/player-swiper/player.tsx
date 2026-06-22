@@ -9,11 +9,13 @@ import { useBaseContext } from "@genuin/components/context/base";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import type { AdInfoType } from "@genuin/components/molecules/feed-player";
 import { PlayerProvider } from "@genuin/components/molecules/feed-player/context/provider";
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
+import { FEED_SKELETON_THEME, PlayerSkeleton } from "@genuin/components/templates/feed/feed-skeleton";
 
 import { usePlayerContext } from "../../molecules/feed-player/context/context";
 
@@ -64,6 +66,15 @@ type PlayerProps = {
   isNext: boolean;
   isPrev: boolean;
   isVisible: boolean;
+  /**
+   * True when this slide is the swiper's `initialSlide` (the clicked tile). Swiper's
+   * `isActive`/`isVisible` render-prop flags are all false on the very first commit
+   * — they only flip true after Swiper's JS init runs a tick later. Without this
+   * hint the initial slide's player gate fails on first paint and renders nothing,
+   * so the parent (whose Suspense already resolved) shows a black box until Swiper
+   * initialises. This forces the clicked slide to render immediately.
+   */
+  isInitialSlide?: boolean;
   totalVideos?: number;
   onReactionStateChange?: (videoId: string, videoSlug: string, isReacted: boolean) => void;
   onCommunityJoinStatusChange: ComponentProps<typeof ControlLayer>["onCommunityJoinStatusChange"];
@@ -87,6 +98,7 @@ export function Player({
   isNext,
   isPrev,
   isVisible,
+  isInitialSlide,
   totalVideos,
   onCommunityJoinStatusChange,
   onGroupJoinStatusChange,
@@ -97,11 +109,12 @@ export function Player({
   onAdEnded,
   onAdPlaybackEnd,
   onAdFilled,
-  pageSession,
 }: PlayerProps) {
   const { showExpandView, toggleExpandView, activeIndex, variant } = useFeedContext();
-  const { muted } = useBaseContext();
+  const { muted, theme } = useBaseContext();
   const [isAdFilled, setIsAdFilled] = useState(false);
+  // Ad types whose creatives should suppress the control layer (banner/display/native).
+  const [hideControlsForAd, setHideControlsForAd] = useState(false);
   // const { isActive, isNext, isPrev, isVisible } = useSwiperSlide();
   const swiper = useSwiper();
   const { showGestureOverlay } = useGestureOverlayManager();
@@ -121,9 +134,9 @@ export function Player({
   const isAccessibilityMode = useMemo(() => detectAccessibilityMode(), []);
 
   const handleTimeUpdate = useCallback(
-    (event: React.SyntheticEvent<HTMLVideoElement>) => {
-      const video = event.currentTarget;
-      if (video.duration > 0) {
+    (event: Event) => {
+      const video = event.target as HTMLVideoElement | null;
+      if (video && video.duration > 0) {
         const progress = (video.currentTime / video.duration) * 100;
 
         if (activeIndex === 1 && progress >= 50) {
@@ -138,12 +151,16 @@ export function Player({
     (type: string) => {
       onAdFilled?.(type, index);
       setIsAdFilled(true);
+      // Banner/display/native creatives render their own UI; hide our control layer.
+      const adType = type?.toLowerCase();
+      setHideControlsForAd(adType === "banner" || adType === "display" || adType === "native");
     },
     [onAdFilled, index]
   );
 
   const handleAdPlaybackEnd = useCallback(() => {
     setIsAdFilled(false);
+    setHideControlsForAd(false);
     onAdPlaybackEnd?.(index);
   }, [onAdPlaybackEnd, index]);
 
@@ -166,7 +183,10 @@ export function Player({
 
   // load player when the post is active or previous/next post is active or the post is visible
   // For accessibility mode, always load to help with keyboard navigation and screen readers
-  if (isAccessibilityMode || isActive || isNext || isPrev || isVisible)
+  // isInitialSlide covers the clicked tile on first commit, before Swiper init flips
+  // its isActive/isVisible flags true — without it that slide renders nothing and
+  // the resolved parent shows a black box.
+  if (isAccessibilityMode || isActive || isNext || isPrev || isVisible || isInitialSlide)
     return (
       <PlayerProvider
         isActive={isActive}
@@ -211,7 +231,19 @@ export function Player({
                     : "100%",
               flexShrink: isActive && (sheetState === "panel-view" || sheetState === "full-view") ? 0 : undefined,
             }}>
-            <Suspense fallback={null}>
+            <SafeSuspense
+              fallback={
+                // Player shimmer, NOT null. The feed-player chunk is heavy; on
+                // resource-constrained host pages it can take a while to download.
+                // A null fallback shows a bare black box (the "black screen" between
+                // skeleton and player). The shimmer holds the space until FeedPlayer
+                // mounts and its VideoPlayer paints the poster/thumbnail.
+                <PlayerSkeleton
+                  colors={FEED_SKELETON_THEME[theme === "light" ? "light" : "dark"]}
+                  isMobile={isMobile}
+                />
+              }
+              errorFallback={null}>
               <FeedPlayer
                 videoId={post.video?.id ?? ""}
                 videoDescription={post.video?.descritptionText}
@@ -238,33 +270,38 @@ export function Player({
                 onAdPlaybackEnd={handleAdPlaybackEnd}
                 isSponsored={post.video?.cardLayoutId === 7 || post.video?.videoLayoutId === 6}
                 adsPlatform={post.video?.adsPlatform}
-                pageSession={pageSession}
                 playerSize={{
                   height: swiper.height,
                   width: swiper.width,
                 }}
                 sponsorshipInfo={post.sponsored}
               />
-            </Suspense>
+            </SafeSuspense>
           </div>
-          <Suspense fallback={null}>
-            <ControlLayer
-              index={index}
-              isActive={isActive}
-              postDetails={post}
-              isSectioned={isSectioned}
-              onCommunityJoinStatusChange={onCommunityJoinStatusChange}
-              onGroupJoinStatusChange={onGroupJoinStatusChange}
-              onGroupSubscriptionChange={onGroupSubscriptionChange}
-              showCloseButton={variant === "expand"}
-              onReactionStateChange={onReactionStateChange}
-              onCommentCountChange={onCommentCountChange}
-              containerWidth={swiper.width}
-              // Applies GPU acceleration to prevent layer flickering on iOS devices during animations
-              className="gencl:translate-x-0"
-              adType={post.video?.adUrl ? "in-stream" : "in-feed"}
-            />
-          </Suspense>
+          {/* null fallback is correct: ControlLayer is a transparent `absolute inset-0`
+              overlay of action buttons/gradients over the FeedPlayer rendered above —
+              the video/poster is already painted behind it, so there is no black screen
+              while its chunk loads (a shimmer over live video would look worse). */}
+          {!(isAdFilled && hideControlsForAd) && (
+            <SafeSuspense fallback={null} errorFallback={null}>
+              <ControlLayer
+                index={index}
+                isActive={isActive}
+                postDetails={post}
+                isSectioned={isSectioned}
+                onCommunityJoinStatusChange={onCommunityJoinStatusChange}
+                onGroupJoinStatusChange={onGroupJoinStatusChange}
+                onGroupSubscriptionChange={onGroupSubscriptionChange}
+                showCloseButton={variant === "expand"}
+                onReactionStateChange={onReactionStateChange}
+                onCommentCountChange={onCommentCountChange}
+                // Applies GPU acceleration to prevent layer flickering on iOS devices during animations
+                className="gencl:translate-x-0"
+                containerWidth={swiper.width}
+                adType={post.video?.adUrl ? "in-stream" : "in-feed"}
+              />
+            </SafeSuspense>
+          )}
           {showIheartBar && <IHeartEmbedBar attributes={post.video?.attributes} />}
         </div>
       </PlayerProvider>

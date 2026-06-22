@@ -81,7 +81,7 @@ const meta: Meta<typeof VideoPlayer> = {
     },
   },
   args: {
-    src: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    src: "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_5MB.mp4",
     poster: "https://peach.blender.org/wp-content/uploads/title_anouncement.jpg?x11217",
     autoPlay: false,
     muted: false,
@@ -109,7 +109,7 @@ export const AutoplayMuted: Story = {
     autoPlay: true,
     muted: true,
     play: true, // ensure play is true for autoplay to work if component relies on it
-    src: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+    src: "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_5MB.mp4",
     poster: "https://orange.blender.org/wp-content/themes/orange/images/common/organisation_header.jpg",
   },
 };
@@ -118,15 +118,15 @@ export const NoControlsStory: Story = {
   name: "No Controls",
   args: {
     controls: false,
-    src: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+    src: "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_5MB.mp4",
     poster: "",
   },
 };
 
 export const DifferentSource: Story = {
   args: {
-    src: "https://test-videos.co.uk/vids/Sintel/mp4/Sintel_1080x460_500k.mp4",
-    poster: "https://sintel.org/wp-content/uploads/2010/05/title_1_2K_web.jpg",
+    src: "https://media.w3.org/2010/05/sintel/trailer.mp4",
+    poster: "",
     width: "100%",
     height: "auto",
   },
@@ -134,14 +134,14 @@ export const DifferentSource: Story = {
 
 export const WithPoster: Story = {
   args: {
-    src: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
+    src: "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_5MB.mp4",
     poster: "https://mango.blender.org/wp-content/uploads/2012/05/title_02.jpg",
   },
 };
 
 export const LoopVideo: Story = {
   args: {
-    src: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+    src: "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_5MB.mp4",
     loop: true,
     autoPlay: true,
     play: true, // ensure play is true for autoplay to work
@@ -186,14 +186,14 @@ const EventHandlingPlayer = (props: PlayerProps) => {
 export const EventHandling: Story = {
   render: (args) => <EventHandlingPlayer {...args} />,
   args: {
-    src: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
+    src: "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_5MB.mp4",
     controls: true,
   },
 };
 
 export const CustomDimensions: Story = {
   args: {
-    src: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4",
+    src: "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_5MB.mp4",
     width: "800px",
     height: "450px",
   },
@@ -201,7 +201,7 @@ export const CustomDimensions: Story = {
 
 export const ResponsivePlayer: Story = {
   args: {
-    src: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4",
+    src: "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_5MB.mp4",
     width: "100%",
     height: "auto",
   },

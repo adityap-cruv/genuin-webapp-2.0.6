@@ -231,6 +231,7 @@ export function parseFeed(
                     image_url?: string | null;
                     timestamp?: number | null;
                     title?: string | null;
+                    subtitle?: string | null;
                     bucket_name?: string | null;
                     offer_text?: string | null;
                     slug?: string | null;

@@ -1,0 +1,118 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./tabs.stories";
+
+{/*
+  Design-system narrative for the tabs component. Attached to the
+  matching story group via `<Meta of={…}>` so it renders as the
+  "Docs" tab next to the live stories. Layout: narrative intro →
+  live examples + controls → usage guidelines.
+*/}
+
+<Meta of={Stories} />
+
+# Tabs
+
+## What tabs are for
+
+Tabs are the layout primitive for *parallel views of related content* on the same page. The user clicks a tab, the content below the tab strip switches to that view, the surrounding page stays the same. The pattern works because it gives the user a single-screen way to slice a topic into related dimensions — Overview / Activity / Settings, Posts / Replies / Likes, Mobile / Desktop / API — without forcing them through page navigation, scrolling past long sections, or opening separate dialogs. The page becomes a small system: tabs are dimensions, content panels are values, and the user picks which dimension to look at.
+
+A good tab strip is small, consistent, and load-bearing. Each tab is a short, scannable label that tells the user what they'll see when they click. The active tab is unambiguously highlighted (a colored underline, a filled background, a weight change in the type) so the user always knows where they are. Clicking a tab does *not* take the user to another page — the URL might update, but the surrounding chrome (header, sidebar, breadcrumbs) stays put. A bad tab strip is a navigation bar in disguise (clicking takes the user away from the page they were on), or a half-finished accordion (only one tab "fits" the layout, the others overflow off-screen on mobile), or a tab strip with so many tabs that the user has to scroll horizontally to find one.
+
+The Genuin Tabs component is built on `@radix-ui/react-tabs`, which gets the keyboard model (arrow keys move between tabs, Enter / Space activates), focus management, and ARIA semantics (`role="tablist"`, `role="tab"`, `role="tabpanel"`, `aria-controls`, `aria-selected`) correct out of the box. The design system layers on the underline-active treatment, the border separator between the strip and the content, and a `<TabsSkeleton>` for the loading state.
+
+## Tabs in this design system
+
+The Tabs component in `@genuin/ui` is composed from five exported pieces.
+
+### The pieces
+
+- **`<Tabs>`** — the root. Owns the active tab value. Pass `value` + `onValueChange` for controlled use, or `defaultValue` for uncontrolled.
+- **`<TabsList>`** — the horizontal strip that contains the tab triggers. Lays out as a flex row with `gap-2` between tabs.
+- **`<TabsTrigger>`** — one clickable tab in the strip. Each trigger has a stable `value` matching one panel below. The active trigger gets a 2px primary-color underline and a heavier font weight.
+- **`<TabsContent>`** — one content panel paired with a trigger by `value`. Renders below the strip with a subtle top border (acting as the strip's bottom rule when no tab is "active") and 24px top padding.
+- **`<TabsSkeleton>`** — the loading-state placeholder. Renders `noOfTabs` skeleton chips inside a bordered row, mirroring the strip's shape so the swap-to-real-tabs is gentle.
+
+### Visual treatment
+
+- **Inactive trigger**: `body-1-medium` typography, secondary-900 text, transparent border-bottom.
+- **Active trigger**: `body-1-semi-bold` typography (heavier), primary-color underline (`border-b-2`), translated 0.25 to align flush with the content's top border.
+- **Disabled trigger**: pointer-events disabled, 50% opacity.
+- **Content panel**: top border (`secondary-150`) that visually continues the strip's underline across the page width.
+
+The Genuin tab style is *underline tabs*, not pill tabs or filled tabs. The underline-active treatment scans cleanly, allows variable-width labels, and works in both light and dense layouts.
+
+### Behavior
+
+- **Activation**: click or keyboard (Enter / Space). Radix's `activationMode` default is `"automatic"` — focusing a tab with arrow keys also activates it. Pass `activationMode="manual"` if focus should move without changing the panel (rare; useful when activating triggers expensive work).
+- **Keyboard**: arrow keys navigate between tabs, Home / End jump to first / last, Tab moves focus into and out of the strip.
+- **Orientation**: `orientation` on `<Tabs>` accepts `"horizontal"` (default) or `"vertical"`. Vertical changes arrow-key navigation accordingly. The design-system styling assumes horizontal — vertical works structurally but needs custom layout.
+
+### Loading state
+
+Render `<TabsSkeleton noOfTabs={n}>` while the tab definitions themselves are loading (when the *number* of tabs depends on data — e.g., dynamic tabs per workspace). When only the *content* inside a known set of tabs is loading, render the tabs normally and show skeletons inside the active `<TabsContent>` instead.
+
+### URL syncing
+
+A common pattern is binding the active tab to a query param (`?tab=overview`). Drive the tabs in controlled mode:
+
+```tsx
+const [tab, setTab] = useQueryState('tab', { defaultValue: 'overview' });
+
+<Tabs value={tab} onValueChange={setTab}>
+  <TabsList>
+    <TabsTrigger value="overview">Overview</TabsTrigger>
+    <TabsTrigger value="activity">Activity</TabsTrigger>
+    <TabsTrigger value="settings">Settings</TabsTrigger>
+  </TabsList>
+  <TabsContent value="overview">...</TabsContent>
+  ...
+</Tabs>
+```
+
+This makes tabs deep-linkable, back-button-friendly, and shareable.
+
+### Accessibility
+
+The Radix primitive wires every ARIA relationship: `<TabsList>` is `role="tablist"`, each trigger is `role="tab"` with `aria-selected` and `aria-controls` matching its panel id, and each panel is `role="tabpanel"` with `aria-labelledby`. Keyboard users get the right model out of the box. Don't override roles or strip the focus ring.
+
+## Examples
+
+### Default
+
+<Canvas of={Stories.Default} />
+
+<Controls of={Stories.Default} />
+
+### Skeleton
+
+<Canvas of={Stories.Skeleton} />
+
+## When to use Tabs
+
+- **Parallel views of one topic.** Profile pages: Posts / Replies / Likes. Loop pages: Overview / Members / Activity. Settings pages: Account / Billing / Notifications.
+- **Filter dimensions on a list.** "All / Active / Archived" tabs above a list, where each tab is a different filter on the same data.
+- **Step-shaped detail views.** Documentation tabs ("Install / Configure / Use"), platform tabs ("iOS / Android / Web"), language tabs in code samples.
+- **Comparing modes side-by-side via switching.** Edit / Preview tabs in an editor, Code / Visual tabs in a builder.
+- **Pages with 2–6 dimensions of related content.** Anything more than 6 tabs is a navigation tree pretending to be tabs.
+- **Pick `<TabsTrigger>` labels that are nouns or short noun phrases.** "Overview" not "View overview"; "Members" not "View members".
+- **Always pair tabs with URL state for top-level views.** Deep-linking to a specific tab is what makes tabbed pages shareable.
+
+## How not to use Tabs
+
+- **Don't use Tabs as primary navigation.** Tabs are for views *within* a page; navigation is for moving *between* pages. If clicking a tab should take the user to a different layout, header, or breadcrumb, render a real navigation bar (links to routes), not a tab strip.
+- **Don't use Tabs to hide required content.** A signup form with "Personal info / Plan / Payment" tabs makes users feel like they can stop early. Use a stepper for sequential flows where each step depends on the previous.
+- **Don't ship Tabs with one tab.** A single tab with one panel below is just a panel — render it directly.
+- **Don't use Tabs to host wildly different layouts.** If "Overview" is a 500px-tall panel and "Activity" is a 4000px scroll, the user gets disoriented when switching. Either normalize the heights or make them separate pages.
+- **Don't use horizontal Tabs with more than ~6 labels.** They overflow on mobile and force horizontal scroll. Use a `<Select>` for "section picker" patterns with many options, or a sidebar list.
+- **Don't put Tabs inside Tabs.** Two levels of tabs at the same scope is a navigation tree — the user can't tell which level controls what. Flatten or restructure.
+- **Don't change tab order across visits.** The same set of tabs should appear in the same order every time the user opens the page. Sorting by recency or popularity breaks muscle memory.
+- **Don't use Tabs and an Accordion at the same scope.** Pick one disclosure model. Mixing them confuses the user about which interaction reveals what.
+- **Don't use the `<TabsTrigger>` to fire side effects unrelated to switching the panel.** Activating a tab should switch the panel. If you also need to log analytics, do it from the panel's render side, not from `onClick` on the trigger.
+- **Don't suppress the active-state styling.** The user must see, at a glance, which tab they're on. Hiding the underline or the type-weight change is the most common failure mode of a tabbed UI.
+- **Don't mount expensive content behind every tab.** Each `<TabsContent>` is mounted by Radix only when active (you can also use `forceMount` for SEO). Don't manually render every panel's expensive component upfront.
+- **Don't render a `<TabsContent>` without a matching `<TabsTrigger>`.** Orphan panels never display; the trigger is what activates them via the `value` match.
+- **Don't reuse the same `value` for two tabs or panels.** The `value` is the binding; duplicates cause Radix to highlight or render the wrong one.
+- **Don't disable individual tabs silently.** A grayed-out tab with no explanation looks broken. Either show *why* it's disabled (helper text, tooltip) or omit it for users who can't access it.
+- **Don't render `<TabsList>` on its own with custom panels below.** The `<Tabs>` root provides the context that links list to content. Loose lists won't drive panels.
+- **Don't put a Tabs inside a Dialog with a primary action below.** When the user switches tabs, the primary action's meaning changes — confusing. Put the action *inside* each tab's panel, or use multi-step instead.

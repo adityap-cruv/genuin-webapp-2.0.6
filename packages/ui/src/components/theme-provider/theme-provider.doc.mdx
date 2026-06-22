@@ -1,0 +1,65 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./theme-provider.stories";
+
+{/*
+  Design-system narrative for the ThemeProvider primitive.
+  Renders as the "Docs" tab next to the live stories.
+*/}
+
+<Meta of={Stories} />
+
+# ThemeProvider
+
+## What ThemeProvider is for
+
+`ThemeProvider` wraps a subtree with a publisher / brand palette and an
+optional dark mode. It is a **pure className wrapper** — no React Context,
+no hooks. Descendants automatically render against the active palette
+because the CSS variable layer does all the work; primitives like
+`Button`, `Chip`, `Link` already read from `--gencl-primary*` and pick up
+the override transparently.
+
+Reach for `<ThemeProvider>` when:
+
+- A page needs to render under a publisher's brand color (iHeart, McClatchy,
+  US Weekly, …) without rebuilding any descendant components.
+- A subtree (e.g. a dialog or a section) needs a different palette than the
+  surrounding page.
+- You want to opt a region into dark mode by toggling the `dark` class.
+
+## Props
+
+- **`theme`** — Publisher / brand theme. Built-in values: `"genuin"`
+  (default), `"iheart"`, `"mcclatchy"`, `"us-weekly"`. Open-ended via the
+  `string` fallback so hosts can register custom themes by shipping a
+  matching `.theme-<name>` stylesheet block.
+- **`mode`** — `"light"` (default) or `"dark"`. Toggles the `dark` class
+  on the wrapper; the rest of the design system reads it via the
+  `@custom-variant dark (&:is(.dark *))` rule.
+- **`asChild`** — Render as a different element (e.g. `<section>`,
+  `<main>`, a layout primitive) via Radix Slot.
+- **`className`** — Merged with the auto-generated theme + mode classes.
+
+All standard `HTMLDivElement` attributes are forwarded; `ref` is forwarded
+to the underlying element.
+
+## Examples
+
+### Default
+
+<Canvas of={Stories.Default} />
+
+<Controls of={Stories.Default} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+### Dark mode
+
+<Canvas of={Stories.DarkMode} />
+
+### `asChild`
+
+<Canvas of={Stories.AsChild} />

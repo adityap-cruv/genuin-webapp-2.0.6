@@ -4,7 +4,7 @@ const SDKLoader = ({ onLoad }: { onLoad?: () => void }) => {
     useEffect(() => {
         // console.log('SDK client-side effects');
 
-        const sdkUrl = import.meta.env.VITE_GEN_SDK_URL;
+        const sdkUrl = import.meta.env.VITE_GENAI_GEN_SDK_URL;
         if (!sdkUrl) {
             console.error('REACT_APP_GEN_SDK_URL is not defined');
             return;

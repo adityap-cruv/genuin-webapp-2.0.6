@@ -1,9 +1,10 @@
 import { Button } from "@genuin/ui/button";
-import { lazy, Suspense, type ComponentPropsWithoutRef } from "react";
+import { lazy, type ComponentPropsWithoutRef } from "react";
 
 import { useAuthContext } from "@genuin/components/context";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 
 import { Link } from "../link";
 
@@ -55,10 +56,10 @@ export function BecomeCreatorButton({ buttonText, size, shareUrl, ...restProps }
   }
 
   return (
-    <Suspense fallback={null}>
+    <SafeSuspense fallback={null} errorFallback={null}>
       <AuthenticationModal asChild customStep="BECOME_CREATOR">
         {button}
       </AuthenticationModal>
-    </Suspense>
+    </SafeSuspense>
   );
 }

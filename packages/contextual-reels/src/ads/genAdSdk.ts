@@ -1,0 +1,580 @@
+/**
+ * GenAd SDK loading and instance management — consolidated from:
+ *   ads/loadGenAdSdk.ts
+ *   ads/useGenAdInstance.ts
+ */
+
+import { useEffect, useRef, useState } from "react";
+
+import { normalizeBannerConfig, normalizeNativeConfig, normalizeVideoConfig } from "@cxr/ads/normalizers";
+import type { AdProviderKind } from "@cxr/ads/normalizers";
+import { useEventBus } from "@cxr/instance/coordination/EventBusContext";
+import { useAnalytics } from "@cxr/providers/AnalyticsProvider";
+import { DEFAULT_UNMUTE_VOLUME } from "@cxr/providers/PlayerProvider";
+import { resyncShadowStyles } from "@cxr/shadow-dom";
+import { useShadowDom } from "@cxr/shadow-dom-context";
+
+// ─── GenAd SDK loader ─────────────────────────────────────────────────────────
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- import.meta.env shape is bundler-defined
+const _env: Record<string, string | undefined> = (import.meta as any).env ?? {};
+
+/** Base URL for the GenAd SDK assets. Set VITE_CXR_GEN_AD_BASE_URL to override. */
+const GEN_AD_BASE_URL: string = _env.VITE_CXR_GEN_AD_BASE_URL ?? "https://media.begenuin.com/ad-sdk/1.0.0";
+
+/** Cached promise — null until the first call to `loadGenAdSdk`. */
+let genAdLoadPromise: Promise<void> | null = null;
+
+/**
+ * Load the GenAd in-feed SDK (CSS + JS).
+ *
+ * Returns a singleton promise that resolves once the script has loaded (or
+ * immediately if the script tag is already present in the DOM). Rejects if
+ * the script fails to load.
+ *
+ * @returns Promise that resolves when the GenAd SDK is ready to use.
+ */
+export function loadGenAdSdk(): Promise<void> {
+  if (genAdLoadPromise) return genAdLoadPromise;
+
+  const genAdCssHref = `${GEN_AD_BASE_URL}/gen_ad.min.css`;
+
+  genAdLoadPromise = new Promise<void>((resolve, reject) => {
+    // GenAd content renders in document.body (via portal) so its CSS only needs
+    // to live in document.head — no shadow root injection required.
+    if (!document.querySelector(`link[href*="gen_ad.min.css"]`)) {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = genAdCssHref;
+      document.head.appendChild(link);
+    }
+
+    // If the script is already in the DOM, resolve immediately.
+    if (document.querySelector(`script[src*="gen_ad.min.js"]`)) {
+      resolve();
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = `${GEN_AD_BASE_URL}/gen_ad.min.js`;
+    script.onload = () => resolve();
+    script.onerror = (err) => reject(err);
+    document.head.appendChild(script);
+  });
+
+  return genAdLoadPromise;
+}
+
+/**
+ * Reset the singleton (intended for test isolation only).
+ *
+ * @internal
+ */
+export function _resetGenAdSdkSingleton(): void {
+  genAdLoadPromise = null;
+}
+
+// ─── useGenAdInstance hook ────────────────────────────────────────────────────
+
+/**
+ * Default audible volume (0.0–1.0) applied when the user explicitly unmutes an
+ * ad. Applied once, at the SDK boundary, only on a user-initiated unmute.
+ * Shares the reel player's default so ad and content unmute to the same level.
+ */
+const UNMUTE_VOLUME = DEFAULT_UNMUTE_VOLUME;
+
+/** Advertiser branding details. */
+interface AdvertiserDetails {
+  logo: string;
+  primaryColor: string;
+}
+
+/** Companion content video descriptor. */
+interface ContentVideo {
+  url: string;
+  autoplay: boolean;
+  loop: boolean;
+  muted: boolean;
+  objectFit: string;
+}
+
+/** Props for the `useGenAdInstance` hook. */
+export interface UseGenAdInstanceOptions {
+  /** Numeric slot id, used to derive the container DOM id. */
+  id: number;
+  /**
+   * Per-widget instance identifier — namespaces the container DOM id so that
+   * multiple widgets on the same page don't collide.
+   */
+  instanceId: string;
+  /**
+   * Ref to the slot's container element — used to read banner dimensions after
+   * the DOM has been painted. Replaces the old `document.querySelector('.gen-ext')`
+   * which always grabbed the first widget on the page.
+   *
+   * Optional: when omitted the hook falls back to `[300, 250]`.
+   * `GenAdSlot` always provides this; callers that invoke the hook directly may omit it.
+   */
+  containerRef?: React.RefObject<HTMLElement | null>;
+  /** Whether this slot is currently the active/visible slide. */
+  isActive: boolean;
+  /** Whether audio is muted. Synced to the SDK after every change. */
+  isMuted: boolean;
+  /**
+   * Whether the ad request must wait for the user to unmute before firing.
+   *
+   * `true` (default) gates the request on the unmuted state — used for ad
+   * breaks on organic videos, where requesting an ad on a still-muted video is
+   * undesirable. `false` arms the request immediately on activation — used for
+   * standalone `type:"ads"` slides, which should fill right away regardless of
+   * the mute state.
+   */
+  gateOnUnmute?: boolean;
+  /** Whether the ad is playing. Synced to the SDK after every change. */
+  isPlaying?: boolean;
+  /** Raw display/banner ad descriptor from the feed item. */
+  displayAd?: unknown;
+  /** Raw native ad descriptor from the feed item. */
+  nativeAd?: unknown;
+  /** Raw video ad descriptor from the feed item. */
+  videoAd?: unknown;
+  /** Advertiser branding for the video ad overlay. */
+  videoAdAdvertiserDetails?: AdvertiserDetails;
+  /** Companion content video for the ad slot. */
+  videoAdContentVideo?: ContentVideo;
+  /** Ad network platform identifiers. */
+  platforms: { video?: string; banner?: string; native?: string };
+  /** Tag creative details — used for analytics. */
+  tagDetails: { tag_id?: string };
+  /** Feed item object — forwarded to analytics. */
+  item: unknown;
+  /** Called when an ad provider fills the slot. */
+  onWaterfallSuccess?: (provider: AdProviderKind) => void;
+  /** Called when the full waterfall fails to fill. */
+  onWaterfallFail?: () => void;
+  /** Called when the ad completes playback. */
+  onAdCompleted?: () => void;
+  /**
+   * Called with the new mute state on a SYSTEM-driven volume change inside the ad
+   * (browser autoplay policy, programmatic mute). User toggles are not forwarded
+   * here — the host owns those via its own controls.
+   */
+  onMuteClick?: (muted: boolean) => void;
+  /** Called when the ad starts playing (mirrors onMuteClick / onAdCompleted convention). */
+  onAdPlay?: () => void;
+  /** Called when the ad pauses (mirrors onMuteClick / onAdCompleted convention). */
+  onAdPause?: () => void;
+  /** Called when the ad SDK provides CTA details (advertiserLogo, ctaTitle, ctaUrl, onClick). */
+  onAdCTA?: (cta: AdCtaDetails) => void;
+  /**
+   * Increment this value to force-destroy the current ad instance and reset
+   * state (e.g. when the slide changes away while an ad is loading).
+   */
+  destroySignal: number;
+  /**
+   * Override for the SDK loader — injected in tests to avoid real network calls.
+   * Defaults to the module-level `loadGenAdSdk`.
+   *
+   * @internal
+   */
+  _loadSdk?: () => Promise<void>;
+}
+
+/** CTA details provided by the ad SDK via onAdCTA callback. */
+export interface AdCtaDetails {
+  advertiserLogo: string;
+  ctaTitle: string;
+  ctaUrl: string;
+  onClick: () => void;
+}
+
+/** Values exposed by the hook. */
+export interface UseGenAdInstanceResult {
+  /** Whether an ad provider has successfully loaded an ad. */
+  adLoaded: boolean;
+  /** Which provider filled the slot, or `null` before fill. */
+  provider: AdProviderKind | null;
+  /** The DOM element id that GenAd renders into. */
+  containerId: string;
+}
+
+/**
+ * Manage a single GenAd in-feed ad slot.
+ *
+ * Handles SDK loading, init, destroy, mute sync, analytics events, and the
+ * `genad:destroy` global event. Mirrors the behaviour of `AdsPlaceholder.jsx`
+ * exactly so the JSX component can be replaced by this hook + `GenAdSlot`.
+ *
+ * @param options - Slot configuration and event callbacks.
+ * @returns Reactive slot state consumed by `GenAdSlot`.
+ */
+export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInstanceResult {
+  const {
+    id,
+    instanceId,
+    containerRef,
+    isActive,
+    isMuted,
+    gateOnUnmute = true,
+    displayAd,
+    nativeAd,
+    videoAd,
+    videoAdAdvertiserDetails,
+    videoAdContentVideo,
+    platforms,
+    // tagDetails: _tagDetails,
+    // item: _item,
+    onWaterfallSuccess,
+    onWaterfallFail,
+    onAdCompleted,
+    onMuteClick,
+    isPlaying,
+    onAdPlay,
+    onAdPause,
+    onAdCTA,
+    destroySignal,
+    _loadSdk = loadGenAdSdk,
+  } = options;
+
+  const bus = useEventBus();
+  const { sendEvent } = useAnalytics();
+  const shadowDom = useShadowDom();
+
+  const containerId = `gen-ad-slot-${instanceId}-${id}`;
+
+  // Refs for callbacks — keeps SDK closures from going stale when parent re-renders
+  const onWaterfallSuccessRef = useRef(onWaterfallSuccess);
+  const onWaterfallFailRef = useRef(onWaterfallFail);
+  const onAdCompletedRef = useRef(onAdCompleted);
+  const onMuteClickRef = useRef(onMuteClick);
+  const onAdPlayRef = useRef(onAdPlay);
+  const onAdPauseRef = useRef(onAdPause);
+  const onAdCTARef = useRef(onAdCTA);
+  onWaterfallSuccessRef.current = onWaterfallSuccess;
+  onWaterfallFailRef.current = onWaterfallFail;
+  onAdCompletedRef.current = onAdCompleted;
+  onMuteClickRef.current = onMuteClick;
+  onAdPlayRef.current = onAdPlay;
+  onAdPauseRef.current = onAdPause;
+  onAdCTARef.current = onAdCTA;
+
+  // Guards against double-init within the same activation
+  const instanceIdRef = useRef<number | null>(null);
+  const initInFlightRef = useRef(false);
+
+  // Live mirror of `isMuted`. The init effect deps are intentionally narrow
+  // ([isActive, requestArmed]) so a re-mute never tears the ad down, which means
+  // `isMuted` is otherwise stale inside it — read the current value through the
+  // ref so the SDK always inits with the real mute state, not the value captured
+  // when `requestArmed` first latched.
+  const isMutedRef = useRef(isMuted);
+  isMutedRef.current = isMuted;
+
+  const [adLoaded, setAdLoaded] = useState(false);
+  const [provider, setProvider] = useState<AdProviderKind | null>(null);
+
+  // Ad requests are gated on the unmuted state: never request while muted. Once
+  // the active slot is observed unmuted we latch `requestArmed` true so a later
+  // re-mute does NOT re-run the init effect (which would tear the ad down) — only
+  // deactivation clears it. `isMuted` is the global player mute, so the unmuted
+  // state carries across slides exactly as the product spec requires.
+  // `gateOnUnmute=false` (standalone `type:"ads"` slides) bypasses the gate and
+  // arms the request immediately on activation.
+  const [requestArmed, setRequestArmed] = useState(false);
+  useEffect(() => {
+    if (!isActive) {
+      setRequestArmed(false);
+      return;
+    }
+    if (!gateOnUnmute || !isMuted) setRequestArmed(true);
+  }, [isActive, isMuted, gateOnUnmute]);
+
+  // First available ad-source label for analytics
+  const adSource = platforms.video || platforms.banner || platforms.native || undefined;
+
+  // destroySignal: force-destroy + reset when it increments
+  useEffect(() => {
+    if (!destroySignal) return;
+    if (instanceIdRef.current != null) {
+      (window as Window & { GenAd?: { destroy(id: number): void } }).GenAd?.destroy(instanceIdRef.current);
+    }
+    instanceIdRef.current = null;
+    initInFlightRef.current = false;
+    setAdLoaded(false);
+    setProvider(null);
+  }, [destroySignal]);
+
+  // Listen for the per-instance genad:destroy event — scoped to the bus so
+  // multiple widgets on the same page cannot cross-contaminate each other.
+  useEffect(() => {
+    const unsub = bus.on("genad:destroy", () => {
+      if (instanceIdRef.current != null) {
+        (window as Window & { GenAd?: { destroy(id: number): void } }).GenAd?.destroy(instanceIdRef.current);
+      }
+    });
+    return unsub;
+  }, [bus]);
+
+  // Core ad init / cleanup effect
+  useEffect(() => {
+    // Gate on unmute: no ad request while muted; fires once `requestArmed` latches.
+    if (!isActive || !requestArmed) return;
+
+    // Double-init guard
+    /* v8 ignore next 1 */
+    if (initInFlightRef.current || instanceIdRef.current != null) return;
+
+    let cancelled = false;
+    initInFlightRef.current = true;
+
+    _loadSdk()
+      .then(() => {
+        if (cancelled) {
+          initInFlightRef.current = false;
+          return;
+        }
+
+        // Clone gen_ad.min.css into the shadow root now that it's in document.head.
+        const rootNode = containerRef?.current?.getRootNode();
+        if (rootNode instanceof ShadowRoot) {
+          resyncShadowStyles(rootNode);
+        }
+
+        /* v8 ignore next 6 */
+        if (instanceIdRef.current != null) {
+          (window as Window & { GenAd?: { destroy(id: number): void } }).GenAd?.destroy(instanceIdRef.current);
+          instanceIdRef.current = null;
+        }
+        /* v8 ignore end */
+
+        setAdLoaded(false);
+
+        // In shadow DOM mode, pass the element directly so the SDK calls
+        // element.getRootNode() to detect the shadow root automatically.
+        // containerId alone won't work — document.getElementById() can't
+        // reach elements inside a shadow root.
+        const containerElement = shadowDom ? (containerRef?.current ?? undefined) : undefined;
+
+        const initOptions = {
+          containerId,
+          ...(containerElement ? { containerElement } : {}),
+          muted: isMutedRef.current,
+          // Hand the target level to the SDK at init — it owns volume from here,
+          // so the host never has to clamp it after the play transition.
+          volume: UNMUTE_VOLUME,
+          onWaterfallSuccess: (resolvedProvider: AdProviderKind): void => {
+            initInFlightRef.current = false;
+            setAdLoaded(true);
+            bus.emit("ad:fill", {});
+            setProvider(resolvedProvider);
+            onWaterfallSuccessRef.current?.(resolvedProvider);
+
+            const adEventDetails = {
+              provider: resolvedProvider,
+              ad_source: platforms[resolvedProvider] || undefined,
+            };
+            sendEvent("Ad Response Received", adEventDetails);
+            sendEvent("Ad Impression", adEventDetails);
+          },
+          onAdCompleted: (): void => {
+            (window as Window & { GenAd?: { destroy(id: number): void } }).GenAd?.destroy(instanceIdRef.current!);
+            instanceIdRef.current = null;
+            initInFlightRef.current = false;
+            onAdCompletedRef.current?.();
+          },
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          onWaterfallFail: (_failedProvider: string): void => {
+            (window as Window & { GenAd?: { destroy(id: number): void } }).GenAd?.destroy(instanceIdRef.current!);
+            cancelled = true;
+            instanceIdRef.current = null;
+            initInFlightRef.current = false;
+            setAdLoaded(false);
+            bus.emit("ad:nofill", {});
+            sendEvent("Ad Request Failed", { ad_source: adSource });
+            // Call after state resets so the carousel advance sees clean hook state
+            onWaterfallFailRef.current?.();
+          },
+          onVolumeChange: (data: { volume: number; isMuted: boolean; reason?: "system" | "user" }): void => {
+            // Only propagate SYSTEM-driven mute changes (browser autoplay policy,
+            // programmatic mute) to the host. User toggles inside the ad are
+            // already owned by the host's own controls / `ad:unmuteRequest` path —
+            // echoing them back would double-handle or loop. Mirrors
+            // gen-ad-container's `onSystemMuteChange` guard.
+            console.log("data", data);
+            if (data.reason === "system") {
+              onMuteClickRef.current?.(data.isMuted);
+            }
+          },
+          onStageStart: (data: { stage: string }): void => {
+            if (data.stage === "play") {
+              onAdPlayRef.current?.();
+            } else if (data.stage === "pause") {
+              onAdPauseRef.current?.();
+            }
+          },
+          onPlaybackStateChange: (data: { isPaused: boolean }): void => {
+            if (data.isPaused) {
+              onAdPauseRef.current?.();
+            } else {
+              onAdPlayRef.current?.();
+            }
+          },
+          events: {
+            onAdCTA: (cta: AdCtaDetails): void => {
+              onAdCTARef.current?.(cta);
+            },
+          },
+          debug: process.env.NODE_ENV === "development",
+        };
+
+        // Read container dimensions after the DOM has been painted so we get the
+        // actual slot size — avoids the old document.querySelector('.gen-ext') bug
+        // that always grabbed the first widget on the page.
+        const el = containerRef?.current ?? null;
+        const bannerW = el ? el.clientWidth || (el as HTMLElement).offsetWidth : 300;
+        const bannerH = el ? el.clientHeight || (el as HTMLElement).offsetHeight : 250;
+        const bannerSize: [number, number] = [bannerW, bannerH];
+
+        const bannerConfig = normalizeBannerConfig(displayAd, bannerSize);
+        if (bannerConfig) {
+          (initOptions as Record<string, unknown>).banner = bannerConfig;
+        }
+
+        const nativeConfig = normalizeNativeConfig(nativeAd);
+        if (nativeConfig) {
+          (initOptions as Record<string, unknown>).native = nativeConfig;
+        }
+
+        const videoConfig = normalizeVideoConfig(videoAd, platforms, videoAdAdvertiserDetails, videoAdContentVideo);
+        if (videoConfig) {
+          (initOptions as Record<string, unknown>).video = videoConfig;
+        }
+
+        const GenAd = (window as Window & { GenAd?: { init(o: typeof initOptions): number | null } }).GenAd;
+        const sdkInstanceId = GenAd?.init(initOptions);
+
+        sendEvent("Ad Requested", { ad_source: adSource });
+
+        if (sdkInstanceId != null) {
+          instanceIdRef.current = sdkInstanceId;
+        }
+      })
+      .catch(() => {
+        initInFlightRef.current = false;
+      });
+
+    return () => {
+      cancelled = true;
+      initInFlightRef.current = false;
+      (window as Window & { GenAd?: { destroy(id: number): void } }).GenAd?.destroy(instanceIdRef.current!);
+      instanceIdRef.current = null;
+      setAdLoaded(false);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally narrow: re-init only on (de)activation or arming, not on every mute toggle
+  }, [isActive, requestArmed]);
+
+  // Notify GenAd SDK when fullscreen state changes so it can re-render and adapt to the new viewport
+  useEffect(() => {
+    let setTinyTimeout: ReturnType<typeof setTimeout>;
+    if (!bus) return;
+    const handleFullScreenChange = (): void => {
+      if (!isActive) return;
+      // Use setTimeout to ensure DOM has updated before calling updateView
+      setTinyTimeout = setTimeout(() => {
+        if (
+          typeof window !== "undefined" &&
+          window.GenAd &&
+          typeof window.GenAd.updateView === "function" &&
+          instanceIdRef.current != null
+        ) {
+          window.GenAd.updateView(instanceIdRef.current);
+        }
+      }, 10);
+    };
+
+    const unSubFullScreenEnter = bus.on("fullscreen:enter", handleFullScreenChange);
+    const unSubFullScreenExit = bus.on("fullscreen:exit", handleFullScreenChange);
+
+    return () => {
+      unSubFullScreenEnter();
+      unSubFullScreenExit();
+      clearTimeout(setTinyTimeout);
+    };
+  }, [bus, isActive]);
+
+  // Event-driven, gesture-bound user unmute. ClickOverlay emits
+  // `ad:unmuteRequest` SYNCHRONOUSLY from its tap handler; CxrEventBus.emit
+  // invokes this handler inline in the same call stack, so the SDK volume/unmute
+  // call stays inside the iOS Safari user-gesture window (never deferred to an
+  // effect). This is the exclusive volume-on-unmute path — the mute-sync effect
+  // below never sets volume.
+  //
+  // Instance targeting: every slot's hook subscribes to the same per-widget bus,
+  // but acts only when `detail.containerId` matches its own `containerId`, so a
+  // tap on one slot never unmutes another. `containerId` is unique per slot
+  // (`gen-ad-slot-${instanceId}-${id}`).
+  //
+  // Only acts on a real muted→unmuted transition: if the ad is already unmuted
+  // the unmute is a no-op, so we skip both the volume bump and the redundant
+  // mute call.
+  useEffect(() => {
+    const unsub = bus.on("ad:unmuteRequest", (detail): void => {
+      if (detail.containerId !== containerId) return;
+      if (!isMutedRef.current) return;
+
+      const GenAd = (
+        window as Window & {
+          GenAd?: {
+            muteByContainer(c: string, m: boolean): void;
+            setVolumeByContainer?(c: string, v: number): void;
+          };
+        }
+      ).GenAd;
+      if (!GenAd) return;
+
+      if (typeof GenAd.setVolumeByContainer === "function") {
+        GenAd.setVolumeByContainer(containerId, UNMUTE_VOLUME);
+      }
+      if (typeof GenAd.muteByContainer === "function") {
+        GenAd.muteByContainer(containerId, false);
+      }
+    });
+    return unsub;
+  }, [bus, containerId]);
+
+  // Keep SDK mute state in sync with the external isMuted prop for SYSTEM-driven
+  // changes (SDK onVolumeChange → setMuted system, programmatic mute, etc.).
+  // This effect must NOT set volume — volume-on-unmute is owned exclusively by
+  // the synchronous `ad:unmuteRequest` handler above.
+  //
+  // Also re-runs on `adLoaded`: gated-on-unmute ads only request AFTER the user
+  // unmutes, so the unmute that triggers the request fires before this slot's SDK
+  // instance exists — this sync is a no-op against a not-yet-created instance at
+  // that moment. Without re-applying on load the SDK can stay stranded muted
+  // (browser autoplay) while the host shows unmuted. Re-syncing once the ad fills
+  // forces the SDK to the host's real mute state and clears that desync.
+  useEffect(() => {
+    const GenAd = (
+      window as Window & {
+        GenAd?: { muteByContainer(c: string, m: boolean): void };
+      }
+    ).GenAd;
+    if (!GenAd) return;
+    GenAd.muteByContainer(containerId, isMuted);
+  }, [isMuted, containerId, adLoaded]);
+
+  // Keep SDK play/pause state in sync with the external isPlaying prop (v1.17.0)
+  useEffect(() => {
+    // early return if the SDK method isn't available — avoids errors in older versions of the SDK and ensures this effect is safe to include even before the SDK has loaded
+    if (window.GenAd === undefined || typeof window.GenAd.pauseByContainer !== "function") {
+      return;
+    }
+    if (isPlaying) {
+      window.GenAd?.resumeByContainer(containerId);
+    } else {
+      window.GenAd?.pauseByContainer(containerId);
+    }
+  }, [isPlaying, containerId]);
+
+  return { adLoaded, provider, containerId };
+}

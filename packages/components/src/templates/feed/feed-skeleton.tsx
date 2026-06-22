@@ -3,6 +3,7 @@ import { cn } from "@genuin/ui/lib/utils";
 import { Skeleton } from "@genuin/ui/skeleton";
 import type { FC } from "react";
 
+import { useBaseContext } from "@genuin/components/context/base";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { CommentsItemSkeleton } from "@genuin/components/molecules/comments/comment-item-skeleton";
 
@@ -12,14 +13,32 @@ export type FeedSkeletonProps = {
   showCommentsSkeleton?: boolean;
 };
 
-type SkeletonColors = {
+export type SkeletonColors = {
   container: string;
   primary: string;
   secondary: string;
 };
 
-// Internal sub-component for mobile player overlay (owner info, description, pills, action buttons)
-const MobilePlayerOverlay: FC<{ colors: SkeletonColors }> = ({ colors }) => (
+/**
+ * The theme→colors map used by every skeleton section. Exported so Suspense
+ * boundaries that render a single section (e.g. just the action buttons) can
+ * resolve the same colors without re-deriving them.
+ */
+export const FEED_SKELETON_THEME: Record<"light" | "dark", SkeletonColors> = {
+  light: {
+    container: "gencl:bg-secondary-100",
+    primary: "gencl:bg-secondary-200",
+    secondary: "gencl:bg-secondary-300",
+  },
+  dark: {
+    container: "gencl:bg-black",
+    primary: "gencl:bg-secondary-900",
+    secondary: "gencl:bg-secondary-800",
+  },
+} as const;
+
+// Sub-component for mobile player overlay (owner info, description, pills, action buttons)
+export const MobilePlayerOverlay: FC<{ colors: SkeletonColors }> = ({ colors }) => (
   <div className="gencl:flex gencl:sm:hidden! gencl:absolute gencl:bottom-0 gencl:left-1/2 gencl:-translate-x-1/2 gencl:p-4 gencl:justify-between gencl:items-end gencl:gap-4 gencl:w-screen gencl:max-w-full">
     <div className="gencl:w-full">
       {/* Owner info */}
@@ -53,8 +72,9 @@ const MobilePlayerOverlay: FC<{ colors: SkeletonColors }> = ({ colors }) => (
   </div>
 );
 
-// Internal sub-component for vertical action buttons (desktop)
-const ActionButtonsSkeleton: FC<{ colors: SkeletonColors }> = ({ colors }) => (
+// Sub-component for vertical action buttons (desktop). Exported so the
+// player-swiper Actions Suspense boundary can show the same shimmer.
+export const ActionButtonsSkeleton: FC<{ colors: SkeletonColors }> = ({ colors }) => (
   <div className="gencl:flex gencl:gap-4 gencl:flex-col gencl:justify-end gencl:w-13 gencl:pb-4">
     {Array.from({ length: 5 }).map((_, index) => (
       <Skeleton key={index} className={cn("gencl:size-12 gencl:rounded-full gencl:shrink-0", colors.secondary)} />
@@ -62,8 +82,9 @@ const ActionButtonsSkeleton: FC<{ colors: SkeletonColors }> = ({ colors }) => (
   </div>
 );
 
-// Internal sub-component for player skeleton (video)
-const PlayerSkeleton: FC<{ colors: SkeletonColors; isMobile: boolean }> = ({ colors, isMobile }) => (
+// Sub-component for player skeleton (video). Exported so the player-swiper
+// content Suspense boundary can show the same shimmer while the player chunk loads.
+export const PlayerSkeleton: FC<{ colors: SkeletonColors; isMobile: boolean }> = ({ colors, isMobile }) => (
   <div className={cn("gencl:relative", isMobile ? "gencl:w-full gencl:h-full" : "gencl:aspect-reel gencl:h-full")}>
     <Skeleton
       className={cn("gencl:w-full gencl:h-full gencl:bg-secondary-500 gencl:sm:bg-secondary-100!", colors.primary)}
@@ -72,62 +93,89 @@ const PlayerSkeleton: FC<{ colors: SkeletonColors; isMobile: boolean }> = ({ col
   </div>
 );
 
-// Internal sub-component for side panel skeleton
-const SidePanelSkeleton: FC<{ theme: "light" | "dark" }> = ({ theme }) => (
-  <div className="gencl:w-full gencl:h-full gencl:overflow-auto gencl:max-w-[520px] gencl:gap-4 gencl:grid gencl:grid-rows-[auto_minmax(300px,1fr)]">
-    {/* Post details section */}
+// Sub-component for side panel skeleton (post details + comments). Exported so
+// the player-swiper Comments Suspense boundary can show the same shimmer.
+//
+// `showPostDetails` controls the top post-details block. The split feed layout
+// shows it (post details render there), but expand view shows comments only — so
+// it passes `showPostDetails={false}` to drop the block and let comments fill the
+// panel.
+export const SidePanelSkeleton: FC<{ theme: "light" | "dark"; showPostDetails?: boolean }> = ({
+  theme,
+  showPostDetails = true,
+}) => {
+  const { isEmbed } = useBaseContext();
+  // In the Web SDK (isEmbed) the comments section deliberately renders in the
+  // INVERTED theme — dark feed → light comments, and vice-versa — matching how the
+  // real embedded comments surface is themed. In the Web App (isEmbed === false) the
+  // comments follow the feed theme like everything else (no inversion).
+  const commentsTheme: "light" | "dark" = isEmbed ? (theme === "dark" ? "light" : "dark") : theme;
+  return (
     <div
       className={cn(
-        "gencl:border gencl:p-4 gencl:rounded-2xl",
-        theme === "light" ? "gencl:border-secondary-150" : "gencl:border-secondary-800"
+        "gencl:w-full gencl:h-full gencl:overflow-auto gencl:max-w-[520px] gencl:gap-4 gencl:grid",
+        showPostDetails ? "gencl:grid-rows-[auto_minmax(300px,1fr)]" : "gencl:grid-rows-[minmax(300px,1fr)]"
       )}>
-      {/* Owner info */}
-      <div className="gencl:w-100 gencl:flex gencl:gap-2 gencl:overflow-hidden gencl:mb-3 gencl:mt-0">
-        <Skeleton className="gencl:size-10 gencl:rounded-full gencl:shrink-0" />
-        <div className="gencl:w-full gencl:flex gencl:flex-col gencl:justify-center gencl:gap-2">
-          <Skeleton className="gencl:w-full gencl:h-3 gencl:rounded-md gencl:mt-1.5" />
-        </div>
-      </div>
-      {/* Description */}
-      <Skeleton className="gencl:w-full gencl:h-3 gencl:rounded-md" />
-      {/* Pills */}
-      <div className="gencl:w-100 gencl:flex gencl:gap-2 gencl:overflow-hidden gencl:mt-3">
-        <Skeleton className="gencl:size-10 gencl:rounded-full gencl:shrink-0 gencl:w-32 gencl:h-7" />
-        <Skeleton className="gencl:size-10 gencl:rounded-full gencl:shrink-0 gencl:w-32 gencl:h-7" />
-      </div>
-    </div>
-    {/* Comments section */}
-    <div
-      className={cn(
-        "gencl:relative gencl:border gencl:p-4 gencl:rounded-2xl",
-        theme === "light" ? "gencl:border-secondary-150" : "gencl:border-secondary-800"
-      )}>
-      {Array.from({ length: 4 }).map((_, index) => (
-        <CommentsItemSkeleton key={index} />
-      ))}
-      {/* Comment input */}
-      <div
-        className={cn(
-          "gencl:absolute gencl:rounded-b-3xl gencl:bottom-0 gencl:right-0 gencl:flex gencl:w-full gencl:items-center gencl:justify-between gencl:gap-x-4 gencl:border-t gencl:p-4",
-          theme === "light" ? "gencl:bg-white gencl:border-secondary-150" : "gencl:bg-black gencl:border-secondary-800"
-        )}>
+      {/* Post details section */}
+      {showPostDetails && (
         <div
           className={cn(
-            "gencl:w-full gencl:rounded-lg gencl:h-10 gencl:border gencl:p-2 gencl:flex gencl:justify-center gencl:items-center",
+            "gencl:border gencl:p-4 gencl:rounded-2xl",
             theme === "light" ? "gencl:border-secondary-150" : "gencl:border-secondary-800"
           )}>
-          <Skeleton
-            className={cn(
-              "gencl:h-3 gencl:w-full",
-              theme === "light" ? "gencl:bg-secondary-150" : "gencl:bg-secondary-800"
-            )}
-          />
+          {/* Owner info */}
+          <div className="gencl:w-100 gencl:flex gencl:gap-2 gencl:overflow-hidden gencl:mb-3 gencl:mt-0">
+            <Skeleton className="gencl:size-10 gencl:rounded-full gencl:shrink-0" />
+            <div className="gencl:w-full gencl:flex gencl:flex-col gencl:justify-center gencl:gap-2">
+              <Skeleton className="gencl:w-full gencl:h-3 gencl:rounded-md gencl:mt-1.5" />
+            </div>
+          </div>
+          {/* Description */}
+          <Skeleton className="gencl:w-full gencl:h-3 gencl:rounded-md" />
+          {/* Pills */}
+          <div className="gencl:w-100 gencl:flex gencl:gap-2 gencl:overflow-hidden gencl:mt-3">
+            <Skeleton className="gencl:size-10 gencl:rounded-full gencl:shrink-0 gencl:w-32 gencl:h-7" />
+            <Skeleton className="gencl:size-10 gencl:rounded-full gencl:shrink-0 gencl:w-32 gencl:h-7" />
+          </div>
         </div>
-        <Skeleton className="gencl:h-6 gencl:w-10 gencl:shrink-0" />
+      )}
+      {/* Comments section — rendered in the inverted theme (see commentsTheme above) */}
+      <div
+        className={cn(
+          "gencl:relative gencl:border gencl:p-4 gencl:rounded-2xl",
+          commentsTheme === "light"
+            ? "gencl:bg-white gencl:border-secondary-150"
+            : "gencl:bg-black gencl:border-secondary-800"
+        )}>
+        {Array.from({ length: 4 }).map((_, index) => (
+          <CommentsItemSkeleton key={index} />
+        ))}
+        {/* Comment input */}
+        <div
+          className={cn(
+            "gencl:absolute gencl:rounded-b-3xl gencl:bottom-0 gencl:right-0 gencl:flex gencl:w-full gencl:items-center gencl:justify-between gencl:gap-x-4 gencl:border-t gencl:p-4",
+            commentsTheme === "light"
+              ? "gencl:bg-white gencl:border-secondary-150"
+              : "gencl:bg-black gencl:border-secondary-800"
+          )}>
+          <div
+            className={cn(
+              "gencl:w-full gencl:rounded-lg gencl:h-10 gencl:border gencl:p-2 gencl:flex gencl:justify-center gencl:items-center",
+              commentsTheme === "light" ? "gencl:border-secondary-150" : "gencl:border-secondary-800"
+            )}>
+            <Skeleton
+              className={cn(
+                "gencl:h-3 gencl:w-full",
+                commentsTheme === "light" ? "gencl:bg-secondary-150" : "gencl:bg-secondary-800"
+              )}
+            />
+          </div>
+          <Skeleton className="gencl:h-6 gencl:w-10 gencl:shrink-0" />
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 export const FeedSkeleton: FC<FeedSkeletonProps> = ({
   variant = "default",
@@ -135,19 +183,11 @@ export const FeedSkeleton: FC<FeedSkeletonProps> = ({
   showCommentsSkeleton = false,
 }) => {
   const { isMobile } = useDeviceDetectMediaQuery();
-  const skeletonTheme = {
-    light: {
-      container: "gencl:bg-secondary-100",
-      primary: "gencl:bg-secondary-200",
-      secondary: "gencl:bg-secondary-300",
-    },
-    dark: {
-      container: "gencl:bg-black",
-      primary: "gencl:bg-secondary-900",
-      secondary: "gencl:bg-secondary-800",
-    },
-  } as const;
-  const colors = skeletonTheme[theme];
+  const { isEmbed } = useBaseContext();
+  const colors = FEED_SKELETON_THEME[theme];
+  // Web SDK (isEmbed) inverts the comments shimmer vs the feed theme; Web App keeps
+  // it aligned with the feed theme. See SidePanelSkeleton for the rationale.
+  const commentsColors = FEED_SKELETON_THEME[isEmbed ? (theme === "dark" ? "light" : "dark") : theme];
 
   // Player-list variant: Just the video player with action buttons
   if (variant === "player-list") {
@@ -192,10 +232,12 @@ export const FeedSkeleton: FC<FeedSkeletonProps> = ({
           <ActionButtonsSkeleton colors={colors} />
         </div>
 
-        {/* comment box shimmer */}
+        {/* comment box shimmer — inverted theme in the SDK, feed theme in the Web App */}
         {showCommentsSkeleton && (
           <div className="gencl:max-w-118 gencl:w-full gencl:h-full gencl:py-6 gencl:hidden gencl:sm:block!">
-            <Skeleton className={cn("gencl:w-full gencl:h-full gencl:py-6 gencl:rounded-2xl", colors.primary)} />
+            <Skeleton
+              className={cn("gencl:w-full gencl:h-full gencl:py-6 gencl:rounded-2xl", commentsColors.primary)}
+            />
           </div>
         )}
 

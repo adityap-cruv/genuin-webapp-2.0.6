@@ -13,7 +13,7 @@ export const EditUserMessage: React.FC<EditUserMessageProps> = ({ value, onChang
     return (
         <div className='gai:flex gai:w-full gai:flex-col gai:gap-2'>
             <textarea
-                className='gai:max-h-[160px] gai:w-full gai:resize-none gai:overflow-y-auto gai:border-0 gai:bg-transparent gai:text-secondary-gray-900 gai:outline-0'
+                className='gai:max-h-[160px] gai:w-full gai:resize-none gai:overflow-y-auto gai:border-0 gai:bg-transparent gai:text-base gai:text-secondary-gray-900 gai:outline-0'
                 rows={3}
                 value={value}
                 onChange={e => onChange(e.target.value)}

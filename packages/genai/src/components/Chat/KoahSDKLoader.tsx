@@ -46,10 +46,10 @@ const KoahSDKLoader = ({ onLoad }: KoahSDKLoaderProps) => {
     const loadedRef = useRef(false);
 
     useEffect(() => {
-        const publisherId = import.meta.env.VITE_KOAH_PUBLISHER_ID;
+        const publisherId = import.meta.env.VITE_GENAI_KOAH_PUBLISHER_ID;
 
         if (!publisherId) {
-            console.warn('[KoahSDKLoader] VITE_KOAH_PUBLISHER_ID is not defined');
+            console.warn('[KoahSDKLoader] VITE_GENAI_KOAH_PUBLISHER_ID is not defined');
             onLoad?.();
             return;
         }

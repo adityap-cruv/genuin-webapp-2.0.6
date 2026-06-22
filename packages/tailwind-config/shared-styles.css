@@ -1,5 +1,6 @@
 @import "tailwindcss" prefix(gencl);
 @import "tw-animate-css" prefix(gencl);
+@import "./themes.css";
 @custom-variant dark (&: is(.dark *));
 
 :root {

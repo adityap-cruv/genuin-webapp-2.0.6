@@ -1,0 +1,71 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./link.stories";
+
+{/*
+  Design-system narrative for the Link static-page primitive.
+  Renders as the "Docs" tab next to the live stories.
+*/}
+
+<Meta of={Stories} />
+
+# Link
+
+## What Link is for
+
+`Link` is a typography-aware inline anchor with consistent colour, weight,
+and underline behaviour. It is **framework-agnostic on purpose** — it
+renders a plain `<a>` and does not import `next/link`. Pages that need
+client-side routing wrap a `next/link` via `asChild`; the web-sdk uses
+the bare `<a>` semantics.
+
+## Props
+
+- **`href`** — Anchor URL. Required when not using `asChild`.
+- **`tone`** — `"default"` (brand action colour, default) / `"subtle"` /
+  `"inverted"` (for dark backgrounds).
+- **`weight`** — `"medium"` (default) / `"semibold"` / `"bold"`. Mirrors
+  the typography weight scale.
+- **`underline`** — `"always"` / `"hover"` (default) / `"none"`.
+- **`external`** — When `true`, emits `target="_blank"` +
+  `rel="noopener noreferrer"` and appends a visual `↗` affordance. An
+  explicit `target` or `rel` from the consumer wins.
+- **`asChild`** — Render as a different element via Radix Slot (e.g.
+  wrap a `next/link`).
+
+All standard `HTMLAnchorElement` attributes are forwarded — `aria-label`,
+`aria-current`, `download`, etc. all pass through.
+
+## Accessibility
+
+The default browser focus outline is replaced with a visible
+`focus-visible:ring-*` — focus visibility is **never** suppressed
+without a visible replacement.
+
+## Examples
+
+### Default
+
+<Canvas of={Stories.Default} />
+
+<Controls of={Stories.Default} />
+
+### All tones
+
+<Canvas of={Stories.AllTones} />
+
+### All weights
+
+<Canvas of={Stories.AllWeights} />
+
+### Underline modes
+
+<Canvas of={Stories.AllUnderlines} />
+
+### External link
+
+<Canvas of={Stories.ExternalLink} />
+
+### Wrapping a NextLink (`asChild`)
+
+<Canvas of={Stories.AsChildNextLink} />

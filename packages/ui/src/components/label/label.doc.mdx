@@ -1,0 +1,106 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./label.stories";
+
+{/*
+  Design-system narrative for the label component. Attached to the
+  matching story group via `<Meta of={…}>` so it renders as the
+  "Docs" tab next to the live stories. Layout: narrative intro →
+  live examples + controls → usage guidelines.
+*/}
+
+<Meta of={Stories} />
+
+# Label
+
+## What labels are for
+
+A label is the small piece of text that names a form field. It tells the user what the field is for ("Email address", "Phone number", "Country") and gives screen readers the same information so the input is meaningful to everyone. The label is not chrome and not decoration — it is the *contract* between the form and the user. Without it, an input is just a box: a sighted user might guess from context, a keyboard user has to read surrounding text, a screen-reader user gets "edit text" with no further information. With a real, properly-associated label, every user gets the same answer to "what does this field want?"
+
+A label has two responsibilities. The first is semantic: it must point at the input it labels via `htmlFor`/`id` so the browser, the OS accessibility layer, and assistive tech all know which control the text describes. That association also expands the click target — clicking the label focuses (or toggles) the input — which is a small but real ergonomic win, especially for checkboxes and radios. The second responsibility is communicative: the label's wording must be clear, plain, and stable. "Email" is better than "Identifier"; "Mobile phone" is better than "Phone (Mobile)"; "Username" is better than "Display name (visible to others)". Long, parenthetical, or multi-clause labels usually mean the field is wrong, not that the label is wrong.
+
+The Genuin Label is a thin styled wrapper around `@radix-ui/react-label`, which adds a couple of behaviors the native `<label>` lacks (it works correctly with non-native form controls like custom switches, and it forwards click-to-focus to controls inside its descendants). Visually, the component applies the design system's small label type and a couple of CSS hooks for sibling/ancestor disabled states.
+
+## Label in this design system
+
+The Label component in `@genuin/ui` is a single export, `<Label>`. It renders a `<label>` element via Radix's `LabelPrimitive.Root`, applies the design-system label type, and wires up two CSS state hooks that let the label dim itself when the labelled control or its group is disabled.
+
+### Typography & layout
+
+- Renders as a flex row with `items-center` and `gap-2` — so an icon, badge, or required marker can sit alongside the text without extra wrappers.
+- Type: `text-sm`, `font-medium`, `leading-none`. The label reads as deliberately small and dense, not as body copy.
+- `select-none` — labels don't get accidentally selected when the user is focused on the field.
+
+### Disabled state hooks
+
+The component listens to two CSS state cues so it can dim itself in sync with the labelled control:
+
+- **`peer-disabled:cursor-not-allowed peer-disabled:opacity-50`** — when the labelled input is a *peer* sibling (the canonical Tailwind pattern of `<input class="peer"> <label>`), the label dims and switches its cursor when the input is `disabled`.
+- **`group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50`** — when an ancestor with `data-disabled="true"` wraps the label, the same effect applies. This handles fieldset-style disabled groups and Radix controls (Switch, Checkbox, RadioGroup) which set `data-disabled` on their root.
+
+Together, these mean the label *automatically* reflects the control's disabled state without the host having to wire it up — as long as the layout puts the label inside (or as a peer of) the disabled control.
+
+### Pairing with controls
+
+- **`htmlFor`** — the canonical way to associate a label with a control. Pass the input's `id`. Always do this even when the label visually wraps the input — it costs nothing and helps tooling.
+- **Wrapping the input** — the Radix label also forwards click-to-focus to a single control inside its DOM, so `<Label><input /></Label>` works without `htmlFor`. Prefer the explicit `htmlFor` form for clarity, but the wrap-style is fine for compact patterns like checkboxes with inline text.
+- **Inside `Form`** — the canonical place is `<FormLabel>`, which extends this component, reads the field's id from form context, and emits the correct `htmlFor` automatically. Use the bare `<Label>` only outside the form orchestration.
+
+### Required, optional, and helper indicators
+
+The component does not render its own required marker. When a field is required, add a visible cue inline:
+
+```tsx
+<Label htmlFor="email">
+  Email <span aria-hidden className="text-red">*</span>
+</Label>
+```
+
+For optional fields in mostly-required forms, the convention is "(optional)" appended in a muted weight. Don't bury that distinction in placeholder or description text — labels are the right place for it.
+
+### Accessibility
+
+Because the component uses Radix's primitive, the label correctly announces alongside the control for both native inputs (`<input>`, `<textarea>`, `<select>`) and Radix controls that don't render a real `<input>` (Switch, Checkbox, RadioGroupItem). The host shouldn't need to add `aria-labelledby` by hand — the label's `htmlFor`/`id` association is the canonical wiring.
+
+## Examples
+
+### Default
+
+<Canvas of={Stories.Default} />
+
+<Controls of={Stories.Default} />
+
+### Required
+
+<Canvas of={Stories.Required} />
+
+### With helper
+
+<Canvas of={Stories.WithHelper} />
+
+## When to use Label
+
+- **Every form field.** Inputs, textareas, selects, checkboxes, switches, radios, file pickers, color pickers — everything that takes user input has a label. No exceptions.
+- **Inline next to a checkbox or switch.** "Subscribe to newsletter", "Notify me about new replies" — the label sits beside the control so the user can click either the checkbox or the text.
+- **Above standalone inputs.** Email, phone, username — the label sits above the input with `Form`'s 2-row grid spacing.
+- **Pairs of fields.** "First name" / "Last name", "Country" / "Postal code" — each field gets its own label; never one shared label for two inputs.
+- **Filter and search fields with affordances.** Even when the field has a leading icon (search magnifier), pair with a label — visible or `sr-only` — so screen readers know what the field is for.
+- **Pair with `<FormLabel>` inside `<Form>`.** The form orchestration handles the id wiring; you just write the text.
+- **Use `htmlFor` whenever you can.** Even when the label wraps the input, the explicit attribute is clearer to readers and tooling.
+
+## How not to use Label
+
+- **Don't ship a control without a `<Label>`.** A naked input with placeholder-only labelling is an accessibility failure. Every field, including search bars, needs an accessible name — visible or `sr-only`.
+- **Don't use the placeholder as a label.** Placeholders disappear the moment the user types; labels persist. Putting the meaning in the placeholder is the single most common labelling bug.
+- **Don't use a `<div>` or `<span>` styled to look like a label.** The element type matters: `<label>` carries semantic relationships that custom elements can't replicate. If the visible label is far from the input (separate column, different region), use `aria-labelledby` instead.
+- **Don't share one label between two inputs.** "Phone number" with two separate fields next to it is wrong. Each input needs its own label, even if visually grouped.
+- **Don't omit `htmlFor` and rely solely on wrapping.** Some custom controls don't auto-receive the wrap association, and explicit `htmlFor` is also better for static analysis and refactors. Wrapping is a fallback, not the canonical pattern.
+- **Don't put long help text inside the label.** "Email — we'll never share this with anyone except for password resets and account recovery flows" belongs in `<FormDescription>`, not the label. Labels are 1–4 words.
+- **Don't use a label as a heading.** A `<Label>` is for form fields, not for sections. A section header is `<h2>` / `<h3>` / role-styled chrome, not a label.
+- **Don't dynamic-update the label text mid-typing.** Labels should read the same whether the field is empty, focused, partially filled, or fully filled. Animated "floating labels" that change role from placeholder to label confuse screen readers — they read the wrong text at the wrong time.
+- **Don't suppress the disabled-state styling.** The component dims labels when the linked control is disabled — this is a necessary signal so the user doesn't tap a label expecting interaction.
+- **Don't omit a required indicator.** Required fields must read as required *in the label*. Hiding the asterisk because "the form will validate anyway" is a friction tax users feel later.
+- **Don't render a colored or capslock-styled label without an accessibility reason.** Labels should look like labels. Save red text and uppercase for actual states (errors, warnings) so the visual vocabulary stays meaningful.
+- **Don't put two `<Label>`s pointing to the same `id`.** Multiple labels for one control creates ambiguous announcements. If you need both visible and visually-hidden labelling, use one `<Label>` and supplement with `aria-describedby`.
+- **Don't translate `htmlFor` values.** The `id`/`htmlFor` strings are technical identifiers, not user-facing copy — they should stay stable across locales.
+- **Don't position the label below the input.** Convention is label-above (or label-beside for checkboxes). Putting it below means the user reads the input first, then learns what it was for after typing — wrong order.

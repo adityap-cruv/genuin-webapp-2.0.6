@@ -9,44 +9,35 @@ import { LinkProvider } from "@genuin/components/context/link";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { type BrandType } from "@genuin/components/lib/utils/brand-layout";
 import { TRACK_OBSERVABILITY } from "@genuin/components/lib/utils/env";
+import { AppErrorBoundary } from "@genuin/components/molecules/error/app-error-boundary";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { ReactQueryClientProvider } from "@genuin/components/react-query/react-query-provider";
 import type { AuthUser } from "@genuin/components/types/auth";
 import type { BrandDetailsConfigType } from "@genuin/components/types/brand";
+import { VideoElementProvider } from "@genuin/ui";
 import { Skeleton } from "@genuin/ui/components/skeleton";
 import { cn } from "@genuin/ui/lib/utils";
-import { Suspense, lazy, useEffect } from "react";
-
-import type { SingleEmbedDataConfig } from "@/type";
+import { lazy, useEffect, useMemo } from "react";
 
 import { Genuin } from "./genuin-sdk";
 
-const LazyEmbed = lazy(() =>
-  import("@genuin/components/organisms/embed/embed")
-    .then((module) => ({
-      default: module.Embed,
-    }))
-    .catch((error) => {
-      console.error("Failed to load Embed component:", error);
-      // Fallback to a basic error component
-      return { default: () => <div>Failed to load embed component</div> };
-    })
-);
+import type { SingleEmbedDataConfig } from "@/type";
 
-const LazyStandardWall = lazy(() =>
-  import("@genuin/components/page/standard-wall/standard-wall")
-    .then((module) => ({
-      default: module.StandardWall,
-    }))
-    .catch((error) => {
-      console.error("Failed to load StandardWall component:", error);
-      // Fallback to a basic error component
-      return {
-        default: () => <div>Failed to load standard wall component</div>,
-      };
-    })
-);
+// import { LazyToaster } from "./react-utils";
 
-interface EmbedRootProps {
+// Bare dynamic-import factories. The catch/fallback is intentionally NOT inlined
+// here: AppErrorBoundary below catches the failure, renders a styled retryable
+// card, and re-creates these lazy components on retry (via the `attempt` key) so
+// the import is genuinely re-attempted — a swallowed `.catch()` cannot retry.
+const loadEmbed = () =>
+  import("@genuin/components/organisms/embed/embed").then((module) => ({ default: module.Embed }));
+
+const loadStandardWall = () =>
+  import("@genuin/components/page/standard-wall/standard-wall").then((module) => ({
+    default: module.StandardWall,
+  }));
+
+export interface EmbedRootProps {
   targetContainer: HTMLElement;
   container: HTMLElement;
   embedData: EmbedDataType;
@@ -104,6 +95,46 @@ function EmbedSkeleton({ container, theme }: { container: HTMLElement; theme?: "
   );
 }
 
+/**
+ * Renders the lazily-loaded embed body. Recreates the lazy component whenever
+ * `attempt` changes so that AppErrorBoundary's "Try again" genuinely re-runs
+ * the failed dynamic import (React.lazy memoises the import promise, so a fresh
+ * component identity is required to retry).
+ */
+function EmbedContent({
+  attempt,
+  style,
+  theme,
+  container,
+  wasLazilyLoaded,
+  isOnlyForExpand,
+}: {
+  attempt: number;
+  style?: string;
+  theme?: "dark" | "light";
+  container: HTMLElement;
+  wasLazilyLoaded?: boolean;
+  isOnlyForExpand?: boolean;
+}) {
+  const isStandardWall = style === "standard_wall";
+  // `attempt` is the retry key — bumping it recreates the lazy component so the
+  // dynamic import is re-run after a failure. The factories themselves are stable.
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- attempt intentionally drives recreation
+  const LazyStandardWall = useMemo(() => lazy(loadStandardWall), [attempt]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- attempt intentionally drives recreation
+  const LazyEmbed = useMemo(() => lazy(loadEmbed), [attempt]);
+
+  return (
+    <SafeSuspense fallback={<EmbedSkeleton theme={theme} container={container} />}>
+      {isStandardWall ? (
+        <LazyStandardWall />
+      ) : (
+        <LazyEmbed wasLazilyLoaded={wasLazilyLoaded} isOnlyForExpand={isOnlyForExpand} />
+      )}
+    </SafeSuspense>
+  );
+}
+
 export function EmbedRoot({
   targetContainer,
   container,
@@ -156,18 +187,25 @@ export function EmbedRoot({
                 currentScreen={config.embedDetails?.placement_id ? "view_placement" : "view_embed"}>
                 <AuthProvider onSignIn={() => {}} onSignOut={() => {}} onUpdateUser={() => {}} user={user}>
                   <UrlParamProvider name={embedData.name}>
-                    <Suspense fallback={<EmbedSkeleton theme={config.theme} container={container} />}>
-                      {embedData.style === "standard_wall" ? (
-                        <LazyStandardWall />
-                      ) : (
-                        <LazyEmbed wasLazilyLoaded={wasLazilyLoaded} isOnlyForExpand={isOnlyForExpand} />
-                      )}
-                    </Suspense>
-                    {/* {config.useShadowDOM && (
-                      <Suspense fallback={null}>
-                        <LazyToaster />
-                      </Suspense>
-                    )} */}
+                    <VideoElementProvider>
+                      <AppErrorBoundary>
+                        {(attempt: number) => (
+                          <EmbedContent
+                            attempt={attempt}
+                            style={embedData.style}
+                            theme={config.theme}
+                            container={container}
+                            wasLazilyLoaded={wasLazilyLoaded}
+                            isOnlyForExpand={isOnlyForExpand}
+                          />
+                        )}
+                      </AppErrorBoundary>
+                      {/* {config.useShadowDOM && (
+                        <SafeSuspense errorFallback={null} fallback={null}>
+                          <LazyToaster />
+                        </SafeSuspense>
+                      )} */}
+                    </VideoElementProvider>
                   </UrlParamProvider>
                 </AuthProvider>
               </AnalyticsProvider>

@@ -21,7 +21,6 @@ const BrandPersona: React.FC<BrandPersonaProps> = ({ jsonData }) => {
 
     // const [isInserting, setIsInserting] = useState(false);
     // const [inserted, setInserted] = useState(jsonData?.inserted || false);
-    // const { updateAgentMessageContent, currentSessionId } = useAgentsContext();
 
     // const handleInsert = async () => {
     //     if (!jsonData) return;

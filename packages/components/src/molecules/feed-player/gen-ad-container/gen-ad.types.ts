@@ -40,6 +40,19 @@ export type GenAdVideoConfig = {
   contentVideo?: ContentVideoConfig;
 };
 
+export type GenAdPrebidBidder = {
+  bidder: string;
+  params: Record<string, string | number>;
+};
+
+export type GenAdPrebidConfig = {
+  bidders: GenAdPrebidBidder[];
+  mediaTypes?: string[];
+  rollout?: number;
+  prebidOptions?: Record<string, unknown>;
+  scriptUrl?: string;
+};
+
 export type GenAdConfig = {
   /** Unique element ID for the ad slot container div. */
   adSlotId: string;
@@ -48,6 +61,7 @@ export type GenAdConfig = {
   aniview?: GenAdAniviewConfig;
   native?: GenAdNativeConfig | GenAdNativeConfig[];
   video?: GenAdVideoConfig | GenAdVideoConfig[];
+  prebid?: GenAdPrebidConfig;
   waterfallOrder?: string[];
   debug?: boolean;
 };

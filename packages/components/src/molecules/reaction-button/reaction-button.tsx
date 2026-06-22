@@ -13,6 +13,7 @@ import { useBaseContext } from "@genuin/components/context/base";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { useVideoReationMutation } from "@genuin/components/react-query/api/feed/spark";
 
 import { ActionPopover } from "../actions/action-popover";
@@ -177,7 +178,7 @@ export const ReactionButton = React.memo(function ReactionButton({
       );
     }
     return (
-      <React.Suspense fallback={null}>
+      <SafeSuspense fallback={null} errorFallback={null}>
         <AuthenticationModal
           getAppData={{
             data: {
@@ -196,7 +197,7 @@ export const ReactionButton = React.memo(function ReactionButton({
             {showReactionCount && count}
           </div>
         </AuthenticationModal>
-      </React.Suspense>
+      </SafeSuspense>
     );
   }
 
@@ -222,6 +223,14 @@ function Button({
   onReactionStateChange,
   isCommentsLoaded,
   videoType,
+  // Destructure-and-discard so these custom / Radix-ish props don't
+  // leak through `restProps` onto the underlying `<span>` /
+  // `<PrimitiveButton>` and onto the rendered DOM. React warns
+  // about unknown attributes; `asChild` in particular is the Radix
+  // pattern for forwarding to children, but the `withCustomChildren`
+  // branch renders a `<span>` directly.
+  showReactionCount: _showReactionCount,
+  asChild: _asChild,
   ...restProps
 }: ReactionButtonProps) {
   const { user } = useAuthContext();

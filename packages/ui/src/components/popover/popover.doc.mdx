@@ -1,0 +1,107 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./popover.stories";
+
+{/*
+  Design-system narrative for the popover component. Attached to the
+  matching story group via `<Meta of={…}>` so it renders as the
+  "Docs" tab next to the live stories. Layout: narrative intro →
+  live examples + controls → usage guidelines.
+*/}
+
+<Meta of={Stories} />
+
+# Popover
+
+## What popovers are for
+
+A popover is a small floating surface that appears next to a trigger and disappears when the user dismisses it. It exists to surface a piece of UI — a small form, a menu, a date picker, a quick disclosure of detail — without taking the user away from the page they're on. The popover is non-modal: the page behind it stays scrollable, the rest of the UI stays interactive, and dismissing the popover (clicking outside, pressing Escape) leaves the user exactly where they were. That is what separates it from a dialog: a dialog says "do this thing now"; a popover says "here's a small surface; do something with it if you want."
+
+A good popover is small, decisive, and tightly scoped to one thing. The user opens it, does the thing (picks a date, types a search, toggles a setting), and dismisses it. A bad popover is a misshapen modal: too big, full of nested forms, hosting a flow that needed its own screen. The Genuin Popover is built on Radix's primitive, so positioning, focus management, click-outside dismissal, and ARIA semantics are correct by default. The design system layers on a sized container, three themes (light, dark, auth), an optional arrow, and a portal that respects shadow-DOM boundaries (so popovers from the embedded Web SDK render in the right place).
+
+## Popover in this design system
+
+The Popover component in `@genuin/ui` is composed from five exported pieces. They mirror the Radix structure so any Radix popover pattern translates here.
+
+### The pieces
+
+- **`<Popover>`** — the root. Owns the open/close state. Pass `open` + `onOpenChange` to control it externally, or `defaultOpen` for uncontrolled.
+- **`<PopoverTrigger>`** — the element that opens the popover. Use `asChild` to wrap a real button or interactive element. The trigger receives `aria-expanded` and `aria-controls` automatically.
+- **`<PopoverAnchor>`** — an alternative anchor element. Use this when the trigger and the visual anchor are different (e.g., a hidden trigger but the popover should align to a specific node in the layout).
+- **`<PopoverContent>`** — the floating surface. Renders into a portal, applies positioning logic, runs the side-aware open/close animation, and accepts the `theme`, `showArrow`, and `customBackgroundColor` design-system props on top of every Radix `Content` prop (`side`, `align`, `sideOffset`, `collisionPadding`, etc.).
+- **`<PopoverClose>`** — wrap any element to make it a close affordance inside the popover. Useful for a "Done" button or an explicit close icon.
+
+### Themes
+
+- **`light`** (default) — white background, neutral border, soft shadow. The standard treatment for popovers floating over white or light surfaces.
+- **`dark`** — secondary-900 background, secondary-700 border, white text. Use over media-heavy surfaces, dark dashboards, or when adjacent UI is dark-themed.
+- **`auth`** — bordered card with no fill. Used in authentication and onboarding surfaces where the popover should pick up the surrounding surface color.
+
+`customBackgroundColor` overrides the fill (and the arrow) for one-off branded popovers. Reach for it sparingly — every recolored popover drifts from the design system's vocabulary.
+
+### Positioning
+
+The popover positions itself relative to the trigger (or the anchor, when supplied). All Radix positioning props pass through:
+
+- **`side`** — `"top" | "right" | "bottom" | "left"`. Defaults to `"bottom"`. Pick the side with the most room or the one that matches the affordance ("filter" buttons usually pop down; "user" menus usually pop down; date pickers usually pop down).
+- **`align`** — `"start" | "center" | "end"`. Defaults to `"center"`. Use `"start"` to align the popover's left edge with the trigger; `"end"` for the right edge.
+- **`sideOffset`** — gap (px) between the trigger and the popover. Defaults to 4. Increase for popovers that need breathing room from the trigger.
+- **`collisionPadding`** — minimum gap (px) from viewport edges before the popover flips. Useful inside dialogs and modals so the popover doesn't paint outside.
+
+### Arrow
+
+`showArrow` (default `false`) renders a small arrow pointing back at the trigger, color-matched to the theme. Use it when the popover is far from the trigger or the visual association would be unclear without it. Skip it when the popover is anchored close enough that the arrow adds chrome without value.
+
+### Animation
+
+The component animates open/close with a side-aware slide-in (slides in from the side opposite to where it appears) and a fade. The animations are tuned to feel quick — popovers should appear immediately and disappear immediately. Don't override the durations.
+
+### Portal & shadow DOM
+
+`<PopoverContent>` renders into a portal returned by `getRootContainer()`. In the standalone web app this is `document.body`; inside the embedded Web SDK (which mounts inside a shadow root), it's the shadow-DOM root. This is why the popover renders correctly in both contexts without the host having to think about it.
+
+## Examples
+
+### Default
+
+<Canvas of={Stories.Default} />
+
+<Controls of={Stories.Default} />
+
+### With icon
+
+<Canvas of={Stories.WithIcon} />
+
+### Positioned popover
+
+<Canvas of={Stories.PositionedPopover} />
+
+## When to use Popover
+
+- **Small floating menus.** "More" menus, overflow actions, quick-jump menus on a card.
+- **Date pickers, color pickers, font pickers.** A small selection UI that needs space but doesn't earn a full dialog.
+- **Filters and faceted search.** A button reveals a popover with a small set of toggles or a `Command` palette.
+- **Quick-edit chips.** Tap a tag to retitle it; tap a label to assign a value. The popover hosts a single-input or small-form interaction.
+- **Inline pickers next to form fields.** "Choose recipients", "Pick a country" — a popover with a `Command` filter is the canonical pattern.
+- **Tooltips with content beyond a single line.** When a tooltip would be too long, a popover (with a click trigger, not hover) is better — tooltips are for short text only.
+- **Pick `light` for white-surface UI** and `dark` for dark dashboards / media surfaces. Don't pick by aesthetic.
+- **Use `align="start"` for buttons on the left side of a row.** It keeps the popover from overflowing the right edge.
+- **Add `showArrow` only when the popover is far from the trigger.** When the popover sits 4–8px from the trigger, the position alone tells the user what it's anchored to.
+
+## How not to use Popover
+
+- **Don't use it as a modal.** A popover is non-modal — the page stays interactive behind it. If the user *must* respond before continuing, use a `Dialog`.
+- **Don't put long forms inside.** A 5-field form belongs in a Dialog or a Drawer. Popovers are for one-input, one-decision interactions.
+- **Don't open a popover automatically on hover.** Hover is for tooltips. Popovers open on click / tap / keyboard activation. Mixing the two confuses both touch and keyboard users.
+- **Don't open a popover on page load without user intent.** Surprise floating UI feels like an ad. Popovers open from explicit triggers.
+- **Don't stack popovers (open one from inside another).** Two popovers compete for outside-click dismissal and create unpredictable focus. If you need a second layer, replace the first popover's content rather than opening another.
+- **Don't render `<PopoverTrigger>` around a `<div>` without `asChild` and a real interactive element.** The trigger must be an interactive element (button, link, custom Radix-compatible control). A clickable div breaks keyboard activation and ARIA semantics.
+- **Don't suppress click-outside-to-close.** It's the contract: the user expects to click anywhere else to dismiss. Disabling that turns the popover into a small modal — the wrong tool.
+- **Don't put scrollable content directly inside without sizing the popover.** A popover that contains its own scroll needs a fixed `max-height`. Otherwise it grows past the viewport and breaks positioning.
+- **Don't omit a discoverable close affordance for popovers with forms.** Click-outside is enough for menus, but a popover that hosts an input flow benefits from an explicit "Done" or "Save" inside, plus an `×` in a corner if the input is destructive.
+- **Don't use `<Popover>` as a notification.** A toast is for ephemeral feedback. A popover requires the user to *open* it; an unsolicited popover is a misshapen toast.
+- **Don't use the dark theme on a light page just because dark looks "premium."** The theme should match the surrounding surface so the popover reads as part of the interface, not as decoration.
+- **Don't override the open/close animation timing.** It's tuned for popovers' "open immediately, close immediately" cadence. Slow animations make the popover feel sluggish; instant ones feel jarring.
+- **Don't render arbitrary HTML through the popover via `dangerouslySetInnerHTML`.** Popover content is part of the trusted DOM — let React render it. Untrusted HTML in a popover is the same security risk as anywhere else.
+- **Don't put a `<PopoverContent>` outside a `<Popover>` root.** It needs the open-state context to function. Keep the trigger and content as siblings under the same root.
+- **Don't pop over the user's primary action.** If the popover covers the submit button or the navigation control, the user feels trapped. Move the trigger or align the popover so the primary action stays visible.

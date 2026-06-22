@@ -24,7 +24,7 @@ const buttonVariants = cva(
         custom: "",
         navigation:
           "gencl:p-0 gencl:size-11! gencl:rounded-full! gencl:flex-center gencl:bg-secondary-800 gencl:text-white gencl:backdrop-blur-sm gencl:hover:bg-secondary-600 gencl:border-0 gencl:transition-all gencl:duration-200 [&_svg]:gencl:size-5",
-        overlay: "",
+        overlay: "gencl:bg-black/40 gencl:backdrop-blur-[1px] gencl:rounded-full!",
       },
       // TODO: Improve and standardize the size naming convention
       size: {
@@ -75,13 +75,12 @@ const buttonVariants = cva(
       {
         theme: "overlay",
         size: "xs",
-        class:
-          "gencl:size-6 gencl:[&_svg]:shrink-0 gencl:rounded-full gencl:p-1.5! gencl:bg-black/40 gencl:backdrop-blur-[1px]",
+        class: "gencl:size-6 gencl:[&_svg]:shrink-0 gencl:p-1.5!",
       },
       {
         theme: "overlay",
         size: "sm",
-        class: "gencl:size-8 gencl:rounded-full gencl:p-0.5! gencl:bg-black/40 gencl:backdrop-blur-[1px]",
+        class: "gencl:size-8 gencl:p-0.5!",
       },
       {
         theme: "overlay",

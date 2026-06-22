@@ -1,0 +1,118 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./infinite-scroll.stories";
+
+{/*
+  Design-system narrative for the infinite-scroll component. Attached to the
+  matching story group via `<Meta of={…}>` so it renders as the
+  "Docs" tab next to the live stories. Layout: narrative intro →
+  live examples + controls → usage guidelines.
+*/}
+
+<Meta of={Stories} />
+
+# Infinite Scroll
+
+## What infinite scroll is for
+
+Infinite scroll is a list-loading pattern that fetches the *next* page of data when the user reaches the end of the *current* page — so the list grows as they scroll. The user never has to click a "Load more" button or step through numbered pagination; they keep scrolling, and the content keeps coming. The pattern earns its keep when the content is fundamentally exploratory — feeds, search results, comment threads, image grids — and when there's no need for the user to know exactly *where* in a list they are. It removes a small but real piece of friction (the click between pages) and replaces it with a continuous reading experience.
+
+The cost is that infinite scroll can hide the bottom of the list, slow long sessions to a crawl as memory accumulates, and make it impossible to share a deep position in the list. So infinite scroll is the right pattern for some lists and the wrong pattern for others. It works for content the user is browsing on momentum (a feed of posts, a stream of search hits) and works poorly for content the user needs to navigate deliberately (a settings list, a paginated dataset, a checkout summary). When in doubt, ask: "Will the user ever need to find an item six pages back, on purpose?" If yes, paginate. If no, infinite-scroll.
+
+The Genuin InfiniteScroll component is a thin behavioural wrapper. It places a 2-pixel sentinel `<div>` after the rendered children, watches the sentinel with an `IntersectionObserver`, and calls `getNextPage()` when the sentinel becomes ≥95% visible. The component is intentionally minimal — it does *not* fetch the data, manage error retries, virtualise the list, or remember scroll position. Those responsibilities belong to the host (TanStack Query's `useInfiniteQuery`, your service layer, your route).
+
+## Infinite Scroll in this design system
+
+The InfiniteScroll component in `@genuin/ui` is exported as a single component: `<InfiniteScroll>`. It wraps a list of items and triggers a callback when the user reaches the end.
+
+### Props
+
+- **`children`** — the rendered list of items. The component does not own the list state; it just renders what you give it.
+- **`hasNextPage`** — a boolean from your data layer. When `true`, the loader renders below the sentinel and the next-page callback is allowed to fire. When `false`, the component stops calling for more.
+- **`isLoadingNextPage`** — a boolean from your data layer. While `true`, the next-page callback is suppressed even if the sentinel re-intersects, so a single fetch in flight isn't multiplied by repeated intersections.
+- **`getNextPage`** — the callback that fetches more items. Pair this with TanStack Query's `fetchNextPage` (or whatever your service layer exposes). The component invokes it when the sentinel crosses the 95% intersection threshold *and* `hasNextPage` is true *and* `isLoadingNextPage` is false.
+- **`loader`** — optional override for the loader rendered while `hasNextPage` is true. Defaults to the standard `Loader` size `md` centered in a row.
+
+### Trigger geometry
+
+The component drops a 2-pixel sentinel below the children and watches it with `IntersectionObserver({ threshold: 0.95 })`. The sentinel becomes visible when the user has scrolled to within ~2px of the end of the rendered list — at which point `getNextPage` fires (if allowed) and the loader takes the place of the empty pixels until the new items arrive.
+
+The sentinel observes against the document viewport, not the parent container. So the component works out of the box when the parent allows the page to scroll. If your list scrolls inside a fixed-height container with its own overflow, you need a different approach — wrap the items in a virtualised list (`@tanstack/react-virtual`) or handle the intersection inside the scrolling container yourself.
+
+### Loader behaviour
+
+While `hasNextPage` is true, the loader (default or custom) renders below the sentinel. When `hasNextPage` flips to `false` (the data layer signals the end of the list), the loader disappears and the component's job is done. If you need a "You've reached the end" footer, render it yourself outside the component — InfiniteScroll itself stays silent at the end.
+
+### Pairing with TanStack Query
+
+The canonical wiring is:
+
+```tsx
+const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({...});
+
+return (
+  <InfiniteScroll
+    hasNextPage={hasNextPage}
+    isLoadingNextPage={isFetchingNextPage}
+    getNextPage={fetchNextPage}
+  >
+    {data.pages.flatMap(p => p.items).map(item => <Item key={item.id} {...item} />)}
+  </InfiniteScroll>
+);
+```
+
+The hook owns the data and the loading flags; the component owns the trigger and the loader. Nothing else in between.
+
+### What it does not do
+
+- Does **not** virtualise. Render-everything-as-you-go works fine up to a few hundred items; beyond that, render performance suffers — pair with `@tanstack/react-virtual` or switch to a windowed list.
+- Does **not** persist scroll position across navigation. Use the router or your state layer.
+- Does **not** retry on error. Surface the error in the host and let the user retry explicitly.
+- Does **not** debounce. The intersection callback only fires when the sentinel actually transitions across the 95% threshold, so a single page's worth of overshoot is the normal cadence.
+
+## Examples
+
+### Default
+
+<Canvas of={Stories.Default} />
+
+<Controls of={Stories.Default} />
+
+### Loading state
+
+<Canvas of={Stories.LoadingState} />
+
+### No more pages
+
+<Canvas of={Stories.NoMorePages} />
+
+### Custom loader
+
+<Canvas of={Stories.CustomLoader} />
+
+## When to use Infinite Scroll
+
+- **Feeds.** Newsfeed, comments, replies, activity logs — content the user reads in chronological order, momentum-style.
+- **Search results.** Page after page of hits the user is scanning until something looks right.
+- **Image / card grids.** Loops, channels, content discovery — the user is browsing visually, not navigating numerically.
+- **Notification lists / activity panels.** Long lists where most users only look at the top, but power users want to scroll back through history.
+- **Pair with `useInfiniteQuery`.** TanStack Query's pagination model is the intended fit — it owns the data, the loading flags, and the next-page calls.
+- **Use the default loader unless the surrounding layout demands otherwise.** Consistency across pages is more important than a one-off loader styled to a single feed.
+- **Prefer infinite scroll over pagination when the content is exploratory.** Browsing a feed shouldn't feel like flipping book pages.
+
+## How not to use Infinite Scroll
+
+- **Don't use infinite scroll for paginated datasets the user navigates deliberately.** Settings tables, billing history, audit logs — these need page numbers, jump-to-page, and stable URLs. Infinite scroll hides the bottom and makes it impossible to share or bookmark a deep position.
+- **Don't infinite-scroll on a footer-bearing page without a separate footer link.** A real page footer (legal, contact, sitemap) is unreachable when the list keeps growing. Either move the footer to a side panel, or move it out of pages that scroll infinitely.
+- **Don't render-everything for tens of thousands of items.** Memory grows linearly with what you render. Pair with `@tanstack/react-virtual` (or a similar windowing library) once the list crosses a few hundred items, especially when items are media-heavy.
+- **Don't put `<InfiniteScroll>` inside a fixed-height scroll container.** The sentinel observes the viewport, not the parent. If your list scrolls *inside* a container, the trigger will fire too early or never. Use a different trigger (intersection inside the container, scroll-position math, a manual "Load more" button).
+- **Don't drive `getNextPage` from any prop other than the data layer's flags.** If you toggle `hasNextPage` in component-local state, you lose sync with what the server thinks the next page is. Use the data layer as the source of truth.
+- **Don't suppress the loader to "save space".** The loader is the user's signal that more is coming. Without it, the empty space below the last item reads as "this is the end."
+- **Don't fire side effects in the next-page callback that don't actually fetch.** Triggering analytics, opening dialogs, or navigating from inside `getNextPage` couples scroll behaviour to unrelated actions and creates surprising flicker.
+- **Don't infinite-scroll a list that the user must reach the bottom of.** Onboarding, terms of service, multi-step legal copy — those need explicit pagination or a dedicated read-then-confirm flow.
+- **Don't render `<InfiniteScroll>` without `key`-stable items.** When pages append, React relies on stable keys to avoid re-mounting items. Index keys cause every page swap to flicker the entire list.
+- **Don't open dialogs / modals on top of an infinite-scrolling list with stale focus.** When the list grows behind the modal, focus and tab order shift in ways the user can't see. Pause the next-page calls while modals are open if the modal can dismiss back to the list.
+- **Don't combine infinite scroll with a sticky "Showing X of Y" indicator that updates on every fetch.** It creates a busy, twitchy header. If you need a count, render it once at the top.
+- **Don't infinite-scroll on a server component.** The component uses `IntersectionObserver` and refs — both client-only. The host must be `'use client'`.
+- **Don't observe the same sentinel from two `<InfiniteScroll>` instances.** Nesting infinite scrolls (a feed within a feed) leads to both fetching at once and the user seeing duplicate loaders. Flatten or re-architect.
+- **Don't ship infinite scroll without a reachable bottom for screen readers.** When the list ends, the loader should disappear and the next focusable element should be reachable via keyboard. Lists that keep loading forever are a real accessibility failure.

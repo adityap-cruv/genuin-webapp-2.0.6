@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn';
 
 interface CompactSkeletonProps extends React.ComponentProps<'div'> {
     width?: number | string;

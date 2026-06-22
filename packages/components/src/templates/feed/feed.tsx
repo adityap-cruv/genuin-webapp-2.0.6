@@ -32,6 +32,7 @@ export function FeedWithData({
   defaultExpandView,
   onCloseExpandView,
   isSectioned,
+  externalFeedData,
   ...restProps
 }: FeedWithDataPropsType) {
   const embedDetails = useSafeEmbedContext();
@@ -42,7 +43,15 @@ export function FeedWithData({
       groupIds: embedDetails?.embedData?.customization.community_loop_ids?.map((item) => item.loop_id),
       startVideoSlug: embedDetails?.embedData?.startVideoSlug,
       contextualParams: embedDetails?.embedData?.contextualParams,
-      embed_id: embedDetails?.embedData?.embed_id,
+      // An embed is identified by EITHER embed_id OR placement_id + style_id (mutually
+      // exclusive — see genuin-sdk resolveConfig). Standard-wall is commonly placement-
+      // based, so forwarding only embed_id (the previous behaviour) dropped BOTH ids
+      // from the feed request for those embeds. Pass all three; feed.ts omits whichever
+      // is undefined via its `&&` guards. The feed/carousel path (embed.tsx) already
+      // forwards all three — this aligns standard-wall with it.
+      embedId: embedDetails?.embedData?.embed_id,
+      placementId: embedDetails?.embedData?.placement_id,
+      styleId: embedDetails?.embedData?.style_id,
       sponsorship_id: embedDetails?.embedData?.sponsorship_id,
       isInIframe,
       shouldShowMiddlewareOverlay: isMiddlewareOverlayEnabled({
@@ -54,13 +63,31 @@ export function FeedWithData({
     [embedDetails, isInIframe, brandDetails.brand_id]
   );
 
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage, isError } = useFeed(feedType, queryOptions);
+  // When `externalFeedData` is provided, disable the network call entirely.
+  // The fixture's `videos` / `isLoading` / pagination fields drive the render
+  // below, and a 4xx from the API can't mask the fixture (which is what the
+  // `<Embed>` fix in 07eaeb11f addressed for the same shape).
+  //
+  // `feedQueryOptions` must be the SAME object passed to useFeed and to
+  // getQueryKeyForFeed below: getQueryKeyForFeed serializes every option key
+  // (including `enabled`), so deriving the queryKey from `queryOptions` without
+  // `enabled` yields a key missing "enabled-undefined" — which then misses the
+  // cache on exact-match setQueryData (e.g. the spark/reaction optimistic
+  // update), leaving the UI stale despite a 200 response.
+  const feedQueryOptions = {
+    ...queryOptions,
+    enabled: externalFeedData ? false : undefined,
+  };
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage, isError } = useFeed(
+    feedType,
+    feedQueryOptions
+  );
 
-  const videos = useMemo(() => data?.pages.flatMap((page) => page.feed) ?? [], [data]);
+  const apiVideos = useMemo(() => data?.pages.flatMap((page) => page.feed) ?? [], [data]);
 
-  const feedData: FeedData = {
-    queryKey: getQueryKeyForFeed(feedType, queryOptions),
-    videos,
+  const feedData: FeedData = externalFeedData ?? {
+    queryKey: getQueryKeyForFeed(feedType, feedQueryOptions),
+    videos: apiVideos,
     isLoading,
     hasNextPage: hasNextPage ?? false,
     isFetchingNextPage,
@@ -69,11 +96,11 @@ export function FeedWithData({
     pageSession: data?.pages[0]?.pageSession,
   };
 
-  if (isError) {
+  if (isError && !externalFeedData) {
     return <ErrorState type="ERROR" />;
   }
 
-  if (videos.length === 0 && !isLoading && !isFetchingNextPage) {
+  if (feedData.videos.length === 0 && !feedData.isLoading && !feedData.isFetchingNextPage) {
     return <ErrorState type="NO_CONTENT" />;
   }
 

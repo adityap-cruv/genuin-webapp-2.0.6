@@ -3,8 +3,8 @@ import { toast } from 'sonner';
 
 import { Add } from '@/assets/SvgIcons/icons';
 import Spinner from '@/components/ui/spinner';
-import { useAgentsContext } from '@/context/app/context';
-import { insertSocialHandle, updateAgentMessage, validateSocialHandle } from '@/lib/api';
+import { useSessionContext } from '@/stores/session/context';
+import { insertSocialHandle, updateAgentMessage, validateSocialHandle } from '@/services/api';
 
 type SocialHandle = {
     platform: string;
@@ -25,7 +25,7 @@ const BrandSocialHandleFetcher = ({ jsonData, messageId }: BrandSocialHandleFetc
     const [selectedHandles, setSelectedHandles] = useState<Set<string>>(new Set());
     const [loadingHandles, setLoadingHandles] = useState<Set<string>>(new Set());
     // const [isImporting, setIsImporting] = useState(false);
-    const { currentSessionId, updateAgentMessageContent } = useAgentsContext();
+    const { currentSessionId, updateAgentMessageContent } = useSessionContext();
     if (!jsonData?.social_handles || jsonData?.social_handles.length === 0) {
         return (
             <div className='gai:flex gai:w-full gai:flex-col gai:overflow-hidden gai:rounded-xl gai:border gai:border-[#E6ECFF]'>

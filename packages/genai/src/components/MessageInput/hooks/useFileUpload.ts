@@ -1,8 +1,8 @@
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 
-import { useAgentsContext } from '@/context/app/context';
-import { getPreSignedUrl } from '@/lib/api';
+import { useUIContext } from '@/stores/ui/context';
+import { getPreSignedUrl } from '@/services/api';
 import type { UploadedFile } from '@/types';
 
 import { ALLOWED_TYPES, MAX_FILE_SIZE } from '../utils/fileUtils';
@@ -22,7 +22,7 @@ const uploadFileToPreSignedUrl = async (file: File, preSignedUrl: string): Promi
 };
 
 export const useFileUpload = () => {
-    const { brand_id, user_id, setS3Keys, clearS3Keys } = useAgentsContext();
+    const { brand_id, user_id, setS3Keys, clearS3Keys } = useUIContext();
     const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
     const [isUploadingFiles, setIsUploadingFiles] = useState(false);
     const fileInputRef = useRef<HTMLInputElement | null>(null);

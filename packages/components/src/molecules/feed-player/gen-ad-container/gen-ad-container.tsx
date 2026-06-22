@@ -6,19 +6,22 @@ import { useAnalytics } from "../../../context/analytics/context";
 import { ensureStylesInShadowRoot } from "../../root-portal/shadow-root/shadow-dom.utils";
 
 import type { GenAdConfig, GenAdContainerProps } from "./gen-ad.types";
+import { getMinBannerSize } from "./gen-ad.utils";
 
 function getAdSource(config: GenAdConfig, provider?: string): string {
   const map: Record<string, string | undefined> = {
     video: Array.isArray(config.video) ? config.video[0]?.platform : config.video?.platform,
-    display: Array.isArray(config.banner) ? config.banner[0]?.platform : config.banner?.platform,
+    // Key must be "banner" — the waterfall emits "banner" (see gen-ad.utils.ts), not "display"
+    banner: Array.isArray(config.banner) ? config.banner[0]?.platform : config.banner?.platform,
     native: Array.isArray(config.native) ? config.native[0]?.platform : config.native?.platform,
+    prebid: config.prebid ? "prebid" : undefined,
   };
-  return provider ? (map[provider] ?? "") : (map.video ?? map.display ?? map.native ?? "");
+  return provider ? (map[provider] ?? "") : (map.video ?? map.banner ?? map.native ?? "");
 }
 
 const GEN_AD_SCRIPT_URL = "https://media.begenuin.com/ad-sdk/1.0.0/gen_ad.min.js";
 
-// const GEN_AD_SCRIPT_URL = "http://localhost:4000/dist/gen_ad.min.js";
+// const GEN_AD_SCRIPT_URL = "http://localhost:3000/src/gen_ad.js";
 
 export function loadGenAdScript(): void {
   const existing = document.querySelector(`script[src="${GEN_AD_SCRIPT_URL}"]`);
@@ -93,6 +96,39 @@ export function GenAdContainer({
 
     let initInterval: ReturnType<typeof setInterval>;
     let missingContainerAttempts = 0;
+    // Smallest [w, h] the banner waterfall needs; null when no banner is
+    // requested (video/native-only waterfalls don't care about slot size).
+    const minBannerSize = getMinBannerSize(configRef.current.banner);
+    // Track whether we suppressed mount due to slot size, so a later
+    // resize-up can attempt again. Distinct from `instanceIdRef` (which
+    // tracks successful mounts).
+    let suppressedForSize = false;
+
+    const measureSlot = (): [number, number] => {
+      const el = adContainerRef.current;
+      if (!el) return [0, 0];
+      // The container has `hidden` (display:none) while `isVisible=false`
+      // — which is its initial state, because `isVisible` is bound to
+      // `isAdFilled` and the ad hasn't filled yet. A display:none element's
+      // clientWidth/Height read 0, so reading the container directly would
+      // spuriously suppress every banner request before init can ever fire.
+      // Fall back to the parent (the player frame), since the container
+      // is `h-full w-full` of its parent when shown — the parent's bounds
+      // are the effective slot size for the size-guard decision.
+      const ownW = el.clientWidth;
+      const ownH = el.clientHeight;
+      const parent = el.parentElement;
+      const w = ownW || parent?.clientWidth || 0;
+      const h = ownH || parent?.clientHeight || 0;
+      return [w, h];
+    };
+
+    const slotMeetsBannerMin = (): boolean => {
+      if (!minBannerSize) return true;
+      const [w, h] = measureSlot();
+      const [minW, minH] = minBannerSize;
+      return w >= minW && h >= minH;
+    };
 
     const initAd = () => {
       if ((window as any).GenAd && !adContainerRef.current) {
@@ -103,6 +139,26 @@ export function GenAdContainer({
         return;
       }
       if ((window as any).GenAd && adContainerRef.current) {
+        // IAB compliance: refuse to request a banner ad when the slot is
+        // smaller than the requested creative size. Rendering a 300×250
+        // creative in a 200×200 container produces an off-spec, non-viewable
+        // impression — the SDK and the ad-server would still count it, so the
+        // only place to stop it is before init runs. ResizeObserver below
+        // re-tries when the slot grows back to spec.
+        if (minBannerSize && !slotMeetsBannerMin()) {
+          if (!instanceIdRef.current && !suppressedForSize) {
+            const [w, h] = measureSlot();
+            const [minW, minH] = minBannerSize;
+            console.warn(
+              `[GenAd] slot ${w}×${h} smaller than required banner ${minW}×${minH}; suppressing ad request.`
+            );
+            suppressedForSize = true;
+            onAdFillFailedRef.current?.();
+          }
+          clearInterval(initInterval);
+          return;
+        }
+        suppressedForSize = false;
         clearInterval(initInterval);
         try {
           const { adSlotId: _adSlotId, waterfallOrder, ...genAdInitConfig } = configRef.current;
@@ -124,7 +180,10 @@ export function GenAdContainer({
                 ad_source: getAdSource(configRef.current, provider),
               });
             },
-            onStageSuccess: (provider: string) => {
+            onStageSuccess: (
+              provider: string,
+              meta?: { timestamp?: number; requestBody?: Record<string, unknown> }
+            ) => {
               trackRef.current(EventName.AD_RESPONSE_RECEIVED, {
                 ...baseAdParams,
                 provider,
@@ -134,6 +193,10 @@ export function GenAdContainer({
             },
             onStageFail: (provider: string, error: Error) => {
               const msg = error?.message ?? "";
+              // Surface the raw SDK error so dev/QA can tell why a stage
+              // failed (unknown platform, bad tag_id, network) — categorised
+              // analytics events alone discard `error.message`.
+              console.warn(`[GenAd] stage fail (provider=${provider}):`, msg, error);
               const adSource = getAdSource(configRef.current, provider);
               const params = { ...baseAdParams, provider, ad_source: adSource };
               if (msg.includes("303")) {
@@ -229,15 +292,52 @@ export function GenAdContainer({
       initInterval = setInterval(initAd, 100);
     }
 
+    // Banner-only: track the slot's live dimensions so we can
+    //   (a) re-attempt init if the slot was too small at mount time but
+    //       grew back to spec, and
+    //   (b) tear the running banner down if it shrinks below spec mid-play,
+    //       so an off-spec impression isn't kept on screen.
+    // Observe the *parent* element: while the container is hidden
+    // (display:none, isVisible=false) it has no box and ResizeObserver
+    // wouldn't fire on it. The parent is the player frame, whose size we
+    // already fall back to in `measureSlot()`. Real video / native creatives
+    // are size-responsive and don't need this.
+    let resizeObserver: ResizeObserver | null = null;
+    if (minBannerSize && adContainerRef.current?.parentElement) {
+      resizeObserver = new ResizeObserver(() => {
+        const ok = slotMeetsBannerMin();
+        if (instanceIdRef.current && !ok) {
+          const [w, h] = measureSlot();
+          const [minW, minH] = minBannerSize;
+          console.warn(`[GenAd] slot resized to ${w}×${h}; destroying banner (below ${minW}×${minH}).`);
+          (window as any).GenAd?.destroy?.(instanceIdRef.current);
+          instanceIdRef.current = null;
+          suppressedForSize = true;
+          onAdFillFailedRef.current?.();
+        } else if (!instanceIdRef.current && ok && suppressedForSize) {
+          // Slot grew back to spec — attempt a fresh mount.
+          initAd();
+        }
+      });
+      resizeObserver.observe(adContainerRef.current.parentElement);
+    }
+
     return () => {
       clearInterval(initInterval);
+      resizeObserver?.disconnect();
       if (instanceIdRef.current && (window as any).GenAd) {
         (window as any).GenAd.destroy(instanceIdRef.current);
         instanceIdRef.current = null;
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- videoId/videoType/muted captured at init time; muted changes handled by separate effect; EventName is stable
-  }, [isActive]);
+    // `config` is included so a caller swapping configs (e.g. picking a
+    // different banner size, advancing waterfall) triggers cleanup + a fresh
+    // init rather than leaving the previous instance in place. videoId /
+    // videoType / muted are still captured at init time by closure (muted
+    // changes are handled by the separate mute effect below); EventName is
+    // stable across renders.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- see above
+  }, [isActive, config]);
 
   useEffect(() => {
     if (!isActive) return;
@@ -263,7 +363,7 @@ export function GenAdContainer({
       id={config.adSlotId}
       className={cn(
         "gencl:absolute gencl:z-20 gencl:text-white gencl:h-full gencl:w-full gencl:flex gencl:items-center gencl:justify-center",
-        !isVisible && "gencl:hidden"
+        !isVisible && "gencl:opacity-0 gencl:pointer-events-none"
       )}
     />
   );

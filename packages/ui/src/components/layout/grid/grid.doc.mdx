@@ -1,0 +1,71 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./grid.stories";
+
+<Meta of={Stories} />
+
+# Grid
+
+## What Grid is for
+
+`Grid` is the generative-layout system's main primitive for multi-column /
+multi-row arrangements. It wraps CSS Grid with a generator-friendly API:
+numeric tracks resolve to equal-width fractions; raw strings pass through to
+`grid-template-*` for arbitrary track configurations.
+
+For the canonical 2-or-3-column ratio split (e.g. `"746px 320px"`), prefer the
+dedicated [`SplitView`](?path=/docs/layout-splitview--docs) primitive — the
+dedicated name reads more clearly in a page tree.
+
+## Props
+
+- **`cols`** — Column tracks. `number` resolves to
+  `repeat(N, minmax(0, 1fr))` via a Tailwind class (statically discovered for
+  1-12). A `string` (e.g. `"746px 320px"`, `"1fr 2fr 1fr"`) passes through as
+  the raw `grid-template-columns` value via inline `style`. Numbers outside
+  1-12 fall through to the same inline-style path.
+- **`rows`** — Row tracks. Same convention; static Tailwind classes for 1-6.
+- **`gap`** — Symmetric gap between cells. Named DS token. Mutually exclusive
+  with `colGap` / `rowGap` — when `gap` is set, the asymmetric versions are
+  ignored.
+- **`colGap`** — Column gap only.
+- **`rowGap`** — Row gap only.
+- **`asChild`** — Render as a different element via Radix Slot.
+
+All standard `HTMLDivElement` attributes are forwarded. A caller-provided
+`style` is merged with the resolved track style — track style wins.
+
+## Why inline style for string tracks
+
+Tailwind cannot safelist arbitrary track strings at build time. The generator
+emits `"746px 320px"` from Figma frames, and emits per-breakpoint variants —
+that universe is too large to enumerate as classes. Inline style is the
+deliberate, documented fallback.
+
+## Examples
+
+### Three equal columns
+
+<Canvas of={Stories.ThreeEqualColumns} />
+
+<Controls of={Stories.ThreeEqualColumns} />
+
+### Twelve-column grid
+
+<Canvas of={Stories.TwelveColumnGrid} />
+
+### String tracks (`"746px 320px"`)
+
+<Canvas of={Stories.StringTracks} />
+
+### Asymmetric gaps
+
+<Canvas of={Stories.AsymmetricGaps} />
+
+### Rows and columns together
+
+<Canvas of={Stories.RowsAndCols} />
+
+### As `<section>` (`asChild`)
+
+<Canvas of={Stories.AsSection} />

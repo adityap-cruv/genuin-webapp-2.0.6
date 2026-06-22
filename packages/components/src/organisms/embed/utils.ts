@@ -1,8 +1,22 @@
 import type { Swiper as SwiperType } from "swiper/types";
 
+import type { EmbedEventContextType } from "@genuin/components/context/embed/event-bus";
+
 /**
  * Utility functions for managing embed navigation
  */
+
+/**
+ * Returns the flat carousel index for the active video. Sectioned placements track a
+ * section-local index, so this maps the selected section back to its first flat index.
+ */
+export function getFlatActiveIndex(context: EmbedEventContextType): number {
+  if (!context.isSectioned) return context.activeIndex;
+  return Math.max(
+    context.sectionList.findIndex((section) => section?.id === context.selectedSection?.id),
+    0
+  );
+}
 
 /**
  * Checks if a slide index is currently visible in the viewport

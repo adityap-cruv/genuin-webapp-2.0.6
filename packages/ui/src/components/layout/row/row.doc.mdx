@@ -1,0 +1,59 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./row.stories";
+
+<Meta of={Stories} />
+
+# Row
+
+## What Row is for
+
+`Row` is a horizontal flex container with full alignment, justification, and
+wrap controls. Reach for it whenever you would otherwise hand-write
+`flex flex-row items-* justify-* gap-N` on a `<div>`. It is the bread-and-butter
+primitive for laying things out side by side.
+
+For wrap-first layouts (chips, tags, action button groups, breadcrumbs), use
+[`Cluster`](?path=/docs/layout-cluster--docs) instead — the wrap intent is
+clearer in code and easier for the AI generator to target. For vertical
+arrangements use [`Column`](?path=/docs/layout-column--docs) or
+[`Stack`](?path=/docs/layout-stack--docs).
+
+## Props
+
+- **`gap`** — Spacing between children. Named DS token from the Padding scale
+  (`none` / `xxs` / `xs` / `sm` / `md` / `ml` / `lg` / `xl` / `xxl`). Defaults
+  to `"none"`.
+- **`align`** — Vertical alignment of children. One of `start`, `center`,
+  `end`, `baseline`, `stretch`. Defaults to `stretch`.
+- **`justify`** — Horizontal distribution of children. One of `start`,
+  `center`, `end`, `between`, `around`, `evenly`. Defaults to `start`.
+- **`wrap`** — Whether children should wrap to multiple lines when out of
+  horizontal space. Defaults to `false`.
+- **`asChild`** — Render as a different element via Radix Slot.
+
+All standard `HTMLDivElement` attributes are forwarded.
+
+## Examples
+
+### Default
+
+<Canvas of={Stories.Default} />
+
+<Controls of={Stories.Default} />
+
+### Centered
+
+<Canvas of={Stories.Centered} />
+
+### Space between
+
+<Canvas of={Stories.SpaceBetween} />
+
+### Wrapping
+
+<Canvas of={Stories.Wrapping} />
+
+### As `<nav>` (`asChild`)
+
+<Canvas of={Stories.AsNav} />

@@ -16,6 +16,13 @@ export * from "./unmute-icon";
 export * from "./play-icon";
 export * from "./pause-icon";
 export * from "./x-icon";
+// Old (pre-player_ui_v2) icon variants — used only by the legacy player controls.
+export * from "./mute-icon-old";
+export * from "./unmute-icon-old";
+export * from "./play-icon-old";
+export * from "./pause-icon-old";
+export * from "./expand-icon-old";
+export * from "./collapse-icon-old";
 export * from "./home-icon";
 export * from "./explore-icon";
 export * from "./latest-icon";

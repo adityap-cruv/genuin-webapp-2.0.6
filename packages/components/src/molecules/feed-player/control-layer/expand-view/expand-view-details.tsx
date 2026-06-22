@@ -3,7 +3,7 @@ import { Avatar } from "@genuin/ui/avatar";
 import { Image } from "@genuin/ui/components/image";
 import { cn, getFormattedDuration, getMonthYear } from "@genuin/ui/utils";
 import type { VariantProps } from "class-variance-authority";
-import { useMemo, memo, useEffect, useState, type ComponentProps, useCallback, useRef, lazy, Suspense } from "react";
+import { useMemo, memo, useEffect, useState, type ComponentProps, useCallback, useRef, lazy, forwardRef } from "react";
 
 import { VideoTypes } from "@genuin/components/context";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
@@ -14,6 +14,7 @@ import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
 import { getBaseUrl } from "@genuin/components/lib/utils";
 import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { Pills } from "@genuin/components/molecules/feed-player/pills";
 import { Link } from "@genuin/components/molecules/link";
 import { ProfileLink } from "@genuin/components/molecules/profile-link";
@@ -63,6 +64,10 @@ type ExpandViewProps = ComponentProps<"div"> & {
   isActive: boolean;
 } & ExpandViewCallbacks &
   VariantProps<typeof controlLayerVariant>;
+
+export type ExpandViewDetailsRef = {
+  closeSheet: () => void;
+};
 
 /**
  * Hook to get layout configuration and shared logic
@@ -444,7 +449,7 @@ const SharedActions = memo(function SharedActions({
 
   // Default actions for other brands
   return (
-    <Suspense fallback={null}>
+    <SafeSuspense fallback={null} errorFallback={null}>
       <Actions
         onClick={(e) => e.stopPropagation()}
         className="gencl:sm:hidden! gencl:gap-2!"
@@ -524,22 +529,25 @@ const SharedActions = memo(function SharedActions({
           onReactionStateChange?.(video.id, video.slug, isReacted);
         }}
       />
-    </Suspense>
+    </SafeSuspense>
   );
 });
 
-export function ExpandViewDetails({
-  className,
-  postDetails,
-  isActive,
-  variant,
-  onGroupJoinStatusChange,
-  onGroupSubscriptionChange,
-  onCommunityJoinStatusChange,
-  onReactionStateChange,
-  onCommentCountChange,
-  ...restProps
-}: ExpandViewProps) {
+export const ExpandViewDetails = forwardRef<ExpandViewDetailsRef, ExpandViewProps>(function ExpandViewDetails(
+  {
+    className,
+    postDetails,
+    isActive,
+    variant,
+    onGroupJoinStatusChange,
+    onGroupSubscriptionChange,
+    onCommunityJoinStatusChange,
+    onReactionStateChange,
+    onCommentCountChange,
+    ...restProps
+  }: ExpandViewProps,
+  ref
+) {
   const {
     brandLayoutType,
     defaultOpenCommentDialog,
@@ -556,7 +564,7 @@ export function ExpandViewDetails({
     positionIndex,
     videoAutoplay,
   } = useExpandViewConfig(postDetails);
-  const { brand, engagement } = useEmbedConfigs();
+  const { brand, engagement, isDesignSystemV2 } = useEmbedConfigs();
   const viewportHeight = useViewportHeight();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
   const [isExpanded, setIsExpanded] = useState(false);
@@ -607,19 +615,6 @@ export function ExpandViewDetails({
             isSwipeBlocked && "swiper-no-swiping"
           )}
           onClick={(e) => e.stopPropagation()}>
-          <div className="gencl:z-20">
-            {!isDesktop && (
-              <OctoExpandSheet
-                ref={octoSheetRef}
-                isActive={isActive}
-                videoId={video.id}
-                videoSlug={video.slug}
-                isMobile={isMobile}
-                viewportHeight={viewportHeight}
-              />
-            )}
-          </div>
-
           {/**
            * If the brand is US Weekly, we do not show the user profile in expand view.
            */}
@@ -693,14 +688,26 @@ export function ExpandViewDetails({
             />
           </DynamicSheet> */}
 
+          <div className="gencl:z-20">
+            {!isDesktop && (
+              <OctoExpandSheet
+                ref={octoSheetRef}
+                isActive={isActive}
+                videoId={video.id}
+                videoSlug={video.slug}
+                isMobile={isMobile}
+              />
+            )}
+          </div>
+
           {/* Linkout inside player — show on mobile always, and on desktop only when
               comments are also open (split view: linkout overlay + comment right panel). */}
           {showLinkoutInExpand && brandLayoutType !== "iheart" && !isOctoVisible && video.linkouts && (
-            <Suspense fallback={null}>
+            <SafeSuspense fallback={null} errorFallback={null}>
               <Linkouts
                 linkouts={video.linkouts}
                 linkoutId={video.linkoutId!}
-                // variant="dynamic"
+                {...(isDesignSystemV2 ? { variant: "dynamic" as const } : {})}
                 view="expand"
                 showImmediately={video.linkouts.length > 0 && !video.linkoutId}
                 isActive={isActive}
@@ -711,33 +718,33 @@ export function ExpandViewDetails({
                 positionIndex={positionIndex}
                 autoplay={videoAutoplay}
               />
-            </Suspense>
+            </SafeSuspense>
           )}
 
-          {!isOctoVisible && (
-            <AdaptiveDescription
-              video={video}
-              type={brandLayoutType}
-              {...(brandLayoutType === "iheart" && {
-                isExpanded,
-                onExpand,
-              })}
-              layoutType={brandLayoutType}
-            />
-          )}
+          <AdaptiveDescription
+            video={video}
+            type={brandLayoutType}
+            {...(brandLayoutType === "iheart" && {
+              isExpanded,
+              onExpand,
+            })}
+            layoutType={brandLayoutType}
+          />
         </div>
 
-        <SharedActions
-          postDetails={postDetails}
-          brandLayoutType={brandLayoutType}
-          defaultOpenCommentDialog={defaultOpenCommentDialog}
-          onReactionStateChange={onReactionStateChange}
-          onCommentCountChange={onCommentCountChange}
-          isActive={isActive}
-          onOctoOpen={handleOctoActionToggle}
-          linkoutThumbnail={video.linkouts?.[0]?.links?.find((l: any) => l.image)?.image}
-          isDesktop={isDesktop}
-        />
+        {octoSheetState !== "panel-view" && octoSheetState !== "full-view" && (
+          <SharedActions
+            postDetails={postDetails}
+            brandLayoutType={brandLayoutType}
+            defaultOpenCommentDialog={defaultOpenCommentDialog}
+            onReactionStateChange={onReactionStateChange}
+            onCommentCountChange={onCommentCountChange}
+            isActive={isActive}
+            onOctoOpen={handleOctoActionToggle}
+            linkoutThumbnail={video.linkouts?.[0]?.links?.find((l: any) => l.image)?.image}
+            isDesktop={isDesktop}
+          />
+        )}
       </div>
       {(!hideGroupPill || !hideCommunityPill) && (
         <div
@@ -794,4 +801,4 @@ export function ExpandViewDetails({
       )}
     </div>
   );
-}
+});

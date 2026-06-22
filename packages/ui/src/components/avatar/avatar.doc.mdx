@@ -1,0 +1,117 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as AvatarStories from "./avatar.stories";
+
+{/*
+  Design-system narrative for the Avatar component. Attached to the
+  `Components/Avatar` story group via `<Meta of={…}>` so it renders as
+  the "Docs" tab next to the live stories. Layout: narrative intro →
+  live examples + controls → usage guidelines.
+*/}
+
+<Meta of={AvatarStories} />
+
+# Avatar
+
+## What avatars are for
+
+An avatar is a small, circular representation of a person, account, brand, or entity in the interface. It does one job: turn an abstract identity (a user ID, a name, an email) into something the eye can recognize at a glance. Done well, an avatar lets the user *see* who is speaking, who owns a piece of content, who is online, who replied — without having to read a single label. Done poorly, it adds visual noise without aiding recognition.
+
+A well-designed avatar resolves three things in order: a real, trusted image when one is available; a deterministic fallback (initials, a color, an icon) when it is not; and a graceful loading state in between. It must remain recognizable at every size it appears in — from a 24px comment author chip to a 160px profile header — and it must never lie about identity (the wrong face next to the wrong name is worse than no face at all). The Genuin Avatar wraps Radix's primitive, which handles image loading and fallback orchestration correctly out of the box, so the guidance below focuses on *which size and treatment* to reach for, and which patterns to avoid.
+
+## Avatar in this design system
+
+The Avatar component in `@genuin/ui` is built on `@radix-ui/react-avatar` and exposes a single export: `<Avatar>`. It auto-resolves an image URL, falls back to initials when the image is missing or fails, and optionally renders a tappable, zoomable variant for media-style use cases.
+
+### Sizes
+
+Eight discrete sizes cover everything from chrome to hero use cases. Type styles for the fallback initials are baked into each size — so initials always read correctly without extra styling.
+
+| Size  | Pixels | Typical use                                      |
+| ----- | ------ | ------------------------------------------------ |
+| `xs`  | 24px   | Comment threads, dense lists, inline @mentions   |
+| `sm`  | 32px   | Default — list rows, navigation chrome, headers  |
+| `md`  | 40px   | Card author lines, message threads               |
+| `lg`  | 48px   | Detail views, conversation headers               |
+| `xl`  | 56px   | Empty-state illustrations, prominent author rows |
+| `2xl` | 64px   | Profile cards, settings pages                    |
+| `3xl` | 88px   | Profile previews, modals                         |
+| `4xl` | 160px  | Profile hero, account pages                      |
+
+### Sources & resolution
+
+- **`imageUrl`** — the image to display. It can be a full HTTPS URL or, when paired with `isAvatar=true`, a token that resolves to the standard avatar asset URL. Webp variants are picked automatically for non-avatar images via `getWebpUrlForImage`.
+- **`isAvatar`** — flips the behaviour: `true` means the URL is an avatar token (rendered against the secondary-300 chip background), `false` means it is a generic image (rendered without the chip background).
+- **`alt`** — required. Doubles as the source of the fallback initials when the image fails to load. Pass a real name ("Jane Smith"), not a placeholder.
+
+### Fallback
+
+When `imageUrl` is empty or fails to load, the component renders a circular fallback with the first letter of the first two words of `alt`, uppercased ("Jane Smith" → "JS"). If `alt` is empty, it falls back to `"U"`. The fallback uses the secondary-300 background by default and inherits the size's typography. Customize per-instance via `fallbackClassName`.
+
+### Zoomable variant
+
+Pass `shouldZoom` to render the lazily-loaded `AvatarWithZoom` wrapper, which makes the avatar tappable and opens a zoomed view. Reach for it when the avatar represents content that the user is likely to want to inspect more closely — author photos in feed cards, profile previews, etc. Don't enable it on chrome-level avatars (lists, comments, headers); the extra weight of the zoom UI is overkill there.
+
+### Customization
+
+`className` styles the root, `imageClassName` styles the underlying `<img>`, and `fallbackClassName` styles the initials block. Reach for these only when something genuinely needs to differ from the default — a colored ring, a status dot, a different background. Avoid overriding the `rounded-full` shape; an avatar that isn't a circle isn't an avatar in this system.
+
+## Examples
+
+### Default
+
+A standard avatar with a remote image URL at the default `sm` size — the everyday case for list rows and chrome.
+
+<Canvas of={AvatarStories.Default} />
+
+<Controls of={AvatarStories.Default} />
+
+### With fallback
+
+When `imageUrl` is empty (or fails to load), the component derives initials from `alt`. Here `"Jane Smith"` resolves to `JS` on the secondary-300 background.
+
+<Canvas of={AvatarStories.WithFallback} />
+
+### Custom avatar URL
+
+`isAvatar=true` treats the URL as an avatar token resolved against the avatar asset pipeline and renders the chip background underneath.
+
+<Canvas of={AvatarStories.CustomAvatarUrl} />
+
+### All sizes
+
+Every supported size rendered side-by-side. Type scale for the fallback initials is baked into each size so initials remain proportionate when the image is missing.
+
+<Canvas of={AvatarStories.AllSizes} />
+
+### No alt
+
+When `alt` is empty the fallback degrades to `"U"`. This is the worst-case rendering, kept here as a visual reminder to always pass a meaningful `alt`.
+
+<Canvas of={AvatarStories.NoAlt} />
+
+## When to use Avatar
+
+- **Author attribution.** Anywhere a piece of content is created by, owned by, or directed at a person/brand — feed cards, comments, replies, notifications.
+- **List rows and search results.** When the row represents a person, an avatar at `xs` or `sm` is the fastest way to differentiate items.
+- **Conversation and presence.** Message threads, group chats, "who's online" lists. Pair `sm`/`md` avatars with status dots when presence matters.
+- **Profile surfaces.** Use `2xl`–`4xl` for profile headers and account pages — the avatar carries identity here, so make it large and unambiguous.
+- **Empty / aspirational states.** A large avatar (`xl`+) with default initials reads as "your future self" in onboarding empty states.
+- **Pick size by surface, not importance.** A profile hero is `4xl`; a comment author is `xs`. Don't bump up the size of an `xs`-context avatar to "draw attention" — that's the job of layout and typography around it.
+- **Prefer real names in `alt`.** The same string powers accessibility, the fallback initials, and the zoom dialog title — so a real name does triple duty.
+- **Enable `shouldZoom` only when the photo carries meaning** (a profile photo, a contributor avatar). Skip it on brand marks or list-chrome.
+
+## How not to use Avatar
+
+- **Don't use an Avatar to represent something that isn't an entity.** Avatars are for *people, brands, or accounts*. A category, a tag, a piece of content — those want an icon, an emoji, or a thumbnail, not an avatar.
+- **Don't ship an Avatar without a meaningful `alt`.** Empty or placeholder `alt` ("avatar", "user", "image") is worse than nothing — it pollutes screen-reader output and makes the fallback initials read as `U`. Use the entity's real name.
+- **Don't suppress the fallback.** The fallback exists because images fail (CDN hiccups, deleted accounts, slow networks). Don't render the avatar conditionally based on whether the image loads — let the component fall back. The fallback *is* the loading and error state.
+- **Don't override the circle shape.** The component, the type system, and the surrounding patterns assume a circle. Squares and rounded-rects break alignment in lists, status indicators, and overlap stacks.
+- **Don't hand-render initials yourself.** Pass `alt` and let the component derive them. Hand-rolled initials get out of sync with the displayed name (renames, language changes, RTL).
+- **Don't crop a non-square image into the avatar.** The component squares an aspect-ratio at `aspect-square`. If your source isn't square or has a focal point off-center, fix the source — don't mask the issue with `imageClassName`.
+- **Don't use a tiny avatar (`xs`) at the same time as the user's full name in big type.** The avatar should be sized in proportion to the surrounding label. A 24px avatar next to a headline-1 name reads as decorative, not informative.
+- **Don't enable `shouldZoom` for low-resolution avatar tokens.** The zoom view exposes pixelation; only enable it for images that will actually look good at a larger size.
+- **Don't stack avatars without a defined overlap pattern.** Overlap stacks ("avatar group") need a consistent ring/border so adjacent avatars are visually separated. Don't roll your own — promote the pattern to a shared `AvatarGroup` if you need it.
+- **Don't put interactive content on top of an Avatar.** A button, link, or menu trigger inside the avatar breaks the click target. If the avatar should *itself* be interactive (e.g., open a profile), use `shouldZoom` or wrap it in a single anchor — not nested controls.
+- **Don't use an Avatar for status alone.** "User online" is a status dot, not an avatar. Combine the two; don't conflate them.
+- **Don't pull avatars from arbitrary external URLs without sanitization.** The component accepts any `imageUrl`, but uploads / user-supplied URLs should be validated and fetched through the sanctioned media pipeline — never rendered raw.

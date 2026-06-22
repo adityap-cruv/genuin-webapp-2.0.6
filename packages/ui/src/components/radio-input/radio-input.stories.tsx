@@ -31,7 +31,6 @@ All styling uses the \`gencl\` Tailwind prefix for consistency.
       },
     },
   },
-  tags: ["autodocs"],
   argTypes: {
     value: {
       control: "text",

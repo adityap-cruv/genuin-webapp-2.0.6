@@ -8,7 +8,6 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./collapsib
 export default {
   title: "Components/Collapsible",
   component: Collapsible,
-  tags: ["autodocs"],
   argTypes: {
     open: {
       control: "boolean",

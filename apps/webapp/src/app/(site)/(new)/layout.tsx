@@ -1,13 +1,16 @@
 import "@genuin/components/styles";
+import { VideoElementProvider } from "@genuin/ui/components/video-player";
 import { type Metadata, type Viewport } from "next";
 import { Inter } from "next/font/google";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { type Session } from "next-auth";
 
+import { GenuinSdkLoader } from "@components/genuin-sdk-loader";
 import SiteProviders from "@components/providers/site-providers";
 import { getEmbedConfig } from "@lib/api/config";
 import { type ConfigType } from "@lib/stores/genuin-options";
 import { cn, parseBrandColors } from "@lib/utils";
+import { parseSdkParams } from "@lib/utils/parse-sdk-params";
 
 import { auth } from "../../../../auth";
 import Error from "../../error";
@@ -82,6 +85,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </html>
     );
   }
+  const searchParamsStr = (await headers()).get("x-search-params") ?? "";
+  const sdkParams = parseSdkParams(searchParamsStr);
   const favicon = !config?.protected_content ? config?.favicon : undefined;
   const brandColors = parseBrandColors(config?.brand_colors || {});
 
@@ -104,8 +109,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           height: "100%",
         }}>
         <SiteProviders config={config} session={userSession}>
-          {children}
+          <VideoElementProvider>{children}</VideoElementProvider>
         </SiteProviders>
+        {sdkParams && config.api_key && <GenuinSdkLoader apiKey={config.api_key} params={sdkParams} />}
       </body>
     </html>
   );

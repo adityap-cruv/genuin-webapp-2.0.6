@@ -123,6 +123,7 @@ type VideoData = {
     image_url?: string;
     timestamp?: number;
     title?: string;
+    subtitle?: string;
     bucket_name?: string;
     offer_text?: string;
     slug?: string;

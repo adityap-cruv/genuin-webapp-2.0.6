@@ -5,8 +5,8 @@
  * before the first test runs. Add new domains by importing their handler array
  * and adding it to `allHandlers`.
  */
-import { registerRoute } from './server';
-import { homeHandlers } from './handlers/home';
+import { homeHandlers } from "./handlers/home";
+import { registerRoute } from "./server";
 
 const allHandlers = [...homeHandlers];
 

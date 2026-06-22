@@ -1,17 +1,27 @@
 import type { DynamicSheetState } from "@genuin/ui/dynamic-sheet";
 import { useCallback, useEffect, useRef } from "react";
 
+const TOGGLE_DEBOUNCE_MS = 400;
+
 import type { UseSheetStateReturn } from "@genuin/components/hooks/use-sheet-state";
+
+import type { PhaseView } from "./octo-phase-map";
 
 /**
  * State priority for detecting downward swipes on Octo sheet
  */
 const OCTO_STATE_PRIORITY: Record<DynamicSheetState, number> = {
+  // Linkout chip states sit below `default` (chips never count as
+  // "more expanded" than other open content types).
+  "pl-xs": -2,
+  "pl-sml": -1,
   default: 0,
   "default-active": 1,
   "expand-view": 2,
   "panel-view": 3,
   "full-view": 4,
+  // `responsive` is the most-expanded surface a linkout can occupy.
+  responsive: 5,
 };
 
 type UseOctoSheetManagementProps = {
@@ -53,22 +63,7 @@ export function useOctoSheetManagement({
 }: UseOctoSheetManagementProps) {
   const prevOctoSheetStateRef = useRef<DynamicSheetState>(octoSheetState);
   const isSheetOpenRef = useRef(false);
-
-  /**
-   * Handles expand request from GenAI SDK when agent response is ready.
-   * Transitions from default/default-active/expand-view to panel-view.
-   */
-  const handleOctoExpandRequest = useCallback(() => {
-    if (!enabled) return;
-
-    if (octoSheetState === "panel-view" || octoSheetState === "full-view") {
-      return;
-    }
-
-    setOctoHidden(false);
-    // Go directly to panel-view when agent response is ready
-    setContentTypeState("octo", "panel-view");
-  }, [enabled, octoSheetState, setContentTypeState]);
+  const toggleDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   /**
    * Track when sheet opens/closes to distinguish between video transitions and user swipes.
@@ -86,6 +81,13 @@ export function useOctoSheetManagement({
       prevOctoSheetStateRef.current = "default";
     }
   }, [enabled, isActive]);
+
+  // Clear pending debounce on unmount to avoid stale state updates.
+  useEffect(() => {
+    return () => {
+      if (toggleDebounceRef.current) clearTimeout(toggleDebounceRef.current);
+    };
+  }, []);
 
   /**
    * Handles Octo sheet state changes from DynamicSheet drag interactions.
@@ -157,57 +159,50 @@ export function useOctoSheetManagement({
   }, [enabled, setContentTypeState, resetSheet]);
 
   /**
-   * Handles thinking started event — fires once per session when agent starts generating.
-   * Transitions from default/default-active to expand-view.
+   * Collapses the Octo sheet back to its default (compact) state without hiding it.
+   *
+   * Used when the GenAI SDK reports the `collapsed` phase (chat closed / post-close
+   * idle). Unlike `applyPhase`, this bypasses the expand-only ratchet so a close
+   * genuinely returns the sheet to `default`, and unlike `handleOctoSheetClose` it
+   * keeps Octo visible (no `octoHidden`) so the compact widget stays on screen.
    */
-  const handleOctoThinkingStarted = useCallback(() => {
-    if (!enabled) return;
-
-    setOctoHidden(false);
-    if (octoSheetState === "default" || octoSheetState === "default-active") {
-      setContentTypeState("octo", "expand-view");
-    }
-  }, [enabled, octoSheetState, setContentTypeState]);
-
-  /**
-   * @deprecated Use handleOctoThinkingStarted instead.
-   */
-  const handleOctoCompactExpand = handleOctoThinkingStarted;
-
-  /**
-   * Handles countdown active state changes from GenAI SDK.
-   * Transitions between default and default-active states.
-   */
-  const handleOctoCountdownActive = useCallback(
-    (active: boolean) => {
-      if (!enabled) return;
-
-      if (active) {
-        setOctoHidden(false);
-        // Transition to default-active when countdown starts
-        if (octoSheetState === "default") {
-          setContentTypeState("octo", "default-active");
-        }
-      } else {
-        // Transition back to default when countdown is cancelled
-        if (octoSheetState === "default-active") {
-          setContentTypeState("octo", "default");
-        }
-      }
-    },
-    [enabled, octoSheetState, setContentTypeState]
-  );
-
-  /**
-   * Handles error events from GenAI SDK.
-   * Hides octo by resetting the sheet.
-   */
-  const handleOctoError = useCallback(() => {
+  const handleOctoCollapse = useCallback(() => {
     if (!enabled) return;
 
     prevOctoSheetStateRef.current = "default";
-    resetSheet();
-  }, [enabled, resetSheet]);
+    setOctoHidden(false);
+    setContentTypeState("octo", "default");
+  }, [enabled, setContentTypeState, setOctoHidden]);
+
+  /**
+   * Single reducer for the Octo lifecycle. Applies a PhaseView (from the phase map)
+   * to the sheet. Replaces the per-event handlers (expand/thinking/countdown/error/auto-close).
+   * Never hides Octo — null sheetState means leave the sheet untouched (idle/error phases).
+   * Never switches the active content type, so an open comments/linkouts sheet is never stolen.
+   */
+  const applyPhase = useCallback(
+    (view: PhaseView) => {
+      if (!enabled) return;
+      if (!view.sheetState) return; // null = leave the sheet untouched (idle/error)
+
+      // Ratchet: a lifecycle phase may only expand the sheet, never shrink it.
+      // Once the user is in a larger view (e.g. panel-view), a later lower-priority
+      // phase (thinking → expand-view, collapsed → default) must not auto-collapse it.
+      // Only explicit user actions (swipe-down, close) reduce the sheet.
+      const current = prevOctoSheetStateRef.current;
+      const currentPriority = OCTO_STATE_PRIORITY[current] ?? 0;
+      const nextPriority = OCTO_STATE_PRIORITY[view.sheetState] ?? 0;
+      if (nextPriority < currentPriority) {
+        setOctoHidden(false);
+        return;
+      }
+
+      setOctoHidden(false);
+      prevOctoSheetStateRef.current = view.sheetState; // keep swipe-detection coherent
+      setContentTypeState("octo", view.sheetState);
+    },
+    [enabled, setContentTypeState, setOctoHidden]
+  );
 
   /**
    * Resets ref and shows Octo when action button is used to open the sheet.
@@ -222,9 +217,16 @@ export function useOctoSheetManagement({
   /**
    * Toggles Octo visibility via the action button.
    * If currently hidden, shows it and resets tracking. If visible, hides it and closes the sheet.
+   * Debounced to prevent flicker and duplicate inits on rapid taps.
    */
   const handleOctoActionToggle = useCallback(() => {
     if (!enabled) return;
+
+    if (toggleDebounceRef.current) return;
+
+    toggleDebounceRef.current = setTimeout(() => {
+      toggleDebounceRef.current = null;
+    }, TOGGLE_DEBOUNCE_MS);
 
     if (octoHidden) {
       setOctoHidden(false);
@@ -245,13 +247,10 @@ export function useOctoSheetManagement({
   }, [isOctoVisible, setOctoVisible]);
 
   return {
-    handleOctoExpandRequest,
+    applyPhase,
+    handleOctoCollapse,
     handleOctoSheetStateChange,
     handleOctoSheetClose,
-    handleOctoThinkingStarted,
-    handleOctoCompactExpand,
-    handleOctoCountdownActive,
-    handleOctoError,
     handleOctoActionOpen,
     handleOctoActionToggle,
     /** Aliased to `isOctoHidden` to keep the public return shape stable for existing callers. */

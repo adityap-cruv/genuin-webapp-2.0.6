@@ -1,0 +1,26 @@
+/**
+ * Dev-surface stylesheet for `@genuin/hierarchical-tree`.
+ *
+ * Pulls in the design-system stylesheet (`@genuin/tailwind-config`),
+ * which sets the `--gencl-*` CSS variables consumed by the
+ * `@genuin/ui` primitives the walker renders. The Tailwind v4 prefix
+ * is `gencl` — same prefix used in production by the webapp via the
+ * compiled `@genuin/ui/styles` bundle.
+ */
+@import '@genuin/tailwind-config';
+
+/*
+ * Extend Tailwind v4's automatic source detection to scan the
+ * @genuin/ui workspace package — its components carry the `gencl:`
+ * utility classes the dev shell renders. Without this, the dev
+ * preview ships with Tailwind's own classes only and @genuin/ui
+ * components render as unstyled HTML.
+ */
+@source "../../../ui/src/**/*.{ts,tsx}";
+
+html,
+body,
+#root {
+  min-height: 100vh;
+  margin: 0;
+}

@@ -24,7 +24,10 @@ type OctoExpandSheetProps = {
   videoId: string;
   videoSlug: string;
   isMobile: boolean;
-  viewportHeight: number;
+  /** Called whenever the Octo sheet should block parent swipe gestures. */
+  onSwipeBlockChange?: (blocked: boolean) => void;
+  /** Called whenever Octo's rendered visibility changes. */
+  onVisibilityChange?: (visible: boolean) => void;
 };
 
 /**
@@ -38,7 +41,7 @@ type OctoExpandSheetProps = {
  * via ref for action-button coordination.
  */
 export const OctoExpandSheet = forwardRef<OctoExpandSheetRef, OctoExpandSheetProps>(function OctoExpandSheet(
-  { isActive, videoId, videoSlug, isMobile, viewportHeight },
+  { isActive, videoId, videoSlug, isMobile, onSwipeBlockChange, onVisibilityChange },
   ref
 ) {
   const {
@@ -49,10 +52,8 @@ export const OctoExpandSheet = forwardRef<OctoExpandSheetRef, OctoExpandSheetPro
     isOctoHidden,
     handleOctoSheetStateChange,
     handleOctoSheetClose,
-    handleOctoExpandRequest,
-    handleOctoThinkingStarted,
-    handleOctoCountdownActive,
-    handleOctoError,
+    applyPhase,
+    handleOctoCollapse,
     handleOctoActionOpen,
     handleOctoActionToggle,
   } = useOctoExpandSheet({ isActive });
@@ -75,15 +76,12 @@ export const OctoExpandSheet = forwardRef<OctoExpandSheetRef, OctoExpandSheetPro
             videoSlug={videoSlug}
             octoSheetState={octoSheetState ?? "default"}
             isMobile={isMobile}
-            viewportHeight={viewportHeight}
             octoRenderMode={octoRenderMode}
             variant="embed"
             onStateChange={handleOctoSheetStateChange}
             onClose={handleOctoSheetClose}
-            onExpandRequest={handleOctoExpandRequest}
-            onThinkingStarted={handleOctoThinkingStarted}
-            onCountdownActive={handleOctoCountdownActive}
-            onError={handleOctoError}
+            applyPhase={applyPhase}
+            onCollapse={handleOctoCollapse}
           />
         </div>
       </Suspense>

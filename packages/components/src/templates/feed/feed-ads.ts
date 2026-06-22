@@ -80,14 +80,16 @@ export function appendStaticVideoAdToHouseAds(feed: PostDetailsType[]): PostDeta
  * Manages ad injection across paginated feed updates.
  *
  * - webapp: enriches existing house_ad items with static video_ad entries (appendStaticVideoAdToHouseAds).
- * - sdk, expand view open, shouldInjectExpandViewAds=true: inserts synthetic ad items between videos (injectAdsForExpandView).
- * - sdk, collapsed or flag off: returns rawVideos unchanged.
+ * - sdk, expand view open, shouldInjectExpandViewAds=true: inserts synthetic ad slides between videos (injectAdsForExpandView). LIVE — do not alter.
+ * - sdk, expand view open, shouldAttachStaticExpandViewAd=true: attaches a static adTagObject onto existing video items (attachStaticAdToFeedVideos). Kept separate from the live path.
+ * - sdk, collapsed or both flags off: returns rawVideos unchanged.
  *
  * @param rawVideos - The current flat list of feed items from pagination.
  * @param brandId - The active brand's numeric id, used to gate webapp injection.
  * @param showExpandView - Whether the expand/fullscreen view is currently active.
  * @param platform - Rendering context: "webapp" or "sdk".
- * @param shouldInjectExpandViewAds - SDK-only flag: enables synthetic ad insertion in expand view.
+ * @param shouldInjectExpandViewAds - SDK-only flag: enables synthetic ad-slide insertion in expand view (live placements).
+ * @param shouldAttachStaticExpandViewAd - SDK-only flag: attaches a static adTagObject onto existing videos in expand view (new, id-scoped).
  * @returns The processed feed array, or rawVideos unchanged when no injection applies.
  */
 export function useAdInjectedFeed(
@@ -95,17 +97,24 @@ export function useAdInjectedFeed(
   brandId: number | undefined,
   showExpandView: boolean,
   platform: "webapp" | "sdk",
-  shouldInjectExpandViewAds: boolean = false
+  shouldInjectExpandViewAds: boolean = false,
+  shouldAttachStaticExpandViewAd: boolean = false
 ): PostDetailsType[] {
   // injectedFeedRef holds the last stable result so pagination doesn't re-randomize existing slots.
   const injectedFeedRef = useRef<PostDetailsType[]>([]);
   const rawBaseRef = useRef<PostDetailsType[]>([]);
 
   return useMemo(() => {
-    // sdk: inject synthetic ads between videos when expand view is open and flag is on
     if (platform === "sdk") {
+      // LIVE path: synthetic ad slides inserted between videos. Do not change.
       if (shouldInjectExpandViewAds && showExpandView) {
         return injectAdsForExpandView(rawVideos);
+      }
+      // New, id-scoped path: attach a static adTagObject onto existing video
+      // items. No synthetic slides — the real video plays client-side and the
+      // genuin ad SDK overlays the ad once its waterfall fills.
+      if (shouldAttachStaticExpandViewAd && showExpandView) {
+        return attachStaticAdToFeedVideos(rawVideos);
       }
       injectedFeedRef.current = [];
       rawBaseRef.current = [];
@@ -131,7 +140,14 @@ export function useAdInjectedFeed(
 
     rawBaseRef.current = rawVideos;
     return injectedFeedRef.current;
-  }, [rawVideos, brandId, showExpandView, platform, shouldInjectExpandViewAds]);
+  }, [
+    rawVideos,
+    brandId,
+    showExpandView,
+    platform,
+    shouldInjectExpandViewAds,
+    shouldAttachStaticExpandViewAd,
+  ]);
 }
 
 function createInjectableAdItem(
@@ -191,8 +207,9 @@ function createInjectableAdItem(
 }
 
 /**
- * Interleaves synthetic ad items after every non-ad, non-special video in the feed.
- * Used in expand-view only for selected placements/embeds (gated by shouldInjectExpandViewAds).
+ * LIVE path — do not alter. Interleaves synthetic ad slides after every non-ad,
+ * non-special video in the feed. Used in expand view for selected live
+ * placements (gated by shouldInjectExpandViewAds).
  */
 export function injectAdsForExpandView(feed: PostDetailsType[]): PostDetailsType[] {
   const result: PostDetailsType[] = [];
@@ -212,4 +229,51 @@ export function injectAdsForExpandView(feed: PostDetailsType[]): PostDetailsType
   }
 
   return result;
+}
+
+/**
+ * Builds a video_ad-only adTagObject from a single EXPAND_VIEW_AD_CONFIGS entry,
+ * including advertiser branding for the ad overlay.
+ */
+function buildStaticAdTagObject(idx: number): AdTagObjectType {
+  const cfg = EXPAND_VIEW_AD_CONFIGS[idx % EXPAND_VIEW_AD_CONFIGS.length]!;
+  return {
+    display_ad: null,
+    native_ad: null,
+    video_ad: {
+      url: cfg.adUrl,
+      ads_url: cfg.adUrl,
+      cpm: 0.001,
+      advertiserDetails: { logo: cfg.logo, primaryColor: cfg.primaryColor },
+      contentVideo: { url: cfg.videoSource, autoplay: true, loop: true, muted: true, objectFit: "contain" },
+    },
+    order: ["video_ad"],
+  };
+}
+
+/**
+ * Attaches a static adTagObject onto each real, non-ad, non-special video item
+ * in the feed — expand-view only, for selected placements/embeds (gated by
+ * shouldInjectExpandViewAds). No synthetic slides are inserted: the item keeps
+ * its real video.source (played client-side) and the player runs the genuin ad
+ * waterfall, overlaying the ad once it fills. Items that already carry an
+ * adTagObject (server-driven ads) are left untouched.
+ */
+export function attachStaticAdToFeedVideos(feed: PostDetailsType[]): PostDetailsType[] {
+  let adCounter = 0;
+
+  return feed.map((item) => {
+    const isAlreadyAd = (item as { type?: string }).type === "ads";
+    const isSpecialSlide = item.video?.type === "complete" || item.video?.type === "overlay";
+    const hasExistingAd = !!(item as { adTagObject?: AdTagObjectType }).adTagObject;
+
+    if (isAlreadyAd || isSpecialSlide || hasExistingAd || !item.video) return item;
+
+    // Deterministic pick (no Math.random) so the attached creative is stable
+    // across re-renders and pagination — re-randomizing would swap ads mid-scroll.
+    return {
+      ...item,
+      adTagObject: buildStaticAdTagObject(adCounter++),
+    } as PostDetailsType;
+  });
 }

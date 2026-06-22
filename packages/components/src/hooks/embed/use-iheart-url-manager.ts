@@ -1,5 +1,10 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
+import {
+  IHEART_FULLSCREEN_PARAM,
+  IHEART_FULLSCREEN_PARAM_VALUE,
+  isCurrentPageIheartSubdomain,
+} from "@genuin/components/lib/utils/iheart-url";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 type UseIheartUrlManagerProps = {
@@ -30,6 +35,7 @@ export function useIheartUrlManager({
   videos,
 }: UseIheartUrlManagerProps) {
   const baseUrlRef = useRef<string | null>(null);
+  const fullscreenSearchParamRef = useRef<{ wasPresent: boolean; value: string | null } | null>(null);
 
   const getVideoPathSegment = (index: number): string => {
     const video = videos[index];
@@ -85,6 +91,58 @@ export function useIheartUrlManager({
     const method = replaceState ? "replaceState" : "pushState";
     window.history[method]({}, "", currentUrl.toString());
   };
+
+  const setFullscreenParam = useCallback(() => {
+    const currentUrl = new URL(window.location.href);
+
+    if (!fullscreenSearchParamRef.current) {
+      fullscreenSearchParamRef.current = {
+        wasPresent: currentUrl.searchParams.has(IHEART_FULLSCREEN_PARAM),
+        value: currentUrl.searchParams.get(IHEART_FULLSCREEN_PARAM),
+      };
+    }
+
+    if (currentUrl.searchParams.get(IHEART_FULLSCREEN_PARAM) === IHEART_FULLSCREEN_PARAM_VALUE) {
+      return;
+    }
+
+    currentUrl.searchParams.set(IHEART_FULLSCREEN_PARAM, IHEART_FULLSCREEN_PARAM_VALUE);
+    window.history.replaceState({}, "", currentUrl.toString());
+  }, []);
+
+  const restoreFullscreenParam = useCallback(() => {
+    const previousValue = fullscreenSearchParamRef.current;
+    if (!previousValue) return;
+
+    const currentUrl = new URL(window.location.href);
+    if (previousValue.wasPresent && previousValue.value !== null) {
+      currentUrl.searchParams.set(IHEART_FULLSCREEN_PARAM, previousValue.value);
+    } else {
+      currentUrl.searchParams.delete(IHEART_FULLSCREEN_PARAM);
+    }
+
+    window.history.replaceState({}, "", currentUrl.toString());
+    fullscreenSearchParamRef.current = null;
+  }, []);
+
+  useEffect(() => {
+    if (!isIheartLayout || typeof window === "undefined") return;
+    if (!isCurrentPageIheartSubdomain()) return;
+
+    if (activePlayerType === "expand-view") {
+      setFullscreenParam();
+    } else {
+      restoreFullscreenParam();
+    }
+  }, [activePlayerType, isIheartLayout, restoreFullscreenParam, setFullscreenParam]);
+
+  useEffect(() => {
+    return () => {
+      if (typeof window !== "undefined") {
+        restoreFullscreenParam();
+      }
+    };
+  }, [restoreFullscreenParam]);
 
   useEffect(() => {
     if (!isIheartLayout) return;

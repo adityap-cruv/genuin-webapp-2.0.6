@@ -1,0 +1,116 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./skeleton.stories";
+
+{/*
+  Design-system narrative for the skeleton component. Attached to the
+  matching story group via `<Meta of={…}>` so it renders as the
+  "Docs" tab next to the live stories. Layout: narrative intro →
+  live examples + controls → usage guidelines.
+*/}
+
+<Meta of={Stories} />
+
+# Skeleton
+
+## What skeletons are for
+
+A skeleton is a placeholder block that occupies the *shape* of content the user is about to see — a gray rectangle in the size of a heading, a small box where the avatar will be, a row of three pill-shaped chips. It pulses gently to signal "this is loading" without showing actual data, then it disappears the moment real content arrives. The point of a skeleton is to make a loading state feel like a *layout* instead of a *spinner* — the page looks structurally correct from the first paint, and the user's eye anchors to where the content will land instead of staring at a centered spinner waiting for the page to assemble itself.
+
+The pattern works because it tells the user three things at once: the page is loading (the pulse), what you'll see when it's ready (the shape), and where it'll appear (the position). A spinner only tells the first. A blank screen tells none. So skeletons are the right loading state for surfaces that have a known, predictable layout — feed cards, profile headers, list rows, table rows, dashboards. They're the wrong loading state for surfaces where the layout isn't predictable (free-form content, search results that might be empty, lists where length is unknown), where a small spinner is honest and a skeleton would be a lie.
+
+A good skeleton matches the real content's silhouette: same heights, same positions, same approximate widths. A bad skeleton is a generic gray bar that looks nothing like what's coming, or a skeleton that lingers after the data arrives and creates visible flicker. The Genuin Skeleton is intentionally tiny — a styled `<div>` with the design system's `pulse` animation and a neutral background. Every concrete skeleton (a card skeleton, an avatar skeleton, a row skeleton) is built by composing Skeleton blocks into the right layout.
+
+## Skeleton in this design system
+
+The Skeleton component in `@genuin/ui` is a single export, `<Skeleton>`. It renders a `<div>` with three things:
+
+- `gencl:bg-secondary-100` — a low-saturation neutral fill that reads as "placeholder" without screaming for attention.
+- `gencl:animate-pulse` — Tailwind's standard subtle opacity pulse. Slow enough to feel calm, present enough to signal activity.
+- `gencl:rounded-md` — the design system's medium corner radius, matching the most common content surfaces (cards, chips, list items).
+
+Every other dimension — width, height, margin, layout — comes from the consumer via `className`. That's deliberate: the component doesn't dictate what to skeleton; it gives you a single building block, and you compose skeletons that match your real content.
+
+### Composing skeletons
+
+A skeleton for a feed card might be:
+
+```tsx
+<div className="space-y-3">
+  <Skeleton className="h-40 w-full" />              {/* Cover image */}
+  <Skeleton className="h-5 w-3/4" />                {/* Title */}
+  <Skeleton className="h-4 w-1/2" />                {/* Subtitle */}
+  <div className="flex items-center gap-2">
+    <Skeleton className="size-8 rounded-full" />    {/* Avatar */}
+    <Skeleton className="h-4 w-24" />               {/* Author name */}
+  </div>
+</div>
+```
+
+The pattern: pick the heights and widths that match the real content's shape, override `rounded-md` to `rounded-full` for circular skeletons (avatars), and group with the same spacing the real layout uses. The skeleton should look, at a squint, like a low-fidelity tracing of the rendered card.
+
+### Sizing & shape conventions
+
+- **Text**: `h-4` for body lines, `h-5` for paragraph titles, `h-6` / `h-7` for section headings, `h-8`+ for hero text.
+- **Avatars**: `size-8` (sm), `size-10` (md), `size-12` (lg), with `rounded-full`.
+- **Buttons**: `h-10 w-24` (md button), `h-9 w-20` (sm), `h-12 w-28` (lg).
+- **Card images**: aspect-ratio classes work the same way they do on real images — `aspect-square`, `aspect-video`, `aspect-[3/4]`.
+- **Chips & pills**: `h-6 w-16 rounded-full`.
+
+Skeletons should mirror the production scale, not invent a parallel one.
+
+### Animation
+
+The animation is Tailwind's `animate-pulse` — opacity fades between 1 and ~0.5 over 2s, infinitely. The cadence is intentional: faster than a heartbeat, slower than a strobe. Don't override the animation timing or the keyframes — every skeleton across the app should pulse together, so the page reads as a single loading state, not a row of lightly-arrhythmic blinkers.
+
+### When to mount and when to remove
+
+- Render skeletons while the data layer is in its loading state (`isLoading` from TanStack Query, `pending` from Suspense, etc.).
+- Swap to real content the moment data arrives. Don't fade between them — the swap should be instant; the *content* arrival is the moment of payoff.
+- Reserve the same vertical space the real content will occupy so nothing jumps when the swap happens. This is the whole reason skeletons exist; if the layout reflows on swap, the skeleton failed.
+
+### Accessibility
+
+Skeletons are decorative; they convey no information by themselves. Don't add `aria-label`s explaining "loading" — instead, set `aria-busy="true"` on the surrounding container while skeletons are showing, so assistive tech announces the loading state once at the right level.
+
+For motion-sensitive users, the surrounding application's `prefers-reduced-motion` handling should already pause the pulse via Tailwind's reduced-motion variants. Don't override the animation locally without preserving that hook.
+
+## Examples
+
+### Default
+
+<Canvas of={Stories.Default} />
+
+<Controls of={Stories.Default} />
+
+### Rounded full
+
+<Canvas of={Stories.RoundedFull} />
+
+## When to use Skeleton
+
+- **Feed and list rendering.** Cards, list rows, table rows — anywhere the layout is predictable and the rows arrive in batches. Render N skeleton rows that match the expected page size.
+- **Profile headers and entity pages.** The avatar, the name, the meta line — render the silhouette so the page doesn't pop into existence.
+- **Dashboards and metric panels.** Skeleton tiles, skeleton charts (with a single rectangle approximating the chart area), skeleton callouts.
+- **Detail pages with multiple sections.** A blog-post page with title, author, body, comments — skeleton each section with appropriate widths.
+- **Side panels with predictable content shape.** Settings rows, preference toggles — match the rendered layout's heights and widths.
+- **Reach for Skeleton when the layout is known and the wait is over ~300ms.** Sub-300ms loads should not show a skeleton — the flicker is more disruptive than no skeleton.
+- **Compose skeletons that *look like* the rendered content.** The closer the silhouette, the more legitimate the loading state feels.
+
+## How not to use Skeleton
+
+- **Don't use a single full-page Skeleton block.** A giant gray rectangle covering the whole viewport doesn't tell the user anything more than a spinner would. Either skeleton the structure or use a centered `Loader`.
+- **Don't use Skeleton for unpredictable layouts.** Search results that might be 0 / 1 / 50 rows of varying heights — a skeleton row count is a guess that will be wrong. Use a small `Loader` that doesn't lie about the result shape.
+- **Don't keep skeletons rendered alongside partial data.** As real items load, swap each one out — don't show three real cards followed by three skeletons "for symmetry." The user reads that as still loading; just stop rendering the skeleton placeholders once you have data.
+- **Don't fade between skeleton and real content.** The skeleton's job ends the moment data arrives. A fade just delays the perceived load and dilutes the payoff.
+- **Don't render skeletons under ~300ms loads.** Sub-perceptual flickers are more disruptive than a brief blank state.
+- **Don't render skeletons for over ~5s without progress signal.** A skeleton holding a placeholder for 8 seconds reads as "stuck." Switch to a progress indicator, an explanation ("This is taking longer than usual"), or a recoverable error state.
+- **Don't ship skeletons that don't match the real content's shape.** Generic gray bars that don't reflect the actual heights / widths / number of rows defeat the purpose. The skeleton should be a low-fidelity sketch of the production layout.
+- **Don't override the animation cadence per skeleton.** Every skeleton on the page should pulse together. Faster animations on one section make it look broken next to the rest.
+- **Don't change `bg-secondary-100` to a darker color.** The skeleton fill is calibrated against the page background to read as "placeholder" without grabbing focus. Darker fills steal the user's eye away from real content as it loads.
+- **Don't put text inside Skeleton blocks.** "Loading..." inside a skeleton ruins the layout abstraction. The skeleton is the visual; the announcement happens via `aria-busy` and (optionally) a global loading message.
+- **Don't use Skeleton for empty states.** "No results yet" deserves a real empty-state component with copy and a CTA — not a row of pulsing rectangles.
+- **Don't reuse the same skeleton layout for two different real layouts.** A list with avatars and a list without need different skeletons. Reusing one because "skeletons are skeletons" mismatches the silhouette and breaks the layout swap.
+- **Don't animate the swap to real content.** Animations on the result delay perceived load. The skeleton goes; the content appears; the user moves on.
+- **Don't render skeletons inside `<Suspense>` fallbacks alongside an existing error boundary that re-throws.** When the fetch fails, the skeleton stays — error boundaries are the right place to show "Something went wrong," not a perpetual skeleton.
+- **Don't use Skeleton for a single-row inline replacement** ("the username is loading"). One word loading inline reads as a glitch when it pulses gray. Use a tiny `Loader` next to the label, or just don't render until ready.

@@ -98,6 +98,51 @@ export async function ensureStylesInShadowRoot(shadowRoot: ShadowRoot): Promise<
 }
 
 /**
+ * Inline CSS property values that hide an element. A publisher may hide the embed
+ * container (e.g. `visibility:hidden` / `display:none` / `opacity:0`) to reclaim
+ * layout space when the embed is only used for expand-on-load. The expand overlay
+ * renders in its own body-level fixed shadow host (`getOrCreateOverlayShadowHost`)
+ * and must stay visible regardless — so we filter these hiding declarations out at
+ * the copy boundary (see `copyClassAndStyle`) instead of mutating the publisher's
+ * original container. Nothing to override, nothing to restore.
+ */
+const HIDING_STYLE_VALUES: Record<string, string[]> = {
+  visibility: ["hidden", "collapse"],
+  display: ["none"],
+  opacity: ["0"],
+};
+
+/*
+ * CSS declarations that hide an element. When the embed container is hidden by the host page
+ * (e.g. `display:none` so it takes no layout space until expanded), we must NOT propagate that
+ * hiding onto the expand view's overlay host / shadow root — otherwise the expand overlay would
+ * inherit the container's hidden state and never appear.
+ *
+ * The container's own styles are always respected and left untouched; only the *copy* of those
+ * styles onto the overlay drops these declarations (see copyClassAndStyle / createShadowRoot).
+ *
+ * Each predicate normalizes (trim + lowercase) before matching, and `opacity` is parsed
+ * numerically so `0`, `0.0`, `0.00`, and `0%` are all treated as hidden.
+ */
+const HIDING_DECLARATION_PREDICATES: Record<string, (value: string) => boolean> = {
+  display: (value) => value.trim().toLowerCase() === "none",
+  visibility: (value) => ["hidden", "collapse"].includes(value.trim().toLowerCase()),
+  opacity: (value) => {
+    const parsed = Number.parseFloat(value);
+    return !Number.isNaN(parsed) && parsed <= 0;
+  },
+};
+
+/**
+ * Returns true when the given CSS property/value pair would hide an element
+ * (`display:none`, `visibility:hidden|collapse`, or `opacity:0`). Used to filter such
+ * declarations out when copying container styles onto the expand view's overlay.
+ */
+export function isHidingDeclaration(prop: string, value: string): boolean {
+  return HIDING_DECLARATION_PREDICATES[prop]?.(value) ?? false;
+}
+
+/**
  * Creates a shadow root element with proper attributes and styles
  */
 function createShadowRoot(container: HTMLElement): HTMLElement {
@@ -118,7 +163,21 @@ function createShadowRoot(container: HTMLElement): HTMLElement {
 
   const originalStyle = container.getAttribute("style");
   if (originalStyle) {
-    root.setAttribute("style", originalStyle);
+    // Copy the container's inline styles onto the inner root, but drop hiding declarations
+    // (display:none, visibility:hidden, opacity:0). The container itself keeps them — we only
+    // avoid propagating the hidden state into the shadow tree the embed renders in.
+    container.style.cssText
+      .split(";")
+      .map((declaration) => declaration.trim())
+      .filter(Boolean)
+      .forEach((declaration) => {
+        const separatorIndex = declaration.indexOf(":");
+        if (separatorIndex === -1) return;
+        const prop = declaration.slice(0, separatorIndex).trim();
+        const value = declaration.slice(separatorIndex + 1).trim();
+        if (isHidingDeclaration(prop, value)) return;
+        root.style.setProperty(prop, value, container.style.getPropertyPriority(prop));
+      });
   }
   return root;
 }
@@ -137,38 +196,80 @@ function resetContainerStyles(container: HTMLElement): void {
 }
 
 /**
- * Copies all styles from one shadow root to another
+ * Returns the comparable key for a style/link element: a <style>'s text content or a
+ * <link>'s href. Used to detect equivalent styles across shadow roots.
+ */
+function styleKey(styleElement: Element): string | null {
+  return styleElement.tagName === "STYLE"
+    ? (styleElement as HTMLStyleElement).textContent
+    : (styleElement as HTMLLinkElement).href;
+}
+
+/**
+ * Copies all styles from one shadow root to another, giving the source ("main") styles
+ * higher cascade priority than any matching styles already in the target.
+ *
+ * For each source style: if an equivalent already exists in the target (same <style>
+ * text or same <link> href) it is removed, then the source clone is appended LAST. The
+ * later DOM position means the main embed's styles win over the overlay's own base
+ * styles for equal specificity.
  */
 function copyStylesBetweenShadowRoots(sourceShadowRoot: ShadowRoot, targetShadowRoot: ShadowRoot): void {
   const styles = sourceShadowRoot.querySelectorAll('link[rel="stylesheet"], style');
 
   styles.forEach((styleElement) => {
-    // Only clone if not already present
-    const styleContent =
-      styleElement.tagName === "STYLE"
-        ? (styleElement as HTMLStyleElement).textContent
-        : (styleElement as HTMLLinkElement).href;
+    const sourceKey = styleKey(styleElement);
 
-    const alreadyExists = Array.from(targetShadowRoot.querySelectorAll("link, style")).some((existingStyle) => {
-      if (existingStyle.tagName === "STYLE" && styleElement.tagName === "STYLE") {
-        return (existingStyle as HTMLStyleElement).textContent === styleContent;
+    // Remove any equivalent style already present in the target so the main embed's
+    // version is the one that takes effect (replace), then append it last (priority).
+    Array.from(targetShadowRoot.querySelectorAll("link, style")).forEach((existingStyle) => {
+      if (existingStyle.tagName === styleElement.tagName && styleKey(existingStyle) === sourceKey) {
+        existingStyle.remove();
       }
-      if (existingStyle.tagName === "LINK" && styleElement.tagName === "LINK") {
-        return (existingStyle as HTMLLinkElement).href === styleContent;
-      }
-      return false;
     });
 
-    if (!alreadyExists) {
-      targetShadowRoot.appendChild(styleElement.cloneNode(true));
-    }
+    targetShadowRoot.appendChild(styleElement.cloneNode(true));
   });
+}
+
+/**
+ * Copies the className and inline `style` attribute from a source element onto a target.
+ * The source ("main") values take priority: source classes are merged on top of the
+ * target's existing classes, and source inline-style declarations override matching
+ * target ones while leaving the target's other inline styles intact.
+ *
+ * @param mode - "merge" keeps the target's existing classes and adds the source's on top
+ *   (used for the overlay host, which has its own positioning classes/styles to retain);
+ *   "replace" mirrors the source classes onto the target.
+ */
+function copyClassAndStyle(source: HTMLElement, target: HTMLElement, mode: "merge" | "replace"): void {
+  const sourceClasses = source.classList;
+  if (mode === "replace") {
+    target.className = source.className;
+  } else {
+    sourceClasses.forEach((cls) => target.classList.add(cls));
+  }
+
+  // Merge inline-style declarations: source wins on conflicts, target keeps the rest.
+  // Hiding declarations (display:none, visibility:hidden, opacity:0) are skipped so a
+  // host page that hides the container does not also hide the copied-onto expand overlay.
+  const sourceStyle = source.style;
+  for (let i = 0; i < sourceStyle.length; i++) {
+    const prop = sourceStyle.item(i);
+    const value = sourceStyle.getPropertyValue(prop);
+    if (isHidingDeclaration(prop, value)) continue;
+    target.style.setProperty(prop, value, sourceStyle.getPropertyPriority(prop));
+  }
 }
 
 /**
  * Sets up shadow DOM for the main embed container.
  * Returns the inner element that React should mount into.
- * If the host element has no `id`, one is auto-generated and assigned
+ * If the host element has no `id`, one is auto-generated and assigned.
+ *
+ * The container's own hiding styles (display:none, visibility:hidden, opacity:0) are
+ * respected and left untouched. They are filtered out only when copied onto the expand
+ * view's overlay (see copyClassAndStyle / createShadowRoot), so the overlay stays visible.
  */
 export async function setupMainShadowDOM(container: HTMLElement): Promise<HTMLElement> {
   if (!container.id) {
@@ -261,12 +362,8 @@ export function getOrCreateOverlayShadowHost(portalKey: string = "default"): {
 
   const shadowRoot = host.attachShadow({ mode: "open" });
 
-  // Copy styles from the main embed's shadow DOM (if exists)
-  const mainShadowHost = doc.querySelector("[data-genuin-host]");
-  if (mainShadowHost?.shadowRoot) {
-    copyStylesBetweenShadowRoots(mainShadowHost.shadowRoot, shadowRoot);
-  }
-
+  // Ensure the overlay's own base styles are present first, so the main embed's styles
+  // (copied below) land after them in the DOM and therefore win the cascade.
   void ensureStylesInShadowRoot(shadowRoot);
 
   // Create the portal container for this host's content
@@ -276,6 +373,26 @@ export function getOrCreateOverlayShadowHost(portalKey: string = "default"): {
   portalContainer.style.width = "100%";
   portalContainer.style.height = "100%";
   shadowRoot.appendChild(portalContainer);
+
+  // Mirror the main embed's shadow DOM so the overlay renders with identical styling.
+  // The main embed's styles, host attributes, and inner-root attributes take priority.
+  const mainShadowHost = doc.querySelector<HTMLElement>("[data-genuin-host]");
+  if (mainShadowHost?.shadowRoot) {
+    // 1. Styles: main embed's <style>/<link> override and sit after the overlay's base.
+    copyStylesBetweenShadowRoots(mainShadowHost.shadowRoot, shadowRoot);
+
+    // 2. Host: merge the main host's className + inline style onto the overlay host,
+    //    keeping the overlay's own positioning classes/styles (gen-sdk-root-portal,
+    //    position:fixed, full-screen sizing).
+    copyClassAndStyle(mainShadowHost, host, "merge");
+
+    // 3. Inner root: replicate the main shadow's inner root (the .gen-sdk-class element)
+    //    className + inline style onto the overlay's portal container.
+    const mainInnerRoot = mainShadowHost.shadowRoot.querySelector<HTMLElement>(".gen-sdk-class");
+    if (mainInnerRoot) {
+      copyClassAndStyle(mainInnerRoot, portalContainer, "merge");
+    }
+  }
 
   overlayShadowHostCache.set(portalKey, { host, shadowRoot });
   return { host, shadowRoot };

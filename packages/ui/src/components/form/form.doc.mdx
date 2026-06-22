@@ -1,0 +1,131 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./form.stories";
+
+{/*
+  Design-system narrative for the form component. Attached to the
+  matching story group via `<Meta of={…}>` so it renders as the
+  "Docs" tab next to the live stories. Layout: narrative intro →
+  live examples + controls → usage guidelines.
+*/}
+
+<Meta of={Stories} />
+
+# Form
+
+## What forms are for
+
+A form is the structured handshake between the user and the system: a layout of inputs that lets the user provide data, validation that gives them feedback as they go, and a submit step that commits the result. Every form is a small contract with the user — these are the things you need to tell us, here is what we already know, here is how we'll let you know if something's wrong, and here is the action that finalizes the change. Done well, a form is invisible: the user types, sees real-time confirmation, and the submit button saves their work without surprises. Done poorly, a form is the most frustrating piece of UI in the whole product — labels disconnected from inputs, error messages buried somewhere off-screen, validation that fires too early or too late, submit handlers that lose data on failure.
+
+A good form is built around three guarantees: every input is unambiguously labelled, validation is locally sourced (errors appear next to the field that caused them, in plain language), and the form's state is the single source of truth (no hidden mismatches between visual state and the data that gets submitted). The Genuin Form component layers on top of `react-hook-form` to provide all three: a typed form context, a `FormField` controller that wires inputs to the form, layout slots (label, control, description, message) with the correct `id` / `htmlFor` / `aria-describedby` / `aria-invalid` plumbing, and a `useFormField` hook that any custom input can read for its accessibility relationships.
+
+## Form in this design system
+
+The Form component in `@genuin/ui` is a thin orchestration layer on top of `react-hook-form`. It exposes a small set of named slots that wire labels, controls, descriptions, and error messages together with the correct accessibility relationships — so that custom inputs and design-system primitives (`Input`, `Textarea`, `Checkbox`, `Select`) all participate in the same labelled, error-aware structure.
+
+### The pieces
+
+- **`<Form>`** — re-export of `FormProvider`. Wrap your form with this and pass the result of `useForm()` to make the form's state available to every nested field.
+- **`<FormField>`** — a typed wrapper around `react-hook-form`'s `Controller`. Connects an input to a named field on the form and gives downstream slots access to that name via context. Use it to render a single field. Accepts `name`, `control`, `defaultValue`, `rules`, `render`, etc. — the full Controller API.
+- **`<FormItem>`** — the layout container for a single field. Generates a unique `id` for the field, lays out the children as a 2-row grid with `gap-2`, and provides the `id` to descendant slots so they wire up correctly.
+- **`<FormLabel>`** — the visible label. Reads the field's id from context and emits the correct `htmlFor`. Adds `data-error` when validation has flagged the field so you can target an error treatment in CSS.
+- **`<FormControl>`** — a Radix `Slot` that hosts the actual input element. Does not render its own DOM — it forwards `id`, `aria-describedby`, and `aria-invalid` onto its single child. This means an input inside `<FormControl>` is automatically described by the label, the description, and any error message.
+- **`<FormDescription>`** — supporting copy beneath the input, e.g. "We'll never share your email." Wired into the input's `aria-describedby` automatically.
+- **`<FormMessage>`** — the error / helper message. Reads the field's error state and renders the message with red treatment when there is one. Skips rendering when there's no body, so the layout doesn't reserve space for an empty row.
+- **`useFormField()`** — exposes the current field's `name`, `id`, and validation state. Use it inside a custom input that can't be a direct child of `<FormControl>`.
+
+### How the pieces compose
+
+The canonical layout for a single field is:
+
+```tsx
+<FormField
+  control={form.control}
+  name="email"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>Email</FormLabel>
+      <FormControl>
+        <Input type="email" placeholder="you@genuin.co" {...field} />
+      </FormControl>
+      <FormDescription>We'll only use this for account notifications.</FormDescription>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+```
+
+Reading the slot order top-to-bottom: label → input → description → error message. Every slot is optional except `FormControl` (you need an input) and one of the labelling pieces (you need an accessible name).
+
+### Validation
+
+`react-hook-form` handles validation. Pair it with **Zod** via `@hookform/resolvers/zod` for schema-first validation:
+
+```tsx
+const formSchema = z.object({
+  email: z.string().email(),
+  username: z.string().min(3).max(32),
+});
+
+const form = useForm<z.infer<typeof formSchema>>({
+  resolver: zodResolver(formSchema),
+  defaultValues: { email: '', username: '' },
+});
+```
+
+Validation modes (`onChange`, `onBlur`, `onSubmit`, `onTouched`) come from `react-hook-form`. The default — validate on submit, then re-validate on change — is right for most forms; pick `onBlur` when fields are expensive to validate (network checks).
+
+### Accessibility
+
+The component wires `htmlFor` on the label, `id` on the control, `aria-describedby` to combine description + message ids, and `aria-invalid` from the field's error state. As long as you compose the slots correctly, the result is screen-reader friendly without manual ARIA work. `useFormField()` returns those same ids if you need to wire a custom control by hand.
+
+### Styling and layout
+
+- **`FormItem`** is a 2-row grid with `gap-2` between rows. Override only when a field genuinely needs a different layout (e.g., inline label + control on a single row for compact filters).
+- **`FormLabel`** uses `body-1-medium` type by default. The error treatment is read from `data-error` — restyle via `data-error:text-red` if you need a custom error label color.
+- **`FormMessage`** is `body-1-medium` in `secondary-600`, switching to `red` on error. It only renders when there's content; don't rely on it to reserve vertical space.
+- **`FormDescription`** has no built-in styling beyond participating in the layout — pass classes via `className` for type and color.
+
+## Examples
+
+### Basic form
+
+<Canvas of={Stories.BasicForm} />
+
+<Controls of={Stories.BasicForm} />
+
+### Validation errors
+
+<Canvas of={Stories.ValidationErrors} />
+
+### Prefilled form
+
+<Canvas of={Stories.PrefilledForm} />
+
+## When to use Form
+
+- **Account & profile flows.** Sign-up, sign-in, password reset, profile editing — anywhere multiple fields submit together.
+- **Settings panels.** Forms with named, validated fields where the user reviews then submits a batch of changes.
+- **Content authoring.** Composing a post, creating a loop, scheduling a campaign — multi-field forms with rich validation rules and conditional logic.
+- **Filter and search panels.** Even when the form's "submit" is implicit (apply filters as the user changes them), `Form` + `FormField` give you the same labelling, error, and accessibility wiring.
+- **Modal forms.** Quick-create / quick-edit dialogs benefit from the same wiring — label, control, message — even when the form is short.
+- **Always pair `useForm` with a Zod schema.** Validation should be declared in one place and reused by both the resolver and the submit handler — and the schema gives you the inferred TypeScript type for free.
+- **Always wrap inputs in `FormField` + `FormItem` + `FormControl`.** Without `FormField`, the input is unmanaged. Without `FormItem`, the slot ids don't match. Without `FormControl`, the accessibility wiring doesn't happen.
+- **Always render `<FormMessage />`.** It's a no-op when there's no error and the canonical place for validation feedback. Skipping it sends users hunting for why submission failed.
+
+## How not to use Form
+
+- **Don't render an input outside `FormField` + `FormControl`.** Inputs that bypass these wrappers don't get id wiring, don't get tracked by `react-hook-form`, and don't show up in form state. They're invisible to validation and submission.
+- **Don't use a native `<label htmlFor>` next to a `<FormControl>` input and skip `FormLabel`.** `FormLabel` reads the generated id from context — hand-rolled labels will mismatch the next time the layout changes.
+- **Don't omit `FormMessage` to "save space."** A field that can fail validation must have a place to surface the failure next to it. Without it, the user submits, gets a generic error, and has no way to know which field is wrong.
+- **Don't put your own `id` on the input inside `FormControl`.** `FormControl` is a Radix `Slot` that forwards `id` onto its child. Setting `id` yourself overwrites the generated one and breaks the label association.
+- **Don't validate by `onChange` for expensive checks.** Username availability, server-side uniqueness checks, etc. should validate on `onBlur` or on submit — onChange validation runs on every keystroke and creates a noisy, latency-sensitive experience.
+- **Don't disable the submit button while errors are being shown without explanation.** A grayed-out submit with no helper text reads as broken. Either render an inline summary above the submit ("Fix the errors above to continue") or keep the button enabled and let submission re-trigger validation.
+- **Don't bypass the schema in your submit handler.** The handler should trust that values pass validation; if you need to do additional work, do it after the resolver has run. Re-validating in the handler is a sign that the schema is incomplete.
+- **Don't use `Form` for trivial single-input controls** (a search box, an inline filter input). The orchestration is overhead — render an `Input` with state directly.
+- **Don't bury required-field markers in description copy.** Mark required fields with a visible asterisk on the label and a `aria-required` on the control, not as an aside in `FormDescription`.
+- **Don't put multiple inputs inside one `FormControl`.** `FormControl` is a single-child slot. Two inputs side-by-side that share a label need two `FormField`s and a wrapping layout div, not one shared control.
+- **Don't manage form state with both `useState` and `react-hook-form`.** Pick one — and inside `Form`, it must be `react-hook-form`. Mixing the two creates phantom mismatches between the visual state and the submitted data.
+- **Don't suppress focus rings on inputs inside the form.** Validation errors steer focus back to the offending field; the focus ring is what tells the keyboard user where they landed. Don't override `outline` without an equivalent indicator.
+- **Don't pre-fill consent / billing fields with default values.** The form's `defaultValues` are perfect for "Edit profile" use cases (existing data) but anti-pattern for consent or payment fields where the user must actively make the choice.
+- **Don't show `FormDescription` and `FormMessage` together saying the same thing.** Description is for guidance ("Must be at least 8 characters"); message is for error ("Password is too short"). Don't duplicate.

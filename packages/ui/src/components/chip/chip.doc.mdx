@@ -1,0 +1,99 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./chip.stories";
+
+{/*
+  Design-system narrative for the chip component. Attached to the
+  matching story group via `<Meta of={…}>` so it renders as the
+  "Docs" tab next to the live stories. Layout: narrative intro →
+  live examples + controls → usage guidelines.
+*/}
+
+<Meta of={Stories} />
+
+# Chip
+
+## What chips are for
+
+A chip is a tiny, label-shaped piece of UI that attaches a single short word or phrase to something else on the screen — a name, a row, a card, a piece of content. It exists to communicate one fact at a glance: a role ("Owner"), a status ("Pending"), a category ("Beta"), a count ("12 new"), or a tag ("Featured"). Chips are read, not interacted with — they're typographic furniture, not controls. When the user can act on them (filter, dismiss, select), the right component is a button or a filter pill, not a chip.
+
+The value of a chip is in its compactness and consistency. Because it always has the same shape, weight, and padding, the eye picks it out instantly across rows, cards, and lists — even when the surrounding layout changes. Misuse is easy: chips that look interactive get clicked; chips that carry too many words become labels and lose their punch; chips that change color arbitrarily lose their semantic value. The Genuin Chip is deliberately minimal — two color variants, two corner shapes, one type style — so that every chip across the app reads the same way and means the same thing in the same situation.
+
+## Chip in this design system
+
+The Chip component in `@genuin/ui` is a non-interactive, presentational element. It renders as a `<p>` (paragraph) — emphasis on *not a button*, *not a link* — styled with the design system's `body-2-semi-bold` type and a tight padding box. It accepts any standard paragraph props plus two visual props.
+
+### Variants (color)
+
+- **`default`** — primary-100 background with primary text. The brand-tinted treatment, used for chips that highlight identity, role, or first-class meta ("Owner", "Pro", "Featured").
+- **`secondary`** — secondary-100 background with secondary text. The neutral treatment for less prominent metadata ("Member", "Guest", "Draft", category tags).
+
+Both variants are designed to sit comfortably on white and most surface tints. They are *not* interactive states — there's no hover, focus, or pressed appearance, because chips don't respond to interaction.
+
+### Rounded
+
+- **`full`** (default) — fully rounded ends. The canonical pill shape; reach for this in almost every case.
+- **`small`** — gently rounded corners. Use when the surrounding UI is corner-heavy and a pill chip would feel out of place — e.g., next to badges, code tags, or inside dense data tables.
+
+### Content
+
+A chip should hold one word, occasionally two. Anything longer either belongs in a label, a badge with an icon, or a different component entirely. Type is fixed at `body-2-semi-bold`; the small size and bold weight do the work of making the chip read as a label rather than as inline copy. Don't put icons, counts on top of icons, or images inside a chip — if you need a glyph, use a Badge.
+
+### Customization
+
+`className` lets you tweak placement (margin, alignment) but should not be used to recolor a chip into states the design system doesn't ship — if you need a third color (success, warning, danger), promote it as a variant rather than one-off in CSS.
+
+## Examples
+
+### Default
+
+<Canvas of={Stories.Default} />
+
+<Controls of={Stories.Default} />
+
+### Secondary
+
+<Canvas of={Stories.Secondary} />
+
+### Small rounded
+
+<Canvas of={Stories.SmallRounded} />
+
+### Secondary small rounded
+
+<Canvas of={Stories.SecondarySmallRounded} />
+
+### Long text
+
+<Canvas of={Stories.LongText} />
+
+### Short text
+
+<Canvas of={Stories.ShortText} />
+
+## When to use Chip
+
+- **Roles and ownership.** "Owner", "Admin", "Member", "Guest" next to a user's name in a list or header.
+- **Status that doesn't need a strong color.** "Draft", "Beta", "Archived" — soft signals that something is in a specific lifecycle state. For statuses that need urgency (errors, warnings, success confirmations), use a Badge instead.
+- **Categories and tags.** Topic tags on a piece of content, channel labels next to a post title, environment markers ("QA", "Prod") on dashboards.
+- **Plan/tier markers.** "Pro", "Enterprise", "Free" on cards and headers where the tier is informative but not the headline.
+- **Metadata pairs in a list.** Each row of a settings list might end with a chip that says what kind of thing the row is.
+- **Pick `default` for chips tied to your account, role, or identity.** It carries the brand color and reads as "this concerns *you*."
+- **Pick `secondary` for everything else.** Most chips on a page should be secondary so the few `default` chips actually stand out.
+- **Pick `full` for chips that float on a card or row.** Pill ends pair well with rounded surfaces.
+- **Pick `small` for chips embedded in dense, square UIs.** Tables, code blocks, badge stacks — corners help them sit in.
+
+## How not to use Chip
+
+- **Don't use a Chip as a button.** If clicking it should do something, render a button or a filter component instead. The chip is a `<p>` — it has no role, no focus ring, no keyboard semantics.
+- **Don't make a Chip dismissible or "X-able."** A chip with an `×` is a tag/filter pill, which is a different component. Don't bolt close behaviour onto Chip.
+- **Don't use Chip for filter UI.** Filter chips need pressed/unpressed states and keyboard handling. Use a toggleable button (Button with shape=`pill`) for filtering.
+- **Don't rely on Chip for status that signals urgency.** "Error", "Warning", "Success" need their own color treatment; using `default` or `secondary` for those mutes the signal. Reach for Badge.
+- **Don't put long sentences in a Chip.** "Account verified yesterday at 4:32pm" is metadata text, not a chip. Keep it 1–2 words; if you need more, you need a different component.
+- **Don't stack many chips on a single row to communicate multiple facts.** Three or four chips in a row turn into noise. Pick the most informative one and surface the rest in a tooltip, popover, or detail view.
+- **Don't recolor a Chip via `className` to invent ad-hoc statuses.** Brand consistency comes from using the variants the design system ships. If a new color is needed, add a new variant, don't fork it inline.
+- **Don't put a Chip inside a button or a clickable row's primary content.** A chip nested inside an interactive area causes hit-testing confusion (especially in tables) — keep it at the leaf of the layout.
+- **Don't use a Chip when a label or heading would be clearer.** "Section 1: Overview" is a heading, not a chip. The chip is meta about content, not the content's title.
+- **Don't put icons inside a Chip.** Icons want a Badge; chips are typographic only. Mixing them blurs the system.
+- **Don't use a Chip to represent a count alone ("3", "12").** Counts pair with context — "3 new" works; "3" by itself wants a Badge or a numeric pill.
+- **Don't size a Chip up.** The component has fixed type and padding deliberately so chips don't compete with surrounding copy. If you need bigger chrome, you're looking for a different component.

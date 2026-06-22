@@ -1,0 +1,165 @@
+/**
+ * Tests for PlayerProvider — written FIRST per TDD mandate.
+ */
+import React from "react";
+import { act } from "react";
+import { createRoot } from "react-dom/client";
+import type { Root } from "react-dom/client";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+
+import { CxrEventBus } from "@cxr/instance/coordination/CxrEventBus";
+import { EventBusProvider, useEventBus } from "@cxr/instance/coordination/EventBusContext";
+import { PlayerProvider, usePlayer } from "@cxr/providers/PlayerProvider";
+
+interface Captured {
+  isMuted: boolean;
+  isPlaying: boolean;
+  setMuted: (v: boolean, source?: "user" | "system") => void;
+  setPlaying: (v: boolean) => void;
+}
+
+let captured: Captured = {
+  isMuted: false,
+  isPlaying: false,
+  setMuted: () => {},
+  setPlaying: () => {},
+};
+
+function Consumer(): null {
+  const ctx = usePlayer();
+  captured = ctx;
+  return null;
+}
+
+let capturedBus: ReturnType<typeof useEventBus> | null = null;
+
+function BusConsumer(): null {
+  capturedBus = useEventBus();
+  return null;
+}
+
+describe("PlayerProvider", () => {
+  let container: HTMLDivElement;
+  let root: Root;
+
+  beforeEach(() => {
+    container = document.createElement("div");
+    document.body.appendChild(container);
+    root = createRoot(container);
+  });
+
+  afterEach(() => {
+    act(() => root.unmount());
+    document.body.removeChild(container);
+  });
+
+  function render() {
+    act(() => {
+      root.render(
+        React.createElement(
+          EventBusProvider,
+          null,
+          React.createElement(
+            PlayerProvider,
+            null,
+            React.createElement(Consumer),
+            React.createElement(BusConsumer)
+          )
+        )
+      );
+    });
+  }
+
+  it("provides isMuted=true initially (default muted)", () => {
+    render();
+    expect(captured.isMuted).toBe(true);
+  });
+
+  it("provides isPlaying=true initially (autoplay on by default)", () => {
+    render();
+    expect(captured.isPlaying).toBe(true);
+  });
+
+  it("setMuted updates isMuted", () => {
+    render();
+    act(() => {
+      captured.setMuted(false);
+    });
+    expect(captured.isMuted).toBe(false);
+  });
+
+  it("setPlaying updates isPlaying", () => {
+    render();
+    act(() => {
+      captured.setPlaying(true);
+    });
+    expect(captured.isPlaying).toBe(true);
+  });
+
+  it("usePlayer throws outside PlayerProvider", () => {
+    let errorCaught = false;
+    function BadConsumer(): null {
+      try {
+        usePlayer();
+      } catch {
+        errorCaught = true;
+      }
+      return null;
+    }
+    act(() => {
+      root.render(React.createElement(BadConsumer));
+    });
+    expect(errorCaught).toBe(true);
+  });
+
+  it("emits player:play on mount when isPlaying defaults to true", () => {
+    const emitSpy = vi.spyOn(CxrEventBus.prototype, "emit");
+    render();
+    expect(emitSpy).toHaveBeenCalledWith("player:play", {});
+    emitSpy.mockRestore();
+  });
+
+  it("emits player:pause when setPlaying(false) is called", () => {
+    const emitSpy = vi.spyOn(CxrEventBus.prototype, "emit");
+    render();
+    emitSpy.mockClear();
+    act(() => {
+      captured.setPlaying(false);
+    });
+    expect(emitSpy).toHaveBeenCalledWith("player:pause", {});
+    emitSpy.mockRestore();
+  });
+
+  it("emits player:play when setPlaying(true) is called after pause", () => {
+    const emitSpy = vi.spyOn(CxrEventBus.prototype, "emit");
+    render();
+    act(() => {
+      captured.setPlaying(false);
+    });
+    emitSpy.mockClear();
+    act(() => {
+      captured.setPlaying(true);
+    });
+    expect(emitSpy).toHaveBeenCalledWith("player:play", {});
+    emitSpy.mockRestore();
+  });
+
+  it("emits mute:unmuted bus event when setMuted(false) is called", () => {
+    render();
+    const emitSpy = vi.spyOn(CxrEventBus.prototype, "emit");
+    act(() => {
+      captured.setMuted(false);
+    });
+    expect(emitSpy).toHaveBeenCalledWith("mute:unmuted", {});
+    emitSpy.mockRestore();
+  });
+
+  it("unmutes when fullscreen:enter fires on the bus", () => {
+    render();
+    expect(captured.isMuted).toBe(true);
+    act(() => {
+      capturedBus!.emit("fullscreen:enter", {});
+    });
+    expect(captured.isMuted).toBe(false);
+  });
+});

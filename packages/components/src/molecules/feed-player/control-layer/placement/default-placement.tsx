@@ -1,11 +1,13 @@
 import { Image } from "@genuin/ui/components/image";
 import { CommentIcon, PlayIcon } from "@genuin/ui/icons";
 import { cn, getFormattedDuration, getMonthYear } from "@genuin/ui/lib/utils";
-import { useMemo, lazy, Suspense } from "react";
+import { useMemo, lazy } from "react";
 
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-import useViewportHeight from "@genuin/components/hooks/use-screen-height";
+import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
+
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 
 import { DynamicReactionIcon } from "../../../reaction-button";
 import { Stats } from "../../../stats";
@@ -42,12 +44,14 @@ export function DefaultPlacement({
   onReactionStateChange,
   ...restProps
 }: ControlLayerPropsType) {
-  const { contentDisplay, responsive, engagement } = useEmbedConfigs();
+  const { contentDisplay, responsive, view, engagement } = useEmbedConfigs();
   const { isXs, isMd, isSm, isLg } = responsive;
   const { isMobile } = useDeviceDetectMediaQuery();
-  const viewportHeight = useViewportHeight();
-
-  const isOctoEnabled = engagement.engagementTools.octo;
+  const isOctoEnabled = engagement.engagementTools.octo && view.isFeed;
+  const { octoVisible } = useSheetState();
+  // Mirrors expand-view: hide the overlay content sections while Octo is on
+  // screen, and bring them back the moment Octo closes.
+  const isOctoVisible = isOctoEnabled && octoVisible;
   const shouldHideOnSmall = isXs;
   const shouldUseCompactText = isMd;
 
@@ -152,7 +156,7 @@ export function DefaultPlacement({
     () => (
       <>
         {contentDisplay.showVideoLinkouts && postDetails.video?.linkouts && (
-          <Suspense fallback={null}>
+          <SafeSuspense fallback={null} errorFallback={null}>
             <Linkouts
               view="embed"
               // variant="dynamic"
@@ -163,7 +167,7 @@ export function DefaultPlacement({
               linkoutId={postDetails.video?.linkoutId}
               videoDetails={postDetails.video}
             />
-          </Suspense>
+          </SafeSuspense>
         )}
       </>
     ),
@@ -226,20 +230,35 @@ export function DefaultPlacement({
   // Define layout sections with grouped conditions for better performance
   const layoutSections = useMemo(
     () => ({
-      top: [
-        contentDisplay.videoDetailsPosition === "overlay_on_top" && videoDetails,
-        contentDisplay.sectionDetailsPosition === "overlay_on_top" && sectionDetails,
-        contentDisplay.sectionDetailsPosition === "overlay_on_top" && noOfClips,
-      ].filter(Boolean),
-      bottom: [
-        contentDisplay.sectionDetailsPosition === "overlay_on_bottom" && noOfClips,
-        contentDisplay.sectionDetailsPosition === "overlay_on_bottom" && sectionDetails,
-        contentDisplay.videoDetailsPosition === "overlay_on_bottom" && videoDetails,
-        contentDisplay.videoDetailsPosition === "overlay_on_bottom" && !isOctoEnabled && linkoutSection,
-        contentDisplay.socialInteractionCountsPosition === "overlay_on_bottom" && socialInteraction,
-      ].filter(Boolean),
+      // While Octo is on screen the overlay text sections collapse (parity with
+      // expand-view's `!isOctoVisible`); they re-render once Octo closes.
+      top: isOctoVisible
+        ? []
+        : [
+            contentDisplay.videoDetailsPosition === "overlay_on_top" && videoDetails,
+            contentDisplay.sectionDetailsPosition === "overlay_on_top" && sectionDetails,
+            contentDisplay.sectionDetailsPosition === "overlay_on_top" && noOfClips,
+          ].filter(Boolean),
+      bottom: isOctoVisible
+        ? []
+        : [
+            contentDisplay.sectionDetailsPosition === "overlay_on_bottom" && noOfClips,
+            contentDisplay.sectionDetailsPosition === "overlay_on_bottom" && sectionDetails,
+            contentDisplay.videoDetailsPosition === "overlay_on_bottom" && videoDetails,
+            contentDisplay.videoDetailsPosition === "overlay_on_bottom" && !isOctoEnabled && linkoutSection,
+            contentDisplay.socialInteractionCountsPosition === "overlay_on_bottom" && socialInteraction,
+          ].filter(Boolean),
     }),
-    [contentDisplay, videoDetails, sectionDetails, noOfClips, linkoutSection, socialInteraction, isOctoEnabled]
+    [
+      contentDisplay,
+      videoDetails,
+      sectionDetails,
+      noOfClips,
+      linkoutSection,
+      socialInteraction,
+      isOctoEnabled,
+      isOctoVisible,
+    ]
   );
 
   return (
@@ -277,7 +296,6 @@ export function DefaultPlacement({
             videoId={postDetails.video?.id ?? ""}
             videoSlug={postDetails.video?.slug ?? ""}
             isMobile={isMobile}
-            viewportHeight={viewportHeight}
           />
         </div>
       </div>

@@ -1,0 +1,33 @@
+{
+  "extends": "@genuin/typescript-config/react-library.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "noEmit": true,
+    "types": ["vite/client", "react", "react-dom", "node"],
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    // `@genuin/components` ships its source via a wildcard `exports`
+    // entry (`"./*": "./src/*"`), so a subpath request like
+    // `@genuin/components/molecules/linkout-new/responsive-card`
+    // points at a target without an extension — TS's `bundler`
+    // resolver won't append `.tsx`. Mirror what `apps/webapp` does
+    // and map subpaths through `paths` for the dev shell only. The
+    // library tsconfig (`tsconfig.json`) is intentionally untouched —
+    // `@genuin/components` is dev-only and must never appear in the
+    // built library output consumed by `@genuin/web-sdk`.
+    "paths": {
+      "@genuin/components/*": ["../components/src/*"]
+      // `@genuin/web-sdk` is NOT mapped — the dev shell loads the
+      // production CDN bundle via a <script> tag in `src/dev/index.html`
+      // and never imports SDK source. `window.genuin` is typed inline in
+      // `src/dev/dev-app.tsx` (a single `declare global` block) instead
+      // of an ambient `.d.ts` module shim. The library `tsconfig.json`
+      // stays clean — no SDK code reaches the built library output.
+    }
+  },
+  "include": ["src/dev"],
+  "exclude": ["**/node_modules/**"]
+}

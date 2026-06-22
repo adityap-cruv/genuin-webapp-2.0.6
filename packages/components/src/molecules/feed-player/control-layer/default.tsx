@@ -1,6 +1,6 @@
 import { Button } from "@genuin/ui/button";
 import { cn } from "@genuin/ui/lib/utils";
-import React, { useCallback, Suspense } from "react";
+import React, { useCallback } from "react";
 
 import { useAuthContext } from "@genuin/components/context";
 import { useBaseContext } from "@genuin/components/context/base";
@@ -8,6 +8,7 @@ import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 import { useDoubleClick } from "@genuin/components/hooks/use-double-click";
 import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
 import { PlaybackSpeedCapsule } from "@genuin/components/molecules/playback-speed/speed-capsule";
 import { DynamicReactionIcon, ReactionButton } from "@genuin/components/molecules/reaction-button";
@@ -18,6 +19,7 @@ import { usePlayerContext } from "../context/context";
 import type { ControlLayerPropsType } from "./control-layer.types";
 import { Controls } from "./controls";
 import { VideoEditActionButtons } from "./controls/control-buttons";
+import { SPONSORED_TAG_SIZE, resolveControlSize } from "./player-control-size";
 import { PlayingState } from "./playing-state";
 import { Scrubber } from "./scrubber";
 
@@ -161,7 +163,16 @@ export function Default({
   const { video } = postDetails;
   if (!video) return null;
 
-  const hidePlayerControls = isEmbed && containerWidth ? ((containerWidth ?? 0) < 200 ? true : false) : false;
+  const hideControlsThreshold = embedConfig.isDesignSystemV2 ? 151 : 200;
+  const hidePlayerControls =
+    isEmbed && containerWidth ? ((containerWidth ?? 0) < hideControlsThreshold ? true : false) : false;
+  // Expand view sizes from the viewport, embed view from the container.
+  // `typeof window` guard keeps it SSR-safe (deep-linked expand view).
+  const effectiveControlSize = embedConfig.isDesignSystemV2
+    ? showExpandView && typeof window !== "undefined"
+      ? resolveControlSize(window.innerWidth)
+      : embedConfig.responsive.controlSize
+    : "lg";
 
   switch (brandLayoutType) {
     case "iheart":
@@ -195,7 +206,7 @@ export function Default({
           />
 
           {(showExpandView || isMobile || isTablet) && expandViewDetails && (
-            <Suspense fallback={null}>
+            <SafeSuspense fallback={null} errorFallback={null}>
               <ExpandViewDetails
                 postDetails={postDetails}
                 isActive={isActive}
@@ -207,7 +218,7 @@ export function Default({
                 variant={variant}
                 className={cn(playbackSpeed.speed !== 1 && "gencl:invisible")}
               />
-            </Suspense>
+            </SafeSuspense>
           )}
           <PlayingState
             showOnlyPlayAction={true}
@@ -276,24 +287,45 @@ export function Default({
                 isMobile || isTablet || isIpad
                   ? `${!isSectioned && showExpandView && "gencl:top-0"}`
                   : "gencl:group-hover:opacity-100 gencl:group-hover:pointer-events-auto gencl:opacity-0 gencl:pointer-events-none gencl:transition-opacity gencl:duration-300",
-                video.videoLayoutId === 6 && !isMobile && "gencl:left-0 gencl:w-[calc(100%-134px)]",
+                video.videoLayoutId === 6 &&
+                  !isMobile &&
+                  !embedConfig.isDesignSystemV2 &&
+                  "gencl:left-0 gencl:w-[calc(100%-134px)]",
                 isSheetOpen && "gencl:hidden"
               )}
               variant={isSectioned ? "sectioned" : "default"}
+              size={effectiveControlSize}
               isSponsored={video.videoLayoutId === 6}
               hidePlayerControls={hidePlayerControls}
             />
 
-            {/* Always-visible Sponsored badge rendered outside the hover-controlled Controls wrapper
-                so parent opacity-0 on desktop does not hide it. */}
+            {/* Sponsored badge sits outside Controls so desktop hover opacity-0 doesn't hide it. */}
             {video.videoLayoutId === 6 && !isMobile && (
               <div
                 className={cn(
-                  "gencl:absolute gencl:top-4 gencl:right-4 gencl:z-50",
-                  "gencl:bg-black/40 gencl:px-4 gencl:rounded-[50px] gencl:flex-center gencl:text-white",
-                  isMobile || isTablet || isIpad ? "gencl:h-9" : "gencl:h-12"
-                )}>
-                <p className="gencl:text-body-1-normal">Sponsored</p>
+                  "gencl:absolute gencl:top-4 gencl:z-50",
+                  embedConfig.isDesignSystemV2
+                    ? "gencl:left-4 gencl:bg-white gencl:rounded-3xl gencl:flex-center gencl:text-gray-900 gencl:px-2! gencl:py-1!"
+                    : "gencl:right-4 gencl:bg-black/40 gencl:px-4 gencl:rounded-[50px] gencl:flex-center gencl:text-white",
+                  !embedConfig.isDesignSystemV2 && (isMobile || isTablet || isIpad ? "gencl:h-9" : "gencl:h-12")
+                )}
+                style={
+                  embedConfig.isDesignSystemV2
+                    ? {
+                        backdropFilter: "blur(7.5px)",
+                        width: SPONSORED_TAG_SIZE[effectiveControlSize].width,
+                        height: SPONSORED_TAG_SIZE[effectiveControlSize].height,
+                      }
+                    : undefined
+                }>
+                <p
+                  className={
+                    embedConfig.isDesignSystemV2
+                      ? SPONSORED_TAG_SIZE[effectiveControlSize].text
+                      : "gencl:text-body-1-normal"
+                  }>
+                  Sponsored
+                </p>
               </div>
             )}
 
@@ -316,7 +348,7 @@ export function Default({
              * It will show the details of the post. If post is expanded.
              */}
             {(showExpandView || isMobile || isTablet) && expandViewDetails ? (
-              <Suspense fallback={null}>
+              <SafeSuspense fallback={null} errorFallback={null}>
                 <ExpandViewDetails
                   postDetails={postDetails}
                   isActive={isActive}
@@ -328,7 +360,7 @@ export function Default({
                   variant={variant}
                   className={cn(playbackSpeed.speed !== 1 && "gencl:hidden gencl:transition-all")}
                 />
-              </Suspense>
+              </SafeSuspense>
             ) : (
               <div
                 className={cn(
@@ -351,11 +383,11 @@ export function Default({
                 />
 
                 {video.linkouts && (
-                  <Suspense fallback={null}>
+                  <SafeSuspense fallback={null} errorFallback={null}>
                     <Linkouts
                       isActive={isActive}
                       view="embed"
-                      // variant="dynamic"
+                      {...(embedConfig.isDesignSystemV2 ? { variant: "dynamic" as const } : {})}
                       layout="overlay"
                       linkouts={video.linkouts}
                       linkoutId={video.linkoutId}
@@ -364,7 +396,7 @@ export function Default({
                       positionIndex={positionIndex}
                       autoplay={embedConfig.video.videoAutoplay}
                     />
-                  </Suspense>
+                  </SafeSuspense>
                 )}
               </div>
             )}

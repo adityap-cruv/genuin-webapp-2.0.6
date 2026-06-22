@@ -6,7 +6,6 @@ import { Table, TableHeader, TableBody, TableFooter, TableHead, TableRow, TableC
 const meta: Meta<typeof Table> = {
   title: "Components/Table",
   component: Table,
-  tags: ["autodocs"],
 };
 
 export default meta;

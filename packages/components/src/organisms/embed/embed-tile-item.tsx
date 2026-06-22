@@ -10,6 +10,7 @@ import type { EmbedEventContextType } from "@genuin/components/context/embed/eve
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
+import { useChunkPrefetch } from "@genuin/components/lib/prefetch/use-chunk-prefetch";
 
 import { EmbedTile } from "../embed-tile";
 
@@ -52,6 +53,11 @@ export function EmbedItem({
   const { embedEventBus, updateSelectedSection } = useEmbedContext();
   const { isTablet, isMobile } = useDeviceDetection();
   const [isHovering, setIsHovering] = useState(false);
+
+  // Parent loaded → warm the expand-view chunk chain in idle time. Gated to the first
+  // tile: every tile opens the same expand-view chunks, so warming once is enough (the
+  // prefetcher de-dupes anyway). Brand-specific sequences resolve inside the hook.
+  useChunkPrefetch("embed-tile-rendered", index === 0);
   const [embedIsActive, setEmbedIsActive] = useState(embedEventBus.getContext().activePlayerType === "embed");
   const [isVideoWatched, setIsVideoWatched] = useState<boolean>(
     postDetails.video?.isWatched || (baseContextManager.getVideoState(postDetails.video?.id || "")?.isWatched ?? false)
@@ -62,6 +68,22 @@ export function EmbedItem({
   const { getContentTypeState } = useSheetState();
   const octoSheetState = getContentTypeState("octo");
   const isOctoVisible = octoSheetState === "panel-view" || octoSheetState === "full-view";
+
+  // Mirror the `gen-ad-playing` flag the feed-player provider toggles on
+  // <html> during an IMA ad break. Tracked as React state (not just read
+  // from the tracker) so the auto-advance effect below re-runs when the
+  // ad ends — re-scheduling the timer that was suppressed during the ad.
+  const [isAdPlaying, setIsAdPlaying] = useState(false);
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const root = document.documentElement;
+    setIsAdPlaying(root.classList.contains("gen-ad-playing"));
+    const observer = new MutationObserver(() => {
+      setIsAdPlaying(root.classList.contains("gen-ad-playing"));
+    });
+    observer.observe(root, { attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     if (config.view.brandLayoutType !== "iheart") return;
@@ -159,7 +181,8 @@ export function EmbedItem({
       postDetails.type === "ads" ||
       isSponsored ||
       isOctoVisible ||
-      !isPlaying
+      !isPlaying ||
+      isAdPlaying
     ) {
       return;
     }
@@ -186,11 +209,16 @@ export function EmbedItem({
     }
 
     const timer = setTimeout(() => {
-      // Read all three flags from the mutable tracker at fire time — avoids stale
+      // Read all flags from the mutable tracker at fire time — avoids stale
       // closure over the React `isPlaying` state which may not reflect a mid-timer pause.
+      // `isAdPlaying` covers the case where an IMA ad break started after the timer
+      // was scheduled (content video isn't necessarily paused on iOS Safari).
       const playPauseTracker = baseContextManager.getPlayPauseTracker();
       const shouldeMoveToNextVideo =
-        playPauseTracker.isPlaying && playPauseTracker.isFocused && playPauseTracker.isInView;
+        playPauseTracker.isPlaying &&
+        playPauseTracker.isFocused &&
+        playPauseTracker.isInView &&
+        !playPauseTracker.isAdPlaying;
       if (shouldeMoveToNextVideo) goToNextVideo();
     }, moveToNextTime * 1000);
 
@@ -211,6 +239,7 @@ export function EmbedItem({
     postDetails,
     baseContextManager,
     isOctoVisible,
+    isAdPlaying,
   ]);
 
   return (

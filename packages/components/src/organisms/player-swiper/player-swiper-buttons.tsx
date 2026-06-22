@@ -5,6 +5,11 @@ import { cn } from "@genuin/ui/lib/utils";
 import { useEffect, useState } from "react";
 import type { Swiper } from "swiper/types";
 
+import type { PlayerControlSize } from "@genuin/components/molecules/feed-player/control-layer/player-control-size";
+import { useNewPlayerControls } from "@genuin/components/molecules/feed-player/control-layer/use-new-player-controls";
+
+import { NavigationButtonV2 } from "./player-swiper-buttons-v2";
+
 export function CloseButton({
   theme,
   className,
@@ -86,6 +91,8 @@ export function NavigationButton({
   theme,
   size,
   disable = false,
+  isIheartLayout = false,
+  v2Size,
 }: {
   swiper?: Swiper;
   postsLength?: number;
@@ -94,11 +101,15 @@ export function NavigationButton({
   theme?: "light" | "dark";
   size: ButtonProps["size"];
   disable?: boolean;
+  isIheartLayout?: boolean;
+  /** V2-only: double-circle size token for the design-system arrows. @default "md" */
+  v2Size?: PlayerControlSize;
 }) {
   // State to force re-render when swiper state changes
   const [, forceUpdate] = useState({});
   const [prevHovered, setPrevHovered] = useState(false);
   const [nextHovered, setNextHovered] = useState(false);
+  const isV2 = useNewPlayerControls();
 
   useEffect(() => {
     if (swiper && swiper.update) {
@@ -108,6 +119,21 @@ export function NavigationButton({
   }, [postsLength, swiper]);
 
   if (!swiper) return null;
+
+  // Design System V2: double-circle arrows. iHeart keeps the legacy buttons.
+  if (isV2 && !isIheartLayout) {
+    return (
+      <NavigationButtonV2
+        swiper={swiper}
+        postsLength={postsLength}
+        position={position}
+        className={className}
+        disable={disable}
+        size={v2Size}
+        theme={theme}
+      />
+    );
+  }
 
   const currentSlide = swiper.activeIndex + 1;
   const totalSlides = postsLength ?? swiper.slides.length;

@@ -1,0 +1,109 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./input-otp.stories";
+
+{/*
+  Design-system narrative for the input-otp component. Attached to the
+  matching story group via `<Meta of={…}>` so it renders as the
+  "Docs" tab next to the live stories. Layout: narrative intro →
+  live examples + controls → usage guidelines.
+*/}
+
+<Meta of={Stories} />
+
+# Input OTP
+
+## What OTP inputs are for
+
+A one-time-password (OTP) input is a specialized text field for entering a short, fixed-length code — typically 4–8 digits — that the user just received via SMS, email, an authenticator app, or a passkey-style fallback. Unlike a normal text input, an OTP input renders one slot per character so the user sees, at a glance, exactly how many digits the code has and how many they've entered. The pattern signals "this is a code" rather than "this is a free-form input," and that visual difference matters: it tells the user where they are in the entry, makes typos easier to spot, and gives the input a verification-screen feel that builds confidence in the moment.
+
+Beyond the visual, a good OTP input integrates with the device's autofill stack. On iOS and Android, when an SMS arrives with the code, the system surfaces it as a quick-fill suggestion (for one-time codes specifically — a separate autofill category from regular text) — and only inputs that opt in via `autoComplete="one-time-code"` and `inputMode="numeric"` participate. A bad OTP input is six side-by-side `<input>` elements managed by hand: paste doesn't distribute across slots, autofill doesn't fire, backspace doesn't move focus backwards, the user has to click into each slot one at a time. The Genuin InputOTP is built on the `input-otp` library, which presents one *real* hidden input to the platform (so autofill works) and renders an array of visual slots on top — the user sees six boxes, the platform sees one input.
+
+## Input OTP in this design system
+
+The InputOTP component in `@genuin/ui` is a thin wrapper around the `input-otp` library, exposing four exported pieces.
+
+### The pieces
+
+- **`<InputOTP>`** — the root. Owns the hidden real input and the slot context. Accepts every prop the underlying library accepts: `value`, `onChange`, `maxLength`, `onComplete`, `pattern`, `disabled`, etc. Pass `containerClassName` to style the slot row, `className` to style the underlying real input.
+- **`<InputOTPGroup>`** — a layout container that groups slots together. Use multiple groups when the code has a separator in the middle (e.g., 3 slots + separator + 3 slots).
+- **`<InputOTPSlot>`** — a single character slot. Identifies itself by `index`, reads the current char / active / caret state from context, and renders the design-system treatment: a 36×36px square, shared rounded corners on the first and last slot of a group, a gray dot when empty, the typed character when filled, and a faux blinking caret when the slot is active.
+- **`<InputOTPSeparator>`** — a visual divider (a minus glyph) between groups. It is `role="separator"` and not focusable; the separator is purely visual.
+
+### Layout shapes
+
+- **Single block** — one `<InputOTPGroup>` wrapping `maxLength` slots. The most common shape (4 slots for a 4-digit code, 6 for a 6-digit code).
+- **Split** — two `<InputOTPGroup>`s with an `<InputOTPSeparator>` between them. Common for codes formatted as `123-456` so the user can verify against the source SMS more easily.
+- **Custom** — any composition of groups and separators, as long as the total slot count matches `maxLength` on the root.
+
+### Slot state and chrome
+
+Each slot reads three pieces of state from the OTP context:
+
+- **`char`** — the character currently in this slot (empty when not typed).
+- **`isActive`** — whether the caret is currently in this slot (the slot the next keystroke will fill).
+- **`hasFakeCaret`** — whether to render the simulated caret (the real input is hidden, so the library injects a CSS-animated caret in the active slot).
+
+Empty slots show a small filled gray dot — a placeholder cue so the user can count remaining digits at a glance. Filled slots render the character. The active slot shows the blinking caret on top of either.
+
+### Behavior
+
+- **Paste** — pasting a 6-digit string fills all 6 slots in order; pasting more than `maxLength` is truncated.
+- **Backspace** — deletes the current slot and moves focus backwards to the previous slot.
+- **Arrow keys** — move between slots without changing values.
+- **Autofill** — the library renders a single underlying input with `autoComplete="one-time-code"` so iOS / Android propose the SMS code as a quick suggestion; tapping it fills all slots at once.
+- **`onComplete`** — fires when the last slot is filled. Use it to auto-submit / auto-verify so the user doesn't have to press a separate button.
+- **`pattern`** — restricts allowed characters. Pass a regex string (`"[0-9]"` for digits-only, `"[A-Za-z0-9]"` for alphanumeric).
+
+### Accessibility
+
+The root input is real, focusable, and labelled — pair it with `<FormLabel>` (or a `<label htmlFor>`) so the field has a meaningful name. The slots are decorative `<div>`s; screen readers don't try to read them as separate fields. Keyboard users get a single focusable target that handles all the per-slot navigation internally.
+
+## Examples
+
+### Default
+
+<Canvas of={Stories.Default} />
+
+<Controls of={Stories.Default} />
+
+### With separators
+
+<Canvas of={Stories.WithSeparators} />
+
+### Custom styling
+
+<Canvas of={Stories.CustomStyling} />
+
+### Disabled
+
+<Canvas of={Stories.Disabled} />
+
+## When to use Input OTP
+
+- **SMS / email verification.** "Enter the 6-digit code we sent to your phone." Pair with `onComplete` and auto-verify so the user doesn't have to press a button.
+- **2FA setup and confirmation.** Authenticator-app codes (TOTP), backup codes during recovery flows.
+- **Account creation and email verification.** Confirm-your-email loops where the user clicks a magic link or types a 6-digit code.
+- **Passkey fallback.** When passkeys aren't supported, OTP is the most user-friendly fallback for mid-flow verification.
+- **Sensitive actions.** Re-confirming identity before a destructive operation (account deletion, payout change) — the OTP signals that this is a verification step, not just another form field.
+- **Pick the slot count from your code length.** 4 for short codes, 6 for the standard SMS / email pattern, 8 for backup codes. Don't pick more slots "to feel more secure" — code length is a backend decision.
+- **Wire `onComplete` to auto-submit.** OTP entries are short; making the user press a button after typing the last digit is unnecessary friction.
+
+## How not to use Input OTP
+
+- **Don't use it as a generic text input.** OTPs are short and fixed-length. For passwords, codes longer than ~8 chars, or any field where the length isn't predetermined, use `<Input>`.
+- **Don't render multiple `<input>` elements yourself with hand-rolled focus management.** That breaks paste, breaks SMS autofill, and reinvents the library badly. Use the component.
+- **Don't strip `autoComplete="one-time-code"`.** That attribute is the iOS / Android signal to surface SMS codes as autofill suggestions. Without it, users have to read the code from another app and type it by hand.
+- **Don't omit the `<FormLabel>` (or a native `<label htmlFor>`).** "Verification code" is a real label — and like any input, the OTP must have an accessible name.
+- **Don't make the slot count different from `maxLength`.** The hidden input enforces `maxLength`; if you render fewer slots than that, characters disappear; more, and the extra slots stay empty forever.
+- **Don't use `pattern="[A-Z]"` (or any case-sensitive class) without telling the user.** If only uppercase letters are allowed, say so on the label or in helper text. The user can't see the regex.
+- **Don't disable a slot or animate slot heights.** The slots are decorative; their state comes from context. Disabling a single slot or animating its height fights the library's slot model.
+- **Don't show error styling on individual slots.** Errors apply to the whole code. Render a single error message via `<FormMessage>`; don't paint specific slots red.
+- **Don't auto-submit on paste before the code is fully filled.** `onComplete` fires when the input reaches `maxLength` — not earlier. Don't manually fire submission on paste; the library's own completion event is the right hook.
+- **Don't render the OTP without enough vertical space for the keyboard.** On mobile, an OTP screen with the input low on the page disappears under the on-screen keyboard. Anchor the input near the top of the viewport so the user sees it while typing.
+- **Don't use it for free-form short text** ("Enter your initials", "Enter your favorite color"). The slot UI strongly implies "this is a code." Free-form text wants `<Input>`.
+- **Don't pre-fill the OTP with a default value.** Verification codes are user-typed by definition; pre-filling them defeats the purpose and looks suspicious.
+- **Don't suppress the focus styling on the active slot.** The blinking caret is the user's signal that typing will fill *this* slot. Hiding it leaves them guessing.
+- **Don't mount OTP behind a tab change or route change while the SMS is arriving.** The autofill suggestion appears against the focused input — if focus moves while the code is in flight, the suggestion disappears. Keep the OTP mounted and focused until the code lands.
+- **Don't rate-limit OTP submission only on the client.** Brute-forcing 6 digits is trivial; the limit must live on the server. The component cannot defend the code by itself.
+- **Don't mix code length and shape ad-hoc** ("4 + 3 = 7 with a dash"). Pick one shape per use case and use it consistently across the app.

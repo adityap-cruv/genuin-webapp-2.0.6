@@ -1,0 +1,30 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`STATIC_AD_CONFIGS > snapshot: locks all creative URLs 1`] = `
+[
+  {
+    "adUrl": "https://media.begenuin.com/ad-sdk/test-creatives/finance.xml",
+    "logo": "https://media.begenuin.com/ad-sdk/test-creatives/splitero.webp",
+    "primaryColor": "#F97316",
+    "videoSource": "https://vz-8bbc7bbf-a1e.b-cdn.net/738f9e12-141d-4c56-8357-16b71a68debd/play_360p.mp4",
+  },
+  {
+    "adUrl": "https://media.begenuin.com/ad-sdk/test-creatives/consumerserivce.xml",
+    "logo": "https://media.begenuin.com/ad-sdk/test-creatives/airtasker.webp",
+    "primaryColor": "#061257",
+    "videoSource": "https://vz-8bbc7bbf-a1e.b-cdn.net/2f4ed7d2-b4db-4925-b1e5-3d7a314a0307/play_360p.mp4",
+  },
+  {
+    "adUrl": "https://media.begenuin.com/ad-sdk/test-creatives/foodandgroceryads.xml",
+    "logo": "https://media.begenuin.com/ad-sdk/test-creatives/impossiblefoods.webp",
+    "primaryColor": "#E10600",
+    "videoSource": "https://vz-8bbc7bbf-a1e.b-cdn.net/4b01ccd6-4da4-4128-b17d-26714707fd69/play_360p.mp4",
+  },
+  {
+    "adUrl": "https://media.begenuin.com/ad-sdk/test-creatives/soda.xml",
+    "logo": "https://media.begenuin.com/ad-sdk/test-creatives/skypop.webp",
+    "primaryColor": "#061257",
+    "videoSource": "https://vz-8bbc7bbf-a1e.b-cdn.net/09c2567e-73bd-4aca-9348-987da7c7cd20/play_360p.mp4",
+  },
+]
+`;

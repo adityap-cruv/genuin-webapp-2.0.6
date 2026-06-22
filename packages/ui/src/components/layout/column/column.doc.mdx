@@ -1,0 +1,51 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./column.stories";
+
+<Meta of={Stories} />
+
+# Column
+
+## What Column is for
+
+`Column` is a vertical flex container with full alignment, justification, and
+wrap controls. Use it whenever a vertical layout needs more than just a gap —
+when children must be horizontally centered, justified, or distributed in
+their parent's available height. For the common "just stack things vertically
+with a gap" pattern, use [`Stack`](?path=/docs/layout-stack--docs) instead.
+
+Kept separate from [`Row`](?path=/docs/layout-row--docs) (rather than a
+`direction` prop) because "this is a vertical group" is clearer in code and
+easier for the AI generator to emit.
+
+## Props
+
+- **`gap`** — Spacing between children. Named DS token. Defaults to `"none"`.
+- **`align`** — Horizontal alignment of children. One of `start`, `center`,
+  `end`, `baseline`, `stretch`.
+- **`justify`** — Vertical distribution of children. One of `start`, `center`,
+  `end`, `between`, `around`, `evenly`.
+- **`wrap`** — Whether children should wrap.
+- **`asChild`** — Render as a different element via Radix Slot.
+
+All standard `HTMLDivElement` attributes are forwarded.
+
+## Examples
+
+### Default
+
+<Canvas of={Stories.Default} />
+
+<Controls of={Stories.Default} />
+
+### Centered items
+
+<Canvas of={Stories.CenteredItems} />
+
+### Space between (in a tall container)
+
+<Canvas of={Stories.SpaceBetween} />
+
+### As `<article>` (`asChild`)
+
+<Canvas of={Stories.AsArticle} />

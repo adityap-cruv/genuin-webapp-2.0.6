@@ -1,0 +1,56 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./container.stories";
+
+<Meta of={Stories} />
+
+# Container
+
+## What Container is for
+
+`Container` is the page-level "don't let content stretch wider than X"
+primitive. It caps a region's width, centers it horizontally, and applies an
+inset padding from the named DS scale.
+
+Named `maxW` tokens (`mobile`, `tablet-sm`, `tablet`, `desktop`, `desktop-wide`,
+`full`) match the canonical responsive breakpoint set used across the codebase,
+so call sites can request a width target by name without committing to a px
+literal. Raw px values are accepted as an escape hatch for one-off cases.
+
+## Props
+
+- **`maxW`** — Max width. Accepts:
+  - A named breakpoint token (`"mobile"` / `"tablet-sm"` / `"tablet"` /
+    `"desktop"` / `"desktop-wide"` / `"full"`). Defaults to `"desktop"`.
+  - A raw CSS length string (e.g. `"960px"`) — falls through to inline
+    `style.maxWidth` as an escape hatch.
+- **`px`** — Horizontal padding. One of `none` / `xs` / `sm` / `md` / `lg` /
+  `xl`. Defaults to `"md"`.
+- **`asChild`** — Render as a different element (e.g. `<main>`, `<section>`).
+
+All standard `HTMLDivElement` attributes are forwarded. A caller-provided
+`style` is preserved.
+
+## Examples
+
+### Default (desktop)
+
+<Canvas of={Stories.Default} />
+
+<Controls of={Stories.Default} />
+
+### Mobile
+
+<Canvas of={Stories.Mobile} />
+
+### Desktop wide
+
+<Canvas of={Stories.DesktopWide} />
+
+### Raw maxW escape hatch (`"960px"`)
+
+<Canvas of={Stories.RawMaxWidthEscapeHatch} />
+
+### As `<main>` (`asChild`)
+
+<Canvas of={Stories.AsMain} />

@@ -1,0 +1,106 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./sheet.stories";
+
+{/*
+  Design-system narrative for the sheet component. Attached to the
+  matching story group via `<Meta of={…}>` so it renders as the
+  "Docs" tab next to the live stories. Layout: narrative intro →
+  live examples + controls → usage guidelines.
+*/}
+
+<Meta of={Stories} />
+
+# Sheet
+
+## What sheets are for
+
+A sheet is a panel that slides in from one edge of the viewport — left, right, top, or bottom — and floats above the page until the user dismisses it. It serves the same purpose as a dialog (focused, modal, single-task) but with a different shape and motion: instead of zooming into the center of the screen, it slides in from an edge, pinning to that side. The visual difference is meaningful. Side sheets feel like a *panel*, not a *card*: they invite editing, configuring, viewing detail, and they can be tall enough to host longer flows that a centered dialog would compress awkwardly. Top and bottom sheets read as banners or notification stripes — chunkier than a toast, lighter than a full dialog.
+
+A good sheet is anchored, scoped, and dismissible. It commits to one side, hosts one focused task, and gives the user every possible way out (Escape, click-outside, an explicit close button). A bad sheet is a centered dialog cosplaying as a panel, or a side panel that's secretly a half-broken modal — a long form crammed into the right edge with no proper close affordance, or a bottom sheet that hijacks the whole screen on mobile.
+
+The Genuin Sheet is built on the same Radix dialog primitive as the `<Dialog>` component (`@radix-ui/react-dialog`), so it gets the same focus trap, scroll lock, click-outside dismissal, Escape behaviour, and ARIA semantics out of the box. The design system layers on the side-aware slide animation, an explicit close icon, and a portal that respects shadow-DOM boundaries. For the multi-state, drag-aware bottom-sheet pattern — the kind that snaps between `expand-view` / `panel-view` / `full-view` — use `<DynamicSheet>` instead.
+
+## Sheet in this design system
+
+The Sheet component in `@genuin/ui` is composed from eight exported pieces, mirroring the dialog primitive.
+
+### The pieces
+
+- **`<Sheet>`** — the root. Controls open / closed state. Pass `open` + `onOpenChange` for controlled use, or `defaultOpen` for uncontrolled.
+- **`<SheetTrigger>`** — the element that opens the sheet. Use `asChild` to wrap a real button.
+- **`<SheetContent>`** — the slide-in panel itself. Renders into a portal (shadow-DOM aware), runs the side-aware animation, and includes the `×` close icon by default. Accepts `side` and `hideCloseIcon`.
+- **`<SheetOverlay>`** — the dimmed backdrop. Used internally by `<SheetContent>`; exported for advanced cases.
+- **`<SheetPortal>`** — the portal node. Used internally; exported for cases where the host needs explicit portal control.
+- **`<SheetClose>`** — wrap any element to make it a close trigger inside the sheet (e.g., a "Done" button in the footer).
+- **`<SheetHeader>` / `<SheetFooter>`** — layout helpers. The header is a column flex with padding, designed to host the title and optional description. The footer is a column flex pinned to the bottom (`mt-auto`) with padding — the canonical place for action buttons.
+
+### Sides
+
+`<SheetContent side="...">` accepts `"top"`, `"right"` (default), `"bottom"`, `"left"`.
+
+- **`right`** (default) — slides in from the right edge. The canonical side panel — for inspectors, detail panels, edit drawers, settings panels. 75% width on mobile, capped at `max-w-sm` on `sm` and up.
+- **`left`** — slides in from the left edge. Same sizing as right. Use for navigation-style sheets — main menu on mobile, secondary navigation, filter trees.
+- **`top`** — slides in from the top edge, full width, auto height. Use for chunky banners, search-with-suggestions trays, top-of-screen search overlays.
+- **`bottom`** — slides in from the bottom edge, full width, auto height. Use for bottom-sheet-style pickers, sort/filter trays, action menus on mobile.
+
+### Animation & timing
+
+The sheet animates in over 500ms and out over 300ms — the entrance is slower than the exit, which feels polite (the panel arrives gracefully and leaves quickly). Animations are side-aware: a right sheet slides out to the right; a top sheet slides out to the top.
+
+### Close affordances
+
+- `×` icon top-right by default. Hide with `hideCloseIcon={true}` only when the footer has an explicit "Cancel"/"Close" button or the sheet is a command-palette-style surface that dismisses on selection.
+- Escape closes the sheet (Radix default).
+- Click on overlay closes the sheet (Radix default).
+- Wrap any element in `<SheetClose>` to make it a close trigger.
+
+Even with the `×` hidden, Escape and click-outside still work — never disable both. The user must always have a clean exit.
+
+### Accessibility
+
+The sheet is a Radix dialog under the hood, so it has `role="dialog"`, `aria-modal`, focus trap, and the standard scroll-lock behaviour. Pair the body with a `<DialogTitle>` (re-exported from `@genuin/ui/components/dialog` if needed) so the panel has an accessible name. Or pass `aria-labelledby` / `aria-label` directly on `<SheetContent>`.
+
+### Portal & shadow DOM
+
+`<SheetContent>` portals into the result of `getRootContainer()` — `document.body` in the standalone web app, the shadow-DOM root inside the embedded Web SDK. The same pattern as Dialog and Popover.
+
+## Examples
+
+### Default
+
+<Canvas of={Stories.Default} />
+
+<Controls of={Stories.Default} />
+
+## When to use Sheet
+
+- **Inspector / detail panels.** A right sheet that slides in to show details of the row the user clicked, with an edit form alongside the content.
+- **Edit drawers.** A right sheet hosting a longer form than a Dialog could comfortably hold — multi-section settings, profile edits, content composers.
+- **Mobile main navigation.** A left sheet triggered by the hamburger menu, hosting the app's primary navigation tree.
+- **Filter trees.** A left or right sheet hosting a hierarchical filter, with the result list staying behind on the page.
+- **Top-search trays.** A top sheet that slides down from the top edge, hosting a search input + suggestions.
+- **Bottom-pickers (mobile).** A bottom sheet for sorting, filtering, or "more actions" on a mobile-first list.
+- **Pick `right` for the default side panel.** The right-edge convention is the most common for editing flows.
+- **Pick `bottom` over a centered dialog on mobile** when the content is naturally a list or picker — sheets feel native to thumb-driven interaction.
+- **Pick `<DynamicSheet>` instead of a bottom Sheet** when you need multi-state drag and snap (peek / expand / full). Sheet is single-state.
+- **Always render a `<SheetTitle>` (or `aria-label`).** The sheet must have an accessible name.
+
+## How not to use Sheet
+
+- **Don't use Sheet for confirmations.** "Delete this thing? Cancel / Confirm" is a Dialog. Sheet's slide-from-edge motion makes confirm/cancel feel slow and wrong-shaped.
+- **Don't use Sheet for ephemeral feedback.** "Saved" / "Copied" are toasts. A modal sheet for ephemeral state is a heavy hammer for a tiny nail.
+- **Don't open a Sheet from inside another Sheet or Dialog.** Stacking dialogs and sheets confuses focus traps and Escape semantics. Close the first before opening the second, or use an inline disclosure within the existing sheet.
+- **Don't disable both `Escape` and the `×`.** The user must always have a clean exit. Hiding the icon is fine when there's an explicit close button in the footer — disabling Escape is almost never the right choice.
+- **Don't put unscoped scroll content inside.** The sheet is fixed to the edge. If your body grows past the viewport without an internal scroll container, the user can't reach the bottom. Wrap the body in a `flex-1 overflow-y-auto` container so header / footer stay pinned.
+- **Don't use top/bottom Sheets for primary content on desktop.** They take the full width of the viewport, which is overkill for the desktop case. Use right/left instead — the same content reads as a panel without dominating the screen.
+- **Don't use Sheet to host a navigation flow that should change the URL.** Routes are routes; a sheet is a panel. If clicking inside should change the user's location, render the same view at a real route and link to it.
+- **Don't open a Sheet automatically on page load.** Surprise modals are the most-hated pattern on the web. Sheets open from explicit user intent.
+- **Don't reuse the same root for two sheets at once.** Each `<Sheet>` has its own open state; mounting two roots that both manage `open` causes weird interactions. If you need multiple sheets, make sure only one is open at a time.
+- **Don't put long forms inside a top or bottom Sheet.** They have auto height and grow with content — an 800px form drops the user off-screen. Use a right sheet for long forms.
+- **Don't render the close icon and a custom close button at the same position.** Pick one — the built-in `×` (set via the default), or a custom close in the header / footer (and pass `hideCloseIcon`).
+- **Don't fight the animation timing.** The 500ms in / 300ms out cadence is intentional. Faster opens feel jarring; slower closes feel sluggish.
+- **Don't render a Sheet without anchoring it to a side.** The default is `right`, but always be explicit when the side matters — readers and reviewers shouldn't have to remember the default.
+- **Don't put a `<SheetContent>` outside a `<Sheet>` root.** It needs the open-state context. Loose content doesn't render or animate.
+- **Don't render multiple `<SheetContent>`s inside one `<Sheet>`.** Only one panel renders per root. If you need different content per case, conditionally render a single `<SheetContent>` with the right children.
+- **Don't reach for Sheet when DynamicSheet is right.** Multi-state drag, snap points, peek/expand/full transitions — those need `<DynamicSheet>`. Sheet is "open or closed", nothing in between.

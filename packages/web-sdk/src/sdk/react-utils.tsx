@@ -1,6 +1,8 @@
 import type { EmbedDataType } from "@genuin/components/context/embed/embed.types";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
+import { AppErrorBoundary } from "@genuin/components/molecules/error/app-error-boundary";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import {
   cleanupOverlayShadowHost,
   ensureStylesInShadowRoot,
@@ -11,15 +13,18 @@ import { cn } from "@genuin/ui";
 import { Loader } from "@genuin/ui/components/loader";
 import { Skeleton } from "@genuin/ui/components/skeleton";
 import type { ToasterProps } from "@genuin/ui/components/toaster";
-import { Suspense, lazy, useEffect, type ReactNode } from "react";
+import { Suspense, lazy, useEffect, useMemo, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import type { Root } from "react-dom/client";
+
+import { metrics } from "../utils/metrics";
+import { generateExpandViewSkeletonHTML } from "../utils/skeleton-html";
+
+import type { EmbedRootProps } from "./embed-root";
 
 import { SDKEventType } from "@/core";
 import type { SingleEmbedDataConfig } from "@/type";
 
-import { metrics } from "../utils/metrics";
-import { generateExpandViewSkeletonHTML } from "../utils/skeleton-html";
 
 // Lazy load Toaster for better code splitting
 const LazyToasterInner = lazy(() =>
@@ -48,12 +53,60 @@ export function LazyToaster(props: ToasterProps) {
   return <LazyToasterInner {...props} />;
 }
 
-// Lazy load EmbedRoot for better code splitting
-const LazyEmbedRoot = lazy(() =>
-  import("./embed-root").then((module) => ({
-    default: module.EmbedRoot,
-  }))
-);
+// Bare factory for the EmbedRoot chunk. Recreated per retry-attempt inside
+// EmbedRootMount so AppErrorBoundary's "Try again" re-runs the dynamic import.
+const loadEmbedRoot = () => import("./embed-root").then((module) => ({ default: module.EmbedRoot }));
+
+/**
+ * Mounts the lazily-loaded EmbedRoot under an AppErrorBoundary. If the EmbedRoot
+ * chunk (or anything it dynamically pulls in) fails to load, the failure is
+ * contained here: a styled retryable card is shown instead of a blank embed, and
+ * every other embed / the host page keeps working. Recreating LazyEmbedRoot on
+ * each `attempt` makes the retry button genuinely re-fetch the failed chunk.
+ */
+function LazyEmbedRootSuspense({
+  attempt,
+  embedRootProps,
+  fallbackSkeleton,
+}: {
+  attempt: number;
+  embedRootProps: EmbedRootProps;
+  fallbackSkeleton: ReactNode;
+}) {
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- attempt intentionally drives recreation
+  const LazyEmbedRoot = useMemo(() => lazy(loadEmbedRoot), [attempt]);
+  // Intentionally a bare <Suspense>, NOT <SafeSuspense>: the parent
+  // EmbedRootMount already wraps this in an AppErrorBoundary whose `attempt`
+  // render-prop drives the retry (recreating LazyEmbedRoot re-fetches the chunk).
+  // Adding an inner AppErrorBoundary here would swallow the failure first and
+  // defeat that retry loop.
+  return (
+    // eslint-disable-next-line no-restricted-syntax -- intentional bare Suspense; parent AppErrorBoundary drives the retry loop
+    <Suspense fallback={fallbackSkeleton}>
+      <LazyEmbedRoot {...embedRootProps} />
+    </Suspense>
+  );
+}
+
+function EmbedRootMount({
+  embedRootProps,
+  fallbackSkeleton,
+}: {
+  embedRootProps: EmbedRootProps;
+  fallbackSkeleton: ReactNode;
+}) {
+  return (
+    <AppErrorBoundary>
+      {(attempt: number) => (
+        <LazyEmbedRootSuspense
+          attempt={attempt}
+          embedRootProps={embedRootProps}
+          fallbackSkeleton={fallbackSkeleton}
+        />
+      )}
+    </AppErrorBoundary>
+  );
+}
 
 // Track React roots per container to support multiple embeds
 const containerRootMap = new Map<HTMLElement, Root>();
@@ -234,28 +287,6 @@ export function loadExpandView(
   }
 }
 
-// Lazy load FeedSkeleton only when expand view needs it
-// Using specific import path to avoid bundling heavy feed components
-// const LazyFeedSkeleton = lazy(() =>
-//   import("@genuin/components/templates/feed/feed-skeleton").then((m) => ({
-//     default: m.FeedSkeleton,
-//   }))
-// );
-
-/**
- * React-based expand view skeleton (loaded after providers are available)
- */
-// function ExpandViewSkeleton({ theme }: { theme?: "dark" | "light" }) {
-//   const bgClass = theme === "dark" ? "gencl:bg-secondary-900" : "gencl:bg-secondary-50";
-//   return (
-//     <div className={`gencl:fixed gencl:inset-0 gencl:h-full gencl:w-full gencl:z-50 ${bgClass}`}>
-//       <Suspense fallback={null}>
-//         <LazyFeedSkeleton theme={theme} variant="fullscreen" showCommentsSkeleton={false} />
-//       </Suspense>
-//     </div>
-//   );
-// }
-
 export async function loadNewEmbed({
   container,
   shadowTarget,
@@ -337,7 +368,9 @@ export async function loadNewEmbed({
     const isIheartIframe = document.getElementById("ihr-player-bar-frame");
 
     toasterRoot.render(
-      <Suspense fallback={null}>
+      // Toaster is non-critical chrome: if its chunk fails, swallow it silently
+      // (fallback={null}) so a failed toast bundle never blanks the embed.
+      <SafeSuspense fallback={null} errorFallback={null}>
         <LazyToaster
           style={
             {
@@ -346,7 +379,7 @@ export async function loadNewEmbed({
             } as React.CSSProperties
           }
         />
-      </Suspense>
+      </SafeSuspense>
     );
   }
 
@@ -365,20 +398,21 @@ export async function loadNewEmbed({
   };
 
   const rootToRender: ReactNode = (
-    <Suspense fallback={<EmbedSkeleton theme={config.theme} container={container} />}>
-      <LazyEmbedRoot
-        targetContainer={shadowTarget}
-        container={container}
-        embedData={embedData}
-        brandDetails={brandDetails}
-        config={config}
-        user={user}
-        wasLazilyLoaded={wasLazilyLoaded}
-        brandLayoutType={brandLayoutType}
-        isOnlyForExpand={isOnlyForExpand}
-        onContentReady={handleContentReady}
-      />
-    </Suspense>
+    <EmbedRootMount
+      fallbackSkeleton={<EmbedSkeleton theme={config.theme} container={container} />}
+      embedRootProps={{
+        targetContainer: shadowTarget,
+        container,
+        embedData,
+        brandDetails,
+        config,
+        user,
+        wasLazilyLoaded,
+        brandLayoutType,
+        isOnlyForExpand,
+        onContentReady: handleContentReady,
+      }}
+    />
   );
 
   root.render(rootToRender);

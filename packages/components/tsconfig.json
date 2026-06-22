@@ -18,7 +18,7 @@
     "esModuleInterop": true
   },
   "include": ["src", "src/**/*.json"],
-  "exclude": ["dist", "build", "**/node_modules/**", "**/*.stories.tsx", "**/*.stories.ts", ".storybook"],
+  "exclude": ["dist", "build", "**/node_modules/**", "**/*.stories.tsx", "**/*.stories.ts", ".storybook", "src/**/_story-helpers.tsx", "src/**/_gen-ad-container-mock.tsx", "src/**/*.test.tsx", "src/**/*.test.ts"],
   "references": [
     {
       "path": "../ui"

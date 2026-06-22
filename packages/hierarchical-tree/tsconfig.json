@@ -1,0 +1,32 @@
+{
+  "extends": "@genuin/typescript-config/react-library.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "composite": true,
+    "incremental": true,
+    "outDir": "dist/types",
+    "rootDir": "src",
+    "types": ["react", "react-dom", "node"],
+    "resolveJsonModule": true,
+    "esModuleInterop": true
+  },
+  "include": ["src"],
+  "exclude": [
+    "dist",
+    "build",
+    "**/node_modules/**",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.stories.tsx",
+    "**/*.stories.ts",
+    "src/dev",
+    "vite.config.ts"
+  ],
+  "references": [
+    {
+      "path": "../ui"
+    }
+  ]
+}

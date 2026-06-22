@@ -1,7 +1,7 @@
 # Codebase Map
 
-> **Living, team-shared knowledge of this codebase.** Claude reads this *before* searching broadly
-> and appends durable findings *after* learning something non-obvious — see the `codebase-memory`
+> **Living, team-shared knowledge of this codebase.** Claude reads this _before_ searching broadly
+> and appends durable findings _after_ learning something non-obvious — see the `codebase-memory`
 > skill. Keep entries as concise pointers, not paragraphs. Fix or delete entries that go stale.
 > This is for durable codebase knowledge — **not** session logs or task history.
 
@@ -31,6 +31,15 @@
 
 <!-- Append where hard-to-find things live. Format:
 - **<thing>** — <path:line> -->
+
+- **Dynamic-chunk failure handling (web-sdk)** — `AppErrorBoundary`
+  (`packages/components/src/molecules/error/app-error-boundary.tsx`) catches failed `React.lazy`
+  imports/render errors and shows a styled retryable card, scoping the failure to one embed. SDK lazy
+  trees wrap in it: `EmbedRootMount`/`LazyEmbedRootSuspense` in `react-utils.tsx` (outer EmbedRoot
+  chunk) and `EmbedContent` in `embed-root.tsx` (embed / standard-wall chunks). Retry works by
+  recreating the lazy component via `useMemo(() => lazy(factory), [attempt])` — a plain remount reuses
+  React.lazy's memoised rejected promise and never refetches. Toaster wraps in a silent
+  `fallback={() => null}` boundary (non-critical chrome). GEN-9406.
 
 ---
 

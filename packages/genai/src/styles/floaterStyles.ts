@@ -1,3 +1,6 @@
+import { eventBus } from '@/core/events/EventBus';
+import { EVENTS } from '@/core/events/eventRegistry';
+
 import GenAILogo from '../assets/GenAI.png';
 // import Draggabilly from 'draggabilly';
 
@@ -84,7 +87,7 @@ export const createFloaterElement = (draggable?: boolean) => {
     if (!draggable) {
         floater.addEventListener('click', () => {
             floater.innerHTML = createFloaterSpinner();
-            window.dispatchEvent(new Event('genai:openDialog'));
+            eventBus.emit(EVENTS.OPEN_DIALOG, undefined);
         });
     }
 

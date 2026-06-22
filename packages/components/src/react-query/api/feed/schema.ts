@@ -47,6 +47,7 @@ export const videoSchema = z.object({
       image_url: z.string().nullish(),
       timestamp: z.number().nullish(),
       title: z.string().nullish(),
+      subtitle: z.string().nullish(),
       bucket_name: z.string().nullish(),
       offer_text: z.string().nullish(),
       slug: z.string().nullish(),
@@ -140,16 +141,6 @@ export const sponsoredSchema = z
   })
   .nullish();
 
-const PostDetailsSchema = z.object({
-  type: z.string().optional().nullish(),
-  video: videoSchema,
-  group: GroupSchema,
-  community: communitySchema,
-  owner: ownerSchema,
-  section: SectionSchema,
-  sponsored: sponsoredSchema,
-});
-
 const videoAdItemSchema = z.object({
   ads_url: z.string(),
   url: z.string(),
@@ -190,6 +181,20 @@ export const adTagObjectSchema = z.object({
 });
 
 export type AdTagObjectType = z.infer<typeof adTagObjectSchema>;
+
+const PostDetailsSchema = z.object({
+  type: z.string().optional().nullish(),
+  video: videoSchema,
+  group: GroupSchema,
+  community: communitySchema,
+  owner: ownerSchema,
+  section: SectionSchema,
+  sponsored: sponsoredSchema,
+  // Optional ad config for static, client-side ad injection (expand view).
+  // When present on a normal video item, the player plays the real video and
+  // the genuin ad SDK overlays the ad once its waterfall fills.
+  adTagObject: adTagObjectSchema.nullish(),
+});
 
 export const AdsPostDetailsSchema = z.object({
   type: z.literal("ads"),

@@ -19,7 +19,6 @@ const BrandAssets = ({ jsonData }: { jsonData: BrandAssetsJsonData; messageId?: 
     // const [isInserting, setIsInserting] = useState(false);
     // const [inserted, setInserted] = useState(jsonData?.inserted || false);
     const hasData = jsonData && Object.keys(jsonData).length > 0;
-    // const { updateAgentMessageContent, currentSessionId } = useAgentsContext();
 
     // const handleInsert = async () => {
     //     if (!jsonData) return;

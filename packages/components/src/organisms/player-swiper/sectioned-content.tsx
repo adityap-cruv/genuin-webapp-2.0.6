@@ -1,10 +1,11 @@
 import { cn } from "@genuin/ui/lib/utils";
-import { lazy, Suspense } from "react";
-import type { Dispatch, SetStateAction } from "react";
+import { lazy } from "react";
+import type { Dispatch, SetStateAction, ReactNode } from "react";
 import { SwiperSlide } from "swiper/react";
 import type { Swiper } from "swiper/types";
 
 import { useAnalytics } from "@genuin/components/context";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 
 import { Player } from "./player";
 import { SwiperImplementation } from "./swiper-implementation";
@@ -45,6 +46,8 @@ interface SectionedContentProps {
   onAdPlaybackEnd?: (index: number) => void;
   /** Feed-session identifier from the first feed API page, forwarded to analytics. */
   pageSession?: string | null;
+  /** Shimmer for the lazy WatchBoundaryOverlay boundary; never null (see player-swiper). */
+  playerFallback: ReactNode;
 }
 
 export function SectionedContent({
@@ -72,6 +75,7 @@ export function SectionedContent({
   onAdFilled,
   onAdPlaybackEnd,
   pageSession,
+  playerFallback,
 }: SectionedContentProps) {
   const { track, EventName } = useAnalytics();
 
@@ -149,6 +153,9 @@ export function SectionedContent({
                         isNext={isTrulyNext}
                         isPrev={isTrulyPrev}
                         isVisible={isTrulyVisible}
+                        // First-mount visible slide before either swiper inits: the
+                        // initial vertical slide of the first horizontal section.
+                        isInitialSlide={sectionIdx === 0 && index === startIndex}
                         post={post}
                         isSectioned={isSectioned}
                         onCommunityJoinStatusChange={onCommunityJoinStatusChange}
@@ -163,9 +170,9 @@ export function SectionedContent({
                         pageSession={pageSession}
                       />
                     ) : post.video.type === "complete" ? (
-                      <Suspense fallback={null}>
+                      <SafeSuspense fallback={playerFallback} errorFallback={null}>
                         <WatchBoundaryOverlay videoDetails={post.video} variant="complete" />
-                      </Suspense>
+                      </SafeSuspense>
                     ) : (
                       <></>
                     );

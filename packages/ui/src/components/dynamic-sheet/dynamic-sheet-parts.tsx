@@ -1,7 +1,7 @@
 "use client";
 
 import { cva, type VariantProps } from "class-variance-authority";
-import type { ComponentPropsWithoutRef } from "react";
+import { forwardRef, type ComponentPropsWithoutRef } from "react";
 
 import { cn } from "@genuin/ui/lib/utils";
 
@@ -78,29 +78,34 @@ const indicatorPillVariants = cva("gencl:h-1 gencl:rounded-full gencl:transition
 interface DynamicSheetDragIndicatorProps extends ComponentPropsWithoutRef<"div"> {
   theme?: "light" | "dark";
   isDragging?: boolean;
+  /** When false, the pill is purely decorative chrome — suppress the
+   *  grab/grabbing cursor affordance so the cursor doesn't lie about
+   *  draggability. Defaults to true for backward compatibility. */
+  draggable?: boolean;
 }
 
-export function DynamicSheetDragIndicator({
-  theme = "light",
-  isDragging = false,
-  className,
-  ...props
-}: DynamicSheetDragIndicatorProps) {
-  return (
-    <div
-      data-slot="dynamic-sheet-indicator"
-      className={cn(
-        "gencl:flex gencl:w-full gencl:items-center gencl:justify-center gencl:shrink-0 gencl:py-2 gencl:touch-none",
-        isDragging ? "gencl:cursor-grabbing" : "gencl:cursor-grab",
-        className
-      )}
-      {...props}>
+export const DynamicSheetDragIndicator = forwardRef<HTMLDivElement, DynamicSheetDragIndicatorProps>(
+  function DynamicSheetDragIndicator(
+    { theme = "light", isDragging = false, draggable = true, className, ...props },
+    ref
+  ) {
+    return (
       <div
-        className={indicatorPillVariants({
-          theme,
-          dragging: isDragging,
-        })}
-      />
-    </div>
-  );
-}
+        ref={ref}
+        data-slot="dynamic-sheet-indicator"
+        className={cn(
+          "gencl:flex gencl:w-full gencl:items-center gencl:justify-center gencl:shrink-0 gencl:py-2 gencl:touch-none",
+          draggable && (isDragging ? "gencl:cursor-grabbing" : "gencl:cursor-grab"),
+          className
+        )}
+        {...props}>
+        <div
+          className={indicatorPillVariants({
+            theme,
+            dragging: isDragging,
+          })}
+        />
+      </div>
+    );
+  }
+);

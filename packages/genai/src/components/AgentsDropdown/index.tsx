@@ -1,11 +1,13 @@
 import { Select, SelectContent, SelectItem, SelectValue, SelectTrigger } from '@/components/ui/select';
-import { useAgentsContext } from '@/context/app/context';
+import { useAgentContext } from '@/stores/agent/context';
+import { useSessionContext } from '@/stores/session/context';
 import type { AgentType } from '@/types';
 
 import AgentsDropdownSkeleton from './skeleton';
 
 const AgentsDropdown = () => {
-    const { agents, setCurrentAgent, currentAgent, enteredInChatMode, isMaya } = useAgentsContext();
+    const { filteredAgents: agents, setCurrentAgent, currentAgent, isMaya } = useAgentContext();
+    const { enteredInChatMode } = useSessionContext();
 
     // Find the current agent object
     if (isMaya) {

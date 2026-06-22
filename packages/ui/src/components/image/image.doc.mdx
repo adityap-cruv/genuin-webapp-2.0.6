@@ -1,0 +1,127 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./image.stories";
+
+{/*
+  Design-system narrative for the image component. Attached to the
+  matching story group via `<Meta of={…}>` so it renders as the
+  "Docs" tab next to the live stories. Layout: narrative intro →
+  live examples + controls → usage guidelines.
+*/}
+
+<Meta of={Stories} />
+
+# Image
+
+## What images are for
+
+An image is the most direct way to put visual information into the interface — a face, a place, a piece of content, a screenshot, an illustration, a generated graphic. The job of an `<img>` element looks simple — load a file, render the pixels — but in a real product an image is also a stack of decisions: which format to load, what size to constrain it to, how it should crop or fit when its native dimensions don't match the layout, how to behave when the URL fails or the user is offline, how it affects layout shift while loading, and how the user reads it (or doesn't) with assistive tech. The component layer exists to make those decisions consistent across the app, so that every image renders with the same crop rules, the same loading behaviour, the same shape vocabulary, and the same fallback story.
+
+A good image component is invisible: it loads the right format at the right size, holds its space while loading so the layout doesn't jump, and either renders the picture or quietly gets out of the way when the source isn't there. A bad image component is the leading cause of layout shift, broken-icon thumbnails, and accessibility failures. The Genuin Image is a deliberately thin wrapper around the native `<img>` — no Suspense, no skeletons, no automatic responsive variants. What it does add is an aspect-ratio vocabulary, a corner-radius vocabulary, a scale (transform) variant for hover/active treatments, automatic WebP rewriting through a media helper, and a render-nothing-on-error escape hatch.
+
+## Image in this design system
+
+The Image component in `@genuin/ui` is exported as a single function: `<Image>`. It renders a native `<img>` with `loading="lazy"`, applies the design-system shape and aspect-ratio classes, optionally rewrites the URL to a WebP variant via `getWebpUrlForImage`, and supports an opt-in error handler that unmounts the element when the source fails.
+
+### Aspect ratios
+
+The component locks the image to a known aspect ratio via Tailwind's `aspect-*` utilities:
+
+| Variant     | Ratio | Typical use                                             |
+| ----------- | ----- | ------------------------------------------------------- |
+| `auto`      | —     | Default. Image keeps its native aspect ratio.          |
+| `square`    | 1:1   | Avatars, profile thumbs, square gallery tiles, OG cards |
+| `video`     | 16:9  | Video posters, hero banners, embedded media thumbs      |
+| `portrait`  | 3:4   | Portrait photos, mobile-feed-style cards                |
+| `landscape` | 4:3   | Photo grids, marketing visuals                          |
+| `reel`      | 9:16  | Short-form vertical video covers                         |
+| `banner`    | 2:5   | Wide page banners, marquee strips                       |
+
+Choose an aspect ratio whenever the layout demands a specific shape — picking one prevents layout shift, since the component reserves the right amount of space before the pixels arrive. The native fit behaviour is whatever you set via `className` (`object-cover` for cropping, `object-contain` for letterboxing). `object-cover` is the right default for most cases.
+
+### Radius
+
+`none`, `sm`, `md`, `lg`, `full` — corresponding to the standard radius scale. `full` is the canonical avatar / circular treatment. `lg` is the most common card-style image rounding. Use `none` only when an upstream container already clips the corners.
+
+### Scale
+
+A pre-baked transform scale (0, 0.5, 0.75, 0.9, 0.95, 1, 1.05, 1.1, 1.25, 1.5) that the component applies via Tailwind's `scale-*` utilities. Reach for this when an image needs to react to a parent's hover/active state (hover-zoom on a card thumbnail, scale-down on tap) — the scaling sits inside `transition-all`, so the change animates by default.
+
+### Format & source
+
+- **`src`** — string URL or any value the native `<img>` accepts.
+- **`useWebp`** (default `true`) — when `src` is a string, the URL is rewritten through `getWebpUrlForImage` to fetch the WebP variant. Disable when the source is already optimal (an SVG, an external URL outside the media pipeline, an inline data URL).
+
+### Error handling
+
+- **`handleError`** (default `false`) — when `true`, an `onError` handler unmounts the image (renders `null` instead of a broken-icon `<img>`). Use it for non-essential images where a missing source should disappear silently. **Never use it for images carrying meaning** (a hero photo, a profile picture, a screenshot) — surface a fallback instead so the layout still communicates correctly.
+- **`!src`** — also renders `null`. The component will not render an empty `<img>`.
+
+### Loading
+
+The component sets `loading="lazy"` so off-screen images don't block the initial paint. Pair it with explicit `width` and `height` attributes (or an aspect ratio) so the browser can reserve the space.
+
+### Accessibility
+
+`alt` is a passthrough — required for every meaningful image and either an empty string or omitted for decorative ones. The component does not validate it; the discipline lives with the caller. A user-uploaded photo wants a real description ("Profile photo of Jane Smith"), an icon-style image inside a button wants `alt=""` (the button's accessible name does the work), an asset that is purely decorative wants `alt=""`.
+
+## Examples
+
+### Default
+
+<Canvas of={Stories.Default} />
+
+<Controls of={Stories.Default} />
+
+### With aspect ratio
+
+<Canvas of={Stories.WithAspectRatio} />
+
+### With radius
+
+<Canvas of={Stories.WithRadius} />
+
+### Scaled
+
+<Canvas of={Stories.Scaled} />
+
+### Portrait
+
+<Canvas of={Stories.Portrait} />
+
+### With object fit story
+
+<Canvas of={Stories.WithObjectFitStory} />
+
+### Webp disabled
+
+<Canvas of={Stories.WebpDisabled} />
+
+## When to use Image
+
+- **User-generated content thumbnails.** Feed cards, comment attachments, post previews — anywhere the URL comes from the media pipeline and a WebP variant is available.
+- **Avatars and profile pictures (without zoom).** When the avatar component's chrome is overkill — a logged-in nav badge, a tiny inline mention. For the standard avatar treatment, use the Avatar component instead.
+- **Card cover images.** Loops, channels, posts, products — the cover image of a card with `aspectRatio="video"` or `landscape` and a `radius="lg"`.
+- **Hero banners and marketing visuals.** With `aspectRatio="banner"` or `video` to lock the layout shape.
+- **Screenshot / illustration assets.** App tour visuals, empty-state illustrations — disable WebP rewriting if you're shipping the asset bundled with the app.
+- **Hover-reactive thumbnails.** Pair `scale=1.05` with a parent's `:hover` to give cards a subtle lift.
+- **Pick an aspect ratio whenever you know the layout shape.** It prevents layout shift while the image loads, and it keeps the page predictable across devices.
+- **Pair the radius with the parent's radius.** A `radius="lg"` thumbnail inside a `rounded-2xl` card feels right; a `radius="none"` thumbnail inside the same card looks pasted-on.
+- **Set `handleError` only when a missing image should disappear silently.** For meaningful content, render a fallback instead.
+
+## How not to use Image
+
+- **Don't use `<Image>` for icons.** Lucide / SVG components are sharper, smaller, and don't fetch a network resource. Reach for `Image` when there's a real raster asset to load.
+- **Don't ship `<Image>` without `alt`.** Even decorative images must have `alt=""` (an explicit empty string) so screen readers know to skip them. Missing `alt` is a real accessibility failure, not a stylistic choice.
+- **Don't use `useWebp` on SVGs or data URLs.** The WebP rewriter is for the media pipeline only. Leave SVGs and inline data URLs alone — disable `useWebp` for them.
+- **Don't use `handleError` for meaningful images.** Silently disappearing content is not a fallback. If a hero image fails, render an alternative (initials, a category illustration, a placeholder gradient) so the layout still tells the right story.
+- **Don't omit aspect ratio inside cards or grids.** Without a fixed aspect, the card pops up and down as the image loads — pick the closest aspect ratio variant or set `width` / `height` explicitly.
+- **Don't render an `<Image>` at the wrong size.** A 4000-pixel-wide hero crammed into a 200-pixel slot wastes bandwidth and time. The component does not auto-resize the source — pick an upstream variant or set `srcset`.
+- **Don't override the lazy loading default for off-screen images.** `loading="lazy"` is the right default for almost every image. Set `loading="eager"` only for above-the-fold heroes that must render with first paint.
+- **Don't apply your own `aspect-*` class via `className`.** It will fight the variant. Pick the variant; if you need a ratio that isn't there, add it to the component instead of monkey-patching it inline.
+- **Don't use `scale=1.5` as a permanent layout choice.** The scale variant is for transient hover/active states. A permanently scaled-up image should be sized correctly via the parent layout instead.
+- **Don't use `<Image>` to render an avatar.** The Avatar component handles the WebP rewriting, the fallback initials, the size scale, and the optional zoom — replicating that with `<Image>` will drift from the avatar pattern.
+- **Don't render a full-size image inside a tiny thumbnail container without a thumbnail variant.** Either the container expands accidentally or the layout gets bloated by a bandwidth-heavy fetch. Pick a sized URL.
+- **Don't add a custom `onError` and `handleError` together.** They both bind `onError`. Pick one — either the component-level fallback (`handleError`) or your own custom handler (omit `handleError`).
+- **Don't fade in or animate the image with `transition` on the parent.** The component already wraps itself in `transition-all`; double transitions stutter. Animate the parent's other properties (transform, shadow) and let the image keep its own transition.
+- **Don't put interactive controls on top of an `<Image>` without a clear hit target.** A clickable image needs a wrapping `<button>` or `<a>` with proper semantics — don't bind `onClick` to the `<img>` and call it interactive.

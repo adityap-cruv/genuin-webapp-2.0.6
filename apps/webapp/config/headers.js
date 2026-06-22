@@ -77,7 +77,42 @@ const HOSTS = {
   bunnyCDN: isProd ? "https://vz-8bbc7bbf-a1e.b-cdn.net" : "https://vz-eee5e913-a30.b-cdn.net",
 
   /**
-   * Ad network endpoints — extend this list when integrating new ad providers.
+   * Google ad infrastructure — required for IMA SDK (video ads) and GPT (banner ads).
+   *
+   * Google does NOT publish a static domain allowlist; its ad-serving subdomains
+   * rotate over time (e.g. pubads/securepubads/cm/ep1/a0a*.safeframe). We therefore
+   * allowlist by wildcard on the small set of root ad domains rather than chasing
+   * individual subdomains via CSP violation reports.
+   *
+   * See: https://developers.google.com/publisher-tag/guides/content-security-policy
+   */
+  googleAds: (() => {
+    // Single broad allowlist of Google ad root domains. Google rotates subdomains
+    // (pubads/securepubads/cm/ep1/ep2/a0a*.safeframe/www.google.com …) freely across
+    // script, fetch, iframe and pixel roles, so we apply the same wildcard set to every
+    // relevant directive rather than maintaining per-directive lists that drift out of sync.
+    const roots = [
+      "https://*.google.com",
+      "https://*.googleapis.com",
+      "https://*.googlesyndication.com",
+      "https://*.doubleclick.net",
+      "https://*.adtrafficquality.google",
+      "https://*.gstatic.com",
+      "https://*.2mdn.net",
+      "https://*.ampproject.org",
+    ];
+    return {
+      scripts: roots,
+      connect: roots,
+      frames: roots,
+      images: roots,
+      // Video/audio creatives can additionally come from Google's video CDN.
+      media: [...roots, "https://*.googlevideo.com"],
+    };
+  })(),
+
+  /**
+   * Non-Google ad network endpoints.
    * All entries are included in connect-src.
    */
   adHosts: [
@@ -149,78 +184,98 @@ async function getHeaders() {
          * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
          * @see https://content-security-policy.com/
          */
-        {
-          key: "Content-Security-Policy",
-          value: [
-            // default
-            "default-src 'self' https:",
+        ...(!isDev
+          ? [
+              {
+                key: "Content-Security-Policy",
+                value: [
+                  // default
+                  "default-src 'self' https:",
 
-            // scripts: self + CDNs + (dev-only HMR/eval)
-            [
-              "script-src 'self'",
-              "https://cdn.rudderlabs.com",
-              "https://cdn.jsdelivr.net",
-              "https://*.begenuin.com",
-              "https://*.vercel-insights.com",
-              ...(isDev
-                ? ["'unsafe-inline'", "'unsafe-eval'", "http://localhost:*", "ws://localhost:*"]
-                : ["'unsafe-inline'", "'unsafe-eval'"]),
-            ].join(" "),
+                  // scripts: self + CDNs + Google ads + (dev-only HMR/eval)
+                  [
+                    "script-src 'self'",
+                    "https://cdn.rudderlabs.com",
+                    "https://cdn.jsdelivr.net",
+                    "https://*.begenuin.com",
+                    "https://*.vercel-insights.com",
+                    ...HOSTS.googleAds.scripts,
+                    ...(isDev
+                      ? ["'unsafe-inline'", "'unsafe-eval'", "http://localhost:*", "ws://localhost:*"]
+                      : ["'unsafe-inline'", "'unsafe-eval'"]),
+                  ].join(" "),
 
-            // styles: self + inline + dev HMR
-            [
-              "style-src 'self' 'unsafe-inline'",
-              "https://*.begenuin.com",
-              "https://fonts.googleapis.com",
-              ...(isDev ? ["http://localhost:*", "ws://localhost:*"] : []),
-            ].join(" "),
+                  // styles: self + inline + dev HMR
+                  [
+                    "style-src 'self' 'unsafe-inline'",
+                    "https://*.begenuin.com",
+                    "https://fonts.googleapis.com",
+                    ...(isDev ? ["http://localhost:*", "ws://localhost:*"] : []),
+                  ].join(" "),
 
-            // images
-            `img-src 'self' data: blob: ${HOSTS.media} ${HOSTS.bunnyCDN} https://*.picsum.photos https://picsum.photos`,
+                  // images
+                  [
+                    "img-src 'self' data: blob:",
+                    HOSTS.media,
+                    HOSTS.bunnyCDN,
+                    "https://*.picsum.photos https://picsum.photos",
+                    ...HOSTS.googleAds.images,
+                  ].join(" "),
 
-            // media (video/audio)
-            `media-src 'self' data: blob: ${HOSTS.media} ${HOSTS.ssai} ${HOSTS.bunnyCDN}`,
+                  // media (video/audio)
+                  [
+                    "media-src 'self' data: blob:",
+                    HOSTS.media,
+                    HOSTS.ssai,
+                    HOSTS.bunnyCDN,
+                    ...HOSTS.googleAds.media,
+                  ].join(" "),
 
-            `font-src 'self' data: blob: ${HOSTS.media} ${HOSTS.bunnyCDN}`,
+                  `font-src 'self' data: blob: ${HOSTS.media} ${HOSTS.bunnyCDN} https://*.gstatic.com`,
 
-            // XHR/fetch/WebSocket
-            [
-              "connect-src 'self'",
-              ...(isDev ? ["http://localhost:*", "ws://localhost:*"] : []),
-              "https://api.rudderstack.com",
-              "https://cdn.rudderlabs.com",
-              "https://cdn.jsdelivr.net",
-              "https://*.begenuin.com",
-              HOSTS.api,
-              HOSTS.rudder,
-              HOSTS.media,
-              HOSTS.s3Media,
-              HOSTS.ociMedia,
-              HOSTS.sentry,
-              HOSTS.ssai,
-              HOSTS.bunnyCDN,
-              ...HOSTS.adHosts,
-              // Self is sufficient for NextAuth endpoints since they're on the same origin
-            ].join(" "),
+                  // XHR/fetch/WebSocket
+                  [
+                    "connect-src 'self'",
+                    ...(isDev ? ["http://localhost:*", "ws://localhost:*"] : []),
+                    "https://api.rudderstack.com",
+                    "https://cdn.rudderlabs.com",
+                    "https://cdn.jsdelivr.net",
+                    "https://*.begenuin.com",
+                    HOSTS.api,
+                    HOSTS.rudder,
+                    HOSTS.media,
+                    HOSTS.s3Media,
+                    HOSTS.ociMedia,
+                    HOSTS.sentry,
+                    HOSTS.ssai,
+                    HOSTS.bunnyCDN,
+                    ...HOSTS.googleAds.connect,
+                    ...HOSTS.adHosts,
+                  ].join(" "),
 
-            // web workers
-            [
-              "worker-src 'self' blob:",
-              ...(isDev ? ["http://localhost:*", "ws://localhost:*"] : []),
-              "https://cdn.rudderlabs.com",
-              "https://cdn.jsdelivr.net",
-            ].join(" "),
+                  // web workers
+                  [
+                    "worker-src 'self' blob:",
+                    ...(isDev ? ["http://localhost:*", "ws://localhost:*"] : []),
+                    "https://cdn.rudderlabs.com",
+                    "https://cdn.jsdelivr.net",
+                  ].join(" "),
 
-            // forms
-            `form-action 'self' ${HOSTS.api}`,
+                  // forms
+                  `form-action 'self' ${HOSTS.api}`,
 
-            // framing
-            `frame-ancestors 'self' ${HOSTS.brandsHost}${isDev ? " http://localhost:*" : ""}`,
+                  // frame-src: iframes this page is allowed to load (SafeFrame, IMA SDK)
+                  ["frame-src 'self'", ...HOSTS.googleAds.frames, ...(isDev ? ["http://localhost:*"] : [])].join(" "),
 
-            // upgrade/block mixed (QA+Prod only)
-            ...(isDev ? [] : ["upgrade-insecure-requests", "block-all-mixed-content"]),
-          ].join("; "),
-        },
+                  // framing
+                  `frame-ancestors 'self' ${HOSTS.brandsHost}${isDev ? " http://localhost:*" : ""}`,
+
+                  // upgrade/block mixed (QA+Prod only)
+                  ...(isDev ? [] : ["upgrade-insecure-requests", "block-all-mixed-content"]),
+                ].join("; "),
+              },
+            ]
+          : []),
 
         /**
          * X-Content-Type-Options Header

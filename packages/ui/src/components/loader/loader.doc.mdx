@@ -1,0 +1,113 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./loader.stories";
+
+{/*
+  Design-system narrative for the loader component. Attached to the
+  matching story group via `<Meta of={…}>` so it renders as the
+  "Docs" tab next to the live stories. Layout: narrative intro →
+  live examples + controls → usage guidelines.
+*/}
+
+<Meta of={Stories} />
+
+# Loader
+
+## What loaders are for
+
+A loader is the small, animated indicator that tells the user "the system is working — wait." It exists to bridge the moment between an action (a click, a form submit, a page navigation) and the result (data, success, error). Without it, a slow request reads as "the app is broken"; with it, the same wait reads as "the app is busy." That difference matters more than it looks: the same 800ms delay can feel responsive or feel frozen depending on whether something is moving on screen. A loader is the smallest possible piece of UI that turns a "frozen" state into an "active" state.
+
+A good loader is unobtrusive, predictable, and small. It uses the same shape, the same animation, and the same color across every surface, so the user reads "the app is loading" without thinking about it. A bad loader is loud (a giant spinner that takes over the whole screen for a 200ms request), inconsistent (a different animation in every feature), or stuck (an indicator that keeps spinning long after the work is done because the host forgot to remove it). The Genuin Loader is deliberately one shape — a circular spinning arc — in five sizes and three stroke colors, with no other variants or animation choices. The variation is in *where* you put it, not what it looks like.
+
+## Loader in this design system
+
+The Loader component in `@genuin/ui` is a single export, `<Loader>`, that renders an SVG arc with a continuous CSS spin. Every other concern — placement, layout, when to show it, how long to show it — is the host's job.
+
+### Sizes
+
+- **`xs`** — 16px. Inline with body text, table cells, or compact chrome where a larger spinner would dominate.
+- **`sm`** (default) — 20px. The standard. Use it inside inputs (`isLoading`), next to action buttons, in form-validation footers.
+- **`md`** — 28px. Centred-in-card loaders, dropdown async indicators, modest section placeholders.
+- **`lg`** — 36px. Section-level loading states, list placeholders, content panels waiting for data.
+- **`xl`** — 44px. Full-card or full-screen takeovers, hero-section placeholders, splash-style waits.
+
+### Stroke colors
+
+- **`primary`** (default) — brand color. The right pick for white/light surfaces.
+- **`white`** — for dark backgrounds, overlays, dialogs with a dark theme.
+- **`black`** — for cases where the surface is a brand-tinted color and a primary spinner would clash.
+
+### Animation
+
+The animation is `animate-spin`, the standard Tailwind continuous rotation. The arc is one quarter of a circle so the spin is visually unambiguous — no jitter, no pause, no end. The component does not slow down or speed up; it spins at a constant rate until removed from the DOM.
+
+### Layout
+
+The component is just an `<svg>`. It takes the size you give it via the `size` variant (which sets width and height) and any extra `className` you pass. It doesn't position itself or center itself — the host decides. Common patterns:
+
+- **Inline next to text** — `<Loader size="xs" />` followed by a label like "Saving...".
+- **Centered in a row** — wrap in a `flex justify-center items-center` row of the right height (`h-10` for an inline form footer, `h-40` for a card placeholder).
+- **Absolutely positioned** — for overlay loaders on top of a card, `absolute inset-0` with a faint background.
+
+### Customization
+
+`className` reaches the SVG. Use it for placement (margin, position) or to swap a dimension (`size-6` for a one-off). Don't override the animation or replace the path — every loader in the app should read the same.
+
+## Examples
+
+### Default
+
+<Canvas of={Stories.Default} />
+
+<Controls of={Stories.Default} />
+
+### Extra small
+
+<Canvas of={Stories.ExtraSmall} />
+
+### Medium
+
+<Canvas of={Stories.Medium} />
+
+### Large
+
+<Canvas of={Stories.Large} />
+
+### Extra large
+
+<Canvas of={Stories.ExtraLarge} />
+
+### Custom color
+
+<Canvas of={Stories.CustomColor} />
+
+### Loader group
+
+<Canvas of={Stories.LoaderGroup} />
+
+## When to use Loader
+
+- **Inside a button while submitting.** Pair the button's `loading` state with a `<Loader size="xs" strokeColor="white" />` inline with the label so the user sees the click registered.
+- **Inside an input doing live work.** Use `isLoading` on `<Input>` or `<Textarea>`; the component already wires up a `<Loader size="sm" />` on the right side.
+- **Inside `<InfiniteScroll>`.** The default loader for the next-page indicator is exactly this component.
+- **Skeleton-like card placeholders.** When loading is short and the layout is a single section, a centered `Loader size="lg"` is acceptable — but for longer waits, prefer a real skeleton component that mirrors the layout.
+- **Optimistic-update fallbacks.** Show a tiny `<Loader>` next to the item the user just acted on so they know the server hasn't confirmed yet.
+- **Pick the smallest size that's clearly visible.** A button-row spinner is `xs`; an input loader is `sm`; a card placeholder is `lg`. Bigger is not better.
+- **Pick the color that contrasts with the surface.** `primary` on white, `white` on dark, `black` on a brand-tinted background. Don't pick by aesthetic.
+
+## How not to use Loader
+
+- **Don't show a loader for under ~100ms of work.** Sub-100ms responses feel instant; a flicker of spinner on top makes them feel slower than they are. Either delay rendering the loader by 150–250ms or skip it entirely.
+- **Don't show a loader for over ~5 seconds of work without a progress signal.** A continuously spinning indicator past about 5 seconds reads as "stuck." Switch to a progress bar, a "this is taking longer than usual" message, or a step-by-step status — the user needs more than "still working".
+- **Don't render a giant loader for a small action.** A 44px spinner for a 200ms autosave is theatrical. Pick a size proportional to the action.
+- **Don't put a loader in a button that's still clickable.** While the loader is showing, the button must be disabled (or its action no-oped) so the user can't double-submit. Visible spinning + clickable button = duplicate submissions.
+- **Don't replace the button's label with the spinner alone.** A spinner without a label is ambiguous ("what is happening?"). Keep the label and add the spinner alongside, or swap the label for an explicit status ("Saving...").
+- **Don't put a loader behind a modal overlay that doesn't block interaction.** If the page is loading, the user shouldn't be able to click anything that depends on the result. Either truly block the surface or scope the loader to the slice that's actually loading.
+- **Don't swap colors mid-load.** A spinner that changes from primary to red to indicate failure is a hack. Replace the spinner with an explicit error icon and message when the load fails.
+- **Don't ship a loader without a way for the host to remove it.** A loader that keeps spinning after the work has finished is the worst possible state. Always tie its mount to the actual loading flag.
+- **Don't stack multiple loaders for the same operation.** A page-level loader, a section-level loader, and a card-level loader all spinning at once is visual noise. Pick the one that scopes the wait correctly and remove the rest.
+- **Don't animate something else with a different rotation alongside the loader.** Two spinners with different speeds at the same time fight each other and make the page look broken.
+- **Don't override the spin animation with custom `animation-duration`.** The cadence is intentionally consistent across the app — fast spinners read as panic, slow spinners read as slug. Use the default.
+- **Don't pair the loader with content that shifts as it loads.** When the data arrives and the loader is replaced, the surrounding layout shouldn't jump. Reserve the loader's space (give it a fixed-height container) so the result lands in the same spot the loader was in.
+- **Don't use `<Loader>` for a multi-step process.** A linear progress bar or a step-by-step indicator communicates progress; a spinner only communicates "busy." Pick the right tool for the duration and shape of the wait.
+- **Don't use `<Loader>` as a decorative element.** It is functional UI. A spinning circle that doesn't represent loading is a lie that wastes the user's attention.

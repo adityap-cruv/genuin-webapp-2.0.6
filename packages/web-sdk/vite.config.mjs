@@ -158,7 +158,7 @@ const genuinResolver = () => ({
     // shared deps (React, LottieFiles, Radix UI, etc.) with the rest of the web-sdk bundle.
     // This avoids bundling pre-compiled dist chunks that already contain those deps.
     if (id === "@genuin/genai-sdk") {
-      const mainPath = resolve(__dirname, "../genai/src/index.tsx");
+      const mainPath = resolve(__dirname, "../genai/src/index.ts");
       if (fs.existsSync(mainPath)) {
         return mainPath;
       }
@@ -174,10 +174,10 @@ const genuinResolver = () => ({
       }
     }
 
-    // When genai/src/index.tsx imports its own './index.css', redirect to the
-    // pre-built dist CSS for the same reason as above.
-    const genaiSrcIndex = resolve(__dirname, "../genai/src/index.tsx");
-    if (importer === genaiSrcIndex && id === "./index.css") {
+    // When genai/src/index.ts imports its own './styles/index.css', redirect to
+    // the pre-built dist CSS for the same reason as above.
+    const genaiSrcIndex = resolve(__dirname, "../genai/src/index.ts");
+    if (importer === genaiSrcIndex && id === "./styles/index.css") {
       const cssPath = resolve(__dirname, "../genai/dist/genai-sdk.css");
       if (fs.existsSync(cssPath)) {
         return cssPath;

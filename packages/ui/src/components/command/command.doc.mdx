@@ -1,0 +1,98 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./command.stories";
+
+{/*
+  Design-system narrative for the command component. Attached to the
+  matching story group via `<Meta of={…}>` so it renders as the
+  "Docs" tab next to the live stories. Layout: narrative intro →
+  live examples + controls → usage guidelines.
+*/}
+
+<Meta of={Stories} />
+
+# Command
+
+## What command palettes are for
+
+A command palette is a search-driven launcher: a single input field stacked over a filterable list of actions, navigations, and entities. The user types a few characters; the list narrows; they pick the match with the keyboard or the mouse, and that choice runs an action or jumps somewhere in the app. It is the keyboard-first user's universal remote — and, increasingly, every user's preferred way through a feature-rich product. Once a command palette exists in a product, it tends to absorb shortcuts, search bars, and quick-actions that used to live in five different menus.
+
+The pattern works because it inverts the usual interaction model. Normally the user has to *find* the right control on the right screen; a command palette lets them *describe* what they want and trust the app to find it. That works only when three things are true: the palette is fast (no perceptible latency between keystroke and filtered list), the items inside it are well-named (a user who types "settings" must find "Settings"), and the keyboard model is bulletproof (Enter activates, ↑↓ navigates, Esc dismisses, focus is trapped, and modifier shortcuts open the palette in the first place).
+
+The Genuin Command is a styled wrapper around `cmdk` (the de-facto React command-palette primitive used by Vercel, Linear, and others). The primitive handles fuzzy filtering, keyboard navigation, virtualised lists, ARIA combobox semantics, and selection state. The design system layers on visual treatment, an opinionated dialog wrapper, and slot composition.
+
+## Command in this design system
+
+The Command component in `@genuin/ui` is composed from nine exported pieces. They mirror the structure of `cmdk` so anything you can build with cmdk's docs you can build here.
+
+### The pieces
+
+- **`<Command>`** — the root. Owns search state and the filtered list. Use it inline (a search-with-suggestions field embedded in a page) or wrap it in `<CommandDialog>` (a global, modal command palette).
+- **`<CommandDialog>`** — the modal launcher. Wraps `<Command>` in the design system's `<Dialog>`, adds an `sr-only` title and description, and applies the standardized cmdk styling. Use this when the palette is meant to be summoned with a global shortcut (⌘K / Ctrl+K).
+- **`<CommandInput>`** — the search input with the magnifier icon. Mounts a focused `<input>` and updates the filter as the user types.
+- **`<CommandList>`** — the scrollable container for results. Caps height at 300px by default; the cmdk primitive keeps the active item in view automatically.
+- **`<CommandEmpty>`** — the slot rendered when no items match. Required for usability — never let an empty palette look broken.
+- **`<CommandGroup>`** — a labelled section of items. Use a `heading` prop to label the group ("Suggestions", "Settings", "Recent"). Groups separate visually and stay in source order.
+- **`<CommandSeparator>`** — a thin horizontal divider between groups.
+- **`<CommandItem>`** — one row in the list. Accepts an icon, a label, and optionally a `<CommandShortcut>`. Activated on Enter, click, or selection. Supports `disabled`.
+- **`<CommandShortcut>`** — a right-aligned span for a keyboard hint (`⌘D`, `Ctrl+K`). Visual only; binding the shortcut globally is the caller's responsibility.
+
+### Inline vs dialog
+
+- **Inline `<Command>`** — for in-place search-and-pick: a typeahead in a page, a destination picker in a form, an inline filter for a long list. Renders in flow without modal chrome.
+- **`<CommandDialog>`** — for global, app-wide commands: navigation jumping, action execution, entity lookup. Always pairs with a global keyboard shortcut (typically ⌘K) so power users can summon it from anywhere.
+
+### Keyboard model
+
+`cmdk` ships the right defaults out of the box:
+
+- Typing filters; the input keeps focus.
+- ↑/↓ moves through items, including across groups.
+- Enter activates the highlighted item via its `onSelect`.
+- Escape closes the dialog (when wrapped in `<CommandDialog>`).
+- Focus is trapped inside the dialog; closing returns focus to the trigger.
+
+You don't need to wire any of this — but you must not break it. Any custom item or wrapper should be a real `<CommandItem>` so the primitive can register it.
+
+### Activation
+
+Items emit selection through the `onSelect` prop, not `onClick`. That ensures selection works for keyboard *and* mouse users equally. `value` (optional) gives you a stable string the filter can match against, separate from the visible label — useful when the label has formatting (icons, badges) but the search target is plain text.
+
+## Examples
+
+### Default
+
+<Canvas of={Stories.Default} />
+
+<Controls of={Stories.Default} />
+
+### Command dialog example
+
+<Canvas of={Stories.CommandDialogExample} />
+
+## When to use Command
+
+- **App-wide command palette.** A single ⌘K dialog that opens from anywhere and exposes navigation, search, and quick actions. Shipping one shifts power users into a faster mode of work and reduces deep-menu hunting.
+- **Quick-jump navigation.** "Go to channel...", "Open project...", "Jump to user..." — anywhere the user knows the name of a destination and wants to skip the click trail.
+- **Action launcher.** Run actions on the current selection without hunting for the right menu — "Mark as done", "Archive thread", "Invite member".
+- **Inline typeahead pickers.** Replace a `<select>` with a search-and-pick field when there are more than ~10 options or the user is likely to know the option's name. Embedded `<Command>` (no dialog) is the right tool here.
+- **Multi-source search.** When one query should pull from several entity types (people, channels, files, settings) and present them as grouped results.
+- **Always pair the dialog with a keyboard shortcut.** A command palette without ⌘K is half a feature. Make the shortcut discoverable in the UI ("Press ⌘K to search").
+- **Always group items meaningfully.** "Suggestions" / "Channels" / "People" / "Settings" — groups are the most powerful UX affordance the palette gives you.
+- **Always include a `CommandEmpty` state.** "No results for 'foo'." is part of the contract; without it the palette looks broken on a typo.
+
+## How not to use Command
+
+- **Don't use Command as a generic search bar.** A site-search input that returns inline links isn't a command palette — it's search. The palette is for *acting* (navigate, run, pick), not for browsing prose results.
+- **Don't ship a command palette without keyboard activation.** If users have to click a button to open it, you've built a slow modal. Bind ⌘K (Mac) and Ctrl+K (everyone else) at minimum.
+- **Don't put long descriptions inside `CommandItem`.** Items are read at a glance — one line, optionally with an icon and a shortcut. Tooltips, paragraphs, or multi-line copy break the rhythm.
+- **Don't mix actions with destructive operations silently.** "Delete project" inside the palette must visibly read as destructive, and the destructive step should still confirm before running. Don't let the palette become a one-keystroke way to lose data.
+- **Don't forget `CommandEmpty`.** An empty result list with no message reads as "the palette is broken." The empty state is part of the spec.
+- **Don't render groups with no headings.** A group's heading is what makes the palette scannable. Unlabeled groups are just a visual gap.
+- **Don't mount `<Command>` inside another scrollable container.** `cmdk` handles scrolling and keep-active-in-view internally. Wrapping it in another `overflow-auto` element fights its scroll behavior and breaks keyboard navigation.
+- **Don't use raw `<button>` or `<div>` inside `CommandList`.** Items must be `<CommandItem>` so the primitive can index, filter, highlight, and activate them. Custom rows break filtering.
+- **Don't open another modal from inside `CommandDialog`.** Stacking modals confuses focus traps and Escape semantics. If a command needs a follow-up dialog, close the palette first, then open the next dialog.
+- **Don't put forms inside the palette.** The palette is single-input; multi-field forms belong in their own dialog or page. If the user needs to *configure* the action, the palette should pick the action, then route to the form.
+- **Don't over-fill it.** A palette with 500+ items still works mechanically, but the user can't reason about it. Cap categories, surface "Recent" / "Suggestions" up top, and let cmdk's filter narrow long tails on demand.
+- **Don't replace a tab bar with a command palette.** Tabs exist for parallel views; the palette exists for one-shot actions and navigation. They serve different jobs — keep both.
+- **Don't ship a `<CommandShortcut>` glyph without binding the actual key globally.** Showing `⌘D` next to "Documents" implies that ⌘D works from anywhere. If it doesn't, the chip is lying.

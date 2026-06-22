@@ -202,10 +202,12 @@ export function useAdPlayer({
           }
         }
 
-        // Resume content playback from the correct position
+        // Resume content playback from the correct position. Catch
+        // the AbortError that fires when a src swap interrupts the
+        // play promise — registry handles the next play call.
         setTimeout(() => {
           if (playerStateRef.current.shouldPlay) {
-            player.play();
+            void player.play()?.catch?.(() => {});
           } else {
             player.pause();
           }
@@ -228,7 +230,7 @@ export function useAdPlayer({
           console.error("AdsLoader error:", e.detail);
           setTimeout(() => {
             if (playerStateRef.current.shouldPlay) {
-              player.play();
+              void player.play()?.catch?.(() => {});
             }
           }, 50);
         });
@@ -548,10 +550,11 @@ export function useAdPlayer({
             const errorResult = categorizeAdError(error);
             handleAdErrorRecovery(adsManager, errorResult, playerStateRef);
 
-            // Resume content playback
+            // Resume content playback. Catch the AbortError that
+            // fires when a src swap interrupts the play promise.
             setTimeout(() => {
               if (playerStateRef.current.shouldPlay) {
-                player.play();
+                void player.play()?.catch?.(() => {});
               }
             }, 50);
 

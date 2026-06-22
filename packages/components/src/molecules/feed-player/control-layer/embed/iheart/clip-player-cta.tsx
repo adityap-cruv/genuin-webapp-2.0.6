@@ -1,14 +1,22 @@
 import { cn } from "@genuin/ui/lib/utils";
-import { useCallback, lazy, Suspense, useMemo } from "react";
+import { useCallback, lazy, useMemo } from "react";
 
 import { useAnalytics } from "@genuin/components/context";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { SDKEventEmitter, SDKEventName } from "@genuin/components/lib/sdk-event-emitter";
+import { addIheartCtaCampaign } from "@genuin/components/lib/utils/iheart-url";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { buildLinkoutsAnalyticsData } from "@genuin/components/organisms/linkouts/build-linkouts-analytics-data";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 import { usePlayerContext } from "../../../context";
+
+// TODO(temp): Remove this KFI dummy-data redirect. Temporary placement-specific
+// hardcoding — drop once real linkout data is served from the API.
+// Placement whose CTA click redirects to the linkout cta_link instead of the
+// constructed iheart.com URL. Mirrors KFI_PLACEMENT_IDS in embed.tsx.
+const KFI_PLACEMENT_IDS = ["6a2be0e245aec54862efd9a5", "6a312de7a01f8b8ab6edde5a"];
 
 const Linkouts = lazy(() =>
   import("@genuin/components/organisms/linkouts").then((m) => ({
@@ -41,9 +49,27 @@ export const ClipPlayerCTA = ({ postDetails, isActive }: ClipPlayerCTAProps) => 
     [postDetails.video, totalVideos, positionIndex]
   );
 
+  const isKfiPlacement =
+    !!embedDetails?.embedData?.placement_id && KFI_PLACEMENT_IDS.includes(embedDetails.embedData.placement_id);
+
   const handleCTAClick = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
+
+      // For the KFI placement only, honour the linkout's explicit destination
+      // (cta_link) directly instead of constructing an iheart.com URL.
+      const ctaLink = postDetails.video?.linkouts?.[0]?.cta_link;
+      if (isKfiPlacement && ctaLink) {
+        const url = addIheartCtaCampaign(ctaLink);
+        track(EventName.LINKOUTS_CLICKED, {
+          ...analyticsEventData,
+          linkUrl: url.toString(),
+          linkTitle: postDetails.video?.linkouts?.[0]?.cta_text ?? "Listen Live",
+        });
+        window.open(url, "_blank", "noopener,noreferrer");
+        return;
+      }
+
       const type = postDetails.video?.attributes?.type;
       const episodeId = postDetails.video?.attributes?.episode_id
         ? Number(postDetails.video?.attributes?.episode_id)
@@ -79,10 +105,11 @@ export const ClipPlayerCTA = ({ postDetails, isActive }: ClipPlayerCTAProps) => 
           (isStation ? stationId : slug) +
           (isFullEpisode ? "/episode/" + episodeId : "")
       );
+      const destinationUrl = addIheartCtaCampaign(url);
 
       track(EventName.LINKOUTS_CLICKED, {
         ...analyticsEventData,
-        linkUrl: url,
+        linkUrl: destinationUrl.toString(),
         linkTitle: isGoToEpisode ? "Go to Episode" : isFullEpisode ? "Full Episode" : "Listen Live",
       });
 
@@ -90,16 +117,16 @@ export const ClipPlayerCTA = ({ postDetails, isActive }: ClipPlayerCTAProps) => 
       // if (isExpandViewOpen) {
       //   embedDetails?.goBackToPreviousPlayerType();
       // }
-      window.open(url, "_blank", "noopener,noreferrer");
+      window.open(destinationUrl, "_blank", "noopener,noreferrer");
     },
-    [postDetails, embedDetails]
+    [postDetails, embedDetails, isKfiPlacement, track, EventName.LINKOUTS_CLICKED, analyticsEventData]
   );
 
   if (!postDetails.video?.attributes?.slug) return;
   if (!postDetails.video.linkouts) return;
 
   return (
-    <Suspense fallback={null}>
+    <SafeSuspense fallback={null} errorFallback={null}>
       <Linkouts
         linkouts={postDetails.video.linkouts}
         linkoutId={postDetails.video.linkoutId}
@@ -113,6 +140,6 @@ export const ClipPlayerCTA = ({ postDetails, isActive }: ClipPlayerCTAProps) => 
         positionIndex={positionIndex}
         autoplay={video.videoAutoplay}
       />
-    </Suspense>
+    </SafeSuspense>
   );
 };

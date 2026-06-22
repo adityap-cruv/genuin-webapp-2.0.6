@@ -233,6 +233,7 @@ export function checkAndAppendHttps(link: string): string {
  */
 export function defaultSizesForIcons() {
   return {
+    xxs: "gencl:size-2",
     xs: "gencl:size-3",
     sm: "gencl:size-4",
     md: "gencl:size-5",

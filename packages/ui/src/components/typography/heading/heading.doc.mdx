@@ -1,0 +1,76 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./heading.stories";
+
+{/*
+  Design-system narrative for the Heading typography primitive.
+*/}
+
+<Meta of={Stories} />
+
+# Heading
+
+## When to use Heading vs Text
+
+Reach for `Heading` when the rendered element is a **page or section title** —
+the visual scale tops out at 100 px and bottoms out at 20 px, which covers every
+display- and headline-scale slot in the Genuin DS. For paragraph copy, captions,
+or labels, use [`Text`](?path=/docs/typography-text--docs) instead.
+
+Visual level (`level`) and semantic element (`as`) are independent. Pick the
+`level` that matches the design, then override `as` only when the document
+outline needs to diverge — most of the time the level-default semantic mapping
+is what you want.
+
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `level` | `'h1' \| 'h2' \| 'h3' \| 'headline-0' \| 'headline-1' \| 'headline-2' \| 'headline-3' \| 'headline-4'` | `'headline-2'` | Visual size + line-height + letter-spacing. |
+| `weight` | `'medium' \| 'semibold' \| 'bold'` | per level | Font weight. Defaults to the canonical Figma weight per level. |
+| `as` | `'h1' \| 'h2' \| 'h3' \| 'h4' \| 'h5' \| 'h6'` | per level | Semantic HTML element. Defaults to the canonical Figma mapping. |
+| `align` | `'left' \| 'center' \| 'right'` | `'left'` | Text alignment. |
+| `asChild` | `boolean` | `false` | Render as a different element via Radix Slot. |
+
+All standard `HTMLHeadingElement` attributes are forwarded.
+
+## Canonical defaults
+
+| `level` | default `weight` | default `as` |
+|---|---|---|
+| `h1` | bold | `h1` |
+| `h2` | semibold | `h2` |
+| `h3` | semibold | `h3` |
+| `headline-0` | bold | `h1` |
+| `headline-1` | semibold | `h2` |
+| `headline-2` | semibold | `h3` |
+| `headline-3` | semibold | `h4` |
+| `headline-4` | semibold | `h5` |
+
+## Examples
+
+### Default
+
+<Canvas of={Stories.Default} />
+
+<Controls of={Stories.Default} />
+
+### All levels
+
+<Canvas of={Stories.AllLevels} />
+
+### Weight matrix
+
+<Canvas of={Stories.WeightMatrix} />
+
+### `as` override
+
+<Canvas of={Stories.AsOverride} />
+
+### `asChild` link
+
+<Canvas of={Stories.AsChildLink} />
+
+### Alignments
+
+<Canvas of={Stories.Alignments} />

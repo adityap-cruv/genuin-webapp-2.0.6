@@ -4,7 +4,7 @@ import { type AxiosInstance } from "axios";
 
 import { useAxiosInstance } from "@genuin/components/context/axios";
 import { axiosInstance as globalAxiosInstance } from "@genuin/components/context/axios/context";
-import type { EmbedDataType } from "@genuin/components/context/embed/embed.types";
+import type { ConfigurationType, EmbedDataType } from "@genuin/components/context/embed/embed.types";
 import { getDeviceId } from "@genuin/components/lib/utils/device-id";
 import { queryClient } from "@genuin/components/react-query/client";
 import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
@@ -124,7 +124,8 @@ async function fetchFeed(
         options.contextualParams.user_segments.max_age ||
         options.contextualParams.user_segments.segment ||
         options.contextualParams.user_segments.gender ||
-        options.contextualParams.user_segments.race) && {
+        options.contextualParams.user_segments.race ||
+        options.contextualParams.user_segments.interests) && {
         user_segments: {
           ...(options.contextualParams.user_segments.age && {
             age: options.contextualParams.user_segments.age,
@@ -143,6 +144,9 @@ async function fetchFeed(
           }),
           ...(options.contextualParams.user_segments.race && {
             race: options.contextualParams.user_segments.race,
+          }),
+          ...(options.contextualParams.user_segments.interests && {
+            interests: options.contextualParams.user_segments.interests,
           }),
         },
       }),
@@ -169,11 +173,37 @@ async function fetchFeed(
       time: options.contextualParams.time,
     }),
 
-    // URL context (always include current URL)
+    // URL context: honor an explicit user-provided url (e.g. PDP url), else current URL.
     ...{
-      url: window.location.href,
+      url: options?.contextualParams?.url || window.location.href,
     },
   };
+
+  // Build configuration body if provided
+  let configurationDataBody = {};
+  if (options?.configuration) {
+    const configurationObj: Record<string, any> = {};
+
+    if (options.configuration.style_title) {
+      configurationObj.style_title = options.configuration.style_title;
+    }
+    if (options.configuration.style_subtitle) {
+      configurationObj.style_subtitle = options.configuration.style_subtitle;
+    }
+    if (options.configuration.sections && options.configuration.sections.length > 0) {
+      configurationObj.sections = options.configuration.sections.map((section) => ({
+        ...(section.title && { title: section.title }),
+        ...(section.subtitle && { subtitle: section.subtitle }),
+        ...(section.description && { description: section.description }),
+        ...(section.cover_url && { cover_url: section.cover_url }),
+        ...(section.thumbnail_url && { thumbnail_url: section.thumbnail_url }),
+      }));
+    }
+
+    if (Object.keys(configurationObj).length > 0) {
+      configurationDataBody = { configuration: configurationObj };
+    }
+  }
 
   // Select URL and build requestBody based on options
   let url: string;
@@ -250,8 +280,11 @@ async function fetchFeed(
       break;
 
     default:
-      url =
-        options?.brandId && [3283, 2249, 2910].includes(options.brandId) ? API_PATHS.FEED_HOME_V1 : API_PATHS.FEED_HOME;
+      url = API_PATHS.FEED_HOME_V1;
+      // options?.brandId && [3283, 2249, 2910, 99].includes(options.brandId)
+      //   ? API_PATHS.FEED_HOME_V1
+      //   : API_PATHS.FEED_HOME;
+
       requestBody = {
         type: feedTypeToNumber[feedType],
         ...(deviceId && { device_id: deviceId }),
@@ -273,6 +306,7 @@ async function fetchFeed(
     .post(url, {
       ...requestBody,
       ...contextualFeedParamsBody,
+      ...configurationDataBody,
     })
     .then((res) => {
       // if (res.status !== 200) {
@@ -314,6 +348,7 @@ type UseFeedOptionsType = {
   pageSession?: string;
   lastVideoId?: string;
   contextualParams?: EmbedDataType["contextualParams"];
+  configuration?: ConfigurationType;
   // Placeholder data for the query - must match the FeedPage structure
   placeholderData?: {
     pages: FeedPage[];

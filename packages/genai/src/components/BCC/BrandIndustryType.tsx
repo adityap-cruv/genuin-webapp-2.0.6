@@ -30,7 +30,6 @@ const BrandIndustryType: React.FC<BrandIndustryTypeProps> = ({ jsonData }) => {
     }
     // const [isInserting, setIsInserting] = useState(false);
     // const [inserted, setInserted] = useState(jsonData?.inserted || false);
-    // const { updateAgentMessageContent, currentSessionId } = useAgentsContext();
 
     // const handleInsert = async () => {
     //     if (!jsonData) return;

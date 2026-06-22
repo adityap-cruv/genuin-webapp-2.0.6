@@ -13,8 +13,10 @@ import {
     LikeFilled,
     Regenerate,
 } from '@/assets/SvgIcons/icons';
-import type { HandleSendMessageParams } from '@/context/app/provider';
+import type { HandleSendMessageParams } from '@/modules/chat/types';
+import { useUIContext } from '@/stores/ui/context';
 import type { Agent, Artifact, ChatHistoryEvent, ThinkingStep } from '@/types';
+import { cn } from '@/utils/cn';
 
 import AttachmentCard from '../Attachments/AttachmentCard';
 import { Button } from '../ui/button';
@@ -25,68 +27,58 @@ import { EditUserMessage } from './EditUserMessage';
 import ThinkingIndicator from './ThinkingIndicator';
 import ThinkingStatusList from './ThinkingStatusList';
 
-// Lazy load widgets - chunks only loaded when included in contentOrder
+// Lazy load widgets — chunks only loaded when included in contentOrder
 const InventoryWidget = lazy(() => import('./InventoryWidget'));
 const KoahAdWidget = lazy(() => import('./KoahAdWidget'));
 
-const ThinkingMessages = () => {
+// ---------------------------------------------------------------------------
+// Sub-components
+// ---------------------------------------------------------------------------
+
+function ThinkingMessages() {
     return (
         <div className='gai:font-body-2-med gai:text-secondary-gray-600 gai:italic'>
             <ThinkingIndicator />
         </div>
     );
+}
+
+const ICON_MAP: Record<string, React.ReactNode> = {
+    LikeFilled: <LikeFilled className='gai:text-secondary-gray-600 gai:hover:text-secondary-gray-900' />,
+    DislikeFilled: <DislikeFilled className='gai:text-secondary-gray-600 gai:hover:text-secondary-gray-900' />,
+    Copied: <Copied className='gai:text-secondary-gray-600 gai:hover:text-secondary-gray-900' />,
+    Copy: <Copy className='gai:text-secondary-gray-600 gai:hover:text-secondary-gray-900' />,
+    LikeEmpty: <LikeEmpty className='gai:text-secondary-gray-600 gai:hover:text-secondary-gray-900' />,
+    DislikeEmpty: <DislikeEmpty className='gai:text-secondary-gray-600 gai:hover:text-secondary-gray-900' />,
+    Regenerate: <Regenerate className='gai:text-secondary-gray-600 gai:hover:text-secondary-gray-900' />,
+    Edit: <Edit className='gai:text-secondary-gray-600 gai:hover:text-secondary-gray-900' />,
+    ChevronLeft: (
+        <ChevronLeft className='gai:h-5 gai:w-5 gai:text-secondary-gray-600 gai:hover:text-secondary-gray-900' />
+    ),
+    ChevronRight: (
+        <ChevronRight className='gai:h-5 gai:w-5 gai:text-secondary-gray-600 gai:hover:text-secondary-gray-900' />
+    ),
 };
 
-const FeedbackButton = ({
-    iconName,
-    onClick,
-}: {
-    iconName: string;
-    onClick: (e: React.MouseEvent) => void;
-    onBoardingAgents: string[];
-    currentAgent: string;
-}) => {
-    const IconMap: Record<string, React.ReactNode> = {
-        LikeFilled: <LikeFilled className='gai:text-secondary-gray-600 gai:hover:text-secondary-gray-900' />,
-        DislikeFilled: <DislikeFilled className='gai:text-secondary-gray-600 gai:hover:text-secondary-gray-900' />,
-        Copied: <Copied className='gai:text-secondary-gray-600 gai:hover:text-secondary-gray-900' />,
-        Copy: <Copy className='gai:text-secondary-gray-600 gai:hover:text-secondary-gray-900' />,
-        LikeEmpty: <LikeEmpty className='gai:text-secondary-gray-600 gai:hover:text-secondary-gray-900' />,
-        DislikeEmpty: <DislikeEmpty className='gai:text-secondary-gray-600 gai:hover:text-secondary-gray-900' />,
-        Regenerate: <Regenerate className='gai:text-secondary-gray-600 gai:hover:text-secondary-gray-900' />,
-        Edit: <Edit className='gai:text-secondary-gray-600 gai:hover:text-secondary-gray-900' />,
-        ChevronLeft: (
-            <ChevronLeft className='gai:h-5 gai:w-5 gai:text-secondary-gray-600 gai:hover:text-secondary-gray-900' />
-        ),
-        ChevronRight: (
-            <ChevronRight className='gai:h-5 gai:w-5 gai:text-secondary-gray-600 gai:hover:text-secondary-gray-900' />
-        ),
-    };
-
-    // if(iconName === 'Edit' && onBoardingAgents.includes(currentAgent)) {
-    //     return null;
-    // }
-
+function FeedbackButton({ iconName, onClick }: { iconName: string; onClick: (e: React.MouseEvent) => void }) {
     return (
-        <div>
-            <Button
-                size='icon'
-                className='gai:flex gai:cursor-pointer gai:items-center gai:gap-1 gai:rounded-md gai:border-0 gai:bg-transparent gai:p-0 gai:py-0 gai:text-secondary-gray-600 gai:shadow-none gai:hover:bg-primary-50 gai:hover:text-secondary-gray-900'
-                onClick={onClick}
-            >
-                {IconMap[iconName]}
-            </Button>
-        </div>
+        <Button
+            size='icon'
+            className='gai:flex gai:cursor-pointer gai:items-center gai:gap-1 gai:rounded-md gai:border-0 gai:bg-transparent gai:p-0 gai:py-0 gai:text-secondary-gray-600 gai:shadow-none gai:hover:bg-primary-50 gai:hover:text-secondary-gray-900'
+            onClick={onClick}
+        >
+            {ICON_MAP[iconName]}
+        </Button>
     );
-};
+}
 
-const ArtifactsList = ({ artifacts }: { artifacts: Artifact[] }) => {
-    if (!artifacts || artifacts.length === 0) return null;
+function ArtifactsList({ artifacts }: { artifacts: Artifact[] }) {
+    if (!artifacts.length) return null;
 
     const getArtifactUrl = (artifact: Artifact) => {
         if (!artifact.s3_key) return undefined;
         if (artifact.s3_key.startsWith('http')) return artifact.s3_key;
-        const baseUrl = import.meta.env.VITE_ASSET_BASE_URL || 'https://ds-dataset-rvc.s3.us-west-2.amazonaws.com';
+        const baseUrl = import.meta.env.VITE_GENAI_ASSET_BASE_URL || 'https://ds-dataset-rvc.s3.us-west-2.amazonaws.com';
         const encodedKey = artifact.s3_key
             .split('/')
             .map(segment => encodeURIComponent(segment))
@@ -99,9 +91,13 @@ const ArtifactsList = ({ artifacts }: { artifacts: Artifact[] }) => {
             {artifacts.map(artifact => {
                 const url = getArtifactUrl(artifact);
                 const isImage = artifact.type?.startsWith('image/');
-                const previewUrl = isImage && url ? url : undefined;
                 const card = (
-                    <AttachmentCard name={artifact.name} type={artifact.type} previewUrl={previewUrl} className='' />
+                    <AttachmentCard
+                        name={artifact.name}
+                        type={artifact.type}
+                        previewUrl={isImage && url ? url : undefined}
+                        className=''
+                    />
                 );
 
                 if (url) {
@@ -126,32 +122,50 @@ const ArtifactsList = ({ artifacts }: { artifacts: Artifact[] }) => {
             })}
         </div>
     );
+}
+
+// ---------------------------------------------------------------------------
+// Density maps
+// ---------------------------------------------------------------------------
+
+/** Maps `uiDensity` to user chat bubble padding. */
+const BUBBLE_PADDING: Record<'xs' | 'sm' | 'base', string> = {
+    base: 'gai:px-4 gai:py-3',
+    sm: 'gai:px-3 gai:py-2',
+    xs: 'gai:px-2 gai:py-1',
 };
 
-type ItemProps = {
-    event: ChatHistoryEvent;
-    allEvents: ChatHistoryEvent[];
-    messageType: 'user' | 'agent';
-    currentSessionId: string | null;
-    currentAgent: string;
-    agents: Agent[];
-    onBoardingAgents: string[];
-    isLastMessage: boolean;
-    sessionThinking?: boolean;
-    isSdkLoaded: boolean;
-    isKoahSdkLoaded: boolean;
-    setFeedback: (sessionId: string, responseId: string, liked: boolean) => void;
-    handleSendMessage: (params: HandleSendMessageParams) => Promise<void>;
-    view: 'page' | 'floater' | 'dialog' | 'web-sdk';
-    thinkingSteps: ThinkingStep[];
+/** Maps `uiDensity` to user chat bubble text size. */
+const BUBBLE_TEXT_SIZE: Record<'xs' | 'sm' | 'base', string> = {
+    base: 'gai:text-sm',
+    sm: 'gai:text-xs',
+    xs: 'gai:text-[10px]',
 };
+
+/** Maps `uiDensity` to user message wrapper width. xs = full-width to maximise limited space. */
+const USER_MSG_WIDTH: Record<'xs' | 'sm' | 'base', string> = {
+    base: 'gai:w-[80%]',
+    sm: 'gai:w-[80%]',
+    xs: 'gai:w-full',
+};
+
+/** Maps `uiDensity` to user bubble max-width. xs = full-width to maximise limited space. */
+const USER_BUBBLE_MAX_WIDTH: Record<'xs' | 'sm' | 'base', string> = {
+    base: 'gai:max-w-[80%]',
+    sm: 'gai:max-w-[80%]',
+    xs: 'gai:max-w-full',
+};
+
+// ---------------------------------------------------------------------------
+// useStreamingDisplay
+// ---------------------------------------------------------------------------
 
 // Tune chunk sizes to balance timeliness vs. smooth streaming feel.
 const STREAM_CHUNK_MIN = 2;
 const STREAM_CHUNK_MAX = 20;
 
-// Incrementally reveals the agent response so SSE chunks render like a typewriter.
-const useStreamingDisplay = ({
+/** Incrementally reveals the agent response so SSE chunks render like a typewriter. */
+function useStreamingDisplay({
     messageId,
     content,
     isStreaming,
@@ -165,14 +179,14 @@ const useStreamingDisplay = ({
     isCompleted: boolean;
     initialDisplay: string;
     isCached?: boolean;
-}) => {
+}) {
     const [displayText, setDisplayText] = useState(content);
     const pendingRef = useRef('');
     const lastContentRef = useRef(content);
     const displayRef = useRef(content);
     const frameRef = useRef<number | null>(null);
     const hasStreamedRef = useRef(false);
-    const animationInitializedRef = useRef(false); // Guard to prevent re-initialization
+    const animationInitializedRef = useRef(false);
 
     const cancelFrame = () => {
         if (frameRef.current !== null) {
@@ -187,8 +201,10 @@ const useStreamingDisplay = ({
             return;
         }
 
-        const pendingLength = pendingRef.current.length;
-        const chunkSize = Math.min(STREAM_CHUNK_MAX, Math.max(STREAM_CHUNK_MIN, Math.ceil(pendingLength / 6)));
+        const chunkSize = Math.min(
+            STREAM_CHUNK_MAX,
+            Math.max(STREAM_CHUNK_MIN, Math.ceil(pendingRef.current.length / 6))
+        );
         const nextChunk = pendingRef.current.slice(0, chunkSize);
         pendingRef.current = pendingRef.current.slice(chunkSize);
 
@@ -199,18 +215,14 @@ const useStreamingDisplay = ({
         frameRef.current = requestAnimationFrame(stepReveal);
     }, []);
 
-    useEffect(() => {
-        return () => {
-            cancelFrame();
-        };
-    }, []);
+    useEffect(() => () => cancelFrame(), []);
 
     useEffect(() => {
         cancelFrame();
         pendingRef.current = '';
         lastContentRef.current = '';
         hasStreamedRef.current = false;
-        animationInitializedRef.current = false; // Reset initialization flag for new message
+        animationInitializedRef.current = false;
         displayRef.current = initialDisplay;
         setDisplayText(initialDisplay);
     }, [messageId, initialDisplay]);
@@ -220,13 +232,10 @@ const useStreamingDisplay = ({
         const prevContent = lastContentRef.current;
         if (nextContent === prevContent) return;
 
-        // For cached messages, treat them as streaming even if isStreaming is false
         const shouldStream = isStreaming || (isCached && !hasStreamedRef.current);
 
-        // If animation already initialized for cached message, skip
-        if (isCached && animationInitializedRef.current) {
-            return;
-        }
+        // Skip if animation already initialized for this cached message
+        if (isCached && animationInitializedRef.current) return;
 
         if (!shouldStream) {
             if (!hasStreamedRef.current) {
@@ -239,10 +248,7 @@ const useStreamingDisplay = ({
             return;
         }
 
-        // Mark animation as initialized for cached messages
-        if (isCached && !animationInitializedRef.current) {
-            animationInitializedRef.current = true;
-        }
+        if (isCached) animationInitializedRef.current = true;
 
         if (nextContent.length < prevContent.length) {
             lastContentRef.current = nextContent;
@@ -282,47 +288,84 @@ const useStreamingDisplay = ({
         }
     }, [isStreaming, isCompleted, content, stepReveal]);
 
-    const isAnimating = displayText !== content;
-    const hasFinished = displayText === content;
+    return { displayText, isAnimating: displayText !== content };
+}
 
-    return { displayText, isAnimating, hasFinished };
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/** Finds the preceding user message content for a given agent event index. */
+function findUserQuestion(allEvents: ChatHistoryEvent[], currentIndex: number): string | null {
+    for (let i = currentIndex - 1; i >= 0; i--) {
+        const evt = allEvents[i];
+        if (evt?.role === 'user' && evt.message?.content) return evt.message.content;
+    }
+    return null;
+}
+
+/** Finds the last agent text response (non-tool/function) at or before the given index. */
+function findAgentTextResponse(allEvents: ChatHistoryEvent[], currentIndex: number): string {
+    for (let i = currentIndex; i >= 0; i--) {
+        const evt = allEvents[i];
+        if (
+            evt?.role === 'agent' &&
+            evt.message?.content &&
+            !evt.message.function_name &&
+            !evt.message.function_response
+        ) {
+            return evt.message.content;
+        }
+    }
+    return '';
+}
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
+type ItemProps = {
+    event: ChatHistoryEvent;
+    allEvents: ChatHistoryEvent[];
+    messageType: 'user' | 'agent';
+    currentSessionId: string | null;
+    currentAgent: string;
+    agents: Agent[];
+    onBoardingAgents: string[];
+    isLastMessage: boolean;
+    sessionThinking?: boolean;
+    isSdkLoaded: boolean;
+    isKoahSdkLoaded: boolean;
+    setFeedback: (sessionId: string, responseId: string, liked: boolean) => void;
+    handleSendMessage: (params: HandleSendMessageParams) => Promise<void>;
+    view: 'page' | 'floater' | 'dialog' | 'web-sdk';
+    thinkingSteps: ThinkingStep[];
 };
 
-const ItemComponent: React.FC<ItemProps> = ({
+// ---------------------------------------------------------------------------
+// ItemComponent
+// ---------------------------------------------------------------------------
+
+function ItemComponent({
     event,
     allEvents,
     messageType,
     currentSessionId,
     currentAgent,
-    onBoardingAgents,
     isLastMessage,
     sessionThinking,
     isSdkLoaded,
     isKoahSdkLoaded,
-    // setFeedback,
     handleSendMessage,
     view,
     thinkingSteps,
-}) => {
-    // Get the message content
+}: ItemProps) {
+    const { uiDensity } = useUIContext();
     const content = event.message.content;
+    const normalizedContent = content || '';
 
-    // Find user question for agent messages (used for Koah ads)
-    // Look for the most recent user message before this agent event
-    const userQuestion =
-        messageType === 'agent'
-            ? (() => {
-                  const currentIndex = allEvents.findIndex(e => e.id === event.id);
-                  // Search backwards from current event to find the last user message
-                  for (let i = currentIndex - 1; i >= 0; i--) {
-                      const evt = allEvents[i];
-                      if (evt?.role === 'user' && evt.message?.content) {
-                          return evt.message.content;
-                      }
-                  }
-                  return null;
-              })()
-            : null;
+    const currentIndex = allEvents.findIndex(e => e.id === event.id);
+    const userQuestion = messageType === 'agent' ? findUserQuestion(allEvents, currentIndex) : null;
 
     const [copied, setCopied] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
@@ -331,6 +374,7 @@ const ItemComponent: React.FC<ItemProps> = ({
     const [shouldRenderKoahAd, setShouldRenderKoahAd] = useState(false);
     const [showInventoryWidget, setShowInventoryWidget] = useState(!event.is_cached);
     const [showCarousel, setShowCarousel] = useState(!event.is_cached);
+
     const handleCopy = async () => {
         try {
             await navigator.clipboard.writeText(content);
@@ -340,12 +384,6 @@ const ItemComponent: React.FC<ItemProps> = ({
             console.error('[MessageItem] Failed to copy message content', error);
         }
     };
-
-    // const startEditing = () => {
-    //     if (messageType !== 'user') return;
-    //     setEditedText(content || '');
-    //     setIsEditing(true);
-    // };
 
     const cancelEditing = () => {
         setIsEditing(false);
@@ -368,50 +406,42 @@ const ItemComponent: React.FC<ItemProps> = ({
     };
 
     const messageId = event.id ?? '';
-    const normalizedContent = content || '';
     const streamingActive = messageType === 'agent' && isLastMessage && Boolean(sessionThinking) && !event.isCompleted;
     const shouldAnimateOnMount =
         messageType === 'agent' &&
         (event.is_cached || (isLastMessage && (!event.isCompleted || Boolean(sessionThinking))));
-    const initialDisplay = shouldAnimateOnMount ? '' : normalizedContent;
 
-    const { displayText, isAnimating, hasFinished } = useStreamingDisplay({
+    const { displayText, isAnimating } = useStreamingDisplay({
         messageId,
         content: normalizedContent,
         isStreaming: streamingActive,
         isCompleted: Boolean(event.isCompleted),
-        initialDisplay,
+        initialDisplay: shouldAnimateOnMount ? '' : normalizedContent,
         isCached: event.is_cached,
     });
 
-    // Handle delayed rendering for cached messages
+    const hasFinished = !isAnimating;
+
+    // Delayed rendering for cached messages — show components sequentially after text finishes
     useEffect(() => {
         if (!event.is_cached) {
-            // Non-cached: show everything immediately
             setShowKoahAd(true);
             setShowInventoryWidget(true);
             setShowCarousel(true);
             return;
         }
 
-        // Cached: wait for text animation to finish, then show components sequentially
-        // Order: Koah Ad -> Inventory Widget -> Carousel
-        if (hasFinished) {
-            const timer0 = setTimeout(() => {
-                setShowKoahAd(true);
-            }, 150);
-            const timer1 = setTimeout(() => {
-                setShowInventoryWidget(true);
-            }, 300);
-            const timer2 = setTimeout(() => {
-                setShowCarousel(true);
-            }, 600);
-            return () => {
-                clearTimeout(timer0);
-                clearTimeout(timer1);
-                clearTimeout(timer2);
-            };
-        }
+        if (!hasFinished) return;
+
+        // Order: Koah Ad → Inventory Widget → Carousel
+        const t0 = setTimeout(() => setShowKoahAd(true), 150);
+        const t1 = setTimeout(() => setShowInventoryWidget(true), 300);
+        const t2 = setTimeout(() => setShowCarousel(true), 600);
+        return () => {
+            clearTimeout(t0);
+            clearTimeout(t1);
+            clearTimeout(t2);
+        };
     }, [hasFinished, event.is_cached]);
 
     useEffect(() => {
@@ -419,38 +449,42 @@ const ItemComponent: React.FC<ItemProps> = ({
     }, [isKoahSdkLoaded, showKoahAd]);
 
     const toolMetadata = event.metadata?.toolMetadata;
-
     const shouldRenderCarousel = messageType === 'agent' && Boolean(event.carousel_metadata);
 
-    // const handleFeedback = async (e: React.MouseEvent, liked: boolean) => {
-    //     e.preventDefault();
-    //     e.stopPropagation();
-    //     try {
-    //         await responseFeedback({
-    //             session_id: currentSessionId as string,
-    //             response_id: event.id,
-    //             feedback: liked,
-    //         });
-    //         setFeedback(currentSessionId as string, event.id, liked);
-    //     } catch (error) {
-    //         toast.error('Failed to submit feedback');
-    //     }
-    // };
-
-    // we may have function name
+    // Thinking indicators — only rendered when at least one child is visible
+    const showThinkingList = view === 'web-sdk' && isLastMessage && sessionThinking && thinkingSteps.length > 0;
+    const hasAnyContent = !!(
+        content ||
+        event.carousel_metadata ||
+        toolMetadata ||
+        (userQuestion && event.contentSequence?.includes('koah_ads'))
+    );
+    const showSkeleton =
+        isLastMessage &&
+        sessionThinking &&
+        messageType === 'agent' &&
+        !hasAnyContent &&
+        !(view === 'web-sdk' && thinkingSteps.length > 0);
 
     return (
-        <div className={`gai:flex gai:w-full ${messageType === 'user' ? 'gai:justify-end' : 'gai:justify-start'}`}>
+        <div
+            data-mid={event.id}
+            className={`gai:flex gai:w-full ${messageType === 'user' ? 'gai:justify-end' : 'gai:justify-start'}`}
+        >
             {messageType === 'user' ? (
                 <div
-                    className={`gai:flex ${
-                        isEditing ? 'gai:w-full' : 'gai:w-[80%]'
-                    } gai:flex-col gai:items-end gai:gap-2`}
+                    className={cn(
+                        'gai:flex gai:flex-col gai:items-end gai:gap-2',
+                        isEditing ? 'gai:w-full' : USER_MSG_WIDTH[uiDensity]
+                    )}
                 >
                     <div
-                        className={`gai:rounded-3xl gai:rounded-br-none gai:bg-primary-50 gai:px-4 gai:py-3 gai:font-body-1-med gai:text-secondary-gray-900 ${
-                            isEditing ? 'gai:w-full' : 'gai:max-w-[80%]'
-                        }`}
+                        className={cn(
+                            'gai:rounded-3xl gai:rounded-br-none gai:bg-primary-50 gai:font-body-1-med gai:text-secondary-gray-900',
+                            BUBBLE_PADDING[uiDensity],
+                            BUBBLE_TEXT_SIZE[uiDensity],
+                            isEditing ? 'gai:w-full' : USER_BUBBLE_MAX_WIDTH[uiDensity]
+                        )}
                     >
                         {isEditing ? (
                             <EditUserMessage
@@ -463,18 +497,12 @@ const ItemComponent: React.FC<ItemProps> = ({
                             content
                         )}
                     </div>
-                    {!isEditing && event.artifacts && event.artifacts.length > 0 && (
-                        <ArtifactsList artifacts={event.artifacts} />
-                    )}
+
+                    {!isEditing && !!event.artifacts?.length && <ArtifactsList artifacts={event.artifacts} />}
+
                     {!isEditing && view !== 'web-sdk' && (
                         <div className='gai:flex gai:items-center gai:gap-0'>
-                            <FeedbackButton
-                                iconName={copied ? 'Copied' : 'Copy'}
-                                onClick={handleCopy}
-                                onBoardingAgents={onBoardingAgents}
-                                currentAgent={currentAgent}
-                            />
-                            {/* <FeedbackButton iconName='Edit' onClick={startEditing} onBoardingAgents={onBoardingAgents} currentAgent={currentAgent} /> */}
+                            <FeedbackButton iconName={copied ? 'Copied' : 'Copy'} onClick={handleCopy} />
                         </div>
                     )}
                 </div>
@@ -482,71 +510,30 @@ const ItemComponent: React.FC<ItemProps> = ({
                 <div
                     className={`gai:flex gai:w-full ${view === 'web-sdk' ? 'gai:flex-col' : 'gai:flex-row'} gai:gap-2`}
                 >
-                    {/* Thinking indicators - always at the top, before any content */}
-                    <div className='gai:flex gai:w-full gai:flex-col gai:gap-2'>
-                        {/* Show agent thinking status list - stays until response_completed */}
-                        {view === 'web-sdk' && isLastMessage && sessionThinking && thinkingSteps.length > 0 && (
-                            <ThinkingStatusList steps={thinkingSteps} />
-                        )}
-                        {/* Show thinking skeleton - hide when any agent content has arrived */}
-                        {(() => {
-                            const hasAnyContent = !!(
-                                content || // Has agent text
-                                event.carousel_metadata || // Has videos
-                                toolMetadata || // Has inventory
-                                (userQuestion && event.contentSequence?.includes('koah_ads')) // Has koah ads data
-                            );
-                            const shouldShowSkeleton =
-                                isLastMessage &&
-                                sessionThinking &&
-                                messageType === 'agent' &&
-                                !hasAnyContent &&
-                                !(view === 'web-sdk' && thinkingSteps.length > 0);
-
-                            return shouldShowSkeleton ? <ThinkingMessages /> : null;
-                        })()}
-                    </div>
+                    {(showThinkingList || showSkeleton) && (
+                        <div className='gai:flex gai:w-full gai:flex-col gai:gap-2'>
+                            {showThinkingList && <ThinkingStatusList steps={thinkingSteps} />}
+                            {showSkeleton && <ThinkingMessages />}
+                        </div>
+                    )}
 
                     <div className='gai:flex gai:w-full gai:flex-col gai:gap-4'>
                         {event.contentSequence?.map(contentType => {
                             switch (contentType) {
                                 case 'koah_ads': {
-                                    // Find the actual agent text response (not tool/function content)
-                                    const agentTextResponse = (() => {
-                                        // Look for the last agent message with actual text content
-                                        const currentIndex = allEvents.findIndex(e => e.id === event.id);
-                                        for (let i = currentIndex; i >= 0; i--) {
-                                            const evt = allEvents[i];
-                                            // Find agent message with content that's not a function/tool
-                                            if (
-                                                evt?.role === 'agent' &&
-                                                evt.message?.content &&
-                                                !evt.message.function_name &&
-                                                !evt.message.function_response
-                                            ) {
-                                                return evt.message.content;
-                                            }
-                                        }
-                                        return ''; // No agent text yet
-                                    })();
-
-                                    // Show Koah ads when conditions are met
-                                    if (shouldRenderKoahAd) {
-                                        return (
-                                            <Suspense key={contentType} fallback={null}>
-                                                <KoahAdWidget
-                                                    userMessage={userQuestion}
-                                                    aiResponse={agentTextResponse}
-                                                    messageId={event.id}
-                                                />
-                                            </Suspense>
-                                        );
-                                    }
-                                    return null;
+                                    if (!shouldRenderKoahAd) return null;
+                                    return (
+                                        <Suspense key={contentType} fallback={null}>
+                                            <KoahAdWidget
+                                                userMessage={userQuestion}
+                                                aiResponse={findAgentTextResponse(allEvents, currentIndex)}
+                                                messageId={event.id}
+                                            />
+                                        </Suspense>
+                                    );
                                 }
 
                                 case 'agent_text': {
-                                    // Render agent text content
                                     return (
                                         <AgentTextContent
                                             key={contentType}
@@ -562,30 +549,24 @@ const ItemComponent: React.FC<ItemProps> = ({
                                 }
 
                                 case 'videos': {
-                                    // Show carousel when conditions are met
-                                    if (shouldRenderCarousel && showCarousel) {
-                                        return (
-                                            <CarousalEmbed
-                                                key={contentType}
-                                                carousalMetadata={event.carousel_metadata}
-                                                isLastMessage={isLastMessage}
-                                                isSdkLoaded={isSdkLoaded}
-                                            />
-                                        );
-                                    }
-                                    return null;
+                                    if (!shouldRenderCarousel || !showCarousel) return null;
+                                    return (
+                                        <CarousalEmbed
+                                            key={contentType}
+                                            carousalMetadata={event.carousel_metadata}
+                                            isLastMessage={isLastMessage}
+                                            isSdkLoaded={isSdkLoaded}
+                                        />
+                                    );
                                 }
 
                                 case 'inventory': {
-                                    // Show inventory widget when tool metadata exists
-                                    if (toolMetadata && showInventoryWidget) {
-                                        return (
-                                            <Suspense key={contentType} fallback={null}>
-                                                <InventoryWidget metadata={toolMetadata} />
-                                            </Suspense>
-                                        );
-                                    }
-                                    return null;
+                                    if (!toolMetadata || !showInventoryWidget) return null;
+                                    return (
+                                        <Suspense key={contentType} fallback={null}>
+                                            <InventoryWidget metadata={toolMetadata} />
+                                        </Suspense>
+                                    );
                                 }
 
                                 default:
@@ -597,22 +578,21 @@ const ItemComponent: React.FC<ItemProps> = ({
             )}
         </div>
     );
-};
+}
 
-const Item = React.memo(ItemComponent, (prevProps, nextProps) => {
-    // Custom comparison to prevent unnecessary re-renders
-    return (
-        prevProps.event.id === nextProps.event.id &&
-        prevProps.event.message.content === nextProps.event.message.content &&
-        prevProps.event.isCompleted === nextProps.event.isCompleted &&
-        prevProps.event.is_cached === nextProps.event.is_cached &&
-        prevProps.isLastMessage === nextProps.isLastMessage &&
-        prevProps.sessionThinking === nextProps.sessionThinking &&
-        prevProps.thinkingSteps.length === nextProps.thinkingSteps.length &&
-        prevProps.allEvents.length === nextProps.allEvents.length &&
-        Boolean(prevProps.event.carousel_metadata) === Boolean(nextProps.event.carousel_metadata) &&
-        prevProps.isKoahSdkLoaded === nextProps.isKoahSdkLoaded
-    );
-});
+const Item = React.memo(
+    ItemComponent,
+    (prev, next) =>
+        prev.event.id === next.event.id &&
+        prev.event.message.content === next.event.message.content &&
+        prev.event.isCompleted === next.event.isCompleted &&
+        prev.event.is_cached === next.event.is_cached &&
+        prev.isLastMessage === next.isLastMessage &&
+        prev.sessionThinking === next.sessionThinking &&
+        prev.thinkingSteps.length === next.thinkingSteps.length &&
+        prev.allEvents.length === next.allEvents.length &&
+        Boolean(prev.event.carousel_metadata) === Boolean(next.event.carousel_metadata) &&
+        prev.isKoahSdkLoaded === next.isKoahSdkLoaded
+);
 
 export default Item;

@@ -1,0 +1,146 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./switch.stories";
+
+{/*
+  Design-system narrative for the switch component. Attached to the
+  matching story group via `<Meta of={…}>` so it renders as the
+  "Docs" tab next to the live stories. Layout: narrative intro →
+  live examples + controls → usage guidelines.
+*/}
+
+<Meta of={Stories} />
+
+# Switch
+
+## What switches are for
+
+A switch is the form control for an *immediate-effect on/off toggle*. The user flips it, the world changes — a setting takes effect, a feature turns on, notifications start arriving. The visual metaphor is the physical wall switch or the iOS-style settings toggle: there are exactly two states, the change is instantaneous, and the visual matches the state at all times. That immediacy is what separates a switch from a checkbox. A checkbox lives inside a form: the user might tick a few of them, then submit, and only then do the changes take effect. A switch lives outside the form-submit model: each flip *is* the action.
+
+A good switch is unambiguous about which state is "on" and which is "off." The label reads as a noun phrase or an active question — "Email notifications", "Show captions", "Dark mode" — and the user can tell at a glance, without reading anything, which state they're in (filled track + thumb-on-the-right = on; muted track + thumb-on-the-left = off). A bad switch is a checkbox in disguise (lives in a form, only takes effect after submit), or a switch where the on/off state isn't visually obvious, or a switch wired to an action that takes seconds to complete with no feedback (so the user flips it, sees nothing happen, flips it back).
+
+The Genuin Switch is built on `@radix-ui/react-switch`, so the keyboard model (Space toggles, Tab moves focus), the focus ring, and ARIA semantics (`role="switch"`, `aria-checked`) are correct out of the box. The design system layers on the brand color when on, the muted color when off, the 18px-tall track, the 16px circular thumb, and the smooth slide transition.
+
+## Switch in this design system
+
+The Switch component in `@genuin/ui` is a single export, `<Switch>`, that renders the Radix switch primitive with the design-system styling.
+
+### Visual treatment
+
+- **Track**: a 32px-wide × 18px-tall pill-shaped container.
+  - **On (`data-state=checked`)**: `primary` brand fill.
+  - **Off (`data-state=unchecked`)**: `secondary-500` muted fill.
+  - Subtle shadow (`shadow-xs`) for depth.
+  - Transparent border that picks up a focus ring on `:focus-visible`.
+- **Thumb**: a 16px white circle inside the track. Slides from left (off) to right (on) with a smooth `transition-transform`. The thumb is purely visual — clicks register on the whole track.
+- **Disabled**: `cursor-not-allowed`, 50% opacity.
+- **Focus**: a 3px ring on the track when keyboard-focused.
+- **Hover**: cursor pointer, subtle visual cue from the surrounding click target.
+
+### State
+
+- **`checked` / `defaultChecked`** — controlled or uncontrolled boolean state. The component fires `onCheckedChange` when toggled (Radix uses this name, not `onChange`).
+- **`disabled`** — non-interactive, dimmed, no-op on click.
+- **`required`** — set on the underlying button so HTML form submission can validate it.
+- **`name` / `value`** — for native form submission, Radix renders a hidden `<input>` so the switch participates in standard form data.
+
+### Pairing with a label
+
+The Switch component is purely the toggle — it does not render its own label. Always pair it with a `<Label>`:
+
+```tsx
+<div className="flex items-center justify-between">
+  <Label htmlFor="email-notifications">Email notifications</Label>
+  <Switch id="email-notifications" checked={enabled} onCheckedChange={setEnabled} />
+</div>
+```
+
+The canonical Genuin pattern places the label on the *left* and the switch on the *right* in a justified row — this matches iOS / Material settings conventions and lets the eye scan a column of toggles without re-reading positions. Click on the label focuses (and toggles) the switch, just like with checkboxes.
+
+### Pairing with `<Form>`
+
+Inside the form orchestration, drive the switch via `<Controller>`:
+
+```tsx
+<FormField
+  control={form.control}
+  name="emailNotifications"
+  render={({ field }) => (
+    <FormItem className="flex items-center justify-between">
+      <FormLabel>Email notifications</FormLabel>
+      <FormControl>
+        <Switch checked={field.value} onCheckedChange={field.onChange} />
+      </FormControl>
+    </FormItem>
+  )}
+/>
+```
+
+That said — switches *outside* a form-submit context are the more common pattern. A settings page where each toggle calls a mutation as it flips is the canonical use; a form with a switch that only takes effect on submit is a hint that you should use a checkbox instead.
+
+### Asynchronous toggling
+
+When the toggle fires a network mutation, give the user feedback so they know the change is in flight:
+
+- **Optimistic** — flip the visual immediately and assume success. Roll back on error and show a toast.
+- **Pending** — show a small loader next to the label while the request is in flight, with the switch disabled.
+- **Confirmation** — for switches that change important state (turn off 2FA, disconnect an integration), pair the flip with a confirmation dialog.
+
+Don't leave the user staring at a switch they flipped 800ms ago with no acknowledgement.
+
+### Accessibility
+
+The component is a real `<button role="switch">` with `aria-checked` automatically synced. Pair with a `<Label>` (or use `aria-labelledby` for hidden-text cases) so screen readers announce both the state and the purpose. Don't add `aria-pressed` — `aria-checked` is the right attribute for a switch role.
+
+## Examples
+
+### Default
+
+<Canvas of={Stories.Default} />
+
+<Controls of={Stories.Default} />
+
+### Checked
+
+<Canvas of={Stories.Checked} />
+
+### Disabled
+
+<Canvas of={Stories.Disabled} />
+
+### Checked disabled
+
+<Canvas of={Stories.CheckedDisabled} />
+
+### With label
+
+<Canvas of={Stories.WithLabel} />
+
+## When to use Switch
+
+- **Settings panels.** Notifications, dark mode, autoplay, captions — any preference that takes effect immediately.
+- **Feature toggles in admin / dev tools.** Enabling/disabling experimental features per session.
+- **Privacy and visibility controls.** "Make profile public", "Show online status" — clear, immediate-effect toggles.
+- **Connection / integration status.** "Connected to Google", "Sync with Slack" — flip to disconnect.
+- **Filter and view toggles.** "Show only mine", "Compact view" — UI-state toggles that update the page on flip.
+- **Pick Switch over Checkbox** when the toggle takes effect *now* (no submit step). If the user's flipping the toggle and expecting to commit later via a button, it's a Checkbox.
+- **Always pair with a `<Label>`.** A naked switch is meaningless.
+- **Always show feedback for async toggles.** Optimistic update + toast, or pending loader + disabled state.
+
+## How not to use Switch
+
+- **Don't use Switch inside a multi-field form with a submit button.** That's a Checkbox. Switches commit on flip; checkboxes commit on submit. Mixing the two confuses the user about when their change takes effect.
+- **Don't use Switch for mutually exclusive choices.** "Light theme / Dark theme" with two switches is a radio group. Use one switch for "Dark mode", or radios for "Theme: Light / Dark / System".
+- **Don't use Switch for actions.** "Delete account", "Send message" — those are buttons. Switches are *values*, not actions.
+- **Don't ship a Switch without a label.** A toggle with no label is just a piece of chrome. Pair with `<Label htmlFor>` or `aria-labelledby` in 100% of cases.
+- **Don't put long labels next to a switch.** "Send me email notifications about replies, likes, follows, mentions, and important account activity" is two lines of copy that the user will skim and probably get wrong. Keep labels short ("Email notifications") and surface details elsewhere.
+- **Don't use a Switch for a tri-state value.** "On / Off / System default" needs three options — radios, not a switch. Don't try to encode three states by adding an "indeterminate" visual to a Switch.
+- **Don't suppress the focus ring.** Keyboard users rely on it to know which switch they're on. The component provides a visible ring; don't override it.
+- **Don't disable a Switch silently.** A grayed-out toggle with no explanation reads as broken. Pair the disabled state with helper text ("Available on Pro plan") or a tooltip.
+- **Don't fire an irreversible action on toggle without confirmation.** "Disable 2FA" should not trigger the moment the user flips the switch — confirm first, then flip on success.
+- **Don't ignore async failures.** If the toggle calls a mutation and the mutation fails, roll the visual back to the previous state and show the user why. Leaving the UI in the optimistic state when the request failed creates real bugs.
+- **Don't use Switch for a "save my preferences" sequence.** A series of switches followed by a Save button is a checkbox group with extra steps. Pick one model: switches with immediate effect, or checkboxes with a submit.
+- **Don't make the switch tiny on touch surfaces.** The default size already accounts for touch — don't shrink it below the standard. The whole row (label + switch) should be a tappable target.
+- **Don't render multiple Switches with no spacing.** A column of toggles wants generous vertical padding so the user can tap each one without misfires. The label-left + switch-right pattern with `space-y-3` (or larger) keeps things readable.
+- **Don't put a Switch inside a clickable card without stopping propagation.** A card with a switch in its corner — clicking the card opens detail; clicking the switch toggles. If the inner switch click bubbles to the card, the user opens the detail view every time they toggle.
+- **Don't use the Switch as part of a confirmation pattern.** "Slide to confirm" disguised as a switch is the wrong control — use a button + dialog.

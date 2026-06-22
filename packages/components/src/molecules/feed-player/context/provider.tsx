@@ -1,7 +1,6 @@
 "use client";
 
 import mitt from "mitt";
-import type OpenPlayerJS from "openplayerjs";
 import React, { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import type { Swiper } from "swiper/types";
 
@@ -63,6 +62,16 @@ type VideoProviderProps = {
    * A video description to pass data to analytics.
    */
   videoDescription?: string | null;
+  /** Section title — forwarded to analytics as `section_title` (iHeart `station.asset.sub.name`). */
+  sectionTitle?: string | null;
+  /** Section subtitle — forwarded to analytics as `section_subtitle`. */
+  sectionSubtitle?: string | null;
+  /** Section id — forwarded to analytics as `section_id` (iHeart `view.item.asset.id`). */
+  sectionId?: string | null;
+  /** Podcast id — forwarded to analytics as `podcast_id` (iHeart `station.asset.sub.id` = `podcast|<id>`). */
+  podcastId?: string | null;
+  /** Station id — forwarded to analytics as `station_id` (iHeart `station.asset.sub.id` = `live|<id>`). */
+  stationId?: string | null;
   /**
    * Function to update active index in embed-manager-provider
    */
@@ -115,6 +124,11 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   explicitLoop,
   totalVideos,
   videoDescription,
+  sectionTitle,
+  sectionSubtitle,
+  sectionId,
+  podcastId,
+  stationId,
   activeIndex,
   videoType,
   onPlayerIterationEnd,
@@ -133,7 +147,10 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   const isIHeartLayout = brandLayoutType === "iheart";
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const playerRef = useRef<OpenPlayerJS | null>(null);
+  // The live `<video>` element, registered by FeedPlayer via setPlayerRef.
+  // The V2 rewrite dropped OpenPlayerJS, so this is the raw media element —
+  // imperative actions (seek, focus, replay) run directly against it.
+  const playerRef = useRef<HTMLVideoElement | null>(null);
   /**
    * Player configuration reference. contains the player configuration.
    */
@@ -202,11 +219,26 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       content_id: videoId,
       total_videos: totalVideos,
       title: videoDescription,
+      section_title: sectionTitle,
+      section_subtitle: sectionSubtitle,
+      section_id: sectionId,
+      podcast_id: podcastId,
+      station_id: stationId,
       video_id: videoId,
       video_url: videoUrl,
       video_type: videoType,
     }),
-    [videoId, totalVideos, videoDescription, videoType]
+    [
+      videoId,
+      totalVideos,
+      videoDescription,
+      sectionTitle,
+      sectionSubtitle,
+      sectionId,
+      podcastId,
+      stationId,
+      videoType,
+    ]
   );
 
   const [pausedBySystem, setPausedBySystem] = useState(baseEventBus.getContext().systemPaused);
@@ -494,7 +526,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       // Let's say, embed -> expand -> embed,
       // In that case we need to change currentTime same as the previous player type.
       if (embedEventBus.getContext().skipTimeOffsetOnce) {
-        playerRef.current.getMedia().currentTime = timeInfo.currentTime;
+        playerRef.current.currentTime = timeInfo.currentTime;
         embedEventBus.updateContext({
           ...embedEventBus.getContext(),
           skipTimeOffsetOnce: false,
@@ -513,7 +545,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
 
       // in case resumePlaybackFrom is -1, start it from beginning.
       if (resumePlaybackFrom === -1) {
-        playerRef.current.getElement().currentTime = 0;
+        playerRef.current.currentTime = 0;
         previousActivePlayerTypeRef.current = currentActivePlayerType;
         return;
       }
@@ -529,7 +561,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         newCurrentTime = newCurrentTime < 0 ? 0 : newCurrentTime;
 
         // reset the player.
-        playerRef.current.getMedia().currentTime = newCurrentTime;
+        playerRef.current.currentTime = newCurrentTime;
       }
 
       // Update previous active player type
@@ -739,8 +771,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     let previewInterval: NodeJS.Timeout | null = null;
 
     function handlePreviewIndexChange({ previewIndex }: any) {
-      const player = playerRef.current;
-      const media = player?.getMedia();
+      const media = playerRef.current;
       // Clear any existing preview interval before handling new preview state
       if (previewInterval) {
         clearInterval(previewInterval);
@@ -858,21 +889,19 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     (byUser: boolean) => {
       // Focus the video element before toggling to ensure browser routes
       // the action correctly, even when focus is trapped in another element or iframe.
-      playerRef.current?.getElement().focus({ preventScroll: true });
-
-      // If the player is still loading, ignore toggle requests.
-      if (isLoading) return;
-
+      playerRef.current?.focus({ preventScroll: true });
+      // Ignore only programmatic toggles while loading. A user click is the
+      // gesture that should start a paused/blocked video — never swallow it,
+      // or the play/pause button goes dead when isLoading is stuck true.
+      if (isLoading && !byUser) return;
       // If paused by system and user triggers play, resume from system pause.
       if (byUser && (pausedBySystem || baseEventBus.getContext().systemPaused)) {
         resumeFromSystemPause();
         return;
       }
-
       if (byUser && video.videoShouldPreview && typeof index === "number") {
         disablePreviewMode();
       }
-
       // Whenever user clicks on play/pause button, to mostly play/pause
       // If the user clicks on video which is not active or in view and feedPlayerShouldPlay is true
       // updateActiveIndex will take it into view and will start playing based on feed player shoud play
@@ -888,7 +917,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         updateActiveIndex?.(index, undefined, true);
         return;
       }
-
       if (byUser && video.videoShouldPreview && websiteType === "polaris" && !isActive && index !== undefined) {
         updateActiveIndex?.(index, undefined, undefined, true);
         setFeedPlayerShouldPlay((prev) => {
@@ -904,13 +932,13 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
               ...baseAnalyticsData,
               position_index: index,
               by_user: true,
+              start_position: videoStateRef.current.currentTime,
             });
           }
           return newPlayingState;
         });
         return;
       }
-
       if (byUser && !video.videoShouldPreview && websiteType === "legacy" && !isActive && index !== undefined) {
         updateActiveIndex?.(index);
         setFeedPlayerShouldPlay((prev) => {
@@ -926,13 +954,13 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
               ...baseAnalyticsData,
               position_index: index,
               by_user: true,
+              start_position: videoStateRef.current.currentTime,
             });
           }
           return newPlayingState;
         });
         return;
       }
-
       /**
        * TODO: This is temporary patch work for the time being
        * Handles edge case where legacy website needs to sync global play state
@@ -944,7 +972,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         }));
         return;
       }
-
       setFeedPlayerShouldPlay((prev) => {
         if (!isActive && index !== undefined) {
           updateActiveIndex?.(index);
@@ -984,21 +1011,25 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     ]
   );
 
-  // setPlayerRef: Sets the player reference to the current OpenPlayerJS instance or null.
-  const setPlayerRef = useCallback((player: OpenPlayerJS | null) => {
+  // setPlayerRef: Registers the live `<video>` element (or null on unmount).
+  const setPlayerRef = useCallback((player: HTMLVideoElement | null) => {
     playerRef.current = player;
   }, []);
 
   const seek = useCallback((seekTime: number) => {
     if (!playerRef.current) return;
-    playerRef.current.getMedia().currentTime = seekTime;
+    playerRef.current.currentTime = seekTime;
   }, []);
 
   // play: Sets the feed player to play state.
   const play = useCallback(
     (byUser: boolean, seekTime: number = 0) => {
-      // If the player is still loading, ignore play requests.
-      if (isLoading) return;
+      // NB: do NOT gate on `isLoading`. For a non-playing tile the <video>
+      // fires `loadstart` (isLoading→true) but, loading paused via hls.js,
+      // never fires `playing`/`canplay`, so isLoading stays stuck true.
+      // Gating here meant an auto/hover play(false) bailed before setting
+      // the intent, so the tile never played on hover. `play()` only
+      // records the INTENT — the element starts when it is ready.
 
       // Prevent non-user triggered play while system pause is active.
       if (!byUser && (pausedBySystem || baseEventBus.getContext().systemPaused)) {
@@ -1006,7 +1037,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       }
 
       if (seekTime && playerRef.current) {
-        playerRef.current.getMedia().currentTime = seekTime;
+        playerRef.current.currentTime = seekTime;
       }
 
       setFeedPlayerShouldPlay(true);
@@ -1016,10 +1047,11 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         track(EventName.VIDEO_PLAY, {
           ...baseAnalyticsData,
           by_user: true,
+          start_position: videoStateRef.current.currentTime,
         });
       }
     },
-    [track, EventName.VIDEO_PLAY, baseAnalyticsData, isLoading, pausedBySystem, baseEventBus]
+    [track, EventName.VIDEO_PLAY, baseAnalyticsData, pausedBySystem, baseEventBus]
   );
 
   // pause: Sets the feed player to pause state.
@@ -1059,7 +1091,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     (byUser: boolean, bypassMuteChange?: boolean) => {
       // Focus the video element before toggling to ensure browser routes
       // the action correctly, even when focus is trapped in another element or iframe.
-      playerRef.current?.getElement().focus({ preventScroll: true });
+      playerRef.current?.focus({ preventScroll: true });
 
       // Special handling for video preview mode (hover-to-play feature)
       // if (video.videoShouldPreview && byUser) {
@@ -1248,13 +1280,16 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     (isAdPlaying: boolean, adInfo: AdInfoType) => {
       setAdInfo({ isAdPlaying, adInfo });
       document.documentElement.classList.toggle("gen-ad-playing", isAdPlaying);
+      // Mirror ad state into the shared tracker so the embed auto-advance timer
+      // (embed-tile-item.tsx) can suppress slide changes while an ad is on screen.
+      baseContextManager.setPlayPauseTracker({ isAdPlaying });
       if (isAdPlaying) {
         onAdStarted?.(adInfo);
       } else {
         onAdEnded?.(adInfo);
       }
     },
-    [onAdEnded, onAdStarted]
+    [baseContextManager, onAdEnded, onAdStarted]
   );
 
   /**

@@ -1,0 +1,149 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./textarea.stories";
+
+{/*
+  Design-system narrative for the textarea component. Attached to the
+  matching story group via `<Meta of={…}>` so it renders as the
+  "Docs" tab next to the live stories. Layout: narrative intro →
+  live examples + controls → usage guidelines.
+*/}
+
+<Meta of={Stories} />
+
+# Textarea
+
+## What textareas are for
+
+A textarea is the form control for *multi-line free-form text*. The user types more than a single line — a comment, a description, a bio, a message body, a feedback paragraph, a code snippet — and the field gives them room to do it. The defining characteristic is that the input is *open-ended*: there's no fixed length, no preset format, no slot-based structure. The user types prose, the field accepts whatever they type, and the form sends it on. That openness is exactly what separates a textarea from an `<input>` (single-line, format-bounded), from an OTP field (fixed-length code), and from a rich-text editor (formatted output, not plain text).
+
+A good textarea is unambiguously sized for the expected input. A 1-line bio gets a 2-row textarea; a feedback message gets 4–6 rows; a long-form post gets 10+ rows or auto-grows. The user should never have to fight the field — typing should never trigger an unnecessary scrollbar inside a tiny box, and pasting a paragraph should expand the field gracefully rather than truncating its visible portion. A bad textarea is a 1-row field for a 500-word essay (or a 20-row field for a one-line note), a textarea with no character counter when there's a hard limit, or a textarea that resists `prefers-reduced-motion` users with surprise auto-resize jumps.
+
+The Genuin Textarea is intentionally minimal — a styled `<textarea>` with the same border, padding, focus, and `aria-invalid` treatment as the design-system `<Input>`. It does not auto-resize, count characters, or render a placeholder strategy beyond the native one. Auto-resizing, soft limits, character counts, and rich-text behaviour belong to the host (or to dedicated components built on top).
+
+## Textarea in this design system
+
+The Textarea component in `@genuin/ui` is a single export, `<Textarea>`. It renders a native `<textarea>` with the design-system styling, accepting every standard HTML textarea prop.
+
+### Default treatment
+
+- Full-width, with 12px horizontal padding and 8px vertical padding.
+- `body-1-medium` typography, secondary-900 text.
+- 1px secondary-150 border, 8px corner radius.
+- On focus: secondary-600 border, native outline suppressed (the colored border replaces it).
+- On `aria-invalid="true"`: red border. Driven from the form layer (`<FormControl>` sets it from validation state).
+- On `disabled`: 50% opacity, `cursor-not-allowed`.
+
+### Sizing
+
+The component does not preset a height — it respects whatever the native `<textarea>` defaults give you. Control the size via:
+
+- **`rows`** — the number of visible text rows (e.g., `rows={4}` for a comment field, `rows={8}` for a long-form field). The most direct way to size the field for the expected input.
+- **`className="min-h-[..]"`** — for explicit pixel/rem heights, especially in dense layouts.
+- **`className="resize-y"` / `"resize-none"`** — opt out of the user's manual resize handle when the surrounding layout can't accommodate growth.
+
+For genuinely auto-growing textareas (a chat composer that grows with the message), build a small wrapper that watches `scrollHeight` and adjusts `height` on each `onChange`. The base component intentionally stays static so the surrounding layout doesn't reflow on every keystroke unless the host opts in.
+
+### Native behaviour kept intact
+
+Everything the browser does for a `<textarea>` works:
+
+- **Spellcheck** — on by default; turn off via `spellCheck={false}` for code-shaped input.
+- **Wrap** — `wrap="hard"` inserts line breaks at the visible width when the form submits; `wrap="soft"` (default) doesn't. Stick with `soft` for everything but plain-text exporters.
+- **`maxLength`** — the browser enforces the limit. Useful as a hard cap, but pair with a visible counter so the user isn't surprised.
+- **`autoComplete`** — inherits browser behaviour. Set `off` for ephemeral inputs (one-time feedback, search), or `on` / a specific token where autofill helps.
+- **`inputMode`** — for mobile keyboards (`text` is fine for almost every textarea).
+
+### Pairing with labels and `<Form>`
+
+- **Always pair with `<Label htmlFor>`** — like every other input.
+- Inside the Form orchestration, drop `<Textarea>` inside `<FormControl>` — id, `aria-describedby`, and `aria-invalid` are wired automatically. Don't set `id` yourself.
+
+```tsx
+<FormField
+  control={form.control}
+  name="bio"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>Bio</FormLabel>
+      <FormControl>
+        <Textarea rows={4} placeholder="Tell us about yourself..." {...field} />
+      </FormControl>
+      <FormDescription>A short paragraph for your profile page.</FormDescription>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+```
+
+### Character counts and limits
+
+The component does not render a counter. When the field has a hard limit, render the count below the textarea (right-aligned) and turn it red as the user approaches the limit:
+
+```tsx
+<div className="text-xs text-right text-secondary-500">
+  {value.length} / 280
+</div>
+```
+
+For soft limits ("recommended length"), use the same pattern with a softer color treatment.
+
+### Accessibility
+
+The textarea is a real `<textarea>` element, so screen readers, autofill, copy/paste, and keyboard navigation all work natively. Pair with `<FormLabel>` (or `<label htmlFor>`) for the accessible name, `<FormDescription>` for guidance, and `<FormMessage>` for errors — the form layer wires them via `aria-describedby` automatically. Don't add `role="textbox"` — the native element already has the right role.
+
+## Examples
+
+### Default
+
+<Canvas of={Stories.Default} />
+
+<Controls of={Stories.Default} />
+
+### Invalid
+
+<Canvas of={Stories.Invalid} />
+
+### Disabled
+
+<Canvas of={Stories.Disabled} />
+
+### Required
+
+<Canvas of={Stories.Required} />
+
+### Custom class
+
+<Canvas of={Stories.CustomClass} />
+
+## When to use Textarea
+
+- **Comments and replies.** Anywhere the user writes a paragraph or two of free-form text.
+- **Bios and descriptions.** Profile bios, channel descriptions, organization summaries — short multi-line fields with a recommended length.
+- **Feedback and survey forms.** "Tell us more about your experience" — open-ended question fields.
+- **Message composers.** Direct messages, chat, email-style compose surfaces — pair with auto-grow when the surface allows.
+- **Code snippets and configuration blocks.** Pair with `spellCheck={false}` and a monospace font (`className="font-mono"`).
+- **Long-form posts.** Blog drafts, announcements — pair with a generous `rows` value (10+) or an auto-grow wrapper.
+- **Pick `rows` to match the expected input.** A 1-line note doesn't want 4 rows; a paragraph doesn't want 1.
+- **Always render a `<Label>` (or `<FormLabel>`).** No exceptions.
+- **Render a counter for any field with a hard `maxLength`.** Users need to see how much room they have left.
+
+## How not to use Textarea
+
+- **Don't use Textarea for a single-line input.** A name, an email, a username — use `<Input>`. Textareas are for multi-line text.
+- **Don't ship Textarea without a label.** Same rule as `<Input>`. Placeholder-only labelling is an accessibility failure.
+- **Don't use the placeholder as a label.** It disappears the moment the user types. Render a real `<Label>`.
+- **Don't use Textarea for rich text.** Bold / italics / lists / links want a rich-text editor, not a `<textarea>`. Plain text only.
+- **Don't restrict resizing without a reason.** The default browser resize handle (`resize-y`) lets users adapt the field to their input. Disable it (`resize-none`) only when the surrounding layout can't accommodate growth.
+- **Don't auto-resize *and* allow user resize.** Pick one. If you auto-grow on input, set `resize-none` so the user doesn't fight the resize logic.
+- **Don't let the textarea push primary actions off-screen.** Either cap its max-height or scroll its content; make sure the submit button stays reachable while the user types.
+- **Don't ignore `maxLength`.** A field that silently truncates pasted content surprises users. Pair `maxLength` with a visible counter and ideally a graceful warning before the cap.
+- **Don't validate the textarea on every keystroke for expensive checks.** Run async validation on blur (or debounced) — not per character.
+- **Don't omit `<FormMessage>` inside `<FormItem>`.** Errors must surface next to the field — not in a global toast or somewhere off-screen.
+- **Don't override the focus border without an equivalent.** The component replaces the native outline with a colored border. Stripping both leaves keyboard users without a focus indicator.
+- **Don't put a Textarea in a fixed-height container without an inner scroll wrapper.** The textarea's own scroll fights the container's scroll and the user can lose their cursor's position.
+- **Don't use Textarea for code editors that need syntax highlighting.** A real code editor (Monaco, CodeMirror) gives you tokenization, line numbers, and find-replace. A textarea gives you "type characters."
+- **Don't pre-fill with placeholder-shaped real values.** "Type something here..." as the default value confuses users into thinking the field is already populated.
+- **Don't disable the textarea while it has unsubmitted content.** If a state change forces it disabled mid-typing, the user loses what they were writing — disable from the *empty* state, not while content is being authored.
+- **Don't use the same Textarea component for both plain-text input and "Markdown" composers without surfacing the rendering rule.** If the value will be parsed as Markdown, the user needs to know that — show a "Supports Markdown" hint in the description, otherwise users type literal `**bold**` and get confused.
+- **Don't override `inputMode` to a numeric or email keyboard.** Textareas are for prose; the default text mode is the right keyboard.

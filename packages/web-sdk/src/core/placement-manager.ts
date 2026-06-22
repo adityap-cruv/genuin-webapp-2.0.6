@@ -27,7 +27,8 @@ export class PlacementManager {
 
     // Pass full config (including initSponsorshipId) to the API so backend can include/override sponsorshipId
     const placementData = await apiService.getPlacementData(config);
-    const parsedPlacementData = parsePlacementToEmbedData(placementData, styleId);
+    const parsedPlacementData = parsePlacementToEmbedData(placementData, styleId, config.configuration);
+
     if (parsedPlacementData) {
       this.placements.set(placementId, parsedPlacementData);
     }

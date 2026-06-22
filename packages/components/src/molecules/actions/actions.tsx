@@ -3,7 +3,7 @@ import { cn } from "@genuin/ui/utils";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 import { type ComponentProps, type ReactNode, cloneElement, isValidElement, useMemo } from "react";
-import { lazy, Suspense } from "react";
+import { lazy } from "react";
 
 import { useAnalytics, VideoTypes } from "@genuin/components/context/analytics";
 import { useAuthContext } from "@genuin/components/context/auth";
@@ -12,6 +12,7 @@ import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
 import { OctoActionIcon } from "@genuin/components/molecules/octo-action-icon";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { DynamicReactionIcon } from "@genuin/components/molecules/reaction-button";
 import { ReactionButton } from "@genuin/components/molecules/reaction-button";
 import { ShareButton } from "@genuin/components/molecules/share-button";
@@ -161,7 +162,7 @@ const defaultActionWrappers: Record<
       }
 
       return (
-        <Suspense fallback={node}>
+        <SafeSuspense fallback={node} errorFallback={null}>
           <AuthenticationModal
             key="authentication-modal"
             getAppData={{
@@ -176,12 +177,12 @@ const defaultActionWrappers: Record<
             asChild>
             <div onClick={handleRepostClick}>{node}</div>
           </AuthenticationModal>
-        </Suspense>
+        </SafeSuspense>
       );
     }
 
     return (
-      <Suspense fallback={node}>
+      <SafeSuspense fallback={node} errorFallback={null}>
         <RepostModal
           key="repost-modal"
           videoId={_context.contentId}
@@ -189,7 +190,7 @@ const defaultActionWrappers: Record<
           asChild>
           <div onClick={handleRepostClick}>{node}</div>
         </RepostModal>
-      </Suspense>
+      </SafeSuspense>
     );
   },
   REACTION: (node, context) => {
@@ -250,7 +251,7 @@ const defaultActionWrappers: Record<
   },
   MORE: (node, context) => {
     return (
-      <Suspense fallback={node}>
+      <SafeSuspense fallback={node} errorFallback={null}>
         <Menu
           key="actions-more-menu"
           contentId={context.contentId}
@@ -260,7 +261,7 @@ const defaultActionWrappers: Record<
           videoType={context.videoType ?? VideoTypes.Content}>
           {node}
         </Menu>
-      </Suspense>
+      </SafeSuspense>
     );
   },
 };

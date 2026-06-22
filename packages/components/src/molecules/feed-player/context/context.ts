@@ -1,5 +1,4 @@
 "use client";
-import type OpenPlayerJS from "openplayerjs";
 import { createContext, useContext } from "react";
 
 import type { getVideoPlayerConfigs } from "../utils";
@@ -23,9 +22,11 @@ export type AdInfoType = {
 
 export type PlayerContextType = {
   /**
-   * This is used to set openplayerjs instance.
+   * Registers the live `<video>` element so the provider can drive imperative
+   * actions (seek, focus, replay) against it. Wired from FeedPlayer's ref
+   * callback. Null on unmount.
    */
-  setPlayerRef: (player: OpenPlayerJS | null) => void;
+  setPlayerRef: (player: HTMLVideoElement | null) => void;
 
   setVideoTimeState: SetVideoTimeStateType;
   onVideoTimeStateChange: (callback: (state: VideoTimeStateType) => void) => () => void;

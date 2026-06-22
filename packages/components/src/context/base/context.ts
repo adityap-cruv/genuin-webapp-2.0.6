@@ -48,6 +48,7 @@ const DEFAULT_WEB_CONFIGS: BrandDetailsConfigType["web_configs"] = {
   },
   video_aspect_ratio: "9:16",
   tap_behavior: 3,
+  design_system: "v1",
   gesture_guidance: true,
   playback_speed_enabled: true,
   is_start_with_sound: false,

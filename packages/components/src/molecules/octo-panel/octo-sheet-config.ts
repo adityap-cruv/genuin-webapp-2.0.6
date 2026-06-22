@@ -4,7 +4,6 @@ import { cn } from "@genuin/ui/lib/utils";
 export interface OctoSheetConfigParams {
   isMobile: boolean;
   octoState: DynamicSheetState;
-  viewportHeight: number;
 }
 
 export interface OctoSheetConfig {
@@ -21,10 +20,16 @@ function panelFullClassName(state: DynamicSheetState): string {
     state === "default" && "gencl:bg-transparent! gencl:shadow-none!",
     state === "default-active" && "gencl:bg-transparent! gencl:shadow-none!",
     state === "expand-view" && "gencl:bg-transparent! gencl:shadow-none!",
+    // Height + bottom anchor are supplied here as `!important` CSS classes, not
+    // via the config `heights` map. The expanded states are `position: fixed`,
+    // so a CSS `h-[70%]`/`h-full` resolves against the viewport (the fixed
+    // containing block). The config `heights` inline style resolves against the
+    // sheet's collapsed flow-parent (~0px) and would render blank — the class
+    // `!important` wins over it.
     state === "panel-view" &&
       "gencl:fixed! gencl:bottom-0! gencl:left-0! gencl:right-0! gencl:h-[70%]! gencl:w-full! gencl:rounded-t-2xl! gencl:rounded-b-none! gencl:z-50! gencl:bg-white!",
     state === "full-view" &&
-      "gencl:fixed! gencl:bottom-0! gencl:left-0! gencl:right-0! gencl:w-full! gencl:rounded-t-2xl! gencl:rounded-b-none! gencl:z-50! gencl:bg-white!"
+      "gencl:fixed! gencl:bottom-0! gencl:left-0! gencl:right-0! gencl:h-full! gencl:w-full! gencl:rounded-t-2xl! gencl:rounded-b-none! gencl:z-50! gencl:bg-white!"
   );
 }
 
@@ -33,7 +38,7 @@ function collapsedFooterClassName(state: DynamicSheetState): string {
   return state === "default" ? "" : "gencl:border-t";
 }
 
-export function getOctoSheetConfig({ isMobile, octoState, viewportHeight }: OctoSheetConfigParams): OctoSheetConfig {
+export function getOctoSheetConfig({ isMobile, octoState }: OctoSheetConfigParams): OctoSheetConfig {
   const isPanelOrFullState = octoState === "panel-view" || octoState === "full-view";
   const isExpandedState = octoState === "expand-view" || isPanelOrFullState;
 
@@ -75,12 +80,12 @@ export function getOctoSheetConfig({ isMobile, octoState, viewportHeight }: Octo
       enabledStates: ["default", "default-active", "expand-view", "panel-view", "full-view"],
       heights: {
         default: "60px",
-        "default-active": "158px",
+        "default-active": "162px",
         "expand-view": "280px",
         "panel-view": "70%",
         "full-view": "100%",
       },
-      autoAdvance: autoAdvanceRules,
+      // autoAdvance: autoAdvanceRules,
       showClose: octoState !== "default",
       showOverlay: isPanelOrFullState,
       showIndicator: false,

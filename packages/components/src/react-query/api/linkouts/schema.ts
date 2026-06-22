@@ -5,6 +5,19 @@ const linkSchema = z.object({
   link: z.string(),
   image: z.string().nullish(),
   title: z.string().nullish(),
+  // Extended fields surfaced by the Figma design — populated when the
+  // backend returns them, dropped silently otherwise. The `<LinkCard>`
+  // expand/panel/full-view layouts render each field individually.
+  description: z.string().nullish(),
+  brand: z.string().nullish(),
+  website: z.string().nullish(),
+  originalPrice: z.string().nullish(),
+  currentPrice: z.string().nullish(),
+  rating: z.string().nullish(),
+  likes: z.string().nullish(),
+  downloads: z.string().nullish(),
+  phone: z.string().nullish(),
+  address: z.string().nullish(),
 });
 
 const linkoutSchema = z.object({

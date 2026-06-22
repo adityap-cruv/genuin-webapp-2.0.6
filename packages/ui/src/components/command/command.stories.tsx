@@ -19,7 +19,6 @@ import {
 const meta: Meta<typeof Command> = {
   title: "Components/Command",
   component: Command,
-  tags: ["autodocs"],
   parameters: {
     layout: "centered",
   },

@@ -1,8 +1,10 @@
-import { useAgentsContext } from '@/context/app/context';
+import { useAgentContext } from '@/stores/agent/context';
+import { useUIContext } from '@/stores/ui/context';
 import type { Agent } from '@/types';
 
 const AgentPill = ({ agents }: { agents: Agent[] }) => {
-    const { showAllObjectives, setCurrentAgent } = useAgentsContext();
+    const { setCurrentAgent } = useAgentContext();
+    const { showAllObjectives } = useUIContext();
     return agents.map(agent => (
         <div
             key={agent.id}

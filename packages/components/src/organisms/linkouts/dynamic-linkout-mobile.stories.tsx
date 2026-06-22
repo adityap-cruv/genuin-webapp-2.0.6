@@ -14,39 +14,18 @@
  * Device mode is controlled via setDeviceMode() from preview.ts (single matchMedia mock).
  */
 
-import { VideoPlayer } from "@genuin/ui/components/video-player";
 import type { Meta, StoryObj } from "@storybook/react";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 
-import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
 import { DynamicLinkouts } from "@genuin/components/molecules/linkout-new/linkouts-dynamic";
 import { buildLinkoutsAnalyticsData } from "@genuin/components/organisms/linkouts/build-linkouts-analytics-data";
 
-import { setDeviceMode } from "../../../.storybook/preview";
+import { StoryVideoBackdrop, useSeededLinkoutState } from "./_story-helpers";
+import { LINKOUT_FIGMA_CAROUSEL } from "./linkouts.fixtures";
 
-// Mock Data
-const STORY_VIDEO_POSTER = "https://peach.blender.org/wp-content/uploads/title_anouncement.jpg?x11217";
-
-const SAMPLE_LINKS = [
-  {
-    link: "https://www.walmart.com/",
-    title: "Badminton racket",
-    image: "https://placehold.co/240x240/png?text=Racket",
-    position: 0,
-  },
-  {
-    link: "https://www.amazon.com/",
-    title: "Tennis shoes",
-    image: "https://placehold.co/240x240/png?text=Shoes",
-    position: 1,
-  },
-  {
-    link: "https://www.target.com/",
-    title: "Yoga mat",
-    image: "https://placehold.co/240x240/png?text=Yoga+Mat",
-    position: 2,
-  },
-];
+// Sourced from packages/components/src/organisms/linkouts/linkouts.fixtures.ts
+// (TOEFL / ETS reference content from the Figma design).
+const SAMPLE_LINKS = LINKOUT_FIGMA_CAROUSEL;
 
 const LINKOUTS_ANALYTICS = buildLinkoutsAnalyticsData({});
 
@@ -56,25 +35,14 @@ type DynamicLinkoutsMobileHarnessProps = {
   linkThumbnail?: boolean;
   linkTitle?: boolean;
   button?: boolean;
+  /** When true, every field from `LINKOUT_FIGMA_CAROUSEL` is forwarded
+   *  to `<DynamicLinkouts>` (description, brand, website, originalPrice,
+   *  currentPrice, rating, likes, downloads, phone, address). The
+   *  `linkThumbnail`/`linkTitle` flags still apply on top so reviewers
+   *  can mix-and-match. Defaults to false to preserve the existing
+   *  variant stories' minimal projection. */
+  richData?: boolean;
 };
-
-// Sub-components
-
-function StoryVideoBackdrop() {
-  return (
-    <div className="gencl:absolute gencl:inset-0 gencl:pointer-events-none">
-      <VideoPlayer
-        poster={STORY_VIDEO_POSTER}
-        play={false}
-        controls={false}
-        muted
-        preload="none"
-        className="gencl:h-full gencl:w-full gencl:object-cover"
-        style={{ width: "100%", height: "100%", objectFit: "cover" }}
-      />
-    </div>
-  );
-}
 
 // Mobile harness
 
@@ -82,37 +50,36 @@ function DynamicLinkoutsMobileHarness({
   linkThumbnail = true,
   linkTitle = true,
   button = true,
+  richData = false,
 }: DynamicLinkoutsMobileHarnessProps) {
-  // Set synchronously before any hooks or children evaluate matchMedia
-  setDeviceMode("mobile");
-
-  const { openContentType, closeContentType } = useSheetState();
+  useSeededLinkoutState({
+    initialState: "default-active",
+    deviceMode: "mobile",
+  });
 
   const links = useMemo(
     () =>
       SAMPLE_LINKS.map((sample) => ({
+        // Spread the full fixture first so description / brand / website
+        // / prices / rating / likes / downloads / phone / address flow
+        // through; the projections below override image/title per the
+        // variant flags.
+        ...(richData ? sample : {}),
         link: sample.link,
         position: sample.position,
         image: linkThumbnail ? sample.image : "",
         ...(linkTitle ? { title: sample.title } : {}),
       })),
-    [linkThumbnail, linkTitle]
+    [linkThumbnail, linkTitle, richData]
   );
 
   const primaryLink = SAMPLE_LINKS[0];
   const ctaText = button ? (primaryLink?.title ?? "") : "";
   const ctaLink = button ? (primaryLink?.link ?? "") : "";
 
-  useEffect(() => {
-    openContentType("linkouts", "inside", "default-active");
-    return () => closeContentType("linkouts");
-  }, [closeContentType, openContentType]);
-
   return (
     <div className="gencl:relative gencl:h-full gencl:w-full gencl:overflow-hidden gencl:bg-neutral-900">
-      <div className="gencl:absolute gencl:inset-0">
-        <StoryVideoBackdrop />
-      </div>
+      <StoryVideoBackdrop className="gencl:h-full gencl:w-full gencl:object-cover" asAbsolute />
 
       <div className="gencl:absolute gencl:inset-x-0 gencl:bottom-0 gencl:z-[5]">
         <DynamicLinkouts
@@ -243,7 +210,7 @@ const meta: Meta<typeof DynamicLinkoutsMobileHarness> = {
         <div
           id="mobile-story-frame"
           style={{
-            height: "100vh",
+            height: "720px",
             width: "420px",
             margin: "10px auto",
             position: "relative",
@@ -254,8 +221,14 @@ const meta: Meta<typeof DynamicLinkoutsMobileHarness> = {
           }}>
           <style>{`
             @layer utilities {
+              /* The sheet's positioned mode pins to left:0/right:0; in the
+                 storybook frame the right side bleeds past the visible
+                 viewport. Inset by 8px on each side so reviewers see the
+                 sheet with the same horizontal breathing room as the design. */
               #mobile-story-frame [data-slot="dynamic-sheet"] {
-                width: 100% !important;
+                left: 8px !important;
+                right: 8px !important;
+                width: auto !important;
               }
             }
           `}</style>
@@ -270,10 +243,10 @@ const meta: Meta<typeof DynamicLinkoutsMobileHarness> = {
       description: {
         component: `
 These stories represent the \`DynamicLinkouts\` component in **embed mode** (\`view="embed"\`) as it appears overlaid on a video card in the mobile feed before the user taps into the expand view.
-
+ 
 ### What this is not
 This is **not** the expand/post-detail overlay. For that see \`Dynamic Linkouts Expand\`.
-
+  
 ### Story 00 vs stories 01–04
 - **Story 00** renders all four card variants side by side in a 2×2 grid. Drag/expand is disabled here so you can compare visual appearance quickly.
 - **Stories 01–04** each render a single variant inside mobile frame with distinct content based on the story name.
@@ -298,9 +271,9 @@ export const AllVariantsLayoutForMobile: Story = {
       description: {
         story: `
 **Visual comparison grid all four card variants side by side.**
-
+ 
 Renders thumbnail-only, thumbnail+title, thumbnail+button, and thumbnail+title+button in a 2×2 grid so you can compare appearance without switching stories.
-
+ 
 > Drag/expand interaction is disabled in this grid. To test the sheet drag behaviour (default → panel-view → full-view) use stories 01–04.
         `,
       },
@@ -310,19 +283,20 @@ Renders thumbnail-only, thumbnail+title, thumbnail+button, and thumbnail+title+b
 };
 
 export const ThumbnailOnly: Story = {
-  name: "Thumbnail + Url",
+  name: "Url Only (fallback icon)",
   parameters: {
     docs: {
       description: {
         story: `
-**Minimal card image and link only.**
+**Minimal card url only — no image, no title, no button.**
 
+The favicon area falls back to the chain-link \`LinkIcon\` per Figma node 9621:92218 ("Thumbnail fallback") because no \`image\` is supplied.
         `,
       },
     },
   },
   args: {
-    linkThumbnail: true,
+    linkThumbnail: false,
     linkTitle: false,
     button: false,
   },
@@ -381,5 +355,26 @@ This is the primary reference story for the mobile embed view. All three content
     linkThumbnail: true,
     linkTitle: true,
     button: true,
+  },
+};
+
+export const FullFigmaCardMobile: Story = {
+  name: "Full Figma Card",
+  parameters: {
+    docs: {
+      description: {
+        story: `
+**Mobile embed with the complete Figma data set.**
+
+Renders the carousel with the full TOEFL / ETS reference content from \`linkouts.fixtures.ts\` — every field the design surfaces (description, brand, website, prices, rating, likes, downloads, phone, address) flows through the registry adapter to \`<LinkCard>\`. The width-bucketed embed scenario picks \`embed-expand\` at 420 px, so the rich meta row is visible from the start.
+        `,
+      },
+    },
+  },
+  args: {
+    linkThumbnail: true,
+    linkTitle: true,
+    button: true,
+    richData: true,
   },
 };

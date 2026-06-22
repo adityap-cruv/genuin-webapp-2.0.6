@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "composite": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "types": ["vite/client", "node"]
+  },
+  "include": [
+    "src/**/*.stories.tsx",
+    "src/**/*.stories.ts",
+    ".storybook/**/*.ts",
+    ".storybook/**/*.tsx"
+  ]
+}

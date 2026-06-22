@@ -7,16 +7,16 @@
  *
  * Architecture: `docs/superpowers/specs/2026-05-27-webapp-mocking-architecture-design.md`.
  */
-import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
-import { readFile } from 'node:fs/promises';
-import { resolve } from 'node:path';
+import { readFile } from "node:fs/promises";
+import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
+import { resolve } from "node:path";
 
 // Resolve fixture root relative to this file. Playwright compiles tests under
 // CommonJS so `__dirname` is available — we don't reach for `import.meta.url`.
-const DATA_ROOT = resolve(__dirname, 'data');
+const DATA_ROOT = resolve(__dirname, "data");
 
 /** HTTP methods supported by the mock server. */
-export type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+export type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
 /** Route key combining method and path pattern, e.g. `GET /api/v3/feed`. */
 export type RouteKey = `${Method} ${string}`;
@@ -31,7 +31,7 @@ export interface MockResponse {
 /** Handler function — only usable for routes registered in-process (does not survive JSON). */
 export type RouteHandlerFn = (
   req: IncomingMessage,
-  params: Record<string, string>,
+  params: Record<string, string>
 ) => Promise<MockResponse> | MockResponse;
 
 /** Route handler — fixture path, static response, or in-process function. */
@@ -51,22 +51,22 @@ let started = false;
 
 /** Convert `/api/v3/community/:id` into a RegExp plus captured param names. */
 function compile(key: RouteKey, handler: RouteHandler): CompiledRoute {
-  const spaceIdx = key.indexOf(' ');
+  const spaceIdx = key.indexOf(" ");
   if (spaceIdx === -1) throw new Error(`Invalid RouteKey: "${key}"`);
   const method = key.slice(0, spaceIdx) as Method;
   const pattern = key.slice(spaceIdx + 1);
 
   const paramNames: string[] = [];
   const regexBody = pattern
-    .split('/')
+    .split("/")
     .map((segment) => {
-      if (segment.startsWith(':')) {
+      if (segment.startsWith(":")) {
         paramNames.push(segment.slice(1));
-        return '([^/]+)';
+        return "([^/]+)";
       }
-      return segment.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      return segment.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     })
-    .join('/');
+    .join("/");
 
   return { method, pattern: new RegExp(`^${regexBody}$`), paramNames, handler };
 }
@@ -84,7 +84,10 @@ export function registerRoute(key: RouteKey, handler: RouteHandler): void {
 //   overrideRoutes.length = 0;
 // }
 
-function matchRoute(method: string, pathname: string): { handler: RouteHandler; params: Record<string, string> } | null {
+function matchRoute(
+  method: string,
+  pathname: string
+): { handler: RouteHandler; params: Record<string, string> } | null {
   // When per-test overrides are active, check overrideRoutes first: [...overrideRoutes, ...defaultRoutes]
   for (const route of defaultRoutes) {
     if (route.method !== method) continue;
@@ -92,7 +95,7 @@ function matchRoute(method: string, pathname: string): { handler: RouteHandler; 
     if (!match) continue;
     const params: Record<string, string> = {};
     route.paramNames.forEach((name, i) => {
-      params[name] = match[i + 1] ?? '';
+      params[name] = match[i + 1] ?? "";
     });
     return { handler: route.handler, params };
   }
@@ -102,13 +105,13 @@ function matchRoute(method: string, pathname: string): { handler: RouteHandler; 
 async function resolveResponse(
   handler: RouteHandler,
   req: IncomingMessage,
-  params: Record<string, string>,
+  params: Record<string, string>
 ): Promise<MockResponse> {
-  if ('fixture' in handler) {
-    const body = await readFile(resolve(DATA_ROOT, handler.fixture), 'utf8');
+  if ("fixture" in handler) {
+    const body = await readFile(resolve(DATA_ROOT, handler.fixture), "utf8");
     return { body: JSON.parse(body) };
   }
-  if ('response' in handler) return handler.response;
+  if ("response" in handler) return handler.response;
   return handler.handler(req, params);
 }
 
@@ -120,24 +123,24 @@ async function resolveResponse(
 // }
 
 const DEFAULT_HEADERS = {
-  'content-type': 'application/json',
-  'access-control-allow-origin': '*',
-  'access-control-allow-headers': '*',
-  'access-control-allow-methods': 'GET,POST,PUT,PATCH,DELETE,OPTIONS',
+  "content-type": "application/json",
+  "access-control-allow-origin": "*",
+  "access-control-allow-headers": "*",
+  "access-control-allow-methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS",
 } as const;
 
 function send(res: ServerResponse, response: MockResponse): void {
   res.writeHead(response.status ?? 200, { ...DEFAULT_HEADERS, ...(response.headers ?? {}) });
-  res.end(typeof response.body === 'string' ? response.body : JSON.stringify(response.body));
+  res.end(typeof response.body === "string" ? response.body : JSON.stringify(response.body));
 }
 
 async function handleRequest(req: IncomingMessage, res: ServerResponse, port: number): Promise<void> {
-  if (req.method === 'OPTIONS') {
-    send(res, { status: 204, body: '' });
+  if (req.method === "OPTIONS") {
+    send(res, { status: 204, body: "" });
     return;
   }
 
-  const url = new URL(req.url ?? '/', `http://localhost:${port}`);
+  const url = new URL(req.url ?? "/", `http://localhost:${port}`);
 
   // Uncomment to enable per-test override control endpoints (also restore overrideRoutes, useOverride, resetOverrides).
   // if (req.method === 'POST' && url.pathname === '/__reset__') {
@@ -152,10 +155,10 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse, port: nu
   //   return;
   // }
 
-  const matched = matchRoute(req.method ?? 'GET', url.pathname);
+  const matched = matchRoute(req.method ?? "GET", url.pathname);
   if (!matched) {
     process.stderr.write(`[mock] unhandled ${req.method} ${url.pathname}\n`);
-    send(res, { status: 404, body: { error: 'mock_not_found', method: req.method, path: url.pathname } });
+    send(res, { status: 404, body: { error: "mock_not_found", method: req.method, path: url.pathname } });
     return;
   }
 
@@ -164,19 +167,19 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse, port: nu
 
 /** Start the mock server on the given port. Resolves once listening. */
 export async function startMockServer(port: number): Promise<void> {
-  if (started) throw new Error('Mock server already running');
+  if (started) throw new Error("Mock server already running");
 
   const server = createServer((req, res) => {
     handleRequest(req, res, port).catch((error) => {
       process.stderr.write(`[mock] handler error: ${error instanceof Error ? error.message : String(error)}\n`);
-      send(res, { status: 500, body: { error: 'mock_internal_error' } });
+      send(res, { status: 500, body: { error: "mock_internal_error" } });
     });
   });
 
   await new Promise<void>((resolveListen, reject) => {
-    server.once('error', reject);
+    server.once("error", reject);
     server.listen(port, () => {
-      server.off('error', reject);
+      server.off("error", reject);
       resolveListen();
     });
   });

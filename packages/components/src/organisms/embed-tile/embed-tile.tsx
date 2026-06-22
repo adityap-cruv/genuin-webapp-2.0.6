@@ -4,7 +4,7 @@ import { cn } from "@genuin/ui";
 import { CommentIcon, PlayIcon } from "@genuin/ui/icons";
 import { cva } from "class-variance-authority";
 import type { VariantProps } from "class-variance-authority";
-import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { lazy, useCallback, useEffect, useMemo, useState } from "react";
 import { useBoolean } from "usehooks-ts";
 
 import { useBaseContext } from "@genuin/components/context";
@@ -18,8 +18,13 @@ import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
 import { SDKEventEmitter, SDKEventName } from "@genuin/components/lib/sdk-event-emitter";
 import { isMiddlewareOverlayEnabled } from "@genuin/components/lib/utils";
 import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { PlayerProvider, usePlayerContext } from "@genuin/components/molecules/feed-player/context";
 import { EmbedMuteButton } from "@genuin/components/molecules/feed-player/control-layer/controls/embed";
+import {
+  resolveControlSize,
+  SPONSORED_TAG_SIZE,
+} from "@genuin/components/molecules/feed-player/control-layer/player-control-size";
 import { DynamicReactionIcon } from "@genuin/components/molecules/reaction-button";
 import { Stats } from "@genuin/components/molecules/stats";
 import { IFRAME_HEIGHT, IHeartEmbedBar } from "@genuin/components/organisms/player-swiper/iheart/iheart-embed-bar";
@@ -151,9 +156,9 @@ export function EmbedTile({
       {shouldShowMiddlewareOverlay && postDetails.video?.type === "overlay" ? (
         <WatchBoundaryOverlay info={listenLiveButtonInfo} videoDetails={postDetails.video} variant="overlay" />
       ) : shouldShowMiddlewareOverlay && postDetails.video?.type === "complete" ? (
-        <Suspense fallback={null}>
+        <SafeSuspense fallback={null} errorFallback={null}>
           <WatchBoundaryOverlay info={listenLiveButtonInfo} videoDetails={postDetails.video} variant="complete" />
-        </Suspense>
+        </SafeSuspense>
       ) : (
         <div
           className={cn(
@@ -178,6 +183,11 @@ export function EmbedTile({
             explicitLoop={config.video.videoLoop && isActive}
             updateActiveIndex={updateActiveIndex}
             videoDescription={postDetails.video?.descritptionText}
+            sectionTitle={postDetails.video?.attributes?.title ?? postDetails.section?.title}
+            sectionSubtitle={postDetails.video?.attributes?.subtitle ?? postDetails.section?.sub_title}
+            sectionId={postDetails.section?.id}
+            podcastId={postDetails.video?.attributes?.podcast_id}
+            stationId={postDetails.video?.attributes?.station_id}
             totalVideos={totalVideos}
             swiper={swiper}
             activeIndex={activeIndex}
@@ -206,13 +216,16 @@ type EmbedPlayerProps = {
   pageSession?: string | null;
 };
 
-function EmbedPlayer({ postDetails, isActive = false, index, itemSize, pageSession }: EmbedPlayerProps) {
+function EmbedPlayer({ postDetails, isActive = false, index, itemSize }: EmbedPlayerProps) {
   const { isAdPlaying } = usePlayerContext();
   const { isEmbed } = useBaseContext();
   const config = useEmbedConfigs();
   const [isAdFilled, setIsAdFilled] = useState(false);
+  // Ad types whose creatives should suppress the control layer (banner/display/native).
+  const [hideControlsForAd, setHideControlsForAd] = useState(false);
   const { changeActivePlayerType, embedData } = useEmbedContext();
   const videoCrop = config.video.videoCrop;
+
   const embedDetails = useSafeEmbedContext();
   const showLayout = config.responsive.canShowEngagement;
   const layoutType = !showLayout
@@ -268,14 +281,18 @@ function EmbedPlayer({ postDetails, isActive = false, index, itemSize, pageSessi
 
   // Hide the control layer while an ad is showing, and notify the parent
   // so it can lock the swiper and disable navigation buttons.
-  const handleAdFilled = useCallback((type: string) => {
+  const handleAdFilled = useCallback((_type: string) => {
     setIsAdFilled(true);
+    // Banner/display/native creatives render their own UI; hide our control layer.
+    const adType = _type?.toLowerCase();
+    setHideControlsForAd(adType === "banner" || adType === "display" || adType === "native");
   }, []);
 
   // Re-show the control layer once the ad fill ends, and notify the parent
   // to re-enable swiper navigation.
   const handleAdPlaybackEnd = useCallback(() => {
     setIsAdFilled(false);
+    setHideControlsForAd(false);
   }, []);
 
   const isSponsored = postDetails.video?.cardLayoutId === 7; // Sponsored content is determined by cardLayoutId 7
@@ -305,13 +322,18 @@ function EmbedPlayer({ postDetails, isActive = false, index, itemSize, pageSessi
         <div
           className={cn(
             "gencl:w-full gencl:transition-all gencl:duration-300 gencl:ease-in-out",
-            isNonDesktop && isActive && (sheetState === "panel-view" || sheetState === "full-view")
+            isActive && (sheetState === "panel-view" || sheetState === "full-view")
               ? "gencl:h-[30%] gencl:shrink-0"
               : "gencl:h-full"
           )}>
-          <Suspense fallback={null}>
+          <SafeSuspense fallback={null} errorFallback={null}>
             <FeedPlayer
               videoDescription={postDetails.video?.descritptionText}
+              sectionTitle={postDetails.video?.attributes?.title ?? postDetails.section?.title}
+              sectionSubtitle={postDetails.video?.attributes?.subtitle ?? postDetails.section?.sub_title}
+              sectionId={postDetails.section?.id}
+              podcastId={postDetails.video?.attributes?.podcast_id}
+              stationId={postDetails.video?.attributes?.station_id}
               videoId={postDetails.video?.id ?? ""}
               adUrl={postDetails.video?.adUrl ?? undefined}
               src={postDetails.video?.source}
@@ -330,22 +352,20 @@ function EmbedPlayer({ postDetails, isActive = false, index, itemSize, pageSessi
               }
               layoutType={layoutType}
               aria-hidden="true"
-              tabIndex={-1}
               index={index}
               isActive={isActive}
               adTagObject={(postDetails as any).adTagObject ?? undefined}
               onAdFilled={handleAdFilled}
               onAdPlaybackEnd={handleAdPlaybackEnd}
-              pageSession={pageSession}
               isSponsored={postDetails.video?.cardLayoutId === 7 || postDetails.video?.videoLayoutId === 6}
               videoType={postDetails.video?.videoType ?? VideoTypes.Content}
               playerSize={itemSize}
               sponsorshipInfo={postDetails.sponsored}
             />
-          </Suspense>
+          </SafeSuspense>
         </div>
-        {!isAdFilled && (isSponsored ? !hidePlayerControls : true) && (
-          <Suspense fallback={null}>
+        {(isSponsored ? !hidePlayerControls : true) && !(isAdFilled && hideControlsForAd) && (
+          <SafeSuspense fallback={null} errorFallback={null}>
             <ControlLayer
               variant={config.view.isPlacementView ? "placement" : "embed"}
               isActive={isActive}
@@ -357,16 +377,38 @@ function EmbedPlayer({ postDetails, isActive = false, index, itemSize, pageSessi
               containerWidth={itemSize.width}
               adType={postDetails.video?.adUrl ? "in-stream" : "in-feed"}
             />
-          </Suspense>
+          </SafeSuspense>
         )}
         {isSponsored && !isAdFilled && (
-          <div className="gencl:absolute gencl:top-2 gencl:left-2 gencl:bg-black/40 gencl:h-8 gencl:z-50 gencl:px-2 gencl:rounded-[50px] gencl:text-white gencl:flex-center">
-            <p className="gencl:text-body-1-normal">Sponsored</p>
+          <div
+            className={cn(
+              "gencl:absolute gencl:top-2 gencl:left-2 gencl:z-50 gencl:flex-center",
+              config.isDesignSystemV2
+                ? "gencl:bg-white gencl:rounded-3xl gencl:text-gray-900 gencl:px-2! gencl:py-1!"
+                : "gencl:bg-black/40 gencl:h-8 gencl:px-2 gencl:rounded-[50px] gencl:text-white"
+            )}
+            style={
+              config.isDesignSystemV2
+                ? {
+                    backdropFilter: "blur(7.5px)",
+                    width: SPONSORED_TAG_SIZE[resolveControlSize(itemSize.width)].width,
+                    height: SPONSORED_TAG_SIZE[resolveControlSize(itemSize.width)].height,
+                  }
+                : undefined
+            }>
+            <p
+              className={
+                config.isDesignSystemV2
+                  ? SPONSORED_TAG_SIZE[resolveControlSize(itemSize.width)].text
+                  : "gencl:text-body-1-normal"
+              }>
+              Sponsored
+            </p>
           </div>
         )}
         {isAdFilled && (
           <div className="gencl:absolute gencl:top-2 gencl:right-2">
-            <EmbedMuteButton size="xs" />
+            <EmbedMuteButton size="sm" />
           </div>
         )}
       </div>
@@ -376,7 +418,7 @@ function EmbedPlayer({ postDetails, isActive = false, index, itemSize, pageSessi
 }
 
 function OutsideComponents({ postDetails }: { postDetails: PostDetailsType }) {
-  const { contentDisplay, responsive, engagement, links, view, video } = useEmbedConfigs();
+  const { contentDisplay, responsive, engagement, links, view, video, isDesignSystemV2 } = useEmbedConfigs();
   const { linkoutHeight } = useEmbedDimensions();
   const { isXs } = responsive;
   const showLinkout = links.showLinkOutside;
@@ -449,11 +491,11 @@ function OutsideComponents({ postDetails }: { postDetails: PostDetailsType }) {
           style={{
             height: `${linkoutHeight}px`,
           }}>
-          <Suspense fallback={null}>
+          <SafeSuspense fallback={null} errorFallback={null}>
             <Linkouts
               view="embed"
               layout="outside"
-              // variant="dynamic"
+              {...(isDesignSystemV2 ? { variant: "dynamic" as const } : {})}
               isActive={true}
               showImmediately
               linkouts={postDetails.video?.linkouts}
@@ -461,7 +503,7 @@ function OutsideComponents({ postDetails }: { postDetails: PostDetailsType }) {
               videoDetails={postDetails.video}
               autoplay={video.videoAutoplay}
             />
-          </Suspense>
+          </SafeSuspense>
         </div>
       )}
 

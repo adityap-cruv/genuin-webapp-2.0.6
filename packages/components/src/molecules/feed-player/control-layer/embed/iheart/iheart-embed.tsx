@@ -7,7 +7,6 @@ import { useBaseContext, useEmbedContext } from "@genuin/components/context";
 import type { GenericData } from "@genuin/components/context/base/feed-context-manager";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-import useViewportHeight from "@genuin/components/hooks/use-screen-height";
 import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
 import { ReadMore } from "@genuin/components/molecules/read-more";
 import type { ReadMoreTextType } from "@genuin/components/molecules/read-more/read-more.types";
@@ -37,6 +36,7 @@ export function IHeartControlLayer({
   const {
     view: { websiteType },
     brand: { expandOnInteraction },
+    engagement,
     expandViewConfig,
   } = useEmbedConfigs();
   const { isMobile } = useDeviceDetectMediaQuery();
@@ -45,9 +45,6 @@ export function IHeartControlLayer({
   const { changeActivePlayerType } = useEmbedContext();
   const embedConfigs = useEmbedConfigs();
 
-  const viewportHeight = useViewportHeight();
-
-  const { engagement } = useEmbedConfigs();
   const isOctoEnabled = engagement.engagementTools.octo;
   const { getContentTypeState, octoVisible } = useSheetState();
   const octoSheetState = getContentTypeState("octo");
@@ -397,7 +394,6 @@ export function IHeartControlLayer({
               videoId={video.id}
               videoSlug={video.slug}
               isMobile={isMobile}
-              viewportHeight={viewportHeight}
             />
 
             {!isOctoVisible && (
@@ -407,6 +403,7 @@ export function IHeartControlLayer({
                 size="lg"
                 variant={isOctoEnabled ? "expand" : "clip"}
                 videoDetails={postDetails.video}
+                section={postDetails.section}
                 index={index}
                 isActive={isActive}
                 contentId={postDetails.video?.id}

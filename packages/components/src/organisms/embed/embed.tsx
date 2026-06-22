@@ -2,7 +2,7 @@
 import { cn, getAspectRatio } from "@genuin/ui/lib/utils";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
-import { useMemo, useState, useEffect, useCallback, lazy, Suspense } from "react";
+import { useMemo, useState, useEffect, useCallback, lazy } from "react";
 import { SwiperSlide } from "swiper/react";
 import type { Swiper } from "swiper/types";
 
@@ -16,6 +16,7 @@ import { useEmbedDimensions } from "@genuin/components/hooks/embed/use-embed-dim
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { SDKEventEmitter, SDKEventName } from "@genuin/components/lib/sdk-event-emitter";
 import { isMiddlewareOverlayEnabled } from "@genuin/components/lib/utils";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { useFeed } from "@genuin/components/react-query/api/feed";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
@@ -32,7 +33,76 @@ import { FetchNextPageHandler } from "./fetch-next-page-handler";
 import { PipViewLoader } from "./pip-view/pip-view-loader";
 import { SdkSkeleton, ShimmerSlide } from "./skeleton";
 import { useAutoExpand } from "./use-auto-expand";
-import { isSlideVisible } from "./utils";
+import { isSlideVisible, getFlatActiveIndex } from "./utils";
+
+// TODO(temp): Remove this KFI dummy-data override. Temporary placement-specific
+// hardcoding — drop once real attribute/linkout data is served from the API.
+/** Placement that receives the KFI station attribute/linkout override. */
+const KFI_PLACEMENT_IDS = ["6a2be0e245aec54862efd9a5", "6a312de7a01f8b8ab6edde5a"];
+const KFI_LINKOUT_URL = "https://iheart.com/live/177";
+/** CTA text the iHeart listen-live button renders (it reads `linkouts[0].cta_text`). */
+const KFI_LINKOUT_CTA_TEXT = "Listen Live";
+const KFI_ATTRIBUTE_OVERRIDE = {
+  type: "station",
+  station_id: "177",
+  title: "KFI AM 640",
+  description: "KFI AM 640 - More Stimulating Talk",
+  image_url:
+    "https://i.iheart.com/v3/re/assets.brands/690a88896eecce6af2355242?ops=gravity(%22center%22),contain(360,360)&quality=80",
+  // The expand-view CTA (ClipPlayerCTA) only renders when attributes.slug is set.
+  // The actual click redirects to cta_link, so this value just unblocks that guard.
+  slug: "kfi-am-640",
+} as const;
+
+/** Linkout injected when a KFI feed item has none, so the listen-live CTA still renders. */
+const KFI_DEFAULT_LINKOUT = {
+  cta_link: KFI_LINKOUT_URL,
+  cta_text: KFI_LINKOUT_CTA_TEXT,
+  links: [],
+};
+
+/**
+ * For the KFI placement, merge dummy station attributes into every feed item's
+ * `video.attributes` and force every linkout to the KFI "Listen Live" CTA
+ * (`cta_link` + `cta_text`). The iHeart layout's listen-live button only renders
+ * when `linkouts[0].cta_text` is present, so items without linkouts get one injected.
+ * Returns the input untouched for any other placement. Clones rather than mutates
+ * so cached query data is never edited in place.
+ */
+function applyPlacementAttributeOverride<T extends { pages?: Array<{ feed?: PostDetailsType[] }> } | undefined>(
+  data: T,
+  placementId: string | undefined
+): T {
+  if (!data || !placementId || !KFI_PLACEMENT_IDS.includes(placementId) || !data.pages) {
+    return data;
+  }
+  return {
+    ...data,
+    pages: data.pages.map((page) => ({
+      ...page,
+      feed: page.feed?.map((item) => {
+        if (!item.video) return item;
+        const existingLinkouts = item.video.linkouts;
+        const linkouts =
+          Array.isArray(existingLinkouts) && existingLinkouts.length > 0
+            ? existingLinkouts.map((linkout) => ({
+                ...linkout,
+                cta_link: KFI_LINKOUT_URL,
+                cta_text: KFI_LINKOUT_CTA_TEXT,
+              }))
+            : [KFI_DEFAULT_LINKOUT];
+        return {
+          ...item,
+          video: {
+            ...item.video,
+            attributes: { ...item.video.attributes, ...KFI_ATTRIBUTE_OVERRIDE },
+            linkouts,
+          },
+        };
+      }),
+    })),
+  } as T;
+}
 
 const IheartUrlManager = lazy(() =>
   import("./iheart-url-manager").then((m) => ({
@@ -105,6 +175,10 @@ export function Embed({
   const [swiper, setSwiper] = useState<Swiper | null>(null);
   const [slidesOffsetBefore, setSlidesOffsetBefore] = useState<number>(0);
 
+  const [swiperKey, setSwiperKey] = useState(0);
+  // Flat index the remounted swiper should start at (sectioned: restore correct section).
+  const [swiperInitialSlide, setSwiperInitialSlide] = useState(0);
+
   const { isInIframe, theme } = useBaseContext();
   const { embedData, embedEventBus, rootElement, updateIsSectioned, updateSectionList, changeActivePlayerType } =
     useEmbedContext();
@@ -160,6 +234,7 @@ export function Embed({
     placementId: embedData.placement_id,
     styleId: embedData.style_id,
     contextualParams: enrichedContextualParams,
+    configuration: embedData.configuration,
     embedId: embedData.embed_id,
     sponsorship_id: embedData.sponsorship_id,
     isInIframe,
@@ -176,6 +251,21 @@ export function Embed({
     initialVideoIds: embedData.initialVideoIds,
   };
 
+  // Single options object shared by both useFeed and getQueryKeyForFeed.
+  // getQueryKeyForFeed serializes EVERY option key into the cache key, so the
+  // key must be derived from the exact same options useFeed registers under —
+  // including `enabled`. Deriving the standalone queryKey from `feedParams`
+  // (without `enabled`) produced a key missing the "enabled-undefined" element,
+  // so optimistic updates via setQueryData (exact match) silently no-oped and
+  // the spark/reaction UI never updated despite a 200 API response.
+  const feedQueryOptions = {
+    ...feedParams,
+    // Skip the API call entirely when a caller (storybook fixture,
+    // SSR-hydrated host) supplies its own feed data — the response
+    // would 4xx without a valid JWT and `isError` below would short-
+    // circuit to `<SdkErrorState>` even though the fixture is valid.
+    enabled: externalFeedData ? false : undefined,
+  };
   const {
     isLoading,
     data: apiFeedData,
@@ -184,8 +274,14 @@ export function Embed({
     hasNextPage,
     isFetchingNextPage,
   } = useFeed(feedType, feedParams);
-  const queryKey = getQueryKeyForFeed(feedType, feedParams);
-  const feedData = externalFeedData ?? apiFeedData;
+  const queryKey = getQueryKeyForFeed(feedType, feedQueryOptions);
+  const rawFeedData = externalFeedData ?? apiFeedData;
+  // For a specific placement, override each feed item's attributes/linkouts with
+  // station-specific dummy data. Existing attributes are merged, not overwritten.
+  const feedData = useMemo(
+    () => applyPlacementAttributeOverride(rawFeedData, embedData.placement_id),
+    [rawFeedData, embedData.placement_id]
+  );
   const videos = useMemo(() => feedData?.pages?.flatMap((page) => page.feed) || [], [feedData]);
   const pageSession = feedData?.pages[0]?.pageSession;
   const { isDesktop, isMobile } = useDeviceDetectMediaQuery();
@@ -298,6 +394,14 @@ export function Embed({
               track(isEmbed ? EventName.EMBED_VIEWED : EventName.PLACEMENT_VIEWED, {
                 community_id: config.community.communityIds,
                 group_id: config.community.communityLoopIds,
+                // iHeart screen_view: show/section identity (view.item.asset.id/name) + page URL.
+                section_title: filteredPost[0]?.video?.attributes?.title ?? filteredPost[0]?.section?.title,
+                section_id: filteredPost[0]?.section?.id,
+                content_id: filteredPost[0]?.video?.id,
+                podcast_id: filteredPost[0]?.video?.attributes?.podcast_id,
+                station_id: filteredPost[0]?.video?.attributes?.station_id,
+                page_name: "show_title_clips_feed",
+                url: typeof window !== "undefined" ? window.location.href : undefined,
                 ...(!isEmbed && {
                   has_sections: isSectioned,
                   section_count: sectionList.length,
@@ -320,6 +424,7 @@ export function Embed({
       config.community.communityLoopIds,
       isSectioned,
       sectionList.length,
+      filteredPost,
     ]
   );
 
@@ -368,8 +473,8 @@ export function Embed({
   useEffect(() => {
     function handleCenterActiveSlide() {
       if (swiper) {
-        const activeIndex = embedEventBus.getContext().activeIndex;
-        swiper.slideTo(activeIndex, 300); // Center the active slide with smooth animation
+        const targetIndex = getFlatActiveIndex(embedEventBus.getContext());
+        swiper.slideTo(targetIndex, 300); // Center the active slide with smooth animation
       }
     }
 
@@ -382,15 +487,20 @@ export function Embed({
   // Listen for activePlayerType changes to sync local state.
   // When returning from expand-view to embed in single-video mode, reset the
   useEffect(() => {
-    function handleActivePlayerTypeChange(eventData: any, context: EmbedEventContextType) {
+    function handleActivePlayerTypeChange(_eventData: unknown, context: EmbedEventContextType) {
       setActivePlayerType(context.activePlayerType);
-
-      embedEventBus.on("activePlayerTypeChange", handleActivePlayerTypeChange);
-      return () => {
-        embedEventBus.off("activePlayerTypeChange", handleActivePlayerTypeChange);
-      };
+      if (isSectioned ? context.activePlayerType !== "expand-view" : undefined) {
+        // Seed initialSlide with the flat index of the selected section before remounting.
+        setSwiperInitialSlide(getFlatActiveIndex(context));
+        setSwiperKey((k) => k + 1);
+      }
     }
-  }, [embedEventBus]);
+
+    embedEventBus.on("activePlayerTypeChange", handleActivePlayerTypeChange);
+    return () => {
+      embedEventBus.off("activePlayerTypeChange", handleActivePlayerTypeChange);
+    };
+  }, [embedEventBus, isSectioned]);
 
   // Listen for activeIndex changes to sync local state
   useEffect(() => {
@@ -492,7 +602,7 @@ export function Embed({
 
   if (config.view.isExpandOnly) {
     return (
-      <Suspense fallback={<FeedSkeleton variant="fullscreen" />}>
+      <SafeSuspense fallback={<FeedSkeleton variant="fullscreen" />}>
         <EmbedExpandView
           videos={videos}
           hasNextPage={!!hasNextPage}
@@ -502,11 +612,11 @@ export function Embed({
           totalVideos={totalVideos}
           fetchNextPage={fetchNextPage}
         />
-      </Suspense>
+      </SafeSuspense>
     );
   }
 
-  if (isError) {
+  if (isError && !externalFeedData) {
     return <SdkErrorState containerHeight={containerHeight} containerWidth={containerWidth} />;
   }
 
@@ -542,14 +652,14 @@ export function Embed({
       {...restProps}>
       <EmbedManagerProvider swiper={swiper}>
         {isIheartLayout && (
-          <Suspense fallback={null}>
+          <SafeSuspense fallback={null} errorFallback={null}>
             <IheartUrlManager
               websiteType={websiteType}
               activePlayerType={activePlayerType}
               activeIndex={activeIndex}
               videos={filteredPost}
             />
-          </Suspense>
+          </SafeSuspense>
         )}
         <FetchNextPageHandler
           videos={filteredPost}
@@ -559,110 +669,140 @@ export function Embed({
           swiper={swiper}
         />
         {isGridLayout ? (
-          <GridView
-            videos={filteredPost}
-            rows={config.view.gridLayout?.row ?? 2}
-            cols={config.view.gridLayout?.column ?? 2}
-            autoAdjust={config.view.gridLayout?.auto_adjust}
-            aspectRatio={embedAspectRatio}
-            totalVideos={feedData?.pages?.[0]?.totalVideos}
-          />
+          <SafeSuspense
+            fallback={
+              <SdkSkeleton
+                containerHeight={containerHeight}
+                containerWidth={containerWidth}
+                statsHeight={statsHeight}
+                linkoutHeight={linkoutHeight}
+                spaceBetweenVideos={spaceBetweenVideos}
+                availableHeight={availableHeight}
+              />
+            }
+            errorFallback={null}>
+            <GridView
+              videos={filteredPost}
+              rows={config.view.gridLayout?.row ?? 2}
+              cols={config.view.gridLayout?.column ?? 2}
+              autoAdjust={config.view.gridLayout?.auto_adjust}
+              aspectRatio={embedAspectRatio}
+              totalVideos={feedData?.pages?.[0]?.totalVideos}
+              hasNextPage={hasNextPage}
+              isFetchingNextPage={isFetchingNextPage}
+              fetchNextPage={fetchNextPage}
+            />
+          </SafeSuspense>
         ) : (
           !isOnlyForExpand && (
             <div className="gencl:relative">
-              <EmbedHeader
-                style={{
-                  height: headerHeight,
-                }}
-                variant={embedVariant}
-              />
-              <EmbedSwiper
-                onSwiper={(swiperInstance: any) => setSwiper(swiperInstance)}
-                forFeed={config.view.isFeed}
-                aspectRatio={embedAspectRatio}
-                spaceBetweenVideos={spaceBetweenVideos}
-                slidesPerView={slidesPerView}
-                isIheartLayout={isIheartLayout}
-                allowTouchMove={!config.brand.expandOnInteraction}
-                onSlideChange={(swiperInstance: any) => {
-                  // Early safety check
-                  if (!swiperInstance) return;
-
-                  // Handle slides offset
-                  if (swiperInstance.isBeginning) {
-                    setSlidesOffsetBefore(0);
-                  } else {
-                    setSlidesOffsetBefore(48);
-                  }
-                  onFeedSlideChange(swiperInstance);
-                }}
-                onSlidePrevTransitionStart={() => track(EventName.SWIPE_PREVIOUS)}
-                onSlideNextTransitionStart={() => track(EventName.SWIPE_NEXT)}
-                onReachBeginning={() => {
-                  setSlidesOffsetBefore(0);
-                }}
-                containerDimensions={{
-                  height: config.view.isFeed
-                    ? availableHeight - spaceBetweenVideos
-                    : availableHeight + spaceBetweenVideos,
-                  width: containerWidth,
-                }}
-                style={{
-                  height: availableHeight,
-                }}
-                freeMode={config.view.scrollBehavior === "free_scroll"}
-                centeredSlides={config.view.centeredSlides}
-                centeredSlidesBounds={config.view.centeredSlides}
-                slidesOffsetBefore={
-                  config.view.isCarousel && isIheartLayout && !isMobile && !isLandscapeVideo ? slidesOffsetBefore : 0
+              <SafeSuspense fallback={null} errorFallback={null}>
+                <EmbedHeader
+                  style={{
+                    height: headerHeight,
+                  }}
+                  variant={embedVariant}
+                />
+              </SafeSuspense>
+              <SafeSuspense
+                fallback={
+                  <div style={{ height: availableHeight }} className="gencl:flex gencl:gap-2 gencl:overflow-hidden">
+                    {Array.from({ length: Math.max(1, Math.ceil(slidesPerView)) }).map((_, idx) => (
+                      <ShimmerSlide key={`swiper-fallback-${idx}`} />
+                    ))}
+                  </div>
                 }
-                customHeightFor={{
-                  index: filteredPost.findIndex((feed) => feed.video?.type === "overlay"),
-                  height: 160,
-                }}>
-                {filteredPost?.map((videoData, idx) => {
-                  return videoData.video?.type === "complete" ? (
-                    <></>
-                  ) : videoData.video?.type === "overlay" &&
-                    config.view.brandLayoutType === "iheart" &&
-                    isDesktop &&
-                    websiteType !== "legacy" ? (
-                    <></>
-                  ) : (
-                    <SwiperSlide key={idx} virtualIndex={idx}>
-                      <Suspense fallback={<ShimmerSlide />}>
-                        <EmbedItem
-                          index={idx}
-                          postDetails={videoData}
-                          totalVideos={feedData?.pages?.[0]?.totalVideos}
-                          swiper={swiper}
-                          itemSize={slideItemSize}
-                          pageSession={pageSession}
-                        />
-                      </Suspense>
-                    </SwiperSlide>
-                  );
-                })}
-                {/* Add shimmer slides when fetching next page */}
-                {isFetchingNextPage &&
-                  Array.from({ length: 3 }).map((_, idx) => (
-                    <SwiperSlide key={`shimmer-${idx}`} virtualIndex={filteredPost.length + idx}>
-                      <ShimmerSlide />
-                    </SwiperSlide>
-                  ))}
-                {((embedData.style === "carousel" && isIheartLayout) || !isIheartLayout) && (
-                  <NavigationButtonsWithContext
-                    totalSlides={totalSlides}
-                    theme={theme}
-                    embedVariant={embedVariant}
-                    setSlidesOffsetBefore={setSlidesOffsetBefore}
-                  />
-                )}
-              </EmbedSwiper>
+                errorFallback={null}>
+                <EmbedSwiper
+                  key={swiperKey}
+                  initialSlide={swiperInitialSlide}
+                  onSwiper={(swiperInstance: any) => setSwiper(swiperInstance)}
+                  forFeed={config.view.isFeed}
+                  aspectRatio={embedAspectRatio}
+                  spaceBetweenVideos={spaceBetweenVideos}
+                  slidesPerView={slidesPerView}
+                  isIheartLayout={isIheartLayout}
+                  onSlideChange={(swiperInstance: any) => {
+                    // Early safety check
+                    if (!swiperInstance) return;
+
+                    // Handle slides offset
+                    if (swiperInstance.isBeginning) {
+                      setSlidesOffsetBefore(0);
+                    } else {
+                      setSlidesOffsetBefore(48);
+                    }
+                    onFeedSlideChange(swiperInstance);
+                  }}
+                  onSlidePrevTransitionStart={() => track(EventName.SWIPE_PREVIOUS)}
+                  onSlideNextTransitionStart={() => track(EventName.SWIPE_NEXT)}
+                  onReachBeginning={() => {
+                    setSlidesOffsetBefore(0);
+                  }}
+                  containerDimensions={{
+                    height: config.view.isFeed
+                      ? availableHeight - spaceBetweenVideos
+                      : availableHeight + spaceBetweenVideos,
+                    width: containerWidth,
+                  }}
+                  style={{
+                    height: availableHeight,
+                  }}
+                  freeMode={config.view.scrollBehavior === "free_scroll"}
+                  centeredSlides={config.view.centeredSlides}
+                  centeredSlidesBounds={config.view.centeredSlides}
+                  slidesOffsetBefore={
+                    config.view.isCarousel && isIheartLayout && !isMobile && !isLandscapeVideo ? slidesOffsetBefore : 0
+                  }
+                  customHeightFor={{
+                    index: filteredPost.findIndex((feed) => feed.video?.type === "overlay"),
+                    height: 160,
+                  }}>
+                  {filteredPost?.map((videoData, idx) => {
+                    return videoData.video?.type === "complete" ? (
+                      <></>
+                    ) : videoData.video?.type === "overlay" &&
+                      config.view.brandLayoutType === "iheart" &&
+                      isDesktop &&
+                      websiteType !== "legacy" ? (
+                      <></>
+                    ) : (
+                      <SwiperSlide key={idx} virtualIndex={idx}>
+                        <SafeSuspense fallback={<ShimmerSlide />} errorFallback={null}>
+                          <EmbedItem
+                            index={idx}
+                            postDetails={videoData}
+                            totalVideos={feedData?.pages?.[0]?.totalVideos}
+                            swiper={swiper}
+                            itemSize={slideItemSize}
+                            pageSession={pageSession}
+                          />
+                        </SafeSuspense>
+                      </SwiperSlide>
+                    );
+                  })}
+                  {/* Add shimmer slides when fetching next page */}
+                  {isFetchingNextPage &&
+                    Array.from({ length: 3 }).map((_, idx) => (
+                      <SwiperSlide key={`shimmer-${idx}`} virtualIndex={filteredPost.length + idx}>
+                        <ShimmerSlide />
+                      </SwiperSlide>
+                    ))}
+                  {!isIheartLayout && (
+                    <NavigationButtonsWithContext
+                      totalSlides={totalSlides}
+                      isIheartLayout={isIheartLayout}
+                      theme={theme}
+                      embedVariant={embedVariant}
+                      setSlidesOffsetBefore={setSlidesOffsetBefore}
+                    />
+                  )}
+                </EmbedSwiper>
+              </SafeSuspense>
             </div>
           )
         )}
-        {isIheartLayout && embedData.style === "feed" && (
+        {isIheartLayout && (
           <NavigationButtonsWithContext
             totalSlides={totalSlides}
             isIheartLayout={true}

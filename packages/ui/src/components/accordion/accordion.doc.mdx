@@ -1,0 +1,107 @@
+import { Canvas, Controls, Description, Meta } from "@storybook/addon-docs/blocks";
+
+import * as AccordionStories from "./accordion.stories";
+
+{/*
+  Design-system narrative for the Accordion component. Attached to the
+  `Components/Accordion` story group via `<Meta of={…}>` so it renders
+  as the "Docs" tab next to the live stories. Layout: narrative intro
+  → live examples + controls → usage guidelines. Source prose is pure
+  markdown so it stays editable as a design doc.
+*/}
+
+<Meta of={AccordionStories} />
+
+# Accordion
+
+## What accordions are for
+
+An accordion is a vertically stacked set of headers that each reveal or hide a related block of content when activated. It is a tool for **progressive disclosure** — letting the interface stay short and scannable by default, while still giving the user access to the full detail behind any item they care about. The pattern works because most users only need a small slice of what a long page contains; collapsing everything else trades fewer pixels of "what's available" for a much shorter cognitive load and shorter scroll.
+
+A good accordion communicates three things at a glance: what each section is about (the trigger label), whether it is currently open, and that opening one will not lose the user's place. When those signals are clear, the accordion is invisible — the user just reads what they need. When they are not, the accordion becomes friction: people miss content, hunt for triggers, or expand everything because they don't trust the labels. The Genuin Accordion is built on Radix's primitive, which means keyboard navigation, focus management, and ARIA roles are correct by default — so the design guidance below is mostly about *when* and *how*, not *whether* it's accessible.
+
+## Accordion in this design system
+
+The Accordion component in `@genuin/ui` is a thin wrapper around `@radix-ui/react-accordion` and is composed from four exported pieces:
+
+- **`<Accordion>`** — the root container. Configured by `type`, plus the usual Radix props.
+- **`<AccordionItem>`** — one collapsible section. Requires a unique `value` and accepts any standard props.
+- **`<AccordionTrigger>`** — the clickable header for an item. Renders the label, plus a chevron that auto-rotates on open. A custom indicator can be passed via `openCloseIcon`.
+- **`<AccordionContent>`** — the body that expands and collapses with a synced animation.
+
+### Modes (`type`)
+
+- **Single** — only one item is open at a time. Opening another closes the previous. Combine with `collapsible` to allow the user to close the open item by clicking it again. Use this when the items are related views of the *same* topic and seeing two at once would create confusion.
+- **Multiple** — any number of items can be open simultaneously. The user fully controls how much they reveal. Use this when items are independent and the user might compare or reference them side by side.
+
+### Initial state
+
+- **`defaultValue`** (uncontrolled) — pre-opens the named item when the accordion mounts. Use it sparingly: pre-opening a section signals "this is the most important one." If everything matters equally, leave them all closed.
+- **`value` / `onValueChange`** (controlled) — drive the open state from your own state when the accordion needs to react to other UI (deep links, search results, validation focus).
+
+### Layout & direction
+
+- **`orientation`** — `"vertical"` (default) is the canonical accordion. `"horizontal"` is supported by the underlying primitive but should be reserved for chrome-like patterns; treat it as an exception, not a default.
+- **`dir`** — `"ltr"` / `"rtl"`. Mirror automatically for RTL locales rather than hand-flipping styles.
+
+### Trigger affordances
+
+The default trigger is a flexbox row with the label on the start, a chevron on the end, and a hover underline. The chevron rotates 180° on `data-state=open`. To use a different glyph (plus/minus, caret, custom SVG), pass `openCloseIcon` — the rotation styling stays attached to the default chevron only, so a custom icon should signal state on its own (e.g., swap between `+` and `−` or render the SVG differently per state via `data-state`).
+
+### Animation
+
+`AccordionContent` ships with `data-state`-driven `accordion-up` / `accordion-down` keyframes and `overflow-hidden` so height transitions cleanly. Don't add your own height/`max-height` transitions on top — they will fight the built-in animation and cause flicker.
+
+## Examples
+
+### Single
+
+<Description of={AccordionStories.Single} />
+
+<Canvas of={AccordionStories.Single} />
+
+<Controls of={AccordionStories.Single} />
+
+### Multiple
+
+<Description of={AccordionStories.Multiple} />
+
+<Canvas of={AccordionStories.Multiple} />
+
+### With default value
+
+<Description of={AccordionStories.WithDefaultValue} />
+
+<Canvas of={AccordionStories.WithDefaultValue} />
+
+### Custom styled
+
+<Description of={AccordionStories.CustomStyled} />
+
+<Canvas of={AccordionStories.CustomStyled} />
+
+## When to use Accordion
+
+- **Reference content.** FAQs, "Learn more" sections, terms & conditions, configuration panels — any page where the user needs *some* of the detail, not all of it.
+- **Settings groups.** Account, billing, notifications, integrations — group related controls under collapsible headers so the page is scannable but still contains everything.
+- **Long-form articles or playbooks.** When a single page covers multiple distinct topics and a Table of Contents would feel too heavy, an accordion gives the same navigation with the content inline.
+- **Mobile and dense layouts.** On narrow viewports an accordion replaces a side-tab pattern: the same content is reachable, but the page stays one column.
+- **Side panels and drawers.** When a panel needs to expose multiple categories of detail without a tab bar, accordion sections keep things flat and predictable.
+- **Pick `type="single"` for read-flow content** (FAQs, help docs, articles) — the user reads one item, moves on, opens the next.
+- **Pick `type="multiple"` for compare/reference content** (settings groups, requirement lists, multi-step summaries) — the user wants to see two or more open at once.
+- **Pre-open the most relevant item** with `defaultValue` only when there's a clear "first stop" — otherwise leave everything closed and let the user choose.
+
+## How not to use Accordion
+
+- **Don't hide content the user must see.** If a section is required for the task on this page (form fields, error states, primary CTAs), it doesn't belong inside an accordion. Progressive disclosure is for *optional* depth, not required steps.
+- **Don't use accordions for navigation between pages.** If clicking a header should change the route, use a list of links — not an accordion. Conflating the two breaks back-button behavior and accessibility.
+- **Don't nest accordions inside accordions.** Two levels of expand-and-collapse hide content behind two interactions; users lose the map. Flatten the structure or move the deeper level into a separate page or modal.
+- **Don't mix accordion and tabs at the same level.** Pick one model. Accordion = stacked, all-on-one-surface; Tabs = mutually exclusive views. Using both for the same set of items confuses the mental model.
+- **Don't open everything by default.** If every item is open on load, the accordion isn't doing anything — just render the sections as plain headings. Default-open is a signal of priority; if everything is priority, nothing is.
+- **Don't write vague trigger labels.** "More info", "Details", "Section 1" force the user to expand to find out what's inside. Each trigger should read like a question or a noun phrase that completes "this section is about…".
+- **Don't put long form-flows inside an accordion.** A multi-step submission flow needs the user to see context, validation, and the submit action together. Hiding any of those behind a collapse is a recognized cause of failed submissions.
+- **Don't disable items silently.** If an item shouldn't be openable, communicate why (lock icon, helper text). A trigger that ignores clicks looks broken.
+- **Don't suppress the focus ring on the trigger.** The trigger is a real, keyboard-activated control — its focus state must be visible. If you restyle it, provide an equivalent indicator.
+- **Don't use accordions for a single section.** One trigger and one body is just a disclosure or details element. Reach for `<details>` or a custom expandable; the accordion overhead isn't worth it for n = 1.
+- **Don't animate the trigger height itself.** Only `AccordionContent` animates. Adding a height transition to the trigger or item creates a double-bounce that fights the content animation.
+- **Don't put scrollable content inside an item.** If an item's body needs its own scrollbar, the content is too long for an accordion — give it its own page or modal so the scroll context is unambiguous.

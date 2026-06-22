@@ -20,7 +20,10 @@ type Story = StoryObj<typeof VideoTrimSlider>;
 
 export const Default: Story = {
   args: {
-    videoUrl: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    // VideoTrimSlider reads frames into a <canvas> for the thumbnail strip,
+    // so the source must serve `Access-Control-Allow-Origin: *`. The
+    // test-videos.co.uk host doesn't — MDN's CC0 sample does.
+    videoUrl: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
     currentDuration: 0,
     onTrimmerReady: (isReady: boolean) => {
       console.log("onTrimmerReady::", isReady);

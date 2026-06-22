@@ -3,7 +3,7 @@
 import { Loader } from "@genuin/ui/components/loader";
 import { abbreviateNumber, cn } from "@genuin/ui/lib/utils";
 import type { ComponentProps } from "react";
-import { useEffect, useState, useRef, useMemo, useCallback, lazy, Suspense } from "react";
+import { useEffect, useState, useRef, useMemo, useCallback, lazy } from "react";
 import type { Swiper } from "swiper/types";
 import { useBoolean } from "usehooks-ts";
 
@@ -15,8 +15,15 @@ import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-d
 import { useFocusManagement } from "@genuin/components/hooks/use-focus-management";
 import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
 import type { OctoPanelHandle } from "@genuin/components/molecules/octo-panel/octo-panel";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { type PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
+import {
+  ActionButtonsSkeleton,
+  FEED_SKELETON_THEME,
+  PlayerSkeleton,
+  SidePanelSkeleton,
+} from "@genuin/components/templates/feed/feed-skeleton";
 
 import type { Player } from "./player";
 import { calculateSlideDimensions } from "./utils";
@@ -62,17 +69,24 @@ const CommentsDialog = lazy(() =>
 );
 
 const OctoPanel = lazy(() =>
-  import("../../molecules/octo-panel/index.js").then((m) => ({
+  // Pre-existing typo — drop the trailing `.js`. The file is `index.ts`,
+  // every other lazy import in this module omits the extension, and
+  // Next.js's dev server doesn't auto-rewrite `.js` → `.ts` for an
+  // explicitly-specified `.js` path. Surfaced when /home tries to
+  // compile this chunk; the stale extension fails module resolution.
+  import("../../molecules/octo-panel").then((m) => ({
     default: m.OctoPanel,
   }))
 );
 
+// prefetch: CHUNK_LOADERS.sectionedContent mirrors this import (see lib/prefetch/chunk-loaders.ts)
 const SectionedContent = lazy(() =>
   import("./sectioned-content").then((m) => ({
     default: m.SectionedContent,
   }))
 );
 
+// prefetch: CHUNK_LOADERS.nonSectionedContent mirrors this import (see lib/prefetch/chunk-loaders.ts)
 const NonSectionedContent = lazy(() =>
   import("./non-sectioned-content").then((m) => ({
     default: m.NonSectionedContent,
@@ -80,6 +94,27 @@ const NonSectionedContent = lazy(() =>
 );
 
 const SectionsTabs = lazy(() => import("./sections-tabs").then((m) => ({ default: m.SectionsTabs })));
+
+/**
+ * A Suspense fallback that occupies the same positioned box as the lazy component
+ * it stands in for, with the spinner centered inside. Bare `<Loader />` collapses to
+ * its 16px intrinsic size at the flex start of the container and shifts the layout
+ * when the real (absolutely-positioned) chunk swaps in; this keeps the loader where
+ * the content will actually appear so there is no jump.
+ */
+function PositionedLoader({
+  className,
+  size = "xs",
+}: {
+  className?: string;
+  size?: ComponentProps<typeof Loader>["size"];
+}) {
+  return (
+    <div className={cn("gencl:flex gencl:items-center gencl:justify-center", className)} aria-hidden>
+      <Loader size={size} />
+    </div>
+  );
+}
 
 type PlayerListPropsType = {
   posts: PostDetailsType[];
@@ -157,25 +192,41 @@ export function PlayerList({
   const { sheetState, openContentType, setContentTypeState, hasContentType, closeContentType, getContentTypeState } =
     useSheetState();
   const [isEndOfFeedReached, setEndOfFeedReached] = useState<boolean>(false);
+  // Colors for the lazy-chunk Suspense fallbacks below. The expand view renders
+  // on a dark surface by default, matching the FeedSkeleton default theme.
+  const skeletonColors = FEED_SKELETON_THEME[theme === "light" ? "light" : "dark"];
+  // Single player shimmer reused by the player-area boundary AND each slide's lazy
+  // Player/WatchBoundaryOverlay boundary, so no boundary in the slide tree falls back
+  // to null (a null fallback paints a black box while the chunk downloads).
+  const playerChunkFallback = (
+    <div className="gencl:h-full gencl:w-full">
+      <PlayerSkeleton colors={skeletonColors} isMobile={isMobile} />
+    </div>
+  );
   // if we use directly isTablet from the hook then for desktop it will be true based on useDeviceDetectMediaQuery implementation
   const isTablet = !isMobile && !isDesktop;
   const [adActiveOn, setAdActiveOn] = useState<number>(-1);
 
-  // Container dimensions state
+  // Container dimensions state. Only the iheart-tablet case needs a measured value
+  // (computed in the effect via ResizeObserver); every other layout just needs a
+  // truthy object to unblock rendering. Seed that synchronously in the initializer
+  // so the player area paints on the FIRST commit — leaving it null until the effect
+  // runs left the reel container empty for a frame (longer on heavy host pages),
+  // which is the transparent gap seen when entering expand view.
   const containerRef = useRef<HTMLDivElement>(null);
+  const needsMeasuredDimensions = brandLayoutType === "iheart" && isTablet;
   const [slideDimensions, setSlideDimensions] = useState<{
     slideWidth: number;
     slideHeight: number;
     slidesPerView: number;
-  } | null>(null);
+  } | null>(() => (needsMeasuredDimensions ? null : ({} as any)));
 
   // Calculate slide dimensions on mount and resize (only for iheart brand on specific devices)
   useEffect(() => {
     const shouldCalculateDimensions = brandLayoutType === "iheart" && isTablet;
 
     if (!shouldCalculateDimensions) {
-      // Set dimensions immediately for non-iheart or non-tablet to allow rendering
-      setSlideDimensions({} as any);
+      // Already seeded synchronously in the useState initializer above; nothing to do.
       return;
     }
 
@@ -460,14 +511,14 @@ a swiper inside another swiper.
       )}>
       {/* Back button for iheart expand view (not on mobile) */}
       {brandLayoutType === "iheart" && !isMobile && (
-        <Suspense fallback={null}>
+        <SafeSuspense fallback={<PositionedLoader className="gencl:absolute gencl:left-8 gencl:z-50 gencl:size-10" />}>
           <IHeartBackButton
             websiteType={websiteType}
             isAdsEnabledInIheart={isAdsEnabledInIheart}
             onBackClick={changeExpandViewType}
             theme={theme}
           />
-        </Suspense>
+        </SafeSuspense>
       )}
       <div
         className={cn(
@@ -489,25 +540,40 @@ a swiper inside another swiper.
         >
           {/* Header with back button and centered title */}
           {brandLayoutType === "iheart" && !isEndOfFeedReached && !isAdFilled && (
-            <Suspense fallback={null}>
+            <SafeSuspense
+              fallback={
+                <PositionedLoader className="gencl:absolute gencl:top-0 gencl:left-0 gencl:right-0 gencl:z-20 gencl:p-4" />
+              }>
               <PlayerHeader
                 isMobile={isMobile}
                 title={filteredPost[activeIndex]?.video?.attributes?.title ?? ""}
                 onBackClick={changeExpandViewType}
               />
-            </Suspense>
+            </SafeSuspense>
           )}
 
           {isSectioned && (
-            <Suspense fallback={null}>
+            <SafeSuspense
+              fallback={
+                <PositionedLoader className="gencl:absolute gencl:top-0 gencl:left-0 gencl:right-0 gencl:z-50 gencl:p-4" />
+              }>
               <SectionsTabs onSectionSelect={handleSectionSelect} />
-            </Suspense>
+            </SafeSuspense>
           )}
+          {/* While slideDimensions is being measured (iheart-tablet only — every
+              other layout is seeded synchronously), show the player shimmer instead
+              of nothing, so the reel area never renders empty/black for that frame
+              (or longer on a slow host page). */}
+          {!slideDimensions && playerChunkFallback}
           {slideDimensions && (
             <div className="gencl:h-full gencl:w-full">
               {isSectioned ? (
-                <Suspense fallback={null}>
+                // Fallback fills the parent (h-full w-full) so it matches the
+                // fixed slideDimensions geometry — no aspect re-derivation, no
+                // size flash when the real player chunk swaps in.
+                <SafeSuspense fallback={playerChunkFallback}>
                   <SectionedContent
+                    playerFallback={playerChunkFallback}
                     sectionList={sectionList ?? []}
                     embedDetails={embedDetails}
                     filteredPost={filteredPost}
@@ -533,10 +599,11 @@ a swiper inside another swiper.
                     onAdPlaybackEnd={onAdPlaybackEnd}
                     pageSession={pageSession}
                   />
-                </Suspense>
+                </SafeSuspense>
               ) : (
-                <Suspense fallback={null}>
+                <SafeSuspense fallback={playerChunkFallback}>
                   <NonSectionedContent
+                    playerFallback={playerChunkFallback}
                     startIndex={startIndex}
                     slideDimensions={slideDimensions}
                     disableSwiper={disableSwiper || isAdFilled}
@@ -559,7 +626,7 @@ a swiper inside another swiper.
                     onAdPlaybackEnd={onAdPlaybackEnd ?? (() => {})}
                     pageSession={pageSession}
                   />
-                </Suspense>
+                </SafeSuspense>
               )}
             </div>
           )}
@@ -567,7 +634,7 @@ a swiper inside another swiper.
 
         {/* Navigation buttons for iheart expand view positioned relative to player */}
         {showExpandView && brandLayoutType === "iheart" && isDesktop && !disableSwiper && (
-          <Suspense fallback={null}>
+          <SafeSuspense fallback={<PositionedLoader size="lg" className="gencl:relative gencl:pl-10" />}>
             <NavigationButton
               swiper={activeSwiper ?? undefined}
               postsLength={filteredPost.length}
@@ -576,18 +643,26 @@ a swiper inside another swiper.
               theme={theme}
               size={websiteType === "polaris" ? "lg" : "xl"}
               disable={isAdFilled}
+              isIheartLayout
             />
-          </Suspense>
+          </SafeSuspense>
         )}
       </div>
       {showExpandView && isDesktop && (
-        <Suspense fallback={null}>
+        <SafeSuspense
+          fallback={<PositionedLoader className="gencl:absolute gencl:right-7.5 gencl:top-6 gencl:size-10" />}>
           <CloseButton theme={theme} onCloseClick={toggleExpandView} />
-        </Suspense>
+        </SafeSuspense>
       )}
       {/* Navigation buttons for expand view (not on mobile) */}
       {showExpandView && brandLayoutType !== "iheart" && !isMobile && (
-        <Suspense fallback={null}>
+        <SafeSuspense
+          fallback={
+            <PositionedLoader
+              size="lg"
+              className="gencl:fixed gencl:right-7.5 gencl:top-1/2 gencl:-translate-y-1/2 gencl:size-12"
+            />
+          }>
           <NavigationButton
             swiper={activeSwiper ?? undefined}
             postsLength={filteredPost.length}
@@ -595,10 +670,10 @@ a swiper inside another swiper.
             size={websiteType === "polaris" ? "lg" : "xl"}
             disable={isAdFilled}
           />
-        </Suspense>
+        </SafeSuspense>
       )}
       {!isMobile && brandLayoutType !== "iheart" && filteredPost[activeIndex] && !isAdFilled && (
-        <Suspense fallback={null}>
+        <SafeSuspense fallback={<ActionButtonsSkeleton colors={skeletonColors} />}>
           <Actions
             shareUrl={filteredPost[activeIndex]?.video?.shareUrl ?? ""}
             isReacted={filteredPost[activeIndex]?.video?.isSparked ?? false}
@@ -643,7 +718,8 @@ a swiper inside another swiper.
 
                 if (!isDesktop && filteredPost[activeIndex] && (isCommentOpen || defaultOpen))
                   return (
-                    <Suspense fallback={null}>
+                    <SafeSuspense
+                      fallback={<PositionedLoader size="md" className="gencl:fixed gencl:inset-0 gencl:z-50" />}>
                       <CommentsDialog
                         commentCount={filteredPost[activeIndex]?.video?.commentCount ?? 0}
                         communityId={filteredPost[activeIndex]?.community?.id ?? ""}
@@ -660,7 +736,7 @@ a swiper inside another swiper.
                         }}>
                         <CommentBox>{defaultNode}</CommentBox>
                       </CommentsDialog>
-                    </Suspense>
+                    </SafeSuspense>
                   );
                 return (
                   <span
@@ -708,7 +784,7 @@ a swiper inside another swiper.
                 );
               },
             }}
-            onReactionStateChange={(isReacted) => {
+            onReactionStateChange={(isReacted: boolean) => {
               onReactionStateChange?.(
                 filteredPost[activeIndex]?.video?.id ?? "",
                 filteredPost[activeIndex]?.video?.slug ?? "",
@@ -716,7 +792,7 @@ a swiper inside another swiper.
               );
             }}
           />
-        </Suspense>
+        </SafeSuspense>
       )}
       {/* Comment panel - show this only if expand view is open  */}
       {isCommentOpen &&
@@ -727,7 +803,8 @@ a swiper inside another swiper.
         brandLayoutType !== "iheart" &&
         isDesktop && (
           <div className="gencl:max-w-118 gencl:w-full gencl:h-full gencl:hidden gencl:sm:block! gencl:py-6">
-            <Suspense fallback={null}>
+            <SafeSuspense
+              fallback={<SidePanelSkeleton theme={theme === "light" ? "light" : "dark"} showPostDetails={false} />}>
               <Comments
                 videoId={filteredPost[activeIndex].video?.id ?? ""}
                 loopId={filteredPost[activeIndex].group?.id ?? ""}
@@ -740,7 +817,7 @@ a swiper inside another swiper.
                 onCommentCountChange={onCommentCountChange}
                 shareUrl={filteredPost[activeIndex].video?.shareUrl ?? ""}
               />
-            </Suspense>
+            </SafeSuspense>
           </div>
         )}
 
@@ -752,7 +829,7 @@ a swiper inside another swiper.
         brandLayoutType !== "iheart" &&
         isDesktop && (
           <div className="gencl:max-w-118 gencl:w-full gencl:h-full gencl:hidden gencl:sm:block! gencl:py-6">
-            <Suspense fallback={null}>
+            <SafeSuspense errorFallback={null} fallback={null}>
               <OctoPanel
                 ref={octoPanelRef}
                 videoId={filteredPost[activeIndex].video?.id || ""}
@@ -764,7 +841,7 @@ a swiper inside another swiper.
                 onClose={() => setOctoOpen(false)}
                 panelClassName="gencl:h-full"
               />
-            </Suspense>
+            </SafeSuspense>
           </div>
         )}
 

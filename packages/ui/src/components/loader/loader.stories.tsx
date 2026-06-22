@@ -5,7 +5,6 @@ import { Loader } from "./loader";
 const meta: Meta<typeof Loader> = {
   title: "Components/Loader",
   component: Loader,
-  tags: ["autodocs"],
   parameters: {
     layout: "centered",
   },

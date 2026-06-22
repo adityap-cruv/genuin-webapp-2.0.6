@@ -1,7 +1,8 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, useEffect, useState } from "react";
 
 import { useEmbedContext } from "@genuin/components/context/embed";
 import type { EmbedEventContextType } from "@genuin/components/context/embed/event-bus";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 const PipView = lazy(() => import("./pip-view").then((m) => ({ default: m.PipView })));
@@ -32,8 +33,8 @@ export function PipViewLoader({ videos, isLoading, totalVideos }: PipViewLoaderP
   }
 
   return (
-    <Suspense fallback={null}>
+    <SafeSuspense fallback={null} errorFallback={null}>
       <PipView videos={videos} isLoading={isLoading} totalVideos={totalVideos} />
-    </Suspense>
+    </SafeSuspense>
   );
 }

@@ -84,13 +84,24 @@ export type LiveCustomizationTools = {
   // Allow other properties from the placement API response
   [key: string]: any;
 };
+export type ConfigurationType = {
+  style_title?: string;
+  style_subtitle?: string;
+  sections?: Array<{
+    title?: string;
+    subtitle?: string;
+    description?: string;
+    cover_url?: string;
+    thumbnail_url?: string;
+  }>;
+};
 
 export type ContextualParamsType = {
   page_context?: string;
   geo?: {
-    lat?: number;
-    long?: number;
-    radius_limit?: number;
+    lat?: string | number;
+    long?: string | number;
+    radius_limit?: string | number;
   };
   url?: string;
   previous_page_context?: string;
@@ -103,12 +114,13 @@ export type ContextualParamsType = {
   };
   time?: string | number;
   user_segments?: {
-    age?: number;
+    age?: string | number;
     min_age?: number;
     max_age?: number;
-    segment?: string;
+    segment?: string[];
     gender?: string;
-    race?: string;
+    race?: string[];
+    interests?: string[];
   };
   brands_ids?: number[];
   user_interests?: string[];
@@ -231,6 +243,7 @@ type MobileConfigsType = {
   share_transcript_enabled?: boolean;
   gesture_guidance: boolean;
   is_start_with_sound: boolean;
+  design_system?: "v1" | "v2";
 };
 
 type SitemapConfigsType = {
@@ -477,6 +490,7 @@ export type EmbedDataType = {
   style_id?: string;
   environment?: string;
   contextualParams?: SDKConfig["contextualParams"];
+  configuration?: ConfigurationType;
   elementId?: string;
   brand_ids?: number[];
   sponsorship_id?: string | string[];

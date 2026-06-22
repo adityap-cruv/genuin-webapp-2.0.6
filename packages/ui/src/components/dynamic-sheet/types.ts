@@ -2,7 +2,25 @@ import type { ComponentProps, ReactNode, RefObject } from "react";
 
 // ─── Sheet States ─────────────────────────────────────────────────────────────
 
-export const DYNAMIC_SHEET_STATES = ["default", "default-active", "expand-view", "panel-view", "full-view"] as const;
+export const DYNAMIC_SHEET_STATES = [
+  // Compact placement chips. Upstream of `default`; used as the entry
+  // point for narrow embeds and the mobile-expand flow's first frame
+  // (auto-advances to `default` after 3 s in that flow).
+  "pl-xs",
+  "pl-sml",
+  "default",
+  "default-active",
+  "expand-view",
+  "panel-view",
+  "full-view",
+  // Responsive wide-card layout (post-detail / ad slots). Single
+  // self-contained card that fills its host container; adapts to
+  // width AND height via size buckets + orientation. Only enabled
+  // by the `responsive` scenario in `linkouts-sheet-config.ts` —
+  // every other scenario keeps its existing state machine
+  // unchanged. See RESPONSIVE_LINKOUT_PLAN.md.
+  "responsive",
+] as const;
 
 export type DynamicSheetState = (typeof DYNAMIC_SHEET_STATES)[number];
 
@@ -12,12 +30,23 @@ export type HeightValue = string | number;
 
 export type DynamicSheetHeightConfig = Partial<Record<DynamicSheetState, HeightValue>>;
 
+// Numbers are % of container (per the `DynamicSheetConfig` doc-comment),
+// strings are CSS values. Per-scenario overrides in linkouts-sheet-config.ts
+// pin the chip states to fixed pixel heights ("32px" for pl-xs, "40px" for
+// pl-sml) — the percentages here are sensible fallbacks when a scenario
+// doesn't specify.
 export const DEFAULT_HEIGHTS: Record<DynamicSheetState, HeightValue> = {
+  "pl-xs": 5,
+  "pl-sml": 6,
   default: 15,
   "default-active": 18,
   "expand-view": 40,
   "panel-view": 70,
   "full-view": 100,
+  // `responsive` fills its host container — the responsive scenario
+  // overrides this with `100%`, but the default keeps it numeric so
+  // snap math stays well-defined in any other (unintended) scenario.
+  responsive: 100,
 };
 
 // ─── Render Mode ──────────────────────────────────────────────────────────────
@@ -82,12 +111,6 @@ export interface DynamicSheetConfig {
   /** Called when the sheet requests to close */
   onClose?: () => void;
   /**
-   * When true, the close button/gesture calls onClose but does NOT collapse
-   * the sheet (no setIsVisible(false)). Useful for inline/embed variants where
-   * "close" should snap back to a default state rather than disappear entirely.
-   */
-  preventCloseCollapse?: boolean;
-  /**
    * Rules that automatically advance the sheet from one state to another
    * after an optional delay. Replaces the previous hardcoded
    * default-active → expand-view behaviour.
@@ -110,13 +133,22 @@ export interface DynamicSheetProps extends ComponentProps<"div"> {
   onDismissed?: () => void;
   /** Sheet behaviour configuration */
   config?: DynamicSheetConfig;
-  /**
-   * Controlled state - when provided, the sheet will transition to this state
-   * instead of using initialState when opening. Useful when parent manages state.
-   */
-  controlledState?: DynamicSheetState;
   /** Render strategy – "fixed" (portal) or "container" (inline absolute) */
   renderMode?: DynamicSheetRenderMode;
+  /**
+   * Bottom inset in CSS px for bottom-anchored (positioned, non-inline-flow)
+   * sheets. Applied as the panel's `style.bottom` so the sheet's bottom edge
+   * can be re-anchored to the visual-viewport bottom — e.g. above the iOS
+   * on-screen keyboard. Typically sourced from a keyboard-inset hook.
+   *
+   * Only takes effect when the sheet is rendered bottom-anchored (the consumer
+   * pins it with `position: fixed`/`absolute` + `bottom`). When `undefined`,
+   * no inline `bottom` is applied and behaviour is unchanged.
+   *
+   * NOTE: an inline `bottom` cannot override a `bottom-0 !important` Tailwind
+   * class — remove any such class from the panel className for this to apply.
+   */
+  bottomInset?: number;
   /**
    * Required when renderMode="container".
    * Optional for renderMode="inline" – used to compute percentage-based heights
@@ -142,6 +174,34 @@ export interface DynamicSheetProps extends ComponentProps<"div"> {
   onDragging?: (isDragging: boolean) => void;
   /** Callback to enable/disable swipers when interacting with the sheet */
   onSwiperToggle?: (disable: boolean) => void;
+  /** Optional externally-controlled sheet state. When set, the sheet
+   *  transitions to this state. Added by release/genuin-sdk/2.0.6 for
+   *  the octo flow; the implementation lives in `dynamic-sheet.tsx`
+   *  and may need re-porting if the merged version was taken from
+   *  the linkout branch. */
+  controlledState?: DynamicSheetState;
+  /**
+   * Per-state body renderer used to measure `"auto"` heights for
+   * states whose body differs from the currently-mounted `children`.
+   *
+   * Background: the engine measures `children` (the active body) to
+   * resolve `"auto"` heights. When two adjacent enabled states are
+   * both `"auto"` but render *different* bodies (e.g. `default-active`
+   * = compact card, `expand-view` = rich card), the engine would
+   * collapse both states onto the active body's measured height and
+   * the snap chain breaks.
+   *
+   * Hosts that hit that case can pass `autoHeightProvider(state)`.
+   * The engine mounts the returned node in a hidden measurement well
+   * (one per `"auto"` state) and uses each well's `offsetHeight` as
+   * the snap target for that state. Wells are `aria-hidden`,
+   * `inert`, pointer-event-disabled, and absolutely positioned off
+   * the visible flow so they don't affect layout or interaction.
+   *
+   * Optional: when omitted, the engine falls back to the legacy
+   * shared `measuredAutoPx` from the active body.
+   */
+  autoHeightProvider?: (state: DynamicSheetState) => ReactNode;
 }
 
 // ─── Hook Types ───────────────────────────────────────────────────────────────

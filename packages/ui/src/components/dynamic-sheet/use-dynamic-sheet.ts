@@ -30,6 +30,18 @@ export function useDynamicSheet({
     [heights, containerHeight]
   );
 
+  // Order-agnostic view of `enabledStates`, sorted ascending by
+  // pixel height. Consumer configs declare `enabledStates` in
+  // arbitrary order (some scenarios list panel/full first as the
+  // "primary" states), but the drag clamp math and the step-down
+  // swipe target both need a smallest→largest sequence to behave
+  // correctly. Sorting here keeps the public config shape free and
+  // makes the hook robust to any ordering.
+  const enabledStatesByHeight = useMemo(
+    () => [...enabledStates].sort((a, b) => stateToPx(a) - stateToPx(b)),
+    [enabledStates, stateToPx]
+  );
+
   const validInitialState = useMemo(
     () => (enabledStates.includes(initialState) ? initialState : enabledStates[0] || "default"),
     [enabledStates, initialState]
@@ -59,13 +71,13 @@ export function useDynamicSheet({
   }, [currentState]);
 
   const heightBounds = useMemo(() => {
-    const first = enabledStates[0];
-    const last = enabledStates[enabledStates.length - 1];
+    const first = enabledStatesByHeight[0];
+    const last = enabledStatesByHeight[enabledStatesByHeight.length - 1];
     return {
       min: first ? stateToPx(first) - 60 : 0,
       max: last ? stateToPx(last) : containerHeight,
     };
-  }, [enabledStates, stateToPx, containerHeight]);
+  }, [enabledStatesByHeight, stateToPx, containerHeight]);
 
   const clearHoldTimer = useCallback(() => {
     if (holdTimerRef.current) {
@@ -209,13 +221,17 @@ export function useDynamicSheet({
       if (dt.hasMoved) {
         const isSwipingDown = dt.initialY - dt.lastY < 0;
         if (isSwipingDown) {
-          const stateIndex = enabledStates.indexOf(currentStateRef.current);
-          if (stateIndex === 0) {
+          // Step-down targets are computed against the height-sorted
+          // view so they work regardless of how the consumer ordered
+          // `enabledStates` in its config (some scenarios list the
+          // tallest state first).
+          const sortedIndex = enabledStatesByHeight.indexOf(currentStateRef.current);
+          if (sortedIndex === 0) {
             setTransientHeightPx(null);
             onRequestClose?.();
             return;
           }
-          const target = stepByStepSwipeDown ? enabledStates[stateIndex - 1] : enabledStates[0];
+          const target = stepByStepSwipeDown ? enabledStatesByHeight[sortedIndex - 1] : enabledStatesByHeight[0];
           isPendingTransitionRef.current = false;
           if (target && target !== currentStateRef.current) {
             transitionTo(target);
@@ -249,6 +265,7 @@ export function useDynamicSheet({
     isDragging,
     heightBounds,
     enabledStates,
+    enabledStatesByHeight,
     stateToPx,
     transitionTo,
     onStateChange,

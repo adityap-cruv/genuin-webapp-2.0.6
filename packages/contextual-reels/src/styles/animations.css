@@ -1,0 +1,225 @@
+@keyframes cxr-slide-up {
+  from {
+    transform: translateY(40px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes cxr-color-fade {
+  from {
+    background-color: transparent;
+  }
+  to {
+    background-color: var(--cxr-cta-color, #c6002b);
+  }
+}
+
+@keyframes cxr-height-grow {
+  from {
+    max-height: 0;
+    opacity: 0;
+  }
+  to {
+    max-height: var(--cxr-og-height, 36px);
+    opacity: 1;
+  }
+}
+
+@keyframes cxr-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes cxr-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/*
+ * Ticker / marquee: the track holds two identical copies of the text, each with
+ * an equal trailing gap. Translating the track by exactly -50% advances it by one
+ * copy (text + its gap), so the second copy lands precisely where the first began
+ * — a seamless, continuous left-scroll. Speed is constant; the duration is driven
+ * per call site via --cxr-ticker-duration so longer text scrolls proportionally.
+ */
+@keyframes cxr-ticker {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.cxr-ticker-mask {
+  overflow: hidden;
+}
+
+.cxr-ticker-track {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  width: max-content;
+  will-change: transform;
+  animation: cxr-ticker var(--cxr-ticker-duration, 12s) linear infinite;
+}
+
+/* Honour OS-level reduced-motion: hold static, no scroll. */
+@media (prefers-reduced-motion: reduce) {
+  .cxr-ticker-track {
+    animation: none;
+  }
+}
+
+/*
+ * Heartbeat: subtle scale pulse for drawing attention to CTAs (e.g. Watch).
+ * transform-only — runs on the compositor, so it never triggers layout/reflow.
+ */
+@keyframes cxr-heartbeat {
+  to {
+    transform: scale(var(--cxr-heartbeat-scale, 1.035));
+  }
+}
+
+/*
+ * Reusable attention-pulse utility. Apply `cxr-heartbeat` to any element.
+ * Configurable per call site via CSS custom properties:
+ *   --cxr-heartbeat-scale     final scale (default 1.05)
+ *   --cxr-heartbeat-duration  half-cycle duration (default 0.25s)
+ *   --cxr-heartbeat-count     number of full beats (default 2)
+ *   --cxr-heartbeat-delay     delay before first beat (default 1s)
+ * Larger default duration than the reference (0.25s) keeps the motion gentle.
+ * iteration-count is 2x beat count: each beat is an up+down alternate pair.
+ * Animation runs a fixed number of beats then holds the resting state.
+ */
+.cxr-heartbeat {
+  transform-origin: center;
+  will-change: transform;
+  animation: cxr-heartbeat var(--cxr-heartbeat-duration, 0.25s) ease-in-out var(--cxr-heartbeat-delay, 0.7s)
+    calc(var(--cxr-heartbeat-count, 2) * 2) alternate;
+}
+
+/* Honour OS-level reduced-motion: hold the resting state, no pulsing. */
+@media (prefers-reduced-motion: reduce) {
+  .cxr-heartbeat {
+    animation: none;
+  }
+}
+
+/*
+ * Registered custom properties for the AI-border trace.
+ * --cxr-animated-border-angle drives the conic-gradient start angle (animatable as a real
+ * <angle>); --cxr-animated-border-opacity fades the whole gradient out on the final sweep.
+ * Both must be @property-registered so they can be interpolated by keyframes.
+ */
+@property --cxr-animated-border-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@property --cxr-animated-border-opacity {
+  syntax: "<number>";
+  initial-value: 1;
+  inherits: false;
+}
+
+/*
+ * AI border: a conic-gradient ring sweeps around the element edge then fades
+ * out (the "Google AI" trace-and-fade). Drives --cxr-animated-border-angle from -45deg to
+ * 315deg (a full 360deg turn) holding full opacity until 75% then fading out.
+ * Angles are hardcoded concrete <angle> values — interpolating a registered
+ * <angle> through a var() start/end is fragile across browsers, so we don't.
+ */
+@keyframes cxr-animated-border-trace {
+  0% {
+    --cxr-animated-border-angle: -45deg;
+    --cxr-animated-border-opacity: 1;
+  }
+  75% {
+    --cxr-animated-border-opacity: 1;
+  }
+  100% {
+    --cxr-animated-border-angle: 315deg;
+    --cxr-animated-border-opacity: 0;
+  }
+}
+
+/*
+ * Reusable AI-border halo utility. Apply `cxr-animated-border` to any rounded element
+ * to render an animated white ring hugging its edge.
+ *
+ * Stacking (bottom -> top):
+ *   1. the element's own opaque background fill (painted by the element),
+ *   2. the `::before` conic-gradient ring layer, painted ON TOP of the bg
+ *      (z-index: 1) but mask-punched so only a ~2px band at the rounded edge
+ *      survives — the interior of the mask is excluded, revealing the bg,
+ *   3. the icon/content, lifted above the ring (give it z-index: 2 / position
+ *      relative at the call site).
+ *
+ * The mask uses the standard border trick: stack a content-box fill over a
+ * border-box fill and `mask-composite: exclude` (xor) them, so only the
+ * `border` band (the difference between the two boxes) remains opaque. We do
+ * NOT use overflow:hidden — clipping the oversized rotating cone to the button
+ * box is what hid the ring before; the mask alone shapes the visible band.
+ *
+ * Configurable per call site via CSS custom properties:
+ *   --cxr-animated-border-duration  one trace duration (default 2.5s)
+ *   --cxr-animated-border-count     number of sweeps; default 2 = sweep twice then vanish
+ *   --cxr-animated-border-width     thickness of the ring band (default 3px)
+ * `forwards` holds the final faded-out state so the ring disappears when done.
+ */
+.cxr-animated-border {
+  position: relative;
+}
+
+.cxr-animated-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: inherit;
+  /* The conic cone is centred at 50% 50% (the button centre) and rotates via
+   * `from var(--cxr-animated-border-angle)`, so the layer only needs to cover the button
+   * box itself — no oversizing — for the mask band to align to the edge. */
+  padding: var(--cxr-animated-border-width, 3px);
+  background: conic-gradient(
+    from var(--cxr-animated-border-angle) at 50% 50%,
+    transparent 0deg,
+    rgba(255, 255, 255, var(--cxr-animated-border-opacity)) 45deg,
+    transparent 90deg
+  );
+  /* Border-trick mask: keep only the padding band, punch out the interior. */
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  /* The animation drives --cxr-animated-border-angle/--cxr-animated-border-opacity inside `background`,
+   * not transform — hint the background layer (one-shot, so could be omitted). */
+  will-change: background;
+  animation: cxr-animated-border-trace var(--cxr-animated-border-duration, 2.5s) cubic-bezier(0.1, 0.9, 0.2, 1) var(--cxr-animated-border-count, 2) forwards;
+}
+
+/* Honour OS-level reduced-motion: no ring at all. */
+@media (prefers-reduced-motion: reduce) {
+  .cxr-animated-border::before {
+    animation: none;
+    background: none;
+    -webkit-mask: none;
+    mask: none;
+  }
+}

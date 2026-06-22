@@ -28,6 +28,9 @@ yarn-error.log*
 .env*.local
 **/.env
 
+# Claude Code runtime artifacts (lock files, scheduled task state)
+.claude/scheduled_tasks.lock
+
 # vercel
 .vercel
 
@@ -73,6 +76,7 @@ next-env.d.ts
 *storybook.log
 
 *.html
+!packages/hierarchical-tree/src/dev/index.html
 
 packages/web-sdk/stats.json
 # Playwright

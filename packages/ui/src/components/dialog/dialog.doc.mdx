@@ -1,0 +1,112 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./dialog.stories";
+
+{/*
+  Design-system narrative for the dialog component. Attached to the
+  matching story group via `<Meta of={…}>` so it renders as the
+  "Docs" tab next to the live stories. Layout: narrative intro →
+  live examples + controls → usage guidelines.
+*/}
+
+<Meta of={Stories} />
+
+# Dialog
+
+## What dialogs are for
+
+A dialog is a focused, modal layer that appears on top of the rest of the page to ask the user to make a decision, complete a small task, or acknowledge information. It pulls the user out of the page flow on purpose: while it's open, everything else is dimmed, the keyboard is trapped inside, and the only ways out are to act, dismiss, or close. That focus is the dialog's strength — it concentrates attention on one thing — and also its cost — it interrupts whatever the user was doing. So dialogs should be used sparingly and only when interruption is genuinely warranted.
+
+A good dialog has a clear purpose stated in the title, a concise body that doesn't try to be a whole page, and an unambiguous primary action. The user should know within a second what the dialog wants from them and how to either do that thing or dismiss it. Dialogs that are too long, ambiguous, or chained together stop being a focusing tool and become an obstacle. The Genuin Dialog is built on Radix's primitive, so focus trapping, Escape-to-close, click-outside-to-close, scroll lock on body, and ARIA roles (`role="dialog"`, `aria-modal`, `aria-labelledby`, `aria-describedby`) are correct out of the box. The design system layers on the visual treatment, the responsive positioning (bottom-sheet on mobile, centered card on desktop), the standard close button, and a registry that tracks open dialogs across the app.
+
+## Dialog in this design system
+
+The Dialog component in `@genuin/ui` is composed from ten exported pieces, mirroring the Radix structure plus a couple of layout helpers.
+
+### The pieces
+
+- **`<Dialog>`** — the root. Controls open state and registers the dialog with the global `dialogManager` while open. Requires a `type` prop — a stable string identifier used for cross-app dialog tracking (e.g., closing all dialogs of a kind, deduping competing dialogs).
+- **`<DialogTrigger>`** — the element that opens the dialog. Use `asChild` to wrap a real `<Button>` or link.
+- **`<DialogContent>`** — the dialog surface itself. Renders into a portal, applies the overlay, runs the open/close animation, and includes the close button by default. Supports a `variant`, an optional background blur, and a togglable close icon.
+- **`<DialogOverlay>`** — the dimmed background. Used internally by `DialogContent` but exported for advanced cases.
+- **`<DialogClose>`** — wrap any element to make it a close trigger inside the dialog (e.g., a "Cancel" button in the footer).
+- **`<DialogPortal>`** — exported portal node, normally used internally.
+- **`<DialogHeader>` / `<DialogFooter>`** — layout helpers. The header is a column flex with a bottom border (for title + description). The footer is a row flex that stacks on mobile and right-aligns on desktop (for action buttons).
+- **`<DialogTitle>` / `<DialogDescription>`** — the accessible name and description of the dialog. Both are required for accessibility — Radix wires them as `aria-labelledby` and `aria-describedby` on the content. If the title or description must be invisible (for command palettes, fully visual dialogs), keep them in the DOM with `sr-only`.
+
+### Variants & positioning
+
+- **`default`** — bottom-sheet on small screens (slides up from the bottom edge), centered card on `sm` and up. The right pattern for almost every dialog. Mobile users get a comfortable thumb-reachable surface, desktop users get a focused card.
+- **`top`** — anchored to the top center of the viewport. Use for dialogs that pair with a top-of-page trigger (search, notifications) or shouldn't push other content out of the user's mental focus.
+
+### Open state
+
+- **Uncontrolled** — pass `defaultOpen` and let the component manage state.
+- **Controlled** — drive it with `open` and `onOpenChange`. Use this when external state needs to react (URL deep-linking, multi-step flows, server-driven prompts).
+- **Required `type`** — every dialog must declare a stable `type` string. Use a feature-scoped key (`"share-loop"`, `"delete-channel"`, `"invite-member"`). The `dialogManager` uses this to track what's currently open across the app — never reuse a `type` for two semantically different dialogs.
+
+### Close affordances
+
+The default `<DialogContent>` ships with an `×` close button in the top-right. Hide it via `showClose={false}` only when:
+
+- The dialog is a command palette where the user dismisses with Escape or by selecting an item.
+- The footer already has an explicit "Cancel"/"Close" button and a redundant `×` would clutter the surface.
+
+Even with the `×` hidden, Escape and click-on-overlay still close the dialog (Radix defaults). Don't disable those without an extremely strong reason — users learn to expect them.
+
+### Backdrop blur
+
+Pass `bgBlur` on `<DialogContent>` to add a frosted-glass blur to the overlay. Reserve this for dialogs that sit over visually busy backgrounds (media, dashboards), where a flat 50% black wouldn't separate the surfaces enough.
+
+### Layout & content
+
+The header / footer helpers give you the standard layout: header at top with title + description and a separator below, body in the middle, footer at the bottom with stacked-on-mobile, right-aligned-on-desktop action buttons. Stick to this structure unless you're building a dedicated form factor (full-screen dialog, drawer, etc.) — consistency matters more than novelty here.
+
+## Examples
+
+### Default
+
+<Canvas of={Stories.Default} />
+
+<Controls of={Stories.Default} />
+
+### Confirmation dialog
+
+<Canvas of={Stories.ConfirmationDialog} />
+
+### Form dialog
+
+<Canvas of={Stories.FormDialog} />
+
+### Top dialog
+
+<Canvas of={Stories.TopDialog} />
+
+## When to use Dialog
+
+- **Confirmations.** "Delete this loop? This action cannot be undone." Always pair with a clear destructive action button and a non-default cancel button.
+- **Quick edits.** Renaming, changing a small subset of fields, attaching a tag — anywhere a full page would be overkill but inline editing would be cluttered.
+- **Multi-step prompts.** Onboarding nudges, "What's new" announcements, brief surveys. Keep these short — anything longer than 2–3 steps belongs in a dedicated page or drawer.
+- **Choosing from a small list.** "Pick a destination", "Choose a template". When the list grows or you want filtering, reach for a Command palette inside the dialog.
+- **Acknowledgements that need a response.** Terms accepted, role assigned, action completed — when you need an explicit click before continuing.
+- **Errors and warnings the user needs to act on.** Network lost, save failed, irreversible step ahead. (Toasts are for non-blocking feedback; dialogs are for blocking decisions.)
+- **Pick `default` everywhere by default.** Bottom-sheet mobile + centered desktop is the right pattern in 95% of cases.
+- **Pick `top` only when there's a layout reason** — e.g., the dialog is summoned by a top header element and centering it would feel disconnected.
+- **Always provide a `<DialogTitle>`.** Hide it with `sr-only` if it's not visually needed, but never omit it — the dialog must have an accessible name.
+
+## How not to use Dialog
+
+- **Don't open a dialog without a clear purpose.** "Here's some info" with only an OK button is a non-modal callout pretending to be modal. Use a toast or an inline notice.
+- **Don't stack dialogs.** A dialog opened from inside a dialog confuses focus traps, Escape semantics, and user expectations. Close the first, then open the second — or use a drawer/inline disclosure instead.
+- **Don't reuse the same `type` for different dialogs.** The `dialogManager` keys on `type`; collisions break state tracking and may close a dialog you didn't expect.
+- **Don't suppress the `×` and `Escape` together.** The user must always have a way out without committing. Hiding both is an anti-pattern unless the dialog is genuinely required (legal acceptance, account-level lockout) — and even then, prefer disabling the primary action until the user has done what's needed.
+- **Don't disable click-outside-to-close as a default.** Radix lets you opt out via `onPointerDownOutside`. Reserve this for forms with unsaved changes — and even then, prompt before discarding ("You have unsaved changes — discard them?") rather than refusing to close at all.
+- **Don't hide the title and description from the DOM entirely.** "Visually hidden" is fine (`sr-only`); "not rendered" breaks Radix's `aria-labelledby` and screen readers will announce the dialog as untitled.
+- **Don't put long forms in a dialog.** A 2–3 field form fits; a 10-field form belongs on a page or in a drawer. Long forms break thumb reach on mobile (the bottom-sheet sticks to the bottom) and cause overflow scrolling that fights the modal behavior.
+- **Don't put a primary navigation action in a dialog.** Dialogs interrupt; navigation continues the flow. If clicking takes the user to another page, render a link or a button on the page itself.
+- **Don't render scrollable content without a constrained height.** Long content inside a dialog must use the dialog's own scroll, not the page's. Set a max-height on the body so the header and footer stay visible while the middle scrolls.
+- **Don't open a dialog automatically on page load.** Surprise modals are the most-hated pattern on the web. Tie dialogs to user intent (clicking a trigger, completing a step, hitting an error). Onboarding nudges are the rare exception — and even then, dismissible.
+- **Don't use Dialog for ephemeral feedback.** "Saved", "Copied", "Sent" — those are toasts. A dialog for ephemeral state forces the user to acknowledge what they already know.
+- **Don't put `autoFocus` on a destructive button inside the dialog.** Focus should land on the safest control by default — a cancel button, a non-destructive primary action, or the first input. The component already passes `autoFocus={false}` on the content for this reason.
+- **Don't use a dialog where a drawer or full page is the right pattern.** Drawers are better for editable side-panels that the user might want to keep open while glancing at the page. Full pages are better for content that warrants its own URL and back-button. Dialogs are for single-purpose, decision-shaped tasks.
+- **Don't disable the close button without supplying an alternative path out.** A close button missing on a non-blocking dialog leaves the user no clean exit — which they'll register as the app being broken.

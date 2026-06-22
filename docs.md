@@ -11,18 +11,20 @@ When looking for a doc, start here. When adding a new doc, register it here.
 
 ## Where to put new docs
 
-| What you're writing                              | Where it goes                           |
-| ------------------------------------------------ | --------------------------------------- |
-| Environment / tooling prerequisites              | `docs/setup/`                           |
-| Repo structure, monorepo decisions, path guides  | `docs/architecture/`                    |
-| Technology migration guide (framework, CSS, etc) | `docs/migrations/`                      |
-| Upgrade status, deployment procedures, QA        | `docs/upgrades/`                        |
-| SDK bundle, chunk, lazy-loading analysis         | `packages/web-sdk/docs/performance/`    |
-| SDK infrastructure (CDN, CSS versioning, deps)   | `packages/web-sdk/docs/infrastructure/` |
-| SDK migration (build tools, validators)          | `packages/web-sdk/docs/migrations/`     |
-| Historical SDK reorganization records            | `packages/web-sdk/docs/history/`        |
-| Per-package usage instructions                   | `packages/<name>/README.md`             |
-| Per-app usage instructions                       | `apps/<name>/README.md`                 |
+| What you're writing                              | Where it goes                                |
+| ------------------------------------------------ | -------------------------------------------- |
+| Environment / tooling prerequisites              | `docs/setup/`                                |
+| Repo structure, monorepo decisions, path guides  | `docs/architecture/`                         |
+| Technology migration guide (framework, CSS, etc) | `docs/migrations/`                           |
+| Upgrade status, deployment procedures, QA        | `docs/upgrades/`                             |
+| SDK bundle, chunk, lazy-loading analysis         | `packages/web-sdk/docs/performance/`         |
+| SDK infrastructure (CDN, CSS versioning, deps)   | `packages/web-sdk/docs/infrastructure/`      |
+| SDK migration (build tools, validators)          | `packages/web-sdk/docs/migrations/`          |
+| Historical SDK reorganization records            | `packages/web-sdk/docs/history/`             |
+| Components-package feature plans (linkouts etc.) | `packages/components/docs/<feature-folder>/` |
+| Component-package QA test fixtures (XML, MP4 …)  | `packages/<name>/.storybook/qa-fixtures/`    |
+| Per-package usage instructions                   | `packages/<name>/README.md`                  |
+| Per-app usage instructions                       | `apps/<name>/README.md`                      |
 
 ---
 
@@ -57,6 +59,7 @@ Structural documentation about how the repository is organized.
 | [docs/architecture/REPO_CONTEXT.md](docs/architecture/REPO_CONTEXT.md)                   | Full repository context and structure |
 | [docs/architecture/MONOREPO_CONVERSION.md](docs/architecture/MONOREPO_CONVERSION.md)     | History of the monorepo conversion    |
 | [docs/architecture/PATH_RESOLUTION_GUIDE.md](docs/architecture/PATH_RESOLUTION_GUIDE.md) | Path resolution and import guide      |
+| [docs/architecture/SAFE_SUSPENSE.md](docs/architecture/SAFE_SUSPENSE.md)                 | SafeSuspense pattern, chunk-failure resilience, lint enforcement |
 
 ### Migrations
 
@@ -112,6 +115,18 @@ Operational docs for the upgrade lifecycle: tracking, deployment, and QA.
 | File                                                           | Purpose                         |
 | -------------------------------------------------------------- | ------------------------------- |
 | [packages/components/README.md](packages/components/README.md) | Shared components package guide |
+
+### Linkouts plans
+
+Feature plans for the `molecules/linkout-new` family — scenario configs, ad slots, outside / responsive layouts. Authored as living docs alongside the implementation work; new plans go here.
+
+| File                                                                                                                             | Purpose                                                           |
+| -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| [packages/components/docs/linkouts/FULL_DYNAMIC_LINKOUT_PLAN.md](packages/components/docs/linkouts/FULL_DYNAMIC_LINKOUT_PLAN.md) | End-to-end dynamic-linkout scenario picker / state machine plan   |
+| [packages/components/docs/linkouts/RESPONSIVE_LINKOUT_PLAN.md](packages/components/docs/linkouts/RESPONSIVE_LINKOUT_PLAN.md)     | Responsive wide-card layout matrix (size buckets + orientation)   |
+| [packages/components/docs/linkouts/OUTSIDE_LINKOUT_PLAN.md](packages/components/docs/linkouts/OUTSIDE_LINKOUT_PLAN.md)           | Outside (below-the-frame) layout variant for embed scenarios      |
+| [packages/components/docs/linkouts/DYNAMIC_LINKOUT_ADS_PLAN.md](packages/components/docs/linkouts/DYNAMIC_LINKOUT_ADS_PLAN.md)   | Banner / display / video ad fallback rollout for the linkout slot |
+| [packages/components/docs/linkouts/SAMPLE_AD_TAGS.md](packages/components/docs/linkouts/SAMPLE_AD_TAGS.md)                       | Sample ad tags for QA: IMA (video) + GAM (display banner) paths   |
 
 ---
 

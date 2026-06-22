@@ -1,8 +1,9 @@
 "use client";
-import { lazy, Suspense, useCallback, useEffect, useInsertionEffect, useMemo, useState } from "react";
+import { lazy, useCallback, useEffect, useInsertionEffect, useMemo, useState } from "react";
 
 import { SDKEventEmitter, SDKEventName, SDKListenerEventName } from "@genuin/components/lib/sdk-event-emitter";
 import type { getBrandType } from "@genuin/components/lib/utils/brand-layout";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 import { EmbedContext, type FollowStatusItem } from "./context";
@@ -395,9 +396,9 @@ export function EmbedProvider({
         updateFollowStatus: followStatusMethods.updateFollowStatus,
       }}>
       {trackObservability && (
-        <Suspense fallback={null}>
+        <SafeSuspense fallback={null} errorFallback={null}>
           <ObservabilityTracker sdkInitTime={sdkInitTime} embedEventBus={embedEventBus} />
-        </Suspense>
+        </SafeSuspense>
       )}
       {children}
     </EmbedContext.Provider>

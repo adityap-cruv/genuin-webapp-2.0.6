@@ -175,9 +175,9 @@ export const EmitAnalyticsData: EmitAnalyticsDataType = {
     description: "",
   },
   [EventName.VIDEO_PLAY]: {
-    canFire: false,
+    canFire: true,
     allowed_keys: [...commonAllowedKeys],
-    description: "",
+    description: "Forwarded to iHeart analytics as the `play` event (resume after pause).",
   },
   [EventName.PAGE_VIEW]: {
     canFire: false,

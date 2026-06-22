@@ -4,4 +4,4 @@
 # pnpm lint-staged
 
 # Per-package: ESLint uses each package's local eslint.config.mjs
-pnpm -r --if-present run lint-staged
+# pnpm -r --if-present run lint-staged

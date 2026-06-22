@@ -1,3 +1,4 @@
+import { VideoElementProvider } from "@genuin/ui/components/video-player/video-element-provider";
 import { Toaster } from "@genuin/ui/toaster";
 import type { Preview } from "@storybook/react-vite";
 
@@ -8,6 +9,7 @@ import { EmbedProvider } from "../src/context/embed";
 import { LinkProvider } from "../src/context/link";
 import "../src/globals.css";
 import { parseBrandColors } from "../src/lib/utils/brand-color-parser";
+import { PlayerImplProvider, type PlayerImpl } from "../src/molecules/feed-player/player-impl-context";
 import { ReactQueryClientProvider } from "../src/react-query/react-query-provider";
 
 import { testBrandDetails, testEmbedData } from "./test-data";
@@ -86,8 +88,24 @@ if (typeof window !== "undefined") {
   };
 }
 const preview: Preview = {
+  globalTypes: {
+    playerImpl: {
+      name: "Video player",
+      description: "Switch between V1 (legacy OpenPlayerJS) and V2 (registry-backed) FeedPlayer impl.",
+      defaultValue: "v2",
+      toolbar: {
+        icon: "play",
+        items: [
+          { value: "v2", title: "V2 (registry, default)" },
+          { value: "v1", title: "V1 (legacy, OpenPlayerJS)" },
+        ],
+        showName: true,
+      },
+    },
+  },
   decorators: [
     (Story, context) => {
+      const playerImpl = (context.globals?.playerImpl as PlayerImpl | undefined) ?? "v2";
       let embedData;
 
       // Exclude component-level props from being spread into embedData (they corrupt the embed context)
@@ -116,13 +134,42 @@ const preview: Preview = {
               <EmbedProvider
                 container={document.getElementById("gen-sdk") as HTMLElement}
                 embedData={embedData as any}
-                brandLayoutType={"iheart"}>
+                brandLayoutType={"default"}>
                 <BaseContextProvider useShadowDOM={false} brandDetails={testBrandDetails} isEmbed>
                   <LinkProvider>
                     <AuthProvider onSignIn={() => {}} onSignOut={() => {}} onUpdateUser={() => {}} user={null}>
                       <AnalyticsProvider user={null} isWebSDK brandDetails={testBrandDetails} embedData={embedData}>
-                        <Story />
-                        <Toaster />
+                        {/* FeedPlayer mounts VideoPlayerV2 unconditionally
+                            ([feed-player.tsx]), and V2 reads the registry
+                            via useVideoRegistry. Without this provider every
+                            Web-SDK story that transitively renders a video
+                            (EmbedTile, Embed, StandardWall, …) throws
+                            "useVideoRegistry must be used within a
+                            <VideoElementProvider>" before any markup paints. */}
+                        <VideoElementProvider>
+                          <PlayerImplProvider impl={playerImpl}>
+                            {/* Originally `<Story key={playerImpl} />` to
+                                force remount on toolbar toggle (Storybook
+                                docs view re-renders only the inner story
+                                content; outer providers stay mounted, so
+                                PlayerProvider state carries across the
+                                impl toggle and ControlLayer chrome looks
+                                stale). Removed because in stories that
+                                mount multiple FeedPlayer instances at once
+                                (Embed Feed / Carousel / Grid with their
+                                3+ swiper slides), the simultaneous
+                                unmount+remount cascade froze the browser
+                                — likely 3+ V1 OpenPlayerJS instances
+                                initialising in parallel, or 3+ V2 registry
+                                claim/release races, plus 3+ PlayerProviders
+                                resetting in lock-step. The chrome-reset
+                                quirk is the lesser cost; reviewers refresh
+                                the docs page if they need a clean state
+                                after toggling. */}
+                            <Story />
+                            <Toaster />
+                          </PlayerImplProvider>
+                        </VideoElementProvider>
                       </AnalyticsProvider>
                     </AuthProvider>
                   </LinkProvider>
@@ -163,10 +210,17 @@ const preview: Preview = {
                   usernameSet: true,
                 }}>
                 <AnalyticsProvider user={null} brandDetails={testBrandDetails}>
-                  <main style={{ ...parsedColor }}>
-                    <Story />
-                    <Toaster />
-                  </main>
+                  <VideoElementProvider>
+                    <PlayerImplProvider impl={playerImpl}>
+                      <main style={{ ...parsedColor }}>
+                        {/* `key={playerImpl}` previously here too; removed
+                            for the same reason as the Web-SDK branch —
+                            multi-FeedPlayer stories froze on toggle. */}
+                        <Story />
+                        <Toaster />
+                      </main>
+                    </PlayerImplProvider>
+                  </VideoElementProvider>
                 </AnalyticsProvider>
               </AuthProvider>
             </LinkProvider>

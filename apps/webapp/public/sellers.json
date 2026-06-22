@@ -100,6 +100,37 @@
       "name": "Kansas City Star",
       "domain": "kansascity.com",
       "is_confidential": 0
+    },
+    {
+      "seller_id": "2477",
+      "seller_type": "PUBLISHER",
+      "name": "Miami Herald",
+      "domain": "miamiherald.com",
+      "is_confidential": 0
+    },
+
+    {
+      "seller_id": "3312",
+      "seller_type": "PUBLISHER",
+      "name": "Fort Worth Star-Telegram",
+      "domain": "star-telegram.com",
+      "is_confidential": 0
+    },
+
+    {
+      "seller_id": "3180",
+      "seller_type": "PUBLISHER",
+      "name": "The Tacoma News Tribune",
+      "domain": "thenewstribune.com",
+      "is_confidential": 0
+    },
+
+    {
+      "seller_id": "3296",
+      "seller_type": "PUBLISHER",
+      "name": "The Sacramento Bee",
+      "domain": "sacbee.com",
+      "is_confidential": 0
     }
   ]
 }

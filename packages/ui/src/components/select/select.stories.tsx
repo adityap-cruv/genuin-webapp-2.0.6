@@ -14,7 +14,6 @@ import {
 const meta: Meta<typeof Select> = {
   title: "Components/Select",
   component: Select,
-  tags: ["autodocs"],
   parameters: {
     layout: "centered",
   },

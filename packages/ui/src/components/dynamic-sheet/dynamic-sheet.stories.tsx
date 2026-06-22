@@ -16,7 +16,6 @@ const meta: Meta<typeof DynamicSheet> = {
       },
     },
   },
-  tags: ["autodocs"],
   decorators: [
     (Story: any) => (
       <div className="gencl:relative gencl:h-screen gencl:w-full gencl:bg-secondary-100 gencl:overflow-hidden">

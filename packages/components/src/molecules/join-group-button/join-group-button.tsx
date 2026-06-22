@@ -2,13 +2,14 @@ import { Button as PrimitiveButton } from "@genuin/ui/button";
 import { Loader } from "@genuin/ui/components/loader";
 import { Toast } from "@genuin/ui/components/toaster";
 import type { ComponentProps } from "react";
-import { useCallback, Suspense, lazy } from "react";
+import { useCallback, lazy } from "react";
 
 import { useAnalytics } from "@genuin/components/context/analytics";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { useJoinGroupMutation } from "@genuin/components/react-query/api/group/join";
 import { useLeaveGroupMutation } from "@genuin/components/react-query/api/group/join";
 import type { GroupUserStatusType } from "@genuin/components/types/roles";
@@ -83,7 +84,7 @@ export function JoinGroupButton({ groupId, ...restProps }: JoinGroupButtonProps)
     }
 
     return (
-      <Suspense fallback={null}>
+      <SafeSuspense fallback={null} errorFallback={null}>
         <AuthenticationModal
           getAppData={{
             description: (
@@ -103,7 +104,7 @@ export function JoinGroupButton({ groupId, ...restProps }: JoinGroupButtonProps)
           asChild>
           {button}
         </AuthenticationModal>
-      </Suspense>
+      </SafeSuspense>
     );
   }
 

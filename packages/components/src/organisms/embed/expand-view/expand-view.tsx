@@ -11,8 +11,9 @@ import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-d
 import { usePrevious } from "@genuin/components/hooks/use-previous";
 import useViewportHeight from "@genuin/components/hooks/use-screen-height";
 import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
-import { SDKEventEmitter, SDKEventName } from "@genuin/components/lib/sdk-event-emitter";
 import { isMiddlewareOverlayEnabled } from "@genuin/components/lib/utils";
+import { SDKEventEmitter, SDKEventName, SDKListenerEventName } from "@genuin/components/lib/sdk-event-emitter";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { RootPortal } from "@genuin/components/molecules/root-portal";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { FeedSkeleton } from "@genuin/components/templates/feed/feed-skeleton";
@@ -60,13 +61,13 @@ const ExpandViewContent = ({
   return !(community || group || user) ? (
     defaultComponent
   ) : (
-    <Suspense fallback={<FeedSkeleton variant="fullscreen" />}>
+    <SafeSuspense fallback={<FeedSkeleton variant="fullscreen" />}>
       <StandardWall
         className="gencl:h-full gencl:w-full"
         defaultComponent={defaultComponent}
         baseLayoutVariant="embed-expand-view"
       />
-    </Suspense>
+    </SafeSuspense>
   );
 };
 
@@ -90,9 +91,22 @@ export function EmbedExpandView({
   totalVideos,
   fetchNextPage,
 }: EmbedExpandViewProps) {
-  const [startIndex, setStartIndex] = useState(0);
   const { changeActiveIndex, embedEventBus, goBackToPreviousPlayerType, embedData } = useEmbedContext();
-
+  // Derive the starting slide SYNCHRONOUSLY on mount. The swiper reads `initialSlide`
+  // exactly once when it first mounts, so the correct index must be present on the
+  // very first commit. Computing it in an effect (which runs after the first paint)
+  // let the swiper capture initialSlide=0 before the effect corrected it — opening
+  // the wrong (first) video. The slug-change listener below still updates it later.
+  const [startIndex, setStartIndex] = useState(() => {
+    const context = embedEventBus.getContext();
+    const currentActiveIndex = context.isSectioned ? 0 : context.activeIndex;
+    const overlayIndex = videos.findIndex((post) => post.video?.type === "overlay");
+    return overlayIndex === -1
+      ? currentActiveIndex
+      : currentActiveIndex >= overlayIndex
+        ? currentActiveIndex - 1
+        : currentActiveIndex;
+  });
   const { setMuted, muted, setPlaybackSpeed, isInIframe, baseEventBus, brandDetails } = useBaseContext();
   const {
     brand: { isIndianExpress, shouldAutoExpand },
@@ -135,6 +149,14 @@ export function EmbedExpandView({
   const handleCloseExpandView = useCallback((isEscapeKey?: boolean) => {
     // Update the screen type based on the current view
     updateScreen(isPlacementView ? "view_placement" : "view_embed");
+
+    // The host container's own hiding styles are never mutated (only filtered when copied onto
+    // the expand overlay), so there is nothing to restore on collapse.
+
+    // Carry expand view's mute/unmute state back to embed on collapse (shared BaseContext).
+    // if (defaultAudioUnmute) {
+    //   setMuted(true);
+    // }
 
     setPlaybackSpeed((x) => {
       if (x.speed !== 1) {
@@ -203,17 +225,8 @@ export function EmbedExpandView({
      * as it may lead to unexpected behavior or rendering issues.
      */
 
-    const context = embedEventBus.getContext();
-    // Store current mute state when entering expand view
-    const currentActiveIndex = context.isSectioned ? 0 : context.activeIndex;
-    const overlayIndex = videos.findIndex((post) => post.video?.type === "overlay");
-    setStartIndex(
-      overlayIndex === -1
-        ? currentActiveIndex
-        : currentActiveIndex >= overlayIndex
-          ? currentActiveIndex - 1
-          : currentActiveIndex
-    );
+    // startIndex is derived synchronously in the useState initializer above (the
+    // swiper captures initialSlide on first mount). Only the side effects remain here.
 
     // When expand view mounts, set comment placement to 'outside' and apply width-based state.
     // if (isDesktop) {
@@ -422,7 +435,13 @@ export function EmbedExpandView({
   }, []);
 
   const defaultComponent = (
-    <Suspense fallback={<FeedSkeleton variant="fullscreen" />}>
+    // Single full-screen skeleton fallback while the FeedView chunk loads. It auto-
+    // unmounts the instant Suspense resolves, so it never lingers over real content.
+    // The entry gap (previous skeleton gone, overlay not yet painted) is handled in
+    // RootPortal, which now seeds its container synchronously; the inner PlayerList /
+    // PostSidePanel boundaries inside FeedView carry their own skeleton fallbacks, so
+    // heavy host pages keep showing a shimmer rather than a bare black portal.
+    <SafeSuspense fallback={<FeedSkeleton variant="fullscreen" showCommentsSkeleton={comment && isDesktop} />}>
       <FeedView
         startIndex={startIndex}
         defaultExpandView
@@ -450,7 +469,7 @@ export function EmbedExpandView({
         onActiveIndexChange={changeActiveIndex}
         disableNativeFullscreenApi
       />
-    </Suspense>
+    </SafeSuspense>
   );
 
   return (
@@ -465,13 +484,14 @@ export function EmbedExpandView({
           isIHeart && websiteType === "legacy" && ["gencl:fixed", isDesktop ? "gencl:z-[115]!" : "gencl:z-[112]!"]
         )}
         style={{ height: !isIHeart ? `${viewportHeight}px` : "100%" }}
+        trackVisualViewport={!isIHeart}
         enabledToaster={!(community || group || user)}>
         {isIHeart ? (
-          <Suspense fallback={<FeedSkeleton variant="fullscreen" />}>
+          <SafeSuspense fallback={<FeedSkeleton variant="fullscreen" />}>
             <IheartFullscreenContainer>
               <ExpandViewContent defaultComponent={defaultComponent} community={community} group={group} user={user} />
             </IheartFullscreenContainer>
-          </Suspense>
+          </SafeSuspense>
         ) : (
           <ExpandViewContent defaultComponent={defaultComponent} community={community} group={group} user={user} />
         )}

@@ -1,0 +1,83 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./dynamic-linkout-outside.stories";
+
+{/*
+  Design-system narrative for `<DynamicLinkouts layout="outside">`.
+  Attached to the `Organisms / Linkouts / Dynamic Linkouts Outside View`
+  story group via `<Meta of={…}>` so it renders as the "Docs" tab
+  next to the live stories. Layout: what the unit is → variant
+  rules → visual chrome rules → live examples.
+*/}
+
+<Meta of={Stories} />
+
+# Dynamic Linkouts (Outside View)
+
+## What this unit is
+
+The **outside-layout** variant of `<DynamicLinkouts>` attaches the linkout panel **below the video frame as a sibling** instead of overlaying it. The video player's bottom edge sits flush against the linkout's top edge, and the two share an 8 px rounded outer corner pair: video has `rounded-tl-lg rounded-tr-lg`, linkout has `rounded-bl-lg rounded-br-lg`. From the host's perspective it's a vertically stacked container — the linkout is no longer pinned over the video chrome.
+
+This layout is selected by passing `layout="outside"` to `<DynamicLinkouts>` (the embed/overlay layout passes `layout="overlay"`). The scenario picker in `linkouts-sheet-config.ts` routes `outside` layouts to the `embed-outside-*` family which carries the **light-theme** chrome: white panel surface, gray-900 text, gray-700 / gray-150 carousel dots — matching Figma `10075:76988`.
+
+The variant picker is identical to the embed (inside) layout — same five width buckets, same auto-advance timer on `default-active`. The only differences are visual.
+
+## Variant rules
+
+The picker reads `effectiveVideoWidth` and resolves to one of five outside-layout scenarios. Boundaries match `linkouts-sheet-config.ts:111-115`.
+
+| Frame width | Scenario | Render branch |
+| --- | --- | --- |
+| **≤ 180 px** | `embed-outside-xs` | `pl-xs` chip (transparent chrome, no panel) |
+| **181–249 px** | `embed-outside-sml` | `pl-sml` chip (transparent chrome, thumbnail + title) |
+| **250–299 px** | `embed-outside-default` | Light-theme panel, `default` state, compact composite |
+| **300–399 px** | `embed-outside-active` | Light-theme panel, `default-active` state, auto-advances to `expand-view` after 3 s |
+| **≥ 400 px** | `embed-outside-expand` | Light-theme panel, `expand-view` state, full rich card |
+
+The two chip variants (`pl-xs` / `pl-sml`) retain their transparent chrome from the embed flow — there's no visible panel surface so the bottom-rounded treatment doesn't apply. The three panel variants share `OUTSIDE_PANEL_CLASS` (`w-full rounded-t-none rounded-b-lg`) so the chrome stays consistent across width buckets.
+
+## Visual chrome
+
+Where the outside layout diverges from the embed (overlay) layout:
+
+| Element | Embed (inside) | Outside |
+| --- | --- | --- |
+| Panel surface | Translucent dark (`bg-black/50` + backdrop blur) | White (`bg-white` + backdrop blur) |
+| Panel corners | `rounded-lg` all four | `rounded-t-none rounded-b-lg` (top flush against frame) |
+| Panel margins | `mx-2 w-[calc(100%_-_16px)]` (floating card with 8 px gutter) | `w-full` (spans the frame's full width) |
+| Theme | `dark` (white text on dark panel) | `light` (gray-900 text on white panel) |
+| Carousel dots | active `secondary-600` (`#767B81`), inactive `secondary-100` (`#E9EBEC`) | active `secondary-700` (`#585C61`), inactive `secondary-150` (`#DFE1E3`) |
+| CTA pill | Full-width dark pill at the bottom | Full-width dark pill at the bottom (same) |
+| Frame attachment | Overlays the video | Sibling below the video, edges share a flush join |
+
+The dot colour switch is driven by `theme` on the scenario config — `<LinkoutCarouselDots>` reads `theme` from `baseConfig.theme` and selects `secondary-700` / `secondary-150` for `theme === "light"`, otherwise `secondary-600` / `secondary-100`.
+
+## Examples
+
+The five stories below mirror the embed view's per-state set so the two chrome treatments can be compared side-by-side.
+
+### Placement XS (≤ 180 px)
+
+<Canvas of={Stories.PlacementXSOutside} />
+
+### Placement SML (181–249 px)
+
+<Canvas of={Stories.PlacementSMLOutside} />
+
+### Default (250–299 px)
+
+<Canvas of={Stories.DefaultOutside} />
+
+### Default Active (300–399 px)
+
+<Canvas of={Stories.DefaultActiveOutside} />
+
+### Expand View (≥ 400 px)
+
+<Canvas of={Stories.ExpandViewOutside} />
+
+### Dynamic View
+
+Resizable frame harness — drag the bottom-right corner or click a preset above the frame to swap variants live. The linkout sits below the frame as a sibling (`layout="outside"`) and the width buckets above drive the picker.
+
+<Canvas of={Stories.DynamicViewOutside} />

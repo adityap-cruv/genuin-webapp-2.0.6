@@ -3,7 +3,6 @@ import { Popover, PopoverTrigger, PopoverContent } from "@genuin/ui/components/p
 import { FlagIcon, GroupIcon, PlayIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
 import type { ReactNode } from "react";
-import { Suspense } from "react";
 import React, { useEffect, useState } from "react";
 
 import type { VideoTypes } from "@genuin/components/context";
@@ -12,6 +11,7 @@ import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { PlaybackSpeed } from "@genuin/components/molecules/playback-speed";
 import { ShareButton } from "@genuin/components/molecules/share-button";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
@@ -110,11 +110,12 @@ export function Menu({ contentId, shareUrl, videoSlug, children, groupSlug, vide
       embedDetails?.embedData.card_layout_id !== 3 &&
       !isIndianExpress && {
         children: (
-          <Suspense
+          <SafeSuspense
             fallback={menuItems({
               text: "Report Post",
               className: "gencl:text-red",
-            })}>
+            })}
+            errorFallback={null}>
             <Report
               type="report-dialog"
               reportFor="VIDEO"
@@ -130,7 +131,7 @@ export function Menu({ contentId, shareUrl, videoSlug, children, groupSlug, vide
                 }),
               })}
             </Report>
-          </Suspense>
+          </SafeSuspense>
         ),
       },
   ].filter(

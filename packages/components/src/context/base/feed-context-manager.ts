@@ -28,6 +28,10 @@ export type PlayPauseTracker = {
   isPlaying: boolean;
   isFocused: boolean;
   isInView: boolean;
+  // True while an IMA ad break is playing on the active player. Used by the
+  // embed auto-advance timer to suppress slide changes during an ad — without
+  // this, iOS Safari advances to the next video while the ad is still on screen.
+  isAdPlaying: boolean;
 };
 
 export type GenericData = {
@@ -74,6 +78,7 @@ export class FeedContextManager {
     isFocused: true,
     isInView: true,
     isPlaying: false,
+    isAdPlaying: false,
   };
   private eventManager: EventManager<object, EventNames>;
   /** Current preview index (-1 means no preview active) */

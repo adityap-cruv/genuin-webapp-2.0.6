@@ -9,7 +9,6 @@ import { Checkbox } from "./checkbox";
 const meta: Meta<typeof Checkbox> = {
   title: "Components/Checkbox",
   component: Checkbox,
-  tags: ["autodocs"],
   parameters: {
     layout: "centered",
     docs: {

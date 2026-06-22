@@ -1,10 +1,11 @@
 import { Dialog, DialogContent } from "@genuin/ui/components/dialog";
 import { cn } from "@genuin/ui/utils";
 import { cva, type VariantProps } from "class-variance-authority";
-import { type ComponentProps, lazy, Suspense } from "react";
+import { type ComponentProps, lazy } from "react";
 
 import { useAuthContext } from "@genuin/components/context/auth";
 import { useBaseContext } from "@genuin/components/context/base";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { Success } from "@genuin/components/molecules/success";
 import type { AuthUser } from "@genuin/components/types/auth";
 
@@ -49,7 +50,7 @@ export function SideBarBecomeCreator({ className, variant, ...restProps }: SideB
 
   return (
     <>
-      <Suspense
+      <SafeSuspense
         fallback={
           <div
             className={cn(
@@ -86,7 +87,7 @@ export function SideBarBecomeCreator({ className, variant, ...restProps }: SideB
             </div>
           </div>
         </AuthenticationModal>
-      </Suspense>
+      </SafeSuspense>
       <style>
         {`
           .genuin-become-creator-centerout {

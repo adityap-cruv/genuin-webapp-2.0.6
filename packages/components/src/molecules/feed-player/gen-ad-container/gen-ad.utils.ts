@@ -6,6 +6,29 @@ export function extractNetworkCode(tagId: string): string {
   return tagId.split("/").filter(Boolean)[0] ?? "";
 }
 
+/**
+ * Smallest [width, height] tuple across the banner config(s). Returns `null`
+ * when no banner is requested (video/native-only waterfalls don't need a
+ * fixed slot size). Used by `<GenAdContainer>` to suppress the ad request
+ * when the slot is too small to host the requested creative size —
+ * rendering a 300×250 banner in a 200×200 slot is off-spec per IAB
+ * guidelines and the impression would not be viewable.
+ */
+export function getMinBannerSize(banner: GenAdBannerConfig | GenAdBannerConfig[] | undefined): [number, number] | null {
+  if (!banner) return null;
+  const list = Array.isArray(banner) ? banner : [banner];
+  if (list.length === 0) return null;
+  let minW = Infinity;
+  let minH = Infinity;
+  for (const entry of list) {
+    const [w, h] = entry.size;
+    if (w < minW) minW = w;
+    if (h < minH) minH = h;
+  }
+  if (!Number.isFinite(minW) || !Number.isFinite(minH)) return null;
+  return [minW, minH];
+}
+
 type DisplayAdItem = NonNullable<Extract<AdTagObjectType["display_ad"], { tag_id: string }>>;
 type NativeAdItem = NonNullable<Extract<AdTagObjectType["native_ad"], { tag_id: string }>>;
 type VideoAdItem = NonNullable<Extract<AdTagObjectType["video_ad"], { ads_url: string }>>;
@@ -87,6 +110,21 @@ export function buildGenAdConfigFromAdTagObject(
       }
     });
   }
+
+  // disabling for usweekly for now since prebid is causing some issues with ad loading and we don't have a way to test it on staging
+  // if (brandId === 2476) {
+  //   config.prebid = {
+  //     bidders: [
+  //       { bidder: "pubmatic", params: { publisherId: "167328", adSlot: "7384620" } },
+  //       { bidder: "magnite", params: { accountId: 27260, siteId: 619193, zoneId: 4013157 } },
+  //     ],
+  //     rollout: 1.0,
+  //     prebidOptions: {
+  //       prebidConfig: { debug: false },
+  //     },
+  //   };
+  //   config.waterfallOrder = ["prebid", ...(config.waterfallOrder ?? [])];
+  // }
 
   return config;
 }

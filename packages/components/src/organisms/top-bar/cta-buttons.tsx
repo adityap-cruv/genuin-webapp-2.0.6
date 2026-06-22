@@ -8,13 +8,14 @@ import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "@genuin/u
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 import { ChevronLeft, LogOutIcon, SettingsIcon } from "lucide-react";
-import { lazy, Suspense, useState, useCallback } from "react";
+import { lazy, useState, useCallback } from "react";
 
 import { useAnalytics } from "@genuin/components/context/analytics";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { useBaseContext } from "@genuin/components/context/base";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { Link } from "@genuin/components/molecules/link";
 import { Search } from "@genuin/components/molecules/search";
 import { NotificationList } from "@genuin/components/organisms/notification-list";
@@ -60,12 +61,13 @@ export function CtaButtons({ theme }: VariantProps<typeof iconVariant>) {
       <Search theme={theme} />
 
       {showApp && (
-        <Suspense
+        <SafeSuspense
           fallback={
             <Button theme="outline" size="sm">
               Get app
             </Button>
-          }>
+          }
+          errorFallback={null}>
           <AuthenticationModal
             asChild
             customStep="GET_APP"
@@ -76,7 +78,7 @@ export function CtaButtons({ theme }: VariantProps<typeof iconVariant>) {
               Get app
             </Button>
           </AuthenticationModal>
-        </Suspense>
+        </SafeSuspense>
       )}
 
       {isAuthenticated && camera_enabled && create_post_enabled && (
@@ -89,18 +91,19 @@ export function CtaButtons({ theme }: VariantProps<typeof iconVariant>) {
       )}
 
       {showLogin && (
-        <Suspense
+        <SafeSuspense
           fallback={
             <Button theme="primary" className={cn(isAuthenticated && "gencl:hidden")} size="sm">
               Log in
             </Button>
-          }>
+          }
+          errorFallback={null}>
           <AuthenticationModal customStep="SIGNIN" asChild>
             <Button theme="primary" className={cn(isAuthenticated && "gencl:hidden")} size="sm">
               Log in
             </Button>
           </AuthenticationModal>
-        </Suspense>
+        </SafeSuspense>
       )}
 
       {isAuthenticated && (

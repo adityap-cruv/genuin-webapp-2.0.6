@@ -1,7 +1,8 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
-import { useOctoAnalytics } from '@/context/analytics';
-import { useAgentsContext } from '@/context/app/context';
+import { useOctoAnalytics } from '@/adapters/analytics/hooks';
+import { useSessionContext } from '@/stores/session/context';
+import { useUIContext } from '@/stores/ui/context';
 import type { CarousalMetadata } from '@/types';
 
 import { Skeleton } from '../ui/skeleton';
@@ -39,9 +40,8 @@ const GenuinEmbed = ({
     isLastMessage: boolean;
     isSdkLoaded: boolean;
 }) => {
+    const { sessions, currentSessionId } = useSessionContext();
     const {
-        sessions,
-        currentSessionId,
         isSidebarCollapsed,
         view,
         parentWebSdkInstanceId,
@@ -49,7 +49,7 @@ const GenuinEmbed = ({
         parentWebSdkEmbedId,
         parentWebSdkPlacementId,
         parentOctoPanelId,
-    } = useAgentsContext();
+    } = useUIContext();
     const { analytics } = useOctoAnalytics();
     const currentSession = sessions.find(s => s.id === currentSessionId);
 
@@ -97,9 +97,9 @@ const GenuinEmbed = ({
 
             const nestedConfig = {
                 container_id: containerRef.current.id,
-                style_id: import.meta.env.VITE_GEN_SDK_STYLE_ID,
-                placement_id: import.meta.env.VITE_GEN_SDK_PLACEMENT_ID,
-                api_key: import.meta.env.VITE_API_KEY,
+                style_id: import.meta.env.VITE_GENAI_GEN_SDK_STYLE_ID,
+                placement_id: import.meta.env.VITE_GENAI_GEN_SDK_PLACEMENT_ID,
+                api_key: import.meta.env.VITE_GENAI_API_KEY,
                 parent_instance_id: parentWebSdkInstanceId,
                 useShadowDOM: false, // Disable shadow DOM for nested instances to avoid conflicts
                 // Note: Not passing 'live' config for nested instances
@@ -118,9 +118,9 @@ const GenuinEmbed = ({
         } else {
             window.genuin.init({
                 container_id: containerRef.current.id,
-                style_id: import.meta.env.VITE_GEN_SDK_STYLE_ID,
-                placement_id: import.meta.env.VITE_GEN_SDK_PLACEMENT_ID,
-                api_key: import.meta.env.VITE_API_KEY,
+                style_id: import.meta.env.VITE_GENAI_GEN_SDK_STYLE_ID,
+                placement_id: import.meta.env.VITE_GENAI_GEN_SDK_PLACEMENT_ID,
+                api_key: import.meta.env.VITE_GENAI_API_KEY,
             });
         }
 

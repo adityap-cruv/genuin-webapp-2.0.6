@@ -1,0 +1,132 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./tooltip.stories";
+
+{/*
+  Design-system narrative for the tooltip component. Attached to the
+  matching story group via `<Meta of={…}>` so it renders as the
+  "Docs" tab next to the live stories. Layout: narrative intro →
+  live examples + controls → usage guidelines.
+*/}
+
+<Meta of={Stories} />
+
+# Tooltip
+
+## What tooltips are for
+
+A tooltip is a small floating label that appears next to an element when the user hovers, focuses, or long-presses it. The single job is to provide a *short, contextual description* of what the user is pointing at — what an icon-only button does, what a truncated label says in full, what a status dot means. The user sees the tooltip, gets the answer, and either acts or moves on. The tooltip never has its own controls, never expects a click, and never persists once the user looks away.
+
+A good tooltip is short (one line, ideally), specific (says what *this* element does, not what the feature in general does), and instantaneous (appears with no surprise delay, disappears the moment the user is done with it). A bad tooltip is paragraph-long, generic ("Click to learn more"), takes 1.5 seconds to appear (so the user has already moved on), or hosts content the user has to *read* but can't *interact* with. The most important rule about tooltips: they're for sighted, mouse / keyboard users. They don't appear on touch (because there's no hover), they're auxiliary on screen readers (because the underlying element should already have an accessible name), and they're invisible during print or copy. So tooltip text is never load-bearing — if the information matters, it lives in the element's accessible name, in visible label text, or in a popover.
+
+The Genuin Tooltip is built on `@radix-ui/react-tooltip`, which gets the keyboard model (focus opens, blur closes), the touch handling (long-press to open), the Esc-to-dismiss, the ARIA semantics (`role="tooltip"`, `aria-describedby` on the trigger), and the smart positioning correct out of the box.
+
+## Tooltip in this design system
+
+The Tooltip component in `@genuin/ui` is composed from four exported pieces.
+
+### The pieces
+
+- **`<TooltipProvider>`** — context provider that controls the open delay (`delayDuration`) and shares it across nested tooltips. Wrap your app once near the root *or* let the `<Tooltip>` root wrap itself in a default provider with `delayDuration={0}` (the most-common Genuin behaviour: tooltips appear instantly on hover/focus).
+- **`<Tooltip>`** — the root for a single tooltip. Owns `open` / `defaultOpen` / `onOpenChange`. Internally wraps itself in a `<TooltipProvider>` so single-tooltip use needs no extra boilerplate.
+- **`<TooltipTrigger>`** — the element the tooltip describes. Use `asChild` to wrap a real button or interactive element. The trigger gets `aria-describedby` pointing at the tooltip content automatically.
+- **`<TooltipContent>`** — the floating tooltip itself. Renders into a portal (shadow-DOM aware), positioned by Radix relative to the trigger, with the design-system theme + arrow.
+
+### Themes
+
+- **`light`** (default) — secondary-700 background, white text, matching arrow. The standard tooltip on white surfaces.
+- **`dark`** — secondary-800 background, white text. Use over media-heavy surfaces or dashboards where a slightly darker tooltip blends better.
+
+The two themes are deliberate — tooltips don't need a third or fourth color variant. The visual job is "small floating label," and stuck-to-one-look is what makes them feel consistent across the product.
+
+### Positioning
+
+All Radix positioning props pass through:
+
+- **`side`** — `"top" | "right" | "bottom" | "left"`. Defaults to `"top"`. Pick the side with the most room (Radix collision-flips automatically when the chosen side has no space).
+- **`align`** — `"start" | "center" | "end"`. Defaults to `"center"`. Align the tooltip's edge with the trigger's start / center / end.
+- **`sideOffset`** — gap (px) between the trigger and the tooltip. Defaults to 0; Radix's collision detection works fine with that, but increase to 4–6 for more visual breathing room.
+- **`collisionPadding`** — minimum gap (px) from viewport edges before flipping. Useful inside dialogs, popovers, and sheets so the tooltip never paints outside.
+
+### Arrow
+
+The component renders a small arrow pointing back at the trigger by default. Color-matches the theme. Skip it by overriding the `<TooltipPrimitive.Arrow>` styling only when the trigger is so close to the tooltip that the arrow adds chrome without value.
+
+### Interaction model
+
+- **Hover** — the tooltip opens after the configured delay (default `0` in Genuin) and closes when the cursor leaves. Hovering over the tooltip content keeps it open.
+- **Focus** — keyboard focus on the trigger opens the tooltip; blur closes it. Critical for keyboard accessibility.
+- **Touch** — long-press on the trigger opens the tooltip. Tapping outside closes it. Touch users *can* read tooltips, but the tap-to-show interaction is unfamiliar — don't rely on tooltips alone for any information touch users need.
+- **Escape** — dismisses the open tooltip without losing trigger focus.
+
+### Portal & shadow DOM
+
+`<TooltipContent>` portals into the result of `getRootContainer()` — `document.body` in the standalone web app, the shadow-DOM root inside the embedded Web SDK. This is what keeps the tooltip rendering correctly across both contexts.
+
+### Performance
+
+Because `delayDuration` defaults to `0`, every hover triggers an open/close. Radix is fast enough that this isn't a perceivable cost, but for pages with hundreds of tooltips (dense tables, busy dashboards), set a small delay (`<TooltipProvider delayDuration={150}>`) so the user has to dwell briefly before the tooltip opens — that filters out drive-by hovers.
+
+## Examples
+
+### Default
+
+<Canvas of={Stories.Default} />
+
+<Controls of={Stories.Default} />
+
+### Light theme
+
+<Canvas of={Stories.LightTheme} />
+
+### Dark theme
+
+<Canvas of={Stories.DarkTheme} />
+
+### Positioned right
+
+<Canvas of={Stories.PositionedRight} />
+
+### Positioned top
+
+<Canvas of={Stories.PositionedTop} />
+
+### With long text
+
+<Canvas of={Stories.WithLongText} />
+
+### Custom delay
+
+<Canvas of={Stories.CustomDelay} />
+
+## When to use Tooltip
+
+- **Icon-only buttons.** A `×` button, a settings cog, a more-actions `⋯` — every icon-only control needs a tooltip naming the action ("Close", "Settings", "More actions"). Pair with `aria-label` so screen readers also get the name.
+- **Truncated labels.** A list row or table cell where the visible text is clipped — show the full text in a tooltip on hover.
+- **Status indicators.** A colored dot, a small badge, an icon-shaped state cue — tooltip explains what the state means ("Online", "Pending review", "3 errors").
+- **Keyboard shortcuts.** "Save (⌘S)" alongside the visible label so power users can discover the shortcut without opening a help menu.
+- **Disabled controls with a reason.** A disabled button with a tooltip saying "Available on Pro plan" — the tooltip turns a dead end into an explanation.
+- **Dense tooltips on data points.** Charts, dashboards, sparklines — tooltips on hover give exact values without filling the chart area.
+- **Pick `light` for white surfaces** (the default), **`dark` for media-heavy or dark-themed surfaces**.
+- **Always pair tooltips on icon-only buttons with a real `aria-label`.** The tooltip is for visual users; the label is for screen readers.
+- **Always wrap the trigger via `asChild` around a real button or interactive element.** The trigger must be focusable.
+
+## How not to use Tooltip
+
+- **Don't put critical information in a tooltip.** If the user *needs* to read it, put it in visible copy or a popover. Tooltips are auxiliary — touch users miss them, screen readers may not announce them, print and copy don't include them.
+- **Don't use Tooltip as a popover.** A tooltip with multiple lines of copy, headers, links, or a button inside is a misshapen popover. Use the `Popover` component for anything beyond one short label.
+- **Don't put interactive content in a tooltip.** Tooltips close when the user moves the cursor away — putting a button or link inside means the user can't reach it. Use a popover.
+- **Don't write paragraph-long tooltips.** One line, ideally six words or fewer. If you need more, the tooltip is the wrong surface.
+- **Don't use Tooltip on touch-primary surfaces as the only source of meaning.** Mobile users won't see them. Either supply visible labels or accept that touch users will miss the tooltip text.
+- **Don't open a Tooltip on click.** Click is for actions and popovers. Tooltips open on hover and focus, full stop.
+- **Don't omit `aria-label` on icon-only buttons** with tooltips. The tooltip is for visual users; screen readers need a real accessible name on the button.
+- **Don't use Tooltip on entire rows or large surfaces.** A 400px-tall tooltip-bearing div is wrong; tooltips are for *small, identifiable* triggers.
+- **Don't tooltip text that's already visible.** A label like "Save" with a tooltip saying "Save" is noise. Tooltips add information — they don't repeat what the user can already see.
+- **Don't render `<TooltipContent>` outside a `<Tooltip>` root.** It needs the open-state context to function. Loose content doesn't render.
+- **Don't strip the focus-open behaviour.** Keyboard users open tooltips by focusing the trigger. Suppressing that breaks keyboard discoverability.
+- **Don't disable the close-on-blur behaviour.** Tooltips that stay open after focus moves away clutter the screen and can hide other UI.
+- **Don't use Tooltip as a notification.** Notifications are toasts — they appear without the user pointing at anything specific. Tooltips are response-to-pointing.
+- **Don't tooltip a `<div>` that's not a real interactive element.** The trigger needs to be focusable. Use a real `<button>` or `<a>` (or pass `asChild` and apply trigger props to a Radix-compatible interactive component).
+- **Don't override `delayDuration` to a long value (>500ms).** The user has already moved on. Keep delays under 200ms.
+- **Don't render multiple tooltips for one element by stacking `<Tooltip>` components.** Use a single tooltip with all relevant info on one line. Multiple-tooltip stacks confuse focus and accessibility.
+- **Don't wrap a `<Tooltip>` around a focusable form input.** When the input is focused, the tooltip stays open and obscures the field. Use helper text below the field instead.

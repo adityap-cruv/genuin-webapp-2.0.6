@@ -1,6 +1,7 @@
 /* Import component library styles exactly like webapp does */
 @import "@genuin/ui/styles";
 @import "@genuin/components/styles";
+@import "@genuin/genai-sdk/styles";
 
 /* Inter font family */
 @font-face {
@@ -112,5 +113,5 @@
 }
 
 .gen-ext .swiper-navigation {
-    display: none!important
+  display: none !important;
 }

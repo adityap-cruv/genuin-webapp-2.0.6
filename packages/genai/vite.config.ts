@@ -6,7 +6,7 @@ import { defineConfig } from 'vite';
 
 // https://vite.dev/config/
 export default defineConfig(() => {
-    return {
+    const shared = {
         plugins: [react(), tailwindcss()],
         resolve: {
             alias: {
@@ -19,10 +19,27 @@ export default defineConfig(() => {
         css: {
             postcss: './postcss.config.cjs',
         },
+    };
+
+    // App-mode build: emits index.html + mounts src/main.tsx, so `vite preview`
+    // can serve a runnable demo. Output kept separate from the shipped lib build.
+    // Keyed off BUILD_TARGET (not vite mode) so the build can still run under
+    // `--mode development` and pick up VITE_* keys from .env.development.
+    if (process.env.BUILD_TARGET === 'preview') {
+        return {
+            ...shared,
+            build: {
+                outDir: 'dist',
+            },
+        };
+    }
+
+    return {
+        ...shared,
         build: {
             lib: {
                 entry: {
-                    'genai-sdk': path.resolve(__dirname, './src/index.tsx'), // Module version
+                    'genai-sdk': path.resolve(__dirname, './src/index.ts'), // Module version
                     'genai-loader': path.resolve(__dirname, './src/loader.js'), // Script tag version
                 },
                 name: 'GenAISDK',
@@ -35,13 +52,11 @@ export default defineConfig(() => {
                 formats: ['es'],
             },
             rollupOptions: {
+                external: ['react', 'react-dom', 'react/jsx-runtime'],
                 output: {
                     format: 'es',
                     inlineDynamicImports: false,
                     chunkFileNames: chunkInfo => {
-                        if (chunkInfo.name === 'react-vendor') {
-                            return 'chunks/react-vendor-[hash].js';
-                        }
                         if (chunkInfo.name === 'vendor-deps') {
                             return 'chunks/vendor-deps-[hash].js';
                         }
@@ -69,7 +84,7 @@ export default defineConfig(() => {
                             }
 
                             // Check for App component
-                            if (moduleIds.includes('/src/App.tsx') || moduleIds.includes('/src/components/App/')) {
+                            if (moduleIds.includes('/src/renderer/App.tsx') || moduleIds.includes('/src/renderer/')) {
                                 return 'chunks/app-[hash].js';
                             }
 
@@ -101,19 +116,22 @@ export default defineConfig(() => {
                         return `assets/[name]-[hash][extname]`;
                     },
                     manualChunks: (id: string) => {
-                        // Group React-related dependencies into react-vendor chunk
+                        // Group React-related dependencies into react-vendor chunk.
+                        // Match only the core React packages — `react-remove-scroll`,
+                        // `use-sidecar`, etc. depend on tslib helpers and break when split
+                        // away from their helpers.
                         if (id.includes('node_modules')) {
-                            if (id.includes('react') || id.includes('react-dom')) {
+                            if (
+                                /[\\/]node_modules[\\/](react|react-dom|scheduler|use-sync-external-store)[\\/]/.test(
+                                    id
+                                )
+                            ) {
                                 return 'react-vendor';
                             }
                             // Group other dependencies into vendor chunk
                             return 'vendor-deps';
                         }
                         return undefined;
-                    },
-                    globals: {
-                        react: 'React',
-                        'react-dom': 'ReactDOM',
                     },
                 },
             },

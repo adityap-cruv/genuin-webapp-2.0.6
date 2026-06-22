@@ -189,6 +189,10 @@ type WebConfigsType = {
    * Enable transcript sharing if true.
    */
   share_transcript_enabled?: boolean;
+  /**
+   * Design system version for player controls.
+   */
+  design_system?: "v1" | "v2";
 };
 
 type ReactionKey = {

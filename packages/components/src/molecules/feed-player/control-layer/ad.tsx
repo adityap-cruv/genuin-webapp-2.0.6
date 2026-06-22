@@ -1,10 +1,16 @@
 "use client";
+import { MuteIcon, UnmuteIcon } from "@genuin/ui";
+import { Button } from "@genuin/ui/components/button";
 import { cn } from "@genuin/ui/lib/utils";
 import type { ComponentProps } from "react";
 
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+
 import { usePlayerContext } from "../context";
 
-import { AnimatedMuteIcon } from "./controls/control-buttons";
+import { AnimatedMuteIcon as AnimatedMuteIconNew } from "./controls/control-buttons/mute-button";
+import { AnimatedMuteIcon as AnimatedMuteIconOld } from "./controls/control-buttons/mute-button-old";
+import { useNewPlayerControls } from "./use-new-player-controls";
 
 export type AdProps = ComponentProps<"div"> & {
   /** Determines which side the mute button is positioned on. In-feed ads use the right side; in-stream ads use the left. */
@@ -18,8 +24,9 @@ export type AdProps = ComponentProps<"div"> & {
  * left for in-stream ads to avoid overlapping native ad UI elements.
  */
 export function Ad({ className, adType, ...restProps }: AdProps) {
-  const { muted } = usePlayerContext();
-
+  const isV2 = useNewPlayerControls();
+  const { muted, toggleMuted } = usePlayerContext();
+  const embedDetails = useSafeEmbedContext();
   return (
     <div
       className={cn("gencl:absolute gencl:inset-0 gencl:z-50 gencl:flex gencl:pointer-events-none", className)}
@@ -31,7 +38,11 @@ export function Ad({ className, adType, ...restProps }: AdProps) {
           adType === "in-stream" ? "gencl:top-10" : "gencl:top-4"
         )}
         onClick={(e) => e.stopPropagation()}>
-        <AnimatedMuteIcon shouldAnimate={muted} enableVolumeSlider={false} alwaysLarge />
+        {isV2 ? (
+          <AnimatedMuteIconNew shouldAnimate={muted} enableVolumeSlider={false} size="lg" />
+        ) : (
+          <AnimatedMuteIconOld shouldAnimate={muted} enableVolumeSlider={false} alwaysLarge />
+        )}
       </div>
     </div>
   );

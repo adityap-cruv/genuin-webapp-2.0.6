@@ -42,6 +42,8 @@
     "@auth/core": "^0.28.0",
     "@fingerprintjs/fingerprintjs": "^4.2.2",
     "@genuin/components": "workspace:*",
+    "@genuin/genai-sdk": "workspace:*",
+    "@genuin/hierarchical-tree": "workspace:*",
     "@genuin/ui": "workspace:*",
     "@hookform/resolvers": "^5.0.1",
     "@radix-ui/number": "^1.1.0",

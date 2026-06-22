@@ -1,9 +1,9 @@
-import { useAgentsContext } from '@/context/app/context';
+import { useAgentContext } from '@/stores/agent/context';
 
 import Objectives from '../Objectives';
 
 const AgentIntro = () => {
-    const { currentAgent, agents } = useAgentsContext();
+    const { currentAgent, filteredAgents: agents } = useAgentContext();
     const currentAgentObj = agents.find(agent => agent.id === currentAgent);
     if (!currentAgentObj) return null;
     return (

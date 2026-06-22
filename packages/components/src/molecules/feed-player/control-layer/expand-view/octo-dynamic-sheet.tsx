@@ -5,6 +5,8 @@ import type { ComponentProps, RefObject } from "react";
 import { OctoPanel } from "@genuin/components/molecules/octo-panel";
 import { getOctoSheetConfig } from "@genuin/components/molecules/octo-panel/octo-sheet-config";
 
+import { MOBILE_PHASE_MAP, DESKTOP_PHASE_MAP, type OctoPhase, type PhaseView } from "../octo/octo-phase-map";
+
 type OctoDynamicSheetProps = {
   /**
    * Whether the sheet is open
@@ -27,10 +29,6 @@ type OctoDynamicSheetProps = {
    */
   isMobile: boolean;
   /**
-   * Viewport height for sheet configuration
-   */
-  viewportHeight: number;
-  /**
    * Render mode for OctoPanel
    */
   octoRenderMode: "compact" | "full";
@@ -50,25 +48,16 @@ type OctoDynamicSheetProps = {
    */
   onClose: () => void;
   /**
-   * Handler for expand request from SDK
+   * Applies a lifecycle PhaseView to the sheet (mapped from the GenAI SDK's
+   * single octo:lifecycle event upstream).
    */
-  onExpandRequest: () => void;
+  applyPhase: (view: PhaseView) => void;
   /**
-   * @deprecated Use onThinkingStarted instead.
+   * Collapses the sheet back to `default` (without hiding Octo) when the SDK
+   * reports the `collapsed` phase — i.e. the chat/panel was closed. Bypasses the
+   * expand-only ratchet in `applyPhase` so a close genuinely resets the state.
    */
-  onCompactExpand?: () => void;
-  /**
-   * Handler for when the agent starts thinking (fires once per session).
-   */
-  onThinkingStarted?: () => void;
-  /**
-   * Handler for countdown active state
-   */
-  onCountdownActive: (isActive: boolean) => void;
-  /**
-   * Handler for GenAI SDK errors
-   */
-  onError?: () => void;
+  onCollapse?: () => void;
   /**
    * Handler for swiper toggle
    */
@@ -96,7 +85,6 @@ type OctoDynamicSheetProps = {
  *   videoSlug={video.slug}
  *   octoSheetState={getContentTypeState("octo")}
  *   isMobile={!isDesktop}
- *   viewportHeight={viewportHeight}
  *   octoRenderMode="compact"
  *   onStateChange={handleOctoSheetStateChange}
  *   onClose={handleOctoSheetClose}
@@ -110,17 +98,13 @@ export function OctoDynamicSheet({
   videoSlug,
   octoSheetState,
   isMobile,
-  viewportHeight,
   octoRenderMode,
   variant = "expand",
   containerRef,
   onStateChange,
   onClose,
-  onExpandRequest,
-  onCompactExpand,
-  onThinkingStarted,
-  onCountdownActive,
-  onError,
+  applyPhase,
+  onCollapse,
   onSwiperToggle,
 }: OctoDynamicSheetProps) {
   // Get Octo sheet configuration based on current state and viewport
@@ -131,7 +115,6 @@ export function OctoDynamicSheet({
   } = getOctoSheetConfig({
     isMobile,
     octoState: octoSheetState,
-    viewportHeight,
   });
 
   return (
@@ -143,7 +126,7 @@ export function OctoDynamicSheet({
         ...octoConfig,
         onStateChange,
         onClose,
-        disableDragAndSwipe: variant === "embed",
+        disableDragAndSwipe: true,
         // preventCloseCollapse: true,
         // navTitle: octoSheetState !== "default" ? "Octo GPT" : undefined,
       }}
@@ -158,12 +141,19 @@ export function OctoDynamicSheet({
         open={isOpen}
         panelClassName="gencl:h-full"
         renderMode={octoRenderMode}
-        onExpandRequest={onExpandRequest}
-        onCompactExpand={onCompactExpand}
-        onThinkingStarted={onThinkingStarted}
-        onCountdownActive={onCountdownActive}
-        onError={onError}
         onClose={onClose}
+        onLifecyclePhase={(detail) => {
+          // `collapsed` = the chat/panel was closed → force the sheet back to
+          // default (bypasses applyPhase's expand-only ratchet).
+          if ((detail.phase as OctoPhase) === "collapsed" && onCollapse) {
+            onCollapse();
+            return;
+          }
+          // const map = isMobile ? MOBILE_PHASE_MAP : DESKTOP_PHASE_MAP;
+          const map = MOBILE_PHASE_MAP;
+          const view = map[detail.phase as OctoPhase];
+          if (view) applyPhase(view);
+        }}
       />
     </DynamicSheet>
   );

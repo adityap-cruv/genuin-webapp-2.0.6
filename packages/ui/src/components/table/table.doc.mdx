@@ -1,0 +1,132 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./table.stories";
+
+{/*
+  Design-system narrative for the table component. Attached to the
+  matching story group via `<Meta of={…}>` so it renders as the
+  "Docs" tab next to the live stories. Layout: narrative intro →
+  live examples + controls → usage guidelines.
+*/}
+
+<Meta of={Stories} />
+
+# Table
+
+## What tables are for
+
+A table is the layout primitive for *structured, tabular data* — rows of records where each column is the same kind of value across every row. Names, dates, statuses, counts, prices: any time the user is comparing the *same fact* across many entities, a table is the right tool. The pattern's superpower is alignment. Because every value in a column lives in the same vertical slot, the eye can scan a column without re-reading what each cell is. That's what makes tables fast for power users — once you've seen the header, you can sort, scan, compare, and pick out outliers in seconds.
+
+A good table has clear column headers, consistent cell formatting (right-aligned numbers, left-aligned text, monospace for IDs and codes), one job per row, and predictable hover/focus treatment. A bad table is a `<div>` grid pretending to be tabular, a layout where rows have different shapes (some rows have all columns, others "merge" into one big cell), or — most commonly — a table that's wrapped around content that isn't actually tabular ("Latest activity" cards forced into rows just to share width). Tables are for tabular data, full stop. If the rows aren't comparable across columns, the data wants a different layout.
+
+The Genuin Table is a thin styling wrapper around the native HTML `<table>` family. It does not introduce a new abstraction (no row virtualization, no sorting, no built-in pagination) — those live in adjacent layers (`@tanstack/react-table` for sorting/filtering/grouping, `@tanstack/react-virtual` for windowing). The component just gives every table in the app the same border, padding, hover, and selection treatment, on top of real `<table> / <thead> / <tbody> / <th> / <td>` elements that carry the right semantics for screen readers, copy/paste, and print.
+
+## Table in this design system
+
+The Table component in `@genuin/ui` exports eight pieces, mirroring the native HTML table structure:
+
+- **`<Table>`** — the root. Wraps the native `<table>` in a relatively-positioned container so sticky headers, overlay loaders, and absolutely-positioned chrome have a layout context. Applies `text-sm`, `caption-bottom`, and full-width.
+- **`<TableHeader>`** — `<thead>`. Adds a bottom-border to its rows so the header is visually separated from the body.
+- **`<TableBody>`** — `<tbody>`. Removes the bottom-border on the last row so the table doesn't end with a stray divider.
+- **`<TableFooter>`** — `<tfoot>`. Muted background, top-border, font-medium — designed for totals, summary rows, or pagination footers.
+- **`<TableRow>`** — `<tr>`. Hover state (`bg-muted/50`), selected state (`data-[state=selected]:bg-muted`), bottom-border between rows, smooth color transition.
+- **`<TableHead>`** — `<th>`. 40px tall (`h-10`), 8px horizontal padding, `font-medium`, left-aligned, with special handling for embedded checkboxes (right padding stripped, checkbox vertically nudged to align with the text).
+- **`<TableCell>`** — `<td>`. 8px padding all around, `align-middle`, with the same checkbox handling as `TableHead`.
+- **`<TableCaption>`** — `<caption>`. Muted, small text, rendered below the table. Use for accessible table descriptions that don't fit in the surrounding chrome.
+
+### Visual treatment summary
+
+- All text is `text-sm` by default.
+- Header rows are font-medium; body rows are normal weight.
+- Borders are subtle (using the design system's `border` token); they sit between rows but disappear above the header and below the footer.
+- Hover and selected states reuse `muted` and `muted/50` so tables blend with the surrounding surface.
+- The container is `position: relative` so loaders, sticky elements, and overlays compose without extra wrapping.
+
+### Working with `@tanstack/react-table`
+
+For sorting, filtering, column resizing, and grouping, pair the Genuin Table primitives with `@tanstack/react-table`:
+
+```tsx
+const table = useReactTable({ data, columns, getCoreRowModel: getCoreRowModel() });
+
+return (
+  <Table>
+    <TableHeader>
+      {table.getHeaderGroups().map(group => (
+        <TableRow key={group.id}>
+          {group.headers.map(header => (
+            <TableHead key={header.id}>
+              {flexRender(header.column.columnDef.header, header.getContext())}
+            </TableHead>
+          ))}
+        </TableRow>
+      ))}
+    </TableHeader>
+    <TableBody>
+      {table.getRowModel().rows.map(row => (
+        <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+          {row.getVisibleCells().map(cell => (
+            <TableCell key={cell.id}>
+              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            </TableCell>
+          ))}
+        </TableRow>
+      ))}
+    </TableBody>
+  </Table>
+);
+```
+
+The Genuin pieces handle the styling; TanStack Table handles the data model and behaviour.
+
+### Long lists and virtualization
+
+Tables don't include built-in virtualization. For large datasets (1000+ rows), pair with `@tanstack/react-virtual` and render only the visible window. For most settings / admin tables (50–500 rows), pagination is the simpler answer.
+
+### Accessibility
+
+Real `<table>` semantics are the default. Every `<th>` is announced by screen readers as a header for its column, every `<td>` as a cell. Add `<caption>` (via `<TableCaption>`) when the table needs a name beyond the surrounding heading. For keyboard navigation through interactive cells (rows with buttons, links, checkboxes), Tab moves through the actual interactive elements, not the cells — that's what users expect.
+
+For sortable headers, render the sort indicator inside the `<th>` and surface the sort state via `aria-sort` ("ascending", "descending", "none"). For selection-row checkboxes, the design system's checkbox already plays nicely — the table primitives strip right padding and nudge the checkbox to align cleanly.
+
+## Examples
+
+### Basic
+
+<Canvas of={Stories.Basic} />
+
+<Controls of={Stories.Basic} />
+
+### With checkboxes
+
+<Canvas of={Stories.WithCheckboxes} />
+
+## When to use Table
+
+- **Lists of records with multiple comparable fields per row.** Users (name + email + role + last seen), invoices (number + amount + status + due date), API keys (label + key + permissions + last used).
+- **Settings and admin tables.** Workspace members, permission roles, billing history.
+- **Logs and activity tables.** Time + actor + action + target — when the rows are events that share a schema.
+- **Pricing comparison tables.** Plan tiers as columns, features as rows, ticks/crosses in cells.
+- **Reach for Table when columns are *the same dimension* across rows.** "User name", "Status", "Last login" — every row has these. If only some rows have a "status," you don't have tabular data.
+- **Pair with `@tanstack/react-table`** for any table that needs sorting, filtering, or column resizing.
+- **Use `<TableCaption>`** when the table needs a name outside the visual heading (e.g., screen-reader-only contexts, export contexts).
+- **Use `<TableFooter>`** for totals, sums, or "grand totals" rows that aggregate the body.
+
+## How not to use Table
+
+- **Don't use Table for layout.** The HTML 4 era of `<table>`-based grids is over. For positioning columns of *different* content, use Flex or Grid. Tables are only for tabular data.
+- **Don't use Table for cards.** A list of cards (each row a self-contained article, ad, profile) wants a flex/grid of card components, not table rows. The table chrome makes cards feel cramped and breaks responsive collapse.
+- **Don't use a `<div>` grid styled to look like a table.** Real `<table>` semantics give screen readers, copy/paste, and print the right behaviour. A faux table loses all of that.
+- **Don't render a Table without a `<TableHeader>`** for non-trivial data. The header is what tells the user (and screen readers) what the columns mean. Skip it only for single-column "list" tables that would read fine without it.
+- **Don't merge cells (`colspan` / `rowspan`) for stylistic reasons.** They break sorting, copy/paste alignment, and screen-reader announcements. Use them only for genuine merged-data semantics (totals row spanning multiple columns).
+- **Don't put unrelated content in different rows.** Every row must share the same column meaning. If row 1 is a user and row 2 is a "section header," you've broken the table — split into multiple tables or use a different layout.
+- **Don't render a 50-column table on mobile.** Tables don't collapse gracefully to narrow widths. For mobile, transform the table into a list of cards (or scope to fewer columns + an "expand row" detail view) — don't try to fit 12 columns into 320px.
+- **Don't put primary action buttons on every row.** A row of "Edit / Delete / View" on every line is noise. Use a `MoreActions` icon button per row that opens a popover, and reserve the visible columns for data.
+- **Don't auto-refresh the data without a stable scroll position.** When sorting changes, the user's row jumps around — frustrating. Preserve scroll, or animate the resort if you can.
+- **Don't shrink the row height below `h-10` for the header.** That's the tap-and-click target — making it smaller breaks the affordance.
+- **Don't render `<TableRow>` outside `<TableHeader>` / `<TableBody>` / `<TableFooter>`.** The native HTML structure expects rows to live inside one of those — orphan rows have unpredictable styling and ARIA.
+- **Don't put scrollable content inside a cell.** A `<td>` with its own scrollbar fights the page's scroll and hides content. Restructure so the deeper detail lives in a popover or a row-expansion.
+- **Don't use Table for hierarchical data.** Tree views, indented lists — those are tree components, not tables. Tables are flat by design.
+- **Don't strip the hover state.** It's the user's signal that rows are scannable units. Without it, the table reads as static text.
+- **Don't render Table inside a fixed-height container without an inner scroll wrapper.** When the table grows, the parent overflows. Either scope `overflow: auto` to the table's wrapper, or virtualise.
+- **Don't use Table when one or two rows of data is enough.** A 2-row table is a key-value pair list — render `<dl>` / `<dt>` / `<dd>` instead.

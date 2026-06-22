@@ -2,10 +2,14 @@ import { Share } from 'lucide-react';
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
-import { useRudderEvents } from '@/services/analytics/useRudderAnalytics';
+import { useRudderEvents } from '@/adapters/analytics/useRudderAnalytics';
+import { eventBus } from '@/core/events/EventBus';
+import { EVENTS } from '@/core/events/eventRegistry';
 
 import NewChat from '../assets/SvgIcons/NewChat';
-import { useAgentsContext } from '../context/app/context';
+import { useAgentContext } from '@/stores/agent/context';
+import { useSessionContext } from '@/stores/session/context';
+import { useUIContext } from '@/stores/ui/context';
 
 import AgentsDropdown from './AgentsDropdown';
 import AgentsSection from './AgentsSection';
@@ -17,25 +21,17 @@ import { Button } from './ui/button';
 import { NewChatDialog } from './ui/new-chat-dialog';
 import { Toaster } from './ui/sonner';
 import Spinner from './ui/spinner';
-// import * as ReactDOM from 'react-dom/client';
 const Chat = lazy(() => import('./Chat'));
 const AgentIntro = lazy(() => import('./AgentIntro'));
 
 export default function AppContent() {
-    const {
-        enteredInChatMode,
-        currentSessionId,
-        isSidebarCollapsed,
-        handleNewChat,
-        brand_id,
-        currentAgent,
-        onBoardingAgents,
-    } = useAgentsContext();
+    const { enteredInChatMode, currentSessionId, ipInfo } = useSessionContext();
+    const { currentAgent, onBoardingAgents } = useAgentContext();
+    const { isSidebarCollapsed, handleNewChat, brand_id, view } = useUIContext();
 
     const [hasExpandedVideo, setHasExpandedVideo] = useState(false);
 
     const { track } = useRudderEvents();
-    const { ipInfo, view } = useAgentsContext();
 
     useEffect(() => {
         if (ipInfo && view) {
@@ -136,13 +132,9 @@ export default function AppContent() {
                                                 session_id: currentSessionId,
                                             });
                                         }
-                                        window.dispatchEvent(
-                                            new CustomEvent('genai:shareLink', {
-                                                detail: {
-                                                    sessionId: currentSessionId,
-                                                },
-                                            })
-                                        );
+                                        eventBus.emit(EVENTS.SHARE_LINK, {
+                                            sessionId: currentSessionId,
+                                        });
                                         toast.success('Copied to clipboard');
                                     }}
                                 >

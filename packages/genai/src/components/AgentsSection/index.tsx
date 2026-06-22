@@ -3,13 +3,15 @@ import { useEffect, useRef, useState } from 'react';
 import ChevronLeft from '@/assets/SvgIcons/ChevronLeft';
 import ChevronRight from '@/assets/SvgIcons/ChevronRight';
 import { Button } from '@/components/ui/button';
-import { useAgentsContext } from '@/context/app/context';
+import { useAgentContext } from '@/stores/agent/context';
+import { useUIContext } from '@/stores/ui/context';
 
 import AgentCards from './AgentCards';
 import AgentPills from './AgentPills';
 
 const AgentsSection = () => {
-    const { agents, showAllObjectives, isMaya } = useAgentsContext();
+    const { filteredAgents: agents, isMaya } = useAgentContext();
+    const { showAllObjectives } = useUIContext();
 
     const agentsToShow = agents.filter(agent => agent.type !== 'octo_head');
     const scrollContainerRef = useRef<HTMLDivElement>(null);

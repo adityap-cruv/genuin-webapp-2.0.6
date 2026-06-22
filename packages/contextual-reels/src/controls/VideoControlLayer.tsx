@@ -1,0 +1,174 @@
+import React from "react";
+
+import { isGenAiAllowed, type AdLayoutId } from "@cxr/config";
+import type { VideoControlLayerProps } from "@cxr/controls/control-layer.types";
+import { DefaultControlLayer } from "@cxr/controls/video/DefaultControlLayer";
+import { OctoSheet } from "@cxr/genai/octo/OctoSheet";
+import { useInstanceId } from "@cxr/instance/registry/InstanceContext";
+import { isCompactLayout } from "@cxr/utils/ads";
+
+import { CompactControlBar } from "./CompactControlBar";
+import { WatchButton } from "./buttons/atoms/WatchButton";
+
+function stopProp(e: { stopPropagation(): void }): void {
+  e.stopPropagation();
+}
+
+/**
+ * Full-area unmute overlay for the compact 320x50 / 320x100 layouts.
+ *
+ * Mirrors the ad overlay behaviour: a tap anywhere on the compact surface
+ * unmutes the video. Expanding happens only via the expand / Watch buttons,
+ * which sit above this overlay (z-2 > z-1).
+ */
+function CompactUnmuteOverlay({
+  isMuted,
+  onMuteClick,
+}: {
+  isMuted: boolean;
+  onMuteClick: () => void;
+}): React.JSX.Element {
+  return (
+    <div
+      data-testid="compact-unmute-overlay"
+      onClick={() => {
+        if (isMuted) onMuteClick();
+      }}
+      onPointerDown={stopProp}
+      onPointerMove={stopProp}
+      onTouchStart={stopProp}
+      onTouchMove={stopProp}
+      className="gencl:absolute gencl:inset-0 gencl:z-1 gencl:bg-transparent gencl:cursor-pointer"
+    />
+  );
+}
+
+/**
+ * VideoControlLayer — routes to the correct video control sub-component.
+ *
+ * Routing:
+ * - mobile-320x50 / mobile-320x100 → VideoCompact (compact inline bar)
+ * - isFullScreen === true           → VideoFullscreen (click = play/pause)
+ * - all other sizes                 → VideoBanner (click = expand)
+ */
+export function VideoControlLayer({
+  variant,
+  item,
+  tagDetails,
+  dimensions,
+  isActive,
+  isFullScreen,
+  isMuted,
+  isPlay,
+  adLayout,
+  animatedBorder,
+  onMuteClick,
+  onPlayClick,
+  onFullScreenClick,
+}: VideoControlLayerProps): React.JSX.Element {
+  // useInstanceId must be called unconditionally (hooks rules).
+  const instanceId = useInstanceId();
+  const isCompact = isCompactLayout(adLayout);
+
+  const tagId = tagDetails?.tag_id ?? "";
+  const videoId = item.video?.id;
+  const octoAllowed = !isFullScreen && isGenAiAllowed(tagId) && Boolean(videoId);
+  const stripProps = octoAllowed
+    ? {
+        instanceId,
+        videoId: videoId as string,
+        brandId: tagDetails?.customer_id ? Number(tagDetails.customer_id) : undefined,
+        dimensions,
+        isFullScreen,
+        isActive,
+        tagId,
+        host: "compact" as const,
+        // adLayout is the resolved format string; cast to the dispatcher's id union.
+        adLayoutHint: adLayout as AdLayoutId,
+      }
+    : null;
+
+  if (isCompact && !isFullScreen) {
+    const is320x50 = adLayout === "mobile-320x50";
+
+    // 320×50 + Octo allowed: Octo replaces the control bar entirely.
+    if (is320x50 && stripProps) {
+      return (
+        <div
+          data-testid="octo-compact-host"
+          className="gencl:relative gencl:w-full gencl:h-full gencl:flex gencl:items-center gencl:gap-2 gencl:px-1">
+          <CompactUnmuteOverlay isMuted={isMuted} onMuteClick={onMuteClick} />
+          {stripProps && (
+            <div className="gencl:flex gencl:items-center gencl:w-[226px]">
+              <OctoSheet {...stripProps} />
+            </div>
+          )}
+          <WatchButton
+            isPlay={isPlay}
+            onClick={onFullScreenClick}
+            variant="pill"
+            style={{ zIndex: 2, flexShrink: 0 }}
+          />
+        </div>
+      );
+    }
+
+    return (
+      <div className="gencl:relative gencl:w-full gencl:h-full gencl:overflow-hidden gencl:flex gencl:flex-col gencl:justify-between gencl:items-center">
+        <CompactUnmuteOverlay isMuted={isMuted} onMuteClick={onMuteClick} />
+
+        {/* Bar above the overlay (z-2 > z-1); the wrapper passes empty-area
+            taps through to the unmute overlay, interactive rows opt back in. */}
+        <div className="gencl:relative gencl:z-2 gencl:h-full gencl:w-full gencl:pointer-events-none">
+          <CompactControlBar
+            size={is320x50 ? "sm" : "md"}
+            identity={{ imageUrl: item.owner?.profile_image, name: item.owner?.nickname }}
+            description={item.video?.description}
+            animatedBorder={animatedBorder}
+            isPlay={isPlay}
+            isMuted={isMuted}
+            isFullScreen={isFullScreen}
+            onPlayClick={onPlayClick}
+            onMuteClick={onMuteClick}
+            onFullScreenClick={onFullScreenClick}
+            onWatchClick={onFullScreenClick}
+          />
+        </div>
+
+        {/* OCTO LAYER — 320×100 strip below the row. OctoSheet self-resolves and
+            renders null for 320×50 (handled above) and non-compact sizes. */}
+        {stripProps && (
+          <div className="gencl:flex gencl:items-center gencl:w-[248px]">
+            <OctoSheet {...stripProps} />
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Banner sizes expand to fullscreen on a video tap when not already fullscreen.
+  const isBanner = adLayout === "desktop-300x250" || adLayout === "desktop-300x600";
+  const expandOnTap = isBanner && !isFullScreen;
+
+  // 300x250 mounts Octo as a full-size overlay over the playing video; there the
+  // banner chrome is hidden so only the bare video (still tap-to-expand) shows.
+  const hideChrome = adLayout === "desktop-300x250" && !isFullScreen && octoAllowed;
+
+  return (
+    <DefaultControlLayer
+      isFullScreen={isFullScreen}
+      variant={variant}
+      item={item}
+      tagDetails={tagDetails}
+      dimensions={dimensions}
+      isActive={isActive}
+      isMuted={isMuted}
+      isPlay={isPlay}
+      expandOnTap={expandOnTap}
+      hideChrome={hideChrome}
+      onMuteClick={onMuteClick}
+      onPlayClick={onPlayClick}
+      onFullScreenClick={onFullScreenClick}
+    />
+  );
+}

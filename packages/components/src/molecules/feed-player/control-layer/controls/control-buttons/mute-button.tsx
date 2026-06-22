@@ -8,6 +8,13 @@ import { useBaseContext } from "@genuin/components/context/base";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
 import { usePlayerContext } from "../../../context";
+import {
+  DARK_OVERLAY_20,
+  DARK_OVERLAY_40,
+  PLAYER_CONTROL_SIZE,
+  type PlayerControlSize,
+} from "../../player-control-size";
+import { VolumeRing } from "../../volume-ring";
 
 import { AnimatedText } from "./animated-text";
 
@@ -17,12 +24,18 @@ const TRANSITION_MS = 300;
 export const AnimatedMuteIcon = ({
   shouldAnimate,
   enableVolumeSlider = true,
-  alwaysLarge = false,
+  size: sizeProp = "md",
+  suppressText = false,
 }: {
   shouldAnimate: boolean;
   enableVolumeSlider?: boolean;
-  alwaysLarge?: boolean;
+  size?: PlayerControlSize;
+  /** Force the "Tap to unmute" text collapsed — set while the cursor is anywhere
+   * in the control bar so the text can't reflow the row mid-interaction. */
+  suppressText?: boolean;
 }) => {
+  const size = PLAYER_CONTROL_SIZE[sizeProp];
+  const glyphStyle = { width: size.glyph, height: size.glyph };
   const { volume, setVolume } = useBaseContext();
   const { toggleMuted, muted } = usePlayerContext();
   const { isMobile } = useDeviceDetectMediaQuery();
@@ -42,12 +55,13 @@ export const AnimatedMuteIcon = ({
     }
   };
 
+  // Sync to `shouldAnimate`: always collapse the slider; clear timers when it turns off.
   useEffect(() => {
     setStopText(!shouldAnimate);
+    setShowVolumeSlider(false);
     if (!shouldAnimate) {
       clearTimer("showSlider");
       clearTimer("resumeText");
-      setShowVolumeSlider(false);
     }
   }, [shouldAnimate]);
 
@@ -79,14 +93,8 @@ export const AnimatedMuteIcon = ({
     }, TRANSITION_MS);
   };
 
-  // Restart animation whenever system mutes (shouldAnimate flips to true),
-  // and stop it when the prop goes back to false (user acted or system unmuted).
-  useEffect(() => {
-    setShowVolumeSlider(false);
-  }, [shouldAnimate]);
-
   const handleClick = useCallback(
-    (e: any) => {
+    (e: React.MouseEvent) => {
       e.stopPropagation();
       toggleMuted(true);
       setStopText(true);
@@ -98,59 +106,61 @@ export const AnimatedMuteIcon = ({
     e.stopPropagation();
     const newVolume = Number(e.target.value);
     setVolume(newVolume);
-
-    if (muted && newVolume > 0) {
-      toggleMuted(false);
-    }
-
-    if (newVolume === 0) {
-      toggleMuted(true);
-    }
-
-    // Update progress color dynamically
-    const progress = (newVolume / 100) * 100;
-    e.target.style.background = `linear-gradient(to right, white ${progress}%, #707070 ${progress}%)`;
+    if (muted && newVolume > 0) toggleMuted(false);
+    if (newVolume === 0) toggleMuted(true);
   };
 
-  useEffect(() => {
-    // Ensure slider updates on re-renders
-    const slider = document.querySelector<HTMLInputElement>(".volume-slider");
-    if (slider) {
-      const progress = (volume / 100) * 100;
-      slider.style.background = `linear-gradient(to right, white ${progress}%, #707070 ${progress}%)`;
-    }
-  }, [volume]);
+  const volPct = muted ? 0 : Math.max(0, Math.min(100, volume));
+  const showPill = showVolumeSlider || (muted && !stopText);
+
+  // Slider expanded width = speaker circle + gap + input(140) + spacer(16) + paddingRight(12)
+  const expandedWidth = size.outer + 4 + 140 + 16 + 12;
 
   return (
     <div
       onClick={handleClick}
-      className={cn(
-        "gencl:group gencl:cursor-pointer gencl:flex gencl:z-50 gencl:items-center gencl:justify-start gencl:overflow-hidden gencl:rounded-full gencl:transition-all gencl:duration-300 gencl:ease-in-out",
-        showVolumeSlider ? "gencl:w-full gencl:bg-black/50" : "gencl:w-fit gencl:bg-black/40"
-      )}
+      className="gencl:group gencl:cursor-pointer gencl:flex gencl:z-50 gencl:items-center gencl:justify-start gencl:overflow-hidden gencl:rounded-full gencl:transition-[max-width,gap,padding-right,background-color]]"
+      style={{
+        height: size.outer,
+        maxWidth: showVolumeSlider ? expandedWidth : size.outer,
+        gap: showVolumeSlider ? 4 : 0,
+        paddingRight: showVolumeSlider ? 12 : 0,
+        backdropFilter: `blur(${size.outerBlur}px)`,
+        WebkitBackdropFilter: `blur(${size.outerBlur}px)`,
+        background: showPill ? DARK_OVERLAY_20 : "transparent",
+        transitionDuration: "350ms",
+        transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+      }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}>
+      {/* Speaker double-circle; the volume arc shows only in the close view (hidden once the slider is open). */}
       <div
-        className={cn(
-          "gencl:flex gencl:flex-shrink-0 gencl:items-center gencl:justify-center",
-          alwaysLarge ? "gencl:size-12" : "gencl:size-9 gencl:sm:size-12!"
-        )}>
-        {!muted ? (
-          <UnmuteIcon theme="dark" size="md" className="gencl:sm:size-6!" />
-        ) : (
-          <MuteIcon theme="dark" size="md" className="gencl:sm:size-6!" />
-        )}
+        className="gencl:relative gencl:flex gencl:flex-shrink-0 gencl:items-center gencl:justify-center gencl:overflow-hidden gencl:rounded-full gencl:h-full gencl:aspect-square"
+        style={{ background: showVolumeSlider ? "transparent" : DARK_OVERLAY_20 }}>
+        {!showVolumeSlider && <VolumeRing volPct={volPct} inner={size.inner} />}
+        <div
+          className="gencl:relative gencl:flex gencl:flex-shrink-0 gencl:items-center gencl:justify-center gencl:rounded-full"
+          style={{
+            width: size.inner,
+            height: size.inner,
+            background: DARK_OVERLAY_40,
+            backdropFilter: `blur(${size.innerBlur}px)`,
+            WebkitBackdropFilter: `blur(${size.innerBlur}px)`,
+          }}>
+          {!muted ? <UnmuteIcon theme="dark" style={glyphStyle} /> : <MuteIcon theme="dark" style={glyphStyle} />}
+        </div>
       </div>
 
-      {/* Always rendered while muted so the close (width-collapse) animation plays on unmute */}
-      {muted && <AnimatedText text="Tap to unmute" width={110} stop={stopText} />}
+      {/* Always rendered while muted so the width-collapse animation plays on unmute. */}
+      {muted && <AnimatedText text="Tap to unmute" width={110} stop={stopText || suppressText} />}
 
-      {/* Volume slider — always rendered so close animation plays */}
+      {/* Volume slider — always rendered so the close animation plays. */}
       {enableVolumeSlider && !isMobile && (
         <div
+          style={{ transitionDuration: "350ms", transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)" }}
           className={cn(
-            "gencl:transition-[max-width] gencl:duration-500 gencl:ease-in-out gencl:flex gencl:flex-1 gencl:items-center gencl:overflow-hidden gencl:py-2",
-            showVolumeSlider ? "gencl:max-w-full" : "gencl:max-w-0"
+            "gencl:transition-[max-width,opacity] gencl:flex gencl:flex-1 gencl:items-center gencl:overflow-hidden gencl:py-2",
+            showVolumeSlider ? "gencl:max-w-full gencl:opacity-100" : "gencl:max-w-0 gencl:opacity-0"
           )}>
           <input
             type="range"
@@ -158,19 +168,15 @@ export const AnimatedMuteIcon = ({
             max="100"
             value={volume}
             onChange={handleVolumeChange}
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-            style={{
-              accentColor: "white",
-            }}
+            onClick={(e) => e.stopPropagation()}
+            style={{ accentColor: "white" }}
             className="gencl:volume-slider gencl:relative gencl:h-1 gencl:w-[140px] gencl:cursor-pointer gencl:rounded-full"
           />
           <div className="gencl:h-full gencl:w-4 gencl:flex-shrink-0" />
         </div>
       )}
 
-      {/* Custom thumb and track progress styling */}
+      {/* Track fill follows volume; custom round white thumb. */}
       <style>{`
         input[type='range'] {
           -webkit-appearance: none;
@@ -180,11 +186,7 @@ export const AnimatedMuteIcon = ({
           outline: none;
           border-radius: 15px;
           height: 6px;
-          background: linear-gradient(
-            to right,
-            white ${(volume / 100) * 100}%,
-            #707070 ${(volume / 100) * 100}%
-          );
+          background: linear-gradient(to right, white ${volume}%, rgba(255, 255, 255, 0.4) ${volume}%);
         }
 
         input[type='range']::-webkit-slider-thumb {

@@ -1,0 +1,24 @@
+node_modules
+dist
+build
+coverage
+playwright-report
+test-results
+.turbo
+*.log
+.DS_Store
+
+# Local env files — may contain real credentials; never commit
+.env.development
+.env.production
+.env.local
+.env.*.local
+
+# Deploy env files — contain real credentials; never commit
+.env.common
+.env.qa
+.env.production
+.env.development
+
+# Example/template env files are safe to commit
+!.env.*.example

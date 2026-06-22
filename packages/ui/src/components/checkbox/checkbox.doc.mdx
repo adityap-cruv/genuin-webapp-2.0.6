@@ -1,0 +1,118 @@
+import { Canvas, Controls, Description, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./checkbox.stories";
+
+{/*
+  Design-system narrative for the checkbox component. Attached to the
+  matching story group via `<Meta of={…}>` so it renders as the
+  "Docs" tab next to the live stories. Layout: narrative intro →
+  live examples + controls → usage guidelines.
+*/}
+
+<Meta of={Stories} />
+
+# Checkbox
+
+## What checkboxes are for
+
+A checkbox is the simplest input in any user interface: a binary control with two clear states — selected or not selected — plus the visual cues to make that state recognizable at a glance. It exists for one purpose: to let the user say "yes, this applies" or "no, this doesn't" about something independent. Multiple checkboxes in a group let the user say "yes" to as many or as few options as they want, all without affecting one another.
+
+That independence is what defines the control. A checkbox group does *not* mean "pick one of these"; it means "for each of these, decide on/off." When the choices are mutually exclusive, the right control is a radio group; when there are only two states for the entire screen and they take effect immediately, the right control is a switch. A good checkbox is small enough to be unobtrusive in a list, easy to click on small targets (the label is part of the hit area), and unmistakably "checked" or "unchecked" at a glance — no ambiguity, no third "kind of selected" state unless the design explicitly calls for indeterminate.
+
+The Genuin Checkbox is built on Radix's primitive, so the keyboard (Space toggles, Tab moves focus), focus ring, and ARIA semantics are correct by default. The guidance below is about *which size and variant* to reach for, how to label and group checkboxes, and the common ways the pattern goes wrong.
+
+## Checkbox in this design system
+
+The Checkbox component in `@genuin/ui` is a thin wrapper around `@radix-ui/react-checkbox` and exports a single component: `<Checkbox>`. It accepts every prop the underlying Radix root accepts (`checked`, `defaultChecked`, `onCheckedChange`, `disabled`, `name`, `value`, etc.) plus two visual props.
+
+### Variants
+
+- **`default`** — neutral border, **primary** brand color when checked. The standard treatment for forms, settings, and consent UIs.
+- **`secondary`** — neutral border, **secondary-600** when checked. Use when the checkbox sits inside a colored or branded surface where a primary fill would clash.
+
+The check glyph is always white, drawn at a size proportional to the box.
+
+### Sizes
+
+- **`sm`** (12px) — dense lists, inline filters, compact tables.
+- **`md`** (16px — default) — forms, settings, dialogs, the standard everywhere.
+- **`lg`** (20px) — touch-first surfaces, onboarding steps, accessibility-tuned views.
+
+### State
+
+- **`checked` / `defaultChecked`** — controlled or uncontrolled boolean state.
+- **`disabled`** — non-interactive, 50% opacity, `cursor-not-allowed`. Works for both checked and unchecked.
+- **Indeterminate** — Radix supports `checked="indeterminate"`. Use it for "some children selected" parent checkboxes (e.g., a group header above a list). The component renders the standard check; if you need a distinct dash glyph for indeterminate, override the indicator via a child or wrap the component.
+
+### Pairing with a label
+
+The component is purely the box — it does not render its own label. Always pair it with a `<label htmlFor>`:
+
+```tsx
+<div className="flex items-center gap-2">
+  <Checkbox id="terms" />
+  <label htmlFor="terms">Accept terms and conditions</label>
+</div>
+```
+
+Matching `id` on the checkbox to `htmlFor` on the label is non-negotiable: it expands the click target to include the label text and gives screen readers the right name for the control.
+
+### Form integration
+
+Inside `react-hook-form`, drive the checkbox via `Controller` and `field.onChange` / `field.value`, since Radix uses `onCheckedChange` rather than the native `onChange`. For native HTML forms, the component forwards `name` and `value` to the underlying `<button>` and emits a hidden `<input>` to participate in submission.
+
+## Examples
+
+### Default
+
+<Description of={Stories.Default} />
+
+<Canvas of={Stories.Default} />
+
+<Controls of={Stories.Default} />
+
+### Sizes
+
+<Description of={Stories.Sizes} />
+
+<Canvas of={Stories.Sizes} />
+
+### States
+
+<Description of={Stories.States} />
+
+<Canvas of={Stories.States} />
+
+### Playground
+
+<Description of={Stories.Playground} />
+
+<Canvas of={Stories.Playground} />
+
+## When to use Checkbox
+
+- **Independent binary choices.** "Subscribe to newsletter", "Accept terms", "Save card for next time", "Send me email updates" — anywhere the user is saying yes/no to one specific thing.
+- **Multi-select lists.** A list of options where the user can pick zero, one, or many: notification preferences, shareable channels, table row selection.
+- **Filter chips and faceted search.** When each filter applies independently and combinations are valid (size *and* color *and* in-stock).
+- **Consent and acknowledgement.** "I have read and agree to..." inline before a submit button. Always require the user to *actually check it* — never pre-tick consent.
+- **"Select all" and grouped lists.** A parent checkbox above a list, using the `indeterminate` state when only some children are selected.
+- **Bulk-action tables.** A leading column of checkboxes plus a header checkbox to select all rows on the current page.
+- **Pick `default` for forms and settings.** It's the brand-correct treatment for the majority of surfaces.
+- **Pick `secondary` only when the surrounding surface conflicts with primary.** Don't reach for it just because you want a "softer" look.
+- **Match the size to surface density.** `md` everywhere by default; `sm` only when space is genuinely tight; `lg` for touch-first or accessibility-prioritized contexts.
+
+## How not to use Checkbox
+
+- **Don't use a Checkbox for mutually exclusive choices.** If exactly one option must be selected from a group, use a radio group. Two checkboxes side-by-side that "should" never both be checked is a bug waiting to happen.
+- **Don't use a Checkbox to toggle a setting that takes effect immediately.** That's a switch. Checkboxes belong to forms and lists where the user reviews and submits a batch of selections; switches belong to settings panels where each toggle applies on change.
+- **Don't ship a Checkbox without a label.** A naked checkbox communicates nothing. Even visually-hidden labels (`sr-only`) are better than none — but a visible label with `htmlFor` is the standard.
+- **Don't put the label inside the checkbox.** The checkbox is the box; the label is a sibling. Wrapping the label inside Radix's button breaks click targets and screen-reader output.
+- **Don't pre-check consent or marketing checkboxes.** Pre-ticked consent is a dark pattern, illegal in many jurisdictions, and erodes trust regardless. Defaults belong on neutral preferences ("Show notifications"), not on consent ("Send me marketing email").
+- **Don't disable a checkbox without explaining why.** A grayed-out checkbox in the middle of a form is a dead end. Either show the reason inline ("Available on Pro plan") or omit the option for users who can't use it.
+- **Don't use Checkbox for "either/or" questions.** "Email me OR text me" is a radio. "Email me AND/OR text me" is two checkboxes. The wording determines the control, not designer preference.
+- **Don't use a tiny checkbox with a tiny click target.** The label *must* be part of the hit area, and the box itself should be at least 24px in touch contexts even if the rendered size is smaller. Don't strip the surrounding click region for visual minimalism.
+- **Don't suppress the focus ring.** The component provides a visible focus state. Keyboard users rely on it — don't override `outline-hidden` without an equivalent indicator.
+- **Don't use checkboxes for actions.** "Delete", "Submit", "Approve" are buttons. A checkbox represents a *value* in a form, not an action to take.
+- **Don't conflate disabled and read-only.** Disabled means the user cannot change *and* the value is excluded from submission semantics. If you need the value to be visible-but-locked while still showing on submit, render an inert visual (badge, plain text), not a disabled checkbox.
+- **Don't rely on color alone for the checked state.** The component pairs the fill with a check glyph for exactly this reason. If you customize the variants, keep both signals — color and shape.
+- **Don't nest interactive elements inside the checkbox row.** A link, button, or menu trigger inside a checkbox row creates ambiguous click targets. Move secondary actions to the right of the row, with their own affordances.

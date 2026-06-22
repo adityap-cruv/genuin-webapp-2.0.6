@@ -3,7 +3,7 @@ import { Loader } from "@genuin/ui/components/loader";
 import { Toast } from "@genuin/ui/components/toaster";
 import { NotificationEnabledIcon, NotificationIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
-import { useCallback, Suspense, lazy } from "react";
+import { useCallback, lazy } from "react";
 import type { ComponentProps } from "react";
 
 import { useAnalytics } from "@genuin/components/context/analytics";
@@ -12,6 +12,7 @@ import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config
 import { useRouter } from "@genuin/components/hooks/use-router";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { setQueryDataForGroupSubscriptionChangeInFeed } from "@genuin/components/react-query/api/feed";
 import { useSubscribeGroupMutation } from "@genuin/components/react-query/api/group/subscribe";
 import { getPartialQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
@@ -76,7 +77,7 @@ export function GroupSubscriptionButton({ ...restProps }: GroupSubscriptionButto
     }
 
     return (
-      <Suspense fallback={null}>
+      <SafeSuspense fallback={null} errorFallback={null}>
         <AuthenticationModal
           getAppData={{
             data: {
@@ -91,7 +92,7 @@ export function GroupSubscriptionButton({ ...restProps }: GroupSubscriptionButto
           asChild>
           {button}
         </AuthenticationModal>
-      </Suspense>
+      </SafeSuspense>
     );
   }
 

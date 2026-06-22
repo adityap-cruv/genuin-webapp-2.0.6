@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { useAgentsContext } from '@/context/app/context';
+import { useUIContext } from '@/stores/ui/context';
 
 import Add from '../../assets/SvgIcons/Add';
 import { Button } from '../ui/button';
@@ -62,7 +62,7 @@ interface LeftButtonsProps {
 // };
 
 export const LeftButtons = ({ onUploadClick, isUploadingFiles }: LeftButtonsProps) => {
-    const { brand_id } = useAgentsContext();
+    const { brand_id } = useUIContext();
 
     const [isAddPopoverOpen, setIsAddPopoverOpen] = useState(false);
     return (

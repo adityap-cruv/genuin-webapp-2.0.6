@@ -1,0 +1,77 @@
+import { Meta } from "@storybook/blocks";
+
+<Meta title="Hierarchical Tree / Overview" />
+
+# `@genuin/hierarchical-tree`
+
+Runtime walker for Genuin Page artifacts.
+
+## When to use it
+
+Use `<PageRenderer>` when you have a validated `Page` artifact (produced
+by the AI layout generator, or authored by hand against the spec) and
+need to render it as a React tree.
+
+If you're building a one-off page by hand, **do not** reach for this
+walker — assemble Genuin primitives directly. The walker exists to
+translate the spec's serialised artifact into UI, not to be a generic
+layout engine.
+
+## Public API
+
+```tsx
+import { PageRenderer, defaultUiRenderers, defaultSlotRenderers } from "@genuin/hierarchical-tree";
+import type { Page } from "@genuin/hierarchical-tree";
+
+const page: Page = { /* ... */ };
+
+<PageRenderer
+  page={page}
+  uiRenderers={{ ...defaultUiRenderers, "page-header": MyPageHeader }}
+  slotRenderers={{ video: MyVideoEmbed }}
+  resolveSlotProps={(slot) => myDataMap[slot.name] ?? {}}
+/>;
+```
+
+## Host-extension seams
+
+The four seams from spec §3.6:
+
+| Seam | Purpose |
+| --- | --- |
+| `uiRenderers` | Add composite components on top of the 20 primitives. |
+| `slotRenderers` | Override `content` / `video` / `linkout` rendering. |
+| `resolveSlotProps` | Turn authored Slot `props` into renderer-ready props. |
+| `onMissingUiVariant` | Policy when a `uiVariant` isn't registered. |
+
+## Defaults
+
+The walker ships:
+
+- `defaultUiRenderers` — 20 entries (7 layout + 10 static-page atoms +
+  3 authored-structure interactive).
+- `defaultSlotRenderers` — `content` (markdown via `react-markdown`),
+  `video` (SDK embed-target placeholder), `linkout` (basic card grid).
+
+## SSR considerations
+
+`<PageRenderer>` is `'use client'` because it uses `ResizeObserver`.
+
+The walker seeds container width via `defaultWidth` (default 0 →
+mobile-first) so first-paint renders a valid breakpoint without
+flicker. Hosts that own SSR-aware width detection can pass
+`forcedWidth` to bypass measurement entirely.
+
+## Web SDK integration
+
+Per the locked decision, the walker does **not** wrap pages in
+`<SDKProvider>`. Hosts mount the SDK at the React root; the default
+`video` Slot renderer emits embed-target elements the SDK locates by
+id.
+
+```tsx
+// app root
+<SDKProvider initialConfig={cfg}>
+  <PageRenderer page={page} />
+</SDKProvider>
+```

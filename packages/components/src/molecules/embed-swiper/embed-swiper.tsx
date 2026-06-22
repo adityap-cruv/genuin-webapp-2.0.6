@@ -1,11 +1,12 @@
 import { cn } from "@genuin/ui/lib/utils";
 import type { ComponentProps } from "react";
-import { useMemo, useRef, lazy, Suspense, type ReactNode } from "react";
+import { useMemo, useRef, lazy, type ReactNode } from "react";
 import { Swiper } from "swiper/react";
 import type { Swiper as SwiperType } from "swiper/types";
 
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 
 import { SWIPER_CONFIG } from "./utils";
 
@@ -104,7 +105,7 @@ export function EmbedSwiper({
   // Use native scroll for feed mode
   if (useWindowSwiperMode) {
     return (
-      <Suspense fallback={null}>
+      <SafeSuspense fallback={null}>
         <NativeFeedScroll
           // containerHeight={containerDimensions?.height ?? 0}
           containerWidth={containerDimensions?.width ?? 0}
@@ -139,13 +140,13 @@ export function EmbedSwiper({
           ariaLabel="Video feed">
           {children}
         </NativeFeedScroll>
-      </Suspense>
+      </SafeSuspense>
     );
   }
 
   // Use Swiper for carousel mode
   return (
-    <Suspense
+    <SafeSuspense
       fallback={
         <div className={cn("gencl:h-full gencl:w-full gencl:rounded-lg", className)}>
           <div className="gencl:animate-pulse gencl:bg-gray-200 gencl:h-full gencl:w-full gencl:rounded-lg" />
@@ -162,7 +163,6 @@ export function EmbedSwiper({
         freeMode={freeMode ? SWIPER_CONFIG.FREE_MODE : false}
         virtualizeSwiper={virtualizeSwiper}
         watchOverflow={true}
-        snapToSlideEdge
         keyboard={{
           enabled: !isIheartLayout,
           onlyInViewport: false,
@@ -218,6 +218,6 @@ export function EmbedSwiper({
         {...restProps}>
         {children}
       </SwiperWithModules>
-    </Suspense>
+    </SafeSuspense>
   );
 }

@@ -1,12 +1,14 @@
-import { lazy, Suspense } from "react";
-import type { Dispatch, SetStateAction } from "react";
+import { lazy } from "react";
+import type { Dispatch, SetStateAction, ReactNode } from "react";
 import { SwiperSlide } from "swiper/react";
 import type { Swiper } from "swiper/types";
 
 import { useAnalytics } from "@genuin/components/context/analytics/context";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 
 import { SwiperImplementation } from "./swiper-implementation";
 
+// prefetch: CHUNK_LOADERS.player mirrors this import (see lib/prefetch/chunk-loaders.ts)
 const Player = lazy(() => import("./player").then((m) => ({ default: m.Player })));
 
 const WatchBoundaryOverlay = lazy(() =>
@@ -42,6 +44,12 @@ interface NonSectionedContentProps {
   onAdPlaybackEnd: (index: number) => void;
   /** Feed-session identifier from the first feed API page, forwarded to analytics. */
   pageSession?: string | null;
+  /**
+   * Shimmer shown while a slide's lazy `Player` chunk downloads. Must NOT be null —
+   * the Player is the slide's primary content, so a null fallback paints a black box
+   * during the chunk download. Reuses the same PlayerSkeleton as the outer boundary.
+   */
+  playerFallback: ReactNode;
 }
 
 export function NonSectionedContent({
@@ -66,6 +74,7 @@ export function NonSectionedContent({
   onAdFilled,
   onAdPlaybackEnd,
   pageSession,
+  playerFallback,
 }: NonSectionedContentProps) {
   const { track, EventName } = useAnalytics();
   return (
@@ -115,12 +124,15 @@ export function NonSectionedContent({
           {({ isActive, isNext, isPrev, isVisible }) => (
             <>
               {post.video.type === "video" ? (
-                <Suspense fallback={null}>
+                <SafeSuspense fallback={playerFallback} errorFallback={null}>
                   <Player
                     isActive={isActive}
                     isNext={isNext}
                     isPrev={isPrev}
                     isVisible={isVisible}
+                    // Force the clicked tile's slide to render on first commit, before
+                    // Swiper's init flips isActive/isVisible true (see Player.isInitialSlide).
+                    isInitialSlide={index === startIndex}
                     post={post}
                     totalVideos={totalVideos}
                     isSectioned={isSectioned}
@@ -134,11 +146,11 @@ export function NonSectionedContent({
                     onAdPlaybackEnd={onAdPlaybackEnd}
                     pageSession={pageSession}
                   />
-                </Suspense>
+                </SafeSuspense>
               ) : post.video.type === "complete" ? (
-                <Suspense fallback={null}>
+                <SafeSuspense fallback={playerFallback} errorFallback={null}>
                   <WatchBoundaryOverlay videoDetails={post.video} variant="complete" />
-                </Suspense>
+                </SafeSuspense>
               ) : (
                 <></>
               )}

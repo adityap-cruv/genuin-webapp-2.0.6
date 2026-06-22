@@ -10,12 +10,20 @@ import type {
 } from "@genuin/components/context/base/event-bus";
 
 // Priority order for deriving the "most expanded" global sheet state.
+// Chip states sit below `default` with negative priorities so a chip is
+// never picked as "more expanded" than another open content type.
 const STATE_PRIORITY: Record<SheetState, number> = {
+  "pl-xs": -2,
+  "pl-sml": -1,
   default: 0,
   "default-active": 1,
   "expand-view": 2,
   "panel-view": 3,
   "full-view": 4,
+  // `responsive` represents a self-contained card that fills its
+  // host container — sits above `full-view` since it's the most
+  // "expanded" surface a linkout can occupy.
+  responsive: 5,
 };
 
 function getMostExpandedState(states: Partial<Record<SheetContentType, SheetState>>): SheetState {
@@ -236,4 +244,7 @@ export function useSheetState() {
   } as const;
 }
 
+/** Return shape of `useSheetState` — re-exported so consumers can do
+ *  `Pick<UseSheetStateReturn, "setContentTypeState">` without
+ *  spelling out `ReturnType<typeof useSheetState>`. */
 export type UseSheetStateReturn = ReturnType<typeof useSheetState>;

@@ -128,7 +128,7 @@ export const Default: Story = {
       className="gencl:w-50 gencl:aspect-reel"
       variant={variant}
       embedType={embedType}
-      isActive={false}
+      isActive={true}
       index={0}
       onPlayerIterationEnd={() => {}}
       swiper={null}

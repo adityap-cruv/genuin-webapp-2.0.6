@@ -66,6 +66,14 @@ type FeedWithDataPropsType = {
   /** Type of feed to display (HOME, POPULAR, LATEST) */
   feedType: FeedType;
   isSectioned?: boolean;
+  /**
+   * Pre-fetched feed pages. When supplied, `FeedWithData` skips its internal
+   * `useFeed` call (the underlying React Query is `enabled: false`) and
+   * renders the provided data directly. Mirrors `<Embed feedData>` — same
+   * shape, same purpose: Storybook fixtures and SSR-hydrated callers that
+   * don't want a runtime API hit.
+   */
+  externalFeedData?: FeedData;
 } & BaseFeedPropsType &
   ComponentProps<"div">;
 

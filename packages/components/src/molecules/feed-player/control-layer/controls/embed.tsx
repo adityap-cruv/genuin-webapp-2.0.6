@@ -1,121 +1,29 @@
-"use client";
-import { Button } from "@genuin/ui/components/button";
-import { ExpandIcon, MuteIcon, PauseIcon, PlayIcon, UnmuteIcon } from "@genuin/ui/icons";
-import { CollapseIcon } from "@genuin/ui/icons";
-import { cn } from "@genuin/ui/utils";
-import { useEffect, useState, type ComponentProps } from "react";
+import type { ComponentProps } from "react";
 
-import { useBaseContext } from "@genuin/components/context";
-import { useEmbedContext } from "@genuin/components/context/embed";
-import type { EmbedEventContextType } from "@genuin/components/context/embed/event-bus";
-import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import { SDKEventEmitter, SDKEventName } from "@genuin/components/lib/sdk-event-emitter";
-import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+import { useNewPlayerControls } from "../use-new-player-controls";
 
-import { usePlayerContext } from "../../context";
+import { EmbedControls as EmbedControlsOld, EmbedMuteButton as EmbedMuteButtonOld } from "./embed-old";
+import { EmbedControls as EmbedControlsV2, EmbedMuteButton as EmbedMuteButtonV2 } from "./embed-v2";
 
-type ButtonSize = "xs" | "sm" | "md" | "lg";
+// EmbedPlayButton/EmbedExpandButton are consumed only internally by EmbedControls;
+// re-export the V2 versions to preserve this module's public surface.
+export { EmbedPlayButton, EmbedExpandButton } from "./embed-v2";
 
-type EmbedControlsProps = ComponentProps<"div"> & {
-  /**
-   * Size of the buttons within the controls
-   * @default "xs"
-   */
-  size?: ButtonSize;
-  section?: PostDetailsType["section"];
-  videoId?: string;
-};
-
-type EmbedButtonProps = {
-  /** Size of the button icon */
-  size?: ButtonSize;
-};
-
-type EmbedExpandButtonProps = EmbedButtonProps & {
-  section?: PostDetailsType["section"];
-  videoId?: string;
-};
-
-/** Mute/unmute toggle button styled for embed control bars. */
-export function EmbedMuteButton({ size = "xs" }: EmbedButtonProps) {
-  const { muted, toggleMuted } = usePlayerContext();
-
-  return (
-    <Button theme="overlay" className="gencl:px-0" size={size} onClick={() => toggleMuted(true)}>
-      {muted ? <MuteIcon theme="dark" size={size} /> : <UnmuteIcon theme="dark" size={size} />}
-    </Button>
-  );
+/**
+ * Embed control bar — V2 when `web_configs.player_ui_v2` is on, else old.
+ *
+ * @remarks The old component's size union lacks the V2-only "xl" token; the cast
+ * bridges that gap (no real call site passes "xl" to embed controls).
+ */
+export function EmbedControls(props: ComponentProps<typeof EmbedControlsV2>) {
+  const newUI = useNewPlayerControls();
+  if (newUI) return <EmbedControlsV2 {...props} />;
+  return <EmbedControlsOld {...(props as ComponentProps<typeof EmbedControlsOld>)} />;
 }
 
-/** Play/pause toggle button styled for embed control bars. */
-export function EmbedPlayButton({ size = "xs" }: EmbedButtonProps) {
-  const { playingState, togglePlay } = usePlayerContext();
-
-  return (
-    <Button theme="overlay" className="gencl:px-0" size={size} onClick={() => togglePlay(true)}>
-      {playingState === "PLAYING" ? <PauseIcon theme="dark" size={size} /> : <PlayIcon theme="fill-dark" size={size} />}
-    </Button>
-  );
-}
-
-/** Expand/collapse button styled for embed control bars. */
-export function EmbedExpandButton({ size = "xs", section, videoId }: EmbedExpandButtonProps) {
-  const { changeActivePlayerType, updateSelectedSection, embedEventBus } = useEmbedContext();
-  const { brand_id } = useBaseContext().brandDetails;
-  const [isExpandView, setIsExpandView] = useState(false);
-
-  useEffect(() => {
-    function handleActivePlayerTypeChange(_eventData: any, context: EmbedEventContextType) {
-      setIsExpandView(context.activePlayerType === "expand-view");
-    }
-
-    embedEventBus.on("activePlayerTypeChange", handleActivePlayerTypeChange);
-    return () => {
-      embedEventBus.off("activePlayerTypeChange", handleActivePlayerTypeChange);
-    };
-  }, [embedEventBus]);
-
-  return (
-    <Button
-      theme="overlay"
-      className="gencl:px-0"
-      size={size}
-      onClick={() => {
-        changeActivePlayerType("expand-view");
-        if (section) {
-          updateSelectedSection(section);
-        }
-
-        if (!isExpandView) {
-          SDKEventEmitter.emit(SDKEventName.VIDEO_CLICKED, {
-            videoId: videoId ?? "",
-          });
-
-          const isBrandPeacock = brand_id === 3182;
-          if (isBrandPeacock) {
-            const nativeVideoHandler = (window as any).webkit?.messageHandlers?.openNativeVideo;
-            if (nativeVideoHandler) {
-              nativeVideoHandler.postMessage({
-                source: "carousel",
-                videoId: videoId ?? "",
-              });
-            }
-          }
-        }
-      }}>
-      {!isExpandView ? <ExpandIcon theme="dark" size={size} /> : <CollapseIcon theme="dark" size={size} />}
-    </Button>
-  );
-}
-
-export function EmbedControls({ className, size = "xs", section, videoId, ...restProps }: EmbedControlsProps) {
-  const config = useEmbedConfigs();
-
-  return (
-    <div className={cn("gencl:flex gencl:gap-1", className)} {...restProps}>
-      <EmbedMuteButton size={size} />
-      <EmbedPlayButton size={size} />
-      {config.expandViewConfig.enable && <EmbedExpandButton size={size} section={section} videoId={videoId} />}
-    </div>
-  );
+/** Mute/unmute button styled for embed control bars — V2 or old per the flag. */
+export function EmbedMuteButton(props: ComponentProps<typeof EmbedMuteButtonV2>) {
+  const newUI = useNewPlayerControls();
+  if (newUI) return <EmbedMuteButtonV2 {...props} />;
+  return <EmbedMuteButtonOld {...(props as ComponentProps<typeof EmbedMuteButtonOld>)} />;
 }

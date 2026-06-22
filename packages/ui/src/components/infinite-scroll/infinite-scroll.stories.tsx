@@ -8,7 +8,6 @@ import { InfiniteScroll } from "./infinite-scroll";
 const meta: Meta<typeof InfiniteScroll> = {
   title: "Components/InfiniteScroll",
   component: InfiniteScroll,
-  tags: ["autodocs"],
   parameters: {
     layout: "fullscreen", // Use fullscreen to better demonstrate scrolling
   },

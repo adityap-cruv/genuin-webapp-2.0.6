@@ -1,0 +1,51 @@
+{
+  "name": "@genuin/hierarchical-tree",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Runtime walker for Genuin Hierarchical Tree Page artifacts — schema, types, and <PageRenderer>.",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./schema": "./src/schema.ts",
+    "./types": "./src/types.ts"
+  },
+  "scripts": {
+    "build": "tsc --build",
+    "build:preview": "vite build",
+    "dev": "vite",
+    "typecheck": "tsc --build && tsc --noEmit -p tsconfig.dev.json",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "validate": "node ../../scripts/validate-page-artifact.mjs"
+  },
+  "peerDependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "dependencies": {
+    "@genuin/ui": "workspace:*",
+    "mdast-util-from-markdown": "^2.0.2",
+    "react-markdown": "^10.1.0",
+    "zod": "^3.25.56"
+  },
+  "devDependencies": {
+    "@genuin/components": "workspace:*",
+    "@genuin/eslint-config": "workspace:*",
+    "@genuin/tailwind-config": "workspace:*",
+    "@genuin/typescript-config": "workspace:*",
+    "@tailwindcss/vite": "^4.1.10",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@types/mdast": "^4.0.4",
+    "@types/node": "^22.15.21",
+    "@types/react": "^19.1.5",
+    "@types/react-dom": "^19.1.5",
+    "@vitejs/plugin-react": "^4.4.1",
+    "jsdom": "^26.1.0",
+    "tsx": "^4.20.5",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5",
+    "vitest": "^3.2.4"
+  }
+}

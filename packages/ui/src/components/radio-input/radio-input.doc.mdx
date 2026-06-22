@@ -1,0 +1,135 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./radio-input.stories";
+
+{/*
+  Design-system narrative for the radio-input component. Attached to the
+  matching story group via `<Meta of={…}>` so it renders as the
+  "Docs" tab next to the live stories. Layout: narrative intro →
+  live examples + controls → usage guidelines.
+*/}
+
+<Meta of={Stories} />
+
+# Radio Button
+
+## What radio buttons are for
+
+A radio button is the control for *mutually exclusive* choice — pick exactly one of a set of options. The defining characteristic is that selecting one option automatically unselects every other option in the group: there is no possible state where two are picked, and (typically) no state where none is picked. That single guarantee — "one and only one" — is what makes the radio different from every other input in the system. Checkboxes are independent yes/no answers; switches are immediate-effect on/off toggles; radios are "out of these N options, which one?"
+
+A good radio group makes the trade-off between the options visible and equal. Each option has the same visual weight, the same tappable hit area, and a clear label that finishes the sentence "I want my..." (size, plan, language, payment method). A bad radio group either hides options behind a `<select>` when there are only 2–3 of them, presents the choices in a way that subtly biases the user toward the default, or breaks the "exactly one" contract by allowing users to deselect (which makes the form un-submittable). The Genuin radio is built on Radix's primitive, so the keyboard model (arrow keys move between options, Space toggles, Tab moves into and out of the group), focus management, and ARIA semantics (`role="radiogroup"`, `aria-checked`) come correct out of the box.
+
+> **Note on naming.** This file documents what the design system calls **Radio Button**. The component file is named `radio-input` for code reasons; the user-facing name and the imported group component is `RadioGroup` / `RadioGroupItem` / `RadioItem`.
+
+## Radio Button in this design system
+
+The Radio Button family in `@genuin/ui` is built on `@radix-ui/react-radio-group` and exports three pieces.
+
+### The pieces
+
+- **`<RadioGroup>`** — the root container that owns the selected value. Layout is a `grid` with `gap-2` between items; a single value is selected at a time. Pass `value` + `onValueChange` to control it externally, or `defaultValue` for uncontrolled.
+- **`<RadioGroupItem>`** — the bare circular radio button. A 20×20px circle with a 1px secondary-300 border that fills with the brand primary color and renders a check glyph when checked. Pair this with your own label markup when you need full control over layout.
+- **`<RadioItem>`** — the canonical row layout: a left-aligned label paired with a `<RadioGroupItem>` on the right. Renders a clickable row where clicking the label or the radio toggles selection. This is the right pick for most forms.
+
+### Visual treatment
+
+- The unchecked state is an empty circle with a subtle gray border.
+- The checked state is a filled brand-primary circle with a white check glyph.
+- The transition between states animates at 500ms — slow enough to feel deliberate, fast enough not to feel sluggish.
+- `disabled` items render at 50% opacity with `cursor-not-allowed`.
+- The focus state uses a 1px ring with offset, visible to keyboard users.
+
+### Layout
+
+`<RadioItem>` lays out as a full-width flex row with the **label on the left** and the **radio on the right** (`justify-between`). This is the canonical Genuin pattern — it scans easily as a list and lets the user predict where to tap. If you need a different layout (radio-on-left, inline radios, segmented controls), use `<RadioGroupItem>` directly with your own surrounding markup.
+
+### Label typography
+
+`<RadioItem>` uses `body-1-medium` on small screens and `body-1-bold` on `sm` breakpoints and up — the option labels read as deliberate selection prompts, not body copy.
+
+### State
+
+- **Controlled (`value` / `onValueChange`)** — the host owns the selected value. Use this when the value participates in form state (`react-hook-form` + Zod), URL state, or any external coordination.
+- **Uncontrolled (`defaultValue`)** — the group manages its own state. Use for short, throwaway flows where the value never leaves the component.
+- **`disabled`** — works at the group root (disables every option) or per-item via `RadioItem`'s `disabled` prop.
+- **Required** — pass `required` on `<RadioGroup>` to mark the whole group as required for native form submission.
+
+### Pairing with `<Form>`
+
+Inside the form orchestration, drive the group via `<FormField>` + `<Controller>`:
+
+```tsx
+<FormField
+  control={form.control}
+  name="plan"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>Plan</FormLabel>
+      <FormControl>
+        <RadioGroup value={field.value} onValueChange={field.onChange}>
+          <RadioItem value="free" label="Free" />
+          <RadioItem value="pro" label="Pro" />
+          <RadioItem value="enterprise" label="Enterprise" />
+        </RadioGroup>
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+```
+
+`<FormLabel>` is the *group's* label ("Plan"). Each `<RadioItem>` carries its *own* label ("Free", "Pro", "Enterprise") — the radios pick one of those, the form-level label tells the user what dimension they're picking on.
+
+## Examples
+
+### Basic
+
+<Canvas of={Stories.Basic} />
+
+<Controls of={Stories.Basic} />
+
+### With labels and disabled
+
+<Canvas of={Stories.WithLabelsAndDisabled} />
+
+### Horizontal custom
+
+<Canvas of={Stories.HorizontalCustom} />
+
+### Controlled
+
+<Canvas of={Stories.Controlled} />
+
+### Many options scrollable
+
+<Canvas of={Stories.ManyOptionsScrollable} />
+
+## When to use Radio Button
+
+- **Mutually exclusive options.** Plan tier, payment method, language, frequency ("Once / Weekly / Monthly"), shipping speed.
+- **2–6 options at a time.** That's the sweet spot. Two options often work just as well as a switch (on/off) or a toggle group; over six options, switch to a `<Select>` or a `Command` palette.
+- **Settings where seeing the alternatives matters.** Radios show all options at once, which makes them better than `<Select>` for trade-off decisions where the user wants to see every choice before picking.
+- **Onboarding choices.** "How will you use the product?" "How big is your team?" — radios let the user feel the shape of the decision in one glance.
+- **Pick `<RadioItem>` for forms and settings.** The label-left + radio-right pattern is the canonical Genuin layout.
+- **Pick `<RadioGroupItem>` for compact / segmented layouts.** When you need radios next to dense data, inline filter rows, or a custom segmented control.
+- **Always render at least one option as default-selected.** A radio group with no selection risks an unsubmittable form — choose the safest default and start there.
+- **Always group radios under a `<RadioGroup>`.** Loose `<RadioGroupItem>`s without a wrapping group break Radix's selection state.
+
+## How not to use Radio Button
+
+- **Don't use a radio group for independent yes/no choices.** Multiple settings that the user toggles independently want checkboxes. "Email me", "Text me", "Notify me in-app" is three checkboxes — never a radio group.
+- **Don't use a radio for an immediate-effect toggle.** A 2-option radio that switches the page mode on selection is functionally a switch — use the Switch component.
+- **Don't ship a radio group with one item.** "Do this" with a single radio is a checkbox or a button. The whole point of a radio is to choose between alternatives.
+- **Don't allow radios to be deselected.** Radio groups should always have exactly one selection. If "no choice" is meaningful, add an explicit "None" option as a separate radio rather than letting the user un-pick.
+- **Don't use radios when there are more than ~6 options.** A long list of radios takes too much vertical space and burdens the user with all the alternatives. Switch to `<Select>` or `Command`.
+- **Don't put radios inside a `<select>` to "save space."** A native select is a different control with different keyboard behaviour and different visibility characteristics. Pick one or the other based on the number of options and the user's task — not based on layout convenience.
+- **Don't omit the group label.** Without a label like "Plan" or "Frequency", screen-reader users hear "Free, Pro, Enterprise" with no context. The group has a name; render it.
+- **Don't put a `<RadioGroupItem>` outside a `<RadioGroup>` root.** It needs the group's context to participate in selection. Loose items don't share state.
+- **Don't suppress the focus ring.** Keyboard users navigate radios with arrow keys; the focus ring tells them where they are. Removing it without an equivalent indicator breaks that.
+- **Don't disable individual radios silently.** A grayed-out radio inside an otherwise-active group looks broken. Either explain the disabled reason inline ("Available on Pro plan") or remove the option entirely for users who can't pick it.
+- **Don't pair radios with `aria-required` only.** The native `required` prop on `<RadioGroup>` is the right hook; ARIA-only required doesn't fire native validation.
+- **Don't use radios for sorting or ranking choices.** Radios pick one; ranking needs a different control (drag-and-drop list, ordered selector). Don't try to encode "first / second / third" as three radio groups.
+- **Don't render radio labels with two-clause descriptions inside the label.** "Pro — for teams of 2-10 ($29/mo, billed annually)" wants a primary label ("Pro") and a description below — split it. Putting it all in `label` makes the whole row read as one long line.
+- **Don't change the order of radios across visits.** Stable order matters: muscle memory and visual scanning depend on it. Don't sort by recency, popularity, or alphabetical tweak unless the order itself is the data.
+- **Don't visually hide the unselected radios** to make the selected one stand out. The whole point of radios is showing the alternatives; hiding them undermines the affordance and breaks accessibility (the user can't tell other options exist).
+- **Don't use radio buttons as actions.** Radio buttons are *values*; "Delete account" is an action — make it a button. Selecting a radio shouldn't navigate, fire a destructive op, or otherwise behave like a click.

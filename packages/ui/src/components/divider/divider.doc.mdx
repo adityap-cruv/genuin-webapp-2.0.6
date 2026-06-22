@@ -1,0 +1,61 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./divider.stories";
+
+{/*
+  Design-system narrative for the Divider static-page primitive.
+  Renders as the "Docs" tab next to the live stories.
+*/}
+
+<Meta of={Stories} />
+
+# Divider
+
+## What Divider is for
+
+`Divider` is a thin presentational separator — a hairline rule between
+content sections. Reach for it whenever you would otherwise write `border-t`
+on a `<hr>`. Both axes are supported, and the same primitive carries the
+right `role="separator"` + `aria-orientation` ARIA semantics in either
+orientation.
+
+## Props
+
+- **`orientation`** — `"horizontal"` (default) or `"vertical"`.
+- **`tone`** — `"subtle"` / `"default"` / `"strong"`. Maps onto the Genuin
+  DS `secondary-100` / `secondary-150` / `secondary-300` background-color
+  scale. `default` is the canonical 1px hairline.
+- **`inset`** — `"none"` (default) / `"sm"` / `"md"` / `"lg"`. Horizontal
+  inset applied to both ends. Honoured only for horizontal orientation;
+  silently ignored for vertical.
+- **`asChild`** — Render as a different element (e.g. `<hr>`) via Radix Slot.
+
+All standard `HTMLDivElement` attributes are forwarded.
+
+## Examples
+
+### Default
+
+<Canvas of={Stories.Default} />
+
+<Controls of={Stories.Default} />
+
+### All tones
+
+<Canvas of={Stories.AllTones} />
+
+### All insets
+
+<Canvas of={Stories.AllInsets} />
+
+### Vertical
+
+<Canvas of={Stories.Vertical} />
+
+### As `<hr>` (`asChild`)
+
+<Canvas of={Stories.AsHr} />
+
+### In composition
+
+<Canvas of={Stories.InComposition} />

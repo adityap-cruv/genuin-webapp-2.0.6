@@ -1,13 +1,46 @@
 import { cn } from "@genuin/ui/lib/utils";
-import { type FC } from "react";
+import { type FC, lazy, Suspense } from "react";
 
 import type { ControlLayerPropsType } from "../control-layer.types";
 import { EmbedControls } from "../controls/embed";
 
-export const ResponsivenessEmbed: FC<ControlLayerPropsType> = ({ className, isActive, ...restProps }) => {
+const Linkouts = lazy(() =>
+  import("@genuin/components/organisms/linkouts").then((m) => ({
+    default: m.Linkouts,
+  }))
+);
+
+export const ResponsivenessEmbed: FC<ControlLayerPropsType> = ({
+  postDetails,
+  className,
+  isActive,
+  // Drain non-DOM props so they don't leak via {...restProps} onto the <div>.
+  onReactionStateChange: _onReactionStateChange,
+  onCommentCountChange: _onCommentCountChange,
+  containerWidth: _containerWidth,
+  adType: _adType,
+  ...restProps
+}) => {
+  const video = postDetails?.video;
   return (
-    <div className={cn("gencl:h-full gencl:w-full", className)} {...restProps}>
+    <div className={cn("gencl:relative gencl:h-full gencl:w-full", className)} {...restProps}>
       {isActive && <EmbedControls onClick={(e) => e.stopPropagation()} className="gencl:justify-end gencl:p-1" />}
+      {isActive && video?.linkouts && (
+        <div className="gencl:absolute gencl:bottom-0 gencl:py-2 gencl:space-y-2 gencl:w-full">
+          <Suspense fallback={null}>
+            <Linkouts
+              view="embed"
+              variant="dynamic"
+              layout="overlay"
+              isActive={isActive}
+              showImmediately
+              linkouts={video.linkouts}
+              linkoutId={video.linkoutId}
+              videoDetails={video}
+            />
+          </Suspense>
+        </div>
+      )}
     </div>
   );
 };

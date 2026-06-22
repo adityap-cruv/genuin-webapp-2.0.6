@@ -6,7 +6,7 @@ import { useEmbedContext } from "@genuin/components/context/embed";
 import type { EmbedEventContextType } from "@genuin/components/context/embed/event-bus";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
-import { isSlideVisible, getVisibleSlideRange, getNewActiveIndexOnSlideChange } from "./utils";
+import { isSlideVisible, getVisibleSlideRange, getNewActiveIndexOnSlideChange, getFlatActiveIndex } from "./utils";
 
 type EmbedManagerContextType = {
   /**
@@ -274,15 +274,18 @@ export function EmbedManagerProvider({ children, swiper }: EmbedManagerProviderP
   useEffect(() => {
     const handleActivePlayerTypeChange = (eventData: any, context: EmbedEventContextType) => {
       if (context.activePlayerType === "embed") {
+        // Sectioned: activeIndex is section-local; resolve flat carousel index of the selected section.
+        const targetIndex = getFlatActiveIndex(context);
+
         if (isGridLayout) {
           // For grid layout, just set the active index
-          setActiveIndex(context.activeIndex);
+          setActiveIndex(targetIndex);
         } else if (swiper) {
-          if (isSlideVisible(swiper, context.activeIndex)) {
-            setActiveIndex(context.activeIndex);
+          if (isSlideVisible(swiper, targetIndex)) {
+            setActiveIndex(targetIndex);
           } else {
-            swiper.slideTo(context.activeIndex, 0, false);
-            setActiveIndex(context.activeIndex);
+            swiper.slideTo(targetIndex, 0, false);
+            setActiveIndex(targetIndex);
           }
         }
       }

@@ -281,18 +281,20 @@ export function AnalyticsProvider({
   // below, replacing the singleton-held identity that caused the multi-layout race.
   const layoutIdentity = useMemo<Record<string, string | number | undefined>>(
     () => (isWebSDK ? buildLayoutIdentity(embedData) : {}),
-    [isWebSDK, embedData],
+    [isWebSDK, embedData]
   );
 
   const track = useCallback(
     async (eventName: EventNameType, payload?: EventPayload) => {
       // Capture current screen at call time; getScreen() is stable ref so it's safe to read here.
-      await AnalyticsService.track(eventName, {
+      const analyticsPayload = {
         ...layoutIdentity,
         ...payload,
         event_record_screen: getScreen(),
-      });
-      emitAnalyticsEvent(eventName, payload);
+      };
+
+      await AnalyticsService.track(eventName, analyticsPayload);
+      emitAnalyticsEvent(eventName, analyticsPayload);
       if (eventName === EventName.VIDEO_COMPLETED) {
         sendVideoCompletedToBackend(payload);
       }

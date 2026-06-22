@@ -42,7 +42,7 @@ export function PostPlayer({
             poster={post.video?.thumbnail ?? ""}
             className="gencl:bg-secondary-200 gencl:w-full"
             style={{ height: "inherit" }}
-            adPlatform={post.video?.adsPlatform}
+            adsPlatform={post.video?.adsPlatform}
             playsInline
             videoDescription={post.video?.descritptionText}
             videoType={videoType}

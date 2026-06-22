@@ -6,13 +6,21 @@ import { forwardRef, useCallback, useEffect, useImperativeHandle, useLayoutEffec
 
 import { useAuthContext } from "@genuin/components/context/auth";
 import { useBaseContext } from "@genuin/components/context/base";
-import { useEmbedContext } from "@genuin/components/context/embed";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { usePrevious } from "@genuin/components/hooks/use-previous";
 
 /**
  * Type definition for the GenAI SDK module
  * This represents the dynamically imported @genuin/genai-sdk package
  */
+type AutoPromptConfig = {
+  mode: "disabled" | "countdown-only" | "full";
+  countdownMs?: number;
+  idealDelayMs?: number;
+  nextPromptDelayMs?: number;
+  disableAutoClose?: boolean;
+};
+
 type GenAISDKModule = {
   init: (config: {
     containerId: string;
@@ -31,7 +39,7 @@ type GenAISDKModule = {
     integrationType?: "embed" | "placement";
     integrationId?: string;
     contentOrder?: string[];
-    allowAutoPrompt?: boolean;
+    autoPromptConfig?: AutoPromptConfig;
   }) => void;
   destroy: () => void | Promise<void>;
   setWebSdkRenderMode?: (mode: "compact" | "full") => void;
@@ -74,14 +82,8 @@ type OctoPanelPropsType = {
    */
   variant?: "standalone" | "sheet";
   renderMode?: "compact" | "full";
-  onExpandRequest?: () => void;
-  /**
-   * @deprecated Use onThinkingStarted instead. Kept for backward compat.
-   */
-  onCompactExpand?: () => void;
-  onThinkingStarted?: () => void;
-  onCountdownActive?: (isActive: boolean) => void;
-  onError?: () => void;
+  /** Applies a lifecycle phase event (from the GenAI SDK) — maps to a sheet view upstream. */
+  onLifecyclePhase?: (detail: { parentOctoPanelId?: string; phase: string }) => void;
   /**
    * Integration type for the chat session.
    * If not provided, will be determined from embed context.
@@ -92,6 +94,8 @@ type OctoPanelPropsType = {
    * If not provided, will be read from embed context.
    */
   integrationId?: string;
+  /** Controls auto-prompt behaviour (mode, timings). Falls back to SDK defaults if omitted. */
+  autoPromptConfig?: AutoPromptConfig;
 } & ComponentProps<"div">;
 
 export type OctoPanelHandle = {
@@ -153,13 +157,10 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(functio
     onClose,
     variant = "standalone",
     renderMode,
-    onExpandRequest,
-    onCompactExpand,
-    onThinkingStarted,
-    onCountdownActive,
-    onError,
+    onLifecyclePhase,
     integrationType: integrationTypeProp,
     integrationId: integrationIdProp,
+    autoPromptConfig,
     ...triggerProps
   }: OctoPanelPropsType,
   ref
@@ -191,7 +192,7 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(functio
 
   // Context
   const { brandDetails } = useBaseContext();
-  const embedContext = useEmbedContext();
+  const embedContext = useSafeEmbedContext();
   const { user } = useAuthContext();
 
   // Track previous values for change detection
@@ -429,7 +430,6 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(functio
 
     // Initialize SDK for current video
     try {
-      console.log("videoId ##", videoId);
       sdkModule.init({
         containerId: panelIdentity.containerId,
         containerElement: effectiveContainer,
@@ -437,17 +437,23 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(functio
         brandId: brandDetails.brand_id,
         view: "web-sdk",
         renderMode,
-        sessionId: undefined,
         parentWebSdkInstanceId: parentInstanceId,
         parentWebSdkContainerId: parentContainerId ?? undefined,
         parentWebSdkEmbedId: parentEmbedId ?? undefined,
         parentWebSdkPlacementId: parentPlacementId ?? undefined,
         parentOctoPanelId: panelIdentity.panelId,
-        videoId: videoId,
         integrationType,
         integrationId,
+        videoId: videoId,
         contentOrder,
-        allowAutoPrompt: true,
+        autoPromptConfig: {
+          mode: "countdown-only",
+          countdownMs: 0,
+          idealDelayMs: 5000,
+          nextPromptDelayMs: 5000,
+          disableAutoClose: true,
+          ...autoPromptConfig,
+        },
       });
       sdkInitializedRef.current = true;
       setIsReinitializing(false);
@@ -476,6 +482,7 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(functio
     integrationType,
     integrationId,
     renderMode,
+    autoPromptConfig,
   ]);
 
   /**
@@ -591,135 +598,22 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(functio
   }, [renderMode, sdkModule, previousRenderMode]);
 
   /**
-   * Effect: Listen for expand request events from the GenAI SDK.
-   * Filters events to only respond to those targeting this specific panel instance.
+   * Effect: single inbound lifecycle listener from the GenAI SDK. Panel-filtered so one
+   * instance's lifecycle never affects another instance on the same page. Replaces the
+   * five per-event listeners (requestExpand / autoClose / thinking / countdownActive / error).
    */
   useEffect(() => {
-    if (!onExpandRequest) return;
-
-    const handleExpandRequest = (event: Event) => {
-      const { detail } = event as CustomEvent<{ parentOctoPanelId?: string }>;
-      const targetPanelId = detail?.parentOctoPanelId;
-
-      if (targetPanelId && targetPanelId !== panelIdentity.panelId) {
-        return;
-      }
-
-      // Delay to ensure onCompactExpand (genai:webSdkCompactExpand) fires first
-      setTimeout(() => {
-        onExpandRequest();
-      }, 50);
-    };
-
-    window.addEventListener("genai:webSdkRequestExpand", handleExpandRequest);
-    return () => {
-      window.removeEventListener("genai:webSdkRequestExpand", handleExpandRequest);
-    };
-  }, [onExpandRequest, panelIdentity.panelId]);
-
-  /**
-   * Effect: Listen for the auto-close event dispatched by the GenAI SDK after the
-   * full-view idle timeout expires (user didn't interact within 5 s of response).
-   * Resets the sheet to its default (compact) state so the video can play unobstructed.
-   * Only responds when this hook's video is the active one to avoid stale closures.
-   */
-  useEffect(() => {
-    const handleAutoClose = () => {
-      onClose?.();
-    };
-
-    window.addEventListener("genai:webSdkAutoClose", handleAutoClose);
-    return () => {
-      window.removeEventListener("genai:webSdkAutoClose", handleAutoClose);
-    };
-  }, [onClose]);
-
-  /**
-   * Effect: Listen for thinking started events from the GenAI SDK.
-   * Fires exactly once per session when the agent starts generating.
-   * Also supports legacy genai:webSdkCompactExpand for backward compat.
-   */
-  useEffect(() => {
-    const callback = onThinkingStarted ?? onCompactExpand;
-    if (!callback) {
-      return;
-    }
-
+    if (!onLifecyclePhase) return;
     const handler = (event: Event) => {
-      const { detail } = event as CustomEvent<{ parentOctoPanelId?: string }>;
-      const targetPanelId = detail?.parentOctoPanelId;
-
-      if (targetPanelId && targetPanelId !== panelIdentity.panelId) {
+      const { detail } = event as CustomEvent<{ parentOctoPanelId?: string; phase: string }>;
+      if (detail?.parentOctoPanelId && detail.parentOctoPanelId !== panelIdentity.panelId) {
         return;
       }
-
-      callback();
+      onLifecyclePhase(detail);
     };
-
-    window.addEventListener("genai:webSdkThinkingStarted", handler);
-    // Keep legacy listener for backward compat
-    window.addEventListener("genai:webSdkCompactExpand", handler);
-    return () => {
-      window.removeEventListener("genai:webSdkThinkingStarted", handler);
-      window.removeEventListener("genai:webSdkCompactExpand", handler);
-    };
-  }, [onThinkingStarted, onCompactExpand, panelIdentity.panelId]);
-
-  /**
-   * Effect: Listen for countdown active state changes from the GenAI SDK.
-   * Tracks when the auto-send countdown is active/cancelled.
-   */
-  useEffect(() => {
-    if (!onCountdownActive) {
-      return;
-    }
-
-    const handleCountdownActive = (event: Event) => {
-      const { detail } = event as CustomEvent<{
-        parentOctoPanelId?: string;
-        isActive: boolean;
-        source?: string;
-      }>;
-      const targetPanelId = detail?.parentOctoPanelId;
-
-      if (targetPanelId && targetPanelId !== panelIdentity.panelId) {
-        return;
-      }
-
-      onCountdownActive(detail.isActive);
-    };
-
-    window.addEventListener("genai:webSdkCountdownActive", handleCountdownActive);
-    return () => {
-      window.removeEventListener("genai:webSdkCountdownActive", handleCountdownActive);
-    };
-  }, [onCountdownActive, panelIdentity.panelId]);
-
-  /**
-   * Effect: Listen for error events from the GenAI SDK.
-   * Fires when the session enters an error state.
-   */
-  useEffect(() => {
-    if (!onError) {
-      return;
-    }
-
-    const handleError = (event: Event) => {
-      const { detail } = event as CustomEvent<{ parentOctoPanelId?: string }>;
-      const targetPanelId = detail?.parentOctoPanelId;
-
-      if (targetPanelId && targetPanelId !== panelIdentity.panelId) {
-        return;
-      }
-
-      onError();
-    };
-
-    window.addEventListener("genai:webSdkError", handleError);
-    return () => {
-      window.removeEventListener("genai:webSdkError", handleError);
-    };
-  }, [onError, panelIdentity.panelId]);
+    window.addEventListener("genai:octoLifecycle", handler);
+    return () => window.removeEventListener("genai:octoLifecycle", handler);
+  }, [onLifecyclePhase, panelIdentity.panelId]);
 
   // Render SDK container content (used in both variants)
   const sdkContainerContent = (

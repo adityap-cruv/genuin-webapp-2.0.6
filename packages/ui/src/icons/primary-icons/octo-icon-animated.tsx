@@ -1,6 +1,7 @@
-import { LottieIcon } from "@genuin/ui/components/lottie/lottie-icon";
-import type { LottieIconProps } from "@genuin/ui/components/lottie/lottie-icon.types";
 import { cn } from "@genuin/ui/lib/utils";
+
+import { LottieIcon } from "../../components/lottie/lottie-icon";
+import type { LottieIconProps } from "../../components/lottie/lottie-icon.types";
 
 type OctoIconAnimatedProps = Omit<LottieIconProps, "width" | "height"> & {
   /**

@@ -1,0 +1,232 @@
+/**
+ * Per-publisher brand-accent palettes for the Hierarchical Theme Provider.
+ *
+ * Each `.theme-<name>` block overrides the brand-accent CSS variables
+ * declared in `:root` of `shared-styles.css`. Greys and status colors are
+ * intentionally left at the design-system defaults — only the primary
+ * scale is swapped. Promote a publisher's neutrals here only if their
+ * brand guidelines demand divergence from Genuin's secondary scale.
+ *
+ * Sample palettes — realistic-looking but not brand-guideline confirmed.
+ * These power the dev shell's theme picker; not intended for production.
+ *
+ * Each `.theme-<slug>` block declares BOTH the brand tokens
+ * (`--gencl-primary*`, `--gencl-secondary*`) AND the Tailwind v4
+ * indirection tokens (`--gencl-color-primary*`, `--gencl-color-secondary*`)
+ * with identical hex values. The duplication exists because the
+ * `@theme` block in `shared-styles.css` declares
+ * `--gencl-color-primary: var(--gencl-primary)` at `:root` only — the
+ * `var()` resolves once at `:root`, so the resolved literal cascades
+ * down and child `.theme-X` overrides of `--gencl-primary` never
+ * reach the Tailwind utility chain (`bg-primary`, `bg-secondary-900`, …).
+ * Re-declaring the `--gencl-color-*` tokens here re-resolves them
+ * against the current theme's brand tokens.
+ *
+ * See: docs/plans/hierarchical/HIERARCHICAL_THEME_PROVIDER_PLAN.md
+ */
+
+/* genuin is the default in shared-styles.css :root. The class exists as a
+   no-op for symmetry with the named themes — wrapping in <ThemeProvider
+   theme="genuin"> produces an explicit theme class without changing any
+   variable. */
+.theme-genuin {
+  /* No overrides — :root defaults apply. */
+}
+
+.theme-iheart {
+  /* Brand tokens — for components that read var(--gencl-primary-*) directly. */
+  --gencl-primary: #c6002b;
+  --gencl-primary-100: #f6d9df;
+  --gencl-primary-200: #eba6b5;
+  --gencl-primary-300: #dd6680;
+  --gencl-primary-400: #d13355;
+  --gencl-primary-600: #950020;
+  --gencl-primary-700: #590013;
+  /* Tailwind v4 utility tokens — re-declared here because the @theme block
+   * in shared-styles.css declares them as var(--gencl-primary) ONLY at :root,
+   * so the var() resolves once and the literal cascades down. Re-declaring
+   * in each theme scope re-resolves against this theme's brand tokens. */
+  --gencl-color-primary: #c6002b;
+  --gencl-color-primary-100: #f6d9df;
+  --gencl-color-primary-200: #eba6b5;
+  --gencl-color-primary-300: #dd6680;
+  --gencl-color-primary-400: #d13355;
+  --gencl-color-primary-600: #950020;
+  --gencl-color-primary-700: #590013;
+}
+
+.theme-mcclatchy {
+  /* Brand tokens — for components that read var(--gencl-primary-*) directly. */
+  --gencl-primary: #b8242a;
+  --gencl-primary-100: #f4dedf;
+  --gencl-primary-200: #e6b2b4;
+  --gencl-primary-300: #d47c7f;
+  --gencl-primary-400: #c65055;
+  --gencl-primary-600: #8a1b20;
+  --gencl-primary-700: #531013;
+  /* Tailwind v4 utility tokens — re-declared here because the @theme block
+   * in shared-styles.css declares them as var(--gencl-primary) ONLY at :root,
+   * so the var() resolves once and the literal cascades down. Re-declaring
+   * in each theme scope re-resolves against this theme's brand tokens. */
+  --gencl-color-primary: #b8242a;
+  --gencl-color-primary-100: #f4dedf;
+  --gencl-color-primary-200: #e6b2b4;
+  --gencl-color-primary-300: #d47c7f;
+  --gencl-color-primary-400: #c65055;
+  --gencl-color-primary-600: #8a1b20;
+  --gencl-color-primary-700: #531013;
+}
+
+.theme-us-weekly {
+  /* Brand tokens — for components that read var(--gencl-primary-*) directly. */
+  --gencl-primary: #6a3da8;
+  --gencl-primary-100: #e9e2f2;
+  --gencl-primary-200: #cbbbe1;
+  --gencl-primary-300: #a68bcb;
+  --gencl-primary-400: #8864b9;
+  --gencl-primary-600: #502e7e;
+  --gencl-primary-700: #301b4c;
+  /* Tailwind v4 utility tokens — re-declared here because the @theme block
+   * in shared-styles.css declares them as var(--gencl-primary) ONLY at :root,
+   * so the var() resolves once and the literal cascades down. Re-declaring
+   * in each theme scope re-resolves against this theme's brand tokens. */
+  --gencl-color-primary: #6a3da8;
+  --gencl-color-primary-100: #e9e2f2;
+  --gencl-color-primary-200: #cbbbe1;
+  --gencl-color-primary-300: #a68bcb;
+  --gencl-color-primary-400: #8864b9;
+  --gencl-color-primary-600: #502e7e;
+  --gencl-color-primary-700: #301b4c;
+}
+
+.theme-artitech {
+  /* Brand tokens — for components that read var(--gencl-primary-*) directly. */
+  --gencl-primary: #e91e26;
+  --gencl-primary-100: #fcddde;
+  --gencl-primary-200: #f7b0b3;
+  --gencl-primary-300: #f2787d;
+  --gencl-primary-400: #ed4b51;
+  --gencl-primary-600: #af171d;
+  --gencl-primary-700: #690e11;
+  --gencl-secondary-50: #faebeb;
+  --gencl-secondary-100: #f3cccc;
+  --gencl-secondary-150: #edb3b3;
+  --gencl-secondary-200: #e79999;
+  --gencl-secondary-300: #dc6666;
+  --gencl-secondary-400: #d03333;
+  --gencl-secondary-500: #c40000;
+  --gencl-secondary-600: #a70000;
+  --gencl-secondary-700: #890000;
+  --gencl-secondary-800: #620000;
+  --gencl-secondary-900: #3b0000;
+  /* Tailwind v4 utility tokens — re-declared here because the @theme block
+   * in shared-styles.css declares them as var(--gencl-primary) ONLY at :root,
+   * so the var() resolves once and the literal cascades down. Re-declaring
+   * in each theme scope re-resolves against this theme's brand tokens. */
+  --gencl-color-primary: #e91e26;
+  --gencl-color-primary-100: #fcddde;
+  --gencl-color-primary-200: #f7b0b3;
+  --gencl-color-primary-300: #f2787d;
+  --gencl-color-primary-400: #ed4b51;
+  --gencl-color-primary-600: #af171d;
+  --gencl-color-primary-700: #690e11;
+  --gencl-color-secondary-50: #faebeb;
+  --gencl-color-secondary-100: #f3cccc;
+  --gencl-color-secondary-150: #edb3b3;
+  --gencl-color-secondary-200: #e79999;
+  --gencl-color-secondary-300: #dc6666;
+  --gencl-color-secondary-400: #d03333;
+  --gencl-color-secondary-500: #c40000;
+  --gencl-color-secondary-600: #a70000;
+  --gencl-color-secondary-700: #890000;
+  --gencl-color-secondary-800: #620000;
+  --gencl-color-secondary-900: #3b0000;
+}
+
+.theme-planet-fitness {
+  /* Brand tokens — for components that read var(--gencl-primary-*) directly. */
+  --gencl-primary: #3b158d;
+  --gencl-primary-100: #e2dcee;
+  --gencl-primary-200: #baadd7;
+  --gencl-primary-300: #8973bb;
+  --gencl-primary-400: #6244a4;
+  --gencl-primary-600: #2c106a;
+  --gencl-primary-700: #1b093f;
+  --gencl-secondary-50: #fffcee;
+  --gencl-secondary-100: #fff9d4;
+  --gencl-secondary-150: #fff5bf;
+  --gencl-secondary-200: #fff2a9;
+  --gencl-secondary-300: #ffec7f;
+  --gencl-secondary-400: #ffe554;
+  --gencl-secondary-500: #ffdf29;
+  --gencl-secondary-600: #d9be23;
+  --gencl-secondary-700: #b39c1d;
+  --gencl-secondary-800: #807015;
+  --gencl-secondary-900: #4d430c;
+  /* Tailwind v4 utility tokens — re-declared here because the @theme block
+   * in shared-styles.css declares them as var(--gencl-primary) ONLY at :root,
+   * so the var() resolves once and the literal cascades down. Re-declaring
+   * in each theme scope re-resolves against this theme's brand tokens. */
+  --gencl-color-primary: #3b158d;
+  --gencl-color-primary-100: #e2dcee;
+  --gencl-color-primary-200: #baadd7;
+  --gencl-color-primary-300: #8973bb;
+  --gencl-color-primary-400: #6244a4;
+  --gencl-color-primary-600: #2c106a;
+  --gencl-color-primary-700: #1b093f;
+  --gencl-color-secondary-50: #fffcee;
+  --gencl-color-secondary-100: #fff9d4;
+  --gencl-color-secondary-150: #fff5bf;
+  --gencl-color-secondary-200: #fff2a9;
+  --gencl-color-secondary-300: #ffec7f;
+  --gencl-color-secondary-400: #ffe554;
+  --gencl-color-secondary-500: #ffdf29;
+  --gencl-color-secondary-600: #d9be23;
+  --gencl-color-secondary-700: #b39c1d;
+  --gencl-color-secondary-800: #807015;
+  --gencl-color-secondary-900: #4d430c;
+}
+
+.theme-harley-davidson {
+  /* Brand tokens — for components that read var(--gencl-primary-*) directly. */
+  --gencl-primary: #f58025;
+  --gencl-primary-100: #feecde;
+  --gencl-primary-200: #fcd3b3;
+  --gencl-primary-300: #f9b37c;
+  --gencl-primary-400: #f79951;
+  --gencl-primary-600: #b8601c;
+  --gencl-primary-700: #6e3a11;
+  --gencl-secondary-50: #eeeeee;
+  --gencl-secondary-100: #d5d5d5;
+  --gencl-secondary-150: #bfbfbf;
+  --gencl-secondary-200: #aaaaaa;
+  --gencl-secondary-300: #808080;
+  --gencl-secondary-400: #555555;
+  --gencl-secondary-500: #2b2b2b;
+  --gencl-secondary-600: #252525;
+  --gencl-secondary-700: #1e1e1e;
+  --gencl-secondary-800: #161616;
+  --gencl-secondary-900: #0d0d0d;
+  /* Tailwind v4 utility tokens — re-declared here because the @theme block
+   * in shared-styles.css declares them as var(--gencl-primary) ONLY at :root,
+   * so the var() resolves once and the literal cascades down. Re-declaring
+   * in each theme scope re-resolves against this theme's brand tokens. */
+  --gencl-color-primary: #f58025;
+  --gencl-color-primary-100: #feecde;
+  --gencl-color-primary-200: #fcd3b3;
+  --gencl-color-primary-300: #f9b37c;
+  --gencl-color-primary-400: #f79951;
+  --gencl-color-primary-600: #b8601c;
+  --gencl-color-primary-700: #6e3a11;
+  --gencl-color-secondary-50: #eeeeee;
+  --gencl-color-secondary-100: #d5d5d5;
+  --gencl-color-secondary-150: #bfbfbf;
+  --gencl-color-secondary-200: #aaaaaa;
+  --gencl-color-secondary-300: #808080;
+  --gencl-color-secondary-400: #555555;
+  --gencl-color-secondary-500: #2b2b2b;
+  --gencl-color-secondary-600: #252525;
+  --gencl-color-secondary-700: #1e1e1e;
+  --gencl-color-secondary-800: #161616;
+  --gencl-color-secondary-900: #0d0d0d;
+}

@@ -20,6 +20,8 @@ import type {
 } from "@/type";
 import { queryUtils } from "@/utils/query-utils";
 
+import { startIHeartAnalyticsBridge } from "../analytics/iheart-analytics-bridge";
+
 import {
   EventManager,
   SDKEventType,
@@ -34,6 +36,7 @@ import { getRandomNumber, parsePlacementToEmbedData } from "../utils";
 import { loadErrorView, renderEmbedSkeleton as loadLoadingView } from "./dom-utils";
 import { loadExpandView } from "./react-utils";
 import { resolveBrandContextFromUrl } from "./sdk-utils";
+import { ensureViewportMeta } from "./viewport-meta";
 
 // Allowed events list - only these events can be listened to
 const ALLOWED_EVENTS = [
@@ -63,9 +66,6 @@ const ALLOWED_EMIT_EVENTS = [
   "player:onMiniPlayerPlayChange",
   "sdk:themeChange",
   "sdk:clearLoginAction",
-
-  // 'sdk:expandEmbed',
-  // 'sdk:collapseEmbed',
 ];
 
 export class GenuinSDK {
@@ -85,6 +85,8 @@ export class GenuinSDK {
   private callbackQueueManager: CallbackQueueManager;
   private placementManager: PlacementManager;
   private videoManager = FeedContextManager;
+  /** Unsubscribe for the iHeart analytics bridge, set at init, torn down on destroy. */
+  private stopIHeartBridge?: () => void;
 
   /**
    * Validates if a token value is valid (not null, undefined, empty, or string 'undefined'/'null')
@@ -178,6 +180,9 @@ export class GenuinSDK {
       console.warn("SDK initialization is disabled via URL parameter.");
       return;
     }
+    // Inject the zoom-disabling viewport meta tag onto the host page so mobile
+    // Safari does not auto-zoom / shift layout when the chat input is focused.
+    ensureViewportMeta();
     // Performance marker: Init start
     try {
       const { metrics } = await import("../utils/metrics");
@@ -196,6 +201,11 @@ export class GenuinSDK {
       await this.initializeAllEmbeds();
 
       this.isInitialized = true;
+
+      // Forward analytics to iHeart's SDK when the testing flag is on and the iHeart
+      // Analytics SDK is present on the host page. No-op otherwise.
+      this.stopIHeartBridge?.();
+      this.stopIHeartBridge = startIHeartAnalyticsBridge(this.eventManager);
 
       // Performance marker: Init end
       try {
@@ -291,63 +301,35 @@ export class GenuinSDK {
   }
 
   async newUpdate(config?: UpdateConfigByUserType) {
-    console.log("[gen-update-loader] newUpdate called with config:", config);
     // if sdk is not initialized then queue the update call.
     if (!this.isInitialized) {
-      console.log("[gen-update-loader] SDK not initialized, queuing update call");
       this.callbackQueueManager.enqueue(() => this._performUpdate(config), config);
       return;
     }
-    console.log("[gen-update-loader] SDK initialized, calling _performUpdate");
     await this._performUpdate(config);
-    console.log("[gen-update-loader] newUpdate completed");
   }
 
   private async _performUpdate(config?: UpdateConfigByUserType) {
-    console.log("[gen-update-loader] _performUpdate started with config:", config);
     // In case of token comes authenticateUser, this function will authenticate user in all the embeds.
     if (this.isValidToken(config?.token)) {
-      console.log("[gen-update-loader] Valid token found, authenticating user");
       await this.authenticateUser({
         token: config.token,
         userParams: config.user_params,
       });
-      console.log("[gen-update-loader] User authentication completed");
-    } else {
-      console.log("[gen-update-loader] No valid token in config, skipping authentication");
     }
 
     // Update contextual params in the embed where the instance id matches.
     const contextualParams: ContextualParamsType | undefined = config?.contextual_params ?? config?.contextualParams;
     if (contextualParams && config && config.container_id) {
-      console.log(
-        "[gen-update-loader] Updating contextual params for container:",
-        config.container_id,
-        "params:",
-        contextualParams
-      );
       await this.updateContextualParamsInEmbed({
         contextualParams: contextualParams,
         containerId: config.container_id,
       });
-      console.log("[gen-update-loader] Contextual params update completed");
-    } else {
-      console.log(
-        "[gen-update-loader] Skipping contextual params update — contextualParams:",
-        contextualParams,
-        "container_id:",
-        config?.container_id
-      );
     }
+
     // Update start video slug in the embed/placement where the instance id matches.
     if (config?.start_video_slug && config.container_id) {
       // User-provided data takes priority
-      console.log(
-        "[gen-update-loader] start_video_slug provided, updating start video:",
-        config.start_video_slug,
-        "container:",
-        config.container_id
-      );
       await this.updateStartVideoId({
         startVideoSlug: config.start_video_slug,
         containerId: config.container_id,
@@ -355,21 +337,12 @@ export class GenuinSDK {
         commentId: config.comment_id,
         sourceInstanceId: config.source_instance_id,
       });
-      console.log("[gen-update-loader] Start video slug update completed");
     } else {
       // No start_video_slug from user — check localStorage for a pending action
-      console.log("[gen-update-loader] No start_video_slug in config, checking localStorage for pending action");
       const pendingAction = getPendingAction();
-      console.log("[gen-update-loader] Pending action from localStorage:", pendingAction);
       if (pendingAction?.videoSlug) {
         // Use container_id from config if available, otherwise fall back to the divId stored in the pending action
         const containerId = config?.container_id ?? pendingAction.divId;
-        console.log(
-          "[gen-update-loader] Found pending action videoSlug:",
-          pendingAction.videoSlug,
-          "resolved containerId:",
-          containerId
-        );
         if (containerId) {
           await this.updateStartVideoId({
             startVideoSlug: pendingAction.videoSlug,
@@ -378,15 +351,9 @@ export class GenuinSDK {
             commentId: pendingAction.commentId,
           });
           clearPendingAction();
-          console.log("[gen-update-loader] Pending action applied and cleared");
-        } else {
-          console.log("[gen-update-loader] No containerId resolved, skipping pending action");
         }
-      } else {
-        console.log("[gen-update-loader] No pending action found in localStorage");
       }
     }
-    console.log("[gen-update-loader] _performUpdate completed");
   }
 
   /**
@@ -415,8 +382,6 @@ export class GenuinSDK {
           this.setInitializationStatus(elementObject.element, "pending");
           elementObject.status = "pending";
         }
-      } else {
-        console.log("No valid object found for element or already initialized::", instanceId);
       }
     }
   }
@@ -464,7 +429,7 @@ export class GenuinSDK {
         const instanceId = element.getAttribute("data-instance-id");
         if (instanceId && this.sdkElements[instanceId]) {
           const { loadExpandView } = await import("./react-utils");
-          loadExpandView(element, this.sdkElements[instanceId].config.theme, element.shadowRoot);
+          loadExpandView(element, this.sdkElements[instanceId].config.theme);
         }
       }
 
@@ -630,7 +595,12 @@ export class GenuinSDK {
       // Only parse placement if live_customization_data exists
       // For nested instances, this might not be present
       if (config.live?.live_customization_data && config.styleId) {
-        config.embedDetails = parsePlacementToEmbedData(config.live.live_customization_data, config.styleId);
+        config.embedDetails = parsePlacementToEmbedData(
+          // live_customization_data holds the raw PlacementDataResponse for placement-based live embeds
+          config.live.live_customization_data,
+          config.styleId,
+          config.configuration
+        );
       }
     }
 
@@ -660,6 +630,12 @@ export class GenuinSDK {
       console.warn("No embed details or placement details found for live embed configuration.");
       return;
     }
+
+    // Attach the resolved config fields (contextualParams, configuration, brandContext,
+    // deep-link, etc.) onto embedDetails so they reach the rendered embed and feed query —
+    // mirroring the non-live getEmbedDetails path. Runs after the URL brandContext
+    // resolution above so URL-derived context still takes precedence when present.
+    this.applyConfigToEmbedDetails(config.embedDetails, config);
 
     const { loadNewEmbed } = await import("./react-utils");
     const liveInstanceId = element.getAttribute("data-instance-id");
@@ -778,13 +754,7 @@ export class GenuinSDK {
 
     if (embedDetails) {
       // Add all the other params to embedDetails
-      embedDetails.authInfo = config.authInfo;
-      embedDetails.startVideoSlug = config.startVideoSlug;
-      embedDetails.brand_context = config.brandContext;
-      embedDetails.autoUserInteractionToPerform = config.action;
-      embedDetails.commentId = config.commentId;
-      embedDetails.expandOnLoad = config.expandOnLoad;
-      if (config.contextualParams) embedDetails.contextualParams = config.contextualParams;
+      this.applyConfigToEmbedDetails(embedDetails, config);
 
       // Use brandDetails layout IDs as fallback if not present in embedDetails
       if (!embedDetails.card_layout_id && brandDetails.card_layout_id) {
@@ -861,12 +831,15 @@ export class GenuinSDK {
     const isNestedOctoUpdate = typeof sourceInstanceId === "string";
     const shouldHandleExpandView = !targetUpdateElement?.config?.disableExpandView && !isNestedOctoUpdate;
 
-    if (shouldHandleExpandView && targetUpdateElement?.element)
+    if (shouldHandleExpandView && targetUpdateElement?.element) {
+      // Body-level loader so it survives a publisher-hidden container. The
+      // skeleton is fully inline-styled, so it needs no shadow-scoped CSS.
       loadExpandView(
         targetUpdateElement.element,
         targetUpdateElement.config.theme,
         targetUpdateElement.element.shadowRoot
       );
+    }
 
     this.eventManager.emit(SDKEventType.SDK_UPDATE_START_VIDEO_SLUG, {
       embedId,
@@ -910,7 +883,6 @@ export class GenuinSDK {
     contextualParams = this.deepMergeObjects(oldContextualParams, contextualParams || {});
     embedId = updateTargetElement.config.embedDetails?.embed_id;
     placementId = updateTargetElement.config.embedDetails?.placement_id;
-    if (embedId || placementId) console.log("Emitting event with::", embedId, placementId);
     this.eventManager.emit(SDKEventType.SDK_UPDATE_CONTEXTUAL_PARAMS, {
       embedId,
       placementId,
@@ -1027,8 +999,6 @@ export class GenuinSDK {
       }
       if (this.getInitializationStatus(element as HTMLElement) === "pending") {
         uniqueElements.add(element as HTMLElement);
-      } else {
-        console.log("Embed already initialized in element:", element);
       }
     });
 
@@ -1080,10 +1050,16 @@ export class GenuinSDK {
       }
 
       // Shadow DOM is enabled by default (useShadowDOM !== false).
-      // Set up the Shadow DOM before any rendering so every subsequent write
-      // (skeleton, expand loader, React root) targets the shadow root from the
-      // very first paint — eliminating the blink caused by late attachment.
+      // Set up the Shadow DOM before any rendering so the loading skeleton and the
+      // React root target the shadow root from the very first paint — eliminating
+      // the blink caused by late attachment. (The expand-on-load loader mounts at
+      // body level instead — see loadExpandView.)
       const useShadowDOM = extractedData.useShadowDOM !== false;
+      const isExpandOnLoad =
+        extractedData.expandOnLoad === true || (!!extractedData.startVideoSlug && extractedData.expandOnLoad !== false);
+
+      // The container's own hiding styles (display:none, etc.) are respected; they are filtered
+      // out only when copied onto the expand view's overlay, so the overlay still appears.
       const shadowTarget = useShadowDOM ? await setupMainShadowDOM(element) : element;
 
       // Propagate the resolved flag so downstream consumers see the same value.
@@ -1092,12 +1068,9 @@ export class GenuinSDK {
       // Show loading skeleton immediately (inside shadow root when enabled)
       loadLoadingView(shadowTarget, extractedData.theme);
 
-      // Load expand view if expandOnLoad is set
-      if (
-        extractedData.expandOnLoad === true ||
-        (extractedData.startVideoSlug && extractedData.expandOnLoad !== false)
-      ) {
-        loadExpandView(element, extractedData.theme, useShadowDOM ? element.shadowRoot : null);
+      // Load expand view if expandOnLoad is set.
+      if (isExpandOnLoad) {
+        loadExpandView(element, extractedData.theme);
       }
 
       if (extractedData) {
@@ -1115,11 +1088,9 @@ export class GenuinSDK {
     const userErrorHandler = configByUser?.error_handler || configByUser?.errorHandler;
     if (userErrorHandler) {
       this.eventManager.on(SDKEventType.SDK_EMBED_ERROR, ({ payload }) => {
-        console.log("[gen-sdk]: Calling user error handler with:", payload);
         userErrorHandler(payload);
       });
       this.eventManager.on(SDKEventType.SDK_EMBED_NO_CONTENT, ({ payload }) => {
-        console.log("[gen-sdk]: Calling user error handler with:", payload);
         userErrorHandler(payload);
       });
     }
@@ -1243,19 +1214,9 @@ export class GenuinSDK {
     for (const attr of possibleAttributeNames) {
       let value = singleElement.getAttribute(attr);
       switch (attr) {
-        // case 'data-embed-id':
-        //   answerToReturn.embedId = value ?? configByUser?.embed_id
-        //   continue
-        //   continue
         case "data-api-key":
           answerToReturn.apiKey = value ?? configByUser?.api_key;
           break;
-        // case 'data-placement-id':
-        //   answerToReturn.placementId = value ?? configByUser?.placement_id
-        //   continue
-        // case 'data-style-id':
-        //   answerToReturn.styleId = value ?? configByUser?.style_id
-        //   continue
         case "data-comment-id":
           answerToReturn.commentId = value ?? configByUser?.comment_id;
           break;
@@ -1482,12 +1443,10 @@ export class GenuinSDK {
     }
 
     // extras needed to set explicitly from user config.
-    answerToReturn.params = configByUser?.params;
-    answerToReturn.authInfo = configByUser?.authInfo;
-    answerToReturn.brandContext = configByUser?.brand_context;
-    answerToReturn.useShadowDOM = configByUser?.useShadowDOM;
-    answerToReturn.parentInstanceId = configByUser?.parent_instance_id;
+    this.applyUserConfigDefaults(answerToReturn, configByUser);
 
+    // Walk up the DOM to detect nested rendering (expand view is disabled when nested).
+    // Lives here (not in applyUserConfigDefaults) because it needs the source element.
     let currentElement: HTMLElement | null = singleElement;
     let isNested = false;
 
@@ -1502,14 +1461,49 @@ export class GenuinSDK {
 
     answerToReturn.disableExpandView = isNested;
 
+    return answerToReturn;
+  }
+
+  /**
+   * Copies the configByUser-sourced fields that have no DOM data-attribute equivalent
+   * onto the extracted config. Shared by the live and non-live extraction paths so the
+   * field list lives in one place.
+   * @param answerToReturn The partial config being assembled.
+   * @param configByUser The user-provided init configuration.
+   * @private
+   */
+  private applyUserConfigDefaults(answerToReturn: Partial<SingleEmbedDataConfig>, configByUser?: ConfigByUser): void {
+    answerToReturn.params = configByUser?.params;
+    answerToReturn.authInfo = configByUser?.authInfo;
+    answerToReturn.brandContext = configByUser?.brand_context;
+    answerToReturn.configuration = configByUser?.configuration;
+    answerToReturn.useShadowDOM = configByUser?.useShadowDOM;
+    answerToReturn.parentInstanceId = configByUser?.parent_instance_id;
+
     // Carry the init-payload sponsorship_id override so it can take priority
     // over the value coming from Embed or Placement API data in getEmbedDetails.
     const initSponsorshipId = configByUser?.sponsorship_id;
     if (Array.isArray(initSponsorshipId)) {
       answerToReturn.initSponsorshipId = initSponsorshipId;
     }
+  }
 
-    return answerToReturn;
+  /**
+   * Attaches the resolved config fields onto embedDetails so they reach the rendered
+   * embed (and the feed query). Shared by the live and non-live initialization paths.
+   * @param embedDetails The embed details to mutate.
+   * @param config The resolved single-embed config.
+   * @private
+   */
+  private applyConfigToEmbedDetails(embedDetails: EmbedDataType, config: Partial<SingleEmbedDataConfig>): void {
+    embedDetails.authInfo = config.authInfo;
+    embedDetails.startVideoSlug = config.startVideoSlug;
+    embedDetails.brand_context = config.brandContext;
+    embedDetails.autoUserInteractionToPerform = config.action;
+    embedDetails.commentId = config.commentId;
+    embedDetails.expandOnLoad = config.expandOnLoad;
+    if (config.contextualParams) embedDetails.contextualParams = config.contextualParams;
+    if (config.configuration) embedDetails.configuration = config.configuration;
   }
 
   /**
@@ -1539,18 +1533,46 @@ export class GenuinSDK {
       answerToReturn.placementId = liveData.placement_id;
       answerToReturn.styleId = liveData.style_id;
       answerToReturn.embedId = undefined;
-
-      // Parse the placement to get embed details
-      // if (answerToReturn.styleId) {
-      //   answerToReturn.embedDetails = parsePlacementToEmbedData(
-      //     liveData,
-      //     answerToReturn.styleId,
-      //   )
-      // }
     }
 
     answerToReturn.apiKey = liveData.api_key;
     answerToReturn.live = liveData;
+
+    // The live path has no DOM element to parse data-* attributes from, so read the
+    // remaining fields straight from configByUser (the non-live path gets these from
+    // the data-attribute switch in extractDataFromSingleDiv).
+    answerToReturn.contextualParams = configByUser.contextual_params ?? configByUser.contextualParams;
+
+    const theme = configByUser.theme;
+    if (theme === "dark" || theme === "light") {
+      answerToReturn.theme = theme;
+    }
+
+    const websiteType = configByUser.website_type;
+    if (websiteType === "legacy" || websiteType === "polaris") {
+      answerToReturn.websiteType = websiteType;
+    }
+
+    answerToReturn.videoIds = configByUser.video_ids?.split(",");
+    answerToReturn.initialVideoIds = configByUser.initial_video_ids?.split(",");
+    answerToReturn.startVideoSlug = configByUser.start_video_slug;
+    answerToReturn.action = configByUser.action;
+    answerToReturn.commentId = configByUser.comment_id;
+    if (this.isValidToken(configByUser.token)) {
+      answerToReturn.token = configByUser.token;
+    }
+    if (configByUser.allow_gesture_scroll !== undefined) {
+      answerToReturn.allowGestureScroll = configByUser.allow_gesture_scroll;
+    }
+
+    // Mirror the deep-link default from extractDataFromSingleDiv: when a start video
+    // is set, open the expand view (live has no data-expand-on-load attribute).
+    if (answerToReturn.startVideoSlug) {
+      answerToReturn.expandOnLoad = true;
+    }
+
+    // configByUser-sourced fields shared with the non-live path.
+    this.applyUserConfigDefaults(answerToReturn, configByUser);
 
     return answerToReturn;
   }
@@ -1847,6 +1869,10 @@ export class GenuinSDK {
     // Remove all iframes
     const iframes = document.querySelectorAll("iframe[data-genuin-embed]");
     iframes.forEach((iframe) => iframe.remove());
+
+    // Tear down the iHeart analytics bridge.
+    this.stopIHeartBridge?.();
+    this.stopIHeartBridge = undefined;
 
     // Clear all listeners and state
     this.eventManager.removeAllListeners();

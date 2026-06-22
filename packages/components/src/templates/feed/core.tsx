@@ -1,6 +1,6 @@
 "use client";
 import { cn } from "@genuin/ui/utils";
-import { useCallback, useEffect, useState, memo, lazy, Suspense } from "react";
+import { useCallback, useEffect, useState, memo, lazy } from "react";
 
 import { useBaseContext } from "@genuin/components/context";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
@@ -9,6 +9,7 @@ import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-d
 import { useInterruptionManager } from "@genuin/components/hooks/use-interruption-manager";
 import { useRouter } from "@genuin/components/hooks/use-router";
 import useViewportHeight from "@genuin/components/hooks/use-screen-height";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
 import { setQueryDataForCommunityRoleChange } from "@genuin/components/react-query/api/community/details/details";
 import {
@@ -68,10 +69,13 @@ const FeedContentWrapper = memo(function FeedContentWrapper({
   children: React.ReactNode;
 }) {
   if (isIHeart) {
+    // Not null: this wraps the primary feed content (PlayerList etc). A null fallback
+    // would blank the whole feed while the iheart-container chunk downloads. The
+    // fullscreen shimmer holds the screen until it mounts.
     return (
-      <Suspense fallback={null}>
+      <SafeSuspense fallback={<FeedSkeleton variant="fullscreen" />}>
         <IheartFullscreenContainerLazy>{children}</IheartFullscreenContainerLazy>
-      </Suspense>
+      </SafeSuspense>
     );
   }
   return <>{children}</>;
@@ -121,7 +125,7 @@ export const FeedViewCore = memo(function FeedViewCore({
     engagement: {
       engagementTools: { comment: showCommentBox },
     },
-    brand: { shouldInjectExpandViewAds },
+    brand: { shouldInjectExpandViewAds, shouldAttachStaticExpandViewAd },
   } = useEmbedConfigs();
 
   const videos = useAdInjectedFeed(
@@ -129,7 +133,8 @@ export const FeedViewCore = memo(function FeedViewCore({
     brandDetails.brand_id ?? undefined,
     showExpandView,
     platform ?? "webapp",
-    shouldInjectExpandViewAds
+    shouldInjectExpandViewAds,
+    shouldAttachStaticExpandViewAd
   );
   const { isDesktop } = useDeviceDetectMediaQuery();
   const showSidePanel =
@@ -325,16 +330,18 @@ export const FeedViewCore = memo(function FeedViewCore({
           className
         )}
         style={{
-          height: variant === "expand" ? `${viewportHeight}px` : "100%",
+          // TODO NEED TO CHECK WHY WE HAVE USED VIEWPORT HEIGHT FOR EXPAND VARIANT, SHOULD WE USE IT FOR PAGE ALSO
+          // height: variant === "expand" ? `${viewportHeight}px` : "100%",
+          height: "100%",
         }}
         {...restProps}>
         <FeedContentWrapper isIHeart={isIHeart}>
-          <Suspense fallback={<FeedSkeleton variant="player-list" theme={skeletonTheme} />}>
+          <SafeSuspense fallback={<FeedSkeleton variant="player-list" theme={skeletonTheme} />}>
             <PlayerList isSectioned={isSectioned} totalVideos={totalVideos} {...playerListProps} />
-          </Suspense>
+          </SafeSuspense>
           {showSidePanel && (
             <div className={cn("gencl:contents", { "gencl:invisible gencl:pointer-events-none": isAdFilled })}>
-              <Suspense fallback={<FeedSkeleton variant="side-panel" theme={skeletonTheme} />}>
+              <SafeSuspense fallback={<FeedSkeleton variant="side-panel" theme={skeletonTheme} />}>
                 <PostSidePanel
                   onGroupJoinStatusChange={handleGroupJoinStatusChange}
                   onGroupSubscriptionChange={handleGroupSubscriptionChange}
@@ -342,12 +349,14 @@ export const FeedViewCore = memo(function FeedViewCore({
                   onCommentCountChange={handleCommentCountChange}
                   postDetails={videos?.[activeIndex] as PostDetailsType}
                 />
-              </Suspense>
+              </SafeSuspense>
             </div>
           )}
           {/* For Interruption */}
           {shouldShowDialog && (
-            <Suspense fallback={null}>
+            // null fallback is correct: this is a modal dialog rendered on top of the
+            // fully-painted feed; the feed stays visible while the modal chunk loads.
+            <SafeSuspense fallback={null} errorFallback={null}>
               <AuthenticationModal
                 open={shouldShowDialog}
                 onOpenChange={() => {
@@ -355,7 +364,7 @@ export const FeedViewCore = memo(function FeedViewCore({
                 }}
                 customStep={dialogType}
               />
-            </Suspense>
+            </SafeSuspense>
           )}
         </FeedContentWrapper>
       </div>

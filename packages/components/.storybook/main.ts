@@ -1,7 +1,11 @@
+import { createRequire } from "module";
 import { join, dirname } from "path";
 
 import type { StorybookConfig } from "@storybook/react-vite";
+import remarkGfm from "remark-gfm";
 import tsconfigPaths from "vite-tsconfig-paths";
+
+const require = createRequire(import.meta.url);
 
 /**
  * This function is used to resolve the absolute path of a package.
@@ -16,11 +20,28 @@ const config: StorybookConfig = {
     "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)",
     "!../src/**/__wip__/**/*.stories.@(js|jsx|mjs|ts|tsx)",
   ],
+  // VAST XML + MP4 fixtures + 9:16 content clip the FeedPlayer ad-QA story
+  // requests via `/ad-tags/vast-*.xml` and `/videos/*` at this Storybook
+  // origin. Dev-only, never shipped. See:
+  // packages/components/docs/linkouts/SAMPLE_AD_TAGS.md
+  staticDirs: ["./qa-fixtures"],
   addons: [
     getAbsolutePath("@storybook/addon-onboarding"),
     getAbsolutePath("@chromatic-com/storybook"),
     getAbsolutePath("@storybook/addon-vitest"),
-    getAbsolutePath("@storybook/addon-docs"),
+    {
+      name: getAbsolutePath("@storybook/addon-docs"),
+      // Enable GitHub-flavoured markdown in `*.doc.mdx` pages so
+      // pipe-style tables, strikethrough, task lists, and autolinks
+      // render. Mirrors `packages/ui/.storybook/main.ts`.
+      options: {
+        mdxPluginOptions: {
+          mdxCompileOptions: {
+            remarkPlugins: [remarkGfm],
+          },
+        },
+      },
+    },
   ],
   framework: {
     name: getAbsolutePath("@storybook/react-vite"),
@@ -46,6 +67,16 @@ const config: StorybookConfig = {
         alias: {
           ...config.resolve?.alias,
           "@hooks": join(__dirname, "../src/hooks"),
+          // Swap the production GenAd container for a storybook-only
+          // stub that renders the Figma banner creative directly,
+          // so stories exercise the real `<DynamicLinkouts content>`
+          // -> `<LinkoutItem bannerAd>` code path without
+          // lazy-loading `gen_ad.min.js` or hitting ad networks.
+          // See `_gen-ad-container-mock.tsx`.
+          "@genuin/components/molecules/feed-player/gen-ad-container": join(
+            __dirname,
+            "../src/organisms/linkouts/_gen-ad-container-mock.tsx"
+          ),
         },
       },
       define: {

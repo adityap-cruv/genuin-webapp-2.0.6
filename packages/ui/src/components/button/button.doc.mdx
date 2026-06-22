@@ -1,0 +1,128 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./button.stories";
+
+{/*
+  Design-system narrative for the button component. Attached to the
+  matching story group via `<Meta of={…}>` so it renders as the
+  "Docs" tab next to the live stories. Layout: narrative intro →
+  live examples + controls → usage guidelines.
+*/}
+
+<Meta of={Stories} />
+
+# Button
+
+## What buttons are for
+
+A button is the most basic unit of interaction in any user interface — a target the user activates to make something happen. It signals "you can do something here" and, when activated, triggers an action: submitting a form, navigating, confirming a choice, opening a panel, or running a command. Buttons set user expectations through three signals working together — the label tells the user what will happen, the visual treatment tells them how important or destructive that action is, and the size and position tell them how prominent it is in the current view.
+
+Because buttons carry user intent, they are a load-bearing part of the experience. Inconsistent or ambiguous buttons quickly erode trust: people learn to hesitate, second-guess, or ignore them. The goal of this design system is to make the right choice obvious — for both designers building screens and engineers wiring them up — so that any given button on a Genuin screen looks, behaves, and reads the same way as every other button of its kind.
+
+## Buttons in this design system
+
+The Button component in `@genuin/ui` is configured along four axes — **theme**, **size**, **shape**, and **variant** — which combine to cover every button surface across the Genuin webapp, the Web SDK, and the GenAI SDK. Below are the canonical kinds, all of which are demonstrated in the embedded Storybook examples.
+
+### Themes (visual weight)
+
+- **Primary** — solid brand color, white label. The single most important action on a screen or in a flow. Maximum visual weight.
+- **Secondary** — light neutral fill, dark label. A supporting action that sits next to a primary button without competing with it.
+- **Secondary Dark** — dark neutral fill, white label. Used on light surfaces where a non-primary action still needs strong presence (e.g., toolbars, dense headers).
+- **Outline** — transparent fill, neutral border, dark label. A low-emphasis action — typical for cancel, dismiss, or alternate paths.
+- **Text** — no fill, no border, primary-color label. The lightest treatment, used inline with content or in tight spaces where chrome would feel heavy.
+- **Navigation** — fixed-size circular button with dark fill, used exclusively for chrome-style navigation (carousel arrows, back/close in modals, paginated controls).
+- **Overlay** — translucent dark fill with a backdrop blur, used on top of media (images, video, gradients) where a normal button would lose contrast.
+- **Custom** — escape hatch. Renders no theme styles so a caller can pass `className` for one-off treatments. Use sparingly.
+
+### Sizes
+
+`xs` (24px), `sm` (36px), `md` (40px — default), `xl` (44px), `lg` (48px). Size scales the height; padding and typography are derived. Pick `md` unless the surface explicitly calls for something denser or larger.
+
+### Shapes
+
+`default` (rounded corners), `pill` (fully rounded with horizontal padding), `square` (uniform padding for icon buttons), `circle` (a 1:1 round button for icon-only navigation).
+
+### Variant
+
+`default` for label buttons, `icon` for icon-only buttons (auto-squares the size and centers the glyph), `rounded` for pill behavior on a default button without switching shape.
+
+### State
+
+Buttons support a `disabled` state out of the box — pointer events disabled and 50% opacity — and accept any native `<button>` props (type, onClick, aria-\*, etc.). They can also render as a different element via `asChild` so a button-styled `<a>` stays a real anchor for routing and accessibility.
+
+## Examples
+
+### Primary
+
+<Canvas of={Stories.Primary} />
+
+<Controls of={Stories.Primary} />
+
+### Secondary
+
+<Canvas of={Stories.Secondary} />
+
+### Outline
+
+<Canvas of={Stories.Outline} />
+
+### Text
+
+<Canvas of={Stories.Text} />
+
+### Small
+
+<Canvas of={Stories.Small} />
+
+### Medium
+
+<Canvas of={Stories.Medium} />
+
+### Large
+
+<Canvas of={Stories.Large} />
+
+### Disabled
+
+<Canvas of={Stories.Disabled} />
+
+### With icon
+
+<Canvas of={Stories.WithIcon} />
+
+### Icon only
+
+<Canvas of={Stories.IconOnly} />
+
+### As child
+
+<Canvas of={Stories.AsChild} />
+
+## When to use which button
+
+- **One Primary per view.** A screen, modal, or section should have at most one primary action. Two primaries means neither one is.
+- **Pair Primary with Secondary or Outline.** Confirm/Cancel, Save/Discard, Submit/Back — the secondary action is always lower-weight than the primary.
+- **Use Text for inline or tertiary actions.** "Forgot password?", "Learn more", "Edit" inside a long form — anywhere chrome would feel heavy.
+- **Use Outline for destructive-but-not-final actions.** Cancel, dismiss, or "not now" reads better as outline than as a filled button.
+- **Use Icon-only buttons only when the icon is unambiguous.** ✕ for close, ＋ for add, ⋯ for more — and always provide an `aria-label`. If you need a tooltip to explain the icon, use a label instead.
+- **Use Navigation/Overlay only on top of media or chrome.** They are designed to float over content. Don't use them as regular call-to-actions on a flat surface.
+- **Pick size by surface density, not by importance.**
+  - `sm` — toolbars, table rows, dense lists
+  - `md` — default for forms, dialogs, and page actions
+  - `lg` — hero sections, onboarding, marketing surfaces
+  - `xs` — compact chrome, badges, in-content controls
+- **Pill shape signals a filterable or chip-like action.** Use it for tag/filter rows and segmented controls — not for primary form submits.
+- **Render as a link when the action navigates.** Use `asChild` with an `<a>` (or framework `<Link>`) for anything that changes the URL — never a button with an onClick that calls `router.push`. This preserves middle-click, right-click, and screen-reader semantics.
+
+## How not to use buttons
+
+- **Don't use a `<div>` or styled span as a button.** Always render the `Button` component (or `asChild` with a real `<a>`/`<Link>`). Custom click targets break keyboard activation, focus, and assistive tech.
+- **Don't suppress the focus ring without a replacement.** The component provides a visible focus state — don't override it with `outline-none` unless you provide an equivalent indicator. Keyboard users rely on it.
+- **Don't use color alone to signal meaning.** A red button isn't a destructive button on its own — pair the treatment with a clear, action-oriented label ("Delete account"), and put the destructive action behind a confirm step.
+- **Don't ship more than one Primary per view.** If two actions feel equally important, they aren't — choose, or split them across separate steps.
+- **Don't use `theme: "custom"` to one-off a new style.** If you need a treatment that isn't here, raise it as a design-system change so the new variant is added centrally — don't fork the visuals in a single feature.
+- **Don't put long-form copy in a button label.** Buttons should be 1–3 words, action-led ("Save changes", "Add member"). If you need a sentence, you need a different component.
+- **Don't disable a button without explaining why.** A grayed-out button with no context is a dead end. Either show validation messages above the form, a tooltip on hover, or surface what's missing inline.
+- **Don't nest interactive elements inside a button.** No buttons inside buttons, no anchors inside buttons. The whole component should be a single click target.
+- **Don't use a button for something that isn't an action.** If it navigates, use a link (`asChild` with `<a>`). If it shows status, use a Badge. If it's purely decorative, it isn't a button at all.
+- **Don't use `size="lg"` to make a button feel important.** Importance comes from theme, not size. A primary `md` button outranks a secondary `lg` button every time.

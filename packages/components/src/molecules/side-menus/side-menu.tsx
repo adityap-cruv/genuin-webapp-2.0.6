@@ -1,6 +1,8 @@
 import { cn } from "@genuin/ui/lib/utils";
-import { lazy, Suspense } from "react";
+import { lazy } from "react";
 import type { FC } from "react";
+
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 
 import type { MenuItem } from "./side-menu.types";
 
@@ -37,11 +39,11 @@ const SideMenu: FC<SideMenuProps> = ({ items, activeId, onSelect }) => {
         );
 
         return item.variant === "signOut" ? (
-          <Suspense fallback={listItem}>
+          <SafeSuspense fallback={listItem}>
             <AuthenticationModal key={item.id} customStep="SIGN_OUT" asChild>
               {listItem}
             </AuthenticationModal>
-          </Suspense>
+          </SafeSuspense>
         ) : (
           listItem
         );

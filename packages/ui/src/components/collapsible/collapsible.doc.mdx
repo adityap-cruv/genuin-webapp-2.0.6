@@ -1,0 +1,97 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./collapsible.stories";
+
+{/*
+  Design-system narrative for the collapsible component. Attached to the
+  matching story group via `<Meta of={…}>` so it renders as the
+  "Docs" tab next to the live stories. Layout: narrative intro →
+  live examples + controls → usage guidelines.
+*/}
+
+<Meta of={Stories} />
+
+# Collapsible
+
+## What collapsibles are for
+
+A collapsible is the most basic disclosure primitive in the interface: a single piece of content that the user can show or hide on demand. It exists to keep secondary or supporting information out of the way until someone asks for it — without spinning up the heavier machinery of a modal, drawer, or full-blown accordion. Click the trigger, the content slides into view; click again, it slides away. That's the entire contract.
+
+The point of a collapsible is *one* extra layer of detail, attached to the place that needs it. It shines when the surrounding page is scannable on its own, but a small subset of users (or a small subset of moments) want more. Hiding everything by default gives the page room to breathe; revealing it on intent keeps the detail one click away. A collapsible is *not* a navigation tool, *not* a substitute for tabs, and *not* a way to hide content the user has to act on — those are different problems with different controls.
+
+The Genuin Collapsible is a pass-through wrapper around `@radix-ui/react-collapsible`, so the keyboard model (Space/Enter on the trigger), focus management, ARIA roles (`aria-expanded`, `aria-controls`), and animation hooks come from Radix and behave correctly out of the box. The component itself is intentionally unstyled — the design system gives you the behavior; the surrounding screen styles the trigger and content.
+
+## Collapsible in this design system
+
+The Collapsible component in `@genuin/ui` exposes three pieces:
+
+- **`<Collapsible>`** — the root. Owns open/closed state and emits change events.
+- **`<CollapsibleTrigger>`** — the control that toggles the content. Should always be wrapped around a real button (or pass `asChild` and supply your own).
+- **`<CollapsibleContent>`** — the body that appears when open. Hidden from the accessibility tree when closed.
+
+### State
+
+- **Uncontrolled** — pass `defaultOpen` to set the initial state and let Radix track the rest.
+- **Controlled** — drive it with `open` + `onOpenChange`. Use this when external state needs to react to the collapsible (e.g., scrolling to it, syncing with URL, persisting in user preferences) or when a parent needs to coordinate multiple collapsibles.
+- **`disabled`** — locks the trigger so it can't be toggled. Useful when the underlying data isn't yet available, or the action requires a state the user hasn't reached yet.
+
+### Triggering it
+
+`CollapsibleTrigger` is a Radix `<button>` under the hood. Almost always pass `asChild` and wrap a real `<Button>` so the trigger inherits the design system's button treatment, focus ring, and hit area:
+
+```tsx
+<CollapsibleTrigger asChild>
+  <Button size="sm" variant="icon">
+    <ChevronDown />
+    <span className="sr-only">Toggle</span>
+  </Button>
+</CollapsibleTrigger>
+```
+
+The trigger label can be visible text ("Show more"), an icon, or both. Whichever you choose, it must communicate that it expands content — a glyph alone with no `aria-label` or `sr-only` text is unacceptable.
+
+### Content
+
+`CollapsibleContent` is hidden via `aria-hidden` and removed from the tab order when closed. Style it as you would any block — borders, padding, spacing, animations — and let the component handle the show/hide. The component doesn't ship a default open/close animation, so when you add one (height transition, opacity, etc.), drive it from `data-state` so it stays in sync with the underlying primitive.
+
+### Layout
+
+The Genuin pattern is to render the trigger inline with a heading or a label row, with the always-visible primary content directly below, and the collapsible body below that. Keep the structure flat: a trigger, a body, done.
+
+## Examples
+
+### Default
+
+<Canvas of={Stories.Default} />
+
+<Controls of={Stories.Default} />
+
+### Initially open
+
+<Canvas of={Stories.InitiallyOpen} />
+
+## When to use Collapsible
+
+- **"Show more / show less" blocks.** A truncated description, comment thread, or property list where the user occasionally wants the full detail.
+- **Optional configuration sections.** "Advanced settings" or "Additional options" inside a form, kept hidden so the default flow stays short.
+- **One-off disclosure on a card or row.** A list item that has a primary line plus an optional details panel — the disclosure feels lighter than navigating into a detail view.
+- **Notification / activity expansion.** A summary like "@user starred 3 repos" with the list of repos hidden behind a toggle until the user wants to see them.
+- **Inline help and explanations.** A "What is this?" link next to a field that expands a short paragraph in place — better than a tooltip when the explanation needs more than one line.
+- **Empty-state suggestions.** "No results — try expanding your search" with the suggestions hidden behind a collapsible by default.
+- **Reach for Collapsible when there is a single body to disclose.** If you have a *list* of disclosures, you want Accordion. If the disclosure is a heavy, full-screen experience, you want Modal or Drawer.
+- **Prefer uncontrolled (`defaultOpen`) when the open state is local.** Switch to controlled (`open` / `onOpenChange`) only when something *outside* the component needs to know.
+
+## How not to use Collapsible
+
+- **Don't use it for a list of disclosures.** Two or more collapsibles stacked together with similar triggers is the accordion pattern — use `Accordion`. Multiple raw collapsibles drift in spacing, animation, and keyboard behaviour.
+- **Don't hide content the user must act on.** Required fields, errors, primary CTAs, terms of service — none of these belong inside a collapsible. Disclosure is for *optional* depth, not for hiding requirements.
+- **Don't use Collapsible for navigation.** If clicking the trigger should change routes, render a link. A collapsible's contract is "show/hide what's already on this page."
+- **Don't ship a Collapsible without a trigger.** A `CollapsibleContent` with no associated `CollapsibleTrigger` is just an `aria-hidden` div — confusing and inaccessible.
+- **Don't put a `<div>` inside `CollapsibleTrigger` without `asChild` + a real button.** The trigger must be a button. Don't strip the role; don't fake it with a clickable div.
+- **Don't write vague trigger labels.** "More", "Click here", "Toggle" force the user to expand to find out what's behind. The trigger should say *what* will appear: "Show 3 more comments", "Advanced options", "View shipping details".
+- **Don't suppress the focus ring on the trigger.** Keyboard users rely on it. If you restyle, provide an equivalent indicator.
+- **Don't animate the trigger's surroundings on open.** Only `CollapsibleContent` should animate. If the surrounding layout reflows when the body opens, that's expected — use a smooth height transition on the content, not on the wrapper.
+- **Don't nest Collapsibles deeply.** Two levels of disclosure already taxes the user's attention; three is a maze. Flatten the structure or move the deeper level into a separate page or modal.
+- **Don't use Collapsible to lazy-load expensive content.** It defers visibility, not work. If you need the content to fetch only on open, do that explicitly via `onOpenChange` — the component doesn't lazy-mount for you.
+- **Don't disable a Collapsible silently.** A `disabled` trigger that gives no reason looks broken. Pair it with helper text or a tooltip explaining why the user can't expand it yet.
+- **Don't put a single Collapsible where a static disclosure is enough.** If the content is short and the page has space for it, just render it. The collapsible only earns its weight when hiding the body actually buys back useful real estate.

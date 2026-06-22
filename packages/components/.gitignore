@@ -1,0 +1,10 @@
+# Compiled artifacts emitted next to .storybook source files. The source is
+# `preview.tsx` / `test-data.ts`; the matching `.js` / `.d.ts` / `.d.ts.map`
+# were checked in by mistake and Storybook prefers them over the source,
+# so edits to `preview.tsx` silently fail to apply. Keep these out of git.
+.storybook/preview.js
+.storybook/preview.d.ts
+.storybook/preview.d.ts.map
+.storybook/test-data.js
+.storybook/test-data.d.ts
+.storybook/test-data.d.ts.map

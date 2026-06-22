@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy } from "react";
 import { useMemo } from "react";
 
 import type { VideoTypes } from "@genuin/components/context";
@@ -6,6 +6,7 @@ import { useAuthContext } from "@genuin/components/context/auth";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { type CommentListType } from "@genuin/components/react-query/api/comments";
 
 import { ActionPopover } from "../actions/action-popover";
@@ -146,7 +147,7 @@ export function CommentInputBox({
       );
     }
     return (
-      <Suspense
+      <SafeSuspense
         fallback={
           <div>
             <MentionInput
@@ -179,7 +180,7 @@ export function CommentInputBox({
             />
           </div>
         </AuthenticationModal>
-      </Suspense>
+      </SafeSuspense>
     );
   }
 

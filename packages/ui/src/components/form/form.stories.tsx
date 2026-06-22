@@ -12,7 +12,6 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 const meta: Meta<typeof Form> = {
   title: "Components/Form",
   component: Form,
-  tags: ["autodocs"],
   parameters: {
     layout: "centered",
   },

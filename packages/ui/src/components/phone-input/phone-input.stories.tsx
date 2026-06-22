@@ -7,7 +7,6 @@ import { PhoneInput } from "./phone-input";
 const meta: Meta<typeof PhoneInput> = {
   title: "Components/PhoneInput",
   component: PhoneInput,
-  tags: ["autodocs"],
   parameters: {
     layout: "centered",
   },

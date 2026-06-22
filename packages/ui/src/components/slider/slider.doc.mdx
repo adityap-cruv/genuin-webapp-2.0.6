@@ -1,0 +1,147 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./slider.stories";
+
+{/*
+  Design-system narrative for the slider component. Attached to the
+  matching story group via `<Meta of={…}>` so it renders as the
+  "Docs" tab next to the live stories. Layout: narrative intro →
+  live examples + controls → usage guidelines.
+*/}
+
+<Meta of={Stories} />
+
+# Slider
+
+## What sliders are for
+
+A slider is the form control for selecting a *value within a range* — pick a number on a continuous scale by dragging a thumb along a track. The defining trait is that the user can *see and feel* the gradient of choice: where 0 is, where the maximum is, where they currently are, and what's possible between them. Unlike an `<input type="number">`, which asks the user to read the field and type a value, a slider invites direct manipulation: grab the thumb, slide it, and the value follows. That makes the slider the right control whenever the *relationship* between possible values matters more than the exact number — volume, brightness, opacity, price range, transparency, zoom level, audio scrubbing.
+
+A good slider is unambiguous about the range, the current value(s), and the step size. The track shows the full extent at a glance; the filled "range" portion shows how much of the scale the current value covers; the thumb shows exactly where the value lives. The keyboard model is bulletproof — arrow keys nudge by step, Page Up / Page Down jump in larger increments, Home / End snap to min / max. A bad slider hides the value entirely (no number visible anywhere), uses a single thumb when the use case clearly wants two (a price-range filter), or gives the user no idea what the step granularity is (sliding by 0.001 when they want whole numbers).
+
+The Genuin Slider is built on `@radix-ui/react-slider`, which gets the keyboard model, the touch behaviour, multi-thumb support, vertical orientation, and ARIA semantics (`role="slider"`, `aria-valuemin`, `aria-valuemax`, `aria-valuenow`) correct out of the box. The design system layers on the brand colors, the track height, and the thumb visuals.
+
+## Slider in this design system
+
+The Slider component in `@genuin/ui` is a single export, `<Slider>`, that renders the full Radix slider tree (Root → Track → Range → one or more Thumbs) with the design-system styling applied.
+
+### Single-thumb vs multi-thumb
+
+The slider supports both. Pass `value` (or `defaultValue`) as an array — its length determines the number of thumbs:
+
+- `[50]` — one thumb, scalar selection (volume, brightness).
+- `[20, 80]` — two thumbs, range selection (price range, time window).
+- `[a, b, c]` — three or more thumbs (rare but supported — multi-marker timelines, audio fade points).
+
+When neither `value` nor `defaultValue` is passed, the component defaults to a two-thumb range from `min` to `max`.
+
+### Orientation
+
+`orientation` (Radix prop) accepts `"horizontal"` (default) or `"vertical"`.
+
+- **Horizontal** — the canonical layout. The track stretches across the available width; the thumb moves left/right.
+- **Vertical** — the track grows top-to-bottom (with a `min-h-44` floor), the thumb moves up/down. Use for vertical mixers, audio level meters, or vertically-laid-out controls. Don't use vertical for "natural" range pickers (price, time) — horizontal is the convention there.
+
+### Min / max / step
+
+- **`min`** (default `0`) and **`max`** (default `100`) — set the range. Pick values that match the data the slider represents (`min: -100, max: 100` for a balance / pan slider; `min: 0, max: 1, step: 0.01` for opacity).
+- **`step`** — how much the slider moves per arrow keypress and per discrete drag tick. Choose the smallest meaningful unit for the use case. For percentages, `1`. For monetary ranges, `1` or `5`. For opacity (0–1), `0.01` or `0.05`.
+
+### Visual treatment
+
+- **Track**: `secondary-100` background, fully rounded (`rounded-full`), 6px (`h-1.5`) thick on horizontal, 6px wide on vertical.
+- **Range** (the filled portion between min and current value, or between two thumbs): `primary` brand fill.
+- **Thumb**: 16px circle with `primary` border and fill, soft shadow, focus / hover ring (`ring-4`) for keyboard-visible interaction. The thumb is purely visual chrome — clicking and dragging it moves the value via Radix.
+- **Disabled**: 50% opacity on the whole component; thumbs lose pointer events.
+
+### Layout caveats
+
+The component renders as a full-width row (or full-height column on vertical). It does not include its own labels or value readout — those belong to the host. Pair with a label above ("Volume") and optionally a value readout ("75%") next to or below the slider so the user can read the exact value while dragging.
+
+### Pairing with `<Form>`
+
+Inside the form orchestration, drive the slider via `<Controller>` since Radix uses `value` / `onValueChange` (not the native `onChange`):
+
+```tsx
+<FormField
+  control={form.control}
+  name="opacity"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>Opacity ({Math.round(field.value[0] * 100)}%)</FormLabel>
+      <FormControl>
+        <Slider
+          min={0}
+          max={1}
+          step={0.01}
+          value={field.value}
+          onValueChange={field.onChange}
+        />
+      </FormControl>
+    </FormItem>
+  )}
+/>
+```
+
+### Accessibility
+
+The component automatically wires `role="slider"`, `aria-valuemin`, `aria-valuemax`, `aria-valuenow`, and `aria-orientation`. For multi-thumb sliders, each thumb gets its own ARIA attributes. Pass `aria-label` (or `aria-labelledby` pointing to a visible label) on each thumb when there's no obvious associated `<label>`. Always ensure the focus ring is visible — keyboard users rely on it to know which thumb they're moving.
+
+## Examples
+
+### Default
+
+<Canvas of={Stories.Default} />
+
+<Controls of={Stories.Default} />
+
+### Range
+
+<Canvas of={Stories.Range} />
+
+### With steps
+
+<Canvas of={Stories.WithSteps} />
+
+### Disabled
+
+<Canvas of={Stories.Disabled} />
+
+### Custom range
+
+<Canvas of={Stories.CustomRange} />
+
+### Vertical
+
+<Canvas of={Stories.Vertical} />
+
+## When to use Slider
+
+- **Continuous numeric selection.** Volume, brightness, opacity, transparency, scale — anywhere the value is a point on a continuous scale.
+- **Range filters.** Price range, date range, file-size range — pass a 2-thumb `value` and let the user pick the lower and upper bounds together.
+- **Audio / video scrubbing.** Pair with playback state to let the user scrub through media. Render the buffered region behind the range fill.
+- **Color / channel mixers.** Hue, saturation, lightness, alpha — sliders are the canonical color-picking control alongside or instead of an HSV grid.
+- **Configuration controls.** "Maximum results to show" (with `min: 5, max: 100, step: 5`), "Refresh interval", "Card density".
+- **Pick the right `step`.** Too fine a step (0.001 on a price slider) makes the slider feel imprecise; too coarse (steps of 10 on a percentage) feels jerky.
+- **Always show the current value.** A slider without a visible numeric readout forces the user to guess.
+- **Pair with a label.** "Volume", "Price range" — the slider has no built-in label.
+- **Use 2-thumb sliders for range filters.** A pair of separate min/max inputs feels disconnected; a 2-thumb slider unifies them.
+
+## How not to use Slider
+
+- **Don't use a Slider for boolean toggles.** "On / Off" wants a Switch, not a slider with two stops.
+- **Don't use a Slider for a small number of discrete choices** ("Small / Medium / Large"). Use radios or a segmented button group — sliders imply continuity.
+- **Don't ship a slider without a visible value readout.** "Volume" with no number means the user has to guess; render the current value somewhere on screen (above, beside, or below).
+- **Don't use a slider for high-precision numeric input.** Typing `42.78` into a number field is faster than nudging a thumb to it. Pair the slider with a number input if both manipulation and exact entry matter.
+- **Don't use a slider for an ordering / ranking task.** A slider chooses a value, not an order. Use a drag-and-drop list for ranking.
+- **Don't use a slider where users will frequently want to enter the maximum or minimum exactly.** Sliding to the absolute edge is fiddly; offer a "Max" button or a number input alongside.
+- **Don't suppress the focus / hover ring.** The thumb's focus ring tells keyboard users which thumb they're controlling. The hover ring tells mouse users they can grab it. Both are required.
+- **Don't use a slider to confirm or commit a destructive action.** "Slide to delete" is theatrical and accessibility-hostile (no clear keyboard equivalent). Use a button + confirmation dialog.
+- **Don't render a slider with no `min` / `max` displayed.** The user should see what the endpoints are — show them as labels under the track or as adjacent helper text.
+- **Don't use a horizontal slider on a narrow column.** A 60px-wide slider gives almost no room to drag. Either widen the layout or use a number input.
+- **Don't pair a 2-thumb slider with a single value readout.** Range sliders need two readouts (low and high) — show them on either side or above the thumbs.
+- **Don't use a slider for a discrete-step choice longer than ~10 stops.** A 50-stop slider is a select dressed as a slider — use a `<Select>` or a `Command` palette.
+- **Don't tie a slider to an expensive operation that fires per-step.** "Resize image as the user drags" is too expensive — debounce the result, or fire the operation only on `onValueCommit` (Radix's "release" event).
+- **Don't use a Slider for date / time pickers.** A slider feels imprecise for dates; users want a calendar (date) or a wheel (time).
+- **Don't render the slider without enough vertical breathing room.** The thumb's hover/focus ring extends past the track; cramming the slider into a tight row will clip the ring and make focus invisible.
+- **Don't use a slider to navigate a step-by-step process.** A linear progress bar with "Next" / "Back" controls is the right tool for steppers; sliders imply continuous values.

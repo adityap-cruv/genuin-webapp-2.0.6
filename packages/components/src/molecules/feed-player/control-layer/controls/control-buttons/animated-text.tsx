@@ -18,8 +18,10 @@ type AnimatedTextProps = {
  *   → hidden for HIDE_DURATION → repeat
  */
 export const AnimatedText = memo(function AnimatedText({ text, width = 110, stop }: AnimatedTextProps) {
-  // Start visible so the expand animation plays immediately on mount.
-  const [visible, setVisible] = useState(true);
+  // Start collapsed so the first paint is at width 0; a rAF then expands it,
+  // letting the CSS width/opacity transition actually play the slide-in.
+  // (Starting at `true` mounts already-expanded → transition has no delta → it pops.)
+  const [visible, setVisible] = useState(false);
 
   const showTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -37,54 +39,53 @@ export const AnimatedText = memo(function AnimatedText({ text, width = 110, stop
   };
 
   /**
-   * Schedule one full show→hide→show cycle starting from the expand phase.
-   * Calling this while timers are already running is safe — they are cleared
-   * first so the cycle always restarts cleanly.
+   * Schedule a show→hide→show cycle.
+   * @param beginHidden when true, start in the hidden phase — stay collapsed for
+   *   HIDE_DURATION, THEN slide in. Used on (re)start so the hint doesn't snap
+   *   back the instant it's un-suppressed (e.g. when the cursor leaves the bar).
+   * Calling this while timers are running is safe — they're cleared first.
    */
-  const startCycle = () => {
+  const startCycle = (beginHidden = false) => {
     clearTimers();
-    // Phase 1: show immediately (CSS transition handles the expand animation).
+    if (beginHidden) {
+      // Grace gap before the first expand.
+      setVisible(false);
+      hideTimerRef.current = setTimeout(() => startCycle(false), HIDE_DURATION);
+      return;
+    }
+    // Phase 1: expand (CSS transition handles the slide-in).
     setVisible(true);
     // Phase 2: after SHOW_DURATION collapse.
     showTimerRef.current = setTimeout(() => {
       setVisible(false);
-      // Phase 3: after HIDE_DURATION restart from expand.
-      hideTimerRef.current = setTimeout(() => {
-        startCycle();
-      }, HIDE_DURATION);
+      // Phase 3: after HIDE_DURATION expand again.
+      hideTimerRef.current = setTimeout(() => startCycle(false), HIDE_DURATION);
     }, SHOW_DURATION);
   };
 
-  // Mount: kick off the cycle immediately.
-  useEffect(() => {
-    startCycle();
-    return () => {
-      clearTimers();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // React to `stop` prop changes.
+  // Drives both mount and `stop` changes.
   useEffect(() => {
     if (stop) {
       clearTimers();
       // Collapse immediately so the CSS closing animation plays.
       setVisible(false);
-    } else {
-      // `stop` flipped false → restart cycle from the expand phase.
-      startCycle();
+      return;
     }
+    // Begin from the hidden phase: wait HIDE_DURATION, THEN slide in — so the
+    // hint eases back in instead of snapping the instant `stop` clears.
+    startCycle(true);
+    return () => clearTimers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stop]);
 
   return (
     <div
-      className="gencl:text-body-1-medium gencl:flex gencl:min-w-0 gencl:overflow-hidden gencl:whitespace-nowrap gencl:transition-[max-width,opacity] gencl:duration-500 gencl:ease-in-out"
+      className={`gencl:text-body-1-medium gencl:flex gencl:min-w-0 gencl:overflow-hidden gencl:whitespace-nowrap gencl:transition-[max-width,opacity] gencl:duration-500 gencl:ease-in-out`}
       style={{
         maxWidth: visible ? `${width}px` : "0px",
         opacity: visible ? 1 : 0,
       }}>
-      <p className="gencl:text-white gencl:pr-4">{text}</p>
+      <p className="gencl:text-white gencl:pl-[6px] gencl:pr-4">{text}</p>
     </div>
   );
 });

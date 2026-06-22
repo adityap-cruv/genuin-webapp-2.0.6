@@ -59,6 +59,36 @@ export default [
         },
       ],
       "@typescript-eslint/consistent-type-imports": ["error", { prefer: "type-imports" }],
+      // Force every lazy/dynamic-import boundary through <SafeSuspense> (which
+      // pairs Suspense with a AppErrorBoundary) so a failed chunk can't unwind
+      // to the React root and blank the embed. This targets the JSX element
+      // (both `<Suspense>` and `<React.Suspense>`) — the actual render is what
+      // matters, and unlike an import-name ban it doesn't false-positive on
+      // `import * as React`. Intentional bare-Suspense sites (the wrapper itself,
+      // or a parent that already drives chunk-retry) opt out with an explanatory
+      // `// eslint-disable-next-line no-restricted-syntax` comment.
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "JSXOpeningElement[name.name='Suspense']",
+          message:
+            "Use <SafeSuspense> (@genuin/components/molecules/error/safe-suspense), not bare <Suspense>. " +
+            "If a parent already contains chunk-load failures, opt out with an explanatory eslint-disable.",
+        },
+        {
+          selector: "JSXMemberExpression[property.name='Suspense']",
+          message: "Use <SafeSuspense>, not React.Suspense.",
+        },
+      ],
+    },
+  },
+  {
+    // The SafeSuspense wrapper itself must render the real <Suspense>.
+    // Storybook stories are never shipped in the SDK bundle, so a bare
+    // <Suspense> there can't blank a production embed — exempt them too.
+    files: ["**/molecules/error/safe-suspense.tsx", "**/*.stories.tsx", "**/*.stories.ts"],
+    rules: {
+      "no-restricted-syntax": "off",
     },
   },
 ];

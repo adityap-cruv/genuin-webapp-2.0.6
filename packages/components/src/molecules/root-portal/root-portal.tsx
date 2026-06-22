@@ -1,7 +1,7 @@
 import { Toaster } from "@genuin/ui";
 import { cn } from "@genuin/ui/lib/utils";
 import * as React from "react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { createPortal } from "react-dom";
 
 import { useBaseContext } from "@genuin/components/context/base";
@@ -21,6 +21,14 @@ type RootPortalProps = {
    * Defaults to "default" for backward compatibility.
    */
   portalKey?: string;
+  /**
+   * When true, the portal container is re-anchored to the live visual viewport
+   * (`window.visualViewport`) instead of being pinned to the layout viewport via
+   * `inset: 0`. This shrinks the (potentially `bg-black`) backdrop to the visible
+   * area when the iOS keyboard opens, so it does not paint a "black void" behind
+   * the keyboard. Defaults to false — existing consumers keep `inset: 0`.
+   */
+  trackVisualViewport?: boolean;
 };
 
 const BRAND_OVERLAY_Z_INDEX: Record<number, string> = {
@@ -67,14 +75,22 @@ export function RootPortal({
   style,
   enabledToaster = true,
   portalKey = "default",
+  trackVisualViewport = false,
 }: RootPortalProps) {
-  const [mounted, setMounted] = React.useState(false);
-  const [containerElement, setContainerElement] = React.useState<HTMLElement | null>(null);
   const { parsedBrandColors, isEmbed, useShadowDOM, brandDetails, theme } = useBaseContext();
 
+  // Resolve the shadow-host container *synchronously* during the first render for
+  // the embed-overlay case. getOrCreateOverlayShadowHost is idempotent and sync, so
+  // the portal target exists on the very first commit — there is no null-first-render
+  // frame where the previous skeleton has unmounted but the overlay hasn't painted
+  // yet (the transparent gap when entering expand-view). The effect below still owns
+  // all style/z-index work; this only seeds the target early.
+  const [containerElement, setContainerElement] = React.useState<HTMLElement | null>(() => {
+    if (typeof window === "undefined" || container || !useShadowDOM) return null;
+    const { shadowRoot } = getOrCreateOverlayShadowHost(portalKey);
+    return shadowRoot.querySelector("[data-portal-container]") as HTMLElement | null;
+  });
   useEffect(() => {
-    setMounted(true);
-
     // Resolve the container element
     if (container) {
       if (typeof container === "string") {
@@ -127,8 +143,43 @@ export function RootPortal({
     }
   }, [containerElement, theme]);
 
+  // When enabled, anchor the portal container to the live visual viewport instead
+  // of the layout viewport (`inset: 0`). On iOS the keyboard shrinks the visual
+  // viewport but not the layout viewport, so an `inset: 0` backdrop keeps painting
+  // (e.g. `bg-black`) behind the keyboard — the "black void". Re-anchoring to the
+  // visual-viewport rectangle shrinks the backdrop to the visible area.
+  // `theme` is in the deps so this re-applies immediately after the theme effect
+  // re-sets `inset: 0` on a theme change.
+  useEffect(() => {
+    if (!trackVisualViewport || !containerElement) return;
+    const viewport = window.visualViewport;
+    if (!viewport) return;
+
+    function syncToVisualViewport() {
+      const vp = window.visualViewport;
+      if (!vp || !containerElement) return;
+      containerElement.style.inset = "";
+      containerElement.style.top = `${vp.offsetTop}px`;
+      containerElement.style.left = `${vp.offsetLeft}px`;
+      containerElement.style.width = `${vp.width}px`;
+      containerElement.style.height = `${vp.height}px`;
+    }
+
+    syncToVisualViewport();
+    viewport.addEventListener("resize", syncToVisualViewport);
+    viewport.addEventListener("scroll", syncToVisualViewport);
+
+    return () => {
+      viewport.removeEventListener("resize", syncToVisualViewport);
+      viewport.removeEventListener("scroll", syncToVisualViewport);
+    };
+  }, [trackVisualViewport, containerElement, theme]);
+
   if (typeof window === "undefined") return null;
-  if (!isEmbed || !mounted || !containerElement) return null;
+  // The shadow-overlay path seeds `containerElement` synchronously above, so it
+  // renders on the first client commit (no transparent gap). The document.body /
+  // explicit-container paths resolve it in the effect, so they still wait one tick.
+  if (!isEmbed || !containerElement) return null;
 
   const elementToRender = (
     <div

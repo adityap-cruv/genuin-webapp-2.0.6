@@ -1,0 +1,136 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./dynamic-sheet.stories";
+
+{/*
+  Design-system narrative for the dynamic-sheet component. Attached to the
+  matching story group via `<Meta of={…}>` so it renders as the
+  "Docs" tab next to the live stories. Layout: narrative intro →
+  live examples + controls → usage guidelines.
+*/}
+
+<Meta of={Stories} />
+
+# Dynamic Sheet
+
+## What dynamic sheets are for
+
+A dynamic sheet is a multi-state, drag-aware bottom panel — a surface that slides up from the bottom of the viewport (or a host container), can rest at several different heights, and lets the user drag it up to expand or down to collapse and dismiss. Unlike a dialog, which has only "open" and "closed", a dynamic sheet has a *state machine*: a sequence of named heights ("peek", "default", "expand", "panel", "full") that the sheet snaps between. The user can move freely between those states with a flick or a drag, and the host can drive transitions programmatically (auto-advancing from one state to another after a delay, for example).
+
+This pattern earns its keep when the surface needs to grow or shrink with the user's intent. A peek state shows just enough to advertise the panel's existence without taking space; expand and panel states give progressively more room as the user wants more detail; full-view dedicates the whole viewport when the user really wants to focus. Done well, the sheet feels like the same piece of UI breathing — not five different modal experiences. Done poorly, it feels twitchy: too many states, snap points the user can't predict, drag interactions that fight scroll. The Genuin DynamicSheet is built around three render strategies, a configurable list of named states, optional auto-advance rules, automatic auto-height measurement, and a careful gesture model that distinguishes "dragging the sheet" from "scrolling content inside it."
+
+## Dynamic Sheet in this design system
+
+The DynamicSheet component in `@genuin/ui` is exported as a single `<DynamicSheet>` root with a richly configured `config` prop. Behaviour is split between the component (animation, gesture, render mode) and the `useDynamicSheet` hook (snap math, drag tracking, state transitions).
+
+### Render modes
+
+- **`fixed`** (default) — portals into `document.body`, `position: fixed`, covers the full viewport. The bottom-sheet pattern most users expect from mobile apps. Reach for this when the sheet should sit above all page content.
+- **`container`** — `position: absolute` inside the nearest positioned ancestor. Pass `containerRef` so the hook can measure the container height. Use when the sheet should be scoped to a specific section of the page (a card, an embed, a feed item).
+- **`inline`** — no positioning at all; the sheet renders inline in the document flow. Height animates from `0` to its computed pixel value on open. The parent fully controls placement (flex, grid, etc.). Use when the sheet must integrate into a layout rather than overlay it.
+
+### States
+
+Eight built-in named states, in order from smallest to largest:
+
+| State            | Default size | Typical use                                                                |
+| ---------------- | ------------ | -------------------------------------------------------------------------- |
+| `pl-xs`          | 5%           | Compact placement chip (entry point for narrow embeds)                     |
+| `pl-sml`         | 6%           | Compact placement chip — slightly taller                                   |
+| `default`        | 15%          | Resting peek state                                                         |
+| `default-active` | 18%          | Resting state with active treatment                                        |
+| `expand-view`    | 40%          | First substantive expansion                                                |
+| `panel-view`     | 70%          | Larger panel, exposes more content; first state with overlay               |
+| `full-view`      | 100%         | Full-screen takeover                                                       |
+| `responsive`     | 100%         | Self-contained card that fills its host container; size-bucket responsive |
+
+`config.enabledStates` filters which of those are actually reachable from drag/snap. `config.heights` overrides individual heights per state — numbers are percent of container, strings are CSS values, and `"auto"` / `"fit-content"` resolves to the measured combined height of the rendered indicator + header + content + footer.
+
+### Open / close lifecycle
+
+- **`isOpen`** — controls the animation. `true` plays the open animation; `false` plays the close animation.
+- **`onDismissed`** — called once the close animation finishes (≈400ms after `isOpen` becomes `false`). The host should unmount the sheet here.
+- **`config.onClose`** — called when the user requests to close (overlay click, swipe-down past threshold, close button). The host typically uses this to flip its own `isOpen` to `false`.
+
+### Auto-advance
+
+`config.autoAdvance` accepts a list of `{ from, to, delayMs }` rules. When the sheet enters a `from` state, a timer starts; if the user doesn't interact, the sheet transitions to `to`. Use it for first-frame promotional reveals (e.g., chip → expand after 3s) — never use it to silently hijack a state the user just dragged to.
+
+### Header, footer, and chrome
+
+- **`header`** — custom header node, replaces the built-in. The header is also a drag handle.
+- **`footer`** — custom footer; only rendered when `config.showFooter` is true.
+- **`config.navTitle`** + **`config.showClose`** — render the built-in header instead, with a centered title and a top-right close button.
+- **`config.showIndicator`** — render the drag-pill indicator at the very top of the sheet (default on, hidden in the `default` state).
+- **`config.showOverlay`** — show a backdrop dim/blur. Only meaningful in `panel-view` and `full-view` (and only for `fixed` / `container` render modes).
+- **`config.theme`** — `"light"` or `"dark"`. Light is white-on-secondary; dark is translucent black with a backdrop blur.
+
+### Gesture model
+
+The sheet uses two layers of gesture handling: the panel itself (drags the sheet between states) and the scrollable content area (scrolls content unless the user is at `scrollTop === 0` and pulls down past the threshold, at which point control hands off to the sheet's close logic — Instagram-style). `config.disableDragAndSwipe` turns both off entirely. `onDragging` and `onSwiperToggle` are signal callbacks the host uses to disable adjacent swipers (carousels, feed scrolls) while the sheet is active.
+
+### Auto-height
+
+States configured with `height: "auto"` are measured at runtime. The component sums the heights of the drag indicator, header wrapper, inner content wrapper, and footer wrapper, and that pixel value flows back through the snap math so drag and animation just see numbers. ResizeObservers re-measure when content changes shape (e.g., a title wrapping to two lines). For non-auto states, the inner content wrapper takes `height: 100%` so children can fill the panel.
+
+## Examples
+
+### Basic
+
+<Canvas of={Stories.Basic} />
+
+<Controls of={Stories.Basic} />
+
+### Dark theme
+
+<Canvas of={Stories.DarkTheme} />
+
+### Custom heights
+
+<Canvas of={Stories.CustomHeights} />
+
+### Content only
+
+<Canvas of={Stories.ContentOnly} />
+
+### Auto advance
+
+<Canvas of={Stories.AutoAdvance} />
+
+### Mobile demo
+
+<Canvas of={Stories.MobileDemo} />
+
+### Desktop demo
+
+<Canvas of={Stories.DesktopDemo} />
+
+## When to use Dynamic Sheet
+
+- **Multi-step disclosure on mobile.** A peek that advertises content, an expand that shows the highlights, a full view that gives the whole detail — all on one surface, with the user controlling how far they want to go.
+- **Embedded promo / placement units.** The chip states (`pl-xs`, `pl-sml`) are designed for narrow inline embeds that auto-advance to a fuller state.
+- **In-feed detail panels.** Use `container` mode to scope the sheet to a single feed item or card so the rest of the feed stays visible above.
+- **Ephemeral configuration / quick controls.** Settings that benefit from being summoned on demand and dismissed with a swipe — sound, captions, playback speed.
+- **Detail views that need a full-screen escape hatch.** When a panel that started small needs to grow into a full takeover, the sheet's state machine handles the transition with one drag.
+- **Pick `fixed` for app-wide modal sheets.** Bottom-sheet experiences anchored to the device viewport.
+- **Pick `container` for embedded sheets.** When the sheet must respect a parent's bounds (cards, inline players, embedded SDK widgets).
+- **Pick `inline` for layout integration.** When the sheet should live inside a flex/grid layout and not overlay anything.
+- **Use `auto` heights when content size is unpredictable.** Variable text, dynamic forms, lists that change.
+- **Use auto-advance only with a clear, dismissible reveal.** A peek that grows on first appearance is fine; a sheet that randomly grows after the user settles isn't.
+
+## How not to use Dynamic Sheet
+
+- **Don't use it as a basic dialog.** A dialog is for a single-state, modal decision. The dynamic sheet brings drag, multi-state, and auto-advance machinery that dialogs don't need. Use `Dialog` for confirmations, quick edits, and acknowledgements.
+- **Don't enable every state.** A sheet with 8 snap points feels chaotic. Pick the 2–3 states the flow actually needs and pass them via `config.enabledStates`.
+- **Don't pass `containerRef` for `container` mode and forget to position the parent.** `container` mode uses `position: absolute`, which resolves against the nearest positioned ancestor. If the container isn't `relative` (or another positioned value), the sheet will jump to the body and break layout.
+- **Don't fight the gesture model.** The content area handles its own pointer events to keep scroll and pull-to-close separate. Adding your own pointer handlers inside the content can break either gesture. If you need a custom interaction, hook into `onDragging` / `onSwiperToggle` instead.
+- **Don't put another scroll container inside the content.** The content area is already scrollable. Nesting a second `overflow-auto` inside breaks the pull-to-close gesture and confuses both scrolls.
+- **Don't use auto-advance for high-cost transitions.** If the auto-advance moves the sheet from `default` to `full-view`, the user can be surprised mid-action. Keep auto-advance to small, expected reveals (peek → expand) and never as a substitute for explicit user action.
+- **Don't disable both the close button and swipe-down.** The user must always have a clean exit. If `disableDragAndSwipe` is true, render the built-in close (`config.showClose`) or expose your own close affordance in the header.
+- **Don't put long forms in `default` or `expand-view`.** Small states are for summaries and quick controls. A 10-field form belongs in `panel-view` or `full-view`, with the sheet entering at the larger state directly.
+- **Don't change `enabledStates` mid-flow.** The hook keys snap math off the enabled set; mutating it while the sheet is open can leave the sheet in an unreachable state. Set it on mount and treat it as immutable for the lifetime of the sheet.
+- **Don't forget to handle `onDismissed`.** The component does not unmount itself — it plays the close animation and then calls `onDismissed`. Without it, the sheet stays in the tree, holds focus, and prevents new sheets from opening cleanly.
+- **Don't render two `fixed` sheets at the same time.** Stacking bottom sheets confuses focus, drag boundaries, and the overlay hierarchy. Close one before opening the next, or use `container` mode for in-content sheets.
+- **Don't use the sheet for ephemeral feedback.** Toasts and snackbars exist for that. The sheet's open/close animation is ~400ms and the chrome is heavier than feedback-shaped UI warrants.
+- **Don't suppress the drag indicator** when drag is enabled. The pill is the user's signal that the surface can be dragged. Hiding it while keeping the gesture turns the panel into a hidden control.
+- **Don't measure or animate the panel from outside.** Heights are computed by the hook from `containerHeight` and the per-state config. Wrapping the sheet in a height-animating parent or applying transforms from outside fights the internal animation and produces flicker.

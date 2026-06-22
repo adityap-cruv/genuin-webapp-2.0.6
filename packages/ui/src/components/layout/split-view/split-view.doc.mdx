@@ -1,0 +1,57 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./split-view.stories";
+
+<Meta of={Stories} />
+
+# SplitView
+
+## What SplitView is for
+
+`SplitView` is the primitive for ratio-split layouts — e.g. a wide column on
+one side and a narrower column on the other (`[746, 320]`), or three equal
+`1fr` columns. It's a thin wrapper around `Grid` with `rows: 1` semantics, kept
+as a separate primitive because the "ratio split" intent is common enough to
+warrant a dedicated name.
+
+If we later find this is just sugar with no usage benefit, it can fold into
+[`Grid`](?path=/docs/layout-grid--docs).
+
+## Props
+
+- **`tracks`** — Required. Accepts:
+  - `number` — equal-fraction split (`2` → `1fr 1fr`, `3` → `1fr 1fr 1fr`)
+  - `number[]` — explicit pixel widths (`[746, 320]` → `"746px 320px"`)
+  - `string` — raw `grid-template-columns` value (`"2fr 1fr"`,
+    `"min-content 1fr"`)
+- **`gap`** — Gap between columns. Named DS token. Defaults to `"none"`.
+- **`align`** — Vertical alignment of column contents. One of `start`,
+  `center`, `end`, `stretch`. Defaults to `stretch`.
+- **`asChild`** — Render as a different element via Radix Slot.
+
+All standard `HTMLDivElement` attributes are forwarded. A caller-provided
+`style` is merged with the resolved track style — track style wins.
+
+## Examples
+
+### Websitev5 ratio (746/320)
+
+<Canvas of={Stories.Websitev5Ratio} />
+
+<Controls of={Stories.Websitev5Ratio} />
+
+### Two equal columns
+
+<Canvas of={Stories.TwoEqualColumns} />
+
+### Three equal columns
+
+<Canvas of={Stories.ThreeEqualColumns} />
+
+### String ratio (`"2fr 1fr"`)
+
+<Canvas of={Stories.StringRatio} />
+
+### As `<section>` (`asChild`)
+
+<Canvas of={Stories.AsSection} />

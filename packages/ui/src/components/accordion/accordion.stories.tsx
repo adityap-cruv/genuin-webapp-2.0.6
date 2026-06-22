@@ -6,7 +6,10 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./
 const meta = {
   title: "Components/Accordion",
   component: Accordion,
-  tags: ["autodocs"],
+  // Docs tab is sourced from `accordion.doc.mdx` via `<Meta of={…}>`;
+  // leaving `tags: ["autodocs"]` here would race with that explicit
+  // attachment and Storybook would emit a duplicate auto-generated
+  // Docs page.
   parameters: {
     layout: "centered",
   },

@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 
 import Stop from '@/assets/SvgIcons/Stop';
-import { useAgentsContext } from '@/context/app/context';
-import { useInputContext } from '@/context/input/context';
+import { useChatContext } from '@/stores/chat/context';
+import { useSessionContext } from '@/stores/session/context';
+import { useUIContext } from '@/stores/ui/context';
+import { useInputContext } from '@/stores/input/context';
 
 import ArrowUpward from '../../assets/SvgIcons/ArrowUpward';
 import { Button } from '../ui/button';
@@ -14,17 +16,9 @@ import { UploadedFilesList } from './UploadedFilesList';
 import { useFileUpload } from './hooks/useFileUpload';
 
 const MessageInput = () => {
-    const {
-        creatingSession,
-        currentSessionId,
-        sessions,
-        handleSendMessage,
-        // isSuggestionsOpen,
-        setIsSuggestionsOpen,
-        setTextAreaRef,
-        suggestedPrompts,
-        stopSessionResponse,
-    } = useAgentsContext();
+    const { creatingSession, handleSendMessage, stopSessionResponse } = useChatContext();
+    const { currentSessionId, sessions } = useSessionContext();
+    const { setIsSuggestionsOpen, setTextAreaRef, suggestedPrompts } = useUIContext();
     const { input, setInput } = useInputContext();
     const [stopping, setStopping] = useState(false);
     const [isFocused, setIsFocused] = useState(false);

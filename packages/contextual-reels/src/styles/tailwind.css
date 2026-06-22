@@ -1,0 +1,188 @@
+@import "tailwindcss" prefix(gencl);
+@import "./tokens.css";
+@import "./animations.css";
+@import "@genuin/genai-sdk/styles";
+@import "@genuin/ui/styles";
+
+@theme {
+  --color-cxr-white: #fff;
+  --radius-cxr-sm: 4px;
+  --radius-cxr-btn: 30px;
+  --text-cxr-sm: 12px;
+  --text-cxr-md: 14px;
+  --text-cxr-lg: 16px;
+}
+
+/* Font faces — cannot be expressed as Tailwind utilities */
+@font-face {
+  font-family: "Avenir Next";
+  src:
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-Regular.woff2") format("woff2"),
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-Regular.woff") format("woff"),
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-Regular.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Avenir Next";
+  src:
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-Medium.woff2") format("woff2"),
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-Medium.woff") format("woff"),
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-Medium.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Avenir Next";
+  src:
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-MediumItalic.woff2") format("woff2"),
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-MediumItalic.woff") format("woff"),
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-MediumItalic.ttf") format("truetype");
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Avenir Next";
+  src:
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-UltraLight.woff2") format("woff2"),
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-UltraLight.woff") format("woff"),
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-UltraLight.ttf") format("truetype");
+  font-weight: 100;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Avenir Next";
+  src:
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-UltraLightItalic.woff2") format("woff2"),
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-UltraLightItalic.woff") format("woff"),
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-UltraLightItalic.ttf") format("truetype");
+  font-weight: 100;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Avenir Next";
+  src:
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-HeavyItalic.woff2") format("woff2"),
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-HeavyItalic.woff") format("woff"),
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-HeavyItalic.ttf") format("truetype");
+  font-weight: 900;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Avenir Next";
+  src:
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-Italic.woff2") format("woff2"),
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-Italic.woff") format("woff"),
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-Italic.ttf") format("truetype");
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Avenir Next";
+  src:
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-Bold.woff2") format("woff2"),
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-Bold.woff") format("woff"),
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Avenir Next";
+  src:
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-BoldItalic.woff2") format("woff2"),
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-BoldItalic.woff") format("woff"),
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-BoldItalic.ttf") format("truetype");
+  font-weight: 700;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Avenir Next";
+  src:
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-DemiBold.woff2") format("woff2"),
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-DemiBold.woff") format("woff"),
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-DemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Avenir Next";
+  src:
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-DemiBoldItalic.woff2") format("woff2"),
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-DemiBoldItalic.woff") format("woff"),
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-DemiBoldItalic.ttf") format("truetype");
+  font-weight: 600;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Avenir Next";
+  src:
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-Heavy.woff2") format("woff2"),
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-Heavy.woff") format("woff"),
+    url("https://media.begenuin.com/webapp_assets/fonts/AvenirNext-Heavy.ttf") format("truetype");
+  font-weight: 900;
+  font-style: normal;
+}
+
+/*
+ * Widget global rules — cannot be expressed as Tailwind utilities because they
+ * target classes applied at runtime (useFullscreenClasses hook, App.tsx root)
+ * or rely on global selectors (body).
+ */
+
+/* Fullscreen overlay — applied by App.tsx when isFullScreen */
+.cxr__v1.cxr__fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: var(--cxr-z-fullscreen);
+  width: 100%;
+  height: 100%;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Lock host-page scroll while fullscreen is active */
+body.cxr__body--fullscreen {
+  overflow: hidden;
+}
+
+/* Legacy fullscreen toggle — useFullscreenClasses hook toggles these classes on body/overlay.
+   The hook is currently unused (no component calls it); these rules are kept for when it is wired up. */
+body.expand {
+  overflow: hidden;
+}
+
+.cxr__v1.expand {
+  /* !important needed: host-page styles may set position/width/height on the widget root */
+  position: fixed !important;
+  inset: 0;
+  z-index: var(--cxr-z-fullscreen);
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* vlitejs CSS is not imported — replicate the sizing rules it would have applied. */
+.cxr__v1 .v-vlite.v-video {
+  aspect-ratio: unset;
+  height: 100%;
+  width: 100%;
+}
+
+.cxr__v1 .v-container,
+.cxr__v1 .v-media,
+.cxr__v1 .v-media > iframe {
+  height: 100%;
+  width: 100%;
+}

@@ -21,6 +21,7 @@ export const LinkoutCTA = ({
   ctaLink,
   isDisabled = false,
   isLoading = false,
+  showIcon = false,
   handleCTAClick,
   className,
 }: LinkoutCTAProps) => {
@@ -36,13 +37,13 @@ export const LinkoutCTA = ({
         shape="default"
         variant="default"
         className={cn(
-          "gencl:w-full gencl:text-body-0-semi-bold! gencl:transition-all gencl:text-white gencl:bg-black gencl:hover:bg-white/90 gencl:flex gencl:gap-2 gencl:justify-between gencl:items-center gencl:px-3 gencl:py-2 gencl:rounded-lg!",
+          "gencl:w-full gencl:text-body-1-semi-bold! gencl:transition-all gencl:text-white gencl:bg-black gencl:hover:bg-black/80 gencl:flex gencl:gap-2 gencl:justify-between gencl:items-center gencl:px-3 gencl:py-2 gencl:rounded-lg!",
           className
         )}
         onClick={handleCTAClick}
         disabled={isDisabled || isLoading}>
         <div className="gencl:flex gencl:gap-2 gencl:items-center gencl:w-[90%]">
-          <LinkIcon className="gencl:size-4 gencl:shrink-0 gencl:stroke-white" />
+          {showIcon && <LinkIcon className="gencl:size-4 gencl:shrink-0 gencl:stroke-white" />}
           <p className="gencl:line-clamp-1 gencl:truncate">{ctaText}</p>
         </div>
         {isLoading ? (

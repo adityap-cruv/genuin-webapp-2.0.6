@@ -5,8 +5,8 @@ import { SDKEventEmitter, SDKListenerEventName } from "@genuin/components/lib/sd
 import type * as ObservabilityService from "@genuin/components/lib/utils/observability/service";
 
 import { AnalyticsService, EventName } from "../../context";
-import { useSafeEmbedContext } from "../../context/embed/context";
 import { buildLayoutIdentity } from "../../context/analytics/build-layout-identity";
+import { useSafeEmbedContext } from "../../context/embed/context";
 import type { EmbedEventContextType, EmbedEventNameType } from "../../context/embed/event-bus";
 import type { EventManager } from "../../lib/utils/event-manager";
 
@@ -42,8 +42,18 @@ export function useObservability({ embedEventBus, sdkInitTime }: UseObservabilit
     // Seed from context so re-mounting the hook doesn't re-fire an already-sent event.
     let isEmbedRenderedFired: boolean = embedEventBus.getContext().hasEmittedEmbedRendered;
 
+    // Captured at registration so cleanup can remove the SAME handler reference.
+    // FEED_LOADED is registered asynchronously (after the lazy utils import resolves),
+    // so the handler may still be null if the effect tears down before the import lands.
+    let feedLoadedHandler: ((eventData: any) => void) | null = null;
+
+    // Track whether this effect run has been cleaned up so a late-resolving import
+    // does not register a listener after unmount (which would leak).
+    let isCleanedUp = false;
+
     // Load observability utilities asynchronously
     loadObservabilityUtils().then((utils) => {
+      if (isCleanedUp) return;
       setupObservability(utils);
       utils.observabilityTracker.setSdkRenderedTime(sdkInitTime ?? 0);
     });
@@ -98,8 +108,16 @@ export function useObservability({ embedEventBus, sdkInitTime }: UseObservabilit
       function startResourceObserver(utils: typeof ObservabilityService): PerformanceObserver | null {
         try {
           const observer = new PerformanceObserver((list) => {
-            const ctx = embedEventBus.getContext();
             if (isEmbedRenderedFired || utils.observabilityTracker.getIsRenderFired()) return;
+
+            // Snapshot the current tracking once, then accumulate across every entry in
+            // this batch into a local mutable copy. Reading getContext() per entry would
+            // miss updates made earlier in the same batch (the emit below is async w.r.t.
+            // this loop), so a thumbnail + video arriving together could under-count.
+            const baseTracking = embedEventBus.getContext().resourceTracking;
+            let nextThumbnails = baseTracking.thumbnailImages;
+            let nextVideos = baseTracking.videos;
+            let changed = false;
 
             list.getEntries().forEach((entry) => {
               const url = entry.name.toLowerCase();
@@ -107,56 +125,51 @@ export function useObservability({ embedEventBus, sdkInitTime }: UseObservabilit
 
               if (!utils.observabilityTracker.isAllowedDomain(originalUrl)) return;
 
-              const updates: Partial<EmbedEventContextType["resourceTracking"]> = ctx.resourceTracking;
-              const currentTracking = ctx.resourceTracking;
-
               // Track thumbnail images
               if (utils.observabilityTracker.isImageResource(url)) {
-                const thumbData = currentTracking.thumbnailImages;
-                if (!thumbData.resources.includes(originalUrl) && originalUrl === thumbData.thumbnailUrl) {
-                  updates.thumbnailImages = {
-                    expected: thumbData.expected,
-                    loaded: thumbData.loaded + 1,
-                    resources: [...thumbData.resources, originalUrl],
-                    thumbnailUrl: thumbData.thumbnailUrl,
+                if (!nextThumbnails.resources.includes(originalUrl) && originalUrl === nextThumbnails.thumbnailUrl) {
+                  nextThumbnails = {
+                    ...nextThumbnails,
+                    loaded: nextThumbnails.loaded + 1,
+                    resources: [...nextThumbnails.resources, originalUrl],
                   };
+                  changed = true;
                 }
               }
 
               // Track videos
               if (utils.observabilityTracker.isVideoResource(url)) {
-                const videoData = currentTracking.videos;
-                if (!videoData.resources.includes(originalUrl) && originalUrl === videoData.videoUrl) {
-                  updates.videos = {
-                    expected: videoData.expected,
-                    loaded: videoData.loaded + 1,
-                    resources: [...videoData.resources, originalUrl],
-                    videoUrl: videoData.videoUrl,
+                if (!nextVideos.resources.includes(originalUrl) && originalUrl === nextVideos.videoUrl) {
+                  nextVideos = {
+                    ...nextVideos,
+                    loaded: nextVideos.loaded + 1,
+                    resources: [...nextVideos.resources, originalUrl],
                   };
-                }
-              }
-
-              // Emit updates if any
-              if (Object.keys(updates).length > 0) {
-                embedEventBus.emit("updateResourceTracking", undefined, (currentCtx) => ({
-                  ...currentCtx,
-                  resourceTracking: {
-                    ...currentCtx.resourceTracking,
-                    ...updates,
-                  },
-                }));
-
-                // Check if all resources loaded
-                // Both thumbnail and video must be fully loaded before firing embed_rendered.
-                const allLoaded =
-                  updates.videos?.expected === updates.videos?.loaded &&
-                  updates.thumbnailImages?.expected === updates.thumbnailImages?.loaded;
-
-                if (allLoaded && !isEmbedRenderedFired && !utils.observabilityTracker.getIsRenderFired()) {
-                  fireEmbedRenderedEvent(observer, 0, utils);
+                  changed = true;
                 }
               }
             });
+
+            // Emit only when an actual match advanced a count this batch.
+            if (changed) {
+              embedEventBus.emit("updateResourceTracking", undefined, (currentCtx) => ({
+                ...currentCtx,
+                resourceTracking: {
+                  ...currentCtx.resourceTracking,
+                  thumbnailImages: nextThumbnails,
+                  videos: nextVideos,
+                },
+              }));
+
+              // Both thumbnail and video must be fully loaded before firing embed_rendered.
+              const allLoaded =
+                nextVideos.expected === nextVideos.loaded &&
+                nextThumbnails.expected === nextThumbnails.loaded;
+
+              if (allLoaded && !isEmbedRenderedFired && !utils.observabilityTracker.getIsRenderFired()) {
+                fireEmbedRenderedEvent(observer, 0, utils);
+              }
+            }
           });
 
           observer.observe({ entryTypes: ["resource"] });
@@ -212,20 +225,31 @@ export function useObservability({ embedEventBus, sdkInitTime }: UseObservabilit
           ...buildLayoutIdentity(embedData),
           api_details: embedRenderedPayload.api_details,
           resource_details: embedRenderedPayload.resource_details,
-          latency: utils.observabilityTracker.getSdkToEmbedTime() - resourceWaitDuration,
+          // Clamp to >= 0. On the failsafe path resourceWaitDuration is 10000, which can
+          // exceed elapsed time (early failsafe / clock skew) and yield a negative latency
+          // that would pollute the metric average.
+          latency: Math.max(0, utils.observabilityTracker.getSdkToEmbedTime() - resourceWaitDuration),
           api_latency: embedRenderedPayload.api_latency,
           resource_latency: embedRenderedPayload.resource_latency,
         });
       }
 
-      // Listen for videos loaded event
+      // Listen for videos loaded event. Capture the reference so cleanup can
+      // remove this exact handler by identity (SDKEventEmitter.off matches by ref).
+      feedLoadedHandler = handleVideosLoaded;
       SDKEventEmitter.on(SDKListenerEventName.FEED_LOADED, handleVideosLoaded);
     }
 
     return () => {
-      // Removes listener by reference identity; no-op lambda used because the original handleVideosLoaded
-      // is scoped inside setupObservability and unavailable here — acceptable since the effect re-runs rarely.
-      SDKEventEmitter.off(SDKListenerEventName.FEED_LOADED, () => {});
+      isCleanedUp = true;
+
+      // Remove the actual registered handler by reference identity. Previously a
+      // throwaway `() => {}` was passed, which never matched the real listener and
+      // leaked a FEED_LOADED subscription on every re-mount.
+      if (feedLoadedHandler) {
+        SDKEventEmitter.off(SDKListenerEventName.FEED_LOADED, feedLoadedHandler);
+        feedLoadedHandler = null;
+      }
 
       if (observerRef.current) {
         observerRef.current.disconnect();
@@ -234,5 +258,7 @@ export function useObservability({ embedEventBus, sdkInitTime }: UseObservabilit
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [embedEventBus]);
+    // embedData is read by fireEmbedRenderedEvent -> buildLayoutIdentity. Include it so a
+    // late-resolving embed context doesn't ship a stale/empty layout identity in the event.
+  }, [embedEventBus, embedData]);
 }

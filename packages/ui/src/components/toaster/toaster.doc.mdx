@@ -1,0 +1,129 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./toaster.stories";
+
+{/*
+  Design-system narrative for the toaster component. Attached to the
+  matching story group via `<Meta of={…}>` so it renders as the
+  "Docs" tab next to the live stories. Layout: narrative intro →
+  live examples + controls → usage guidelines.
+*/}
+
+<Meta of={Stories} />
+
+# Toast
+
+## What toasts are for
+
+A toast is a small, non-blocking notification that appears at the edge of the screen, communicates a single short message, and disappears on its own. It tells the user "something happened" — your post was saved, the link is copied, the request failed — without interrupting their work, without demanding a response, and without taking the focus away from whatever they were doing. The pattern works because it respects the user's attention: the user *might* read it, the user *might* not, and either way the work continues. That's the toast's whole superpower — it gives the system a voice without giving it the floor.
+
+A good toast is short, specific, and quickly dismissible. It tells the user *what* happened in plain language ("Saved.", "Link copied.", "Couldn't load comments — try again.") and disappears within a few seconds. A bad toast asks a question, requires a click to dismiss without showing a close button, hangs around for 30 seconds, or stacks five at once after a single action. The Genuin Toaster is built on `sonner`, the canonical toast library for React (used by Vercel, Cal.com, Resend), so animation, queueing, dismissal, swipe gestures, and accessibility are correct by default. The design system layers on the brand colors, the success/error treatments, the mobile-vs-desktop position differences, and a small custom-toast renderer for the `iHeart` co-branded surface.
+
+The component is *not* the right tool for blocking decisions, persistent banners, or any feedback that requires the user's confirmation. Use a Dialog for blocking decisions, a banner for persistent state, and a toast only for ephemeral feedback the user is free to ignore.
+
+## Toast in this design system
+
+The Toast surface in `@genuin/ui` is exported from `toaster.tsx` as two pieces:
+
+- **`<Toaster>`** — the host component. Mount it once near the root of your tree (typically inside the app's layout). It owns the queue, the positioning, the animation, and the theme. Without it, no toast appears.
+- **`Toast`** — an object with two methods, `Toast.Success(...)` and `Toast.Error(...)`. Call them imperatively from anywhere in your app (mutation `onSuccess`, `onError` handlers, command palette actions, etc.) to enqueue a toast.
+
+### Variants
+
+- **`Toast.Success({ message, description?, isIheart? })`** — green check inside a circle, message in `body-0-semi-bold`, optional supporting description in `body-1-medium`. Use for confirming positive actions (saved, sent, copied, completed).
+- **`Toast.Error({ message, description?, isIheart? })`** — red X glyph, same typography. Use for failures the user should know about (save failed, network error, validation rejected at the boundary).
+- **`isIheart`** — switches to the `iHeart` co-branded green-on-green treatment with a tighter padding profile. Reach for it only inside the iHeart-themed surfaces; everywhere else, leave it `false` (or omit).
+
+There are two variants on purpose: most toasts are either "this worked" or "this didn't." Warning, info, and neutral toasts can be expressed via the success variant with a different message — over-using variants dilutes the signal.
+
+### Positioning
+
+The `<Toaster>` adapts to the device:
+
+- **Mobile** — `top-center`, expanded width (`min(calc(100% - 32px), 380px)`), full-bleed-style banner.
+- **Desktop** — `bottom-right`, capped width (`max-w-sm`), corner-style toast.
+
+These defaults match the Genuin product convention. Override per-mount via `<Toaster position="..." />` only when the surrounding layout demands it (e.g., a fullscreen-immersive surface where bottom-right would clash).
+
+### Anatomy
+
+Each toast renders:
+
+- A status icon (left) — a circular green check for success, a red X for error.
+- The message (top) — bold, single line ideally.
+- An optional description (below message) — supporting copy, used sparingly.
+- A close `×` button (right) — visible by default, dismisses the toast immediately.
+
+The toast box has 4px corner radius, a soft shadow, white background, and a 1px secondary-150 border (or the iHeart green styling when `isIheart` is true).
+
+### Calling the toast
+
+```tsx
+// On success
+mutation.mutate(data, {
+  onSuccess: () => Toast.Success({ message: 'Profile updated.' }),
+  onError: (error) => Toast.Error({
+    message: 'Couldn\'t save profile.',
+    description: error.message,
+  }),
+});
+```
+
+Toasts are imperative — call from anywhere with access to the `Toast` import. They appear via the `<Toaster>` host. There's no `<ToastProvider>` to wrap your app in — the host *is* the provider.
+
+### Animations & gestures
+
+`sonner` handles enter / exit animations, swipe-to-dismiss on mobile, and stacking. Toasts rendered in quick succession queue up and animate in with a small offset. Hovering pauses auto-dismiss. Don't override the defaults — they're tuned to feel polite without being sluggish.
+
+### Accessibility
+
+`sonner` renders the toast region with the right ARIA: `role="status"` for success/info, `role="alert"` for error (when escalated), `aria-live="polite"`. Screen readers announce the message when it appears without stealing focus. Keep messages short (one sentence, ideally) so the announcement is fast.
+
+## Examples
+
+### Success
+
+<Canvas of={Stories.Success} />
+
+<Controls of={Stories.Success} />
+
+### Error
+
+<Canvas of={Stories.Error} />
+
+### Descriptive
+
+<Canvas of={Stories.Descriptive} />
+
+## When to use Toast
+
+- **Confirming a successful action.** "Saved.", "Sent.", "Copied to clipboard.", "Invitation sent."
+- **Reporting a failure the user should know but can keep working through.** "Couldn't load comments — try again.", "Upload failed."
+- **Background sync notifications.** "Your changes were saved automatically.", "Reconnected to server."
+- **Undo prompts** (with a description like "Click to undo" — though for a real undo button, use sonner's `action` API directly).
+- **Optimistic-update fallbacks.** When a mutation fails after the UI optimistically updated, fire an error toast and roll the visual back.
+- **Feedback for keyboard / shortcut actions.** "Search bar opened" — but only when there's no other visible signal that the action took effect.
+- **Use `Toast.Success`** for positive confirmations.
+- **Use `Toast.Error`** for failures the user should know about.
+- **Mount `<Toaster />` once near the root of your tree.** Don't mount per-page or per-feature — the queue should be app-global.
+
+## How not to use Toast
+
+- **Don't use Toast for blocking decisions.** "Delete this thing? Confirm / Cancel" must not be a toast. Use a `Dialog` — toasts dismiss themselves and the user could lose the prompt.
+- **Don't use Toast for persistent banners.** "Your trial ends in 3 days" should be a banner / inline notice, not a toast. Toasts are ephemeral; persistent state needs a persistent surface.
+- **Don't use Toast for content the user must read.** Legal terms, important warnings, multi-line help text — those need a real surface (Dialog, banner, dedicated page). A toast disappears.
+- **Don't fire multiple toasts for one user action.** "Saved." + "Updated." + "Synced." is noise; consolidate into one message.
+- **Don't fire toasts as a substitute for inline validation.** A failed form submission with field-level errors should surface those errors inline (`<FormMessage>`), not as a generic toast.
+- **Don't fire a toast on every state change.** "Field updated." every time the user types a character is the worst possible toast experience. Toasts are for *user-initiated discrete events*, not continuous state.
+- **Don't use the success variant for warnings.** "Some items couldn't be processed" is not a success — render it as an error or rethink the flow.
+- **Don't write multi-paragraph messages.** A toast that takes 6 seconds to read won't be read. Keep messages to one sentence; use `description` only when truly needed.
+- **Don't use Toast as a debug log.** Stack traces, internal errors, raw API responses don't belong on the user's screen. Send them to logging; show the user a friendly message.
+- **Don't fire a toast when the page already shows the result.** If the user clicks "Add" and the new item appears in the list immediately, a "Item added" toast is redundant — the visible change *is* the confirmation.
+- **Don't put a `<button>` inside a toast that opens a dialog.** Dialogs steal focus; toasts shouldn't be a path to focus-stealing UI. Use sonner's `action` API for inline action buttons (with simple side effects), and use a different surface entirely if a dialog is needed.
+- **Don't auto-dismiss error toasts too quickly.** Errors typically deserve a slightly longer duration than successes — the user might want to read the message before deciding what to do.
+- **Don't omit the `<Toaster>` host.** Without it, every `Toast.Success(...)` call is a no-op. Mount it once near the app root.
+- **Don't render multiple `<Toaster>`s in the same tree.** Each one creates its own queue. The result is duplicate toasts firing twice. One Toaster, app-wide.
+- **Don't use Toast for accessibility-critical notifications without testing the announcement.** Verify the message reads well aloud — "Updated" is fine; "Update successful with 200 OK" is not.
+- **Don't show a toast on page load.** Surprise toasts feel like an ad. Toasts respond to user actions, not page lifecycle events.
+- **Don't override the position to a place that overlaps with primary UI.** A bottom-right toast on top of a chat composer's send button blocks the user. Position toasts where they don't compete with the active interaction.
+- **Don't use Toast as a step in a multi-step flow.** Multi-step flows live on a page or in a dialog; toasts can't be referenced or backtracked to.

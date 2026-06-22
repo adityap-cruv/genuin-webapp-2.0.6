@@ -13,9 +13,10 @@
  * @author Genuin Team
  */
 
+import { execSync } from "child_process";
 import fs from "fs";
 import path from "path";
-import { execSync } from "child_process";
+
 import { build as esbuild } from "esbuild";
 
 /**

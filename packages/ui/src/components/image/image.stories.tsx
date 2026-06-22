@@ -8,7 +8,6 @@ const meta: Meta<typeof Image> = {
   parameters: {
     layout: "centered",
   },
-  tags: ["autodocs"],
   argTypes: {
     src: { control: "text", description: "The source URL of the image." },
     alt: { control: "text", description: "Alternative text for the image." },

@@ -1,0 +1,54 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./stack.stories";
+
+{/*
+  Design-system narrative for the Stack layout primitive. Attached to
+  the matching story group via `<Meta of={…}>` so it renders as the
+  "Docs" tab next to the live stories.
+*/}
+
+<Meta of={Stories} />
+
+# Stack
+
+## What Stack is for
+
+`Stack` is the ergonomic shortcut for the most common layout pattern in the app:
+a vertical list of things separated by a consistent gap. No alignment knobs, no
+direction toggle — just a column with a `gap`. Reach for it whenever you would
+otherwise write `flex flex-col gap-N` on a `<div>`.
+
+When you need horizontal-vs-vertical alignment control, justification, or
+flex-wrap, use [`Column`](?path=/docs/layout-column--docs) or
+[`Row`](?path=/docs/layout-row--docs) instead.
+
+## Props
+
+- **`gap`** — Vertical spacing between children. Named DS token from the
+  Padding scale (`none` / `xxs` / `xs` / `sm` / `md` / `ml` / `lg` / `xl` /
+  `xxl`). Defaults to `"md"` (16 px).
+- **`asChild`** — Render as a different element (e.g. `<section>`, `<main>`,
+  `<ul>`) via Radix Slot. Useful for preserving semantics without nesting.
+
+All standard `HTMLDivElement` attributes are forwarded.
+
+## Examples
+
+### Default
+
+<Canvas of={Stories.Default} />
+
+<Controls of={Stories.Default} />
+
+### Tight gap
+
+<Canvas of={Stories.TightGap} />
+
+### Loose gap
+
+<Canvas of={Stories.LooseGap} />
+
+### As a `<section>` (`asChild`)
+
+<Canvas of={Stories.AsSection} />

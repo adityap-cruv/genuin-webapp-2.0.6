@@ -16,6 +16,12 @@ import { ShareButton } from "@genuin/components/molecules/share-button";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 import { usePlayerContext } from "../../../context";
+import { useEmbedContext } from "@genuin/components/context";
+
+// TODO(temp): Remove this KFI dummy-data share URL. For these placements the share
+// link is hardcoded to the station's live page; drop once the real share URL is
+// served from the API. Mirrors KFI_PLACEMENT_IDS in embed.tsx.
+const KFI_PLACEMENT_IDS = ["6a2be0e245aec54862efd9a5", "6a312de7a01f8b8ab6edde5a"];
 
 type IHeartControlsProps = ComponentProps<"div"> & {
   /**
@@ -39,6 +45,8 @@ type IHeartControlsProps = ComponentProps<"div"> & {
   reactionCount?: number;
   isActive: boolean;
   videoDetails: PostDetailsType["video"];
+  /** Section the clip belongs to — forwarded to share analytics (iHeart `station.asset.name`). */
+  section?: PostDetailsType["section"];
   /**
    * Callback functions for handling control actions
    */
@@ -57,6 +65,7 @@ export function IHeartControls({
   isReacted = false,
   reactionCount = 0,
   videoDetails,
+  section,
   index,
   onReactionStateChange,
   isVideoWatched,
@@ -65,6 +74,7 @@ export function IHeartControls({
   const {
     view: { websiteType },
   } = useEmbedConfigs();
+  const { embedData } = useEmbedContext();
   const { playingState, togglePlay, muted, toggleMuted } = usePlayerContext();
   const { track, EventName } = useAnalytics();
   //  Access baseContextManager to subscribe to preview index change events
@@ -132,15 +142,18 @@ export function IHeartControls({
     //     })();
     const isPodcast = videoDetails?.attributes?.type === "podcast";
 
-    const url = new URL(
-      "https://iheart.com/" +
-        (isPodcast ? "podcast/" : "live/") +
-        (isPodcast ? videoDetails.attributes?.slug : videoDetails?.attributes?.station_id) +
-        "/highlights/" +
-        videoDetails?.slug +
-        "_" +
-        videoDetails?.id
-    );
+    const url =
+      embedData.placement_id && KFI_PLACEMENT_IDS.includes(embedData.placement_id)
+        ? new URL("https://iheart.com/live/177")
+        : new URL(
+            "https://iheart.com/" +
+              (isPodcast ? "podcast/" : "live/") +
+              (isPodcast ? videoDetails.attributes?.slug : videoDetails?.attributes?.station_id) +
+              "/highlights/" +
+              videoDetails?.slug +
+              "_" +
+              videoDetails?.id
+          );
 
     const windowUrl = typeof window !== "undefined" ? window.location.href : "";
     const localWebsiteType = hasIheartSubdomain(windowUrl) ? "inferno" : websiteType;
@@ -274,9 +287,24 @@ export function IHeartControls({
         onClick={() => {
           // Track share event (same as Actions component)
           if (contentId) {
+            // Web has no per-target share picker: ShareButton uses the native OS share sheet
+            // when available, otherwise copies the link. Report that method as share.platform.
+            const shareMethod =
+              typeof navigator !== "undefined" && typeof navigator.share === "function"
+                ? "native_share"
+                : "copy_link";
             track(EventName.VIDEO_SHARED, {
               content_id: contentId,
               title: videoDetails?.descritptionText,
+              // Station/section name → iHeart `station.asset.sub.name`. Same source the rest of
+              // the embed uses for sectionTitle; `section?.title` alone is often empty here.
+              section_title: videoDetails?.attributes?.title ?? section?.title,
+              section_id: section?.id,
+              // Parent station/podcast id — needed for iHeart `station.asset.sub.id`
+              // (`live|<station_id>` / `podcast|<podcast_id>`); without it sub is empty.
+              station_id: videoDetails?.attributes?.station_id,
+              podcast_id: videoDetails?.attributes?.podcast_id,
+              share_method: shareMethod,
               content_category: "loop",
               event_record_screen: "feed",
               event_target_screen: "none",

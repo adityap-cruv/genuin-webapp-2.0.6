@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { SyntheticEvent } from 'react';
 
-import { useAgentsContext } from '@/context/app/context';
-import { renderInventoryWidget, type InventoryRenderRequest, type InventoryRenderResponse } from '@/lib/api';
+import { useUIContext } from '@/stores/ui/context';
+import { renderInventoryWidget, type InventoryRenderRequest, type InventoryRenderResponse } from '@/services/api';
 import type { ToolMetadataPayload } from '@/types';
 
 import Spinner from '../ui/spinner';
@@ -67,7 +67,7 @@ const deriveRenderPayloads = (metadata: ToolMetadataPayload | undefined): Invent
 };
 
 const InventoryWidget = ({ metadata }: InventoryWidgetProps) => {
-    const { view } = useAgentsContext();
+    const { view } = useUIContext();
     const [htmlContents, setHtmlContents] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);

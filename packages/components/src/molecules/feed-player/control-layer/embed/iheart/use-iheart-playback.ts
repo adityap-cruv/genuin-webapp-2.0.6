@@ -7,6 +7,7 @@ import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { SDKEventEmitter, SDKEventName, SDKListenerEventName } from "@genuin/components/lib/sdk-event-emitter";
 import type { PlayChangeIHeartContentPayload } from "@genuin/components/lib/sdk-event-emitter";
+import { addIheartCtaCampaign } from "@genuin/components/lib/utils/iheart-url";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 interface UseIHeartPlaybackParams {
@@ -60,10 +61,10 @@ export function getBaseUrlWithouthighlights({
   // For station type with radio URL (/live/), replace with /podcast/
   if (type === "podcast" && baseUrl.includes("/live/")) {
     const urlObj = new URL(baseUrl);
-    return `${urlObj.origin}/podcast/${slug}`;
+    return addIheartCtaCampaign(`${urlObj.origin}/podcast/${slug}`).toString();
   }
 
-  return baseUrl;
+  return addIheartCtaCampaign(baseUrl).toString();
 }
 
 /**

@@ -1,0 +1,136 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./dynamic-linkout-embed.stories";
+
+{/*
+  Design-system narrative for `<DynamicLinkouts view="embed">` and
+  its IAB ad fallbacks. Attached to the `Organisms / Linkouts /
+  Dynamic Linkouts Embed View` story group via `<Meta of={…}>` so
+  it renders as the "Docs" tab next to the live stories. Layout:
+  what the unit is → variant rules → ad-fallback rules → live
+  examples + controls.
+*/}
+
+<Meta of={Stories} />
+
+# Dynamic Linkouts (Embed View)
+
+## What this unit is
+
+`<DynamicLinkouts>` is the **monetisation slot** that sits inside every Genuin video player. Its primary job is to surface a brand-paid linkout — a small CTA card pinned to the bottom of the player that drives the viewer to an advertiser landing page. When a linkout isn't available (the brand's campaign exhausted its budget, the audience doesn't match, the placement was sold direct to a different demand source, etc.) the same slot **falls back to an IAB ad**: a banner along the bottom, a display ad anchored to the centre, or a full-frame video ad. From the player's point of view it's one slot with one lifecycle; what gets rendered is decided by the upstream waterfall.
+
+The component is **shape-shifting by design**. The player's pixel footprint varies wildly across the surfaces we ship in — a 9:16 mobile feed video at 360×600, a 16:9 desktop embed at 1024×576, a sidebar widget at 200×300, a chip on a story preview at 160×90. The same component must look right in all of them. It does that by picking one of five visual *variants* (chip → rich card) based on the frame's measured width *and* height, falling back to a smaller variant whenever the chosen one would overwhelm the video underneath.
+
+Below we describe the picker rules — first for the linkout itself, then for each of the three ad fallback formats — and finish with live, resizable examples.
+
+## Linkout variant rules
+
+The picker reads the player's measured width and height every frame (via `ResizeObserver`) and resolves to one of five variants. The rule is **two-stage**: pick by width, then step down if the resulting card would overflow the height budget.
+
+### Stage 1 — width buckets
+
+| Frame width | Variant | What renders |
+| --- | --- | --- |
+| **≤ 180 px** | `pl-xs` | 32 px tall chip with the brand favicon + truncated title, no image, no CTA pill. The minimum useful surface. |
+| **181–249 px** | `pl-sml` | 40 px tall chip with a small thumbnail, title, and chevron. Same chip footprint as `pl-xs`, plus a 16 px square brand image. |
+| **250–299 px** | `default` | Compact composite — single-row card with a 60×60 thumbnail and a one-line title, no header chrome and no inline CTA. |
+| **300–399 px** | `default-active` | Composite + header band (favicon, brand name, close affordance) and an auto-advance timer that promotes the card to `expand-view` after 3 s. Mirrors the production embed-300 scenario. |
+| **≥ 400 px** | `expand-view` | Full rich card — thumbnail, title, description, brand/price/rating/likes chips row, and a full-width Sign-Up-Now CTA pill. |
+
+Boundaries are exclusive on the upper edge (`< 250` rather than `≤ 250`) except for `pl-xs`, which uses `≤ 180`. Sub-180 frames stay in `pl-xs` even at 100 px wide because there's no smaller variant to fall back to — the host should be checking visibility before rendering at all in that range.
+
+### Stage 2 — height step-down
+
+The width bucket picks the *ideal* variant. After it mounts, the picker measures the rendered card height via a `ResizeObserver` on the linkout's root. The rule:
+
+> If `linkoutHeight > frameHeight / 2`, step down one variant (and re-check after the dynamic-sheet's 320 ms transition has settled).
+
+A 250 px tall linkout will **not** render in a 500 px tall frame — it would consume half the player and crowd the video out. The picker drops to the next-smaller variant (e.g. `expand-view` → `default-active`, then `default-active` → `default`, etc.) until the height budget is respected or the picker hits `pl-xs`, which is the unconditional floor.
+
+The step-down is debounced past 360 ms so it reads the *settled* card height, not the mid-animation height. Reading mid-animation would over-shrink: the picker would see the in-transition value, decide it doesn't fit, and step down once per animation frame straight to `pl-xs`.
+
+A side-effect of the step-down: if the user resizes the frame *vertically* upward (more room), the picker resets its step-down counter on the next width-bucket change and reconsiders the width-ideal variant. So shrinking-then-growing the frame returns to the rich card cleanly, without leaving the slot stuck at a too-small variant.
+
+## Ad fallback rules
+
+When the linkout API returns no eligible link for the current viewer, the same slot renders one of three IAB ad formats. The three pickers run independently, and the host chooses which mode applies (typically driven by the upstream demand response — banner if the publisher's GAM line item filled with a 320×100, display if it filled with a 300×600, video if it filled with a VAST tag).
+
+### Banner ad
+
+The bottom-of-frame format. Same slot the linkout would normally occupy.
+
+| Supported sizes | Frame requirements |
+| --- | --- |
+| **300×50** | Frame width ≥ 300 px |
+| **320×50** | Frame width ≥ 320 px |
+| **320×100** | Frame width ≥ 320 px |
+
+Additional guardrails that apply to **all** banner sizes:
+
+- **Frame height ≥ 200 px.** Below this the player is too cramped to spare a 50–100 px band of vertical real estate. The banner is suppressed entirely; the slot stays empty.
+- **Ad height ≤ 100 px.** Hard cap. Any larger entry the API serves is rejected before the picker considers it.
+- **Pick the largest area that fits.** When the frame width supports both a 320 and a 300 wide banner, the picker prefers 320. When it supports both 320×50 and 320×100, it prefers 320×100. Tiebreaker is height (the taller of two equal-width entries wins).
+
+If none of the three sizes fits, the banner slot is empty and no ad is shown. The linkout host should treat that as a no-fill condition and decide whether to retry the waterfall with a different format.
+
+### Display ad
+
+A centre-anchored ad that sits inside the video frame (MPU and half-page formats). The video underneath is dimmed to a 40% white wash with a 5 px backdrop blur so the ad stays the visual focus.
+
+| Supported sizes | Frame requirements |
+| --- | --- |
+| **300×250** (MPU) | Frame width ≥ 300 px **and** frame height ≥ 250 px |
+| **300×600** (half-page) | Frame width ≥ 300 px **and** frame height ≥ 600 px |
+
+Picker behaviour:
+
+- **Largest area that fits.** With a frame that supports both, the picker prefers 300×600 (180 000 px² vs 75 000 px² for the MPU).
+- **No additional minimum-height gate** beyond each ad's own dimensions — the ad's height *is* the gate.
+
+Positioning:
+
+- **300×250** sits with its top edge at **25 % of the frame height** (matching Figma's `top: calc(50% - 75.5px)` on the 800 px reference frame, generalised to a ratio). The 25 % anchor is clamped so the ad's bottom edge never extends past the frame: if the frame is short enough that 25 % would push the ad off-screen, the position snaps so the bottom aligns with the frame bottom and the whole ad stays inside.
+- **300×600** sits **dead-centre**, vertically and horizontally. Because the picker only selects it when `frameH ≥ 600`, no clamping kicks in.
+
+Both ads are horizontally centred in the frame.
+
+### Video ad
+
+A full-frame video ad fitted into the player at one of five canonical aspect ratios (9:16, 3:4, 1:1, 4:3, 16:9). The same source creative is rendered at every ratio — the chosen aspect ratio plus `object-fit: cover` determines the crop.
+
+Fit rules:
+
+- **`object-fit: contain`** semantics for the outer box. The ad is centred and scaled so it touches **one or both** of the frame's edges; the opposite axis is letterboxed if the frame's aspect ratio doesn't match the ad's.
+- If `frame_ratio > ad_ratio` (frame wider than ad), height fills the frame and width letterboxes.
+- If `frame_ratio < ad_ratio` (frame narrower than ad), width fills the frame and height letterboxes.
+- If the two ratios match exactly, the ad touches all four edges.
+
+There is **no size guard** — the video ad always renders. The fit logic produces a sensible result at any frame size, including tiny chip-sized frames. (In production this is typically gated by the upstream demand response, not by the player; the player just renders what's served.)
+
+The video underneath is dimmed to a 40 % white wash with backdrop blur, same as the display ad. The ratio dropdown in the Examples below lets you exercise each crop.
+
+## Examples
+
+The harness below renders a resizable player frame. Use the **frame size presets** to jump to fixed dimensions, drag the bottom-right corner to free-resize, and use the **Ad mode** picker above the presets to swap the renderer between the linkout (default) and the three ad fallback formats. The readout under the frame shows which variant or ad size the picker landed on.
+
+### Dynamic View
+
+<Canvas of={Stories.DynamicViewEmbed} />
+
+### All embed scenarios at a glance
+
+The remaining stories show each embed variant in isolation, with their production scenario chrome:
+
+<Canvas of={Stories.PlacementXSEmbed} />
+
+<Canvas of={Stories.PlacementSMLEmbed} />
+
+<Canvas of={Stories.DefaultEmbed} />
+
+<Canvas of={Stories.DefaultActiveEmbed} />
+
+<Canvas of={Stories.ExpandViewEmbed} />
+
+<Canvas of={Stories.PanelViewEmbed} />
+
+<Canvas of={Stories.FullViewEmbed} />

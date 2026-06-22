@@ -38,8 +38,11 @@ import { Pills } from "@genuin/components/molecules/feed-player/pills/pills";
 import { DynamicLinkouts } from "@genuin/components/molecules/linkout-new/linkouts-dynamic";
 import { ReadMore } from "@genuin/components/molecules/read-more";
 import { buildLinkoutsAnalyticsData } from "@genuin/components/organisms/linkouts/build-linkouts-analytics-data";
+import type { LinkData } from "@genuin/components/react-query/api/linkouts/schema";
 
 import { setDeviceMode } from "../../../.storybook/preview";
+
+import { LINKOUT_FIGMA_CAROUSEL, LINKOUT_FIGMA_CTA } from "./linkouts.fixtures";
 
 // Mock Data
 
@@ -83,26 +86,9 @@ const STORY_POST_DETAILS = {
   },
 } as const;
 
-const SAMPLE_LINKS = [
-  {
-    link: "https://www.walmart.com/",
-    title: "Badminton racket",
-    image: "https://placehold.co/240x240/png?text=Racket",
-    position: 0,
-  },
-  {
-    link: "https://www.amazon.com/",
-    title: "Tennis shoes",
-    image: "https://placehold.co/240x240/png?text=Shoes",
-    position: 1,
-  },
-  {
-    link: "https://www.target.com/",
-    title: "Yoga mat",
-    image: "https://placehold.co/240x240/png?text=Yoga+Mat",
-    position: 2,
-  },
-];
+// Sourced from packages/components/src/organisms/linkouts/linkouts.fixtures.ts
+// (TOEFL / ETS reference content from the Figma design).
+const SAMPLE_LINKS = LINKOUT_FIGMA_CAROUSEL;
 
 const LINKOUTS_ANALYTICS = buildLinkoutsAnalyticsData({});
 
@@ -136,10 +122,7 @@ const LINKS_FULL = SAMPLE_LINKS.map((sample) => ({
 
 // CTA values for button scenarios
 
-const CTA_WITH_BUTTON = {
-  ctaText: SAMPLE_LINKS[0]?.title ?? "",
-  ctaLink: SAMPLE_LINKS[0]?.link ?? "",
-};
+const CTA_WITH_BUTTON = LINKOUT_FIGMA_CTA;
 
 // Shared UI primitives
 
@@ -179,7 +162,11 @@ function DesktopLinkoutsExpandHarness() {
   const { hasContentType, openContentType, closeContentType, sheetContentPlacements } = useSheetState();
   const [isCommentsOpen, setIsCommentsOpen] = useState(true);
 
-  const links = LINKS_FULL;
+  // Forward the full fixture (description, brand, prices, rating,
+  // likes, downloads, phone, address) so the desktop expand body
+  // renders the rich card variant. `LINKS_FULL` strips fields and
+  // doesn't fit this story's "show everything" intent.
+  const links = SAMPLE_LINKS;
   const { ctaText, ctaLink } = CTA_WITH_BUTTON;
 
   const isOutsidePlacement = sheetContentPlacements["linkouts"] === "outside";
@@ -435,7 +422,7 @@ function MobileSdkDetails({
 // Mobile harness
 
 type DynamicLinkoutsExpandHarnessProps = {
-  links: typeof LINKS_THUMBNAIL_ONLY;
+  links: LinkData[];
   ctaText: string;
   ctaLink: string;
 };
@@ -507,11 +494,11 @@ const meta: Meta<typeof DynamicLinkoutsExpandHarness> = {
     docs: {
       disable: true,
       description: {
-        component: `
+        component: ` 
 These stories represent the \`DynamicLinkouts\` component as it appears inside the **expand/post-detail overlay** the full-screen view a user sees after tapping a video in the feed.
-
+ 
 ### Two layouts covered
-
+ 
 | Story | Layout | Key behaviour |
 |---|---|---|
 | 01 Desktop | 3-column: video / actions / linkouts+comments | Linkouts start overlaid on the video. Clicking the linkout action button moves them into the right panel. Comments panel is independently togglable. |
@@ -519,25 +506,25 @@ These stories represent the \`DynamicLinkouts\` component as it appears inside t
 
 ### Sheet states
 The linkout strip supports three states driven by a drag handle:
-
+ 
 | State | Description |
 |---|---|
 | \`default\` | Strip collapsed at the bottom of the video |
 | \`default-active\` | Strip collapsed at the bottom of the video and then expand a bit automatically|
 | \`panel-view\` | User drags up partway strip grows to panel height |
 | \`full-view\` | User drags to top strip takes full card height |
-
+ 
 Drag the handle in any individual story to move between states.
 
 ### Controls
-
+ 
 - **linkThumbnail**: toggles the product image on each card
 - **linkTitle**: toggles the text label on each card
 - **button**: toggles the CTA button on each card
 - **deviceMode**: switches the internal \`matchMedia\` mock so \`DynamicLinkouts\` renders mobile (pagination dots) or desktop (nav arrows) navigation
-
+ 
 ### Architecture notes
-
+ 
 - Both harnesses render into \`document.body\` via \`createPortal\` so the overlay sits above all Storybook chrome.
 - Sheet state (\`default\` → \`panel-view\` → \`full-view\`) is managed by \`useSheetState\`.
 - The global \`matchMedia\` mock lives in \`.storybook/preview.ts\`. Do **not** add a local \`window.matchMedia\` override in this file.
@@ -562,12 +549,12 @@ export const DesktopExpand: Story = {
       description: {
         story: `
 **Desktop expand view** — the post-detail overlay as seen on a wide viewport.
-
+ 
 Layout is three columns:
 - **Left (52%)** — video player. When linkouts are in "inside" placement they overlay the bottom of the video.
 - **Middle (72px)** — vertical action bar (react, comment, share, linkout toggle, more).
 - **Right (flex)** — linkouts carousel and/or comments panel.
-
+ 
 **Interactions to test:**
 1. Click the linkout icon in the action bar → linkouts move from the video overlay into the right panel ("outside" placement).
 2. Click the comment icon → comments panel toggles open/closed.
@@ -586,9 +573,9 @@ export const EXPANDTHUMBNAIL: Story = {
       description: {
         story: `
 **Mobile expand — thumbnail only.**
-
+ 
 Each linkout card shows only the product image and the destination URL. No title text, no CTA button.
-
+ 
 Use this to verify:
 - Card aspect ratio and image fit at mobile width.
 - Carousel pagination dots appear correctly (mobile nav mode).
@@ -611,7 +598,7 @@ export const EXPANDThumbnailAndTitle: Story = {
       description: {
         story: `
 **Mobile expand — thumbnail with title.**
-
+ 
 Adds the product title below the image. Use this to verify:
 - Title text wraps correctly within the card width.
 - Card height grows to accommodate the title without breaking the carousel layout.
@@ -634,7 +621,7 @@ export const EXPANDThumbnailAndButton: Story = {
       description: {
         story: `
 **Mobile expand — thumbnail with CTA button, no title.**
-
+ 
 Shows the button-primary variant where the card has an image and a call-to-action but no descriptive title. Use this to verify:
 - Button text fits within the card and does not overflow.
 - Button tap target is large enough at mobile size.
@@ -671,5 +658,24 @@ Use this as the baseline when:
   args: {
     links: LINKS_FULL,
     ...CTA_WITH_BUTTON,
+  },
+};
+
+export const FullFigmaCardExpand: Story = {
+  name: "Mobile Expand View — Full Figma Card",
+  parameters: {
+    docs: {
+      description: {
+        story: `
+**Full data set from the Figma reference.**
+
+Same harness as the mobile expand stories above, but the carousel carries the complete \`LINKOUT_FIGMA_CAROUSEL\` content — description, brand, website, prices, rating, likes, downloads, phone, address. Drag the sheet handle from \`pl-sml\` (chip) → \`default\` → \`default-active\` → \`expand-view\` → \`panel-view\` → \`full-view\` to see every \`<LinkCard>\` branch render with rich data in turn.
+        `,
+      },
+    },
+  },
+  args: {
+    links: LINKOUT_FIGMA_CAROUSEL,
+    ...LINKOUT_FIGMA_CTA,
   },
 };

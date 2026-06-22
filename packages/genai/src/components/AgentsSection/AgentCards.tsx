@@ -1,7 +1,8 @@
 // Fixed AgentCard Component
 import { useState } from 'react';
 
-import { useAgentsContext } from '@/context/app/context';
+import { useAgentContext } from '@/stores/agent/context';
+import { useUIContext } from '@/stores/ui/context';
 import type { Agent } from '@/types';
 
 import { Button } from '../ui/button';
@@ -9,7 +10,8 @@ import { Skeleton } from '../ui/skeleton';
 
 const AgentCards = ({ agents }: { agents: Agent[] }) => {
     const [focusedAgent, setFocusedAgent] = useState<Agent | null>(null);
-    const { setCurrentAgent, showAllObjectives } = useAgentsContext();
+    const { setCurrentAgent } = useAgentContext();
+    const { showAllObjectives } = useUIContext();
 
     if (agents.length === 0) {
         return Array.from({ length: 4 }).map((_, i) => (

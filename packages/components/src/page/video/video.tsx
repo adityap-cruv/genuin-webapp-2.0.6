@@ -1,9 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
-import { lazy, Suspense } from "react";
+import { lazy } from "react";
 
 import { useBaseContext } from "@genuin/components/context/base";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { ErrorState } from "@genuin/components/molecules/error-state";
 import type { AuthenticationModalProps } from "@genuin/components/organisms/authentication-modal";
 import { useFeed } from "@genuin/components/react-query/api/feed";
@@ -52,14 +53,14 @@ export function VideoPage({ videoId }: { videoId: string }) {
         }}
       />
       {showGetApp && (
-        <Suspense fallback={null}>
+        <SafeSuspense fallback={null} errorFallback={null}>
           <AuthenticationModal
             open={true}
             showClose={false}
             customStep="GET_APP_WITH_BLURRED_BG"
             getAppData={{ data: { type: "video" } }}
           />
-        </Suspense>
+        </SafeSuspense>
       )}
     </>
   );

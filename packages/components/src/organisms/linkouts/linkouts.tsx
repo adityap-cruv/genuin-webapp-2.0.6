@@ -1,12 +1,14 @@
 "use client";
-import { cn } from "@genuin/ui/lib/utils";
+import { checkAndAppendHttps, cn } from "@genuin/ui/lib/utils";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 import type { ComponentProps } from "react";
-import { useEffect, useState, useMemo, lazy, Suspense } from "react";
+import { useEffect, useState, useMemo, lazy } from "react";
 
 import { useAnalytics } from "@genuin/components/context/analytics/context";
 import { useShowLinkouts } from "@genuin/components/hooks/use-show-linkouts";
+import type { LinkoutSlotContent } from "@genuin/components/molecules/linkout-new/types";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { buildLinkoutsAnalyticsData } from "@genuin/components/organisms/linkouts/build-linkouts-analytics-data";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { useGetLinkouts } from "@genuin/components/react-query/api/linkouts/get-linkouts";
@@ -78,6 +80,12 @@ export type LinkoutsProps = {
   autoplay?: boolean;
   handleCTAClick?: (e: React.MouseEvent) => void;
   onSwiperToggle?: (isOpen: boolean) => void;
+  /**
+   * Forwarded to `<DynamicLinkouts>` when `variant === "dynamic"`.
+   * Takes precedence over `linkouts` — pass when the slot should
+   * host an IAB banner ad instead of a link card.
+   */
+  dynamicContent?: LinkoutSlotContent;
 } & ComponentProps<"div"> &
   VariantProps<typeof linkOutVariant>;
 
@@ -96,6 +104,7 @@ export function Linkouts({
   layout,
   handleCTAClick,
   onSwiperToggle,
+  dynamicContent,
   ...restProps
 }: LinkoutsProps) {
   const { showLinkouts } = useShowLinkouts({ linkoutId, isActive });
@@ -188,13 +197,20 @@ export function Linkouts({
 
   // ─── Derive processed data ────────────────────────────────────────────────
   const linkoutData = linkouts?.[0];
+  // Linkout URLs can come from the API without a protocol (e.g. "www.iheart.com/podcast/").
+  // The Link component treats protocol-less hrefs as internal and rewrites them against the
+  // brand's white_label_url, sending users to the whitelabel site instead of the linkout.
+  // Normalize here so every card variant receives absolute URLs.
   const sortedLinks = useMemo(
-    () => [...(linkoutData?.links ?? [])].sort((a, b) => (a.position || 0) - (b.position || 0)),
+    () =>
+      [...(linkoutData?.links ?? [])]
+        .sort((a, b) => (a.position || 0) - (b.position || 0))
+        .map((link) => (link.link ? { ...link, link: checkAndAppendHttps(link.link) } : link)),
     [linkoutData]
   );
 
   const effectiveCTAText = linkoutData?.cta_text ?? "";
-  const effectiveCTALink = linkoutData?.cta_link ?? "";
+  const effectiveCTALink = linkoutData?.cta_link ? checkAndAppendHttps(linkoutData.cta_link) : "";
 
   // ─── Resolve effective variant ────────────────────────────────────────────
   const resolvedVariant = useMemo((): ResolvedVariant => {
@@ -230,7 +246,7 @@ export function Linkouts({
   switch (resolvedVariant) {
     case "dynamic":
       return (
-        <Suspense fallback={null}>
+        <SafeSuspense fallback={null} errorFallback={null}>
           <DynamicLinkouts
             links={sortedLinks}
             ctaText={effectiveCTAText}
@@ -240,14 +256,15 @@ export function Linkouts({
             layout={layout}
             analyticsEventData={analyticsEventData}
             onSwiperToggle={onSwiperToggle}
+            content={dynamicContent}
           />
-        </Suspense>
+        </SafeSuspense>
       );
 
     case "cta_only":
       return (
         <div className={cn(animationClasses, className)} {...restProps}>
-          <Suspense fallback={null}>
+          <SafeSuspense fallback={null} errorFallback={null}>
             <CTAOnlyCard
               key={`cta-only`}
               isEmbed={view === "embed"}
@@ -257,7 +274,7 @@ export function Linkouts({
               linkCount={sortedLinks.length}
               handleCTAClick={handleCTAClick}
             />
-          </Suspense>
+          </SafeSuspense>
         </div>
       );
 
@@ -267,9 +284,9 @@ export function Linkouts({
 
       return (
         <div className={cn(animationClasses, className)} {...restProps}>
-          <Suspense fallback={null}>
+          <SafeSuspense fallback={null} errorFallback={null}>
             <SingleLinkCard link={link} showThumbnail={!!link.image?.trim()} {...commonCardProps} />
-          </Suspense>
+          </SafeSuspense>
         </div>
       );
     }
@@ -277,9 +294,9 @@ export function Linkouts({
     case "multi":
       return (
         <div className={cn(animationClasses, className)} {...restProps}>
-          <Suspense fallback={null}>
+          <SafeSuspense fallback={null} errorFallback={null}>
             <MultiLinkCard links={sortedLinks} maxVisible={100} {...commonCardProps} />
-          </Suspense>
+          </SafeSuspense>
         </div>
       );
   }

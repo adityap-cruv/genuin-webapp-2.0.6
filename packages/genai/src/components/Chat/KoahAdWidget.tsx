@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { useOctoAnalytics } from '@/context/analytics';
-import { useAgentsContext } from '@/context/app/context';
+import { useOctoAnalytics } from '@/adapters/analytics/hooks';
+import { useSessionContext } from '@/stores/session/context';
+import { useUIContext } from '@/stores/ui/context';
 
 type KoahAdWidgetProps = {
     userMessage: string | null;
@@ -12,7 +13,6 @@ type KoahAdWidgetProps = {
 // Copy Koah's native styles into shadow root so they can apply
 const injectKoahStyles = (container: HTMLElement): void => {
     const rootNode = container.getRootNode();
-
     // Only need to handle shadow root case - styles in document.head work normally outside shadow DOM
     if (!(rootNode instanceof ShadowRoot)) return;
 
@@ -21,9 +21,10 @@ const injectKoahStyles = (container: HTMLElement): void => {
     // Check if styles already exist in shadow root
     const existingStyle = shadowRoot.querySelector('#koah-theme-styles-shadow');
     if (existingStyle) return;
-
-    // Copy Koah's own theme styles from document.head into shadow root
-    const koahThemeStyles = document.head.querySelector('#koah-preact-snippet-styles');
+    // Copy Koah's own theme styles from document.head into shadow root.
+    // Koah injects them as <style id="koah-snippet-styles"> in the document head;
+    // without this clone they never apply inside the shadow root and the ad renders unstyled.
+    const koahThemeStyles = document.head.querySelector('#koah-snippet-styles');
     if (koahThemeStyles) {
         const clonedStyles = koahThemeStyles.cloneNode(true) as HTMLStyleElement;
         clonedStyles.id = 'koah-theme-styles-shadow';
@@ -32,7 +33,8 @@ const injectKoahStyles = (container: HTMLElement): void => {
 };
 
 const KoahAdWidget = ({ userMessage, aiResponse, messageId }: KoahAdWidgetProps) => {
-    const { view, currentSessionId } = useAgentsContext();
+    const { currentSessionId } = useSessionContext();
+    const { view } = useUIContext();
     const { analytics } = useOctoAnalytics();
     const containerRef = useRef<HTMLDivElement>(null);
     const [adServed, setAdServed] = useState(false);

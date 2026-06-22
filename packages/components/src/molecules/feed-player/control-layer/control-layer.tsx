@@ -1,9 +1,10 @@
 import { cn } from "@genuin/ui/lib/utils";
 import { cva } from "class-variance-authority";
-import { memo, lazy, Suspense } from "react";
+import { memo, lazy } from "react";
 import type { CSSProperties } from "react";
 
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 
 import { usePlayerContext } from "../context";
 
@@ -58,13 +59,13 @@ export const ControlLayer = memo(function ControlLayer(props: ControlLayerPropsT
    */
   if (isAdPlaying) {
     return (
-      <Suspense fallback={null}>
+      <SafeSuspense fallback={null} errorFallback={null}>
         <Ad
           className={cn(controlLayerVariant({ variant: props.variant ?? "default" }), props.className)}
           style={safariOptimizationStyles}
           adType={props.adType ?? "in-feed"}
         />
-      </Suspense>
+      </SafeSuspense>
     );
   }
 
@@ -74,13 +75,13 @@ export const ControlLayer = memo(function ControlLayer(props: ControlLayerPropsT
   if (!props.variant || props.variant === "default") {
     const { className, variant = "default", ...restProps } = props;
     return (
-      <Suspense fallback={null}>
+      <SafeSuspense fallback={null} errorFallback={null}>
         <Default
           className={cn(controlLayerVariant({ variant }), className)}
           style={safariOptimizationStyles}
           {...restProps}
         />
-      </Suspense>
+      </SafeSuspense>
     );
   }
 
@@ -90,14 +91,14 @@ export const ControlLayer = memo(function ControlLayer(props: ControlLayerPropsT
   if (props.variant === "embed") {
     const { className, variant, ...restProps } = props;
     return (
-      <Suspense fallback={null}>
+      <SafeSuspense fallback={null} errorFallback={null}>
         <Embed
           className={cn(controlLayerVariant({ variant }), className)}
           style={safariOptimizationStyles}
           layoutType={props.layoutType}
           {...restProps}
         />
-      </Suspense>
+      </SafeSuspense>
     );
   }
 
@@ -107,13 +108,13 @@ export const ControlLayer = memo(function ControlLayer(props: ControlLayerPropsT
   if (props.variant === "placement") {
     const { className, variant, ...restProps } = props;
     return (
-      <Suspense fallback={null}>
+      <SafeSuspense fallback={null} errorFallback={null}>
         <Placement
           className={cn(controlLayerVariant({ variant }), className)}
           style={safariOptimizationStyles}
           {...restProps}
         />
-      </Suspense>
+      </SafeSuspense>
     );
   }
 
@@ -121,13 +122,13 @@ export const ControlLayer = memo(function ControlLayer(props: ControlLayerPropsT
   if (props.variant === "embed-pip") {
     const { className, variant, ...restProps } = props;
     return (
-      <Suspense fallback={null}>
+      <SafeSuspense fallback={null} errorFallback={null}>
         <EmbedPip
           className={cn(controlLayerVariant({ variant }), className)}
           style={safariOptimizationStyles}
           {...restProps}
         />
-      </Suspense>
+      </SafeSuspense>
     );
   }
 

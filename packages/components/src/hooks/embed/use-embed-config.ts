@@ -1,12 +1,16 @@
+"use client";
+
 import { useBrowserDetect } from "@genuin/ui/hooks";
-import { useMemo } from "react";
+import { useLayoutEffect, useMemo, useState } from "react";
 
 import { useBaseContext } from "@genuin/components/context/base";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import type { CustomizationType } from "@genuin/components/context/embed/embed.types";
+import { resolveControlSize } from "@genuin/components/molecules/feed-player/control-layer/player-control-size";
 import type { FeedType } from "@genuin/components/types/post";
 
 import { useDeviceDetectMediaQuery } from "../use-devide-detect-media-query";
+import { useSearchParams } from "../use-search-params";
 
 const MIN_EMBED_WIDTH = 150;
 const MIN_EMBED_HEIGHT = 268; // Based on 9:16 aspect ratio for 150 width
@@ -33,12 +37,23 @@ const BRAND_FEATURE_IDS = {
     ]),
     embedIds: new Set<string>([]),
   },
+  // LIVE: synthetic ad slides inserted between videos. Do not alter.
   adInjection: {
     placementIds: new Set(["69e22226dd5806e4fb990a48", "69fdb9cc45fa9f171bd1ab70"]),
     embedIds: new Set<string>([]),
   },
+  // New, id-scoped: attaches a static adTagObject onto existing videos (no new slides).
+  staticExpandViewAd: {
+    placementIds: new Set<string>(["6a312de7a01f8b8ab6edde5a", "6a312e6756a45d0f66cf554c", "6a312ed0fa2e81f7e2dc4e79"]),
+    embedIds: new Set<string>([]),
+  },
   autoExpand: {
-    placementIds: new Set<string>(["69faddecc002c7c205f3ad6a", "69fdb9cc45fa9f171bd1ab70"]),
+    placementIds: new Set<string>([
+      "69faddecc002c7c205f3ad6a",
+      "69fdb9cc45fa9f171bd1ab70",
+      "6a22797a5c3c0f6ee27cacb5",
+      "6a20274c5c3c0f6ee27c197b",
+    ]),
     embedIds: new Set<string>([]),
   },
   expandOnInteraction: {
@@ -88,6 +103,15 @@ export function useEmbedConfigs() {
   const { brandDetails, isEmbed } = useBaseContext();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
   const { isSafari } = useBrowserDetect();
+  const { searchParams } = useSearchParams();
+
+  // Tracks whether the v2 design system experience is enabled via the
+  // `design_system=v2` URL param. Recomputed whenever the search string
+  // changes so consumers stay in sync with client-side navigation.
+  const isDesignSystemV2 = useMemo(
+    () => new URLSearchParams(searchParams).get("design_system") === "v2",
+    [searchParams]
+  );
 
   const isAdsEnabledInIheart = useMemo(() => {
     return rootElement?.getAttribute("data-ads-enabled") === "true";
@@ -302,7 +326,7 @@ export function useEmbedConfigs() {
 
     // Default and disabled engagement tool states
     const defaultEngagementTools = {
-      octo: true,
+      octo: false,
       repost: true,
       spark: true,
       comment: true,
@@ -373,7 +397,7 @@ export function useEmbedConfigs() {
       redirectionTools,
       openAllLinksInNewTab: false,
     };
-  }, [customization, rootElement]);
+  }, [customization, isEmbed, brandDetails.camera_enabled]);
 
   // ============================================================
   // Link Configuration
@@ -462,9 +486,46 @@ export function useEmbedConfigs() {
   //==================================================================
   // Responsive breakpoints configuration
   //==================================================================
+  // Live container dimensions, kept in sync with the embed root via a
+  // ResizeObserver. Reading `rootElement.offsetWidth` directly inside
+  // the memo below races against React's render cycle: on first paint
+  // the element isn't laid out yet (offsetWidth=0) and `canShowEngagement`
+  // resolves to `false`, picking the minimal "responsiveness" variant
+  // even though the actual rendered size satisfies the threshold. The
+  // memo's `[rootElement, …]` deps don't recompute when the element's
+  // size changes — only when its identity changes — so the wrong value
+  // sticks unless something else triggers a re-render. Threading the
+  // dimensions through state forces the memo to re-evaluate as soon
+  // as the box has dimensions.
+  const [containerSize, setContainerSize] = useState<{ width: number; height: number }>(() => ({
+    width: rootElement?.offsetWidth ?? 0,
+    height: rootElement?.offsetHeight ?? 0,
+  }));
+  // `useLayoutEffect`, not `useEffect`: the dimensions read must happen
+  // synchronously *before* the browser paints the first frame. Otherwise
+  // first paint reads the stale initial state (0×0), ControlLayer picks
+  // the "responsiveness" variant, then the effect fires post-paint and
+  // re-renders into the real variant — visible as a layout flash on
+  // mount (and on every key={playerImpl} remount during V1/V2 toggling).
+  useLayoutEffect(() => {
+    if (!rootElement) return;
+    const sync = () => {
+      setContainerSize((prev) => {
+        const w = rootElement.offsetWidth ?? 0;
+        const h = rootElement.offsetHeight ?? 0;
+        if (prev.width === w && prev.height === h) return prev;
+        return { width: w, height: h };
+      });
+    };
+    sync();
+    const observer = new ResizeObserver(sync);
+    observer.observe(rootElement);
+    return () => observer.disconnect();
+  }, [rootElement]);
+
   const responsiveConfig = useMemo(() => {
-    const containerWidth = rootElement?.offsetWidth || 0;
-    const containerHeight = rootElement?.offsetHeight || 0;
+    const containerWidth = containerSize.width;
+    const containerHeight = containerSize.height;
     const currentStyle = embedData?.style;
     const gridColumn = embedData?.grid_layout?.column ?? 1;
 
@@ -484,7 +545,11 @@ export function useEmbedConfigs() {
     } as const;
 
     const getHeaderHeight = (): number => {
-      if (!headerConfig.showHeader || (viewConfig.isPlacementView && !contentDisplayConfig.showStyleDetails)) return 0;
+      if (
+        !headerConfig.showHeader ||
+        (viewConfig.isPlacementView && (!contentDisplayConfig.showStyleDetails || !headerConfig.heading))
+      )
+        return 0;
 
       if (viewConfig.isFeed) {
         if (headerConfig.ctaButton?.url) return HEADER_HEIGHTS.feed.withCtaButton;
@@ -558,16 +623,23 @@ export function useEmbedConfigs() {
       isMd: effectiveVideoWidth <= breakpoints.md,
       isLg: effectiveVideoWidth <= breakpoints.lg,
       canShowEngagement: canShowEngagement(),
+      controlSize: resolveControlSize(containerWidth),
     };
 
     return responsive;
   }, [
+    // `containerSize` replaces the bare `rootElement` dep — we still
+    // need rootElement.identity to know which element to observe (that
+    // lives in the effect above), but the memo only cares about its
+    // dimensions, fed in via state.
+    containerSize,
     rootElement,
     embedData?.style,
     embedData?.grid_layout?.column,
     customization,
     dimensionsConfig.aspectRatio,
     headerConfig.showHeader,
+    headerConfig.heading,
     headerConfig.ctaButton,
     headerConfig.subHeading,
     viewConfig.isFeed,
@@ -593,6 +665,8 @@ export function useEmbedConfigs() {
         (window.location.hostname === "iheartvip.prototype.begenuin.com" ||
           (isIheart && window.location.hostname === "gendemo.b-cdn.net")));
 
+    const shouldAttachStaticExpandViewAd = matchesFeature(BRAND_FEATURE_IDS.staticExpandViewAd, embedData);
+
     const feedType: FeedType = "FEED_V1";
     const iheartArticleId = isIheart;
     return {
@@ -602,6 +676,7 @@ export function useEmbedConfigs() {
       autoPageContext: isIheart,
       showIheartIframe: false,
       shouldInjectExpandViewAds,
+      shouldAttachStaticExpandViewAd,
       iheartArticleId,
       shouldAutoExpand: matchesFeature(BRAND_FEATURE_IDS.autoExpand, embedData),
       expandOnInteraction: matchesFeature(BRAND_FEATURE_IDS.expandOnInteraction, embedData) && isMobile,
@@ -650,6 +725,12 @@ export function useEmbedConfigs() {
     virtualizeSwiper,
     brand,
     embedSwiperConfigs,
+    /**
+     * True when the embed URL contains `design_system=v2`. Gates the v2
+     * design system experience (e.g. dynamic linkouts, v2 player controls)
+     * across the app.
+     */
+    isDesignSystemV2,
     /**
      * TODO: Productise this — currently hardcoded to a specific embed ID (6980fb600599bd5a2e1011b5).
      * Once validated, this should be driven by an embed-level config flag (e.g. embedData.render_only_single_video)

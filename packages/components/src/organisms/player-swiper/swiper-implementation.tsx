@@ -1,12 +1,13 @@
 import { dialogManager } from "@genuin/ui/lib/dialog-manager/dialog-manager";
 import { cn } from "@genuin/ui/lib/utils";
-import { useEffect, useRef, useState, useMemo, lazy, Suspense } from "react";
+import { useEffect, useRef, useState, useMemo, lazy } from "react";
 import { Swiper } from "swiper/react";
 import type { Swiper as SwiperType } from "swiper/types";
 
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
 
 // Lazy load both Swiper and modules together to avoid separate loading delays
@@ -130,7 +131,7 @@ export function SwiperImplementation({
   }, [disableScroll, disable]);
 
   return (
-    <Suspense
+    <SafeSuspense
       fallback={
         <div className={cn("gencl:h-full gencl:w-full", className)}>
           <div className="gencl:animate-pulse gencl:bg-gray-200 gencl:h-full gencl:w-full" />
@@ -180,10 +181,9 @@ export function SwiperImplementation({
           scrollOnFocus: true,
         }}
         followFinger
-        snapToSlideEdge
         {...restProps}>
         {children}
       </SwiperWithModules>
-    </Suspense>
+    </SafeSuspense>
   );
 }

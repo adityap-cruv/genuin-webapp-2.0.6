@@ -1,0 +1,68 @@
+{
+  "code": "200",
+  "message": "Feed is loaded.",
+  "data": {
+    "reels": [
+      {
+        "_id": "69b298f4d6a6ad57e7b9a499",
+        "community": {
+          "dp": "https://media.begenuin.com/uploads/profile_images/community/communityProfile_1763401871407.png",
+          "handle": "entertainment",
+          "name": "Entertainment",
+          "private": false,
+          "share_string": "https://infolinks.begenuin.com/community/entertainment",
+          "slug": "entertainment"
+        },
+        "config": {
+          "size_mode": ""
+        },
+        "cta": {
+          "ad_copy": "",
+          "hashtags": null,
+          "link": "",
+          "show_url_meta": false,
+          "text": ""
+        },
+        "loop": {
+          "description": "Get the inside scoop on the shows everyone's talking about, from standout episodes to behind-the-scenes buzz",
+          "name": "TV",
+          "preview_image": "",
+          "private": false,
+          "share_string": "https://infolinks.begenuin.com/loop/tv?community=214f3f0fb7000d43",
+          "slug": "tv"
+        },
+        "og_details": null,
+        "owner": {
+          "is_avatar": false,
+          "nickname": "usweekly",
+          "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1765220758938.png",
+          "share_string": "https://infolinks.begenuin.com/profile/usweekly",
+          "username": "Us Weekly"
+        },
+        "type": "loop",
+        "video": {
+          "ads_config": {
+            "ads_url": "https://nxs.begenuin.com/tagxml/customer/3119/tag/3753?&location_lat=[LOCATION_LAT]&city=[CITY]&regionfips104_dg=[DEVICE_GEO_REGIONFIPS104]&source_ds=[DEVICE_SUA_SOURCE]&AV_CONTENT_ID=&midroll_times=&session_id=[SESSION_ID]&utcoffset_ug=[USER_GEO_UTCOFFSET]&AV_DNT=[DNT]&site_page=[PAGE_URL]&device_ipv6=[DEVICE_IPV6]&AV_PLCMT=[PLACEMENT_MACRO]&AV_LATITUDE=[LOCATION_LAT]&AV_GDPR=[GDPR]&cat_s=[SITE_CAT]&domain_sp=begenuin.com&postroll=1&skipafter_iv=0&site_search=[SITE_SEARCH]&keywords_s=[SITE_KEYWORDS]&ppi_d=[DEVICE_PPI]&lon_ug=[USER_GEO_LON]&plcmt_iv=1&accuracy_dg=[DEVICE_ACCURACY]&bitness_ds=[DEVICE_SUA_BITNESS]&max_ad_duration=60&location_lon=[LOCATION_LON]&us_privacy_r=1---&AV_LANGUAGE=[DEVICE_LANGUAGE]&AV_DOMAIN=[DOMAIN]&placement_iv=1&linearity_iv=1&device_js=[DEVICE_JS]&metro_ug=[USER_GEO_METRO]&lastfix_ug=[USER_GEO_LASTFIX]&cattax_sp=[SITE_PUBLISHER_CATTAX]&device_make=[DEVICE_MAKE]&AV_LMT=[LIMITED_AD_TRACKING]&pub_name=[PUBLISHER_NAME]&player_width=[WIDTH]&pos_iv=7&langb_d=[DEVICE_LANGB]&user_id=3F27Nx17QetY0IFxF8edNKyEijL&AV_REGION=[REGION]&AV_MODEL=[DEVICE_MODEL]&secure_i=1&ad_breaks=0,0,-1&flashver_d=[DEVICE_FLASHVER]&mobile_ds=[DEVICE_SUA_MOBILE]&platform_version_ds=[DEVICE_SUA_PLATFORM_VERSION]&url_sc=[CONTENT_URL]&player_height=[HEIGHT]&lat_ug=[USER_GEO_LAT]&AV_OSVERS=[OS_VERSION]&device_type=[DEVICE_TYPE]&ua=[UA]&AV_CONSENT=[GDPRCONSENT]&mccmnc_d=[DEVICE_MCCMNC]&AV_USERAGENT=[UA]&name_s=Begenuin&privacypolicy_s=[SITE_PRIVACYPOLICY]&bidfloorcur_i=USD&accuracy_ug=[USER_GEO_ACCURACY]&lastfix_dg=[DEVICE_GEO_LASTFIX]&yob=[YOB]&device_language=[DEVICE_LANGUAGE]&ipservice_ug=[USER_GEO_IPSERVICE]&site_ref=[SITE_REF]&cattax_s=[SITE_CATTAX]&device_model=[DEVICE_MODEL]&geofetch_d=[DEVICE_GEOFETCH]&ipservice_dg=[DEVICE_GEO_IPSERVICE]&metro_dg=[DEVICE_GEO_METRO]&region_ug=[USER_GEO_REGION]&len_sc=[CONTENT_LENGTH]&sectioncat_s=[SITE_SECTIONCAT]&id_sp=99&mobile_s=[SITE_MOBILE]&min_ad_duration=5&region=[REGION]&connectiontype_d=[DEVICE_CONNECTIONTYPE]&browsers_version_ds=[DEVICE_SUA_BROWSERS_VERSION]&city_ug=[USER_GEO_CITY]&site_id=99_&width=[DEVICE_WIDTH]&AV_LONGITUDE=[LOCATION_LON]&AV_RTB_DEVICE_TYPE=[DEVICE_TYPE]&hwv=[DEVICE_HWV]&kwarray_s=[SITE_KWARRAY]&pxratio_d=[DEVICE_PXRATIO]&type_dg=[DEVICE_GEO_TYPE]&AV_OS=[OS]&AV_URL=[PAGE_URL]&is_lat=[LIMITED_AD_TRACKING]&AV_MAKE=[DEVICE_MAKE]&AV_IFA_TYPE=[IFA_TYPE]&height=[DEVICE_HEIGHT]&zip=[ZIP_CODE]&platform_brand_ds=[DEVICE_SUA_PLATFORM_BRAND]&type_ug=[USER_GEO_TYPE]&country_ug=[USER_GEO_COUNTRY]&AV_HEIGHT=[DEVICE_HEIGHT]&cb=1781261273335247142&did=[DID]&AV_CONNECTIONTYPE=[DEVICE_CONNECTIONTYPE]&AV_TIMESTAMP=1781261273335247482&utcoffset_dg=[DEVICE_GEO_UTCOFFSET]&dnt=[DNT]&name_sp=[SITE_PUBLISHER_NAME]&cat_sp=[SITE_PUBLISHER_CAT]&os=[DEVICE_OS]&gender=[GENDER]&carrier_d=[DEVICE_CARRIER]&zip_ug=[USER_GEO_ZIP]&us_privacy=1---&AV_WIDTH=[DEVICE_WIDTH]&AV_PLACEMENT=[VIDEO_PLACEMENT]&AV_IP=[IP]&vid_d=0&domain_s=[DOMAIN]&ip=[IP]&browsers_brand_ds=[DEVICE_SUA_BROWSERS_BRAND]&model_ds=[DEVICE_SUA_MODEL]&country_code=[COUNTRY_ID]&architecture_ds=[DEVICE_SUA_ARCHITECTURE]&regionfips104_ug=[USER_GEO_REGIONFIPS104]&pagecat_s=[SITE_PAGECAT]&skipmin_iv=0&osv=[DEVICE_OS_VERSION]"
+          },
+          "created_at": "2024-09-24T09:46:00.116Z",
+          "description": "[\"Dutton Ranch' Men Share the Secret to a Good Cowboy Look\"]",
+          "id": "76ec168b-69a8-4f97-bbb4-ff99461b8f87",
+          "link": "",
+          "metadata": {
+            "aspect_ratio": "9:16",
+            "duration": "37",
+            "resolution": "1080x1920",
+            "size": "12670225"
+          },
+          "no_of_comments": 0,
+          "no_of_sparks": 0,
+          "share_string": "https://infolinks.begenuin.com/video/dutton-ranch-men-share-the-secret-to-a-good?community=214f3f0fb7000d43&loop=214f3f5905801401",
+          "slug": "dutton-ranch-men-share-the-secret-to-a-good",
+          "thumbnail": "https://vz-8bbc7bbf-a1e.b-cdn.net/3bef6a96-fa15-428b-abf7-97ce84cdf34b/thumbnail.jpg",
+          "updated_at": "2024-09-24T09:57:12.227Z",
+          "url": "https://vz-8bbc7bbf-a1e.b-cdn.net/3bef6a96-fa15-428b-abf7-97ce84cdf34b/playlist.m3u8"
+        }
+      }
+    ]
+  }
+}

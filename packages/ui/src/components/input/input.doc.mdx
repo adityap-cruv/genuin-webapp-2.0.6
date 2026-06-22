@@ -1,0 +1,132 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./input.stories";
+
+{/*
+  Design-system narrative for the input component. Attached to the
+  matching story group via `<Meta of={…}>` so it renders as the
+  "Docs" tab next to the live stories. Layout: narrative intro →
+  live examples + controls → usage guidelines.
+*/}
+
+<Meta of={Stories} />
+
+# Input
+
+## What inputs are for
+
+A text input is the most common piece of data-entry UI in any product: a single-line field where the user types something — a name, an email, a search query, a code, a URL. The input looks trivial — a rectangle with a cursor — but it carries the entire weight of validating real user data, communicating its purpose, and giving feedback as the user types. The component layer exists to make every input behave the same way: same height, same focus treatment, same error treatment, same way of pairing with labels, icons, and validation messages.
+
+A good input is unambiguous about what it wants. Its label says exactly what data the user should type; its placeholder, when used, hints at the *format* (not the meaning); its size matches the expected length; its keyboard shows the right symbols on mobile (numeric keypad for codes, email keyboard for emails); and its error message lands next to the field, not somewhere off-screen. A bad input is the most common source of form abandonment — labels that say "Enter info", placeholders that disappear when you start typing, error states that look identical to neutral states, layouts that hide the validation message under a sticky footer.
+
+The Genuin Input is a thin wrapper around the native `<input>`. It applies the design-system type scale, the standard focus and invalid treatments, and offers two affordances on top: an optional inline icon (left or right) and a loading indicator that replaces or supplements the right-side region while async work is in flight (live validation, autocomplete fetch).
+
+## Input in this design system
+
+The Input component in `@genuin/ui` is exported as a single function: `<Input>`. It renders a wrapping `<div>` that positions the icon and loader, and a native `<input>` inside. All standard HTML input props pass through.
+
+### Default treatment
+
+- 40px tall (`h-10`), full-width.
+- `body-1-medium` typography, secondary-900 text.
+- 12px horizontal padding, expanding to 40px on the icon side when an icon is present.
+- 1px secondary-150 border, 8px corner radius.
+- On focus: secondary-600 border, native outline suppressed (the colored border replaces it).
+- On `aria-invalid="true"`: red border. The component does not toggle this itself — drive it from your form layer (e.g. `<FormControl>` sets `aria-invalid` based on validation state).
+- On `disabled`: 50% opacity, `cursor-not-allowed`.
+
+### Icons
+
+- **`icon`** — a React node rendered absolutely positioned inside the input.
+- **`iconPlacement`** — `"left"` (default) or `"right"`. Controls which side the icon sits on, and the input's padding is adjusted automatically so the text doesn't slide under the glyph.
+- The icon is wrapped in a `aria-hidden` span styled with `text-secondary-400`. It is decorative; if it carries meaning (e.g. a search magnifier in a global search), pair the input with a real `<label>` so screen readers still know what the input is.
+
+### Loading state
+
+- **`isLoading`** — when `true`, renders a `Loader` (size `sm`) absolutely positioned on the right side of the input. Use it for live validation ("Checking username availability..."), inline lookup ("Resolving address..."), or async commands. The loader does not block input — the user keeps typing while the request is in flight.
+- The loader is purely visual. It does not disable the input or queue keystrokes; that's the host's job (debouncing, request cancellation).
+
+### Types
+
+The component is type-agnostic — pass any native input type: `text`, `email`, `password`, `tel`, `url`, `number`, `search`, `date`, `time`. Each type triggers the right keyboard on mobile, the right validation primitives in the browser, and the right autocomplete affordances. Always pick the most specific type — `email` over `text` for emails, `tel` over `text` for phone numbers — even when you do your own validation.
+
+### Pairing with labels and forms
+
+- **Always pair `<Input>` with a `<Label htmlFor>` or with the `Form` system.** The component does not render its own label. Inside the `Form` orchestration (`<FormField>` + `<FormItem>` + `<FormControl>`), the label / id / `aria-describedby` / `aria-invalid` are wired automatically — drop the `<Input>` inside `<FormControl>` and don't set `id` yourself.
+- Outside `Form`, write the label by hand: `<label htmlFor="email">Email</label> <Input id="email" type="email" />`.
+
+### Native attributes that matter
+
+The component is just a styled native input — every attribute the browser supports works:
+
+- `autoComplete` — set to a real token (`email`, `current-password`, `one-time-code`, `street-address`). It's how password managers and address autofill find the field.
+- `inputMode` — controls the on-screen keyboard on mobile (`numeric`, `decimal`, `email`, `url`, `tel`).
+- `enterkeyhint` — hints what the Enter key should say ("Search", "Send", "Done").
+- `pattern` / `maxLength` / `min` / `max` — let the browser enforce constraints in addition to your own validation.
+
+### Customization
+
+`className` reaches the inner `<input>`. Use it for spacing tweaks or one-off type changes. Avoid using it to recolor states the component already ships (focus, invalid, disabled) — keep those consistent across the app.
+
+## Examples
+
+### Default
+
+<Canvas of={Stories.Default} />
+
+<Controls of={Stories.Default} />
+
+### Password
+
+<Canvas of={Stories.Password} />
+
+### Email
+
+<Canvas of={Stories.Email} />
+
+### Number
+
+<Canvas of={Stories.Number} />
+
+### Disabled
+
+<Canvas of={Stories.Disabled} />
+
+### Required
+
+<Canvas of={Stories.Required} />
+
+### With icon
+
+<Canvas of={Stories.WithIcon} />
+
+## When to use Input
+
+- **Text fields in a form.** Name, email, username, address line, code, title — anything single-line.
+- **Search bars.** Pair with a magnifier icon on the left and `type="search"`.
+- **Inline filters.** A short input that filters a list as the user types (debounce the value upstream).
+- **Authentication.** Email / password fields, OTP codes, recovery tokens. Always set the right `autoComplete` token.
+- **One-shot lookups.** Address resolvers, username availability checks — use `isLoading` to show that the lookup is in flight.
+- **Pair `<Input>` with `<Label>` (or `<FormControl>`) in 100% of cases.** Inputs without labels are accessibility failures.
+- **Use `iconPlacement="left"` for affordance (search, lock, user).** The icon clarifies what the field is for at a glance.
+- **Use `iconPlacement="right"` for action chrome (loader, clear button via custom render, validation tick).** Right-side glyphs read as "state" rather than "purpose."
+- **Use `isLoading` for async per-keystroke work.** It's the right way to communicate that the field is doing something the user can't see.
+
+## How not to use Input
+
+- **Don't ship an `<Input>` without a label.** A floating placeholder is not a label — when the user starts typing, the placeholder disappears and the user can't see what the field was for.
+- **Don't use the placeholder as a label.** Placeholders should hint at *format* ("you@genuin.co"), never *meaning* ("Email"). Putting the label in the placeholder breaks accessibility, breaks autofill, and confuses users with cognitive load issues.
+- **Don't override `aria-invalid` manually.** Let the form layer set it. Manual overrides desync the visual state from the validation state.
+- **Don't suppress the focus border.** The component replaces the native outline with a colored border — don't strip both. Keyboard users rely on the focus state.
+- **Don't use a `<div>` with `contentEditable` and call it an input.** That breaks autofill, label association, paste behaviour, validation, and assistive tech. Use the real component.
+- **Don't put two inputs side-by-side without separate labels.** "Phone number" with two fields wants two inputs each with their own labels (e.g., "Country code", "Phone number") — not one shared label.
+- **Don't use `type="text"` for emails or numbers.** Always pick the most specific input type. It informs the keyboard, autofill, and browser-level validation.
+- **Don't omit `autoComplete` on auth fields.** Password managers depend on it. Without it, users have to type their credentials manually every time.
+- **Don't put both an icon and a loader on the right.** The component places the loader on the right; an icon on the right will overlap. Put the icon on the left when you also need a loader.
+- **Don't disable the input while validation is in flight.** Use `isLoading` instead. Disabling kills typing momentum and confuses keyboard users (focus may move away).
+- **Don't validate on every keystroke for expensive checks.** Debounce upstream and use `isLoading` to communicate that something is happening — never validate the same input on every keypress against a network endpoint.
+- **Don't render error text below an `<Input>` outside of `<FormMessage>`.** The form system wires `aria-describedby` to a known id; ad-hoc error nodes won't be announced.
+- **Don't use a fixed `width` on `<Input>` outside of layout containers.** The component is designed to fill its parent. Sizing it via `width` instead of layout breaks responsive behaviour.
+- **Don't strip the border and rely on the page's background to imply structure.** The border is the visual hit area and the affordance for "this is interactive." Without it, the input reads as a label.
+- **Don't render an `<Input type="password">` with `autoComplete="off"` thinking it disables password managers.** Modern browsers ignore that hint for password fields. Use the right `autoComplete` token (`new-password` / `current-password`) — and let users save passwords; that's a security improvement, not a bug.
+- **Don't use placeholder text in a high-contrast color.** Placeholders should be visibly lighter than the typed value. The component leaves placeholder colors to the browser default — don't override them to match the input text or the user can't tell what's typed and what isn't.

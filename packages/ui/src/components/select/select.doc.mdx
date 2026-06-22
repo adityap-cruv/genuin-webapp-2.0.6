@@ -1,0 +1,138 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./select.stories";
+
+{/*
+  Design-system narrative for the select component. Attached to the
+  matching story group via `<Meta of={…}>` so it renders as the
+  "Docs" tab next to the live stories. Layout: narrative intro →
+  live examples + controls → usage guidelines.
+*/}
+
+<Meta of={Stories} />
+
+# Select
+
+## What selects are for
+
+A select is a compact form control that lets the user pick exactly one value from a list. The list lives in a dropdown — collapsed when the field isn't active, expanded when the user opens it. It exists to handle the same "pick one" job as a radio group, but with a very different cost profile: where radios show every option at the same time, a select keeps the field tiny until the user wants to engage. That trade-off — show all options at once vs hide them behind a chevron — is the heart of choosing between the two. Radios for short lists where the alternatives matter; selects for medium-to-long lists where the field needs to stay compact.
+
+A good select is unambiguous about its current value, opens fast, navigates well by keyboard, and keeps the options scannable. The trigger always shows the selected value (or a placeholder when nothing is picked). The dropdown opens on click, on Space/Enter, on arrow keys; it closes on Escape, on outside-click, on selection. Typing the first letter of an option jumps the selection to it. The dropdown re-positions to fit the viewport so it never overflows the screen. A bad select is a `<div>` styled to look like a dropdown that breaks on the keyboard, leaks options past the viewport edge, or worse — a six-option select where a radio group would have made the choice plainly visible.
+
+The Genuin Select is built on `@radix-ui/react-select`, which gets every one of those mechanics correct out of the box. The design system layers on the trigger styling, the dropdown chrome, the per-item layout, and a portal that respects shadow-DOM boundaries (so selects in the embedded Web SDK render in the right tree).
+
+## Select in this design system
+
+The Select component in `@genuin/ui` is composed from ten exported pieces, mirroring Radix.
+
+### The pieces
+
+- **`<Select>`** — the root. Owns the value, controlled (`value` + `onValueChange`) or uncontrolled (`defaultValue`).
+- **`<SelectTrigger>`** — the visible field that opens the dropdown. Renders the placeholder/value, the chevron, and applies the design-system 40px-tall styling, border, and `aria-invalid`-driven red border.
+- **`<SelectValue>`** — the slot inside the trigger that renders the selected value (or the placeholder string when empty).
+- **`<SelectContent>`** — the dropdown surface. Renders into a portal (shadow-DOM aware), max-heights to the available viewport space, and includes scroll-up / scroll-down indicators when the list overflows.
+- **`<SelectGroup>` / `<SelectLabel>`** — group items under a heading. The label is non-interactive; it just labels the group ("Continents", "Recent", "Suggested").
+- **`<SelectItem>`** — a single option. Optionally renders a tick mark (`showTickMark`) on the right when selected. Pass children for the label content (text, icon + text, etc.).
+- **`<SelectSeparator>`** — a thin divider between groups inside the dropdown.
+- **`<SelectScrollUpButton>` / `<SelectScrollDownButton>`** — built-in scroll affordances rendered automatically inside `<SelectContent>` (toggle them via `showScrollUpButton` / `showScrollDownButton` if you have a fixed-height list and don't need them).
+
+### Trigger treatment
+
+The trigger looks like the design system's `<Input>`: 40px tall, secondary-150 border, 8px rounded corners, `text-sm`. The chevron sits on the right and rotates on open. When `aria-invalid` is true (e.g., set by `<FormControl>` in the form layer), the border turns red. The placeholder text (rendered through `<SelectValue placeholder="...">`) uses the same secondary-600 color as the input placeholder, keeping the field-shaped controls visually consistent.
+
+### Dropdown treatment
+
+`<SelectContent>` is a positioned popper with the side-aware slide+fade animation, a soft shadow, and white background. It max-heights to `(--radix-select-content-available-height)` so it never overflows the viewport — when the list is taller than the available space, the scroll buttons fade in at the top/bottom edges. Items inside use `text-sm` with hover (`bg-secondary-50`) and selected (`bg-secondary-100`) treatments.
+
+### Items
+
+`<SelectItem>` renders a row with the label on the left and the tick mark on the right (when `showTickMark` is true, which is the default). Hover and keyboard focus highlight the row. Pass a child structure of `[Icon, text]` to render an icon next to the label — the component layout reserves the right gap for it.
+
+### Pairing with `<Form>`
+
+Inside the form orchestration, drive the select via `<Controller>` (or `<FormField>`). `<FormControl>` wraps the trigger so id, `aria-describedby`, and `aria-invalid` are wired automatically:
+
+```tsx
+<FormField
+  control={form.control}
+  name="country"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>Country</FormLabel>
+      <Select onValueChange={field.onChange} defaultValue={field.value}>
+        <FormControl>
+          <SelectTrigger>
+            <SelectValue placeholder="Pick a country" />
+          </SelectTrigger>
+        </FormControl>
+        <SelectContent>
+          <SelectItem value="us">United States</SelectItem>
+          <SelectItem value="uk">United Kingdom</SelectItem>
+          ...
+        </SelectContent>
+      </Select>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+```
+
+### Native-feeling, but not a `<select>`
+
+The Genuin Select is a Radix combobox under the hood, *not* a native HTML `<select>`. That means it renders its own dropdown styled the way the rest of the app is styled (good), and it does *not* use the OS-native dropdown UI on mobile (a deliberate trade-off — consistent across platforms vs OS-native ergonomics). For very long lists or when the OS picker is genuinely better (region pickers in iOS settings-style flows), reach for a native `<select>` directly or a `Command` palette inside a popover.
+
+### Portal & shadow DOM
+
+`<SelectContent>` portals into the result of `getRootContainer()` — `document.body` in the standalone web app, the shadow-DOM root inside the embedded Web SDK. This is what keeps the dropdown rendering in the correct tree for both contexts.
+
+## Examples
+
+### Default
+
+<Canvas of={Stories.Default} />
+
+<Controls of={Stories.Default} />
+
+### With groups
+
+<Canvas of={Stories.WithGroups} />
+
+### Disabled
+
+<Canvas of={Stories.Disabled} />
+
+### No tick mark
+
+<Canvas of={Stories.NoTickMark} />
+
+## When to use Select
+
+- **Medium-length lists (7–25 options).** Country, language, time zone, plan tier with many options.
+- **Compact form fields.** When showing the alternatives inline (radios) would push the page to scroll.
+- **Settings panels with many small fields.** Notification frequency, email digest, default view — selects keep the layout dense.
+- **Filter dropdowns.** "Sort by", "Status", "Owner" — anywhere the user picks one value to slice a list.
+- **Selects inside cards / dense lists.** When inline radios would not fit the surface.
+- **Pick `<SelectGroup>` + `<SelectLabel>`** to group long lists by category. Helps the eye scan and the keyboard user navigate.
+- **Always pass `placeholder` on `<SelectValue>`.** "Pick a country" is the user's first cue when nothing is selected.
+- **Always pair with a `<Label>` (or `<FormLabel>`).** The trigger has no built-in label.
+
+## How not to use Select
+
+- **Don't use a Select for boolean choices.** "On/Off", "Yes/No" — that's a Switch or a Radio.
+- **Don't use a Select for 2–4 options where the alternatives matter.** Use radios — the user picks faster and sees the trade-offs at once.
+- **Don't use a Select for very long lists (50+ options).** A static dropdown is unwieldy past about 25 items. Use a `Command` palette in a popover so the user can search.
+- **Don't put icons or buttons inside `<SelectItem>` that are not the item itself.** The item is a single click target; nesting another control breaks selection.
+- **Don't put long descriptions inside an item.** Items are scanned at a glance — one short line, optionally with an icon. If the option needs a multi-line description, switch to a radio list with secondary text.
+- **Don't reach for `<SelectTrigger>` outside a `<Select>`.** It needs the root's context. Loose triggers don't open or update.
+- **Don't suppress the focus/hover treatment.** Keyboard users need the focused row to stand out; the design system provides the styling — don't override it.
+- **Don't render a `<Select>` without a placeholder when the value is allowed to be empty.** "Choose…" or a dimmed default is the only clue the user has that nothing is picked.
+- **Don't drive the select from `useState` while also inside `<Form>`.** Pick one source of truth — the form state. Mixing the two desyncs the trigger from the submitted value.
+- **Don't open a select on hover.** Hover-open is a desktop-only anti-pattern; touch users can't trigger it. Selects open on click / Space / Enter.
+- **Don't put a Select inside another Select.** Nested combobox semantics are unsupported and break focus and Escape behaviour.
+- **Don't strip the chevron icon.** The chevron is the universal "this opens" affordance. Without it, the field reads as text input.
+- **Don't put primary destructive actions in a Select.** "Delete account" doesn't belong in a dropdown — it's a button. Mixing values and actions is confusing.
+- **Don't disable individual items silently.** Like radios, a grayed-out item with no explanation looks broken. Either surface the reason inline or omit the option for users who can't pick it.
+- **Don't use the same `value` for two items.** Radix uses `value` to track selection — duplicates cause the wrong item to highlight.
+- **Don't render `<SelectItem>` outside `<SelectContent>`.** Items belong in the dropdown surface; loose items don't get the portal positioning or keyboard navigation.
+- **Don't fight the auto-positioning.** The component flips above/below depending on viewport space; setting your own hard side breaks at the bottom of the screen.
+- **Don't show the tick mark for one-shot pickers** where the dropdown closes on selection (`showTickMark={false}`) only when the surface is purely visual — it can be useful for menu-style dropdowns where there is no "selected" concept. For data selection, keep the tick.

@@ -5,6 +5,8 @@ import type {
 } from "@genuin/components/context/embed/embed.types";
 import type { AuthUser } from "@genuin/components/types/auth";
 
+import type { ConfigurationType } from "./type";
+
 export function parseUserData(userData: any, accessToken: string, refreshToken?: string): AuthUser {
   return {
     id: userData?.user_id,
@@ -45,7 +47,11 @@ export function parseUserData(userData: any, accessToken: string, refreshToken?:
  * @param data - PlacementDataResponse containing placement configuration
  * @returns EmbedDataType with all available data mapped
  */
-export function parsePlacementToEmbedData(data: PlacementDataResponse, styleId: string): EmbedDataType {
+export function parsePlacementToEmbedData(
+  data: PlacementDataResponse,
+  styleId: string,
+  configuration?: ConfigurationType
+): EmbedDataType {
   const webConfig = data.environments?.web;
   const configureView = webConfig?.configure_view;
   const expandView = webConfig?.expand_view;
@@ -120,10 +126,10 @@ export function parsePlacementToEmbedData(data: PlacementDataResponse, styleId: 
       // Display preferences
       feed_display_pref: "default",
 
-      // Heading and sub-heading from styles
-      heading: data.styles?.find((style) => style._id === styleId)?.title ?? null,
+      // Heading and sub-heading from styles — configuration overrides style defaults
+      heading: configuration?.style_title ?? data.styles?.find((style) => style._id === styleId)?.title,
       heading_text_color: configureView?.heading_text_color,
-      sub_heading: data.styles?.find((style) => style._id === styleId)?.sub_title ?? null,
+      sub_heading: configuration?.style_subtitle ?? data.styles?.find((style) => style._id === styleId)?.sub_title,
       sub_heading_text_color: configureView?.sub_heading_text_color,
 
       // UI element visibility

@@ -273,7 +273,7 @@ export const testEmbedData: EmbedDataType = {
       spark: true,
       comment: true,
       share: true,
-      // octo: false,
+      octo: false,
     },
     enable_redirection_tools: {
       community: true,

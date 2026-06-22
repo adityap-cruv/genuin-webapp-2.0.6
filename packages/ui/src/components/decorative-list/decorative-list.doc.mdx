@@ -1,0 +1,88 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./decorative-list.stories";
+
+{/*
+  Design-system narrative for the decorative-list component. Attached to the
+  matching story group via `<Meta of={…}>` so it renders as the
+  "Docs" tab next to the live stories. Layout: narrative intro →
+  live examples + controls → usage guidelines.
+*/}
+
+<Meta of={Stories} />
+
+# Decorative List
+
+## What decorative lists are for
+
+A decorative list is a vertical list with a visible structural connector — a thin vertical line down the left edge with small "elbow" branches reaching out to each item. The connector is purely visual: it gives the eye a clear sense of *belonging* (these items are part of the same set) and a clear sense of *order* (they read top to bottom from a single starting point), without leaning on the universal-but-noisy bullet point or the heavy chrome of a card grid.
+
+The pattern earns its keep when a flat list of items would feel disconnected on a busy surface, but a card grid would feel too heavy. It says, "these are siblings under a shared parent" — a one-glance organizational cue that the user gets for free, with no extra labels or headings. Used well, the connector lines turn a list into a small org-chart-like visual without requiring any explicit hierarchy markup.
+
+The risk is that the decoration carries no semantic value: if the connector lines are the *only* way to tell that the items are related, screen readers and printers don't see them. So the rule of thumb is: use the decorative list to *enhance* a list that already reads as a list, never to *replace* the labelling that makes it understandable without the decoration.
+
+## Decorative List in this design system
+
+The DecorativeList component in `@genuin/ui` is a single export, `<DecorativeList>`, that wraps a styled `<ul>` and dynamically draws the connector line so its bottom always lands at the vertical center of the last `<li>`.
+
+### What it renders
+
+- A `<ul>` with `role="list"` (so it stays a list even when CSS strips list semantics).
+- A 1-pixel vertical gradient line on the left edge — secondary-150 from the top down to the middle of the last item, transparent below.
+- A small horizontal "elbow" before each `<li>`: an L-shaped pseudo-element with a 12px corner radius, rendered via `::before` on every direct child `<li>`.
+
+### How it adapts
+
+The vertical line's stop position is computed from the actual rendered height of the last `<li>` and the total height of the list. The component re-measures via `ResizeObserver` (when items resize) and `MutationObserver` (when items are added or removed), so the line always lands cleanly at the last item's vertical center. You do not need to set any heights or pass any sizing props — give it children and it figures the rest out.
+
+### Slots and composition
+
+- **Children must be (or wrap to) `<li>` elements.** The component places `::before` decorations on direct `<li>` descendants. Any non-`<li>` direct child won't get an elbow.
+- **Items can be wrapped in links** (e.g., `<Link>` containing `<li>`) — the elbow still renders against the `<li>` and the link is preserved.
+- **Items can be styled freely** — cards, padded rows, plain text. The connector line sits to the left of every item shape; rounded cards work as well as bare text.
+- **Hide the elbow on a child when needed.** Add `class="has-child"` to an `<li>` to hide *its* elbow — useful when an item is itself a parent of a nested decorative list and the elbow would visually compete with the nested branch.
+
+### Customization
+
+`className` and `style` reach through to the `<ul>`, so you can tweak spacing, max-width, or list typography per instance. Avoid changing the line color, elbow size, or curve by overriding the inline classes — the visual is meant to read identically across the app.
+
+## Examples
+
+### Default
+
+<Canvas of={Stories.Default} />
+
+<Controls of={Stories.Default} />
+
+### With custom styled children
+
+<Canvas of={Stories.WithCustomStyledChildren} />
+
+### Original with custom children
+
+<Canvas of={Stories.OriginalWithCustomChildren} />
+
+## When to use Decorative List
+
+- **Sibling lists under a shared header.** A list of channels under a workspace, members under a role, files under a folder — the connector lines say "these belong to the parent above" without an extra label.
+- **Step-by-step content where steps aren't numbered.** Walkthroughs, checklist-style flows, "what happens next" sequences — the line gives a sense of progression without ordinal numbers.
+- **Side panels with small grouped lists.** Settings sub-sections, quick-link panels, sidebar groupings — the decoration adds visual anchoring on otherwise plain surfaces.
+- **Empty-state with sample items.** "Your loops will appear here:" followed by a styled placeholder list — the connector reinforces the "they'll be siblings of each other" hint.
+- **Nested taxonomies.** Pair the component with itself for one level of nesting (parent decorative list, with each parent `<li>` marked `has-child` and a child decorative list inside) — but keep nesting shallow (max two levels).
+- **Reach for it when the list is short** — typically 3–8 items. The line earns its keep when the eye can take in the whole connector at a glance.
+
+## How not to use Decorative List
+
+- **Don't put non-`<li>` elements as direct children expecting decoration.** A `<div>` directly inside the `<ul>` won't get the elbow. Wrap it in `<li>`, even if you style the `<li>` to look like something else.
+- **Don't put interactive controls outside the `<li>` they belong to.** A button or link that visually sits on a row but is rendered as a sibling of the `<li>` will lose alignment with the elbow and confuse the eye.
+- **Don't use it for long lists.** With 15+ items the connector becomes visual noise and the user just wants a plain list. Switch to a regular list or a virtualised list well before then.
+- **Don't nest more than two levels.** A decorative list inside a decorative list is fine; three levels deep starts to look like a circuit diagram. Use a tree view or a different layout when you need real depth.
+- **Don't rely on the connector to communicate meaning.** Screen readers, printers, and reduced-motion / high-contrast users may not see it. The list itself must read sensibly without the decoration — the visual is a bonus, not a load-bearing signal.
+- **Don't recolor the line or change the elbow shape per instance.** The look is part of the brand vocabulary; a list with a red connector reads as a different concept. If you genuinely need a new variant, add it to the component, don't fork it inline.
+- **Don't use it for unrelated items.** The connector implies sibling relation. A list of action buttons, a set of unrelated CTAs, or a navigation menu should not use this — they aren't siblings of a parent.
+- **Don't use it as a stepper.** A numbered process flow needs explicit numbers and accessible labels for each step. The decorative list does not provide those — it suggests sequence visually but doesn't commit to it.
+- **Don't put it inside a transform-heavy parent.** The component measures DOM heights to position the gradient stop. CSS transforms, scaled containers, and contain-layout boundaries can confuse the measurement and produce a line that doesn't reach the last item.
+- **Don't animate item heights without expecting a flicker.** ResizeObserver re-measures, but rapid height transitions (typing in a textarea inside an item, expanding/collapsing animations) can produce a visible recalculation. Either keep heights stable or accept the small redraw.
+- **Don't suppress the focus ring on items inside the list.** The connector is decorative; the focus ring on links and buttons inside is not. Don't override it.
+- **Don't use it for tabular data.** Two columns of data with row connectors is a table, not a decorative list. Use a `<table>` so the rows are sortable, scrollable, and accessible.
+- **Don't use the component without children.** An empty `<DecorativeList>` renders an unconnected stub of a line. If your list might be empty, render an empty-state instead of an empty list.

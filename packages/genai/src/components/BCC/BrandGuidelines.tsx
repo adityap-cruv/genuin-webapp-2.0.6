@@ -25,7 +25,6 @@ const BrandGuidelines: React.FC<BrandGuidelinesProps> = ({ jsonData }) => {
 
     // const [isInserting, setIsInserting] = useState(false);
     // const [inserted, setInserted] = useState(jsonData?.inserted || false);
-    // const { updateAgentMessageContent, currentSessionId } = useAgentsContext();
 
     if (!jsonData || !jsonData.guidelines || jsonData.guidelines.length === 0) {
         return null;

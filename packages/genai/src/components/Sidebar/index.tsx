@@ -3,14 +3,15 @@ import ExpandSidebar from '@/assets/SvgIcons/ExpandSidebar';
 import NewChat from '@/assets/SvgIcons/NewChat';
 import type { Session } from '@/types';
 
-import { useAgentsContext } from '../../context/app/context';
+import { useSessionContext } from '@/stores/session/context';
+import { useUIContext } from '@/stores/ui/context';
 import Spinner from '../ui/spinner';
 
 import Item from './SidebarItem';
 
 const Sidebar = () => {
-    const { isSidebarCollapsed, setIsSidebarCollapsed, sessions, sessionsFetched, enteredInChatMode, handleNewChat } =
-        useAgentsContext();
+    const { sessions, sessionsFetched, enteredInChatMode } = useSessionContext();
+    const { isSidebarCollapsed, setIsSidebarCollapsed, handleNewChat } = useUIContext();
     const ToggleButton = isSidebarCollapsed ? ExpandSidebar : CollapseSidebar;
 
     if (isSidebarCollapsed) {

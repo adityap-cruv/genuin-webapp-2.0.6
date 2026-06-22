@@ -3,7 +3,9 @@ import type {
   ActionType,
   ContextualParamsType,
   PlacementDataResponse,
+  ConfigurationType,
 } from "@genuin/components/context/embed/embed.types";
+export type { ConfigurationType };
 import type { BrandDetailsConfigType } from "@genuin/components/types/brand";
 
 type AuthUserParams = {
@@ -56,12 +58,12 @@ export type ConfigByUser = {
   placement_id?: string;
   style_id?: string;
   token?: string;
-  embed_type?: string;
   contextual_params?: ContextualParamsType;
   /**
    * @deprecated use contextual_params instead
    */
   contextualParams?: ContextualParamsType;
+  configuration?: ConfigurationType;
   start_video_slug?: string;
   action?: ActionType;
   params?: AuthUserParams;
@@ -111,6 +113,7 @@ export type UpdateConfigByUserType = {
    * @deprecated use contextual_params instead
    */
   contextualParams?: ContextualParamsType;
+  configuration?: ConfigurationType;
   container_id: string;
   action?: ActionType;
   start_video_slug?: string;
@@ -140,6 +143,7 @@ export type SingleEmbedDataConfig = {
    */
   token?: string;
   contextualParams?: ContextualParamsType;
+  configuration?: ConfigurationType;
   brandIds?: number[];
   startVideoSlug?: string;
   action?: ActionType;

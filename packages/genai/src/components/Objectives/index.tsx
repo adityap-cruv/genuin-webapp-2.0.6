@@ -1,26 +1,20 @@
 import { useEffect } from 'react';
 
-import { useAgentsContext } from '@/context/app/context';
-import { useInputContext } from '@/context/input/context';
-import { useRudderEvents } from '@/services/analytics/useRudderAnalytics';
+import { useAgentContext } from '@/stores/agent/context';
+import { useSessionContext } from '@/stores/session/context';
+import { useUIContext } from '@/stores/ui/context';
+import { useInputContext } from '@/stores/input/context';
+import { useRudderEvents } from '@/adapters/analytics/useRudderAnalytics';
 import type { Agent, AgentPreset } from '@/types';
 
 import { Button } from '../ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger } from '../ui/select';
 
 const Objectives = () => {
-    const {
-        agents,
-        showAllObjectives,
-        setShowAllObjectives,
-        isSuggestionsOpen,
-        enteredInChatMode,
-        currentAgent,
-        brand_id,
-        textAreaRef,
-        setIsSuggestionsOpen,
-        ipInfo,
-    } = useAgentsContext();
+    const { filteredAgents: agents, currentAgent } = useAgentContext();
+    const { enteredInChatMode, ipInfo } = useSessionContext();
+    const { showAllObjectives, setShowAllObjectives, isSuggestionsOpen, brand_id, textAreaRef, setIsSuggestionsOpen } =
+        useUIContext();
     const { track } = useRudderEvents();
     const { setInput, input } = useInputContext();
     useEffect(() => {

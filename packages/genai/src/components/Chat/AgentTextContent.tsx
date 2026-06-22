@@ -3,6 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 
+import { useUIContext } from '@/stores/ui/context';
 import type { ChatHistoryEvent } from '@/types';
 
 import BrandAssets from '../BCC/BrandAssets';
@@ -13,7 +14,7 @@ import BrandIndustryType from '../BCC/BrandIndustryType';
 import BrandPersona from '../BCC/BrandPersona';
 import BrandSocialHandleFetcher from '../BCC/BrandSocialHandleFetcher';
 
-import Markdown from './Markdown';
+import { getMarkdownComponents } from './Markdown';
 import ThinkingIndicator from './ThinkingIndicator';
 import VideoMetadata from './VideoMetadata';
 import VideoPlayer from './VideoPlayer';
@@ -45,6 +46,8 @@ const AgentTextContent: React.FC<AgentTextContentProps> = ({
     isLastMessage,
     sessionThinking,
 }) => {
+    const { uiDensity } = useUIContext();
+    const MarkdownComponents = getMarkdownComponents(uiDensity);
     const content = event.message.content;
     const functionName = event.message.function_name;
     const functionResponse = event.message.function_response;
@@ -106,7 +109,7 @@ const AgentTextContent: React.FC<AgentTextContentProps> = ({
     // Default: render markdown content
     return (
         <div className='markdown-content'>
-            <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]} components={Markdown}>
+            <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]} components={MarkdownComponents}>
                 {displayText || (event.isCompleted ? normalizedContent : '')}
             </ReactMarkdown>
             {isAnimating || !hasFinished ? (

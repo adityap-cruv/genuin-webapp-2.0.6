@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 
 import { EditUserMessage } from '@/components/Chat/EditUserMessage';
-import { useAgentsContext } from '@/context/app/context';
+import { useAgentContext } from '@/stores/agent/context';
+import { useChatContext } from '@/stores/chat/context';
+import { useSessionContext } from '@/stores/session/context';
 import type { BrandCTKWsData, Category } from '@/types';
 
 interface BrandCTKWsProps {
@@ -80,7 +82,9 @@ const BrandCTKWs: React.FC<BrandCTKWsProps> = ({ jsonData, messageId }) => {
     const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
     const [regenerationPrompt, setRegenerationPrompt] = useState<string>('');
     const [showRegeneratePrompt, setShowRegeneratePrompt] = useState(false);
-    const { currentSessionId, handleSendMessage, agents } = useAgentsContext();
+    const { currentSessionId } = useSessionContext();
+    const { handleSendMessage } = useChatContext();
+    const { filteredAgents: agents } = useAgentContext();
 
     if (!jsonData || !jsonData.categories || jsonData.categories.length === 0) {
         return (

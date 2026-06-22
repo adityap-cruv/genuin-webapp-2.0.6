@@ -1,0 +1,70 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks";
+
+import * as Stories from "./icon.stories";
+
+{/*
+  Design-system narrative for the Icon static-page primitive.
+  Renders as the "Docs" tab next to the live stories.
+*/}
+
+<Meta of={Stories} />
+
+# Icon
+
+## What Icon is for
+
+`Icon` is a thin wrapper around lucide-react with a **closed curated
+`name` enum**. The closed enum is load-bearing for the AI layout
+generator — it caps the icon vocabulary at a manageable size (currently
+~28 icons) instead of exposing lucide's full 1000+ icon set.
+
+If you need an icon that's not in the enum, the right move is to **add
+to the `IconName` union**, not to bypass the primitive.
+
+## Props
+
+- **`name`** — Curated icon name. Must be one of the values in the
+  closed `IconName` union.
+- **`size`** — `"xs"` (12 px) / `"sm"` (14 px) / `"md"` (16 px, default)
+  / `"lg"` (20 px) / `"xl"` (24 px).
+- **`tone`** — `"currentColor"` (default — inherits parent text colour)
+  / `"default"` (secondary-900) / `"subtle"` (secondary-600) /
+  `"inverted"` (white, for dark backgrounds).
+- **`aria-label`** — **Required.** Pass a meaningful label for a
+  standalone icon. Pass an empty string `""` to mark the icon as
+  decorative — the surrounding text already conveys the meaning.
+
+## Accessibility
+
+- Standalone icons (`aria-label="Search"`) render with
+  `role="img"` + the accessible name.
+- Decorative icons (`aria-label=""`) render with `aria-hidden="true"`
+  and no accessible name — screen readers skip them.
+
+## Examples
+
+### Default
+
+<Canvas of={Stories.Default} />
+
+<Controls of={Stories.Default} />
+
+### All curated names
+
+<Canvas of={Stories.AllNames} />
+
+### All sizes
+
+<Canvas of={Stories.AllSizes} />
+
+### All tones
+
+<Canvas of={Stories.AllTones} />
+
+### Decorative (with text label)
+
+<Canvas of={Stories.WithLabel} />
+
+### Standalone (icon-only button)
+
+<Canvas of={Stories.StandaloneIcon} />

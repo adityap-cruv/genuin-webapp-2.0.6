@@ -5,8 +5,12 @@ import { useCallback, useState, useEffect } from "react";
 
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
+import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
+import type { PlayerControlSize } from "@genuin/components/molecules/feed-player/control-layer/player-control-size";
+import { useNewPlayerControls } from "@genuin/components/molecules/feed-player/control-layer/use-new-player-controls";
 
 import { useEmbedManagerContext } from "./context";
+import { NavigationButtonsV2 } from "./navigation-buttons-v2";
 
 // Common types
 type Theme = "light" | "dark";
@@ -60,6 +64,8 @@ interface NavigationButtonsProps {
   isPrevDisabled?: boolean;
   isNextDisabled?: boolean;
   hideNavButtons?: boolean;
+  /** V2-only: double-circle size token for the design-system arrows. @default "md" */
+  v2Size?: PlayerControlSize;
 }
 
 export function NavigationButtons({
@@ -72,8 +78,13 @@ export function NavigationButtons({
   isPrevDisabled = false,
   isNextDisabled = false,
   hideNavButtons,
+  v2Size,
 }: NavigationButtonsProps) {
   const { isIOS, isMac } = useDeviceDetection();
+  const isV2 = useNewPlayerControls();
+  const {
+    dimensions: { aspectRatio },
+  } = useEmbedConfigs();
 
   // Early return if navigation is disabled
   if (!isNavigationControlEnabled || hideNavButtons) return null;
@@ -81,6 +92,24 @@ export function NavigationButtons({
   // Determine layout and states
   const embedVariant = providedEmbedVariant;
   const isCarousel = embedVariant === "carousel";
+
+  // Design System V2: double-circle arrows for every variant except iHeart,
+  // which keeps its bespoke coloured buttons below. These buttons always overlay
+  // the dark video, so they force the "dark" palette (white circle, dark glyph)
+  // regardless of the page theme — matching the legacy V1 embed arrows.
+  if (isV2 && !isIheartLayout) {
+    return (
+      <NavigationButtonsV2
+        embedVariant={embedVariant}
+        onPrev={onPrev}
+        onNext={onNext}
+        isPrevDisabled={isPrevDisabled}
+        isNextDisabled={isNextDisabled}
+        size={v2Size}
+        theme="dark"
+      />
+    );
+  }
 
   // Theme configuration
   const iconTheme = theme === "dark" ? "dark" : "light";
@@ -133,8 +162,8 @@ export function NavigationButtons({
     </Button>
   );
 
-  // iHeart layout - horizontal buttons below embed
-  if (isIheartLayout) {
+  // iHeart layout - feed only; carousel falls through to standard left/right block
+  if (isIheartLayout && !isCarousel) {
     // Define styles based on theme
     const isDarkTheme = theme === "dark";
 
@@ -154,6 +183,80 @@ export function NavigationButtons({
 
     const iheartNavigationDivClasses = isCarousel
       ? "gencl:absolute gencl:left-1/2 gencl:flex gencl:justify-center gencl:items-center gencl:gap-2 gencl:my-4"
+      : "gencl:absolute gencl:right-[-15%] gencl:bottom-1/2 gencl:flex gencl:justify-center gencl:items-center gencl:gap-2 gencl:my-4 gencl:z-1 gencl:flex-col gencl:translate-y-1/2";
+
+    const colors = isDarkTheme ? darkTheme : lightTheme;
+
+    // Component with hover and focus state
+    const IHeartNavButton = ({ Icon, disabled, onClick, label }: IHeartNavButtonProps) => {
+      const [isHovered, setIsHovered] = useState(false);
+
+      const buttonBg = disabled ? colors.disabled.button : isHovered ? colors.hover.button : colors.default.button;
+
+      const iconFill = disabled ? colors.disabled.icon : isHovered ? colors.hover.icon : colors.default.icon;
+
+      return (
+        <div onMouseEnter={() => !disabled && setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+          {createNavButton({
+            Icon,
+            disabled,
+            onClick: (e) => {
+              setIsHovered(false);
+              onClick(e);
+            },
+            label,
+            size: "sm",
+            className: `gencl:transition-all gencl:duration-200 ${disabled ? "gencl:cursor-not-allowed!" : ""}`,
+            style: {
+              background: buttonBg,
+            },
+            iconClassName: "gencl:transition-colors gencl:duration-200",
+            iconStyle: { fill: iconFill },
+          })}
+        </div>
+      );
+    };
+    return (
+      <div className={iheartNavigationDivClasses}>
+        <IHeartNavButton
+          Icon={isCarousel ? ChevronLeftIcon : ChevronUpIcon}
+          disabled={isPrevDisabled}
+          onClick={handlePrevClick}
+          label="Previous"
+        />
+        <IHeartNavButton
+          Icon={isCarousel ? ChevronRightIcon : ChevronDownIcon}
+          disabled={isNextDisabled}
+          onClick={handleNextClick}
+          label="Next"
+        />
+      </div>
+    );
+  }
+
+  // iHeart layout - horizontal buttons below embed
+  if (isIheartLayout && aspectRatio && aspectRatio === "16:9") {
+    // Define styles based on theme
+    const isDarkTheme = theme === "dark";
+
+    // Dark theme colors
+    const darkTheme = {
+      disabled: { button: "#3F4447", icon: "#717277" },
+      default: { button: "#F6F8F9", icon: "#27292D" },
+      hover: { button: "#A9AFB2", icon: "#27292D" },
+    };
+
+    // Light theme colors
+    const lightTheme = {
+      disabled: { button: "#E6EAED", icon: "#A9AFB2" },
+      default: { button: "#27292D", icon: "#FFFFFF" },
+      hover: { button: "#717277", icon: "#FFFFFF" },
+    };
+
+    // Carousel nav is absolutely positioned at left-1/2; the -translate-x-1/2
+    // shifts it back by half its own width so it stays truly centered.
+    const iheartNavigationDivClasses = isCarousel
+      ? "gencl:absolute gencl:-translate-x-1/2 gencl:left-1/2 gencl:flex gencl:justify-center gencl:items-center gencl:gap-2 gencl:my-4"
       : "gencl:absolute gencl:right-[-15%] gencl:bottom-1/2 gencl:flex gencl:justify-center gencl:items-center gencl:gap-2 gencl:my-4 gencl:z-1 gencl:flex-col gencl:translate-y-1/2";
 
     const colors = isDarkTheme ? darkTheme : lightTheme;
@@ -260,20 +363,45 @@ export function NavigationButtonsWithContext({
   theme,
   setSlidesOffsetBefore,
   embedVariant,
+  v2Size,
 }: {
   totalSlides: number;
   isIheartLayout?: boolean;
   theme?: "light" | "dark";
   setSlidesOffsetBefore?: (value: number) => void;
   embedVariant?: EmbedVariant;
+  /** V2-only: double-circle size token for the design-system arrows. @default "md" */
+  v2Size?: PlayerControlSize;
 }) {
   const { goToNextVideo, goToPreviousVideo, activeIndex, getSlideVisibilityPercentage, swiper } =
     useEmbedManagerContext();
   const config = useEmbedConfigs();
 
+  // When the in-slide Octo sheet expands to panel/full view it covers the slide,
+  // so the carousel arrows must not float on top of it. Hide them while Octo is
+  // visible and in an expanded state (default/compact Octo keeps the arrows).
+  const { octoVisible, getContentTypeState } = useSheetState();
+  const octoSheetState = getContentTypeState("octo");
+  const isOctoSheetExpanded = octoVisible && (octoSheetState === "panel-view" || octoSheetState === "full-view");
+
   const [isPrevDisabled, setIsPrevDisabled] = useState(false);
   const [isNextDisabled, setIsNextDisabled] = useState(false);
   const [hideNavButtons, setHideNavButtons] = useState(false);
+  const [isAdPlaying, setIsAdPlaying] = useState(false);
+
+  // Mirror the `gen-ad-playing` flag the feed-player provider sets on
+  // <html>. Used to hide the carousel arrows during an ad break so the
+  // ad's own controls (skip, click-through) aren't obscured.
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const root = document.documentElement;
+    setIsAdPlaying(root.classList.contains("gen-ad-playing"));
+    const observer = new MutationObserver(() => {
+      setIsAdPlaying(root.classList.contains("gen-ad-playing"));
+    });
+    observer.observe(root, { attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
 
   const handlePrev = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -367,7 +495,8 @@ export function NavigationButtonsWithContext({
       isNextDisabled={isNextDisabled}
       theme={theme}
       embedVariant={embedVariant}
-      hideNavButtons={hideNavButtons}
+      hideNavButtons={hideNavButtons || isAdPlaying || isOctoSheetExpanded}
+      v2Size={v2Size}
     />
   );
 }

@@ -1,8 +1,10 @@
 import { useEffect, useRef } from 'react';
 
-import { useAgentsContext } from '@/context/app/context';
-import { useInputContext } from '@/context/input/context';
-import { useRudderEvents } from '@/services/analytics/useRudderAnalytics';
+import { useAgentContext } from '@/stores/agent/context';
+import { useSessionContext } from '@/stores/session/context';
+import { useUIContext } from '@/stores/ui/context';
+import { useInputContext } from '@/stores/input/context';
+import { useRudderEvents } from '@/adapters/analytics/useRudderAnalytics';
 
 import PresetPromptsSkeleton from './skeleton';
 
@@ -13,15 +15,9 @@ const PresetPrompts = ({
     setIsSuggestionsOpen: (isSuggestionsOpen: boolean) => void;
     onClose?: () => void;
 }) => {
-    const {
-        enteredInChatMode,
-        showAllObjectives,
-        textAreaRef,
-        ipInfo,
-        currentAgent,
-        suggestedPrompts,
-        isLoadingSuggestedPrompts,
-    } = useAgentsContext();
+    const { enteredInChatMode, ipInfo } = useSessionContext();
+    const { currentAgent } = useAgentContext();
+    const { showAllObjectives, textAreaRef, suggestedPrompts, isLoadingSuggestedPrompts } = useUIContext();
     const { track } = useRudderEvents();
     const { setInput } = useInputContext();
     const suggestionsRef = useRef<HTMLDivElement>(null);
