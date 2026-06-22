@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { normalizeBannerConfig, normalizeNativeConfig, normalizeVideoConfig } from "@cxr/ads/normalizers";
 import type { AdProviderKind } from "@cxr/ads/normalizers";
+import { resolvePageUrl, resolveVideoAdMacros } from "@cxr/ads/adUrlMacros";
 import { useEventBus } from "@cxr/instance/coordination/EventBusContext";
 import { useAnalytics } from "@cxr/providers/AnalyticsProvider";
 import { DEFAULT_UNMUTE_VOLUME } from "@cxr/providers/PlayerProvider";
@@ -445,7 +446,8 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
           (initOptions as Record<string, unknown>).native = nativeConfig;
         }
 
-        const videoConfig = normalizeVideoConfig(videoAd, platforms, videoAdAdvertiserDetails, videoAdContentVideo);
+        const resolvedVideoAd = resolveVideoAdMacros(videoAd, resolvePageUrl());
+        const videoConfig = normalizeVideoConfig(resolvedVideoAd, platforms, videoAdAdvertiserDetails, videoAdContentVideo);
         if (videoConfig) {
           (initOptions as Record<string, unknown>).video = videoConfig;
         }
