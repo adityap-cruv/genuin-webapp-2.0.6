@@ -87,8 +87,18 @@ export function computeTileSize(params: {
     return { tileHeight, tileWidth: aspect > 0 ? tileHeight * aspect : tileHeight };
   }
   if (mode === "dynamic-rows") {
-    const tileWidth = containerWidth / cols - GRID_GAP;
-    return { tileWidth, tileHeight: aspect > 0 ? tileWidth / aspect : tileWidth };
+    // Width is driven by the fixed column count, height follows the aspect ratio.
+    // But a single row must fit the container: if the aspect-derived height would
+    // exceed the usable height (e.g. portrait tiles in a wide, short container),
+    // cap the height to the container and shrink the width to keep the aspect.
+    // Rows then scroll only once they genuinely exceed the container height.
+    const widthFromCols = containerWidth / cols - GRID_GAP;
+    const heightFromWidth = aspect > 0 ? widthFromCols / aspect : widthFromCols;
+    if (usableHeight > 0 && heightFromWidth > usableHeight) {
+      const tileHeight = usableHeight - GRID_GAP;
+      return { tileHeight, tileWidth: aspect > 0 ? tileHeight * aspect : tileHeight };
+    }
+    return { tileWidth: widthFromCols, tileHeight: heightFromWidth };
   }
   return {
     tileWidth: containerWidth / cols - GRID_GAP,

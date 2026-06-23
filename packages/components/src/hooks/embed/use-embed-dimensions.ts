@@ -16,36 +16,57 @@ export interface EmbedDimensions {
   availableHeight: number;
 }
 
+/**
+ * Last positive measurement per host element, kept across hook (re)mounts.
+ *
+ * `useEmbedDimensions` is used by both the skeleton and the GridView, and the
+ * skeleton is also a Suspense fallback for the lazily-loaded GridView. When the
+ * GridView chunk loads, the fallback skeleton unmounts and a fresh component
+ * mounts — local state would reset to "unmeasured", flipping the dynamic grid
+ * back to its plain-shimmer placeholder for a frame (the flicker). Seeding the
+ * initial state from this cache keeps a remounted consumer already measured.
+ */
+const measuredDimensionsCache = new WeakMap<Element, { width: number; height: number }>();
+
 export function useEmbedDimensions() {
   const embedContext = useSafeEmbedContext();
   const config = useEmbedConfigs();
 
-  // State to hold observed dimensions as an object
+  const root = embedContext?.rootElement ?? null;
+
+  // State to hold observed dimensions as an object, seeded from the cache so a
+  // remount (e.g. the Suspense fallback swap) starts already measured.
   const [observedDimensions, setObservedDimensions] = useState<{
     width?: number;
     height?: number;
-  }>({ width: undefined, height: undefined });
+  }>(() => (root && measuredDimensionsCache.has(root) ? measuredDimensionsCache.get(root)! : {}));
 
   useEffect(() => {
-    const root = embedContext?.rootElement;
     if (!root) return;
+
+    // Only commit real, positive measurements. In a shadow DOM the host can
+    // report 0 before layout settles; storing that would size content to a
+    // collapsed box and then jump once the real size arrives (a left-side
+    // flicker for the dynamic grid). Skipping non-positive reads leaves the
+    // dimensions undefined until the host genuinely has a size.
+    const commitIfPositive = () => {
+      const width = root.clientWidth;
+      const height = root.clientHeight;
+      if (width > 0 && height > 0) {
+        measuredDimensionsCache.set(root, { width, height });
+        setObservedDimensions((prev) => (prev.width === width && prev.height === height ? prev : { width, height }));
+      }
+    };
+
     // Initial set
-    setObservedDimensions({
-      width: root.clientWidth,
-      height: root.clientHeight,
-    });
+    commitIfPositive();
     // Observe size changes, in case of the embed-elements size changes we need to update the dimensions
-    const resizeObserver = new ResizeObserver(() => {
-      setObservedDimensions({
-        width: root.clientWidth,
-        height: root.clientHeight,
-      });
-    });
+    const resizeObserver = new ResizeObserver(commitIfPositive);
     resizeObserver.observe(root);
     return () => {
       resizeObserver.disconnect();
     };
-  }, [embedContext?.rootElement]);
+  }, [root]);
 
   return useMemo(() => {
     const DEFAULT_HEIGHT = 100;
@@ -102,6 +123,13 @@ export function useEmbedDimensions() {
     const containerHeight = observedDimensions.height ?? config.dimensions.containerHeight ?? DEFAULT_HEIGHT;
     const containerWidth = observedDimensions.width ?? config.dimensions.containerWidth ?? DEFAULT_WIDTH;
 
+    // True once the host has a real measured size. observedDimensions is only
+    // ever set from a positive measurement (see the effect above), so a defined
+    // width/height means the container has genuinely been laid out. Consumers
+    // that size content off the container (e.g. the dynamic grid skeleton) wait
+    // for this to avoid the collapsed-then-expand flicker.
+    const isMeasured = observedDimensions.width != null && observedDimensions.height != null;
+
     const availableHeight = Math.max(containerHeight - headerHeight, MIN_CAROUSEL_HEIGHT);
 
     // For iheart brand layout in carousel view, reserve space for navigation buttons below the embed.
@@ -120,6 +148,7 @@ export function useEmbedDimensions() {
       linkoutHeight,
       spaceBetweenVideos,
       availableHeight: finalAvailableHeight,
+      isMeasured,
     };
   }, [
     config.engagement.showSocialInteractionData,

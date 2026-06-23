@@ -37,7 +37,7 @@ export function GridView({
 } & ComponentProps<"div">) {
   const { embedEventBus, rootElement } = useEmbedContext();
   const { swiper } = useEmbedManagerContext();
-  const { containerHeight, containerWidth, headerHeight } = useEmbedDimensions();
+  const { containerHeight, containerWidth, headerHeight, isMeasured } = useEmbedDimensions();
 
   /** Ref to the inner grid div so we can measure its rendered height. */
   const gridDivRef = useRef<HTMLDivElement>(null);
@@ -56,10 +56,11 @@ export function GridView({
   // Observe the inner grid div's rendered height and emit a RESIZE SDK event.
   //
   // - fixed mode: the host grows to fit the whole grid (original behavior).
-  // - dynamic-rows: the host MUST stay capped at the container height so the
-  //   extra rows overflow and scroll INSIDE the container. Emitting the full
-  //   content height here would grow the host to fit everything, so there would
-  //   never be any overflow to scroll. We emit the (capped) container height.
+  // - dynamic-rows: the host fits the content but is CAPPED at the container
+  //   height. With few rows it shrinks to the content (no empty space below);
+  //   once the rows exceed the container it caps and the extra rows scroll
+  //   inside. Emitting the full content height unconditionally would both leave
+  //   dead space for short grids and prevent scrolling for tall ones.
   // - dynamic-cols: height is bounded by the fixed row count; emit that.
   useEffect(() => {
     const gridEl = gridDivRef.current;
@@ -70,8 +71,13 @@ export function GridView({
       if (!entry) return;
 
       const gridHeight = entry.contentRect.height;
+      const contentHeight = headerHeight + gridHeight;
       const totalHeight =
-        mode === "fixed" ? headerHeight + gridHeight : Math.max(containerHeight, 0);
+        mode === "fixed"
+          ? contentHeight
+          : mode === "dynamic-rows"
+            ? Math.min(contentHeight, Math.max(containerHeight, 0))
+            : Math.max(containerHeight, 0);
 
       SDKEventEmitter.emit(
         SDKEventName.RESIZE,
@@ -154,11 +160,14 @@ export function GridView({
   // Grid template + scroll behavior per mode.
   const gridStyle = useMemo<React.CSSProperties>(() => {
     if (mode === "dynamic-rows") {
-      // Columns fixed, rows flow downward and scroll vertically.
+      // Columns fixed at the computed tile width (not 1fr) so the tiles stay at
+      // their aspect-correct size and left-align, leaving any spare width as a
+      // gap on the right. Rows flow downward and scroll vertically.
       return {
         display: "grid",
-        gridTemplateColumns: `repeat(${effectiveCols}, 1fr)`,
+        gridTemplateColumns: `repeat(${effectiveCols}, ${Math.max(tileWidth, 0)}px)`,
         gridAutoRows: "max-content",
+        justifyContent: "start",
       };
     }
     if (mode === "dynamic-cols") {
@@ -195,13 +204,25 @@ export function GridView({
         ? "gencl:overflow-y-auto"
         : "";
 
-  // In dynamic mode the scroll wrapper must have a bounded height for
-  // overflow:auto to engage. Cap it at the container height minus the header so
-  // extra rows/cols scroll inside the container instead of growing the host.
+  // Scroll wrapper height.
+  // - dynamic-rows: maxHeight so it shrinks to the content for short grids (no
+  //   dead space) and caps + scrolls vertically once rows overflow.
+  // - dynamic-cols: fixed height — the fixed-row `1fr` tracks and the horizontal
+  //   scrollbar both need a bounded height to lay out against.
   const scrollWrapperStyle: React.CSSProperties =
-    mode === "fixed"
-      ? {}
-      : { height: Math.max(containerHeight - headerHeight, 0) };
+    mode === "dynamic-rows"
+      ? { maxHeight: Math.max(containerHeight - headerHeight, 0) }
+      : mode === "dynamic-cols"
+        ? { height: Math.max(containerHeight - headerHeight, 0) }
+        : {};
+
+  // In dynamic mode the tile size depends on the measured container and the
+  // aspect ratio. If we lay tiles out before both are real, they render at the
+  // wrong size (e.g. tall portrait default) and then snap once the values land
+  // — the flicker. Hold the tiles back until ready; the structure (and the grid
+  // ref the ResizeObserver needs) still renders.
+  const aspectReady = Boolean(aspectRatio);
+  const tilesReady = mode === "fixed" || (isMeasured && aspectReady);
 
   return (
     <div
@@ -218,13 +239,17 @@ export function GridView({
       />
       <div className={cn("gencl:w-full", outerScrollClass)} style={scrollWrapperStyle}>
         <div ref={gridDivRef} className={cn("gencl:w-full gencl:gap-2")} style={gridStyle}>
-          {sortedVideos.map((videoData, index) => (
+          {tilesReady &&
+            sortedVideos.map((videoData, index) => (
             <div
               key={index}
               className={cn(
-                "gencl:relative gencl:overflow-hidden gencl:rounded-md",
-                "gencl:transition-all gencl:duration-300 gencl:ease-in-out",
-                "gencl:cursor-pointer"
+                "gencl:relative gencl:overflow-hidden gencl:rounded-md gencl:cursor-pointer",
+                // `transition-all` animates width/height. In dynamic mode the tile
+                // size is set explicitly and changes between the first (pre-measure)
+                // render and the measured render, which makes tiles visibly grow
+                // from the left. Only keep the transition for fixed mode.
+                mode === "fixed" && "gencl:transition-all gencl:duration-300 gencl:ease-in-out"
               )}
               style={cellStyle}
               onClick={() => {

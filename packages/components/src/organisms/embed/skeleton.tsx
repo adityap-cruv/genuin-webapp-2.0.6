@@ -69,6 +69,39 @@ export function SdkSkeleton({
   if (isGridLayout) {
     const rawRows = config.view.gridLayout?.row ?? 2;
     const rawCols = config.view.gridLayout?.column ?? 2;
+    const isDynamic = rawRows === -1 || rawCols === -1;
+    // The aspect ratio drives the dynamic tile shape. It arrives with the
+    // placement config, which can land AFTER the first skeleton paint. Until then
+    // getAspectRatio() defaults to portrait (9:16) — so a landscape grid would
+    // render tall skeleton columns and then snap to short tiles once the real
+    // ratio loads (the flicker). Treat a missing ratio as not-ready.
+    const hasAspectRatio = Boolean(config.dimensions.aspectRatio);
+
+    // Defensive: if the aspect ratio hasn't loaded yet, getAspectRatio() would
+    // default to portrait and lay out wrongly-shaped tiles that snap once the
+    // real ratio lands. Hold a plain shimmer until the ratio is known. (Container
+    // measurement is handled upstream by useEmbedDimensions, which keeps the last
+    // positive size cached across remounts, so a separate !isMeasured gate here
+    // is no longer needed.)
+    if (isDynamic && !hasAspectRatio) {
+      return (
+        <div
+          className={cn("gencl:rounded-md", theme === "dark" ? "gencl:bg-secondary-900" : "gencl:bg-secondary-200")}
+          style={{
+            height: Math.max(0, containerHeight || 0),
+            width: Math.max(0, containerWidth || 0),
+          }}
+          {...restProps}>
+          <Skeleton
+            className={cn(
+              "gencl:h-full gencl:w-full",
+              theme === "dark" ? "gencl:bg-secondary-800" : "gencl:bg-secondary-100"
+            )}
+          />
+        </div>
+      );
+    }
+
     const { width: widthRatio, height: heightRatio } = getAspectRatio(config.dimensions.aspectRatio);
     const aspect = ratioToAspect(widthRatio, heightRatio);
     // Mirror GridView exactly: usable height = container minus the grid header.
@@ -107,8 +140,9 @@ export function SdkSkeleton({
       mode === "dynamic-rows"
         ? {
             display: "grid",
-            gridTemplateColumns: `repeat(${cols}, 1fr)`,
+            gridTemplateColumns: `repeat(${cols}, ${Math.max(tileWidth, 0)}px)`,
             gridAutoRows: "max-content",
+            justifyContent: "start",
           }
         : mode === "dynamic-cols"
           ? {
@@ -138,20 +172,29 @@ export function SdkSkeleton({
           ? "gencl:overflow-y-auto"
           : "gencl:overflow-auto";
 
-    // Mirror GridView's scroll wrapper: in dynamic modes the wrapper height is
-    // bounded to usableHeight so the grid's 1fr row tracks resolve to the same
-    // tile height as the rendered grid (a `h-full` wrapper would use the full
-    // container height and make the skeleton tiles taller/wider than reality).
+    // Mirror GridView's scroll wrapper exactly so the skeleton occupies the same
+    // box as the loaded grid (otherwise the layout visibly collapses on swap):
+    // - dynamic-rows: maxHeight (shrinks to content, caps + scrolls).
+    // - dynamic-cols: fixed height for the 1fr tracks + horizontal scrollbar.
     const scrollWrapperStyle: React.CSSProperties =
-      mode === "fixed" ? {} : { height: usableHeight };
+      mode === "dynamic-rows"
+        ? { maxHeight: usableHeight }
+        : mode === "dynamic-cols"
+          ? { height: usableHeight }
+          : {};
+
+    // Mirror GridView's outer box: dynamic-rows shrinks to its content (capped),
+    // so the skeleton must NOT reserve the full container height — that is what
+    // made the content appear to zoom/collapse from the top-left on load.
+    const outerStyle: React.CSSProperties =
+      mode === "dynamic-rows"
+        ? { maxHeight: Math.max(0, containerHeight || 0), width: Math.max(0, containerWidth || 0) }
+        : { height: Math.max(0, containerHeight || 0), width: Math.max(0, containerWidth || 0) };
 
     return (
       <div
         className={cn("gencl:rounded-md", theme === "dark" ? "gencl:bg-secondary-900" : "gencl:bg-secondary-200")}
-        style={{
-          height: Math.max(0, containerHeight || 0),
-          width: Math.max(0, containerWidth || 0),
-        }}
+        style={outerStyle}
         {...restProps}>
         <EmbedHeaderSkeleton variant="grid" theme={theme} />
         <div className={cn("gencl:w-full", scrollClass)} style={scrollWrapperStyle}>
@@ -162,9 +205,10 @@ export function SdkSkeleton({
                 <div
                   key={index}
                   className={cn(
-                    "gencl:relative gencl:overflow-hidden gencl:rounded-md",
-                    "gencl:transition-all gencl:duration-300 gencl:ease-in-out",
-                    "gencl:cursor-pointer"
+                    "gencl:relative gencl:overflow-hidden gencl:rounded-md gencl:cursor-pointer",
+                    // Match GridView: no size transition in dynamic mode, so the
+                    // skeleton tiles don't animate-grow from the left on resize.
+                    mode === "fixed" && "gencl:transition-all gencl:duration-300 gencl:ease-in-out"
                   )}
                   style={cellStyle}>
                   <Skeleton
