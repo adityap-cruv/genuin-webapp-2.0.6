@@ -1,7 +1,7 @@
 import type { EmbedDataType } from "@genuin/components/context/embed/embed.types";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
-// import { AppErrorBoundary } from "@genuin/components/molecules/error/app-error-boundary";
+import { AppErrorBoundary } from "@genuin/components/molecules/error/app-error-boundary";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import {
   cleanupOverlayShadowHost,
