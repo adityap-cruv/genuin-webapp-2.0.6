@@ -3,11 +3,13 @@ import { lazy, useEffect, useState } from "react";
 
 import { useEmbedContext } from "@genuin/components/context/embed";
 import type { EmbedEventContextType } from "@genuin/components/context/embed/event-bus";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useChunkPrefetch } from "@genuin/components/lib/prefetch/use-chunk-prefetch";
 import { ErrorBoundary } from "@genuin/components/page/standard-wall/error-boundary";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { FeedSkeleton } from "@genuin/components/templates/feed/feed-skeleton";
+import { IHeartFeedSkeleton } from "@genuin/components/templates/feed/iheart-feed-skeleton";
 
 // prefetch: CHUNK_LOADERS.expandView mirrors this import (see lib/prefetch/chunk-loaders.ts)
 const EmbedExpandView = lazy(() => import("./expand-view").then((m) => ({ default: m.EmbedExpandView })));
@@ -43,6 +45,10 @@ export function ExpandViewLoader({
   fetchNextPage,
 }: ExpandViewLoaderProps) {
   const { embedEventBus } = useEmbedContext();
+  const {
+    view: { brandLayoutType },
+  } = useEmbedConfigs();
+  const isIHeart = brandLayoutType === "iheart";
   const [isExpandMode, setIsExpandMode] = useState(embedEventBus.getContext().activePlayerType === "expand-view");
 
   useEffect(() => {
@@ -68,7 +74,11 @@ export function ExpandViewLoader({
   // (rejected import) states, so expand-view never blanks to a black screen.
   // Light-DOM shimmer — not a second shadow-DOM portal — so it doesn't add a
   // competing consumer to the expand-view shadow host.
-  const fullscreenSkeleton = <FeedSkeleton variant="fullscreen" showCommentsSkeleton />;
+  const fullscreenSkeleton = isIHeart ? (
+    <IHeartFeedSkeleton />
+  ) : (
+    <FeedSkeleton variant="fullscreen" showCommentsSkeleton />
+  );
 
   if (isSectioned) {
     return (

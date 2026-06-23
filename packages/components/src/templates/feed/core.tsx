@@ -28,6 +28,7 @@ import type { GroupUserStatusType } from "@genuin/components/types/roles";
 import { useFeedContext } from "./context";
 import { useAdInjectedFeed } from "./feed-ads";
 import { FeedSkeleton } from "./feed-skeleton";
+import { IHeartFeedSkeleton } from "./iheart-feed-skeleton";
 import type { FeedViewPropsType } from "./feed.type";
 
 import "swiper/css";
@@ -73,7 +74,7 @@ const FeedContentWrapper = memo(function FeedContentWrapper({
     // would blank the whole feed while the iheart-container chunk downloads. The
     // fullscreen shimmer holds the screen until it mounts.
     return (
-      <SafeSuspense fallback={<FeedSkeleton variant="fullscreen" />}>
+      <SafeSuspense fallback={<IHeartFeedSkeleton />}>
         <IheartFullscreenContainerLazy>{children}</IheartFullscreenContainerLazy>
       </SafeSuspense>
     );
@@ -336,12 +337,18 @@ export const FeedViewCore = memo(function FeedViewCore({
         }}
         {...restProps}>
         <FeedContentWrapper isIHeart={isIHeart}>
-          <SafeSuspense fallback={<FeedSkeleton variant="player-list" theme={skeletonTheme} />}>
+          <SafeSuspense
+            fallback={
+              isIHeart ? <IHeartFeedSkeleton theme={skeletonTheme} /> : <FeedSkeleton variant="player-list" theme={skeletonTheme} />
+            }>
             <PlayerList isSectioned={isSectioned} totalVideos={totalVideos} {...playerListProps} />
           </SafeSuspense>
           {showSidePanel && (
             <div className={cn("gencl:contents", { "gencl:invisible gencl:pointer-events-none": isAdFilled })}>
-              <SafeSuspense fallback={<FeedSkeleton variant="side-panel" theme={skeletonTheme} />}>
+              <SafeSuspense
+                fallback={
+                  isIHeart ? <IHeartFeedSkeleton theme={skeletonTheme} /> : <FeedSkeleton variant="side-panel" theme={skeletonTheme} />
+                }>
                 <PostSidePanel
                   onGroupJoinStatusChange={handleGroupJoinStatusChange}
                   onGroupSubscriptionChange={handleGroupSubscriptionChange}

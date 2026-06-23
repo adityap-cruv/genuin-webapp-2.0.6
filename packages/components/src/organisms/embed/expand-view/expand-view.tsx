@@ -17,6 +17,7 @@ import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { RootPortal } from "@genuin/components/molecules/root-portal";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { FeedSkeleton } from "@genuin/components/templates/feed/feed-skeleton";
+import { IHeartFeedSkeleton } from "@genuin/components/templates/feed/iheart-feed-skeleton";
 
 import { useUpdateStartVideoSlug } from "./use-update-start-video-slug";
 
@@ -52,16 +53,18 @@ const ExpandViewContent = ({
   community,
   group,
   user,
+  isIHeart,
 }: {
   defaultComponent: React.ReactNode;
   community: boolean;
   group: boolean;
   user: boolean;
+  isIHeart: boolean;
 }) => {
   return !(community || group || user) ? (
     defaultComponent
   ) : (
-    <SafeSuspense fallback={<FeedSkeleton variant="fullscreen" />}>
+    <SafeSuspense fallback={isIHeart ? <IHeartFeedSkeleton /> : <FeedSkeleton variant="fullscreen" />}>
       <StandardWall
         className="gencl:h-full gencl:w-full"
         defaultComponent={defaultComponent}
@@ -441,7 +444,14 @@ export function EmbedExpandView({
     // RootPortal, which now seeds its container synchronously; the inner PlayerList /
     // PostSidePanel boundaries inside FeedView carry their own skeleton fallbacks, so
     // heavy host pages keep showing a shimmer rather than a bare black portal.
-    <SafeSuspense fallback={<FeedSkeleton variant="fullscreen" showCommentsSkeleton={comment && isDesktop} />}>
+    <SafeSuspense
+      fallback={
+        isIHeart ? (
+          <IHeartFeedSkeleton />
+        ) : (
+          <FeedSkeleton variant="fullscreen" showCommentsSkeleton={comment && isDesktop} />
+        )
+      }>
       <FeedView
         startIndex={startIndex}
         defaultExpandView
@@ -487,13 +497,25 @@ export function EmbedExpandView({
         trackVisualViewport={!isIHeart}
         enabledToaster={!(community || group || user)}>
         {isIHeart ? (
-          <SafeSuspense fallback={<FeedSkeleton variant="fullscreen" />}>
+          <SafeSuspense fallback={<IHeartFeedSkeleton />}>
             <IheartFullscreenContainer>
-              <ExpandViewContent defaultComponent={defaultComponent} community={community} group={group} user={user} />
+              <ExpandViewContent
+                defaultComponent={defaultComponent}
+                community={community}
+                group={group}
+                user={user}
+                isIHeart={isIHeart}
+              />
             </IheartFullscreenContainer>
           </SafeSuspense>
         ) : (
-          <ExpandViewContent defaultComponent={defaultComponent} community={community} group={group} user={user} />
+          <ExpandViewContent
+            defaultComponent={defaultComponent}
+            community={community}
+            group={group}
+            user={user}
+            isIHeart={isIHeart}
+          />
         )}
       </RootPortal>
     </RemoveScroll>

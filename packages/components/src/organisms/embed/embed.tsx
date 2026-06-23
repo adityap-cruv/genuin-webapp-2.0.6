@@ -21,6 +21,7 @@ import { useFeed } from "@genuin/components/react-query/api/feed";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
 import { FeedSkeleton } from "@genuin/components/templates/feed";
+import { IHeartFeedSkeleton } from "@genuin/components/templates/feed/iheart-feed-skeleton";
 
 import { getSlidesPerView } from "../../molecules/embed-swiper/utils";
 
@@ -602,7 +603,7 @@ export function Embed({
 
   if (config.view.isExpandOnly) {
     return (
-      <SafeSuspense fallback={<FeedSkeleton variant="fullscreen" />}>
+      <SafeSuspense fallback={isIheartLayout ? <IHeartFeedSkeleton /> : <FeedSkeleton variant="fullscreen" />}>
         <EmbedExpandView
           videos={videos}
           hasNextPage={!!hasNextPage}
