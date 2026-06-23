@@ -50,8 +50,8 @@ export function SafeSuspense({ children, fallback = null, errorFallback, onError
         : () => errorFallback;
 
   return (
-    // <AppErrorBoundary fallback={boundaryFallback} onError={onError ? (error) => onError(error) : undefined}>
-    <Suspense fallback={fallback}>{children}</Suspense>
-    // </AppErrorBoundary>
+    <AppErrorBoundary fallback={boundaryFallback} onError={onError ? (error) => onError(error) : undefined}>
+      <Suspense fallback={fallback}>{children}</Suspense>
+    </AppErrorBoundary>
   );
 }

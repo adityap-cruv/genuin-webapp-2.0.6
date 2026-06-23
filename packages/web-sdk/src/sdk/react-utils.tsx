@@ -95,11 +95,11 @@ function EmbedRootMount({
   fallbackSkeleton: ReactNode;
 }) {
   return (
-    // <AppErrorBoundary>
-    // {(attempt: number) => (
-    <LazyEmbedRootSuspense attempt={1} embedRootProps={embedRootProps} fallbackSkeleton={fallbackSkeleton} />
-    // )}
-    // </AppErrorBoundary>
+    <AppErrorBoundary>
+      {(attempt: number) => (
+        <LazyEmbedRootSuspense attempt={attempt} embedRootProps={embedRootProps} fallbackSkeleton={fallbackSkeleton} />
+      )}
+    </AppErrorBoundary>
   );
 }
 
@@ -323,27 +323,7 @@ export async function loadNewEmbed({
   // crashes and spurious re-renders. This happens when loadNewEmbed is called
   // again (e.g. live embed update) before the previous root is cleaned up.
   const existingRoot = containerRootMap.get(container);
-  const root =
-    existingRoot ??
-    createRoot(shadowTarget, {
-      // Fires for every error any error boundary in this tree catches, with the
-      // React componentStack. Unlike the boundary's console.error (stripped by
-      // the prod build), this re-dispatches as a window event so a caught render
-      // failure is observable in production. Listen via:
-      //   window.addEventListener("genuin:caught-error", (e) => console.warn(e.detail));
-      onCaughtError: (error, errorInfo) => {
-        window.dispatchEvent(
-          new CustomEvent("genuin:caught-error", {
-            detail: {
-              embedId,
-              message: error instanceof Error ? error.message : String(error),
-              stack: error instanceof Error ? error.stack : undefined,
-              componentStack: errorInfo?.componentStack,
-            },
-          })
-        );
-      },
-    });
+  const root = existingRoot ?? createRoot(shadowTarget);
   if (!existingRoot) {
     containerRootMap.set(container, root);
   }

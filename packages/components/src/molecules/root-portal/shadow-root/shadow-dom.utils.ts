@@ -3,6 +3,24 @@
 
 import { hoistTailwindPropertyAtRulesFromShadowRoot } from "./hoist-tailwind-property-rules";
 
+/**
+ * Marks a DOM node as SDK-rendered internal chrome (shadow inner-root, loader
+ * divs, portal/overlay containers) rather than a publisher-authored embed
+ * container. These nodes carry the `gen-sdk-class` class — the same class the
+ * SDK's container scanner (`getAndSetDivs`) looks for — so on a second
+ * `genuin.init()` they would otherwise be re-captured as fresh host containers
+ * and mounted into, producing a second React root on a node React already owns
+ * (`removeChild: not a child` crashes). The scanner excludes anything carrying
+ * this attribute. Publisher containers (including nested GenAI carousels, which
+ * mount in light DOM with `data-web-sdk-nested`) never carry it.
+ */
+export const GENUIN_INTERNAL_ATTR = "data-genuin-internal";
+
+/** Stamps a node as SDK-internal so the container scanner ignores it. */
+export function markGenuinInternal(node: HTMLElement): void {
+  node.setAttribute(GENUIN_INTERNAL_ATTR, "true");
+}
+
 interface StyleRequirement {
   name: string;
   selector: string;
@@ -179,6 +197,10 @@ function createShadowRoot(container: HTMLElement): HTMLElement {
         root.style.setProperty(prop, value, container.style.getPropertyPriority(prop));
       });
   }
+  // The inner root clones the host container's id, class (gen-sdk-class) and data
+  // attributes above — so without this marker a later getAndSetDivs scan would
+  // mistake it for a second publisher container and mount a competing React root.
+  markGenuinInternal(root);
   return root;
 }
 

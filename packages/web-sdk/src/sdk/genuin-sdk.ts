@@ -4,7 +4,10 @@ import type { ActionType } from "@genuin/components/context/embed/embed.types";
 import type { ContextualParamsType } from "@genuin/components/context/embed/embed.types";
 import { getPendingAction, clearPendingAction } from "@genuin/components/lib/utils/pending-action-storage";
 import { loadGenAdScript } from "@genuin/components/molecules/feed-player/gen-ad-container";
-import { setupMainShadowDOM } from "@genuin/components/molecules/root-portal/shadow-root/shadow-dom.utils";
+import {
+  GENUIN_INTERNAL_ATTR,
+  setupMainShadowDOM,
+} from "@genuin/components/molecules/root-portal/shadow-root/shadow-dom.utils";
 import type { AuthUser } from "@genuin/components/types/auth";
 
 import { BrandDetailsManager } from "@/core/brand-details-manager";
@@ -940,13 +943,27 @@ export class GenuinSDK {
    * (skeletons included) lives inside the shadow root from the very first paint.
    */
   private async getAndSetDivs(configByUser?: ConfigByUser) {
-    const selector =
-      '[id="gen-sdk"]:not(.gen-sdk-root-portal):not([data-portal-container]), [id^="gen-sdk-"]:not(.gen-sdk-root-portal):not([data-portal-container]), .gen-sdk-class:not(.gen-sdk-root-portal):not([data-portal-container])';
+    // `:not([${GENUIN_INTERNAL_ATTR}])` excludes SDK-rendered chrome (the shadow
+    // inner-root clones the host's id/class/data-attrs, so it otherwise looks
+    // like a duplicate publisher container). `:not([data-status])` is a backstop:
+    // any element the SDK has already touched in a prior init is skipped, so a
+    // second init can never re-capture and double-root an in-flight embed.
+    const notInternal = `:not(.gen-sdk-root-portal):not([data-portal-container]):not([${GENUIN_INTERNAL_ATTR}]):not([data-status])`;
+    const selector = [
+      `[id="gen-sdk"]${notInternal}`,
+      `[id^="gen-sdk-"]${notInternal}`,
+      `.gen-sdk-class${notInternal}`,
+    ].join(", ");
 
     const elements: HTMLElement[] = Array.from(document.querySelectorAll(selector)).filter(
       (el): el is HTMLElement => el instanceof HTMLElement
     );
 
+    // Nested embeds (e.g. the GenAI carousel) mount in LIGHT DOM (useShadowDOM:false),
+    // so they are already found by the document scan above. The only `.gen-sdk-class`
+    // nodes that live INSIDE a shadow root are the SDK's own inner roots — never a
+    // publisher container — so we only pull from shadow roots the nodes that carry a
+    // genuine nested-host marker, guarding against re-capturing internal roots.
     const shadowHosts = Array.from(document.querySelectorAll("[data-genuin-host], [data-genuin-overlay-host]")).filter(
       (el): el is HTMLElement => el instanceof HTMLElement
     );
@@ -955,7 +972,15 @@ export class GenuinSDK {
       const { shadowRoot } = host;
       if (!shadowRoot) return;
       shadowRoot.querySelectorAll(selector).forEach((el) => {
-        if (el instanceof HTMLElement) {
+        if (
+          el instanceof HTMLElement &&
+          // A real nested host is explicitly marked, or carries a publisher
+          // embed/placement/style data-attr. SDK-internal inner roots have none.
+          (el.getAttribute("data-web-sdk-nested") === "true" ||
+            el.hasAttribute("data-embed-id") ||
+            el.hasAttribute("data-placement-id") ||
+            el.hasAttribute("data-style-id"))
+        ) {
           elements.push(el);
         }
       });
@@ -1011,8 +1036,10 @@ export class GenuinSDK {
         const existingInstanceId = element.getAttribute("data-instance-id");
 
         if (existingInstanceId && this.sdkElements[existingInstanceId]) {
-          // This is the parent container, skip it
-          return;
+          // This is the parent container — skip only this one. `continue`, not
+          // `return`: a `return` aborts the whole loop, leaving any sibling
+          // pending containers (incl. the actual nested child) uninitialized.
+          continue;
         }
       }
 
@@ -1583,6 +1610,12 @@ export class GenuinSDK {
    * @returns The initialization status: 'pending', 'loading', or 'done'.
    */
   private getInitializationStatus(element: HTMLElement): InitializationStatus {
+    // Backstop: never treat SDK-rendered internal chrome as a fresh container.
+    // The selector already excludes these, but defaulting them to "done" here
+    // means even a stray internal node can never be mounted into.
+    if (element.hasAttribute(GENUIN_INTERNAL_ATTR)) {
+      return "done";
+    }
     const status = element.getAttribute("data-status");
     if (status === "pending" || status === "loading" || status === "done") {
       return status;
