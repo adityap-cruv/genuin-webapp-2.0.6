@@ -38,6 +38,8 @@ interface RudderstackReadyApi extends RudderstackLike {
 
 interface AnalyticsProviderProps {
   children: ReactNode;
+  /** Tag ID injected into every event's `event_details.tag_id`. */
+  tagId?: string;
 }
 
 /**
@@ -59,7 +61,7 @@ function readOffsite(): OffsitePropertiesConfig {
 /**
  * AnalyticsProvider — bootstraps Rudderstack + geoip, exposes `useAnalytics`.
  */
-export function AnalyticsProvider({ children }: AnalyticsProviderProps): ReactNode {
+export function AnalyticsProvider({ children, tagId }: AnalyticsProviderProps): ReactNode {
   // Refs persist across renders without re-triggering effects.
   const deviceRef = useRef<DeviceDetails>(getDeviceDetailsSnapshot());
   const bufferRef = useRef<EventBuffer>(createEventBuffer());
@@ -104,10 +106,10 @@ export function AnalyticsProvider({ children }: AnalyticsProviderProps): ReactNo
       sendEvent(eventName, eventDetails) {
         // Enqueue — the buffer is a pass-through after `flush()`, so post-ready
         // calls forward directly to the live emitter set in the effect above.
-        bufferRef.current.enqueue(eventName, eventDetails);
+        bufferRef.current.enqueue(eventName, { tag_id: tagId, ...eventDetails });
       },
     }),
-    []
+    [tagId]
   );
 
   return <AnalyticsContext.Provider value={value}>{children}</AnalyticsContext.Provider>;

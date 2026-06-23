@@ -220,6 +220,27 @@ describe("providers/AnalyticsProvider", () => {
     unmount(root, container);
   });
 
+  it("injects tag_id from prop into every event's event_details", () => {
+    let readyCb: (() => void) | undefined;
+    readyMock.mockImplementation((cb: () => void) => {
+      readyCb = cb;
+    });
+    setRudder();
+    trackMock.mockClear();
+    const handle: ConsumerHandle = { send: () => undefined };
+    const { root, container } = mount(
+      <AnalyticsProvider tagId="tag-xyz">
+        <Consumer name="evt" handle={handle} />
+      </AnalyticsProvider>
+    );
+    act(() => handle.send());
+    act(() => readyCb?.());
+    expect(trackMock).toHaveBeenCalledTimes(1);
+    const payload = trackMock.mock.calls[0]?.[1] as Record<string, unknown>;
+    expect((payload.event_details as Record<string, unknown>).tag_id).toBe("tag-xyz");
+    unmount(root, container);
+  });
+
   it("exposes a stable sendEvent reference across renders", () => {
     const seen: Array<unknown> = [];
     function StableConsumer(): ReactElement {

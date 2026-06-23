@@ -186,7 +186,7 @@ export function sendEventLog(args: SendEventLogArgs, deps: SendEventLogDeps): vo
   const updatedEventDetails: Record<string, unknown> = {
     ...eventDetails,
     page: windowLink,
-    tag_id: tagDetails.tag_id,
+    ...(tagDetails.tag_id !== undefined ? { tag_id: tagDetails.tag_id } : {}),
     video_share_string: videoDetails.video?.slug,
     loop_share_string: videoDetails.loop?.share_string ?? "",
     video_id: videoDetails.video?.id,

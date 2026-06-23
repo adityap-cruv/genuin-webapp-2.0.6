@@ -141,6 +141,28 @@ export function isFullscreenAdBreakEnabled(tagId: string): boolean {
 }
 
 /**
+ * Tag IDs that require the user to unmute within 3 seconds or trigger an ad passback.
+ * If the widget starts muted (volume 0) and the user does not unmute within the timeout,
+ * `onAdFail` is called to signal no engagement.
+ */
+export const MUTE_PASSBACK_TAG_IDS: readonly string[] = [
+  "6a032e34054c8fcb08582510",
+  "6a032de445fa9f171bd291cb",
+  "69b298e3d6a6ad57e7b9a464",
+  "69b298f4d6a6ad57e7b9a499",
+] as const;
+
+/**
+ * Returns whether the mute-passback behaviour is enabled for the given tag.
+ *
+ * @param tagId The tag identifier to test. Empty strings return `false`.
+ */
+export function isMutePassbackEnabled(tagId: string): boolean {
+  if (!tagId) return false;
+  return MUTE_PASSBACK_TAG_IDS.includes(tagId);
+}
+
+/**
  * Tag IDs for which static ad injection is enabled in the feed.
  */
 export const STATIC_AD_INJECT_TAG_IDS: readonly string[] = [] as const;

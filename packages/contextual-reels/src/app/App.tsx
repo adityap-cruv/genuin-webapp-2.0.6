@@ -26,6 +26,7 @@ import { sendEventLogFromGlobals } from "@cxr/analytics/analytics";
 import { CloseButton } from "@cxr/app/CloseButton";
 import { FeedSkeleton } from "@cxr/app/FeedSkeleton";
 import { NoContent } from "@cxr/app/NoContent";
+import { isMutePassbackEnabled } from "@cxr/config";
 import { useFullscreenClasses } from "@cxr/feed/hooks/useFullscreenClasses";
 import { useEventBus } from "@cxr/instance/coordination/EventBusContext";
 import { EventBusProvider } from "@cxr/instance/coordination/EventBusContext";
@@ -39,7 +40,7 @@ import { InstanceProvider } from "@cxr/instance/registry/InstanceContext";
 import { useInstanceRegistration } from "@cxr/instance/registry/useInstanceRegistration";
 import { getDeviceDetailsSnapshot } from "@cxr/platform/device";
 import { windowLink } from "@cxr/platform/topWindow";
-import { AdProvider } from "@cxr/providers/AdProvider";
+import { AdProvider, useAdWaterfall } from "@cxr/providers/AdProvider";
 import { AnalyticsProvider } from "@cxr/providers/AnalyticsProvider";
 import { ConfigProvider } from "@cxr/providers/ConfigProvider";
 import { FeedProvider, useFeed } from "@cxr/providers/FeedProvider";
@@ -152,7 +153,7 @@ export default function App({
     <InstanceProvider instanceId={instanceId}>
       <EventBusProvider>
         <UserInteractionProvider>
-          <AnalyticsProvider>
+          <AnalyticsProvider tagId={tagId}>
             <FullScreenProvider>
               <FullScreenClassApplier rootTagId={rootTagId} overlayRef={overlayRef}>
                 {(cls, isFullScreen) => (
@@ -173,6 +174,7 @@ export default function App({
                               <GenAIProvider tagId={tagId}>
                                 <PlayerProvider>
                                   <AppRegistrar />
+                                  <MutePassbackGuard tagId={tagId} />
                                   <NativeFeedShim tagDetails={tagDetails} />
                                 </PlayerProvider>
                               </GenAIProvider>
@@ -273,6 +275,39 @@ function AppRegistrar(): null {
 
   // suppress unused-var lint for isPlaying (used indirectly via pause)
   void isPlaying;
+
+  return null;
+}
+
+/**
+ * For tags in MUTE_PASSBACK_TAG_IDS: starts a 3-second timer on mount.
+ * If the user hasn't unmuted before the timer fires, calls `onAdFail` (passback).
+ * Timer is cancelled if the user unmutes in time.
+ */
+function MutePassbackGuard({ tagId }: { tagId: string }): null {
+  const { isMuted } = usePlayer();
+  const { onAdFail } = useAdWaterfall();
+  const firedRef = useRef(false);
+  const isMutedRef = useRef(isMuted);
+
+  useEffect(() => {
+    isMutedRef.current = isMuted;
+  }, [isMuted]);
+
+  useEffect(() => {
+    if (!isMutePassbackEnabled(tagId)) return;
+
+    const id = window.setTimeout(() => {
+      if (isMutedRef.current && !firedRef.current) {
+        firedRef.current = true;
+        onAdFail();
+      }
+    }, 3000);
+
+    return () => window.clearTimeout(id);
+    // Run once on mount — tagId and onAdFail are stable.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return null;
 }

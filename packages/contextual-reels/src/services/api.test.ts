@@ -219,10 +219,10 @@ describe("services/getTag", () => {
 // ─── getIpInfo ────────────────────────────────────────────────────────────────
 
 describe("services/getIpInfo", () => {
-  it("GETs /goservices/data/ip_info and unwraps the envelope", async () => {
+  it("GETs /goservices/data/ip_info and returns flat JSON directly", async () => {
     const mockFetch = vi
       .fn()
-      .mockResolvedValue(makeFetchResponse({ data: { data: { city: "Bangalore", country: "IN" } } }));
+      .mockResolvedValue(makeFetchResponse({ city: "Bangalore", country: "IN" }));
 
     const result = await getIpInfo(mockFetch);
 

@@ -190,6 +190,6 @@ export async function getIpInfo(
   fetchFn: (url: string, init?: RequestInit) => Promise<Response> = apiFetch
 ): Promise<RawGeoIpResponse> {
   const response = await fetchFn("/goservices/data/ip_info");
-  const json = (await response.json()) as ResponseLike<RawGeoIpResponse>;
-  return handleResponse<RawGeoIpResponse>(json);
+  // ip_info returns flat JSON, not the standard { data: {...} } envelope.
+  return (await response.json()) as RawGeoIpResponse;
 }
