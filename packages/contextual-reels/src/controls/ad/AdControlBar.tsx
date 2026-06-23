@@ -4,9 +4,14 @@ import React, { useState } from "react";
 
 import { CompactControlBar, type CompactBarCta } from "@cxr/controls/CompactControlBar";
 import { ExpandCollapseButton } from "@cxr/controls/buttons/atoms/ExpandCollapseButton";
+import { ExpandCollapseButtonV2 } from "@cxr/controls/buttons/atoms/ExpandCollapseButtonV2";
 import { MuteUnmuteButton } from "@cxr/controls/buttons/atoms/MuteUnmuteButton";
+import { MuteUnmuteButtonV2 } from "@cxr/controls/buttons/atoms/MuteUnmuteButtonV2";
 import { PlayPauseButton } from "@cxr/controls/buttons/atoms/PlayPauseButton";
+import { PlayPauseButtonV2 } from "@cxr/controls/buttons/atoms/PlayPauseButtonV2";
 import type { AdControlBarProps } from "@cxr/controls/control-layer.types";
+import { resolveCxrControlSize } from "@cxr/controls/control-size";
+import { useNewPlayerControls } from "@cxr/controls/useNewPlayerControls";
 import { useUserInteracted } from "@cxr/instance/coordination/UserInteractionTracker";
 
 /**
@@ -36,6 +41,7 @@ export function AdControlBar({
   // a later SYSTEM mute (autoplay policy on the next ad) actually shows the mute
   // icon instead of staying stuck on the "sound on" enticement.
   const interacted = useUserInteracted();
+  const isV2 = useNewPlayerControls();
   const perceivedMuted = muteToggled || interacted ? isMuted : false;
   const handleMute = () => {
     if (!muteToggled) {
@@ -63,6 +69,7 @@ export function AdControlBar({
     return (
       <CompactControlBar
         size={layout === "320x50" ? "sm" : "md"}
+        useV2Icons={isV2}
         cta={cta}
         isPlay={isPlay}
         isMuted={perceivedMuted}
@@ -78,6 +85,24 @@ export function AdControlBar({
   // layout === 'default'
   // pointer-events-auto: the fullscreen ad break wraps this in a
   // pointer-events-none container; the cluster must opt back in.
+  if (isV2) {
+    // Match the player's V2 control size (DefaultTopBar uses the same call).
+    const v2Size = resolveCxrControlSize(undefined, isFullScreen);
+    return (
+      <div
+        className={`gencl:absolute gencl:top-3 gencl:right-3 gencl:flex gencl:flex-row gencl:items-center gencl:gap-2 gencl:z-[10] gencl:pointer-events-auto`}>
+        <MuteUnmuteButtonV2
+          isMuted={perceivedMuted}
+          onClick={handleMute}
+          size={v2Size}
+          enableVolumeSlider={false}
+          shouldAnimate={false}
+        />
+        <PlayPauseButtonV2 isPlay={isPlay ?? false} onClick={onPlayClick} size={v2Size} shouldAnimate={false} />
+        <ExpandCollapseButtonV2 isFullScreen={isFullScreen} onClick={handleExpand} size={v2Size} />
+      </div>
+    );
+  }
   return (
     <div
       className={`gencl:absolute gencl:top-3 gencl:right-3 gencl:flex gencl:flex-row gencl:items-center gencl:gap-2 gencl:z-[10] gencl:pointer-events-auto`}>

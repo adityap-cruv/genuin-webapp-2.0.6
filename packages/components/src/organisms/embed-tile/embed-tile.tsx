@@ -21,10 +21,7 @@ import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { PlayerProvider, usePlayerContext } from "@genuin/components/molecules/feed-player/context";
 import { EmbedMuteButton } from "@genuin/components/molecules/feed-player/control-layer/controls/embed";
-import {
-  resolveControlSize,
-  SPONSORED_TAG_SIZE,
-} from "@genuin/components/molecules/feed-player/control-layer/player-control-size";
+import { resolveControlSize, SPONSORED_TAG_SIZE } from "@genuin/ui/player-controls";
 import { DynamicReactionIcon } from "@genuin/components/molecules/reaction-button";
 import { Stats } from "@genuin/components/molecules/stats";
 import { IFRAME_HEIGHT, IHeartEmbedBar } from "@genuin/components/organisms/player-swiper/iheart/iheart-embed-bar";

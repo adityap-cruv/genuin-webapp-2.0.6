@@ -9,6 +9,7 @@ import { useCallback, useEffect } from "react";
 
 import { FullscreenActionRailHost } from "@cxr/controls/FullscreenActionRailHost";
 import type { ControlLayerVariant } from "@cxr/controls/control-layer.types";
+import { FeedNavButtons } from "@cxr/feed/FeedNavButtons";
 import { ReelList } from "@cxr/feed/ReelList";
 import { useEmblaCarousel } from "@cxr/feed/hooks/useEmblaCarousel";
 import { useAdWaterfall } from "@cxr/providers/AdProvider";
@@ -83,12 +84,16 @@ export function Feed({ entries, tagDetails, variant }: FeedProps): React.JSX.Ele
       className={
         isFullScreen
           ? "gencl:fixed gencl:inset-0 gencl:flex gencl:items-center gencl:justify-center"
-          : "gencl:h-full gencl:w-full"
+          : "gencl:relative gencl:h-full gencl:w-full"
       }
       style={isFullScreen ? { background: "#000" } : undefined}>
       <div
         data-testid="fullscreen-video-box"
-        className={isFullScreen ? "gencl:relative gencl:h-full gencl:overflow-hidden" : "gencl:h-full gencl:w-full"}
+        className={
+          isFullScreen
+            ? "gencl:relative gencl:h-full gencl:overflow-hidden"
+            : "gencl:relative gencl:h-full gencl:w-full"
+        }
         style={isFullScreen ? { width: FULLSCREEN_VIDEO_WIDTH, background: "#000" } : undefined}>
         <div ref={viewportRef} data-testid="feed-container" className="gencl:h-full gencl:w-full gencl:overflow-hidden">
           <ReelList
@@ -101,10 +106,11 @@ export function Feed({ entries, tagDetails, variant }: FeedProps): React.JSX.Ele
         </div>
       </div>
       {/*
-        Action rail lives at backdrop level (outside the Embla transform subtree, where a
-        fixed/absolute child would otherwise be trapped). Anchored just right of the
-        centred video box so it sits in the black margin like the design.
+        Nav arrows + action rail live at backdrop level (outside the video box's
+        overflow-hidden + Embla transform subtree). In fullscreen they sit in the
+        black margin beside the centred video; in collapse, inside the embed.
       */}
+      <FeedNavButtons emblaApiRef={emblaApiRef} variant={variant} />
       <FullscreenActionRailHost
         tagDetails={tagDetails}
         variant={variant}

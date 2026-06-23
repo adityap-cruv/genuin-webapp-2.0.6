@@ -58,6 +58,14 @@ export function LightPlayer({
   // Keep the ref in sync when the prop changes (avoids stale closure in lifecycle hooks).
   lastUserPlayAtRef.current = lastUserPlayAt;
 
+  // Apply the volume (0..1) to the native element. usePlayerLifecycle also applies
+  // it once the player is ready; this covers the pre-ready window.
+  useEffect(() => {
+    if (videoEl.current) {
+      videoEl.current.volume = Math.max(0, Math.min(1, volume));
+    }
+  }, [volume]);
+
   const { sendEvent } = useAnalytics();
   const { setVolume } = usePlayer();
 

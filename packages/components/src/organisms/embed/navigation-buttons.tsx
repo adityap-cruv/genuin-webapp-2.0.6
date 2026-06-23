@@ -6,7 +6,7 @@ import { useCallback, useState, useEffect } from "react";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
-import type { PlayerControlSize } from "@genuin/components/molecules/feed-player/control-layer/player-control-size";
+import type { PlayerControlSize } from "@genuin/ui/player-controls";
 import { useNewPlayerControls } from "@genuin/components/molecules/feed-player/control-layer/use-new-player-controls";
 
 import { useEmbedManagerContext } from "./context";
@@ -163,7 +163,7 @@ export function NavigationButtons({
   );
 
   // iHeart layout - feed only; carousel falls through to standard left/right block
-  if (isIheartLayout && !isCarousel) {
+  if (isIheartLayout &&(!isCarousel || aspectRatio === "16:9")) {
     // Define styles based on theme
     const isDarkTheme = theme === "dark";
 
@@ -234,79 +234,6 @@ export function NavigationButtons({
     );
   }
 
-  // iHeart layout - horizontal buttons below embed
-  if (isIheartLayout && aspectRatio && aspectRatio === "16:9") {
-    // Define styles based on theme
-    const isDarkTheme = theme === "dark";
-
-    // Dark theme colors
-    const darkTheme = {
-      disabled: { button: "#3F4447", icon: "#717277" },
-      default: { button: "#F6F8F9", icon: "#27292D" },
-      hover: { button: "#A9AFB2", icon: "#27292D" },
-    };
-
-    // Light theme colors
-    const lightTheme = {
-      disabled: { button: "#E6EAED", icon: "#A9AFB2" },
-      default: { button: "#27292D", icon: "#FFFFFF" },
-      hover: { button: "#717277", icon: "#FFFFFF" },
-    };
-
-    // Carousel nav is absolutely positioned at left-1/2; the -translate-x-1/2
-    // shifts it back by half its own width so it stays truly centered.
-    const iheartNavigationDivClasses = isCarousel
-      ? "gencl:absolute gencl:-translate-x-1/2 gencl:left-1/2 gencl:flex gencl:justify-center gencl:items-center gencl:gap-2 gencl:my-4"
-      : "gencl:absolute gencl:right-[-15%] gencl:bottom-1/2 gencl:flex gencl:justify-center gencl:items-center gencl:gap-2 gencl:my-4 gencl:z-1 gencl:flex-col gencl:translate-y-1/2";
-
-    const colors = isDarkTheme ? darkTheme : lightTheme;
-
-    // Component with hover and focus state
-    const IHeartNavButton = ({ Icon, disabled, onClick, label }: IHeartNavButtonProps) => {
-      const [isHovered, setIsHovered] = useState(false);
-
-      const buttonBg = disabled ? colors.disabled.button : isHovered ? colors.hover.button : colors.default.button;
-
-      const iconFill = disabled ? colors.disabled.icon : isHovered ? colors.hover.icon : colors.default.icon;
-
-      return (
-        <div onMouseEnter={() => !disabled && setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-          {createNavButton({
-            Icon,
-            disabled,
-            onClick: (e) => {
-              setIsHovered(false);
-              onClick(e);
-            },
-            label,
-            size: "sm",
-            className: `gencl:transition-all gencl:duration-200 ${disabled ? "gencl:cursor-not-allowed!" : ""}`,
-            style: {
-              background: buttonBg,
-            },
-            iconClassName: "gencl:transition-colors gencl:duration-200",
-            iconStyle: { fill: iconFill },
-          })}
-        </div>
-      );
-    };
-    return (
-      <div className={iheartNavigationDivClasses}>
-        <IHeartNavButton
-          Icon={isCarousel ? ChevronLeftIcon : ChevronUpIcon}
-          disabled={isPrevDisabled}
-          onClick={handlePrevClick}
-          label="Previous"
-        />
-        <IHeartNavButton
-          Icon={isCarousel ? ChevronRightIcon : ChevronDownIcon}
-          disabled={isNextDisabled}
-          onClick={handleNextClick}
-          label="Next"
-        />
-      </div>
-    );
-  }
 
   // Carousel layout - side navigation buttons
   if (isCarousel) {

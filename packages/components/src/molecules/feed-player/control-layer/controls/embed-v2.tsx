@@ -1,6 +1,7 @@
 "use client";
 import { ExpandIcon, MuteIcon, PauseIcon, PlayIcon, UnmuteIcon } from "@genuin/ui/icons";
 import { CollapseIcon } from "@genuin/ui/icons";
+import { IconCircleButton, type PlayerControlSize } from "@genuin/ui/player-controls";
 import { cn } from "@genuin/ui/utils";
 import { useEffect, useState, type ComponentProps } from "react";
 
@@ -12,8 +13,6 @@ import { SDKEventEmitter, SDKEventName } from "@genuin/components/lib/sdk-event-
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 import { usePlayerContext } from "../../context";
-import { PlayerControlButton } from "../player-control-button";
-import type { PlayerControlSize } from "../player-control-size";
 
 type EmbedControlsProps = ComponentProps<"div"> & {
   /** Size of the buttons. @default "sm" */
@@ -38,7 +37,7 @@ export function EmbedMuteButton({ size = "sm" }: EmbedButtonProps) {
   const volPct = muted ? 0 : Math.max(0, Math.min(100, volume));
 
   return (
-    <PlayerControlButton
+    <IconCircleButton
       size={size}
       className="gencl:cursor-pointer"
       volPct={volPct}
@@ -53,7 +52,7 @@ export function EmbedPlayButton({ size = "sm" }: EmbedButtonProps) {
   const { playingState, togglePlay } = usePlayerContext();
 
   return (
-    <PlayerControlButton
+    <IconCircleButton
       size={size}
       className="gencl:cursor-pointer"
       onClick={() => togglePlay(true)}
@@ -80,7 +79,7 @@ export function EmbedExpandButton({ size = "sm", section, videoId }: EmbedExpand
   }, [embedEventBus]);
 
   return (
-    <PlayerControlButton
+    <IconCircleButton
       size={size}
       className="gencl:cursor-pointer"
       onClick={() => {

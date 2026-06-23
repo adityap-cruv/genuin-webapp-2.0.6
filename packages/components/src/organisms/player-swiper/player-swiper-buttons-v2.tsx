@@ -1,14 +1,11 @@
 import { cn } from "@genuin/ui/lib/utils";
+import { NAV_BUTTON_COLORS, NavChevron, IconCircleButton, type PlayerControlSize } from "@genuin/ui/player-controls";
 import { useEffect, useState } from "react";
 import type { Swiper } from "swiper/types";
 
-import { NAV_BUTTON_COLORS, NavChevron } from "@genuin/components/molecules/feed-player/control-layer/nav-chevron";
-import { PlayerControlButton } from "@genuin/components/molecules/feed-player/control-layer/player-control-button";
-import type { PlayerControlSize } from "@genuin/components/molecules/feed-player/control-layer/player-control-size";
-
 /**
  * Design System V2 expand-view navigation arrows (double-circle
- * `PlayerControlButton`). Drop-in v2 visual for `NavigationButton`; iHeart keeps
+ * `IconCircleButton`). Drop-in v2 visual for `NavigationButton`; iHeart keeps
  * the legacy buttons and never reaches here. Solid fill + glyph colours mirror
  * the legacy V1 palette so the arrows stay visible on dark backdrops. Defaults
  * to `lg`, overridable via `size`.
@@ -78,7 +75,7 @@ export function NavigationButtonV2({
           "gencl:rounded-full gencl:transition-opacity gencl:duration-200",
           prevDisabled && "gencl:opacity-40 gencl:cursor-not-allowed"
         )}>
-        <PlayerControlButton
+        <IconCircleButton
           size={size}
           outerBg={colors.outer}
           innerBg={colors.inner}
@@ -98,7 +95,7 @@ export function NavigationButtonV2({
           "gencl:rounded-full gencl:transition-opacity gencl:duration-200",
           nextDisabled && "gencl:opacity-40 gencl:cursor-not-allowed"
         )}>
-        <PlayerControlButton
+        <IconCircleButton
           size={size}
           outerBg={colors.outer}
           innerBg={colors.inner}

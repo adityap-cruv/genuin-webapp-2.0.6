@@ -32,6 +32,7 @@
     "./styles": "./dist/index.css",
     "./utils": "./src/lib/utils.ts",
     "./icons": "./src/icons/index.ts",
+    "./player-controls": "./src/components/player-controls/index.ts",
     "./lottie": "./src/components/lottie/index.ts",
     "./audio-player": "./src/components/audio-player/index.ts",
     "./image": "./src/components/image/index.ts",

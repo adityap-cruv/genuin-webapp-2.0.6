@@ -5,7 +5,7 @@ import { cn } from "@genuin/ui/lib/utils";
 import { useEffect, useState } from "react";
 import type { Swiper } from "swiper/types";
 
-import type { PlayerControlSize } from "@genuin/components/molecules/feed-player/control-layer/player-control-size";
+import type { PlayerControlSize } from "@genuin/ui/player-controls";
 import { useNewPlayerControls } from "@genuin/components/molecules/feed-player/control-layer/use-new-player-controls";
 
 import { NavigationButtonV2 } from "./player-swiper-buttons-v2";

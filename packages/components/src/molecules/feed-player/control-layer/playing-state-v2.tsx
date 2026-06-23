@@ -8,7 +8,7 @@ import type { ComponentProps } from "react";
 
 import { usePlayerContext } from "../context/context";
 
-import { PlayerControlButton } from "./player-control-button";
+import { IconCircleButton } from "@genuin/ui/player-controls";
 
 export type PlayingStateProps = ComponentProps<"div"> & {
   showOnlyPlayAction?: boolean;
@@ -41,7 +41,7 @@ export function PlayingState({ className, showOnlyPlayAction = false, ...restPro
       <div
         key="system-pause"
         className="gencl:flex gencl:flex-col gencl:items-center gencl:gap-2 gencl:absolute gencl:h-full gencl:w-full gencl:justify-center">
-        <PlayerControlButton
+        <IconCircleButton
           size="xl"
           role="status"
           aria-live="polite"
@@ -81,7 +81,7 @@ export function PlayingState({ className, showOnlyPlayAction = false, ...restPro
     // Only show PlayIcon when action is PLAY, hide all other actions (PAUSE, MUTE, UNMUTE)
     if (buttonAction === "PAUSE") {
       return (
-        <PlayerControlButton
+        <IconCircleButton
           key={buttonAction}
           size="xl"
           role="status"
@@ -101,7 +101,7 @@ export function PlayingState({ className, showOnlyPlayAction = false, ...restPro
   // Default behavior for non-iHeart layouts
   if (buttonAction === "PAUSE" && playingState === "PAUSED") {
     return (
-      <PlayerControlButton
+      <IconCircleButton
         key={buttonAction}
         size="xl"
         role="status"
@@ -137,7 +137,7 @@ export function PlayingState({ className, showOnlyPlayAction = false, ...restPro
   const ariaLabel = getAriaLabelForAction(buttonAction);
 
   return (
-    <PlayerControlButton
+    <IconCircleButton
       key={buttonAction}
       size="xl"
       role="status"

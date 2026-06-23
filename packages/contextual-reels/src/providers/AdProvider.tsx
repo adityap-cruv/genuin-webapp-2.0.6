@@ -145,3 +145,8 @@ export function useAdWaterfall(): AdWaterfallContextValue {
   }
   return ctx;
 }
+
+/** Returns `undefined` when no {@link AdProvider} is in scope instead of throwing error or "". */
+export function useOptionalAdWaterfall(): AdWaterfallContextValue | undefined {
+  return useContext(AdWaterfallContext);
+}

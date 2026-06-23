@@ -19,7 +19,7 @@ import { usePlayerContext } from "../context/context";
 import type { ControlLayerPropsType } from "./control-layer.types";
 import { Controls } from "./controls";
 import { VideoEditActionButtons } from "./controls/control-buttons";
-import { SPONSORED_TAG_SIZE, resolveControlSize } from "./player-control-size";
+import { SPONSORED_TAG_SIZE, resolveControlSize } from "@genuin/ui/player-controls";
 import { PlayingState } from "./playing-state";
 import { Scrubber } from "./scrubber";
 

@@ -9,6 +9,7 @@ import { isCompactLayout } from "@cxr/utils/ads";
 
 import { CompactControlBar } from "./CompactControlBar";
 import { WatchButton } from "./buttons/atoms/WatchButton";
+import { useNewPlayerControls } from "./useNewPlayerControls";
 
 function stopProp(e: { stopPropagation(): void }): void {
   e.stopPropagation();
@@ -69,6 +70,8 @@ export function VideoControlLayer({
   // useInstanceId must be called unconditionally (hooks rules).
   const instanceId = useInstanceId();
   const isCompact = isCompactLayout(adLayout);
+  // iHeart stays on the legacy controls; everything else gets the V2 icon set.
+  const isV2 = useNewPlayerControls() && variant !== "iheart";
 
   const tagId = tagDetails?.tag_id ?? "";
   const videoId = item.video?.id;
@@ -122,6 +125,7 @@ export function VideoControlLayer({
         <div className="gencl:relative gencl:z-2 gencl:h-full gencl:w-full gencl:pointer-events-none">
           <CompactControlBar
             size={is320x50 ? "sm" : "md"}
+            useV2Icons={isV2}
             identity={{ imageUrl: item.owner?.profile_image, name: item.owner?.nickname }}
             description={item.video?.description}
             animatedBorder={animatedBorder}

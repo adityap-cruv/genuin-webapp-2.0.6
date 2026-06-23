@@ -71,3 +71,12 @@ export function useConfig(): ConfigContextValue {
   }
   return ctx;
 }
+
+/**
+ * Non-throwing config accessor. Returns `undefined` when rendered outside a
+ * {@link ConfigProvider} (e.g. isolated unit tests). Use for optional reads
+ * such as feature gates that must degrade gracefully rather than crash.
+ */
+export function useOptionalConfig(): ConfigContextValue | undefined {
+  return useContext(ConfigContext);
+}

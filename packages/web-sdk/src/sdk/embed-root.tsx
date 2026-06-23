@@ -9,7 +9,7 @@ import { LinkProvider } from "@genuin/components/context/link";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { type BrandType } from "@genuin/components/lib/utils/brand-layout";
 import { TRACK_OBSERVABILITY } from "@genuin/components/lib/utils/env";
-import { AppErrorBoundary } from "@genuin/components/molecules/error/app-error-boundary";
+// import { AppErrorBoundary } from "@genuin/components/molecules/error/app-error-boundary";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { ReactQueryClientProvider } from "@genuin/components/react-query/react-query-provider";
 import type { AuthUser } from "@genuin/components/types/auth";

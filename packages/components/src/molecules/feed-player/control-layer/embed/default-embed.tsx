@@ -1,11 +1,10 @@
 import { PlayIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
+import { resolveControlSize } from "@genuin/ui/player-controls";
 import { type FC, lazy, useCallback } from "react";
 
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
-import { resolveControlSize } from "@genuin/components/molecules/feed-player/control-layer/player-control-size";
-
 import { Stats } from "@genuin/components/molecules/stats";
 
 import type { ControlLayerPropsType } from "../control-layer.types";

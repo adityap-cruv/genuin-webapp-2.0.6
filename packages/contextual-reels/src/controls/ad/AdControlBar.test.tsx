@@ -1,6 +1,7 @@
 import React, { act } from 'react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createRoot, type Root } from 'react-dom/client';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+
 import { AdControlBar } from './AdControlBar';
 import {
   UserInteractionProvider,
@@ -8,6 +9,21 @@ import {
 } from '@cxr/instance/coordination/UserInteractionTracker';
 
 vi.mock('@cxr/config', () => ({ assetLink: 'https://test.cdn/' }));
+
+// AdControlBar can render the context-bound V2 buttons (MuteUnmuteButtonV2 reads
+// usePlayer). Mock the provider so the bar mounts in isolation regardless of the
+// active design system. Old and V2 buttons share the same test ids, so the
+// assertions below hold under either branch.
+vi.mock('@cxr/providers/PlayerProvider', () => ({
+  usePlayer: () => ({
+    isMuted: false,
+    isPlaying: false,
+    volume: 100,
+    setMuted: vi.fn(),
+    setPlaying: vi.fn(),
+    setVolume: vi.fn(),
+  }),
+}));
 
 const defaultProps = {
   isPlay: false,

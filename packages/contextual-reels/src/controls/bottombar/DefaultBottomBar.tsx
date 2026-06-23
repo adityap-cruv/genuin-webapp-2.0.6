@@ -1,6 +1,8 @@
 "use client";
 import React, { lazy, Suspense } from "react";
 
+import { ShareIcon, SparkIcon } from "@genuin/ui/icons";
+
 import { assetLink, isGenAiAllowed } from "@cxr/config";
 import type { BottomBarSubProps, ControlLayerVariant } from "@cxr/controls/control-layer.types";
 import { useOctoSplit } from "@cxr/providers/GenAIProvider";
@@ -126,11 +128,15 @@ function IconButtons({
             e.stopPropagation();
             openShareLink(shareUrl);
           }}>
-          <img
-            src={`${assetLink}reactions/iheartmedia/cxr/like.svg`}
-            style={{ width: "24px", height: "24px" }}
-            alt="Spark"
-          />
+          {isIheart ? (
+            <img
+              src={`${assetLink}reactions/iheartmedia/cxr/like.svg`}
+              style={{ width: "24px", height: "24px" }}
+              alt="Spark"
+            />
+          ) : (
+            <SparkIcon theme="dark" size="lg" />
+          )}
         </button>
       )}
       {isIheart && (
@@ -166,11 +172,15 @@ function IconButtons({
             e.stopPropagation();
             void copyToClipboard(shareUrl ?? "");
           }}>
-          <img
-            src={`${assetLink}reactions/iheartmedia/cxr/share.svg`}
-            style={{ width: "24px", height: "24px" }}
-            alt="Share"
-          />
+          {isIheart ? (
+            <img
+              src={`${assetLink}reactions/iheartmedia/cxr/share.svg`}
+              style={{ width: "24px", height: "24px" }}
+              alt="Share"
+            />
+          ) : (
+            <ShareIcon theme="dark" size="lg" />
+          )}
         </button>
       )}
     </div>

@@ -1,11 +1,14 @@
 import { cn } from "@genuin/ui/lib/utils";
+import {
+  NAV_BUTTON_COLORS,
+  NavChevron,
+  IconCircleButton,
+  type NavChevronDirection,
+  type PlayerControlSize,
+} from "@genuin/ui/player-controls";
 import type { CSSProperties } from "react";
 
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
-import { NAV_BUTTON_COLORS, NavChevron } from "@genuin/components/molecules/feed-player/control-layer/nav-chevron";
-import type { NavChevronDirection } from "@genuin/components/molecules/feed-player/control-layer/nav-chevron";
-import { PlayerControlButton } from "@genuin/components/molecules/feed-player/control-layer/player-control-button";
-import type { PlayerControlSize } from "@genuin/components/molecules/feed-player/control-layer/player-control-size";
 
 type EmbedVariant = "grid" | "carousel" | "feed" | "dynamic" | "standard_wall" | "expand_only" | undefined;
 type ButtonClickHandler = (e: React.MouseEvent<HTMLButtonElement>) => void;
@@ -23,7 +26,7 @@ interface NavigationButtonsV2Props {
 }
 
 /**
- * Design System V2 embed navigation arrows (double-circle `PlayerControlButton`).
+ * Design System V2 embed navigation arrows (double-circle `IconCircleButton`).
  * Carousel renders left/right; every other variant renders the vertical up/down
  * pair. iHeart is handled by the legacy buttons, not here. Solid fill + glyph
  * colours mirror the legacy V1 palette so the arrows stay visible on dark
@@ -67,7 +70,7 @@ export function NavigationButtonsV2({
         disabled && "gencl:opacity-40 gencl:cursor-not-allowed"
       )}
       style={safariOptimizationStyles}>
-      <PlayerControlButton
+      <IconCircleButton
         size={size}
         outerBg={colors.outer}
         innerBg={colors.inner}

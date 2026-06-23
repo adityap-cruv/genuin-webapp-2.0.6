@@ -35,12 +35,12 @@ export interface PlayerContextValue {
   isMuted: boolean;
   /** Whether the active player is in play state. */
   isPlaying: boolean;
-  /** Set the audible volume directly (0..1). */
-  setVolume: (volume: number) => void;
   /** Convenience toggle: `true` silences (volume 0), `false` unmutes to {@link DEFAULT_UNMUTE_VOLUME}. */
   setMuted: (muted: boolean) => void;
   /** Update playing state. */
   setPlaying: (playing: boolean) => void;
+  /** Set the audible volume directly (0..1). */
+  setVolume: (volume: number) => void;
 }
 
 const PlayerContext = createContext<PlayerContextValue | undefined>(undefined);

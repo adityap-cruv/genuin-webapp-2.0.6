@@ -4,6 +4,22 @@ import { createRoot } from "react-dom/client";
 import type { Root } from "react-dom/client";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
+// DefaultTopBar renders the context-bound V2 atoms (MuteUnmuteButtonV2 reads
+// usePlayer; the V2 atoms read assetLink). Mock both so the bar mounts in
+// isolation regardless of the active design system. Old and V2 buttons share the
+// same test ids, so the assertions below hold under either branch.
+vi.mock("@cxr/config", () => ({ assetLink: "https://test.cdn/" }));
+vi.mock("@cxr/providers/PlayerProvider", () => ({
+  usePlayer: () => ({
+    isMuted: false,
+    isPlaying: false,
+    volume: 100,
+    setMuted: vi.fn(),
+    setPlaying: vi.fn(),
+    setVolume: vi.fn(),
+  }),
+}));
+
 import { DefaultTopBar } from "@cxr/controls/topbar/DefaultTopBar";
 
 describe("DefaultTopBar", () => {
@@ -55,7 +71,9 @@ describe("DefaultTopBar", () => {
   it("non-full: right group contains expand button", () => {
     render({ isFullScreen: false });
     const rightGroup = container.querySelector('[data-testid="topbar-right-group"]');
-    expect(rightGroup?.querySelectorAll("button").length).toBeGreaterThanOrEqual(1);
+    // Count interactive controls by role, not tag: the V2 expand button renders a
+    // div[role="button"], the legacy one a native <button>. Both satisfy this.
+    expect(rightGroup?.querySelectorAll('button, [role="button"]').length).toBeGreaterThanOrEqual(1);
     expect(rightGroup?.querySelector('[data-testid="topbar-expand"]')).toBeTruthy();
   });
 

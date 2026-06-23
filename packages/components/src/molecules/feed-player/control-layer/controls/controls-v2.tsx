@@ -1,5 +1,6 @@
 import { ExpandIcon } from "@genuin/ui/icons";
 import { CollapseIcon } from "@genuin/ui/icons";
+import { IconCircleButton, SPONSORED_TAG_SIZE, type PlayerControlSize } from "@genuin/ui/player-controls";
 import { cn } from "@genuin/ui/utils";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
@@ -11,8 +12,6 @@ import { usePathname } from "@genuin/components/hooks/use-pathname";
 import { useSearchParams } from "@genuin/components/hooks/use-search-params";
 
 import { usePlayerContext } from "../../context";
-import { PlayerControlButton } from "../player-control-button";
-import { SPONSORED_TAG_SIZE, type PlayerControlSize } from "../player-control-size";
 
 import { AnimatedPlayButton } from "./control-buttons";
 import { AnimatedMuteIcon } from "./control-buttons";
@@ -148,7 +147,7 @@ export const Controls = memo(function Controls({
               )}
 
               {!isMobile && enableExpand && (
-                <PlayerControlButton
+                <IconCircleButton
                   size={size}
                   onClick={toggleExpandView}
                   className="gencl:cursor-pointer"
@@ -157,7 +156,7 @@ export const Controls = memo(function Controls({
               )}
 
               {isMobile && showCloseButton && getSearchParams("feed") !== "1" && !pathname.includes("/video") && (
-                <PlayerControlButton
+                <IconCircleButton
                   size={size}
                   onClick={toggleExpandView}
                   className="gencl:cursor-pointer"
@@ -170,7 +169,7 @@ export const Controls = memo(function Controls({
       )}
 
       {isMobile && isEmbed && !hidePlayerControls && showExpandView && !isSponsored && (
-        <PlayerControlButton
+        <IconCircleButton
           size={size}
           onClick={toggleExpandView}
           className="gencl:cursor-pointer"

@@ -1,7 +1,8 @@
 "use client";
 import React from "react";
 
-import { assetLink } from "@cxr/config";
+import { ShareIcon, SparkIcon } from "@genuin/ui/icons";
+
 import type { ControlLayerVariant } from "@cxr/controls/control-layer.types";
 import type { NormalisedReel, TagResponse } from "@cxr/types";
 import { copyToClipboard, openShareLink } from "@cxr/utils/share";
@@ -53,11 +54,7 @@ export function FullscreenActionRail({
             e.stopPropagation();
             openShareLink(shareUrl);
           }}>
-          <img
-            src={`${assetLink}reactions/iheartmedia/cxr/like.svg`}
-            style={{ width: "24px", height: "24px" }}
-            alt="Spark"
-          />
+          <SparkIcon theme="dark" size="lg" />
         </button>
       )}
       {config?.show_share && (
@@ -69,11 +66,7 @@ export function FullscreenActionRail({
             e.stopPropagation();
             void copyToClipboard(shareUrl ?? "");
           }}>
-          <img
-            src={`${assetLink}reactions/iheartmedia/cxr/share.svg`}
-            style={{ width: "24px", height: "24px" }}
-            alt="Share"
-          />
+          <ShareIcon theme="dark" size="lg" />
         </button>
       )}
     </div>

@@ -1,11 +1,15 @@
 "use client";
 
+import { type PlayerControlSize } from "@genuin/ui/player-controls";
 import React, { useLayoutEffect, useRef, useState } from "react";
 
 import { ExpandCollapseButton } from "@cxr/controls/buttons/atoms/ExpandCollapseButton";
+import { ExpandCollapseButtonV2 } from "@cxr/controls/buttons/atoms/ExpandCollapseButtonV2";
 import { LinkoutButton } from "@cxr/controls/buttons/atoms/LinkoutButton";
 import { MuteUnmuteButton } from "@cxr/controls/buttons/atoms/MuteUnmuteButton";
+import { MuteUnmuteButtonV2 } from "@cxr/controls/buttons/atoms/MuteUnmuteButtonV2";
 import { PlayPauseButton } from "@cxr/controls/buttons/atoms/PlayPauseButton";
+import { PlayPauseButtonV2 } from "@cxr/controls/buttons/atoms/PlayPauseButtonV2";
 import { WatchButton } from "@cxr/controls/buttons/atoms/WatchButton";
 
 const noop = (): void => undefined;
@@ -53,6 +57,8 @@ export interface CompactControlBarProps extends React.HTMLAttributes<HTMLDivElem
   onFullScreenClick?: () => void;
   /** Watch tap — falls back to onFullScreenClick. */
   onWatchClick?: () => void;
+  /** Render the Design System V2 double-circle icons instead of the legacy set. */
+  useV2Icons?: boolean;
 }
 
 /**
@@ -73,6 +79,7 @@ export function CompactControlBar({
   onMuteClick,
   onFullScreenClick,
   onWatchClick,
+  useV2Icons = false,
   className,
   ...rest
 }: CompactControlBarProps): React.JSX.Element {
@@ -82,6 +89,8 @@ export function CompactControlBar({
   // Linkout needs the md row height; in sm the CTA only affects Watch sizing.
   const showLinkout = hasCta && size === "md";
   const handleWatch = onWatchClick ?? onFullScreenClick ?? noop;
+  // 320×50 (sm) → xs, 320×100 (md) → sm — matches resolveCxrControlSize's collapsed row.
+  const v2Size: PlayerControlSize = size === "sm" ? "xs" : "sm";
 
   // Constant scroll speed: derive duration from the measured text width instead
   // of the character count, so long captions don't whip past faster than short
@@ -118,9 +127,35 @@ export function CompactControlBar({
           </span>
         )}
         <div className="gencl:flex gencl:items-center gencl:gap-1 gencl:pointer-events-auto gencl:shrink-0 gencl:ml-auto">
-          <MuteUnmuteButton animatedBorder={animatedBorder} isMuted={isMuted} onClick={onMuteClick} size={size} />
-          <PlayPauseButton isPlay={isPlay ?? false} onClick={onPlayClick ?? noop} size={size} />
-          <ExpandCollapseButton isFullScreen={isFullScreen} onClick={onFullScreenClick ?? noop} size={size} />
+          {useV2Icons ? (
+            <>
+              <MuteUnmuteButtonV2
+                isMuted={isMuted}
+                onClick={onMuteClick}
+                size={v2Size}
+                enableVolumeSlider={false}
+                shouldAnimate={false}
+                animatedBorder={animatedBorder}
+              />
+              <PlayPauseButtonV2
+                isPlay={isPlay ?? false}
+                onClick={onPlayClick ?? noop}
+                size={v2Size}
+                shouldAnimate={false}
+              />
+              <ExpandCollapseButtonV2
+                isFullScreen={isFullScreen}
+                onClick={onFullScreenClick ?? noop}
+                size={v2Size}
+              />
+            </>
+          ) : (
+            <>
+              <MuteUnmuteButton animatedBorder={animatedBorder} isMuted={isMuted} onClick={onMuteClick} size={size} />
+              <PlayPauseButton isPlay={isPlay ?? false} onClick={onPlayClick ?? noop} size={size} />
+              <ExpandCollapseButton isFullScreen={isFullScreen} onClick={onFullScreenClick ?? noop} size={size} />
+            </>
+          )}
         </div>
       </div>
 

@@ -29,3 +29,4 @@ export * from "./dynamic-sheet";
 export * from "./textarea";
 export * from "./select";
 export * from "./table";
+export * from "./player-controls";

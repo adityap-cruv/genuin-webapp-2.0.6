@@ -49,6 +49,8 @@ export interface TagResponse {
     show_cta?: boolean;
     /** Control-layer UI variant ("default" | "iheart"). Defaults to "default" when absent. */
     variant?: "default" | "iheart";
+    /** New Player design absent or any other value, keeps the legacy controls. Read via {@link useNewPlayerControls}.*/
+    design_system?: "v1" | "v2";
     [key: string]: unknown;
   } | null;
   /** Display (banner) ad descriptor. */

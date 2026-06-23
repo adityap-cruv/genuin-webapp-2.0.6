@@ -42,6 +42,7 @@ export function DefaultControlLayer({
           isFullScreen={isFullScreen}
           isMuted={isMuted}
           isPlay={isPlay}
+          isActive={isActive}
           onMuteClick={onMuteClick}
           onPlayClick={onPlayClick}
           onFullScreenClick={onFullScreenClick}

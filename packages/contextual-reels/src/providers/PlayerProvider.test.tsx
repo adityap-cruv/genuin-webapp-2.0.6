@@ -14,15 +14,19 @@ import { PlayerProvider, usePlayer } from "@cxr/providers/PlayerProvider";
 interface Captured {
   isMuted: boolean;
   isPlaying: boolean;
+  volume: number;
   setMuted: (v: boolean, source?: "user" | "system") => void;
   setPlaying: (v: boolean) => void;
+  setVolume: (v: number) => void;
 }
 
 let captured: Captured = {
   isMuted: false,
   isPlaying: false,
+  volume: 100,
   setMuted: () => {},
   setPlaying: () => {},
+  setVolume: () => {},
 };
 
 function Consumer(): null {
@@ -94,6 +98,19 @@ describe("PlayerProvider", () => {
       captured.setPlaying(true);
     });
     expect(captured.isPlaying).toBe(true);
+  });
+
+  it("provides volume=100 initially (full volume)", () => {
+    render();
+    expect(captured.volume).toBe(100);
+  });
+
+  it("setVolume updates volume", () => {
+    render();
+    act(() => {
+      captured.setVolume(40);
+    });
+    expect(captured.volume).toBe(40);
   });
 
   it("usePlayer throws outside PlayerProvider", () => {

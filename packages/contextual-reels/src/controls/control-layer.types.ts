@@ -60,6 +60,7 @@ export interface TopBarProps {
   isFullScreen: boolean;
   isMuted: boolean;
   isPlay: boolean;
+  isActive?: boolean;
   onMuteClick: () => void;
   onPlayClick: () => void;
   onFullScreenClick: () => void;
