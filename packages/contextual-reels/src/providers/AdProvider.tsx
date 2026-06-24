@@ -14,6 +14,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 
+import { EVENT } from "@cxr/analytics/analytics";
 import type { AdProviderKind } from "@cxr/ads/normalizers";
 import {
   installGenaiBridge,
@@ -101,7 +102,7 @@ export function AdProvider({ children, tagId, tagHeight, tagWidth, adLayout = "u
     notifyAdNoFill();
     const elapsed = Date.now() - renderStartRef.current;
     console.log("notifyAdNoFill", `+${elapsed}ms (${(elapsed / 1000).toFixed(2)}s) from page load`);
-    sendEvent("Ad Passback", {
+    sendEvent(EVENT.AD_PASSBACK, {
       tag_height: tagHeight,
       tag_width: tagWidth,
     });

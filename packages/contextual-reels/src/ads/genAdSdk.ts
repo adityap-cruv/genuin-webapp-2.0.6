@@ -7,6 +7,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { normalizeBannerConfig, normalizeNativeConfig, normalizeVideoConfig } from "@cxr/ads/normalizers";
+import { EVENT } from "@cxr/analytics/analytics";
 import type { AdProviderKind } from "@cxr/ads/normalizers";
 import { resolvePageUrl, resolveVideoAdMacros } from "@cxr/ads/adUrlMacros";
 import { useEventBus } from "@cxr/instance/coordination/EventBusContext";
@@ -374,14 +375,34 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
               provider: resolvedProvider,
               ad_source: platforms[resolvedProvider] || undefined,
             };
-            sendEvent("Ad Response Received", adEventDetails);
-            sendEvent("Ad Impression", adEventDetails);
+            sendEvent(EVENT.AD_RESPONSE_RECEIVED, adEventDetails);
+            sendEvent(EVENT.AD_IMPRESSION_TITLE, adEventDetails);
           },
-          onAdCompleted: (): void => {
+          onAdCompleted: (completedProvider?: AdProviderKind): void => {
+            sendEvent(EVENT.AD_COMPLETED, {
+              provider: completedProvider,
+              ad_source: (completedProvider && platforms[completedProvider]) || adSource,
+            });
             (window as Window & { GenAd?: { destroy(id: number): void } }).GenAd?.destroy(instanceIdRef.current!);
             instanceIdRef.current = null;
             initInFlightRef.current = false;
             onAdCompletedRef.current?.();
+          },
+          // Per-stage failure inside the waterfall. Mirrors gen-ad-container's
+          // onStageFail categorisation: HTTP-status hints in the SDK error
+          // message map a stage fail onto render-failed vs a generic ad error.
+          // The waterfall-level no-fill path stays in `onWaterfallFail` below.
+          onStageFail: (failedProvider: AdProviderKind, error?: Error): void => {
+            const msg = error?.message ?? "";
+            const details = {
+              provider: failedProvider,
+              ad_source: (failedProvider && platforms[failedProvider]) || adSource,
+            };
+            if (msg.includes("401") || msg.includes("403") || msg.includes("404")) {
+              sendEvent(EVENT.AD_RENDER_FAILED, details);
+            } else {
+              sendEvent(EVENT.AD_ERROR_TITLE, details);
+            }
           },
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           onWaterfallFail: (_failedProvider: string): void => {
@@ -391,7 +412,7 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
             initInFlightRef.current = false;
             setAdLoaded(false);
             bus.emit("ad:nofill", {});
-            sendEvent("Ad Request Failed", { ad_source: adSource });
+            sendEvent(EVENT.AD_REQUEST_FAILED, { ad_source: adSource });
             // Call after state resets so the carousel advance sees clean hook state
             onWaterfallFailRef.current?.();
           },
@@ -424,6 +445,45 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
             onAdCTA: (cta: AdCtaDetails): void => {
               onAdCTARef.current?.(cta);
             },
+            // SDK creative-lifecycle events, mirrored from gen-ad-container so
+            // CXR reports the same per-creative analytics. `Ad Impression` is
+            // intentionally NOT wired here — CXR emits it once on
+            // `onWaterfallSuccess` (the proven fill signal); duplicating it on
+            // the SDK render event would double-count impressions.
+            onAdRendered: (event?: { provider?: AdProviderKind }): void => {
+              sendEvent(EVENT.AD_RENDERED, {
+                provider: event?.provider,
+                ad_source: (event?.provider && platforms[event.provider]) || adSource,
+              });
+            },
+            onAdStarted: (event?: { provider?: AdProviderKind }): void => {
+              sendEvent(EVENT.AD_STARTED, {
+                provider: event?.provider,
+                ad_source: (event?.provider && platforms[event.provider]) || adSource,
+              });
+            },
+            onAdQuartile: (event?: { provider?: AdProviderKind; quartile?: number | string }): void => {
+              sendEvent(EVENT.AD_MEDIA_QUARTILE, {
+                provider: event?.provider,
+                quartile: event?.quartile,
+                ad_source: (event?.provider && platforms[event.provider]) || adSource,
+              });
+            },
+            onAdSkipped: (event?: { provider?: AdProviderKind }): void => {
+              // Skipping the ad blurs the host window and pauses the player;
+              // refocus so playback resumes (mirrors gen-ad-container).
+              window.focus();
+              sendEvent(EVENT.AD_SKIPPED, {
+                provider: event?.provider,
+                ad_source: (event?.provider && platforms[event.provider]) || adSource,
+              });
+            },
+            onAdClicked: (event?: { provider?: AdProviderKind }): void => {
+              sendEvent(EVENT.AD_CLICKED, {
+                provider: event?.provider,
+                ad_source: (event?.provider && platforms[event.provider]) || adSource,
+              });
+            },
           },
           debug: process.env.NODE_ENV === "development",
         };
@@ -455,7 +515,7 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
         const GenAd = (window as Window & { GenAd?: { init(o: typeof initOptions): number | null } }).GenAd;
         const sdkInstanceId = GenAd?.init(initOptions);
 
-        sendEvent("Ad Requested", { ad_source: adSource });
+        sendEvent(EVENT.AD_REQUESTED_TITLE, { ad_source: adSource });
 
         if (sdkInstanceId != null) {
           instanceIdRef.current = sdkInstanceId;

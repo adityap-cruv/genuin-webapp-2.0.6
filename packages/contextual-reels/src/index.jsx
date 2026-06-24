@@ -4,7 +4,7 @@ import { createRoot } from "react-dom/client";
 import "@cxr/styles/tailwind.css";
 
 import { initializeRudderAnalytics } from "@cxr/analytics/rudderstack";
-import { sendEventLogFromGlobals } from "@cxr/analytics/analytics";
+import { EVENT, sendEventLogFromGlobals } from "@cxr/analytics/analytics";
 import { getDeviceDetailsSnapshot } from "@cxr/platform/device";
 import { userId } from "@cxr/userId";
 import { windowLink } from "@cxr/platform/topWindow";
@@ -145,7 +145,7 @@ async function init() {
     }
 
     sendEventLogFromGlobals(
-      { eventName: "tag_init", eventDetails: {}, tagDetails: { tag_id: tagId } },
+      { eventName: EVENT.TAG_INIT, eventDetails: {}, tagDetails: { tag_id: tagId } },
       { deviceDetails: getDeviceDetailsSnapshot(), userId, windowLink }
     );
 

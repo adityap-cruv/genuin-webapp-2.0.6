@@ -9,6 +9,7 @@
  * Analytics event sequence is preserved verbatim from the legacy
  * `services/db.js` `getReelsGenerator`.
  */
+import { EVENT } from "@cxr/analytics/analytics";
 import { windowLink as defaultWindowLink } from "@cxr/platform/topWindow";
 import { apiFetch, handleResponse, type ResponseLike } from "@cxr/services/api";
 
@@ -95,7 +96,7 @@ export function createFeedGenerator(args: FactoryArgs): () => Promise<Reel[]> {
   return async function fetchBatch(): Promise<Reel[]> {
     if (reelsNoMore[tagId]) return [];
 
-    sendEvent("batch_started");
+    sendEvent(EVENT.BATCH_STARTED);
 
     const params = new URLSearchParams({
       tag_id: tagId,
@@ -108,16 +109,16 @@ export function createFeedGenerator(args: FactoryArgs): () => Promise<Reel[]> {
     const response = await fetch_(`/goservices/ad_creative/feed?${params}`);
     const json = (await response.json()) as ResponseLike<FeedResponseShape>;
 
-    if (callCounter > 0) sendEvent("batch_completed");
-    sendEvent("feed_api_call_completed");
+    if (callCounter > 0) sendEvent(EVENT.BATCH_COMPLETED);
+    sendEvent(EVENT.FEED_API_CALL_COMPLETED);
     callCounter += 1;
 
     const data = handleResponse<FeedResponseShape>(json);
     refs[tagId] = data.ref;
 
     if (!data.reels.length) {
-      sendEvent("feed_completed");
-      sendEvent("tag_displayed");
+      sendEvent(EVENT.FEED_COMPLETED);
+      sendEvent(EVENT.TAG_DISPLAYED);
       reelsNoMore[tagId] = true;
     }
 

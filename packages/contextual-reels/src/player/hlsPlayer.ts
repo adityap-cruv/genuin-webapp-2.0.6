@@ -336,7 +336,7 @@ export function useImaPlugin({
       adsManager.addEventListener(STARTED, (adEvent: unknown) => {
         const ad = (adEvent as { getAd?: () => { data: AdData } })?.getAd?.();
         const details = buildAdEventDetails(ad?.data ?? {});
-        sendEvent("ad_start", details);
+        sendEvent(EVENT.AD_START, details);
       });
 
       adsManager.addEventListener(LOADED, (adEvent: unknown) => {

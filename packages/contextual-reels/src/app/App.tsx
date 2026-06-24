@@ -22,7 +22,7 @@ import {
   useState,
 } from "react";
 
-import { sendEventLogFromGlobals } from "@cxr/analytics/analytics";
+import { EVENT, sendEventLogFromGlobals } from "@cxr/analytics/analytics";
 import { CloseButton } from "@cxr/app/CloseButton";
 import { FeedSkeleton } from "@cxr/app/FeedSkeleton";
 import { NoContent } from "@cxr/app/NoContent";
@@ -130,7 +130,7 @@ export default function App({
         const tagDimensions = parseTagDimensions(adLayout);
         sendEventLogFromGlobals(
           {
-            eventName: "tag_captured",
+            eventName: EVENT.TAG_CAPTURED,
             eventDetails: {
               tagId,
               tag_height: tagDimensions?.height,

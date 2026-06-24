@@ -561,6 +561,113 @@ describe("ads/useGenAdInstance", () => {
     unmount(root, container);
   });
 
+  it("fires Ad Completed analytics on onAdCompleted", async () => {
+    const { root, container } = mountHook({
+      ...baseProps,
+      isActive: true,
+      platforms: { video: "aniview" },
+    });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    await act(async () => {
+      (lastInitOptions.onAdCompleted as (p?: string) => void)("video");
+    });
+
+    expect(sendEventMock).toHaveBeenCalledWith(
+      "Ad Completed",
+      expect.objectContaining({ provider: "video", ad_source: "aniview" })
+    );
+    unmount(root, container);
+  });
+
+  it("fires Ad Error on a generic onStageFail", async () => {
+    const { root, container } = mountHook({ ...baseProps, isActive: true });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    await act(async () => {
+      (lastInitOptions.onStageFail as (p: string, e?: Error) => void)("video", new Error("boom 500"));
+    });
+
+    expect(sendEventMock).toHaveBeenCalledWith("Ad Error", expect.objectContaining({ provider: "video" }));
+    unmount(root, container);
+  });
+
+  it("fires Ad Render Failed on a 4xx onStageFail", async () => {
+    const { root, container } = mountHook({ ...baseProps, isActive: true });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    await act(async () => {
+      (lastInitOptions.onStageFail as (p: string, e?: Error) => void)("banner", new Error("status 404"));
+    });
+
+    expect(sendEventMock).toHaveBeenCalledWith("Ad Render Failed", expect.objectContaining({ provider: "banner" }));
+    unmount(root, container);
+  });
+
+  it("fires Ad Started and Ad Rendered from the SDK events block", async () => {
+    const { root, container } = mountHook({ ...baseProps, isActive: true });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    const events = lastInitOptions.events as {
+      onAdStarted: (e?: { provider?: string }) => void;
+      onAdRendered: (e?: { provider?: string }) => void;
+    };
+
+    await act(async () => {
+      events.onAdStarted({ provider: "video" });
+      events.onAdRendered({ provider: "video" });
+    });
+
+    expect(sendEventMock).toHaveBeenCalledWith("Ad Started", expect.objectContaining({ provider: "video" }));
+    expect(sendEventMock).toHaveBeenCalledWith("Ad Rendered", expect.objectContaining({ provider: "video" }));
+    unmount(root, container);
+  });
+
+  it("fires Ad Media Quartile, Ad Skipped and Ad Clicked from the SDK events block", async () => {
+    const { root, container } = mountHook({ ...baseProps, isActive: true });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    const events = lastInitOptions.events as {
+      onAdQuartile: (e?: { provider?: string; quartile?: number }) => void;
+      onAdSkipped: (e?: { provider?: string }) => void;
+      onAdClicked: (e?: { provider?: string }) => void;
+    };
+
+    await act(async () => {
+      events.onAdQuartile({ provider: "video", quartile: 2 });
+      events.onAdSkipped({ provider: "video" });
+      events.onAdClicked({ provider: "video" });
+    });
+
+    expect(sendEventMock).toHaveBeenCalledWith(
+      "Ad Media Quartile",
+      expect.objectContaining({ provider: "video", quartile: 2 })
+    );
+    expect(sendEventMock).toHaveBeenCalledWith("Ad Skipped", expect.objectContaining({ provider: "video" }));
+    expect(sendEventMock).toHaveBeenCalledWith("Ad Clicked", expect.objectContaining({ provider: "video" }));
+    unmount(root, container);
+  });
+
   it("calls onMuteClick via onVolumeChange only for system-driven changes", async () => {
     const onMuteClick = vi.fn();
     const { root, container } = mountHook({
