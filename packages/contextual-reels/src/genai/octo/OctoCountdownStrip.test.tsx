@@ -17,6 +17,8 @@ vi.mock("./OctoSdkPanel", () => ({
   OctoSdkPanel: () => React.createElement("div", { "data-testid": "octo-sdk-panel" }),
 }));
 
+import { StrategyProvider } from "@cxr/strategies/StrategyProvider";
+
 import { OctoCountdownStrip } from "./OctoCountdownStrip";
 
 function emitPhase(panelId: string, phase: string): void {
@@ -43,15 +45,18 @@ describe("OctoCountdownStrip", () => {
   it("enters fullscreen on a countdown→idle transition", () => {
     act(() => {
       root.render(
-        React.createElement(OctoCountdownStrip, {
-          instanceId: "i1",
-          videoId: "v1",
+        React.createElement(StrategyProvider, {
           tagId: "t1",
-          isActive: true,
-          isFullScreen: false,
-          dimensions: { width: 320, height: 50 },
-          host: "compact",
-          variant: "50",
+          children: React.createElement(OctoCountdownStrip, {
+            instanceId: "i1",
+            videoId: "v1",
+            tagId: "t1",
+            isActive: true,
+            isFullScreen: false,
+            dimensions: { width: 320, height: 50 },
+            host: "compact",
+            variant: "50",
+          }),
         })
       );
     });
@@ -68,15 +73,18 @@ describe("OctoCountdownStrip", () => {
   it("ignores idle when no countdown preceded it", () => {
     act(() => {
       root.render(
-        React.createElement(OctoCountdownStrip, {
-          instanceId: "i2",
-          videoId: "v2",
+        React.createElement(StrategyProvider, {
           tagId: "t2",
-          isActive: true,
-          isFullScreen: false,
-          dimensions: { width: 320, height: 100 },
-          host: "compact",
-          variant: "100",
+          children: React.createElement(OctoCountdownStrip, {
+            instanceId: "i2",
+            videoId: "v2",
+            tagId: "t2",
+            isActive: true,
+            isFullScreen: false,
+            dimensions: { width: 320, height: 100 },
+            host: "compact",
+            variant: "100",
+          }),
         })
       );
     });

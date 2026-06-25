@@ -8,16 +8,7 @@
  *  - Owns `isPlaying: boolean` (defaults to true).
  *  - Exposes `setVolume`, `setMuted` and `setPlaying` via `usePlayer()`.
  */
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ReactNode,
-} from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
 import { useEventBus } from "@cxr/instance/coordination/EventBusContext";
 
@@ -35,12 +26,16 @@ export interface PlayerContextValue {
   isMuted: boolean;
   /** Whether the active player is in play state. */
   isPlaying: boolean;
+  /** True while a fullscreen ad break has its ad/cover on screen — hides widget chrome. */
+  isAdBreakActive: boolean;
+  /** Set the audible volume directly (0..1). */
+  setVolume: (volume: number) => void;
   /** Convenience toggle: `true` silences (volume 0), `false` unmutes to {@link DEFAULT_UNMUTE_VOLUME}. */
   setMuted: (muted: boolean) => void;
   /** Update playing state. */
   setPlaying: (playing: boolean) => void;
-  /** Set the audible volume directly (0..1). */
-  setVolume: (volume: number) => void;
+  /** Set whether a fullscreen ad break is currently active. */
+  setAdBreakActive: (active: boolean) => void;
 }
 
 const PlayerContext = createContext<PlayerContextValue | undefined>(undefined);
@@ -66,6 +61,7 @@ export function PlayerProvider({ children }: PlayerProviderProps): ReactNode {
   const isMuted = volume === 0;
   // Fix #1: autoplay on by default — muted so browsers allow it without a gesture.
   const [isPlaying, setIsPlaying] = useState(true);
+  const [isAdBreakActive, setAdBreakActive] = useState(false);
   const bus = useEventBus();
 
   // Toggle between silence and a gentle default level. Unmuting from 0 jumps to
@@ -107,11 +103,13 @@ export function PlayerProvider({ children }: PlayerProviderProps): ReactNode {
       volume,
       isMuted,
       isPlaying,
+      isAdBreakActive,
       setVolume,
       setMuted,
       setPlaying: setIsPlaying,
+      setAdBreakActive,
     }),
-    [volume, isMuted, isPlaying, setMuted]
+    [volume, isMuted, isPlaying, isAdBreakActive, setVolume, setMuted, setIsPlaying, setAdBreakActive]
   );
 
   return <PlayerContext.Provider value={value}>{children}</PlayerContext.Provider>;

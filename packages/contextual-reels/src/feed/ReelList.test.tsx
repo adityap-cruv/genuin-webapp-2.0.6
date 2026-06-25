@@ -31,9 +31,9 @@ vi.mock("./useFeedNavigation", () => ({
 import { ReelList } from "@cxr/feed/ReelList";
 
 const makeReelEntry = (id: number): FeedEntry => ({
-  kind: "reel",
+  kind: "video",
   data: {
-    kind: "reel",
+    kind: "video",
     id,
     active: id === 0,
     videoUrl: null,

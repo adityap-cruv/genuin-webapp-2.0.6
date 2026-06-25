@@ -12,7 +12,6 @@ import type { ControlLayerVariant } from "@cxr/controls/control-layer.types";
 import { FeedNavButtons } from "@cxr/feed/FeedNavButtons";
 import { ReelList } from "@cxr/feed/ReelList";
 import { useEmblaCarousel } from "@cxr/feed/hooks/useEmblaCarousel";
-import { useAdWaterfall } from "@cxr/providers/AdProvider";
 import { useFeed } from "@cxr/providers/FeedProvider";
 import { useFullScreen } from "@cxr/providers/FullScreenProvider";
 import { useGenAI } from "@cxr/providers/GenAIProvider";
@@ -40,19 +39,19 @@ interface FeedProps {
  * @param props  entries, tagDetails, and optional navigation callbacks.
  */
 export function Feed({ entries, tagDetails, variant }: FeedProps): React.JSX.Element | null {
-  const { setPlaying } = usePlayer();
+  const { setPlaying, isAdBreakActive } = usePlayer();
   const onSlideSelect = useCallback(() => setPlaying(true), [setPlaying]);
   const { viewportRef, emblaApiRef, enable, disable } = useEmblaCarousel();
   const { isFullScreen } = useFullScreen();
   const { octoFraction } = useGenAI();
   const { activeIndex, setActiveIndex } = useFeed();
-  const { isAdBreakActive } = useAdWaterfall();
 
   // Hide the action rail while an ad slide or a fullscreen ad break is on
   // screen — ads own their own overlay/CTA chrome.
   const activeEntry = entries[activeIndex];
   const isAdActive = activeEntry?.kind === "ad" || isAdBreakActive;
-  const activeReel = activeEntry?.kind === "reel" ? activeEntry.data : undefined;
+  const activeReel =
+    activeEntry?.kind === "video" || activeEntry?.kind === "video-with-ad" ? activeEntry.data : undefined;
 
   // Freeze the vertical feed swipe while an Octo sheet owns part of the player
   // (panel/full → octoFraction > 0); restore it the moment the sheet collapses.

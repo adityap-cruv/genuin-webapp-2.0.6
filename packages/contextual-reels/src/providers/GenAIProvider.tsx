@@ -1,28 +1,25 @@
 "use client";
 /**
- * GenAIProvider — bridges GenAI SDK custom events to React state.
+ * GenAIProvider — owns the active reel's Octo split state and isolates GenAI
+ * SDK window events per instance.
  *
- * The GenAI SDK dispatches events on `window`. This provider bridges them into
- * the per-instance `CxrEventBus` so that multiple widget instances on the same
- * page cannot cross-contaminate each other's state.
- *
- * Two concerns are handled in separate effects:
- *  1. Window → bus bridge: re-emits window events onto the per-instance bus.
- *  2. Bus → state: updates React state from bus events.
+ * The SDK dispatches on `window`, which every co-located widget shares. This
+ * provider re-emits those events onto the per-instance `CxrEventBus` so one
+ * instance can't react to another's GenAI events.
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
-import { isGenAiAllowed } from "@cxr/config";
-import type { GenAiStatus } from "@cxr/feed/hooks/useGenAiSwipeGate";
 import { useEventBus } from "@cxr/instance/coordination/EventBusContext";
-
-// Re-export so consumers can import from this module without a separate dep.
-export type { GenAiStatus };
+import { useStrategy } from "@cxr/strategies/StrategyProvider";
 
 /** Context value exposed by `useGenAI`. */
 export interface GenAIContextValue {
-  /** Whether the current tag is on the GenAI allow list. */
-  isAllowed: boolean;
+  /**
+   * Whether the GenAI Octo experience is enabled for this tag. Derived once
+   * from the strategy layer so every consumer reads the same answer without
+   * re-deriving the allowlist check independently.
+   */
+  genAiEnabled: boolean;
   /**
    * Fraction (0–1) of the player container the active reel's Octo sheet
    * occupies. Drives the Instagram-style split: the player shrinks to
@@ -45,30 +42,29 @@ const GenAIContext = createContext<GenAIContextValue | undefined>(undefined);
 
 interface GenAIProviderProps {
   children: ReactNode;
-  /** Tag id used to check the GenAI allow list. */
-  tagId: string;
 }
 
 /**
- * Provide GenAI status to the component tree.
+ * Own the active reel's Octo split state and bridge GenAI SDK window events.
  *
- * Bridges GenAI SDK window events into the per-instance {@link CxrEventBus} and
- * translates bus events into React state. Requires `EventBusProvider` as an
- * ancestor.
+ * The SDK dispatches on `window`; this re-emits onto the per-instance
+ * {@link CxrEventBus} so co-located instances stay isolated. Whether GenAI is
+ * available for the tag is a strategy decision (`useStrategy().genAiEnabled`),
+ * not this provider's concern. Requires `EventBusProvider` as an ancestor.
  *
  * @example
  * ```tsx
  * <EventBusProvider>
- *   <GenAIProvider tagId={tagId}>
+ *   <GenAIProvider>
  *     <Feed ... />
  *   </GenAIProvider>
  * </EventBusProvider>
  * ```
  */
-export function GenAIProvider({ children, tagId }: GenAIProviderProps): ReactNode {
+export function GenAIProvider({ children }: GenAIProviderProps): ReactNode {
+  const { genAiEnabled } = useStrategy();
   const [octoFraction, setOctoFractionState] = useState(0);
   const [octoAxis, setOctoAxisState] = useState<"x" | "y">("y");
-  const isAllowed = isGenAiAllowed(tagId);
   const bus = useEventBus();
 
   // Clamp to [0, 1]; only write on real change to avoid churn while the active
@@ -83,10 +79,11 @@ export function GenAIProvider({ children, tagId }: GenAIProviderProps): ReactNod
     setOctoAxisState((prev) => (prev === axis ? prev : axis));
   }, []);
 
-  // ── 1. Window → bus bridge ──────────────────────────────────────────────────
-  // The GenAI SDK dispatches on window; we cannot change that. Re-emit onto the
-  // per-instance bus so only this instance's tree reacts.
+  // Re-emit the SDK's window events onto the per-instance bus so only this
+  // instance's tree reacts. Skipped when GenAI is off for this tag — no point
+  // bridging events that no consumer will act on.
   useEffect(() => {
+    if (!genAiEnabled) return;
     function onWindowOnFill(): void {
       bus.emit("genai:onFill", {});
     }
@@ -100,11 +97,11 @@ export function GenAIProvider({ children, tagId }: GenAIProviderProps): ReactNod
       window.removeEventListener("genai:onFill", onWindowOnFill);
       window.removeEventListener("genai:onNoFill", onWindowOnNoFill);
     };
-  }, [bus]);
+  }, [bus, genAiEnabled]);
 
   const value = useMemo<GenAIContextValue>(
-    () => ({ isAllowed, octoFraction, setOctoFraction, octoAxis, setOctoAxis }),
-    [isAllowed, octoFraction, setOctoFraction, octoAxis, setOctoAxis]
+    () => ({ genAiEnabled, octoFraction, setOctoFraction, octoAxis, setOctoAxis }),
+    [genAiEnabled, octoFraction, setOctoFraction, octoAxis, setOctoAxis]
   );
 
   return <GenAIContext.Provider value={value}>{children}</GenAIContext.Provider>;
@@ -117,7 +114,7 @@ export function GenAIProvider({ children, tagId }: GenAIProviderProps): ReactNod
  *
  * @example
  * ```tsx
- * const { isAllowed, octoFraction, setOctoFraction } = useGenAI();
+ * const { genAiEnabled, octoFraction, setOctoFraction } = useGenAI();
  * ```
  */
 export function useGenAI(): GenAIContextValue {

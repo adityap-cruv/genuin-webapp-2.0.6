@@ -3,7 +3,6 @@
 import React from "react";
 
 import { assetLink } from "@cxr/config";
-import { useUserInteracted } from "@cxr/instance/coordination/UserInteractionTracker";
 
 import type { ButtonBaseProps } from "./button.types";
 import { GHOST_SHELL_CLASSES, SIZE_MAP, VARIANT_CLASSES } from "./button.types";
@@ -43,13 +42,7 @@ export function MuteUnmuteButton({
   animatedBorder = false,
   style,
 }: MuteUnmuteButtonProps): React.JSX.Element {
-  // Until the user has interacted with cxr, always show the unmute (sound-on)
-  // icon even while actually muted; afterwards the icon respects the real mute
-  // state. The label and toggle always use the real `isMuted`, so the first tap
-  // genuinely unmutes.
-  const interacted = useUserInteracted();
-  const displayMuted = interacted ? isMuted : false;
-  const src = `${assetLink}reactions/iheartmedia/cxr/${displayMuted ? "mute" : "unmute"}.svg`;
+  const src = `${assetLink}reactions/iheartmedia/cxr/${isMuted ? "mute" : "unmute"}.svg`;
   const label = isMuted ? "Unmute" : "Mute";
 
   return (

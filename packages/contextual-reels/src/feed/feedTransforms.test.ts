@@ -1,8 +1,6 @@
 /**
  * Tests for feedTransforms — consolidated from:
  *   utils/thumbnails.test.ts
- *   feed/transforms/staticAdCatalog.test.ts
- *   feed/transforms/injectStaticAds.test.ts
  *   feed/transforms/transformReelData.test.ts
  */
 import { describe, expect, it } from "vitest";
@@ -10,22 +8,17 @@ import { describe, expect, it } from "vitest";
 import {
   replaceThumbnailUrlForSmallDimensions,
   replaceProfileImageUrlForSmallDimensions,
-  STATIC_AD_CONFIGS,
   BLANK_HLS_URL,
-  buildStaticAdItem,
-  buildStaticAdEntry,
-  staticAdConfigToReel,
   buildAdObject,
   buildReelAdObjectFromConfig,
-  injectStaticAds,
   transformReelData,
   normaliseReel,
   normaliseAd,
   normaliseFeed,
   inferVideoAdPlatform,
-  LAST_INDEX_NO_ADS_TAG_IDS,
+  resolveReelAdConfig,
 } from "@cxr/feed/feedTransforms";
-import type { Reel, TagResponse, ReelFeedItem, AdFeedItem, FeedItem, AdsConfig } from "@cxr/types";
+import type { Reel, TagResponse, AdsConfig } from "@cxr/types";
 
 // ─── Thumbnail URL helpers ────────────────────────────────────────────────────
 
@@ -101,37 +94,6 @@ describe("replaceProfileImageUrlForSmallDimensions", () => {
   });
 });
 
-// ─── Static ad catalog ────────────────────────────────────────────────────────
-
-describe("STATIC_AD_CONFIGS", () => {
-  it("has exactly 4 entries", () => {
-    expect(STATIC_AD_CONFIGS).toHaveLength(4);
-  });
-
-  it("snapshot: locks all creative URLs", () => {
-    expect(STATIC_AD_CONFIGS).toMatchSnapshot();
-  });
-
-  it("each entry has videoSource, adUrl, logo, primaryColor", () => {
-    for (const cfg of STATIC_AD_CONFIGS) {
-      expect(typeof cfg.videoSource).toBe("string");
-      expect(cfg.videoSource.length).toBeGreaterThan(0);
-      expect(typeof cfg.adUrl).toBe("string");
-      expect(cfg.adUrl.length).toBeGreaterThan(0);
-      expect(typeof cfg.logo).toBe("string");
-      expect(cfg.logo.length).toBeGreaterThan(0);
-      expect(typeof cfg.primaryColor).toBe("string");
-      expect(cfg.primaryColor.length).toBeGreaterThan(0);
-    }
-  });
-
-  it("primaryColor values are hex colour strings", () => {
-    for (const cfg of STATIC_AD_CONFIGS) {
-      expect(cfg.primaryColor).toMatch(/^#[0-9A-Fa-f]{6}$/);
-    }
-  });
-});
-
 describe("BLANK_HLS_URL", () => {
   it("is a valid HTTPS URL", () => {
     expect(BLANK_HLS_URL).toMatch(/^https:\/\//);
@@ -143,112 +105,6 @@ describe("BLANK_HLS_URL", () => {
 
   it("is the expected S3 blank stream URL", () => {
     expect(BLANK_HLS_URL).toBe("https://reels-media.s3.us-east-2.amazonaws.com/static/blank_screen/300h/master.m3u8");
-  });
-});
-
-// ─── Static ad injection ──────────────────────────────────────────────────────
-
-function makeReel(id: number): ReelFeedItem {
-  return {
-    id,
-    active: false,
-    type: "reel",
-    video_url: `https://example.com/${id}.m3u8`,
-    video_type: "hls",
-    thumb: null,
-    user: null,
-    community: null,
-    cta: null,
-    loop: null,
-    og_details: null,
-    owner: null,
-    config: null,
-  };
-}
-
-describe("buildStaticAdItem", () => {
-  it('returns an AdFeedItem with type "ads"', () => {
-    const item = buildStaticAdItem(0, 10);
-    expect(item.type).toBe("ads");
-  });
-
-  it("cycles through the catalog (index % 4)", () => {
-    const item0 = buildStaticAdItem(0, 0);
-    const item4 = buildStaticAdItem(4, 4);
-    expect(item0.video_ad).toBe(item4.video_ad);
-    expect(item0.ad_url).toBe(item4.ad_url);
-  });
-
-  it("uses the globalIndex for the video.id field", () => {
-    const item = buildStaticAdItem(0, 7);
-    expect((item as AdFeedItem & { video: { id: string } }).video!.id).toBe("ad-7");
-  });
-
-  it("sets video_ad and ad_url to the catalog adUrl", () => {
-    const item = buildStaticAdItem(1, 0);
-    expect(item.video_ad).toContain("consumerserivce.xml");
-    expect(item.ad_url).toContain("consumerserivce.xml");
-  });
-
-  it("sets videoAds true and audioAds false", () => {
-    const item = buildStaticAdItem(0, 0);
-    expect(item.videoAds).toBe(true);
-    expect(item.audioAds).toBe(false);
-  });
-
-  it("sets video_type to hls", () => {
-    const item = buildStaticAdItem(0, 0);
-    expect(item.video_type).toBe("hls");
-  });
-});
-
-describe("injectStaticAds", () => {
-  it("returns empty array for empty feed", () => {
-    expect(injectStaticAds([])).toEqual([]);
-  });
-
-  it("interleaves one reel with one static ad", () => {
-    const feed: FeedItem[] = [makeReel(0)];
-    const result = injectStaticAds(feed);
-    expect(result).toHaveLength(2);
-    expect(result[0]?.type).toBe("reel");
-    expect(result[1]?.type).toBe("ads");
-  });
-
-  it("interleaves two reels with two static ads", () => {
-    const feed: FeedItem[] = [makeReel(0), makeReel(1)];
-    const result = injectStaticAds(feed);
-    expect(result).toHaveLength(4);
-    expect(result[0]?.type).toBe("reel");
-    expect(result[1]?.type).toBe("ads");
-    expect(result[2]?.type).toBe("reel");
-    expect(result[3]?.type).toBe("ads");
-  });
-
-  it("reassigns ids 0..n after interleaving", () => {
-    const feed: FeedItem[] = [makeReel(0), makeReel(1), makeReel(2)];
-    const result = injectStaticAds(feed);
-    result.forEach((item, i) => {
-      expect(item.id).toBe(i);
-    });
-  });
-
-  it("cycles catalog at index 4+", () => {
-    const feed: FeedItem[] = Array.from({ length: 5 }, (_, i) => makeReel(i));
-    const result = injectStaticAds(feed);
-    // Static ads are at odd indices: 1, 3, 5, 7, 9
-    const adItems = result.filter((item) => item.type === "ads") as AdFeedItem[];
-    // 5th ad (index 4 in catalog) should cycle to catalog[0]
-    const firstAd = adItems[0];
-    const fifthAd = adItems[4];
-    expect(fifthAd?.video_ad).toBe(firstAd?.video_ad);
-  });
-
-  it("total output length = 2 * input length", () => {
-    const n = 7;
-    const feed: FeedItem[] = Array.from({ length: n }, (_, i) => makeReel(i));
-    const result = injectStaticAds(feed);
-    expect(result).toHaveLength(n * 2);
   });
 });
 
@@ -275,17 +131,6 @@ const baseVideoReel: Reel = {
   og_details: { title: "OG Title" },
   config: { autoplay: true },
 } as unknown as Reel;
-
-describe("LAST_INDEX_NO_ADS_TAG_IDS", () => {
-  it("contains both expected tag IDs", () => {
-    expect(LAST_INDEX_NO_ADS_TAG_IDS.has("67f0498997d4b55f87c9b01d")).toBe(true);
-    expect(LAST_INDEX_NO_ADS_TAG_IDS.has("69846c0e6852c97693efad40")).toBe(true);
-  });
-
-  it("does not contain other IDs", () => {
-    expect(LAST_INDEX_NO_ADS_TAG_IDS.has("unknown-tag")).toBe(false);
-  });
-});
 
 describe("transformReelData — regular video reel", () => {
   it('sets type to "reel" for a non-ads, non-vast reel', () => {
@@ -759,36 +604,12 @@ describe("buildReelAdObjectFromConfig", () => {
   });
 });
 
-describe("buildStaticAdEntry", () => {
-  it("builds a catalog creative through the backend normaliseAd path", () => {
-    const cfg = STATIC_AD_CONFIGS[0]!;
-    const { kind, data } = buildStaticAdEntry(0, 7);
-    expect(kind).toBe("ad");
-    expect(data.id).toBe(7);
-    expect(data.videoAds).toBe(true);
-    expect(data.audioAds).toBe(false);
-    // videoAd is the backend `video_ad[]` array, same as a real ads reel.
-    expect(Array.isArray(data.videoAd)).toBe(true);
-    expect(data.adUrl).toBe(cfg.adUrl);
-    expect(data.videoPlatform).toBe("gen_video");
-    expect(data.videoAdAdvertiserDetails).toEqual({ logo: cfg.logo, primaryColor: cfg.primaryColor });
-    expect(data.videoAdContentVideo?.url).toBe(cfg.videoSource);
-    expect(data.videoUrl).toBe(BLANK_HLS_URL);
-  });
-
-  it("matches the shape of a directly-normalised backend ads reel", () => {
-    const cfg = STATIC_AD_CONFIGS[1]!;
-    const viaStatic = buildStaticAdEntry(1, 3).data;
-    const viaBackend = normaliseAd(staticAdConfigToReel(cfg), 3).data;
-    expect(viaStatic).toEqual(viaBackend);
-  });
-});
-
-describe("normaliseReel — ads_config", () => {
-  function reelWithAdsConfig(adsConfig?: AdsConfig): Reel {
+describe("normaliseReel — ad_configs", () => {
+  function reelWithAdConfigs(adsConfig?: AdsConfig): Reel {
     return {
       type: "loop",
-      video: { id: "vid-1", url: "https://playlist.m3u8", ads_config: adsConfig },
+      video: { id: "vid-1", url: "https://playlist.m3u8" },
+      ad_configs: adsConfig ? { video_ad: [adsConfig] } : undefined,
       owner: null,
       cta: null,
       community: null,
@@ -798,8 +619,15 @@ describe("normaliseReel — ads_config", () => {
     } as unknown as Reel;
   }
 
-  it("builds an adObject from video.ads_config regardless of tag gating", () => {
-    const { data } = normaliseReel(reelWithAdsConfig({ ads_url: "https://triton/ars" }), 3, "any-tag");
+  it("builds an adObject from ad_configs.video_ad[0] regardless of tag gating", () => {
+    const { data } = normaliseReel(
+      reelWithAdConfigs({ ads_url: "https://triton/ars" }),
+      3,
+      "any-tag",
+      false,
+      false,
+      false
+    );
     expect(data.adObject).toBeDefined();
     expect(data.adObject?.videoAd).toBe("https://triton/ars");
     expect(data.adObject?.videoAds).toBe(true);
@@ -807,14 +635,71 @@ describe("normaliseReel — ads_config", () => {
     expect(data.adObject?.id).toBe(100_003);
   });
 
-  it("leaves adObject undefined when ads_config has no ads_url and the tag is not flagged", () => {
-    const { data } = normaliseReel(reelWithAdsConfig({}), 0, "unflagged-tag");
+  it("leaves adObject undefined when ad_configs.video_ad[0] has no ads_url and adBreakEnabled=false", () => {
+    const { data } = normaliseReel(reelWithAdConfigs({}), 0, "tag", false, false, false);
     expect(data.adObject).toBeUndefined();
   });
 
-  it("leaves adObject undefined when video carries no ads_config", () => {
-    const { data } = normaliseReel(reelWithAdsConfig(undefined), 0, "unflagged-tag");
+  it("leaves adObject undefined when reel has no ad_configs", () => {
+    const { data } = normaliseReel(reelWithAdConfigs(undefined), 0, "tag", false, false, false);
     expect(data.adObject).toBeUndefined();
+  });
+
+  // Backward compat: older feed responses carry the ad break as a single
+  // `video.ads_config` object instead of the top-level `ad_configs.video_ad` array.
+  it("falls back to legacy video.ads_config when ad_configs is absent", () => {
+    const reel = {
+      type: "loop",
+      video: { id: "vid", url: "https://playlist.m3u8", ads_config: { ads_url: "https://legacy/ars?stid=1" } },
+    } as unknown as Reel;
+    const { kind, data } = normaliseReel(reel, 2, "tag", false, false, false);
+    expect(kind).toBe("video-with-ad");
+    expect(data.adObject?.videoAd).toBe("https://legacy/ars?stid=1");
+    expect(data.adObject?.id).toBe(100_002);
+  });
+
+  it("prefers ad_configs.video_ad[0] over legacy video.ads_config", () => {
+    const reel = {
+      type: "loop",
+      video: { id: "vid", url: "https://playlist.m3u8", ads_config: { ads_url: "https://legacy/ars" } },
+      ad_configs: { video_ad: [{ ads_url: "https://current/ars" }] },
+    } as unknown as Reel;
+    const { data } = normaliseReel(reel, 0, "tag", false, false, false);
+    expect(data.adObject?.videoAd).toBe("https://current/ars");
+  });
+
+  it("drops the legacy ad break when adsDisabled is true", () => {
+    const reel = {
+      type: "loop",
+      video: { id: "vid", url: "https://playlist.m3u8", ads_config: { ads_url: "https://legacy/ars" } },
+    } as unknown as Reel;
+    const { kind, data } = normaliseReel(reel, 0, "tag", false, false, true);
+    expect(kind).toBe("video");
+    expect(data.adObject).toBeUndefined();
+  });
+});
+
+describe("resolveReelAdConfig", () => {
+  it("returns ad_configs.video_ad[0] when it carries an ads_url", () => {
+    const reel = { ad_configs: { video_ad: [{ ads_url: "https://current/ars" }] } } as unknown as Reel;
+    expect(resolveReelAdConfig(reel)?.ads_url).toBe("https://current/ars");
+  });
+
+  it("falls back to legacy video.ads_config when the array is absent or empty", () => {
+    const reel = { video: { ads_config: { ads_url: "https://legacy/ars" } } } as unknown as Reel;
+    expect(resolveReelAdConfig(reel)?.ads_url).toBe("https://legacy/ars");
+  });
+
+  it("ignores entries without an ads_url and returns undefined when none qualify", () => {
+    const reel = {
+      ad_configs: { video_ad: [{ platform: "gen_video" }] },
+      video: { ads_config: { platform: "gen_video" } },
+    } as unknown as Reel;
+    expect(resolveReelAdConfig(reel)).toBeUndefined();
+  });
+
+  it("returns undefined when no ad config exists on either shape", () => {
+    expect(resolveReelAdConfig({ video: { url: "x" } } as unknown as Reel)).toBeUndefined();
   });
 });
 
@@ -855,14 +740,15 @@ describe("normaliseFeed — both backend ad structures", () => {
     video_ad: [{ ads_url: adsUrl, cpm: 5, platform: "tritondigital", url: adsUrl }],
   } as unknown as Reel;
 
-  // Kind 2: ad delivered on an organic loop's video.ads_config → ad break.
+  // Kind 2: ad delivered on an organic loop's ad_configs.video_ad → ad break.
   const organicWithBreak = {
     type: "loop",
-    video: { id: "vid", url: "https://playlist.m3u8", ads_config: { ads_url: adsUrl } },
+    video: { id: "vid", url: "https://playlist.m3u8" },
+    ad_configs: { video_ad: [{ ads_url: adsUrl }] },
   } as unknown as Reel;
 
   it("routes a type=ads reel to a directly-rendered ad entry", () => {
-    const entry = normaliseFeed([inFeedAd], "tag")[0];
+    const entry = normaliseFeed([inFeedAd], "tag", false, false, false)[0];
     if (!entry || entry.kind !== "ad") throw new Error("expected an ad entry");
     expect(entry.data.videoAds).toBe(true);
     expect(entry.data.videoAd).toEqual([{ ads_url: adsUrl, cpm: 5, platform: "tritondigital", url: adsUrl }]);
@@ -871,14 +757,31 @@ describe("normaliseFeed — both backend ad structures", () => {
   });
 
   it("routes a type=loop reel to a video entry with an ad-break adObject from ads_config", () => {
-    const entry = normaliseFeed([organicWithBreak], "tag")[0];
-    if (!entry || entry.kind !== "reel") throw new Error("expected a reel entry");
+    const entry = normaliseFeed([organicWithBreak], "tag", false, false, false)[0];
+    if (!entry || entry.kind !== "video-with-ad") throw new Error("expected a video-with-ad entry");
     // Organic video still plays.
     expect(entry.data.videoUrl).toBe("https://playlist.m3u8");
-    // Ad break sourced from ads_config, platform inferred from the host.
+    // Ad break sourced from ad_configs.video_ad[0], platform inferred from the host.
     expect(entry.data.adObject).toBeDefined();
     expect(entry.data.adObject?.videoAd).toBe(adsUrl);
     expect(entry.data.adObject?.videoPlatform).toBe("tritondigital");
     expect(entry.data.adObject?.videoUrl).toBe(BLANK_HLS_URL);
+  });
+
+  describe("adsDisabled kill switch", () => {
+    it("drops standalone backend ad slides from the feed", () => {
+      const reels = [organicWithBreak, inFeedAd] as unknown as Reel[];
+      const entries = normaliseFeed(reels, "tag", false, false, true);
+      expect(entries).toHaveLength(1);
+      expect(entries.every((entry) => entry.kind !== "ad")).toBe(true);
+    });
+
+    it("strips the ad break from organic reels (video, no adObject)", () => {
+      const entry = normaliseFeed([organicWithBreak], "tag", false, false, true)[0];
+      if (!entry || entry.kind !== "video") throw new Error("expected a plain video entry");
+      // Organic video still plays — only the ad break is gone.
+      expect(entry.data.videoUrl).toBe("https://playlist.m3u8");
+      expect(entry.data.adObject).toBeUndefined();
+    });
   });
 });

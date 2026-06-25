@@ -13,9 +13,6 @@ export interface CxrEventMap {
   "genad:destroy": Record<string, never>;
   "genai:onFill": Record<string, never>;
   "genai:onNoFill": Record<string, never>;
-  "genai:dataFetching": Record<string, never>;
-  "genai:dataReceived": Record<string, never>;
-  "genai:chatClosed": { identifier?: string };
   "genai:videoId": { videoId: string };
   "player:play": Record<string, never>;
   "player:pause": Record<string, never>;

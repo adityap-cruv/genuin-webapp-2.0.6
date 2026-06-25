@@ -5,6 +5,7 @@ import { act, type ReactNode, type ReactElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
+import { AD_LAYOUT } from "@cxr/config";
 import {
   installGenaiBridge,
   shouldCountFill,
@@ -38,7 +39,6 @@ vi.mock("../ads/waterfall", () => ({
   notifyAdFill: vi.fn(),
   notifyAdNoFill: vi.fn(),
   installGenaiBridge: vi.fn(() => vi.fn()),
-  SINGLE_HIT_TAG_IDS: new Set(),
 }));
 
 // ---------------------------------------------------------------------------
@@ -278,11 +278,11 @@ describe("providers/AdProvider", () => {
   it("exposes the adLayout prop value in context", () => {
     const handle: ContextHandle = { ctx: null };
     const { root, container } = mount(
-      <AdProvider tagId="tag1" adLayout="desktop-300x250">
+      <AdProvider tagId="tag1" adLayout={AD_LAYOUT.L2}>
         <Consumer handle={handle} />
       </AdProvider>
     );
-    expect(handle.ctx?.adLayout).toBe("desktop-300x250");
+    expect(handle.ctx?.adLayout).toBe(AD_LAYOUT.L2);
     expect(handle.ctx?.isAudioOnlyAds).toBe(false);
     unmount(root, container);
   });
@@ -290,7 +290,7 @@ describe("providers/AdProvider", () => {
   it("sets isAudioOnlyAds=true for mobile-320x50", () => {
     const handle: ContextHandle = { ctx: null };
     const { root, container } = mount(
-      <AdProvider tagId="tag1" adLayout="mobile-320x50">
+      <AdProvider tagId="tag1" adLayout={AD_LAYOUT.L3}>
         <Consumer handle={handle} />
       </AdProvider>
     );
@@ -301,7 +301,7 @@ describe("providers/AdProvider", () => {
   it("sets isAudioOnlyAds=true for mobile-320x100", () => {
     const handle: ContextHandle = { ctx: null };
     const { root, container } = mount(
-      <AdProvider tagId="tag1" adLayout="mobile-320x100">
+      <AdProvider tagId="tag1" adLayout={AD_LAYOUT.L4}>
         <Consumer handle={handle} />
       </AdProvider>
     );

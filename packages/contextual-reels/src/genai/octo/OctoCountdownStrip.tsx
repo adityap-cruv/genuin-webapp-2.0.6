@@ -14,7 +14,7 @@
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 
-import { isGenAiAllowed, isIframe } from "@cxr/config";
+import { isIframe } from "@cxr/config";
 import { useFullScreen } from "@cxr/providers/FullScreenProvider";
 
 import { OctoSdkPanel } from "./OctoSdkPanel";
@@ -39,7 +39,6 @@ export function OctoCountdownStrip({
   videoId,
   brandId,
   isActive,
-  tagId,
   variant,
 }: OctoCountdownStripProps): React.JSX.Element | null {
   const { enterFullScreen } = useFullScreen();
@@ -86,7 +85,6 @@ export function OctoCountdownStrip({
   }, [panelId, enterFullScreen]);
 
   if (!videoId) return null;
-  if (!isGenAiAllowed(tagId)) return null;
 
   // 60px = 100px total strip height − ~40px compact control bar above it.
   const heightClass = variant === "100" ? "gencl:h-[60px]" : "gencl:h-full";

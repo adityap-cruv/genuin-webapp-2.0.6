@@ -87,6 +87,20 @@ describe("CompactControlBar", () => {
   it("does not render the Linkout in sm even with complete CTA data", () => {
     render({ size: "sm", cta: { url: "https://example.com", caption: "Shop Now" } });
     expect(container.querySelector('a[href="https://example.com"]')).toBeNull();
+  });
+
+  it("renders no actions row in video sm (showWatchInSm omitted)", () => {
+    render({ size: "sm", description: "A scrolling caption" });
+    expect(query("compact-bar-actions")).toBeNull();
+    // Video sm keeps its ticker.
+    expect(query("compact-bar-description")).toBeTruthy();
+  });
+
+  it("renders a Watch-only actions row in ad sm (showWatchInSm) and drops the ticker", () => {
+    render({ size: "sm", showWatchInSm: true, description: "Rendered by genAd, not shown here" });
     expect(query("compact-bar-actions")).toBeTruthy();
+    expect(container.querySelector('[data-testid="watch-btn"]')).toBeTruthy();
+    // genAd owns the description in ad sm, so CXR suppresses its ticker.
+    expect(query("compact-bar-description")).toBeNull();
   });
 });

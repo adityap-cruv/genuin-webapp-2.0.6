@@ -1,5 +1,6 @@
 "use client";
 
+import { AD_LAYOUT } from "@cxr/config";
 import { ClickOverlay } from "@cxr/controls/ClickOverlay";
 import { AdControlBar } from "@cxr/controls/ad/AdControlBar";
 import { CompactControlBarOld } from "@cxr/controls/buttons/ControlButtons";
@@ -32,7 +33,7 @@ export function AdControlLayer({
   if (!isAdReady) return null;
 
   if (isCompact && !isFullScreen && variant === "new") {
-    const layout = (adLayout === "mobile-320x50" ? "320x50" : "320x100") as "320x50" | "320x100";
+    const layout = (adLayout === AD_LAYOUT.L3 ? "320x50" : "320x100") as "320x50" | "320x100";
     return (
       <div className="gencl:relative gencl:h-full gencl:w-full">
         {/* Bar sits above the overlay (z-[2] > overlay z-[1]) so real button taps reach their own

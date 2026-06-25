@@ -2,11 +2,12 @@
  * Routes a feed entry to the correct layout based on `entry.kind`.
  *
  * Routing table:
- * - entry.kind === 'ad'   → AdLayout  (GenAdSlot + AdControlLayer)
- * - entry.kind === 'reel' → VideoLayout (LightPlayer + VideoControlLayer)
+ * - entry.kind === 'ad'            → AdLayout  (GenAdSlot + AdControlLayer)
+ * - entry.kind === 'video-with-ad' → VideoLayout (LightPlayer + ad break + VideoControlLayer)
+ * - entry.kind === 'video'         → VideoLayout (LightPlayer + VideoControlLayer)
  *
- * All adLayout-specific branching is handled inside the layout components and
- * their control layers — ReelItem is a pure 2-branch router.
+ * Both video kinds use the unified VideoLayout — the adObject prop
+ * gates the ad break overlay internally. ReelItem itself is a pure 3-branch router.
  */
 import type { ControlLayerVariant } from "@cxr/controls/control-layer.types";
 import { VideoLayout, AdLayout } from "@cxr/feed/layouts";
@@ -40,7 +41,21 @@ export function ReelItem({
     return <AdLayout ad={entry.data} isActive={isActive} onAutoAdvance={onAutoAdvance} />;
   }
 
-  if (entry.kind === "reel") {
+  if (entry.kind === "video-with-ad") {
+    return (
+      <VideoLayout
+        reel={entry.data}
+        isActive={isActive}
+        tagDetails={tagDetails}
+        variant={variant}
+        onTimeUpdate={onTimeUpdate}
+        onAutoAdvance={onAutoAdvance}
+        adObject={entry.data.adObject}
+      />
+    );
+  }
+
+  if (entry.kind === "video") {
     return (
       <VideoLayout
         reel={entry.data}

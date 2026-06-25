@@ -6,14 +6,13 @@ import { describe, it, expect } from "vitest";
 
 import * as config from "@cxr/config";
 import {
+  AD_LAYOUT,
   adLayoutVariants,
   resolveAdLayout,
   RUDDER_SNIPPET_VERSION,
   RUDDER_SDK_BASE_URL,
-  GENAI_ENABLED_TAG_IDS,
   isGenAiAllowed,
-  FULLSCREEN_AD_BREAK_ENABLED_TAG_IDS,
-  isFullscreenAdBreakEnabled,
+  isAdBreakEnabled,
   type AdLayoutId,
 } from "@cxr/config";
 
@@ -70,43 +69,39 @@ describe("config/constants", () => {
 describe("config/adLayouts", () => {
   it("exposes the canonical variants", () => {
     expect(adLayoutVariants).toEqual([
-      { id: "desktop-300x600", width: 300, height: 600 },
-      { id: "desktop-300x250", width: 300, height: 250 },
-      { id: "mobile-320x50", width: 320, height: 50 },
-      { id: "mobile-320x100", width: 320, height: 100 },
+      { id: AD_LAYOUT.L1, width: 300, height: 600 },
+      { id: AD_LAYOUT.L2, width: 300, height: 250 },
+      { id: AD_LAYOUT.L3, width: 320, height: 50 },
+      { id: AD_LAYOUT.L4, width: 320, height: 100 },
     ]);
   });
 
-  it('returns "unknown" when either dimension is zero or missing', () => {
-    expect(resolveAdLayout(0, 600)).toBe("unknown");
-    expect(resolveAdLayout(300, 0)).toBe("unknown");
-    expect(resolveAdLayout()).toBe("unknown");
+  it("returns AD_LAYOUT.Unknown when either dimension is zero or missing", () => {
+    expect(resolveAdLayout(0, 600)).toBe(AD_LAYOUT.Unknown);
+    expect(resolveAdLayout(300, 0)).toBe(AD_LAYOUT.Unknown);
+    expect(resolveAdLayout()).toBe(AD_LAYOUT.Unknown);
   });
 
   it.each<[number, number, AdLayoutId]>([
-    [300, 600, "desktop-300x600"],
-    [300, 250, "desktop-300x250"],
-    [320, 50, "mobile-320x50"],
-    [320, 100, "mobile-320x100"],
-  ])("resolves %dx%d to %s", (w, h, expected) => {
+    [300, 600, AD_LAYOUT.L1],
+    [300, 250, AD_LAYOUT.L2],
+    [320, 50, AD_LAYOUT.L3],
+    [320, 100, AD_LAYOUT.L4],
+  ])("resolves %dx%d to layout id %i", (w, h, expected) => {
     expect(resolveAdLayout(w, h)).toBe(expected);
   });
 
-  it('returns "unknown" for non-pixel-perfect sizes', () => {
-    expect(resolveAdLayout(301, 600)).toBe("unknown");
-    expect(resolveAdLayout(300, 599)).toBe("unknown");
-    expect(resolveAdLayout(640, 480)).toBe("unknown");
+  it("returns AD_LAYOUT.Unknown for non-pixel-perfect sizes", () => {
+    expect(resolveAdLayout(301, 600)).toBe(AD_LAYOUT.Unknown);
+    expect(resolveAdLayout(300, 599)).toBe(AD_LAYOUT.Unknown);
+    expect(resolveAdLayout(640, 480)).toBe(AD_LAYOUT.Unknown);
   });
 });
 
 // ─── Tag allow lists ──────────────────────────────────────────────────────────
 
 describe("config/tagAllowLists", () => {
-  it("exposes the GenAI tag ids list (currently empty)", () => {
-    expect(Array.isArray(GENAI_ENABLED_TAG_IDS)).toBe(true);
-  });
-
-  it("returns false for unknown ids", () => {
+  it("returns false for unknown GenAI ids", () => {
     expect(isGenAiAllowed("not-a-real-id")).toBe(false);
     expect(isGenAiAllowed("")).toBe(false);
   });
@@ -115,13 +110,12 @@ describe("config/tagAllowLists", () => {
 // ─── Fullscreen ad break flag ─────────────────────────────────────────────────
 
 describe("config/fullscreenAdBreak", () => {
-  it("enables the fullscreen ad break only for listed tag ids", () => {
-    const [enabledTag] = FULLSCREEN_AD_BREAK_ENABLED_TAG_IDS;
-    expect(isFullscreenAdBreakEnabled(enabledTag!)).toBe(true);
+  it("enables the fullscreen ad break for a configured tag id", () => {
+    expect(isAdBreakEnabled("6a2fefd87ce338c3a5afc605")).toBe(true);
   });
 
   it("rejects unlisted and empty tag ids", () => {
-    expect(isFullscreenAdBreakEnabled("not-a-listed-tag")).toBe(false);
-    expect(isFullscreenAdBreakEnabled("")).toBe(false);
+    expect(isAdBreakEnabled("not-a-listed-tag")).toBe(false);
+    expect(isAdBreakEnabled("")).toBe(false);
   });
 });

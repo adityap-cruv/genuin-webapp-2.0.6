@@ -7,6 +7,8 @@ import { createRoot } from "react-dom/client";
 import type { Root } from "react-dom/client";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
+import { AD_LAYOUT } from "../config";
+
 // Mock all providers and heavy deps
 vi.mock("../providers/AnalyticsProvider", () => ({
   AnalyticsProvider: ({ children }: { children: React.ReactNode }) =>
@@ -14,15 +16,10 @@ vi.mock("../providers/AnalyticsProvider", () => ({
   useAnalytics: vi.fn(() => ({ sendEvent: vi.fn() })),
 }));
 
-vi.mock("../providers/ConfigProvider", () => ({
-  ConfigProvider: ({ children }: { children: React.ReactNode }) =>
-    React.createElement("div", { "data-testid": "config-provider" }, children),
-  useConfig: vi.fn(() => ({
-    tagDetails: {},
-    rootTagId: "",
-    tagId: "",
-    isGenAiEnabled: false,
-  })),
+vi.mock("../strategies/StrategyProvider", () => ({
+  StrategyProvider: ({ children }: { children: React.ReactNode }) =>
+    React.createElement("div", { "data-testid": "strategy-provider" }, children),
+  useStrategy: vi.fn(() => ({ genAiEnabled: false })),
 }));
 
 vi.mock("../providers/FeedProvider", () => ({
@@ -104,7 +101,7 @@ describe("App", () => {
         React.createElement(App, {
           tagId: "tag-1",
           rootTagId: "root-1",
-          adLayout: "unknown",
+          adLayout: AD_LAYOUT.Unknown,
           instanceId: "test-instance",
           ...props,
         })
@@ -123,7 +120,7 @@ describe("App", () => {
   });
 
   it("does not render a close button", () => {
-    render({ adLayout: "mobile-320x50" });
+    render({ adLayout: AD_LAYOUT.L3 });
     expect(container.querySelector(".cxr__close-button")).toBeNull();
   });
 });

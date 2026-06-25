@@ -16,7 +16,7 @@ vi.mock("./bottombar/FullscreenBottomBar", () => ({
 
 function makeReel(): NormalisedReel {
   return {
-    kind: "reel",
+    kind: "video",
     id: 0,
     active: true,
     videoUrl: null,
@@ -27,6 +27,7 @@ function makeReel(): NormalisedReel {
     loop: null,
     ogDetails: null,
     owner: null,
+    config: null,
     video: null,
     cta: null,
     playerType: "default",

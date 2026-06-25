@@ -1,7 +1,7 @@
 /**
  * Public API for the layouts folder.
  *
- * Re-exports the two layout components so consumers can import from '@cxr/feed/layouts/layouts'
+ * Re-exports layout components so consumers can import from '@cxr/feed/layouts'
  * without knowing which file each component lives in.
  */
 

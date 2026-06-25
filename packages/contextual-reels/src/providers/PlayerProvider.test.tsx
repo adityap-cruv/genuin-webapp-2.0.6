@@ -14,18 +14,22 @@ import { PlayerProvider, usePlayer } from "@cxr/providers/PlayerProvider";
 interface Captured {
   isMuted: boolean;
   isPlaying: boolean;
+  isAdBreakActive: boolean;
   volume: number;
   setMuted: (v: boolean, source?: "user" | "system") => void;
   setPlaying: (v: boolean) => void;
+  setAdBreakActive: (active: boolean) => void;
   setVolume: (v: number) => void;
 }
 
 let captured: Captured = {
   isMuted: false,
   isPlaying: false,
+  isAdBreakActive: false,
   volume: 100,
   setMuted: () => {},
   setPlaying: () => {},
+  setAdBreakActive: () => {},
   setVolume: () => {},
 };
 
@@ -63,12 +67,7 @@ describe("PlayerProvider", () => {
         React.createElement(
           EventBusProvider,
           null,
-          React.createElement(
-            PlayerProvider,
-            null,
-            React.createElement(Consumer),
-            React.createElement(BusConsumer)
-          )
+          React.createElement(PlayerProvider, null, React.createElement(Consumer), React.createElement(BusConsumer))
         )
       );
     });
@@ -178,5 +177,31 @@ describe("PlayerProvider", () => {
       capturedBus!.emit("fullscreen:enter", {});
     });
     expect(captured.isMuted).toBe(false);
+  });
+
+  describe("isAdBreakActive", () => {
+    it("defaults to false", () => {
+      render();
+      expect(captured.isAdBreakActive).toBe(false);
+    });
+
+    it("setAdBreakActive(true) flips the flag to true", () => {
+      render();
+      act(() => {
+        captured.setAdBreakActive(true);
+      });
+      expect(captured.isAdBreakActive).toBe(true);
+    });
+
+    it("setAdBreakActive(false) resets the flag to false", () => {
+      render();
+      act(() => {
+        captured.setAdBreakActive(true);
+      });
+      act(() => {
+        captured.setAdBreakActive(false);
+      });
+      expect(captured.isAdBreakActive).toBe(false);
+    });
   });
 });

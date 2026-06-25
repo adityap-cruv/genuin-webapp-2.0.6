@@ -37,9 +37,21 @@ export interface VideoConfig {
   vastUrl: string;
   platform: string;
   audioLayout: "full_video";
+  /**
+   * Gates GenAd's side-video render (the small clip beside the banner on the
+   * 320×100 layout). GenAd defaults this to `false`; it must be explicitly true.
+   * GenAd still self-restricts the side video to the "isShort" height band
+   * (61–100px), so enabling it here is a no-op for taller layouts.
+   */
+  showVideo: boolean;
   advertiserDetails?: {
-    logo: string;
-    primaryColor: string;
+    logo?: string;
+    primaryColor?: string;
+    /**
+     * Side-video source GenAd renders beside the banner (320×100). Set to the
+     * ad's own resolved video URL so the current ad clip is what shows.
+     */
+    videoUrl?: string;
   };
   contentVideo?: {
     url: string;
@@ -156,6 +168,12 @@ export function normalizeNativeConfig(nativeAd: unknown): NativeConfig | NativeC
 interface AdvertiserDetails {
   logo: string;
   primaryColor: string;
+  /**
+   * Fallback video source for GenAd's side video. GenAd resolves the side-video
+   * URL from the branding API by brandId first, then falls back to this. Omit
+   * when the branding API is expected to supply the clip.
+   */
+  videoUrl?: string;
 }
 
 /** Companion content-video descriptor. */
@@ -226,11 +244,19 @@ export function normalizeVideoConfig(
 
     const entryContentVideo = (typeof ad === "object" && (ad as RawVideoAdObject).contentVideo) || contentVideo;
 
+    // GenAd renders the side video from advertiserDetails.videoUrl. Default it to
+    // the ad's own resolved video URL so the current clip is what shows, while
+    // preserving any branding (logo/primaryColor) passed by the caller.
+    const advertiserDetailsWithVideo = { ...(entryAdvertiserDetails ?? {}), videoUrl: url };
+
     return {
       vastUrl: url,
       platform,
       audioLayout: "full_video",
-      ...(entryAdvertiserDetails ? { advertiserDetails: entryAdvertiserDetails } : {}),
+      // Enable GenAd's side video; GenAd's isShort height gate keeps it limited
+      // to the 320×100 banner band.
+      showVideo: true,
+      advertiserDetails: advertiserDetailsWithVideo,
       ...(entryContentVideo ? { contentVideo: entryContentVideo } : {}),
     };
   };

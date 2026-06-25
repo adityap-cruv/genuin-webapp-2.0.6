@@ -7,10 +7,18 @@ import { createRoot } from "react-dom/client";
 import type { Root } from "react-dom/client";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
+import { AD_LAYOUT } from "@cxr/config";
+import type * as ConfigModule from "@cxr/config";
+import { useFullscreenAdBreak } from "../hooks/useFullscreenAdBreak";
+import { useAdWaterfall } from "../../providers/AdProvider";
 import type { NormalisedReel, NormalisedAd, TagResponse } from "@cxr/types";
 
+const { mockLightPlayer } = vi.hoisted(() => ({ mockLightPlayer: vi.fn() }));
 vi.mock("../../player/LightPlayer", () => ({
-  LightPlayer: () => React.createElement("div", { "data-testid": "light-player" }),
+  LightPlayer: (props: Record<string, unknown>) => {
+    mockLightPlayer(props);
+    return React.createElement("div", { "data-testid": "light-player" });
+  },
 }));
 vi.mock("../../ads/GenAdSlot", () => ({
   GenAdSlot: () => React.createElement("div", { "data-testid": "gen-ad-slot" }),
@@ -19,8 +27,10 @@ vi.mock("../../providers/PlayerProvider", () => ({
   usePlayer: vi.fn(() => ({
     isMuted: true,
     isPlaying: false,
+    volume: 1,
     setMuted: vi.fn(),
     setPlaying: vi.fn(),
+    setAdBreakActive: vi.fn(),
   })),
 }));
 
@@ -50,23 +60,59 @@ vi.mock("../../genai/octo/OctoSheet", () => ({
   OctoSheet: () => null,
 }));
 
-vi.mock("../../config", () => ({
-  isGenAiAllowed: () => false,
-  resolveAdLayout: () => "unknown",
-}));
+vi.mock("../../config", async (importOriginal) => {
+  const actual = await importOriginal<typeof ConfigModule>();
+  return {
+    ...actual,
+    isGenAiAllowed: () => false,
+    resolveAdLayout: () => actual.AD_LAYOUT.Unknown,
+  };
+});
 
 vi.mock("../../providers/AdProvider", () => ({
   useAdWaterfall: vi.fn(() => ({
-    adLayout: "unknown",
+    adLayout: AD_LAYOUT.Unknown,
     isAudioOnlyAds: false,
     onAdSuccess: vi.fn(),
     onAdFail: vi.fn(),
   })),
 }));
 
+vi.mock("../../providers/GenAIProvider", () => ({
+  useGenAI: vi.fn(() => ({
+    genAiEnabled: false,
+    octoFraction: 0,
+    setOctoFraction: vi.fn(),
+    octoAxis: "y" as const,
+    setOctoAxis: vi.fn(),
+  })),
+  useOctoSplit: vi.fn(() => ({
+    octoFraction: 0,
+    octoAxis: "y" as const,
+    splitActive: false,
+    playerShare: 1,
+  })),
+}));
+
+vi.mock("../hooks/useFullscreenAdBreak", () => ({
+  useFullscreenAdBreak: vi.fn(() => ({
+    status: "idle",
+    shouldMountAd: false,
+    isOverlayMounted: false,
+    isAdVisible: false,
+    suppressVideo: false,
+    handleWaterfallSuccess: vi.fn(),
+    handleWaterfallFail: vi.fn(),
+    handleAdCompleted: vi.fn(),
+  })),
+  AD_FADE_MS: 300,
+}));
+
 // Mock control layers so layout tests don't need full provider trees
 vi.mock("../../controls/VideoControlLayer", () => ({
   VideoControlLayer: () => React.createElement("div", { "data-testid": "video-control-layer" }),
+  CompactUnmuteOverlay: () =>
+    React.createElement("div", { "data-testid": "compact-unmute-overlay" }),
 }));
 vi.mock("../../controls/AdControlLayer", () => ({
   AdControlLayer: () => React.createElement("div", { "data-testid": "ad-control-layer" }),
@@ -84,7 +130,7 @@ if (typeof globalThis.ResizeObserver === "undefined") {
 import { VideoLayout, AdLayout } from ".";
 
 const mockReel: NormalisedReel = {
-  kind: "reel",
+  kind: "video",
   id: 0,
   active: true,
   videoUrl: "https://example.com/video.m3u8",
@@ -141,6 +187,55 @@ describe("VideoLayout (default / fullscreen path)", () => {
   });
 });
 
+// Regression: the 320×100 compact layout (L4) must wire onEnded → onAutoAdvance
+// so a finished video scrolls to the next reel, like the L1/L2 players already do.
+describe("VideoLayout L4 (320×100 compact) auto-advance", () => {
+  let container: HTMLDivElement;
+  let root: Root;
+
+  beforeEach(() => {
+    mockLightPlayer.mockClear();
+    (useAdWaterfall as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
+      adLayout: AD_LAYOUT.L4,
+      isAudioOnlyAds: false,
+      onAdSuccess: vi.fn(),
+      onAdFail: vi.fn(),
+    });
+    container = document.createElement("div");
+    document.body.appendChild(container);
+    root = createRoot(container);
+  });
+
+  afterEach(() => {
+    act(() => root.unmount());
+    document.body.removeChild(container);
+    (useAdWaterfall as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
+      adLayout: AD_LAYOUT.Unknown,
+      isAudioOnlyAds: false,
+      onAdSuccess: vi.fn(),
+      onAdFail: vi.fn(),
+    });
+  });
+
+  it("passes onAutoAdvance to the compact LightPlayer's onEnded", () => {
+    const onAutoAdvance = vi.fn();
+    act(() => {
+      root.render(
+        React.createElement(VideoLayout, {
+          reel: mockReel,
+          isActive: true,
+          tagDetails: mockTagDetails,
+          onTimeUpdate: () => undefined,
+          onAutoAdvance,
+        })
+      );
+    });
+
+    const props = mockLightPlayer.mock.calls.at(-1)?.[0] as { onEnded?: () => void } | undefined;
+    expect(props?.onEnded).toBe(onAutoAdvance);
+  });
+});
+
 const mockAd: NormalisedAd = {
   kind: "ad",
   id: 0,
@@ -158,6 +253,7 @@ const mockAd: NormalisedAd = {
   nativePlatform: undefined,
   displayPlatform: undefined,
   adUrl: undefined,
+  gateOnUnmute: false,
 };
 
 describe("AdLayout", () => {
@@ -220,6 +316,7 @@ const mockVideoAd: NormalisedAd = {
   nativePlatform: undefined,
   displayPlatform: undefined,
   adUrl: "https://example.com/vast.xml",
+  gateOnUnmute: false,
 };
 
 describe("AdLayout (video ad)", () => {
@@ -256,5 +353,82 @@ describe("AdLayout (video ad)", () => {
   it("renders GenAdSlot", () => {
     render();
     expect(container.querySelector('[data-testid="gen-ad-slot"]')).toBeTruthy();
+  });
+});
+
+const mockAdObject: NormalisedAd = {
+  kind: "ad",
+  id: 99,
+  active: true,
+  videoUrl: "https://blank.m3u8",
+  videoType: "hls",
+  audioAds: false,
+  videoAds: true,
+  videoAd: "https://example.com/vast.xml",
+  videoAdAdvertiserDetails: undefined,
+  videoAdContentVideo: undefined,
+  displayAd: undefined,
+  nativeAd: undefined,
+  videoPlatform: "gen_video",
+  nativePlatform: undefined,
+  displayPlatform: undefined,
+  adUrl: "https://example.com/vast.xml",
+  gateOnUnmute: true,
+};
+
+describe("VideoLayout with adObject (video-with-ad path)", () => {
+  let container: HTMLDivElement;
+  let root: Root;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    container = document.createElement("div");
+    document.body.appendChild(container);
+    root = createRoot(container);
+  });
+
+  afterEach(() => {
+    act(() => root.unmount());
+    document.body.removeChild(container);
+  });
+
+  function render(adBreakOverrides: Partial<ReturnType<typeof useFullscreenAdBreak>> = {}) {
+    (useFullscreenAdBreak as ReturnType<typeof vi.fn>).mockReturnValue({
+      status: "idle",
+      shouldMountAd: false,
+      isOverlayMounted: false,
+      isAdVisible: false,
+      suppressVideo: false,
+      handleWaterfallSuccess: vi.fn(),
+      handleWaterfallFail: vi.fn(),
+      handleAdCompleted: vi.fn(),
+      ...adBreakOverrides,
+    });
+    act(() => {
+      root.render(
+        React.createElement(VideoLayout, {
+          reel: mockReel,
+          isActive: true,
+          tagDetails: mockTagDetails,
+          onTimeUpdate: () => undefined,
+          adObject: mockAdObject,
+        })
+      );
+    });
+  }
+
+  it("renders light player when no ad break active", () => {
+    render();
+    expect(container.querySelector('[data-testid="light-player"]')).toBeTruthy();
+  });
+
+  it("renders ad break overlay when isOverlayMounted=true", () => {
+    render({ isOverlayMounted: true, isAdVisible: true, shouldMountAd: true });
+    expect(container.querySelector('[data-testid="fullscreen-ad-break"]')).toBeTruthy();
+  });
+
+  it("does not render ad break overlay when isOverlayMounted=false", () => {
+    render({ isOverlayMounted: false });
+    expect(container.querySelector('[data-testid="fullscreen-ad-break"]')).toBeNull();
   });
 });

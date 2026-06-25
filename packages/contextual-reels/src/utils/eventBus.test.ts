@@ -18,12 +18,12 @@ describe("eventBus", () => {
 
   it("returns an unsubscribe function that stops further deliveries", () => {
     const handler = vi.fn();
-    const off = addEventListener("genai:chatClosed", handler);
-    dispatchEvent("genai:chatClosed", { identifier: "one" });
+    const off = addEventListener("genai:videoId", handler);
+    dispatchEvent("genai:videoId", { videoId: "one" });
     off();
-    dispatchEvent("genai:chatClosed", { identifier: "two" });
+    dispatchEvent("genai:videoId", { videoId: "two" });
     expect(handler).toHaveBeenCalledTimes(1);
-    expect(handler).toHaveBeenCalledWith({ identifier: "one" });
+    expect(handler).toHaveBeenCalledWith({ videoId: "one" });
   });
 
   it("delivers to every attached listener", () => {
@@ -48,8 +48,8 @@ describe("eventBus", () => {
 
   it("passes an empty-object detail for events with no payload", () => {
     const handler = vi.fn();
-    const off = addEventListener("genai:dataFetching", handler);
-    dispatchEvent("genai:dataFetching", {});
+    const off = addEventListener("genai:onFill", handler);
+    dispatchEvent("genai:onFill", {});
     expect(handler).toHaveBeenCalledWith({});
     off();
   });

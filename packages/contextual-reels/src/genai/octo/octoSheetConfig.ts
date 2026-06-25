@@ -1,7 +1,7 @@
 import type { DynamicSheetConfig, DynamicSheetState } from "@genuin/ui/dynamic-sheet";
 import { cn } from "@genuin/ui/lib/utils";
 
-import { resolveAdLayout, type AdLayoutId } from "@cxr/config";
+import { AD_LAYOUT, resolveAdLayout, type AdLayoutId } from "@cxr/config";
 
 /** Parameters for {@link getOctoSheetConfig}. */
 export interface OctoSheetConfigParams {
@@ -58,12 +58,12 @@ export function octoFractionForState(state: DynamicSheetState): number {
 function enabledStatesFor(layoutId: AdLayoutId, isFullScreen: boolean): DynamicSheetState[] {
   if (isFullScreen) return FULL_LADDER;
   switch (layoutId) {
-    case "desktop-300x600":
+    case AD_LAYOUT.L1:
       return FULL_LADDER;
-    case "desktop-300x250":
-    case "mobile-320x100":
+    case AD_LAYOUT.L2:
+    case AD_LAYOUT.L4:
       return ["default", "default-active", "expand-view"];
-    case "mobile-320x50":
+    case AD_LAYOUT.L3:
       return ["default"];
     default:
       return FULL_LADDER;

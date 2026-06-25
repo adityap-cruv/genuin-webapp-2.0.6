@@ -4,7 +4,11 @@ import { createRoot } from "react-dom/client";
 import type { Root } from "react-dom/client";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
-vi.mock("@cxr/config", () => ({ assetLink: "https://test.cdn/" }));
+vi.mock("@cxr/config", () => ({
+  assetLink: "https://test.cdn/",
+  AD_LAYOUT: { Unknown: 0, L1: 1, L2: 2, L3: 3, L4: 4 },
+  isCompactLayout: (id: number) => id === 3 || id === 4,
+}));
 vi.mock("../providers/PlayerProvider", () => ({
   usePlayer: () => ({
     isMuted: true,
@@ -22,6 +26,7 @@ vi.mock("../instance/coordination/EventBusContext", () => ({
   useEventBus: () => testBus,
 }));
 
+import { AD_LAYOUT } from "@cxr/config";
 import { AdControlLayer } from "@cxr/controls/AdControlLayer";
 import type { AdControlLayerProps } from "@cxr/controls/control-layer.types";
 
@@ -46,7 +51,7 @@ describe("AdControlLayer — overlay stacking", () => {
       isPlay: true,
       isMuted: true,
       isFullScreen: false,
-      adLayout: "mobile-320x50",
+      adLayout: AD_LAYOUT.L3,
       isAdReady: true,
       variant: "new",
       onPlayClick: vi.fn(),
@@ -72,7 +77,7 @@ describe("AdControlLayer — overlay stacking", () => {
       // Asserts class presence only: jsdom does not evaluate CSS, so the actual z-stacking
       // and pointer-events fall-through are not exercised. Runtime correctness is covered by
       // the behavioral mute/play tests below.
-      render({ adLayout: "mobile-320x50" });
+      render({ adLayout: AD_LAYOUT.L3 });
       const overlay = container.querySelector<HTMLElement>('[data-testid="click-overlay"]')!;
       const muteBtn = container.querySelector<HTMLElement>('[data-testid="mute-btn"]')!;
       const barWrapper = muteBtn.closest<HTMLElement>(".gencl\\:z-\\[2\\]");
@@ -84,7 +89,7 @@ describe("AdControlLayer — overlay stacking", () => {
     });
 
     it("mute click toggles audio and does NOT open fullscreen", () => {
-      const { onMuteClick, onFullScreenClick, onPlayClick } = render({ adLayout: "mobile-320x50", isMuted: true });
+      const { onMuteClick, onFullScreenClick, onPlayClick } = render({ adLayout: AD_LAYOUT.L3, isMuted: true });
       act(() => {
         (container.querySelector('[data-testid="mute-btn"]') as HTMLButtonElement).click();
       });
@@ -94,7 +99,7 @@ describe("AdControlLayer — overlay stacking", () => {
     });
 
     it("play click toggles playback and does NOT open fullscreen", () => {
-      const { onPlayClick, onFullScreenClick } = render({ adLayout: "mobile-320x50" });
+      const { onPlayClick, onFullScreenClick } = render({ adLayout: AD_LAYOUT.L3 });
       act(() => {
         (container.querySelector('[data-testid="play-pause-btn"]') as HTMLButtonElement).click();
       });
@@ -108,7 +113,7 @@ describe("AdControlLayer — overlay stacking", () => {
       // Asserts class presence only: jsdom does not evaluate CSS, so the actual z-stacking
       // and pointer-events fall-through are not exercised. Runtime correctness is covered by
       // the behavioral mute/play tests below.
-      render({ adLayout: "mobile-320x100" });
+      render({ adLayout: AD_LAYOUT.L4 });
       const overlay = container.querySelector<HTMLElement>('[data-testid="click-overlay"]')!;
       const muteBtn = container.querySelector<HTMLElement>('[data-testid="mute-btn"]')!;
       const barWrapper = muteBtn.closest<HTMLElement>(".gencl\\:z-\\[2\\]");
@@ -118,7 +123,7 @@ describe("AdControlLayer — overlay stacking", () => {
     });
 
     it("mute click does NOT open fullscreen", () => {
-      const { onMuteClick, onFullScreenClick } = render({ adLayout: "mobile-320x100", isMuted: false });
+      const { onMuteClick, onFullScreenClick } = render({ adLayout: AD_LAYOUT.L4, isMuted: false });
       act(() => {
         (container.querySelector('[data-testid="mute-btn"]') as HTMLButtonElement).click();
       });
@@ -127,7 +132,7 @@ describe("AdControlLayer — overlay stacking", () => {
     });
 
     it("play click toggles playback and does NOT open fullscreen", () => {
-      const { onPlayClick, onFullScreenClick } = render({ adLayout: "mobile-320x100" });
+      const { onPlayClick, onFullScreenClick } = render({ adLayout: AD_LAYOUT.L4 });
       act(() => {
         (container.querySelector('[data-testid="play-pause-btn"]') as HTMLButtonElement).click();
       });
@@ -141,7 +146,7 @@ describe("AdControlLayer — overlay stacking", () => {
       // Asserts class presence only: jsdom does not evaluate CSS, so the actual z-stacking
       // and pointer-events fall-through are not exercised. Runtime correctness is covered by
       // the behavioral mute/play tests below.
-      render({ adLayout: "mobile-320x50", variant: "old" });
+      render({ adLayout: AD_LAYOUT.L3, variant: "old" });
       const overlay = container.querySelector<HTMLElement>('[data-testid="click-overlay"]')!;
       const bar = container.querySelector<HTMLElement>('[data-testid="compact-control-bar"]')!;
       const barWrapper = bar.closest<HTMLElement>(".gencl\\:z-\\[2\\]");
@@ -151,7 +156,7 @@ describe("AdControlLayer — overlay stacking", () => {
     });
 
     it("mute click does NOT open fullscreen", () => {
-      const { onMuteClick, onFullScreenClick } = render({ adLayout: "mobile-320x50", variant: "old", isMuted: true });
+      const { onMuteClick, onFullScreenClick } = render({ adLayout: AD_LAYOUT.L3, variant: "old", isMuted: true });
       act(() => {
         (container.querySelector('[data-testid="mute-btn"]') as HTMLButtonElement).click();
       });
@@ -160,7 +165,7 @@ describe("AdControlLayer — overlay stacking", () => {
     });
 
     it("play click toggles playback and does NOT open fullscreen", () => {
-      const { onPlayClick, onFullScreenClick } = render({ adLayout: "mobile-320x50", variant: "old" });
+      const { onPlayClick, onFullScreenClick } = render({ adLayout: AD_LAYOUT.L3, variant: "old" });
       act(() => {
         (container.querySelector('[data-testid="play-pause-btn"]') as HTMLButtonElement).click();
       });
@@ -174,7 +179,7 @@ describe("AdControlLayer — overlay stacking", () => {
       // Asserts class presence only: jsdom does not evaluate CSS, so stacking/pointer
       // behavior cannot be exercised here. Runtime correctness (a button tap reaching its
       // own handler and not the overlay) is covered by the behavioral mute/play tests below.
-      render({ adLayout: "fullscreen", isFullScreen: false });
+      render({ adLayout: AD_LAYOUT.L1, isFullScreen: false });
       const muteBtn = container.querySelector<HTMLElement>('[data-testid="mute-btn"]')!;
       const cluster = muteBtn.closest<HTMLElement>(".gencl\\:z-\\[10\\]");
       expect(cluster).not.toBeNull();
@@ -182,7 +187,7 @@ describe("AdControlLayer — overlay stacking", () => {
 
     it("mute click toggles audio and does NOT open fullscreen", () => {
       const { onMuteClick, onFullScreenClick, onPlayClick } = render({
-        adLayout: "fullscreen",
+        adLayout: AD_LAYOUT.L1,
         isFullScreen: false,
         isMuted: true,
       });
@@ -195,7 +200,7 @@ describe("AdControlLayer — overlay stacking", () => {
     });
 
     it("play click toggles playback and does NOT open fullscreen", () => {
-      const { onPlayClick, onFullScreenClick } = render({ adLayout: "fullscreen", isFullScreen: false });
+      const { onPlayClick, onFullScreenClick } = render({ adLayout: AD_LAYOUT.L1, isFullScreen: false });
       act(() => {
         (container.querySelector('[data-testid="play-pause-btn"]') as HTMLButtonElement).click();
       });

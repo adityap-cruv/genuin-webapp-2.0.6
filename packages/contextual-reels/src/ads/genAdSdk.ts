@@ -6,10 +6,10 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { normalizeBannerConfig, normalizeNativeConfig, normalizeVideoConfig } from "@cxr/ads/normalizers";
-import { EVENT } from "@cxr/analytics/analytics";
-import type { AdProviderKind } from "@cxr/ads/normalizers";
 import { resolvePageUrl, resolveVideoAdMacros } from "@cxr/ads/adUrlMacros";
+import { normalizeBannerConfig, normalizeNativeConfig, normalizeVideoConfig } from "@cxr/ads/normalizers";
+import type { AdProviderKind } from "@cxr/ads/normalizers";
+import { EVENT } from "@cxr/analytics/analytics";
 import { useEventBus } from "@cxr/instance/coordination/EventBusContext";
 import { useAnalytics } from "@cxr/providers/AnalyticsProvider";
 import { DEFAULT_UNMUTE_VOLUME } from "@cxr/providers/PlayerProvider";
@@ -130,6 +130,11 @@ export interface UseGenAdInstanceOptions {
    * undesirable. `false` arms the request immediately on activation — used for
    * standalone `type:"ads"` slides, which should fill right away regardless of
    * the mute state.
+   *
+   * Callers (`AdLayout`, `VideoLayout`) don't hardcode this — it flows from
+   * `NormalisedAd.gateOnUnmute` via `genAdSlotAdProps`, which in turn is sourced
+   * from the backend's `ads_config.gate_on_unmute` / `reel.gate_on_unmute` flag
+   * when present. This default only applies when no caller value is supplied.
    */
   gateOnUnmute?: boolean;
   /** Whether the ad is playing. Synced to the SDK after every change. */
@@ -422,7 +427,6 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
             // already owned by the host's own controls / `ad:unmuteRequest` path —
             // echoing them back would double-handle or loop. Mirrors
             // gen-ad-container's `onSystemMuteChange` guard.
-            console.log("data", data);
             if (data.reason === "system") {
               onMuteClickRef.current?.(data.isMuted);
             }
@@ -507,7 +511,12 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
         }
 
         const resolvedVideoAd = resolveVideoAdMacros(videoAd, resolvePageUrl());
-        const videoConfig = normalizeVideoConfig(resolvedVideoAd, platforms, videoAdAdvertiserDetails, videoAdContentVideo);
+        const videoConfig = normalizeVideoConfig(
+          resolvedVideoAd,
+          platforms,
+          videoAdAdvertiserDetails,
+          videoAdContentVideo
+        );
         if (videoConfig) {
           (initOptions as Record<string, unknown>).video = videoConfig;
         }

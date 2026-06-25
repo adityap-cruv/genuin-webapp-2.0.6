@@ -7,7 +7,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 import {
-  SINGLE_HIT_TAG_IDS,
   shouldCountFill,
   shouldCountNoFill,
   notifyAdFill,
@@ -16,60 +15,37 @@ import {
 } from "@cxr/ads/waterfall";
 import { CxrEventBus } from "@cxr/instance/coordination/CxrEventBus";
 
-const SINGLE_HIT_ID = "69b298e3d6a6ad57e7b9a464";
-const OTHER_ID = "69b298f4d6a6ad57e7b9a499";
-const NORMAL_ID = "aaaabbbbccccdddd11112222";
-
-describe("ads/waterfall — SINGLE_HIT_TAG_IDS", () => {
-  it("contains the two known single-hit tag IDs", () => {
-    expect(SINGLE_HIT_TAG_IDS.has(SINGLE_HIT_ID)).toBe(true);
-    expect(SINGLE_HIT_TAG_IDS.has(OTHER_ID)).toBe(true);
-  });
-
-  it("does not contain arbitrary tag IDs", () => {
-    expect(SINGLE_HIT_TAG_IDS.has(NORMAL_ID)).toBe(false);
-  });
-});
-
 describe("ads/waterfall — shouldCountFill", () => {
-  it("returns true for a non-single-hit tagId regardless of fill count", () => {
-    expect(shouldCountFill(NORMAL_ID, 0)).toBe(true);
-    expect(shouldCountFill(NORMAL_ID, 1)).toBe(true);
-    expect(shouldCountFill(NORMAL_ID, 99)).toBe(true);
+  it("returns true when not single-hit, regardless of fill count", () => {
+    expect(shouldCountFill(false, 0)).toBe(true);
+    expect(shouldCountFill(false, 1)).toBe(true);
+    expect(shouldCountFill(false, 99)).toBe(true);
   });
 
-  it("returns true for single-hit tagId when fill count is 0", () => {
-    expect(shouldCountFill(SINGLE_HIT_ID, 0)).toBe(true);
-    expect(shouldCountFill(OTHER_ID, 0)).toBe(true);
+  it("returns true when single-hit and fill count is 0", () => {
+    expect(shouldCountFill(true, 0)).toBe(true);
   });
 
-  it("returns false for single-hit tagId when fill count is 1", () => {
-    expect(shouldCountFill(SINGLE_HIT_ID, 1)).toBe(false);
-    expect(shouldCountFill(OTHER_ID, 1)).toBe(false);
-  });
-
-  it("returns false for single-hit tagId when fill count is 2+", () => {
-    expect(shouldCountFill(SINGLE_HIT_ID, 2)).toBe(false);
-    expect(shouldCountFill(SINGLE_HIT_ID, 10)).toBe(false);
+  it("returns false when single-hit and fill count is 1+", () => {
+    expect(shouldCountFill(true, 1)).toBe(false);
+    expect(shouldCountFill(true, 2)).toBe(false);
+    expect(shouldCountFill(true, 10)).toBe(false);
   });
 });
 
 describe("ads/waterfall — shouldCountNoFill", () => {
-  it("returns true for a non-single-hit tagId regardless of noFill count", () => {
-    expect(shouldCountNoFill(NORMAL_ID, 0)).toBe(true);
-    expect(shouldCountNoFill(NORMAL_ID, 5)).toBe(true);
+  it("returns true when not single-hit, regardless of noFill count", () => {
+    expect(shouldCountNoFill(false, 0)).toBe(true);
+    expect(shouldCountNoFill(false, 5)).toBe(true);
   });
 
-  it("returns true for single-hit tagId when noFill count is 0", () => {
-    expect(shouldCountNoFill(SINGLE_HIT_ID, 0)).toBe(true);
+  it("returns true when single-hit and noFill count is 0", () => {
+    expect(shouldCountNoFill(true, 0)).toBe(true);
   });
 
-  it("returns false for single-hit tagId when noFill count is 1", () => {
-    expect(shouldCountNoFill(SINGLE_HIT_ID, 1)).toBe(false);
-  });
-
-  it("returns false for single-hit tagId when noFill count is 2+", () => {
-    expect(shouldCountNoFill(SINGLE_HIT_ID, 2)).toBe(false);
+  it("returns false when single-hit and noFill count is 1+", () => {
+    expect(shouldCountNoFill(true, 1)).toBe(false);
+    expect(shouldCountNoFill(true, 2)).toBe(false);
   });
 });
 

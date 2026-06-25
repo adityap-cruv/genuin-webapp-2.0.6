@@ -4,7 +4,6 @@ import { MuteButtonView, type PlayerControlSize } from "@genuin/ui/player-contro
 import React from "react";
 
 import { assetLink } from "@cxr/config";
-import { useUserInteracted } from "@cxr/instance/coordination/UserInteractionTracker";
 import { usePlayer } from "@cxr/providers/PlayerProvider";
 
 export interface MuteUnmuteButtonV2Props {
@@ -43,14 +42,6 @@ export function MuteUnmuteButtonV2({
 }: MuteUnmuteButtonV2Props): React.JSX.Element {
   const { volume, setVolume, setMuted } = usePlayer();
 
-  // Until the user has interacted with cxr, always show the unmute (sound-on)
-  // icon even while actually muted (volume 0 is an autoplay workaround, not a
-  // user mute); afterwards the icon respects the real mute state. The label and
-  // toggle always use the real `isMuted`, so the first tap genuinely unmutes.
-  // Mirrors MuteUnmuteButton (V1) — keep the two in sync.
-  const interacted = useUserInteracted();
-  const displayMuted = interacted ? isMuted : false;
-
   // MuteButtonView's slider speaks 0–100; CXR's PlayerProvider speaks 0–1. Convert here.
   const handleVolumeChange = (newVolume: number) => {
     const next = newVolume / 100;
@@ -61,7 +52,7 @@ export function MuteUnmuteButtonV2({
 
   return (
     <MuteButtonView
-      muted={displayMuted}
+      muted={isMuted}
       volume={Math.round(volume * 100)}
       onToggleMuted={() => onClick?.()}
       onVolumeChange={handleVolumeChange}

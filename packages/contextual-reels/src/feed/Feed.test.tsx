@@ -9,7 +9,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 import type { FeedEntry, TagResponse } from "@cxr/types";
 
-const { mockUseFullScreen, mockUseFeed, mockUseAdWaterfall } = vi.hoisted(() => ({
+const { mockUseFullScreen, mockUseFeed, mockUseAdWaterfall, mockUsePlayer } = vi.hoisted(() => ({
   mockUseFullScreen: vi.fn(() => ({
     isFullScreen: false,
     enterFullScreen: vi.fn(),
@@ -22,7 +22,13 @@ const { mockUseFullScreen, mockUseFeed, mockUseAdWaterfall } = vi.hoisted(() => 
     onAdFail: vi.fn(),
     adLayout: "unknown",
     isAudioOnlyAds: false,
+  })),
+  mockUsePlayer: vi.fn(() => ({
+    isMuted: true,
+    isPlaying: true,
     isAdBreakActive: false,
+    setMuted: vi.fn(),
+    setPlaying: vi.fn(),
     setAdBreakActive: vi.fn(),
   })),
 }));
@@ -45,16 +51,30 @@ vi.mock("./ReelList", () => ({
     React.createElement("div", { "data-testid": "reel-list", "data-count": props.entries.length }),
 }));
 
+vi.mock("@cxr/controls/FullscreenActionRailHost", () => ({
+  FullscreenActionRailHost: (props: {
+    isFullScreen: boolean;
+    isAdActive: boolean;
+    item?: { id: number };
+  }) => {
+    if (!props.isFullScreen || props.isAdActive) return null;
+    return React.createElement("div", {
+      "data-testid": "fullscreen-action-rail-anchor",
+      "data-item-id": props.item === undefined ? "undefined" : String(props.item.id),
+    });
+  },
+}));
+
 vi.mock("../providers/FullScreenProvider", () => ({
   useFullScreen: () => mockUseFullScreen(),
 }));
 
 vi.mock("../providers/PlayerProvider", () => ({
-  usePlayer: () => ({ isMuted: true, isPlaying: true, setMuted: vi.fn(), setPlaying: vi.fn() }),
+  usePlayer: () => mockUsePlayer(),
 }));
 
 vi.mock("../providers/GenAIProvider", () => ({
-  useGenAI: () => ({ isAllowed: false, octoFraction: 0, setOctoFraction: vi.fn() }),
+  useGenAI: () => ({ genAiEnabled: false, octoFraction: 0, setOctoFraction: vi.fn(), octoAxis: 'y', setOctoAxis: vi.fn() }),
 }));
 
 vi.mock("../providers/FeedProvider", () => ({
@@ -68,9 +88,9 @@ vi.mock("../providers/AdProvider", () => ({
 import { Feed } from "@cxr/feed/Feed";
 
 const makeReelEntry = (id: number): FeedEntry => ({
-  kind: "reel",
+  kind: "video",
   data: {
-    kind: "reel",
+    kind: "video",
     id,
     active: id === 0,
     videoUrl: null,
@@ -112,7 +132,13 @@ describe("Feed", () => {
       onAdFail: vi.fn(),
       adLayout: "unknown",
       isAudioOnlyAds: false,
+    });
+    mockUsePlayer.mockReturnValue({
+      isMuted: true,
+      isPlaying: true,
       isAdBreakActive: false,
+      setMuted: vi.fn(),
+      setPlaying: vi.fn(),
       setAdBreakActive: vi.fn(),
     });
     container = document.createElement("div");
@@ -167,6 +193,28 @@ describe("Feed", () => {
     expect(container.querySelector('[data-testid="fullscreen-action-rail-anchor"]')).toBeTruthy();
   });
 
+  it("passes the active video entry's data as `item` to the action rail, not undefined", () => {
+    // Regression test: NormalisedReel.kind/FeedEntry.kind were widened from the single
+    // literal "reel" to "video" | "video-with-ad", but Feed.tsx still compared
+    // `activeEntry?.kind === "reel"` — a comparison that can never be true, so
+    // `activeReel` (passed as `item`) was silently always `undefined` for every
+    // video slide. This asserts `item` actually carries the active entry's `data`.
+    mockUseFullScreen.mockReturnValue({
+      isFullScreen: true,
+      enterFullScreen: vi.fn(),
+      exitFullScreen: vi.fn(),
+      toggleFullScreen: vi.fn(),
+    });
+    mockUseFeed.mockReturnValue({ entries: mockEntries, activeIndex: 0, setActiveIndex: vi.fn() });
+    act(() => {
+      root.render(React.createElement(Feed, { entries: mockEntries, tagDetails: railTagDetails }));
+    });
+    const anchor = container.querySelector('[data-testid="fullscreen-action-rail-anchor"]');
+    const activeEntry = mockEntries[0];
+    expect(activeEntry).toBeDefined();
+    expect(anchor?.getAttribute("data-item-id")).toBe(String(activeEntry?.data.id));
+  });
+
   it("hides the action rail in fullscreen when the active slide is an ad", () => {
     const entries = [makeReelEntry(0), makeAdEntry()];
     mockUseFullScreen.mockReturnValue({
@@ -190,12 +238,12 @@ describe("Feed", () => {
       toggleFullScreen: vi.fn(),
     });
     mockUseFeed.mockReturnValue({ entries: mockEntries, activeIndex: 0, setActiveIndex: vi.fn() });
-    mockUseAdWaterfall.mockReturnValue({
-      onAdSuccess: vi.fn(),
-      onAdFail: vi.fn(),
-      adLayout: "unknown",
-      isAudioOnlyAds: false,
+    mockUsePlayer.mockReturnValue({
+      isMuted: true,
+      isPlaying: true,
       isAdBreakActive: true,
+      setMuted: vi.fn(),
+      setPlaying: vi.fn(),
       setAdBreakActive: vi.fn(),
     });
     act(() => {

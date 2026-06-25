@@ -30,7 +30,7 @@ describe("useFullscreenAdBreak", () => {
   let latest: UseFullscreenAdBreakResult;
   let onAdComplete: ReturnType<typeof vi.fn>;
 
-  const adObject = buildReelAdObject(0);
+  const adObject = buildReelAdObject(0, false);
 
   beforeEach(() => {
     vi.useFakeTimers();

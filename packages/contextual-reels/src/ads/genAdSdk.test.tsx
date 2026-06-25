@@ -144,6 +144,7 @@ let genAdInit: Mock;
 let genAdDestroy: Mock;
 let genAdMuteByContainer: Mock;
 let genAdSetVolumeByContainer: Mock;
+let genAdUpdateView: Mock;
 let lastInitOptions: Record<string, unknown> = {};
 
 function installGenAd(): void {
@@ -154,11 +155,13 @@ function installGenAd(): void {
   genAdDestroy = vi.fn();
   genAdMuteByContainer = vi.fn();
   genAdSetVolumeByContainer = vi.fn();
+  genAdUpdateView = vi.fn();
   (window as unknown as { GenAd: unknown }).GenAd = {
     init: genAdInit,
     destroy: genAdDestroy,
     muteByContainer: genAdMuteByContainer,
     setVolumeByContainer: genAdSetVolumeByContainer,
+    updateView: genAdUpdateView,
   };
 }
 
@@ -852,7 +855,33 @@ describe("ads/useGenAdInstance", () => {
 
     const options = lastInitOptions as Record<string, unknown>;
     expect(options["video"]).toBeDefined();
+    // showVideo must reach GenAd.init or the side video never renders (320×100).
+    expect((options["video"] as { showVideo?: boolean }).showVideo).toBe(true);
+    // The ad's resolved URL is mirrored into advertiserDetails.videoUrl so the
+    // current ad clip is what GenAd shows beside the banner.
+    expect((options["video"] as { advertiserDetails?: { videoUrl?: string } }).advertiserDetails?.videoUrl).toBe(
+      "https://example.com/vast.xml"
+    );
     unmount(root, container);
+  });
+
+  it("calls updateView once after init so the compact side video renders", async () => {
+    vi.useFakeTimers();
+    try {
+      const { root, container } = mountHook({ ...baseProps, isActive: true });
+
+      // Flush the async SDK-load promise chain that precedes init.
+      await act(async () => {
+        await vi.runAllTimersAsync();
+      });
+
+      expect(genAdInit).toHaveBeenCalledTimes(1);
+      expect(genAdUpdateView).toHaveBeenCalledWith(42);
+
+      unmount(root, container);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("handles cancelled promise (cleanup before SDK resolves)", async () => {

@@ -142,7 +142,26 @@ describe("ads/normalizeVideoConfig", () => {
       vastUrl: "https://example.com/vast.xml",
       platform: "",
       audioLayout: "full_video",
+      showVideo: true,
+      // The ad's own resolved URL is mirrored as the side-video source.
+      advertiserDetails: { videoUrl: "https://example.com/vast.xml" },
     });
+  });
+
+  it("defaults advertiserDetails.videoUrl to the ad's resolved URL", () => {
+    const result = normalizeVideoConfig({ url: "https://example.com/clip.mp4", platform: "gam" });
+    expect((result as { advertiserDetails: { videoUrl: string } })?.advertiserDetails.videoUrl).toBe(
+      "https://example.com/clip.mp4"
+    );
+  });
+
+  it("sets showVideo so GenAd renders the side video", () => {
+    expect((normalizeVideoConfig("https://example.com/vast.xml") as { showVideo: boolean })?.showVideo).toBe(true);
+    const arr = normalizeVideoConfig([
+      "https://example.com/a.xml",
+      { url: "https://example.com/b.xml" },
+    ]) as Array<{ showVideo: boolean }>;
+    expect(arr.every((e) => e.showVideo === true)).toBe(true);
   });
 
   it("uses platforms.video for platform when videoAd is a string", () => {
@@ -150,9 +169,12 @@ describe("ads/normalizeVideoConfig", () => {
     expect((result as { platform: string })?.platform).toBe("gen_video");
   });
 
-  it("spreads advertiserDetails from outer args", () => {
+  it("spreads advertiserDetails from outer args (plus the videoUrl default)", () => {
     const result = normalizeVideoConfig("https://example.com/vast.xml", undefined, advertiserDetails);
-    expect((result as { advertiserDetails: typeof advertiserDetails })?.advertiserDetails).toEqual(advertiserDetails);
+    expect((result as { advertiserDetails: typeof advertiserDetails })?.advertiserDetails).toEqual({
+      ...advertiserDetails,
+      videoUrl: "https://example.com/vast.xml",
+    });
   });
 
   it("spreads contentVideo from outer args", () => {
@@ -207,7 +229,11 @@ describe("ads/normalizeVideoConfig", () => {
       undefined,
       outerAdv
     );
-    expect((result as { advertiserDetails: typeof innerAdv })?.advertiserDetails).toEqual(innerAdv);
+    // Inner branding wins; videoUrl is defaulted to the entry's resolved URL.
+    expect((result as { advertiserDetails: typeof innerAdv })?.advertiserDetails).toEqual({
+      ...innerAdv,
+      videoUrl: "https://example.com/v.xml",
+    });
   });
 
   it("per-entry contentVideo overrides outer contentVideo", () => {

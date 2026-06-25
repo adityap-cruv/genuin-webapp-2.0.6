@@ -11,7 +11,7 @@
  * Phase 1 status: standalone — no `.jsx` imports this yet. Phase 2 will wire
  * the legacy `App.jsx` through this provider.
  */
-import { createContext, useContext, useEffect, useMemo, useRef, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, type ReactNode } from "react";
 
 import { createEventBuffer, type EventBuffer } from "@cxr/analytics/analytics";
 import { sendEventLog, type OffsitePropertiesConfig, type RudderstackLike } from "@cxr/analytics/analytics";
@@ -28,6 +28,12 @@ const _logger = createLogger("cxr/analytics-provider");
 export interface AnalyticsContextValue {
   /** Emit an analytics event. Buffered until Rudderstack is ready. */
   sendEvent: (eventName: string, eventDetails?: Record<string, unknown>) => void;
+  /**
+   * Register the active tag's numeric `brand_id` so it is injected into every
+   * subsequent event's `event_details.brand_id`. Resolved asynchronously after
+   * the tag config loads — call once `tagDetails` is available.
+   */
+  setBrandId: (brandId: number | undefined) => void;
 }
 
 const AnalyticsContext = createContext<AnalyticsContextValue | undefined>(undefined);
@@ -65,6 +71,14 @@ export function AnalyticsProvider({ children, tagId }: AnalyticsProviderProps): 
   // Refs persist across renders without re-triggering effects.
   const deviceRef = useRef<DeviceDetails>(getDeviceDetailsSnapshot());
   const bufferRef = useRef<EventBuffer>(createEventBuffer());
+  // brand_id resolves async after the tag loads. Held in a ref so `sendEvent`
+  // stays referentially stable (its identity must not change when brand_id
+  // arrives, or consumer effects keyed on it would re-run).
+  const brandIdRef = useRef<number | undefined>(undefined);
+
+  const setBrandId = useCallback((brandId: number | undefined): void => {
+    brandIdRef.current = brandId;
+  }, []);
 
   useEffect(() => {
     initializeRudderAnalytics();
@@ -104,12 +118,21 @@ export function AnalyticsProvider({ children, tagId }: AnalyticsProviderProps): 
   const value = useMemo<AnalyticsContextValue>(
     () => ({
       sendEvent(eventName, eventDetails) {
+        // Inject tag_id + brand_id into every event. Omitted when undefined so
+        // we never emit `tag_id: undefined` keys. brand_id is read from the ref
+        // at call time so late-resolving values still attach. Caller-supplied
+        // eventDetails win on key collision.
+        const identifiers = {
+          ...(tagId !== undefined ? { tag_id: tagId } : {}),
+          ...(brandIdRef.current !== undefined ? { brand_id: brandIdRef.current } : {}),
+        };
         // Enqueue — the buffer is a pass-through after `flush()`, so post-ready
         // calls forward directly to the live emitter set in the effect above.
-        bufferRef.current.enqueue(eventName, { tag_id: tagId, ...eventDetails });
+        bufferRef.current.enqueue(eventName, { ...identifiers, ...eventDetails });
       },
+      setBrandId,
     }),
-    [tagId]
+    [tagId, setBrandId]
   );
 
   return <AnalyticsContext.Provider value={value}>{children}</AnalyticsContext.Provider>;

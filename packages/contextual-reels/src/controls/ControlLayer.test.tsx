@@ -4,6 +4,7 @@ import { createRoot } from "react-dom/client";
 import type { Root } from "react-dom/client";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
+import { AD_LAYOUT } from "@cxr/config";
 import { ControlLayer } from "@cxr/controls/ControlLayer";
 import type { NormalisedReel } from "@cxr/types";
 
@@ -28,7 +29,7 @@ vi.mock("../genai/octo/OctoSheet", () => ({
 
 function makeReel(): NormalisedReel {
   return {
-    kind: "reel",
+    kind: "video",
     id: 0,
     active: true,
     videoUrl: null,
@@ -39,6 +40,7 @@ function makeReel(): NormalisedReel {
     loop: null,
     ogDetails: null,
     owner: null,
+    config: null,
     video: null,
     cta: null,
     playerType: "default",
@@ -72,7 +74,7 @@ describe("ControlLayer", () => {
           isFullScreen: false,
           isMuted: false,
           isPlay: true,
-          adLayout: "unknown",
+          adLayout: AD_LAYOUT.Unknown,
           onMuteClick: vi.fn(),
           onPlayClick: vi.fn(),
           onFullScreenClick: vi.fn(),

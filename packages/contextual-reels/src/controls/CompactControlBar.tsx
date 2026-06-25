@@ -1,7 +1,7 @@
 "use client";
 
 import { type PlayerControlSize } from "@genuin/ui/player-controls";
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { ExpandCollapseButton } from "@cxr/controls/buttons/atoms/ExpandCollapseButton";
 import { ExpandCollapseButtonV2 } from "@cxr/controls/buttons/atoms/ExpandCollapseButtonV2";
@@ -11,6 +11,7 @@ import { MuteUnmuteButtonV2 } from "@cxr/controls/buttons/atoms/MuteUnmuteButton
 import { PlayPauseButton } from "@cxr/controls/buttons/atoms/PlayPauseButton";
 import { PlayPauseButtonV2 } from "@cxr/controls/buttons/atoms/PlayPauseButtonV2";
 import { WatchButton } from "@cxr/controls/buttons/atoms/WatchButton";
+import { useUserInteracted } from "@cxr/instance/coordination/UserInteractionTracker";
 
 const noop = (): void => undefined;
 
@@ -45,6 +46,12 @@ export interface CompactControlBarProps extends React.HTMLAttributes<HTMLDivElem
   identity?: CompactBarIdentity | null;
   /** One-line truncated description row. Hidden when absent. */
   description?: string | null;
+  /**
+   * When true, suppress the scrolling description ticker and the Watch/Linkout
+   * actions row — used in 320×100 when the Octo strip occupies that space, so
+   * only identity + the icon cluster remain.
+   */
+  hideTickerAndActions?: boolean;
   /** Linkout CTA (ads) — renders beside Watch in 'md' when complete. */
   cta?: CompactBarCta | null;
   isPlay?: boolean;
@@ -59,6 +66,12 @@ export interface CompactControlBarProps extends React.HTMLAttributes<HTMLDivElem
   onWatchClick?: () => void;
   /** Render the Design System V2 double-circle icons instead of the legacy set. */
   useV2Icons?: boolean;
+  /**
+   * 320×50 ad layout: genAd renders the description externally, so CXR drops the
+   * ticker and shows a right-aligned Watch button on the second row instead.
+   * Video sm ignores this and keeps its ticker-only second row.
+   */
+  showWatchInSm?: boolean;
 }
 
 /**
@@ -75,14 +88,18 @@ export function CompactControlBar({
   isMuted,
   isFullScreen = false,
   animatedBorder = true,
+  hideTickerAndActions = false,
   onPlayClick,
   onMuteClick,
   onFullScreenClick,
   onWatchClick,
   useV2Icons = false,
+  showWatchInSm = false,
   className,
   ...rest
 }: CompactControlBarProps): React.JSX.Element {
+  const hasInteracted = useUserInteracted();
+
   const showImage = Boolean(identity?.imageUrl);
   const showName = Boolean(identity?.name);
   const hasCta = Boolean(cta?.url && cta?.caption);
@@ -91,6 +108,10 @@ export function CompactControlBar({
   const handleWatch = onWatchClick ?? onFullScreenClick ?? noop;
   // 320×50 (sm) → xs, 320×100 (md) → sm — matches resolveCxrControlSize's collapsed row.
   const v2Size: PlayerControlSize = size === "sm" ? "xs" : "sm";
+  // Ad sm: drop the ticker (genAd renders it) and show only a Watch button.
+  const showSmWatch = size === "sm" && showWatchInSm && !hideTickerAndActions;
+  // Ticker renders for md and for video sm; ad sm suppresses it in favour of Watch.
+  const showTicker = Boolean(description) && !hideTickerAndActions && !showSmWatch;
 
   // Constant scroll speed: derive duration from the measured text width instead
   // of the character count, so long captions don't whip past faster than short
@@ -105,8 +126,8 @@ export function CompactControlBar({
 
   const containerClass =
     size === "sm"
-      ? "gencl:h-full gencl:w-full gencl:flex gencl:flex-col gencl:items-end gencl:justify-between gencl:gap-0.5 gencl:p-0.5"
-      : "gencl:h-full gencl:w-full gencl:flex gencl:flex-col gencl:justify-between gencl:p-1 gencl:gap-0.5";
+      ? "gencl:h-full gencl:w-full gencl:flex gencl:flex-col gencl:items-end gencl:justify-between gencl:gap-0.5 gencl:px-0.5"
+      : "gencl:h-full gencl:w-full gencl:flex gencl:flex-col gencl:justify-between gencl:p-1 gencl:gap-1";
 
   return (
     <div data-testid="compact-control-bar" className={`${containerClass} ${className ?? ""}`.trim()} {...rest}>
@@ -130,7 +151,7 @@ export function CompactControlBar({
           {useV2Icons ? (
             <>
               <MuteUnmuteButtonV2
-                isMuted={isMuted}
+                isMuted={hasInteracted ? isMuted : false}
                 onClick={onMuteClick}
                 size={v2Size}
                 enableVolumeSlider={false}
@@ -143,15 +164,16 @@ export function CompactControlBar({
                 size={v2Size}
                 shouldAnimate={false}
               />
-              <ExpandCollapseButtonV2
-                isFullScreen={isFullScreen}
-                onClick={onFullScreenClick ?? noop}
-                size={v2Size}
-              />
+              <ExpandCollapseButtonV2 isFullScreen={isFullScreen} onClick={onFullScreenClick ?? noop} size={v2Size} />
             </>
           ) : (
             <>
-              <MuteUnmuteButton animatedBorder={animatedBorder} isMuted={isMuted} onClick={onMuteClick} size={size} />
+              <MuteUnmuteButton
+                animatedBorder={animatedBorder}
+                isMuted={hasInteracted ? isMuted : false}
+                onClick={onMuteClick}
+                size={size}
+              />
               <PlayPauseButton isPlay={isPlay ?? false} onClick={onPlayClick ?? noop} size={size} />
               <ExpandCollapseButton isFullScreen={isFullScreen} onClick={onFullScreenClick ?? noop} size={size} />
             </>
@@ -159,49 +181,73 @@ export function CompactControlBar({
         </div>
       </div>
 
-      {description && (
+      {showTicker && (
+        // Outer pill owns the background + side padding; the inner ticker mask
+        // clips the scroll inside that padded area, so text keeps a hard ~8px
+        // gap from the edges (no blurry fade).
         <div
           data-testid="compact-bar-description"
-          className={`cxr-ticker-mask gencl:w-full gencl:max-w-full gencl:px-2 ${size === "md" ? "gencl:py-0.5" : ""}`}
-          // md shows the translucent pill; sm (50px) scrolls the same ticker with no background.
-          style={
-            size === "sm"
-              ? undefined
-              : {
-                  borderRadius: "8px",
-                  background: "rgba(19, 20, 21, 0.60)",
-                  backdropFilter: "blur(7.5px)",
-                  WebkitBackdropFilter: "blur(7.5px)",
-                }
-          }>
-          {/* Two identical copies + the -50% keyframe give a seamless loop; the
-              duplicate is aria-hidden so screen readers announce the text once.
-              Duration scales with length to keep a constant scroll speed. */}
-          <div className="cxr-ticker-track" style={{ ["--cxr-ticker-duration" as string]: `${tickerDuration}s` }}>
-            {[false, true].map((isClone) => (
-              <span
-                key={isClone ? "clone" : "main"}
-                ref={isClone ? undefined : tickerSpanRef}
-                aria-hidden={isClone || undefined}
-                className="gencl:whitespace-nowrap gencl:pr-8"
-                style={{
-                  color: "#FFF",
-                  fontFeatureSettings: "'liga' off, 'clig' off",
-                  fontSize: "12px",
-                  fontStyle: "normal",
-                  fontWeight: 500,
-                  lineHeight: "20px",
-                  letterSpacing: 0,
-                }}>
-                {description}
-              </span>
-            ))}
+          className={`gencl:w-full gencl:max-w-full gencl:overflow-hidden ${
+            size === "md" ? "gencl:px-2 gencl:py-0.5" : "gencl:px-1.5"
+          }`}
+          // Both sizes show the translucent pill; sm (50px) uses a tighter
+          // radius and side padding so it stays proportional in the shorter bar.
+          style={{
+            borderRadius: size === "sm" ? "6px" : "8px",
+            background: "rgba(19, 20, 21, 0.60)",
+            backdropFilter: "blur(7.5px)",
+            WebkitBackdropFilter: "blur(7.5px)",
+          }}>
+          <div className="cxr-ticker-mask gencl:w-full gencl:max-w-full">
+            {/* Two identical copies + the -50% keyframe give a seamless loop; the
+                duplicate is aria-hidden so screen readers announce the text once.
+                Duration scales with length to keep a constant scroll speed. */}
+            <div className="cxr-ticker-track" style={{ ["--cxr-ticker-duration" as string]: `${tickerDuration}s` }}>
+              {[false, true].map((isClone) => (
+                <span
+                  key={isClone ? "clone" : "main"}
+                  ref={isClone ? undefined : tickerSpanRef}
+                  aria-hidden={isClone || undefined}
+                  // sm pads the trailing gap proportionally to its smaller text.
+                  className={`gencl:whitespace-nowrap ${size === "sm" ? "gencl:pr-6" : "gencl:pr-8"}`}
+                  style={{
+                    color: "#FFF",
+                    fontFeatureSettings: "'liga' off, 'clig' off",
+                    fontSize: size === "sm" ? "10px" : "12px",
+                    fontStyle: "normal",
+                    fontWeight: 500,
+                    lineHeight: size === "sm" ? "14px" : "20px",
+                    letterSpacing: 0,
+                  }}>
+                  {description}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       )}
 
-      {/* 320×50 (sm) shows only identity + ticker — no Watch/Linkout actions row. */}
-      {size === "md" && (
+      {/* 320×50 ad layout: genAd renders the description externally, so CXR shows
+          only a right-aligned Watch button on the second row (no ticker). */}
+      {showSmWatch && (
+        <div
+          data-testid="compact-bar-actions"
+          className="gencl:flex gencl:justify-end gencl:z-15 gencl:pointer-events-auto gencl:ml-auto">
+          {/* Compact for the 50px bar: tighten the button's vertical padding and
+              type so the two rows fit within 320×50. */}
+          <WatchButton
+            isPlay={false}
+            onClick={handleWatch}
+            variant="rect"
+            pulse
+            style={{ fontSize: "11px", paddingTop: "3px", paddingBottom: "3px" }}
+          />
+        </div>
+      )}
+
+      {/* 320×50 (sm) shows only identity + ticker — no Watch/Linkout actions row.
+          Hidden too when the Octo strip owns the 320×100 lower area. */}
+      {size === "md" && !hideTickerAndActions && (
         <div
           data-testid="compact-bar-actions"
           className="gencl:w-full gencl:flex gencl:gap-1 gencl:h-8 gencl:rounded-full gencl:z-15 gencl:pointer-events-auto">

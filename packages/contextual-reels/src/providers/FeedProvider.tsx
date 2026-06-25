@@ -3,17 +3,17 @@
  *
  * Responsibilities:
  *  1. Create feed generator via createFeedGenerator.
- *  2. Fetch raw reels and apply normaliseFeed + injectStaticAdEntries.
+ *  2. Fetch raw reels and apply normaliseFeed.
  *  3. Emit analytics events matching the legacy sequence.
  *  4. Expose useFeed() hook with entries and activeIndex.
  */
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
-import { isStaticAdInjectionEnabled } from "@cxr/config";
-import { normaliseFeed, injectStaticAdEntries } from "@cxr/feed/feedTransforms";
+import { normaliseFeed } from "@cxr/feed/feedTransforms";
 import { useAnalytics } from "@cxr/providers/AnalyticsProvider";
 import DUMMY_FEED_RESPONSE from "@cxr/providers/dummyFeed.json";
 import { createFeedGenerator } from "@cxr/services/feed";
+import { useStrategy } from "@cxr/strategies/StrategyProvider";
 import type { FeedEntry, Reel } from "@cxr/types";
 
 const USE_DUMMY_FEED = false;
@@ -51,6 +51,7 @@ interface FeedProviderProps {
  */
 export function FeedProvider({ children, tagId }: FeedProviderProps): ReactNode {
   const { sendEvent } = useAnalytics();
+  const { adBreakEnabled, gateOnUnmute, adsDisabled } = useStrategy();
   const [entries, setEntries] = useState<FeedEntry[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -77,10 +78,9 @@ export function FeedProvider({ children, tagId }: FeedProviderProps): ReactNode 
           return;
         }
 
-        const normalised = normaliseFeed(reels, tagId);
-        const result = isStaticAdInjectionEnabled(tagId) ? injectStaticAdEntries(normalised) : normalised;
+        const normalised = normaliseFeed(reels, tagId, adBreakEnabled, gateOnUnmute, adsDisabled);
 
-        setEntries(result);
+        setEntries(normalised);
         setActiveIndex(0);
       } catch {
         if (!cancelled) setFeedFailed(true);

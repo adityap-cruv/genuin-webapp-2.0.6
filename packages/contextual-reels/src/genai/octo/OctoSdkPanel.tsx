@@ -9,10 +9,11 @@
  * Mounts the SDK into a container div and forwards `genai:octoLifecycle` phases
  * to the parent state machine. The web-sdk parent-instance plumbing is omitted.
  */
-import { userId } from "@cxr/userId";
-import { createLogger } from "@cxr/utils/logger";
 import type * as GenAiSdk from "@genuin/genai-sdk";
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+
+import { userId } from "@cxr/userId";
+import { createLogger } from "@cxr/utils/logger";
 
 import type { OctoPhase } from "./octo-phase-map";
 
@@ -167,7 +168,7 @@ export function OctoSdkPanel({
         containerId,
         containerElement: container,
         userId,
-        brandId: 1729,
+        brandId: brandId ?? null,
         view: "web-sdk",
         renderMode,
         uiDensity,

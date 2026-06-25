@@ -1,16 +1,13 @@
 /**
  * Feed transform pipeline for the contextual-reels widget.
  *
- * Consolidates: utils/thumbnails, feed/transforms/staticAdCatalog,
- * feed/transforms/injectStaticAds, feed/transforms/transformReelData.
+ * Consolidates: utils/thumbnails, feed/transforms/transformReelData.
  */
-import { isFullscreenAdBreakEnabled } from "@cxr/config";
 import type {
   Reel,
   TagResponse,
   FeedItem,
   FeedItemType,
-  AdFeedItem,
   FeedItemUser,
   NormalisedReel,
   NormalisedAd,
@@ -99,55 +96,8 @@ export function normaliseVideo(video: NormalisedReel["video"]): NormalisedReel["
   return { ...video, description: normaliseDescription(video.description) };
 }
 
-// ─── Static ad catalog ────────────────────────────────────────────────────────
-
-/** A single static ad creative configuration. */
-export interface StaticAdConfig {
-  /** MP4 video source URL for the companion content video. */
-  readonly videoSource: string;
-  /** VAST XML URL for the video ad. */
-  readonly adUrl: string;
-  /** Advertiser logo image URL. */
-  readonly logo: string;
-  /** Advertiser primary brand colour (hex). */
-  readonly primaryColor: string;
-}
-
 /**
- * Four static ad creatives used for demo/testing injection.
- *
- * The catalog is cycled modulo 4 by `injectStaticAds` when the feed is
- * longer than 4 items.
- */
-export const STATIC_AD_CONFIGS: readonly StaticAdConfig[] = [
-  {
-    videoSource: "https://vz-8bbc7bbf-a1e.b-cdn.net/738f9e12-141d-4c56-8357-16b71a68debd/play_360p.mp4",
-    adUrl: "https://media.begenuin.com/ad-sdk/test-creatives/finance.xml",
-    logo: "https://media.begenuin.com/ad-sdk/test-creatives/splitero.webp",
-    primaryColor: "#F97316",
-  },
-  {
-    videoSource: "https://vz-8bbc7bbf-a1e.b-cdn.net/2f4ed7d2-b4db-4925-b1e5-3d7a314a0307/play_360p.mp4",
-    adUrl: "https://media.begenuin.com/ad-sdk/test-creatives/consumerserivce.xml",
-    logo: "https://media.begenuin.com/ad-sdk/test-creatives/airtasker.webp",
-    primaryColor: "#061257",
-  },
-  {
-    videoSource: "https://vz-8bbc7bbf-a1e.b-cdn.net/4b01ccd6-4da4-4128-b17d-26714707fd69/play_360p.mp4",
-    adUrl: "https://media.begenuin.com/ad-sdk/test-creatives/foodandgroceryads.xml",
-    logo: "https://media.begenuin.com/ad-sdk/test-creatives/impossiblefoods.webp",
-    primaryColor: "#E10600",
-  },
-  {
-    videoSource: "https://vz-8bbc7bbf-a1e.b-cdn.net/09c2567e-73bd-4aca-9348-987da7c7cd20/play_360p.mp4",
-    adUrl: "https://media.begenuin.com/ad-sdk/test-creatives/soda.xml",
-    logo: "https://media.begenuin.com/ad-sdk/test-creatives/skypop.webp",
-    primaryColor: "#061257",
-  },
-] as const;
-
-/**
- * A blank HLS stream used as the `video_url` for static ad feed items.
+ * A blank HLS stream used as the `video_url` for in-feed ad entries.
  *
  * This keeps the HLS player in a valid (but silent) state while the GenAd
  * SDK renders the actual ad content over it.
@@ -176,9 +126,10 @@ const REEL_AD_BREAK_VIDEO_AD = [
  * Build the fullscreen ad-break config for an organic reel from the live ad
  * waterfall above. Stands in for the backend `adObject`.
  *
- * @param reelId  The reel's feed position — offset to keep slot ids unique.
+ * @param reelId        The reel's feed position — offset to keep slot ids unique.
+ * @param gateOnUnmute  Tag-level default; forwarded when the backend omits `gate_on_unmute`.
  */
-export function buildReelAdObject(reelId: number): NormalisedAd {
+export function buildReelAdObject(reelId: number, gateOnUnmute: boolean): NormalisedAd {
   return buildAdObject({
     id: REEL_AD_BREAK_ID_OFFSET + reelId,
     active: false,
@@ -188,73 +139,8 @@ export function buildReelAdObject(reelId: number): NormalisedAd {
     videoAd: REEL_AD_BREAK_VIDEO_AD.map((entry) => ({ ...entry })),
     videoPlatform: REEL_AD_BREAK_VIDEO_AD[0]!.platform,
     adUrl: REEL_AD_BREAK_VIDEO_AD[0]!.url,
+    gateOnUnmute,
   });
-}
-
-// ─── Static ad injection ──────────────────────────────────────────────────────
-
-/**
- * Build a static ad feed item from the catalog at the given index.
- *
- * @param catalogIndex  Position in `STATIC_AD_CONFIGS` (wrapped modulo 4).
- * @param globalIndex   Absolute position used for `video.id` and the item id.
- * @returns An `AdFeedItem` ready to be inserted into the feed.
- */
-export function buildStaticAdItem(catalogIndex: number, globalIndex: number): AdFeedItem {
-  const cfg = STATIC_AD_CONFIGS[catalogIndex % STATIC_AD_CONFIGS.length]!;
-  return {
-    id: globalIndex,
-    active: false,
-    type: "ads",
-    audioAds: false,
-    videoAds: true,
-    video_ad: cfg.adUrl,
-    video_ad_advertiser_details: { logo: cfg.logo, primaryColor: cfg.primaryColor },
-    video_ad_content_video: {
-      url: cfg.videoSource,
-      autoplay: true,
-      loop: true,
-      muted: true,
-      objectFit: "contain",
-    },
-    video_ad_platform: "gen_video",
-    native_ad_platform: undefined,
-    display_ad_platform: undefined,
-    display_ad: undefined,
-    native_ad: undefined,
-    ad_url: cfg.adUrl,
-    video_url: BLANK_HLS_URL,
-    video_type: "hls",
-    thumb: null,
-    user: null,
-    video: { id: `ad-${globalIndex}`, url: cfg.videoSource },
-    community: null,
-    cta: null,
-    loop: null,
-    og_details: null,
-    owner: null,
-    config: null,
-  };
-}
-
-/**
- * Interleave organic feed items with static ad slots.
- *
- * Every feed item is followed by a static ad creative picked from the catalog
- * (cycling modulo 4). After interleaving, all item `id` fields are reassigned
- * 0..n so that array position and id remain in sync.
- *
- * @deprecated Use {@link injectStaticAdEntries} instead.
- * @param transformedFeed  Output of `transformReelData` mapped over raw reels.
- * @returns Feed with static ads at every odd position, ids 0-indexed.
- */
-export function injectStaticAds(transformedFeed: FeedItem[]): FeedItem[] {
-  const result: FeedItem[] = [];
-  for (let i = 0; i < transformedFeed.length; i++) {
-    result.push(transformedFeed[i]!);
-    result.push(buildStaticAdItem(i, transformedFeed.length + i));
-  }
-  return result.map((item, i) => ({ ...item, id: i }));
 }
 
 // ─── Reel data transform ──────────────────────────────────────────────────────
@@ -268,14 +154,6 @@ function generateAdLink(_opts: {
 }): string {
   return "https://programmatic-dsp.infytvcode.repl.co/vast";
 }
-
-/**
- * Tag IDs that fire noAdsCallback when the user reaches the last feed item.
- */
-export const LAST_INDEX_NO_ADS_TAG_IDS: ReadonlySet<string> = new Set([
-  "67f0498997d4b55f87c9b01d",
-  "69846c0e6852c97693efad40",
-]);
 
 /** Helper: returns true when value is an object with at least one key. */
 function hasObjectContent(value: unknown): boolean {
@@ -468,6 +346,8 @@ export interface AdSource {
   nativePlatform?: string;
   displayPlatform?: string;
   adUrl?: string;
+  /** See {@link NormalisedAd.gateOnUnmute}. Defaults to `true` when omitted. */
+  gateOnUnmute?: boolean;
 }
 
 /**
@@ -496,6 +376,7 @@ export function buildAdObject(source: AdSource): NormalisedAd {
     nativePlatform: source.nativePlatform,
     displayPlatform: source.displayPlatform,
     adUrl: source.adUrl,
+    gateOnUnmute: source.gateOnUnmute ?? true,
   };
 }
 
@@ -516,12 +397,12 @@ export function inferVideoAdPlatform(adsUrl: string | undefined): string | undef
 }
 
 /**
- * Map a backend `video.ads_config` into the ad-break {@link NormalisedAd}.
+ * Map a backend `ad_configs.video_ad[0]` entry into the ad-break {@link NormalisedAd}.
  *
  * This is the real-data counterpart to the mock {@link buildReelAdObject}: the
  * organic video plays first, then this ad renders as the fullscreen break.
  *
- * @param adsConfig  The `ads_config` block from `reel.video`.
+ * @param adsConfig  The first element of `reel.ad_configs.video_ad`.
  * @param id         Slot id — offset by the caller to stay unique vs in-feed ads.
  */
 export function buildReelAdObjectFromConfig(adsConfig: AdsConfig, id: number): NormalisedAd {
@@ -536,21 +417,50 @@ export function buildReelAdObjectFromConfig(adsConfig: AdsConfig, id: number): N
     videoAdAdvertiserDetails: adsConfig.advertiserDetails,
     videoAdContentVideo: adsConfig.contentVideo,
     adUrl: adsConfig.ads_url,
+    gateOnUnmute: adsConfig.gate_on_unmute,
   });
+}
+
+/**
+ * Resolve the ad-break config for an organic reel across both backend shapes,
+ * newest-wins:
+ *   1. `reel.ad_configs.video_ad[0]` — current top-level array shape.
+ *   2. `reel.video.ads_config`       — legacy single object nested on `video`.
+ *
+ * Returns the first entry carrying an `ads_url`, or `undefined` when neither
+ * shape supplies one. Keeping the lookup here means {@link normaliseReel} stays
+ * agnostic to which shape the backend sent.
+ *
+ * @param reel  Raw reel from the feed API.
+ */
+export function resolveReelAdConfig(reel: Reel): AdsConfig | undefined {
+  const current = reel.ad_configs?.video_ad?.[0];
+  if (current?.ads_url) return current;
+  const legacy = (reel.video as { ads_config?: AdsConfig | null } | null)?.ads_config;
+  if (legacy?.ads_url) return legacy;
+  return undefined;
 }
 
 /**
  * Normalise a raw organic reel into a NormalisedReel entry.
  *
- * @param reel   Raw reel from feed API.
- * @param index  Zero-based position; becomes id.
- * @param tagId  Tag id; gates the mock fullscreen ad-break `adObject`.
+ * @param reel          Raw reel from feed API.
+ * @param index         Zero-based position; becomes id.
+ * @param tagId         Tag id; gates the mock fullscreen ad-break `adObject`.
+ * @param adBreakEnabled  Whether mock ad-break fallback is active for this tag.
+ * @param gateOnUnmute  Tag-level default for `NormalisedAd.gateOnUnmute` when the
+ *                      backend does not supply an explicit value.
+ * @param adsDisabled   Hard kill switch — when true, no ad break is attached even
+ *                      if the backend supplies one; the reel stays a plain `video`.
  */
 export function normaliseReel(
   reel: Reel,
   index: number,
-  tagId: string
-): { kind: "reel"; data: NormalisedReel } {
+  tagId: string,
+  adBreakEnabled: boolean,
+  gateOnUnmute: boolean,
+  adsDisabled: boolean
+): { kind: "video" | "video-with-ad"; data: NormalisedReel } {
   const isVastType = reel.video_type === "vast";
   // isAdsType check needed to distinguish vast-organic from ads-type reels
   const isAdsType = reel.type === "ads";
@@ -574,17 +484,23 @@ export function normaliseReel(
     ctaColor: "#0645ff",
   };
 
-  // Ad break: drive from the real backend `video.ads_config` when present.
+  // Ad break: drive from the real backend ad config when present — current
+  // `ad_configs.video_ad[0]` or legacy `video.ads_config` (see resolveReelAdConfig).
   // Fall back to the mock waterfall only for flag-enabled tags (dev/demo).
-  const adsConfig = (reel.video as { ads_config?: AdsConfig } | null | undefined)?.ads_config;
-  const adObject: NormalisedAd | undefined = adsConfig?.ads_url
-    ? buildReelAdObjectFromConfig(adsConfig, REEL_AD_BREAK_ID_OFFSET + index)
-    : isFullscreenAdBreakEnabled(tagId)
-      ? buildReelAdObject(index)
-      : undefined;
+  // `adsDisabled` short-circuits both — no ad break regardless of backend value.
+  const adsConfig = resolveReelAdConfig(reel);
+  const adObject: NormalisedAd | undefined = adsDisabled
+    ? undefined
+    : adsConfig?.ads_url
+      ? buildReelAdObjectFromConfig(adsConfig, REEL_AD_BREAK_ID_OFFSET + index)
+      : adBreakEnabled
+        ? buildReelAdObject(index, gateOnUnmute)
+        : undefined;
+
+  const kind: "video" | "video-with-ad" = adObject !== undefined ? "video-with-ad" : "video";
 
   const data: NormalisedReel = {
-    kind: "reel",
+    kind,
     id: index,
     active: index === 0,
     videoUrl,
@@ -602,7 +518,7 @@ export function normaliseReel(
     adObject,
   };
 
-  return { kind: "reel", data };
+  return { kind, data };
 }
 
 /**
@@ -680,84 +596,39 @@ export function normaliseAd(reel: Reel, index: number): { kind: "ad"; data: Norm
     nativePlatform,
     displayPlatform,
     adUrl,
+    // Standalone ads-type reel — defaults to false (request immediately,
+    // don't wait for unmute) unless the backend opts in via gate_on_unmute.
+    gateOnUnmute: reel.gate_on_unmute ?? false,
   });
 
   return { kind: "ad", data };
 }
 
 /**
- * Build a static ad FeedEntry from the catalog at the given index.
- *
- * @param catalogIndex  Position in STATIC_AD_CONFIGS (wrapped modulo 4).
- * @param globalIndex   Absolute position used for id.
- */
-/**
- * Shape a static catalog creative as a raw backend `type:"ads"` reel.
- *
- * This is what lets static ads be created exactly like real backend ads: the
- * returned reel has the same `video_ad[]` shape the feed API sends, so it can
- * be run through {@link normaliseAd} instead of a bespoke builder.
- *
- * @param cfg  A creative from {@link STATIC_AD_CONFIGS}.
- */
-export function staticAdConfigToReel(cfg: StaticAdConfig): Reel {
-  return {
-    type: "ads",
-    video_ad: [
-      {
-        url: cfg.adUrl,
-        ads_url: cfg.adUrl,
-        platform: "gen_video",
-        advertiserDetails: { logo: cfg.logo, primaryColor: cfg.primaryColor },
-        contentVideo: { url: cfg.videoSource, autoplay: true, loop: true, muted: true, objectFit: "contain" },
-      },
-    ],
-  } as unknown as Reel;
-}
-
-export function buildStaticAdEntry(catalogIndex: number, globalIndex: number): { kind: "ad"; data: NormalisedAd } {
-  const cfg = STATIC_AD_CONFIGS[catalogIndex % STATIC_AD_CONFIGS.length]!;
-  // Built through the same backend pipeline as a real `type:"ads"` reel.
-  return normaliseAd(staticAdConfigToReel(cfg), globalIndex);
-}
-
-/**
  * Normalise a raw reel array into a FeedEntry array.
- * Does not apply static ad injection — call injectStaticAdEntries separately.
  *
- * @param reels              Raw reels from the feed API.
- * @param tagId              Tag id; gates the mock fullscreen ad-break `adObject`.
+ * @param reels           Raw reels from the feed API.
+ * @param tagId           Tag id; used for per-reel ad config lookups.
+ * @param adBreakEnabled  Whether the mock fullscreen ad-break fallback is active.
+ * @param gateOnUnmute    Tag-level default for `NormalisedAd.gateOnUnmute` when the
+ *                        backend does not supply an explicit value.
+ * @param adsDisabled     Hard kill switch — when true, backend ad slides are dropped
+ *                        and no ad break is attached to organic reels.
  */
-export function normaliseFeed(reels: Reel[], tagId: string): FeedEntry[] {
-  return reels.map((reel, index) =>
-    reel.type === "ads" ? normaliseAd(reel, index) : normaliseReel(reel, index, tagId)
-  );
-}
-
-/**
- * Re-stamp an id onto a FeedEntry without breaking the discriminated union.
- * TypeScript cannot narrow through a generic spread, so we switch on kind explicitly.
- */
-function withId(entry: FeedEntry, id: number): FeedEntry {
-  switch (entry.kind) {
-    case "reel":
-      return { kind: "reel", data: { ...entry.data, id } };
-    case "ad":
-      return { kind: "ad", data: { ...entry.data, id } };
-  }
-}
-
-/**
- * Interleave FeedEntry array with static ad entries.
- * Mirrors injectStaticAds but operates on FeedEntry[].
- *
- * @param entries  Output of normaliseFeed.
- */
-export function injectStaticAdEntries(entries: FeedEntry[]): FeedEntry[] {
-  const result: FeedEntry[] = [];
-  for (let i = 0; i < entries.length; i++) {
-    result.push(entries[i]!);
-    result.push(buildStaticAdEntry(i, entries.length + i));
-  }
-  return result.map((entry, i) => withId(entry, i));
+export function normaliseFeed(
+  reels: Reel[],
+  tagId: string,
+  adBreakEnabled: boolean,
+  gateOnUnmute: boolean,
+  adsDisabled: boolean
+): FeedEntry[] {
+  return reels.reduce<FeedEntry[]>((entries, reel, index) => {
+    if (reel.type === "ads") {
+      // Drop standalone backend ad slides entirely when ads are disabled.
+      if (!adsDisabled) entries.push(normaliseAd(reel, index));
+      return entries;
+    }
+    entries.push(normaliseReel(reel, index, tagId, adBreakEnabled, gateOnUnmute, adsDisabled));
+    return entries;
+  }, []);
 }

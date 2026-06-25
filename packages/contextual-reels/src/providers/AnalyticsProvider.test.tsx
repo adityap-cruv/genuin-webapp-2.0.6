@@ -241,6 +241,60 @@ describe("providers/AnalyticsProvider", () => {
     unmount(root, container);
   });
 
+  it("injects brand_id registered via setBrandId into every event's event_details", () => {
+    let readyCb: (() => void) | undefined;
+    readyMock.mockImplementation((cb: () => void) => {
+      readyCb = cb;
+    });
+    setRudder();
+    trackMock.mockClear();
+    const handle: { send: () => void; setBrand: (id: number | undefined) => void } = {
+      send: () => undefined,
+      setBrand: () => undefined,
+    };
+    function BrandConsumer(): ReactElement {
+      const { sendEvent, setBrandId } = useAnalytics();
+      handle.send = () => sendEvent("evt", { foo: "bar" });
+      handle.setBrand = setBrandId;
+      return <span />;
+    }
+    const { root, container } = mount(
+      <AnalyticsProvider tagId="tag-xyz">
+        <BrandConsumer />
+      </AnalyticsProvider>
+    );
+    // Register brand_id before emitting — mirrors TagLoader's load sequence.
+    act(() => handle.setBrand(99));
+    act(() => handle.send());
+    act(() => readyCb?.());
+    expect(trackMock).toHaveBeenCalledTimes(1);
+    const payload = trackMock.mock.calls[0]?.[1] as Record<string, unknown>;
+    const details = payload.event_details as Record<string, unknown>;
+    expect(details.brand_id).toBe(99);
+    expect(details.tag_id).toBe("tag-xyz");
+    unmount(root, container);
+  });
+
+  it("omits brand_id when setBrandId has not been called", () => {
+    let readyCb: (() => void) | undefined;
+    readyMock.mockImplementation((cb: () => void) => {
+      readyCb = cb;
+    });
+    setRudder();
+    trackMock.mockClear();
+    const handle: ConsumerHandle = { send: () => undefined };
+    const { root, container } = mount(
+      <AnalyticsProvider tagId="tag-xyz">
+        <Consumer name="evt" handle={handle} />
+      </AnalyticsProvider>
+    );
+    act(() => handle.send());
+    act(() => readyCb?.());
+    const payload = trackMock.mock.calls[0]?.[1] as Record<string, unknown>;
+    expect((payload.event_details as Record<string, unknown>)).not.toHaveProperty("brand_id");
+    unmount(root, container);
+  });
+
   it("exposes a stable sendEvent reference across renders", () => {
     const seen: Array<unknown> = [];
     function StableConsumer(): ReactElement {

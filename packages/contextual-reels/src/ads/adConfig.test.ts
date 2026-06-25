@@ -32,6 +32,7 @@ const BASE_AD: NormalisedAd = {
   nativePlatform: undefined,
   displayPlatform: undefined,
   adUrl: undefined,
+  gateOnUnmute: true,
 };
 
 describe("buildGenAdInitOptions", () => {

@@ -11,7 +11,6 @@
  * mounts the SDK panel directly (no DynamicSheet, no state ladder) and
  * auto-prompts in `mode: "full"`. Lifecycle phases are ignored for layout.
  */
-import { isGenAiAllowed } from "@cxr/config";
 import { useEffect, useRef, useState } from "react";
 
 import { OctoSdkPanel } from "./OctoSdkPanel";
@@ -28,7 +27,6 @@ export function OctoSplitView({
   videoId,
   brandId,
   isActive,
-  tagId,
 }: OctoSheetProps): React.JSX.Element | null {
   // Monotonic activation key for SDK destroy+reinit on reel re-activation.
   const [activationKey, setActivationKey] = useState(0);
@@ -40,7 +38,6 @@ export function OctoSplitView({
   }, [isActive]);
 
   if (!videoId) return null;
-  if (!isGenAiAllowed(tagId)) return null;
 
   const isOpen = isActive;
 

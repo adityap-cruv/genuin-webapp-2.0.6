@@ -12,9 +12,8 @@
  */
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, type ReactNode } from "react";
 
-import { EVENT } from "@cxr/analytics/analytics";
 import type { AdProviderKind } from "@cxr/ads/normalizers";
 import {
   installGenaiBridge,
@@ -23,8 +22,14 @@ import {
   notifyAdFill,
   notifyAdNoFill,
 } from "@cxr/ads/waterfall";
+import { EVENT } from "@cxr/analytics/analytics";
+import { AD_LAYOUT, type AdLayoutId } from "@cxr/config";
 import { useEventBus } from "@cxr/instance/coordination/EventBusContext";
 import { useAnalytics } from "@cxr/providers/AnalyticsProvider";
+import { useStrategy } from "@cxr/strategies/StrategyProvider";
+import { createLogger } from "@cxr/utils/logger";
+
+const _logger = createLogger("cxr/ad-provider");
 
 /** Context value exposed by `useAdWaterfall`. */
 export interface AdWaterfallContextValue {
@@ -32,13 +37,10 @@ export interface AdWaterfallContextValue {
   onAdSuccess: (provider: AdProviderKind) => void;
   /** Call when the full waterfall fails to fill the slot. */
   onAdFail: () => void;
-  /** The embed layout variant string (e.g. `'mobile-320x50'`). */
-  adLayout: string;
-  /** True when the layout is an audio-only ad layout (`mobile-320x50` or `mobile-320x100`). */
+  /** The numeric embed layout id (see `AD_LAYOUT`). */
+  adLayout: AdLayoutId;
+  /** True when the layout is an audio-only ad layout (L3 or L4). */
   isAudioOnlyAds: boolean;
-  /** True while a fullscreen ad break has its ad/cover on screen. */
-  isAdBreakActive: boolean;
-  setAdBreakActive: (active: boolean) => void;
 }
 
 const AdWaterfallContext = createContext<AdWaterfallContextValue | undefined>(undefined);
@@ -46,8 +48,9 @@ const AdWaterfallContext = createContext<AdWaterfallContextValue | undefined>(un
 interface AdProviderProps {
   children: ReactNode;
   /**
-   * The root tag ID — used to gate single-hit tag behaviour.
-   * If the `ConfigProvider` is not yet available, pass this as a prop.
+   * The root tag ID — retained for analytics and external callers.
+   * Single-hit waterfall gating now derives from `useStrategy().singleHitWaterfall`
+   * rather than a per-tag allowlist.
    */
   tagId: string;
   /** Tag height in px — forwarded to the `Ad Passback` analytics event. */
@@ -55,10 +58,10 @@ interface AdProviderProps {
   /** Tag width in px — forwarded to the `Ad Passback` analytics event. */
   tagWidth?: number;
   /**
-   * The embed layout variant string.
-   * Defaults to `'unknown'` when the embedding page has not specified a layout.
+   * The numeric embed layout id.
+   * Defaults to `AD_LAYOUT.Unknown` when the embedding page has not specified a layout.
    */
-  adLayout?: string;
+  adLayout?: AdLayoutId;
 }
 
 /**
@@ -75,9 +78,17 @@ interface AdProviderProps {
  * </AdProvider>
  * ```
  */
-export function AdProvider({ children, tagId, tagHeight, tagWidth, adLayout = "unknown" }: AdProviderProps): ReactNode {
+
+export function AdProvider({
+  children,
+  tagId,
+  tagHeight,
+  tagWidth,
+  adLayout = AD_LAYOUT.Unknown,
+}: AdProviderProps): ReactNode {
   const { sendEvent } = useAnalytics();
   const bus = useEventBus();
+  const { singleHitWaterfall } = useStrategy();
 
   const fillCountRef = useRef(0);
   const noFillCountRef = useRef(0);
@@ -87,26 +98,26 @@ export function AdProvider({ children, tagId, tagHeight, tagWidth, adLayout = "u
   const onAdSuccess = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     (_provider: AdProviderKind): void => {
-      if (!shouldCountFill(tagId, fillCountRef.current)) return;
+      if (!shouldCountFill(singleHitWaterfall, fillCountRef.current)) return;
       fillCountRef.current += 1;
       notifyAdFill();
       const elapsed = Date.now() - renderStartRef.current;
-      console.log("notifyAdFill", `+${elapsed}ms (${(elapsed / 1000).toFixed(2)}s) from page load`);
+      _logger.debug(`notifyAdFill +${elapsed}ms (${(elapsed / 1000).toFixed(2)}s) from page load`);
     },
-    [tagId]
+    [singleHitWaterfall]
   );
 
   const onAdFail = useCallback((): void => {
-    if (!shouldCountNoFill(tagId, noFillCountRef.current)) return;
+    if (!shouldCountNoFill(singleHitWaterfall, noFillCountRef.current)) return;
     noFillCountRef.current += 1;
     notifyAdNoFill();
     const elapsed = Date.now() - renderStartRef.current;
-    console.log("notifyAdNoFill", `+${elapsed}ms (${(elapsed / 1000).toFixed(2)}s) from page load`);
-    sendEvent(EVENT.AD_PASSBACK, {
+    _logger.debug(`notifyAdNoFill +${elapsed}ms (${(elapsed / 1000).toFixed(2)}s) from page load`);
+    sendEvent("Ad Passback", {
       tag_height: tagHeight,
       tag_width: tagWidth,
     });
-  }, [tagId, tagHeight, tagWidth, sendEvent]);
+  }, [singleHitWaterfall, tagHeight, tagWidth, sendEvent]);
 
   useEffect(() => {
     return installGenaiBridge(
@@ -116,14 +127,10 @@ export function AdProvider({ children, tagId, tagHeight, tagWidth, adLayout = "u
     );
   }, [bus, onAdSuccess, onAdFail]);
 
-  const isAudioOnlyAds = adLayout === "mobile-320x50" || adLayout === "mobile-320x100";
-
-  // Set by the reel whose fullscreen ad break is on screen; hides widget chrome.
-  const [isAdBreakActive, setAdBreakActive] = useState(false);
+  const isAudioOnlyAds = adLayout === AD_LAYOUT.L3 || adLayout === AD_LAYOUT.L4;
 
   return (
-    <AdWaterfallContext.Provider
-      value={{ onAdSuccess, onAdFail, adLayout, isAudioOnlyAds, isAdBreakActive, setAdBreakActive }}>
+    <AdWaterfallContext.Provider value={{ onAdSuccess, onAdFail, adLayout, isAudioOnlyAds }}>
       {children}
     </AdWaterfallContext.Provider>
   );

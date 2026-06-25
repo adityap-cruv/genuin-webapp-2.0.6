@@ -7,9 +7,25 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { DefaultBottomBar } from "@cxr/controls/bottombar/DefaultBottomBar";
 import type { NormalisedReel, TagResponse } from "@cxr/types";
 
+vi.mock("@cxr/providers/GenAIProvider", () => ({
+  useGenAI: vi.fn(() => ({
+    genAiEnabled: false,
+    octoFraction: 0,
+    setOctoFraction: vi.fn(),
+    octoAxis: "y" as const,
+    setOctoAxis: vi.fn(),
+  })),
+  useOctoSplit: vi.fn(() => ({
+    octoFraction: 0,
+    octoAxis: "y" as const,
+    splitActive: false,
+    playerShare: 1,
+  })),
+}));
+
 function makeReel(overrides: Partial<NormalisedReel> = {}): NormalisedReel {
   return {
-    kind: "reel",
+    kind: "video",
     id: 0,
     active: true,
     videoUrl: null,

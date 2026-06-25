@@ -15,12 +15,12 @@ import { genAdSlotAdProps } from "@cxr/ads/adSlotProps";
 import type { AdCtaDetails } from "@cxr/ads/genAdSdk";
 import { AdControlLayer } from "@cxr/controls/AdControlLayer";
 import { useInactivityAdvance } from "@cxr/feed/hooks/useInactivityAdvance";
+import { useEventBus } from "@cxr/instance/coordination/EventBusContext";
 import { useInstanceId } from "@cxr/instance/registry/InstanceContext";
 import { useAdWaterfall } from "@cxr/providers/AdProvider";
 import { useFullScreen } from "@cxr/providers/FullScreenProvider";
 import { usePlayer } from "@cxr/providers/PlayerProvider";
 import type { NormalisedAd } from "@cxr/types";
-import { useEventBus } from "@cxr/instance/coordination/EventBusContext";
 
 /** Props for {@link AdLayout}. */
 export interface AdLayoutProps {
@@ -109,9 +109,6 @@ export function AdLayout({ ad, isActive, onAutoAdvance }: AdLayoutProps): React.
         instanceId={instanceId}
         isActive={isActive}
         isMuted={isMuted}
-        // Standalone `type:"ads"` slide — request immediately, don't wait for
-        // unmute (unlike organic-video ad breaks, which gate on unmute).
-        gateOnUnmute={false}
         isPlay={isPlaying}
         tagDetails={{}}
         item={{}}

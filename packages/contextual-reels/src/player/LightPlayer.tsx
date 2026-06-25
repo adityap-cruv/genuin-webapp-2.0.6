@@ -93,11 +93,18 @@ export function LightPlayer({
     return () => video.removeEventListener("volumechange", handleVolumeChange);
   }, [videoEl, setVolume]);
 
-  // Determine whether this item is a "video" item for analytics purposes.
-  // NormalisedReel uses camelCase `videoType`; legacy raw reels use snake_case `video_type`.
-  // Any non-null/non-vast videoType means this is a playable video item.
+  // Determine whether this item is a "video" item for analytics + auto-advance.
+  // NormalisedReel uses `kind` ("video" | "video-with-ad") and camelCase
+  // `videoType`; legacy raw reels use `type` / snake_case `video_type`. Organic
+  // reels often have a null video_type, so the `kind` check is what lets them
+  // auto-advance on completion — not just vast/typed items.
+  const rawKind = videoDetails["kind"];
   const rawVideoType = videoDetails["video_type"] ?? videoDetails["videoType"];
-  const isVideoItem = videoDetails["type"] === "video" || (typeof rawVideoType === "string" && rawVideoType !== "");
+  const isVideoItem =
+    videoDetails["type"] === "video" ||
+    rawKind === "video" ||
+    rawKind === "video-with-ad" ||
+    (typeof rawVideoType === "string" && rawVideoType !== "");
   const handleTimeUpdate = useCallback(
     (currentTime: number, duration: number, itemId: number) => {
       if (duration > 0) setProgress(currentTime / duration);

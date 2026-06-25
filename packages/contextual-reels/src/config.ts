@@ -59,12 +59,24 @@ export const RUDDER_SDK_BASE_URL = "https://cdn.rudderlabs.com/v3";
 
 // ─── Ad layout resolver ───────────────────────────────────────────────────────
 
-/** Identifier strings emitted by {@link resolveAdLayout}. */
-export type AdLayoutId = "desktop-300x600" | "desktop-300x250" | "mobile-320x50" | "mobile-320x100" | "unknown";
+/**
+ * Numeric identifiers for supported ad slot sizes.
+ * Use these constants everywhere — pixel dimensions live in comments only.
+ */
+export const AD_LAYOUT = {
+  Unknown: 0,
+  L1: 1, // desktop 300×600 — full player
+  L2: 2, // desktop 300×250 — full player + Octo overlay
+  L3: 3, // mobile 320×50  — compact bar, no player
+  L4: 4, // mobile 320×100 — banner with 100px thumbnail player
+} as const;
+
+/** Numeric layout identifier produced by {@link resolveAdLayout}. */
+export type AdLayoutId = (typeof AD_LAYOUT)[keyof typeof AD_LAYOUT];
 
 /** A single supported ad slot size. */
 export interface AdLayoutVariant {
-  readonly id: Exclude<AdLayoutId, "unknown">;
+  readonly id: Exclude<AdLayoutId, 0>;
   readonly width: number;
   readonly height: number;
 }
@@ -73,13 +85,13 @@ export interface AdLayoutVariant {
  * The four pixel-perfect ad sizes the widget supports.
  *
  * Order is intentional — the resolver scans front-to-back so the canonical
- * "primary" variant (300x600) is listed first for documentation purposes.
+ * "primary" variant (L1) is listed first for documentation purposes.
  */
 export const adLayoutVariants: readonly AdLayoutVariant[] = [
-  { id: "desktop-300x600", width: 300, height: 600 },
-  { id: "desktop-300x250", width: 300, height: 250 },
-  { id: "mobile-320x50", width: 320, height: 50 },
-  { id: "mobile-320x100", width: 320, height: 100 },
+  { id: AD_LAYOUT.L1, width: 300, height: 600 },
+  { id: AD_LAYOUT.L2, width: 300, height: 250 },
+  { id: AD_LAYOUT.L3, width: 320, height: 50 },
+  { id: AD_LAYOUT.L4, width: 320, height: 100 },
 ] as const;
 
 /**
@@ -87,95 +99,26 @@ export const adLayoutVariants: readonly AdLayoutVariant[] = [
  *
  * @param width  Slot width in CSS pixels.
  * @param height Slot height in CSS pixels.
- * @returns The matching layout id, or `'unknown'` when no variant matches
- *          exactly (also returned when either dimension is falsy).
+ * @returns The matching layout id, or `AD_LAYOUT.Unknown` (0) when no variant
+ *          matches exactly (also returned when either dimension is falsy).
  */
 export function resolveAdLayout(width = 0, height = 0): AdLayoutId {
-  if (!width || !height) return "unknown";
+  if (!width || !height) return AD_LAYOUT.Unknown;
   const exact = adLayoutVariants.find((v) => v.width === width && v.height === height);
-  return exact ? exact.id : "unknown";
+  return exact ? exact.id : AD_LAYOUT.Unknown;
 }
 
-// ─── Tag allow lists ──────────────────────────────────────────────────────────
-
-/**
- * The tag ids for which the GenAI experience is enabled.
- *
- * Pinned to the legacy list — DO NOT extend without confirming the GenAI
- * pipeline can serve the new tag.
- */
-export const GENAI_ENABLED_TAG_IDS: readonly string[] = [
-  // "69846c0e6852c97693efad40",
-  // "69c66cfe2d3aa5231a687a3d",
-  // "69c66cfe2d3aa5231a687a3d",
-] as const;
-
-/**
- * Returns whether the given tag id is allowed to render the GenAI experience.
- *
- * @param tagId The tag identifier to test. Empty strings return `false`.
- */
-export function isGenAiAllowed(tagId: string): boolean {
-  if (!tagId) return false;
-  return GENAI_ENABLED_TAG_IDS.includes(tagId);
-}
-
-/**
- * Tag IDs for which the fullscreen ad break on organic videos is enabled.
- * While enabled, every reel gets a mock `adObject` (see `buildReelAdObject`)
- * until the backend supplies real per-reel ad configs.
- */
-export const FULLSCREEN_AD_BREAK_ENABLED_TAG_IDS: readonly string[] = [
-  "6a2fefd87ce338c3a5afc605",
-  "6a391232d73aa25887ac2af3",
-] as const;
-
-/**
- * Returns whether the fullscreen ad break is enabled for the given tag.
- *
- * @param tagId The tag identifier to test. Empty strings return `false`.
- */
-export function isFullscreenAdBreakEnabled(tagId: string): boolean {
-  if (!tagId) return false;
-  return FULLSCREEN_AD_BREAK_ENABLED_TAG_IDS.includes(tagId);
-}
-
-/**
- * Tag IDs that require the user to unmute within 3 seconds or trigger an ad passback.
- * If the widget starts muted (volume 0) and the user does not unmute within the timeout,
- * `onAdFail` is called to signal no engagement.
- */
-export const MUTE_PASSBACK_TAG_IDS: readonly string[] = [
-  "6a032e34054c8fcb08582510",
-  "6a032de445fa9f171bd291cb",
-  "69b298e3d6a6ad57e7b9a464",
-  "69b298f4d6a6ad57e7b9a499",
-] as const;
-
-/**
- * Returns whether the mute-passback behaviour is enabled for the given tag.
- *
- * @param tagId The tag identifier to test. Empty strings return `false`.
- */
-export function isMutePassbackEnabled(tagId: string): boolean {
-  if (!tagId) return false;
-  return MUTE_PASSBACK_TAG_IDS.includes(tagId);
-}
-
-/**
- * Tag IDs for which static ad injection is enabled in the feed.
- */
-export const STATIC_AD_INJECT_TAG_IDS: readonly string[] = [] as const;
-
-/**
- * Returns whether static ad injection is enabled for the given tag.
- *
- * @param tagId The tag identifier to test. Empty strings return `false`.
- */
-export function isStaticAdInjectionEnabled(tagId: string): boolean {
-  if (!tagId) return false;
-  return STATIC_AD_INJECT_TAG_IDS.includes(tagId);
-}
+// ─── Tag strategy predicates ────────────────────────────────────────────────
+// Predicates live in strategies/strategies.ts (thin wrappers over the cascade
+// resolver) — re-exported here so existing @cxr/config imports keep working.
+export {
+  isGenAiAllowed,
+  isAdBreakEnabled,
+  isGateOnUnmuteEnabled,
+  isSingleHitWaterfallEnabled,
+  isAdsDisabled,
+  isMutePassbackEnabled,
+} from "@cxr/strategies/strategies";
 
 // utils/isIframe.ts
 export function isIframe(): boolean {

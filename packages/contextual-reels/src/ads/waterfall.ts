@@ -10,40 +10,23 @@ import { createLogger } from "@cxr/utils/logger";
 const _logger = createLogger("cxr/waterfall");
 
 /**
- * Tag IDs that should only trigger the fill/no-fill callback once per page
- * load, regardless of how many ad slots are on the page.
- */
-export const SINGLE_HIT_TAG_IDS: ReadonlySet<string> = new Set([
-  "69b298e3d6a6ad57e7b9a464",
-  "69b298f4d6a6ad57e7b9a499",
-  // 300x600
-  "69b298e3d6a6ad57e7b9a464",
-  // 300x250
-  "69b298f4d6a6ad57e7b9a499",
-  // 320x100
-  "6a032e34054c8fcb08582510",
-  // 320x50
-  "6a032de445fa9f171bd291cb",
-]);
-
-/**
  * Returns `true` if the fill event should be counted (and thus forwarded).
  *
  * Single-hit tags suppress all fills after the first.
  *
- * @param tagId           The tag identifier.
- * @param currentFillCount Number of fills already counted this session.
+ * @param singleHit         Whether the active tag is single-hit (from `useStrategy`).
+ * @param currentFillCount  Number of fills already counted this session.
  *
  * @example
  * ```ts
- * if (shouldCountFill(tagId, fillCount.current)) {
+ * if (shouldCountFill(singleHitWaterfall, fillCount.current)) {
  *   fillCount.current += 1;
  *   notifyAdFill();
  * }
  * ```
  */
-export function shouldCountFill(tagId: string, currentFillCount: number): boolean {
-  if (SINGLE_HIT_TAG_IDS.has(tagId) && currentFillCount >= 1) return false;
+export function shouldCountFill(singleHit: boolean, currentFillCount: number): boolean {
+  if (singleHit && currentFillCount >= 1) return false;
   return true;
 }
 
@@ -52,19 +35,19 @@ export function shouldCountFill(tagId: string, currentFillCount: number): boolea
  *
  * Single-hit tags suppress all no-fills after the first.
  *
- * @param tagId               The tag identifier.
+ * @param singleHit           Whether the active tag is single-hit (from `useStrategy`).
  * @param currentNoFillCount  Number of no-fills already counted this session.
  *
  * @example
  * ```ts
- * if (shouldCountNoFill(tagId, noFillCount.current)) {
+ * if (shouldCountNoFill(singleHitWaterfall, noFillCount.current)) {
  *   noFillCount.current += 1;
  *   notifyAdNoFill();
  * }
  * ```
  */
-export function shouldCountNoFill(tagId: string, currentNoFillCount: number): boolean {
-  if (SINGLE_HIT_TAG_IDS.has(tagId) && currentNoFillCount >= 1) return false;
+export function shouldCountNoFill(singleHit: boolean, currentNoFillCount: number): boolean {
+  if (singleHit && currentNoFillCount >= 1) return false;
   return true;
 }
 

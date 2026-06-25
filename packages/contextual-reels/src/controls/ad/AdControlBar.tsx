@@ -42,17 +42,15 @@ export function AdControlBar({
   // icon instead of staying stuck on the "sound on" enticement.
   const interacted = useUserInteracted();
   const isV2 = useNewPlayerControls();
-  const perceivedMuted = muteToggled || interacted ? isMuted : false;
+  const engaged = muteToggled || interacted;
+  const perceivedMuted = engaged ? isMuted : false;
   const handleMute = () => {
-    if (!muteToggled) {
-      // First tap on the sound-on enticement: the user wants audio, so unmute
-      // regardless of what `perceivedMuted` (forced false pre-toggle) implies.
-      setMuteToggled(true);
-      onMuteClick(false);
-      return;
-    }
-    // Subsequent taps: drive audio to the opposite of what the user currently sees.
-    onMuteClick(!perceivedMuted);
+    setMuteToggled(true);
+    // Before the user has engaged at all, the icon is the forced sound-on
+    // enticement over an actually-muted ad: the tap means "I want audio", so
+    // unmute outright. Once engaged (tapped here OR unmuted via the ad overlay),
+    // `perceivedMuted` tracks the real state, so just toggle to its opposite.
+    onMuteClick(engaged ? !perceivedMuted : false);
   };
   const handleExpand = onFullScreenClick ?? (() => undefined);
 
@@ -70,6 +68,7 @@ export function AdControlBar({
       <CompactControlBar
         size={layout === "320x50" ? "sm" : "md"}
         useV2Icons={isV2}
+        showWatchInSm
         cta={cta}
         isPlay={isPlay}
         isMuted={perceivedMuted}
@@ -78,6 +77,7 @@ export function AdControlBar({
         onMuteClick={handleMute}
         onFullScreenClick={handleExpand}
         onWatchClick={onFullScreenClick}
+        className="gencl:p-1!"
       />
     );
   }

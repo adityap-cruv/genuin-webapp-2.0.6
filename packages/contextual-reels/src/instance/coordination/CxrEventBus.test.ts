@@ -16,12 +16,12 @@ describe("CxrEventBus", () => {
   it("returns an off() function that stops further deliveries", () => {
     const bus = new CxrEventBus();
     const handler = vi.fn();
-    const off = bus.on("genai:chatClosed", handler);
-    bus.emit("genai:chatClosed", { identifier: "one" });
+    const off = bus.on("genai:videoId", handler);
+    bus.emit("genai:videoId", { videoId: "one" });
     off();
-    bus.emit("genai:chatClosed", { identifier: "two" });
+    bus.emit("genai:videoId", { videoId: "two" });
     expect(handler).toHaveBeenCalledTimes(1);
-    expect(handler).toHaveBeenCalledWith({ identifier: "one" });
+    expect(handler).toHaveBeenCalledWith({ videoId: "one" });
   });
 
   it("delivers to every listener attached to the same event", () => {

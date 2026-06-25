@@ -1,11 +1,10 @@
 "use client";
+import { ShareIcon, SparkIcon } from "@genuin/ui/icons";
 import React, { lazy, Suspense } from "react";
 
-import { ShareIcon, SparkIcon } from "@genuin/ui/icons";
-
-import { assetLink, isGenAiAllowed } from "@cxr/config";
+import { assetLink } from "@cxr/config";
 import type { BottomBarSubProps, ControlLayerVariant } from "@cxr/controls/control-layer.types";
-import { useOctoSplit } from "@cxr/providers/GenAIProvider";
+import { useGenAI, useOctoSplit } from "@cxr/providers/GenAIProvider";
 import type { NormalisedReel, TagResponse } from "@cxr/types";
 import { copyToClipboard, openShareLink } from "@cxr/utils/share";
 
@@ -210,6 +209,7 @@ export function DefaultBottomBar({
   onMuteClick,
   onPlayClick,
 }: BottomBarSubProps): React.JSX.Element {
+  const { genAiEnabled } = useGenAI();
   const isSmall = isSmallDimensions(dimensions);
   // In fullscreen, compact layouts (320x50/320x100) skip the ResizeObserver, so
   // `dimensions` is {0,0} — fall back to the viewport height (mirrors ProfileRow)
@@ -252,12 +252,12 @@ export function DefaultBottomBar({
 
           {/* Single Octo gate: only allowed tags mount the lazy OctoSheet, so the
               octo chunk (and the GenAI SDK it pulls) is never fetched otherwise. */}
-          {isGenAiAllowed(tagDetails?.tag_id ?? "") && item.video?.id && (
+          {genAiEnabled && item.video?.id && (
             <Suspense fallback={null}>
               <OctoSheet
                 instanceId={instanceId}
                 videoId={item.video.id}
-                brandId={tagDetails?.customer_id ? Number(tagDetails.customer_id) : undefined}
+                brandId={tagDetails?.brand_id}
                 dimensions={dimensions}
                 isFullScreen={isFullScreen}
                 isActive={isActive}

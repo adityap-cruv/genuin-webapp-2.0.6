@@ -18,6 +18,7 @@ export interface GenAdSlotAdProps {
   videoAd: unknown;
   videoAdAdvertiserDetails: NormalisedAd["videoAdAdvertiserDetails"];
   videoAdContentVideo: NormalisedAd["videoAdContentVideo"];
+  gateOnUnmute: boolean;
 }
 
 /**
@@ -34,5 +35,6 @@ export function genAdSlotAdProps(ad: NormalisedAd): GenAdSlotAdProps {
     videoAd: ad.videoAd,
     videoAdAdvertiserDetails: ad.videoAdAdvertiserDetails,
     videoAdContentVideo: ad.videoAdContentVideo,
+    gateOnUnmute: ad.gateOnUnmute,
   };
 }

@@ -1,4 +1,5 @@
 import type { AdCtaDetails } from "@cxr/ads/genAdSdk";
+import type { AdLayoutId } from "@cxr/config";
 import type { NormalisedReel, TagResponse } from "@cxr/types";
 
 /** Supported UI variant identifiers for the control layer. */
@@ -22,11 +23,8 @@ export interface ControlLayerProps {
 
 /** Full prop surface for the VideoControlLayer orchestrator. */
 export interface VideoControlLayerProps extends ControlLayerProps {
-  /**
-   * The embed layout variant string (e.g. `'mobile-320x50'`).
-   * Drives compact-vs-full rendering without prop drilling from the layout layer.
-   */
-  adLayout: string;
+  /** The numeric embed layout id (see `AD_LAYOUT`). */
+  adLayout: AdLayoutId;
 }
 
 /** Full prop surface for the AdControlLayer. */
@@ -34,7 +32,7 @@ export interface AdControlLayerProps {
   isFullScreen: boolean;
   isPlay: boolean;
   isMuted: boolean;
-  adLayout: string;
+  adLayout: AdLayoutId;
   /**
    * Whether the ad slot has received a fill or definitive no-fill from the waterfall.
    * Controls are hidden while this is false (ad is still loading).

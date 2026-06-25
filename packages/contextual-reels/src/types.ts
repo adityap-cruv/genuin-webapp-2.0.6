@@ -34,8 +34,12 @@ export interface TagResponse {
     url?: string;
     ad_copy?: string;
   } | null;
-  /** Customer/advertiser identifier. */
+  /** Customer/advertiser identifier (legacy string form). */
   customer_id?: string;
+  /** Numeric brand identifier — used to initialise the Octo GenAI SDK. */
+  brand_id?: number;
+  /** Brand primary colour hex — used as compact-layout backdrop. */
+  brand_color?: string;
   /**
    * Generic tag-level config blob.
    *
@@ -77,9 +81,9 @@ export interface TagResponse {
 }
 
 /**
- * Per-reel ad configuration delivered on `reel.video.ads_config`.
+ * Per-reel ad configuration — one element of `reel.ad_configs.video_ad`.
  *
- * The backend attaches this to an organic (loop/reel) video to schedule a
+ * The backend attaches this to an organic (loop/reel) item to schedule a
  * fullscreen ad break. Only `ads_url` is guaranteed today; the optional fields
  * let the same shape carry richer creatives later without a type change.
  */
@@ -92,6 +96,11 @@ export interface AdsConfig {
   advertiserDetails?: { logo: string; primaryColor: string };
   /** Companion content video to play behind the ad. */
   contentVideo?: { url: string; autoplay: boolean; loop: boolean; muted: boolean; objectFit: string };
+  /**
+   * Whether the ad request must wait for the user to unmute before firing.
+   * Omitted/`undefined` defaults to `true` (gate on unmute) — see {@link NormalisedAd.gateOnUnmute}.
+   */
+  gate_on_unmute?: boolean;
   /** Forward-compatible escape hatch for fields the backend adds later. */
   [key: string]: unknown;
 }
@@ -99,8 +108,7 @@ export interface AdsConfig {
 /**
  * Shape of a single item in the raw feed returned by the backend.
  *
- * This is the *server response* shape. Downstream code (e.g. `injectStaticAds`)
- * maps it to `FeedItem`.
+ * This is the *server response* shape. Downstream code maps it to `FeedItem`.
  */
 export interface Reel {
   /** Numeric position index assigned by the feed pipeline. */
@@ -137,9 +145,17 @@ export interface Reel {
     thumbnail?: string;
     description?: string;
     share_string?: string;
-    /** Schedules a fullscreen ad break for this organic video. */
-    ads_config?: AdsConfig;
+    /**
+     * Legacy per-reel ad-break config nested on the video object. Superseded by
+     * the top-level {@link Reel.ad_configs}; read as a fallback so older feed
+     * responses (single `ads_config` object) still schedule an ad break.
+     */
+    ads_config?: AdsConfig | null;
     [key: string]: unknown;
+  } | null;
+  /** Ad configurations for this reel item — `video_ad[0]` drives the fullscreen ad break. */
+  ad_configs?: {
+    video_ad?: AdsConfig[];
   } | null;
   // Ad-specific fields (present when type === 'ads')
   audioAds?: boolean;
@@ -161,6 +177,12 @@ export interface Reel {
   ad_url?: string | null;
   /** Audio ad descriptor (present when type === 'ads' and audio_ad slot is filled). */
   audio_ad?: unknown;
+  /**
+   * Whether this standalone ad slot must wait for the user to unmute before
+   * firing. Omitted/`undefined` defaults to `false` (load regardless of mute)
+   * — see {@link NormalisedAd.gateOnUnmute}.
+   */
+  gate_on_unmute?: boolean;
 }
 
 /**
@@ -389,7 +411,7 @@ export type FeedItem = ReelFeedItem | AdFeedItem;
 
 /** Organic video content after normalisation. */
 export interface NormalisedReel {
-  readonly kind: "reel";
+  readonly kind: "video" | "video-with-ad";
   id: number;
   active: boolean;
   videoUrl: string | null;
@@ -434,11 +456,25 @@ export interface NormalisedAd {
   nativePlatform: string | undefined;
   displayPlatform: string | undefined;
   adUrl: string | undefined;
+  /**
+   * Whether `useGenAdInstance` must wait for the user to unmute before
+   * requesting this ad. `true` gates the request on the unmuted state (used
+   * for ad breaks on organic videos); `false` requests immediately regardless
+   * of mute state (used for standalone `type:"ads"` slides). Sourced from the
+   * backend's `gate_on_unmute` flag when present, else the producer's default.
+   */
+  gateOnUnmute: boolean;
 }
 
 /**
  * Discriminated union output of the transformation layer.
  *
- * Narrow via `entry.kind` to access the specific normalised data shape.
+ * Narrow via `entry.kind` to access the specific normalised data shape:
+ * - `"video"`         — organic reel, no ad break
+ * - `"video-with-ad"` — organic reel with `adObject` guaranteed non-null
+ * - `"ad"`            — standalone ad slot
  */
-export type FeedEntry = { kind: "reel"; data: NormalisedReel } | { kind: "ad"; data: NormalisedAd };
+export type FeedEntry =
+  | { kind: "video";         data: NormalisedReel }
+  | { kind: "video-with-ad"; data: NormalisedReel }
+  | { kind: "ad";            data: NormalisedAd   };

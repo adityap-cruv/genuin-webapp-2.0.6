@@ -9,37 +9,22 @@ import React, { act, type ReactNode, type ReactElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
-import type * as ConfigModule from "@cxr/config";
-import { isGenAiAllowed } from "@cxr/config";
 import type { CxrEventBus } from "@cxr/instance/coordination/CxrEventBus";
 import { EventBusProvider, useEventBus } from "@cxr/instance/coordination/EventBusContext";
 import { GenAIProvider, useGenAI, useOctoSplit, type OctoSplit } from "@cxr/providers/GenAIProvider";
-
-// ---------------------------------------------------------------------------
-// Mocks
-// ---------------------------------------------------------------------------
-
-vi.mock("../config", async (importOriginal) => {
-  const original = await importOriginal<typeof ConfigModule>();
-  return {
-    ...original,
-    isGenAiAllowed: vi.fn(() => true),
-  };
-});
+import * as StrategyProviderModule from "@cxr/strategies/StrategyProvider";
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
 interface ContextHandle {
-  isAllowed: boolean;
   octoFraction: number;
   setOctoFraction: (fraction: number) => void;
 }
 
 function Consumer({ handle }: { handle: ContextHandle }): ReactElement {
   const ctx = useGenAI();
-  handle.isAllowed = ctx.isAllowed;
   handle.octoFraction = ctx.octoFraction;
   handle.setOctoFraction = ctx.setOctoFraction;
   return <span />;
@@ -84,7 +69,16 @@ function dispatch(eventName: string): void {
 describe("providers/GenAIProvider", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (isGenAiAllowed as ReturnType<typeof vi.fn>).mockReturnValue(true);
+    // Default: genAiEnabled=true so existing bridge tests pass without change.
+    vi.spyOn(StrategyProviderModule, "useStrategy").mockReturnValue({
+      genAiEnabled: true,
+      adBreakEnabled: false,
+      gateOnUnmute: false,
+      singleHitWaterfall: false,
+      adsDisabled: false,
+      mutePassback: false,
+      mutePassbackDelayMs: 3000,
+    });
   });
 
   afterEach(() => {
@@ -93,7 +87,7 @@ describe("providers/GenAIProvider", () => {
 
   it("renders children", () => {
     const { root, container } = mount(
-      <GenAIProvider tagId="tag-1">
+      <GenAIProvider>
         <span>hello</span>
       </GenAIProvider>
     );
@@ -101,38 +95,11 @@ describe("providers/GenAIProvider", () => {
     unmount(root, container);
   });
 
-  it("reflects isAllowed=true from isGenAiAllowed", () => {
-    const handle = {} as ContextHandle;
-
-    const { root, container } = mount(
-      <GenAIProvider tagId="tag-1">
-        <Consumer handle={handle} />
-      </GenAIProvider>
-    );
-
-    expect(handle.isAllowed).toBe(true);
-    unmount(root, container);
-  });
-
-  it("reflects isAllowed=false from isGenAiAllowed", () => {
-    (isGenAiAllowed as ReturnType<typeof vi.fn>).mockReturnValue(false);
-    const handle = {} as ContextHandle;
-
-    const { root, container } = mount(
-      <GenAIProvider tagId="tag-xyz">
-        <Consumer handle={handle} />
-      </GenAIProvider>
-    );
-
-    expect(handle.isAllowed).toBe(false);
-    unmount(root, container);
-  });
-
   it("initial octoFraction is 0", () => {
     const handle = {} as ContextHandle;
 
     const { root, container } = mount(
-      <GenAIProvider tagId="tag-1">
+      <GenAIProvider>
         <Consumer handle={handle} />
       </GenAIProvider>
     );
@@ -145,7 +112,7 @@ describe("providers/GenAIProvider", () => {
     const handle = {} as ContextHandle;
 
     const { root, container } = mount(
-      <GenAIProvider tagId="tag-1">
+      <GenAIProvider>
         <Consumer handle={handle} />
       </GenAIProvider>
     );
@@ -159,7 +126,7 @@ describe("providers/GenAIProvider", () => {
     const handle = {} as ContextHandle;
 
     const { root, container } = mount(
-      <GenAIProvider tagId="tag-1">
+      <GenAIProvider>
         <Consumer handle={handle} />
       </GenAIProvider>
     );
@@ -176,7 +143,7 @@ describe("providers/GenAIProvider", () => {
     const received: string[] = [];
 
     const { root, container } = mount(
-      <GenAIProvider tagId="tag-1">
+      <GenAIProvider>
         <BusListener event="genai:onFill" received={received} />
       </GenAIProvider>
     );
@@ -190,7 +157,7 @@ describe("providers/GenAIProvider", () => {
     const received: string[] = [];
 
     const { root, container } = mount(
-      <GenAIProvider tagId="tag-1">
+      <GenAIProvider>
         <BusListener event="genai:onNoFill" received={received} />
       </GenAIProvider>
     );
@@ -204,7 +171,7 @@ describe("providers/GenAIProvider", () => {
     const removeEventListenerSpy = vi.spyOn(window, "removeEventListener");
 
     const { root, container } = mount(
-      <GenAIProvider tagId="tag-1">
+      <GenAIProvider>
         <span />
       </GenAIProvider>
     );
@@ -222,7 +189,7 @@ describe("providers/GenAIProvider", () => {
     let bus!: CxrEventBus;
 
     const { root, container } = mount(
-      <GenAIProvider tagId="tag-1">
+      <GenAIProvider>
         <BusCapture onBus={(b) => (bus = b)} />
       </GenAIProvider>
     );
@@ -256,6 +223,86 @@ describe("providers/GenAIProvider", () => {
   });
 });
 
+describe("genAiEnabled in context", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("exposes genAiEnabled=true from strategy", async () => {
+    vi.spyOn(StrategyProviderModule, "useStrategy").mockReturnValue({
+      genAiEnabled: true,
+      adBreakEnabled: false,
+      gateOnUnmute: false,
+      singleHitWaterfall: false,
+      adsDisabled: false,
+      mutePassback: false,
+      mutePassbackDelayMs: 3000,
+    });
+
+    const handle = { genAiEnabled: false } as { genAiEnabled: boolean };
+    function Consumer({ h }: { h: typeof handle }): React.JSX.Element {
+      const ctx = useGenAI();
+      h.genAiEnabled = ctx.genAiEnabled;
+      return <span />;
+    }
+
+    const { root } = mount(
+      <GenAIProvider>
+        <Consumer h={handle} />
+      </GenAIProvider>
+    );
+    await act(async () => {});
+    expect(handle.genAiEnabled).toBe(true);
+    await act(async () => root.unmount());
+  });
+
+  it("does NOT emit genai:onFill bus event when genAiEnabled=false", async () => {
+    vi.spyOn(StrategyProviderModule, "useStrategy").mockReturnValue({
+      genAiEnabled: false,
+      adBreakEnabled: false,
+      gateOnUnmute: false,
+      singleHitWaterfall: false,
+      adsDisabled: false,
+      mutePassback: false,
+      mutePassbackDelayMs: 3000,
+    });
+    const received: string[] = [];
+    const { root } = mount(
+      <GenAIProvider>
+        <BusListener event="genai:onFill" received={received} />
+      </GenAIProvider>
+    );
+    await act(async () => {
+      window.dispatchEvent(new Event("genai:onFill"));
+    });
+    expect(received).toHaveLength(0);
+    await act(async () => root.unmount());
+  });
+
+  it("DOES emit genai:onFill bus event when genAiEnabled=true", async () => {
+    vi.spyOn(StrategyProviderModule, "useStrategy").mockReturnValue({
+      genAiEnabled: true,
+      adBreakEnabled: false,
+      gateOnUnmute: false,
+      singleHitWaterfall: false,
+      adsDisabled: false,
+      mutePassback: false,
+      mutePassbackDelayMs: 3000,
+    });
+    const received: string[] = [];
+    const { root } = mount(
+      <GenAIProvider>
+        <BusListener event="genai:onFill" received={received} />
+      </GenAIProvider>
+    );
+    await act(async () => {
+      window.dispatchEvent(new Event("genai:onFill"));
+    });
+    expect(received).toHaveLength(1);
+    await act(async () => root.unmount());
+  });
+});
+
 describe("providers/useOctoSplit", () => {
   function SplitConsumer({ isActive, handle }: { isActive: boolean; handle: { split: OctoSplit } }): ReactElement {
     handle.split = useOctoSplit(isActive);
@@ -282,7 +329,7 @@ describe("providers/useOctoSplit", () => {
     const split = {} as { split: OctoSplit };
 
     const { root, container } = mount(
-      <GenAIProvider tagId="tag-1">
+      <GenAIProvider>
         <Consumer handle={ctx} />
         <SplitConsumer isActive handle={split} />
       </GenAIProvider>
@@ -304,7 +351,7 @@ describe("providers/useOctoSplit", () => {
     const split = {} as { split: OctoSplit };
 
     const { root, container } = mount(
-      <GenAIProvider tagId="tag-1">
+      <GenAIProvider>
         <Consumer handle={ctx} />
         <SplitConsumer isActive={false} handle={split} />
       </GenAIProvider>
@@ -329,7 +376,7 @@ describe("providers/useOctoSplit", () => {
     }
 
     const { root, container } = mount(
-      <GenAIProvider tagId="t">
+      <GenAIProvider>
         <Probe />
       </GenAIProvider>
     );
@@ -348,7 +395,7 @@ describe("providers/useOctoSplit", () => {
     }
 
     const { root, container } = mount(
-      <GenAIProvider tagId="t">
+      <GenAIProvider>
         <Probe />
       </GenAIProvider>
     );

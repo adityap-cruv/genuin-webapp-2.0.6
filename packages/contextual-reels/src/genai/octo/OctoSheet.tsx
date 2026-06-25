@@ -12,7 +12,7 @@
 import { DynamicSheet } from "@genuin/ui/dynamic-sheet";
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 
-import { resolveAdLayout, type AdLayoutId } from "@cxr/config";
+import { AD_LAYOUT, resolveAdLayout, type AdLayoutId } from "@cxr/config";
 import { useGenAI } from "@cxr/providers/GenAIProvider";
 
 import { OctoCountdownStrip } from "./OctoCountdownStrip";
@@ -70,7 +70,7 @@ export function OctoSheet(props: OctoSheetProps): React.JSX.Element | null {
   const { dimensions, isFullScreen, host, brandId } = props;
 
   // Don't render Octo without a brand ID.
-  // if (!brandId) return null;
+  if (!brandId) return null;
 
   // Fullscreen (any size) keeps the mobile sheet ladder regardless of outer size.
   if (isFullScreen) {
@@ -80,15 +80,15 @@ export function OctoSheet(props: OctoSheetProps): React.JSX.Element | null {
   const layoutId = props.adLayoutHint ?? resolveAdLayout(dimensions.width, dimensions.height);
 
   switch (layoutId) {
-    case "desktop-300x250":
+    case AD_LAYOUT.L2:
       return host === "split" ? <OctoSplitView {...props} /> : null;
-    case "mobile-320x100":
+    case AD_LAYOUT.L4:
       return host === "compact" ? <OctoCountdownStrip {...props} variant="100" /> : null;
-    case "mobile-320x50":
+    case AD_LAYOUT.L3:
       return host === "compact" ? <OctoCountdownStrip {...props} variant="50" /> : null;
-    case "unknown":
+    case AD_LAYOUT.Unknown:
       return null;
-    case "desktop-300x600":
+    case AD_LAYOUT.L1:
     default:
       return host === "bottombar" ? <OctoSheetLadder {...props} /> : null;
   }
