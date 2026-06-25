@@ -68,7 +68,7 @@ wrapper, and the `screen_view` payload is emitted separately in `embed.tsx` (`EM
 | `station.offlineEnabled` | 🔒 `"No Value"` (string sentinel — matches prod capture) |
 | `station.streamInitTime` | ⚙️ epoch-ms at stream start (constant per session) |
 | `station.playbackStartTime` | ⚙️ epoch-ms at load |
-| `station.playedFrom` | 📦 `432` for `embed_id=69c38273686a088a80a25ea2`; `433` for `placement_id=69c2812fd98484cf6b83a5ba`; else `431` |
+| `station.playedFrom` | 📦 `432` for `embed_id=69c38273686a088a80a25ea2`; `433` for `placement_id=69c2812fd98484cf6b83a5ba`; `434` for `placement_id=6a39a496a7d9f8da7f6e7cca`; `435` for `placement_id=6a3c5b0dcb0f2cc8d56a2b0d`; else `431` |
 | `station.sessionId` | ⚙️ UUID (generated once per session) |
 | `station.startPosition` | ⚙️ `start_position` (0 fresh, playhead on resume) |
 | `isAutoplay` | 📦 `autoplay` ‖ `video_autoplay` === true |
@@ -93,7 +93,7 @@ wrapper, and the `screen_view` payload is emitted separately in `embed.tsx` (`EM
 |---|--------------|----------|
 | Q1 | ✅ `station.completionRate` (track_end) | Sent as `clamp(listenTime/video_length, 0..1)` (1 = full); confirmed against live (`1`). |
 | Q2 | `event.location` (pause) | Required but no value/type. Expected value? (`feed`/`full_screen`?) — **not sent** |
-| Q3 | ✅ `station.playedFrom` | Resolved as iHeart numeric source codes: `432` for embed `69c38273686a088a80a25ea2`, `433` for placement `69c2812fd98484cf6b83a5ba`, otherwise existing `431`. |
+| Q3 | ✅ `station.playedFrom` | Resolved as iHeart numeric source codes: `432` for embed `69c38273686a088a80a25ea2`, `433` for placement `69c2812fd98484cf6b83a5ba`, `434` for placement `6a39a496a7d9f8da7f6e7cca`, `435` for placement `6a3c5b0dcb0f2cc8d56a2b0d`, otherwise existing `431`. |
 | Q4 | ✅ `view.item.asset.sub.id` (screen_view) | Resolved: `<parentType>\|highlights` (e.g. `live\|highlights`, `podcast\|highlights`) per 07_Screen_View spec. `asset.id` = `<parentType>\|<parentId>`; `pageName` = `live_profile`/`podcast_profile`. |
 | Q5 | `view.item.asset.id` (screen_view) | We send `highlights\|<podcast_id‖station_id‖section_id>`. Confirm correct id + `assetType\|id` format. |
 | Q6 | `endReason` / `exitSpot` (stream_end) | Web only observes exit → `close_app` / `music` always. Other enum values aren't observable in a web embed. Acceptable? |

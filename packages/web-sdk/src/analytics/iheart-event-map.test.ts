@@ -95,6 +95,16 @@ describe("iHeart payload builders", () => {
     expect(event.data.station?.playedFrom).toBe(433);
   });
 
+  it("station.playedFrom is 434 for placement_id 6a39a496a7d9f8da7f6e7cca", () => {
+    const event = buildStreamStart({ ...samplePayload, placement_id: "6a39a496a7d9f8da7f6e7cca" }, snapshot);
+    expect(event.data.station?.playedFrom).toBe(434);
+  });
+
+  it("station.playedFrom is 435 for placement_id 6a3c5b0dcb0f2cc8d56a2b0d", () => {
+    const event = buildStreamStart({ ...samplePayload, placement_id: "6a3c5b0dcb0f2cc8d56a2b0d" }, snapshot);
+    expect(event.data.station?.playedFrom).toBe(435);
+  });
+
   it("buildTrackEnd -> track_end with derived reason + dual-send listenTime", () => {
     const event = buildTrackEnd(samplePayload, snapshot, "next");
     expect(event.type).toBe("track_end");

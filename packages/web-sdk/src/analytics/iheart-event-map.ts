@@ -170,6 +170,8 @@ const PLAYED_FROM_BY_EMBED_ID: Record<string, number> = {
 };
 const PLAYED_FROM_BY_PLACEMENT_ID: Record<string, number> = {
   "69c2812fd98484cf6b83a5ba": 433,
+  "6a39a496a7d9f8da7f6e7cca": 434,
+  "6a3c5b0dcb0f2cc8d56a2b0d": 435,
 };
 
 function playedFrom(payload: GenuinPayload): number {
