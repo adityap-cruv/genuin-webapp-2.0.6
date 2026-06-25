@@ -27,6 +27,25 @@
 <!-- Append how non-obvious systems work, with file pointers. Example shape:
 - **<system>** — <one-or-two-line explanation>. (path:line) -->
 
+- **CXR strategy system** — per-tag feature toggles for the contextual-reels widget. Resolved by
+  `resolveStrategies(tagId)` as a 3-layer cascade (most-specific wins): `DEFAULT_STRATEGIES` → preset
+  bundle → tag inline keys. Edit behaviour in **one file**:
+  `packages/contextual-reels/src/strategies/strategyConfig.ts` (`TAG_STRATEGIES` + `STRATEGY_PRESETS`).
+  `<StrategyProvider tagId>` memoises the resolved object; `useStrategy()` reads it and degrades to
+  `DEFAULT_STRATEGIES` (all-off) outside a provider — never throws. `tagId` is the **embed tag id**,
+  not a feed reel `_id`. Toggles: `genAiEnabled`, `adBreakEnabled`, `gateOnUnmute`,
+  `singleHitWaterfall`, `adsDisabled`, `mutePassback` + tunable `mutePassbackDelayMs` (default 3000).
+  Full reference: [packages/contextual-reels/docs/STRATEGIES.md](../packages/contextual-reels/docs/STRATEGIES.md).
+- **CXR mutePassback timing** — the passback timer (`MutePassbackGuard`, `src/app/App.tsx`) arms on
+  the **first `player:play`** bus event, NOT on mount — so it measures muted *playback*, not the
+  tag/feed-load gap. One-shot: a later pause/resume won't restart or re-fire it.
+- **CXR fill/passback logs are tag-agnostic** — `notifyAdFill`/`notifyAdNoFill`
+  (`src/ads/waterfall.ts`) postMessage to the parent + call `window.adFillCallback`/`noAdsCallback`;
+  no per-tag branch. Only id-driven gate is `singleHitWaterfall` (suppresses after first count). Their
+  `_logger.debug` lines are no-ops in any `vite build` (`import.meta.env.PROD` is true for build, not
+  just `--mode production`) and `console.*` is fully stripped in `build:prod`; only `pnpm dev` (vite
+  serve) shows them, and only with DevTools console level set to **Verbose**.
+
 ## File pointers
 
 <!-- Append where hard-to-find things live. Format:

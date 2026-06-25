@@ -22,6 +22,7 @@ When looking for a doc, start here. When adding a new doc, register it here.
 | SDK migration (build tools, validators)          | `packages/web-sdk/docs/migrations/`          |
 | Historical SDK reorganization records            | `packages/web-sdk/docs/history/`             |
 | Components-package feature plans (linkouts etc.) | `packages/components/docs/<feature-folder>/` |
+| CXR widget system docs / ADRs                    | `packages/contextual-reels/docs/`            |
 | Component-package QA test fixtures (XML, MP4 …)  | `packages/<name>/.storybook/qa-fixtures/`    |
 | Per-package usage instructions                   | `packages/<name>/README.md`                  |
 | Per-app usage instructions                       | `apps/<name>/README.md`                      |
@@ -127,6 +128,26 @@ Feature plans for the `molecules/linkout-new` family — scenario configs, ad sl
 | [packages/components/docs/linkouts/OUTSIDE_LINKOUT_PLAN.md](packages/components/docs/linkouts/OUTSIDE_LINKOUT_PLAN.md)           | Outside (below-the-frame) layout variant for embed scenarios      |
 | [packages/components/docs/linkouts/DYNAMIC_LINKOUT_ADS_PLAN.md](packages/components/docs/linkouts/DYNAMIC_LINKOUT_ADS_PLAN.md)   | Banner / display / video ad fallback rollout for the linkout slot |
 | [packages/components/docs/linkouts/SAMPLE_AD_TAGS.md](packages/components/docs/linkouts/SAMPLE_AD_TAGS.md)                       | Sample ad tags for QA: IMA (video) + GAM (display banner) paths   |
+
+---
+
+## `packages/contextual-reels/` — CXR widget
+
+| File                                                                                         | Purpose                                                          |
+| -------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| [packages/contextual-reels/README.md](packages/contextual-reels/README.md)                   | CXR widget package guide                                         |
+| [packages/contextual-reels/docs/STRATEGIES.md](packages/contextual-reels/docs/STRATEGIES.md) | Per-tag strategy system — toggles, the 3-layer cascade, recipes |
+| [packages/contextual-reels/docs/PROJECT.md](packages/contextual-reels/docs/PROJECT.md)       | CXR project context                                             |
+
+### CXR decisions (ADRs)
+
+Architecture decision records for the widget. New ADRs go in `docs/cxr-decisions/`, numbered sequentially.
+
+| File                                                                                                                                                       | Purpose                                   |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| [packages/contextual-reels/docs/cxr-decisions/001-drop-swiper.md](packages/contextual-reels/docs/cxr-decisions/001-drop-swiper.md)                         | ADR 001 — drop Swiper                     |
+| [packages/contextual-reels/docs/cxr-decisions/002-chromium-os-quirk.md](packages/contextual-reels/docs/cxr-decisions/002-chromium-os-quirk.md)             | ADR 002 — Chromium OS quirk               |
+| [packages/contextual-reels/docs/cxr-decisions/003-mutation-observer-scope.md](packages/contextual-reels/docs/cxr-decisions/003-mutation-observer-scope.md) | ADR 003 — MutationObserver document scope |
 
 ---
 
