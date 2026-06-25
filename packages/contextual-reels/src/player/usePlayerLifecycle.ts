@@ -191,13 +191,15 @@ export function usePlayerLifecycle({
 
     // --- HLS / direct src setup ---
     const setupHlsContent = () => {
-      if (video.canPlayType("application/vnd.apple.mpegurl")) {
-        // Native HLS (Safari/iOS) — no library needed.
-        video.src = content;
-        return;
-      }
       import("hls.js").then(({ default: HlsClass }) => {
+        // Prefer HLS.js wherever it is supported so we can pin the lowest quality
+        // and gate segment loading. Native HLS (`canPlayType('…mpegurl')`) is only
+        // a fallback for browsers without MSE — notably Safari/iOS. We must NOT
+        // take the native path on Chromium: Chrome returns "maybe" for the HLS
+        // MIME type yet runs its own adaptive bitrate, which ignores our
+        // bandwidth-conservation pinning and climbs to the highest rendition.
         if (!HlsClass.isSupported()) {
+          // No MSE — let the browser play the manifest natively (Safari/iOS).
           video.src = content;
           return;
         }
@@ -220,9 +222,10 @@ export function usePlayerLifecycle({
                 level.bitrate < (arr[lowestI] as { bitrate: number }).bitrate ? idx : lowestI,
               0
             );
+            // Setting `currentLevel` pins the manual level and disables ABR
+            // (hls.autoLevelEnabled becomes false as a derived getter), so the
+            // player stays on the lowest rendition.
             hls.currentLevel = lowestIdx;
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any -- hls.autoLevelEnabled
-            (hls as any).autoLevelEnabled = false;
           }
         });
 

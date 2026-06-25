@@ -1,137 +1,16 @@
 /**
- * HLS player hooks — consolidated from:
- *   player/useHlsSource.ts
+ * Player helper hooks — consolidated from:
  *   player/useAutoplayFallback.ts
  *   player/useImaPlugin.ts
+ *
+ * Note: the HLS.js lifecycle lives inline in `usePlayerLifecycle.ts`; the former
+ * `useHlsSource` hook here was an unused duplicate and has been removed.
  */
-import type Hls from "hls.js";
-import { useEffect, useRef, type RefObject } from "react";
+import type { RefObject } from "react";
 
 import { EVENT } from "@cxr/analytics/analytics";
 import type { PlayerDims, PlayerHandle } from "@cxr/player/types";
 import { createLogger } from "@cxr/utils/logger";
-
-// ─── useHlsSource ─────────────────────────────────────────────────────────────
-
-/** Options for `useHlsSource`. */
-export interface UseHlsSourceOptions {
-  /** Ref to the underlying `<video>` element (must be non-null at mount time). */
-  videoEl: RefObject<HTMLVideoElement | null>;
-  /** HLS `.m3u8` manifest URL. */
-  src: string;
-  /**
-   * When `true` the hook calls `hls.startLoad(-1)` to allow segment downloads.
-   * When `false` it calls `hls.stopLoad()` to conserve bandwidth.
-   * This is only applied AFTER the player is ready; the initial `startLoad(-1)`
-   * that fires immediately after `attachMedia` is unconditional (deadlock fix).
-   */
-  isPlay: boolean;
-  /** Called once after the unconditional initial `startLoad(-1)`. */
-  onReady?: () => void;
-}
-
-/** Result of `useHlsSource`. */
-export interface UseHlsSourceResult {
-  /** Ref to the Hls instance for inspection by other hooks. */
-  hlsRef: RefObject<Hls | null>;
-}
-
-/**
- * Creates and manages an `Hls` instance tied to a `<video>` element.
- *
- * Key design decisions:
- * - `autoStartLoad: false` — HLS never auto-fetches segments; we control loading
- *   explicitly to save bandwidth for off-screen slides.
- * - Unconditional `startLoad(-1)` right after `attachMedia` — prevents a deadlock
- *   where Vlitejs waits for video metadata that HLS will never load without startLoad.
- * - Subsequent `isPlay` changes toggle `startLoad`/`stopLoad` to gate bandwidth.
- *
- * @example
- * const { hlsRef } = useHlsSource({ videoEl, src: item.content, isPlay });
- */
-export function useHlsSource({ videoEl, src, isPlay, onReady }: UseHlsSourceOptions): UseHlsSourceResult {
-  const hlsRef = useRef<Hls | null>(null);
-  const isReadyRef = useRef(false);
-
-  // Mount effect: create HLS instance, attach, pre-load metadata.
-  useEffect(() => {
-    const video = videoEl.current;
-    if (!video) return;
-
-    let destroyed = false;
-
-    if (video.canPlayType("application/vnd.apple.mpegurl")) {
-      // Native HLS (Safari / iOS) — no library needed, 0 bytes loaded.
-      video.src = src;
-      return;
-    }
-
-    // Load HLS.js only on browsers that need it (Chrome, Firefox, Android).
-    import("hls.js").then(({ default: HlsClass }) => {
-      if (destroyed) return;
-
-      if (!HlsClass.isSupported()) {
-        // Last-resort fallback (very old browser)
-        video.src = src;
-        return;
-      }
-
-      const hls = new HlsClass({ autoStartLoad: false, startFragPrefetch: false });
-      // Limit buffer to ~100 KB to save memory for off-screen slides.
-      // maxBufferSize is a writable config property not typed in all hls.js versions.
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- runtime property
-      (hls as any).maxBufferSize = 1 * 1000 * 100;
-
-      hls.loadSource(src);
-      hls.attachMedia(video);
-
-      hls.on(HlsClass.Events.MANIFEST_PARSED, () => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- hls.levels is not in all typings
-        const levels: Array<{ bitrate: number }> = (hls as any).levels ?? [];
-        if (levels.length > 0) {
-          const lowestIdx = levels.reduce(
-            (lowestI, level, idx, arr) =>
-              level.bitrate < (arr[lowestI] as { bitrate: number }).bitrate ? idx : lowestI,
-            0
-          );
-          hls.currentLevel = lowestIdx;
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- hls.autoLevelEnabled
-          (hls as any).autoLevelEnabled = false;
-        }
-      });
-
-      hlsRef.current = hls;
-
-      // Unconditional initial load — breaks the Vlitejs onReady deadlock.
-      hls.startLoad(-1);
-      isReadyRef.current = true;
-      onReady?.();
-    });
-
-    return () => {
-      destroyed = true;
-      isReadyRef.current = false;
-      if (hlsRef.current) {
-        hlsRef.current.destroy();
-        hlsRef.current = null;
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- src intentionally stable after mount
-  }, []);
-
-  // Bandwidth gating after player is ready.
-  useEffect(() => {
-    if (!isReadyRef.current || !hlsRef.current) return;
-
-    if (isPlay) {
-      hlsRef.current.startLoad(-1);
-    } else {
-      hlsRef.current.stopLoad();
-    }
-  }, [isPlay]);
-
-  return { hlsRef };
-}
 
 // ─── useAutoplayFallback ──────────────────────────────────────────────────────
 
