@@ -10,6 +10,8 @@ import { lazy } from "react";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { useBaseContext } from "@genuin/components/context/base";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { useAuthRedirectHandler } from "@genuin/components/hooks/use-auth-redirect-handler";
+import { StandardWallLoginGate } from "@genuin/components/molecules/auth-login-gate/auth-login-gate";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { SidebarActions, SideBarBecomeCreator } from "@genuin/components/molecules/sidebar";
 import { PoweredByGenuin } from "@genuin/components/molecules/sidebar";
@@ -88,15 +90,18 @@ function ProxyComponent({ variant }: VariantProps<typeof proxyComponentVariant>)
   const isAuthenticated = authenticationStatus === "authenticated";
   const showLogin = brandDetails.web_cta === "login" || brandDetails.web_cta === "both";
   const showApp = brandDetails.web_cta === "app" || brandDetails.web_cta === "both";
+  const loginClickHandler = useAuthRedirectHandler({ action: "login" });
 
   return (
     <div className={cn(proxyComponentVariant({ variant }))}>
       {!isAuthenticated && showLogin && (
-        <SafeSuspense fallback={<ProxyItem icon={<LoginIcon size="lg" />} text="Log in" />} errorFallback={null}>
-          <AuthenticationModal asChild={false} customStep="SIGNIN" className="gencl:w-full">
-            <ProxyItem icon={<LoginIcon size="lg" />} text="Log in" />
-          </AuthenticationModal>
-        </SafeSuspense>
+        <StandardWallLoginGate
+          loginClickHandler={loginClickHandler}
+          asChild={false}
+          modalClassName="gencl:w-full"
+          wrapperClassName="gencl:w-full gencl:cursor-pointer">
+          <ProxyItem icon={<LoginIcon size="lg" />} text="Log in" />
+        </StandardWallLoginGate>
       )}
       {showApp && (
         <SafeSuspense fallback={<ProxyItem icon={<QRIcon size="lg" />} text="Get app" />} errorFallback={null}>

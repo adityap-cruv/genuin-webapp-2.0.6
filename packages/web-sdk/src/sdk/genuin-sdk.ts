@@ -958,11 +958,6 @@ export class GenuinSDK {
       (el): el is HTMLElement => el instanceof HTMLElement
     );
 
-    // Nested embeds (e.g. the GenAI carousel) mount in LIGHT DOM (useShadowDOM:false),
-    // so they are already found by the document scan above. The only `.gen-sdk-class`
-    // nodes that live INSIDE a shadow root are the SDK's own inner roots — never a
-    // publisher container — so we only pull from shadow roots the nodes that carry a
-    // genuine nested-host marker, guarding against re-capturing internal roots.
     const shadowHosts = Array.from(document.querySelectorAll("[data-genuin-host], [data-genuin-overlay-host]")).filter(
       (el): el is HTMLElement => el instanceof HTMLElement
     );
@@ -971,7 +966,7 @@ export class GenuinSDK {
       const { shadowRoot } = host;
       if (!shadowRoot) return;
       shadowRoot.querySelectorAll(selector).forEach((el) => {
-        if (
+         if (
           el instanceof HTMLElement &&
           // A real nested host is explicitly marked, or carries a publisher
           // embed/placement/style data-attr. SDK-internal inner roots have none.
@@ -1035,7 +1030,7 @@ export class GenuinSDK {
         const existingInstanceId = element.getAttribute("data-instance-id");
 
         if (existingInstanceId && this.sdkElements[existingInstanceId]) {
-          // This is the parent container — skip only this one. `continue`, not
+           // This is the parent container — skip only this one. `continue`, not
           // `return`: a `return` aborts the whole loop, leaving any sibling
           // pending containers (incl. the actual nested child) uninitialized.
           continue;
@@ -1084,8 +1079,10 @@ export class GenuinSDK {
       const isExpandOnLoad =
         extractedData.expandOnLoad === true || (!!extractedData.startVideoSlug && extractedData.expandOnLoad !== false);
 
-      // The container's own hiding styles (display:none, etc.) are respected; they are filtered
-      // out only when copied onto the expand view's overlay, so the overlay still appears.
+      // The publisher's container is never mutated for expand-on-load. A hidden
+      // container (display:none / visibility:hidden / opacity:0) is left as-is; the
+      // body-level expand overlay drops those hiding styles at the copy boundary
+      // (see `copyClassAndStyle`) and the loader mounts at body level (below).
       const shadowTarget = useShadowDOM ? await setupMainShadowDOM(element) : element;
 
       // Propagate the resolved flag so downstream consumers see the same value.
@@ -1609,7 +1606,7 @@ export class GenuinSDK {
    * @returns The initialization status: 'pending', 'loading', or 'done'.
    */
   private getInitializationStatus(element: HTMLElement): InitializationStatus {
-    // Backstop: never treat SDK-rendered internal chrome as a fresh container.
+        // Backstop: never treat SDK-rendered internal chrome as a fresh container.
     // The selector already excludes these, but defaulting them to "done" here
     // means even a stray internal node can never be mounted into.
     if (element.hasAttribute(GENUIN_INTERNAL_ATTR)) {

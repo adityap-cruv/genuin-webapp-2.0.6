@@ -40,7 +40,7 @@ export function useInterruptionManager() {
   const interactionRef = useRef({ lastIndex: 0, swipeCount: 0 });
   const [shouldShowDialog, setShouldShowDialog] = useState(false);
   const [dialogType, setDialogType] = useState<StepsType | undefined>(undefined);
-  const { modalConfig } = useEmbedConfigs();
+  const { modalConfig, view } = useEmbedConfigs();
 
   // First check if get_app_popup is enabled
   const getAppConfig = brandDetails?.web_configs?.get_app_popup;
@@ -109,12 +109,15 @@ export function useInterruptionManager() {
 
   // Trigger authentication or download modal based on configuration
   const triggerAuthenticationModal = useCallback(() => {
-    // Only proceed if we have a dialog to show
-    if (dialogToShow) {
+    // The logged-out signin popup is intentionally NOT auto-shown on swipe/idle.
+    // On embed, logged-out auth happens via an explicit action/login click that
+    // redirects (host callback / whitelabel). CATEGORY_SELECTION / EDIT_USERNAME
+    // (logged-in) and GET_APP still auto-show.
+    if (dialogToShow && (dialogToShow !== "SIGNIN" || !view.isStandardWall)) {
       setShouldShowDialog(true);
       setDialogType(dialogToShow);
     }
-  }, [dialogToShow]);
+  }, [dialogToShow, view.isStandardWall]);
 
   // Function to close dialog and reset state
   const closeDialog = useCallback(() => {

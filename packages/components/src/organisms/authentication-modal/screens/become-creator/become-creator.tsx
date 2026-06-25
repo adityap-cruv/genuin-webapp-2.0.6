@@ -10,6 +10,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { useAnalytics } from "@genuin/components/context/analytics";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { useBaseContext } from "@genuin/components/context/base";
+import { useAuthRedirectHandler } from "@genuin/components/hooks/use-auth-redirect-handler";
 import {
   setQueryDataBecomeCreator,
   useCbRequestMutation,
@@ -31,6 +32,12 @@ type BecomeCreatorProps = ComponentProps<"div">;
 export function BecomeCreator({ ...props }: BecomeCreatorProps) {
   const { brandDetails } = useBaseContext();
   const { user, updateUser, updateLocalStorageUserData } = useAuthContext();
+  const isAppMode = brandDetails.web_cta === "app";
+
+  // Embed standard_wall + logged-out → redirect (host callback / whitelabel).
+  // Returns undefined off standard_wall / on webapp → keep the SDK modal fallback.
+  // App mode (GET_APP) is intentionally left untouched (pending manager decision).
+  const becomeCreatorClickHandler = useAuthRedirectHandler({ action: "become-a-creator" });
   const {
     data: cbStatus,
     isLoading: isCbStatusLoading,
@@ -85,8 +92,15 @@ export function BecomeCreator({ ...props }: BecomeCreatorProps) {
             "Become a Creator"
           )}
         </Button>
+      ) : !isAppMode && becomeCreatorClickHandler ? (
+        <Button
+          className="gencl:w-full gencl:text-body-0-semi-bold"
+          theme="primary"
+          onClick={becomeCreatorClickHandler}>
+          Become a Creator
+        </Button>
       ) : (
-        <AuthenticationModal asChild customStep={brandDetails.web_cta === "app" ? "GET_APP" : "SIGNIN"}>
+        <AuthenticationModal asChild customStep={isAppMode ? "GET_APP" : "SIGNIN"}>
           <Button className="gencl:w-full gencl:text-body-0-semi-bold" theme="primary">
             Become a Creator
           </Button>

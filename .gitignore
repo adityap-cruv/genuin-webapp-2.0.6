@@ -46,6 +46,7 @@ next-env.d.ts
 
 # Build outputs
 **/dist
+**/dist-preview
 **/.next
 **/build
 **/storybook-static

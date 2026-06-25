@@ -7,6 +7,7 @@ import { axiosRegistry, useAxiosInstance } from "@genuin/components/context/axio
 import { useSearchParams } from "@genuin/components/hooks/use-search-params";
 import { SDKEventEmitter, SDKListenerEventName } from "@genuin/components/lib/sdk-event-emitter";
 import { savePendingAction, type PendingActionData } from "@genuin/components/lib/utils/pending-action-storage";
+import { triggerStandardWallRedirect } from "@genuin/components/lib/utils/standard-wall-auth-redirect";
 import { useGetUserDataForSSOMutation } from "@genuin/components/react-query/api/authentication/auto-login";
 import { invalidateAllQueries } from "@genuin/components/react-query/client";
 
@@ -79,7 +80,7 @@ export function AuthProvider({ children, user, onSignIn, onSignOut, onUpdateUser
   const axiosInstance = useAxiosInstance();
 
   // Access isEmbed from BaseContext
-  const { isEmbed, isInIframe } = useBaseContext?.() || { isEmbed: false };
+  const { isEmbed, isInIframe, brandDetails } = useBaseContext?.() || { isEmbed: false };
 
   // Access embed context if available
   const embedContext = useSafeEmbedContext?.();
@@ -281,13 +282,32 @@ export function AuthProvider({ children, user, onSignIn, onSignOut, onUpdateUser
       urlToOpen?: string;
       pendingActionData?: Omit<PendingActionData, "timestamp" | "divId">;
     }) => {
-      // For non-embed environments and authenticated user, always return undefined so consumer shows auth modal
+      // Non-embed (real webapp) or already authenticated: return undefined so the
+      // consumer shows the SDK auth modal exactly as before.
       if (!isEmbed || authenticationStatus === "authenticated") {
         return undefined;
       }
 
-      // In embed environments with genuinAuth.
-      // return a function to handle external auth
+      const isStandardWall = embedData?.style === "standard_wall";
+
+      // STANDARD_WALL ONLY: never show the SDK auth modal. Always return a redirect
+      // handler — host callback if configured, else per-embed signInUrl, else whitelabel.
+      if (isStandardWall) {
+        return () => {
+          if (authenticationStatus === "unauthenticated" && pendingActionData) {
+            const enrichedPendingActionData: Omit<PendingActionData, "timestamp"> = {
+              ...pendingActionData,
+              divId: embedContext?.rootElement?.id,
+            };
+            savePendingAction(enrichedPendingActionData);
+          }
+
+          triggerStandardWallRedirect({ authCallbackData, embedData, brandDetails, urlToOpen });
+        };
+      }
+
+      // OTHER embed layouts (carousel / feed / grid / expand_only): UNCHANGED.
+      // They already redirect via genuinAuth or their hideModal <Link>.
       if (window.genuinAuth || embedData?.authInfo?.signInUrl || embedData?.authInfo?.signUpUrl) {
         return () => {
           // Save pending action if provided and user is unauthenticated
@@ -306,11 +326,17 @@ export function AuthProvider({ children, user, onSignIn, onSignOut, onUpdateUser
         };
       }
 
-      // For standard_wall embeds without genuinAuth, return undefined
       // so consumer shows auth modal
       return undefined;
     },
-    [isEmbed, embedData?.style, authenticationStatus, embedData?.authInfo, embedContext?.rootElement?.id]
+    [
+      isEmbed,
+      authenticationStatus,
+      embedData?.style,
+      embedData?.authInfo,
+      embedContext?.rootElement?.id,
+      brandDetails?.white_label_url,
+    ]
   );
 
   useEffect(() => {
