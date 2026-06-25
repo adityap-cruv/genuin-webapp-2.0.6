@@ -86,7 +86,6 @@ export function usePlayerLifecycle({
   const currentPlayerRef = useRef<PlayerHandle | null>(null);
   const isPlayerReady = useRef(false);
   const isPlayRef = useRef(isPlay);
-  const isMutedRef = useRef(isMuted);
   const volumeRef = useRef(volume);
   const hlsInstanceRef = useRef<Hls | null>(null);
 
@@ -139,7 +138,6 @@ export function usePlayerLifecycle({
   // user raise the level (e.g. to DEFAULT_UNMUTE_VOLUME) without a muted→unmuted
   // transition. The mute icon is driven by `volume === 0` in PlayerProvider.
   useEffect(() => {
-    isMutedRef.current = isMuted;
     volumeRef.current = volume;
     const player = currentPlayerRef.current;
     if (!player || !videoEl.current) return;
@@ -162,14 +160,17 @@ export function usePlayerLifecycle({
         hlsInstanceRef.current.startLoad(-1);
       }
       if (currentPlayerRef.current) {
-        tryPlay(currentPlayerRef.current, video, isMutedRef.current).catch((e) => {
+        // Always attempt unmuted play (desiredMuted=false). The element stays
+        // unmuted and silence comes from volume 0 — see the volume/mute effect
+        // above. tryPlay only mutes-and-retries if the browser blocks autoplay.
+        tryPlay(currentPlayerRef.current, video, false).catch((e) => {
           logger.warn("tryPlay failed", e);
         });
       }
       if (video.readyState < 2) {
         const onCanPlay = () => {
           if (currentPlayerRef.current) {
-            tryPlay(currentPlayerRef.current, video, isMutedRef.current).catch(() => undefined);
+            tryPlay(currentPlayerRef.current, video, false).catch(() => undefined);
           }
         };
         video.addEventListener("canplay", onCanPlay, { once: true });
@@ -235,7 +236,9 @@ export function usePlayerLifecycle({
       if (hlsInstanceRef.current) {
         hlsInstanceRef.current.startLoad(-1);
       }
-      tryPlay(player, video, isMutedRef.current).catch((e) => {
+      // Attempt unmuted play; silence is governed by volume 0, not by muted.
+      // tryPlay mutes-and-retries only if the browser blocks autoplay.
+      tryPlay(player, video, false).catch((e) => {
         logger.warn("startPlayback failed", e);
       });
     };
