@@ -1,13 +1,14 @@
 import { Button } from "@genuin/ui/components/button";
 import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon } from "@genuin/ui/icons";
+import type { PlayerControlSize } from "@genuin/ui/player-controls";
 import type { CSSProperties } from "react";
 import { useCallback, useState, useEffect } from "react";
 
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
-import type { PlayerControlSize } from "@genuin/ui/player-controls";
 import { useNewPlayerControls } from "@genuin/components/molecules/feed-player/control-layer/use-new-player-controls";
+import { markSwipeIntent } from "@genuin/components/organisms/player-swiper/swipe-intent";
 
 import { useEmbedManagerContext } from "./context";
 import { NavigationButtonsV2 } from "./navigation-buttons-v2";
@@ -333,9 +334,10 @@ export function NavigationButtonsWithContext({
   const handlePrev = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
+      if (swiper) markSwipeIntent(swiper, "navigation");
       goToPreviousVideo();
     },
-    [goToPreviousVideo]
+    [goToPreviousVideo, swiper]
   );
 
   const handleNext = useCallback(
@@ -344,12 +346,13 @@ export function NavigationButtonsWithContext({
       setSlidesOffsetBefore?.(48);
       setTimeout(
         () => {
+          if (swiper) markSwipeIntent(swiper, "navigation");
           goToNextVideo(false, true);
         },
         activeIndex > 0 ? 0 : 50
       );
     },
-    [goToNextVideo, activeIndex, setSlidesOffsetBefore]
+    [goToNextVideo, activeIndex, setSlidesOffsetBefore, swiper]
   );
 
   // Function to update disabled state based on current swiper state

@@ -6,6 +6,7 @@ import type { Swiper } from "swiper/types";
 import { useAnalytics } from "@genuin/components/context/analytics/context";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 
+import { attachSwipeIntent, isUserSwipe } from "./swipe-intent";
 import { SwiperImplementation } from "./swiper-implementation";
 
 // prefetch: CHUNK_LOADERS.player mirrors this import (see lib/prefetch/chunk-loaders.ts)
@@ -83,6 +84,7 @@ export function NonSectionedContent({
       slidesPerView={slideDimensions?.slidesPerView ? (disableSwiper || websiteType === "legacy" ? 1 : 1.2) : undefined}
       spaceBetween={slideDimensions?.slidesPerView ? 16 : undefined}
       onSwiper={(swiper: Swiper) => {
+        attachSwipeIntent(swiper);
         setVerticalSwipers((prev) => ({
           ...prev,
           [0]: swiper,
@@ -107,8 +109,12 @@ export function NonSectionedContent({
       onSlideChange={() => {
         if (isEndOfFeedReached) setEndOfFeedReached(false);
       }}
-      onSlidePrevTransitionStart={() => track(EventName.SWIPE_PREVIOUS)}
-      onSlideNextTransitionStart={() => track(EventName.SWIPE_NEXT)}>
+      onSlidePrevTransitionStart={(swiper: Swiper) =>
+        track(EventName.SWIPE_PREVIOUS, { auto_swipe: !isUserSwipe(swiper) })
+      }
+      onSlideNextTransitionStart={(swiper: Swiper) =>
+        track(EventName.SWIPE_NEXT, { auto_swipe: !isUserSwipe(swiper) })
+      }>
       {filteredPost.map((post, index) => (
         <SwiperSlide
           key={post.video.id}

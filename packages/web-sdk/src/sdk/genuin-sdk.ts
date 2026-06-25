@@ -24,7 +24,6 @@ import type {
 import { queryUtils } from "@/utils/query-utils";
 
 import { startIHeartAnalyticsBridge } from "../analytics/iheart-analytics-bridge";
-
 import {
   EventManager,
   SDKEventType,

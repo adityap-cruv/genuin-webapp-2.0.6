@@ -17,6 +17,7 @@ import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-d
 import { SDKEventEmitter, SDKEventName } from "@genuin/components/lib/sdk-event-emitter";
 import { isMiddlewareOverlayEnabled } from "@genuin/components/lib/utils";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
+import { attachSwipeIntent, isUserSwipe } from "@genuin/components/organisms/player-swiper/swipe-intent";
 import { useFeed } from "@genuin/components/react-query/api/feed";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
@@ -717,7 +718,10 @@ export function Embed({
                 <EmbedSwiper
                   key={swiperKey}
                   initialSlide={swiperInitialSlide}
-                  onSwiper={(swiperInstance: any) => setSwiper(swiperInstance)}
+                  onSwiper={(swiperInstance: any) => {
+                    attachSwipeIntent(swiperInstance);
+                    setSwiper(swiperInstance);
+                  }}
                   forFeed={config.view.isFeed}
                   aspectRatio={embedAspectRatio}
                   spaceBetweenVideos={spaceBetweenVideos}
@@ -735,8 +739,12 @@ export function Embed({
                     }
                     onFeedSlideChange(swiperInstance);
                   }}
-                  onSlidePrevTransitionStart={() => track(EventName.SWIPE_PREVIOUS)}
-                  onSlideNextTransitionStart={() => track(EventName.SWIPE_NEXT)}
+                  onSlidePrevTransitionStart={(swiper: any) =>
+                    track(EventName.SWIPE_PREVIOUS, { auto_swipe: !isUserSwipe(swiper) })
+                  }
+                  onSlideNextTransitionStart={(swiper: any) =>
+                    track(EventName.SWIPE_NEXT, { auto_swipe: !isUserSwipe(swiper) })
+                  }
                   onReachBeginning={() => {
                     setSlidesOffsetBefore(0);
                   }}

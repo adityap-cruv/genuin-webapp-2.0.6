@@ -2,6 +2,8 @@ import { detectAccessibilityMode, getTabindexElementsInViewport } from "@genuin/
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Swiper } from "swiper/types";
 
+import { userSlideNext, userSlidePrev } from "@genuin/components/organisms/player-swiper/swipe-intent";
+
 // Type definition for focusable elements
 export interface FocusableElement {
   index: number;
@@ -212,7 +214,7 @@ export function useFocusManagement({
           } else if (activeSwiper && !activeSwiper.isBeginning) {
             // Go to previous slide
             slideNavigationDirection.current = "prev";
-            activeSwiper.slidePrev();
+            userSlidePrev(activeSwiper, "keyboard");
           } else {
             // Wrap to last element
             const lastIndex = focusableElements.length - 1;
@@ -233,7 +235,7 @@ export function useFocusManagement({
           } else if (activeSwiper && !activeSwiper.isEnd) {
             // Go to next slide
             slideNavigationDirection.current = "next";
-            activeSwiper.slideNext();
+            userSlideNext(activeSwiper, "keyboard");
           } else {
             // Wrap to first element
             const firstElement = focusableElements[0];

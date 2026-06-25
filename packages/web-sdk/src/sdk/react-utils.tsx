@@ -17,13 +17,14 @@ import { Suspense, lazy, useEffect, useMemo, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import type { Root } from "react-dom/client";
 
+import { SDKEventType } from "@/core";
+import type { SingleEmbedDataConfig } from "@/type";
+
 import { metrics } from "../utils/metrics";
 import { generateExpandViewSkeletonHTML } from "../utils/skeleton-html";
 
 import type { EmbedRootProps } from "./embed-root";
 
-import { SDKEventType } from "@/core";
-import type { SingleEmbedDataConfig } from "@/type";
 
 // Lazy load Toaster for better code splitting
 const LazyToasterInner = lazy(() =>

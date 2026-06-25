@@ -19,9 +19,10 @@ import { Skeleton } from "@genuin/ui/components/skeleton";
 import { cn } from "@genuin/ui/lib/utils";
 import { lazy, useEffect, useMemo } from "react";
 
+import type { SingleEmbedDataConfig } from "@/type";
+
 import { Genuin } from "./genuin-sdk";
 
-import type { SingleEmbedDataConfig } from "@/type";
 
 // import { LazyToaster } from "./react-utils";
 

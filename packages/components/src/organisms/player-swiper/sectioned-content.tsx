@@ -8,6 +8,7 @@ import { useAnalytics } from "@genuin/components/context";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 
 import { Player } from "./player";
+import { attachSwipeIntent, isUserSwipe } from "./swipe-intent";
 import { SwiperImplementation } from "./swiper-implementation";
 
 const WatchBoundaryOverlay = lazy(() =>
@@ -102,6 +103,7 @@ export function SectionedContent({
               }
               spaceBetween={slideDimensions?.slidesPerView ? 16 : undefined}
               onSwiper={(swiper: Swiper) => {
+                attachSwipeIntent(swiper);
                 setVerticalSwipers((prev) => ({
                   ...prev,
                   [sectionIdx]: swiper,
@@ -122,8 +124,12 @@ export function SectionedContent({
               onSlideChange={() => {
                 if (isEndOfFeedReached) setEndOfFeedReached(false);
               }}
-              onSlidePrevTransitionStart={() => track(EventName.SWIPE_PREVIOUS)}
-              onSlideNextTransitionStart={() => track(EventName.SWIPE_NEXT)}>
+              onSlidePrevTransitionStart={(swiper: Swiper) =>
+                track(EventName.SWIPE_PREVIOUS, { auto_swipe: !isUserSwipe(swiper) })
+              }
+              onSlideNextTransitionStart={(swiper: Swiper) =>
+                track(EventName.SWIPE_NEXT, { auto_swipe: !isUserSwipe(swiper) })
+              }>
               {filteredPost.map((post, index) => (
                 <SwiperSlide
                   key={post.video.id}

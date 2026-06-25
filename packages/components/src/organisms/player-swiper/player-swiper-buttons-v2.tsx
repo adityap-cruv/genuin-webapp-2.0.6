@@ -3,6 +3,8 @@ import { NAV_BUTTON_COLORS, NavChevron, IconCircleButton, type PlayerControlSize
 import { useEffect, useState } from "react";
 import type { Swiper } from "swiper/types";
 
+import { userSlideNext, userSlidePrev } from "./swipe-intent";
+
 /**
  * Design System V2 expand-view navigation arrows (double-circle
  * `IconCircleButton`). Drop-in v2 visual for `NavigationButton`; iHeart keeps
@@ -66,7 +68,7 @@ export function NavigationButtonV2({
         type="button"
         disabled={prevDisabled}
         onClick={() => {
-          if (!prevDisabled) swiper.slidePrev();
+          if (!prevDisabled) userSlidePrev(swiper, "navigation");
         }}
         aria-label={`Previous video (${currentSlide - 1} of ${totalSlides})`}
         aria-disabled={prevDisabled}
@@ -86,7 +88,7 @@ export function NavigationButtonV2({
         type="button"
         disabled={nextDisabled}
         onClick={() => {
-          if (!nextDisabled) swiper.slideNext();
+          if (!nextDisabled) userSlideNext(swiper, "navigation");
         }}
         aria-label={`Next video (${currentSlide + 1} of ${totalSlides})`}
         aria-disabled={nextDisabled}

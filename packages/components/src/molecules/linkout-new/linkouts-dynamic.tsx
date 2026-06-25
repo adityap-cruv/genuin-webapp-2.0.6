@@ -9,16 +9,17 @@ import type { SheetState } from "@genuin/components/context/base/event-bus";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import {
   LinkoutItem,
   LinkoutCarouselDots,
   LinkoutNavButtons,
 } from "@genuin/components/molecules/linkout-new/linkout-item";
-import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { getLinkoutsConfig } from "@genuin/components/molecules/linkout-new/linkouts-sheet-config";
 import type { FlexRatio } from "@genuin/components/molecules/linkout-new/responsive-card";
 import { LinkoutCTA } from "@genuin/components/molecules/linkouts/linkout-cta";
 import type { buildLinkoutsAnalyticsData } from "@genuin/components/organisms/linkouts/build-linkouts-analytics-data";
+import { userSlideNext, userSlidePrev } from "@genuin/components/organisms/player-swiper/swipe-intent";
 import type { LinkData } from "@genuin/components/react-query/api/linkouts/schema";
 
 import { findBannerConfigForSize, pickBannerAdSize, type BannerAdSize } from "./banner-ad-picker";
@@ -708,14 +709,14 @@ export function DynamicLinkouts({
                 theme={baseConfig.theme}
                 onPrev={() => {
                   if (swiperRef.current) {
-                    swiperRef.current.slidePrev();
+                    userSlidePrev(swiperRef.current, "navigation");
                   } else {
                     setCurrentLinkIdx((i) => (i <= 0 ? links.length - 1 : i - 1));
                   }
                 }}
                 onNext={() => {
                   if (swiperRef.current) {
-                    swiperRef.current.slideNext();
+                    userSlideNext(swiperRef.current, "navigation");
                   } else {
                     setCurrentLinkIdx((i) => (i >= links.length - 1 ? 0 : i + 1));
                   }

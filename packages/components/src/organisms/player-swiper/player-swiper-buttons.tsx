@@ -2,13 +2,15 @@ import type { ButtonProps } from "@genuin/ui/button";
 import { Button } from "@genuin/ui/button";
 import { ArrowLeftIcon, ChevronDownIcon, ChevronLeftIcon, ChevronUpIcon, XIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
+import type { PlayerControlSize } from "@genuin/ui/player-controls";
 import { useEffect, useState } from "react";
 import type { Swiper } from "swiper/types";
 
-import type { PlayerControlSize } from "@genuin/ui/player-controls";
+
 import { useNewPlayerControls } from "@genuin/components/molecules/feed-player/control-layer/use-new-player-controls";
 
 import { NavigationButtonV2 } from "./player-swiper-buttons-v2";
+import { userSlideNext, userSlidePrev } from "./swipe-intent";
 
 export function CloseButton({
   theme,
@@ -199,7 +201,7 @@ export function NavigationButton({
           onClick={() => {
             if (!disable) {
               setPrevHovered(false);
-              swiper.slidePrev();
+              userSlidePrev(swiper, "navigation");
             }
           }}
           aria-label={`Previous video (${currentSlide - 1} of ${totalSlides})`}
@@ -233,7 +235,7 @@ export function NavigationButton({
           onClick={() => {
             if (!disable) {
               setNextHovered(false);
-              swiper.slideNext();
+              userSlideNext(swiper, "navigation");
             }
           }}
           aria-label={`Next video (${currentSlide + 1} of ${totalSlides})`}
