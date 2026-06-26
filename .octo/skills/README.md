@@ -43,6 +43,11 @@ other skill.
 - `frontend-patterns`: Use when creating or modifying React components, hooks, Next.js
   pages, forms, or styling per this repo's React 19 / Next.js 15 App Router / Tailwind v4 /
   TanStack Query v5 conventions and atomic design. Not for perf, a11y, or tests.
+- `seo-geo-optimization`: Use when auditing, fixing, or generating SEO / GEO / AIO surfaces:
+  page routes/components, metadata, JSON-LD/schema, Open Graph/Twitter tags, canonicals,
+  sitemaps, robots, blog/video/community/brand/profile/entity pages, or requests to show up
+  in Google, ChatGPT, Perplexity, Gemini, and similar answer engines. Also use when editing
+  user-facing pages that affect crawlable search surface.
 - `composition-patterns`: Use when a component has too many boolean props or when designing
   the public API of a reusable molecule/organism in `packages/components` — compound
   components, provider-injected state, explicit variants, children over render props,

@@ -8,8 +8,8 @@
  * og:video pointing at real media with pixel dims, complete robots meta, and the player card.
  *
  * Usage:
- *   node .claude/skills/seo-geo-optimization/scripts/verify-live.mjs <url>
- *   node .claude/skills/seo-geo-optimization/scripts/verify-live.mjs http://localhost:4000/video/abc
+ *   node .octo/skills/seo-geo-optimization/scripts/verify-live.mjs <url>
+ *   node .octo/skills/seo-geo-optimization/scripts/verify-live.mjs http://localhost:4000/video/abc
  *
  * Exit: 0 if no failures, 1 if any FAIL, 2 on fetch/usage error. WARN does not fail the run.
  * It cannot reach external validators (Rich Results, Sharing Debugger, Card Validator) — those

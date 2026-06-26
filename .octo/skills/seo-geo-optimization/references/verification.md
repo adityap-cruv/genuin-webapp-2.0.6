@@ -35,7 +35,7 @@ fact only appears after hydration, crawlers and LLMs never see it.
 
 ```bash
 # fetch as a bot — no JS execution, just the server's first response
-node .claude/skills/seo-geo-optimization/scripts/verify-live.mjs http://localhost:4000/<entity-path>
+node .octo/skills/seo-geo-optimization/scripts/verify-live.mjs http://localhost:4000/<entity-path>
 # or by hand:
 curl -sL -A "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)" <url> | less
 ```

@@ -1,32 +1,39 @@
 ---
 name: hierarchical-theme
-description: Bootstrap a NEW publisher palette for the Hierarchical Theme Provider — given a publisher slug + primary hex (and optional secondary hex or brand reference), emit a `.theme-<slug>` CSS block in `packages/tailwind-config/themes.css` and extend the `ThemeName` union. Use when creating/adding/bootstrapping a publisher palette, or when `hierarchical-tree` references a publisher whose `.theme-<slug>` block is missing. Do NOT use for modifying an existing palette, dark-mode handling, per-page colour overrides, or adding CSS variables outside the 14-primary/22-secondary contract.
+description: Bootstrap a new publisher palette for the Hierarchical Theme Provider — given a publisher slug + primary hex (or brand reference), emit a `.theme-<slug>` CSS block in `packages/tailwind-config/themes.css` and extend the `ThemeName` union.
 mandatory: true
 ---
 
 # Hierarchical Theme — Publisher Palette Bootstrap
-
-**When to use:** "Create a theme for `<publisher>`." · "Add a `<publisher>` palette." · "Bootstrap a new publisher." · A `pageTypeHint` or `hierarchical-tree` invocation referencing a publisher whose `.theme-<slug>` block is not present in `packages/tailwind-config/themes.css`. This skill is paired with `hierarchical-tree`: if `hierarchical-tree` is asked to generate a Page for a publisher whose palette does not yet exist, invoke **this skill first** to bootstrap the palette, then return to page generation.
-
-**Do NOT use for:**
-
-- Modifying an existing publisher palette (out of v0 scope — emit `THEME_SLUG_COLLISION`).
-- Dark-mode handling (host concern; the host adds `class="dark"` separately).
-- Per-page colour overrides (forbidden by the `hierarchical-tree` contract — page artifacts are themeless).
-- Adding any CSS variable outside the contract (14 primary + optional 22 secondary = 36 max).
-
----
-
-## What you are doing
 
 You are adding a **per-publisher brand palette** to the Hierarchical Theme Provider. The palette is a CSS block keyed off a `.theme-<slug>` class containing:
 
 - **14 primary variables** (always): the 7 brand tokens (`--gencl-primary` + 6 ramp stops) AND the 7 Tailwind-indirection tokens (`--gencl-color-primary` + 6 ramp stops), carrying identical hex values.
 - **22 secondary variables** (optional, when a `secondaryHex` is supplied): the 11 brand tokens (`--gencl-secondary-{50,100,150,200,300,400,500,600,700,800,900}`) AND the 11 Tailwind-indirection tokens (`--gencl-color-secondary-*`), carrying identical hex values.
 
-**14 primary + 22 secondary = 36 max** (each token duplicated as `--gencl-*-N` and `--gencl-color-*-N` — see *Why the duplication?* below).
+**14 primary + 22 secondary = 36 max** (each token duplicated as `--gencl-*-N` and `--gencl-color-*-N` — see the *Why the duplication?* note in [Output](#output)).
 
 The host applies the palette by wrapping the page in `<ThemeProvider theme="<slug>">`; the artifact itself stays themeless.
+
+This skill is paired with `hierarchical-tree`. If the operator asks `hierarchical-tree` to generate a Page for a publisher whose palette does not yet exist in `themes.css`, invoke **this skill first** to bootstrap the palette — then return to page generation.
+
+---
+
+## When to activate
+
+Triggers:
+
+- "Create a theme for `<publisher>`."
+- "Add a `<publisher>` palette."
+- "Bootstrap a new publisher."
+- A `pageTypeHint` or `hierarchical-tree` invocation referencing a publisher whose `.theme-<slug>` block is not present in `packages/tailwind-config/themes.css`.
+
+**Do not** activate this skill for:
+
+- Modifying an existing publisher palette (out of v0 scope — emit `THEME_SLUG_COLLISION`).
+- Dark-mode handling (host concern; the host adds `class="dark"` separately).
+- Per-page colour overrides (forbidden by the `hierarchical-tree` contract — page artifacts are themeless).
+- Adding any CSS variable outside the contract below (14 primary + optional 22 secondary = 36 max).
 
 ---
 
@@ -355,4 +362,4 @@ Before declaring the bootstrap done:
 
 ## Cross-reference
 
-This skill is paired with `hierarchical-tree`. `hierarchical-tree` emits theme-agnostic Page artifacts; this skill configures the host palette those artifacts render against. The artifact never names a publisher, and this skill never edits a Page — the two surfaces stay disjoint.
+This SKILL is paired with `hierarchical-tree` (one directory over: `../hierarchical-tree/SKILL.md`). `hierarchical-tree` emits theme-agnostic Page artifacts; this SKILL configures the host palette those artifacts render against. The artifact never names a publisher, and this skill never edits a Page — the two surfaces stay disjoint.

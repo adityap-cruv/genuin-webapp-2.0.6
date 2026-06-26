@@ -31,10 +31,10 @@ The rules here are framework-agnostic. A specific repo can carry a **binding fil
 ## Workflow (audit → fix → verify)
 
 1. **Scope** - confirm the entity type(s)/route(s): article/blog, video, community/collection, brand/creator/org, product, profile, or a repo-wide sweep. Check for a project binding (above).
-2. **Audit** - run `node .claude/skills/seo-geo-optimization/scripts/audit-seo.mjs [path]` (static source checks; generic by default, auto-loads repo-tuned checks when a known project is detected). Then walk the matching checklists in `references/seo-checklist.md` + `references/geo-checklist.md` and the per-entity reference.
+2. **Audit** - run `node .octo/skills/seo-geo-optimization/scripts/audit-seo.mjs [path]` (static source checks; generic by default, auto-loads repo-tuned checks when a known project is detected). Then walk the matching checklists in `references/seo-checklist.md` + `references/geo-checklist.md` and the per-entity reference.
 3. **Report** - list findings prioritized by impact, each tagged `[READY]` (data exists, frontend-only) / `[BLOCKED]` (needs backend) / `[FIX]` (live bug) / `[DEFERRED]` / `[DROPPED]`.
 4. **Fix** - apply `[READY]`/`[FIX]` items, honoring the **universal rules** and **missing-data rule** below (plus any project binding caveats).
-5. **Verify** - prove the change works in the **served (JS-free) HTML**, not just the source. This skill never opens a PR or commits; it ends here, with evidence. Run `node .claude/skills/seo-geo-optimization/scripts/verify-live.mjs <url>` against a running server (or ask the user to start one / give you a URL), then escalate flags to the external validators. Full procedure: `references/verification.md`.
+5. **Verify** - prove the change works in the **served (JS-free) HTML**, not just the source. This skill never opens a PR or commits; it ends here, with evidence. Run `node .octo/skills/seo-geo-optimization/scripts/verify-live.mjs <url>` against a running server (or ask the user to start one / give you a URL), then escalate flags to the external validators. Full procedure: `references/verification.md`.
 
 ## Universal rules (apply to any project)
 
