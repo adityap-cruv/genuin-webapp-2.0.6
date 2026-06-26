@@ -38,7 +38,8 @@ export interface UseAutoplayFallbackResult {
     player: PlayerHandle,
     video: HTMLVideoElement,
     desiredMuted?: boolean,
-    onAutoplayBlocked?: () => void
+    onAutoplayBlocked?: () => void,
+    silentFallback?: boolean
   ) => Promise<void>;
 }
 
@@ -52,6 +53,13 @@ export interface UseAutoplayFallbackResult {
  * play is attempted first; only falls back to muted if the browser blocks it.
  * When `true` (or omitted), forces muted before attempting play (legacy behaviour).
  *
+ * @param silentFallback - Strategy for recovering from a blocked unmuted autoplay.
+ * When `false` (or omitted), the legacy fallback applies: mute the element and
+ * retry (`muted=true`) — used by webapp / web-sdk. When `true`, the element stays
+ * **unmuted at volume 0** (silent) and only falls back to muted if even the
+ * volume-0 retry is blocked. This is the contextual-reels "unmuted but silent"
+ * strategy and must not be enabled for other packages.
+ *
  * @example
  * await tryPlay(player, videoEl.current, isMuted);
  */
@@ -59,10 +67,13 @@ export async function tryPlay(
   player: PlayerHandle,
   video: HTMLVideoElement,
   desiredMuted = true,
-  onAutoplayBlocked?: () => void
+  onAutoplayBlocked?: () => void,
+  silentFallback = false
 ): Promise<void> {
-  // Synchronous Vlitejs call — starts the internal state machine.
-  player.play();
+  // Synchronous Vlitejs call — starts the internal state machine. Vlitejs kicks
+  // off its own `<video>.play()` whose promise we don't await; swallow its
+  // rejection so a blocked autoplay doesn't surface as an unhandled rejection.
+  Promise.resolve(player.play()).catch(() => undefined);
 
   // Only force-mute up front when the caller wants the player muted. Forcing
   // `video.muted = true` unconditionally here used to silently override an
@@ -78,10 +89,27 @@ export async function tryPlay(
     const err = error as { name?: string };
 
     if (err?.name === "NotAllowedError") {
-      // Browser blocked unmuted autoplay — drop volume to 0 (so app state and
-      // the mute icon reflect silence), mute the element, and retry muted.
-      _logger.warn("Unmuted autoplay blocked (NotAllowedError) — resetting volume to 0 and retrying muted");
+      // Browser blocked unmuted audible autoplay. Drop volume to 0 so app state
+      // and the mute icon reflect silence.
+      _logger.warn("Unmuted autoplay blocked (NotAllowedError) — resetting volume to 0");
       onAutoplayBlocked?.();
+
+      if (silentFallback) {
+        // contextual-reels strategy: stay UNMUTED at volume 0. A volume-0 element
+        // is silent, which browsers allow to autoplay — so this keeps the
+        // "unmuted but silent" state and lets the mute icon (driven by volume===0)
+        // settle without the muted→unmuted flicker that re-muting would cause.
+        video.volume = 0;
+        try {
+          await video.play();
+          return;
+        } catch {
+          // Even volume-0 unmuted playback was blocked — fall through to the
+          // legacy muted retry below as a last resort.
+        }
+      }
+
+      // Legacy fallback (webapp / web-sdk, and last-resort for CXR): mute and retry.
       video.muted = true;
       player.mute?.();
       try {

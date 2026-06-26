@@ -134,6 +134,28 @@ Multiple `.gen-ext` elements on one page are fully supported. Each instance gets
 
 ---
 
+## Autoplay & sound
+
+The unit autoplays on load. Whether it starts **silent** or **audible** is decided by the
+browser's autoplay policy, not by us:
+
+- **Audible autoplay on load is not achievable for a real first-time visitor.** Browsers block
+  autoplay that produces sound without a prior user gesture. A tag's `initialVolume` (e.g. `0.2`)
+  only produces sound on load in already-trusted contexts (a dev machine with high Media Engagement
+  Index, or `--autoplay-policy=no-user-gesture-required`). Everywhere else it falls back to
+  **unmuted at volume 0** (silent) and shows the unmute affordance — the user raises volume to hear
+  it. See `src/player/hlsPlayer.ts` (`tryPlay` / `silentFallback`).
+- **As a native HTML ad in a cross-origin iframe**, the host page must set `allow="autoplay"` on the
+  iframe for the unit to autoplay **at all** — this is the host's responsibility, not the SDK's.
+  Note `allow="autoplay"` only enables **silent** autoplay; it does **not** grant audible autoplay.
+  MEI does not help here either, since the iframe's origin is the ad server, which never accumulates
+  the user's media engagement.
+
+**Bottom line for ad placements:** design for silent autoplay + a visible unmute control. Do not
+expect `initialVolume` to produce sound on load.
+
+---
+
 ## Public API
 
 After the loader runs, `window.cxr` exposes the public surface:

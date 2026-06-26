@@ -21,6 +21,19 @@
 - **Tailwind v4 renames** — `shadow-sm`→`shadow-xs`, `rounded`→`rounded-sm`, `outline-none`→
   `outline-hidden`, `ring`→`ring-3` (full list in `docs/ai-context.md`).
 - **Bundle size is gated** — there's a chunk-size check in CI; large new client chunks can fail it.
+- **CXR audible autoplay on `localhost` is an environment artifact, not real behavior.** A unit
+  playing with sound on load (no interaction) happens for any of three reasons: (1) an
+  **automation/WebDriver browser** (the MCP/DevTools-controlled Chrome) reports `navigator.webdriver:
+  true` and forges `navigator.userActivation` = true on a fresh page, so it always permits audible
+  autoplay — this is why a tool-driven page load has sound; (2) Chrome whitelists high-MEI origins
+  (`chrome://media-engagement/` — `localhost:3010` sits above the 0.3 threshold from repeated dev
+  loads); (3) the profile runs `Autoplay Policy: no-user-gesture-required`. Real first-time users
+  have no MEI → unmuted-audible autoplay is blocked → the `NotAllowedError` path in
+  `packages/contextual-reels/src/player/hlsPlayer.ts` (`tryPlay`) resets volume to 0 and retries
+  muted. **Test autoplay in an incognito window** (no MEI) for production-realistic behavior. The
+  `initialVolume: 0.2` for tag `6a2fefd87ce338c3a5afc605` in
+  `packages/contextual-reels/src/strategies/strategyConfig.ts` only becomes audible-on-load where the
+  browser already trusts the origin.
 
 ## Architecture notes
 

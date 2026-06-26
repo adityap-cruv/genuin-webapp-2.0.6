@@ -85,6 +85,64 @@ describe("tryPlay", () => {
     expect(onAutoplayBlocked).toHaveBeenCalledTimes(1);
   });
 
+  it("silentFallback: stays unmuted at volume 0 when the volume-0 retry succeeds", async () => {
+    const player = makePlayer();
+    const notAllowed = Object.assign(new Error("NotAllowedError"), { name: "NotAllowedError" });
+    video.volume = 0.2;
+
+    let callCount = 0;
+    vi.spyOn(video, "play").mockImplementation(() => {
+      callCount++;
+      // First (unmuted, audible) attempt blocked; volume-0 retry allowed.
+      if (callCount === 1) return Promise.reject(notAllowed);
+      return Promise.resolve(undefined);
+    });
+
+    await tryPlay(player, video, false, undefined, true);
+
+    expect(video.muted).toBe(false);
+    expect(video.volume).toBe(0);
+    expect(player.mute).not.toHaveBeenCalled();
+    expect(video.play).toHaveBeenCalledTimes(2);
+  });
+
+  it("silentFallback: falls back to muted only when the volume-0 retry is also blocked", async () => {
+    const player = makePlayer();
+    const notAllowed = Object.assign(new Error("NotAllowedError"), { name: "NotAllowedError" });
+
+    let callCount = 0;
+    vi.spyOn(video, "play").mockImplementation(() => {
+      callCount++;
+      // Attempt 1 (audible) and attempt 2 (volume-0) both blocked; muted retry ok.
+      if (callCount <= 2) return Promise.reject(notAllowed);
+      return Promise.resolve(undefined);
+    });
+
+    await tryPlay(player, video, false, undefined, true);
+
+    expect(video.muted).toBe(true);
+    expect(player.mute).toHaveBeenCalledTimes(1);
+    expect(video.play).toHaveBeenCalledTimes(3);
+  });
+
+  it("default (silentFallback off): mutes on NotAllowedError without a volume-0 retry", async () => {
+    const player = makePlayer();
+    const notAllowed = Object.assign(new Error("NotAllowedError"), { name: "NotAllowedError" });
+
+    let callCount = 0;
+    vi.spyOn(video, "play").mockImplementation(() => {
+      callCount++;
+      if (callCount === 1) return Promise.reject(notAllowed);
+      return Promise.resolve(undefined);
+    });
+
+    await tryPlay(player, video, false);
+
+    expect(video.muted).toBe(true);
+    expect(player.mute).toHaveBeenCalledTimes(1);
+    expect(video.play).toHaveBeenCalledTimes(2);
+  });
+
   it("does not invoke onAutoplayBlocked on successful play", async () => {
     const player = makePlayer();
     const onAutoplayBlocked = vi.fn();

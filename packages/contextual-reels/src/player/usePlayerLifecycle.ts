@@ -153,7 +153,11 @@ export function usePlayerLifecycle({
     if (suppressVolumeChangeRef) suppressVolumeChangeRef.current = true;
     videoEl.current.volume = volume;
     if (suppressVolumeChangeRef) suppressVolumeChangeRef.current = false;
-    player.unMute();
+    // Only unmute when there is audible volume to expose. At volume 0 the element
+    // is already silent; calling unMute() here would fight tryPlay's blocked-autoplay
+    // recovery (which keeps the element unmuted at volume 0) and cause the mute icon
+    // to flicker mute↔unmute. The element stays unmuted via onReady's unMute().
+    if (volume > 0) player.unMute();
   }, [isMuted, volume, videoEl]);
 
   // --- isPlay changes after ready ---
@@ -171,15 +175,16 @@ export function usePlayerLifecycle({
       if (currentPlayerRef.current) {
         // Always attempt unmuted play (desiredMuted=false). The element stays
         // unmuted and silence comes from volume 0 — see the volume/mute effect
-        // above. tryPlay only mutes-and-retries if the browser blocks autoplay.
-        tryPlay(currentPlayerRef.current, video, false, () => onAutoplayBlockedRef.current?.()).catch((e) => {
+        // above. silentFallback=true keeps it unmuted at volume 0 if the browser
+        // blocks autoplay, instead of re-muting (CXR "unmuted but silent" strategy).
+        tryPlay(currentPlayerRef.current, video, false, () => onAutoplayBlockedRef.current?.(), true).catch((e) => {
           logger.warn("tryPlay failed", e);
         });
       }
       if (video.readyState < 2) {
         const onCanPlay = () => {
           if (currentPlayerRef.current) {
-            tryPlay(currentPlayerRef.current, video, false, () => onAutoplayBlockedRef.current?.()).catch(
+            tryPlay(currentPlayerRef.current, video, false, () => onAutoplayBlockedRef.current?.(), true).catch(
               () => undefined
             );
           }
@@ -251,8 +256,8 @@ export function usePlayerLifecycle({
         hlsInstanceRef.current.startLoad(-1);
       }
       // Attempt unmuted play; silence is governed by volume 0, not by muted.
-      // tryPlay mutes-and-retries only if the browser blocks autoplay.
-      tryPlay(player, video, false, () => onAutoplayBlockedRef.current?.()).catch((e) => {
+      // silentFallback=true keeps it unmuted at volume 0 if autoplay is blocked.
+      tryPlay(player, video, false, () => onAutoplayBlockedRef.current?.(), true).catch((e) => {
         logger.warn("startPlayback failed", e);
       });
     };
