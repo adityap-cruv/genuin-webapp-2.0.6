@@ -10,6 +10,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { CxrEventBus } from "@cxr/instance/coordination/CxrEventBus";
 import { EventBusProvider, useEventBus } from "@cxr/instance/coordination/EventBusContext";
 import { PlayerProvider, usePlayer } from "@cxr/providers/PlayerProvider";
+import { StrategyProvider } from "@cxr/strategies/StrategyProvider";
 
 interface Captured {
   isMuted: boolean;
@@ -99,9 +100,26 @@ describe("PlayerProvider", () => {
     expect(captured.isPlaying).toBe(true);
   });
 
-  it("provides volume=100 initially (full volume)", () => {
+  it("provides volume=0 initially (unmuted but silent) with no strategy provider", () => {
     render();
-    expect(captured.volume).toBe(100);
+    expect(captured.volume).toBe(0);
+  });
+
+  it("seeds initial volume from the active tag's strategy", () => {
+    // Tag 6a032de445fa9f171bd291cb is configured with initialVolume: 0.2.
+    const tree = React.createElement(
+      EventBusProvider,
+      null,
+      React.createElement(
+        StrategyProvider,
+        { tagId: "6a032de445fa9f171bd291cb" } as React.ComponentProps<typeof StrategyProvider>,
+        React.createElement(PlayerProvider, null, React.createElement(Consumer))
+      )
+    );
+    act(() => {
+      root.render(tree);
+    });
+    expect(captured.volume).toBe(0.2);
   });
 
   it("setVolume updates volume", () => {

@@ -68,6 +68,33 @@ describe("tryPlay", () => {
     expect(video.play).toHaveBeenCalledTimes(2);
   });
 
+  it("invokes onAutoplayBlocked on NotAllowedError", async () => {
+    const player = makePlayer();
+    const notAllowed = Object.assign(new Error("NotAllowedError"), { name: "NotAllowedError" });
+    const onAutoplayBlocked = vi.fn();
+
+    let callCount = 0;
+    vi.spyOn(video, "play").mockImplementation(() => {
+      callCount++;
+      if (callCount === 1) return Promise.reject(notAllowed);
+      return Promise.resolve(undefined);
+    });
+
+    await tryPlay(player, video, false, onAutoplayBlocked);
+
+    expect(onAutoplayBlocked).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not invoke onAutoplayBlocked on successful play", async () => {
+    const player = makePlayer();
+    const onAutoplayBlocked = vi.fn();
+    vi.spyOn(video, "play").mockResolvedValue(undefined);
+
+    await tryPlay(player, video, false, onAutoplayBlocked);
+
+    expect(onAutoplayBlocked).not.toHaveBeenCalled();
+  });
+
   it("swallows AbortError silently without calling logger.warn", async () => {
     const player = makePlayer();
     const abortErr = Object.assign(new Error("AbortError"), { name: "AbortError" });

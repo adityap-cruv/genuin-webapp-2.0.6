@@ -83,8 +83,16 @@ export function LightPlayer({
   useEffect(() => {
     const video = videoEl.current;
     if (!video) return;
+    // vlitejs inits the element with muted=true (for autoplay), which fires a
+    // volumechange before onReady runs unMute(). Skip that first transient so it
+    // doesn't clobber the seeded volume back to 0; subsequent changes are real.
+    let initialMuteSeen = false;
     const handleVolumeChange = (): void => {
       if (suppressVolumeChangeRef.current) return;
+      if (!initialMuteSeen && video.muted) {
+        initialMuteSeen = true;
+        return;
+      }
       // Sync the provider to the element's actual level (hardware buttons / OS
       // media controls route through here). muted → treat as 0.
       setVolume(video.muted ? 0 : video.volume);
@@ -133,6 +141,9 @@ export function LightPlayer({
     onReady,
     itemId: id,
     isVideoItem,
+    // Browser blocked unmuted autoplay — drop feed volume to 0 so the mute icon
+    // and app state match the now-muted element. User can unmute from there.
+    onAutoplayBlocked: () => setVolume(0),
   });
 
   return (

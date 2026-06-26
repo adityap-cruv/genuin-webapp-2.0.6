@@ -11,6 +11,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
 import { useEventBus } from "@cxr/instance/coordination/EventBusContext";
+import { useStrategy } from "@cxr/strategies/StrategyProvider";
 
 /**
  * Volume applied when the user unmutes from silence (control-layer tap, expand,
@@ -55,9 +56,11 @@ interface PlayerProviderProps {
  * ```
  */
 export function PlayerProvider({ children }: PlayerProviderProps): ReactNode {
-  // Start at volume 0 — the element plays unmuted (muted=false) but silent, so
-  // the mute icon shows the "unmute" prompt until the user raises the volume.
-  const [volume, setVolume] = useState(0);
+  const { initialVolume } = useStrategy();
+  // Start at the tag's configured initialVolume (0 by default — plays unmuted
+  // but silent, showing the "unmute" prompt). Lazy init so a later strategy
+  // re-resolve doesn't reset a level the user has since changed.
+  const [volume, setVolume] = useState(() => initialVolume);
   const isMuted = volume === 0;
   // Fix #1: autoplay on by default — muted so browsers allow it without a gesture.
   const [isPlaying, setIsPlaying] = useState(true);

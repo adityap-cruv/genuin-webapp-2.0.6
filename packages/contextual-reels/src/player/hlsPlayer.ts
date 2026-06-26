@@ -34,7 +34,12 @@ export interface UseAutoplayFallbackResult {
    * @example
    * await tryPlay(currentPlayer, videoEl.current);
    */
-  tryPlay: (player: PlayerHandle, video: HTMLVideoElement, desiredMuted?: boolean) => Promise<void>;
+  tryPlay: (
+    player: PlayerHandle,
+    video: HTMLVideoElement,
+    desiredMuted?: boolean,
+    onAutoplayBlocked?: () => void
+  ) => Promise<void>;
 }
 
 /**
@@ -53,7 +58,8 @@ export interface UseAutoplayFallbackResult {
 export async function tryPlay(
   player: PlayerHandle,
   video: HTMLVideoElement,
-  desiredMuted = true
+  desiredMuted = true,
+  onAutoplayBlocked?: () => void
 ): Promise<void> {
   // Synchronous Vlitejs call — starts the internal state machine.
   player.play();
@@ -72,7 +78,10 @@ export async function tryPlay(
     const err = error as { name?: string };
 
     if (err?.name === "NotAllowedError") {
-      // Browser blocked autoplay — mute and retry.
+      // Browser blocked unmuted autoplay — drop volume to 0 (so app state and
+      // the mute icon reflect silence), mute the element, and retry muted.
+      _logger.warn("Unmuted autoplay blocked (NotAllowedError) — resetting volume to 0 and retrying muted");
+      onAutoplayBlocked?.();
       video.muted = true;
       player.mute?.();
       try {

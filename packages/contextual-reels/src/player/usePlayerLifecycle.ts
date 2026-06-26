@@ -49,6 +49,11 @@ export interface UsePlayerLifecycleOptions {
   isVideoItem: boolean;
   /** Set to true before programmatic volume changes to suppress the volumechange listener. */
   suppressVolumeChangeRef?: MutableRefObject<boolean>;
+  /**
+   * Called when the browser blocks unmuted autoplay (`NotAllowedError`). Lets the
+   * parent reset feed volume to 0 so app state matches the now-muted element.
+   */
+  onAutoplayBlocked?: () => void;
 }
 
 function getVideoType(url: string): string {
@@ -82,9 +87,13 @@ export function usePlayerLifecycle({
   itemId,
   isVideoItem,
   suppressVolumeChangeRef,
+  onAutoplayBlocked,
 }: UsePlayerLifecycleOptions): void {
   const currentPlayerRef = useRef<PlayerHandle | null>(null);
   const isPlayerReady = useRef(false);
+  // Ref-wrap so the once-on-mount init effect's closure always calls the latest.
+  const onAutoplayBlockedRef = useRef(onAutoplayBlocked);
+  onAutoplayBlockedRef.current = onAutoplayBlocked;
   const isPlayRef = useRef(isPlay);
   const volumeRef = useRef(volume);
   const hlsInstanceRef = useRef<Hls | null>(null);
@@ -163,14 +172,16 @@ export function usePlayerLifecycle({
         // Always attempt unmuted play (desiredMuted=false). The element stays
         // unmuted and silence comes from volume 0 — see the volume/mute effect
         // above. tryPlay only mutes-and-retries if the browser blocks autoplay.
-        tryPlay(currentPlayerRef.current, video, false).catch((e) => {
+        tryPlay(currentPlayerRef.current, video, false, () => onAutoplayBlockedRef.current?.()).catch((e) => {
           logger.warn("tryPlay failed", e);
         });
       }
       if (video.readyState < 2) {
         const onCanPlay = () => {
           if (currentPlayerRef.current) {
-            tryPlay(currentPlayerRef.current, video, false).catch(() => undefined);
+            tryPlay(currentPlayerRef.current, video, false, () => onAutoplayBlockedRef.current?.()).catch(
+              () => undefined
+            );
           }
         };
         video.addEventListener("canplay", onCanPlay, { once: true });
@@ -241,7 +252,7 @@ export function usePlayerLifecycle({
       }
       // Attempt unmuted play; silence is governed by volume 0, not by muted.
       // tryPlay mutes-and-retries only if the browser blocks autoplay.
-      tryPlay(player, video, false).catch((e) => {
+      tryPlay(player, video, false, () => onAutoplayBlockedRef.current?.()).catch((e) => {
         logger.warn("startPlayback failed", e);
       });
     };

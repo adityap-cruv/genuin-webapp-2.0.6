@@ -14,6 +14,7 @@ import {
   isGenAiAllowed,
   isAdsDisabled,
   isMutePassbackEnabled,
+  getInitialVolume,
   DEFAULT_STRATEGIES,
 } from "@cxr/strategies/strategies";
 
@@ -23,6 +24,8 @@ const AD_BREAK_TAG = "6a2fefd87ce338c3a5afc605";
 const SINGLE_HIT_TAG = "69b298e3d6a6ad57e7b9a464";
 const MUTE_PASSBACK_TAG = "69b298e3d6a6ad57e7b9a464";
 const UNKNOWN_TAG = "aaaabbbbccccdddd11112222";
+// Configured with initialVolume: 0.2 (see strategyConfig.ts).
+const INITIAL_VOLUME_TAG = "6a032de445fa9f171bd291cb";
 
 describe("strategies/resolveStrategies — cascade", () => {
   it("returns all-off defaults for an unknown tag", () => {
@@ -52,6 +55,15 @@ describe("strategies/resolveStrategies — cascade", () => {
 
   it("applies a migrated mute-passback tag", () => {
     expect(resolveStrategies(MUTE_PASSBACK_TAG).mutePassback).toBe(true);
+  });
+
+  it("defaults initialVolume to 0", () => {
+    expect(resolveStrategies(UNKNOWN_TAG).initialVolume).toBe(0);
+    expect(resolveStrategies("").initialVolume).toBe(0);
+  });
+
+  it("applies a tag's configured initialVolume", () => {
+    expect(resolveStrategies(INITIAL_VOLUME_TAG).initialVolume).toBe(0.2);
   });
 });
 
@@ -87,5 +99,11 @@ describe("strategies — backward-compatible predicates", () => {
     expect(isMutePassbackEnabled(MUTE_PASSBACK_TAG)).toBe(true);
     expect(isMutePassbackEnabled(UNKNOWN_TAG)).toBe(false);
     expect(isMutePassbackEnabled("")).toBe(false);
+  });
+
+  it("getInitialVolume mirrors the resolver (0 by default)", () => {
+    expect(getInitialVolume(INITIAL_VOLUME_TAG)).toBe(0.2);
+    expect(getInitialVolume(UNKNOWN_TAG)).toBe(0);
+    expect(getInitialVolume("")).toBe(0);
   });
 });

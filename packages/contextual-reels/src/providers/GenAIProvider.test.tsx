@@ -78,6 +78,7 @@ describe("providers/GenAIProvider", () => {
       adsDisabled: false,
       mutePassback: false,
       mutePassbackDelayMs: 3000,
+      initialVolume: 0,
     });
   });
 
@@ -237,6 +238,7 @@ describe("genAiEnabled in context", () => {
       adsDisabled: false,
       mutePassback: false,
       mutePassbackDelayMs: 3000,
+      initialVolume: 0,
     });
 
     const handle = { genAiEnabled: false } as { genAiEnabled: boolean };
@@ -265,6 +267,7 @@ describe("genAiEnabled in context", () => {
       adsDisabled: false,
       mutePassback: false,
       mutePassbackDelayMs: 3000,
+      initialVolume: 0,
     });
     const received: string[] = [];
     const { root } = mount(
@@ -288,6 +291,7 @@ describe("genAiEnabled in context", () => {
       adsDisabled: false,
       mutePassback: false,
       mutePassbackDelayMs: 3000,
+      initialVolume: 0,
     });
     const received: string[] = [];
     const { root } = mount(

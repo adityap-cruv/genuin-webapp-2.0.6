@@ -44,6 +44,13 @@ export interface Strategies {
    * from the first `player:play`. Ignored unless {@link mutePassback} is on.
    */
   mutePassbackDelayMs: number;
+  /**
+   * Volume (0..1) the feed starts at on first load. Defaults to `0` — the player
+   * plays unmuted but silent and shows the unmute prompt. Set per-tag (e.g.
+   * `0.2`) to start with sound. A browser autoplay block (`NotAllowedError`)
+   * snaps it back to 0; the user can unmute from there.
+   */
+  initialVolume: number;
 }
 
 /**
@@ -59,6 +66,8 @@ export const DEFAULT_STRATEGIES: Strategies = {
   adsDisabled: false,
   mutePassback: false,
   mutePassbackDelayMs: 3000,
+  // 0% by default: plays unmuted-but-silent and shows the unmute prompt.
+  initialVolume: 0,
 };
 
 /**
@@ -108,4 +117,9 @@ export function isAdsDisabled(tagId: string): boolean {
 /** Returns whether the mute-passback behaviour is enabled for the given tag. */
 export function isMutePassbackEnabled(tagId: string): boolean {
   return resolveStrategies(tagId).mutePassback;
+}
+
+/** Returns the initial feed volume (0..1) for the given tag. */
+export function getInitialVolume(tagId: string): number {
+  return resolveStrategies(tagId).initialVolume;
 }
