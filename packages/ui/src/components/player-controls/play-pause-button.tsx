@@ -73,7 +73,13 @@ export const PlayPauseButton = memo(function PlayPauseButton({
 
   return (
     <div
-      onClick={() => {
+      onClick={(e) => {
+        // Stop the tap bubbling to an ancestor click handler (e.g. CXR's
+        // ad-layout handleAdClick, which would otherwise fire the SDK CTA
+        // signal). MuteButtonView already does this; mirror it here. Webapp
+        // consumers stop propagation at their own container, so this is a no-op
+        // for them.
+        e.stopPropagation();
         onToggle();
         // Legacy mode stops the pill on tap; `once` mode lets its latch gate it.
         if (!once) setStopAnimating(true);
