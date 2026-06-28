@@ -138,6 +138,7 @@ Feature plans for the `molecules/linkout-new` family — scenario configs, ad sl
 | [packages/contextual-reels/README.md](packages/contextual-reels/README.md)                   | CXR widget package guide                                         |
 | [packages/contextual-reels/docs/STRATEGIES.md](packages/contextual-reels/docs/STRATEGIES.md) | Per-tag strategy system — toggles, the 3-layer cascade, recipes |
 | [packages/contextual-reels/docs/PROJECT.md](packages/contextual-reels/docs/PROJECT.md)       | CXR project context                                             |
+| [packages/contextual-reels/tests/e2e/README.md](packages/contextual-reels/tests/e2e/README.md) | Control-icon E2E suite — harness, fixtures, real-vs-mocked, scenarios |
 
 ### CXR decisions (ADRs)
 
@@ -148,6 +149,7 @@ Architecture decision records for the widget. New ADRs go in `docs/cxr-decisions
 | [packages/contextual-reels/docs/cxr-decisions/001-drop-swiper.md](packages/contextual-reels/docs/cxr-decisions/001-drop-swiper.md)                         | ADR 001 — drop Swiper                     |
 | [packages/contextual-reels/docs/cxr-decisions/002-chromium-os-quirk.md](packages/contextual-reels/docs/cxr-decisions/002-chromium-os-quirk.md)             | ADR 002 — Chromium OS quirk               |
 | [packages/contextual-reels/docs/cxr-decisions/003-mutation-observer-scope.md](packages/contextual-reels/docs/cxr-decisions/003-mutation-observer-scope.md) | ADR 003 — MutationObserver document scope |
+| [packages/contextual-reels/docs/cxr-decisions/004-e2e-real-genad.md](packages/contextual-reels/docs/cxr-decisions/004-e2e-real-genad.md)                   | ADR 004 — control-icon E2E runs against real GenAd |
 
 ---
 
