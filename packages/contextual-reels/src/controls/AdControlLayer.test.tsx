@@ -18,17 +18,18 @@ vi.mock("../providers/PlayerProvider", () => ({
   }),
 }));
 
-import { CxrEventBus } from "@cxr/instance/coordination/CxrEventBus";
 
 let testBus: CxrEventBus;
 
 vi.mock("../instance/coordination/EventBusContext", () => ({
   useEventBus: () => testBus,
+  useOptionalEventBus: () => testBus,
 }));
 
 import { AD_LAYOUT } from "@cxr/config";
 import { AdControlLayer } from "@cxr/controls/AdControlLayer";
 import type { AdControlLayerProps } from "@cxr/controls/control-layer.types";
+import { CxrEventBus } from "@cxr/instance/coordination/CxrEventBus";
 
 describe("AdControlLayer — overlay stacking", () => {
   let container: HTMLDivElement;

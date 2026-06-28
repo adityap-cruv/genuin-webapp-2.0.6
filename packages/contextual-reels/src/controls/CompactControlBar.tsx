@@ -1,7 +1,7 @@
 "use client";
 
 import { type PlayerControlSize } from "@genuin/ui/player-controls";
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 
 import { ExpandCollapseButton } from "@cxr/controls/buttons/atoms/ExpandCollapseButton";
 import { ExpandCollapseButtonV2 } from "@cxr/controls/buttons/atoms/ExpandCollapseButtonV2";
@@ -11,7 +11,7 @@ import { MuteUnmuteButtonV2 } from "@cxr/controls/buttons/atoms/MuteUnmuteButton
 import { PlayPauseButton } from "@cxr/controls/buttons/atoms/PlayPauseButton";
 import { PlayPauseButtonV2 } from "@cxr/controls/buttons/atoms/PlayPauseButtonV2";
 import { WatchButton } from "@cxr/controls/buttons/atoms/WatchButton";
-import { useUserInteracted } from "@cxr/instance/coordination/UserInteractionTracker";
+import { useAudioEngaged } from "@cxr/controls/useAudioEngaged";
 
 const noop = (): void => undefined;
 
@@ -98,7 +98,21 @@ export function CompactControlBar({
   className,
   ...rest
 }: CompactControlBarProps): React.JSX.Element {
-  const hasInteracted = useUserInteracted();
+  // A tap on THIS bar's mute button is itself an audio action — it ends the
+  // enticement even when it sets the player TO muted. An audible-start unit
+  // (initialVolume > 0) muted by tapping here never emits `mute:unmuted`
+  // (PlayerProvider only emits on the unmuted transition), so without this
+  // local latch the icon would keep showing "sound on" over actually-muted
+  // playback. Mirrors AdControlBar's `muteToggled`.
+  const [muteTapped, setMuteTapped] = useState(false);
+  const handleMute = (): void => {
+    setMuteTapped(true);
+    onMuteClick();
+  };
+  // Enticement ends only on an audio action — a mute-button tap here OR a
+  // `mute:unmuted` bus event (overlay unmute / another bar) — never on a
+  // play/pause or other generic tap. See useAudioEngaged.
+  const hasInteracted = useAudioEngaged(muteTapped);
 
   const showImage = Boolean(identity?.imageUrl);
   const showName = Boolean(identity?.name);
@@ -152,7 +166,7 @@ export function CompactControlBar({
             <>
               <MuteUnmuteButtonV2
                 isMuted={hasInteracted ? isMuted : false}
-                onClick={onMuteClick}
+                onClick={handleMute}
                 size={v2Size}
                 enableVolumeSlider={false}
                 shouldAnimate={false}
@@ -171,7 +185,7 @@ export function CompactControlBar({
               <MuteUnmuteButton
                 animatedBorder={animatedBorder}
                 isMuted={hasInteracted ? isMuted : false}
-                onClick={onMuteClick}
+                onClick={handleMute}
                 size={size}
               />
               <PlayPauseButton isPlay={isPlay ?? false} onClick={onPlayClick ?? noop} size={size} />

@@ -103,4 +103,31 @@ describe("CompactControlBar", () => {
     // genAd owns the description in ad sm, so CXR suppresses its ticker.
     expect(query("compact-bar-description")).toBeNull();
   });
+
+  // Regression for an audible-start compact VIDEO (e.g. tag with initialVolume:0.2).
+  // The bar mounts with no EventBusProvider, so the only audio-action signal is the
+  // local mute-tap latch. PlayerProvider would never emit `mute:unmuted` on a
+  // mute-DOWN transition, so without the latch the icon would keep showing
+  // "sound on" over actually-muted playback.
+  const muteIconFile = (): string | null => {
+    const img = container.querySelector('[data-testid="mute-btn"] img');
+    return img ? (img.getAttribute("src")?.split("/").pop() ?? null) : null;
+  };
+
+  it("audible-start: tapping mute ends the enticement and shows the real muted icon", () => {
+    const onMuteClick = vi.fn();
+    // Audible at load (isMuted=false): icon shows the sound-on enticement.
+    render({ isMuted: false, onMuteClick });
+    expect(muteIconFile()).toBe("unmute.svg");
+
+    // Tap mute — an audio action even though it sets the player TO muted.
+    act(() => {
+      (container.querySelector('[data-testid="mute-btn"]') as HTMLElement).click();
+    });
+    expect(onMuteClick).toHaveBeenCalledTimes(1);
+
+    // Player is now muted; the bar must reflect the REAL state, not the enticement.
+    render({ isMuted: true, onMuteClick });
+    expect(muteIconFile()).toBe("mute.svg");
+  });
 });

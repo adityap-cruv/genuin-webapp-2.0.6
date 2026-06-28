@@ -37,6 +37,14 @@ type Handler<K extends keyof CxrEventMap> = (detail: CxrEventMap[K]) => void;
 /** Per-instance typed event emitter — does not touch window or document. */
 export class CxrEventBus {
   private readonly _listeners = new Map<string, Set<Handler<keyof CxrEventMap>>>();
+  /**
+   * Names of events that have fired at least once on this instance. Lets a
+   * consumer that mounts AFTER an event fired still observe that it happened —
+   * subscriptions only deliver future events, but some state is a one-way latch
+   * (e.g. "the user has engaged audio in this widget") that must survive across
+   * slide changes, where each slide mounts fresh components on the same bus.
+   */
+  private readonly _fired = new Set<keyof CxrEventMap>();
 
   /**
    * Subscribe to an event. Returns an unsubscribe function.
@@ -56,10 +64,19 @@ export class CxrEventBus {
    * Emit an event to all registered listeners.
    */
   emit<K extends keyof CxrEventMap>(name: K, detail: CxrEventMap[K]): void {
+    this._fired.add(name);
     const set = this._listeners.get(name);
     if (!set) return;
     for (const handler of Array.from(set)) {
       (handler as Handler<K>)(detail);
     }
+  }
+
+  /**
+   * Whether `name` has been emitted at least once on this instance. Use for
+   * one-way latches that late-mounting consumers must be able to read.
+   */
+  hasFired<K extends keyof CxrEventMap>(name: K): boolean {
+    return this._fired.has(name);
   }
 }

@@ -35,3 +35,13 @@ export function useEventBus(): CxrEventBus {
   }
   return ctx;
 }
+
+/**
+ * Like {@link useEventBus} but returns `undefined` instead of throwing when
+ * there is no enclosing provider. For components that may render standalone
+ * (Storybook, isolated atoms, tests) and must degrade gracefully rather than
+ * crash — they simply get no bus events.
+ */
+export function useOptionalEventBus(): CxrEventBus | undefined {
+  return useContext(EventBusContext);
+}

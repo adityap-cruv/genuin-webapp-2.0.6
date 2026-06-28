@@ -11,8 +11,8 @@ import { PlayPauseButton } from "@cxr/controls/buttons/atoms/PlayPauseButton";
 import { PlayPauseButtonV2 } from "@cxr/controls/buttons/atoms/PlayPauseButtonV2";
 import type { AdControlBarProps } from "@cxr/controls/control-layer.types";
 import { resolveCxrControlSize } from "@cxr/controls/control-size";
+import { useAudioEngaged } from "@cxr/controls/useAudioEngaged";
 import { useNewPlayerControls } from "@cxr/controls/useNewPlayerControls";
-import { useUserInteracted } from "@cxr/instance/coordination/UserInteractionTracker";
 
 /**
  * Ad control bar routing by `layout`:
@@ -35,14 +35,15 @@ export function AdControlBar({
   // unmutes — the user tapped *for* audio — then a clean mute/unmute cycle follows.
   // Driven by tap (not pointerdown) so it's free of the App-level interaction race.
   const [muteToggled, setMuteToggled] = useState(false);
-  // The enticement only applies before the user has engaged with this widget.
-  // Once they have interacted (persisted per-instance — e.g. they unmuted an
-  // earlier ad in the same widget), the icon must reflect the REAL mute state so
-  // a later SYSTEM mute (autoplay policy on the next ad) actually shows the mute
-  // icon instead of staying stuck on the "sound on" enticement.
-  const interacted = useUserInteracted();
+  // The enticement ends only on an AUDIO action — a mute-button tap (`muteToggled`)
+  // or an unmute via the ad tap-overlay (`mute:unmuted` bus event, tracked by
+  // `useAudioEngaged`). It must NOT end on generic interaction: the App root marks
+  // any pointer-down as "interacted", so gating on that made a play/pause tap flip
+  // the icon to the real (muted) state for an action unrelated to sound. Once an
+  // audio action has occurred the icon tracks the REAL mute state thereafter, so a
+  // later SYSTEM mute (autoplay policy on the next ad) shows the mute icon.
   const isV2 = useNewPlayerControls();
-  const engaged = muteToggled || interacted;
+  const engaged = useAudioEngaged(muteToggled);
   const perceivedMuted = engaged ? isMuted : false;
   const handleMute = () => {
     setMuteToggled(true);
