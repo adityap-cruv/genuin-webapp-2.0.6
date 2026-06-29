@@ -302,11 +302,17 @@ async function fetchFeed(
       };
   }
 
+  // Force the feed `type` to 3 (popular) for this specific placement, regardless of which
+  // feedType branch built the request body.
+  const FORCE_TYPE_3_PLACEMENT_ID = "6a3c5b0dcb0f2cc8d56a2b0d";
+  const placementOverride = options?.placementId === FORCE_TYPE_3_PLACEMENT_ID ? { type: 3 } : {};
+
   return await requestAxiosInstance
     .post(url, {
       ...requestBody,
       ...contextualFeedParamsBody,
       ...configurationDataBody,
+      ...placementOverride,
     })
     .then((res) => {
       // if (res.status !== 200) {
