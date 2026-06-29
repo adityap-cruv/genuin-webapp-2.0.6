@@ -305,11 +305,19 @@ export function Embed({
   // The overlay card isn't required in this layout, and maintaining index
   // consistency between the embed view and expanded view becomes difficult.
   // Hence, we filter out overlay posts when the conditions match.
+  const isIheartArticlePage = config.layoutConfig.isIheartArticlePage;
   const filteredPost = useMemo(() => {
-    return isDesktop && websiteType === "polaris" && isIheartLayout
-      ? videos.filter((post) => post.video?.type !== "overlay")
-      : videos;
-  }, [videos, isDesktop]);
+    // On an iHeart article page, the embed/expand view must not surface the
+    // "complete" (caught-up) or "overlay" special slides.
+    if (isIheartArticlePage) {
+      return videos.filter((post) => post.video?.type !== "overlay" && post.video?.type !== "complete");
+    }
+    return isSectioned
+      ? videos.filter((post) => post.video?.type !== "overlay" && !(isSectioned && post.video?.type === "complete"))
+      : isDesktop && websiteType === "polaris" && isIheartLayout
+        ? videos.filter((post) => post.video?.type !== "overlay")
+        : videos;
+  }, [videos, isDesktop, isSectioned, websiteType, isIheartLayout, isIheartArticlePage]);
 
   // Extract video titles from postDetails
   const sectionList = useMemo(() => filteredPost.map((videoData) => videoData.section || null), [filteredPost]);

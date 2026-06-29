@@ -177,6 +177,7 @@ export function PlayerList({
       showEngagementTools,
     },
     view: { brandLayoutType, websiteType, isAdsEnabledInIheart },
+    layoutConfig: { isIheartArticlePage },
     isDesignSystemV2,
   } = useEmbedConfigs();
 
@@ -309,7 +310,13 @@ export function PlayerList({
   // Callback to enable/disable swipers when interacting with Pills
   const handleSwiperToggle = useCallback(
     (disable: boolean) => {
-      if (isSectioned && horizontalSwiper) {
+      // `.destroyed` guard: on a section switch the old vertical Swiper is torn
+      // down but its instance lingers in `verticalSwipers` state. Calling
+      // enable()/disable() on a destroyed Swiper dereferences a null `params`
+      // (TypeError: Cannot read properties of undefined reading 'grabCursor'),
+      // crashing into the error boundary. Same stale-reference guard as the
+      // activeIndexChange effect below.
+      if (isSectioned && horizontalSwiper && !horizontalSwiper.destroyed) {
         if (disable) {
           horizontalSwiper.disable();
         } else {
@@ -317,7 +324,7 @@ export function PlayerList({
         }
       }
       // Also disable/enable the active vertical swiper
-      if (activeSwiper) {
+      if (activeSwiper && !activeSwiper.destroyed) {
         if (disable) {
           activeSwiper.disable();
         } else {
@@ -335,8 +342,13 @@ export function PlayerList({
 
   // Drop overlay posts entirely — we can't just skip a slide with a swiper-in-swiper.
   const filteredPost = useMemo(() => {
+    // On an iHeart article page the expand view must also drop the "complete"
+    // (caught-up) slide, not just the "overlay" slide.
+    if (isIheartArticlePage) {
+      return posts.filter((post) => post.video?.type !== "overlay" && post.video?.type !== "complete");
+    }
     return posts.filter((post) => post.video?.type !== "overlay");
-  }, [posts]);
+  }, [posts, isIheartArticlePage]);
 
   const handleActiveIndexChange = useCallback(
     (index: number) => {
@@ -371,6 +383,7 @@ export function PlayerList({
   }, [activeVideoId, isOctoOpen]);
 
   const shouldAutoOpenOcto = !isDesktop && showEngagementTools && isOctoToolEnabled;
+  const shouldShowPlayerHeader = brandLayoutType === "iheart" && !isEndOfFeedReached && !isAdFilled;
 
   const prevMobileVideoIdRef = useRef<string | null>(null);
   const octoReopenTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -575,7 +588,7 @@ export function PlayerList({
           // aria-label="Video player"
         >
           {/* Header with back button and centered title */}
-          {brandLayoutType === "iheart" && !isEndOfFeedReached && !isAdFilled && (
+          {shouldShowPlayerHeader && (
             <SafeSuspense
               fallback={
                 <PositionedLoader className="gencl:absolute gencl:top-0 gencl:left-0 gencl:right-0 gencl:z-20 gencl:p-4" />
@@ -584,6 +597,7 @@ export function PlayerList({
                 isMobile={isMobile}
                 title={filteredPost[activeIndex]?.video?.attributes?.title ?? ""}
                 onBackClick={changeExpandViewType}
+                showTitle={!(isSectioned && (sectionList?.length ?? 0) > 0)}
               />
             </SafeSuspense>
           )}
@@ -593,7 +607,16 @@ export function PlayerList({
               fallback={
                 <PositionedLoader className="gencl:absolute gencl:top-0 gencl:left-0 gencl:right-0 gencl:z-50 gencl:p-4" />
               }>
-              <SectionsTabs onSectionSelect={handleSectionSelect} />
+              <SectionsTabs
+                onSectionSelect={handleSectionSelect}
+                // Clear the back button with left PADDING, not a positional `left-10`
+                // offset. The tablist is `absolute w-full`; shifting it right kept its
+                // width at 100% and pushed the right ~48px (and the last tabs) off-screen
+                // past the viewport edge, so the full list could never be scrolled into
+                // view. Padding keeps the strip in-bounds and scrolls with the content
+                // while starting the first tab clear of the back button (right edge ~44px).
+                leadingInset={shouldShowPlayerHeader && isMobile ? 56 : undefined}
+              />
             </SafeSuspense>
           )}
           {/* While slideDimensions is being measured (iheart-tablet only — every

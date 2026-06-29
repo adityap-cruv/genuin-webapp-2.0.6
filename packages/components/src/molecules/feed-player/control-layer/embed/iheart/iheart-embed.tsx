@@ -15,6 +15,7 @@ import { useEmbedManagerContext } from "@genuin/components/organisms/embed/conte
 import { usePlayerContext } from "../../../context";
 import type { ControlLayerPropsType } from "../../control-layer.types";
 import { OctoExpandSheet } from "../../octo/octo-expand-sheet";
+import { PlacementMetadata } from "../../placement/placement-metadata";
 
 import { IHeartControls } from "./controls";
 import { IHeartListenLiveButton } from "./listen-live-button";
@@ -34,7 +35,7 @@ export function IHeartControlLayer({
 }: ControlLayerPropsType) {
   const { baseContextManager } = useBaseContext();
   const {
-    view: { websiteType },
+    view: { websiteType, isPlacementView },
     brand: { expandOnInteraction },
     engagement,
     expandViewConfig,
@@ -50,6 +51,21 @@ export function IHeartControlLayer({
   const octoSheetState = getContentTypeState("octo");
   const isActiveOctoSheet = isOctoEnabled && (octoSheetState === "panel-view" || octoSheetState === "full-view");
   const isOctoVisible = octoVisible;
+
+  // Placement view reuses the shared section metadata (section details + clips
+  // count) alongside iheart's own header/footer. Embed view is untouched.
+  const { sectionDetails, noOfClips } = PlacementMetadata({ postDetails });
+  const showPlacementMeta = isPlacementView && !isOctoVisible;
+  // Single metadata block reused across the placement slots — its position in
+  // the banner is driven by SECTION_METADATA_PLACEMENT.
+  const hasClipCount = noOfClips !== null && noOfClips !== undefined && noOfClips !== false;
+  const sectionMetadata = showPlacementMeta ? (
+    <div className="gencl:flex gencl:gap-2 gencl:items-center">
+      <div>{sectionDetails}</div>
+      {hasClipCount && <div>{" • "}</div>}
+      <div>{noOfClips}</div>
+    </div>
+  ) : null;
 
   const swipeStartYRef = useRef<number>(0);
 
@@ -322,39 +338,41 @@ export function IHeartControlLayer({
 
         {/* Header Section */}
         {!isActiveOctoSheet && (
-          <header className="gencl:absolute gencl:top-0 gencl:w-full gencl:flex gencl:justify-between gencl:items-center gencl:gap-2 gencl:text-white gencl:p-3">
-            {postDetails.video?.attributes?.image_url && (
-              <Image
-                aspectRatio="square"
-                src={postDetails.video.attributes?.image_url ?? ""}
-                alt={`${postDetails.video.attributes?.title || ""}, live radio artwork`}
-                tabIndex={isVideoWatched ? -1 : 0}
-                className={cn(
-                  "gencl:rounded-md gencl:object-cover",
-                  websiteType === "polaris" ? "gencl:size-12 gencl:lg:size-16!" : "gencl:size-14!"
-                )}
-              />
-            )}
-            <div className="gencl:w-full">
-              {postDetails.video?.attributes?.title && (
-                <p
+          <header className="gencl:absolute gencl:top-0 gencl:w-full gencl:flex gencl:flex-col gencl:justify-between gencl:text-white gencl:p-3">
+            <div className="gencl:flex gencl:justify-between gencl:gap-2">
+              {postDetails.video?.attributes?.image_url && (
+                <Image
+                  aspectRatio="square"
+                  src={postDetails.video.attributes?.image_url ?? ""}
+                  alt={`${postDetails.video.attributes?.title || ""}, live radio artwork`}
                   tabIndex={isVideoWatched ? -1 : 0}
-                  aria-label={`${postDetails.video.attributes?.title}, title`}
                   className={cn(
-                    "gencl:font-semibold gencl:leading-[18px] gencl:line-clamp-1 gencl:tracking-[-0.2px] gencl:lg:font-semibold! gencl:lg:leading-[24px]! gencl:lg:tracking-[-0.2px]!",
-                    websiteType === "polaris" ? "gencl:text-[14px] gencl:lg:text-[17px]!" : "gencl:text-[16px]"
-                  )}>
-                  {postDetails.video.attributes?.title}
-                </p>
+                    "gencl:rounded-md gencl:object-cover",
+                    websiteType === "polaris" ? "gencl:size-12 gencl:lg:size-16!" : "gencl:size-14!"
+                  )}
+                />
               )}
-              {postDetails.video?.attributes?.description && (
-                <p
-                  tabIndex={isVideoWatched ? -1 : 0}
-                  aria-label={`${postDetails.video.attributes?.description}, Video title`}
-                  className="gencl:text-[12px] gencl:font-normal gencl:leading-[16px] gencl:line-clamp-2 gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]!">
-                  {postDetails.video.attributes?.description}
-                </p>
-              )}
+              <div className="gencl:w-full">
+                {postDetails.video?.attributes?.title && (
+                  <p
+                    tabIndex={isVideoWatched ? -1 : 0}
+                    aria-label={`${postDetails.video.attributes?.title}, title`}
+                    className={cn(
+                      "gencl:font-semibold gencl:leading-[18px] gencl:line-clamp-1 gencl:tracking-[-0.2px] gencl:lg:font-semibold! gencl:lg:leading-[24px]! gencl:lg:tracking-[-0.2px]!",
+                      websiteType === "polaris" ? "gencl:text-[14px] gencl:lg:text-[17px]!" : "gencl:text-[16px]"
+                    )}>
+                    {postDetails.video.attributes?.title}
+                  </p>
+                )}
+                {postDetails.video?.attributes?.description && (
+                  <p
+                    tabIndex={isVideoWatched ? -1 : 0}
+                    aria-label={`${postDetails.video.attributes?.description}, Video title`}
+                    className="gencl:text-[12px] gencl:font-normal gencl:leading-[16px] gencl:line-clamp-2 gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]!">
+                    {postDetails.video.attributes?.description}
+                  </p>
+                )}
+              </div>
             </div>
           </header>
         )}
@@ -365,6 +383,8 @@ export function IHeartControlLayer({
             "gencl:absolute gencl:bottom-0 gencl:p-3 gencl:text-white gencl:w-full",
             isActiveOctoSheet && "gencl:space-y-3 gencl:h-full gencl:p-0"
           )}>
+          {/* FOOTER — section metadata above the description. */}
+          {sectionMetadata && <div className="gencl:mb-2">{sectionMetadata}</div>}
           {!isOctoVisible && (
             <div className="gencl:rounded">
               <ReadMore

@@ -192,6 +192,14 @@ export function usePlayerLifecycle({
     const video = videoEl.current;
     if (!video) return;
 
+    // Guards the async HLS import and Vlitejs onReady against a component that
+    // unmounts mid-flight. Switching section tabs quickly unmounts the player
+    // before `import("hls.js")` resolves; without this the late callback would
+    // build a new Hls, attachMedia, and startLoad(-1) on an orphaned element —
+    // an audio stream with no owner. Several fast switches stack such orphans,
+    // producing the audio-clash. The flag is read after every await boundary.
+    let cancelled = false;
+
     // --- HLS / direct src setup ---
     const setupHlsContent = () => {
       import("hls.js").then(({ default: HlsClass }) => {
@@ -201,9 +209,8 @@ export function usePlayerLifecycle({
         // take the native path on Chromium: Chrome returns "maybe" for the HLS
         // MIME type yet runs its own adaptive bitrate, which ignores our
         // bandwidth-conservation pinning and climbs to the highest rendition.
-        if (!HlsClass.isSupported()) {
-          // No MSE — let the browser play the manifest natively (Safari/iOS).
-          video.src = content;
+        if (cancelled || !HlsClass.isSupported()) {
+          if (!cancelled) video.src = content;
           return;
         }
         if (hlsInstanceRef.current) {
@@ -231,6 +238,14 @@ export function usePlayerLifecycle({
             hls.currentLevel = lowestIdx;
           }
         });
+
+        // Re-check after the manifest/level work: cleanup may have run while this
+        // ran. If so, tear this instance down instead of registering it — cleanup
+        // already passed the `hlsInstanceRef` null-check and would otherwise leak.
+        if (cancelled) {
+          hls.destroy();
+          return;
+        }
 
         hlsInstanceRef.current = hls;
         // Unconditional startLoad to break Vlitejs onReady deadlock.
@@ -294,6 +309,20 @@ export function usePlayerLifecycle({
         },
         plugins,
         onReady: (player: PlayerHandle) => {
+          // Vlitejs onReady is async; the player may have unmounted while it
+          // initialised (fast tab switch). Destroying here prevents an orphaned
+          // player that would otherwise call startPlayback and emit audio with no
+          // owner — cleanup has already run and left currentPlayerRef null.
+          if (cancelled) {
+            try {
+              player.pause();
+              player.destroy?.();
+            } catch (error) {
+              logger.warn("Error destroying late-ready player:", error);
+            }
+            return;
+          }
+
           currentPlayerRef.current = player;
           isPlayerReady.current = true;
 
@@ -336,6 +365,7 @@ export function usePlayerLifecycle({
 
     // --- cleanup ---
     return () => {
+      cancelled = true;
       isPlayerReady.current = false;
 
       if (currentPlayerRef.current) {
@@ -350,11 +380,28 @@ export function usePlayerLifecycle({
 
       if (hlsInstanceRef.current) {
         try {
+          // detachMedia before destroy so the element stops receiving segments
+          // immediately; destroy alone can leave a tick of buffered audio playing.
+          hlsInstanceRef.current.detachMedia();
           hlsInstanceRef.current.destroy();
         } catch (error) {
           logger.warn("Error cleaning up HLS instance:", error);
         }
         hlsInstanceRef.current = null;
+      }
+
+      // Hard-stop the element directly. If Vlitejs never reached onReady, the
+      // player handle above is null and nothing else pauses the <video> — a
+      // partially-buffered stream would keep its audio. pause() + emptying the
+      // source guarantees silence regardless of how far init progressed.
+      if (video) {
+        try {
+          video.pause();
+          video.removeAttribute("src");
+          video.load();
+        } catch (error) {
+          logger.warn("Error stopping video element:", error);
+        }
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: run once on mount

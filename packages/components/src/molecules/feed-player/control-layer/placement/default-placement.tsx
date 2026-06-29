@@ -1,12 +1,10 @@
-import { Image } from "@genuin/ui/components/image";
 import { CommentIcon, PlayIcon } from "@genuin/ui/icons";
-import { cn, getFormattedDuration, getMonthYear } from "@genuin/ui/lib/utils";
+import { cn } from "@genuin/ui/lib/utils";
 import { useMemo, lazy } from "react";
 
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
-
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 
 import { DynamicReactionIcon } from "../../../reaction-button";
@@ -15,27 +13,15 @@ import type { ControlLayerPropsType } from "../control-layer.types";
 import { EmbedControls } from "../controls/embed";
 import { OctoExpandSheet } from "../octo/octo-expand-sheet";
 
+import { PlacementMetadata } from "./placement-metadata";
+
 const Linkouts = lazy(() =>
   import("@genuin/components/organisms/linkouts").then((m) => ({
     default: m.Linkouts,
   }))
 );
 
-/**
- * Helper function to process video description
- * Handles both string and array descriptions
- */
-export const processVideoDescription = (description: any) => {
-  if (Array.isArray(description)) {
-    return description
-      .map((desc, idx) =>
-        typeof desc === "string" ? desc : desc && typeof desc === "object" && "text" in desc ? desc.text : ""
-      )
-      .filter(Boolean)
-      .map((text, idx) => <span key={idx}>{text}</span>);
-  }
-  return description;
-};
+export { processVideoDescription } from "./placement-metadata";
 
 export function DefaultPlacement({
   postDetails,
@@ -45,112 +31,17 @@ export function DefaultPlacement({
   ...restProps
 }: ControlLayerPropsType) {
   const { contentDisplay, responsive, view, engagement } = useEmbedConfigs();
-  const { isXs, isMd, isSm, isLg } = responsive;
+  const { isXs } = responsive;
   const { isMobile } = useDeviceDetectMediaQuery();
   const isOctoEnabled = engagement.engagementTools.octo && view.isFeed;
   const { octoVisible } = useSheetState();
   // Mirrors expand-view: hide the overlay content sections while Octo is on
   // screen, and bring them back the moment Octo closes.
   const isOctoVisible = isOctoEnabled && octoVisible;
-  const shouldHideOnSmall = isXs;
-  const shouldUseCompactText = isMd;
 
-  // Memoize expensive computations and element creation
-  const sectionDetails = useMemo(
-    () => (
-      <div
-        className={cn(
-          "gencl:flex gencl:items-center gencl:gap-2",
-          contentDisplay.showSectionSubTitle && postDetails.section?.description && "gencl:justify-between"
-        )}>
-        {contentDisplay.showSectionThumbnail && postDetails.section?.thumbnail_url && !shouldHideOnSmall && (
-          <Image
-            src={postDetails.section?.thumbnail_url ?? ""}
-            alt="thumbnail"
-            className={cn("gencl:object-cover", shouldUseCompactText ? "gencl:size-8" : "gencl:size-12")}
-          />
-        )}
-        <div className="gencl:flex gencl:flex-col gencl:justify-center gencl:min-w-0 gencl:flex-1">
-          {contentDisplay.showSectionTitle && (
-            <p
-              className={cn(
-                "gencl:truncate",
-                shouldUseCompactText ? "gencl:!text-[12px] gencl:font-semibold" : "gencl:text-body-2-semi-bold"
-              )}>
-              {postDetails.section?.title}
-            </p>
-          )}
-          {contentDisplay.showSectionSubTitle && !isXs && (
-            <p
-              className={cn(
-                "gencl:truncate",
-                shouldUseCompactText ? "gencl:!text-[12px] gencl:font-normal" : "gencl:text-body-2-normal"
-              )}>
-              {postDetails.section?.description}
-            </p>
-          )}
-        </div>
-      </div>
-    ),
-    [
-      contentDisplay.showSectionThumbnail,
-      contentDisplay.showSectionTitle,
-      contentDisplay.showSectionSubTitle,
-      postDetails.section,
-      shouldUseCompactText,
-      shouldHideOnSmall,
-      isXs,
-    ]
-  );
-
-  const noOfClips = useMemo(
-    () => (
-      <>
-        {contentDisplay.showClipsCount && (postDetails.section?.no_of_clips ?? 0) > 0 && !isSm && (
-          <p
-            className={cn(
-              "gencl:!leading-[16px]",
-              shouldUseCompactText ? "gencl:!text-[12px] gencl:font-semibold" : "gencl:text-body-1-semi-bold"
-            )}>
-            {postDetails.section?.no_of_clips ?? 0} clips
-          </p>
-        )}
-      </>
-    ),
-    [contentDisplay.showClipsCount, postDetails.section?.no_of_clips, isSm, shouldUseCompactText]
-  );
-
-  const videoDetails = useMemo(() => {
-    if (!postDetails.video) return null;
-    const details = [
-      contentDisplay.showPostDate && (
-        <span key="date">
-          {getMonthYear(postDetails.video.attributes?.timestamp ?? postDetails.video.createdAt ?? 0)}
-        </span>
-      ),
-      contentDisplay.showVideoDuration && (postDetails?.video?.duration ?? 0) > 0 && (
-        <span key="duration">{getFormattedDuration(String(postDetails.video.duration ?? ""))}</span>
-      ),
-      contentDisplay.showPostDescription && (postDetails.video.description?.length ?? 0) > 0 && !shouldHideOnSmall && (
-        <span key="description">{processVideoDescription(postDetails.video.description)}</span>
-      ),
-    ].filter(Boolean);
-
-    return (
-      <div
-        className={cn(
-          "gencl:line-clamp-3",
-          shouldUseCompactText ? "gencl:!text-[12px] gencl:font-normal" : "gencl:text-body-2-normal"
-        )}>
-        {details.map((child, index, array) => (
-          <span key={index}>
-            {child}
-            {index < array.length - 1 && <span> • </span>}
-          </span>
-        ))}
-      </div>
-    );
-  }, [contentDisplay, postDetails.video, shouldUseCompactText, shouldHideOnSmall]);
+  // Section details, clips count, and video details rendering live in the shared
+  // PlacementMetadata component so the iheart control layer can reuse them.
+  const { sectionDetails, noOfClips, videoDetails } = PlacementMetadata({ postDetails });
 
   const linkoutSection = useMemo(
     () => (

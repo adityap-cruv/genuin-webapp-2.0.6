@@ -466,6 +466,10 @@ export function useEmbedConfigs() {
        */
       showCloseButton: isEmbed ? embedData?.style !== "standard_wall" : false,
       feedDisplayPreference: customization?.feed_display_pref || "default",
+      isIheartArticlePage:
+        brandLayoutType === "iheart" &&
+        typeof window !== "undefined" &&
+        /(^|\.)iheart\.com$/.test(window.location.hostname),
     };
   }, [customization, isMobile]);
 

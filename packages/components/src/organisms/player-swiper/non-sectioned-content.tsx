@@ -102,7 +102,15 @@ export function NonSectionedContent({
       }}
       disableScroll={disableSwiper}
       onReachEnd={(swiper: Swiper) => {
-        // Guard against spurious reachEnd fired when expand mode changes Swiper geometry:
+        // Swiper (in virtual mode) fires a spurious reachEnd on mount/expand while it
+        // recalculates geometry — at that moment activeIndex can transiently read as the
+        // last index, so the old `activeIndex < length - 1` guard let it through and flipped
+        // isEndOfFeedReached=true on first paint. That hid the iHeart PlayerHeader (back
+        // button) until a vertical swipe reset it via onSlideChange. You cannot genuinely
+        // reach the end of a multi-slide feed while still on the first slide, so also require
+        // activeIndex > 0 (and >1 slide overall).
+        if (filteredPost.length <= 1) return;
+        if (swiper.activeIndex <= 0) return;
         if (swiper.activeIndex < filteredPost.length - 1) return;
         setEndOfFeedReached(true);
       }}
