@@ -1,5 +1,10 @@
 module.exports = {
   testEnvironment: "jsdom",
+  // Only run source tests. Without this, a prior `tsc --build` (typecheck)
+  // emits compiled `*.test.js` into dist/types, which Jest would then try to
+  // run and fail to parse.
+  roots: ["<rootDir>/src"],
+  testPathIgnorePatterns: ["/node_modules/", "<rootDir>/dist/"],
   setupFilesAfterEnv: ["<rootDir>/src/test/jest.setup.ts"],
   transform: {
     "^.+\\.(ts|tsx)$": "ts-jest",

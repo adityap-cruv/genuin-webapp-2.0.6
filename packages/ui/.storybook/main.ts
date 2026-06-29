@@ -1,8 +1,16 @@
+import { createRequire } from "module";
 import { join, dirname, resolve } from "path";
+import { fileURLToPath } from "url";
 
 import type { StorybookConfig } from "@storybook/react-vite";
 import remarkGfm from "remark-gfm";
 import tsconfigPaths from "vite-tsconfig-paths";
+
+// `require` and `__dirname` are not defined when this config is evaluated as
+// pure ESM (e.g. by the Storybook vitest addon). Shim them via import.meta —
+// same approach as packages/components/.storybook/main.ts.
+const require = createRequire(import.meta.url);
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 /**
  * This function is used to resolve the absolute path of a package.

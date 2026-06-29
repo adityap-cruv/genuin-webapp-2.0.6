@@ -187,7 +187,7 @@
     "@storybook/addon-a11y": "^9.0.0",
     "@storybook/addon-docs": "^9.0.0",
     "@storybook/addon-onboarding": "^9.0.0",
-    "@storybook/addon-vitest": "9.0.0",
+    "@storybook/addon-vitest": "9.0.12",
     "@storybook/react-vite": "^9.0.0",
     "@tailwindcss/postcss": "^4.1.7",
     "@testing-library/jest-dom": "^6.6.3",

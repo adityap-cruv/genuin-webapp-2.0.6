@@ -1,6 +1,8 @@
 import "@testing-library/jest-dom";
 import { render } from "@testing-library/react";
 
+import { cn } from "@genuin/ui/lib/utils";
+
 import { Button, buttonVariants } from "./button";
 
 describe("Button Component", () => {
@@ -11,8 +13,10 @@ describe("Button Component", () => {
     const { getByRole } = render(<Button>Default Button</Button>);
     const button = getByRole("button");
     expect(button).toHaveClass(
-      // size "md" is the default per buttonVariants defaultVariants
-      buttonVariants({ variant: "default", size: "md" })
+      // The component applies `cn(buttonVariants(...))`, so tailwind-merge
+      // collapses conflicting utilities. Compare against the merged form, not
+      // the raw cva string. size "md" is the default per defaultVariants.
+      cn(buttonVariants({ variant: "default", size: "md" }))
     );
   });
 
@@ -22,7 +26,7 @@ describe("Button Component", () => {
       const button = getByRole("button");
       expect(button).toHaveClass(
         // size "md" is the default per buttonVariants defaultVariants
-        buttonVariants({ variant: variant as any, size: "md" })
+        cn(buttonVariants({ variant: variant as any, size: "md" }))
       );
     });
   });
@@ -31,7 +35,7 @@ describe("Button Component", () => {
     it(`renders correctly with size="${size}"`, () => {
       const { getByRole } = render(<Button size={size as any}>Size Button</Button>);
       const button = getByRole("button");
-      expect(button).toHaveClass(buttonVariants({ variant: "default", size: size as any }));
+      expect(button).toHaveClass(cn(buttonVariants({ variant: "default", size: size as any })));
     });
   });
 
