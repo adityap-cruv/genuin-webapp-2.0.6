@@ -163,7 +163,7 @@ export function useEmbedConfigs() {
         return embedData?.grid_layout || undefined;
       })(),
       scrollBehavior: customization?.scroll_behavior || "paging",
-      isNavigationControlEnabled: brandLayoutType === "ted" ? false : customization?.is_navigation_control_enabled,
+      isNavigationControlEnabled: customization?.is_navigation_control_enabled,
       /**
        * This flag is used to determine whether the player should pause when the player doesn't autoplay in unmuted state specifically for safari.
        * If true: the player will pause when autoplay is not allowed error gets thrown from player.
