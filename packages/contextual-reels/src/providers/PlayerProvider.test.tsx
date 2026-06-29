@@ -21,6 +21,7 @@ interface Captured {
   setPlaying: (v: boolean) => void;
   setAdBreakActive: (active: boolean) => void;
   setVolume: (v: number) => void;
+  notifyAutoplayBlocked: () => void;
 }
 
 let captured: Captured = {
@@ -32,6 +33,7 @@ let captured: Captured = {
   setPlaying: () => {},
   setAdBreakActive: () => {},
   setVolume: () => {},
+  notifyAutoplayBlocked: () => {},
 };
 
 function Consumer(): null {
@@ -106,13 +108,13 @@ describe("PlayerProvider", () => {
   });
 
   it("seeds initial volume from the active tag's strategy", () => {
-    // Tag 6a032de445fa9f171bd291cb is configured with initialVolume: 0.2.
+    // Tag 6a3aa8244da8cd92d289cc72 is configured with initialVolume: 0.2.
     const tree = React.createElement(
       EventBusProvider,
       null,
       React.createElement(
         StrategyProvider,
-        { tagId: "6a032de445fa9f171bd291cb" } as React.ComponentProps<typeof StrategyProvider>,
+        { tagId: "6a3aa8244da8cd92d289cc72" } as React.ComponentProps<typeof StrategyProvider>,
         React.createElement(PlayerProvider, null, React.createElement(Consumer))
       )
     );
@@ -195,6 +197,32 @@ describe("PlayerProvider", () => {
       capturedBus!.emit("fullscreen:enter", {});
     });
     expect(captured.isMuted).toBe(false);
+  });
+
+  it("notifyAutoplayBlocked drops volume to 0 (single source of truth)", () => {
+    render();
+    act(() => {
+      captured.setMuted(false);
+    });
+    expect(captured.isMuted).toBe(false);
+    act(() => {
+      captured.notifyAutoplayBlocked();
+    });
+    expect(captured.volume).toBe(0);
+    expect(captured.isMuted).toBe(true);
+  });
+
+  it("notifyAutoplayBlocked mutes even after fullscreen:enter (no special-casing)", () => {
+    render();
+    act(() => {
+      capturedBus!.emit("fullscreen:enter", {});
+    });
+    expect(captured.isMuted).toBe(false);
+    act(() => {
+      captured.notifyAutoplayBlocked();
+    });
+    expect(captured.volume).toBe(0);
+    expect(captured.isMuted).toBe(true);
   });
 
   describe("isAdBreakActive", () => {

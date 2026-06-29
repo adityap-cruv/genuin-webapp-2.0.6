@@ -865,7 +865,7 @@ describe("ads/useGenAdInstance", () => {
     unmount(root, container);
   });
 
-  it("calls updateView once after init so the compact side video renders", async () => {
+  it("calls updateView on fullscreen change so GenAd re-renders for the new viewport", async () => {
     vi.useFakeTimers();
     try {
       const { root, container } = mountHook({ ...baseProps, isActive: true });
@@ -876,6 +876,15 @@ describe("ads/useGenAdInstance", () => {
       });
 
       expect(genAdInit).toHaveBeenCalledTimes(1);
+      // updateView is NOT called at init time — only when the viewport changes.
+      expect(genAdUpdateView).not.toHaveBeenCalled();
+
+      // Entering fullscreen schedules a deferred updateView (10ms, after DOM settles).
+      await act(async () => {
+        testBus.emit("fullscreen:enter", {});
+        await vi.runAllTimersAsync();
+      });
+
       expect(genAdUpdateView).toHaveBeenCalledWith(42);
 
       unmount(root, container);

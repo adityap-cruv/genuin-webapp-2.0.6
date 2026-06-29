@@ -1,9 +1,9 @@
 "use client";
 
+import { NavArrowButton } from "@genuin/ui/player-controls";
 import type { EmblaCarouselType } from "embla-carousel";
 import React, { type RefObject } from "react";
 
-import { NavArrowButton } from "@cxr/controls/buttons/atoms/NavArrowButton";
 import type { ControlLayerVariant } from "@cxr/controls/control-layer.types";
 import { resolveCxrControlSize } from "@cxr/controls/control-size";
 import { useNewPlayerControls } from "@cxr/controls/useNewPlayerControls";

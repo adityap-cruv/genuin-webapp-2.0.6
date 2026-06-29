@@ -214,7 +214,6 @@ export function VideoLayout({
               content={reel.videoUrl ?? ""}
               id={reel.id}
               poster={reel.thumb ?? undefined}
-              isMuted={isMuted}
               volume={volume}
               isPlay={isActive && isPlaying && !adBreak.suppressVideo}
               tagDetails={{}}
@@ -256,7 +255,6 @@ export function VideoLayout({
             ad={reel.cta?.link}
             id={reel.id}
             poster={reel.thumb ?? undefined}
-            isMuted={isMuted}
             volume={volume}
             isPlay={isPlayerPlaying}
             hideScrubber={true}
@@ -319,7 +317,6 @@ export function VideoLayout({
             ad={reel.cta?.link}
             id={reel.id}
             poster={reel.thumb ?? undefined}
-            isMuted={isMuted}
             volume={volume}
             isPlay={isPlayerPlaying}
             hideScrubber={splitActive}

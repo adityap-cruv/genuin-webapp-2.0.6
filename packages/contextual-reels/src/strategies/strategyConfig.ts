@@ -36,6 +36,7 @@ export type TagStrategyEntry = Partial<Strategies> & { preset?: StrategyPreset }
  *   GENAI_ENABLED_TAG_IDS was empty → no entries.
  */
 export const TAG_STRATEGIES: Record<string, TagStrategyEntry> = {
+  "6a3aa8244da8cd92d289cc72": { singleHitWaterfall: true, initialVolume: 0.2 },
   "6a2fefd87ce338c3a5afc605": { singleHitWaterfall: true, initialVolume: 0.2 },
   "6a391232d73aa25887ac2af3": { adBreakEnabled: true, gateOnUnmute: true },
   "69b298e3d6a6ad57e7b9a464": { singleHitWaterfall: true, mutePassback: true },

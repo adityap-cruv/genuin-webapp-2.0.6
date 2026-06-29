@@ -40,8 +40,10 @@ export type LightPlayerProps = {
   /** Vlitejs config subset (controls loop behaviour) */
   config?: { auto_swipe?: boolean };
   videoMode?: VideoMode;
-  isMuted: boolean;
-  /** Audible volume 0..1. The element stays unmuted; silence comes from volume 0. */
+  /**
+   * Audible volume 0..1 — the single source of truth for sound. The element stays
+   * unmuted; silence is simply volume 0 (which also drives the mute icon upstream).
+   */
   volume: number;
   isPlay: boolean;
   /** Hide the seek/progress bar (e.g. while the Octo sheet owns the container). */

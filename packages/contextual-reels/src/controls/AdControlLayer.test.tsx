@@ -74,18 +74,16 @@ describe("AdControlLayer — overlay stacking", () => {
   });
 
   describe("compact variant=new (320x50)", () => {
-    it("raises the control bar above the click overlay", () => {
-      // Asserts class presence only: jsdom does not evaluate CSS, so the actual z-stacking
-      // and pointer-events fall-through are not exercised. Runtime correctness is covered by
-      // the behavioral mute/play tests below.
+    it("wraps the control bar in a pointer-events-none raised layer", () => {
+      // The tap-to-fullscreen ClickOverlay was removed from compact ad layouts, so there is
+      // no overlay to stack against. The bar wrapper stays z-[2] + pointer-events-none so its
+      // empty area passes taps through while interactive rows re-enable them. jsdom does not
+      // evaluate CSS, so class presence is the assertion; runtime correctness is covered below.
       render({ adLayout: AD_LAYOUT.L3 });
-      const overlay = container.querySelector<HTMLElement>('[data-testid="click-overlay"]')!;
       const muteBtn = container.querySelector<HTMLElement>('[data-testid="mute-btn"]')!;
       const barWrapper = muteBtn.closest<HTMLElement>(".gencl\\:z-\\[2\\]");
-      expect(overlay.className).toContain("gencl:z-[1]");
       expect(barWrapper).not.toBeNull();
       expect(barWrapper!.className).toContain("gencl:z-[2]");
-      // Empty bar area passes taps through to the overlay; interactive rows re-enable them.
       expect(barWrapper!.className).toContain("gencl:pointer-events-none");
     });
 
@@ -110,25 +108,23 @@ describe("AdControlLayer — overlay stacking", () => {
   });
 
   describe("compact variant=new (320x100)", () => {
-    it("raises the control bar above the click overlay", () => {
-      // Asserts class presence only: jsdom does not evaluate CSS, so the actual z-stacking
-      // and pointer-events fall-through are not exercised. Runtime correctness is covered by
-      // the behavioral mute/play tests below.
+    it("wraps the control bar in a pointer-events-none raised layer", () => {
+      // ClickOverlay removed from compact ad layouts (see 320x50 note above).
       render({ adLayout: AD_LAYOUT.L4 });
-      const overlay = container.querySelector<HTMLElement>('[data-testid="click-overlay"]')!;
       const muteBtn = container.querySelector<HTMLElement>('[data-testid="mute-btn"]')!;
       const barWrapper = muteBtn.closest<HTMLElement>(".gencl\\:z-\\[2\\]");
-      expect(overlay.className).toContain("gencl:z-[1]");
       expect(barWrapper).not.toBeNull();
       expect(barWrapper!.className).toContain("gencl:pointer-events-none");
     });
 
     it("mute click does NOT open fullscreen", () => {
+      // First tap is pre-engagement: handleMute fires onMuteClick(false) ("I want audio")
+      // regardless of the incoming isMuted, per the useAudioEngaged enticement model.
       const { onMuteClick, onFullScreenClick } = render({ adLayout: AD_LAYOUT.L4, isMuted: false });
       act(() => {
         (container.querySelector('[data-testid="mute-btn"]') as HTMLButtonElement).click();
       });
-      expect(onMuteClick).toHaveBeenCalledWith(true);
+      expect(onMuteClick).toHaveBeenCalledWith(false);
       expect(onFullScreenClick).not.toHaveBeenCalled();
     });
 
@@ -143,15 +139,11 @@ describe("AdControlLayer — overlay stacking", () => {
   });
 
   describe("compact variant=old", () => {
-    it("raises the legacy control bar above the click overlay", () => {
-      // Asserts class presence only: jsdom does not evaluate CSS, so the actual z-stacking
-      // and pointer-events fall-through are not exercised. Runtime correctness is covered by
-      // the behavioral mute/play tests below.
+    it("wraps the legacy control bar in a pointer-events-none raised layer", () => {
+      // ClickOverlay removed from compact ad layouts (see 320x50 note above).
       render({ adLayout: AD_LAYOUT.L3, variant: "old" });
-      const overlay = container.querySelector<HTMLElement>('[data-testid="click-overlay"]')!;
       const bar = container.querySelector<HTMLElement>('[data-testid="compact-control-bar"]')!;
       const barWrapper = bar.closest<HTMLElement>(".gencl\\:z-\\[2\\]");
-      expect(overlay.className).toContain("gencl:z-[1]");
       expect(barWrapper).not.toBeNull();
       expect(barWrapper!.className).toContain("gencl:pointer-events-none");
     });

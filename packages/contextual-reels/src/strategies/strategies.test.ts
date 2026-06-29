@@ -19,13 +19,13 @@ import {
 } from "@cxr/strategies/strategies";
 
 // IDs migrated into TAG_STRATEGIES (see strategyConfig.ts).
-const AD_BREAK_TAG = "6a2fefd87ce338c3a5afc605";
+const AD_BREAK_TAG = "6a391232d73aa25887ac2af3";
 // Single-hit + mute-passback both ride on this tag (see strategyConfig.ts).
 const SINGLE_HIT_TAG = "69b298e3d6a6ad57e7b9a464";
 const MUTE_PASSBACK_TAG = "69b298e3d6a6ad57e7b9a464";
 const UNKNOWN_TAG = "aaaabbbbccccdddd11112222";
 // Configured with initialVolume: 0.2 (see strategyConfig.ts).
-const INITIAL_VOLUME_TAG = "6a032de445fa9f171bd291cb";
+const INITIAL_VOLUME_TAG = "6a3aa8244da8cd92d289cc72";
 
 describe("strategies/resolveStrategies — cascade", () => {
   it("returns all-off defaults for an unknown tag", () => {

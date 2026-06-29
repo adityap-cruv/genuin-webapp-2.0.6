@@ -1,5 +1,5 @@
 import { cn } from "@genuin/ui/lib/utils";
-import { NAV_BUTTON_COLORS, NavChevron, IconCircleButton, type PlayerControlSize } from "@genuin/ui/player-controls";
+import { NavArrowButton, type PlayerControlSize } from "@genuin/ui/player-controls";
 import { useEffect, useState } from "react";
 import type { Swiper } from "swiper/types";
 
@@ -29,7 +29,6 @@ export function NavigationButtonV2({
   size?: PlayerControlSize;
   theme?: "light" | "dark";
 }) {
-  const colors = NAV_BUTTON_COLORS[theme];
   // Re-render on slide movement so the begin/end disabled state stays fresh
   // (there is no hover state driving re-renders like the legacy button had).
   const [, forceUpdate] = useState({});
@@ -64,46 +63,28 @@ export function NavigationButtonV2({
       )}
       role="navigation"
       aria-label="Video navigation">
-      <button
-        type="button"
+      <NavArrowButton
+        direction="up"
         disabled={prevDisabled}
         onClick={() => {
           if (!prevDisabled) userSlidePrev(swiper, "navigation");
         }}
-        aria-label={`Previous video (${currentSlide - 1} of ${totalSlides})`}
-        aria-disabled={prevDisabled}
-        tabIndex={0}
-        className={cn(
-          "gencl:rounded-full gencl:transition-opacity gencl:duration-200",
-          prevDisabled && "gencl:opacity-40 gencl:cursor-not-allowed"
-        )}>
-        <IconCircleButton
-          size={size}
-          outerBg={colors.outer}
-          innerBg={colors.inner}
-          icon={<NavChevron direction="up" color={colors.glyph} />}
-        />
-      </button>
-      <button
-        type="button"
+        size={size}
+        theme={theme}
+        ariaLabel={`Previous video (${currentSlide - 1} of ${totalSlides})`}
+        stopPropagation={false}
+      />
+      <NavArrowButton
+        direction="down"
         disabled={nextDisabled}
         onClick={() => {
           if (!nextDisabled) userSlideNext(swiper, "navigation");
         }}
-        aria-label={`Next video (${currentSlide + 1} of ${totalSlides})`}
-        aria-disabled={nextDisabled}
-        tabIndex={0}
-        className={cn(
-          "gencl:rounded-full gencl:transition-opacity gencl:duration-200",
-          nextDisabled && "gencl:opacity-40 gencl:cursor-not-allowed"
-        )}>
-        <IconCircleButton
-          size={size}
-          outerBg={colors.outer}
-          innerBg={colors.inner}
-          icon={<NavChevron direction="down" color={colors.glyph} />}
-        />
-      </button>
+        size={size}
+        theme={theme}
+        ariaLabel={`Next video (${currentSlide + 1} of ${totalSlides})`}
+        stopPropagation={false}
+      />
     </div>
   );
 }

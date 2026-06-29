@@ -1,6 +1,6 @@
 "use client";
 
-import { MuteButtonView, type PlayerControlSize } from "@genuin/ui/player-controls";
+import { MuteButtonView, resolveVolumeChange, type PlayerControlSize } from "@genuin/ui/player-controls";
 import React from "react";
 
 import { assetLink } from "@cxr/config";
@@ -42,12 +42,12 @@ export function MuteUnmuteButtonV2({
 }: MuteUnmuteButtonV2Props): React.JSX.Element {
   const { volume, setVolume, setMuted } = usePlayer();
 
-  // MuteButtonView's slider speaks 0–100; CXR's PlayerProvider speaks 0–1. Convert here.
+  // MuteButtonView's slider speaks 0–100; CXR's PlayerProvider speaks 0–1. Convert via the shared helper.
   const handleVolumeChange = (newVolume: number) => {
-    const next = newVolume / 100;
+    const { volume: next, muted: muteAtZero } = resolveVolumeChange(newVolume, "unit");
     setVolume(next);
-    if (isMuted && next > 0) setMuted(false);
-    if (next === 0) setMuted(true);
+    if (isMuted && !muteAtZero) setMuted(false);
+    if (muteAtZero) setMuted(true);
   };
 
   return (

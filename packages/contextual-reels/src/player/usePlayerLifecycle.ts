@@ -11,7 +11,7 @@
  *   - `useImaPlugin` — IMA ad lifecycle events
  */
 import type Hls from "hls.js";
-import { useEffect, useRef, type MutableRefObject, type RefObject } from "react";
+import { useEffect, useRef, type RefObject } from "react";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore -- vlitejs ships no official types
 import Vlitejs from "vlitejs";
@@ -33,7 +33,6 @@ export interface UsePlayerLifecycleOptions {
   ad?: string;
   config?: { auto_swipe?: boolean };
   isPlay: boolean;
-  isMuted: boolean;
   /** Audible volume 0..1. Applied to the element while it stays unmuted. */
   volume: number;
   tagDetails: Record<string, unknown>;
@@ -47,8 +46,6 @@ export interface UsePlayerLifecycleOptions {
   onReady?: (player: PlayerHandle) => void;
   itemId: number;
   isVideoItem: boolean;
-  /** Set to true before programmatic volume changes to suppress the volumechange listener. */
-  suppressVolumeChangeRef?: MutableRefObject<boolean>;
   /**
    * Called when the browser blocks unmuted autoplay (`NotAllowedError`). Lets the
    * parent reset feed volume to 0 so app state matches the now-muted element.
@@ -65,7 +62,7 @@ function getVideoType(url: string): string {
  * analytics event hooks, and tears down cleanly on unmount.
  *
  * @example
- * usePlayerLifecycle({ videoEl, content, isPlay, isMuted, sendEvent, ... });
+ * usePlayerLifecycle({ videoEl, content, isPlay, volume, sendEvent, ... });
  */
 export function usePlayerLifecycle({
   videoEl,
@@ -73,7 +70,6 @@ export function usePlayerLifecycle({
   ad,
   config,
   isPlay,
-  isMuted,
   volume,
   tagDetails,
   videoDetails,
@@ -86,7 +82,6 @@ export function usePlayerLifecycle({
   onReady: onReadyProp,
   itemId,
   isVideoItem,
-  suppressVolumeChangeRef,
   onAutoplayBlocked,
 }: UsePlayerLifecycleOptions): void {
   const currentPlayerRef = useRef<PlayerHandle | null>(null);
@@ -141,24 +136,16 @@ export function usePlayerLifecycle({
     isPlayRef.current = isPlay;
   });
 
-  // --- volume / mute ---
-  // The element stays unmuted (muted=false) at all times; silence comes from a
-  // volume of 0. This keeps the "unmuted but silent" initial state and lets the
-  // user raise the level (e.g. to DEFAULT_UNMUTE_VOLUME) without a muted→unmuted
-  // transition. The mute icon is driven by `volume === 0` in PlayerProvider.
+  // --- volume (one-way: provider → element) ---
+  // PlayerProvider is the single source of truth for the audible level. The
+  // element is always unmuted (muted=false); silence is simply volume 0. We only
+  // ever WRITE the provider's volume onto the element — never read it back — so
+  // there is no two-way sync to keep consistent. The mute icon is driven by
+  // `volume === 0` in PlayerProvider.
   useEffect(() => {
     volumeRef.current = volume;
-    const player = currentPlayerRef.current;
-    if (!player || !videoEl.current) return;
-    if (suppressVolumeChangeRef) suppressVolumeChangeRef.current = true;
-    videoEl.current.volume = volume;
-    if (suppressVolumeChangeRef) suppressVolumeChangeRef.current = false;
-    // Only unmute when there is audible volume to expose. At volume 0 the element
-    // is already silent; calling unMute() here would fight tryPlay's blocked-autoplay
-    // recovery (which keeps the element unmuted at volume 0) and cause the mute icon
-    // to flicker mute↔unmute. The element stays unmuted via onReady's unMute().
-    if (volume > 0) player.unMute();
-  }, [isMuted, volume, videoEl]);
+    if (videoEl.current) videoEl.current.volume = volume;
+  }, [volume, videoEl]);
 
   // --- isPlay changes after ready ---
   useEffect(() => {
@@ -173,18 +160,18 @@ export function usePlayerLifecycle({
         hlsInstanceRef.current.startLoad(-1);
       }
       if (currentPlayerRef.current) {
-        // Always attempt unmuted play (desiredMuted=false). The element stays
-        // unmuted and silence comes from volume 0 — see the volume/mute effect
-        // above. silentFallback=true keeps it unmuted at volume 0 if the browser
-        // blocks autoplay, instead of re-muting (CXR "unmuted but silent" strategy).
-        tryPlay(currentPlayerRef.current, video, false, () => onAutoplayBlockedRef.current?.(), true).catch((e) => {
+        // Attempt unmuted play (desiredMuted=false). The element stays unmuted and
+        // silence comes from volume 0 — see the volume effect above. If the browser
+        // blocks unmuted autoplay, tryPlay notifies onAutoplayBlocked (→ provider
+        // drops volume to 0) and falls back to a muted retry.
+        tryPlay(currentPlayerRef.current, video, false, () => onAutoplayBlockedRef.current?.()).catch((e) => {
           logger.warn("tryPlay failed", e);
         });
       }
       if (video.readyState < 2) {
         const onCanPlay = () => {
           if (currentPlayerRef.current) {
-            tryPlay(currentPlayerRef.current, video, false, () => onAutoplayBlockedRef.current?.(), true).catch(
+            tryPlay(currentPlayerRef.current, video, false, () => onAutoplayBlockedRef.current?.()).catch(
               () => undefined
             );
           }
@@ -256,8 +243,7 @@ export function usePlayerLifecycle({
         hlsInstanceRef.current.startLoad(-1);
       }
       // Attempt unmuted play; silence is governed by volume 0, not by muted.
-      // silentFallback=true keeps it unmuted at volume 0 if autoplay is blocked.
-      tryPlay(player, video, false, () => onAutoplayBlockedRef.current?.(), true).catch((e) => {
+      tryPlay(player, video, false, () => onAutoplayBlockedRef.current?.()).catch((e) => {
         logger.warn("startPlayback failed", e);
       });
     };
@@ -313,12 +299,10 @@ export function usePlayerLifecycle({
 
           // Vlitejs inits muted for autoplay; once playing, leave the element
           // unmuted and rely on volume for silence. The initial volume is 0, so
-          // playback stays silent until the user raises it.
+          // playback stays silent until the user raises it via the provider.
           player.unMute();
           if (videoEl.current) {
-            if (suppressVolumeChangeRef) suppressVolumeChangeRef.current = true;
             videoEl.current.volume = volumeRef.current;
-            if (suppressVolumeChangeRef) suppressVolumeChangeRef.current = false;
           }
 
           // Notify parent.

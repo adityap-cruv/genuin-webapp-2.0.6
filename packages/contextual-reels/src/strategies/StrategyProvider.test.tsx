@@ -14,7 +14,7 @@ import { StrategyProvider, useStrategy } from "@cxr/strategies/StrategyProvider"
 import { DEFAULT_STRATEGIES, type Strategies } from "@cxr/strategies/strategies";
 
 // A tag migrated into TAG_STRATEGIES with adBreak + gateOnUnmute on.
-const AD_BREAK_TAG = "6a2fefd87ce338c3a5afc605";
+const AD_BREAK_TAG = "6a391232d73aa25887ac2af3";
 const UNKNOWN_TAG = "aaaabbbbccccdddd11112222";
 
 function Consumer({ handle }: { handle: { value: Strategies } }): ReactElement {

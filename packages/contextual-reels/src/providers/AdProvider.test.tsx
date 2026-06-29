@@ -263,14 +263,14 @@ describe("providers/AdProvider", () => {
 
   // ── adLayout / isAudioOnlyAds ─────────────────────────────────────────────
 
-  it("exposes adLayout defaulting to 'unknown' when prop is omitted", () => {
+  it("exposes adLayout defaulting to AD_LAYOUT.Unknown when prop is omitted", () => {
     const handle: ContextHandle = { ctx: null };
     const { root, container } = mount(
       <AdProvider tagId="tag1">
         <Consumer handle={handle} />
       </AdProvider>
     );
-    expect(handle.ctx?.adLayout).toBe("unknown");
+    expect(handle.ctx?.adLayout).toBe(AD_LAYOUT.Unknown);
     expect(handle.ctx?.isAudioOnlyAds).toBe(false);
     unmount(root, container);
   });

@@ -77,13 +77,13 @@ vi.mock("../providers/PlayerProvider", () => ({
     setVolume: vi.fn(),
     setMuted: vi.fn(),
     setPlaying: vi.fn(),
+    notifyAutoplayBlocked: vi.fn(),
   }),
 }));
 
 const baseProps = {
   content: "https://example.com/video.mp4",
   id: 1,
-  isMuted: false,
   volume: 0,
   isPlay: false,
   tagDetails: {},

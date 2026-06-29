@@ -8,6 +8,7 @@ import type { Root } from "react-dom/client";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 import { CompactControlBar, type CompactControlBarProps } from "@cxr/controls/CompactControlBar";
+import { StrategyProvider } from "@cxr/strategies/StrategyProvider";
 
 describe("CompactControlBar", () => {
   let container: HTMLDivElement;
@@ -128,6 +129,25 @@ describe("CompactControlBar", () => {
 
     // Player is now muted; the bar must reflect the REAL state, not the enticement.
     render({ isMuted: true, onMuteClick });
+    expect(muteIconFile()).toBe("mute.svg");
+  });
+
+  // When the tag is configured to start audible (initialVolume > 0) there is no
+  // silent-start enticement, so the mute icon must reflect the REAL `isMuted`
+  // immediately — no tap required to "engage" audio.
+  it("audible-config (initialVolume > 0): shows the real muted icon without any interaction", () => {
+    act(() => {
+      // Tag 6a3aa8244da8cd92d289cc72 is configured with initialVolume: 0.2.
+      root.render(
+        React.createElement(
+          StrategyProvider,
+          { tagId: "6a3aa8244da8cd92d289cc72" } as React.ComponentProps<typeof StrategyProvider>,
+          React.createElement(CompactControlBar, { ...baseProps, isMuted: true })
+        )
+      );
+    });
+    // No mute:unmuted, no tap — yet the icon is the real muted state, not the
+    // sound-on enticement (which silent-start would show here).
     expect(muteIconFile()).toBe("mute.svg");
   });
 });

@@ -1,6 +1,11 @@
 import { ExpandIcon } from "@genuin/ui/icons";
 import { CollapseIcon } from "@genuin/ui/icons";
-import { IconCircleButton, SPONSORED_TAG_SIZE, type PlayerControlSize } from "@genuin/ui/player-controls";
+import {
+  ControlButtonGroup,
+  ExpandCollapseButton,
+  SPONSORED_TAG_SIZE,
+  type PlayerControlSize,
+} from "@genuin/ui/player-controls";
 import { cn } from "@genuin/ui/utils";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
@@ -138,7 +143,7 @@ export const Controls = memo(function Controls({
 
           {/* Right cluster: mute → play/pause → expand|close, grouped top-right. */}
           {!hidePlayerControls && (
-            <div className="gencl:flex gencl:items-center gencl:gap-3">
+            <ControlButtonGroup gap="liberal">
               {showMuteButton && (
                 <AnimatedMuteIcon shouldAnimate={shouldAnimateMuteUnmute} size={size} suppressText={isBoxHovered} />
               )}
@@ -147,32 +152,32 @@ export const Controls = memo(function Controls({
               )}
 
               {!isMobile && enableExpand && (
-                <IconCircleButton
+                <ExpandCollapseButton
                   size={size}
                   onClick={toggleExpandView}
-                  className="gencl:cursor-pointer"
+                  ariaLabel={showExpandView ? "Collapse" : "Expand"}
                   icon={showExpandView ? <CollapseIcon theme="dark" /> : <ExpandIcon theme="dark" />}
                 />
               )}
 
               {isMobile && showCloseButton && getSearchParams("feed") !== "1" && !pathname.includes("/video") && (
-                <IconCircleButton
+                <ExpandCollapseButton
                   size={size}
                   onClick={toggleExpandView}
-                  className="gencl:cursor-pointer"
+                  ariaLabel="Collapse"
                   icon={<CollapseIcon theme="dark" />}
                 />
               )}
-            </div>
+            </ControlButtonGroup>
           )}
         </>
       )}
 
       {isMobile && isEmbed && !hidePlayerControls && showExpandView && !isSponsored && (
-        <IconCircleButton
+        <ExpandCollapseButton
           size={size}
           onClick={toggleExpandView}
-          className="gencl:cursor-pointer"
+          ariaLabel={showExpandView ? "Collapse" : "Expand"}
           icon={showExpandView ? <CollapseIcon theme="dark" /> : <ExpandIcon theme="dark" />}
         />
       )}

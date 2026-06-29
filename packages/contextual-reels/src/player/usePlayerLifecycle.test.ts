@@ -108,7 +108,6 @@ function makeOpts(overrides: Partial<HookOpts> = {}): HookOpts {
     videoEl,
     content: "https://example.com/video.mp4",
     isPlay: false,
-    isMuted: false,
     volume: 0,
     tagDetails: {},
     videoDetails: {},
@@ -213,10 +212,10 @@ describe("usePlayerLifecycle", () => {
     }).not.toThrow();
   });
 
-  it("does not throw with isMuted=true", () => {
+  it("does not throw with an audible volume", () => {
     expect(() => {
       act(() => {
-        root.render(createElement(LifecycleShim, { opts: makeOpts({ isMuted: true }) }));
+        root.render(createElement(LifecycleShim, { opts: makeOpts({ volume: 0.5 }) }));
       });
     }).not.toThrow();
   });

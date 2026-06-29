@@ -1,5 +1,6 @@
 "use client";
 
+import { ControlButtonGroup } from "@genuin/ui/player-controls";
 import React, { useState } from "react";
 
 import { CompactControlBar, type CompactBarCta } from "@cxr/controls/CompactControlBar";
@@ -35,7 +36,7 @@ export function AdControlBar({
   // unmutes — the user tapped *for* audio — then a clean mute/unmute cycle follows.
   // Driven by tap (not pointerdown) so it's free of the App-level interaction race.
   const [muteToggled, setMuteToggled] = useState(false);
-  // The enticement ends only on an AUDIO action — a mute-button tap (`muteToggled`)
+  // The enticement ends only on an AUDIO action — a mute-button tap (`muteTogglemuteToggled, setMuteToggledd`)
   // or an unmute via the ad tap-overlay (`mute:unmuted` bus event, tracked by
   // `useAudioEngaged`). It must NOT end on generic interaction: the App root marks
   // any pointer-down as "interacted", so gating on that made a play/pause tap flip
@@ -90,17 +91,18 @@ export function AdControlBar({
     // Match the player's V2 control size (DefaultTopBar uses the same call).
     const v2Size = resolveCxrControlSize(undefined, isFullScreen);
     return (
-      <div
-        className={`gencl:absolute gencl:top-3 gencl:right-3 gencl:flex gencl:flex-row gencl:items-center gencl:gap-2 gencl:z-[10] gencl:pointer-events-auto`}>
-        <MuteUnmuteButtonV2
-          isMuted={perceivedMuted}
-          onClick={handleMute}
-          size={v2Size}
-          enableVolumeSlider={false}
-          shouldAnimate={false}
-        />
-        <PlayPauseButtonV2 isPlay={isPlay ?? false} onClick={onPlayClick} size={v2Size} shouldAnimate={false} />
-        <ExpandCollapseButtonV2 isFullScreen={isFullScreen} onClick={handleExpand} size={v2Size} />
+      <div className="gencl:absolute gencl:top-3 gencl:right-3 gencl:z-[10] gencl:pointer-events-auto">
+        <ControlButtonGroup gap="tight">
+          <MuteUnmuteButtonV2
+            isMuted={perceivedMuted}
+            onClick={handleMute}
+            size={v2Size}
+            enableVolumeSlider={false}
+            shouldAnimate={false}
+          />
+          <PlayPauseButtonV2 isPlay={isPlay ?? false} onClick={onPlayClick} size={v2Size} shouldAnimate={false} />
+          <ExpandCollapseButtonV2 isFullScreen={isFullScreen} onClick={handleExpand} size={v2Size} />
+        </ControlButtonGroup>
       </div>
     );
   }

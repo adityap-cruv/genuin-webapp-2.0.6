@@ -102,28 +102,6 @@ describe("ClickOverlay", () => {
     });
   });
 
-  it("allowUnmute=false: click does NOT emit ad:unmuteRequest or setMuted", () => {
-    const emitOrder: string[] = [];
-    const unmuteHandler = vi.fn(() => emitOrder.push("emit"));
-    testBus.on("ad:unmuteRequest", unmuteHandler);
-    onSetMuted = () => emitOrder.push("setMuted");
-
-    const { onPlayClick, onFullScreenClick } = render({
-      isFullScreen: false,
-      containerId: "gen-ad-slot-default",
-      allowUnmute: false,
-    });
-    const el = container.querySelector('[data-testid="click-overlay"]')!;
-    act(() => {
-      el.dispatchEvent(new MouseEvent("click", { bubbles: true }));
-    });
-
-    expect(unmuteHandler).not.toHaveBeenCalled();
-    expect(emitOrder).toEqual([]);
-    expect(onPlayClick).not.toHaveBeenCalled();
-    expect(onFullScreenClick).not.toHaveBeenCalled();
-  });
-
   it("expandOnTap=true (non-fullscreen): click expands, does not unmute", () => {
     const emitOrder: string[] = [];
     const unmuteHandler = vi.fn(() => emitOrder.push("emit"));

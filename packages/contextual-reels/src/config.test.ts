@@ -111,7 +111,7 @@ describe("config/tagAllowLists", () => {
 
 describe("config/fullscreenAdBreak", () => {
   it("enables the fullscreen ad break for a configured tag id", () => {
-    expect(isAdBreakEnabled("6a2fefd87ce338c3a5afc605")).toBe(true);
+    expect(isAdBreakEnabled("6a391232d73aa25887ac2af3")).toBe(true);
   });
 
   it("rejects unlisted and empty tag ids", () => {

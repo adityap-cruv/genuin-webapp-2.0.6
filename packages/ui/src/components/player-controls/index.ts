@@ -5,3 +5,7 @@ export * from "./nav-chevron";
 export * from "./animated-text";
 export * from "./mute-button-view";
 export * from "./play-pause-button";
+export * from "./volume";
+export * from "./expand-collapse-button";
+export * from "./nav-arrow-button";
+export * from "./control-button-group";

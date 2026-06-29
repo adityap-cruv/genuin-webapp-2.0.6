@@ -13,7 +13,7 @@ import { AD_LAYOUT } from "../config";
 vi.mock("../providers/AnalyticsProvider", () => ({
   AnalyticsProvider: ({ children }: { children: React.ReactNode }) =>
     React.createElement("div", { "data-testid": "analytics-provider" }, children),
-  useAnalytics: vi.fn(() => ({ sendEvent: vi.fn() })),
+  useAnalytics: vi.fn(() => ({ sendEvent: vi.fn(), setBrandId: vi.fn() })),
 }));
 
 vi.mock("../strategies/StrategyProvider", () => ({

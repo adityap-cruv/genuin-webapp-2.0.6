@@ -1,11 +1,4 @@
-import { cn } from "@genuin/ui/lib/utils";
-import {
-  NAV_BUTTON_COLORS,
-  NavChevron,
-  IconCircleButton,
-  type NavChevronDirection,
-  type PlayerControlSize,
-} from "@genuin/ui/player-controls";
+import { NavArrowButton, type NavChevronDirection, type PlayerControlSize } from "@genuin/ui/player-controls";
 import type { CSSProperties } from "react";
 
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
@@ -43,7 +36,6 @@ export function NavigationButtonsV2({
 }: NavigationButtonsV2Props) {
   const { isIOS, isMac } = useDeviceDetection();
   const isCarousel = embedVariant === "carousel";
-  const colors = NAV_BUTTON_COLORS[theme];
 
   // Safari-specific optimization styles to prevent flickering during swiper transitions
   const safariOptimizationStyles: CSSProperties =
@@ -57,26 +49,16 @@ export function NavigationButtonsV2({
         }
       : {};
 
-  const navButton = (direction: NavChevronDirection, disabled: boolean, onClick: ButtonClickHandler, label: string) => (
-    <button
-      type="button"
-      onClick={(e) => {
-        if (!disabled) onClick(e);
-      }}
+  const navButton = (direction: NavChevronDirection, disabled: boolean, onClick: ButtonClickHandler) => (
+    <NavArrowButton
+      direction={direction}
       disabled={disabled}
-      aria-label={label}
-      className={cn(
-        "gencl:rounded-full gencl:transition-opacity gencl:duration-200",
-        disabled && "gencl:opacity-40 gencl:cursor-not-allowed"
-      )}
-      style={safariOptimizationStyles}>
-      <IconCircleButton
-        size={size}
-        outerBg={colors.outer}
-        innerBg={colors.inner}
-        icon={<NavChevron direction={direction} color={colors.glyph} />}
-      />
-    </button>
+      onClick={onClick}
+      size={size}
+      theme={theme}
+      style={safariOptimizationStyles}
+      stopPropagation={false}
+    />
   );
 
   // Carousel layout - side navigation buttons
@@ -85,10 +67,10 @@ export function NavigationButtonsV2({
       <div className="gencl:absolute gencl:z-20 gencl:inset-y-0 gencl:left-0 gencl:right-0 gencl:pointer-events-none">
         <div className="gencl:h-full gencl:w-full gencl:flex gencl:justify-between gencl:items-center">
           <div className="gencl:ml-2 gencl:pointer-events-auto">
-            {navButton("left", isPrevDisabled, onPrev, "Previous")}
+            {navButton("left", isPrevDisabled, onPrev)}
           </div>
           <div className="gencl:mr-2 gencl:pointer-events-auto">
-            {navButton("right", isNextDisabled, onNext, "Next")}
+            {navButton("right", isNextDisabled, onNext)}
           </div>
         </div>
       </div>
@@ -98,8 +80,8 @@ export function NavigationButtonsV2({
   // Feed / grid layout - vertical buttons on right side
   return (
     <div className="gencl:absolute gencl:z-20 gencl:right-2 gencl:top-1/2 gencl:transform gencl:-translate-y-1/2 gencl:flex gencl:flex-col gencl:gap-2">
-      {navButton("up", isPrevDisabled, onPrev, "Previous")}
-      {navButton("down", isNextDisabled, onNext, "Next")}
+      {navButton("up", isPrevDisabled, onPrev)}
+      {navButton("down", isNextDisabled, onNext)}
     </div>
   );
 }

@@ -1,4 +1,5 @@
 "use client";
+import { ControlButtonGroup } from "@genuin/ui/player-controls";
 import React, { useState } from "react";
 
 import type { TopBarSubProps } from "@cxr/controls/control-layer.types";
@@ -65,7 +66,7 @@ export function DefaultTopBar({
         onClick={stopProp}
         onMouseEnter={() => setRightHovered(true)}
         onMouseLeave={() => setRightHovered(false)}
-        className="gencl:flex gencl:items-center gencl:gap-2 gencl:z-[10]">
+        className="gencl:flex gencl:items-center gencl:z-[10]">
         {isIheart || !isV2 ? (
           <ExpandCollapseButton
             isFullScreen={isFullScreen}
@@ -73,7 +74,7 @@ export function DefaultTopBar({
             size={isFullScreen ? "xl" : "lg"}
           />
         ) : (
-          <>
+          <ControlButtonGroup gap="tight">
             <MuteUnmuteButtonV2
               isMuted={isMuted}
               onClick={onMuteClick}
@@ -89,7 +90,7 @@ export function DefaultTopBar({
               shouldAnimate={isFullScreen && isActive}
             />
             <ExpandCollapseButtonV2 isFullScreen={isFullScreen} onClick={onFullScreenClick} size={v2Size} />
-          </>
+          </ControlButtonGroup>
         )}
       </div>
     </div>

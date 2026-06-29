@@ -83,6 +83,7 @@ vi.mock("../providers/FeedProvider", () => ({
 
 vi.mock("../providers/AdProvider", () => ({
   useAdWaterfall: () => mockUseAdWaterfall(),
+  useOptionalAdWaterfall: () => mockUseAdWaterfall(),
 }));
 
 import { Feed } from "@cxr/feed/Feed";

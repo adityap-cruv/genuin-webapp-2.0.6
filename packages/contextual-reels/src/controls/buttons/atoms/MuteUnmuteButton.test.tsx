@@ -57,7 +57,7 @@ describe('MuteUnmuteButton', () => {
 
   it('applies cxr-animated-border class when animatedBorder=true', () => {
     act(() => {
-      root.render(<MuteUnmuteButton isMuted={false} onClick={() => undefined} animatedBorder={true} />);
+      root.render(<MuteUnmuteButton isMuted={true} onClick={() => undefined} animatedBorder={true} />);
     });
     expect(container.querySelector('button')!.className).toContain('cxr-animated-border');
   });
@@ -71,12 +71,12 @@ describe('MuteUnmuteButton', () => {
 
   it('toggles cxr-animated-border class when animatedBorder changes true->false', () => {
     act(() => {
-      root.render(<MuteUnmuteButton isMuted={false} onClick={() => undefined} animatedBorder={true} />);
+      root.render(<MuteUnmuteButton isMuted={true} onClick={() => undefined} animatedBorder={true} />);
     });
     expect(container.querySelector('button')!.className).toContain('cxr-animated-border');
 
     act(() => {
-      root.render(<MuteUnmuteButton isMuted={false} onClick={() => undefined} animatedBorder={false} />);
+      root.render(<MuteUnmuteButton isMuted={true} onClick={() => undefined} animatedBorder={false} />);
     });
     expect(container.querySelector('button')!.className).not.toContain('cxr-animated-border');
   });

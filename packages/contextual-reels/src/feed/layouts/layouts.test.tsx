@@ -56,6 +56,10 @@ vi.mock("../../instance/registry/InstanceContext", () => ({
   useInstanceId: () => "test-instance",
 }));
 
+vi.mock("../../instance/coordination/EventBusContext", () => ({
+  useEventBus: () => ({ emit: vi.fn(), on: vi.fn(() => () => undefined), off: vi.fn() }),
+}));
+
 vi.mock("../../genai/octo/OctoSheet", () => ({
   OctoSheet: () => null,
 }));

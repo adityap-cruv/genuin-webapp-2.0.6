@@ -33,6 +33,12 @@ export interface PlayerContextValue {
   setVolume: (volume: number) => void;
   /** Convenience toggle: `true` silences (volume 0), `false` unmutes to {@link DEFAULT_UNMUTE_VOLUME}. */
   setMuted: (muted: boolean) => void;
+  /**
+   * Signal that the browser blocked unmuted autoplay. Drops volume to 0 so the
+   * app state (and the mute icon) match the now-silent element. The user can
+   * unmute from there with a gesture.
+   */
+  notifyAutoplayBlocked: () => void;
   /** Update playing state. */
   setPlaying: (playing: boolean) => void;
   /** Set whether a fullscreen ad break is currently active. */
@@ -98,8 +104,16 @@ export function PlayerProvider({ children }: PlayerProviderProps): ReactNode {
   // (expand button, compact tap-to-expand, video:expand, native fullscreen).
   // Bumps a silent player to DEFAULT_UNMUTE_VOLUME; leaves an audible one as-is.
   useEffect(() => {
-    return bus.on("fullscreen:enter", () => setMuted(false));
+    const unsubEnter = bus.on("fullscreen:enter", () => setMuted(false));
+    return () => unsubEnter();
   }, [bus, setMuted]);
+
+  // Browser blocked unmuted autoplay → drop to volume 0 so app state and the
+  // mute icon match the now-silent element. The single source of truth is volume,
+  // so this is all the state change needed.
+  const notifyAutoplayBlocked = useCallback(() => {
+    setVolume(0);
+  }, []);
 
   const value = useMemo<PlayerContextValue>(
     () => ({
@@ -111,8 +125,19 @@ export function PlayerProvider({ children }: PlayerProviderProps): ReactNode {
       setMuted,
       setPlaying: setIsPlaying,
       setAdBreakActive,
+      notifyAutoplayBlocked,
     }),
-    [volume, isMuted, isPlaying, isAdBreakActive, setVolume, setMuted, setIsPlaying, setAdBreakActive]
+    [
+      volume,
+      isMuted,
+      isPlaying,
+      isAdBreakActive,
+      setVolume,
+      setMuted,
+      setIsPlaying,
+      setAdBreakActive,
+      notifyAutoplayBlocked,
+    ]
   );
 
   return <PlayerContext.Provider value={value}>{children}</PlayerContext.Provider>;

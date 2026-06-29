@@ -8,7 +8,12 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 // usePlayer; the V2 atoms read assetLink). Mock both so the bar mounts in
 // isolation regardless of the active design system. Old and V2 buttons share the
 // same test ids, so the assertions below hold under either branch.
-vi.mock("@cxr/config", () => ({ assetLink: "https://test.cdn/" }));
+vi.mock("@cxr/config", () => ({
+  assetLink: "https://test.cdn/",
+  // resolveCxrControlSize (via control-size.ts) imports AD_LAYOUT from @cxr/config;
+  // the mock must include it or control-size's lookup table throws on load.
+  AD_LAYOUT: { Unknown: 0, L1: 1, L2: 2, L3: 3, L4: 4 },
+}));
 vi.mock("@cxr/providers/PlayerProvider", () => ({
   usePlayer: () => ({
     isMuted: false,

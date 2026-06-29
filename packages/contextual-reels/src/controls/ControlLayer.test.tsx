@@ -17,6 +17,10 @@ vi.mock("../instance/coordination/EventBusContext", () => ({
 vi.mock("../providers/PlayerProvider", () => ({
   usePlayer: () => ({ isMuted: true, isPlaying: true, setMuted: vi.fn(), setPlaying: vi.fn() }),
 }));
+vi.mock("../providers/GenAIProvider", () => ({
+  useGenAI: () => ({ genAiEnabled: false }),
+  useOctoSplit: () => ({ octoFraction: 0, octoAxis: "y" }),
+}));
 vi.mock("./TopBar", () => ({
   TopBar: () => React.createElement("div", { "data-testid": "top-bar" }),
 }));

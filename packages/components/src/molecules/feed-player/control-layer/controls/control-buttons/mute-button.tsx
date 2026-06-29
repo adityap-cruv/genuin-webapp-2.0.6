@@ -1,6 +1,6 @@
 "use client";
 import { MuteIcon, UnmuteIcon } from "@genuin/ui/icons";
-import { MuteButtonView, type PlayerControlSize } from "@genuin/ui/player-controls";
+import { MuteButtonView, resolveVolumeChange, type PlayerControlSize } from "@genuin/ui/player-controls";
 import { useCallback } from "react";
 
 import { useBaseContext } from "@genuin/components/context/base";
@@ -28,9 +28,11 @@ export const AnimatedMuteIcon = ({
 
   const handleVolumeChange = useCallback(
     (newVolume: number) => {
-      setVolume(newVolume);
-      if (muted && newVolume > 0) toggleMuted(false);
-      if (newVolume === 0) toggleMuted(true);
+      const { volume: next, muted: muteAtZero } = resolveVolumeChange(newVolume, "percent");
+      setVolume(next);
+      // Preserve the original guards: only unmute if currently muted; mute at zero.
+      if (muted && !muteAtZero) toggleMuted(false);
+      if (muteAtZero) toggleMuted(true);
     },
     [setVolume, toggleMuted, muted]
   );

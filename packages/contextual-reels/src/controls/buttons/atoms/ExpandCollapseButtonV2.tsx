@@ -1,6 +1,6 @@
 "use client";
 
-import { IconCircleButton, type PlayerControlSize } from "@genuin/ui/player-controls";
+import { ExpandCollapseButton, type PlayerControlSize } from "@genuin/ui/player-controls";
 import React from "react";
 
 import { assetLink } from "@cxr/config";
@@ -15,11 +15,9 @@ export interface ExpandCollapseButtonV2Props {
 }
 
 /**
- * CXR Design System V2 expand/collapse adapter.
- *
- * Wraps the shared `IconCircleButton` double-circle shell with CXR's own
- * `assetLink` expand/shrink SVG. `data-testid` flips between "topbar-expand"
- * and "topbar-collapse" to match the legacy button's test IDs.
+ * CXR Design System V2 expand/collapse adapter — injects CXR's `assetLink` glyph
+ * into the shared {@link ExpandCollapseButton}. `data-testid` flips between
+ * "topbar-expand" and "topbar-collapse" to match the legacy button's test IDs.
  */
 export function ExpandCollapseButtonV2({
   isFullScreen,
@@ -28,19 +26,12 @@ export function ExpandCollapseButtonV2({
 }: ExpandCollapseButtonV2Props): React.JSX.Element {
   const src = `${assetLink}reactions/iheartmedia/cxr/${isFullScreen ? "shrink" : "expand"}.svg`;
   const label = isFullScreen ? "Collapse" : "Expand";
-
   return (
-    <IconCircleButton
+    <ExpandCollapseButton
       size={size}
-      role="button"
-      aria-label={label}
-      data-testid={isFullScreen ? "topbar-collapse" : "topbar-expand"}
-      className="gencl:cursor-pointer"
-      onClick={(e) => {
-        // Stop bubbling to the ad-layout onClick (handleAdClick) which fires the SDK CTA.
-        e.stopPropagation();
-        onClick?.();
-      }}
+      onClick={onClick}
+      ariaLabel={label}
+      testId={isFullScreen ? "topbar-collapse" : "topbar-expand"}
       icon={<img src={src} alt={label} />}
     />
   );
