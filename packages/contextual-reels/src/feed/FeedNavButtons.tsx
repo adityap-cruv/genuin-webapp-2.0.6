@@ -7,10 +7,14 @@ import React, { type RefObject } from "react";
 import type { ControlLayerVariant } from "@cxr/controls/control-layer.types";
 import { resolveCxrControlSize } from "@cxr/controls/control-size";
 import { useNewPlayerControls } from "@cxr/controls/useNewPlayerControls";
+import { detectDevice } from "@cxr/platform/device";
 import { useOptionalAdWaterfall } from "@cxr/providers/AdProvider";
 import { useFullScreen } from "@cxr/providers/FullScreenProvider";
 
 const SHOW_FEED_NAV_BUTTONS = true;
+
+/** Mobile swipes to navigate, so the up/down arrows are redundant there. */
+const isMobile = detectDevice().isMobile;
 
 export interface FeedNavButtonsProps {
   /** Live Embla API ref from useEmblaCarousel. */
@@ -26,6 +30,8 @@ export function FeedNavButtons({ emblaApiRef, variant }: FeedNavButtonsProps): R
   const { isFullScreen } = useFullScreen();
   if (!SHOW_FEED_NAV_BUTTONS) return null;
   if (!isV2) return null;
+  // Mobile navigates by swipe — hide the arrows.
+  if (isMobile) return null;
   // Only render in the fullscreen player — hidden in every collapsed/embed view.
   if (!isFullScreen) return null;
 
