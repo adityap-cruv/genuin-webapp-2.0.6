@@ -727,6 +727,7 @@ export function Embed({
                   spaceBetweenVideos={spaceBetweenVideos}
                   slidesPerView={slidesPerView}
                   isIheartLayout={isIheartLayout}
+                  allowTouchMove={!config.brand.expandOnInteraction}
                   onSlideChange={(swiperInstance: any) => {
                     // Early safety check
                     if (!swiperInstance) return;

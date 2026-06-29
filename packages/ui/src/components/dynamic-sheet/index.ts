@@ -1,4 +1,6 @@
 export { DynamicSheet } from "./dynamic-sheet";
+export { SnapSheet } from "./snap-sheet";
+export type { SnapSheetProps, SnapPoint } from "./snap-sheet";
 export { DynamicSheetOverlay, DynamicSheetDragIndicator } from "./dynamic-sheet-parts";
 export { useDynamicSheet } from "./use-dynamic-sheet";
 export type {

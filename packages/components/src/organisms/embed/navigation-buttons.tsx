@@ -163,8 +163,10 @@ export function NavigationButtons({
     </Button>
   );
 
-  // iHeart layout - feed only; carousel falls through to standard left/right block
-  if (isIheartLayout &&(!isCarousel || aspectRatio === "16:9")) {
+  // iHeart layout - feed gets vertical buttons; 16:9 carousels get centered
+  // horizontal buttons below the embed. Other carousels fall through to the
+  // standard left/right block.
+  if (isIheartLayout && (!isCarousel || aspectRatio === "16:9")) {
     // Define styles based on theme
     const isDarkTheme = theme === "dark";
 
@@ -182,8 +184,10 @@ export function NavigationButtons({
       hover: { button: "#717277", icon: "#FFFFFF" },
     };
 
+    // Carousel nav is absolutely positioned at left-1/2; the -translate-x-1/2
+    // shifts it back by half its own width so it stays truly centered.
     const iheartNavigationDivClasses = isCarousel
-      ? "gencl:absolute gencl:left-1/2 gencl:flex gencl:justify-center gencl:items-center gencl:gap-2 gencl:my-4"
+      ? "gencl:absolute gencl:-translate-x-1/2 gencl:left-1/2 gencl:flex gencl:justify-center gencl:items-center gencl:gap-2 gencl:my-4"
       : "gencl:absolute gencl:right-[-15%] gencl:bottom-1/2 gencl:flex gencl:justify-center gencl:items-center gencl:gap-2 gencl:my-4 gencl:z-1 gencl:flex-col gencl:translate-y-1/2";
 
     const colors = isDarkTheme ? darkTheme : lightTheme;
@@ -234,7 +238,6 @@ export function NavigationButtons({
       </div>
     );
   }
-
 
   // Carousel layout - side navigation buttons
   if (isCarousel) {

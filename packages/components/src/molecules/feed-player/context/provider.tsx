@@ -1282,7 +1282,9 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       document.documentElement.classList.toggle("gen-ad-playing", isAdPlaying);
       // Mirror ad state into the shared tracker so the embed auto-advance timer
       // (embed-tile-item.tsx) can suppress slide changes while an ad is on screen.
-      baseContextManager.setPlayPauseTracker({ isAdPlaying });
+      // Reset `isAdSkippable` on every ad-start / ad-end — the SKIPPABLE_STATE_CHANGED
+      // event from IMA flips it on later if the ad becomes skippable.
+      baseContextManager.setPlayPauseTracker({ isAdPlaying, isAdSkippable: false });
       if (isAdPlaying) {
         onAdStarted?.(adInfo);
       } else {
@@ -1290,6 +1292,13 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       }
     },
     [baseContextManager, onAdEnded, onAdStarted]
+  );
+
+  const updateAdSkippable = useCallback(
+    (isAdSkippable: boolean) => {
+      baseContextManager.setPlayPauseTracker({ isAdSkippable });
+    },
+    [baseContextManager]
   );
 
   /**
@@ -1368,6 +1377,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     adInfo: adInfo.adInfo,
     isAdPlaying: adInfo.isAdPlaying,
     updateAdInfo,
+    updateAdSkippable,
     positionIndex: index,
     totalVideos,
     setIsLoading,

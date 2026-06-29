@@ -3,7 +3,7 @@
 import { Loader } from "@genuin/ui/components/loader";
 import { abbreviateNumber, cn } from "@genuin/ui/lib/utils";
 import type { ComponentProps } from "react";
-import { useEffect, useState, useRef, useMemo, useCallback, lazy } from "react";
+import { useEffect, useState, useRef, useMemo, useCallback, lazy, Suspense } from "react";
 import type { Swiper } from "swiper/types";
 import { useBoolean } from "usehooks-ts";
 
@@ -69,10 +69,10 @@ const CommentsDialog = lazy(() =>
 );
 
 const OctoPanel = lazy(() =>
-  // Pre-existing typo — drop the trailing `.js`. The file is `index.ts`,
-  // every other lazy import in this module omits the extension, and
-  // Next.js's dev server doesn't auto-rewrite `.js` → `.ts` for an
-  // explicitly-specified `.js` path. Surfaced when /home tries to
+  // Extensionless path: an explicit `.js` breaks module resolution against
+  // `index.ts`. The file is `index.ts`, every other lazy import in this module
+  // omits the extension, and Next.js's dev server doesn't auto-rewrite `.js` →
+  // `.ts` for an explicitly-specified `.js` path. Surfaced when /home tries to
   // compile this chunk; the stale extension fails module resolution.
   import("../../molecules/octo-panel").then((m) => ({
     default: m.OctoPanel,
@@ -94,6 +94,10 @@ const NonSectionedContent = lazy(() =>
 );
 
 const SectionsTabs = lazy(() => import("./sections-tabs").then((m) => ({ default: m.SectionsTabs })));
+
+const DesktopRightPanels = lazy(() =>
+  import("./desktop-right-panels").then((m) => ({ default: m.DesktopRightPanels }))
+);
 
 /**
  * A Suspense fallback that occupies the same positioned box as the lazy component
@@ -173,6 +177,7 @@ export function PlayerList({
       showEngagementTools,
     },
     view: { brandLayoutType, websiteType, isAdsEnabledInIheart },
+    isDesignSystemV2,
   } = useEmbedConfigs();
 
   // Comment panel state - only auto-open if Octo is NOT enabled (Octo takes priority)
@@ -189,8 +194,15 @@ export function PlayerList({
   const octoPanelRef = useRef<OctoPanelHandle | null>(null);
   const lastOctoVideoIdRef = useRef<string | null>(null);
   const embedDetails = useSafeEmbedContext();
-  const { sheetState, openContentType, setContentTypeState, hasContentType, closeContentType, getContentTypeState } =
-    useSheetState();
+  const {
+    sheetState,
+    openContentType,
+    setContentTypeState,
+    hasContentType,
+    closeContentType,
+    getContentTypeState,
+    sheetContentPlacements,
+  } = useSheetState();
   const [isEndOfFeedReached, setEndOfFeedReached] = useState<boolean>(false);
   // Colors for the lazy-chunk Suspense fallbacks below. The expand view renders
   // on a dark surface by default, matching the FeedSkeleton default theme.
@@ -321,11 +333,7 @@ export function PlayerList({
     handleSwiperToggle(shouldDisable);
   }, [sheetState, handleSwiperToggle]);
 
-  /*
-We need to filter out these posts because we shouldn't show the overlay middleware
-or the full-screen view here, and we cannot simply skip the slide since we're using
-a swiper inside another swiper.
-*/
+  // Drop overlay posts entirely — we can't just skip a slide with a swiper-in-swiper.
   const filteredPost = useMemo(() => {
     return posts.filter((post) => post.video?.type !== "overlay");
   }, [posts]);
@@ -448,13 +456,41 @@ a swiper inside another swiper.
     const currentPost = filteredPost[activeIndex];
     if (!currentPost?.video) return;
 
-    const hasLinkout = currentPost?.video.linkoutId !== null && currentPost?.video.linkoutId !== undefined;
+    // Skip while an ad is showing — touching linkout state would close it (no
+    // auto-reopen) or leak it under the ad. Re-evaluated via the `isAdFilled` dep.
+    if (isAdFilled) return;
+
+    // Match `<Linkouts>`' own render gate: a `linkoutId` OR inline
+    // `video.linkouts` both count. Gating on `linkoutId` alone closes
+    // inline-only videos and leaves sibling tiles with no sheet underneath.
+    const linkoutsList = currentPost?.video.linkouts;
+    const hasLinkoutId = currentPost?.video.linkoutId !== null && currentPost?.video.linkoutId !== undefined;
+    const hasInlineLinkouts =
+      Array.isArray(linkoutsList) && linkoutsList.length > 0 && linkoutsList[0]?.links?.length > 0;
+    const hasLinkout = hasLinkoutId || hasInlineLinkouts;
     if (hasLinkout) {
-      openContentType("linkouts", "outside", "expand-view");
+      // "outside" (desktop right rail) only EXISTS for V2 — <DesktopRightPanels> is
+      // gated on `isDesignSystemV2`. The only host for V1 is the in-player overlay,
+      // whose gate requires placement !== "outside". So restrict "outside" to V2;
+      // V1 keeps "inside" on desktop too. Otherwise the V1 linkout flips to "outside"
+      // with no renderer and disappears whenever the desktop comments panel is shown.
+      // Idempotent, so re-firing on `isAdFilled → false` safely reopens after an ad.
+      openContentType("linkouts", isDesktop && isDesignSystemV2 ? "outside" : "inside", "expand-view");
     } else {
       closeContentType("linkouts");
     }
-  }, [activeIndex, filteredPost, openContentType, closeContentType]);
+    // `showExpandView` dep re-fires on collapse: adjacent sheets' `resetSheet()`
+    // wipes all active content types, so re-open restores the linkout entry.
+  }, [
+    showExpandView,
+    activeIndex,
+    filteredPost,
+    openContentType,
+    closeContentType,
+    isDesktop,
+    isDesignSystemV2,
+    isAdFilled,
+  ]);
 
   // Effect to navigate to selected section when it changes (only for sectioned mode)
   useEffect(() => {
@@ -685,7 +721,33 @@ a swiper inside another swiper.
             theme={showExpandView ? "dark" : "light"}
             className={cn("gencl:shrink-0", showExpandView ? "gencl:pb-4" : "gencl:pb-7")}
             isCommentBoxOpen={isCommentOpen}
+            // V2 only: action-rail linkout button is the entry point to the
+            // right-rail panel (Figma). V1 keeps its legacy in-player overlay.
+            showLinkout={Boolean(
+              isDesignSystemV2 &&
+                showExpandView &&
+                filteredPost[activeIndex]?.video?.linkouts &&
+                filteredPost[activeIndex]?.video?.linkouts.length > 0
+            )}
+            linkoutThumbnail={filteredPost[activeIndex]?.video?.linkouts?.[0]?.links?.[0]?.image ?? null}
+            isLinkoutsOpen={hasContentType("linkouts")}
             actionWrapper={{
+              LINKOUT: (defaultNode) => (
+                <span
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const isOpen = hasContentType("linkouts");
+                    if (isOpen) {
+                      closeContentType("linkouts");
+                    } else {
+                      // Match auto-open placement: "outside" on desktop (right rail),
+                      // "inside" on narrower widths where only the in-player overlay hosts it.
+                      openContentType("linkouts", isDesktop ? "outside" : "inside", "expand-view");
+                    }
+                  }}>
+                  {defaultNode}
+                </span>
+              ),
               COMMENT: (defaultNode) => {
                 if (!showCommentBox) return;
                 //
@@ -794,8 +856,10 @@ a swiper inside another swiper.
           />
         </SafeSuspense>
       )}
-      {/* Comment panel - show this only if expand view is open  */}
-      {isCommentOpen &&
+      {/* V1 keeps its standalone comments column here; V2 hosts comments inside
+          <DesktopRightPanels> below. Rendering both would double the comments. */}
+      {!isDesignSystemV2 &&
+        isCommentOpen &&
         showExpandView &&
         !isAdFilled &&
         showCommentBox &&
@@ -845,39 +909,41 @@ a swiper inside another swiper.
           </div>
         )}
 
-      {/* COMMENTED THIS AS WE DONT HAVE TO USE DYNAMIC SHEET for 2.0.5  */}
-      {/* Right panel container*/}
-      {/* {isDesktop && (
-        <DesktopRightPanels
-          filteredPost={filteredPost}
-          activeIndex={activeIndex}
-          totalVideos={totalVideos}
-          brandLayoutType={brandLayoutType}
-          isLinkoutsPanelVisible={
-            sheetContentPlacements["linkouts"] === "outside" &&
-            showExpandView &&
-            filteredPost[activeIndex] &&
-            !isAdFilled
-          }
-          isCommentsPanelVisible={
-            hasContentType("comments") &&
-            showExpandView &&
-            showCommentBox &&
-            !isAdFilled &&
-            filteredPost[activeIndex] &&
-            brandLayoutType !== "iheart"
-          }
-          onCommentCountChange={onCommentCountChange}
-          handleSwiperToggle={handleSwiperToggle}
-          onCommentClose={() => {
-            closeContentType("comments");
-            setValue(false);
-            if (sheetContentPlacements["linkouts"] === "outside") {
-              setContentTypeState("linkouts", "full-view");
-            }
-          }}
-        />
-      )} */}
+      {/* Desktop right rail: dynamic linkouts (outside placement) above comments.
+          V2 only — v1 keeps its legacy in-player overlay to avoid doubling up. */}
+      {isDesktop && isDesignSystemV2 && (
+        <Suspense fallback={null}>
+          <DesktopRightPanels
+            filteredPost={filteredPost}
+            activeIndex={activeIndex}
+            totalVideos={totalVideos}
+            brandLayoutType={brandLayoutType}
+            isLinkoutsPanelVisible={Boolean(
+              sheetContentPlacements["linkouts"] === "outside" &&
+                showExpandView &&
+                filteredPost[activeIndex] &&
+                !isAdFilled
+            )}
+            isCommentsPanelVisible={Boolean(
+              isCommentOpen &&
+                showExpandView &&
+                showCommentBox &&
+                !isAdFilled &&
+                filteredPost[activeIndex] &&
+                brandLayoutType !== "iheart"
+            )}
+            onCommentCountChange={onCommentCountChange}
+            handleSwiperToggle={handleSwiperToggle}
+            onCommentClose={() => {
+              closeContentType("comments");
+              setCommentOpen(false);
+              // Don't promote the linkout to "full-view" here: CSS already gives the
+              // panel `h-full` when comments hide, and EmbedTile's promote effect
+              // would observe "full-view" and swap the expanded video out.
+            }}
+          />
+        </Suspense>
+      )}
     </div>
   );
 }

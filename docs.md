@@ -128,6 +128,7 @@ Feature plans for the `molecules/linkout-new` family — scenario configs, ad sl
 | [packages/components/docs/linkouts/OUTSIDE_LINKOUT_PLAN.md](packages/components/docs/linkouts/OUTSIDE_LINKOUT_PLAN.md)           | Outside (below-the-frame) layout variant for embed scenarios      |
 | [packages/components/docs/linkouts/DYNAMIC_LINKOUT_ADS_PLAN.md](packages/components/docs/linkouts/DYNAMIC_LINKOUT_ADS_PLAN.md)   | Banner / display / video ad fallback rollout for the linkout slot |
 | [packages/components/docs/linkouts/SAMPLE_AD_TAGS.md](packages/components/docs/linkouts/SAMPLE_AD_TAGS.md)                       | Sample ad tags for QA: IMA (video) + GAM (display banner) paths   |
+| [docs/plans/dynamic-sheet-snap/DESIGN.md](docs/plans/dynamic-sheet-snap/DESIGN.md)                                             | `SnapSheet` snap-point engine (continuous velocity-projected drag) — first consumer is linkouts |
 
 ---
 

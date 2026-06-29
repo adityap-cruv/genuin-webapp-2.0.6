@@ -102,10 +102,21 @@ export interface DynamicSheetConfig {
   theme?: "light" | "dark";
   /** Step-by-step swipe down (true) or jump to lowest state (false) */
   stepByStepSwipeDown?: boolean;
+  /**
+   * When true, each upward drag advances exactly one snap state regardless of
+   * distance. Default `false` snaps to nearest (can skip states on a long drag).
+   */
+  stepByStepSwipeUp?: boolean;
   /** Disable all drag/swipe interactions */
   disableDragAndSwipe?: boolean;
   /** Disable all open/close/height animations (instant transitions) */
   disableAnimation?: boolean;
+  /**
+   * When true, `currentState` updates only at drag end (skips mid-drag proximity
+   * commits). Avoids layout flicker when the host swaps surrounding layout per
+   * state and the user crosses several snap points. Default `false`.
+   */
+  commitOnDragEnd?: boolean;
   /** Called when the sheet state changes */
   onStateChange?: (state: DynamicSheetState) => void;
   /** Called when the sheet requests to close */
@@ -174,11 +185,8 @@ export interface DynamicSheetProps extends ComponentProps<"div"> {
   onDragging?: (isDragging: boolean) => void;
   /** Callback to enable/disable swipers when interacting with the sheet */
   onSwiperToggle?: (disable: boolean) => void;
-  /** Optional externally-controlled sheet state. When set, the sheet
-   *  transitions to this state. Added by release/genuin-sdk/2.0.6 for
-   *  the octo flow; the implementation lives in `dynamic-sheet.tsx`
-   *  and may need re-porting if the merged version was taken from
-   *  the linkout branch. */
+  /** Externally-controlled sheet state (octo flow); when set, the sheet
+   *  transitions to it. */
   controlledState?: DynamicSheetState;
   /**
    * Per-state body renderer used to measure `"auto"` heights for
@@ -212,7 +220,9 @@ export interface UseDynamicSheetOptions {
   initialState: DynamicSheetState;
   containerHeight: number;
   stepByStepSwipeDown: boolean;
+  stepByStepSwipeUp?: boolean;
   disableDragAndSwipe: boolean;
+  commitOnDragEnd?: boolean;
   onStateChange?: (state: DynamicSheetState) => void;
   onRequestClose?: () => void;
   /** Auto-advance rules forwarded from DynamicSheetConfig */

@@ -17,7 +17,9 @@ export function useDynamicSheet({
   initialState = "default",
   containerHeight,
   stepByStepSwipeDown = true,
+  stepByStepSwipeUp = false,
   disableDragAndSwipe = false,
+  commitOnDragEnd = false,
   onStateChange,
   onRequestClose,
   autoAdvance,
@@ -69,6 +71,27 @@ export function useDynamicSheet({
   useEffect(() => {
     currentStateRef.current = currentState;
   }, [currentState]);
+
+  // Sync `currentState` when the host bumps `initialState` after mount; without
+  // this the hook stays at its initial value and the panel never re-resolves its
+  // height. Skip when unchanged, not enabled, or a transition is in flight.
+  useEffect(() => {
+    if (initialState === currentStateRef.current) return;
+    if (!enabledStates.includes(initialState)) return;
+    if (isPendingTransitionRef.current) return;
+    setCurrentState(initialState);
+    currentStateRef.current = initialState;
+  }, [initialState, enabledStates]);
+
+  // Migrate `currentState` when the host swaps `enabledStates` and the current
+  // one is no longer enabled (else the sheet sticks in the old scenario's
+  // chrome). Prefer the host's `initialState`, else the smallest enabled state.
+  useEffect(() => {
+    if (enabledStates.includes(currentStateRef.current)) return;
+    const next = enabledStates.includes(initialState) ? initialState : (enabledStates[0] ?? "default");
+    setCurrentState(next);
+    currentStateRef.current = next;
+  }, [enabledStates, initialState]);
 
   const heightBounds = useMemo(() => {
     const first = enabledStatesByHeight[0];
@@ -187,14 +210,19 @@ export function useDynamicSheet({
       const newHeightPx = clamp(dt.initialHeightPx + delta, heightBounds.min, heightBounds.max);
       setTransientHeightPx(newHeightPx);
 
-      const nearestState = findNearestSnapState(newHeightPx, 0, enabledStates, stateToPx);
-      const nearestPx = stateToPx(nearestState);
-      if (Math.abs(newHeightPx - nearestPx) < SNAP_PROXIMITY_PX && nearestState !== currentStateRef.current) {
-        currentStateRef.current = nearestState;
-        setCurrentState(nearestState);
-        onStateChange?.(nearestState);
-        dt.initialHeightPx = nearestPx;
-        dt.initialY = e.clientY;
+      // Mid-drag proximity snap. Skipped under `commitOnDragEnd` so hosts that
+      // swap layout per state don't flicker while the user crosses snap points;
+      // the final `findNearestSnapState` on pointerup decides the state instead.
+      if (!commitOnDragEnd) {
+        const nearestState = findNearestSnapState(newHeightPx, 0, enabledStates, stateToPx);
+        const nearestPx = stateToPx(nearestState);
+        if (Math.abs(newHeightPx - nearestPx) < SNAP_PROXIMITY_PX && nearestState !== currentStateRef.current) {
+          currentStateRef.current = nearestState;
+          setCurrentState(nearestState);
+          onStateChange?.(nearestState);
+          dt.initialHeightPx = nearestPx;
+          dt.initialY = e.clientY;
+        }
       }
     };
 
@@ -239,8 +267,19 @@ export function useDynamicSheet({
             setTransientHeightPx(null);
           }
         } else {
-          const finalPx = dt.initialHeightPx + (dt.initialY - dt.lastY);
-          const target = findNearestSnapState(finalPx, dt.flickVelocity, enabledStates, stateToPx);
+          // Swiping up: snap to nearest by default; with `stepByStepSwipeUp`,
+          // advance exactly one state so a long drag can't skip the intended stop.
+          let target: DynamicSheetState;
+          if (stepByStepSwipeUp) {
+            // Step along canonical order, not `enabledStatesByHeight`: mid-drag
+            // the host layout hasn't switched, so `100%` resolves small and can
+            // tie with expand-view's auto height, mis-ordering the chain.
+            const canonicalIndex = enabledStates.indexOf(currentStateRef.current);
+            target = enabledStates[canonicalIndex + 1] ?? currentStateRef.current;
+          } else {
+            const finalPx = dt.initialHeightPx + (dt.initialY - dt.lastY);
+            target = findNearestSnapState(finalPx, dt.flickVelocity, enabledStates, stateToPx);
+          }
           isPendingTransitionRef.current = false;
           if (target === currentStateRef.current) {
             setTransientHeightPx(null);

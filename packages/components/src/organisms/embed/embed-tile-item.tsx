@@ -125,10 +125,19 @@ export function EmbedItem({
   const handleMouseEnter = useCallback(() => {
     if (isTablet || isMobile) return;
     setIsHovering(true);
+    // Block hover-to-activate while an unskippable ad is playing on another
+    // slide. Without this gate the active-index change pauses the ad as a
+    // stuck still frame and starts the new slide's video — even though the
+    // user can't actually escape the ad. Once the ad's skip-offset elapses
+    // (`isAdSkippable` flips true via IMA's SKIPPABLE_STATE_CHANGED event)
+    // the active-index change proceeds and the registry will trigger ad
+    // teardown on the previously-active slide.
+    const tracker = baseContextManager.getPlayPauseTracker();
+    if (tracker.isAdPlaying && !tracker.isAdSkippable) return;
     if (swiper && isSlideVisible(swiper, index)) {
       debouncedSetActiveIndex();
     }
-  }, [isTablet, isMobile, debouncedSetActiveIndex, index]);
+  }, [isTablet, isMobile, debouncedSetActiveIndex, index, baseContextManager, swiper]);
 
   const handleMouseLeave = useCallback(() => {
     debouncedSetActiveIndex.cancel();

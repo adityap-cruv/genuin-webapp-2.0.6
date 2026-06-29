@@ -85,6 +85,7 @@ type ImaNamespace = {
       RESUMED: string;
       CLICK: string;
       SKIPPED: string;
+      SKIPPABLE_STATE_CHANGED: string;
     };
   };
   AdErrorEvent: { Type: { AD_ERROR: string } };
@@ -132,6 +133,10 @@ interface ImaAdsManager {
   pause(): void;
   /** Resumes a previously `pause()`d ad. */
   resume(): void;
+  /** Returns whether the currently rendering ad can be skipped right now. */
+  getAdSkippableState?(): boolean;
+  /** Skips the currently rendering ad if it is skippable. No-op otherwise. */
+  skip?(): void;
 }
 
 interface ImaContentPlayhead {
@@ -454,6 +459,26 @@ export class AdsLayer {
     }
   }
 
+  /** Returns whether the currently rendering ad can be skipped right now. */
+  isAdSkippable(): boolean {
+    if (this.destroyed || !this.adsManager) return false;
+    try {
+      return !!this.adsManager.getAdSkippableState?.();
+    } catch {
+      return false;
+    }
+  }
+
+  /** Skips the currently rendering ad if it is skippable. No-op otherwise. */
+  skip(): void {
+    if (this.destroyed || !this.adsManager) return;
+    try {
+      this.adsManager.skip?.();
+    } catch {
+      // ignore — non-skippable ads will throw or no-op.
+    }
+  }
+
   /**
    * Idempotent. The first call loads the SDK and constructs the
    * `AdDisplayContainer` + `AdsLoader`; later calls fast-path.
@@ -608,6 +633,16 @@ export class AdsLayer {
     });
     adsManager.addEventListener(this.ima.AdEvent.Type.STARTED, (e) => {
       this.emit("genuin:ad-started", adDetail(e));
+      // Seed `genuin:ad-skippable-changed` with the initial skippable state so
+      // consumers don't have to also listen to STARTED and treat the missing
+      // event as "not skippable". The state may flip true later when the ad's
+      // skip-offset elapses, at which point SKIPPABLE_STATE_CHANGED fires.
+      const initialSkippable = (this.adsManager as { getAdSkippableState?: () => boolean })?.getAdSkippableState?.();
+      this.emit("genuin:ad-skippable-changed", { isSkippable: !!initialSkippable });
+    });
+    adsManager.addEventListener(this.ima.AdEvent.Type.SKIPPABLE_STATE_CHANGED, () => {
+      const isSkippable = (this.adsManager as { getAdSkippableState?: () => boolean })?.getAdSkippableState?.();
+      this.emit("genuin:ad-skippable-changed", { isSkippable: !!isSkippable });
     });
     adsManager.addEventListener(this.ima.AdEvent.Type.IMPRESSION, (e) => {
       this.emit("genuin:ad-impression", adDetail(e));

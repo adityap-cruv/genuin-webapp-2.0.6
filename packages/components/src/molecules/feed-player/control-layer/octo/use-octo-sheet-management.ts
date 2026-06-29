@@ -32,6 +32,7 @@ type UseOctoSheetManagementProps = {
   octoSheetState: DynamicSheetState;
   setContentTypeState: UseSheetStateReturn["setContentTypeState"];
   resetSheet: UseSheetStateReturn["resetSheet"];
+  closeContentType: UseSheetStateReturn["closeContentType"];
   /** Global octo-hidden flag read from the event bus via `useSheetState`. */
   octoHidden: boolean;
   /** Setter that writes `octoHidden` back to the event bus. */
@@ -56,6 +57,7 @@ export function useOctoSheetManagement({
   octoSheetState,
   setContentTypeState,
   resetSheet,
+  closeContentType,
   octoHidden,
   setOctoHidden,
   setOctoVisible,
@@ -128,7 +130,7 @@ export function useOctoSheetManagement({
         //   resetSheet();
         // }
         setContentTypeState("octo", "default");
-        resetSheet();
+        closeContentType("octo");
         return;
       }
 
@@ -155,8 +157,13 @@ export function useOctoSheetManagement({
     prevOctoSheetStateRef.current = "default";
     setOctoHidden(true);
     setContentTypeState("octo", "default");
-    resetSheet();
-  }, [enabled, setContentTypeState, resetSheet]);
+    // Only remove the octo entry, not every active sheet. `resetSheet()`
+    // wiped activeSheetContentTypes globally and took linkouts /
+    // comments down with it — which surfaced as a height=0 linkout
+    // sheet on subsequent carousel videos because the host's auto-open
+    // effect doesn't re-fire after the unrelated reset.
+    closeContentType("octo");
+  }, [enabled, setContentTypeState, closeContentType]);
 
   /**
    * Collapses the Octo sheet back to its default (compact) state without hiding it.
@@ -235,9 +242,9 @@ export function useOctoSheetManagement({
       setOctoHidden(true);
       prevOctoSheetStateRef.current = "default";
       setContentTypeState("octo", "default");
-      resetSheet();
+      closeContentType("octo");
     }
-  }, [enabled, octoHidden, setContentTypeState, resetSheet]);
+  }, [enabled, octoHidden, setContentTypeState, closeContentType]);
 
   /** True when Octo should be rendered and visible to the user. */
   const isOctoVisible = isOctoEnabled && isActive && shouldShowOcto && !octoHidden;

@@ -32,6 +32,10 @@ export type PlayPauseTracker = {
   // embed auto-advance timer to suppress slide changes during an ad — without
   // this, iOS Safari advances to the next video while the ad is still on screen.
   isAdPlaying: boolean;
+  // True only once the active ad has elapsed past its skip-offset (or the ad
+  // is skippable from frame 1). Hover-to-activate in the carousel uses this
+  // to allow slide changes only when the ad can actually be cut short.
+  isAdSkippable: boolean;
 };
 
 export type GenericData = {
@@ -79,6 +83,7 @@ export class FeedContextManager {
     isInView: true,
     isPlaying: false,
     isAdPlaying: false,
+    isAdSkippable: false,
   };
   private eventManager: EventManager<object, EventNames>;
   /** Current preview index (-1 means no preview active) */

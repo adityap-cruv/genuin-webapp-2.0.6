@@ -26,7 +26,11 @@ export const ResponsivenessEmbed: FC<ControlLayerPropsType> = ({
     <div className={cn("gencl:relative gencl:h-full gencl:w-full", className)} {...restProps}>
       {isActive && <EmbedControls onClick={(e) => e.stopPropagation()} className="gencl:justify-end gencl:p-1" />}
       {isActive && video?.linkouts && (
-        <div className="gencl:absolute gencl:bottom-0 gencl:py-2 gencl:space-y-2 gencl:w-full">
+        <div
+          // `embed-carousel-no-swiping` blocks the outer carousel Swiper but not the
+          // linkout's inner Swiper (which uses the default `swiper-no-swiping`).
+          className="embed-carousel-no-swiping gencl:absolute gencl:bottom-0 gencl:py-2 gencl:space-y-2 gencl:w-full"
+          onClick={(e) => e.stopPropagation()}>
           <Suspense fallback={null}>
             <Linkouts
               view="embed"

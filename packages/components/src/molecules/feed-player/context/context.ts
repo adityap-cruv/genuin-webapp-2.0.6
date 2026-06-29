@@ -116,6 +116,13 @@ export type PlayerContextType = {
    */
   updateAdInfo: (isAdPlaying: boolean, adInfo: AdInfoType) => void;
   /**
+   * Mirrors IMA's `SKIPPABLE_STATE_CHANGED` event onto the shared
+   * `playPauseTracker` so the carousel's hover-to-activate gate (in
+   * `embed-tile-item.tsx`) can block slide changes while the ad isn't
+   * skippable yet.
+   */
+  updateAdSkippable: (isAdSkippable: boolean) => void;
+  /**
    * Total number of videos in feed.
    */
   totalVideos?: number;

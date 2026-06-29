@@ -423,8 +423,13 @@ const SharedActions = memo(function SharedActions({
   onOctoOpen?: () => void;
   isDesktop: boolean;
 }) {
+  const { isDesignSystemV2 } = useEmbedConfigs();
+  const { hasContentType, openContentType, closeContentType } = useSheetState();
   const { video, group, community } = postDetails;
   if (!video || !community || !group) return null;
+  // Mobile action-rail linkout button: tap toggles the in-player linkout
+  // (placement="inside" — mobile has no right rail).
+  const showLinkoutAction = isDesignSystemV2 && Array.isArray(video.linkouts) && (video.linkouts?.length ?? 0) > 0;
 
   // Handle iHeart brand controls
   if (brandLayoutType === "iheart") {
@@ -462,8 +467,24 @@ const SharedActions = memo(function SharedActions({
         slug={video.slug}
         videoType={video.videoType}
         groupSlug={group?.slug ?? ""}
-        showLinkout={false}
+        showLinkout={showLinkoutAction}
+        linkoutThumbnail={linkoutThumbnail ?? video.linkouts?.[0]?.links?.find((l: any) => l.image)?.image}
+        isLinkoutsOpen={hasContentType("linkouts")}
         actionWrapper={{
+          LINKOUT: (defaultNode) => (
+            <span
+              key="linkout-action"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (hasContentType("linkouts")) {
+                  closeContentType("linkouts");
+                } else {
+                  openContentType("linkouts", "inside", "expand-view");
+                }
+              }}>
+              {defaultNode}
+            </span>
+          ),
           OCTO: (defaultNode) => {
             if (isDesktop) return defaultNode;
             return (
@@ -572,9 +593,15 @@ export const ExpandViewDetails = forwardRef<ExpandViewDetailsRef, ExpandViewProp
   const octoSheetRef = useRef<OctoExpandSheetRef>(null);
 
   const isOctoEnabled = engagement.engagementTools.octo;
-  const { getContentTypeState, octoVisible } = useSheetState();
+  const { getContentTypeState, octoVisible, sheetContentPlacements } = useSheetState();
   const octoSheetState = getContentTypeState("octo");
+  const linkoutsSheetState = getContentTypeState("linkouts");
   const isActiveOctoSheet = isOctoEnabled && (octoSheetState === "panel-view" || octoSheetState === "full-view");
+  // Linkout panel/full-view: video shrinks to ~30% top, linkout fills the rest
+  // full-width (Figma). Below we drop this root's absolute/padding/backdrop so it
+  // flows under the shrunken video. Gate on the linkout-specific state (not the
+  // global "most expanded") so an unrelated panel sheet doesn't swap the layout.
+  const isLinkoutPanelOpen = linkoutsSheetState === "panel-view" || linkoutsSheetState === "full-view";
   const isOctoVisible = octoVisible;
   const isSwipeBlocked =
     octoVisible &&
@@ -597,8 +624,14 @@ export const ExpandViewDetails = forwardRef<ExpandViewDetailsRef, ExpandViewProp
     <div
       data-expand-view="true"
       className={cn(
-        "gencl:absolute gencl:gap-2 gencl:w-full gencl:z-20 gencl:right-0 gencl:bottom-0 gencl:p-4 gencl:focus:outline-none",
-        brandLayoutType !== "iheart" && "gencl:bg-gradient-to-t gencl:from-black/50 gencl:to-transparent",
+        "gencl:gap-2 gencl:w-full gencl:z-20 gencl:right-0 gencl:focus:outline-none",
+        // Floating-card states: absolute bottom + padding + gradient.
+        // Panel/full linkout: in flow (no absolute/padding/backdrop) to fill freed space.
+        !isLinkoutPanelOpen && "gencl:absolute gencl:bottom-0 gencl:p-4",
+        isLinkoutPanelOpen && "gencl:flex-1 gencl:min-h-0 gencl:flex gencl:flex-col",
+        !isLinkoutPanelOpen &&
+          brandLayoutType !== "iheart" &&
+          "gencl:bg-gradient-to-t gencl:from-black/50 gencl:to-transparent",
         className
       )}
       {...restProps}>
@@ -606,12 +639,20 @@ export const ExpandViewDetails = forwardRef<ExpandViewDetailsRef, ExpandViewProp
         className={cn(
           "gencl:flex gencl:w-full gencl:gap-4 gencl:justify-between gencl:items-end gencl:transition-opacity gencl:duration-200",
           brandLayoutType === "ted" && "gencl:gap-3",
+          // Panel/full: column, no gap so the linkout spans full width (rail hidden).
+          isLinkoutPanelOpen && "gencl:flex-col! gencl:gap-0! gencl:flex-1 gencl:min-h-0",
           shouldHide && hiddenClassName
         )}>
         <div
           className={cn(
-            "gencl:flex gencl:flex-col gencl:gap-4 gencl:sm:gap-2 gencl:w-5/6 gencl:sm:w-full gencl:transition-all",
+            // `flex-1 min-w-0`: fill the row up to the actions rail so content
+            // (linkout, description) sits a single `gap-4` (16px) from the rail
+            // rather than a fixed 5/6 that `justify-between` then spreads ~48px.
+            "gencl:flex gencl:flex-col gencl:gap-4 gencl:sm:gap-2 gencl:flex-1 gencl:min-w-0 gencl:transition-all",
             brandLayoutType === "ted" || (brandLayoutType === "iheart" && "gencl:gap-3"),
+            // Panel/full linkout: full width + fill height so the sheet renders
+            // edge-to-edge (Figma).
+            isLinkoutPanelOpen && "gencl:w-full! gencl:gap-0! gencl:flex-1 gencl:min-h-0",
             isSwipeBlocked && "swiper-no-swiping"
           )}
           onClick={(e) => e.stopPropagation()}>
@@ -700,39 +741,59 @@ export const ExpandViewDetails = forwardRef<ExpandViewDetailsRef, ExpandViewProp
             )}
           </div>
 
-          {/* Linkout inside player — show on mobile always, and on desktop only when
-              comments are also open (split view: linkout overlay + comment right panel). */}
-          {showLinkoutInExpand && brandLayoutType !== "iheart" && !isOctoVisible && video.linkouts && (
-            <SafeSuspense fallback={null} errorFallback={null}>
-              <Linkouts
-                linkouts={video.linkouts}
-                linkoutId={video.linkoutId!}
-                {...(isDesignSystemV2 ? { variant: "dynamic" as const } : {})}
-                view="expand"
-                showImmediately={video.linkouts.length > 0 && !video.linkoutId}
-                isActive={isActive}
-                layout="overlay"
-                className={cn("gencl:w-full gencl:z-10", className)}
-                videoDetails={video}
-                totalVideos={totalVideos}
-                positionIndex={positionIndex}
-                autoplay={videoAutoplay}
-              />
-            </SafeSuspense>
-          )}
+          {/* In-player linkout: always on mobile, on desktop only for "inside"
+              placement. Desktop "outside" lives in <DesktopRightPanels>; V2 desktop
+              expand view skips this block entirely (the right-rail panel is the host). */}
+          {showLinkoutInExpand &&
+            brandLayoutType !== "iheart" &&
+            !isOctoVisible &&
+            video.linkouts &&
+            sheetContentPlacements["linkouts"] !== "outside" &&
+            !(isDesignSystemV2 && isDesktop) && (
+              // Wrapper gives the dynamic `<Linkouts>` (no className slot of its own)
+              // a definite flex-1 height so its `height: 100%` resolves; without it
+              // the sheet's full-view stays stuck at panel-view size.
+              <div
+                className={cn(
+                  // `swiper-no-swiping`: keep vertical drags inside the sheet from
+                  // falling through to the outer feed Swiper.
+                  "swiper-no-swiping gencl:w-full",
+                  isLinkoutPanelOpen && "gencl:flex-1 gencl:min-h-0 gencl:flex gencl:flex-col"
+                )}>
+                <SafeSuspense fallback={null} errorFallback={null}>
+                  <Linkouts
+                    linkouts={video.linkouts}
+                    linkoutId={video.linkoutId!}
+                    {...(isDesignSystemV2 ? { variant: "dynamic" as const } : {})}
+                    view="expand"
+                    showImmediately={video.linkouts.length > 0 && !video.linkoutId}
+                    isActive={isActive}
+                    layout="overlay"
+                    className={cn("gencl:w-full gencl:z-10", className)}
+                    videoDetails={video}
+                    totalVideos={totalVideos}
+                    positionIndex={positionIndex}
+                    autoplay={videoAutoplay}
+                  />
+                </SafeSuspense>
+              </div>
+            )}
 
-          <AdaptiveDescription
-            video={video}
-            type={brandLayoutType}
-            {...(brandLayoutType === "iheart" && {
-              isExpanded,
-              onExpand,
-            })}
-            layoutType={brandLayoutType}
-          />
+          {/* Hide description when the linkout fills the slot (panel/full-view). */}
+          {!isLinkoutPanelOpen && (
+            <AdaptiveDescription
+              video={video}
+              type={brandLayoutType}
+              {...(brandLayoutType === "iheart" && {
+                isExpanded,
+                onExpand,
+              })}
+              layoutType={brandLayoutType}
+            />
+          )}
         </div>
 
-        {octoSheetState !== "panel-view" && octoSheetState !== "full-view" && (
+        {octoSheetState !== "panel-view" && octoSheetState !== "full-view" && !isLinkoutPanelOpen && (
           <SharedActions
             postDetails={postDetails}
             brandLayoutType={brandLayoutType}
@@ -746,7 +807,7 @@ export const ExpandViewDetails = forwardRef<ExpandViewDetailsRef, ExpandViewProp
           />
         )}
       </div>
-      {(!hideGroupPill || !hideCommunityPill) && (
+      {(!hideGroupPill || !hideCommunityPill) && !isLinkoutPanelOpen && (
         <div
           role="group"
           aria-label="Community and group information"

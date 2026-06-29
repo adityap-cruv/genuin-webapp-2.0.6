@@ -27,6 +27,7 @@ export function useOctoExpandSheet({ isActive }: UseOctoExpandSheetProps) {
     getContentTypeState,
     setContentTypeState,
     resetSheet,
+    closeContentType,
     octoHidden,
     setOctoHidden,
     setOctoVisible,
@@ -41,11 +42,16 @@ export function useOctoExpandSheet({ isActive }: UseOctoExpandSheetProps) {
     const timer = setTimeout(() => setShouldShowOcto(true), 100);
     return () => {
       clearTimeout(timer);
-      resetSheet();
+      // Targeted close: this cleanup runs on every carousel swipe (and
+      // on expand-view exit). The prior `resetSheet()` here wiped every
+      // active sheet — linkouts included — which left the carousel's
+      // dynamic-sheet rendered with `isOpen=false` (height=0) for the
+      // new active tile, so the user saw stray dots but no card.
+      closeContentType("octo");
       setOctoHidden(false);
       setOctoVisible(false);
     };
-  }, [isActive, resetSheet, setOctoHidden, setOctoVisible]);
+  }, [isActive, closeContentType, setOctoHidden, setOctoVisible]);
 
   const octoSheetManagement = useOctoSheetManagement({
     isActive,
@@ -54,6 +60,7 @@ export function useOctoExpandSheet({ isActive }: UseOctoExpandSheetProps) {
     octoSheetState,
     setContentTypeState,
     resetSheet,
+    closeContentType,
     octoHidden,
     setOctoHidden,
     setOctoVisible,

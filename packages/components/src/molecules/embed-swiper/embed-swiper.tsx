@@ -154,6 +154,12 @@ export function EmbedSwiper({
       }>
       <SwiperWithModules
         direction={forFeed ? "vertical" : "horizontal"}
+        // Use a custom no-swiping class for the outer carousel so that nested
+        // Swipers (e.g. the linkout's inner link-card carousel) don't also
+        // match the default `swiper-no-swiping` class via `closest()` and
+        // ignore their own swipe gestures — child Swipers keep the default
+        // class which no host element uses.
+        noSwipingClass="embed-carousel-no-swiping"
         slidesPerView={slidesPerView}
         onActiveIndexChange={(swiper: SwiperType) => {
           onActiveIndexChange?.(swiper);

@@ -1,6 +1,6 @@
 import { cn } from "@genuin/ui/lib/utils";
 import type { QueryKey } from "@tanstack/react-query";
-import { useEffect, useState, lazy, Suspense, useMemo, useCallback } from "react";
+import { useEffect, useState, lazy, useMemo, useCallback } from "react";
 import { RemoveScroll } from "react-remove-scroll";
 
 import { useAnalytics } from "@genuin/components/context";

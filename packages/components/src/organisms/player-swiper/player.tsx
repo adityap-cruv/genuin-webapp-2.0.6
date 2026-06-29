@@ -204,6 +204,10 @@ export function Player({
         videoType={post.video?.videoType ?? VideoTypes.Content}>
         <SheetStatePlaybackController isActive={isActive} />
         <div
+          // Common ancestor of the video and the control layer; the linkout
+          // publishes its live area height here (`--gn-linkout-area-h`) so the
+          // video's `calc()` height tracks the drag continuously.
+          data-player-frame=""
           className={cn(
             "gencl:group gencl:relative gencl:h-full gencl:w-full gencl:overflow-clip gencl:transition-all gencl:duration-300 gencl:ease-in-out",
             {
@@ -224,12 +228,24 @@ export function Player({
             style={{
               height: showIheartBar
                 ? `calc(100% - ${IFRAME_HEIGHT}px)`
-                : isActive && sheetState === "panel-view"
-                  ? "30%"
+                : // panel/full (tiled): the video tracks the sheet's raw live
+                  // height (`--gn-linkout-h`) so dragging the card down grows the
+                  // video continuously. Fallbacks give 30% / 0% before the var is
+                  // first published.
+                  isActive && sheetState === "panel-view"
+                  ? "calc(100% - var(--gn-linkout-h, 70%))"
                   : isActive && sheetState === "full-view"
-                    ? "0"
-                    : "100%",
+                    ? "calc(100% - var(--gn-linkout-h, 100%))"
+                    : // `expand-view` (overlay): full at rest, shrinking as the
+                      // sheet is dragged up toward panel (overshoot above the
+                      // expand snap; 0 at rest = full video).
+                      isActive && sheetState === "expand-view"
+                      ? "calc(100% - var(--gn-linkout-overshoot-h, 0px))"
+                      : "100%",
               flexShrink: isActive && (sheetState === "panel-view" || sheetState === "full-view") ? 0 : undefined,
+              // Track the linkout drag instantly (duration 0) while it's being
+              // dragged; keep the 300ms ease for the release/commit settle.
+              transitionDuration: "calc((1 - var(--gn-sheet-dragging, 0)) * 300ms)",
             }}>
             <SafeSuspense
               fallback={

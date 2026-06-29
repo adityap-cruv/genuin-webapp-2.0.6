@@ -6,7 +6,7 @@ import { useLayoutEffect, useMemo, useState } from "react";
 import { useBaseContext } from "@genuin/components/context/base";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import type { CustomizationType } from "@genuin/components/context/embed/embed.types";
-import { resolveControlSize } from "@genuin/ui/player-controls";
+import { resolveControlSize } from "@genuin/components/molecules/feed-player/control-layer/player-control-size";
 import type { FeedType } from "@genuin/components/types/post";
 
 import { useDeviceDetectMediaQuery } from "../use-devide-detect-media-query";

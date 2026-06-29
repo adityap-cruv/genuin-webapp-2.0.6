@@ -129,10 +129,8 @@ function MetaRow({
   return (
     <div
       className={cn(
-        // `items-center` keeps the bullet separators vertically aligned
-        // with chips that contain icons (rating ⭐, likes ♥, downloads ⬇)
-        // — `items-start` pushed the bullets to the top edge of the
-        // line box, leaving them visibly higher than the icon chips.
+        // `items-center` aligns the bullet separators with icon chips
+        // (rating / likes / downloads); `items-start` pushed them too high.
         "gencl:flex gencl:flex-wrap gencl:gap-1 gencl:items-center gencl:w-full",
         textClassName
       )}>
@@ -160,33 +158,23 @@ export function LinkCard({
   sheetState: SheetState;
   theme?: "light" | "dark";
   onClick?: () => void;
-  /** Page-level CTA text. Currently only consumed by the `default`
-   *  state, which renders the CTA pill inline next to the title (Figma
-   *  8244-20303). Other states ignore these props because the CTA
-   *  lives in the sheet's footer slot. */
+  /** Page-level CTA. Only the `default` state renders it inline; other
+   *  states use the sheet footer. */
   ctaText?: string;
   ctaLink?: string;
   onCtaClick?: (e: React.MouseEvent) => void;
-  /** For `sheetState === "responsive"`: which content state to show
-   *  inside the wide card. `"default"` hides description + chips,
-   *  `"expand"` shows everything. */
+  /** For `responsive`: `"default"` hides description + chips, `"expand"`
+   *  shows everything. */
   responsiveState?: "default" | "expand";
-  /** Storybook-only debug overlay for the responsive card —
-   *  renders the grid columns / rows. */
+  /** Storybook-only debug grid overlay for the responsive card. */
   showResponsiveGrid?: boolean;
-  /** Override `<ResponsiveLinkCard>`'s auto-detected orientation
-   *  (`"portrait"` = image on top, `"landscape"` = image on left).
-   *  Used by hosts that need a deterministic layout regardless of
-   *  measured aspect ratio. Only consumed by the `responsive` branch. */
+  /** Pin `<ResponsiveLinkCard>`'s orientation (responsive branch only). */
   forceOrientation?: "portrait" | "landscape";
   /** Extra classes merged onto the responsive card's CTA pill. */
   ctaClassName?: string;
-  /** Override the responsive card's auto-picked thumb/details flex
-   *  ratio. Forwarded through to `<ResponsiveLinkCard>`. */
+  /** Override the responsive card's thumb/details flex ratio. */
   forceFlexRatio?: FlexRatio;
-  /** Skip rendering the responsive card's thumb area. Used by hosts
-   *  that composite their own preview (e.g. a video) above the
-   *  card. Forwarded through to `<ResponsiveLinkCard>`. */
+  /** Skip the responsive card's thumb area (host composites its own preview). */
   hideThumb?: boolean;
 }) {
   const isDark = theme === "dark";
@@ -197,52 +185,28 @@ export function LinkCard({
   const thumbPlaceholderBg = isDark ? "gencl:bg-secondary-800" : "gencl:bg-secondary-100";
   const thumbPlaceholderIcon = isDark ? "gencl:text-white/60" : "gencl:text-secondary-400";
   const displayTitle = data.title || data.link;
-  // CTA label fallback chain: explicit `ctaText` prop wins; otherwise
-  // the linkout's own `title`. When both are missing (thumbnail-only
-  // linkouts where the URL stands in as the visible title), the button
-  // gets a generic "Learn more" — using the URL as a button label looks
-  // wrong even though it's fine as a row title.
+  // CTA label: `ctaText` → `title` → "Learn more" (the URL works as a row
+  // title but reads wrong on a button).
   const ctaLabel = ctaText || data.title || "Learn more";
   const isPlXs = sheetState === "pl-xs";
   const isPlSml = sheetState === "pl-sml";
-  // `default` and `default-active` share the same body composite per
-  // Figma 8244-20303 / 8249-19818: 64 × 64 thumb + (title + inline
-  // CTA) column. The two states only differ in the sheet chrome
-  // around the body (drag pill + header for default-active).
+  // `default` and `default-active` share the same body (thumb + title +
+  // inline CTA); they differ only in sheet chrome.
   const isDefaultLike = sheetState === "default" || sheetState === "default-active";
-  // Only `expand-view` uses the rich card with description / meta —
-  // default-active's previous double-duty here was a mismatch with
-  // Figma.
+  // Only `expand-view` uses the rich card with description / meta.
   const isExpand = sheetState === "expand-view";
   const isDetail = sheetState === "panel-view" || sheetState === "full-view";
   const isResponsive = sheetState === "responsive";
 
-  // Expand-view CTA placement. By default the CTA pill sits below
-  // the thumbnail+details row at the card's bottom (full card
-  // width). When the description+meta column is short enough that
-  // the CTA fits in the empty space below them — within the thumb's
-  // row height — we promote the CTA into the details column instead
-  // and the bottom row collapses. Threshold: thumb is `min-h-32`
-  // (128 px), CTA is 40 px (`h-10`), gap-1 = 4 px → details fits the
-  // CTA inline iff its natural height ≤ 128 - 40 - 4 = 84 px.
+  // Expand-view CTA placement: by default the pill sits full-width below
+  // the row; when description+meta is short enough it's promoted inline into
+  // the details column. Threshold: details height ≤ 128 - 40 - 4 = 84 px.
   const [ctaFitsInline, setCtaFitsInline] = useState(false);
-  // Natural height of the description + meta block (without the
-  // inline CTA). Used in option 2 to derive the image size so the
-  // image matches the column instead of leaving blank space.
+  // Natural height of description + meta, used to size the image to the column.
   const [detailsContentHeight, setDetailsContentHeight] = useState(0);
-  // Callback ref + ResizeObserver. A plain `useLayoutEffect` with `[]`
-  // deps would only fire once on `<LinkCard>`'s first mount; in flows
-  // that auto-advance `default-active → expand-view` (e.g.
-  // `expand-mobile`), the `isExpand` body branch only renders AFTER
-  // the transition — at first mount the ref target doesn't exist and
-  // the effect early-returns, leaving `ctaFitsInline = false`
-  // permanently. The visible body then picks Option 1 (tall image +
-  // bottom CTA) while the hidden measurement well — which mounted
-  // straight into `expand-view` and observed correctly — measures
-  // the shorter Option 2 layout, so the sheet's auto-height clips
-  // the visible CTA off the bottom. A callback ref re-attaches the
-  // observer whenever the `isExpand` block mounts, so the measurement
-  // matches the well in both flows. */
+  // Callback ref (not `useLayoutEffect([])`) so the observer re-attaches when
+  // the `isExpand` block mounts after an auto-advance — otherwise the visible
+  // body and the measurement well disagree and the sheet clips the CTA.
   const observerRef = useRef<ResizeObserver | null>(null);
   const detailsContentRef = useCallback((el: HTMLDivElement | null) => {
     observerRef.current?.disconnect();
@@ -260,17 +224,9 @@ export function LinkCard({
     observerRef.current = observer;
   }, []);
 
-  // ── Option 2 image sizing ─────────────────────────────────────
-  // When the inline CTA is promoted into the right column
-  // (`ctaFitsInline = true`), the column's natural height is
-  //   description+meta (`detailsContentHeight`)
-  //   + 4 px gap-1
-  //   + 40 px CTA (`h-10` on LinkCardInlineCta).
-  // Setting the image to that exact pixel square (floored at 84 px)
-  // collapses the row to the content's height — no blank space
-  // below the chips, no blank space below the image. Option 1
-  // (`ctaFitsInline = false`) is untouched: the image still uses
-  // the `min-h-32 + aspect-square + h-full` grid behaviour.
+  // When the CTA is promoted inline, size the image to the column's exact
+  // height (details + gap + CTA, floored at 84 px) so the row has no blank
+  // space. Otherwise the image keeps the grid aspect-square behaviour.
   const IMAGE_FLOOR_PX = 84;
   const CTA_INLINE_HEIGHT_PX = 40;
   const CTA_INLINE_GAP_PX = 4;
@@ -279,25 +235,17 @@ export function LinkCard({
       ? Math.max(IMAGE_FLOOR_PX, detailsContentHeight + CTA_INLINE_GAP_PX + CTA_INLINE_HEIGHT_PX)
       : null;
 
-  // Chip surfaces: dark pill with white text / icons in both themes
-  // per Figma 10075:76967 (xs) / 10075:76970 (sml). Inside (dark)
-  // panels use translucent dark over the video poster; outside
-  // (light) panels use solid dark over the white card surface. The
-  // chip body itself is always dark — the panel-level "light" theme
-  // only governs the surrounding card/panel chrome, not the button.
+  // Chip body is always dark (translucent inside, solid outside); the panel
+  // "light" theme only governs the surrounding chrome, not the button.
   const chipBg = isDark ? "gencl:bg-secondary-900/50" : "gencl:bg-secondary-900";
   const chipText = "gencl:text-white";
   const chipIconStroke = "gencl:stroke-white";
-  // Outside-layout chips (light theme) sit flush below the video
-  // frame — no top gutter, no horizontal inset — so the top corners
-  // share the frame's flush bottom edge. Inside (dark) chips float
-  // over the video with a full `rounded-lg` ring on all four sides.
+  // Outside chips sit flush below the frame (rounded bottom only); inside
+  // chips float with a full rounded ring.
   const chipRounding = isDark ? "gencl:rounded-lg" : "gencl:rounded-t-none gencl:rounded-b-lg";
 
-  // ── Responsive wide-card (size + orientation + state-driven) ──
-  // Self-contained card that fills its host container. All layout
-  // adaptation lives inside <ResponsiveLinkCard> via cva token
-  // bundles + ResizeObserver-driven size / orientation pickers.
+  // Responsive wide-card — self-contained, fills the host; layout adaptation
+  // lives in <ResponsiveLinkCard>.
   if (isResponsive) {
     return (
       <ResponsiveLinkCard
@@ -315,19 +263,10 @@ export function LinkCard({
     );
   }
 
-  // pl-xs — minimal chip: text + trailing chevron, 32 px tall, body-2.
-  // The chevron is always visible (even while the title marquees) so
-  // the chip reads as an actionable affordance — `MarqueeText` lives
-  // inside a `flex-1 min-w-0` box so its overflow detection still
-  // accounts for the chevron's reserved width.
-  //
-  // Renders as `<a href target="_blank">` (not `<button>`) so the
-  // browser treats the click as a real user-initiated navigation. A
-  // button-with-window.open path is silently blocked by Chrome's
-  // popup heuristics when the click originates inside a deeply-
-  // nested iframe (e.g. Storybook's preview pane), even though the
-  // event is synchronous. `onClick` still fires so the analytics
-  // `LINKOUTS_CLICKED` event ships before navigation.
+  // pl-xs — minimal chip: text + trailing chevron, 32 px tall.
+  // Renders as `<a target="_blank">` (not `<button>` + window.open) so the
+  // browser treats it as a real navigation — window.open is blocked by
+  // popup heuristics inside nested iframes. `onClick` still fires analytics.
   if (isPlXs) {
     return (
       <a
@@ -340,12 +279,8 @@ export function LinkCard({
           chipRounding,
           chipBg
         )}
-        // Stop pointerdown from bubbling to the dynamic-sheet's content
-        // div, which would `setPointerCapture` on itself at scrollTop=0
-        // and intercept the click before it reaches the anchor (the
-        // browser dispatches `click` on the captured element, not on
-        // the original target). Without this stop, hover shows the
-        // href but click is silently swallowed.
+        // Stop pointerdown bubbling so the sheet's content div doesn't
+        // `setPointerCapture` and swallow the click before it reaches the anchor.
         onPointerDown={(e) => e.stopPropagation()}
         onClick={(e) => {
           e.stopPropagation();
@@ -353,15 +288,7 @@ export function LinkCard({
         }}>
         <MarqueeText
           text={displayTitle}
-          className={cn(
-            // pl-xs uses body-2-medium (12 px / 16 lh) per the Figma
-            // reference, NOT body-3-medium — chip-level text is the
-            // exception to the MetaRow-level switch. `flex-1 min-w-0`
-            // hands the title the available chip width so MarqueeText
-            // can decide whether it overflows and needs to scroll.
-            "gencl:text-body-2-medium! gencl:flex-1 gencl:min-w-0 gencl:text-left",
-            chipText
-          )}
+          className={cn("gencl:text-body-2-medium! gencl:flex-1 gencl:min-w-0 gencl:text-left", chipText)}
         />
         <ChevronRight className={cn("gencl:size-4 gencl:shrink-0", chipIconStroke)} />
       </a>
@@ -382,11 +309,8 @@ export function LinkCard({
           chipRounding,
           chipBg
         )}
-        // See pl-xs above — DynamicSheet's content div captures the
-        // pointer on pointerdown at scrollTop=0, which re-routes the
-        // browser's `click` event to the sheet (where it's swallowed
-        // by stopPropagation). Halting the bubble here prevents the
-        // capture so the anchor's `href` navigation fires.
+        // See pl-xs above — stop the bubble so the sheet's pointer capture
+        // doesn't re-route the click away from this anchor.
         onPointerDown={(e) => e.stopPropagation()}
         onClick={(e) => {
           e.stopPropagation();
@@ -418,19 +342,9 @@ export function LinkCard({
     );
   }
 
-  // `default` / `default-active` — Figma 8244-20303 / 8249-19818
-  // Module layout:
-  //   ┌──────────┬─────────────────────────────────┐
-  //   │          │ Title (Body-1 Semi Bold)        │
-  //   │ 64×64 px │ ─────────────────────────────── │
-  //   │  thumb   │ CTA pill (40 px, dark/translucent│
-  //   │          │   bg, trailing chevron)         │
-  //   └──────────┴─────────────────────────────────┘
-  // Sheet header is suppressed for `default` (Figma 8244-20303 has
-  // no chrome above the body); `default-active` keeps the header
-  // (drag pill + favicon + title + close). The sheet footer is
-  // suppressed in BOTH states because the CTA is inline in the
-  // card. See linkouts-dynamic.tsx.
+  // `default` / `default-active` — 64×64 thumb + (title + inline CTA) column.
+  // The CTA is inline (footer suppressed in both states); only the sheet
+  // header differs between them.
   if (isDefaultLike) {
     const ctaDisplayText = ctaLabel;
     const ctaHref = ctaLink || data.link;
@@ -438,38 +352,24 @@ export function LinkCard({
     return (
       <div
         className={cn(
-          // With a thumbnail: CSS Grid `grid-cols-[auto_1fr]` so the
-          // thumb is a square that grows with the column (Figma
-          // 8244-20303 / 8249-19818). `align-items: stretch` (grid
-          // default) gives the thumb a definite height equal to
-          // the row's height, and `aspect-square` then derives its
-          // width.
-          //
-          // Without a thumbnail: flat block layout so the inner
-          // details column (and its full-width CTA) span the entire
-          // card. The grid `auto_1fr` would otherwise auto-place the
-          // inner div in the empty `auto` column, sizing the column
-          // to the inner content (circular with `w-full`) and
-          // leaving the `1fr` track empty.
+          // With a thumb: grid `auto_1fr` so the thumb is a square sized to
+          // the row height. Without one: flat block so the details column
+          // spans the full card (the grid would strand it in the `auto` track).
           "gencl:relative gencl:w-full gencl:p-2 gencl:rounded-lg",
           hasThumb ? "gencl:grid gencl:grid-cols-[auto_1fr] gencl:gap-2" : "gencl:block",
           textPrimary
         )}>
-        {/* Thumbnail — 1:1 aspect ratio, height = full grid row
-            (Figma 8244-20303 / 8249-19818). `min-h-16` ensures a
-            64 px floor when the column is short (1-line title); the
-            `aspect-square` then makes the width follow. */}
-        <LinkCardThumb src={data.image} className="gencl:min-h-16 gencl:aspect-square gencl:h-full" />
+        {/* Thumbnail — fixed 64×64 (`w-16 h-16 shrink-0`). The earlier
+            aspect-square + h-full recipe resolved wider on iOS Safari and
+            pushed the title behind the image. */}
+        <LinkCardThumb src={data.image} className="gencl:w-16 gencl:h-16 gencl:shrink-0" />
         <div className="gencl:flex gencl:flex-col gencl:gap-1 gencl:flex-1 gencl:min-w-0">
-          {/* Title falls back to the URL when no explicit title is
-              provided (thumbnail+URL-only linkouts). The CTA in those
-              cases reads "Learn more" so the URL isn't duplicated. */}
+          {/* Title falls back to the URL; the CTA then reads "Learn more"
+              so the URL isn't duplicated. */}
           {displayTitle && (
             <p
               className={cn(
-                // line-clamp-2: short titles render on a single line,
-                // long titles wrap to two before truncating (Figma
-                // 8249-19818 shows the TOEFL title on two lines).
+                // line-clamp-2: wraps to two lines before truncating.
                 "gencl:text-body-1-semi-bold! gencl:line-clamp-2 gencl:overflow-hidden gencl:text-ellipsis gencl:w-full",
                 textPrimary
               )}>
@@ -497,16 +397,12 @@ export function LinkCard({
       aria-label={displayTitle}
       className={cn(
         "gencl:relative gencl:w-full gencl:cursor-pointer gencl:transition-opacity gencl:active:opacity-80",
-        // Only `full-view` has a definite parent height (100% of
-        // container) — there the LinkCard fills the slide so the
-        // inner `justify-between` body can space title+desc to the
-        // top and image+meta to the bottom. `panel-view` is auto
-        // height, so the body just sizes to its content naturally.
+        // Only `full-view` has a definite parent height, so fill the slide;
+        // panel-view is auto and sizes to content.
         sheetState === "full-view" && "gencl:h-full gencl:flex gencl:flex-col"
       )}
-      // See pl-xs above — stop pointerdown bubbling so the
-      // DynamicSheet's content div doesn't `setPointerCapture` and
-      // swallow the click before it reaches this row's onClick.
+      // See pl-xs above — stop pointerdown so the sheet's pointer capture
+      // doesn't swallow this row's click.
       onPointerDown={(e) => e.stopPropagation()}
       onClick={(e) => {
         e.stopPropagation();
@@ -516,21 +412,8 @@ export function LinkCard({
         e.stopPropagation();
         if (e.key === "Enter" || e.key === " ") onClick?.();
       }}>
-      {/* ── Expand-view layout (Figma 8244-20305) ──────────────────
-          Module structure:
-            ┌────────────────────────────────────────────────────┐
-            │ Title (full width, Body-1 Semi Bold)               │
-            ├──────────┬─────────────────────────────────────────┤
-            │ 128 × N  │ Description (Body-3 Medium)             │
-            │  thumb   │ Meta row (brand · price · rating · ...) │
-            ├──────────┴─────────────────────────────────────────┤
-            │ Inline CTA pill (40 px, dark bg, trailing chevron) │
-            └────────────────────────────────────────────────────┘
-          The thumbnail is a square that grows with the (description
-          + meta) column height (CSS Grid + aspect-square + h-full,
-          same trick as `default` / `default-active`). The CTA lives
-          inside the card; the sheet footer is suppressed for
-          expand-view. */}
+      {/* Expand-view: title, then a thumb + (description + meta) row, then
+          the inline CTA. Thumb is a square sized to the column height. */}
       {isExpand && (
         <div className="gencl:flex gencl:flex-col gencl:gap-2 gencl:w-full gencl:p-2">
           {/* Title */}
@@ -540,14 +423,9 @@ export function LinkCard({
 
           {/* Image + Details row */}
           <div className="gencl:grid gencl:grid-cols-[auto_1fr] gencl:gap-2 gencl:w-full">
-            {/* Thumbnail — option 1 (`ctaFitsInline = false`) keeps
-                the original grid behaviour: 1:1 aspect, height = row
-                height (driven by description + meta), 128 px floor.
-                Option 2 (`ctaFitsInline = true`) overrides with an
-                explicit pixel square equal to the right column's
-                natural height (description + meta + inline CTA + gap)
-                so the image collapses with the content — see
-                `expandImageSize` above. Floored at 84 px. */}
+            {/* Thumbnail — grid aspect-square (128 px floor) normally;
+                when the CTA is promoted inline, an explicit pixel square
+                matching the column height (see `expandImageSize`). */}
             <LinkCardThumb
               src={data.image}
               alt={displayTitle}
@@ -555,13 +433,8 @@ export function LinkCard({
               style={expandImageSize !== null ? { width: expandImageSize, height: expandImageSize } : undefined}
             />
 
-            {/* Details column. When the description+meta combined
-                height fits within `128 - cta - gap = 84 px`, the
-                CTA is promoted into this column with `mt-auto` to
-                push it to the bottom of the row (the column is
-                stretched to thumb height by grid `align-items:
-                stretch`). Otherwise the CTA renders as a sibling
-                row below. */}
+            {/* Details column. When description+meta fits in ≤ 84 px, the
+                CTA is promoted here (`mt-auto`); otherwise it renders below. */}
             <div className="gencl:flex gencl:flex-col gencl:gap-1 gencl:min-w-0">
               <div ref={detailsContentRef} className="gencl:flex gencl:flex-col gencl:gap-1">
                 {data.description && (
@@ -595,8 +468,7 @@ export function LinkCard({
             </div>
           </div>
 
-          {/* Bottom CTA pill — collapses (renders nothing) when the
-              CTA was promoted into the details column above. */}
+          {/* Bottom CTA — omitted when the CTA was promoted inline above. */}
           {!ctaFitsInline && ctaLabel && (
             <LinkCardInlineCta
               href={ctaLink || data.link}
@@ -609,28 +481,15 @@ export function LinkCard({
         </div>
       )}
 
-      {/* ── Detail layout (panel-view, full-view) ──
-          Figma 8244-20393 (Panel View) Module structure:
-            ┌─────────────────────────────────────────┐
-            │ Title (Headline-4 Semibold, full width) │
-            │ Description (Body-1 Medium, full width) │
-            ├─────────────────────────────────────────┤
-            │           1:1 thumbnail                 │
-            │     (centered, fills remaining space)   │
-            ├─────────────────────────────────────────┤
-            │ Meta wrap (brand · price · rating · …)  │
-            └─────────────────────────────────────────┘
-          The CTA button lives in the sheet's footer slot (not
-          inline), unlike default / default-active / expand-view. */}
+      {/* Detail layout (panel-view, full-view): title + description, a
+          centered 1:1 thumbnail, then the meta wrap. CTA lives in the
+          sheet footer (not inline). */}
       {isDetail && (
         <div
           className={cn(
             "gencl:flex gencl:flex-col gencl:items-stretch gencl:p-3 gencl:w-full gencl:gap-4",
-            // For full-view (100% of container) the body fills the
-            // slide and the IMAGE area absorbs the remaining height
-            // (Figma 8244-20676 layout: title-desc → flex-1 image →
-            // meta → CTA, all top-aligned with no empty gaps).
-            // Panel-view is auto-sized so children stack naturally.
+            // full-view fills the slide (image area absorbs the leftover
+            // height); panel-view is auto-sized and stacks naturally.
             sheetState === "full-view" && "gencl:h-full",
             cardBg
           )}>
@@ -648,12 +507,9 @@ export function LinkCard({
             )}
           </div>
 
-          {/* Image area. In full-view the area is `flex-1 min-h-0`
-              so the image absorbs the leftover vertical space (Figma
-              `aspect-[143/143] h-full` inside a `flex-1` parent).
-              In panel-view the area is auto-sized and the image is
-              capped at `max-w-[280px]` so it stays a reasonable
-              square. Either way, the image is centered horizontally. */}
+          {/* Image area: full-view is `flex-1 min-h-0` so the image absorbs
+              leftover height; panel-view is auto with a `max-w-[280px]` cap.
+              Centered either way. */}
           <div
             className={cn(
               "gencl:flex gencl:items-center gencl:justify-center gencl:w-full",

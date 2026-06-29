@@ -4,7 +4,7 @@ import { cn } from "@genuin/ui";
 import { CommentIcon, PlayIcon } from "@genuin/ui/icons";
 import { cva } from "class-variance-authority";
 import type { VariantProps } from "class-variance-authority";
-import { lazy, useCallback, useEffect, useMemo, useState } from "react";
+import { lazy, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useBoolean } from "usehooks-ts";
 
 import { useBaseContext } from "@genuin/components/context";
@@ -228,9 +228,63 @@ function EmbedPlayer({ postDetails, isActive = false, index, itemSize }: EmbedPl
   const layoutType = !showLayout
     ? "responsiveness"
     : getBrandType(embedDetails?.embedData.card_layout_id, embedDetails?.embedData.video_layout_id);
-  const { sheetState } = useSheetState();
+  const { sheetState, getContentTypeState, hasContentType, openContentType } = useSheetState();
   const { isDesktop } = useDeviceDetectMediaQuery();
   const isNonDesktop = !isDesktop;
+
+  // Carousel cap: dragging the linkout indicator beyond `expand-view` (i.e. into
+  // `panel-view` / `full-view`) means the user wants to enlarge the panel past
+  // the carousel's biggest in-tile state. Promote them straight into the
+  // fullscreen expand-view player; the `ExpandViewLoader` snapshot logic
+  // resets the linkout to `default` on entry and restores it on close.
+  //
+  // Also promote when the user drags from `default-active` to `expand-view`.
+  // On iOS Safari the snap target for `panel-view` (70vh / 70% of parent) sits
+  // too far above expand-view's auto-sized snap point for a typical upward
+  // swipe to cross the midpoint, so the sheet snaps back to expand-view and
+  // the user never reaches the panel-view trigger. The `default-active →
+  // expand-view` transition is user-only — neither `embed-default` (auto-
+  // advances default → default-active) nor `embed-active` (auto-advances
+  // default → expand-view, skipping default-active) hits it via auto-advance.
+  const linkoutsSheetState = getContentTypeState("linkouts");
+  const prevLinkoutsSheetStateRef = useRef(linkoutsSheetState);
+  useEffect(() => {
+    if (!isActive) {
+      prevLinkoutsSheetStateRef.current = linkoutsSheetState;
+      return;
+    }
+    const isExpandViewPlayer = embedDetails?.embedEventBus.getContext().activePlayerType === "expand-view";
+    if (isExpandViewPlayer) {
+      prevLinkoutsSheetStateRef.current = linkoutsSheetState;
+      return;
+    }
+    const prev = prevLinkoutsSheetStateRef.current;
+    const userDraggedToExpand = prev === "default-active" && linkoutsSheetState === "expand-view";
+    if (linkoutsSheetState === "panel-view" || linkoutsSheetState === "full-view" || userDraggedToExpand) {
+      changeActivePlayerType("expand-view", index);
+    }
+    prevLinkoutsSheetStateRef.current = linkoutsSheetState;
+  }, [linkoutsSheetState, isActive, changeActivePlayerType, index, embedDetails]);
+
+  // Carousel re-open: when the active video changes to one that has a
+  // linkout, ensure "linkouts" is in `activeSheetContentTypes`. Gated on
+  // the *video id* changing (not just `isActive` flipping) so the user's
+  // explicit close on the current tile stays effective — without this
+  // gate the close → `closeContentType("linkouts")` would immediately be
+  // undone by this same effect.
+  const hasLinkoutData =
+    (postDetails.video?.linkoutId !== null && postDetails.video?.linkoutId !== undefined) ||
+    (Array.isArray(postDetails.video?.linkouts) && (postDetails.video?.linkouts?.length ?? 0) > 0);
+  const lastOpenedForVideoIdRef = useRef<string | null>(null);
+  const currentVideoId = postDetails.video?.id ?? null;
+  useEffect(() => {
+    if (!isActive) return;
+    if (!hasLinkoutData) return;
+    if (!currentVideoId) return;
+    if (lastOpenedForVideoIdRef.current === currentVideoId) return;
+    lastOpenedForVideoIdRef.current = currentVideoId;
+    openContentType("linkouts", "inside", "default");
+  }, [isActive, hasLinkoutData, currentVideoId, openContentType]);
 
   const handleClickOnEmbedTile = useCallback(() => {
     // Emit SDK event for video click
@@ -319,7 +373,11 @@ function EmbedPlayer({ postDetails, isActive = false, index, itemSize }: EmbedPl
         <div
           className={cn(
             "gencl:w-full gencl:transition-all gencl:duration-300 gencl:ease-in-out",
-            isActive && (sheetState === "panel-view" || sheetState === "full-view")
+            // While an ad plays, the linkout panel is suppressed (control-layer
+            // renders the Ad overlay instead of the embed), so the video frame
+            // must reclaim the full slide. The sheet state is preserved so
+            // playback can revert to the 30/70 split once the ad ends.
+            !isAdPlaying && isActive && (sheetState === "panel-view" || sheetState === "full-view")
               ? "gencl:h-[30%] gencl:shrink-0"
               : "gencl:h-full"
           )}>
@@ -341,7 +399,7 @@ function EmbedPlayer({ postDetails, isActive = false, index, itemSize }: EmbedPl
                   : postDetails.video?.thumbnail
               }
               className={
-                sheetState === "panel-view" || sheetState === "full-view"
+                !isAdPlaying && (sheetState === "panel-view" || sheetState === "full-view")
                   ? "gencl:bg-contain! gencl:object-contain! gencl:h-full! gencl:w-full!"
                   : videoCrop
                     ? "gencl:object-cover gencl:h-full! gencl:w-full gencl:bg-cover"

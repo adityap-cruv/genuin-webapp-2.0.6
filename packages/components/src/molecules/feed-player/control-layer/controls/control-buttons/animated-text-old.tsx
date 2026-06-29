@@ -18,9 +18,7 @@ type AnimatedTextProps = {
  *   → hidden for HIDE_DURATION → repeat
  */
 export const AnimatedText = memo(function AnimatedText({ text, width = 110, stop }: AnimatedTextProps) {
-  // Start collapsed so the first paint is at width 0; a rAF then expands it,
-  // letting the CSS width/opacity transition actually play the slide-in.
-  // (Starting at `true` mounts already-expanded → transition has no delta → it pops.)
+  // Start collapsed so CSS transition has a 0→width delta to animate (starting true = no delta = pop).
   const [visible, setVisible] = useState(false);
 
   const showTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -80,7 +78,7 @@ export const AnimatedText = memo(function AnimatedText({ text, width = 110, stop
 
   return (
     <div
-      className={`gencl:text-body-1-medium gencl:flex gencl:min-w-0 gencl:overflow-hidden gencl:whitespace-nowrap gencl:transition-[max-width,opacity] gencl:duration-500 gencl:ease-in-out`}
+      className="gencl:text-body-1-medium gencl:flex gencl:min-w-0 gencl:overflow-hidden gencl:whitespace-nowrap gencl:transition-[max-width,opacity] gencl:duration-500 gencl:ease-in-out"
       style={{
         maxWidth: visible ? `${width}px` : "0px",
         opacity: visible ? 1 : 0,

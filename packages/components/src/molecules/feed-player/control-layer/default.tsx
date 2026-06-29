@@ -275,6 +275,10 @@ export function Default({
             onClick={handleVideoClick}
             className={cn(
               "group gencl:inset-0 gencl:z-10 gencl:flex gencl:justify-center",
+              // Linkout panel/full-view: Player.tsx shrinks the video, so this
+              // wrapper needs `flex-1 min-h-0 flex-col` to give expand-view-details a
+              // parent height to grow into (else the sheet stays at panel-view size).
+              isSheetOpen && "gencl:flex-1 gencl:min-h-0 gencl:flex-col",
               // showSeeker && "gencl:-translate-y-4",
               // showScrubber ? "gencl:hidden" : "gencl:block",
               className

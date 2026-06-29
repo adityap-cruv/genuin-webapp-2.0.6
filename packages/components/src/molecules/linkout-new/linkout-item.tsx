@@ -19,29 +19,21 @@ import type { FlexRatio } from "./responsive-card";
 
 import "swiper/css";
 
-// Lazy-load `<GenAdContainer>` so the GenAd SDK script isn't pulled
-// into the linkout bundle for callers that never render the banner
-// ad branch. Same pattern `<FeedPlayer>` uses for its full-frame
-// ad overlay.
+// Lazy-load so the GenAd SDK isn't pulled into the bundle for callers
+// that never render the banner-ad branch.
 const GenAdContainer = lazy(() =>
   import("@genuin/components/molecules/feed-player/gen-ad-container").then((m) => ({
     default: m.GenAdContainer,
   }))
 );
 
-/** Stable no-op for `<GenAdContainer>`'s required `moveToNextVideo`
- *  callback. The linkout slot has no concept of "next video"; this
- *  is intentionally a noop so the SDK's completion handler doesn't
- *  trigger any feed behaviour. */
+/** Stable no-op for `<GenAdContainer>`'s required `moveToNextVideo` — the
+ *  linkout slot has no "next video". */
 const noop = (): void => {};
 
 // ─── AutoCycleView ─────────────────────────────────────────────────────────────
-// One LinkCard at a time. Used for the chip and resting states
-// (pl-xs / pl-sml / default). `default-active` and `expand-view`
-// share the same composite body but render inside a Swiper so the
-// user can swipe horizontally between links. The "auto-cycle" name
-// is historical — auto rotation is currently disabled; navigation
-// is driven from outside via the parent's controlled `activeIdx`.
+// One LinkCard at a time, for the chip + resting states (pl-xs / pl-sml /
+// default). Name is historical — navigation is parent-controlled via `activeIdx`.
 
 function AutoCycleView({
   links,
@@ -58,9 +50,7 @@ function AutoCycleView({
   theme?: "light" | "dark";
   activeIdx?: number;
   onLinkClick?: (link: string, title: string) => void;
-  /** Forwarded to `<LinkCard>` so the `default` branch can render its
-   *  inline CTA pill (Figma 8244-20303). The other AutoCycleView
-   *  branches (`pl-xs` / `pl-sml` / `default-active`) ignore them. */
+  /** Forwarded to `<LinkCard>` for the `default` branch's inline CTA pill. */
   ctaText?: string;
   ctaLink?: string;
   onCtaClick?: (e: React.MouseEvent) => void;
@@ -91,12 +81,15 @@ export function LinkoutNavButtons({
   isPrevDisabled,
   isNextDisabled,
   theme = "dark",
+  middleSlot,
 }: {
   onPrev: () => void;
   onNext: () => void;
   isPrevDisabled: boolean;
   isNextDisabled: boolean;
   theme?: "light" | "dark";
+  /** Content between the prev/next buttons — used to inline the dots. */
+  middleSlot?: React.ReactNode;
 }) {
   const isDark = theme === "dark";
   const btnBase =
@@ -117,6 +110,7 @@ export function LinkoutNavButtons({
         className={cn(btnBase, btnEnabled, isPrevDisabled && btnDisabled)}>
         <ChevronLeft className={cn("gencl:size-3", iconColor)} strokeWidth={2} />
       </button>
+      {middleSlot}
       <button
         type="button"
         aria-label="Next"
@@ -130,12 +124,8 @@ export function LinkoutNavButtons({
 }
 
 // ─── LinkoutCarouselDots ─────────────────────────────────────────────────────
-// Pure-prop dots. Lives outside the sheet body so it sits on the video
-// backdrop, below the panel — matching the Figma layout reference where
-// `<Carousel>` is a sibling of the sheet content.
-//
-// `widthMode` mirrors Figma's two layouts: full-width for chip and
-// collapsed states, fixed 334 px (centered) for expand-view.
+// Pure-prop dots, rendered as a sibling of the sheet so they sit on the
+// video backdrop below the panel. `widthMode`: full-width vs fixed 334 px.
 
 export function LinkoutCarouselDots({
   total,
@@ -151,12 +141,8 @@ export function LinkoutCarouselDots({
   widthMode?: "full" | "fixed-334";
 }) {
   if (total <= 1) return null;
-  // Dot colours track the panel theme. Tokens map to the design
-  // system hexes verified in `packages/tailwind-config/shared-styles.css`:
-  //   Dark theme  → active `#767B81` (secondary-600), inactive `#E9EBEC` (secondary-100)
-  //   Light theme → active `#585C61` (secondary-700), inactive `#DFE1E3` (secondary-150)
-  // Light theme is used by the outside-layout placement
-  // (Figma 10075:76988); dark stays the default for inside embed.
+  // Dot colours track the panel theme (light = outside-layout placement,
+  // dark = inside embed).
   const isLight = theme === "light";
   const activeBg = isLight ? "gencl:bg-secondary-700" : "gencl:bg-secondary-600";
   const inactiveBg = isLight ? "gencl:bg-secondary-150" : "gencl:bg-secondary-100";
@@ -185,13 +171,8 @@ export function LinkoutCarouselDots({
 }
 
 // ─── LinkoutItem ──────────────────────────────────────────────────────────────
-// Renders the body of the linkout sheet — either an AutoCycleView
-// (single card at a time, for chip / default states) or a Swiper
-// (for expand-view / panel-view / full-view).
-//
-// The dots and desktop nav buttons used to live inside this component;
-// they've been split out as `<LinkoutCarouselDots>` / `<LinkoutNavButtons>`
-// so the parent can render them outside the sheet panel.
+// Body of the linkout sheet — an AutoCycleView (single card, for chip /
+// default states) or a Swiper (expand-view / panel-view / full-view).
 
 export function LinkoutItem({
   links,
@@ -211,6 +192,8 @@ export function LinkoutItem({
   ctaClassName,
   forceFlexRatio,
   hideThumb,
+  slidesPerView,
+  spaceBetween,
 }: {
   links: LinkData[];
   linkoutsState: SheetState;
@@ -224,74 +207,51 @@ export function LinkoutItem({
   activeIdx?: number;
   onLinkClick?: (link: string, title: string) => void;
   onActiveIndexChange?: (idx: number) => void;
-  /** Page-level CTA props, forwarded to `<LinkCard>` for the
-   *  `default` state's inline CTA pill (Figma 8244-20303). */
+  /** Page-level CTA, forwarded to `<LinkCard>` for the `default` inline pill. */
   ctaText?: string;
   ctaLink?: string;
   onCtaClick?: (e: React.MouseEvent) => void;
-  /** Forwarded to `<LinkCard>`'s `isResponsive` branch — picks
-   *  between the wide card's "default" (hide desc + chips) and
-   *  "expand" (show all) content states. */
+  /** `<LinkCard>`'s responsive content state: `"default"` hides desc + chips. */
   responsiveState?: "default" | "expand";
   /** Storybook-only debug overlay for the responsive card. */
   showResponsiveGrid?: boolean;
   /**
-   * In-linkout banner ad. When supplied, the link path is bypassed
-   * entirely and a `<GenAdContainer>` is rendered in place of the
-   * `<LinkCard>` with a banner-only `GenAdConfig`. The container is
-   * sized exactly to `bannerAd.config.size`; the sheet's `default`
-   * scenario panel handles the dark translucent chrome (Figma
-   * `Component 3` at node 9563:113378) — `<DynamicLinkouts>`
-   * overrides `initialState` / `enabledStates` to keep the slot
-   * locked to `default` while the ad is shown.
+   * In-linkout banner ad. When set, the link path is bypassed and a
+   * `<GenAdContainer>` renders in place of `<LinkCard>`, sized to
+   * `config.size`; `<DynamicLinkouts>` locks the slot to `default`.
    */
   bannerAd?: {
     config: GenAdBannerConfig;
     brandId?: string;
-    /** Optional override for the SDK's analytics `ad_type` field.
-     *  Defaults to `"linkout_banner"` so consumers can disambiguate
-     *  events emitted from this slot vs the `<FeedPlayer>` overlay. */
+    /** Analytics `ad_type` override (default `"linkout_banner"`). */
     adType?: string;
   };
-  /** Forwarded to `<LinkCard>` → `<ResponsiveLinkCard>` to pin the
-   *  responsive card's orientation when auto-detection is unwanted. */
+  /** Forwarded to `<ResponsiveLinkCard>` — pin orientation. */
   forceOrientation?: "portrait" | "landscape";
-  /** Forwarded to `<LinkCard>` → `<ResponsiveLinkCard>`'s CTA pill —
-   *  extra classes merged onto the existing CTA styling. */
+  /** Forwarded to `<ResponsiveLinkCard>` — extra CTA pill classes. */
   ctaClassName?: string;
-  /** Forwarded to `<LinkCard>` → `<ResponsiveLinkCard>` — overrides
-   *  the auto-picked thumb/details flex ratio for hosts that need
-   *  a deterministic image vs. text split. */
+  /** Forwarded to `<ResponsiveLinkCard>` — override thumb/details flex ratio. */
   forceFlexRatio?: FlexRatio;
-  /** Forwarded to `<LinkCard>` → `<ResponsiveLinkCard>` — skip the
-   *  thumb area when the host renders its own preview above the
-   *  card. */
+  /** Forwarded to `<ResponsiveLinkCard>` — skip the thumb area. */
   hideThumb?: boolean;
+  /** Swiper override (used by the expand-desktop-outside peek layout). */
+  slidesPerView?: number | "auto";
+  spaceBetween?: number;
 }) {
   const { brandDetails } = useBaseContext();
-  // `useId` is allowed before the early return because hooks run on
-  // every render regardless of which branch we end up in.
   const generatedAdSlotId = useId();
 
   if (bannerAd) {
-    // Banner ad branch — replaces the link card entirely. The
-    // `<GenAdContainer>` mounts inside the same dynamic-sheet panel
-    // the link card normally fills (see Figma `Component 3` at
-    // 9563:113378). The container's render output is absolutely
-    // positioned to fill its parent, so a relatively-positioned
-    // wrapper sized to the chosen banner is sufficient.
+    // Banner-ad branch — replaces the link card. `<GenAdContainer>` renders
+    // absolutely positioned, so a relative wrapper sized to the banner suffices.
     const adConfig: GenAdConfig = {
       adSlotId: `linkout-banner-${generatedAdSlotId.replace(/[:]/g, "-")}`,
       banner: bannerAd.config,
       ...(bannerAd.brandId ? { brandDetails: { brandId: bannerAd.brandId } } : {}),
     };
     return (
-      // Outer padded wrapper — adds the 4 px grey gap around the
-      // banner that Figma `Component 3` (9563:113782) shows. The
-      // panel's translucent dark fill comes from the dynamic-sheet
-      // chrome below (it's `bg-black/50 + backdrop-blur` by default
-      // in dark theme), so we just need the padding here. The inner
-      // box stays at the exact banner dimensions.
+      // Outer padded wrapper — 4 px gap around the banner; the panel fill
+      // comes from the sheet chrome below. Inner box is the exact banner size.
       <div
         style={{
           padding: 4,
@@ -312,14 +272,9 @@ export function LinkoutItem({
               config={adConfig}
               isActive
               isVisible
-              // The linkout slot has no concept of "next video" — the
-              // SDK invokes this when the ad completes; we no-op so
-              // the slot just becomes empty (or whatever the host's
-              // upstream waterfall decides next).
+              // No "next video" here — no-op on ad completion.
               moveToNextVideo={noop}
-              // Disambiguate analytics from `<FeedPlayer>`'s in-feed
-              // overlay events. The SDK forwards `ad_type` into every
-              // tracking payload via `videoType`.
+              // Disambiguate analytics from `<FeedPlayer>`'s overlay events.
               videoType={bannerAd.adType ?? "linkout_banner"}
             />
           </Suspense>
@@ -332,9 +287,7 @@ export function LinkoutItem({
     link: l.link,
     title: l.title,
     image: l.image ?? brandDetails.logo,
-    // Per-link brand/website override the brandDetails fallback when the
-    // payload supplies them (Figma's design data is per-product, not
-    // per-brand).
+    // Per-link brand/website override the brandDetails fallback when present.
     brand: l.brand ?? brandDetails.name,
     website: l.website ?? brandDetails.website,
     description: l.description ?? undefined,
@@ -348,12 +301,8 @@ export function LinkoutItem({
   }));
 
   if (linkoutsState === "pl-xs" || linkoutsState === "pl-sml" || linkoutsState === "default") {
-    // Chip + resting `default` state render a single card at a time
-    // (no horizontal slider). Chips intentionally let touchmove bubble
-    // to the host carousel; `default` is the resting row that auto-
-    // advances to `expand-view` after 3 s, so the swipe window is too
-    // short to be useful. Pagination dots live in the parent so they
-    // sit on the video backdrop, below the panel.
+    // Chip + resting `default` render a single card (no slider). Chips let
+    // touchmove bubble to the host carousel; `default` soon auto-advances.
     return (
       <AutoCycleView
         links={linksWithMetadata}
@@ -369,11 +318,8 @@ export function LinkoutItem({
   }
 
   if (linkoutsState === "responsive") {
-    // Responsive wide-card: single self-contained card per active
-    // link (no Swiper — the host frame already controls navigation
-    // through its own dots inside the card body). LinkCard's
-    // `isResponsive` branch handles the size buckets, orientation,
-    // and overflow cascade internally.
+    // Responsive wide-card: single self-contained card, no Swiper (the card
+    // body owns its own navigation). `isResponsive` handles layout internally.
     const current = linksWithMetadata[activeIdx ?? 0];
     if (!current) return null;
     return (
@@ -395,46 +341,74 @@ export function LinkoutItem({
     );
   }
 
-  // Only `full-view` has a definite panel height (100% of container)
-  // and uses `h-full justify-between` to bottom-align the image +
-  // meta block. `panel-view` is auto-sized to its content, and
-  // `expand-view` is also auto — both leave Swiper at its default
-  // height so the slide just wraps the LinkCard's intrinsic size.
+  // Only `full-view` has a definite panel height; panel/expand-view are auto.
   const isFullHeightSheet = linkoutsState === "full-view";
 
+  // Single-link shortcut: skip the Swiper wrapper. Its `height: 100%` slide
+  // rules diverge from the auto-measure well (bare LinkCard); rendering
+  // LinkCard directly here matches the well so there's no bottom gap.
+  const only = linksWithMetadata.length === 1 ? linksWithMetadata[0] : undefined;
+  if (only) {
+    return (
+      <div
+        onPointerDown={(e) => e.stopPropagation()}
+        className={isFullHeightSheet ? "gencl:h-full gencl:w-full" : undefined}>
+        <LinkCard
+          data={only}
+          sheetState={linkoutsState}
+          theme={theme}
+          onClick={() => onLinkClick?.(only.link, only.title ?? only.link)}
+          ctaText={ctaText}
+          ctaLink={ctaLink}
+          onCtaClick={onCtaClick}
+        />
+      </div>
+    );
+  }
+
   return (
-    <Swiper
-      spaceBetween={0}
-      slidesPerView={1}
-      loop={links.length > 1}
-      // Autoplay was previously gated on `default` / `default-active`,
-      // but `default` early-returns into AutoCycleView and `default-
-      // active` / `expand-view` / `panel-view` / `full-view` are
-      // user-driven horizontal swipe carousels.
-      autoplay={false}
-      onSwiper={(swiper) => {
-        if (swiperRef) swiperRef.current = swiper;
-      }}
-      onSlideChange={(swiper) => {
-        onActiveIndexChange?.(swiper.realIndex);
-      }}
+    // Stop pointerdown so the parent sheet's `setPointerCapture` doesn't
+    // steal the swipe from this inner Swiper (it fell through to a click).
+    <div
+      onPointerDown={(e) => e.stopPropagation()}
       className={isFullHeightSheet ? "gencl:h-full gencl:w-full" : undefined}>
-      {linksWithMetadata.map((data, idx) => (
-        <SwiperSlide
-          key={data.link ?? `link-${idx}`}
-          className={isFullHeightSheet ? "gencl:h-full" : undefined}
-          style={isFullHeightSheet ? { height: "100%" } : undefined}>
-          <LinkCard
-            data={data}
-            sheetState={linkoutsState}
-            theme={theme}
-            onClick={() => onLinkClick?.(data.link, data.title ?? data.link)}
-            ctaText={ctaText}
-            ctaLink={ctaLink}
-            onCtaClick={onCtaClick}
-          />
-        </SwiperSlide>
-      ))}
-    </Swiper>
+      <Swiper
+        spaceBetween={spaceBetween ?? 0}
+        slidesPerView={slidesPerView ?? 1}
+        loop={links.length > 1}
+        // `noSwiping={false}`: the panel wraps in `swiper-no-swiping` to stop
+        // the OUTER feed Swiper, but Swiper v11's unscoped `closest()` check
+        // also disabled this inner carousel — opt out so it owns its gesture.
+        noSwiping={false}
+        autoplay={false}
+        // `autoHeight` sizes the container to the active slide; without it the
+        // default `height: 100%` resolves to 0 inside auto-sized parents and
+        // the body collapses. Off in full-height where `h-full` is definite.
+        autoHeight={!isFullHeightSheet}
+        onSwiper={(swiper) => {
+          if (swiperRef) swiperRef.current = swiper;
+        }}
+        onSlideChange={(swiper) => {
+          onActiveIndexChange?.(swiper.realIndex);
+        }}
+        className={isFullHeightSheet ? "gencl:h-full gencl:w-full" : undefined}>
+        {linksWithMetadata.map((data, idx) => (
+          <SwiperSlide
+            key={data.link ?? `link-${idx}`}
+            className={isFullHeightSheet ? "gencl:h-full" : undefined}
+            style={isFullHeightSheet ? { height: "100%" } : undefined}>
+            <LinkCard
+              data={data}
+              sheetState={linkoutsState}
+              theme={theme}
+              onClick={() => onLinkClick?.(data.link, data.title ?? data.link)}
+              ctaText={ctaText}
+              ctaLink={ctaLink}
+              onCtaClick={onCtaClick}
+            />
+          </SwiperSlide>
+        ))}
+      </Swiper>
+    </div>
   );
 }

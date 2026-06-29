@@ -17,7 +17,8 @@ import type { AdTagObjectType, PostDetailsType } from "@genuin/components/react-
 
 import { usePlayerContext } from "./context/context";
 import { buildGenAdConfigFromAdTagObject } from "./gen-ad-container";
-import type { GenAdConfig, GenAdContainer as GenAdContainerComponent } from "./gen-ad-container";
+import type { GenAdConfig } from "./gen-ad-container";
+import type { GenAdContainer as GenAdContainerComponent } from "./gen-ad-container/gen-ad-container";
 import { usePlayerImplOverride } from "./player-impl-context";
 
 const GenAdContainer = lazy(() =>
@@ -146,6 +147,7 @@ export const FeedPlayer = memo(function FeedPlayer({
     unmute,
     handleEnded: stateHandleEnded,
     updateAdInfo,
+    updateAdSkippable,
     totalVideos,
     positionIndex,
     setIsLoading,
@@ -243,7 +245,17 @@ export const FeedPlayer = memo(function FeedPlayer({
         sponsorship_id: sponsorshipInfo?.id,
       }),
     };
-  }, [videoId, totalVideos, src, isSponsored, sectionTitle, sectionSubtitle, sectionId, podcastId, stationId]);
+  }, [
+    videoId,
+    totalVideos,
+    src,
+    isSponsored,
+    sectionTitle,
+    sectionSubtitle,
+    sectionId,
+    podcastId,
+    stationId,
+  ]);
 
   const adAnalyticsData = useMemo(
     () => ({
@@ -517,6 +529,11 @@ export const FeedPlayer = memo(function FeedPlayer({
       track(EventName.AD_ERROR, { ...adAnalyticsData, video_id: videoId });
     };
 
+    const handleAdSkippableChanged = (e: Event) => {
+      const { isSkippable } = (e as CustomEvent<{ isSkippable: boolean }>).detail ?? { isSkippable: false };
+      updateAdSkippable(!!isSkippable);
+    };
+
     const handleBrowserRestrictionPause = () => {
       console.warn("[FeedPlayer] handleBrowserRestrictionPause", { videoId });
       pauseBySystem();
@@ -551,6 +568,7 @@ export const FeedPlayer = memo(function FeedPlayer({
     videoEl.addEventListener("genuin:ad-skipped", handleAdSkipped);
     videoEl.addEventListener("genuin:ad-completed", handleAdCompleted);
     videoEl.addEventListener("genuin:ad-error", handleAdError);
+    videoEl.addEventListener("genuin:ad-skippable-changed", handleAdSkippableChanged);
     videoEl.addEventListener("videoPausedByBrowserRestriction", handleBrowserRestrictionPause);
 
     return () => {
@@ -583,6 +601,7 @@ export const FeedPlayer = memo(function FeedPlayer({
       videoEl.removeEventListener("genuin:ad-skipped", handleAdSkipped);
       videoEl.removeEventListener("genuin:ad-completed", handleAdCompleted);
       videoEl.removeEventListener("genuin:ad-error", handleAdError);
+      videoEl.removeEventListener("genuin:ad-skippable-changed", handleAdSkippableChanged);
       videoEl.removeEventListener("videoPausedByBrowserRestriction", handleBrowserRestrictionPause);
     };
   }, [
@@ -611,6 +630,7 @@ export const FeedPlayer = memo(function FeedPlayer({
     track,
     EventName,
     updateAdInfo,
+    updateAdSkippable,
   ]);
 
   const startTime = useMemo(() => baseContextManager.getTimeInfo(videoId).currentTime, [baseContextManager]);
@@ -618,6 +638,8 @@ export const FeedPlayer = memo(function FeedPlayer({
   return (
     <>
       {resolvedAdConfig && (
+        // null fallback is correct: the ad overlays the already-painted VideoPlayer
+        // below, so there is no blank/black screen while the ad chunk loads.
         <SafeSuspense fallback={null} errorFallback={null}>
           <GenAdContainer
             config={resolvedAdConfig}

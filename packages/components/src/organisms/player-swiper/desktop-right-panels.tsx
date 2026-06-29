@@ -40,26 +40,27 @@ export function DesktopRightPanels({
   onCommentClose,
   handleSwiperToggle,
 }: DesktopRightPanelsProps) {
-  const showBothPanels = isLinkoutsPanelVisible && isCommentsPanelVisible;
-  const linkoutsPanelHeight = showBothPanels ? "gencl:h-[35%]" : "gencl:h-[100%]";
-  const commentsPanelHeight = showBothPanels ? "gencl:h-[65%]" : "gencl:h-[100%]";
   const activePost = filteredPost[activeIndex];
   if (!activePost) return null;
 
   return (
     <div
       className={cn(
-        "gencl:flex gencl:flex-col gencl:h-full gencl:w-full gencl:py-6 gencl:overflow-hidden gencl:transition-all gencl:duration-300 gencl:ease-in-out",
+        // Two separate rounded panels with a 16 px gap (Figma). Linkout panel sizes
+        // to content (`flex-none`) so a sparse card doesn't leave a half-empty slot;
+        // comments grows to fill the rest (`flex-1`). One visible → it takes the rail.
+        "gencl:flex gencl:flex-col gencl:h-full gencl:w-full gencl:py-6 gencl:gap-4 gencl:overflow-hidden gencl:transition-all gencl:duration-300 gencl:ease-in-out",
         isCommentsPanelVisible || isLinkoutsPanelVisible
           ? "gencl:max-w-118 gencl:opacity-100"
-          : "gencl:max-w-0 gencl:opacity-0 gencl:pointer-events-none gencl:py-0! gencl:gap-0!",
-        showBothPanels ? "gencl:gap-6" : "gencl:gap-0!"
+          : "gencl:max-w-0 gencl:opacity-0 gencl:pointer-events-none gencl:py-0! gencl:gap-0!"
       )}>
       <div
         className={cn(
           "gencl:w-full gencl:min-w-0 gencl:hidden gencl:sm:block! gencl:overflow-hidden gencl:transition-all gencl:duration-300 gencl:ease-in-out",
           isLinkoutsPanelVisible
-            ? `${linkoutsPanelHeight} gencl:opacity-100`
+            ? isCommentsPanelVisible
+              ? "gencl:flex-none gencl:opacity-100"
+              : "gencl:h-full gencl:opacity-100"
             : "gencl:flex-none gencl:h-0 gencl:opacity-0 gencl:pointer-events-none"
         )}>
         <SafeSuspense fallback={null} errorFallback={null}>
@@ -80,7 +81,7 @@ export function DesktopRightPanels({
         className={cn(
           "gencl:w-full gencl:min-w-0 gencl:hidden gencl:sm:block! gencl:overflow-hidden gencl:transition-all gencl:duration-300 gencl:ease-in-out",
           isCommentsPanelVisible
-            ? `${commentsPanelHeight} gencl:opacity-100`
+            ? "gencl:flex-1 gencl:min-h-0 gencl:opacity-100"
             : "gencl:flex-none gencl:h-0 gencl:opacity-0 gencl:pointer-events-none"
         )}>
         {isCommentsPanelVisible && brandLayoutType !== "iheart" && (
