@@ -1,0 +1,52 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+{/*
+  Design-system narrative for MetaList. Docs-only page (no stories yet).
+  "When to use" / "How not to use" feed the machine-readable catalog.
+*/}
+
+<Meta title="Components/MetaList" />
+
+# MetaList
+
+> **Experimental** — part of the Hierarchical Layout system. The API may change until that system
+> graduates out of experimental.
+
+## What MetaList is for
+
+MetaList is the key-value metadata display: a definition list that renders one `label …… value` row per item, with a leader line filling the gap between the two. It's the right-rail "Placement Styles ···· Carousel, Grid" panel, the product spec sheet, the at-a-glance facts block — anywhere you have a short set of label/value pairs to lay out cleanly.
+
+## How it works
+
+MetaList renders a semantic `<dl>` with a `<dt>` (label) / `<dd>` (value) couple per row, and a middle column — the **leader** — that auto-fills the space between them so labels and values stay aligned down the column.
+
+- **`items`** (required) — `{ label, value }[]`. Each pair is one row.
+- **`leader`** — the connector style between label and value: `dotted` (default) · `dashed` · `solid` · `none` (collapses the connector and snaps the value next to the label).
+
+It's purely presentational: no `'use client'`, no tone knob. Color follows the **ambient text color**, so the list inherits whatever theme surrounds it.
+
+```tsx
+<MetaList
+  leader="dotted"
+  items={[
+    { label: "Placement Styles", value: "Carousel, Grid" },
+    { label: "Members", value: "8.4M" },
+    { label: "Created", value: "Jan 2024" },
+  ]}
+/>
+```
+
+## When to use MetaList
+
+- **Display a set of label→value pairs** — specs, metadata, key facts — in a scannable single column.
+- **Right-rail / detail meta panels** where the classic "key ···· value" alignment helps the eye track across.
+- **Use a `leader`** (`dotted`/`dashed`/`solid`) when the label and value are far apart and need a visual tie; use `none` for tight pairs where the value should sit right after the label.
+- **Let it inherit theme color** — drop it inside any surface and it picks up the ambient text color automatically.
+
+## How not to use MetaList
+
+- **Don't use it for tabular, multi-column data.** MetaList is exactly one label + one value per row. Rows of structured records with sortable columns are a `Table`.
+- **Don't put interactive controls in the values.** It's a presentational `<dl>` (dt/dd). Editable fields belong in a `Form`; actions belong in buttons/links.
+- **Don't use it for long-form prose.** Values should be short (a number, a few words). A paragraph in a `<dd>` breaks the aligned-row rhythm.
+- **Don't use it for navigation or a menu.** A list of links is a nav/menu, not a key-value display.
+- **Don't override per-row text colors to "theme" it.** It inherits ambient color by design; recoloring rows fights the surrounding theme and breaks consistency.

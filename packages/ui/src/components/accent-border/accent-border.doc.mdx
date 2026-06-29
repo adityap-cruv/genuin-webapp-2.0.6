@@ -1,0 +1,62 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+{/*
+  Design-system narrative for AccentBorder. Docs-only page (no stories yet) —
+  rendered from <Meta title>. Layout: narrative intro → how it works → usage
+  guidelines. The "When to use" / "How not to use" sections also feed the
+  machine-readable catalog (tooling/catalog harvest).
+*/}
+
+<Meta title="Components/AccentBorder" />
+
+# AccentBorder
+
+> **Experimental** — part of the Hierarchical Layout system. The API may change until that system
+> graduates out of experimental.
+
+## What AccentBorder is for
+
+AccentBorder wraps a subtree with a single brand-colored accent line on one edge — the visual cue that says "this block is special" without boxing it in. It's the thin colored stripe down the left of a sponsored card, the brand underline that grows under a link on hover, the accent rule that separates a callout from the body around it. It decorates one edge; it is not a full border or a container.
+
+## How it works
+
+AccentBorder renders the line via a `::before` pseudo-element rather than a real CSS `border`, specifically so the `reveal` and `expand` states can animate width/height/opacity **without shifting layout** (toggling a real border between 0 and N px reflows the content). The pseudo sits on the chosen edge and is sized from CSS variables driven by the props.
+
+- **`side`** (required) — `left` · `right` · `top` · `bottom`. One edge only; multi-edge needs nested wrappers (and usually means you want a Surface/card border instead).
+- **`tone`** — `primary` (default) · `secondary` · `neutral`. Maps to the brand variables, so the active `.theme-<slug>` cascade flows through automatically — no per-publisher CSS.
+- **`weight`** — `thin` (2px) · `medium` (3px, default) · `thick` (5px).
+- **`state`** — `always` (static line, default) · `reveal` (fades in on hover) · `expand` (grows from the leading edge to full on hover).
+- **`inset`** — padding from the line to the content: `none` · `xs` · `sm` (default) · `md`.
+- **`asChild`** — render as a different element via Radix `Slot`.
+
+```tsx
+{/* Sponsored-content card: static brand stripe down the left edge */}
+<AccentBorder side="left" tone="primary" inset="md">
+  <SponsoredCard {...props} />
+</AccentBorder>
+
+{/* Hover-revealed underline that grows in from the left */}
+<AccentBorder side="bottom" state="expand" tone="primary">
+  <a href={href}>{label}</a>
+</AccentBorder>
+```
+
+It composes with **Surface**: nest an AccentBorder around a Surface (or vice versa) for a block that needs both a tinted fill and an edge accent.
+
+## When to use AccentBorder
+
+- **Brand-accent a content block** — sponsored cards, pull quotes, callouts, "featured" rows. A single colored edge marks the block without a heavy box.
+- **Hover-reveal or hover-expand an underline** — interactive cards and links (`side="bottom"`, `state="reveal"` or `"expand"`) get a brand cue on hover with zero layout shift.
+- **Pair with Surface** for blocks that need fill *and* an edge accent — AccentBorder is the edge, Surface is the fill.
+- **Use `tone` to stay on-brand across publishers** — `primary`/`secondary`/`neutral` resolve through the theme cascade, so a publisher's palette flows automatically.
+- **Use `inset`** to keep the content clear of the line instead of hand-rolling padding.
+
+## How not to use AccentBorder
+
+- **Don't use it for a full, all-sides border.** It's a single-edge decoration. If you need a boxed card, use a Surface (or a real border) — nesting four AccentBorders is a smell.
+- **Don't use it for a heading-internal accent strap.** That's `<Heading decoration="ribbon">`, which paints the strap on the heading itself. AccentBorder decorates a wrapped subtree's edge.
+- **Don't hardcode the color.** Use the `tone` enum so the line tracks the active theme. A literal hex breaks brand theming for publishers.
+- **Don't reimplement the animated states with a real CSS `border`.** Toggling a border width reflows layout — that's the whole reason this uses a `::before`. Use `state="reveal"`/`"expand"`, don't fork it.
+- **Don't emit one-off pixel weights.** The scale is closed (`thin`/`medium`/`thick`); arbitrary widths break the Hierarchical-Tree closed-vocabulary contract.
+- **Don't lean on color alone to convey meaning** (e.g. "red edge = error"). Pair the accent with text/icon — color alone isn't accessible.
+- **Don't treat it as a container.** It adds an edge and inset padding, nothing else. For arrangement use the layout primitives; for fill use Surface.

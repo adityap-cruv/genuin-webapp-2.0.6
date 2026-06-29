@@ -1,0 +1,58 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+{/*
+  Design-system narrative for Surface. Docs-only page (no stories yet).
+  "When to use" / "How not to use" feed the machine-readable catalog.
+*/}
+
+<Meta title="Components/Surface" />
+
+# Surface
+
+> **Experimental** — part of the Hierarchical Layout system. The API may change until that system
+> graduates out of experimental.
+
+## What Surface is for
+
+Surface is the container-level fill primitive: it wraps a subtree with a tinted background, rounded corners, and internal padding in a single component. It's the muted panel behind a sidebar, the brand-tinted stat tile, the dark "BREAKING" badge, the saturated accent band running across a section. Where AccentBorder decorates an edge, Surface fills the block.
+
+## How it works
+
+Surface exposes closed, theme-aware scales — no arbitrary hex or pixel values — so the same component reads correctly under any publisher's `.theme-<slug>` cascade.
+
+- **`tone`** — `none` · `subtle` (default) · `brand-tint` · `brand-strong` · `accent-strong` · `inverse`. Brand-keyed tones resolve through the brand variables. `inverse` is a deliberately theme-independent near-black (so dark strips don't collapse into a low-contrast colored tone). Tones that sit on dark/bright fills flip the foreground for contrast automatically (`inverse`/`brand-strong` → white, `accent-strong` → near-black).
+- **`radius`** — `none` · `sm` · `md` (default) · `lg` · `full`.
+- **`padding`** — `none` · `xs` · `sm` · `md` (default) · `lg` · `xl`.
+- **`minHeight`** — reserve vertical space so slow subtrees don't collapse: `none` · `sm` (180px) · `md` (300px) · `lg` (420px) · `hero` (600px) · `screen` (100vh).
+- **`height`** — `auto` (default) · `sm`–`hero` · `screen` · `full-bleed`.
+- **`asChild`** — render as a semantic element (`section`, `article`, …) via Radix `Slot`.
+
+```tsx
+{/* Sidebar panel */}
+<Surface tone="subtle" radius="md" padding="md">{children}</Surface>
+
+{/* Brand-tinted stat tile */}
+<Surface tone="brand-tint" radius="lg" padding="lg">{stat}</Surface>
+
+{/* Saturated accent band (e.g. a "more for your membership" strip) */}
+<Surface tone="accent-strong" radius="none" padding="xl">{promo}</Surface>
+```
+
+It composes with **AccentBorder** (fill + edge) and is **dimension-aware** in the Hierarchical-Tree validator alongside `stack`/`container`.
+
+## When to use Surface
+
+- **Give a content block a tinted fill + padding + radius in one primitive** — panels, tiles, callouts, badges, bands.
+- **Use `tone` to stay on-brand** — brand-keyed tones pull from the theme cascade, so a publisher's palette flows through with no overrides.
+- **Reserve space with `minHeight`** so a subtree that loads slowly (async content, media) doesn't collapse and jump.
+- **Pair with AccentBorder** for blocks that need both a fill and an edge accent.
+- **Use `asChild`** to keep the markup semantic (`<section>`/`<article>`) instead of a bare `<div>`.
+
+## How not to use Surface
+
+- **Don't hardcode a background color or arbitrary padding.** Use the closed `tone`/`padding`/`radius` scales — the Hierarchical-Tree contract (and brand theming) depends on the closed vocabulary.
+- **Don't hand-tune the foreground color for contrast.** The dark/bright tones already flip the text color (`inverse`/`brand-strong` → white, `accent-strong` → near-black). Overriding it re-introduces the contrast bug those presets exist to prevent.
+- **Don't use Surface for arrangement.** It fills and pads a block; it does not lay out children. For rows/columns/grids use the layout primitives (`Stack`/`Row`/`Grid`).
+- **Don't deeply nest Surfaces for "emphasis layering."** Stacked tinted panels muddy the hierarchy — flatten, and let one tone carry the emphasis.
+- **Don't reach for `screen`/`full-bleed` casually.** Those are for hero or full-viewport sections; using them for ordinary panels breaks scroll and layout.
+- **Don't use `tone="brand-strong"` for large reading areas.** Saturated fills are for badges/bands/tiles; long body text on a strong fill is hard to read.

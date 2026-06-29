@@ -1,0 +1,51 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+{/*
+  Design-system narrative for LottieIcon. Docs-only page (no stories yet).
+  "When to use" / "How not to use" feed the machine-readable catalog.
+*/}
+
+<Meta title="Components/LottieIcon" />
+
+# LottieIcon
+
+## What LottieIcon is for
+
+LottieIcon plays a small vector animation from an authored Lottie asset (`.lottie` / `.json`). It's the motion primitive behind branded micro-animations — the animated Octo button, a celebratory flourish, an animated state indicator. It is a thin runtime wrapper around the Lottie player, not a general media or icon component.
+
+## How it works
+
+LottieIcon wraps `@lottiefiles/react-lottie-player`'s `Player` and sizes it inside an inline-flex box.
+
+- **`src`** (required) — the animation: a URL string or an imported `.lottie` / `.json` object.
+- **`loop`** — repeat the animation (default `true`).
+- **`autoplay`** — start on mount (default `true`).
+- **`speed`** — playback rate (default `1`).
+- **`width` / `height`** — explicit dimensions for the animation box.
+- **`playing`** — external play/pause control (`true` plays, `false` pauses).
+- **`onComplete`** — callback fired when a (non-looping) play finishes.
+- **`rendererSettings`** — advanced config passed straight to the underlying player.
+
+```tsx
+import animationData from "@genuin/components/assets/lottie/gathering.json";
+
+<LottieIcon src={animationData} width={32} height={32} loop autoplay />;
+```
+
+Because it loads the Lottie runtime, it carries real weight — it's for animation, not for static glyphs.
+
+## When to use LottieIcon
+
+- **Small branded or decorative motion** from an authored `.lottie`/`.json` asset — the Octo button, a success flourish, an animated status dot.
+- **When you need playback control** — `playing` to pause/resume externally, or `onComplete` to chain something after a one-shot animation.
+- **Size it explicitly** with `width`/`height` so the animation fits its icon slot exactly.
+- **Keep the source asset small** — Lottie shines for short, lightweight vector animations.
+
+## How not to use LottieIcon
+
+- **Don't use it for static icons.** A non-animated glyph is an `Icon` (SVG sprite). LottieIcon pulls in the Lottie runtime — don't pay that cost for something that doesn't move.
+- **Don't use it for video or long-form content.** That's `VideoPlayer`. Lottie is for short vector micro-animations, not footage.
+- **Don't render many of them in a list or feed.** Each instance mounts a player and runs an animation loop — dozens will jank. Use a single instance, or a static fallback image for repeated rows.
+- **Don't rely on it to convey meaning without accessible context.** It's decorative; if the animation carries information, pair it with text or an `aria-label` on a wrapping element.
+- **Don't ship oversized `.lottie` assets.** Large animation JSON bloats the bundle and stutters on low-end devices — keep assets tight and short.
+- **Don't leave it looping forever when it's a one-shot cue.** A success checkmark that loops endlessly reads as "still loading" — set `loop={false}` and use `onComplete`.

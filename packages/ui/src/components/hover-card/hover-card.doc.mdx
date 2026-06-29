@@ -1,0 +1,52 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+{/*
+  Design-system narrative for HoverCard. Docs-only page (no stories yet).
+  "When to use" / "How not to use" feed the machine-readable catalog.
+*/}
+
+<Meta title="Components/HoverCard" />
+
+# HoverCard
+
+## What HoverCard is for
+
+HoverCard shows a richer preview of an entity when the user hovers (or keyboard-focuses) a compact reference to it. The canonical Genuin use is the community/group pill in the feed: the pill is the trigger, and hovering it floats a card with the avatar, member counts, and quick actions. It's a desktop affordance for *supplementary* context — a peek, not a required step.
+
+## HoverCard in this design system
+
+HoverCard is the Radix hover-card primitive, exported as three composable parts:
+
+- **`HoverCard`** — the root. Takes `openDelay` / `closeDelay` to tune how eagerly the card appears and dismisses (the pills use `openDelay={300} closeDelay={200}` to avoid flicker).
+- **`HoverCardTrigger`** — the hover target. Use `asChild` so the *real* interactive element (the pill, link, or avatar) is the trigger, not a wrapper `<div>`.
+- **`HoverCardContent`** — the floating card. Portals into the shadow-DOM root, animates in/out per side, and ships the DS chrome (rounded-2xl, border, shadow, `w-80`). Accepts `align` / `sideOffset`.
+
+The primitive has **no visual of its own** beyond the content container — what fills it is your content component (e.g. the `CommunityHoverCard` / `GroupHoverCard` bodies).
+
+```tsx
+<HoverCard openDelay={300} closeDelay={200}>
+  <HoverCardTrigger asChild>{pill}</HoverCardTrigger>
+  <HoverCardContent align="start">
+    <CommunityHoverCard {...details} />
+  </HoverCardContent>
+</HoverCard>
+```
+
+**It is pointer-only.** Hover doesn't exist on touch, and the primitive has no tap-to-open — so on touch devices the content is unreachable unless you provide a fallback (see below).
+
+## When to use HoverCard
+
+- **Desktop hover-preview of a richer entity** behind a compact reference — a community/group pill, a username, an avatar, a link — where hovering reveals stats, context, and quick actions.
+- **Supplementary, "nice to have" context** that the user does not need in order to complete the task — a peek that rewards curiosity without cluttering the layout.
+- **Pair the trigger with the real element via `asChild`** so middle-click, focus, and screen-reader semantics on the underlying pill/link are preserved.
+- **Tune `openDelay` / `closeDelay`** so the card doesn't flicker as the pointer crosses the trigger.
+- **Gate it on pointer capability** (`matchMedia("(hover: hover) and (pointer: fine)")`) and provide a tap-driven fallback (a sheet/popover) on touch.
+
+## How not to use HoverCard
+
+- **Don't use it on touch-primary surfaces without a fallback.** There's no hover on touch, so the content becomes unreachable. Provide a tap-triggered sheet/popover for those users, or don't ship the preview there.
+- **Don't hide critical information or the only path to an action behind hover.** Hover content is discretionary — required info and required actions belong in the persistent layout.
+- **Don't use it as a click menu.** A menu that opens on click is a `Popover` / dropdown `Menu`, not a HoverCard. HoverCard opens on hover; wiring it to clicks fights the primitive.
+- **Don't use it for a short text tooltip.** A one-line label on hover is a `Tooltip`. Reach for HoverCard only when the preview is a real card of content.
+- **Don't trap focus or embed long forms inside.** It's a transient preview dismissed on mouse-leave — anything that needs sustained interaction belongs in a Dialog or Sheet.
+- **Don't stack actions that mutate critical state inside it.** A card that vanishes when the pointer drifts is the wrong place for "delete" / "leave group" without a confirm step.
