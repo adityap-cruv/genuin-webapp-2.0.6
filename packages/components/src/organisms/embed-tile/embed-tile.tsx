@@ -403,7 +403,7 @@ function EmbedPlayer({ postDetails, isActive = false, index, itemSize }: EmbedPl
             </p>
           </div>
         )}
-        {isAdFilled && (
+        {isAdFilled && hideControlsForAd && (
           <div className="gencl:absolute gencl:top-2 gencl:right-2">
             <EmbedMuteButton size="sm" />
           </div>
