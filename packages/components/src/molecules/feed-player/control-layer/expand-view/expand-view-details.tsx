@@ -13,6 +13,7 @@ import useViewportHeight from "@genuin/components/hooks/use-screen-height";
 import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
 import { getBaseUrl } from "@genuin/components/lib/utils";
 import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
+import { addIheartCtaCampaign, isCurrentPageIheartSubdomain } from "@genuin/components/lib/utils/iheart-url";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { Pills } from "@genuin/components/molecules/feed-player/pills";
@@ -178,6 +179,19 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
 
   const linkUrl = useMemo(() => {
     if (typeof window === "undefined" || !attributes) return "";
+
+    // On iheart subdomains (e.g. z100.iheart.com) always use an absolute
+    // iheart.com URL so the link never resolves against the subdomain origin.
+    if (isCurrentPageIheartSubdomain()) {
+      const isStation = attributes.type === "station";
+      const slug = attributes.slug;
+      const stationId = attributes.station_id;
+      const url = new URL(
+        "https://iheart.com/" + (isStation ? "live/" : "podcast/") + (isStation ? stationId : slug)
+      );
+      return addIheartCtaCampaign(url).toString();
+    }
+
     if (contentType === attributes.type) {
       return getBaseUrlWithouthighlights({
         type: attributes.type,
@@ -188,7 +202,7 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
     const path = attributes.type === "podcast" ? "/podcast" : "/live";
     const slug = video?.attributes?.slug;
     return `${baseUrl}${path}/${slug}`;
-  }, [contentType, attributes?.type, attributes?.slug, video?.attributes?.slug]);
+  }, [contentType, attributes?.type, attributes?.slug, attributes?.station_id, video?.attributes?.slug]);
 
   if (!video) return null;
 
