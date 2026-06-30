@@ -292,9 +292,19 @@ function MutePassbackGuard(): null {
   const firedRef = useRef(false);
   const armedRef = useRef(false);
   const isMutedRef = useRef(isMuted);
-  // Skip passback when the page URL contains il.advtq (ad-verification crawlers
-  // that can't unmute — firing passback against them produces false negatives).
-  const bypassPassback = new URLSearchParams(window.location.search).has('il.advtq');
+  // Skip passback when il.advtq is present in the page URL (ad-verification
+  // crawlers that can't unmute — firing passback against them produces false
+  // negatives). Check both the current frame and the top frame (cross-origin
+  // access to window.top.location throws a SecurityError, so swallow it).
+  const bypassPassback = (() => {
+    const AD_VERIFY_PARAM = 'il.advtq';
+    if (new URLSearchParams(window.location.search).has(AD_VERIFY_PARAM)) return true;
+    try {
+      return new URLSearchParams(window.top?.location.search ?? '').has(AD_VERIFY_PARAM);
+    } catch {
+      return false;
+    }
+  })();
 
   useEffect(() => {
     isMutedRef.current = isMuted;
