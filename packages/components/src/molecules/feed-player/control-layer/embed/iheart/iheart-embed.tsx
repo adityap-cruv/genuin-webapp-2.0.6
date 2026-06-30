@@ -8,6 +8,7 @@ import type { GenericData } from "@genuin/components/context/base/feed-context-m
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
+import { addIheartCtaCampaign } from "@genuin/components/lib/utils/iheart-url";
 import { ReadMore } from "@genuin/components/molecules/read-more";
 import type { ReadMoreTextType } from "@genuin/components/molecules/read-more/read-more.types";
 import { useEmbedManagerContext } from "@genuin/components/organisms/embed/context";
@@ -179,6 +180,33 @@ export function IHeartControlLayer({
     [onMouseLeave, postDetails, baseContextManager, embedConfigs]
   );
 
+  // Navigates to the channel/podcast page on iheart.com when the user clicks
+  // the header logo or channel name. Always uses an absolute iheart.com URL so
+  // subdomain pages (e.g. z100.iheart.com) never resolve it against their origin.
+  const handleHeaderClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+
+      const attrs = postDetails.video?.attributes;
+      const episodeId = attrs?.episode_id ? Number(attrs.episode_id) : undefined;
+      const podcastId = attrs?.podcast_id ? Number(attrs.podcast_id) : undefined;
+      const stationId = attrs?.station_id ? Number(attrs.station_id) : undefined;
+      const slug = attrs?.slug;
+
+      const isStation = !podcastId && !episodeId;
+      const isFullEpisode = podcastId && episodeId;
+      const url = new URL(
+        'https://iheart.com/' +
+          (isStation ? 'live/' : 'podcast/') +
+          (isStation ? stationId : slug) +
+          (isFullEpisode ? '/episode/' + episodeId : '')
+      );
+      const destinationUrl = addIheartCtaCampaign(url);
+      window.open(destinationUrl, '_blank', 'noopener,noreferrer');
+    },
+    [postDetails.video]
+  );
+
   const listenLiveButtonInfo = useMemo(
     () => ({
       episode: postDetails.video?.attributes?.episode_id ? Number(postDetails.video.attributes?.episode_id) : undefined,
@@ -346,8 +374,10 @@ export function IHeartControlLayer({
                   src={postDetails.video.attributes?.image_url ?? ""}
                   alt={`${postDetails.video.attributes?.title || ""}, live radio artwork`}
                   tabIndex={isVideoWatched ? -1 : 0}
+                  role="button"
+                  onClick={!isVideoWatched ? handleHeaderClick : undefined}
                   className={cn(
-                    "gencl:rounded-md gencl:object-cover",
+                    "gencl:rounded-md gencl:object-cover gencl:cursor-pointer",
                     websiteType === "polaris" ? "gencl:size-12 gencl:lg:size-16!" : "gencl:size-14!"
                   )}
                 />
@@ -356,9 +386,11 @@ export function IHeartControlLayer({
                 {postDetails.video?.attributes?.title && (
                   <p
                     tabIndex={isVideoWatched ? -1 : 0}
+                    role="button"
+                    onClick={!isVideoWatched ? handleHeaderClick : undefined}
                     aria-label={`${postDetails.video.attributes?.title}, title`}
                     className={cn(
-                      "gencl:font-semibold gencl:leading-[18px] gencl:line-clamp-1 gencl:tracking-[-0.2px] gencl:lg:font-semibold! gencl:lg:leading-[24px]! gencl:lg:tracking-[-0.2px]!",
+                      "gencl:font-semibold gencl:leading-[18px] gencl:line-clamp-1 gencl:tracking-[-0.2px] gencl:lg:font-semibold! gencl:lg:leading-[24px]! gencl:lg:tracking-[-0.2px]! gencl:cursor-pointer",
                       websiteType === "polaris" ? "gencl:text-[14px] gencl:lg:text-[17px]!" : "gencl:text-[16px]"
                     )}>
                     {postDetails.video.attributes?.title}
