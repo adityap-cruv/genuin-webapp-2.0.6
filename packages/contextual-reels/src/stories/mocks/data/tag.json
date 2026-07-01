@@ -1,0 +1,14 @@
+{
+  "tag_id": "storybook-cxr-tag",
+  "brand_id": 0,
+  "brand_color": "#C6002B",
+  "show_cta": false,
+  "cta": null,
+  "config": {
+    "variant": "default",
+    "show_owner_details": true,
+    "show_spark": true,
+    "show_share": true,
+    "show_logo": true
+  }
+}

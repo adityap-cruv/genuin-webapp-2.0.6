@@ -4,14 +4,21 @@
   "data": {
     "reels": [
       {
-        "_id": "69b298f4d6a6ad57e7b9a499",
+        "_id": "6a3aa8244da8cd92d289cc72",
+        "ad_configs": {
+          "video_ad": [
+            {
+              "ads_url": "https://nxs.begenuin.com/tagxml/customer/3119/tag/3753?&dnt=[DNT]&gender=[GENDER]&cb=1782736168399411714&osv=[DEVICE_OS_VERSION]&platform_version_ds=[DEVICE_SUA_PLATFORM_VERSION]&lon_ug=[USER_GEO_LON]&us_privacy=1---&AV_PLCMT=[PLACEMENT_MACRO]&AV_CONSENT=[GDPRCONSENT]&min_ad_duration=5&domain_s=[DOMAIN]&langb_d=[DEVICE_LANGB]&type_dg=[DEVICE_GEO_TYPE]&cat_sp=[SITE_PUBLISHER_CAT]&location_lon=[LOCATION_LON]&site_id=99_&ad_breaks=0,48,-1&AV_PLACEMENT=[VIDEO_PLACEMENT]&AV_URL=[PAGE_URL]&pxratio_d=[DEVICE_PXRATIO]&region_ug=[USER_GEO_REGION]&pub_name=[PUBLISHER_NAME]&id_sp=99&device_make=[DEVICE_MAKE]&geofetch_d=[DEVICE_GEOFETCH]&carrier_d=[DEVICE_CARRIER]&did=[DID]&AV_USERAGENT=[UA]&hwv=[DEVICE_HWV]&country_ug=[USER_GEO_COUNTRY]&ipservice_ug=[USER_GEO_IPSERVICE]&AV_RTB_DEVICE_TYPE=[DEVICE_TYPE]&url_sc=[CONTENT_URL]&name_s=Begenuin&sectioncat_s=[SITE_SECTIONCAT]&device_js=[DEVICE_JS]&privacypolicy_s=[SITE_PRIVACYPOLICY]&platform_brand_ds=[DEVICE_SUA_PLATFORM_BRAND]&AV_REGION=[REGION]&AV_DOMAIN=[DOMAIN]&metro_dg=[DEVICE_GEO_METRO]&accuracy_ug=[USER_GEO_ACCURACY]&midroll_times=00:00:48&max_ad_duration=60&zip=[ZIP_CODE]&browsers_brand_ds=[DEVICE_SUA_BROWSERS_BRAND]&ppi_d=[DEVICE_PPI]&AV_LONGITUDE=[LOCATION_LON]&mobile_s=[SITE_MOBILE]&linearity_iv=1&lat_ug=[USER_GEO_LAT]&us_privacy_r=1---&postroll=1&AV_LANGUAGE=[DEVICE_LANGUAGE]&mccmnc_d=[DEVICE_MCCMNC]&model_ds=[DEVICE_SUA_MODEL]&regionfips104_ug=[USER_GEO_REGIONFIPS104]&AV_OSVERS=[OS_VERSION]&bidfloorcur_i=USD&secure_i=1&country_code=[COUNTRY_ID]&device_language=[DEVICE_LANGUAGE]&site_search=[SITE_SEARCH]&flashver_d=[DEVICE_FLASHVER]&session_id=[SESSION_ID]&city_ug=[USER_GEO_CITY]&domain_sp=begenuin.com&pos_iv=7&city=[CITY]&utcoffset_ug=[USER_GEO_UTCOFFSET]&metro_ug=[USER_GEO_METRO]&type_ug=[USER_GEO_TYPE]&AV_IFA_TYPE=[IFA_TYPE]&AV_IP=[IP]&pagecat_s=[SITE_PAGECAT]&player_height=[HEIGHT]&AV_CONTENT_ID=c2769b48-5407-45df-9c0c-3cbbf99c863d&plcmt_iv=1&accuracy_dg=[DEVICE_ACCURACY]&name_sp=[SITE_PUBLISHER_NAME]&device_model=[DEVICE_MODEL]&mobile_ds=[DEVICE_SUA_MOBILE]&AV_MAKE=[DEVICE_MAKE]&len_sc=[CONTENT_LENGTH]&cattax_s=[SITE_CATTAX]&ip=[IP]&ua=[UA]&source_ds=[DEVICE_SUA_SOURCE]&AV_HEIGHT=[DEVICE_HEIGHT]&keywords_s=[SITE_KEYWORDS]&placement_iv=1&width=[DEVICE_WIDTH]&ipservice_dg=[DEVICE_GEO_IPSERVICE]&regionfips104_dg=[DEVICE_GEO_REGIONFIPS104]&bitness_ds=[DEVICE_SUA_BITNESS]&AV_CONNECTIONTYPE=[DEVICE_CONNECTIONTYPE]&site_ref=[SITE_REF]&site_page=[PAGE_URL]&os=[DEVICE_OS]&lastfix_dg=[DEVICE_GEO_LASTFIX]&architecture_ds=[DEVICE_SUA_ARCHITECTURE]&yob=[YOB]&AV_WIDTH=[DEVICE_WIDTH]&AV_GDPR=[GDPR]&utcoffset_dg=[DEVICE_GEO_UTCOFFSET]&zip_ug=[USER_GEO_ZIP]&AV_DNT=[DNT]&AV_TIMESTAMP=1782736168399412535&kwarray_s=[SITE_KWARRAY]&skipmin_iv=0&is_lat=[LIMITED_AD_TRACKING]&cat_s=[SITE_CAT]&device_type=[DEVICE_TYPE]&lastfix_ug=[USER_GEO_LASTFIX]&AV_MODEL=[DEVICE_MODEL]&player_width=[WIDTH]&skipafter_iv=0&device_ipv6=[DEVICE_IPV6]&height=[DEVICE_HEIGHT]&region=[REGION]&browsers_version_ds=[DEVICE_SUA_BROWSERS_VERSION]&user_id=3FoKpxQRjEer0SQqWjYiq2UJBMa&AV_LMT=[LIMITED_AD_TRACKING]&vid_d=97&AV_OS=[OS]&cattax_sp=[SITE_PUBLISHER_CATTAX]&AV_LATITUDE=[LOCATION_LAT]&location_lat=[LOCATION_LAT]&connectiontype_d=[DEVICE_CONNECTIONTYPE]"
+            }
+          ]
+        },
         "community": {
-          "dp": "https://media.begenuin.com/uploads/profile_images/community/communityProfile_1763401871407.png",
-          "handle": "entertainment",
-          "name": "Entertainment",
+          "dp": "",
+          "handle": "thewoodyshow",
+          "name": "the woody show",
           "private": false,
-          "share_string": "https://infolinks.begenuin.com/community/entertainment",
-          "slug": "entertainment"
+          "share_string": "https://crunchyroll.qa.begenuin.com/community/the-woody-show",
+          "slug": "the-woody-show"
         },
         "config": {
           "size_mode": ""
@@ -24,44 +31,428 @@
           "text": ""
         },
         "loop": {
-          "description": "Get the inside scoop on the shows everyone's talking about, from standout episodes to behind-the-scenes buzz",
-          "name": "TV",
+          "description": "Latest Clips",
+          "name": "Latest Clips",
           "preview_image": "",
           "private": false,
-          "share_string": "https://infolinks.begenuin.com/loop/tv?community=214f3f0fb7000d43",
-          "slug": "tv"
+          "share_string": "https://crunchyroll.qa.begenuin.com/loop/latest-clips-lq7r?community=21749f3a1d800f05",
+          "slug": "latest-clips-lq7r"
         },
         "og_details": null,
         "owner": {
           "is_avatar": false,
-          "nickname": "usweekly",
-          "profile_image": "https://media.begenuin.com/uploads/profile_images/brandProfileLogo_1765220758938.png",
-          "share_string": "https://infolinks.begenuin.com/profile/usweekly",
-          "username": "Us Weekly"
+          "nickname": "iheartmedia",
+          "profile_image": "https://media.qa.begenuin.com/uploads/profile_images/brandProfileLogo_1770297171201.png",
+          "share_string": "https://crunchyroll.qa.begenuin.com/profile/iheartmedia",
+          "username": "iHeartMedia"
         },
         "type": "loop",
         "video": {
-          "ads_config": {
-            "ads_url": "https://nxs.begenuin.com/tagxml/customer/3119/tag/3753?&location_lat=[LOCATION_LAT]&city=[CITY]&regionfips104_dg=[DEVICE_GEO_REGIONFIPS104]&source_ds=[DEVICE_SUA_SOURCE]&AV_CONTENT_ID=&midroll_times=&session_id=[SESSION_ID]&utcoffset_ug=[USER_GEO_UTCOFFSET]&AV_DNT=[DNT]&site_page=[PAGE_URL]&device_ipv6=[DEVICE_IPV6]&AV_PLCMT=[PLACEMENT_MACRO]&AV_LATITUDE=[LOCATION_LAT]&AV_GDPR=[GDPR]&cat_s=[SITE_CAT]&domain_sp=begenuin.com&postroll=1&skipafter_iv=0&site_search=[SITE_SEARCH]&keywords_s=[SITE_KEYWORDS]&ppi_d=[DEVICE_PPI]&lon_ug=[USER_GEO_LON]&plcmt_iv=1&accuracy_dg=[DEVICE_ACCURACY]&bitness_ds=[DEVICE_SUA_BITNESS]&max_ad_duration=60&location_lon=[LOCATION_LON]&us_privacy_r=1---&AV_LANGUAGE=[DEVICE_LANGUAGE]&AV_DOMAIN=[DOMAIN]&placement_iv=1&linearity_iv=1&device_js=[DEVICE_JS]&metro_ug=[USER_GEO_METRO]&lastfix_ug=[USER_GEO_LASTFIX]&cattax_sp=[SITE_PUBLISHER_CATTAX]&device_make=[DEVICE_MAKE]&AV_LMT=[LIMITED_AD_TRACKING]&pub_name=[PUBLISHER_NAME]&player_width=[WIDTH]&pos_iv=7&langb_d=[DEVICE_LANGB]&user_id=3F27Nx17QetY0IFxF8edNKyEijL&AV_REGION=[REGION]&AV_MODEL=[DEVICE_MODEL]&secure_i=1&ad_breaks=0,0,-1&flashver_d=[DEVICE_FLASHVER]&mobile_ds=[DEVICE_SUA_MOBILE]&platform_version_ds=[DEVICE_SUA_PLATFORM_VERSION]&url_sc=[CONTENT_URL]&player_height=[HEIGHT]&lat_ug=[USER_GEO_LAT]&AV_OSVERS=[OS_VERSION]&device_type=[DEVICE_TYPE]&ua=[UA]&AV_CONSENT=[GDPRCONSENT]&mccmnc_d=[DEVICE_MCCMNC]&AV_USERAGENT=[UA]&name_s=Begenuin&privacypolicy_s=[SITE_PRIVACYPOLICY]&bidfloorcur_i=USD&accuracy_ug=[USER_GEO_ACCURACY]&lastfix_dg=[DEVICE_GEO_LASTFIX]&yob=[YOB]&device_language=[DEVICE_LANGUAGE]&ipservice_ug=[USER_GEO_IPSERVICE]&site_ref=[SITE_REF]&cattax_s=[SITE_CATTAX]&device_model=[DEVICE_MODEL]&geofetch_d=[DEVICE_GEOFETCH]&ipservice_dg=[DEVICE_GEO_IPSERVICE]&metro_dg=[DEVICE_GEO_METRO]&region_ug=[USER_GEO_REGION]&len_sc=[CONTENT_LENGTH]&sectioncat_s=[SITE_SECTIONCAT]&id_sp=99&mobile_s=[SITE_MOBILE]&min_ad_duration=5&region=[REGION]&connectiontype_d=[DEVICE_CONNECTIONTYPE]&browsers_version_ds=[DEVICE_SUA_BROWSERS_VERSION]&city_ug=[USER_GEO_CITY]&site_id=99_&width=[DEVICE_WIDTH]&AV_LONGITUDE=[LOCATION_LON]&AV_RTB_DEVICE_TYPE=[DEVICE_TYPE]&hwv=[DEVICE_HWV]&kwarray_s=[SITE_KWARRAY]&pxratio_d=[DEVICE_PXRATIO]&type_dg=[DEVICE_GEO_TYPE]&AV_OS=[OS]&AV_URL=[PAGE_URL]&is_lat=[LIMITED_AD_TRACKING]&AV_MAKE=[DEVICE_MAKE]&AV_IFA_TYPE=[IFA_TYPE]&height=[DEVICE_HEIGHT]&zip=[ZIP_CODE]&platform_brand_ds=[DEVICE_SUA_PLATFORM_BRAND]&type_ug=[USER_GEO_TYPE]&country_ug=[USER_GEO_COUNTRY]&AV_HEIGHT=[DEVICE_HEIGHT]&cb=1781261273335247142&did=[DID]&AV_CONNECTIONTYPE=[DEVICE_CONNECTIONTYPE]&AV_TIMESTAMP=1781261273335247482&utcoffset_dg=[DEVICE_GEO_UTCOFFSET]&dnt=[DNT]&name_sp=[SITE_PUBLISHER_NAME]&cat_sp=[SITE_PUBLISHER_CAT]&os=[DEVICE_OS]&gender=[GENDER]&carrier_d=[DEVICE_CARRIER]&zip_ug=[USER_GEO_ZIP]&us_privacy=1---&AV_WIDTH=[DEVICE_WIDTH]&AV_PLACEMENT=[VIDEO_PLACEMENT]&AV_IP=[IP]&vid_d=0&domain_s=[DOMAIN]&ip=[IP]&browsers_brand_ds=[DEVICE_SUA_BROWSERS_BRAND]&model_ds=[DEVICE_SUA_MODEL]&country_code=[COUNTRY_ID]&architecture_ds=[DEVICE_SUA_ARCHITECTURE]&regionfips104_ug=[USER_GEO_REGIONFIPS104]&pagecat_s=[SITE_PAGECAT]&skipmin_iv=0&osv=[DEVICE_OS_VERSION]"
-          },
           "created_at": "2024-09-24T09:46:00.116Z",
-          "description": "[\"Dutton Ranch' Men Share the Secret to a Good Cowboy Look\"]",
-          "id": "76ec168b-69a8-4f97-bbb4-ff99461b8f87",
+          "description": "[\"Podcast Comedian delivers a satirical monologue on encountering a pregnant woman using crack, highlighting the absurd inequities in fertility and parenting. Their comedic social commentary underscores the disparities between unintended pregnancy and the struggles of hopeful parents.\"]",
+          "id": "c2769b48-5407-45df-9c0c-3cbbf99c863d",
           "link": "",
           "metadata": {
             "aspect_ratio": "9:16",
-            "duration": "37",
+            "contains_external_videos": false,
+            "duration": "97",
+            "media_type": "video",
             "resolution": "1080x1920",
-            "size": "12670225"
+            "size": "88250472"
+          },
+          "no_of_comments": 1,
+          "no_of_sparks": 4,
+          "share_string": "https://crunchyroll.qa.begenuin.com/video/podcast-comedian-delivers-a-satirical-monologue?community=21749f3a1d800f05&loop=2174af3a05001404",
+          "slug": "podcast-comedian-delivers-a-satirical-monologue",
+          "thumbnail": "https://vz-eee5e913-a30.b-cdn.net/6f7ada32-003e-4d29-9d7c-316ab8e94663/thumbnail.jpg",
+          "updated_at": "2024-09-24T09:57:12.227Z",
+          "url": "https://vz-eee5e913-a30.b-cdn.net/6f7ada32-003e-4d29-9d7c-316ab8e94663/playlist.m3u8"
+        }
+      },
+      {
+        "_id": "6a3aa8244da8cd92d289cc72",
+        "ad_configs": {
+          "video_ad": [
+            {
+              "ads_url": "https://nxs.begenuin.com/tagxml/customer/3119/tag/3753?&mobile_ds=[DEVICE_SUA_MOBILE]&model_ds=[DEVICE_SUA_MODEL]&zip_ug=[USER_GEO_ZIP]&city=[CITY]&pxratio_d=[DEVICE_PXRATIO]&connectiontype_d=[DEVICE_CONNECTIONTYPE]&source_ds=[DEVICE_SUA_SOURCE]&AV_WIDTH=[DEVICE_WIDTH]&cb=1782736168399469473&AV_CONTENT_ID=f49939b8-60b2-4031-8052-1152b8398aed&min_ad_duration=5&type_ug=[USER_GEO_TYPE]&AV_OS=[OS]&AV_MAKE=[DEVICE_MAKE]&height=[DEVICE_HEIGHT]&regionfips104_ug=[USER_GEO_REGIONFIPS104]&metro_ug=[USER_GEO_METRO]&ipservice_ug=[USER_GEO_IPSERVICE]&lastfix_dg=[DEVICE_GEO_LASTFIX]&AV_IP=[IP]&AV_LONGITUDE=[LOCATION_LON]&bidfloorcur_i=USD&flashver_d=[DEVICE_FLASHVER]&accuracy_dg=[DEVICE_ACCURACY]&lon_ug=[USER_GEO_LON]&AV_URL=[PAGE_URL]&device_type=[DEVICE_TYPE]&lat_ug=[USER_GEO_LAT]&pub_name=[PUBLISHER_NAME]&midroll_times=00:01:21&accuracy_ug=[USER_GEO_ACCURACY]&AV_LANGUAGE=[DEVICE_LANGUAGE]&mobile_s=[SITE_MOBILE]&AV_USERAGENT=[UA]&skipafter_iv=0&utcoffset_ug=[USER_GEO_UTCOFFSET]&lastfix_ug=[USER_GEO_LASTFIX]&cat_s=[SITE_CAT]&placement_iv=1&location_lat=[LOCATION_LAT]&carrier_d=[DEVICE_CARRIER]&us_privacy=1---&AV_REGION=[REGION]&AV_GDPR=[GDPR]&privacypolicy_s=[SITE_PRIVACYPOLICY]&dnt=[DNT]&us_privacy_r=1---&kwarray_s=[SITE_KWARRAY]&type_dg=[DEVICE_GEO_TYPE]&browsers_brand_ds=[DEVICE_SUA_BROWSERS_BRAND]&AV_PLCMT=[PLACEMENT_MACRO]&city_ug=[USER_GEO_CITY]&ad_breaks=0,81,-1&mccmnc_d=[DEVICE_MCCMNC]&player_height=[HEIGHT]&device_js=[DEVICE_JS]&sectioncat_s=[SITE_SECTIONCAT]&max_ad_duration=60&zip=[ZIP_CODE]&ip=[IP]&width=[DEVICE_WIDTH]&ipservice_dg=[DEVICE_GEO_IPSERVICE]&url_sc=[CONTENT_URL]&regionfips104_dg=[DEVICE_GEO_REGIONFIPS104]&browsers_version_ds=[DEVICE_SUA_BROWSERS_VERSION]&AV_LATITUDE=[LOCATION_LAT]&id_sp=99&geofetch_d=[DEVICE_GEOFETCH]&langb_d=[DEVICE_LANGB]&bitness_ds=[DEVICE_SUA_BITNESS]&country_ug=[USER_GEO_COUNTRY]&utcoffset_dg=[DEVICE_GEO_UTCOFFSET]&did=[DID]&cattax_sp=[SITE_PUBLISHER_CATTAX]&keywords_s=[SITE_KEYWORDS]&device_model=[DEVICE_MODEL]&AV_CONNECTIONTYPE=[DEVICE_CONNECTIONTYPE]&cat_sp=[SITE_PUBLISHER_CAT]&secure_i=1&location_lon=[LOCATION_LON]&AV_IFA_TYPE=[IFA_TYPE]&ua=[UA]&AV_DNT=[DNT]&site_page=[PAGE_URL]&domain_sp=begenuin.com&region=[REGION]&user_id=3FoKq3EtWXfRvY6B62CbSeUYw9t&gender=[GENDER]&AV_OSVERS=[OS_VERSION]&AV_LMT=[LIMITED_AD_TRACKING]&site_ref=[SITE_REF]&device_make=[DEVICE_MAKE]&osv=[DEVICE_OS_VERSION]&country_code=[COUNTRY_ID]&platform_version_ds=[DEVICE_SUA_PLATFORM_VERSION]&AV_PLACEMENT=[VIDEO_PLACEMENT]&len_sc=[CONTENT_LENGTH]&player_width=[WIDTH]&pos_iv=7&os=[DEVICE_OS]&is_lat=[LIMITED_AD_TRACKING]&AV_TIMESTAMP=1782736168399469603&site_id=99_&vid_d=163&site_search=[SITE_SEARCH]&linearity_iv=1&AV_CONSENT=[GDPRCONSENT]&AV_RTB_DEVICE_TYPE=[DEVICE_TYPE]&AV_DOMAIN=[DOMAIN]&skipmin_iv=0&plcmt_iv=1&device_ipv6=[DEVICE_IPV6]&device_language=[DEVICE_LANGUAGE]&session_id=[SESSION_ID]&postroll=1&metro_dg=[DEVICE_GEO_METRO]&name_s=Begenuin&architecture_ds=[DEVICE_SUA_ARCHITECTURE]&platform_brand_ds=[DEVICE_SUA_PLATFORM_BRAND]&ppi_d=[DEVICE_PPI]&region_ug=[USER_GEO_REGION]&AV_HEIGHT=[DEVICE_HEIGHT]&hwv=[DEVICE_HWV]&name_sp=[SITE_PUBLISHER_NAME]&yob=[YOB]&AV_MODEL=[DEVICE_MODEL]&pagecat_s=[SITE_PAGECAT]&cattax_s=[SITE_CATTAX]&domain_s=[DOMAIN]"
+            }
+          ]
+        },
+        "community": {
+          "dp": "",
+          "handle": "thewoodyshow",
+          "name": "the woody show",
+          "private": false,
+          "share_string": "https://crunchyroll.qa.begenuin.com/community/the-woody-show",
+          "slug": "the-woody-show"
+        },
+        "config": {
+          "size_mode": ""
+        },
+        "cta": {
+          "ad_copy": "",
+          "hashtags": null,
+          "link": "",
+          "show_url_meta": false,
+          "text": ""
+        },
+        "loop": {
+          "description": "Latest Clips",
+          "name": "Latest Clips",
+          "preview_image": "",
+          "private": false,
+          "share_string": "https://crunchyroll.qa.begenuin.com/loop/latest-clips-lq7r?community=21749f3a1d800f05",
+          "slug": "latest-clips-lq7r"
+        },
+        "og_details": null,
+        "owner": {
+          "is_avatar": false,
+          "nickname": "iheartmedia",
+          "profile_image": "https://media.qa.begenuin.com/uploads/profile_images/brandProfileLogo_1770297171201.png",
+          "share_string": "https://crunchyroll.qa.begenuin.com/profile/iheartmedia",
+          "username": "iHeartMedia"
+        },
+        "type": "loop",
+        "video": {
+          "created_at": "2024-09-24T09:46:00.116Z",
+          "description": "[\"In this candid chat, a Reading Skeptic and a Book Enthusiast unpack their struggles with attention spans, audiobooks, and why John Grisham and Dean Koontz’s bite-sized chapters make you say “one more.”\"]",
+          "id": "f49939b8-60b2-4031-8052-1152b8398aed",
+          "link": "",
+          "metadata": {
+            "aspect_ratio": "9:16",
+            "contains_external_videos": false,
+            "duration": "163",
+            "media_type": "video",
+            "resolution": "1080x1920",
+            "size": "145041341"
+          },
+          "no_of_comments": 1,
+          "no_of_sparks": 2,
+          "share_string": "https://crunchyroll.qa.begenuin.com/video/in-this-candid-chat-a-reading-skeptic-and-a-book?community=21749f3a1d800f05&loop=2174af3a05001404",
+          "slug": "in-this-candid-chat-a-reading-skeptic-and-a-book",
+          "thumbnail": "https://vz-eee5e913-a30.b-cdn.net/6b45807b-ed9f-4af3-9437-39df4c0ef9be/thumbnail.jpg",
+          "updated_at": "2024-09-24T09:57:12.227Z",
+          "url": "https://vz-eee5e913-a30.b-cdn.net/6b45807b-ed9f-4af3-9437-39df4c0ef9be/playlist.m3u8"
+        }
+      },
+      {
+        "_id": "6a3aa8244da8cd92d289cc72",
+        "ad_configs": {
+          "video_ad": [
+            {
+              "ads_url": "https://nxs.begenuin.com/tagxml/customer/3119/tag/3753?&AV_PLCMT=[PLACEMENT_MACRO]&url_sc=[CONTENT_URL]&site_ref=[SITE_REF]&location_lon=[LOCATION_LON]&city=[CITY]&name_s=Begenuin&kwarray_s=[SITE_KWARRAY]&ua=[UA]&vid_d=179&hwv=[DEVICE_HWV]&device_type=[DEVICE_TYPE]&lat_ug=[USER_GEO_LAT]&AV_OSVERS=[OS_VERSION]&os=[DEVICE_OS]&osv=[DEVICE_OS_VERSION]&carrier_d=[DEVICE_CARRIER]&model_ds=[DEVICE_SUA_MODEL]&AV_LMT=[LIMITED_AD_TRACKING]&len_sc=[CONTENT_LENGTH]&mccmnc_d=[DEVICE_MCCMNC]&regionfips104_ug=[USER_GEO_REGIONFIPS104]&cat_s=[SITE_CAT]&plcmt_iv=1&height=[DEVICE_HEIGHT]&us_privacy_r=1---&AV_IP=[IP]&AV_DOMAIN=[DOMAIN]&site_page=[PAGE_URL]&name_sp=[SITE_PUBLISHER_NAME]&player_width=[WIDTH]&geofetch_d=[DEVICE_GEOFETCH]&type_dg=[DEVICE_GEO_TYPE]&gender=[GENDER]&session_id=[SESSION_ID]&type_ug=[USER_GEO_TYPE]&AV_LONGITUDE=[LOCATION_LON]&cat_sp=[SITE_PUBLISHER_CAT]&device_make=[DEVICE_MAKE]&device_js=[DEVICE_JS]&source_ds=[DEVICE_SUA_SOURCE]&platform_brand_ds=[DEVICE_SUA_PLATFORM_BRAND]&zip_ug=[USER_GEO_ZIP]&metro_ug=[USER_GEO_METRO]&AV_REGION=[REGION]&AV_IFA_TYPE=[IFA_TYPE]&device_model=[DEVICE_MODEL]&placement_iv=1&flashver_d=[DEVICE_FLASHVER]&country_ug=[USER_GEO_COUNTRY]&AV_CONNECTIONTYPE=[DEVICE_CONNECTIONTYPE]&cattax_sp=[SITE_PUBLISHER_CATTAX]&pxratio_d=[DEVICE_PXRATIO]&cb=1782736168399519148&keywords_s=[SITE_KEYWORDS]&skipafter_iv=0&yob=[YOB]&AV_GDPR=[GDPR]&AV_URL=[PAGE_URL]&min_ad_duration=5&secure_i=1&region=[REGION]&langb_d=[DEVICE_LANGB]&connectiontype_d=[DEVICE_CONNECTIONTYPE]&us_privacy=1---&AV_MODEL=[DEVICE_MODEL]&mobile_s=[SITE_MOBILE]&linearity_iv=1&width=[DEVICE_WIDTH]&location_lat=[LOCATION_LAT]&sectioncat_s=[SITE_SECTIONCAT]&midroll_times=00:01:29&domain_s=[DOMAIN]&regionfips104_dg=[DEVICE_GEO_REGIONFIPS104]&architecture_ds=[DEVICE_SUA_ARCHITECTURE]&AV_CONSENT=[GDPRCONSENT]&AV_DNT=[DNT]&cattax_s=[SITE_CATTAX]&postroll=1&platform_version_ds=[DEVICE_SUA_PLATFORM_VERSION]&user_id=3FoKpwh3AEIpYhFKJKCRQRZxRwn&utcoffset_ug=[USER_GEO_UTCOFFSET]&accuracy_ug=[USER_GEO_ACCURACY]&AV_USERAGENT=[UA]&pub_name=[PUBLISHER_NAME]&is_lat=[LIMITED_AD_TRACKING]&AV_LATITUDE=[LOCATION_LAT]&pagecat_s=[SITE_PAGECAT]&max_ad_duration=60&device_ipv6=[DEVICE_IPV6]&zip=[ZIP_CODE]&lastfix_dg=[DEVICE_GEO_LASTFIX]&dnt=[DNT]&region_ug=[USER_GEO_REGION]&skipmin_iv=0&country_code=[COUNTRY_ID]&utcoffset_dg=[DEVICE_GEO_UTCOFFSET]&lastfix_ug=[USER_GEO_LASTFIX]&AV_HEIGHT=[DEVICE_HEIGHT]&AV_MAKE=[DEVICE_MAKE]&ipservice_ug=[USER_GEO_IPSERVICE]&AV_OS=[OS]&privacypolicy_s=[SITE_PRIVACYPOLICY]&did=[DID]&site_id=99_&mobile_ds=[DEVICE_SUA_MOBILE]&device_language=[DEVICE_LANGUAGE]&browsers_version_ds=[DEVICE_SUA_BROWSERS_VERSION]&site_search=[SITE_SEARCH]&id_sp=99&AV_CONTENT_ID=f6dbaf0c-1460-427b-993f-f2ee900fe141&ip=[IP]&accuracy_dg=[DEVICE_ACCURACY]&AV_RTB_DEVICE_TYPE=[DEVICE_TYPE]&AV_TIMESTAMP=1782736168399519258&pos_iv=7&bitness_ds=[DEVICE_SUA_BITNESS]&AV_PLACEMENT=[VIDEO_PLACEMENT]&AV_LANGUAGE=[DEVICE_LANGUAGE]&player_height=[HEIGHT]&browsers_brand_ds=[DEVICE_SUA_BROWSERS_BRAND]&city_ug=[USER_GEO_CITY]&ad_breaks=0,89,-1&bidfloorcur_i=USD&domain_sp=begenuin.com&ipservice_dg=[DEVICE_GEO_IPSERVICE]&metro_dg=[DEVICE_GEO_METRO]&ppi_d=[DEVICE_PPI]&lon_ug=[USER_GEO_LON]&AV_WIDTH=[DEVICE_WIDTH]"
+            }
+          ]
+        },
+        "community": {
+          "dp": "",
+          "handle": "thewoodyshow",
+          "name": "the woody show",
+          "private": false,
+          "share_string": "https://crunchyroll.qa.begenuin.com/community/the-woody-show",
+          "slug": "the-woody-show"
+        },
+        "config": {
+          "size_mode": ""
+        },
+        "cta": {
+          "ad_copy": "",
+          "hashtags": null,
+          "link": "",
+          "show_url_meta": false,
+          "text": ""
+        },
+        "loop": {
+          "description": "Latest Clips",
+          "name": "Latest Clips",
+          "preview_image": "",
+          "private": false,
+          "share_string": "https://crunchyroll.qa.begenuin.com/loop/latest-clips-lq7r?community=21749f3a1d800f05",
+          "slug": "latest-clips-lq7r"
+        },
+        "og_details": null,
+        "owner": {
+          "is_avatar": false,
+          "nickname": "iheartmedia",
+          "profile_image": "https://media.qa.begenuin.com/uploads/profile_images/brandProfileLogo_1770297171201.png",
+          "share_string": "https://crunchyroll.qa.begenuin.com/profile/iheartmedia",
+          "username": "iHeartMedia"
+        },
+        "type": "loop",
+        "video": {
+          "created_at": "2024-09-24T09:46:00.116Z",
+          "description": "[\"Reviewers Greg, Gina, and Sebas explore Tesla's new 24/7 Supercharger diner concept at a Cybertruck charging station, sampling menu items from tuna melts to fried chicken sandwiches and sharing candid reactions.\"]",
+          "id": "f6dbaf0c-1460-427b-993f-f2ee900fe141",
+          "link": "",
+          "metadata": {
+            "aspect_ratio": "9:16",
+            "contains_external_videos": false,
+            "duration": "179",
+            "media_type": "video",
+            "resolution": "1080x1920",
+            "size": "212913969"
+          },
+          "no_of_comments": 1,
+          "no_of_sparks": 3,
+          "share_string": "https://crunchyroll.qa.begenuin.com/video/reviewers-greg-gina-and-sebas-explore-teslas-new?community=21749f3a1d800f05&loop=2174af3a05001404",
+          "slug": "reviewers-greg-gina-and-sebas-explore-teslas-new",
+          "thumbnail": "https://vz-eee5e913-a30.b-cdn.net/2b81c8a2-3ed5-4029-8ebf-4530a512cc20/thumbnail.jpg",
+          "updated_at": "2024-09-24T09:57:12.227Z",
+          "url": "https://vz-eee5e913-a30.b-cdn.net/2b81c8a2-3ed5-4029-8ebf-4530a512cc20/playlist.m3u8"
+        }
+      },
+      {
+        "_id": "6a3aa8244da8cd92d289cc72",
+        "ad_configs": {
+          "video_ad": [
+            {
+              "ads_url": "https://nxs.begenuin.com/tagxml/customer/3119/tag/3753?&plcmt_iv=1&location_lon=[LOCATION_LON]&type_dg=[DEVICE_GEO_TYPE]&osv=[DEVICE_OS_VERSION]&postroll=1&pxratio_d=[DEVICE_PXRATIO]&lastfix_dg=[DEVICE_GEO_LASTFIX]&ipservice_ug=[USER_GEO_IPSERVICE]&AV_PLACEMENT=[VIDEO_PLACEMENT]&AV_CONSENT=[GDPRCONSENT]&AV_TIMESTAMP=1782736168399551067&hwv=[DEVICE_HWV]&pos_iv=7&carrier_d=[DEVICE_CARRIER]&connectiontype_d=[DEVICE_CONNECTIONTYPE]&utcoffset_ug=[USER_GEO_UTCOFFSET]&cb=1782736168399550967&url_sc=[CONTENT_URL]&domain_s=[DOMAIN]&AV_CONTENT_ID=e5308b99-a257-468b-8a89-c7797a3ea990&us_privacy=1---&skipmin_iv=0&bitness_ds=[DEVICE_SUA_BITNESS]&city_ug=[USER_GEO_CITY]&name_sp=[SITE_PUBLISHER_NAME]&cat_sp=[SITE_PUBLISHER_CAT]&cattax_sp=[SITE_PUBLISHER_CATTAX]&player_width=[WIDTH]&platform_brand_ds=[DEVICE_SUA_PLATFORM_BRAND]&platform_version_ds=[DEVICE_SUA_PLATFORM_VERSION]&name_s=Begenuin&geofetch_d=[DEVICE_GEOFETCH]&model_ds=[DEVICE_SUA_MODEL]&browsers_version_ds=[DEVICE_SUA_BROWSERS_VERSION]&region=[REGION]&kwarray_s=[SITE_KWARRAY]&ip=[IP]&flashver_d=[DEVICE_FLASHVER]&accuracy_ug=[USER_GEO_ACCURACY]&AV_IP=[IP]&site_search=[SITE_SEARCH]&id_sp=99&min_ad_duration=5&utcoffset_dg=[DEVICE_GEO_UTCOFFSET]&AV_MODEL=[DEVICE_MODEL]&source_ds=[DEVICE_SUA_SOURCE]&gender=[GENDER]&type_ug=[USER_GEO_TYPE]&AV_DNT=[DNT]&AV_LANGUAGE=[DEVICE_LANGUAGE]&cat_s=[SITE_CAT]&country_code=[COUNTRY_ID]&session_id=[SESSION_ID]&pub_name=[PUBLISHER_NAME]&device_js=[DEVICE_JS]&langb_d=[DEVICE_LANGB]&regionfips104_dg=[DEVICE_GEO_REGIONFIPS104]&browsers_brand_ds=[DEVICE_SUA_BROWSERS_BRAND]&AV_USERAGENT=[UA]&AV_REGION=[REGION]&AV_LMT=[LIMITED_AD_TRACKING]&site_ref=[SITE_REF]&bidfloorcur_i=USD&AV_HEIGHT=[DEVICE_HEIGHT]&AV_IFA_TYPE=[IFA_TYPE]&cattax_s=[SITE_CATTAX]&user_id=3FoKpzFyHEqAgjolmBPoU3yyuZb&metro_dg=[DEVICE_GEO_METRO]&lat_ug=[USER_GEO_LAT]&AV_OS=[OS]&ua=[UA]&ipservice_dg=[DEVICE_GEO_IPSERVICE]&region_ug=[USER_GEO_REGION]&AV_PLCMT=[PLACEMENT_MACRO]&AV_URL=[PAGE_URL]&device_make=[DEVICE_MAKE]&keywords_s=[SITE_KEYWORDS]&location_lat=[LOCATION_LAT]&lastfix_ug=[USER_GEO_LASTFIX]&mobile_s=[SITE_MOBILE]&skipafter_iv=0&device_ipv6=[DEVICE_IPV6]&device_model=[DEVICE_MODEL]&did=[DID]&zip_ug=[USER_GEO_ZIP]&AV_DOMAIN=[DOMAIN]&yob=[YOB]&country_ug=[USER_GEO_COUNTRY]&AV_LATITUDE=[LOCATION_LAT]&AV_MAKE=[DEVICE_MAKE]&AV_CONNECTIONTYPE=[DEVICE_CONNECTIONTYPE]&pagecat_s=[SITE_PAGECAT]&AV_RTB_DEVICE_TYPE=[DEVICE_TYPE]&AV_GDPR=[GDPR]&secure_i=1&device_type=[DEVICE_TYPE]&os=[DEVICE_OS]&dnt=[DNT]&metro_ug=[USER_GEO_METRO]&zip=[ZIP_CODE]&site_page=[PAGE_URL]&site_id=99_&player_height=[HEIGHT]&accuracy_dg=[DEVICE_ACCURACY]&is_lat=[LIMITED_AD_TRACKING]&privacypolicy_s=[SITE_PRIVACYPOLICY]&midroll_times=00:01:49&placement_iv=1&width=[DEVICE_WIDTH]&city=[CITY]&architecture_ds=[DEVICE_SUA_ARCHITECTURE]&AV_OSVERS=[OS_VERSION]&max_ad_duration=60&mobile_ds=[DEVICE_SUA_MOBILE]&vid_d=218&ad_breaks=0,109,-1&linearity_iv=1&mccmnc_d=[DEVICE_MCCMNC]&ppi_d=[DEVICE_PPI]&regionfips104_ug=[USER_GEO_REGIONFIPS104]&AV_WIDTH=[DEVICE_WIDTH]&AV_LONGITUDE=[LOCATION_LON]&len_sc=[CONTENT_LENGTH]&sectioncat_s=[SITE_SECTIONCAT]&height=[DEVICE_HEIGHT]&device_language=[DEVICE_LANGUAGE]&lon_ug=[USER_GEO_LON]&us_privacy_r=1---&domain_sp=begenuin.com"
+            }
+          ]
+        },
+        "community": {
+          "dp": "",
+          "handle": "kost1035",
+          "name": "KOST 103.5",
+          "private": false,
+          "share_string": "https://crunchyroll.qa.begenuin.com/community/kost-1035",
+          "slug": "kost-1035"
+        },
+        "config": {
+          "size_mode": ""
+        },
+        "cta": {
+          "ad_copy": "",
+          "hashtags": null,
+          "link": "",
+          "show_url_meta": false,
+          "text": ""
+        },
+        "loop": {
+          "description": "Latest Clips",
+          "name": "Latest Clips",
+          "preview_image": "",
+          "private": false,
+          "share_string": "https://crunchyroll.qa.begenuin.com/loop/latest-clips-ixv0?community=21749d1c6d800f03",
+          "slug": "latest-clips-ixv0"
+        },
+        "og_details": null,
+        "owner": {
+          "is_avatar": false,
+          "nickname": "iheartmedia",
+          "profile_image": "https://media.qa.begenuin.com/uploads/profile_images/brandProfileLogo_1770297171201.png",
+          "share_string": "https://crunchyroll.qa.begenuin.com/profile/iheartmedia",
+          "username": "iHeartMedia"
+        },
+        "type": "loop",
+        "video": {
+          "created_at": "2024-09-24T09:46:00.116Z",
+          "description": "[\"Social Queen Darlene and producer Mike present a weekend viewing guide featuring Hallmark's Mistletoe Murders with Sarah Drew, Keanu Reeves' new comedy Good Fortune, Netflix’s true-crime doc The Perfect Neighbor, the Brazilian drama Caramelo, and Dodger Baseball.\"]",
+          "id": "e5308b99-a257-468b-8a89-c7797a3ea990",
+          "link": "",
+          "metadata": {
+            "aspect_ratio": "9:16",
+            "contains_external_videos": false,
+            "duration": "218",
+            "media_type": "video",
+            "resolution": "1080x1920",
+            "size": "325691146"
           },
           "no_of_comments": 0,
-          "no_of_sparks": 0,
-          "share_string": "https://infolinks.begenuin.com/video/dutton-ranch-men-share-the-secret-to-a-good?community=214f3f0fb7000d43&loop=214f3f5905801401",
-          "slug": "dutton-ranch-men-share-the-secret-to-a-good",
-          "thumbnail": "https://vz-8bbc7bbf-a1e.b-cdn.net/3bef6a96-fa15-428b-abf7-97ce84cdf34b/thumbnail.jpg",
+          "no_of_sparks": 7,
+          "share_string": "https://crunchyroll.qa.begenuin.com/video/social-queen-darlene-and-producer-mike-present-a?community=21749d1c6d800f03&loop=2174afd844801406",
+          "slug": "social-queen-darlene-and-producer-mike-present-a",
+          "thumbnail": "https://vz-eee5e913-a30.b-cdn.net/6f0b3663-c8f8-4cd1-8e1d-92ca9cf92ddc/thumbnail.jpg",
           "updated_at": "2024-09-24T09:57:12.227Z",
-          "url": "https://vz-8bbc7bbf-a1e.b-cdn.net/3bef6a96-fa15-428b-abf7-97ce84cdf34b/playlist.m3u8"
+          "url": "https://vz-eee5e913-a30.b-cdn.net/6f0b3663-c8f8-4cd1-8e1d-92ca9cf92ddc/playlist.m3u8"
         }
+      },
+      {
+        "_id": "6a3aa8244da8cd92d289cc72",
+        "ad_configs": {
+          "video_ad": [
+            {
+              "ads_url": "https://nxs.begenuin.com/tagxml/customer/3119/tag/3753?&ad_breaks=0,89,-1&type_dg=[DEVICE_GEO_TYPE]&bitness_ds=[DEVICE_SUA_BITNESS]&zip_ug=[USER_GEO_ZIP]&plcmt_iv=1&os=[DEVICE_OS]&accuracy_ug=[USER_GEO_ACCURACY]&AV_TIMESTAMP=1782736168399578669&placement_iv=1&linearity_iv=1&AV_REGION=[REGION]&AV_LANGUAGE=[DEVICE_LANGUAGE]&vid_d=179&device_make=[DEVICE_MAKE]&lastfix_dg=[DEVICE_GEO_LASTFIX]&AV_LATITUDE=[LOCATION_LAT]&AV_RTB_DEVICE_TYPE=[DEVICE_TYPE]&len_sc=[CONTENT_LENGTH]&kwarray_s=[SITE_KWARRAY]&cattax_sp=[SITE_PUBLISHER_CATTAX]&player_height=[HEIGHT]&city=[CITY]&type_ug=[USER_GEO_TYPE]&region_ug=[USER_GEO_REGION]&AV_MAKE=[DEVICE_MAKE]&regionfips104_dg=[DEVICE_GEO_REGIONFIPS104]&model_ds=[DEVICE_SUA_MODEL]&AV_CONSENT=[GDPRCONSENT]&name_sp=[SITE_PUBLISHER_NAME]&zip=[ZIP_CODE]&connectiontype_d=[DEVICE_CONNECTIONTYPE]&browsers_brand_ds=[DEVICE_SUA_BROWSERS_BRAND]&city_ug=[USER_GEO_CITY]&AV_HEIGHT=[DEVICE_HEIGHT]&AV_PLACEMENT=[VIDEO_PLACEMENT]&region=[REGION]&accuracy_dg=[DEVICE_ACCURACY]&ppi_d=[DEVICE_PPI]&AV_OS=[OS]&skipmin_iv=0&platform_brand_ds=[DEVICE_SUA_PLATFORM_BRAND]&name_s=Begenuin&architecture_ds=[DEVICE_SUA_ARCHITECTURE]&site_id=99_&cattax_s=[SITE_CATTAX]&AV_CONTENT_ID=df37574f-da72-46a0-a8be-d10260a9ad3f&utcoffset_ug=[USER_GEO_UTCOFFSET]&browsers_version_ds=[DEVICE_SUA_BROWSERS_VERSION]&regionfips104_ug=[USER_GEO_REGIONFIPS104]&lastfix_ug=[USER_GEO_LASTFIX]&mobile_s=[SITE_MOBILE]&country_code=[COUNTRY_ID]&langb_d=[DEVICE_LANGB]&pub_name=[PUBLISHER_NAME]&midroll_times=00:01:29&metro_dg=[DEVICE_GEO_METRO]&yob=[YOB]&lat_ug=[USER_GEO_LAT]&AV_OSVERS=[OS_VERSION]&AV_LMT=[LIMITED_AD_TRACKING]&site_search=[SITE_SEARCH]&pagecat_s=[SITE_PAGECAT]&ip=[IP]&device_js=[DEVICE_JS]&geofetch_d=[DEVICE_GEOFETCH]&ipservice_dg=[DEVICE_GEO_IPSERVICE]&ipservice_ug=[USER_GEO_IPSERVICE]&us_privacy_r=1---&metro_ug=[USER_GEO_METRO]&AV_USERAGENT=[UA]&site_page=[PAGE_URL]&postroll=1&max_ad_duration=60&did=[DID]&us_privacy=1---&AV_GDPR=[GDPR]&skipafter_iv=0&bidfloorcur_i=USD&pos_iv=7&pxratio_d=[DEVICE_PXRATIO]&is_lat=[LIMITED_AD_TRACKING]&AV_LONGITUDE=[LOCATION_LON]&AV_MODEL=[DEVICE_MODEL]&device_type=[DEVICE_TYPE]&device_model=[DEVICE_MODEL]&height=[DEVICE_HEIGHT]&width=[DEVICE_WIDTH]&utcoffset_dg=[DEVICE_GEO_UTCOFFSET]&site_ref=[SITE_REF]&cat_sp=[SITE_PUBLISHER_CAT]&platform_version_ds=[DEVICE_SUA_PLATFORM_VERSION]&dnt=[DNT]&AV_IFA_TYPE=[IFA_TYPE]&cb=1782736168399578549&url_sc=[CONTENT_URL]&osv=[DEVICE_OS_VERSION]&mobile_ds=[DEVICE_SUA_MOBILE]&hwv=[DEVICE_HWV]&sectioncat_s=[SITE_SECTIONCAT]&location_lat=[LOCATION_LAT]&device_language=[DEVICE_LANGUAGE]&AV_WIDTH=[DEVICE_WIDTH]&id_sp=99&secure_i=1&ua=[UA]&gender=[GENDER]&AV_DNT=[DNT]&AV_CONNECTIONTYPE=[DEVICE_CONNECTIONTYPE]&AV_DOMAIN=[DOMAIN]&cat_s=[SITE_CAT]&domain_sp=begenuin.com&domain_s=[DOMAIN]&device_ipv6=[DEVICE_IPV6]&mccmnc_d=[DEVICE_MCCMNC]&lon_ug=[USER_GEO_LON]&AV_IP=[IP]&player_width=[WIDTH]&flashver_d=[DEVICE_FLASHVER]&carrier_d=[DEVICE_CARRIER]&country_ug=[USER_GEO_COUNTRY]&min_ad_duration=5&location_lon=[LOCATION_LON]&session_id=[SESSION_ID]&AV_URL=[PAGE_URL]&user_id=3FoKpxLuN2G3bo6paFciJyMLy0W&privacypolicy_s=[SITE_PRIVACYPOLICY]&source_ds=[DEVICE_SUA_SOURCE]&AV_PLCMT=[PLACEMENT_MACRO]&keywords_s=[SITE_KEYWORDS]"
+            }
+          ]
+        },
+        "community": {
+          "dp": "",
+          "handle": "thewoodyshow",
+          "name": "the woody show",
+          "private": false,
+          "share_string": "https://crunchyroll.qa.begenuin.com/community/the-woody-show",
+          "slug": "the-woody-show"
+        },
+        "config": {
+          "size_mode": ""
+        },
+        "cta": {
+          "ad_copy": "",
+          "hashtags": null,
+          "link": "",
+          "show_url_meta": false,
+          "text": ""
+        },
+        "loop": {
+          "description": "Latest Clips",
+          "name": "Latest Clips",
+          "preview_image": "",
+          "private": false,
+          "share_string": "https://crunchyroll.qa.begenuin.com/loop/latest-clips-lq7r?community=21749f3a1d800f05",
+          "slug": "latest-clips-lq7r"
+        },
+        "og_details": null,
+        "owner": {
+          "is_avatar": false,
+          "nickname": "iheartmedia",
+          "profile_image": "https://media.qa.begenuin.com/uploads/profile_images/brandProfileLogo_1770297171201.png",
+          "share_string": "https://crunchyroll.qa.begenuin.com/profile/iheartmedia",
+          "username": "iHeartMedia"
+        },
+        "type": "loop",
+        "video": {
+          "created_at": "2024-09-24T09:46:00.116Z",
+          "description": "[\"Comedians Gina and Craig lead a humorous discussion on relationships and communication, exploring why spouses often fail to notice significant changes like a new haircut.\"]",
+          "id": "df37574f-da72-46a0-a8be-d10260a9ad3f",
+          "link": "",
+          "metadata": {
+            "aspect_ratio": "9:16",
+            "contains_external_videos": false,
+            "duration": "179",
+            "media_type": "video",
+            "resolution": "1080x1920",
+            "size": "176695515"
+          },
+          "no_of_comments": 0,
+          "no_of_sparks": 2,
+          "share_string": "https://crunchyroll.qa.begenuin.com/video/comedians-gina-and-craig-lead-a-humorous?community=21749f3a1d800f05&loop=2174af3a05001404",
+          "slug": "comedians-gina-and-craig-lead-a-humorous",
+          "thumbnail": "https://vz-eee5e913-a30.b-cdn.net/4e50f3d1-bd2b-407c-8e43-b6cc1bb98300/thumbnail.jpg",
+          "updated_at": "2024-09-24T09:57:12.227Z",
+          "url": "https://vz-eee5e913-a30.b-cdn.net/4e50f3d1-bd2b-407c-8e43-b6cc1bb98300/playlist.m3u8"
+        }
+      },
+      {
+        "_id": "6a3aa8244da8cd92d289cc72",
+        "ad_configs": {
+          "video_ad": [
+            {
+              "ads_url": "https://nxs.begenuin.com/tagxml/customer/3119/tag/3753?&player_height=[HEIGHT]&osv=[DEVICE_OS_VERSION]&accuracy_ug=[USER_GEO_ACCURACY]&domain_s=[DOMAIN]&AV_GDPR=[GDPR]&skipafter_iv=0&pxratio_d=[DEVICE_PXRATIO]&lastfix_dg=[DEVICE_GEO_LASTFIX]&regionfips104_dg=[DEVICE_GEO_REGIONFIPS104]&source_ds=[DEVICE_SUA_SOURCE]&platform_brand_ds=[DEVICE_SUA_PLATFORM_BRAND]&ppi_d=[DEVICE_PPI]&yob=[YOB]&region_ug=[USER_GEO_REGION]&us_privacy=1---&AV_WIDTH=[DEVICE_WIDTH]&AV_TIMESTAMP=1782736168399605971&site_page=[PAGE_URL]&country_code=[COUNTRY_ID]&postroll=1&AV_PLCMT=[PLACEMENT_MACRO]&AV_CONNECTIONTYPE=[DEVICE_CONNECTIONTYPE]&max_ad_duration=60&device_type=[DEVICE_TYPE]&geofetch_d=[DEVICE_GEOFETCH]&lastfix_ug=[USER_GEO_LASTFIX]&domain_sp=begenuin.com&cattax_sp=[SITE_PUBLISHER_CATTAX]&session_id=[SESSION_ID]&site_search=[SITE_SEARCH]&min_ad_duration=5&utcoffset_ug=[USER_GEO_UTCOFFSET]&is_lat=[LIMITED_AD_TRACKING]&name_sp=[SITE_PUBLISHER_NAME]&lat_ug=[USER_GEO_LAT]&ipservice_ug=[USER_GEO_IPSERVICE]&AV_IFA_TYPE=[IFA_TYPE]&keywords_s=[SITE_KEYWORDS]&player_width=[WIDTH]&langb_d=[DEVICE_LANGB]&metro_dg=[DEVICE_GEO_METRO]&type_ug=[USER_GEO_TYPE]&lon_ug=[USER_GEO_LON]&hwv=[DEVICE_HWV]&cat_sp=[SITE_PUBLISHER_CAT]&ad_breaks=0,65,-1&skipmin_iv=0&ua=[UA]&platform_version_ds=[DEVICE_SUA_PLATFORM_VERSION]&utcoffset_dg=[DEVICE_GEO_UTCOFFSET]&midroll_times=00:01:05&device_js=[DEVICE_JS]&did=[DID]&bitness_ds=[DEVICE_SUA_BITNESS]&model_ds=[DEVICE_SUA_MODEL]&regionfips104_ug=[USER_GEO_REGIONFIPS104]&AV_IP=[IP]&AV_REGION=[REGION]&AV_MODEL=[DEVICE_MODEL]&name_s=Begenuin&zip=[ZIP_CODE]&accuracy_dg=[DEVICE_ACCURACY]&device_language=[DEVICE_LANGUAGE]&pos_iv=7&os=[DEVICE_OS]&mccmnc_d=[DEVICE_MCCMNC]&AV_RTB_DEVICE_TYPE=[DEVICE_TYPE]&city_ug=[USER_GEO_CITY]&AV_DOMAIN=[DOMAIN]&linearity_iv=1&metro_ug=[USER_GEO_METRO]&browsers_brand_ds=[DEVICE_SUA_BROWSERS_BRAND]&user_id=3FoKq19Dll8WtBxAb3klvtWIzPG&us_privacy_r=1---&plcmt_iv=1&device_model=[DEVICE_MODEL]&browsers_version_ds=[DEVICE_SUA_BROWSERS_VERSION]&dnt=[DNT]&cattax_s=[SITE_CATTAX]&AV_USERAGENT=[UA]&url_sc=[CONTENT_URL]&width=[DEVICE_WIDTH]&location_lon=[LOCATION_LON]&connectiontype_d=[DEVICE_CONNECTIONTYPE]&zip_ug=[USER_GEO_ZIP]&id_sp=99&carrier_d=[DEVICE_CARRIER]&cb=1782736168399605871&AV_CONTENT_ID=9cf381c5-af68-424a-97a4-23c3deca4f55&device_ipv6=[DEVICE_IPV6]&ipservice_dg=[DEVICE_GEO_IPSERVICE]&mobile_ds=[DEVICE_SUA_MOBILE]&country_ug=[USER_GEO_COUNTRY]&AV_LANGUAGE=[DEVICE_LANGUAGE]&pub_name=[PUBLISHER_NAME]&placement_iv=1&city=[CITY]&AV_CONSENT=[GDPRCONSENT]&AV_OS=[OS]&AV_MAKE=[DEVICE_MAKE]&pagecat_s=[SITE_PAGECAT]&mobile_s=[SITE_MOBILE]&privacypolicy_s=[SITE_PRIVACYPOLICY]&type_dg=[DEVICE_GEO_TYPE]&cat_s=[SITE_CAT]&AV_LONGITUDE=[LOCATION_LON]&site_id=99_&ip=[IP]&location_lat=[LOCATION_LAT]&region=[REGION]&AV_DNT=[DNT]&len_sc=[CONTENT_LENGTH]&architecture_ds=[DEVICE_SUA_ARCHITECTURE]&site_ref=[SITE_REF]&sectioncat_s=[SITE_SECTIONCAT]&device_make=[DEVICE_MAKE]&flashver_d=[DEVICE_FLASHVER]&AV_PLACEMENT=[VIDEO_PLACEMENT]&height=[DEVICE_HEIGHT]&AV_HEIGHT=[DEVICE_HEIGHT]&AV_LATITUDE=[LOCATION_LAT]&vid_d=130&kwarray_s=[SITE_KWARRAY]&gender=[GENDER]&AV_OSVERS=[OS_VERSION]&AV_LMT=[LIMITED_AD_TRACKING]&AV_URL=[PAGE_URL]&bidfloorcur_i=USD&secure_i=1"
+            }
+          ]
+        },
+        "community": {
+          "dp": "",
+          "handle": "bigboy",
+          "name": "Big boy",
+          "private": false,
+          "share_string": "https://crunchyroll.qa.begenuin.com/community/big-boy",
+          "slug": "big-boy"
+        },
+        "config": {
+          "size_mode": ""
+        },
+        "cta": {
+          "ad_copy": "",
+          "hashtags": null,
+          "link": "",
+          "show_url_meta": false,
+          "text": ""
+        },
+        "loop": {
+          "description": "Latest Clips",
+          "name": "Latest Clips",
+          "preview_image": "",
+          "private": false,
+          "share_string": "https://crunchyroll.qa.begenuin.com/loop/latest-clips-vw6r?community=21749cab3a800f02",
+          "slug": "latest-clips-vw6r"
+        },
+        "og_details": null,
+        "owner": {
+          "is_avatar": false,
+          "nickname": "iheartmedia",
+          "profile_image": "https://media.qa.begenuin.com/uploads/profile_images/brandProfileLogo_1770297171201.png",
+          "share_string": "https://crunchyroll.qa.begenuin.com/profile/iheartmedia",
+          "username": "iHeartMedia"
+        },
+        "type": "loop",
+        "video": {
+          "created_at": "2024-09-24T09:46:00.116Z",
+          "description": "[\"An unnamed Gossip Aunt delivers a rapid-fire, Spanish-language rundown of family rumors—from federal envelopes to American blond kids—showcasing generational drama with comedic flair.\"]",
+          "id": "9cf381c5-af68-424a-97a4-23c3deca4f55",
+          "link": "",
+          "metadata": {
+            "aspect_ratio": "9:16",
+            "contains_external_videos": false,
+            "duration": "130",
+            "media_type": "video",
+            "resolution": "1080x1920",
+            "size": "170607894"
+          },
+          "no_of_comments": 2,
+          "no_of_sparks": 7,
+          "share_string": "https://crunchyroll.qa.begenuin.com/video/an-unnamed-gossip-aunt-delivers-a-rapid-fire?community=21749cab3a800f02&loop=2174b00ea7801407",
+          "slug": "an-unnamed-gossip-aunt-delivers-a-rapid-fire",
+          "thumbnail": "https://vz-eee5e913-a30.b-cdn.net/eb3da9aa-d8cb-47af-80f6-4c9c2d58aa9c/thumbnail.jpg",
+          "updated_at": "2024-09-24T09:57:12.227Z",
+          "url": "https://vz-eee5e913-a30.b-cdn.net/eb3da9aa-d8cb-47af-80f6-4c9c2d58aa9c/playlist.m3u8"
+        }
+      },
+      {
+        "type": "ads",
+        "video_ad": [
+          {
+            "ads_url": "https://nxs.begenuin.com/tagxml/customer/3119/tag/3753?&architecture_ds=[DEVICE_SUA_ARCHITECTURE]&device_language=[DEVICE_LANGUAGE]&source_ds=[DEVICE_SUA_SOURCE]&AV_PLCMT=[PLACEMENT_MACRO]&placement_iv=1&device_type=[DEVICE_TYPE]&country_code=[COUNTRY_ID]&ipservice_dg=[DEVICE_GEO_IPSERVICE]&lat_ug=[USER_GEO_LAT]&us_privacy_r=1---&linearity_iv=1&is_lat=[LIMITED_AD_TRACKING]&AV_LONGITUDE=[LOCATION_LON]&ad_breaks=0,0,-1&postroll=1&device_make=[DEVICE_MAKE]&zip=[ZIP_CODE]&AV_WIDTH=[DEVICE_WIDTH]&AV_APPNAME=[APP_NAME]&min_ad_duration=5&city=[CITY]&connectiontype_d=[DEVICE_CONNECTIONTYPE]&ppi_d=[DEVICE_PPI]&AV_PLACEMENT=[VIDEO_PLACEMENT]&AV_APPSTOREURL=[APP_STORE_URL]&device_ipv6=[DEVICE_IPV6]&os=[DEVICE_OS]&carrier_d=[DEVICE_CARRIER]&did=[DID]&midroll_times=&AV_MAKE=[DEVICE_MAKE]&bitness_ds=[DEVICE_SUA_BITNESS]&AV_LATITUDE=[LOCATION_LAT]&AV_DOMAIN=[APP_DOMAIN]&AV_APPPKGNAME=[APP_BUNDLE]&AV_IFA_TYPE=[IFA_TYPE]&skipafter_iv=0&device_model=[DEVICE_MODEL]&langb_d=[DEVICE_LANGB]&type_dg=[DEVICE_GEO_TYPE]&utcoffset_ug=[USER_GEO_UTCOFFSET]&accuracy_ug=[USER_GEO_ACCURACY]&pub_name=[PUBLISHER_NAME]&gender=[GENDER]&id_ap=99&height=[DEVICE_HEIGHT]&len_sc=[CONTENT_LENGTH]&app_version=[APP_VERSION]&model_ds=[DEVICE_SUA_MODEL]&AV_OSVERS=[OS_VERSION]&app_name=[APP_NAME]&bidfloorcur_i=USD&AV_IP=[IP]&ip=[IP]&width=[DEVICE_WIDTH]&geofetch_d=[DEVICE_GEOFETCH]&metro_dg=[DEVICE_GEO_METRO]&browsers_version_ds=[DEVICE_SUA_BROWSERS_VERSION]&city_ug=[USER_GEO_CITY]&osv=[DEVICE_OS_VERSION]&AV_OS=[OS]&utcoffset_dg=[DEVICE_GEO_UTCOFFSET]&AV_CONNECTIONTYPE=[DEVICE_CONNECTIONTYPE]&cb=1782738341106592419&location_lat=[LOCATION_LAT]&location_lon=[LOCATION_LON]&user_id=3FoPF6PiCn7OEgngDXLfuR0MsOp&country_ug=[USER_GEO_COUNTRY]&AV_CONTENT_ID=&ua=[UA]&platform_version_ds=[DEVICE_SUA_PLATFORM_VERSION]&zip_ug=[USER_GEO_ZIP]&AV_APPVERS=[APP_VERSION]&name_s=[CHANNEL_NAME]&accuracy_dg=[DEVICE_ACCURACY]&regionfips104_dg=[DEVICE_GEO_REGIONFIPS104]&session_id=[SESSION_ID]&type_ug=[USER_GEO_TYPE]&ipservice_ug=[USER_GEO_IPSERVICE]&region_ug=[USER_GEO_REGION]&us_privacy=1---&secure_i=1&metro_ug=[USER_GEO_METRO]&AV_USERAGENT=[UA]&url_sc=[CONTENT_URL]&pxratio_d=[DEVICE_PXRATIO]&lon_ug=[USER_GEO_LON]&app_bundle=[APP_BUNDLE]&device_js=[DEVICE_JS]&lastfix_dg=[DEVICE_GEO_LASTFIX]&AV_GDPR=[GDPR]&domain_sp=begenuin.com&skipmin_iv=0&mobile_ds=[DEVICE_SUA_MOBILE]&platform_brand_ds=[DEVICE_SUA_PLATFORM_BRAND]&regionfips104_ug=[USER_GEO_REGIONFIPS104]&lastfix_ug=[USER_GEO_LASTFIX]&AV_REGION=[REGION]&AV_LMT=[LIMITED_AD_TRACKING]&region=[REGION]&AV_CONSENT=[GDPRCONSENT]&AV_DNT=[DNT]&AV_MODEL=[DEVICE_MODEL]&AV_RTB_DEVICE_TYPE=[DEVICE_TYPE]&max_ad_duration=60&browsers_brand_ds=[DEVICE_SUA_BROWSERS_BRAND]&dnt=[DNT]&AV_LANGUAGE=[DEVICE_LANGUAGE]&vid_d=0&hwv=[DEVICE_HWV]&app_domain=[APP_DOMAIN]&app_store_url=[APP_STORE_URL]&AV_TIMESTAMP=1782738341106593531&player_width=[WIDTH]&pos_iv=7&plcmt_iv=1&flashver_d=[DEVICE_FLASHVER]&mccmnc_d=[DEVICE_MCCMNC]&yob=[YOB]&AV_HEIGHT=[DEVICE_HEIGHT]&player_height=[HEIGHT]",
+            "cpm": 5,
+            "platform": "infy",
+            "url": "https://nxs.begenuin.com/tagxml/customer/3119/tag/3753?&architecture_ds=[DEVICE_SUA_ARCHITECTURE]&device_language=[DEVICE_LANGUAGE]&source_ds=[DEVICE_SUA_SOURCE]&AV_PLCMT=[PLACEMENT_MACRO]&placement_iv=1&device_type=[DEVICE_TYPE]&country_code=[COUNTRY_ID]&ipservice_dg=[DEVICE_GEO_IPSERVICE]&lat_ug=[USER_GEO_LAT]&us_privacy_r=1---&linearity_iv=1&is_lat=[LIMITED_AD_TRACKING]&AV_LONGITUDE=[LOCATION_LON]&ad_breaks=0,0,-1&postroll=1&device_make=[DEVICE_MAKE]&zip=[ZIP_CODE]&AV_WIDTH=[DEVICE_WIDTH]&AV_APPNAME=[APP_NAME]&min_ad_duration=5&city=[CITY]&connectiontype_d=[DEVICE_CONNECTIONTYPE]&ppi_d=[DEVICE_PPI]&AV_PLACEMENT=[VIDEO_PLACEMENT]&AV_APPSTOREURL=[APP_STORE_URL]&device_ipv6=[DEVICE_IPV6]&os=[DEVICE_OS]&carrier_d=[DEVICE_CARRIER]&did=[DID]&midroll_times=&AV_MAKE=[DEVICE_MAKE]&bitness_ds=[DEVICE_SUA_BITNESS]&AV_LATITUDE=[LOCATION_LAT]&AV_DOMAIN=[APP_DOMAIN]&AV_APPPKGNAME=[APP_BUNDLE]&AV_IFA_TYPE=[IFA_TYPE]&skipafter_iv=0&device_model=[DEVICE_MODEL]&langb_d=[DEVICE_LANGB]&type_dg=[DEVICE_GEO_TYPE]&utcoffset_ug=[USER_GEO_UTCOFFSET]&accuracy_ug=[USER_GEO_ACCURACY]&pub_name=[PUBLISHER_NAME]&gender=[GENDER]&id_ap=99&height=[DEVICE_HEIGHT]&len_sc=[CONTENT_LENGTH]&app_version=[APP_VERSION]&model_ds=[DEVICE_SUA_MODEL]&AV_OSVERS=[OS_VERSION]&app_name=[APP_NAME]&bidfloorcur_i=USD&AV_IP=[IP]&ip=[IP]&width=[DEVICE_WIDTH]&geofetch_d=[DEVICE_GEOFETCH]&metro_dg=[DEVICE_GEO_METRO]&browsers_version_ds=[DEVICE_SUA_BROWSERS_VERSION]&city_ug=[USER_GEO_CITY]&osv=[DEVICE_OS_VERSION]&AV_OS=[OS]&utcoffset_dg=[DEVICE_GEO_UTCOFFSET]&AV_CONNECTIONTYPE=[DEVICE_CONNECTIONTYPE]&cb=1782738341106592419&location_lat=[LOCATION_LAT]&location_lon=[LOCATION_LON]&user_id=3FoPF6PiCn7OEgngDXLfuR0MsOp&country_ug=[USER_GEO_COUNTRY]&AV_CONTENT_ID=&ua=[UA]&platform_version_ds=[DEVICE_SUA_PLATFORM_VERSION]&zip_ug=[USER_GEO_ZIP]&AV_APPVERS=[APP_VERSION]&name_s=[CHANNEL_NAME]&accuracy_dg=[DEVICE_ACCURACY]&regionfips104_dg=[DEVICE_GEO_REGIONFIPS104]&session_id=[SESSION_ID]&type_ug=[USER_GEO_TYPE]&ipservice_ug=[USER_GEO_IPSERVICE]&region_ug=[USER_GEO_REGION]&us_privacy=1---&secure_i=1&metro_ug=[USER_GEO_METRO]&AV_USERAGENT=[UA]&url_sc=[CONTENT_URL]&pxratio_d=[DEVICE_PXRATIO]&lon_ug=[USER_GEO_LON]&app_bundle=[APP_BUNDLE]&device_js=[DEVICE_JS]&lastfix_dg=[DEVICE_GEO_LASTFIX]&AV_GDPR=[GDPR]&domain_sp=begenuin.com&skipmin_iv=0&mobile_ds=[DEVICE_SUA_MOBILE]&platform_brand_ds=[DEVICE_SUA_PLATFORM_BRAND]&regionfips104_ug=[USER_GEO_REGIONFIPS104]&lastfix_ug=[USER_GEO_LASTFIX]&AV_REGION=[REGION]&AV_LMT=[LIMITED_AD_TRACKING]&region=[REGION]&AV_CONSENT=[GDPRCONSENT]&AV_DNT=[DNT]&AV_MODEL=[DEVICE_MODEL]&AV_RTB_DEVICE_TYPE=[DEVICE_TYPE]&max_ad_duration=60&browsers_brand_ds=[DEVICE_SUA_BROWSERS_BRAND]&dnt=[DNT]&AV_LANGUAGE=[DEVICE_LANGUAGE]&vid_d=0&hwv=[DEVICE_HWV]&app_domain=[APP_DOMAIN]&app_store_url=[APP_STORE_URL]&AV_TIMESTAMP=1782738341106593531&player_width=[WIDTH]&pos_iv=7&plcmt_iv=1&flashver_d=[DEVICE_FLASHVER]&mccmnc_d=[DEVICE_MCCMNC]&yob=[YOB]&AV_HEIGHT=[DEVICE_HEIGHT]&player_height=[HEIGHT]"
+          }
+        ]
+      },
+      {
+        "type": "ads",
+        "video_ad": [
+          {
+            "ads_url": "https://nxs.begenuin.com/tagxml/customer/3119/tag/3753?&architecture_ds=[DEVICE_SUA_ARCHITECTURE]&device_language=[DEVICE_LANGUAGE]&source_ds=[DEVICE_SUA_SOURCE]&AV_PLCMT=[PLACEMENT_MACRO]&placement_iv=1&device_type=[DEVICE_TYPE]&country_code=[COUNTRY_ID]&ipservice_dg=[DEVICE_GEO_IPSERVICE]&lat_ug=[USER_GEO_LAT]&us_privacy_r=1---&linearity_iv=1&is_lat=[LIMITED_AD_TRACKING]&AV_LONGITUDE=[LOCATION_LON]&ad_breaks=0,0,-1&postroll=1&device_make=[DEVICE_MAKE]&zip=[ZIP_CODE]&AV_WIDTH=[DEVICE_WIDTH]&AV_APPNAME=[APP_NAME]&min_ad_duration=5&city=[CITY]&connectiontype_d=[DEVICE_CONNECTIONTYPE]&ppi_d=[DEVICE_PPI]&AV_PLACEMENT=[VIDEO_PLACEMENT]&AV_APPSTOREURL=[APP_STORE_URL]&device_ipv6=[DEVICE_IPV6]&os=[DEVICE_OS]&carrier_d=[DEVICE_CARRIER]&did=[DID]&midroll_times=&AV_MAKE=[DEVICE_MAKE]&bitness_ds=[DEVICE_SUA_BITNESS]&AV_LATITUDE=[LOCATION_LAT]&AV_DOMAIN=[APP_DOMAIN]&AV_APPPKGNAME=[APP_BUNDLE]&AV_IFA_TYPE=[IFA_TYPE]&skipafter_iv=0&device_model=[DEVICE_MODEL]&langb_d=[DEVICE_LANGB]&type_dg=[DEVICE_GEO_TYPE]&utcoffset_ug=[USER_GEO_UTCOFFSET]&accuracy_ug=[USER_GEO_ACCURACY]&pub_name=[PUBLISHER_NAME]&gender=[GENDER]&id_ap=99&height=[DEVICE_HEIGHT]&len_sc=[CONTENT_LENGTH]&app_version=[APP_VERSION]&model_ds=[DEVICE_SUA_MODEL]&AV_OSVERS=[OS_VERSION]&app_name=[APP_NAME]&bidfloorcur_i=USD&AV_IP=[IP]&ip=[IP]&width=[DEVICE_WIDTH]&geofetch_d=[DEVICE_GEOFETCH]&metro_dg=[DEVICE_GEO_METRO]&browsers_version_ds=[DEVICE_SUA_BROWSERS_VERSION]&city_ug=[USER_GEO_CITY]&osv=[DEVICE_OS_VERSION]&AV_OS=[OS]&utcoffset_dg=[DEVICE_GEO_UTCOFFSET]&AV_CONNECTIONTYPE=[DEVICE_CONNECTIONTYPE]&cb=1782738341106592419&location_lat=[LOCATION_LAT]&location_lon=[LOCATION_LON]&user_id=3FoPF6PiCn7OEgngDXLfuR0MsOp&country_ug=[USER_GEO_COUNTRY]&AV_CONTENT_ID=&ua=[UA]&platform_version_ds=[DEVICE_SUA_PLATFORM_VERSION]&zip_ug=[USER_GEO_ZIP]&AV_APPVERS=[APP_VERSION]&name_s=[CHANNEL_NAME]&accuracy_dg=[DEVICE_ACCURACY]&regionfips104_dg=[DEVICE_GEO_REGIONFIPS104]&session_id=[SESSION_ID]&type_ug=[USER_GEO_TYPE]&ipservice_ug=[USER_GEO_IPSERVICE]&region_ug=[USER_GEO_REGION]&us_privacy=1---&secure_i=1&metro_ug=[USER_GEO_METRO]&AV_USERAGENT=[UA]&url_sc=[CONTENT_URL]&pxratio_d=[DEVICE_PXRATIO]&lon_ug=[USER_GEO_LON]&app_bundle=[APP_BUNDLE]&device_js=[DEVICE_JS]&lastfix_dg=[DEVICE_GEO_LASTFIX]&AV_GDPR=[GDPR]&domain_sp=begenuin.com&skipmin_iv=0&mobile_ds=[DEVICE_SUA_MOBILE]&platform_brand_ds=[DEVICE_SUA_PLATFORM_BRAND]&regionfips104_ug=[USER_GEO_REGIONFIPS104]&lastfix_ug=[USER_GEO_LASTFIX]&AV_REGION=[REGION]&AV_LMT=[LIMITED_AD_TRACKING]&region=[REGION]&AV_CONSENT=[GDPRCONSENT]&AV_DNT=[DNT]&AV_MODEL=[DEVICE_MODEL]&AV_RTB_DEVICE_TYPE=[DEVICE_TYPE]&max_ad_duration=60&browsers_brand_ds=[DEVICE_SUA_BROWSERS_BRAND]&dnt=[DNT]&AV_LANGUAGE=[DEVICE_LANGUAGE]&vid_d=0&hwv=[DEVICE_HWV]&app_domain=[APP_DOMAIN]&app_store_url=[APP_STORE_URL]&AV_TIMESTAMP=1782738341106593531&player_width=[WIDTH]&pos_iv=7&plcmt_iv=1&flashver_d=[DEVICE_FLASHVER]&mccmnc_d=[DEVICE_MCCMNC]&yob=[YOB]&AV_HEIGHT=[DEVICE_HEIGHT]&player_height=[HEIGHT]",
+            "cpm": 5,
+            "platform": "infy",
+            "url": "https://nxs.begenuin.com/tagxml/customer/3119/tag/3753?&architecture_ds=[DEVICE_SUA_ARCHITECTURE]&device_language=[DEVICE_LANGUAGE]&source_ds=[DEVICE_SUA_SOURCE]&AV_PLCMT=[PLACEMENT_MACRO]&placement_iv=1&device_type=[DEVICE_TYPE]&country_code=[COUNTRY_ID]&ipservice_dg=[DEVICE_GEO_IPSERVICE]&lat_ug=[USER_GEO_LAT]&us_privacy_r=1---&linearity_iv=1&is_lat=[LIMITED_AD_TRACKING]&AV_LONGITUDE=[LOCATION_LON]&ad_breaks=0,0,-1&postroll=1&device_make=[DEVICE_MAKE]&zip=[ZIP_CODE]&AV_WIDTH=[DEVICE_WIDTH]&AV_APPNAME=[APP_NAME]&min_ad_duration=5&city=[CITY]&connectiontype_d=[DEVICE_CONNECTIONTYPE]&ppi_d=[DEVICE_PPI]&AV_PLACEMENT=[VIDEO_PLACEMENT]&AV_APPSTOREURL=[APP_STORE_URL]&device_ipv6=[DEVICE_IPV6]&os=[DEVICE_OS]&carrier_d=[DEVICE_CARRIER]&did=[DID]&midroll_times=&AV_MAKE=[DEVICE_MAKE]&bitness_ds=[DEVICE_SUA_BITNESS]&AV_LATITUDE=[LOCATION_LAT]&AV_DOMAIN=[APP_DOMAIN]&AV_APPPKGNAME=[APP_BUNDLE]&AV_IFA_TYPE=[IFA_TYPE]&skipafter_iv=0&device_model=[DEVICE_MODEL]&langb_d=[DEVICE_LANGB]&type_dg=[DEVICE_GEO_TYPE]&utcoffset_ug=[USER_GEO_UTCOFFSET]&accuracy_ug=[USER_GEO_ACCURACY]&pub_name=[PUBLISHER_NAME]&gender=[GENDER]&id_ap=99&height=[DEVICE_HEIGHT]&len_sc=[CONTENT_LENGTH]&app_version=[APP_VERSION]&model_ds=[DEVICE_SUA_MODEL]&AV_OSVERS=[OS_VERSION]&app_name=[APP_NAME]&bidfloorcur_i=USD&AV_IP=[IP]&ip=[IP]&width=[DEVICE_WIDTH]&geofetch_d=[DEVICE_GEOFETCH]&metro_dg=[DEVICE_GEO_METRO]&browsers_version_ds=[DEVICE_SUA_BROWSERS_VERSION]&city_ug=[USER_GEO_CITY]&osv=[DEVICE_OS_VERSION]&AV_OS=[OS]&utcoffset_dg=[DEVICE_GEO_UTCOFFSET]&AV_CONNECTIONTYPE=[DEVICE_CONNECTIONTYPE]&cb=1782738341106592419&location_lat=[LOCATION_LAT]&location_lon=[LOCATION_LON]&user_id=3FoPF6PiCn7OEgngDXLfuR0MsOp&country_ug=[USER_GEO_COUNTRY]&AV_CONTENT_ID=&ua=[UA]&platform_version_ds=[DEVICE_SUA_PLATFORM_VERSION]&zip_ug=[USER_GEO_ZIP]&AV_APPVERS=[APP_VERSION]&name_s=[CHANNEL_NAME]&accuracy_dg=[DEVICE_ACCURACY]&regionfips104_dg=[DEVICE_GEO_REGIONFIPS104]&session_id=[SESSION_ID]&type_ug=[USER_GEO_TYPE]&ipservice_ug=[USER_GEO_IPSERVICE]&region_ug=[USER_GEO_REGION]&us_privacy=1---&secure_i=1&metro_ug=[USER_GEO_METRO]&AV_USERAGENT=[UA]&url_sc=[CONTENT_URL]&pxratio_d=[DEVICE_PXRATIO]&lon_ug=[USER_GEO_LON]&app_bundle=[APP_BUNDLE]&device_js=[DEVICE_JS]&lastfix_dg=[DEVICE_GEO_LASTFIX]&AV_GDPR=[GDPR]&domain_sp=begenuin.com&skipmin_iv=0&mobile_ds=[DEVICE_SUA_MOBILE]&platform_brand_ds=[DEVICE_SUA_PLATFORM_BRAND]&regionfips104_ug=[USER_GEO_REGIONFIPS104]&lastfix_ug=[USER_GEO_LASTFIX]&AV_REGION=[REGION]&AV_LMT=[LIMITED_AD_TRACKING]&region=[REGION]&AV_CONSENT=[GDPRCONSENT]&AV_DNT=[DNT]&AV_MODEL=[DEVICE_MODEL]&AV_RTB_DEVICE_TYPE=[DEVICE_TYPE]&max_ad_duration=60&browsers_brand_ds=[DEVICE_SUA_BROWSERS_BRAND]&dnt=[DNT]&AV_LANGUAGE=[DEVICE_LANGUAGE]&vid_d=0&hwv=[DEVICE_HWV]&app_domain=[APP_DOMAIN]&app_store_url=[APP_STORE_URL]&AV_TIMESTAMP=1782738341106593531&player_width=[WIDTH]&pos_iv=7&plcmt_iv=1&flashver_d=[DEVICE_FLASHVER]&mccmnc_d=[DEVICE_MCCMNC]&yob=[YOB]&AV_HEIGHT=[DEVICE_HEIGHT]&player_height=[HEIGHT]"
+          }
+        ]
+      },
+      {
+        "type": "ads",
+        "video_ad": [
+          {
+            "ads_url": "https://nxs.begenuin.com/tagxml/customer/3119/tag/3753?&architecture_ds=[DEVICE_SUA_ARCHITECTURE]&device_language=[DEVICE_LANGUAGE]&source_ds=[DEVICE_SUA_SOURCE]&AV_PLCMT=[PLACEMENT_MACRO]&placement_iv=1&device_type=[DEVICE_TYPE]&country_code=[COUNTRY_ID]&ipservice_dg=[DEVICE_GEO_IPSERVICE]&lat_ug=[USER_GEO_LAT]&us_privacy_r=1---&linearity_iv=1&is_lat=[LIMITED_AD_TRACKING]&AV_LONGITUDE=[LOCATION_LON]&ad_breaks=0,0,-1&postroll=1&device_make=[DEVICE_MAKE]&zip=[ZIP_CODE]&AV_WIDTH=[DEVICE_WIDTH]&AV_APPNAME=[APP_NAME]&min_ad_duration=5&city=[CITY]&connectiontype_d=[DEVICE_CONNECTIONTYPE]&ppi_d=[DEVICE_PPI]&AV_PLACEMENT=[VIDEO_PLACEMENT]&AV_APPSTOREURL=[APP_STORE_URL]&device_ipv6=[DEVICE_IPV6]&os=[DEVICE_OS]&carrier_d=[DEVICE_CARRIER]&did=[DID]&midroll_times=&AV_MAKE=[DEVICE_MAKE]&bitness_ds=[DEVICE_SUA_BITNESS]&AV_LATITUDE=[LOCATION_LAT]&AV_DOMAIN=[APP_DOMAIN]&AV_APPPKGNAME=[APP_BUNDLE]&AV_IFA_TYPE=[IFA_TYPE]&skipafter_iv=0&device_model=[DEVICE_MODEL]&langb_d=[DEVICE_LANGB]&type_dg=[DEVICE_GEO_TYPE]&utcoffset_ug=[USER_GEO_UTCOFFSET]&accuracy_ug=[USER_GEO_ACCURACY]&pub_name=[PUBLISHER_NAME]&gender=[GENDER]&id_ap=99&height=[DEVICE_HEIGHT]&len_sc=[CONTENT_LENGTH]&app_version=[APP_VERSION]&model_ds=[DEVICE_SUA_MODEL]&AV_OSVERS=[OS_VERSION]&app_name=[APP_NAME]&bidfloorcur_i=USD&AV_IP=[IP]&ip=[IP]&width=[DEVICE_WIDTH]&geofetch_d=[DEVICE_GEOFETCH]&metro_dg=[DEVICE_GEO_METRO]&browsers_version_ds=[DEVICE_SUA_BROWSERS_VERSION]&city_ug=[USER_GEO_CITY]&osv=[DEVICE_OS_VERSION]&AV_OS=[OS]&utcoffset_dg=[DEVICE_GEO_UTCOFFSET]&AV_CONNECTIONTYPE=[DEVICE_CONNECTIONTYPE]&cb=1782738341106592419&location_lat=[LOCATION_LAT]&location_lon=[LOCATION_LON]&user_id=3FoPF6PiCn7OEgngDXLfuR0MsOp&country_ug=[USER_GEO_COUNTRY]&AV_CONTENT_ID=&ua=[UA]&platform_version_ds=[DEVICE_SUA_PLATFORM_VERSION]&zip_ug=[USER_GEO_ZIP]&AV_APPVERS=[APP_VERSION]&name_s=[CHANNEL_NAME]&accuracy_dg=[DEVICE_ACCURACY]&regionfips104_dg=[DEVICE_GEO_REGIONFIPS104]&session_id=[SESSION_ID]&type_ug=[USER_GEO_TYPE]&ipservice_ug=[USER_GEO_IPSERVICE]&region_ug=[USER_GEO_REGION]&us_privacy=1---&secure_i=1&metro_ug=[USER_GEO_METRO]&AV_USERAGENT=[UA]&url_sc=[CONTENT_URL]&pxratio_d=[DEVICE_PXRATIO]&lon_ug=[USER_GEO_LON]&app_bundle=[APP_BUNDLE]&device_js=[DEVICE_JS]&lastfix_dg=[DEVICE_GEO_LASTFIX]&AV_GDPR=[GDPR]&domain_sp=begenuin.com&skipmin_iv=0&mobile_ds=[DEVICE_SUA_MOBILE]&platform_brand_ds=[DEVICE_SUA_PLATFORM_BRAND]&regionfips104_ug=[USER_GEO_REGIONFIPS104]&lastfix_ug=[USER_GEO_LASTFIX]&AV_REGION=[REGION]&AV_LMT=[LIMITED_AD_TRACKING]&region=[REGION]&AV_CONSENT=[GDPRCONSENT]&AV_DNT=[DNT]&AV_MODEL=[DEVICE_MODEL]&AV_RTB_DEVICE_TYPE=[DEVICE_TYPE]&max_ad_duration=60&browsers_brand_ds=[DEVICE_SUA_BROWSERS_BRAND]&dnt=[DNT]&AV_LANGUAGE=[DEVICE_LANGUAGE]&vid_d=0&hwv=[DEVICE_HWV]&app_domain=[APP_DOMAIN]&app_store_url=[APP_STORE_URL]&AV_TIMESTAMP=1782738341106593531&player_width=[WIDTH]&pos_iv=7&plcmt_iv=1&flashver_d=[DEVICE_FLASHVER]&mccmnc_d=[DEVICE_MCCMNC]&yob=[YOB]&AV_HEIGHT=[DEVICE_HEIGHT]&player_height=[HEIGHT]",
+            "cpm": 5,
+            "platform": "infy",
+            "url": "https://nxs.begenuin.com/tagxml/customer/3119/tag/3753?&architecture_ds=[DEVICE_SUA_ARCHITECTURE]&device_language=[DEVICE_LANGUAGE]&source_ds=[DEVICE_SUA_SOURCE]&AV_PLCMT=[PLACEMENT_MACRO]&placement_iv=1&device_type=[DEVICE_TYPE]&country_code=[COUNTRY_ID]&ipservice_dg=[DEVICE_GEO_IPSERVICE]&lat_ug=[USER_GEO_LAT]&us_privacy_r=1---&linearity_iv=1&is_lat=[LIMITED_AD_TRACKING]&AV_LONGITUDE=[LOCATION_LON]&ad_breaks=0,0,-1&postroll=1&device_make=[DEVICE_MAKE]&zip=[ZIP_CODE]&AV_WIDTH=[DEVICE_WIDTH]&AV_APPNAME=[APP_NAME]&min_ad_duration=5&city=[CITY]&connectiontype_d=[DEVICE_CONNECTIONTYPE]&ppi_d=[DEVICE_PPI]&AV_PLACEMENT=[VIDEO_PLACEMENT]&AV_APPSTOREURL=[APP_STORE_URL]&device_ipv6=[DEVICE_IPV6]&os=[DEVICE_OS]&carrier_d=[DEVICE_CARRIER]&did=[DID]&midroll_times=&AV_MAKE=[DEVICE_MAKE]&bitness_ds=[DEVICE_SUA_BITNESS]&AV_LATITUDE=[LOCATION_LAT]&AV_DOMAIN=[APP_DOMAIN]&AV_APPPKGNAME=[APP_BUNDLE]&AV_IFA_TYPE=[IFA_TYPE]&skipafter_iv=0&device_model=[DEVICE_MODEL]&langb_d=[DEVICE_LANGB]&type_dg=[DEVICE_GEO_TYPE]&utcoffset_ug=[USER_GEO_UTCOFFSET]&accuracy_ug=[USER_GEO_ACCURACY]&pub_name=[PUBLISHER_NAME]&gender=[GENDER]&id_ap=99&height=[DEVICE_HEIGHT]&len_sc=[CONTENT_LENGTH]&app_version=[APP_VERSION]&model_ds=[DEVICE_SUA_MODEL]&AV_OSVERS=[OS_VERSION]&app_name=[APP_NAME]&bidfloorcur_i=USD&AV_IP=[IP]&ip=[IP]&width=[DEVICE_WIDTH]&geofetch_d=[DEVICE_GEOFETCH]&metro_dg=[DEVICE_GEO_METRO]&browsers_version_ds=[DEVICE_SUA_BROWSERS_VERSION]&city_ug=[USER_GEO_CITY]&osv=[DEVICE_OS_VERSION]&AV_OS=[OS]&utcoffset_dg=[DEVICE_GEO_UTCOFFSET]&AV_CONNECTIONTYPE=[DEVICE_CONNECTIONTYPE]&cb=1782738341106592419&location_lat=[LOCATION_LAT]&location_lon=[LOCATION_LON]&user_id=3FoPF6PiCn7OEgngDXLfuR0MsOp&country_ug=[USER_GEO_COUNTRY]&AV_CONTENT_ID=&ua=[UA]&platform_version_ds=[DEVICE_SUA_PLATFORM_VERSION]&zip_ug=[USER_GEO_ZIP]&AV_APPVERS=[APP_VERSION]&name_s=[CHANNEL_NAME]&accuracy_dg=[DEVICE_ACCURACY]&regionfips104_dg=[DEVICE_GEO_REGIONFIPS104]&session_id=[SESSION_ID]&type_ug=[USER_GEO_TYPE]&ipservice_ug=[USER_GEO_IPSERVICE]&region_ug=[USER_GEO_REGION]&us_privacy=1---&secure_i=1&metro_ug=[USER_GEO_METRO]&AV_USERAGENT=[UA]&url_sc=[CONTENT_URL]&pxratio_d=[DEVICE_PXRATIO]&lon_ug=[USER_GEO_LON]&app_bundle=[APP_BUNDLE]&device_js=[DEVICE_JS]&lastfix_dg=[DEVICE_GEO_LASTFIX]&AV_GDPR=[GDPR]&domain_sp=begenuin.com&skipmin_iv=0&mobile_ds=[DEVICE_SUA_MOBILE]&platform_brand_ds=[DEVICE_SUA_PLATFORM_BRAND]&regionfips104_ug=[USER_GEO_REGIONFIPS104]&lastfix_ug=[USER_GEO_LASTFIX]&AV_REGION=[REGION]&AV_LMT=[LIMITED_AD_TRACKING]&region=[REGION]&AV_CONSENT=[GDPRCONSENT]&AV_DNT=[DNT]&AV_MODEL=[DEVICE_MODEL]&AV_RTB_DEVICE_TYPE=[DEVICE_TYPE]&max_ad_duration=60&browsers_brand_ds=[DEVICE_SUA_BROWSERS_BRAND]&dnt=[DNT]&AV_LANGUAGE=[DEVICE_LANGUAGE]&vid_d=0&hwv=[DEVICE_HWV]&app_domain=[APP_DOMAIN]&app_store_url=[APP_STORE_URL]&AV_TIMESTAMP=1782738341106593531&player_width=[WIDTH]&pos_iv=7&plcmt_iv=1&flashver_d=[DEVICE_FLASHVER]&mccmnc_d=[DEVICE_MCCMNC]&yob=[YOB]&AV_HEIGHT=[DEVICE_HEIGHT]&player_height=[HEIGHT]"
+          }
+        ]
+      },
+      {
+        "type": "ads",
+        "video_ad": [
+          {
+            "ads_url": "https://nxs.begenuin.com/tagxml/customer/3119/tag/3753?&architecture_ds=[DEVICE_SUA_ARCHITECTURE]&device_language=[DEVICE_LANGUAGE]&source_ds=[DEVICE_SUA_SOURCE]&AV_PLCMT=[PLACEMENT_MACRO]&placement_iv=1&device_type=[DEVICE_TYPE]&country_code=[COUNTRY_ID]&ipservice_dg=[DEVICE_GEO_IPSERVICE]&lat_ug=[USER_GEO_LAT]&us_privacy_r=1---&linearity_iv=1&is_lat=[LIMITED_AD_TRACKING]&AV_LONGITUDE=[LOCATION_LON]&ad_breaks=0,0,-1&postroll=1&device_make=[DEVICE_MAKE]&zip=[ZIP_CODE]&AV_WIDTH=[DEVICE_WIDTH]&AV_APPNAME=[APP_NAME]&min_ad_duration=5&city=[CITY]&connectiontype_d=[DEVICE_CONNECTIONTYPE]&ppi_d=[DEVICE_PPI]&AV_PLACEMENT=[VIDEO_PLACEMENT]&AV_APPSTOREURL=[APP_STORE_URL]&device_ipv6=[DEVICE_IPV6]&os=[DEVICE_OS]&carrier_d=[DEVICE_CARRIER]&did=[DID]&midroll_times=&AV_MAKE=[DEVICE_MAKE]&bitness_ds=[DEVICE_SUA_BITNESS]&AV_LATITUDE=[LOCATION_LAT]&AV_DOMAIN=[APP_DOMAIN]&AV_APPPKGNAME=[APP_BUNDLE]&AV_IFA_TYPE=[IFA_TYPE]&skipafter_iv=0&device_model=[DEVICE_MODEL]&langb_d=[DEVICE_LANGB]&type_dg=[DEVICE_GEO_TYPE]&utcoffset_ug=[USER_GEO_UTCOFFSET]&accuracy_ug=[USER_GEO_ACCURACY]&pub_name=[PUBLISHER_NAME]&gender=[GENDER]&id_ap=99&height=[DEVICE_HEIGHT]&len_sc=[CONTENT_LENGTH]&app_version=[APP_VERSION]&model_ds=[DEVICE_SUA_MODEL]&AV_OSVERS=[OS_VERSION]&app_name=[APP_NAME]&bidfloorcur_i=USD&AV_IP=[IP]&ip=[IP]&width=[DEVICE_WIDTH]&geofetch_d=[DEVICE_GEOFETCH]&metro_dg=[DEVICE_GEO_METRO]&browsers_version_ds=[DEVICE_SUA_BROWSERS_VERSION]&city_ug=[USER_GEO_CITY]&osv=[DEVICE_OS_VERSION]&AV_OS=[OS]&utcoffset_dg=[DEVICE_GEO_UTCOFFSET]&AV_CONNECTIONTYPE=[DEVICE_CONNECTIONTYPE]&cb=1782738341106592419&location_lat=[LOCATION_LAT]&location_lon=[LOCATION_LON]&user_id=3FoPF6PiCn7OEgngDXLfuR0MsOp&country_ug=[USER_GEO_COUNTRY]&AV_CONTENT_ID=&ua=[UA]&platform_version_ds=[DEVICE_SUA_PLATFORM_VERSION]&zip_ug=[USER_GEO_ZIP]&AV_APPVERS=[APP_VERSION]&name_s=[CHANNEL_NAME]&accuracy_dg=[DEVICE_ACCURACY]&regionfips104_dg=[DEVICE_GEO_REGIONFIPS104]&session_id=[SESSION_ID]&type_ug=[USER_GEO_TYPE]&ipservice_ug=[USER_GEO_IPSERVICE]&region_ug=[USER_GEO_REGION]&us_privacy=1---&secure_i=1&metro_ug=[USER_GEO_METRO]&AV_USERAGENT=[UA]&url_sc=[CONTENT_URL]&pxratio_d=[DEVICE_PXRATIO]&lon_ug=[USER_GEO_LON]&app_bundle=[APP_BUNDLE]&device_js=[DEVICE_JS]&lastfix_dg=[DEVICE_GEO_LASTFIX]&AV_GDPR=[GDPR]&domain_sp=begenuin.com&skipmin_iv=0&mobile_ds=[DEVICE_SUA_MOBILE]&platform_brand_ds=[DEVICE_SUA_PLATFORM_BRAND]&regionfips104_ug=[USER_GEO_REGIONFIPS104]&lastfix_ug=[USER_GEO_LASTFIX]&AV_REGION=[REGION]&AV_LMT=[LIMITED_AD_TRACKING]&region=[REGION]&AV_CONSENT=[GDPRCONSENT]&AV_DNT=[DNT]&AV_MODEL=[DEVICE_MODEL]&AV_RTB_DEVICE_TYPE=[DEVICE_TYPE]&max_ad_duration=60&browsers_brand_ds=[DEVICE_SUA_BROWSERS_BRAND]&dnt=[DNT]&AV_LANGUAGE=[DEVICE_LANGUAGE]&vid_d=0&hwv=[DEVICE_HWV]&app_domain=[APP_DOMAIN]&app_store_url=[APP_STORE_URL]&AV_TIMESTAMP=1782738341106593531&player_width=[WIDTH]&pos_iv=7&plcmt_iv=1&flashver_d=[DEVICE_FLASHVER]&mccmnc_d=[DEVICE_MCCMNC]&yob=[YOB]&AV_HEIGHT=[DEVICE_HEIGHT]&player_height=[HEIGHT]",
+            "cpm": 5,
+            "platform": "infy",
+            "url": "https://nxs.begenuin.com/tagxml/customer/3119/tag/3753?&architecture_ds=[DEVICE_SUA_ARCHITECTURE]&device_language=[DEVICE_LANGUAGE]&source_ds=[DEVICE_SUA_SOURCE]&AV_PLCMT=[PLACEMENT_MACRO]&placement_iv=1&device_type=[DEVICE_TYPE]&country_code=[COUNTRY_ID]&ipservice_dg=[DEVICE_GEO_IPSERVICE]&lat_ug=[USER_GEO_LAT]&us_privacy_r=1---&linearity_iv=1&is_lat=[LIMITED_AD_TRACKING]&AV_LONGITUDE=[LOCATION_LON]&ad_breaks=0,0,-1&postroll=1&device_make=[DEVICE_MAKE]&zip=[ZIP_CODE]&AV_WIDTH=[DEVICE_WIDTH]&AV_APPNAME=[APP_NAME]&min_ad_duration=5&city=[CITY]&connectiontype_d=[DEVICE_CONNECTIONTYPE]&ppi_d=[DEVICE_PPI]&AV_PLACEMENT=[VIDEO_PLACEMENT]&AV_APPSTOREURL=[APP_STORE_URL]&device_ipv6=[DEVICE_IPV6]&os=[DEVICE_OS]&carrier_d=[DEVICE_CARRIER]&did=[DID]&midroll_times=&AV_MAKE=[DEVICE_MAKE]&bitness_ds=[DEVICE_SUA_BITNESS]&AV_LATITUDE=[LOCATION_LAT]&AV_DOMAIN=[APP_DOMAIN]&AV_APPPKGNAME=[APP_BUNDLE]&AV_IFA_TYPE=[IFA_TYPE]&skipafter_iv=0&device_model=[DEVICE_MODEL]&langb_d=[DEVICE_LANGB]&type_dg=[DEVICE_GEO_TYPE]&utcoffset_ug=[USER_GEO_UTCOFFSET]&accuracy_ug=[USER_GEO_ACCURACY]&pub_name=[PUBLISHER_NAME]&gender=[GENDER]&id_ap=99&height=[DEVICE_HEIGHT]&len_sc=[CONTENT_LENGTH]&app_version=[APP_VERSION]&model_ds=[DEVICE_SUA_MODEL]&AV_OSVERS=[OS_VERSION]&app_name=[APP_NAME]&bidfloorcur_i=USD&AV_IP=[IP]&ip=[IP]&width=[DEVICE_WIDTH]&geofetch_d=[DEVICE_GEOFETCH]&metro_dg=[DEVICE_GEO_METRO]&browsers_version_ds=[DEVICE_SUA_BROWSERS_VERSION]&city_ug=[USER_GEO_CITY]&osv=[DEVICE_OS_VERSION]&AV_OS=[OS]&utcoffset_dg=[DEVICE_GEO_UTCOFFSET]&AV_CONNECTIONTYPE=[DEVICE_CONNECTIONTYPE]&cb=1782738341106592419&location_lat=[LOCATION_LAT]&location_lon=[LOCATION_LON]&user_id=3FoPF6PiCn7OEgngDXLfuR0MsOp&country_ug=[USER_GEO_COUNTRY]&AV_CONTENT_ID=&ua=[UA]&platform_version_ds=[DEVICE_SUA_PLATFORM_VERSION]&zip_ug=[USER_GEO_ZIP]&AV_APPVERS=[APP_VERSION]&name_s=[CHANNEL_NAME]&accuracy_dg=[DEVICE_ACCURACY]&regionfips104_dg=[DEVICE_GEO_REGIONFIPS104]&session_id=[SESSION_ID]&type_ug=[USER_GEO_TYPE]&ipservice_ug=[USER_GEO_IPSERVICE]&region_ug=[USER_GEO_REGION]&us_privacy=1---&secure_i=1&metro_ug=[USER_GEO_METRO]&AV_USERAGENT=[UA]&url_sc=[CONTENT_URL]&pxratio_d=[DEVICE_PXRATIO]&lon_ug=[USER_GEO_LON]&app_bundle=[APP_BUNDLE]&device_js=[DEVICE_JS]&lastfix_dg=[DEVICE_GEO_LASTFIX]&AV_GDPR=[GDPR]&domain_sp=begenuin.com&skipmin_iv=0&mobile_ds=[DEVICE_SUA_MOBILE]&platform_brand_ds=[DEVICE_SUA_PLATFORM_BRAND]&regionfips104_ug=[USER_GEO_REGIONFIPS104]&lastfix_ug=[USER_GEO_LASTFIX]&AV_REGION=[REGION]&AV_LMT=[LIMITED_AD_TRACKING]&region=[REGION]&AV_CONSENT=[GDPRCONSENT]&AV_DNT=[DNT]&AV_MODEL=[DEVICE_MODEL]&AV_RTB_DEVICE_TYPE=[DEVICE_TYPE]&max_ad_duration=60&browsers_brand_ds=[DEVICE_SUA_BROWSERS_BRAND]&dnt=[DNT]&AV_LANGUAGE=[DEVICE_LANGUAGE]&vid_d=0&hwv=[DEVICE_HWV]&app_domain=[APP_DOMAIN]&app_store_url=[APP_STORE_URL]&AV_TIMESTAMP=1782738341106593531&player_width=[WIDTH]&pos_iv=7&plcmt_iv=1&flashver_d=[DEVICE_FLASHVER]&mccmnc_d=[DEVICE_MCCMNC]&yob=[YOB]&AV_HEIGHT=[DEVICE_HEIGHT]&player_height=[HEIGHT]"
+          }
+        ]
+      },
+      {
+        "type": "ads",
+        "video_ad": [
+          {
+            "ads_url": "https://nxs.begenuin.com/tagxml/customer/3119/tag/3753?&architecture_ds=[DEVICE_SUA_ARCHITECTURE]&device_language=[DEVICE_LANGUAGE]&source_ds=[DEVICE_SUA_SOURCE]&AV_PLCMT=[PLACEMENT_MACRO]&placement_iv=1&device_type=[DEVICE_TYPE]&country_code=[COUNTRY_ID]&ipservice_dg=[DEVICE_GEO_IPSERVICE]&lat_ug=[USER_GEO_LAT]&us_privacy_r=1---&linearity_iv=1&is_lat=[LIMITED_AD_TRACKING]&AV_LONGITUDE=[LOCATION_LON]&ad_breaks=0,0,-1&postroll=1&device_make=[DEVICE_MAKE]&zip=[ZIP_CODE]&AV_WIDTH=[DEVICE_WIDTH]&AV_APPNAME=[APP_NAME]&min_ad_duration=5&city=[CITY]&connectiontype_d=[DEVICE_CONNECTIONTYPE]&ppi_d=[DEVICE_PPI]&AV_PLACEMENT=[VIDEO_PLACEMENT]&AV_APPSTOREURL=[APP_STORE_URL]&device_ipv6=[DEVICE_IPV6]&os=[DEVICE_OS]&carrier_d=[DEVICE_CARRIER]&did=[DID]&midroll_times=&AV_MAKE=[DEVICE_MAKE]&bitness_ds=[DEVICE_SUA_BITNESS]&AV_LATITUDE=[LOCATION_LAT]&AV_DOMAIN=[APP_DOMAIN]&AV_APPPKGNAME=[APP_BUNDLE]&AV_IFA_TYPE=[IFA_TYPE]&skipafter_iv=0&device_model=[DEVICE_MODEL]&langb_d=[DEVICE_LANGB]&type_dg=[DEVICE_GEO_TYPE]&utcoffset_ug=[USER_GEO_UTCOFFSET]&accuracy_ug=[USER_GEO_ACCURACY]&pub_name=[PUBLISHER_NAME]&gender=[GENDER]&id_ap=99&height=[DEVICE_HEIGHT]&len_sc=[CONTENT_LENGTH]&app_version=[APP_VERSION]&model_ds=[DEVICE_SUA_MODEL]&AV_OSVERS=[OS_VERSION]&app_name=[APP_NAME]&bidfloorcur_i=USD&AV_IP=[IP]&ip=[IP]&width=[DEVICE_WIDTH]&geofetch_d=[DEVICE_GEOFETCH]&metro_dg=[DEVICE_GEO_METRO]&browsers_version_ds=[DEVICE_SUA_BROWSERS_VERSION]&city_ug=[USER_GEO_CITY]&osv=[DEVICE_OS_VERSION]&AV_OS=[OS]&utcoffset_dg=[DEVICE_GEO_UTCOFFSET]&AV_CONNECTIONTYPE=[DEVICE_CONNECTIONTYPE]&cb=1782738341106592419&location_lat=[LOCATION_LAT]&location_lon=[LOCATION_LON]&user_id=3FoPF6PiCn7OEgngDXLfuR0MsOp&country_ug=[USER_GEO_COUNTRY]&AV_CONTENT_ID=&ua=[UA]&platform_version_ds=[DEVICE_SUA_PLATFORM_VERSION]&zip_ug=[USER_GEO_ZIP]&AV_APPVERS=[APP_VERSION]&name_s=[CHANNEL_NAME]&accuracy_dg=[DEVICE_ACCURACY]&regionfips104_dg=[DEVICE_GEO_REGIONFIPS104]&session_id=[SESSION_ID]&type_ug=[USER_GEO_TYPE]&ipservice_ug=[USER_GEO_IPSERVICE]&region_ug=[USER_GEO_REGION]&us_privacy=1---&secure_i=1&metro_ug=[USER_GEO_METRO]&AV_USERAGENT=[UA]&url_sc=[CONTENT_URL]&pxratio_d=[DEVICE_PXRATIO]&lon_ug=[USER_GEO_LON]&app_bundle=[APP_BUNDLE]&device_js=[DEVICE_JS]&lastfix_dg=[DEVICE_GEO_LASTFIX]&AV_GDPR=[GDPR]&domain_sp=begenuin.com&skipmin_iv=0&mobile_ds=[DEVICE_SUA_MOBILE]&platform_brand_ds=[DEVICE_SUA_PLATFORM_BRAND]&regionfips104_ug=[USER_GEO_REGIONFIPS104]&lastfix_ug=[USER_GEO_LASTFIX]&AV_REGION=[REGION]&AV_LMT=[LIMITED_AD_TRACKING]&region=[REGION]&AV_CONSENT=[GDPRCONSENT]&AV_DNT=[DNT]&AV_MODEL=[DEVICE_MODEL]&AV_RTB_DEVICE_TYPE=[DEVICE_TYPE]&max_ad_duration=60&browsers_brand_ds=[DEVICE_SUA_BROWSERS_BRAND]&dnt=[DNT]&AV_LANGUAGE=[DEVICE_LANGUAGE]&vid_d=0&hwv=[DEVICE_HWV]&app_domain=[APP_DOMAIN]&app_store_url=[APP_STORE_URL]&AV_TIMESTAMP=1782738341106593531&player_width=[WIDTH]&pos_iv=7&plcmt_iv=1&flashver_d=[DEVICE_FLASHVER]&mccmnc_d=[DEVICE_MCCMNC]&yob=[YOB]&AV_HEIGHT=[DEVICE_HEIGHT]&player_height=[HEIGHT]",
+            "cpm": 5,
+            "platform": "infy",
+            "url": "https://nxs.begenuin.com/tagxml/customer/3119/tag/3753?&architecture_ds=[DEVICE_SUA_ARCHITECTURE]&device_language=[DEVICE_LANGUAGE]&source_ds=[DEVICE_SUA_SOURCE]&AV_PLCMT=[PLACEMENT_MACRO]&placement_iv=1&device_type=[DEVICE_TYPE]&country_code=[COUNTRY_ID]&ipservice_dg=[DEVICE_GEO_IPSERVICE]&lat_ug=[USER_GEO_LAT]&us_privacy_r=1---&linearity_iv=1&is_lat=[LIMITED_AD_TRACKING]&AV_LONGITUDE=[LOCATION_LON]&ad_breaks=0,0,-1&postroll=1&device_make=[DEVICE_MAKE]&zip=[ZIP_CODE]&AV_WIDTH=[DEVICE_WIDTH]&AV_APPNAME=[APP_NAME]&min_ad_duration=5&city=[CITY]&connectiontype_d=[DEVICE_CONNECTIONTYPE]&ppi_d=[DEVICE_PPI]&AV_PLACEMENT=[VIDEO_PLACEMENT]&AV_APPSTOREURL=[APP_STORE_URL]&device_ipv6=[DEVICE_IPV6]&os=[DEVICE_OS]&carrier_d=[DEVICE_CARRIER]&did=[DID]&midroll_times=&AV_MAKE=[DEVICE_MAKE]&bitness_ds=[DEVICE_SUA_BITNESS]&AV_LATITUDE=[LOCATION_LAT]&AV_DOMAIN=[APP_DOMAIN]&AV_APPPKGNAME=[APP_BUNDLE]&AV_IFA_TYPE=[IFA_TYPE]&skipafter_iv=0&device_model=[DEVICE_MODEL]&langb_d=[DEVICE_LANGB]&type_dg=[DEVICE_GEO_TYPE]&utcoffset_ug=[USER_GEO_UTCOFFSET]&accuracy_ug=[USER_GEO_ACCURACY]&pub_name=[PUBLISHER_NAME]&gender=[GENDER]&id_ap=99&height=[DEVICE_HEIGHT]&len_sc=[CONTENT_LENGTH]&app_version=[APP_VERSION]&model_ds=[DEVICE_SUA_MODEL]&AV_OSVERS=[OS_VERSION]&app_name=[APP_NAME]&bidfloorcur_i=USD&AV_IP=[IP]&ip=[IP]&width=[DEVICE_WIDTH]&geofetch_d=[DEVICE_GEOFETCH]&metro_dg=[DEVICE_GEO_METRO]&browsers_version_ds=[DEVICE_SUA_BROWSERS_VERSION]&city_ug=[USER_GEO_CITY]&osv=[DEVICE_OS_VERSION]&AV_OS=[OS]&utcoffset_dg=[DEVICE_GEO_UTCOFFSET]&AV_CONNECTIONTYPE=[DEVICE_CONNECTIONTYPE]&cb=1782738341106592419&location_lat=[LOCATION_LAT]&location_lon=[LOCATION_LON]&user_id=3FoPF6PiCn7OEgngDXLfuR0MsOp&country_ug=[USER_GEO_COUNTRY]&AV_CONTENT_ID=&ua=[UA]&platform_version_ds=[DEVICE_SUA_PLATFORM_VERSION]&zip_ug=[USER_GEO_ZIP]&AV_APPVERS=[APP_VERSION]&name_s=[CHANNEL_NAME]&accuracy_dg=[DEVICE_ACCURACY]&regionfips104_dg=[DEVICE_GEO_REGIONFIPS104]&session_id=[SESSION_ID]&type_ug=[USER_GEO_TYPE]&ipservice_ug=[USER_GEO_IPSERVICE]&region_ug=[USER_GEO_REGION]&us_privacy=1---&secure_i=1&metro_ug=[USER_GEO_METRO]&AV_USERAGENT=[UA]&url_sc=[CONTENT_URL]&pxratio_d=[DEVICE_PXRATIO]&lon_ug=[USER_GEO_LON]&app_bundle=[APP_BUNDLE]&device_js=[DEVICE_JS]&lastfix_dg=[DEVICE_GEO_LASTFIX]&AV_GDPR=[GDPR]&domain_sp=begenuin.com&skipmin_iv=0&mobile_ds=[DEVICE_SUA_MOBILE]&platform_brand_ds=[DEVICE_SUA_PLATFORM_BRAND]&regionfips104_ug=[USER_GEO_REGIONFIPS104]&lastfix_ug=[USER_GEO_LASTFIX]&AV_REGION=[REGION]&AV_LMT=[LIMITED_AD_TRACKING]&region=[REGION]&AV_CONSENT=[GDPRCONSENT]&AV_DNT=[DNT]&AV_MODEL=[DEVICE_MODEL]&AV_RTB_DEVICE_TYPE=[DEVICE_TYPE]&max_ad_duration=60&browsers_brand_ds=[DEVICE_SUA_BROWSERS_BRAND]&dnt=[DNT]&AV_LANGUAGE=[DEVICE_LANGUAGE]&vid_d=0&hwv=[DEVICE_HWV]&app_domain=[APP_DOMAIN]&app_store_url=[APP_STORE_URL]&AV_TIMESTAMP=1782738341106593531&player_width=[WIDTH]&pos_iv=7&plcmt_iv=1&flashver_d=[DEVICE_FLASHVER]&mccmnc_d=[DEVICE_MCCMNC]&yob=[YOB]&AV_HEIGHT=[DEVICE_HEIGHT]&player_height=[HEIGHT]"
+          }
+        ]
       }
     ]
   }
