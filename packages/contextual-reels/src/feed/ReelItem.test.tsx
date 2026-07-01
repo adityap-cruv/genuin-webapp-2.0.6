@@ -11,6 +11,7 @@ import { createRoot } from "react-dom/client";
 import type { Root } from "react-dom/client";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
+import { ReelItem } from "@cxr/feed/ReelItem";
 import type { FeedEntry, NormalisedReel, NormalisedAd, TagResponse } from "@cxr/types";
 
 /** Captures props passed to VideoLayout so tests can assert on forwarded values. */
@@ -23,8 +24,6 @@ vi.mock("./layouts", () => ({
     return React.createElement("div", { "data-testid": "video-layout" });
   },
 }));
-
-import { ReelItem } from "@cxr/feed/ReelItem";
 
 const BASE_REEL: NormalisedReel = {
   kind: "video",
@@ -131,5 +130,13 @@ describe("ReelItem routing", () => {
   it("does not render AdLayout for a video-with-ad entry", () => {
     render(makeVideoWithAdEntry());
     expect(container.querySelector('[data-testid="ad-layout"]')).toBeNull();
+  });
+
+  it("renders an empty fragment for an unrecognised entry kind", () => {
+    // Defensive fallback: a kind outside the 3-branch router renders nothing.
+    const unknownEntry = { kind: "unknown", data: BASE_REEL } as unknown as FeedEntry;
+    render(unknownEntry);
+    expect(container.querySelector('[data-testid="ad-layout"]')).toBeNull();
+    expect(container.querySelector('[data-testid="video-layout"]')).toBeNull();
   });
 });

@@ -52,6 +52,40 @@ describe("InstanceRegistry", () => {
     expect(registry.get("missing")).toBeUndefined();
   });
 
+  it("get resolves a DOM element id via a registered alias", () => {
+    const registry = new InstanceRegistry();
+    const controls = { expand: vi.fn(), collapse: vi.fn(), pause: vi.fn() };
+    registry.register("cxr-internal-1", controls);
+    registry.registerAlias("gen-ext-1", "cxr-internal-1");
+    // Lookup by DOM id resolves through the alias map to the same controls.
+    expect(registry.get("gen-ext-1")).toBe(controls);
+  });
+
+  it("unregister removes the alias pointing at the unregistered instance", () => {
+    const registry = new InstanceRegistry();
+    const controls = { expand: vi.fn(), collapse: vi.fn(), pause: vi.fn() };
+    registry.register("cxr-internal-1", controls);
+    registry.registerAlias("gen-ext-1", "cxr-internal-1");
+    registry.unregister("cxr-internal-1");
+    // Both the instance and its alias must be gone.
+    expect(registry.get("cxr-internal-1")).toBeUndefined();
+    expect(registry.get("gen-ext-1")).toBeUndefined();
+  });
+
+  it("unregister leaves aliases for other instances intact", () => {
+    const registry = new InstanceRegistry();
+    const keep = { expand: vi.fn(), collapse: vi.fn(), pause: vi.fn() };
+    const drop = { expand: vi.fn(), collapse: vi.fn(), pause: vi.fn() };
+    registry.register("cxr-keep", keep);
+    registry.register("cxr-drop", drop);
+    registry.registerAlias("gen-ext-keep", "cxr-keep");
+    registry.registerAlias("gen-ext-drop", "cxr-drop");
+    registry.unregister("cxr-drop");
+    // The unrelated alias still resolves.
+    expect(registry.get("gen-ext-keep")).toBe(keep);
+    expect(registry.get("gen-ext-drop")).toBeUndefined();
+  });
+
   describe("getInstanceRegistry singleton", () => {
     beforeEach(() => {
       // Reset the module-level singleton between tests by re-importing.

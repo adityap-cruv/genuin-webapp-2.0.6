@@ -54,6 +54,9 @@ export interface UsePlayerLifecycleOptions {
 }
 
 function getVideoType(url: string): string {
+  // `String.split` always returns a non-empty array, so `.pop()` is never
+  // undefined and the `?? ""` default is unreachable — kept as a defensive guard.
+  /* v8 ignore next */
   return url.split(".").pop()?.toLowerCase() ?? "";
 }
 
@@ -213,6 +216,11 @@ export function usePlayerLifecycle({
           if (!cancelled) video.src = content;
           return;
         }
+        // The init effect runs once on mount and `setupHlsContent` resolves a
+        // single `import("hls.js")`, so `hlsInstanceRef.current` is always null
+        // here — this destroy guard only fires on a re-setup race that the
+        // run-once architecture prevents. Kept as a defensive teardown.
+        /* v8 ignore next 3 */
         if (hlsInstanceRef.current) {
           hlsInstanceRef.current.destroy();
         }
@@ -242,6 +250,11 @@ export function usePlayerLifecycle({
         // Re-check after the manifest/level work: cleanup may have run while this
         // ran. If so, tear this instance down instead of registering it — cleanup
         // already passed the `hlsInstanceRef` null-check and would otherwise leak.
+        // Everything from the `cancelled` check above through here runs
+        // synchronously (no await boundary), so `cancelled` cannot flip in
+        // between — this re-check only guards a future refactor that adds an
+        // await before this point. Kept as a defensive teardown.
+        /* v8 ignore next 4 */
         if (cancelled) {
           hls.destroy();
           return;

@@ -1,7 +1,7 @@
 "use client";
+import { ShareIcon, SparkIcon } from "@genuin/ui/icons";
 import React from "react";
 
-import { ShareIcon, SparkIcon } from "@genuin/ui/icons";
 
 import type { ControlLayerVariant } from "@cxr/controls/control-layer.types";
 import type { NormalisedReel, TagResponse } from "@cxr/types";

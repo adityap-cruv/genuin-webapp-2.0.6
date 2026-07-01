@@ -102,4 +102,76 @@ describe("FullscreenBottomBar", () => {
     });
     expect(container.querySelector('[data-testid="owner-profile-link"]')).toBeNull();
   });
+
+  it("renders the avatar from a remote https url", () => {
+    render();
+    const img = container.querySelector('[data-testid="owner-profile-link"] img') as HTMLImageElement;
+    expect(img.getAttribute("src")).toBe("https://example.com/a.jpg");
+  });
+
+  it("builds the avatar asset path when the profile image is a bare thumb (not https)", () => {
+    render({
+      item: makeReel({ owner: { share_string: "", nickname: "bob", profile_image: "bob-avatar" } }),
+    });
+    const img = container.querySelector('[data-testid="owner-profile-link"] img') as HTMLImageElement;
+    expect(img.getAttribute("src")).toContain("assets/avatar/bob-avatar.gif");
+  });
+
+  it("falls back to the user.thumb when owner.profile_image is absent", () => {
+    render({
+      item: makeReel({
+        owner: { share_string: "", nickname: "bob", profile_image: undefined },
+        user: { thumb: "user-thumb" } as NormalisedReel["user"],
+      }),
+    });
+    const img = container.querySelector('[data-testid="owner-profile-link"] img') as HTMLImageElement;
+    expect(img.getAttribute("src")).toContain("assets/avatar/user-thumb.gif");
+  });
+
+  it("renders no avatar img when there is no thumb", () => {
+    render({
+      item: makeReel({
+        owner: { share_string: "", nickname: "bob", profile_image: undefined },
+        user: null,
+      }),
+    });
+    // Owner link still renders (nickname), but the img is omitted when src is undefined.
+    expect(container.querySelector('[data-testid="owner-profile-link"]')).toBeTruthy();
+    expect(container.querySelector('[data-testid="owner-profile-link"] img')).toBeNull();
+  });
+
+  it("swaps to the penguin fallback avatar when the image fails to load", () => {
+    render();
+    const img = container.querySelector('[data-testid="owner-profile-link"] img') as HTMLImageElement;
+    act(() => {
+      img.dispatchEvent(new Event("error", { bubbles: false }));
+    });
+    expect(img.getAttribute("src")).toContain("assets/avatar/penguin.gif");
+  });
+
+  it("stops click propagation on the owner profile link", () => {
+    render();
+    const link = container.querySelector('[data-testid="owner-profile-link"]')!;
+    const event = new MouseEvent("click", { bubbles: true });
+    const spy = vi.spyOn(event, "stopPropagation");
+    act(() => {
+      link.dispatchEvent(event);
+    });
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it("renders the video description when present", () => {
+    render();
+    expect(container.querySelector('[data-testid="fullscreen-in-video-overlay"]')?.textContent).toContain("desc");
+  });
+
+  it("omits the description when item.video.description is absent", () => {
+    render({
+      item: makeReel({ video: { description: undefined, slug: "slug", thumbnail: undefined } }),
+    });
+    const overlay = container.querySelector('[data-testid="fullscreen-in-video-overlay"]');
+    expect(overlay).toBeTruthy();
+    // No description paragraph — only the owner nickname text remains.
+    expect(overlay?.querySelectorAll("p").length).toBe(1);
+  });
 });

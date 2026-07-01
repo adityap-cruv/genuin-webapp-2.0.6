@@ -220,4 +220,27 @@ describe("useFullscreenAdBreak", () => {
     expect(latest.status).toBe("idle");
     expect(latest.shouldMountAd).toBe(false);
   });
+
+  it("ignores a late waterfall success after a failure (stays failed)", () => {
+    // handleWaterfallSuccess only promotes requesting → playing; from any other
+    // state (here: failed) it is a no-op, so the video keeps playing uninterrupted.
+    render({});
+    act(() => latest.handleWaterfallFail());
+    expect(latest.status).toBe("failed");
+    act(() => latest.handleWaterfallSuccess("video"));
+    expect(latest.status).toBe("failed");
+    expect(latest.shouldMountAd).toBe(false);
+  });
+
+  it("does not re-enter requesting from a terminal state on re-activation churn", () => {
+    // After completion the cover holds; a re-render while still active must not
+    // bounce the status back to "requesting" (the prev !== "idle" guard).
+    render({});
+    act(() => latest.handleWaterfallSuccess("video"));
+    act(() => latest.handleAdCompleted());
+    expect(latest.status).toBe("completed");
+    render({});
+    render({});
+    expect(latest.status).toBe("completed");
+  });
 });

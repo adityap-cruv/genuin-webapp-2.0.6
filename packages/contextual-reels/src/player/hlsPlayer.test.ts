@@ -350,6 +350,78 @@ describe("useImaPlugin", () => {
     expect(player.play).toHaveBeenCalled();
   });
 
+  it("returns early on adsmanager when the event carries no adsManager", () => {
+    const listeners: Record<string, Array<(e?: unknown) => void>> = {};
+    const player = makeImaPlayer(listeners, { ima: {} });
+
+    const plugin = useGetPlugin({ tagDetails: {}, videoDetails: {}, sendEvent });
+    plugin.attachToPlayer(player);
+
+    // detail without adsManager → the `if (!adsManager) return` guard fires.
+    expect(() => {
+      for (const h of listeners["adsmanager"] ?? []) {
+        h({ detail: {} });
+      }
+    }).not.toThrow();
+    // play() still called before the guard; no ad listeners were registered.
+    expect(player.play).toHaveBeenCalled();
+  });
+
+  it("falls back to default IMA event-type strings when window.google.ima is absent", () => {
+    // Remove the IMA globals so `imaTypes` is undefined and the `?? "complete"`,
+    // `?? "started"`, `?? "loaded"` defaults are used to register listeners.
+    resetImaMock();
+    const listeners: Record<string, Array<(e?: unknown) => void>> = {};
+    const player = makeImaPlayer(listeners, { ima: {} });
+    const adsManagerListeners: Record<string, AdsManagerListener[]> = {};
+    const adsManager = {
+      addEventListener: vi.fn((type: string, cb: AdsManagerListener) => {
+        (adsManagerListeners[type] ??= []).push(cb);
+      }),
+    };
+
+    const plugin = useGetPlugin({ tagDetails: {}, videoDetails: {}, sendEvent });
+    plugin.attachToPlayer(player);
+
+    for (const h of listeners["adsmanager"] ?? []) {
+      h({ detail: { adsManager } });
+    }
+
+    // Listeners were registered under the default string constants.
+    expect(adsManagerListeners["complete"]?.length).toBeGreaterThan(0);
+    expect(adsManagerListeners["started"]?.length).toBeGreaterThan(0);
+    expect(adsManagerListeners["loaded"]?.length).toBeGreaterThan(0);
+  });
+
+  it("defaults ad data to {} when getAd/getAdData yield nothing", () => {
+    const listeners: Record<string, Array<(e?: unknown) => void>> = {};
+    const player = makeImaPlayer(listeners, { ima: {} });
+    const adsManagerListeners: Record<string, AdsManagerListener[]> = {};
+    const adsManager = {
+      addEventListener: vi.fn((type: string, cb: AdsManagerListener) => {
+        (adsManagerListeners[type] ??= []).push(cb);
+      }),
+    };
+
+    const plugin = useGetPlugin({ tagDetails: {}, videoDetails: {}, sendEvent });
+    plugin.attachToPlayer(player);
+
+    for (const h of listeners["adsmanager"] ?? []) {
+      h({ detail: { adsManager } });
+    }
+
+    // COMPLETE: getAd() returns an object with no `data` → `ad?.data ?? {}`.
+    for (const h of adsManagerListeners["complete"] ?? []) h({ getAd: () => ({}) });
+    // STARTED: same `?? {}` default.
+    for (const h of adsManagerListeners["started"] ?? []) h({ getAd: () => ({}) });
+    // LOADED: getAdData() returns undefined → `adData ?? {}`.
+    for (const h of adsManagerListeners["loaded"] ?? []) h({ getAdData: () => undefined });
+
+    expect(sendEvent).toHaveBeenCalledWith("ad_complete", expect.any(Object));
+    expect(sendEvent).toHaveBeenCalledWith("ad_start", expect.any(Object));
+    expect(sendEvent).toHaveBeenCalledWith("ad_response", expect.any(Object));
+  });
+
   it('calls onEnded when COMPLETE fires and videoDetails.type === "ad"', () => {
     const listeners: Record<string, Array<(e?: unknown) => void>> = {};
     const player = makeImaPlayer(listeners, { ima: {} });

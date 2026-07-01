@@ -13,6 +13,14 @@ vi.mock("@cxr/config", () => ({
   AD_LAYOUT: { Unknown: 0, L1: 1, L2: 2, L3: 3, L4: 4 },
 }));
 
+// useNewPlayerControls gates the V2 vs legacy (V1) button set. The real hook is
+// hard-coded to `true`; mock it through a mutable flag so the legacy "default"
+// branch (lines 109-117) can be exercised by flipping it to false.
+let useV2Flag = true;
+vi.mock("@cxr/controls/useNewPlayerControls", () => ({
+  useNewPlayerControls: () => useV2Flag,
+}));
+
 // AdControlBar can render the context-bound V2 buttons (MuteUnmuteButtonV2 reads
 // usePlayer). Mock the provider so the bar mounts in isolation regardless of the
 // active design system. Old and V2 buttons share the same test ids, so the
@@ -41,6 +49,7 @@ describe("AdControlBar", () => {
   let root: Root;
 
   beforeEach(() => {
+    useV2Flag = true;
     container = document.createElement("div");
     document.body.appendChild(container);
     root = createRoot(container);
@@ -232,6 +241,67 @@ describe("AdControlBar", () => {
       const icon = container.querySelector('[data-testid="mute-btn"] img') as HTMLImageElement;
       // Must show the REAL muted icon, not the enticement that slot 1 already cleared.
       expect(icon.getAttribute("src")).toContain("cxr/mute.svg");
+    });
+  });
+
+  // Legacy (V1) "default" cluster: rendered when useNewPlayerControls() is false.
+  // Covers lines 109-117 — the non-V2 absolute top-right play/mute/expand row.
+  describe("layout=default, legacy V1 controls", () => {
+    beforeEach(() => {
+      useV2Flag = false;
+    });
+
+    it("renders the legacy play, mute, and expand buttons", () => {
+      act(() => {
+        root.render(<AdControlBar {...defaultProps} layout="default" />);
+      });
+      expect(container.querySelector('[data-testid="play-pause-btn"]')).not.toBeNull();
+      expect(container.querySelector('[data-testid="mute-btn"]')).not.toBeNull();
+      expect(container.querySelector('[data-testid="topbar-expand"]')).not.toBeNull();
+    });
+
+    it("expand tap calls onFullScreenClick", () => {
+      const onFullScreenClick = vi.fn();
+      act(() => {
+        root.render(<AdControlBar {...defaultProps} layout="default" onFullScreenClick={onFullScreenClick} />);
+      });
+      act(() => {
+        (container.querySelector('[data-testid="topbar-expand"]') as HTMLButtonElement).click();
+      });
+      expect(onFullScreenClick).toHaveBeenCalledOnce();
+    });
+
+    it("play tap calls onPlayClick", () => {
+      const onPlayClick = vi.fn();
+      act(() => {
+        root.render(<AdControlBar {...defaultProps} layout="default" onPlayClick={onPlayClick} />);
+      });
+      act(() => {
+        (container.querySelector('[data-testid="play-pause-btn"]') as HTMLButtonElement).click();
+      });
+      expect(onPlayClick).toHaveBeenCalledOnce();
+    });
+
+    it("first mute tap on the sound-on enticement unmutes", () => {
+      const onMuteClick = vi.fn();
+      act(() => {
+        root.render(<AdControlBar {...defaultProps} layout="default" isMuted onMuteClick={onMuteClick} />);
+      });
+      act(() => {
+        (container.querySelector('[data-testid="mute-btn"]') as HTMLButtonElement).click();
+      });
+      expect(onMuteClick).toHaveBeenCalledWith(false);
+    });
+
+    it("expand is a safe no-op when onFullScreenClick is omitted", () => {
+      act(() => {
+        root.render(<AdControlBar {...defaultProps} layout="default" onFullScreenClick={undefined} />);
+      });
+      expect(() => {
+        act(() => {
+          (container.querySelector('[data-testid="topbar-expand"]') as HTMLButtonElement).click();
+        });
+      }).not.toThrow();
     });
   });
 });

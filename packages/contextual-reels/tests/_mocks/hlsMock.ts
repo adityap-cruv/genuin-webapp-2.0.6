@@ -11,6 +11,7 @@ export interface HlsInstanceMock {
   destroy: Mock;
   loadSource: Mock;
   attachMedia: Mock;
+  detachMedia: Mock;
   on: Mock;
   off: Mock;
   currentLevel: number;
@@ -29,6 +30,7 @@ export function createHlsInstanceMock(): HlsInstanceMock {
     destroy: vi.fn(),
     loadSource: vi.fn(),
     attachMedia: vi.fn(),
+    detachMedia: vi.fn(),
     on: vi.fn((evt: string, cb: (...args: unknown[]) => void) => {
       const list = listeners.get(evt) ?? [];
       list.push(cb);
@@ -64,6 +66,7 @@ export function hlsMockFactory(): { default: unknown; Events: typeof HlsEvents }
     public destroy: HlsInstanceMock["destroy"];
     public loadSource: HlsInstanceMock["loadSource"];
     public attachMedia: HlsInstanceMock["attachMedia"];
+    public detachMedia: HlsInstanceMock["detachMedia"];
     public on: HlsInstanceMock["on"];
     public off: HlsInstanceMock["off"];
     public currentLevel: number;
@@ -76,6 +79,7 @@ export function hlsMockFactory(): { default: unknown; Events: typeof HlsEvents }
       this.destroy = m.destroy;
       this.loadSource = m.loadSource;
       this.attachMedia = m.attachMedia;
+      this.detachMedia = m.detachMedia;
       this.on = m.on;
       this.off = m.off;
       this.currentLevel = m.currentLevel;

@@ -15,6 +15,7 @@ import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from "vite
 
 import { useGenAdInstance, type UseGenAdInstanceOptions } from "@cxr/ads/genAdSdk";
 import { CxrEventBus } from "@cxr/instance/coordination/CxrEventBus";
+import { ShadowDomProvider, type ShadowDomConfig } from "@cxr/shadow-dom-context";
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
@@ -721,6 +722,151 @@ describe("ads/useGenAdInstance", () => {
     unmount(root, container);
   });
 
+  it("onStageStart 'play' invokes onAdPlay and 'pause' invokes onAdPause", async () => {
+    const onAdPlay = vi.fn();
+    const onAdPause = vi.fn();
+    const { root, container } = mountHook({ ...baseProps, isActive: true, onAdPlay, onAdPause });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    const onStageStart = lastInitOptions.onStageStart as (d: { stage: string }) => void;
+    await act(async () => {
+      onStageStart({ stage: "play" });
+    });
+    expect(onAdPlay).toHaveBeenCalledTimes(1);
+    expect(onAdPause).not.toHaveBeenCalled();
+
+    await act(async () => {
+      onStageStart({ stage: "pause" });
+    });
+    expect(onAdPause).toHaveBeenCalledTimes(1);
+
+    unmount(root, container);
+  });
+
+  it("onPlaybackStateChange routes isPaused to onAdPause and unpaused to onAdPlay", async () => {
+    const onAdPlay = vi.fn();
+    const onAdPause = vi.fn();
+    const { root, container } = mountHook({ ...baseProps, isActive: true, onAdPlay, onAdPause });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    const onPlaybackStateChange = lastInitOptions.onPlaybackStateChange as (d: { isPaused: boolean }) => void;
+    await act(async () => {
+      onPlaybackStateChange({ isPaused: true });
+    });
+    expect(onAdPause).toHaveBeenCalledTimes(1);
+    expect(onAdPlay).not.toHaveBeenCalled();
+
+    await act(async () => {
+      onPlaybackStateChange({ isPaused: false });
+    });
+    expect(onAdPlay).toHaveBeenCalledTimes(1);
+
+    unmount(root, container);
+  });
+
+  it("forwards CTA details through the events.onAdCTA callback", async () => {
+    const onAdCTA = vi.fn();
+    const { root, container } = mountHook({ ...baseProps, isActive: true, onAdCTA });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    const events = lastInitOptions.events as { onAdCTA: (cta: unknown) => void };
+    const cta = { advertiserLogo: "logo.png", ctaTitle: "Buy", ctaUrl: "https://x.test", onClick: vi.fn() };
+    await act(async () => {
+      events.onAdCTA(cta);
+    });
+
+    expect(onAdCTA).toHaveBeenCalledWith(cta);
+    unmount(root, container);
+  });
+
+  it("fires Ad Error on an onStageFail with no error object (empty message fallback)", async () => {
+    const { root, container } = mountHook({ ...baseProps, isActive: true });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    // No Error argument → `error?.message ?? ""` falls back to "" → generic Ad Error.
+    await act(async () => {
+      (lastInitOptions.onStageFail as (p: string, e?: Error) => void)("video");
+    });
+
+    expect(sendEventMock).toHaveBeenCalledWith("Ad Error", expect.objectContaining({ provider: "video" }));
+    unmount(root, container);
+  });
+
+  it("resets initInFlight when the SDK loader rejects", async () => {
+    let rejectLoad!: (reason?: unknown) => void;
+    const deferred = new Promise<void>((_res, rej) => {
+      rejectLoad = rej;
+    });
+    sdkLoader.impl = () => deferred;
+
+    const { root, container } = mountHook({ ...baseProps, isActive: true });
+
+    await act(async () => {
+      rejectLoad(new Error("sdk load failed"));
+      await deferred.catch(() => undefined);
+    });
+
+    // The rejection path must swallow the error and never call init.
+    expect(genAdInit).not.toHaveBeenCalled();
+    unmount(root, container);
+  });
+
+  it("does not run the fullscreen updateView handler when the slot is inactive", async () => {
+    vi.useFakeTimers();
+    try {
+      const { root, container } = mountHook({ ...baseProps, isActive: false });
+
+      await act(async () => {
+        await vi.runAllTimersAsync();
+      });
+
+      // Inactive slot: the fullscreen handler hits its `if (!isActive) return` guard.
+      await act(async () => {
+        testBus.emit("fullscreen:enter", {});
+        await vi.runAllTimersAsync();
+      });
+
+      expect(genAdUpdateView).not.toHaveBeenCalled();
+      unmount(root, container);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("ad:unmuteRequest is a no-op when window.GenAd is absent", async () => {
+    const { root, container, result } = mountHook({ ...baseProps, isMuted: true });
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    // Remove the SDK so the handler hits its `if (!GenAd) return` guard.
+    uninstallGenAd();
+
+    expect(() => {
+      act(() => {
+        testBus.emit("ad:unmuteRequest", { containerId: result.containerId });
+      });
+    }).not.toThrow();
+
+    unmount(root, container);
+  });
+
   it("cleanup on unmount while isActive destroys instance", async () => {
     const { root, container } = mountHook({ ...baseProps, isActive: true });
 
@@ -992,5 +1138,206 @@ describe("useGenAdInstance — shadow root resync", () => {
     // No assertion needed beyond "does not throw" — if we get here the test passes
     unmount(root, container);
     plainDiv.remove();
+  });
+});
+
+// ─── useGenAdInstance — play/pause sync, SDK-absent guards, shadow init ────────
+// A standalone block so it can install a GenAd mock that includes
+// pause/resumeByContainer (the default mock omits them on purpose to exercise
+// the version-guard early-return).
+
+describe("useGenAdInstance — play/pause sync", () => {
+  let pauseByContainer: Mock;
+  let resumeByContainer: Mock;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    testBus = new CxrEventBus();
+    pauseByContainer = vi.fn();
+    resumeByContainer = vi.fn();
+    lastInitOptions = {};
+    sdkLoader.impl = () => Promise.resolve();
+    (window as unknown as { GenAd: unknown }).GenAd = {
+      init: vi.fn(() => 42),
+      destroy: vi.fn(),
+      muteByContainer: vi.fn(),
+      setVolumeByContainer: vi.fn(),
+      updateView: vi.fn(),
+      pauseByContainer,
+      resumeByContainer,
+    };
+  });
+
+  afterEach(() => {
+    delete (window as unknown as { GenAd?: unknown }).GenAd;
+    vi.clearAllMocks();
+  });
+
+  it("resumes via resumeByContainer when isPlaying is true", () => {
+    const { root, container } = mountHook({ ...baseProps, isPlaying: true });
+    expect(resumeByContainer).toHaveBeenCalledWith("gen-ad-slot-test-instance-1");
+    expect(pauseByContainer).not.toHaveBeenCalled();
+    unmount(root, container);
+  });
+
+  it("pauses via pauseByContainer when isPlaying is false", () => {
+    const { root, container } = mountHook({ ...baseProps, isPlaying: false });
+    expect(pauseByContainer).toHaveBeenCalledWith("gen-ad-slot-test-instance-1");
+    expect(resumeByContainer).not.toHaveBeenCalled();
+    unmount(root, container);
+  });
+});
+
+describe("useGenAdInstance — SDK absent", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    testBus = new CxrEventBus();
+    lastInitOptions = {};
+    sdkLoader.impl = () => Promise.resolve();
+    // Intentionally do NOT install window.GenAd for this block.
+    delete (window as unknown as { GenAd?: unknown }).GenAd;
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("mute-sync effect is a no-op when window.GenAd is absent", () => {
+    // The effect must hit its `if (!GenAd) return` guard without throwing.
+    const { root, container } = mountHook({ ...baseProps, isMuted: true });
+    unmount(root, container);
+  });
+
+  it("play/pause sync is a no-op when pauseByContainer is unavailable", () => {
+    // Version guard: no GenAd at all → the effect early-returns safely.
+    const { root, container } = mountHook({ ...baseProps, isPlaying: true });
+    unmount(root, container);
+  });
+});
+
+describe("useGenAdInstance — shadow DOM init", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    testBus = new CxrEventBus();
+    installGenAd();
+    lastInitOptions = {};
+    sdkLoader.impl = () => Promise.resolve();
+  });
+
+  afterEach(() => {
+    uninstallGenAd();
+    vi.clearAllMocks();
+  });
+
+  it("passes containerElement to GenAd.init when running inside shadow DOM", async () => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+    const shadowRoot = host.attachShadow({ mode: "open" });
+    const mountDiv = document.createElement("div");
+    shadowRoot.appendChild(mountDiv);
+
+    const shadowConfig: ShadowDomConfig = {
+      enabled: true,
+      hostElement: host,
+      shadowRoot,
+      mountTarget: mountDiv,
+      shadowHostId: "cxr-host-1",
+    };
+
+    const containerRef: { current: HTMLDivElement } = { current: mountDiv };
+    const result: HookResult = { adLoaded: false, provider: null, containerId: "" };
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const root = createRoot(container);
+
+    function Consumer() {
+      const out = useGenAdInstance({
+        ...baseProps,
+        id: 7,
+        instanceId: "shadow-init",
+        containerRef,
+        isActive: true,
+        _loadSdk: () => sdkLoader.impl(),
+      });
+      Object.assign(result, out);
+      return null;
+    }
+
+    act(() => {
+      root.render(
+        <ShadowDomProvider config={shadowConfig}>
+          <Consumer />
+        </ShadowDomProvider>
+      );
+    });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(genAdInit).toHaveBeenCalledTimes(1);
+    // shadowDom truthy → the SDK is handed the live element so it can resolve
+    // its own shadow root via element.getRootNode().
+    expect((lastInitOptions as { containerElement?: HTMLElement }).containerElement).toBe(mountDiv);
+
+    act(() => root.unmount());
+    container.remove();
+    host.remove();
+  });
+
+  it("omits containerElement in shadow DOM mode when the containerRef is null", async () => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+    const shadowRoot = host.attachShadow({ mode: "open" });
+
+    const shadowConfig: ShadowDomConfig = {
+      enabled: true,
+      hostElement: host,
+      shadowRoot,
+      mountTarget: host,
+      shadowHostId: "cxr-host-2",
+    };
+
+    // shadowDom truthy but containerRef.current === null exercises the
+    // `containerRef?.current ?? undefined` nullish fallback.
+    const containerRef: { current: HTMLDivElement | null } = { current: null };
+    const result: HookResult = { adLoaded: false, provider: null, containerId: "" };
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const root = createRoot(container);
+
+    function Consumer() {
+      const out = useGenAdInstance({
+        ...baseProps,
+        id: 8,
+        instanceId: "shadow-null-ref",
+        containerRef,
+        isActive: true,
+        _loadSdk: () => sdkLoader.impl(),
+      });
+      Object.assign(result, out);
+      return null;
+    }
+
+    act(() => {
+      root.render(
+        <ShadowDomProvider config={shadowConfig}>
+          <Consumer />
+        </ShadowDomProvider>
+      );
+    });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(genAdInit).toHaveBeenCalledTimes(1);
+    expect((lastInitOptions as { containerElement?: HTMLElement }).containerElement).toBeUndefined();
+
+    act(() => root.unmount());
+    container.remove();
+    host.remove();
   });
 });

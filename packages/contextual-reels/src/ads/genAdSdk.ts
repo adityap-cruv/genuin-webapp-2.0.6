@@ -18,8 +18,10 @@ import { useShadowDom } from "@cxr/shadow-dom-context";
 
 // ─── GenAd SDK loader ─────────────────────────────────────────────────────────
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- import.meta.env shape is bundler-defined
-const _env: Record<string, string | undefined> = (import.meta as any).env ?? {};
+// import.meta.env shape is bundler-defined; the `?? {}` fallback is unreachable
+// under Vite/Vitest (env is always defined), hence the v8 ignore.
+/* v8 ignore next */
+const _env: Record<string, string | undefined> = (import.meta as any).env ?? {}; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 /** Base URL for the GenAd SDK assets. Set VITE_CXR_GEN_AD_BASE_URL to override. */
 const GEN_AD_BASE_URL: string = _env.VITE_CXR_GEN_AD_BASE_URL ?? "https://media.begenuin.com/ad-sdk/1.0.0";
@@ -547,6 +549,7 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
   // Notify GenAd SDK when fullscreen state changes so it can re-render and adapt to the new viewport
   useEffect(() => {
     let setTinyTimeout: ReturnType<typeof setTimeout>;
+    /* v8 ignore next -- defensive: useEventBus() always returns a bus, so the falsy guard is unreachable */
     if (!bus) return;
     const handleFullScreenChange = (): void => {
       if (!isActive) return;

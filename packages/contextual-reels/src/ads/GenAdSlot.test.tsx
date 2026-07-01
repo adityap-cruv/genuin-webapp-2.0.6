@@ -317,4 +317,13 @@ describe("ads/GenAdSlot", () => {
     expect(mountTarget).not.toBeNull();
     unmount(root, container);
   });
+
+  it("invokes onAdLoadedChange with the current adLoaded state when provided", () => {
+    mockAdLoaded = true;
+    const onAdLoadedChange = vi.fn();
+    const { root, container } = mount(<GenAdSlot {...baseProps} onAdLoadedChange={onAdLoadedChange} />);
+    // The effect must forward the hook's adLoaded value to the parent callback.
+    expect(onAdLoadedChange).toHaveBeenCalledWith(true);
+    unmount(root, container);
+  });
 });

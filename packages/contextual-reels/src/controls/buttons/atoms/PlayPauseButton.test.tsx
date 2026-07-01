@@ -75,4 +75,17 @@ describe('PlayPauseButton', () => {
     const img = container.querySelector('img') as HTMLImageElement;
     expect(img.style.width).toBe('14px');
   });
+
+  // Covers the default `onClick = () => undefined` parameter: clicking with no
+  // handler must not throw, exercising the default no-op function body.
+  it('clicking with no onClick handler is a safe no-op', () => {
+    act(() => {
+      root.render(<PlayPauseButton isPlay={false} />);
+    });
+    expect(() => {
+      act(() => {
+        container.querySelector('button')!.click();
+      });
+    }).not.toThrow();
+  });
 });

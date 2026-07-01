@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { addEventListener, dispatchEvent } from "@cxr/utils/eventBus";
 
@@ -52,5 +52,40 @@ describe("eventBus", () => {
     dispatchEvent("genai:onFill", {});
     expect(handler).toHaveBeenCalledWith({});
     off();
+  });
+
+  describe("server-side rendering (no window)", () => {
+    const originalWindow = globalThis.window;
+
+    afterEach(() => {
+      // Restore the real window after each SSR simulation.
+      Object.defineProperty(globalThis, "window", {
+        value: originalWindow,
+        writable: true,
+        configurable: true,
+      });
+    });
+
+    it("dispatchEvent is a no-op when window is undefined", () => {
+      Object.defineProperty(globalThis, "window", {
+        value: undefined,
+        writable: true,
+        configurable: true,
+      });
+      expect(() => dispatchEvent("video:expand", {})).not.toThrow();
+    });
+
+    it("addEventListener returns a safe no-op unsubscribe when window is undefined", () => {
+      Object.defineProperty(globalThis, "window", {
+        value: undefined,
+        writable: true,
+        configurable: true,
+      });
+      const handler = vi.fn();
+      const off = addEventListener("genai:videoId", handler);
+      // The returned closure must be callable (and a no-op) on the server.
+      expect(() => off()).not.toThrow();
+      expect(handler).not.toHaveBeenCalled();
+    });
   });
 });

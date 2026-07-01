@@ -16,15 +16,18 @@ interface MockEmblaApi {
   api: EmblaCarouselType;
   /** Trigger the 'select' event as if Embla snapped to a new slide. */
   fireSelect: (snapIndex: number) => void;
+  /** Trigger the 'slidesInView' event with a new set of in-view indices. */
+  fireSlidesInView: (indices: number[]) => void;
 }
 
 function makeMockEmblaApi(initialSnap = 0): MockEmblaApi {
   const listeners: Record<string, EmblaEventListener[]> = {};
   let currentSnap = initialSnap;
+  let inView = [initialSnap];
 
   const api = {
     selectedScrollSnap: vi.fn(() => currentSnap),
-    slidesInView: vi.fn(() => [currentSnap]),
+    slidesInView: vi.fn(() => inView),
     scrollNext: vi.fn(),
     scrollPrev: vi.fn(),
     scrollTo: vi.fn(),
@@ -43,7 +46,12 @@ function makeMockEmblaApi(initialSnap = 0): MockEmblaApi {
     (listeners["select"] ?? []).forEach((cb) => cb());
   };
 
-  return { api, fireSelect };
+  const fireSlidesInView = (indices: number[]): void => {
+    inView = indices;
+    (listeners["slidesInView"] ?? []).forEach((cb) => cb());
+  };
+
+  return { api, fireSelect, fireSlidesInView };
 }
 
 // ─── Test shim ────────────────────────────────────────────────────────────────
@@ -245,6 +253,28 @@ describe("useEmblaFeed", () => {
     const { api } = makeMockEmblaApi(0);
     render(api);
     expect(api.on).toHaveBeenCalledWith("select", expect.any(Function));
+  });
+
+  it("registers the slidesInView listener and updates visibleIndices when it fires", () => {
+    const { api, fireSlidesInView } = makeMockEmblaApi(0);
+    render(api);
+    expect(api.on).toHaveBeenCalledWith("slidesInView", expect.any(Function));
+    act(() => {
+      fireSlidesInView([0, 1, 2]);
+    });
+    expect(captured.visibleIndices).toEqual(new Set([0, 1, 2]));
+  });
+
+  it("does nothing when slidesInView fires after the emblaApi is gone", () => {
+    const { api, fireSlidesInView } = makeMockEmblaApi(0);
+    render(api);
+    // Drop the API ref then fire — the handler must early-return, not throw.
+    render(null);
+    expect(() => {
+      act(() => {
+        fireSlidesInView([0, 1]);
+      });
+    }).not.toThrow();
   });
 
   it("deregisters the select listener on unmount", () => {

@@ -172,6 +172,26 @@ describe("setupCxrShadowDOM", () => {
     link.remove();
   });
 
+  it("swallows errors thrown by CSS.registerProperty (already-registered / invalid syntax)", async () => {
+    const registerProperty = vi.fn(() => {
+      throw new Error("InvalidModificationError: property already registered");
+    });
+    vi.stubGlobal("CSS", { registerProperty });
+
+    const cssText = `@property --dup { syntax: "<color>"; inherits: false; initial-value: red; }`;
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, text: () => Promise.resolve(cssText) }));
+
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "https://cdn.example.com/assets/cxr-abc123.css";
+    link.setAttribute("data-genuin-cxr", "css");
+    document.head.appendChild(link);
+
+    await expect(setupCxrShadowDOM(node)).resolves.not.toThrow();
+    expect(registerProperty).toHaveBeenCalledTimes(1);
+    link.remove();
+  });
+
   it("does not throw when CSS.registerProperty is unavailable", async () => {
     vi.stubGlobal("CSS", {});
 

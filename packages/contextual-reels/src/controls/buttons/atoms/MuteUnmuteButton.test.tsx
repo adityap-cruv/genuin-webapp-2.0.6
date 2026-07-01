@@ -1,6 +1,7 @@
 import React, { act } from 'react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createRoot, type Root } from 'react-dom/client';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+
 import { MuteUnmuteButton } from './MuteUnmuteButton';
 
 vi.mock('@cxr/config', () => ({ assetLink: 'https://test.cdn/' }));

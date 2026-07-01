@@ -63,6 +63,24 @@ describe("generateUuid", () => {
     expect(id).toBe("11111111-1111-4111-8111-111111111111");
   });
 
+  it("falls back when crypto itself is undefined", () => {
+    // Exercises the falsy branch of `cryptoObj && typeof cryptoObj.randomUUID`.
+    const original = Object.getOwnPropertyDescriptor(globalThis, "crypto");
+    Object.defineProperty(globalThis, "crypto", {
+      configurable: true,
+      value: undefined,
+    });
+    try {
+      const id = generateUuid();
+      expect(id).toMatch(UUID_LIKE_RE);
+      expect(id.length).toBeGreaterThanOrEqual(16);
+    } finally {
+      if (original) {
+        Object.defineProperty(globalThis, "crypto", original);
+      }
+    }
+  });
+
   it("falls back when crypto.randomUUID is absent", () => {
     const cryptoObj = globalThis.crypto as Crypto | undefined;
     const original = cryptoObj?.randomUUID;

@@ -5,7 +5,6 @@ import { act, type ReactNode, type ReactElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
-import { AD_LAYOUT } from "@cxr/config";
 import {
   installGenaiBridge,
   shouldCountFill,
@@ -13,8 +12,14 @@ import {
   notifyAdFill,
   notifyAdNoFill,
 } from "@cxr/ads/waterfall";
+import { AD_LAYOUT } from "@cxr/config";
 import { CxrEventBus } from "@cxr/instance/coordination/CxrEventBus";
-import { AdProvider, useAdWaterfall, type AdWaterfallContextValue } from "@cxr/providers/AdProvider";
+import {
+  AdProvider,
+  useAdWaterfall,
+  useOptionalAdWaterfall,
+  type AdWaterfallContextValue,
+} from "@cxr/providers/AdProvider";
 
 // ---------------------------------------------------------------------------
 // Mocks
@@ -306,6 +311,34 @@ describe("providers/AdProvider", () => {
       </AdProvider>
     );
     expect(handle.ctx?.isAudioOnlyAds).toBe(true);
+    unmount(root, container);
+  });
+
+  // ── useOptionalAdWaterfall ────────────────────────────────────────────────
+
+  it("useOptionalAdWaterfall returns the context value inside an AdProvider", () => {
+    const handle: ContextHandle = { ctx: null };
+    function OptionalConsumer(): ReactElement {
+      handle.ctx = useOptionalAdWaterfall() ?? null;
+      return <span />;
+    }
+    const { root, container } = mount(
+      <AdProvider tagId="tag1" adLayout={AD_LAYOUT.L2}>
+        <OptionalConsumer />
+      </AdProvider>
+    );
+    expect(handle.ctx?.adLayout).toBe(AD_LAYOUT.L2);
+    unmount(root, container);
+  });
+
+  it("useOptionalAdWaterfall returns undefined (does not throw) outside an AdProvider", () => {
+    let received: AdWaterfallContextValue | undefined | "unset" = "unset";
+    function OptionalOutsider(): ReactElement {
+      received = useOptionalAdWaterfall();
+      return <span />;
+    }
+    const { root, container } = mount(<OptionalOutsider />);
+    expect(received).toBeUndefined();
     unmount(root, container);
   });
 });

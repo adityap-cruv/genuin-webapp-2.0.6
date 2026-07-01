@@ -9,7 +9,8 @@
  * the JSX file can be removed once Phase 2 is fully wired.
  */
 
-import { Suspense, useEffect, useRef } from "react";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
+import { useEffect, useRef } from "react";
 
 import { useGenAdInstance, type UseGenAdInstanceOptions } from "@cxr/ads/genAdSdk";
 
@@ -120,9 +121,9 @@ export function GenAdSlot(props: GenAdSlotProps): React.JSX.Element {
 
       {/* Shimmer placeholder while the SDK hasn't loaded an ad yet */}
       {!adLoaded && (
-        <Suspense fallback={null}>
+        <SafeSuspense fallback={null}>
           <Shimmer />
-        </Suspense>
+        </SafeSuspense>
       )}
     </div>
   );

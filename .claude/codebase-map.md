@@ -21,6 +21,18 @@
 - **Tailwind v4 renames** — `shadow-sm`→`shadow-xs`, `rounded`→`rounded-sm`, `outline-none`→
   `outline-hidden`, `ring`→`ring-3` (full list in `docs/ai-context.md`).
 - **Bundle size is gated** — there's a chunk-size check in CI; large new client chunks can fail it.
+- **CXR `@genuin/components` subpath imports fail `tsc` but work at runtime.** The package exports
+  `"./*": "./src/*"` (no extension), which tsc's `Bundler` resolver won't extension-probe through an
+  exports glob — so `import … from "@genuin/components/molecules/…"` errors TS2307 even though Vite
+  resolves it fine. Fix in `packages/contextual-reels/tsconfig.json`: `paths` alias
+  `"@genuin/components/*": ["../components/src/*"]`. (web-sdk dodges this — it's Vite-built, not
+  tsc-checked.)
+- **CXR coverage gate is strict + per-file** — `packages/contextual-reels/vitest.config.ts`
+  `test.coverage.thresholds` enforces `perFile: true` global 85/75/85/85, with **100%** dirs
+  (`src/utils/**`, `src/ads/**`, `src/player/**`, `src/services/**`, `src/analytics/**`,
+  `src/config/**`) and 95/90/95/95 for `src/providers/**`. `pnpm test:coverage` fails on ANY file
+  below its bar. Browser-only entrypoints (`index.jsx`, `loader.jsx`) + type-only files are in the
+  coverage `exclude` list — extend it there for new untestable entrypoints, don't lower thresholds.
 - **CXR audible autoplay on `localhost` is an environment artifact, not real behavior.** A unit
   playing with sound on load (no interaction) happens for any of three reasons: (1) an
   **automation/WebDriver browser** (the MCP/DevTools-controlled Chrome) reports `navigator.webdriver:
@@ -64,6 +76,18 @@
 <!-- Append where hard-to-find things live. Format:
 - **<thing>** — <path:line> -->
 
+- **CXR unit-test conventions** — the `contextual-reels` package does **NOT** use
+  `@testing-library/react`. Tests render with raw React (`createRoot` + `act`), capture hook/context
+  values via a `Consumer`/shim component into a module var, and import source through the `@cxr/*`
+  alias. Shared mocks live in `packages/contextual-reels/tests/_mocks/` (hls, vlitejs, genAd, ima,
+  rudderstack, axios, genAiSdk); `vi.mock` factories are hoisted so they `await import()` the mock.
+  Global setup (`tests/_setup/vitest.setup.ts`) stubs `HTMLCanvasElement.getContext`. Copy an existing
+  sibling `*.test.tsx` for the provider-tree setup rather than reinventing it.
+- **CXR lazy boundaries use `<SafeSuspense>`** — an eslint rule (`no-restricted-syntax` in
+  `packages/eslint-config/react-internal.js`) bans bare `<Suspense>`; use `SafeSuspense` from
+  `@genuin/components/molecules/error/safe-suspense` (wraps Suspense in `AppErrorBoundary` so a failed
+  lazy chunk shows a local fallback instead of unwinding to the embed root). Opt out only with a
+  justified `// eslint-disable-next-line no-restricted-syntax`.
 - **Dynamic-chunk failure handling (web-sdk)** — `AppErrorBoundary`
   (`packages/components/src/molecules/error/app-error-boundary.tsx`) catches failed `React.lazy`
   imports/render errors and shows a styled retryable card, scoping the failure to one embed. SDK lazy

@@ -22,7 +22,6 @@ import {
   notifyAdFill,
   notifyAdNoFill,
 } from "@cxr/ads/waterfall";
-import { EVENT } from "@cxr/analytics/analytics";
 import { AD_LAYOUT, type AdLayoutId } from "@cxr/config";
 import { useEventBus } from "@cxr/instance/coordination/EventBusContext";
 import { useAnalytics } from "@cxr/providers/AnalyticsProvider";
@@ -81,7 +80,6 @@ interface AdProviderProps {
 
 export function AdProvider({
   children,
-  tagId,
   tagHeight,
   tagWidth,
   adLayout = AD_LAYOUT.Unknown,

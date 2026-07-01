@@ -13,7 +13,8 @@
     "noEmit": true,
     "types": ["vite/client", "vitest/globals"],
     "paths": {
-      "@cxr/*": ["./src/*"]
+      "@cxr/*": ["./src/*"],
+      "@genuin/components/*": ["../components/src/*"]
     }
   },
   "include": ["src/**/*", "tests/**/*"],

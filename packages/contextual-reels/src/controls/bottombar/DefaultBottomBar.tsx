@@ -1,6 +1,7 @@
 "use client";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { ShareIcon, SparkIcon } from "@genuin/ui/icons";
-import React, { lazy, Suspense } from "react";
+import React, { lazy } from "react";
 
 import { assetLink } from "@cxr/config";
 import type { BottomBarSubProps, ControlLayerVariant } from "@cxr/controls/control-layer.types";
@@ -253,7 +254,7 @@ export function DefaultBottomBar({
           {/* Single Octo gate: only allowed tags mount the lazy OctoSheet, so the
               octo chunk (and the GenAI SDK it pulls) is never fetched otherwise. */}
           {genAiEnabled && item.video?.id && (
-            <Suspense fallback={null}>
+            <SafeSuspense fallback={null}>
               <OctoSheet
                 instanceId={instanceId}
                 videoId={item.video.id}
@@ -264,7 +265,7 @@ export function DefaultBottomBar({
                 tagId={tagDetails?.tag_id ?? ""}
                 host="bottombar"
               />
-            </Suspense>
+            </SafeSuspense>
           )}
 
           {!splitActive && item.video?.description && (

@@ -135,6 +135,64 @@ describe("CompactControlBar", () => {
   // When the tag is configured to start audible (initialVolume > 0) there is no
   // silent-start enticement, so the mute icon must reflect the REAL `isMuted`
   // immediately — no tap required to "engage" audio.
+  it("fires onPlayClick when the play/pause button is tapped", () => {
+    const onPlayClick = vi.fn();
+    render({ onPlayClick });
+    act(() => {
+      (container.querySelector('[data-testid="play-pause-btn"]') as HTMLElement).click();
+    });
+    expect(onPlayClick).toHaveBeenCalledOnce();
+  });
+
+  it("play/watch taps are safe no-ops when their handlers are omitted (noop fallback)", () => {
+    // No onPlayClick / onWatchClick / onFullScreenClick → the shared `noop`
+    // fallback runs. Clicking must not throw.
+    render({ onPlayClick: undefined, onWatchClick: undefined, onFullScreenClick: undefined });
+    act(() => {
+      (container.querySelector('[data-testid="play-pause-btn"]') as HTMLElement).click();
+      (container.querySelector('[data-testid="watch-btn"]') as HTMLElement).click();
+    });
+    expect(query("compact-control-bar")).toBeTruthy();
+  });
+
+  it("fires onFullScreenClick when the expand/collapse button is tapped", () => {
+    const onFullScreenClick = vi.fn();
+    render({ onFullScreenClick });
+    act(() => {
+      (container.querySelector('[data-testid="topbar-expand"]') as HTMLElement).click();
+    });
+    expect(onFullScreenClick).toHaveBeenCalledOnce();
+  });
+
+  it("Watch tap prefers onWatchClick over onFullScreenClick", () => {
+    const onWatchClick = vi.fn();
+    const onFullScreenClick = vi.fn();
+    render({ onWatchClick, onFullScreenClick });
+    act(() => {
+      (container.querySelector('[data-testid="watch-btn"]') as HTMLElement).click();
+    });
+    expect(onWatchClick).toHaveBeenCalledOnce();
+    expect(onFullScreenClick).not.toHaveBeenCalled();
+  });
+
+  it("Watch tap falls back to onFullScreenClick when onWatchClick is absent", () => {
+    const onFullScreenClick = vi.fn();
+    render({ onFullScreenClick });
+    act(() => {
+      (container.querySelector('[data-testid="watch-btn"]') as HTMLElement).click();
+    });
+    expect(onFullScreenClick).toHaveBeenCalledOnce();
+  });
+
+  it("invokes the CTA onClick when the Linkout is tapped", () => {
+    const onClick = vi.fn();
+    render({ cta: { url: "https://example.com", caption: "Shop Now", onClick } });
+    act(() => {
+      (container.querySelector('a[href="https://example.com"]') as HTMLElement).click();
+    });
+    expect(onClick).toHaveBeenCalledOnce();
+  });
+
   it("audible-config (initialVolume > 0): shows the real muted icon without any interaction", () => {
     act(() => {
       // Tag 6a3aa8244da8cd92d289cc72 is configured with initialVolume: 0.2.

@@ -11,7 +11,8 @@
  *  - show_cta: false override retained.
  */
 
-import { type ReactNode, type RefObject, Suspense, lazy, useCallback, useEffect, useRef, useState } from "react";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
+import { type ReactNode, type RefObject, lazy, useCallback, useEffect, useRef, useState } from "react";
 
 import { CloseButton } from "@cxr/app/CloseButton";
 import { FeedSkeleton } from "@cxr/app/FeedSkeleton";
@@ -96,7 +97,7 @@ export default function App({
                 instanceId={instanceId}
                 adLayout={adLayout}
                 onDismiss={() => setDismissed(true)}>
-                <Suspense>
+                <SafeSuspense>
                   {apiFailed ? (
                     <NoContent message="This content is no longer available" />
                   ) : !tagDetails ? (
@@ -116,7 +117,7 @@ export default function App({
                       </FeedProvider>
                     </StrategyProvider>
                   )}
-                </Suspense>
+                </SafeSuspense>
               </AppOverlay>
             </FullScreenProvider>
           </AnalyticsProvider>
@@ -350,8 +351,8 @@ function NativeFeedShim({ tagDetails }: { tagDetails: TagResponse }): React.JSX.
   const variant = tagDetails?.config?.variant ?? "default";
 
   return (
-    <Suspense>
+    <SafeSuspense>
       <Feed entries={entries} tagDetails={tagDetails} variant={variant} />
-    </Suspense>
+    </SafeSuspense>
   );
 }

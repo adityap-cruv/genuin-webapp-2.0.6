@@ -73,4 +73,17 @@ describe('LinkoutButton', () => {
     anchor.dispatchEvent(event);
     expect(spy).toHaveBeenCalled();
   });
+
+  // Covers the `onClick?.()` truthy branch: when an onClick is supplied it must
+  // fire alongside the default href navigation.
+  it('invokes the supplied onClick handler on click', () => {
+    const handler = vi.fn();
+    act(() => {
+      root.render(<LinkoutButton href="https://example.com" caption="Order Now" onClick={handler} />);
+    });
+    act(() => {
+      container.querySelector('a')!.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    });
+    expect(handler).toHaveBeenCalledOnce();
+  });
 });

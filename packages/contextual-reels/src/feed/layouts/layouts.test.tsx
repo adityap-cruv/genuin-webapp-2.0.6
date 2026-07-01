@@ -9,9 +9,10 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 import { AD_LAYOUT } from "@cxr/config";
 import type * as ConfigModule from "@cxr/config";
-import { useFullscreenAdBreak } from "../hooks/useFullscreenAdBreak";
-import { useAdWaterfall } from "../../providers/AdProvider";
 import type { NormalisedReel, NormalisedAd, TagResponse } from "@cxr/types";
+
+import { useAdWaterfall } from "../../providers/AdProvider";
+import { useFullscreenAdBreak } from "../hooks/useFullscreenAdBreak";
 
 const { mockLightPlayer } = vi.hoisted(() => ({ mockLightPlayer: vi.fn() }));
 vi.mock("../../player/LightPlayer", () => ({

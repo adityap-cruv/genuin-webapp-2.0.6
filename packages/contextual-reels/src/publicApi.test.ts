@@ -49,4 +49,15 @@ describe("buildPublicApi", () => {
     const api = buildPublicApi(new InstanceRegistry());
     expect(() => api.expand("ghost")).not.toThrow();
   });
+
+  it("_emit() is a no-op when the event has no registered handlers", () => {
+    const api = buildPublicApi(new InstanceRegistry());
+    // No `on()` call for "ad:fill" — the handler set is absent, so _emit returns early.
+    expect(() => api._emit("inst-1", "ad:fill")).not.toThrow();
+  });
+
+  it("collapse() does not throw for unknown instanceId", () => {
+    const api = buildPublicApi(new InstanceRegistry());
+    expect(() => api.collapse("ghost")).not.toThrow();
+  });
 });

@@ -2,7 +2,7 @@
  * Tests for src/config.ts — merged from config/env, config/constants,
  * config/adLayouts, config/tagAllowLists tests.
  */
-import { describe, it, expect } from "vitest";
+import { afterEach, describe, it, expect } from "vitest";
 
 import * as config from "@cxr/config";
 import {
@@ -13,6 +13,7 @@ import {
   RUDDER_SDK_BASE_URL,
   isGenAiAllowed,
   isAdBreakEnabled,
+  isIframe,
   type AdLayoutId,
 } from "@cxr/config";
 
@@ -117,5 +118,43 @@ describe("config/fullscreenAdBreak", () => {
   it("rejects unlisted and empty tag ids", () => {
     expect(isAdBreakEnabled("not-a-listed-tag")).toBe(false);
     expect(isAdBreakEnabled("")).toBe(false);
+  });
+});
+
+// ─── isIframe ─────────────────────────────────────────────────────────────────
+
+describe("config/isIframe", () => {
+  afterEach(() => {
+    // Restore the JSDOM-default self===top identity.
+    Object.defineProperty(window, "top", {
+      configurable: true,
+      get() {
+        return window;
+      },
+    });
+  });
+
+  it("returns false when window.self === window.top (top-level page)", () => {
+    expect(isIframe()).toBe(false);
+  });
+
+  it("returns true when window.self !== window.top (embedded iframe)", () => {
+    Object.defineProperty(window, "top", {
+      configurable: true,
+      get() {
+        return {} as Window;
+      },
+    });
+    expect(isIframe()).toBe(true);
+  });
+
+  it("returns true when accessing window.top throws a cross-origin SecurityError", () => {
+    Object.defineProperty(window, "top", {
+      configurable: true,
+      get() {
+        throw new Error("SecurityError: blocked a frame with origin");
+      },
+    });
+    expect(isIframe()).toBe(true);
   });
 });

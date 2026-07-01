@@ -1,10 +1,11 @@
 // packages/contextual-reels/src/instance/coordination/UserInteractionTracker.test.tsx
 import React, { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
-import { describe, it, expect, afterEach } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 
 import {
   UserInteractionProvider,
+  UserInteractionTracker,
   useMarkUserInteracted,
   useUserInteracted,
 } from "@cxr/instance/coordination/UserInteractionTracker";
@@ -86,5 +87,56 @@ describe("UserInteractionTracker", () => {
 
     act(() => rootB.unmount());
     containerB.remove();
+  });
+
+  it("mark is idempotent — a second mark notifies no subscriber again", () => {
+    const tracker = new UserInteractionTracker();
+    const notify = vi.fn();
+    tracker.subscribe(notify);
+    tracker.mark();
+    expect(tracker.hasInteracted()).toBe(true);
+    expect(notify).toHaveBeenCalledOnce();
+    // Second mark hits the early-return guard and must not notify again.
+    tracker.mark();
+    expect(notify).toHaveBeenCalledOnce();
+  });
+
+  it("subscribe returns an unsubscribe that removes the subscriber", () => {
+    const tracker = new UserInteractionTracker();
+    const notify = vi.fn();
+    const unsubscribe = tracker.subscribe(notify);
+    unsubscribe();
+    tracker.mark();
+    expect(notify).not.toHaveBeenCalled();
+  });
+
+  it("useUserInteracted reports false outside a provider (degrades safely)", () => {
+    const handle = { interacted: true };
+    function Consumer(): React.JSX.Element {
+      handle.interacted = useUserInteracted();
+      return <span />;
+    }
+    container = document.createElement("div");
+    document.body.appendChild(container);
+    root = createRoot(container);
+    act(() => {
+      root.render(<Consumer />);
+    });
+    expect(handle.interacted).toBe(false);
+  });
+
+  it("useMarkUserInteracted is a safe no-op outside a provider", () => {
+    const handle: { mark: (() => void) | null } = { mark: null };
+    function Consumer(): React.JSX.Element {
+      handle.mark = useMarkUserInteracted();
+      return <span />;
+    }
+    container = document.createElement("div");
+    document.body.appendChild(container);
+    root = createRoot(container);
+    act(() => {
+      root.render(<Consumer />);
+    });
+    expect(() => handle.mark!()).not.toThrow();
   });
 });

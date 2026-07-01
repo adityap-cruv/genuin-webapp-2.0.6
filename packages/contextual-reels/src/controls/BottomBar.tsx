@@ -1,5 +1,6 @@
 "use client";
-import React, { lazy, Suspense } from "react";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
+import React, { lazy } from "react";
 
 import type { BottomBarProps } from "@cxr/controls/control-layer.types";
 
@@ -16,8 +17,8 @@ const DefaultBottomBar = lazy(() =>
  */
 export function BottomBar({ ...rest }: BottomBarProps): React.JSX.Element {
   return (
-    <Suspense fallback={null}>
+    <SafeSuspense fallback={null}>
       <DefaultBottomBar {...rest} />
-    </Suspense>
+    </SafeSuspense>
   );
 }

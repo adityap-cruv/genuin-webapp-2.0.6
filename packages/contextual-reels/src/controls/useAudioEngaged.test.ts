@@ -16,7 +16,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 import { useAudioEngaged } from "@cxr/controls/useAudioEngaged";
-import { CxrEventBus } from "@cxr/instance/coordination/CxrEventBus";
+import { CxrEventBus, type CxrEventMap } from "@cxr/instance/coordination/CxrEventBus";
 
 // Strategy + bus are injected via mocks so each test controls initialVolume and
 // whether a bus is present.
@@ -108,5 +108,31 @@ describe("useAudioEngaged", () => {
     mockBus = undefined;
     render();
     expect(result.engaged).toBe(false);
+  });
+
+  // Covers the effect's re-check branch: the state initializer seeds `false`
+  // (hasFired is false at render), but the event fires between render and the
+  // effect, so the effect's `if (bus.hasFired(...)) { setEngaged(true); return; }`
+  // path runs instead of the subscription. Stub a bus whose hasFired flips from
+  // false (first call, during useState) to true (subsequent calls, in the effect).
+  it("engages via the effect's re-check when the event fires between render and effect", () => {
+    let firedSeen = false;
+    const stubBus = {
+      hasFired: (name: keyof CxrEventMap) => {
+        if (name !== "mute:unmuted") return false;
+        // First read (useState initializer) sees false; later reads (effect) see true.
+        const prev = firedSeen;
+        firedSeen = true;
+        return prev;
+      },
+      on: vi.fn(() => () => undefined),
+    };
+    // Justification: the hook only touches `hasFired`/`on`, so a structural stub
+    // is sufficient; casting avoids constructing a full CxrEventBus with private state.
+    mockBus = stubBus as unknown as CxrEventBus;
+    render();
+    expect(result.engaged).toBe(true);
+    // The re-check path returns early, so no subscription is registered.
+    expect(stubBus.on).not.toHaveBeenCalled();
   });
 });

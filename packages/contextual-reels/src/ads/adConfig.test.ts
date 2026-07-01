@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
+import { buildGenAdInitOptions } from "@cxr/ads/adConfig";
+import { normalizeBannerConfig, normalizeNativeConfig, normalizeVideoConfig } from "@cxr/ads/normalizers";
 import type { NormalisedAd } from "@cxr/types";
 
 vi.mock("./normalizers", () => ({
@@ -7,9 +9,6 @@ vi.mock("./normalizers", () => ({
   normalizeNativeConfig: vi.fn(),
   normalizeVideoConfig: vi.fn(),
 }));
-
-import { buildGenAdInitOptions } from "@cxr/ads/adConfig";
-import { normalizeBannerConfig, normalizeNativeConfig, normalizeVideoConfig } from "@cxr/ads/normalizers";
 
 const mockNormalizeBanner = normalizeBannerConfig as ReturnType<typeof vi.fn>;
 const mockNormalizeNative = normalizeNativeConfig as ReturnType<typeof vi.fn>;

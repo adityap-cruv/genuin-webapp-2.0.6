@@ -15,6 +15,7 @@ vi.mock("../providers/PlayerProvider", () => ({
   }),
 }));
 
+import { ClickOverlay } from "@cxr/controls/ClickOverlay";
 import { CxrEventBus } from "@cxr/instance/coordination/CxrEventBus";
 
 let testBus: CxrEventBus;
@@ -23,7 +24,6 @@ vi.mock("../instance/coordination/EventBusContext", () => ({
   useEventBus: () => testBus,
 }));
 
-import { ClickOverlay } from "@cxr/controls/ClickOverlay";
 
 describe("ClickOverlay", () => {
   let container: HTMLDivElement;
@@ -139,5 +139,47 @@ describe("ClickOverlay", () => {
     const el = container.querySelector<HTMLElement>('[data-testid="click-overlay"]')!;
     expect(el.className).toContain("gencl:absolute");
     expect(el.className).toContain("gencl:inset-0");
+  });
+
+  // Covers the shared `stopProp` handler wired to pointer/touch events: each must
+  // stop propagation so an embedded host's scroll listeners don't see the gesture.
+  it.each([
+    ["pointerdown"],
+    ["pointermove"],
+    ["touchstart"],
+    ["touchmove"],
+  ])("stops propagation on %s", (type) => {
+    render();
+    const el = container.querySelector('[data-testid="click-overlay"]')!;
+    const event = new Event(type, { bubbles: true });
+    const spy = vi.spyOn(event, "stopPropagation");
+    act(() => {
+      el.dispatchEvent(event);
+    });
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it("fullscreen: click on an interactive child (button) is ignored", () => {
+    const { onPlayClick } = render({ isFullScreen: true });
+    const overlay = container.querySelector('[data-testid="click-overlay"]')!;
+    const btn = document.createElement("button");
+    overlay.appendChild(btn);
+    act(() => {
+      btn.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+    expect(onPlayClick).not.toHaveBeenCalled();
+  });
+
+  it("non-fullscreen: no containerId still updates mute state without emitting", () => {
+    const emitOrder: string[] = [];
+    testBus.on("ad:unmuteRequest", () => emitOrder.push("emit"));
+    onSetMuted = () => emitOrder.push("setMuted");
+    render({ isFullScreen: false, containerId: undefined });
+    const el = container.querySelector('[data-testid="click-overlay"]')!;
+    act(() => {
+      el.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+    // Video overlays carry no containerId: skip the emit, still update mute state.
+    expect(emitOrder).toEqual(["setMuted"]);
   });
 });

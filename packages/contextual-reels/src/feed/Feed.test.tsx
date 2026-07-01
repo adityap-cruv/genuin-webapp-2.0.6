@@ -7,6 +7,7 @@ import { createRoot } from "react-dom/client";
 import type { Root } from "react-dom/client";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
+import { Feed } from "@cxr/feed/Feed";
 import type { FeedEntry, TagResponse } from "@cxr/types";
 
 const { mockUseFullScreen, mockUseFeed, mockUseAdWaterfall, mockUsePlayer } = vi.hoisted(() => ({
@@ -86,7 +87,6 @@ vi.mock("../providers/AdProvider", () => ({
   useOptionalAdWaterfall: () => mockUseAdWaterfall(),
 }));
 
-import { Feed } from "@cxr/feed/Feed";
 
 const makeReelEntry = (id: number): FeedEntry => ({
   kind: "video",

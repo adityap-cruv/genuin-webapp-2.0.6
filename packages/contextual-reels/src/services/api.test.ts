@@ -3,7 +3,7 @@
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { handleResponse, __createApiFetch, getTag, getIpInfo } from "@cxr/services/api";
+import { handleResponse, __createApiFetch, apiFetch, getTag, getIpInfo } from "@cxr/services/api";
 
 // ─── handleResponse ───────────────────────────────────────────────────────────
 
@@ -65,6 +65,27 @@ describe("services/__createApiFetch", () => {
     const headers = init.headers as Headers;
     expect(headers.get("x-user-id")).toBe("uid-42");
     expect(headers.get("x-url")).toBe("https://host.example/page");
+
+    vi.unstubAllGlobals();
+  });
+
+  it("merges caller-supplied init.headers with the injected auth headers", async () => {
+    const fetchSpy = vi.fn().mockResolvedValue(makeFetchResponse({ data: {} }));
+    vi.stubGlobal("fetch", fetchSpy);
+
+    const apiFetch = __createApiFetch({
+      apiurl: "https://api.test.example",
+      getUserId: () => "uid-7",
+      getLocation: () => "https://host.example/page",
+    });
+
+    // Passing init WITH headers exercises the `init?.headers` truthy branch.
+    await apiFetch("/v1/foo", { headers: { "x-custom": "kept" } });
+
+    const [, init] = fetchSpy.mock.calls[0] as [string, RequestInit & { headers: Headers }];
+    const headers = init.headers as Headers;
+    expect(headers.get("x-custom")).toBe("kept");
+    expect(headers.get("x-user-id")).toBe("uid-7");
 
     vi.unstubAllGlobals();
   });
@@ -168,6 +189,23 @@ describe("services/__createApiFetch", () => {
   it("exports a singleton apiFetch bound to the production env at module load", async () => {
     const mod = await import("./api");
     expect(typeof mod.apiFetch).toBe("function");
+  });
+
+  it("singleton apiFetch invokes its getUserId/getLocation deps against the prod host", async () => {
+    const fetchSpy = vi.fn().mockResolvedValue(makeFetchResponse({ data: {} }));
+    vi.stubGlobal("fetch", fetchSpy);
+
+    // Hits the prod apiurl host so the header-injection branch runs, which in
+    // turn calls the singleton's getUserId() / getLocation() arrow deps.
+    await apiFetch("/goservices/ad_creative?tag_id=t-1");
+
+    const [url, init] = fetchSpy.mock.calls[0] as [string, RequestInit & { headers: Headers }];
+    expect(url).toBe("https://api.begenuin.com/goservices/ad_creative?tag_id=t-1");
+    const headers = init.headers as Headers;
+    // userId is a non-empty per-page-load id resolved via the getUserId() dep.
+    expect(headers.get("x-user-id")).toBeTruthy();
+
+    vi.unstubAllGlobals();
   });
 
   it("skips header injection when apiurl host cannot be parsed", async () => {

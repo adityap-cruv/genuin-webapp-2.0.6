@@ -7,12 +7,12 @@
  * @testing-library/react) to match this package's existing test convention and
  * avoid adding a test dependency.
  */
+import EmblaCarousel from "embla-carousel";
+import type { EmblaCarouselType } from "embla-carousel";
 import React from "react";
 import { act } from "react";
 import { createRoot } from "react-dom/client";
 import type { Root } from "react-dom/client";
-import EmblaCarousel from "embla-carousel";
-import type { EmblaCarouselType } from "embla-carousel";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { useEmblaCarousel } from "@cxr/feed/hooks/useEmblaCarousel";
@@ -58,8 +58,8 @@ function captureWheel(el: HTMLDivElement): () => WheelHandler {
   };
 }
 
-function makeWheel(deltaY: number): WheelEvent {
-  return { deltaY, deltaMode: 0, preventDefault: vi.fn() } as unknown as WheelEvent;
+function makeWheel(deltaY: number, deltaMode = 0, target: EventTarget | null = null): WheelEvent {
+  return { deltaY, deltaMode, target, preventDefault: vi.fn() } as unknown as WheelEvent;
 }
 
 describe("useEmblaCarousel enable/disable", () => {
@@ -162,5 +162,133 @@ describe("useEmblaCarousel enable/disable", () => {
     act(() => hook.viewportRef(el));
 
     expect(EmblaCarousel).toHaveBeenLastCalledWith(el, expect.objectContaining({ watchDrag: false }));
+  });
+
+  it("scrollNext/scrollPrev delegate to the live Embla API", () => {
+    const api = makeApi();
+    vi.mocked(EmblaCarousel).mockReturnValue(api as unknown as EmblaCarouselType);
+    act(() => hook.viewportRef(document.createElement("div")));
+
+    act(() => hook.scrollNext());
+    expect(api.scrollNext).toHaveBeenCalledTimes(1);
+    act(() => hook.scrollPrev());
+    expect(api.scrollPrev).toHaveBeenCalledTimes(1);
+  });
+
+  it("scrollNext/scrollPrev are no-ops before the viewport mounts", () => {
+    expect(() => {
+      act(() => hook.scrollNext());
+      act(() => hook.scrollPrev());
+    }).not.toThrow();
+  });
+
+  it("ignores a wheel gesture that originates inside a scrollable Octo/GenAI element", () => {
+    const api = makeApi();
+    vi.mocked(EmblaCarousel).mockReturnValue(api as unknown as EmblaCarouselType);
+    const el = document.createElement("div");
+    const getWheel = captureWheel(el);
+    act(() => hook.viewportRef(el));
+
+    const octo = document.createElement("div");
+    octo.className = "genai-sdk-container";
+    const child = document.createElement("div");
+    octo.appendChild(child);
+
+    const wheel = getWheel();
+    const evt = makeWheel(50, 0, child);
+    act(() => wheel(evt));
+    // Event left untouched — neither prevented nor scrolled.
+    expect(evt.preventDefault).not.toHaveBeenCalled();
+    expect(api.scrollNext).not.toHaveBeenCalled();
+  });
+
+  it("resets the accumulator when the gesture direction flips mid-swipe", () => {
+    const api = makeApi();
+    vi.mocked(EmblaCarousel).mockReturnValue(api as unknown as EmblaCarouselType);
+    const el = document.createElement("div");
+    const getWheel = captureWheel(el);
+    act(() => hook.viewportRef(el));
+    const wheel = getWheel();
+
+    // Down past threshold → scrollNext, then settle to unlock.
+    act(() => wheel(makeWheel(50)));
+    expect(api.scrollNext).toHaveBeenCalledTimes(1);
+    act(() => api.fireSettle());
+
+    // Flip direction (negative) — accumulator resets, then a big negative scrolls prev.
+    act(() => wheel(makeWheel(-50)));
+    expect(api.scrollPrev).toHaveBeenCalledTimes(1);
+  });
+
+  it("normalises Firefox line-mode (deltaMode 1) and page-mode (deltaMode 2) deltas to px", () => {
+    const api = makeApi();
+    vi.mocked(EmblaCarousel).mockReturnValue(api as unknown as EmblaCarouselType);
+    const el = document.createElement("div");
+    const getWheel = captureWheel(el);
+    act(() => hook.viewportRef(el));
+    const wheel = getWheel();
+
+    // deltaMode 1 (line): deltaY 2 × 16 = 32px > threshold → scrollNext.
+    act(() => wheel(makeWheel(2, 1)));
+    expect(api.scrollNext).toHaveBeenCalledTimes(1);
+    act(() => api.fireSettle());
+
+    // deltaMode 2 (page): deltaY 1 × 100 = 100px > threshold → scrollNext again.
+    act(() => wheel(makeWheel(1, 2)));
+    expect(api.scrollNext).toHaveBeenCalledTimes(2);
+  });
+
+  it("tears down the previous Embla instance when the viewport re-attaches", () => {
+    const first = makeApi();
+    const second = makeApi();
+    vi.mocked(EmblaCarousel)
+      .mockReturnValueOnce(first as unknown as EmblaCarouselType)
+      .mockReturnValueOnce(second as unknown as EmblaCarouselType);
+
+    act(() => hook.viewportRef(document.createElement("div")));
+    // Re-attaching a new node must destroy the first instance before creating the second.
+    act(() => hook.viewportRef(document.createElement("div")));
+    expect(first.destroy).toHaveBeenCalledTimes(1);
+  });
+
+  it("detaching the viewport (null node) tears the instance down", () => {
+    const api = makeApi();
+    vi.mocked(EmblaCarousel).mockReturnValue(api as unknown as EmblaCarouselType);
+    act(() => hook.viewportRef(document.createElement("div")));
+    act(() => hook.viewportRef(null));
+    expect(api.destroy).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("useEmblaCarousel onReady", () => {
+  let container: HTMLDivElement;
+  let root: Root;
+  let hook: UseEmblaCarouselResult;
+  const onReady = vi.fn();
+
+  function Host(): null {
+    hook = useEmblaCarousel({ onReady });
+    return null;
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    container = document.createElement("div");
+    document.body.appendChild(container);
+    root = createRoot(container);
+    act(() => root.render(React.createElement(Host)));
+  });
+
+  afterEach(() => {
+    act(() => root.unmount());
+    document.body.removeChild(container);
+    vi.restoreAllMocks();
+  });
+
+  it("invokes onReady with the live Embla API once the viewport mounts", () => {
+    const api = makeApi();
+    vi.mocked(EmblaCarousel).mockReturnValue(api as unknown as EmblaCarouselType);
+    act(() => hook.viewportRef(document.createElement("div")));
+    expect(onReady).toHaveBeenCalledWith(api);
   });
 });

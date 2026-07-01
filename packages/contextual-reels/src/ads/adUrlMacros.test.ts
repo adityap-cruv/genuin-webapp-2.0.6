@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 
 import { resolvePageUrl, resolveAdUrlMacros, resolveVideoAdMacros } from './adUrlMacros';
 
@@ -88,8 +88,6 @@ describe('resolveVideoAdMacros', () => {
 // ─── resolvePageUrl ───────────────────────────────────────────────────────────
 
 describe('resolvePageUrl', () => {
-  const originalWindow = global.window;
-
   afterEach(() => {
     vi.restoreAllMocks();
     // Restore window.parent to same-window reference
@@ -173,5 +171,23 @@ describe('resolvePageUrl', () => {
       configurable: true,
     });
     expect(resolvePageUrl()).toBe('https://cdn.example.com/widget.html');
+  });
+
+  it('returns an empty string when window is undefined (server-side rendering)', () => {
+    const originalWindow = globalThis.window;
+    Object.defineProperty(globalThis, 'window', {
+      value: undefined,
+      writable: true,
+      configurable: true,
+    });
+    try {
+      expect(resolvePageUrl()).toBe('');
+    } finally {
+      Object.defineProperty(globalThis, 'window', {
+        value: originalWindow,
+        writable: true,
+        configurable: true,
+      });
+    }
   });
 });

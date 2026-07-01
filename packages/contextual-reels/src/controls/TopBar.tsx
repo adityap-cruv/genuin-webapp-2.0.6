@@ -1,6 +1,7 @@
 "use client";
 
-import React, { lazy, Suspense } from "react";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
+import React, { lazy } from "react";
 
 import type { TopBarProps } from "@cxr/controls/control-layer.types";
 
@@ -11,8 +12,8 @@ const DefaultTopBar = lazy(() => import("./topbar/DefaultTopBar").then((m) => ({
  */
 export function TopBar({ variant, ...rest }: TopBarProps): React.JSX.Element {
   return (
-    <Suspense fallback={null}>
+    <SafeSuspense fallback={null}>
       <DefaultTopBar variant={variant} {...rest} />
-    </Suspense>
+    </SafeSuspense>
   );
 }

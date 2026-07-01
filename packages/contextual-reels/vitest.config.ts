@@ -28,7 +28,18 @@ export default defineConfig({
       reporter: ["text", "html"],
       reportsDirectory: "./coverage",
       include: ["src/**/*.{ts,tsx,js,jsx}"],
-      exclude: ["src/**/*.test.{ts,tsx,js,jsx}", "src/loader.js", "src/**/*.stories.{ts,tsx,js,jsx}"],
+      exclude: [
+        "src/**/*.test.{ts,tsx,js,jsx}",
+        "src/**/*.stories.{ts,tsx,js,jsx}",
+        // Browser-only bootstrap entrypoints: mount the widget into a real host
+        // node via createRoot + MutationObserver and use Date.now/Math.random.
+        // Exercised by E2E (tests/e2e), not unit-testable in jsdom.
+        "src/loader.jsx",
+        "src/index.jsx",
+        // Type-only declarations carry no executable lines.
+        "src/types.ts",
+        "src/**/*.d.ts",
+      ],
       thresholds: {
         perFile: true,
         lines: 85,

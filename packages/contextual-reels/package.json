@@ -40,6 +40,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "@genuin/components": "workspace:*",
     "@genuin/genai-sdk": "workspace:*",
     "@genuin/ui": "workspace:*",
     "embla-carousel": "^8.5.2",

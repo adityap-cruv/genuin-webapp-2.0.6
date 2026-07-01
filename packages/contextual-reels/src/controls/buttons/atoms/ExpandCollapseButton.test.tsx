@@ -47,4 +47,27 @@ describe('ExpandCollapseButton', () => {
     act(() => { container.querySelector('button')!.click(); });
     expect(handler).toHaveBeenCalledOnce();
   });
+
+  // Covers the optional `onClick?.()` branch: clicking without a handler must
+  // not throw (the `?.` short-circuits when onClick is undefined).
+  it('clicking with no onClick handler is a safe no-op', () => {
+    act(() => {
+      // onClick is typed required, but the component calls it as `onClick?.()`;
+      // omit it via cast to exercise that defensive optional-call branch.
+      root.render(<ExpandCollapseButton isFullScreen={false} {...({} as { onClick: () => void })} />);
+    });
+    expect(() => {
+      act(() => { container.querySelector('button')!.click(); });
+    }).not.toThrow();
+  });
+
+  // Covers the non-ghost branch of the className ternary (no GHOST_SHELL_CLASSES
+  // appended): the solid variant must not carry the ghost shell background.
+  it('applies solid variant classes without the ghost shell when variant=solid', () => {
+    act(() => {
+      root.render(<ExpandCollapseButton isFullScreen={false} onClick={() => undefined} variant="solid" />);
+    });
+    const btn = container.querySelector('button')!;
+    expect(btn.className).not.toContain('gencl:bg-[#00000066]');
+  });
 });

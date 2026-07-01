@@ -1,5 +1,6 @@
-import { AD_LAYOUT, type AdLayoutId } from "@cxr/config";
 import type { PlayerControlSize } from "@genuin/ui/player-controls";
+
+import { AD_LAYOUT, type AdLayoutId } from "@cxr/config";
 
 /** Single source of truth for V2 control sizes per CXR layout. Tune any cell here. */
 const CONTROL_SIZE_BY_LAYOUT: Record<AdLayoutId, { collapse: PlayerControlSize; fullscreen: PlayerControlSize }> = {

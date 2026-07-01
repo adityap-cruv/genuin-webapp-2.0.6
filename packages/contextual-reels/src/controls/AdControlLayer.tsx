@@ -1,7 +1,6 @@
 "use client";
 
 import { AD_LAYOUT } from "@cxr/config";
-import { ClickOverlay } from "@cxr/controls/ClickOverlay";
 import { AdControlBar } from "@cxr/controls/ad/AdControlBar";
 import { CompactControlBarOld } from "@cxr/controls/buttons/ControlButtons";
 import type { AdControlLayerProps } from "@cxr/controls/control-layer.types";
@@ -23,7 +22,6 @@ export function AdControlLayer({
   onPlayClick,
   onMuteClick,
   onFullScreenClick,
-  containerId,
   variant = "new",
 }: AdControlLayerProps) {
   const isCompact = isCompactLayout(adLayout);

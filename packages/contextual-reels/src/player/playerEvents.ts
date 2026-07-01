@@ -235,6 +235,9 @@ export function usePlayStartedEvents({
     }
 
     function sendPlayEvent(): void {
+      // Every call site already guards with `!_playSent`, so this early-return is
+      // never observed as true — a defensive idempotency guard, not a live branch.
+      /* v8 ignore next */
       if (_playSent) return;
       _playSent = true;
       sendEvent(EVENT.VIDEO_PLAY_STARTED, {});

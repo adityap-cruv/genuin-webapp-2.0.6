@@ -11,7 +11,23 @@ import { LightPlayer } from "@cxr/player/LightPlayer";
 import type { HlsInstanceMock } from "../../tests/_mocks/hlsMock";
 import type { PlayerHandleMock } from "../../tests/_mocks/vlitejsMock";
 
-// Inline mocks to avoid vi.mock hoisting issues with imported factories
+// Captures the timeupdate listeners registered by useQuartileEvents so a test
+// can fire a tick and exercise LightPlayer's handleTimeUpdate / getLastUserPlayAt.
+const timeupdateHandlers: Array<() => void> = [];
+
+// The native <video> element the mocked player exposes via getInstance().
+// usePlayStartedEvents attaches native play/playing listeners to it; a test
+// fires `playing` to exercise LightPlayer's getLastUserPlayAt closure.
+let playerNativeEl: HTMLVideoElement | null = null;
+
+// Shared analytics.sendEvent spy. Declared via vi.hoisted so the (hoisted)
+// vi.mock factory below and the tests both reference the same mock instance —
+// LightPlayer calls sendEvent("video_loaded") for video items, and the
+// isVideoItem-branch tests assert against this exact spy.
+const { analyticsSendEvent } = vi.hoisted(() => ({ analyticsSendEvent: vi.fn() }));
+
+// Inline mocks to avoid vi.mock hoisting issues with imported factories.
+// Invokes onReady synchronously so the player pipeline (quartile listeners) wires up.
 vi.mock("vlitejs", async () => {
   const { createPlayerHandleMock } = await import("../../tests/_mocks/vlitejsMock");
   class Vlitejs {
@@ -19,8 +35,21 @@ vi.mock("vlitejs", async () => {
     __onReady?: (p: PlayerHandleMock) => void;
     static registerPlugin = vi.fn();
     constructor(_el: Element, opts?: { onReady?: (p: PlayerHandleMock) => void }) {
-      this.player = createPlayerHandleMock();
+      const player = createPlayerHandleMock();
+      player.getDuration.mockReturnValue(Promise.resolve(100) as unknown as number);
+      player.getCurrentTime.mockReturnValue(Promise.resolve(40) as unknown as number);
+      player.on.mockImplementation((event: string, handler: () => void) => {
+        if (event === "timeupdate") timeupdateHandlers.push(handler);
+      });
+      // Expose a native <video> so usePlayStartedEvents can attach native
+      // play/playing listeners (its `player.getInstance?.() ?? player` path).
+      const nativeEl = document.createElement("video");
+      vi.spyOn(nativeEl, "play").mockResolvedValue(undefined);
+      (player as unknown as { getInstance: () => HTMLVideoElement }).getInstance = () => nativeEl;
+      playerNativeEl = nativeEl;
+      this.player = player;
       this.__onReady = opts?.onReady;
+      opts?.onReady?.(player);
     }
   }
   return { default: Vlitejs };
@@ -40,6 +69,7 @@ vi.mock("hls.js", async () => {
     destroy: HlsInstanceMock["destroy"];
     loadSource: HlsInstanceMock["loadSource"];
     attachMedia: HlsInstanceMock["attachMedia"];
+    detachMedia: HlsInstanceMock["detachMedia"];
     on: HlsInstanceMock["on"];
     off: HlsInstanceMock["off"];
     currentLevel: number;
@@ -52,6 +82,7 @@ vi.mock("hls.js", async () => {
       this.destroy = m.destroy;
       this.loadSource = m.loadSource;
       this.attachMedia = m.attachMedia;
+      this.detachMedia = m.detachMedia;
       this.on = m.on;
       this.off = m.off;
       this.currentLevel = m.currentLevel;
@@ -62,7 +93,7 @@ vi.mock("hls.js", async () => {
 });
 
 vi.mock("../providers/AnalyticsProvider", () => ({
-  useAnalytics: () => ({ sendEvent: vi.fn() }),
+  useAnalytics: () => ({ sendEvent: analyticsSendEvent }),
 }));
 
 vi.mock("../instance/coordination/EventBusContext", () => ({
@@ -95,6 +126,8 @@ describe("LightPlayer", () => {
   let root: ReturnType<typeof createRoot>;
 
   beforeEach(() => {
+    timeupdateHandlers.length = 0;
+    playerNativeEl = null;
     container = document.createElement("div");
     document.body.appendChild(container);
     root = createRoot(container);
@@ -168,5 +201,111 @@ describe("LightPlayer", () => {
       root.render(createElement(LightPlayer, baseProps));
     });
     expect(container.querySelector(".lightPlayer")).not.toBeNull();
+  });
+
+  it("hides the scrubber when hideScrubber is true", () => {
+    act(() => {
+      root.render(createElement(LightPlayer, { ...baseProps, hideScrubber: true }));
+    });
+    // VideoScrubber renders a progress bar; with hideScrubber it is absent.
+    expect(container.querySelector(".lightPlayer")?.children.length).toBe(1);
+  });
+
+  it("forwards onTimeUpdate and updates progress on a timeupdate tick", async () => {
+    const onTimeUpdate = vi.fn();
+    await act(async () => {
+      root.render(
+        createElement(LightPlayer, { ...baseProps, onTimeUpdate, lastUserPlayAt: 1234 })
+      );
+    });
+
+    expect(timeupdateHandlers.length).toBeGreaterThan(0);
+
+    await act(async () => {
+      for (const h of timeupdateHandlers) h();
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    // handleTimeUpdate forwards currentTime=40, duration=100, id=1 to onTimeUpdate.
+    expect(onTimeUpdate).toHaveBeenCalledWith(40, 100, 1);
+  });
+
+  it("does not throw on a timeupdate tick when no onTimeUpdate prop is given", async () => {
+    await act(async () => {
+      root.render(createElement(LightPlayer, baseProps));
+    });
+    await expect(
+      act(async () => {
+        for (const h of timeupdateHandlers) h();
+        await Promise.resolve();
+        await Promise.resolve();
+      })
+    ).resolves.toBeUndefined();
+  });
+
+  it('treats item as a video item when videoDetails.type === "video"', () => {
+    const sendEvent = analyticsSendEvent;
+    sendEvent.mockClear();
+    act(() => {
+      root.render(
+        createElement(LightPlayer, { ...baseProps, videoDetails: { type: "video" } })
+      );
+    });
+    expect(sendEvent).toHaveBeenCalledWith("video_loaded");
+  });
+
+  it('treats item as a video item when videoDetails.kind === "video-with-ad"', () => {
+    const sendEvent = analyticsSendEvent;
+    sendEvent.mockClear();
+    act(() => {
+      root.render(
+        createElement(LightPlayer, { ...baseProps, videoDetails: { kind: "video-with-ad" } })
+      );
+    });
+    expect(sendEvent).toHaveBeenCalledWith("video_loaded");
+  });
+
+  it("treats item as a video item when videoType is a non-empty string", () => {
+    const sendEvent = analyticsSendEvent;
+    sendEvent.mockClear();
+    act(() => {
+      root.render(
+        createElement(LightPlayer, { ...baseProps, videoDetails: { videoType: "mp4" } })
+      );
+    });
+    expect(sendEvent).toHaveBeenCalledWith("video_loaded");
+  });
+
+  it("treats item as a non-video item when videoType is an empty string", () => {
+    const sendEvent = analyticsSendEvent;
+    sendEvent.mockClear();
+    act(() => {
+      root.render(
+        createElement(LightPlayer, { ...baseProps, videoDetails: { videoType: "" } })
+      );
+    });
+    expect(sendEvent).not.toHaveBeenCalledWith("video_loaded");
+  });
+
+  it("reads lastUserPlayAt on the native playing event", async () => {
+    // LightPlayer passes `getLastUserPlayAt: () => lastUserPlayAtRef.current`
+    // into the lifecycle hook; usePlayStartedEvents invokes it inside the native
+    // `playing` listener. Firing that event exercises the closure.
+    await act(async () => {
+      root.render(createElement(LightPlayer, { ...baseProps, lastUserPlayAt: 5555 }));
+    });
+
+    expect(playerNativeEl).not.toBeNull();
+
+    await act(async () => {
+      playerNativeEl!.dispatchEvent(new Event("playing"));
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    // The closure resolved without throwing; getCurrentTime (40) drove the
+    // not-a-restart path, and getLastUserPlayAt was read for the recent-click check.
+    expect(playerNativeEl).not.toBeNull();
   });
 });

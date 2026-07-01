@@ -60,4 +60,23 @@ describe("InstanceContext", () => {
     act(() => rootB.unmount());
     containerB.remove();
   });
+
+  it("useInstanceId throws when used outside an InstanceProvider", () => {
+    let errorCaught = false;
+    function BadConsumer(): React.JSX.Element {
+      try {
+        useInstanceId();
+      } catch {
+        errorCaught = true;
+      }
+      return <span />;
+    }
+    container = document.createElement("div");
+    document.body.appendChild(container);
+    root = createRoot(container);
+    act(() => {
+      root.render(<BadConsumer />);
+    });
+    expect(errorCaught).toBe(true);
+  });
 });

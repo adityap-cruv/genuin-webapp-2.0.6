@@ -10,11 +10,14 @@ import {
   replaceProfileImageUrlForSmallDimensions,
   BLANK_HLS_URL,
   buildAdObject,
+  buildReelAdObject,
   buildReelAdObjectFromConfig,
   transformReelData,
   normaliseReel,
   normaliseAd,
   normaliseFeed,
+  normaliseDescription,
+  normaliseVideo,
   inferVideoAdPlatform,
   resolveReelAdConfig,
 } from "@cxr/feed/feedTransforms";
@@ -715,6 +718,141 @@ describe("normaliseAd — via buildAdObject", () => {
     expect(data.videoUrl).toBe(BLANK_HLS_URL);
     expect(data.videoPlatform).toBe("gen_video");
     expect(data.adUrl).toBe("https://ad.xml");
+  });
+
+  it("extracts advertiser details and contentVideo from the first video ad", () => {
+    const reel = {
+      type: "ads",
+      video_ad: [
+        {
+          url: "https://ad.xml",
+          platform: "ias",
+          advertiserDetails: { logo: "https://logo.png", primaryColor: "#FF0000" },
+          contentVideo: {
+            url: "https://content.mp4",
+            autoplay: true,
+            loop: false,
+            muted: true,
+            objectFit: "cover",
+          },
+        },
+      ],
+      display_ad: { platform: "gam" },
+      native_ad: { platform: "taboola" },
+    } as unknown as Reel;
+    const { data } = normaliseAd(reel, 0);
+    expect(data.videoAdAdvertiserDetails).toEqual({ logo: "https://logo.png", primaryColor: "#FF0000" });
+    expect(data.videoAdContentVideo?.url).toBe("https://content.mp4");
+    expect(data.displayPlatform).toBe("gam");
+    expect(data.nativePlatform).toBe("taboola");
+  });
+
+  it("omits advertiser details when neither logo nor primaryColor is present", () => {
+    const reel = {
+      type: "ads",
+      video_ad: [{ url: "https://ad.xml", platform: "ias", advertiserDetails: {} }],
+    } as unknown as Reel;
+    const { data } = normaliseAd(reel, 0);
+    expect(data.videoAdAdvertiserDetails).toBeUndefined();
+    expect(data.videoAdContentVideo).toBeUndefined();
+  });
+
+  it("derives audioAds and adUrl from an audio_ad object when video_ad is absent", () => {
+    const reel = {
+      type: "ads",
+      video_ad: undefined,
+      audio_ad: { url: "https://audio.example.com/ad.mp3" },
+    } as unknown as Reel;
+    const { data } = normaliseAd(reel, 0);
+    expect(data.audioAds).toBe(true);
+    expect(data.videoAds).toBe(false);
+    expect(data.videoAd).toBe("https://audio.example.com/ad.mp3");
+    expect(data.adUrl).toBe("https://audio.example.com/ad.mp3");
+    expect(data.videoUrl).toBeNull();
+  });
+
+  it("falls back to ads_url when the first array video ad has no url", () => {
+    const reel = {
+      type: "ads",
+      video_ad: [{ ads_url: "https://fallback.ads.xml", platform: "gen" }],
+    } as unknown as Reel;
+    const { data } = normaliseAd(reel, 1);
+    expect(data.adUrl).toBe("https://fallback.ads.xml");
+    expect(data.active).toBe(false);
+  });
+
+  it("honours an explicit backend gate_on_unmute, defaulting to false otherwise", () => {
+    const gated = { type: "ads", video_ad: [{ url: "u" }], gate_on_unmute: true } as unknown as Reel;
+    const ungated = { type: "ads", video_ad: [{ url: "u" }] } as unknown as Reel;
+    expect(normaliseAd(gated, 0).data.gateOnUnmute).toBe(true);
+    expect(normaliseAd(ungated, 0).data.gateOnUnmute).toBe(false);
+  });
+});
+
+describe("normaliseDescription", () => {
+  it("returns the value unchanged when undefined or empty", () => {
+    expect(normaliseDescription(undefined)).toBeUndefined();
+    expect(normaliseDescription("")).toBe("");
+  });
+
+  it("returns a plain string unchanged when it is not a JSON array literal", () => {
+    expect(normaliseDescription("just a caption")).toBe("just a caption");
+  });
+
+  it("unwraps the first element of a JSON-stringified array", () => {
+    expect(normaliseDescription('["first", "second"]')).toBe("first");
+  });
+
+  it("returns the original string when the array's first element is not a string", () => {
+    expect(normaliseDescription("[42]")).toBe("[42]");
+  });
+
+  it("returns the original string when the JSON is malformed", () => {
+    expect(normaliseDescription("[unterminated")).toBe("[unterminated");
+  });
+});
+
+describe("normaliseVideo", () => {
+  it("returns null when video is absent", () => {
+    expect(normaliseVideo(null)).toBeNull();
+  });
+
+  it("normalises the description on the video object", () => {
+    const video = { id: "v1", description: '["unwrapped"]' } as unknown as Parameters<typeof normaliseVideo>[0];
+    expect(normaliseVideo(video)?.description).toBe("unwrapped");
+  });
+});
+
+describe("buildReelAdObject", () => {
+  it("builds a fresh video ad-break object offset by the reel index", () => {
+    const ad = buildReelAdObject(3, true);
+    expect(ad.id).toBe(100_003);
+    expect(ad.videoAds).toBe(true);
+    expect(ad.audioAds).toBe(false);
+    expect(ad.videoUrl).toBe(BLANK_HLS_URL);
+    expect(ad.gateOnUnmute).toBe(true);
+    expect(Array.isArray(ad.videoAd)).toBe(true);
+  });
+
+  it("forwards the gateOnUnmute flag verbatim", () => {
+    expect(buildReelAdObject(0, false).gateOnUnmute).toBe(false);
+  });
+});
+
+describe("normaliseReel — mock ad-break fallback", () => {
+  it("attaches the mock waterfall adObject when adBreakEnabled and no backend config", () => {
+    const reel = { type: "loop", video: { id: "v", url: "https://p.m3u8" } } as unknown as Reel;
+    const { kind, data } = normaliseReel(reel, 1, "tag", true, true, false);
+    expect(kind).toBe("video-with-ad");
+    expect(data.adObject?.id).toBe(100_001);
+    expect(data.adObject?.gateOnUnmute).toBe(true);
+  });
+
+  it("treats a vast video_type as a blank-HLS organic reel", () => {
+    const reel = { type: "loop", video_type: "vast", video: { url: "ignored" } } as unknown as Reel;
+    const { data } = normaliseReel(reel, 0, "tag", false, false, false);
+    expect(data.videoUrl).toBe(BLANK_HLS_URL);
+    expect(data.videoType).toBe("vast");
   });
 });
 

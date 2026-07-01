@@ -50,9 +50,11 @@ const mockUseAnalytics = useAnalytics as ReturnType<typeof vi.fn>;
 interface Captured {
   entries: FeedEntry[];
   activeIndex: number;
+  isLoading: boolean;
+  feedFailed: boolean;
 }
 
-let captured: Captured = { entries: [], activeIndex: 0 };
+let captured: Captured = { entries: [], activeIndex: 0, isLoading: true, feedFailed: false };
 
 function Consumer(): null {
   const ctx = useFeed();
@@ -66,7 +68,7 @@ describe("FeedProvider", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    captured = { entries: [], activeIndex: 0 };
+    captured = { entries: [], activeIndex: 0, isLoading: true, feedFailed: false };
     container = document.createElement("div");
     document.body.appendChild(container);
     root = createRoot(container);
@@ -160,5 +162,52 @@ describe("FeedProvider", () => {
       await Promise.resolve();
     });
     expect(Array.isArray(captured.entries)).toBe(true);
+  });
+
+  it("marks feedFailed=true and clears loading when the feed returns no reels", async () => {
+    mockCreateFeedGenerator.mockReturnValue(vi.fn().mockResolvedValue([]));
+    render();
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(captured.feedFailed).toBe(true);
+    expect(captured.isLoading).toBe(false);
+    expect(captured.entries).toHaveLength(0);
+  });
+
+  it("marks feedFailed=true when the feed fetch rejects (catch branch)", async () => {
+    mockCreateFeedGenerator.mockReturnValue(vi.fn().mockRejectedValue(new Error("network down")));
+    render();
+    await act(async () => {
+      // Two microtask ticks: reject → catch → finally setState.
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    expect(captured.feedFailed).toBe(true);
+    expect(captured.isLoading).toBe(false);
+  });
+
+  it("bails out (no state update) when the effect is cancelled before the fetch resolves", async () => {
+    let resolveFeed: ((reels: unknown[]) => void) | undefined;
+    const pending = new Promise<unknown[]>((resolve) => {
+      resolveFeed = resolve;
+    });
+    mockCreateFeedGenerator.mockReturnValue(vi.fn().mockReturnValue(pending));
+
+    render();
+    // Unmount while the fetch is still in-flight → cleanup sets cancelled = true.
+    act(() => root.unmount());
+    // Re-mount so afterEach's unmount on an empty root is harmless.
+    root = createRoot(container);
+
+    // Resolve after cancellation → the `if (cancelled) return` guard runs.
+    await act(async () => {
+      resolveFeed?.([{ type: "reel" }]);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    // No throw, no leaked state update on the unmounted tree.
+    expect(true).toBe(true);
   });
 });

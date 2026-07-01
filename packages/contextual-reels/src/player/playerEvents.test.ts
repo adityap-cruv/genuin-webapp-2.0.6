@@ -9,6 +9,13 @@ import { createRoot } from "react-dom/client";
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 
 import { CxrEventBus } from "@cxr/instance/coordination/CxrEventBus";
+import {
+  useQuartileEvents,
+  usePlayStartedEvents,
+  useActiveVideoIdBroadcast,
+  RECENT_CLICK_WINDOW_MS,
+} from "@cxr/player/playerEvents";
+import type { PlayerHandle } from "@cxr/player/types";
 import { dispatchEvent } from "@cxr/utils/eventBus";
 
 // Mock useEventBus so useActiveVideoIdBroadcast receives the pre-created testBus.
@@ -17,14 +24,6 @@ let testBus: CxrEventBus;
 vi.mock("../instance/coordination/EventBusContext", () => ({
   useEventBus: () => testBus,
 }));
-
-import {
-  useQuartileEvents,
-  usePlayStartedEvents,
-  useActiveVideoIdBroadcast,
-  RECENT_CLICK_WINDOW_MS,
-} from "@cxr/player/playerEvents";
-import type { PlayerHandle } from "@cxr/player/types";
 
 // ─── useQuartileEvents tests ──────────────────────────────────────────────────
 
@@ -874,5 +873,213 @@ describe("useActiveVideoIdBroadcast — hook", () => {
       root.render(createElement(VideoIdWrapper, { videoId: undefined }));
     });
     expect(busEmitSpy.mock.calls.filter(([n]) => n === "genai:videoId")).toHaveLength(0);
+  });
+});
+
+// ─── error / edge branches ────────────────────────────────────────────────────
+
+describe("useQuartileEvents — error/edge branches", () => {
+  it("emits video_completed(0,0) when the ended-handler Promise.all rejects", async () => {
+    const listeners: Record<string, Array<() => void>> = {};
+    const sendEvent = vi.fn();
+    const player = {
+      getCurrentTime: vi.fn(() => Promise.reject(new Error("boom"))),
+      getDuration: vi.fn(() => Promise.reject(new Error("boom"))),
+      on: vi.fn((event: string, handler: () => void) => {
+        (listeners[event] ??= []).push(handler);
+      }),
+    };
+    const q = useQuartileEvents({
+      tagDetails: {},
+      videoDetails: {},
+      sendEvent,
+      onTimeUpdate: vi.fn(),
+      itemId: 1,
+      onEnded: vi.fn(),
+      isVideoItem: true,
+    });
+    q.attachToPlayer(player as unknown as PlayerHandle);
+
+    for (const h of listeners["ended"] ?? []) h();
+    await tick();
+
+    expect(sendEvent).toHaveBeenCalledWith("video_completed", { duration: 0, watch_time: 0 });
+  });
+
+  it("rounds non-finite duration/watch_time to 0 in the completed payload", async () => {
+    const listeners: Record<string, Array<() => void>> = {};
+    const sendEvent = vi.fn();
+    const player = {
+      // NaN/Infinity resolve values drive safeRound's non-finite (`isFinite`) false
+      // branch inside buildPayload for the ended → video_completed emit.
+      getCurrentTime: vi.fn(() => Promise.resolve(Infinity)),
+      getDuration: vi.fn(() => Promise.resolve(NaN)),
+      on: vi.fn((event: string, handler: () => void) => {
+        (listeners[event] ??= []).push(handler);
+      }),
+    };
+    const q = useQuartileEvents({
+      tagDetails: {},
+      videoDetails: {},
+      sendEvent,
+      onTimeUpdate: vi.fn(),
+      itemId: 1,
+      onEnded: vi.fn(),
+      isVideoItem: true,
+    });
+    q.attachToPlayer(player as unknown as PlayerHandle);
+
+    for (const h of listeners["ended"] ?? []) h();
+    await tick();
+
+    expect(sendEvent).toHaveBeenCalledWith("video_completed", { duration: 0, watch_time: 0 });
+  });
+
+  it("skips quartile math when duration is 0 (non-positive guard)", async () => {
+    const listeners: Record<string, Array<() => void>> = {};
+    const sendEvent = vi.fn();
+    const onTimeUpdate = vi.fn();
+    const player = {
+      // duration 0 → the `duration <= 0` guard returns before any quartile emits,
+      // and safeRound receives NaN watch_time to exercise its non-finite branch.
+      getCurrentTime: vi.fn(() => Promise.resolve(NaN)),
+      getDuration: vi.fn(() => Promise.resolve(0)),
+      on: vi.fn((event: string, handler: () => void) => {
+        (listeners[event] ??= []).push(handler);
+      }),
+    };
+    const q = useQuartileEvents({
+      tagDetails: {},
+      videoDetails: {},
+      sendEvent,
+      onTimeUpdate,
+      itemId: 7,
+      onEnded: vi.fn(),
+      isVideoItem: true,
+    });
+    q.attachToPlayer(player as unknown as PlayerHandle);
+
+    for (const h of listeners["timeupdate"] ?? []) h();
+    await tick();
+
+    expect(onTimeUpdate).toHaveBeenCalledWith(NaN, 0, 7);
+    expect(sendEvent).not.toHaveBeenCalled();
+  });
+});
+
+describe("usePlayStartedEvents — error/edge branches", () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("emits video_play_interrupted(0,0) when the pause Promise.all rejects", async () => {
+    const vlite: Record<string, Array<(e?: unknown) => void>> = {};
+    const sendEvent = vi.fn();
+    const videoEl = document.createElement("video");
+    const player = {
+      getCurrentTime: vi.fn(() => Promise.reject(new Error("boom"))),
+      getDuration: vi.fn(() => Promise.reject(new Error("boom"))),
+      getInstance: vi.fn(() => videoEl),
+      on: vi.fn((event: string, handler: (e?: unknown) => void) => {
+        (vlite[event] ??= []).push(handler);
+      }),
+    };
+    const hook = usePlayStartedEvents({
+      tagDetails: {},
+      videoDetails: {},
+      sendEvent,
+      getLastUserPlayAt: vi.fn(() => 0),
+      onPlayReset: vi.fn(),
+    });
+    hook.attachToPlayer(player as unknown as PlayerHandle);
+
+    for (const h of vlite["pause"] ?? []) h();
+    await tick();
+
+    expect(sendEvent).toHaveBeenCalledWith("video_play_interrupted", { duration: 0, watch_time: 0 });
+  });
+
+  it("emits video_started(0,0) and play_started when the playing getCurrentTime rejects", async () => {
+    const sendEvent = vi.fn();
+    const videoEl = document.createElement("video");
+    let ctCalls = 0;
+    const player = {
+      // First getCurrentTime (the isRestart check) rejects → fallback catch path.
+      // Subsequent calls (sendVideoStarted's Promise.all) also reject → 0,0 payload.
+      getCurrentTime: vi.fn(() => {
+        ctCalls += 1;
+        return Promise.reject(new Error("boom"));
+      }),
+      getDuration: vi.fn(() => Promise.reject(new Error("boom"))),
+      getInstance: vi.fn(() => videoEl),
+      on: vi.fn(),
+    };
+    const hook = usePlayStartedEvents({
+      tagDetails: {},
+      videoDetails: {},
+      sendEvent,
+      getLastUserPlayAt: vi.fn(() => Date.now()), // recent click
+      onPlayReset: vi.fn(),
+    });
+    hook.attachToPlayer(player as unknown as PlayerHandle);
+
+    videoEl.dispatchEvent(new Event("playing"));
+    await tick();
+    await tick();
+
+    expect(ctCalls).toBeGreaterThan(0);
+    const names = (sendEvent.mock.calls as Array<[string, ...unknown[]]>).map(([n]) => n);
+    expect(names).toContain("video_started");
+    expect(names).toContain("video_play_started");
+  });
+
+  it("uses the player itself as the native target when getInstance is absent", () => {
+    const sendEvent = vi.fn();
+    // No getInstance → `player.getInstance?.() ?? player` falls back to `player`,
+    // which HAS addEventListener, so listeners still attach without throwing.
+    const listeners: Record<string, Array<() => void>> = {};
+    const player = {
+      getCurrentTime: vi.fn(() => Promise.resolve(0)),
+      getDuration: vi.fn(() => Promise.resolve(100)),
+      on: vi.fn(),
+      addEventListener: vi.fn((type: string, cb: () => void) => {
+        (listeners[type] ??= []).push(cb);
+      }),
+    };
+    const hook = usePlayStartedEvents({
+      tagDetails: {},
+      videoDetails: {},
+      sendEvent,
+      getLastUserPlayAt: vi.fn(() => 0),
+      onPlayReset: vi.fn(),
+    });
+
+    expect(() => hook.attachToPlayer(player as unknown as PlayerHandle)).not.toThrow();
+    expect(player.addEventListener).toHaveBeenCalledWith("play", expect.any(Function));
+  });
+
+  it("swallows a throw while attaching the native play listeners", () => {
+    const sendEvent = vi.fn();
+    // addEventListener throwing forces the `catch (e)` around native attach.
+    const badEl = {
+      addEventListener: vi.fn(() => {
+        throw new Error("attach boom");
+      }),
+    };
+    const player = {
+      getCurrentTime: vi.fn(() => Promise.resolve(0)),
+      getDuration: vi.fn(() => Promise.resolve(100)),
+      getInstance: vi.fn(() => badEl as unknown as HTMLVideoElement),
+      on: vi.fn(),
+    };
+    const hook = usePlayStartedEvents({
+      tagDetails: {},
+      videoDetails: {},
+      sendEvent,
+      getLastUserPlayAt: vi.fn(() => 0),
+      onPlayReset: vi.fn(),
+    });
+
+    expect(() => hook.attachToPlayer(player as unknown as PlayerHandle)).not.toThrow();
   });
 });

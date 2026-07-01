@@ -4,7 +4,11 @@ import { createRoot, type Root } from "react-dom/client";
 import { describe, it, expect, vi, afterEach } from "vitest";
 
 import type { CxrEventBus } from "@cxr/instance/coordination/CxrEventBus";
-import { EventBusProvider, useEventBus } from "@cxr/instance/coordination/EventBusContext";
+import {
+  EventBusProvider,
+  useEventBus,
+  useOptionalEventBus,
+} from "@cxr/instance/coordination/EventBusContext";
 
 let container: HTMLDivElement;
 let root: Root;
@@ -105,5 +109,39 @@ describe("EventBusContext", () => {
     expect(handler).not.toHaveBeenCalled();
     act(() => rootB.unmount());
     containerB.remove();
+  });
+
+  it("useEventBus throws when used outside an EventBusProvider", () => {
+    let errorCaught = false;
+    function BadConsumer(): React.JSX.Element {
+      try {
+        useEventBus();
+      } catch {
+        errorCaught = true;
+      }
+      return <span />;
+    }
+    container = document.createElement("div");
+    document.body.appendChild(container);
+    root = createRoot(container);
+    act(() => {
+      root.render(<BadConsumer />);
+    });
+    expect(errorCaught).toBe(true);
+  });
+
+  it("useOptionalEventBus returns undefined outside a provider", () => {
+    const handle: { bus: CxrEventBus | undefined } = { bus: undefined };
+    function Consumer(): React.JSX.Element {
+      handle.bus = useOptionalEventBus();
+      return <span />;
+    }
+    container = document.createElement("div");
+    document.body.appendChild(container);
+    root = createRoot(container);
+    act(() => {
+      root.render(<Consumer />);
+    });
+    expect(handle.bus).toBeUndefined();
   });
 });
