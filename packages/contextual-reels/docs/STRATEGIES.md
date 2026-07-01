@@ -54,7 +54,9 @@ App  →  <StrategyProvider tagId>  →  resolveStrategies(tagId)  →  Strategi
 ```
 
 - `StrategyProvider` resolves **once per tag** (`useMemo`) and shares the result.
-  ([StrategyProvider.tsx:34](../src/strategies/StrategyProvider.tsx#L34))
+  It also rolls any per-tag **traffic experiment** at this point (see
+  [Experiments](#experiments)) and applies the winning overrides before sharing.
+  ([StrategyProvider.tsx](../src/strategies/StrategyProvider.tsx))
 - `useStrategy()` reads it. It does **not** throw outside a provider — a missing
   provider degrades to `DEFAULT_STRATEGIES` (every feature off), because strategies
   are an enhancement layer.
@@ -74,6 +76,7 @@ App  →  <StrategyProvider tagId>  →  resolveStrategies(tagId)  →  Strategi
 | `adsDisabled`         | `boolean` | `false` | Hard kill switch — no ads ever shown. Drops standalone ad slides and strips the organic ad break. Overrides `adBreakEnabled`. |
 | `mutePassback`        | `boolean` | `false` | On first `player:play`, start a timer; if still muted when it fires, trigger an ad passback (`onAdFail`). Distinct from `gateOnUnmute` — this passes the slot back rather than just suppressing the request. |
 | `mutePassbackDelayMs` | `number`  | `3000`  | Delay before the `mutePassback` timer fires, measured from the first `player:play`. Ignored unless `mutePassback` is on. |
+| `initialVolume`       | `number`  | `0`     | Volume (0..1) the feed starts at on first load. `0` plays unmuted-but-silent and shows the unmute prompt; set per-tag (e.g. `0.2`) to start audible. A browser autoplay block snaps it back to 0. |
 
 > Add a new toggle by extending `Strategies` + giving it a default in
 > `DEFAULT_STRATEGIES`. Consumers read it through `useStrategy()` unchanged.
@@ -91,6 +94,37 @@ Defined in [`strategyConfig.ts`](../src/strategies/strategyConfig.ts):
 | `singleHit` | `singleHitWaterfall` |
 
 Attach to a tag with `{ preset: "iheart", ...inlineOverrides }`. Inline keys win.
+
+---
+
+## Experiments
+
+`TAG_STRATEGIES` is **deterministic** per tag. For a randomised slice of traffic,
+use `TAG_EXPERIMENTS` (also in [`strategyConfig.ts`](../src/strategies/strategyConfig.ts)).
+An experiment applies its `overrides` on top of a tag's resolved strategies when a
+page load falls into the bucket (probability `sampleRate`).
+
+```ts
+// strategyConfig.ts
+export const TAG_EXPERIMENTS: Record<string, TagExperiment> = {
+  "6a032e34054c8fcb08582510": { sampleRate: 0.02, overrides: { mutePassback: false } },
+  "6a032de445fa9f171bd291cb": { sampleRate: 0.02, overrides: { mutePassback: false } },
+};
+```
+
+- **Roll site & cadence** — `StrategyProvider` draws `Math.random()` **once per
+  mount** inside `useMemo`, so the bucket is stable for the session but varies
+  page-load to page-load. (Not sticky per user — a returning user may land in a
+  different bucket next load.)
+- **Pure split** — the override logic is `applyExperiment(base, tagId, roll)` in
+  [`strategies.ts`](../src/strategies/strategies.ts): in-bucket when `roll <
+  sampleRate`, no-op otherwise and for tags with no experiment. The random draw
+  lives in the provider, not the function, so it stays unit-testable.
+
+**Current experiment** — tags `6a032e34054c8fcb08582510` / `6a032de445fa9f171bd291cb`
+already start at `initialVolume: 0` and fire the ad request immediately
+(`gateOnUnmute` is off). For **2%** of loads, `mutePassback` is suppressed so the
+volume-0 ad runs instead of being passed back after the muted-playback timer.
 
 ---
 

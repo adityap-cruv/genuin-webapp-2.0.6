@@ -36,7 +36,9 @@ export function replaceThumbnailUrlForSmallDimensions(thumbUrl: string): string 
   }
   const parts = thumbUrl.split("/thumbnails/");
   if (parts.length !== 2) {
-    thumbLogger.error("Thumbnail URL format is incorrect");
+    // Not an error: CDN thumbnails (e.g. bunny-CDN `.../thumbnail.jpg`) have no
+    // `/thumbnails/` segment and no `/s/` variant, so we use the URL as-is.
+    thumbLogger.debug("No /thumbnails/ segment; using thumbnail URL unchanged");
     return thumbUrl;
   }
   const [baseUrl, thumbnailPath] = parts as [string, string];
@@ -55,7 +57,9 @@ export function replaceProfileImageUrlForSmallDimensions(profileImageUrl: string
   }
   const parts = profileImageUrl.split("/profile_images/");
   if (parts.length !== 2) {
-    thumbLogger.error("Profile image URL format is incorrect");
+    // Not an error: some profile images have no `/profile_images/` segment and
+    // thus no `/s/` variant, so we use the URL as-is.
+    thumbLogger.debug("No /profile_images/ segment; using profile image URL unchanged");
     return profileImageUrl;
   }
   const [baseUrl, imagePath] = parts as [string, string];
@@ -93,7 +97,14 @@ export function normaliseDescription(description: string | undefined): string | 
  */
 export function normaliseVideo(video: NormalisedReel["video"]): NormalisedReel["video"] {
   if (!video) return null;
-  return { ...video, description: normaliseDescription(video.description) };
+  // The QA feed renamed the description fields: `description_text` (plain string)
+  // and `description_data` (JSON-array string, like the legacy `description`).
+  // Prefer the clean text, then the array form, then legacy — so every feed
+  // shape still feeds the ticker. normaliseDescription unwraps the array form
+  // and is a no-op for an already-plain string.
+  const raw = video as { description_text?: string; description_data?: string; description?: string };
+  const rawDescription = raw.description_text ?? raw.description_data ?? raw.description;
+  return { ...video, description: normaliseDescription(rawDescription) };
 }
 
 /**
@@ -402,10 +413,16 @@ export function inferVideoAdPlatform(adsUrl: string | undefined): string | undef
  * This is the real-data counterpart to the mock {@link buildReelAdObject}: the
  * organic video plays first, then this ad renders as the fullscreen break.
  *
- * @param adsConfig  The first element of `reel.ad_configs.video_ad`.
- * @param id         Slot id — offset by the caller to stay unique vs in-feed ads.
+ * @param adsConfig     The first element of `reel.ad_configs.video_ad`.
+ * @param id            Slot id — offset by the caller to stay unique vs in-feed ads.
+ * @param gateOnUnmute  Tag-level default applied when the backend `ads_config`
+ *                      omits an explicit `gate_on_unmute`.
  */
-export function buildReelAdObjectFromConfig(adsConfig: AdsConfig, id: number): NormalisedAd {
+export function buildReelAdObjectFromConfig(
+  adsConfig: AdsConfig,
+  id: number,
+  gateOnUnmute: boolean
+): NormalisedAd {
   return buildAdObject({
     id,
     active: false,
@@ -417,7 +434,8 @@ export function buildReelAdObjectFromConfig(adsConfig: AdsConfig, id: number): N
     videoAdAdvertiserDetails: adsConfig.advertiserDetails,
     videoAdContentVideo: adsConfig.contentVideo,
     adUrl: adsConfig.ads_url,
-    gateOnUnmute: adsConfig.gate_on_unmute,
+    // Backend value wins; fall back to the tag-level strategy default.
+    gateOnUnmute: adsConfig.gate_on_unmute ?? gateOnUnmute,
   });
 }
 
@@ -465,12 +483,22 @@ export function normaliseReel(
   // isAdsType check needed to distinguish vast-organic from ads-type reels
   const isAdsType = reel.type === "ads";
 
-  const videoUrl: string | null = isVastType ? BLANK_HLS_URL : ((reel.video as { url?: string } | null)?.url ?? null);
+  // The QA feed renamed the playback and thumbnail fields (`media_url_m3u8`,
+  // `thumbnail_url`). Read the new names first, falling back to the legacy
+  // `url`/`thumbnail` so a backend that has only rolled the rename out to some
+  // environments (e.g. QA ahead of prod) keeps serving playable content.
+  const rawVideo = reel.video as
+    | { url?: string; media_url_m3u8?: string; thumbnail?: string; thumbnail_url?: string }
+    | null;
+
+  const videoUrl: string | null = isVastType
+    ? BLANK_HLS_URL
+    : (rawVideo?.media_url_m3u8 ?? rawVideo?.url ?? null);
 
   const videoType: string | null =
     isVastType || (reel.video_type != null && !isAdsType) ? (reel.video_type as string) : null;
 
-  const rawThumb = (reel.video as { thumbnail?: string } | null)?.thumbnail ?? "";
+  const rawThumb = rawVideo?.thumbnail_url ?? rawVideo?.thumbnail ?? "";
   const thumb: string | null = replaceThumbnailUrlForSmallDimensions(rawThumb) || null;
 
   const rawProfileImage = (reel.owner as { profile_image?: string } | null)?.profile_image ?? "";
@@ -492,7 +520,7 @@ export function normaliseReel(
   const adObject: NormalisedAd | undefined = adsDisabled
     ? undefined
     : adsConfig?.ads_url
-      ? buildReelAdObjectFromConfig(adsConfig, REEL_AD_BREAK_ID_OFFSET + index)
+      ? buildReelAdObjectFromConfig(adsConfig, REEL_AD_BREAK_ID_OFFSET + index, gateOnUnmute)
       : adBreakEnabled
         ? buildReelAdObject(index, gateOnUnmute)
         : undefined;

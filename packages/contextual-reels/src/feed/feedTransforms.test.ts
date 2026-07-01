@@ -584,7 +584,7 @@ describe("buildAdObject", () => {
 describe("buildReelAdObjectFromConfig", () => {
   it("maps ads_config.ads_url onto a video ad break", () => {
     const cfg: AdsConfig = { ads_url: "https://triton/ars?stid=1" };
-    const ad = buildReelAdObjectFromConfig(cfg, 100_003);
+    const ad = buildReelAdObjectFromConfig(cfg, 100_003, true);
     expect(ad.id).toBe(100_003);
     expect(ad.videoAds).toBe(true);
     expect(ad.audioAds).toBe(false);
@@ -600,10 +600,22 @@ describe("buildReelAdObjectFromConfig", () => {
       advertiserDetails: { logo: "logo.png", primaryColor: "#F00" },
       contentVideo: { url: "c.mp4", autoplay: true, loop: true, muted: true, objectFit: "contain" },
     };
-    const ad = buildReelAdObjectFromConfig(cfg, 1);
+    const ad = buildReelAdObjectFromConfig(cfg, 1, true);
     expect(ad.videoPlatform).toBe("gen_video");
     expect(ad.videoAdAdvertiserDetails).toEqual({ logo: "logo.png", primaryColor: "#F00" });
     expect(ad.videoAdContentVideo?.url).toBe("c.mp4");
+  });
+
+  it("falls back to the tag-level gateOnUnmute when the backend omits it", () => {
+    const cfg: AdsConfig = { ads_url: "https://v.xml" };
+    expect(buildReelAdObjectFromConfig(cfg, 1, false).gateOnUnmute).toBe(false);
+    expect(buildReelAdObjectFromConfig(cfg, 1, true).gateOnUnmute).toBe(true);
+  });
+
+  it("lets an explicit backend gate_on_unmute win over the tag default", () => {
+    const cfg: AdsConfig = { ads_url: "https://v.xml", gate_on_unmute: false };
+    // Tag default is true, but the backend explicitly ungates.
+    expect(buildReelAdObjectFromConfig(cfg, 1, true).gateOnUnmute).toBe(false);
   });
 });
 
@@ -679,6 +691,104 @@ describe("normaliseReel — ad_configs", () => {
     const { kind, data } = normaliseReel(reel, 0, "tag", false, false, true);
     expect(kind).toBe("video");
     expect(data.adObject).toBeUndefined();
+  });
+});
+
+describe("normaliseReel — video source field compatibility", () => {
+  // The QA feed renamed the playback/thumbnail fields. normaliseReel must read
+  // the new names while still accepting the legacy ones so a backend that has
+  // only rolled the rename out to some environments keeps working.
+  it("reads videoUrl from the new video.media_url_m3u8 field", () => {
+    const reel = {
+      type: "loop",
+      video: { id: "vid", media_url_m3u8: "https://cdn/playlist.m3u8" },
+    } as unknown as Reel;
+    const { data } = normaliseReel(reel, 0, "tag", false, false, false);
+    expect(data.videoUrl).toBe("https://cdn/playlist.m3u8");
+  });
+
+  it("falls back to the legacy video.url field when media_url_m3u8 is absent", () => {
+    const reel = {
+      type: "loop",
+      video: { id: "vid", url: "https://cdn/legacy.m3u8" },
+    } as unknown as Reel;
+    const { data } = normaliseReel(reel, 0, "tag", false, false, false);
+    expect(data.videoUrl).toBe("https://cdn/legacy.m3u8");
+  });
+
+  it("prefers media_url_m3u8 over the legacy url when both are present", () => {
+    const reel = {
+      type: "loop",
+      video: { id: "vid", media_url_m3u8: "https://cdn/new.m3u8", url: "https://cdn/legacy.m3u8" },
+    } as unknown as Reel;
+    const { data } = normaliseReel(reel, 0, "tag", false, false, false);
+    expect(data.videoUrl).toBe("https://cdn/new.m3u8");
+  });
+
+  it("reads thumb from the new video.thumbnail_url field", () => {
+    const reel = {
+      type: "loop",
+      video: { id: "vid", media_url_m3u8: "https://cdn/playlist.m3u8", thumbnail_url: "https://cdn/thumbnails/t.jpg" },
+    } as unknown as Reel;
+    const { data } = normaliseReel(reel, 0, "tag", false, false, false);
+    expect(data.thumb).toContain("/thumbnails/s/");
+  });
+
+  it("falls back to the legacy video.thumbnail field when thumbnail_url is absent", () => {
+    const reel = {
+      type: "loop",
+      video: { id: "vid", media_url_m3u8: "https://cdn/playlist.m3u8", thumbnail: "https://cdn/thumbnails/legacy.jpg" },
+    } as unknown as Reel;
+    const { data } = normaliseReel(reel, 0, "tag", false, false, false);
+    expect(data.thumb).toContain("/thumbnails/s/legacy.jpg");
+  });
+
+  it("leaves videoUrl null when neither media_url_m3u8 nor url is present", () => {
+    const reel = { type: "loop", video: { id: "vid" } } as unknown as Reel;
+    const { data } = normaliseReel(reel, 0, "tag", false, false, false);
+    expect(data.videoUrl).toBeNull();
+  });
+
+  it("reads the description ticker from the new video.description_text field", () => {
+    const reel = {
+      type: "loop",
+      video: { id: "vid", media_url_m3u8: "https://cdn/playlist.m3u8", description_text: "A plain description" },
+    } as unknown as Reel;
+    const { data } = normaliseReel(reel, 0, "tag", false, false, false);
+    expect(data.video?.description).toBe("A plain description");
+  });
+
+  it("unwraps the JSON-array video.description_data field when description_text is absent", () => {
+    const reel = {
+      type: "loop",
+      video: { id: "vid", media_url_m3u8: "https://cdn/playlist.m3u8", description_data: '["Array form text"]' },
+    } as unknown as Reel;
+    const { data } = normaliseReel(reel, 0, "tag", false, false, false);
+    expect(data.video?.description).toBe("Array form text");
+  });
+
+  it("prefers description_text over description_data and legacy description", () => {
+    const reel = {
+      type: "loop",
+      video: {
+        id: "vid",
+        media_url_m3u8: "https://cdn/playlist.m3u8",
+        description_text: "Preferred text",
+        description_data: '["Array form"]',
+        description: '["Legacy"]',
+      },
+    } as unknown as Reel;
+    const { data } = normaliseReel(reel, 0, "tag", false, false, false);
+    expect(data.video?.description).toBe("Preferred text");
+  });
+
+  it("falls back to the legacy video.description field when the new fields are absent", () => {
+    const reel = {
+      type: "loop",
+      video: { id: "vid", media_url_m3u8: "https://cdn/playlist.m3u8", description: '["Legacy array text"]' },
+    } as unknown as Reel;
+    const { data } = normaliseReel(reel, 0, "tag", false, false, false);
+    expect(data.video?.description).toBe("Legacy array text");
   });
 });
 

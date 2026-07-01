@@ -7,6 +7,7 @@
 import { describe, it, expect } from "vitest";
 
 import {
+  applyExperiment,
   resolveStrategies,
   isAdBreakEnabled,
   isGateOnUnmuteEnabled,
@@ -25,7 +26,9 @@ const SINGLE_HIT_TAG = "69b298e3d6a6ad57e7b9a464";
 const MUTE_PASSBACK_TAG = "69b298e3d6a6ad57e7b9a464";
 const UNKNOWN_TAG = "aaaabbbbccccdddd11112222";
 // Configured with initialVolume: 0.2 (see strategyConfig.ts).
-const INITIAL_VOLUME_TAG = "6a3aa8244da8cd92d289cc72";
+const INITIAL_VOLUME_TAG = "6a2fefd87ce338c3a5afc605";
+// Tags with the 2% mute-passback-suppression experiment (see TAG_EXPERIMENTS).
+const EXPERIMENT_TAG = "6a032e34054c8fcb08582510";
 
 describe("strategies/resolveStrategies — cascade", () => {
   it("returns all-off defaults for an unknown tag", () => {
@@ -64,6 +67,37 @@ describe("strategies/resolveStrategies — cascade", () => {
 
   it("applies a tag's configured initialVolume", () => {
     expect(resolveStrategies(INITIAL_VOLUME_TAG).initialVolume).toBe(0.2);
+  });
+});
+
+describe("strategies/applyExperiment — 2% mute-passback suppression", () => {
+  it("leaves strategies unchanged for a tag with no experiment", () => {
+    const base = resolveStrategies(AD_BREAK_TAG);
+    // Even a roll of 0 (always-in-bucket) is a no-op when the tag has no experiment.
+    expect(applyExperiment(base, AD_BREAK_TAG, 0)).toEqual(base);
+  });
+
+  it("suppresses mutePassback when the roll lands in the 2% bucket", () => {
+    const base = resolveStrategies(EXPERIMENT_TAG);
+    expect(base.mutePassback).toBe(true);
+    // roll < 0.02 → in bucket.
+    const result = applyExperiment(base, EXPERIMENT_TAG, 0.01);
+    expect(result.mutePassback).toBe(false);
+    // Other flags are untouched.
+    expect(result.singleHitWaterfall).toBe(base.singleHitWaterfall);
+  });
+
+  it("keeps mutePassback for the 98% outside the bucket", () => {
+    const base = resolveStrategies(EXPERIMENT_TAG);
+    // roll >= 0.02 → not in bucket.
+    expect(applyExperiment(base, EXPERIMENT_TAG, 0.02).mutePassback).toBe(true);
+    expect(applyExperiment(base, EXPERIMENT_TAG, 0.5).mutePassback).toBe(true);
+  });
+
+  it("skips the experiment when skip is true, even for an in-bucket roll", () => {
+    const base = resolveStrategies(EXPERIMENT_TAG);
+    // roll 0.01 would normally be in the 2% bucket; skip=true forces base.
+    expect(applyExperiment(base, EXPERIMENT_TAG, 0.01, true)).toEqual(base);
   });
 });
 

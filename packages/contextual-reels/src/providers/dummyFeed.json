@@ -49,8 +49,9 @@
         "type": "loop",
         "video": {
           "created_at": "2024-09-24T09:46:00.116Z",
-          "description": "[\"Podcast Comedian delivers a satirical monologue on encountering a pregnant woman using crack, highlighting the absurd inequities in fertility and parenting. Their comedic social commentary underscores the disparities between unintended pregnancy and the struggles of hopeful parents.\"]",
-          "id": "c2769b48-5407-45df-9c0c-3cbbf99c863d",
+          "description_text": "Dutton Ranch' Men Share the Secret to a Good Cowboy Look",
+          "description_data": "[\"Dutton Ranch' Men Share the Secret to a Good Cowboy Look\"]",
+          "id": "76ec168b-69a8-4f97-bbb4-ff99461b8f87",
           "link": "",
           "metadata": {
             "aspect_ratio": "9:16",

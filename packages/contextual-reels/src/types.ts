@@ -140,10 +140,21 @@ export interface Reel {
   /** Video metadata returned alongside the reel. */
   video?: {
     id?: string;
+    /** Legacy playback URL. Superseded by {@link media_url_m3u8}; read as a fallback. */
     url?: string;
+    /** HLS playback URL (current QA feed field). Preferred over legacy {@link url}. */
+    media_url_m3u8?: string;
     slug?: string;
+    /** Legacy thumbnail URL. Superseded by {@link thumbnail_url}; read as a fallback. */
     thumbnail?: string;
+    /** Thumbnail URL (current QA feed field). Preferred over legacy {@link thumbnail}. */
+    thumbnail_url?: string;
+    /** Legacy description (often a JSON-array string). Superseded by {@link description_text}. */
     description?: string;
+    /** Plain-text description (current QA feed field). Preferred for the ticker. */
+    description_text?: string;
+    /** JSON-array-string description (current QA feed field). Fallback after {@link description_text}. */
+    description_data?: string;
     share_string?: string;
     /**
      * Legacy per-reel ad-break config nested on the video object. Superseded by

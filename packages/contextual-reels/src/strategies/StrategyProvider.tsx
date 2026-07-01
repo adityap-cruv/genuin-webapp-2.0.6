@@ -7,10 +7,12 @@
 import { createContext, useContext, useMemo, type ReactNode } from "react";
 
 import {
+  applyExperiment,
   DEFAULT_STRATEGIES,
   resolveStrategies,
   type Strategies,
 } from "@cxr/strategies/strategies";
+import { isAdVerificationCrawler } from "@cxr/utils/ads";
 
 const StrategyContext = createContext<Strategies | undefined>(undefined);
 
@@ -31,7 +33,21 @@ interface StrategyProviderProps {
  * ```
  */
 export function StrategyProvider({ children, tagId }: StrategyProviderProps): ReactNode {
-  const value = useMemo(() => resolveStrategies(tagId), [tagId]);
+  // Roll the experiment bucket once per mount (per page load): the draw is taken
+  // inside useMemo keyed on tagId so the bucket stays stable for the session but
+  // varies load-to-load. applyExperiment is a no-op for tags with no experiment.
+  // Ad-verification crawlers (il.advtq) skip the experiment entirely and behave
+  // like the un-sampled majority.
+  const value = useMemo(
+    () =>
+      applyExperiment(
+        resolveStrategies(tagId),
+        tagId,
+        Math.random(),
+        isAdVerificationCrawler()
+      ),
+    [tagId]
+  );
   return <StrategyContext.Provider value={value}>{children}</StrategyContext.Provider>;
 }
 

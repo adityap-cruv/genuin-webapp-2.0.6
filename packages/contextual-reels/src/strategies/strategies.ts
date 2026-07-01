@@ -10,7 +10,7 @@
  * behaviour. To add a feature toggle, extend {@link Strategies} and give it a
  * default here; consumers read it through {@link resolveStrategies} unchanged.
  */
-import { STRATEGY_PRESETS, TAG_STRATEGIES } from "@cxr/strategies/strategyConfig";
+import { STRATEGY_PRESETS, TAG_EXPERIMENTS, TAG_STRATEGIES } from "@cxr/strategies/strategyConfig";
 
 /** Resolved feature decisions for the active tag. */
 export interface Strategies {
@@ -84,6 +84,33 @@ export function resolveStrategies(tagId: string): Strategies {
     ...(preset ? STRATEGY_PRESETS[preset] : {}),
     ...tagOverrides,
   };
+}
+
+/**
+ * Apply a tag's traffic experiment (if any) on top of its resolved strategies.
+ *
+ * Pure and total: `roll` and `skip` are caller-supplied (the random draw and
+ * crawler detection live in {@link StrategyProvider}, not here, so this stays
+ * testable). The load is in the experiment bucket when `roll < sampleRate`; only
+ * then are the experiment's `overrides` applied. Tags with no experiment, a roll
+ * outside the bucket, or `skip = true` return `base` unchanged.
+ *
+ * @param base   Resolved strategies from {@link resolveStrategies}.
+ * @param tagId  Active tag id — keys into {@link TAG_EXPERIMENTS}.
+ * @param roll   Random draw in `[0, 1)` for this page load.
+ * @param skip   Skip the experiment entirely (e.g. ad-verification crawlers) —
+ *               the load then behaves like the un-sampled majority.
+ */
+export function applyExperiment(
+  base: Strategies,
+  tagId: string,
+  roll: number,
+  skip = false
+): Strategies {
+  if (skip) return base;
+  const experiment = TAG_EXPERIMENTS[tagId];
+  if (!experiment || roll >= experiment.sampleRate) return base;
+  return { ...base, ...experiment.overrides };
 }
 
 // ─── Backward-compatible per-feature predicates ─────────────────────────────────
