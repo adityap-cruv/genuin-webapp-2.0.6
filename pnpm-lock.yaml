@@ -839,6 +839,9 @@ importers:
 
   packages/contextual-reels:
     dependencies:
+      '@genuin/components':
+        specifier: workspace:*
+        version: link:../components
       '@genuin/genai-sdk':
         specifier: workspace:*
         version: link:../genai
