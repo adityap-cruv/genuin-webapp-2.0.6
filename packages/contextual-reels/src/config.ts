@@ -157,10 +157,12 @@ export const STACKED_LAYOUT_TAGS: Readonly<Record<string, StackedLayoutConfig>> 
     width: 320,
     infolinks: { width: 320, height: 50 },
   },
-  // 300×600 → 300×300 (our L2 full player) + 300×300 Infolinks.
+  // 300×600 → 300×300 (our L1 full player) + 300×300 Infolinks.
+  // L1 fills its container (h-full/w-full), so the player fills the 300×300 half
+  // exactly; L2 is dimensionally locked to 300×250 and would leave a 50px gap.
   "69b298e3d6a6ad57e7b9a464": {
     requiredLayout: AD_LAYOUT.L1,
-    ourLayout: AD_LAYOUT.L2,
+    ourLayout: AD_LAYOUT.L1,
     halfHeight: 300,
     width: 300,
     infolinks: { width: 300, height: 300 },

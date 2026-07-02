@@ -255,7 +255,7 @@ describe("config/stackedLayout", () => {
     const c300 = resolveStackedLayout(TAG_300x600, AD_LAYOUT.L1);
     expect(c300).toEqual({
       requiredLayout: AD_LAYOUT.L1,
-      ourLayout: AD_LAYOUT.L2,
+      ourLayout: AD_LAYOUT.L1,
       halfHeight: 300,
       width: 300,
       infolinks: { width: 300, height: 300 },
@@ -273,7 +273,7 @@ describe("config/stackedLayout", () => {
     setSearch("?gen_variant=stacked", "", "localhost");
     const c = resolveStackedLayout("some-other-tag", AD_LAYOUT.L1);
     expect(c?.infolinks).toEqual({ width: 300, height: 300 });
-    expect(c?.ourLayout).toBe(AD_LAYOUT.L2);
+    expect(c?.ourLayout).toBe(AD_LAYOUT.L1);
   });
 
   it("registry contains both opted-in tags", () => {

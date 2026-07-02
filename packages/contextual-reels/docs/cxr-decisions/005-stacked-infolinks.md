@@ -11,7 +11,7 @@ when the partner page carries `?gen_variant=stacked`. Two tags opt in today:
 | Tag id                       | Slot     | Layout | Top half (ours)      | Bottom half (Infolinks) |
 | ---------------------------- | -------- | ------ | -------------------- | ----------------------- |
 | `6a032e34054c8fcb08582510`   | 320×100  | L4     | 320×50 — L3 compact  | 320×50                  |
-| `69b298e3d6a6ad57e7b9a464`   | 300×600  | L1     | 300×300 — L2 player  | 300×300                 |
+| `69b298e3d6a6ad57e7b9a464`   | 300×600  | L1     | 300×300 — L1 player  | 300×300                 |
 
 Three decisions had to be made:
 
