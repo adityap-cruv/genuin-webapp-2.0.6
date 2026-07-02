@@ -78,6 +78,8 @@ export const TAG_EXPERIMENTS: Record<string, TagExperiment> = {
  *   GENAI_ENABLED_TAG_IDS was empty → no entries.
  */
 export const TAG_STRATEGIES: Record<string, TagStrategyEntry> = {
+  // Dev slot (index.html): start audible at 20%; other defaults unchanged.
+  "697c46aa9f432b1a2055e803": { initialVolume: 0.2 },
   // gateOnUnmute:true gates the 98% (request waits for unmute); the 2%
   // experiment below ungates it. Needed because DEFAULT_STRATEGIES.gateOnUnmute
   // is false, so without this the base would ungate every load. initialVolume
