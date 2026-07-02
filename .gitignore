@@ -78,6 +78,9 @@ next-env.d.ts
 
 *.html
 !packages/hierarchical-tree/src/dev/index.html
+!packages/contextual-reels/public/infolinks-test.html
+!packages/contextual-reels/public/infolinks-inner-320x50.html
+!packages/contextual-reels/public/infolinks-inner-300x300.html
 
 packages/web-sdk/stats.json
 # Playwright

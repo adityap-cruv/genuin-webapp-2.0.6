@@ -14,8 +14,17 @@ import {
   isGenAiAllowed,
   isAdBreakEnabled,
   isIframe,
+  hasStackedVariant,
+  shouldUseStackedLayout,
+  resolveStackedLayout,
+  isLocalhost,
+  STACKED_LAYOUT_TAG_ID,
+  STACKED_LAYOUT_TAGS,
   type AdLayoutId,
 } from "@cxr/config";
+
+/** The 300×600 tag registered for the stacked layout. */
+const TAG_300x600 = "69b298e3d6a6ad57e7b9a464";
 
 // ─── env constants ────────────────────────────────────────────────────────────
 
@@ -118,6 +127,159 @@ describe("config/fullscreenAdBreak", () => {
   it("rejects unlisted and empty tag ids", () => {
     expect(isAdBreakEnabled("not-a-listed-tag")).toBe(false);
     expect(isAdBreakEnabled("")).toBe(false);
+  });
+});
+
+// ─── Stacked layout ───────────────────────────────────────────────────────────
+
+describe("config/stackedLayout", () => {
+  /**
+   * Stub `window.location` (search + hostname) and `window.top.location.search`.
+   * Defaults `hostname` to a non-local host so the tag-id gate is exercised;
+   * pass a local host explicitly to test the localhost bypass.
+   */
+  function setSearch(current: string, top?: string, hostname = "example.com") {
+    Object.defineProperty(window, "location", {
+      configurable: true,
+      value: { search: current, hostname },
+    });
+    Object.defineProperty(window, "top", {
+      configurable: true,
+      get() {
+        if (top === "throw") throw new Error("SecurityError: cross-origin");
+        return { location: { search: top ?? "" } };
+      },
+    });
+  }
+
+  afterEach(() => {
+    Object.defineProperty(window, "location", {
+      configurable: true,
+      value: { search: "", hostname: "example.com" },
+    });
+    Object.defineProperty(window, "top", {
+      configurable: true,
+      get() {
+        return window;
+      },
+    });
+  });
+
+  it("detects variant=stacked in the current frame", () => {
+    setSearch("?variant=stacked");
+    expect(hasStackedVariant()).toBe(true);
+  });
+
+  it("detects variant=stacked in the top frame when absent here", () => {
+    setSearch("?foo=bar", "?variant=stacked");
+    expect(hasStackedVariant()).toBe(true);
+  });
+
+  it("returns false when the param is absent in both frames", () => {
+    setSearch("?variant=default", "?other=1");
+    expect(hasStackedVariant()).toBe(false);
+  });
+
+  it("returns false (not throw) when top-frame access is cross-origin blocked", () => {
+    setSearch("?foo=bar", "throw");
+    expect(hasStackedVariant()).toBe(false);
+  });
+
+  it("activates only for the opted-in tag at L4 with the param present", () => {
+    setSearch("?variant=stacked");
+    expect(shouldUseStackedLayout(STACKED_LAYOUT_TAG_ID, AD_LAYOUT.L4)).toBe(true);
+  });
+
+  it("does not activate for a different tag id", () => {
+    setSearch("?variant=stacked");
+    expect(shouldUseStackedLayout("some-other-tag", AD_LAYOUT.L4)).toBe(false);
+  });
+
+  it("does not activate for a non-L4 layout", () => {
+    setSearch("?variant=stacked");
+    expect(shouldUseStackedLayout(STACKED_LAYOUT_TAG_ID, AD_LAYOUT.L3)).toBe(false);
+    expect(shouldUseStackedLayout(STACKED_LAYOUT_TAG_ID, AD_LAYOUT.L1)).toBe(false);
+  });
+
+  it("does not activate when the param is missing", () => {
+    setSearch("?variant=default");
+    expect(shouldUseStackedLayout(STACKED_LAYOUT_TAG_ID, AD_LAYOUT.L4)).toBe(false);
+  });
+
+  it("detects local development hosts", () => {
+    setSearch("", "", "localhost");
+    expect(isLocalhost()).toBe(true);
+    setSearch("", "", "127.0.0.1");
+    expect(isLocalhost()).toBe(true);
+    setSearch("", "", "my-machine.local");
+    expect(isLocalhost()).toBe(true);
+    setSearch("", "", "example.com");
+    expect(isLocalhost()).toBe(false);
+  });
+
+  it("relaxes the tag-id gate on localhost (any 320×100 slot)", () => {
+    setSearch("?variant=stacked", "", "localhost");
+    expect(shouldUseStackedLayout("some-other-tag", AD_LAYOUT.L4)).toBe(true);
+  });
+
+  it("still enforces L4 + param on localhost", () => {
+    setSearch("?variant=stacked", "", "localhost");
+    expect(shouldUseStackedLayout("some-other-tag", AD_LAYOUT.L3)).toBe(false);
+    setSearch("?variant=default", "", "localhost");
+    expect(shouldUseStackedLayout("some-other-tag", AD_LAYOUT.L4)).toBe(false);
+  });
+
+  // ── Second registered tag: 300×600 (L1) → 300×300 halves ──
+
+  it("activates the 300×600 tag at L1 with the param present", () => {
+    setSearch("?variant=stacked");
+    expect(shouldUseStackedLayout(TAG_300x600, AD_LAYOUT.L1)).toBe(true);
+  });
+
+  it("does not activate the 300×600 tag at the wrong layout", () => {
+    setSearch("?variant=stacked");
+    expect(shouldUseStackedLayout(TAG_300x600, AD_LAYOUT.L4)).toBe(false);
+    expect(shouldUseStackedLayout(TAG_300x600, AD_LAYOUT.L2)).toBe(false);
+  });
+
+  it("resolves the correct config per tag", () => {
+    setSearch("?variant=stacked");
+    const c320 = resolveStackedLayout(STACKED_LAYOUT_TAG_ID, AD_LAYOUT.L4);
+    expect(c320).toEqual({
+      requiredLayout: AD_LAYOUT.L4,
+      ourLayout: AD_LAYOUT.L3,
+      halfHeight: 50,
+      width: 320,
+      infolinks: { width: 320, height: 50 },
+    });
+    const c300 = resolveStackedLayout(TAG_300x600, AD_LAYOUT.L1);
+    expect(c300).toEqual({
+      requiredLayout: AD_LAYOUT.L1,
+      ourLayout: AD_LAYOUT.L2,
+      halfHeight: 300,
+      width: 300,
+      infolinks: { width: 300, height: 300 },
+    });
+  });
+
+  it("returns null from resolveStackedLayout when it should not stack", () => {
+    setSearch("?variant=stacked");
+    expect(resolveStackedLayout("some-other-tag", AD_LAYOUT.L1)).toBeNull(); // wrong tag, prod host
+    setSearch("?variant=default");
+    expect(resolveStackedLayout(STACKED_LAYOUT_TAG_ID, AD_LAYOUT.L4)).toBeNull(); // no param
+  });
+
+  it("relaxes the tag-id gate on localhost for the 300×600 layout too", () => {
+    setSearch("?variant=stacked", "", "localhost");
+    const c = resolveStackedLayout("some-other-tag", AD_LAYOUT.L1);
+    expect(c?.infolinks).toEqual({ width: 300, height: 300 });
+    expect(c?.ourLayout).toBe(AD_LAYOUT.L2);
+  });
+
+  it("registry contains both opted-in tags", () => {
+    expect(Object.keys(STACKED_LAYOUT_TAGS)).toEqual(
+      expect.arrayContaining([STACKED_LAYOUT_TAG_ID, TAG_300x600])
+    );
   });
 });
 

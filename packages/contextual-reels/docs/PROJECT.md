@@ -294,4 +294,5 @@ Full historical data in [build-metrics/PERFORMANCE_MATRIX.md](build-metrics/PERF
 
 - [ADR 001 — Drop Swiper](cxr-decisions/001-drop-swiper.md)
 - [ADR 003 — MutationObserver scope](cxr-decisions/003-mutation-observer-scope.md)
+- [ADR 005 — Stacked layout + Infolinks](cxr-decisions/005-stacked-infolinks.md)
 - [Bundle baseline & metrics](build-metrics/PERFORMANCE_MATRIX.md)

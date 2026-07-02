@@ -8,7 +8,8 @@ import { EVENT, sendEventLogFromGlobals } from "@cxr/analytics/analytics";
 import { getDeviceDetailsSnapshot } from "@cxr/platform/device";
 import { userId } from "@cxr/userId";
 import { windowLink } from "@cxr/platform/topWindow";
-import { resolveAdLayout } from "@cxr/config";
+import { resolveAdLayout, resolveStackedLayout } from "@cxr/config";
+import { setupStackedRows } from "@cxr/utils/infolinks";
 import { buildPublicApi } from "@cxr/publicApi";
 import { getInstanceRegistry } from "@cxr/instance/registry/InstanceRegistry";
 import { setupCxrShadowDOM } from "@cxr/shadow-dom";
@@ -153,12 +154,24 @@ async function init() {
     if (node.id) {
       getInstanceRegistry().registerAlias(node.id, instanceId);
     }
+
+    // Resolve the slot layout up front so we can decide whether this is the
+    // stacked 320×100 variant before mounting.
+    const rect = node.getBoundingClientRect();
+    const resolvedLayout = resolveAdLayout(rect.width, rect.height);
+
+    // Stacked variant: split the slot into two equal halves — our widget mounts
+    // into the top row (as the config's `ourLayout`); Infolinks fills the bottom.
+    const stackedConfig = resolveStackedLayout(tagId, resolvedLayout);
+    const mountHost = stackedConfig ? setupStackedRows(node, stackedConfig) : node;
+    const adLayout = stackedConfig ? stackedConfig.ourLayout : resolvedLayout;
+
     // Enable Shadow DOM by default for style isolation.
     const DEFAULT_SHADOW_DOM_SUPPORT = true;
 
     // Shadow DOM remains enabled unless explicitly disabled.
     const useShadowDom = DEFAULT_SHADOW_DOM_SUPPORT || node.getAttribute(DATA_ATTR_SHADOW_DOM_OPT_IN) === "true";
-    const shadowConfig = useShadowDom ? await mountWithShadow(node) : mountDirect(node);
+    const shadowConfig = useShadowDom ? await mountWithShadow(mountHost) : mountDirect(mountHost);
     const { mountTarget } = shadowConfig;
 
     const root = createRoot(mountTarget);
@@ -174,9 +187,6 @@ async function init() {
     // directly — so observing `node`'s own childList would never fire.
     const observeTarget = node.parentNode ?? document.body;
     observer.observe(observeTarget, { childList: true });
-
-    const rect = node.getBoundingClientRect();
-    const adLayout = resolveAdLayout(rect.width, rect.height);
 
     root.render(
       <ShadowDomProvider config={shadowConfig.enabled ? shadowConfig : null}>

@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <!-- 300x300 host document for the Infolinks in-place unit. Loaded via
+         iframe src so Infolinks sees a real document URL (not about:srcdoc). -->
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 300px;
+        height: 300px;
+        overflow: hidden;
+      }
+    </style>
+    <script type="text/javascript">
+      window.infolinks_config = {
+        pid: 3446242,
+        iframe: true,
+        inplace_slot: {
+          width: 300,
+          height: 300,
+          plugin_version: "Genuin",
+          keepFrame: true,
+        },
+      };
+    </script>
+    <script type="text/javascript" src="https://resources.infolinks.com/js/infolinks_main.js"></script>
+  </head>
+  <body></body>
+</html>

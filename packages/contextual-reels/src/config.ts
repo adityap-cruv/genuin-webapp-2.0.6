@@ -108,6 +108,135 @@ export function resolveAdLayout(width = 0, height = 0): AdLayoutId {
   return exact ? exact.id : AD_LAYOUT.Unknown;
 }
 
+// ─── Stacked layout ───────────────────────────────────────────────────────────
+//
+// A stacked slot is split into two equal halves: our widget on top and an
+// Infolinks in-place unit below. Two tags opt in today:
+//   - 320×100 (L4): top 320×50 (our L3) + bottom 320×50 Infolinks.
+//   - 300×600 (L1): top 300×300 (our L2) + bottom 300×300 Infolinks.
+// Activation requires the `variant=stacked` URL param (this frame or the top
+// frame) plus a matching tag id — relaxed to any matching slot size on
+// localhost so either layout can be tested without the production tag id.
+
+/** URL query param that opts a supported slot into the stacked layout. */
+export const STACKED_VARIANT_PARAM = "variant";
+
+/** Value of {@link STACKED_VARIANT_PARAM} that activates the stacked layout. */
+export const STACKED_VARIANT_VALUE = "stacked";
+
+/** Infolinks publisher id used for the bottom Infolinks in-place unit. */
+export const INFOLINKS_PID = 3446242;
+
+/** Per-tag stacked layout configuration. */
+export interface StackedLayoutConfig {
+  /** The layout the embedded slot must resolve to for this tag. */
+  readonly requiredLayout: AdLayoutId;
+  /** The layout our widget renders in the top half. */
+  readonly ourLayout: AdLayoutId;
+  /** Height in CSS px of each half (both halves are equal). */
+  readonly halfHeight: number;
+  /** Width in CSS px of the stacked slot (and each half). */
+  readonly width: number;
+  /** Infolinks `inplace_slot` size for the bottom half. */
+  readonly infolinks: { readonly width: number; readonly height: number };
+}
+
+/**
+ * Registry of tags that opt into the stacked layout, keyed by tag id.
+ * Add a tag here to enable stacking for it.
+ */
+export const STACKED_LAYOUT_TAGS: Readonly<Record<string, StackedLayoutConfig>> = {
+  // 320×100 → 320×50 (our L3 compact) + 320×50 Infolinks.
+  "6a032e34054c8fcb08582510": {
+    requiredLayout: AD_LAYOUT.L4,
+    ourLayout: AD_LAYOUT.L3,
+    halfHeight: 50,
+    width: 320,
+    infolinks: { width: 320, height: 50 },
+  },
+  // 300×600 → 300×300 (our L2 full player) + 300×300 Infolinks.
+  "69b298e3d6a6ad57e7b9a464": {
+    requiredLayout: AD_LAYOUT.L1,
+    ourLayout: AD_LAYOUT.L2,
+    halfHeight: 300,
+    width: 300,
+    infolinks: { width: 300, height: 300 },
+  },
+};
+
+/**
+ * The first opted-in tag (320×100). Retained as a named export for tests and
+ * back-compat; prefer {@link STACKED_LAYOUT_TAGS} for lookups.
+ */
+export const STACKED_LAYOUT_TAG_ID = "6a032e34054c8fcb08582510";
+
+/**
+ * Read {@link STACKED_VARIANT_PARAM} from this frame's URL and — when it is not
+ * present here — from the top frame's URL. Cross-origin access to
+ * `window.top.location` throws a `SecurityError`, which is swallowed (treated as
+ * absent). Mirrors {@link isAdVerificationCrawler}'s current-then-top probe.
+ */
+export function hasStackedVariant(): boolean {
+  if (typeof window === "undefined") return false;
+  const matches = (search: string): boolean =>
+    new URLSearchParams(search).get(STACKED_VARIANT_PARAM) === STACKED_VARIANT_VALUE;
+
+  if (matches(window.location.search)) return true;
+  try {
+    return matches(window.top?.location.search ?? "");
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Whether the widget is running on a local development host (localhost,
+ * 127.0.0.1, [::1], or a `*.local` hostname). Used to relax the tag-id gate so
+ * the stacked layout can be exercised locally against any supported slot size.
+ */
+export function isLocalhost(): boolean {
+  if (typeof window === "undefined") return false;
+  const host = window.location.hostname;
+  return host === "localhost" || host === "127.0.0.1" || host === "[::1]" || host.endsWith(".local");
+}
+
+/**
+ * Resolve the stacked layout config for a slot, or `null` when it should not
+ * stack. Requires the `variant=stacked` URL param plus a supported slot layout.
+ *
+ * In production the tag id must be registered in {@link STACKED_LAYOUT_TAGS} and
+ * the slot must resolve to that tag's `requiredLayout`. On a local development
+ * host ({@link isLocalhost}) the tag-id check is relaxed: any slot whose
+ * resolved layout matches a registered `requiredLayout` stacks, so both the
+ * 320×100 and 300×600 variants can be tested with `?variant=stacked`.
+ */
+export function resolveStackedLayout(
+  tagId: string | null | undefined,
+  adLayout: AdLayoutId
+): StackedLayoutConfig | null {
+  if (!hasStackedVariant()) return null;
+
+  if (tagId && tagId in STACKED_LAYOUT_TAGS) {
+    const config = STACKED_LAYOUT_TAGS[tagId];
+    return config && config.requiredLayout === adLayout ? config : null;
+  }
+
+  if (isLocalhost()) {
+    const match = Object.values(STACKED_LAYOUT_TAGS).find((c) => c.requiredLayout === adLayout);
+    return match ?? null;
+  }
+
+  return null;
+}
+
+/**
+ * Whether a slot should render the stacked layout. Thin boolean wrapper over
+ * {@link resolveStackedLayout}.
+ */
+export function shouldUseStackedLayout(tagId: string | null | undefined, adLayout: AdLayoutId): boolean {
+  return resolveStackedLayout(tagId, adLayout) !== null;
+}
+
 // ─── Tag strategy predicates ────────────────────────────────────────────────
 // Predicates live in strategies/strategies.ts (thin wrappers over the cascade
 // resolver) — re-exported here so existing @cxr/config imports keep working.
