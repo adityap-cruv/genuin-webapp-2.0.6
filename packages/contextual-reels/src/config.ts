@@ -114,12 +114,15 @@ export function resolveAdLayout(width = 0, height = 0): AdLayoutId {
 // Infolinks in-place unit below. Two tags opt in today:
 //   - 320×100 (L4): top 320×50 (our L3) + bottom 320×50 Infolinks.
 //   - 300×600 (L1): top 300×300 (our L2) + bottom 300×300 Infolinks.
-// Activation requires the `variant=stacked` URL param (this frame or the top
+// Activation requires the `gen_variant=stacked` URL param (this frame or the top
 // frame) plus a matching tag id — relaxed to any matching slot size on
 // localhost so either layout can be tested without the production tag id.
 
-/** URL query param that opts a supported slot into the stacked layout. */
-export const STACKED_VARIANT_PARAM = "variant";
+/**
+ * URL query param that opts a supported slot into the stacked layout.
+ * Prefixed with `gen_` to avoid colliding with a publisher's own `variant` param.
+ */
+export const STACKED_VARIANT_PARAM = "gen_variant";
 
 /** Value of {@link STACKED_VARIANT_PARAM} that activates the stacked layout. */
 export const STACKED_VARIANT_VALUE = "stacked";
@@ -202,13 +205,13 @@ export function isLocalhost(): boolean {
 
 /**
  * Resolve the stacked layout config for a slot, or `null` when it should not
- * stack. Requires the `variant=stacked` URL param plus a supported slot layout.
+ * stack. Requires the `gen_variant=stacked` URL param plus a supported slot layout.
  *
  * In production the tag id must be registered in {@link STACKED_LAYOUT_TAGS} and
  * the slot must resolve to that tag's `requiredLayout`. On a local development
  * host ({@link isLocalhost}) the tag-id check is relaxed: any slot whose
  * resolved layout matches a registered `requiredLayout` stacks, so both the
- * 320×100 and 300×600 variants can be tested with `?variant=stacked`.
+ * 320×100 and 300×600 variants can be tested with `?gen_variant=stacked`.
  */
 export function resolveStackedLayout(
   tagId: string | null | undefined,

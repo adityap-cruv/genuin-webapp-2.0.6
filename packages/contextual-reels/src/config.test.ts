@@ -165,18 +165,18 @@ describe("config/stackedLayout", () => {
     });
   });
 
-  it("detects variant=stacked in the current frame", () => {
-    setSearch("?variant=stacked");
+  it("detects gen_variant=stacked in the current frame", () => {
+    setSearch("?gen_variant=stacked");
     expect(hasStackedVariant()).toBe(true);
   });
 
-  it("detects variant=stacked in the top frame when absent here", () => {
-    setSearch("?foo=bar", "?variant=stacked");
+  it("detects gen_variant=stacked in the top frame when absent here", () => {
+    setSearch("?foo=bar", "?gen_variant=stacked");
     expect(hasStackedVariant()).toBe(true);
   });
 
   it("returns false when the param is absent in both frames", () => {
-    setSearch("?variant=default", "?other=1");
+    setSearch("?gen_variant=default", "?other=1");
     expect(hasStackedVariant()).toBe(false);
   });
 
@@ -186,23 +186,23 @@ describe("config/stackedLayout", () => {
   });
 
   it("activates only for the opted-in tag at L4 with the param present", () => {
-    setSearch("?variant=stacked");
+    setSearch("?gen_variant=stacked");
     expect(shouldUseStackedLayout(STACKED_LAYOUT_TAG_ID, AD_LAYOUT.L4)).toBe(true);
   });
 
   it("does not activate for a different tag id", () => {
-    setSearch("?variant=stacked");
+    setSearch("?gen_variant=stacked");
     expect(shouldUseStackedLayout("some-other-tag", AD_LAYOUT.L4)).toBe(false);
   });
 
   it("does not activate for a non-L4 layout", () => {
-    setSearch("?variant=stacked");
+    setSearch("?gen_variant=stacked");
     expect(shouldUseStackedLayout(STACKED_LAYOUT_TAG_ID, AD_LAYOUT.L3)).toBe(false);
     expect(shouldUseStackedLayout(STACKED_LAYOUT_TAG_ID, AD_LAYOUT.L1)).toBe(false);
   });
 
   it("does not activate when the param is missing", () => {
-    setSearch("?variant=default");
+    setSearch("?gen_variant=default");
     expect(shouldUseStackedLayout(STACKED_LAYOUT_TAG_ID, AD_LAYOUT.L4)).toBe(false);
   });
 
@@ -218,32 +218,32 @@ describe("config/stackedLayout", () => {
   });
 
   it("relaxes the tag-id gate on localhost (any 320×100 slot)", () => {
-    setSearch("?variant=stacked", "", "localhost");
+    setSearch("?gen_variant=stacked", "", "localhost");
     expect(shouldUseStackedLayout("some-other-tag", AD_LAYOUT.L4)).toBe(true);
   });
 
   it("still enforces L4 + param on localhost", () => {
-    setSearch("?variant=stacked", "", "localhost");
+    setSearch("?gen_variant=stacked", "", "localhost");
     expect(shouldUseStackedLayout("some-other-tag", AD_LAYOUT.L3)).toBe(false);
-    setSearch("?variant=default", "", "localhost");
+    setSearch("?gen_variant=default", "", "localhost");
     expect(shouldUseStackedLayout("some-other-tag", AD_LAYOUT.L4)).toBe(false);
   });
 
   // ── Second registered tag: 300×600 (L1) → 300×300 halves ──
 
   it("activates the 300×600 tag at L1 with the param present", () => {
-    setSearch("?variant=stacked");
+    setSearch("?gen_variant=stacked");
     expect(shouldUseStackedLayout(TAG_300x600, AD_LAYOUT.L1)).toBe(true);
   });
 
   it("does not activate the 300×600 tag at the wrong layout", () => {
-    setSearch("?variant=stacked");
+    setSearch("?gen_variant=stacked");
     expect(shouldUseStackedLayout(TAG_300x600, AD_LAYOUT.L4)).toBe(false);
     expect(shouldUseStackedLayout(TAG_300x600, AD_LAYOUT.L2)).toBe(false);
   });
 
   it("resolves the correct config per tag", () => {
-    setSearch("?variant=stacked");
+    setSearch("?gen_variant=stacked");
     const c320 = resolveStackedLayout(STACKED_LAYOUT_TAG_ID, AD_LAYOUT.L4);
     expect(c320).toEqual({
       requiredLayout: AD_LAYOUT.L4,
@@ -263,14 +263,14 @@ describe("config/stackedLayout", () => {
   });
 
   it("returns null from resolveStackedLayout when it should not stack", () => {
-    setSearch("?variant=stacked");
+    setSearch("?gen_variant=stacked");
     expect(resolveStackedLayout("some-other-tag", AD_LAYOUT.L1)).toBeNull(); // wrong tag, prod host
-    setSearch("?variant=default");
+    setSearch("?gen_variant=default");
     expect(resolveStackedLayout(STACKED_LAYOUT_TAG_ID, AD_LAYOUT.L4)).toBeNull(); // no param
   });
 
   it("relaxes the tag-id gate on localhost for the 300×600 layout too", () => {
-    setSearch("?variant=stacked", "", "localhost");
+    setSearch("?gen_variant=stacked", "", "localhost");
     const c = resolveStackedLayout("some-other-tag", AD_LAYOUT.L1);
     expect(c?.infolinks).toEqual({ width: 300, height: 300 });
     expect(c?.ourLayout).toBe(AD_LAYOUT.L2);

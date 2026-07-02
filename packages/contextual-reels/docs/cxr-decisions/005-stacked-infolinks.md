@@ -6,7 +6,7 @@
 
 Certain tags need to render as a **stacked** pair — our widget in the top half
 and a third-party Infolinks in-place unit (pid `3446242`) in the bottom half —
-when the partner page carries `?variant=stacked`. Two tags opt in today:
+when the partner page carries `?gen_variant=stacked`. Two tags opt in today:
 
 | Tag id                       | Slot     | Layout | Top half (ours)      | Bottom half (Infolinks) |
 | ---------------------------- | -------- | ------ | -------------------- | ----------------------- |
@@ -49,14 +49,14 @@ it manages its own frame there as it expects. The slot size in the config
 the right creative size per tag.
 
 **Relax the tag-id gate on localhost.** In production the gate requires a
-registered tag id *and* its `requiredLayout` *and* the `variant=stacked` param.
+registered tag id *and* its `requiredLayout` *and* the `gen_variant=stacked` param.
 On a local host (`isLocalhost()` — `localhost`, `127.0.0.1`, `[::1]`, `*.local`)
 the tag-id check is skipped: any slot whose resolved layout matches a registered
 `requiredLayout` stacks, picking up that entry's config. The layout and param
 requirements still hold everywhere, so local behaviour stays faithful to
 production and the bypass can never fire on a real domain.
 
-The `variant=stacked` param is read from this frame and — when absent here — the
+The `gen_variant=stacked` param is read from this frame and — when absent here — the
 top frame, swallowing the cross-origin `SecurityError` (same probe pattern as
 `isAdVerificationCrawler` / `hasStackedVariant`).
 
