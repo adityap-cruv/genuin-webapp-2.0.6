@@ -57,6 +57,7 @@ function buildInfolinksSrcDoc({ width, height }: InfolinksSize): string {
     inplace_slot: {
       width,
       height,
+      ad: "genuin",
       plugin_version: "Genuin",
       keepFrame: true,
     },

@@ -32,6 +32,7 @@ describe("utils/infolinks", () => {
     expect(frame.srcdoc).toContain(`"pid":${INFOLINKS_PID}`);
     expect(frame.srcdoc).toContain(`"width":320`);
     expect(frame.srcdoc).toContain(`"height":50`);
+    expect(frame.srcdoc).toContain(`"ad":"genuin"`);
     expect(frame.srcdoc).toContain(`"plugin_version":"Genuin"`);
     expect(frame.srcdoc).toContain(`"keepFrame":true`);
     expect(frame.srcdoc).toContain("https://resources.infolinks.com/js/infolinks_main.js");
