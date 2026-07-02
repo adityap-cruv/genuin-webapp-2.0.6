@@ -3,6 +3,7 @@ import { describe, it, expect } from "vitest";
 import { INFOLINKS_PID, STACKED_LAYOUT_TAGS } from "@cxr/config";
 import {
   createInfolinksFrame,
+  resolvePageUrl,
   setupStackedRows,
   STACKED_TOP_ATTR,
   STACKED_BOTTOM_ATTR,
@@ -40,6 +41,19 @@ describe("utils/infolinks", () => {
     const frame = createInfolinksFrame({ width: 300, height: 300 });
     expect(frame.srcdoc).toContain(`"width":300`);
     expect(frame.srcdoc).toContain(`"height":300`);
+  });
+
+  it("injects the resolved page URL as purl", () => {
+    const purl = resolvePageUrl();
+    // In JSDOM windowLink resolves to the test page URL, so purl is defined.
+    expect(purl).toBeTruthy();
+    const frame = createInfolinksFrame({ width: 320, height: 50 });
+    expect(frame.srcdoc).toContain(`"purl":${JSON.stringify(purl)}`);
+  });
+
+  it("resolvePageUrl prefers the outermost accessible window href", () => {
+    // JSDOM: window is top, so this is window.location.href.
+    expect(resolvePageUrl()).toBe(window.location.href);
   });
 });
 

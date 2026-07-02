@@ -10,6 +10,7 @@
  */
 
 import { INFOLINKS_PID, type StackedLayoutConfig } from "@cxr/config";
+import { windowLink } from "@cxr/platform/topWindow";
 
 const INFOLINKS_SCRIPT_SRC = "https://resources.infolinks.com/js/infolinks_main.js";
 
@@ -20,13 +21,38 @@ interface InfolinksSize {
 }
 
 /**
+ * Resolve the publisher page URL to pass to Infolinks as `purl`.
+ *
+ * Infolinks uses `purl` to attribute the slot to the hosting page. From inside
+ * our own (often cross-origin) ad iframe it would otherwise default to
+ * `about:srcdoc`, which Infolinks cannot attribute — so we resolve the real page
+ * URL on our end and inject it:
+ *   1. {@link windowLink} — the outermost accessible window's href (the true
+ *      publisher URL when same-origin).
+ *   2. `document.referrer` — the page that embedded us (reliable when the top
+ *      frame is cross-origin and `windowLink` only sees our own frame).
+ *   3. `location.href` — last resort.
+ * Returns `undefined` when none are available (SSR / no browser).
+ */
+export function resolvePageUrl(): string | undefined {
+  if (windowLink) return windowLink;
+  if (typeof document !== "undefined" && document.referrer) return document.referrer;
+  if (typeof window !== "undefined") return window.location.href;
+  return undefined;
+}
+
+/**
  * Build the `srcdoc` HTML for the Infolinks host iframe. The document is sized
  * to the given dimensions with no margins so the in-place unit fills the row
  * exactly.
  */
 function buildInfolinksSrcDoc({ width, height }: InfolinksSize): string {
+  const purl = resolvePageUrl();
   const config = {
     pid: INFOLINKS_PID,
+    // Attribution URL resolved on our end — see resolvePageUrl(). Omitted when
+    // unresolvable so we never send an empty/`about:srcdoc` purl.
+    ...(purl ? { purl } : {}),
     iframe: true,
     inplace_slot: {
       width,

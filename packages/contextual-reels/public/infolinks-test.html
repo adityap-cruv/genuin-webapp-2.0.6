@@ -48,6 +48,46 @@
         display: block;
         border: 0;
       }
+      .readout {
+        margin-top: 10px;
+        font-size: 12px;
+        line-height: 1.6;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        color: #333;
+      }
+      .readout .row {
+        display: flex;
+        gap: 8px;
+        align-items: baseline;
+      }
+      .readout .k {
+        color: #888;
+        min-width: 150px;
+        flex: 0 0 auto;
+      }
+      .readout .v {
+        word-break: break-all;
+      }
+      .readout .ok {
+        color: #1a7f37;
+      }
+      .readout .bad {
+        color: #cf222e;
+      }
+      .readout .pending {
+        color: #9a6700;
+      }
+      .purl-banner {
+        max-width: 640px;
+        font-size: 12px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        background: #eef6ff;
+        border: 1px solid #b6d4fe;
+        border-radius: 6px;
+        padding: 10px 12px;
+        margin-bottom: 20px;
+        word-break: break-all;
+      }
     </style>
   </head>
   <body>
@@ -60,39 +100,81 @@
       <code>infolinks</code> to confirm the script and any ad requests fire.
     </div>
 
+    <div class="purl-banner">
+      <strong>Resolved purl (what we inject):</strong>
+      <span id="resolved-purl">…</span>
+    </div>
+
     <div class="case">
       <h2>320×50 — via <code>srcdoc</code> (what the 320×100 stacked tag does)</h2>
       <div class="slot" data-slot="320x50"></div>
+      <div class="readout" data-readout="320x50"></div>
     </div>
 
     <div class="case">
       <h2>300×300 — via <code>srcdoc</code> (what the 300×600 stacked tag does)</h2>
       <div class="slot" data-slot="300x300"></div>
+      <div class="readout" data-readout="300x300"></div>
     </div>
 
     <div class="case">
       <h2>320×50 — via iframe <code>src</code> (real document URL)</h2>
       <div class="slot">
-        <iframe src="/infolinks-inner-320x50.html" width="320" height="50" title="Infolinks 320x50 (src)"></iframe>
+        <iframe
+          src="/infolinks-inner-320x50.html"
+          width="320"
+          height="50"
+          title="Infolinks 320x50 (src)"
+          data-src-frame="320x50"></iframe>
       </div>
+      <div class="readout" data-readout="src-320x50"></div>
     </div>
 
     <div class="case">
       <h2>300×300 — via iframe <code>src</code> (real document URL)</h2>
       <div class="slot">
-        <iframe src="/infolinks-inner-300x300.html" width="300" height="300" title="Infolinks 300x300 (src)"></iframe>
+        <iframe
+          src="/infolinks-inner-300x300.html"
+          width="300"
+          height="300"
+          title="Infolinks 300x300 (src)"
+          data-src-frame="300x300"></iframe>
       </div>
+      <div class="readout" data-readout="src-300x300"></div>
     </div>
 
     <script>
+      // Resolve the publisher page URL the same way the widget's resolvePageUrl()
+      // does: outermost accessible window href -> document.referrer -> location.href.
+      function resolvePurl() {
+        try {
+          // Walk up to the outermost window we can legally read (mirrors getTopWindow).
+          var current = window;
+          while (current.parent !== current) {
+            // eslint-disable-next-line no-unused-expressions
+            current.parent.location.href; // throws at a cross-origin boundary
+            current = current.parent;
+          }
+          if (current.location && current.location.href) return current.location.href;
+        } catch (e) {
+          /* cross-origin — fall through */
+        }
+        if (document.referrer) return document.referrer;
+        return window.location.href;
+      }
+
+      var RESOLVED_PURL = resolvePurl();
+      document.getElementById("resolved-purl").textContent = RESOLVED_PURL;
+
       // Build a srcdoc frame the same way createInfolinksFrame() does, at any size.
       function makeSrcdocFrame(width, height) {
-        const config = {
+        var config = {
           pid: 3446242,
+          purl: RESOLVED_PURL,
           iframe: true,
-          inplace_slot: { width, height, plugin_version: "Genuin", keepFrame: true },
+          inplace_slot: { width: width, height: height, plugin_version: "Genuin", keepFrame: true },
         };
-        const srcdoc = [
+        var srcdoc = [
           "<!doctype html><html><head><meta charset='utf-8' />",
           "<style>html,body{margin:0;padding:0;width:" + width + "px;height:" + height + "px;overflow:hidden;}</style>",
           "<script type='text/javascript'>window.infolinks_config = " + JSON.stringify(config) + ";<\/script>",
@@ -100,7 +182,7 @@
           "</head><body></body></html>",
         ].join("");
 
-        const frame = document.createElement("iframe");
+        var frame = document.createElement("iframe");
         frame.width = String(width);
         frame.height = String(height);
         frame.title = "Infolinks " + width + "x" + height + " (srcdoc)";
@@ -108,10 +190,77 @@
         return frame;
       }
 
-      document.querySelectorAll(".slot[data-slot]").forEach((slot) => {
-        const [w, h] = slot.getAttribute("data-slot").split("x").map(Number);
-        slot.appendChild(makeSrcdocFrame(w, h));
+      var frames = {}; // readout key -> iframe
+
+      document.querySelectorAll(".slot[data-slot]").forEach(function (slot) {
+        var parts = slot.getAttribute("data-slot").split("x").map(Number);
+        var frame = makeSrcdocFrame(parts[0], parts[1]);
+        slot.appendChild(frame);
+        frames[slot.getAttribute("data-slot")] = frame;
       });
+
+      document.querySelectorAll("iframe[data-src-frame]").forEach(function (frame) {
+        frames["src-" + frame.getAttribute("data-src-frame")] = frame;
+      });
+
+      // Readout: show our injected purl vs. the purl Infolinks actually sends in
+      // its IL_MANAGE request. If they differ (e.g. about:srcdoc), attribution
+      // is NOT honoring our value.
+      function renderRow(label, value, cls) {
+        return (
+          '<div class="row"><span class="k">' +
+          label +
+          '</span><span class="v ' +
+          (cls || "") +
+          '">' +
+          (value == null ? "—" : String(value)) +
+          "</span></div>"
+        );
+      }
+
+      function readIlManagePurl(frame) {
+        try {
+          var doc = frame.contentDocument;
+          if (!doc) return { purl: null, injected: false, crossOrigin: true };
+          var il = doc.querySelector("#IL_MANAGE");
+          if (!il) return { purl: null, injected: false };
+          var src = il.getAttribute("src") || "";
+          var m = src.match(/[?&]purl=([^&]*)/);
+          return { purl: m ? decodeURIComponent(m[1]) : null, injected: true };
+        } catch (e) {
+          return { purl: null, injected: false, crossOrigin: true };
+        }
+      }
+
+      function updateReadouts() {
+        Object.keys(frames).forEach(function (key) {
+          var el = document.querySelector('[data-readout="' + key + '"]');
+          if (!el) return;
+          var info = readIlManagePurl(frames[key]);
+          var ilCls = "pending";
+          if (info.crossOrigin) ilCls = "";
+          else if (info.injected) ilCls = info.purl === RESOLVED_PURL ? "ok" : "bad";
+          var ilVal = info.crossOrigin
+            ? "(cross-origin — check in DevTools Network)"
+            : info.injected
+              ? info.purl
+              : "(IL_MANAGE not injected yet)";
+          el.innerHTML =
+            renderRow("our purl →", RESOLVED_PURL, "ok") +
+            renderRow("infolinks purl →", ilVal, ilCls) +
+            (info.injected && info.purl !== RESOLVED_PURL && !info.crossOrigin
+              ? renderRow("", "⚠ Infolinks is NOT using our purl", "bad")
+              : "");
+        });
+      }
+
+      // Poll for a while — Infolinks injects IL_MANAGE asynchronously.
+      var polls = 0;
+      var timer = setInterval(function () {
+        updateReadouts();
+        if (++polls >= 20) clearInterval(timer); // ~10s
+      }, 500);
+      updateReadouts();
     </script>
   </body>
 </html>

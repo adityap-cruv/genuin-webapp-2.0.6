@@ -15,8 +15,11 @@
       }
     </style>
     <script type="text/javascript">
+      // purl: the embedding page (document.referrer) so Infolinks attributes
+      // the slot to it rather than this inner doc's own URL.
       window.infolinks_config = {
         pid: 3446242,
+        purl: document.referrer || window.location.href,
         iframe: true,
         inplace_slot: {
           width: 300,
