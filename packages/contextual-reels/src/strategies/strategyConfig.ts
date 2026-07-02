@@ -89,8 +89,8 @@ export const TAG_STRATEGIES: Record<string, TagStrategyEntry> = {
   },
   "6a2fefd87ce338c3a5afc605": { singleHitWaterfall: true, initialVolume: 0.2 },
   "6a391232d73aa25887ac2af3": { adBreakEnabled: true, gateOnUnmute: true },
-  "69b298e3d6a6ad57e7b9a464": { singleHitWaterfall: true, mutePassback: true },
-  "69b298f4d6a6ad57e7b9a499": { singleHitWaterfall: true, mutePassback: true },
+  "69b298e3d6a6ad57e7b9a464": { singleHitWaterfall: true, mutePassback: true, gateOnUnmute: true },
+  "69b298f4d6a6ad57e7b9a499": { singleHitWaterfall: true, mutePassback: true, gateOnUnmute: true },
   // gateOnUnmute:true gates the 98% (request waits for unmute); the 2%
   // experiment above ungates the sampled slice. Needed because
   // DEFAULT_STRATEGIES.gateOnUnmute is false, so without this the base would
