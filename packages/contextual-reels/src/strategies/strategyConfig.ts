@@ -57,15 +57,15 @@ export interface TagExperiment {
  */
 export const TAG_EXPERIMENTS: Record<string, TagExperiment> = {
   "6a032e34054c8fcb08582510": {
-    sampleRate: 0.02,
+    sampleRate: 0.1,
     overrides: { gateOnUnmute: false, mutePassback: false },
   },
   "6a032de445fa9f171bd291cb": {
-    sampleRate: 0.02,
+    sampleRate: 0.1,
     overrides: { gateOnUnmute: false, mutePassback: false },
   },
   "6a3aa8244da8cd92d289cc72": {
-    sampleRate: 0.02,
+    sampleRate: 0.1,
     overrides: { gateOnUnmute: false, mutePassback: false },
   },
 };
