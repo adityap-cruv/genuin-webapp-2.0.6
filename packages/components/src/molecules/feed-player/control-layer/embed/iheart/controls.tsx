@@ -4,6 +4,7 @@ import { IHeartMuteIcon, IHeartPauseIcon, IHeartPlayIcon, IHeartShareIcon, IHear
 import { cn } from "@genuin/ui/utils";
 import { type ComponentProps } from "react";
 
+import { useEmbedContext } from "@genuin/components/context";
 import { useAnalytics } from "@genuin/components/context/analytics";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 // import { useBaseContext } from "@genuin/components/context";
@@ -16,7 +17,6 @@ import { ShareButton } from "@genuin/components/molecules/share-button";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 import { usePlayerContext } from "../../../context";
-import { useEmbedContext } from "@genuin/components/context";
 
 // TODO(temp): Remove this KFI dummy-data share URL. For these placements the share
 // link is hardcoded to the station's live page; drop once the real share URL is

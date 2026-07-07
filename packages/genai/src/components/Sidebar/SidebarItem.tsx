@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
+import { useRudderEvents } from '@/adapters/analytics/useRudderAnalytics';
 import Delete from '@/assets/SvgIcons/Delete';
 import Edit from '@/assets/SvgIcons/Edit';
 import Options from '@/assets/SvgIcons/Options';
@@ -13,9 +14,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { eventBus } from '@/core/events/EventBus';
 import { EVENTS } from '@/core/events/eventRegistry';
-import { useSessionContext } from '@/stores/session/context';
 import { deleteSessionV2 } from '@/services/api';
-import { useRudderEvents } from '@/adapters/analytics/useRudderAnalytics';
+import { useSessionContext } from '@/stores/session/context';
 import type { Session } from '@/types';
 
 const Item = ({ session }: { session: Session }) => {

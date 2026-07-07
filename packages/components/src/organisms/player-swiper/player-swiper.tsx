@@ -3,7 +3,7 @@
 import { Loader } from "@genuin/ui/components/loader";
 import { abbreviateNumber, cn } from "@genuin/ui/lib/utils";
 import type { ComponentProps } from "react";
-import { useEffect, useState, useRef, useMemo, useCallback, lazy, Suspense } from "react";
+import { useEffect, useState, useRef, useMemo, useCallback, lazy } from "react";
 import type { Swiper } from "swiper/types";
 import { useBoolean } from "usehooks-ts";
 
@@ -14,8 +14,8 @@ import { useDeviceDetection } from "@genuin/components/hooks/use-device-detectio
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { useFocusManagement } from "@genuin/components/hooks/use-focus-management";
 import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
-import type { OctoPanelHandle } from "@genuin/components/molecules/octo-panel/octo-panel";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
+import type { OctoPanelHandle } from "@genuin/components/molecules/octo-panel/octo-panel";
 import { type PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
 import {
@@ -935,7 +935,7 @@ export function PlayerList({
       {/* Desktop right rail: dynamic linkouts (outside placement) above comments.
           V2 only — v1 keeps its legacy in-player overlay to avoid doubling up. */}
       {isDesktop && isDesignSystemV2 && (
-        <Suspense fallback={null}>
+        <SafeSuspense fallback={null}>
           <DesktopRightPanels
             filteredPost={filteredPost}
             activeIndex={activeIndex}
@@ -965,7 +965,7 @@ export function PlayerList({
               // would observe "full-view" and swap the expanded video out.
             }}
           />
-        </Suspense>
+        </SafeSuspense>
       )}
     </div>
   );

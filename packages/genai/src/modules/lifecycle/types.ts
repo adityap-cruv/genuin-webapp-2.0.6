@@ -1,5 +1,6 @@
-import type { AutoPromptConfig } from './auto-prompt-config';
 import type { OctoState } from '@/core/state-machine/octo-state';
+
+import type { AutoPromptConfig } from './auto-prompt-config';
 
 /** Callback signature for OctoState change subscribers. */
 export type OctoStateChangeCallback = (prev: OctoState, next: OctoState) => void;

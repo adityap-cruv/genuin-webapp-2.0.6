@@ -3,23 +3,24 @@ import { toast } from 'sonner';
 import { v4 as uuidv4 } from 'uuid';
 
 import { useOctoAnalytics } from '@/adapters/analytics/hooks';
-import { convertCachedResponseToEvents } from '@/services/session/CachedResponseConverter';
-import { assembleSSEMessage } from '@/services/stream/ChatMessageAssembler';
+import { useRudderEvents } from '@/adapters/analytics/useRudderAnalytics';
+import { OctoState } from '@/core/state-machine/octo-state';
+import type { HandleSendMessageParams } from '@/modules/chat/types';
+import { useSSEHandler, type SSEMessagePayload } from '@/modules/chat/useSSEHandler';
+import { useSuggestedPrompts } from '@/modules/chat/useSuggestedPrompts';
 import { stopChatSession } from '@/services/api';
 import type { CachedResponseItem } from '@/services/apiTypes';
 import { ingestDataToBCC } from '@/services/ingestDataToBCC';
-import { useRudderEvents } from '@/adapters/analytics/useRudderAnalytics';
+import { convertCachedResponseToEvents } from '@/services/session/CachedResponseConverter';
+import { assembleSSEMessage } from '@/services/stream/ChatMessageAssembler';
+import { useAgentContext } from '@/stores/agent/context';
+import { useLifecycleContext } from '@/stores/lifecycle/context';
+import { useSessionContext } from '@/stores/session/context';
 import type { AgentType, ChatHistoryEvent, HandleSSEMessageData } from '@/types';
 
-import { useAgentContext } from '@/stores/agent/context';
-import { useSSEHandler, type SSEMessagePayload } from '@/modules/chat/useSSEHandler';
-import { useSuggestedPrompts } from '@/modules/chat/useSuggestedPrompts';
-import { useLifecycleContext } from '@/stores/lifecycle/context';
-import { OctoState } from '@/core/state-machine/octo-state';
-import { useSessionContext } from '@/stores/session/context';
 
 import { ChatContext } from './context';
-import type { HandleSendMessageParams } from '@/modules/chat/types';
+
 
 interface ChatProviderProps {
     /** Brand ID forwarded to SSE payloads. */

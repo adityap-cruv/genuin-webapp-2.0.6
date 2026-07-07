@@ -1,7 +1,8 @@
-import dotenv from 'dotenv';
-import { z } from 'zod';
 import fs from 'fs';
 import path from 'path';
+
+import dotenv from 'dotenv';
+import { z } from 'zod';
 
 /**
  * Validates the genai SDK's build-time environment before `vite build`/`vite dev`.

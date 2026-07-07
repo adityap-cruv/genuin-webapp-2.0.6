@@ -5,11 +5,11 @@ import { toast } from 'sonner';
 import { useRudderEvents } from '@/adapters/analytics/useRudderAnalytics';
 import { eventBus } from '@/core/events/EventBus';
 import { EVENTS } from '@/core/events/eventRegistry';
-
-import NewChat from '../assets/SvgIcons/NewChat';
 import { useAgentContext } from '@/stores/agent/context';
 import { useSessionContext } from '@/stores/session/context';
 import { useUIContext } from '@/stores/ui/context';
+
+import NewChat from '../assets/SvgIcons/NewChat';
 
 import AgentsDropdown from './AgentsDropdown';
 import AgentsSection from './AgentsSection';
@@ -151,6 +151,7 @@ export default function AppContent() {
                                 className={`gai:scrollbar-hide gai:flex-1 ${hasExpandedVideo ? '' : 'gai:overflow-y-auto'}`}
                             >
                                 <div className='gai:mx-auto gai:flex gai:min-h-full gai:w-full gai:justify-center gai:px-4 gai:md:w-3/4 gai:md:px-0'>
+                                    {/* eslint-disable-next-line no-restricted-syntax -- genai does not depend on @genuin/components (SafeSuspense); bare Suspense is intentional here. */}
                                     <Suspense
                                         fallback={
                                             <div className='gai:flex gai:w-full gai:items-center gai:justify-center gai:pb-44'>

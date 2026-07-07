@@ -28,8 +28,8 @@ import type { GroupUserStatusType } from "@genuin/components/types/roles";
 import { useFeedContext } from "./context";
 import { useAdInjectedFeed } from "./feed-ads";
 import { FeedSkeleton } from "./feed-skeleton";
-import { IHeartFeedSkeleton } from "./iheart-feed-skeleton";
 import type { FeedViewPropsType } from "./feed.type";
+import { IHeartFeedSkeleton } from "./iheart-feed-skeleton";
 
 import "swiper/css";
 

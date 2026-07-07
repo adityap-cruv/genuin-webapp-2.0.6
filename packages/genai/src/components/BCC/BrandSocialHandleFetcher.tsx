@@ -3,8 +3,8 @@ import { toast } from 'sonner';
 
 import { Add } from '@/assets/SvgIcons/icons';
 import Spinner from '@/components/ui/spinner';
-import { useSessionContext } from '@/stores/session/context';
 import { insertSocialHandle, updateAgentMessage, validateSocialHandle } from '@/services/api';
+import { useSessionContext } from '@/stores/session/context';
 
 type SocialHandle = {
     platform: string;

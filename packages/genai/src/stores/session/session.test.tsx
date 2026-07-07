@@ -2,9 +2,12 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 
+import { updateSessionTitle } from '@/services/api';
+
 import { useSessionContext } from './context';
 import { SessionProvider } from './provider';
 
+// vi.mock is hoisted by Vitest, so it still applies to the imports above.
 vi.mock('@/services/api', () => ({
   getChatHistoryV2: vi.fn(),
   getBrandSessions: vi.fn(),
@@ -22,10 +25,10 @@ vi.mock('@/adapters/analytics/hooks', () => ({
 
 vi.mock('sonner', () => ({ toast: { error: vi.fn() } }));
 
-import { updateSessionTitle } from '@/services/api';
 const mockUpdateSessionTitle = updateSessionTitle as Mock;
 
 function makeWrapper(brandId = 1, currentSessionId?: string) {
+  // eslint-disable-next-line react/display-name -- inline test wrapper; a display name adds no value here.
   return ({ children }: { children: ReactNode }) => (
     <SessionProvider brandId={brandId} currentSessionId={currentSessionId}>
       {children}

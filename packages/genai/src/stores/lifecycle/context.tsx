@@ -1,7 +1,7 @@
 import { createContext, useContext } from 'react';
 
-import { DEFAULT_AUTO_PROMPT_CONFIG } from '@/modules/lifecycle/auto-prompt-config';
 import { OctoState } from '@/core/state-machine/octo-state';
+import { DEFAULT_AUTO_PROMPT_CONFIG } from '@/modules/lifecycle/auto-prompt-config';
 import type { LifecycleContextType } from '@/modules/lifecycle/types';
 
 /**

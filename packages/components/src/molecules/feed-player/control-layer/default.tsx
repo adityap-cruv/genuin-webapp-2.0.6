@@ -1,5 +1,6 @@
 import { Button } from "@genuin/ui/button";
 import { cn } from "@genuin/ui/lib/utils";
+import { SPONSORED_TAG_SIZE, resolveControlSize } from "@genuin/ui/player-controls";
 import React, { useCallback } from "react";
 
 import { useAuthContext } from "@genuin/components/context";
@@ -19,7 +20,6 @@ import { usePlayerContext } from "../context/context";
 import type { ControlLayerPropsType } from "./control-layer.types";
 import { Controls } from "./controls";
 import { VideoEditActionButtons } from "./controls/control-buttons";
-import { SPONSORED_TAG_SIZE, resolveControlSize } from "@genuin/ui/player-controls";
 import { PlayingState } from "./playing-state";
 import { Scrubber } from "./scrubber";
 

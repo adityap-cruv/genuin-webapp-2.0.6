@@ -1,13 +1,13 @@
 import { type ReactNode, useCallback, useEffect, useState } from 'react';
 
+import { OctoState } from '@/core/state-machine/octo-state';
+import { useAppBootstrap } from '@/hooks/useAppBootstrap';
 import { useAgentContext } from '@/stores/agent/context';
 import { useChatContext } from '@/stores/chat/context';
-import { useAppBootstrap } from '@/hooks/useAppBootstrap';
-import { useVideoStylesContext } from './VideoStylesProvider';
 import { useLifecycleContext } from '@/stores/lifecycle/context';
-import { OctoState } from '@/core/state-machine/octo-state';
 import { useSessionContext } from '@/stores/session/context';
 
+import { useVideoStylesContext } from './VideoStylesProvider';
 import { UIContext } from './context';
 
 interface UIProviderProps {

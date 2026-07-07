@@ -11,8 +11,8 @@ import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-d
 import { usePrevious } from "@genuin/components/hooks/use-previous";
 import useViewportHeight from "@genuin/components/hooks/use-screen-height";
 import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
-import { isMiddlewareOverlayEnabled } from "@genuin/components/lib/utils";
 import { SDKEventEmitter, SDKEventName, SDKListenerEventName } from "@genuin/components/lib/sdk-event-emitter";
+import { isMiddlewareOverlayEnabled } from "@genuin/components/lib/utils";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { RootPortal } from "@genuin/components/molecules/root-portal";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";

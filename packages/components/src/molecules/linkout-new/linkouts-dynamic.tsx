@@ -2,7 +2,7 @@
 import { LinkIcon, XIcon } from "@genuin/ui";
 import type { SnapPoint } from "@genuin/ui/dynamic-sheet";
 import { cn } from "@genuin/ui/lib/utils";
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { lazy, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperType } from "swiper/types";
 
@@ -618,7 +618,7 @@ export function DynamicLinkouts({
         data-scenario="expand-desktop-outside"
         style={wrapperStyle}>
         <div className="gencl:flex gencl:flex-col gencl:gap-2 gencl:w-full gencl:h-full gencl:justify-end">
-          <Suspense fallback={null}>
+          <SafeSuspense fallback={null}>
             <Swiper
               spaceBetween={isMulti ? 8 : 0}
               slidesPerView={isMulti ? 1.06 : 1}
@@ -685,7 +685,7 @@ export function DynamicLinkouts({
                 );
               })}
             </Swiper>
-          </Suspense>
+          </SafeSuspense>
 
           {/* Below the panel: arrow + dots + arrow (multi-link only). Dark
               theme because the row sits on the embed's dark backdrop —
@@ -728,7 +728,7 @@ export function DynamicLinkouts({
   const siblingDotsVisible = view === "embed" && showDots && !isPanelOrFullState && !isResponsiveState;
   return (
     <div ref={linkoutContainerRef} data-slot="dynamic-linkouts" style={wrapperStyle}>
-      <Suspense fallback={null}>
+      <SafeSuspense fallback={null}>
         {sheetOpen && (
           <LazySnapSheet
             // Fresh instance when the slot flips between link and banner-ad.
@@ -772,7 +772,7 @@ export function DynamicLinkouts({
             footerClassName={cn(footerClassName(linkoutsState), isPanelOrFullState && "gencl:border-0")}
             // Banner-ad hugs the ad (w-fit, centred); else the scenario panel class.
             className={isBannerAdMode ? "gencl:rounded-lg! gencl:w-fit! gencl:mx-auto!" : className(linkoutsState)}>
-            <Suspense fallback={null}>
+            <SafeSuspense fallback={null}>
               <LinkoutItem
                 linkoutsState={linkoutsState}
                 links={links}
@@ -801,7 +801,7 @@ export function DynamicLinkouts({
                     : undefined
                 }
               />
-            </Suspense>
+            </SafeSuspense>
           </LazySnapSheet>
         )}
         {/* Sibling dots / desktop nav. Skipped for panel/full-view (dots
@@ -841,7 +841,7 @@ export function DynamicLinkouts({
             )}
           </div>
         )}
-      </Suspense>
+      </SafeSuspense>
     </div>
   );
 }

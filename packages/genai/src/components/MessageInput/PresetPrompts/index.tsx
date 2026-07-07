@@ -1,10 +1,10 @@
 import { useEffect, useRef } from 'react';
 
+import { useRudderEvents } from '@/adapters/analytics/useRudderAnalytics';
 import { useAgentContext } from '@/stores/agent/context';
+import { useInputContext } from '@/stores/input/context';
 import { useSessionContext } from '@/stores/session/context';
 import { useUIContext } from '@/stores/ui/context';
-import { useInputContext } from '@/stores/input/context';
-import { useRudderEvents } from '@/adapters/analytics/useRudderAnalytics';
 
 import PresetPromptsSkeleton from './skeleton';
 

@@ -1,7 +1,7 @@
 import { useCallback, useRef } from 'react';
 
-import { readStream } from '@/services/stream/StreamReader';
 import { getChatStreamUrl, startChatSession, type StartChatPayload } from '@/services/api';
+import { readStream } from '@/services/stream/StreamReader';
 import type { AgentType, HandleSSEMessageData } from '@/types';
 
 export interface SSEMessagePayload {

@@ -7,8 +7,8 @@ import type { EmbedEventContextType } from "@genuin/components/context/embed/eve
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
 import { useChunkPrefetch } from "@genuin/components/lib/prefetch/use-chunk-prefetch";
-import { ErrorBoundary } from "@genuin/components/page/standard-wall/error-boundary";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
+import { ErrorBoundary } from "@genuin/components/page/standard-wall/error-boundary";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { FeedSkeleton } from "@genuin/components/templates/feed/feed-skeleton";
 import { IHeartFeedSkeleton } from "@genuin/components/templates/feed/iheart-feed-skeleton";

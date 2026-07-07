@@ -67,7 +67,7 @@ export const SectionsTabs = ({ className, leadingInset, onSectionSelect }: Secti
         inline: "center",
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [selectedSection?.id]);
 
   const containerStyle: React.CSSProperties = {

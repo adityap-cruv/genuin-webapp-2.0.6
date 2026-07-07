@@ -1,8 +1,8 @@
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 
-import { useUIContext } from '@/stores/ui/context';
 import { getPreSignedUrl } from '@/services/api';
+import { useUIContext } from '@/stores/ui/context';
 import type { UploadedFile } from '@/types';
 
 import { ALLOWED_TYPES, MAX_FILE_SIZE } from '../utils/fileUtils';

@@ -1,12 +1,12 @@
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import { InvalidStateTransitionError, isValidTransition, OctoState } from '@/core/state-machine/octo-state';
 import {
   type AutoPromptConfig,
   type LegacyAutoPromptConfig,
   DEFAULT_AUTO_PROMPT_CONFIG,
   normalizeAutoPromptConfig,
 } from '@/modules/lifecycle/auto-prompt-config';
-import { InvalidStateTransitionError, isValidTransition, OctoState } from '@/core/state-machine/octo-state';
 
 import { LifecycleContext } from './context';
 
@@ -35,7 +35,7 @@ export function LifecycleProvider({ autoPromptConfig: autoPromptConfigProp, chil
     // Normalize once per raw-input identity so downstream consumers always see the new shape.
     const autoPromptConfig: AutoPromptConfig = useMemo(
         () => (autoPromptConfigProp ? normalizeAutoPromptConfig(autoPromptConfigProp) : DEFAULT_AUTO_PROMPT_CONFIG),
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+         
         [autoPromptConfigProp],
     );
 

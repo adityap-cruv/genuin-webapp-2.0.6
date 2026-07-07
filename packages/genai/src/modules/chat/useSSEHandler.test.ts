@@ -1,8 +1,12 @@
 import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 
+import { startChatSession } from '@/services/api';
+import { readStream } from '@/services/stream/StreamReader';
+
 import { useSSEHandler } from './useSSEHandler';
 
+// vi.mock is hoisted by Vitest, so it still applies to the imports above.
 vi.mock('@/services/api', () => ({
   getChatStreamUrl: (id: string) => `/stream/${id}`,
   startChatSession: vi.fn(),
@@ -11,9 +15,6 @@ vi.mock('@/services/api', () => ({
 vi.mock('@/services/stream/StreamReader', () => ({
   readStream: vi.fn(),
 }));
-
-import { startChatSession } from '@/services/api';
-import { readStream } from '@/services/stream/StreamReader';
 
 const mockStartChatSession = startChatSession as Mock;
 const mockReadStream = readStream as Mock;

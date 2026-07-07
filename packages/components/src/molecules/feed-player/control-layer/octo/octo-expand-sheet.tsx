@@ -1,5 +1,7 @@
 "use client";
-import { forwardRef, Suspense, useImperativeHandle } from "react";
+import { forwardRef, useImperativeHandle } from "react";
+
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 
 import { OctoDynamicSheet } from "../expand-view/octo-dynamic-sheet";
 
@@ -67,7 +69,7 @@ export const OctoExpandSheet = forwardRef<OctoExpandSheetRef, OctoExpandSheetPro
 
   return (
     <div className="gencl:relative gencl:h-full gencl:w-full swiper-no-swiping" onClick={(e) => e.stopPropagation()}>
-      <Suspense fallback={null}>
+      <SafeSuspense fallback={null}>
         <div>
           <OctoDynamicSheet
             key={videoId}
@@ -84,7 +86,7 @@ export const OctoExpandSheet = forwardRef<OctoExpandSheetRef, OctoExpandSheetPro
             onCollapse={handleOctoCollapse}
           />
         </div>
-      </Suspense>
+      </SafeSuspense>
     </div>
   );
 });

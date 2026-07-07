@@ -8,7 +8,7 @@ import type { CarousalMetadata, ChatHistoryEvent } from '@/types';
 function parseAgentMessage(message: string): {
     content: string;
     function_name?: string | null;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     function_response?: any | null;
     carousel_metadata?: CarousalMetadata | null;
 } {

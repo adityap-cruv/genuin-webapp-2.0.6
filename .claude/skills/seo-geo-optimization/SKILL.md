@@ -52,10 +52,9 @@ The rules here are framework-agnostic. A specific repo can carry a **binding fil
 Before generating metadata or JSON-LD, **check the fetch actually returned the fields.** Three cases:
 
 - **Entity not found / fetch failed** (empty `{}`, 404, throws) → do **not** emit empty tags or a hollow JSON-LD object. Skip structured data and report it: *"No metadata returned for `<entity>` - skipped JSON-LD; likely a soft-404."*
-- **Entity exists but a required field is missing** (e.g. no description, duration, author, or thumbnail) → insert a **clearly-marked placeholder**, never a fabricated value, and **tell the user explicitly** which field was missing and what placeholder you used. Mark it in code with a greppable `TODO(seo): placeholder - field "<x>" missing` comment so it surfaces in the diff. Prefer omitting an optional field over an empty string.
-- **Field is known-unavailable by design** (e.g. transcript / key-moments not exposed by any API) → render conditionally and tag `[BLOCKED]`/`[DEFERRED]`; do not placeholder these.
+- **A field REQUIRED by the standard JSON-LD type is missing from our ecosystem** (schema.org marks it required, but no API exposes it) → **never omit the required field** and **never fabricate a value.** Emit a type-appropriate empty value so the object still validates: **empty string `""`** for text/URL/date fields, **`0`** for numeric fields (duration, count, rating), **`[]`** for required arrays. Pick the empty value that matches the field's schema type. Do **not** invent a fake string like `"placeholder"` or `"TODO"` - use the neutral empty of the correct type.
 
-Always surface a one-line summary, e.g. *"Added 2 placeholders (duration, thumbnail) for `<entity>` - confirm or supply real values before merge."* Placeholders are a flag for the human, not a silent fill.
+**Always tell the user explicitly** which required fields were filled with empties and what value was used, e.g. *"Filled required JSON-LD fields with empty values for `<entity>`: `duration=0`, `thumbnailUrl=\"\"` - supply real values before merge."* The empty is a flag for the human, not a silent fill. Mark each in code with a greppable `TODO(seo): empty - required field "<x>" not in ecosystem` comment so it surfaces in the diff.
 
 ## What to implement, per entity type
 

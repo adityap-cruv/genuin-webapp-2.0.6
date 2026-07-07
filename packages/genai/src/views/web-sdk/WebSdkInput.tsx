@@ -87,7 +87,7 @@ export function WebSdkInput({
             setFocusOpen(true);
             setIsSuggestionsOpen(true);
         });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
     }, [setIsSuggestionsOpen]);
 
     const handleBlur = useCallback(() => {

@@ -207,6 +207,7 @@ export class SDKLifecycle {
                 return;
             }
 
+            // eslint-disable-next-line react/no-is-mounted -- SDKLifecycle is a plain class with its own isMounted() method; not the React component API.
             if (this.isMounted() && !(window as any).GenAISDK?.forceOpen) return;
 
             (window as any).GenAISDK.forceOpen = false;
@@ -246,6 +247,7 @@ export class SDKLifecycle {
                     return;
                 }
 
+                // eslint-disable-next-line react/no-is-mounted -- SDKLifecycle is a plain class with its own isMounted() method; not the React component API.
                 if (!this.isMounted()) {
                     this.pendingMessages.push({ message, agent_id, session_id });
                     if (this.pendingMessages.length === 1) {

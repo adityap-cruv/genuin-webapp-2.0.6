@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { SyntheticEvent } from 'react';
 
-import { useUIContext } from '@/stores/ui/context';
 import { renderInventoryWidget, type InventoryRenderRequest, type InventoryRenderResponse } from '@/services/api';
+import { useUIContext } from '@/stores/ui/context';
 import type { ToolMetadataPayload } from '@/types';
 
 import Spinner from '../ui/spinner';

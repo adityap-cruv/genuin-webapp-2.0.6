@@ -1,17 +1,25 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { useMemo, useRef, useState, type ReactNode } from "react";
 
-import { AgentsContext } from "../src/context/app/context";
-import type { AgentsContextType } from "../src/context/app/types";
-import { InputContext } from "../src/context/input/context";
+import type { AgentContextType } from "../src/modules/agent/types";
+import type { HandleSendMessageParams, ChatContextType } from "../src/modules/chat/types";
+import type { SessionContextType } from "../src/modules/session/types";
+import { AgentContext } from "../src/stores/agent/context";
+import { ChatContext } from "../src/stores/chat/context";
+import { InputContext } from "../src/stores/input/context";
+import { SessionContext } from "../src/stores/session/context";
+import { UIContext } from "../src/stores/ui/context";
+import type { UIContextType } from "../src/stores/ui/types";
 import type { Agent, ChatHistoryEvent, Session } from "../src/types";
 
 /**
- * Storybook-only mock for `useAgentsContext`. Stories pass a partial
- * override; everything else falls back to inert defaults so components
- * render without needing the real provider tree.
+ * Storybook-only mocks for `useUIContext` / `useSessionContext` /
+ * `useAgentContext` / `useChatContext`. Stories pass a partial override via
+ * `MockAgentsProvider`; everything else falls back to inert defaults so
+ * components render without needing the real provider tree
+ * (`SessionProvider` -> `AgentProvider` -> `ChatProvider` -> `UIProvider`).
  *
- * Treat this as a sibling of `src/context/app/types.ts` — when
- * `AgentsContextType` changes, update the defaults here.
+ * Treat this as a sibling of the `src/modules/{agent,chat,session}/types.ts`
+ * and `src/stores/ui/types.ts` files — update the defaults here when those change.
  */
 export const mockAgent: Agent = {
   type: "maya",
@@ -49,72 +57,140 @@ export const mockChatEvent = (overrides: Partial<ChatHistoryEvent> = {}): ChatHi
 const noop = () => {};
 const asyncNoop = async () => {};
 
-const defaultAgentsContext: AgentsContextType = {
-  initialAgent: "maya",
-  isMaya: true,
-  currentAgent: "maya",
-  currentSessionId: null,
-  sessions: [],
-  enteredInChatMode: false,
-  creatingSession: false,
-  agents: [mockAgent],
-  isSidebarCollapsed: false,
-  sessionsFetched: true,
-  s3_keys: [],
-  showAllObjectives: false,
-  user_id: "story-user",
-  brand_id: 2314,
-  isSuggestionsOpen: false,
-  textAreaRef: null,
-  ipInfo: null,
-  view: "page",
-  pendingMessages: [],
-  userEmail: "story@example.com",
-  videoStyles: [],
-  onBoardingAgents: [],
-  suggestedPrompts: [],
-  isLoadingSuggestedPrompts: false,
-  webSdkRenderMode: "full",
-  setAgents: noop,
-  setCurrentAgent: noop,
-  setSessions: noop,
-  setCurrentSessionId: asyncNoop,
-  deleteSession: noop,
-  handleSendMessage: asyncNoop,
-  stopSessionResponse: asyncNoop,
-  markSessionNameAnimationComplete: noop,
-  setIsSidebarCollapsed: noop,
-  setFeedback: noop,
-  removeSession: noop,
-  updateSessionName: noop,
-  setEnteteredInChatMode: noop,
-  setSessionsFetched: noop,
-  handleOnSocketError: noop,
-  setS3Keys: noop,
-  clearS3Keys: noop,
-  setShowAllObjectives: noop,
-  handleNewChat: noop,
-  setIsSuggestionsOpen: noop,
-  setTextAreaRef: noop,
-  refreshData: async () => [],
-  toggleStyleSelection: noop,
-  toggleOptionSelection: noop,
-  resetVideoStyles: noop,
-  updateAgentMessageContent: noop,
-  setWebSdkRenderMode: noop,
-};
+/** Combined override shape — spans the UI, Session, Agent, and Chat domains. */
+type MockContextValue = Partial<UIContextType> &
+  Partial<SessionContextType> &
+  Partial<Omit<AgentContextType, "filteredAgents">> &
+  Partial<ChatContextType>;
 
 interface MockAgentsProviderProps {
-  value?: Partial<AgentsContextType>;
+  value?: MockContextValue;
   children: ReactNode;
 }
 
-export function MockAgentsProvider({ value, children }: MockAgentsProviderProps) {
-  const merged = useMemo(
-    () => ({ ...defaultAgentsContext, ...value }) as AgentsContextType,
+export function MockAgentsProvider({ value = {}, children }: MockAgentsProviderProps) {
+  const getInitialAgentIdRef = useRef<(() => string) | null>(null);
+  const setCurrentAgentStateRef = useRef<((id: string) => void) | null>(null);
+  const connectToStreamRef = useRef<((sessionId: string) => Promise<{ isCompleted: boolean }>) | null>(
+    null,
+  );
+  const handleSendMessageRef = useRef<((params: HandleSendMessageParams) => Promise<void>) | null>(
+    null,
+  );
+
+  const isMaya = value.isMaya ?? true;
+  const agents = useMemo(() => value.agents ?? [mockAgent], [value.agents]);
+
+  const uiValue: UIContextType = useMemo(
+    () => ({
+      view: "page",
+      isSidebarCollapsed: false,
+      setIsSidebarCollapsed: noop,
+      webSdkRenderMode: "full",
+      setWebSdkRenderMode: noop,
+      uiDensity: "base",
+      s3_keys: [],
+      setS3Keys: noop,
+      clearS3Keys: noop,
+      showAllObjectives: false,
+      setShowAllObjectives: noop,
+      isSuggestionsOpen: false,
+      setIsSuggestionsOpen: noop,
+      textAreaRef: null,
+      setTextAreaRef: noop,
+      videoStyles: [],
+      toggleStyleSelection: noop,
+      toggleOptionSelection: noop,
+      resetVideoStyles: noop,
+      suggestedPrompts: [],
+      isLoadingSuggestedPrompts: false,
+      handleNewChat: noop,
+      refreshData: async () => [],
+      user_id: "story-user",
+      brand_id: 2314,
+      ...value,
+    }),
     [value],
   );
-  return <AgentsContext.Provider value={merged}>{children}</AgentsContext.Provider>;
+
+  const sessionValue: SessionContextType = useMemo(
+    () => ({
+      getInitialAgentIdRef,
+      setCurrentAgentStateRef,
+      sessions: [],
+      setSessions: noop,
+      currentSessionId: null,
+      setCurrentSessionIdState: noop,
+      enteredInChatMode: false,
+      setEnteredInChatMode: noop,
+      sessionsFetched: true,
+      setSessionsFetched: noop,
+      ipInfo: null,
+      setIpInfo: noop,
+      setCurrentSessionId: asyncNoop,
+      removeSession: noop,
+      updateSessionName: asyncNoop,
+      setFeedback: asyncNoop,
+      updateAgentMessageContent: noop,
+      connectToStreamRef,
+      refreshData: async () => [],
+      initSessions: noop,
+      startNewChat: noop,
+      clearSessionForAgentSwitch: noop,
+      ...value,
+    }),
+    [value],
+  );
+
+  const agentValue: AgentContextType = useMemo(
+    () => ({
+      initialAgent: isMaya ? "maya" : (agents[0]?.id ?? "maya"),
+      isMaya,
+      currentAgent: agents[0]?.id ?? "maya",
+      setCurrentAgentState: noop,
+      agents,
+      filteredAgents: isMaya ? agents.filter((agent: Agent) => agent.id === "maya") : agents,
+      onBoardingAgents: [],
+      setAgents: noop,
+      setCurrentAgent: noop,
+      getInitialAgentId: () => "maya",
+      setAgentsFromBootstrap: noop,
+      ...value,
+    }),
+    [value, isMaya, agents],
+  );
+
+  const chatValue: ChatContextType = useMemo(
+    () => ({
+      pendingMessages: [],
+      setPendingMessages: noop,
+      creatingSession: false,
+      handleSendMessage: asyncNoop,
+      stopSessionResponse: asyncNoop,
+      handleOnSocketError: noop,
+      cachedPromptResponses: new Map(),
+      suggestedPrompts: [],
+      isLoadingSuggestedPrompts: false,
+      handleSendMessageRef,
+      s3_keys: [],
+      setS3Keys: noop,
+      clearS3Keys: noop,
+      isSidebarCollapsedForSSE: false,
+      setIsSidebarCollapsedForSSE: noop,
+      ...value,
+    }),
+    [value],
+  );
+
+  return (
+    <UIContext.Provider value={uiValue}>
+      <SessionContext.Provider value={sessionValue}>
+        <AgentContext.Provider value={agentValue}>
+          <ChatContext.Provider value={chatValue}>{children}</ChatContext.Provider>
+        </AgentContext.Provider>
+      </SessionContext.Provider>
+    </UIContext.Provider>
+  );
 }
 
 interface MockInputProviderProps {
@@ -136,7 +212,7 @@ export function MockProviders({
   inputValue,
   children,
 }: {
-  agents?: Partial<AgentsContextType>;
+  agents?: MockContextValue;
   inputValue?: string;
   children: ReactNode;
 }) {

@@ -7,8 +7,8 @@ import { useEffect, useState, useMemo, lazy } from "react";
 
 import { useAnalytics } from "@genuin/components/context/analytics/context";
 import { useShowLinkouts } from "@genuin/components/hooks/use-show-linkouts";
-import type { LinkoutSlotContent } from "@genuin/components/molecules/linkout-new/types";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
+import type { LinkoutSlotContent } from "@genuin/components/molecules/linkout-new/types";
 import { buildLinkoutsAnalyticsData } from "@genuin/components/organisms/linkouts/build-linkouts-analytics-data";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { useGetLinkouts } from "@genuin/components/react-query/api/linkouts/get-linkouts";

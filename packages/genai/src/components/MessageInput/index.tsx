@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 
 import Stop from '@/assets/SvgIcons/Stop';
 import { useChatContext } from '@/stores/chat/context';
+import { useInputContext } from '@/stores/input/context';
 import { useSessionContext } from '@/stores/session/context';
 import { useUIContext } from '@/stores/ui/context';
-import { useInputContext } from '@/stores/input/context';
 
 import ArrowUpward from '../../assets/SvgIcons/ArrowUpward';
 import { Button } from '../ui/button';

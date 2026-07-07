@@ -1,10 +1,11 @@
 import type React from 'react';
 
-import type { Agent, IpInfo, Session } from '@/types';
 
 import type { HandleSendMessageParams } from '@/modules/chat/types';
 import type { AutoPromptConfig } from '@/modules/lifecycle/auto-prompt-config';
 import type { OctoStateChangeCallback } from '@/modules/lifecycle/types';
+import type { Agent, IpInfo, Session } from '@/types';
+
 import type { OctoState } from '../../core/state-machine/octo-state';
 
 export interface VideoStyleOption {

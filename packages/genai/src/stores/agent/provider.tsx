@@ -1,11 +1,10 @@
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useRudderEvents } from '@/adapters/analytics/useRudderAnalytics';
-import type { Agent } from '@/types';
-
-import { useLifecycleContext } from '@/stores/lifecycle/context';
 import { OctoState } from '@/core/state-machine/octo-state';
+import { useLifecycleContext } from '@/stores/lifecycle/context';
 import { useSessionContext } from '@/stores/session/context';
+import type { Agent } from '@/types';
 
 import { AgentContext } from './context';
 

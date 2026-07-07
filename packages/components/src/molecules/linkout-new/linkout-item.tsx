@@ -2,12 +2,13 @@
 
 import { cn } from "@genuin/ui/lib/utils";
 import { ChevronRight, ChevronLeft } from "lucide-react";
-import { lazy, Suspense, useId, type RefObject } from "react";
+import { lazy, useId, type RefObject } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperType } from "swiper/types";
 
 import { useBaseContext } from "@genuin/components/context";
 import type { SheetState } from "@genuin/components/context/base/event-bus";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import type {
   GenAdBannerConfig,
   GenAdConfig,
@@ -267,7 +268,7 @@ export function LinkoutItem({
             width: bannerAd.config.size[0],
             height: bannerAd.config.size[1],
           }}>
-          <Suspense fallback={null}>
+          <SafeSuspense fallback={null}>
             <GenAdContainer
               config={adConfig}
               isActive
@@ -277,7 +278,7 @@ export function LinkoutItem({
               // Disambiguate analytics from `<FeedPlayer>`'s overlay events.
               videoType={bannerAd.adType ?? "linkout_banner"}
             />
-          </Suspense>
+          </SafeSuspense>
         </div>
       </div>
     );

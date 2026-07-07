@@ -1,10 +1,10 @@
 import CollapseSidebar from '@/assets/SvgIcons/CollapseSidebar';
 import ExpandSidebar from '@/assets/SvgIcons/ExpandSidebar';
 import NewChat from '@/assets/SvgIcons/NewChat';
-import type { Session } from '@/types';
-
 import { useSessionContext } from '@/stores/session/context';
 import { useUIContext } from '@/stores/ui/context';
+import type { Session } from '@/types';
+
 import Spinner from '../ui/spinner';
 
 import Item from './SidebarItem';

@@ -523,6 +523,7 @@ function ItemComponent({
                                 case 'koah_ads': {
                                     if (!shouldRenderKoahAd) return null;
                                     return (
+                                        // eslint-disable-next-line no-restricted-syntax -- genai does not depend on @genuin/components (SafeSuspense); bare Suspense is intentional here.
                                         <Suspense key={contentType} fallback={null}>
                                             <KoahAdWidget
                                                 userMessage={userQuestion}
@@ -563,6 +564,7 @@ function ItemComponent({
                                 case 'inventory': {
                                     if (!toolMetadata || !showInventoryWidget) return null;
                                     return (
+                                        // eslint-disable-next-line no-restricted-syntax -- genai does not depend on @genuin/components (SafeSuspense); bare Suspense is intentional here.
                                         <Suspense key={contentType} fallback={null}>
                                             <InventoryWidget metadata={toolMetadata} />
                                         </Suspense>

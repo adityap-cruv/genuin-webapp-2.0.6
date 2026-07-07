@@ -4,9 +4,9 @@ import { toast } from 'sonner';
 import { useOctoAnalytics } from '@/adapters/analytics/hooks';
 import { getChatHistoryV2, getBrandSessions, updateSessionTitle } from '@/services/api';
 import type { SessionV2 } from '@/services/apiTypes';
+import { convertChatHistoryV2ToEvents } from '@/services/session/conversationUtils';
 import type { IpInfo, Session } from '@/types';
 
-import { convertChatHistoryV2ToEvents } from '@/services/session/conversationUtils';
 
 import { SessionContext } from './context';
 

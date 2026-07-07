@@ -96,6 +96,7 @@ const Avatar = React.memo(function Avatar({
 
   if (shouldZoom) {
     return (
+      // eslint-disable-next-line no-restricted-syntax -- packages/ui (atoms) cannot depend on @genuin/components (molecules/SafeSuspense) without a circular dependency; bare Suspense is intentional here.
       <Suspense fallback={<BasicAvatar addCursor={true} />}>
         <AvatarWithZoom
           className={className}

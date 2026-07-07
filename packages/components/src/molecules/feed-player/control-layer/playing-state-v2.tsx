@@ -3,12 +3,12 @@ import { UnmuteIcon } from "@genuin/ui/icons";
 import { PlayIcon } from "@genuin/ui/icons";
 import { PauseIcon } from "@genuin/ui/icons";
 import { Loader } from "@genuin/ui/loader";
+import { IconCircleButton } from "@genuin/ui/player-controls";
 import { cn } from "@genuin/ui/utils";
 import type { ComponentProps } from "react";
 
 import { usePlayerContext } from "../context/context";
 
-import { IconCircleButton } from "@genuin/ui/player-controls";
 
 export type PlayingStateProps = ComponentProps<"div"> & {
   showOnlyPlayAction?: boolean;

@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 
+import { useRudderEvents } from '@/adapters/analytics/useRudderAnalytics';
 import { useAgentContext } from '@/stores/agent/context';
+import { useInputContext } from '@/stores/input/context';
 import { useSessionContext } from '@/stores/session/context';
 import { useUIContext } from '@/stores/ui/context';
-import { useInputContext } from '@/stores/input/context';
-import { useRudderEvents } from '@/adapters/analytics/useRudderAnalytics';
 import type { Agent, AgentPreset } from '@/types';
 
 import { Button } from '../ui/button';

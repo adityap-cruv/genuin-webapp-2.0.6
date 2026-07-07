@@ -1,8 +1,8 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 
 import { Add, Verified } from '@/assets/SvgIcons/icons';
-import { useSessionContext } from '@/stores/session/context';
 import { updateAgentMessage, insertExistingBrandAsConsumerBrand, insertNewBrandAsConsumerBrand } from '@/services/api';
+import { useSessionContext } from '@/stores/session/context';
 import type { BrandConsumerBrand } from '@/types';
 
 const BrandConsumerBrands = ({

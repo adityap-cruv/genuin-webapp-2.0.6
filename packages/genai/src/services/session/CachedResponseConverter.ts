@@ -1,5 +1,5 @@
-import { normalizeCarouselMetadata, normalizeToolMetadata } from '@/services/stream/providerUtils';
 import type { CachedResponseItem } from '@/services/apiTypes';
+import { normalizeCarouselMetadata, normalizeToolMetadata } from '@/services/stream/providerUtils';
 import type { CarousalMetadata, ChatHistoryEvent, ToolMetadataPayload } from '@/types';
 
 export interface ConvertCachedResponseResult {

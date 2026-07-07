@@ -1,7 +1,8 @@
 import { createContext, useContext, type ReactNode } from 'react';
 
-import type { VideoStyle } from './types';
 import { useVideoStyles } from '@/hooks/useVideoStyles';
+
+import type { VideoStyle } from './types';
 
 interface VideoStylesContextValue {
   videoStyles: VideoStyle[];

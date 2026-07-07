@@ -1,5 +1,7 @@
 import { cn } from "@genuin/ui/lib/utils";
-import { type FC, lazy, Suspense } from "react";
+import { type FC, lazy } from "react";
+
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 
 import type { ControlLayerPropsType } from "../control-layer.types";
 import { EmbedControls } from "../controls/embed";
@@ -31,7 +33,7 @@ export const ResponsivenessEmbed: FC<ControlLayerPropsType> = ({
           // linkout's inner Swiper (which uses the default `swiper-no-swiping`).
           className="embed-carousel-no-swiping gencl:absolute gencl:bottom-0 gencl:py-2 gencl:space-y-2 gencl:w-full"
           onClick={(e) => e.stopPropagation()}>
-          <Suspense fallback={null}>
+          <SafeSuspense fallback={null}>
             <Linkouts
               view="embed"
               variant="dynamic"
@@ -42,7 +44,7 @@ export const ResponsivenessEmbed: FC<ControlLayerPropsType> = ({
               linkoutId={video.linkoutId}
               videoDetails={video}
             />
-          </Suspense>
+          </SafeSuspense>
         </div>
       )}
     </div>

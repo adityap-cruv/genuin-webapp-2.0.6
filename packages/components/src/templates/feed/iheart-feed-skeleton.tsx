@@ -1,6 +1,7 @@
 "use client";
 import { cn } from "@genuin/ui/lib/utils";
 import { Skeleton } from "@genuin/ui/skeleton";
+
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { FEED_SKELETON_THEME } from "@genuin/components/templates/feed/feed-skeleton";
 
