@@ -245,17 +245,7 @@ export const FeedPlayer = memo(function FeedPlayer({
         sponsorship_id: sponsorshipInfo?.id,
       }),
     };
-  }, [
-    videoId,
-    totalVideos,
-    src,
-    isSponsored,
-    sectionTitle,
-    sectionSubtitle,
-    sectionId,
-    podcastId,
-    stationId,
-  ]);
+  }, [videoId, totalVideos, src, isSponsored, sectionTitle, sectionSubtitle, sectionId, podcastId, stationId]);
 
   const adAnalyticsData = useMemo(
     () => ({
@@ -691,6 +681,22 @@ export const FeedPlayer = memo(function FeedPlayer({
             onAdCompleted={() => {
               setIsAdFilled(false);
               onAdPlaybackEnd?.();
+            }}
+            onAdSkipped={() => {
+              // Release the slot on skip so the VideoPlayer remounts and the
+              // organic video shows. Otherwise isAdFilled stays true, the
+              // VideoPlayer stays unmounted, and the slot goes black — there is
+              // no organic video underneath an in-feed ad to reveal.
+              setIsAdFilled(false);
+              onAdStateChange?.(false);
+              onAdPlaybackEnd?.();
+              updateAdInfo(false, {
+                adId: null,
+                url: null,
+                title: null,
+                totalAds: 0,
+                currentAdIndex: 0,
+              });
             }}
             onSystemMuteChange={(isMuted) => {
               if (isMuted) {

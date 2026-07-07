@@ -85,6 +85,8 @@ export type GenAdContainerProps = {
   onAdFillFailed?: () => void;
   /** Called when ad playback completes. */
   onAdCompleted?: () => void;
+  /** Called when the user skips the ad. Slot should be released so the organic video is revealed. */
+  onAdSkipped?: () => void;
   /** Advances the feed to the next video after the ad ends. */
   moveToNextVideo: () => void;
   /** Whether the video is muted. Used to determine initial audio state for video ads. */

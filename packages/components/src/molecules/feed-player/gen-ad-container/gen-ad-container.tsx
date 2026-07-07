@@ -62,6 +62,7 @@ export function GenAdContainer({
   onAdFilled,
   onAdFillFailed,
   onAdCompleted,
+  onAdSkipped,
   onSystemMuteChange,
 }: GenAdContainerProps) {
   const adContainerRef = useRef<HTMLDivElement>(null);
@@ -84,6 +85,9 @@ export function GenAdContainer({
 
   const onAdCompletedRef = useRef(onAdCompleted);
   onAdCompletedRef.current = onAdCompleted;
+
+  const onAdSkippedRef = useRef(onAdSkipped);
+  onAdSkippedRef.current = onAdSkipped;
 
   const onSystemMuteChangeRef = useRef(onSystemMuteChange);
   onSystemMuteChangeRef.current = onSystemMuteChange;
@@ -266,6 +270,9 @@ export function GenAdContainer({
                   provider: event?.provider,
                   ad_source: getAdSource(configRef.current, event?.provider),
                 });
+                // Release the ad slot so the organic video underneath is revealed;
+                // without this isAdFilled stays true, the VideoPlayer stays unmounted, and the slot goes black.
+                onAdSkippedRef.current?.();
               },
               onAdClicked: (event: any) => {
                 trackRef.current(EventName.AD_CLICKED, {
