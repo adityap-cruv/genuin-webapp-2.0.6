@@ -29,6 +29,7 @@ import { useAdWaterfall } from "@cxr/providers/AdProvider";
 import { useFullScreen } from "@cxr/providers/FullScreenProvider";
 import { useGenAI, useOctoSplit } from "@cxr/providers/GenAIProvider";
 import { usePlayer } from "@cxr/providers/PlayerProvider";
+import { useStrategy } from "@cxr/strategies/StrategyProvider";
 import type { NormalisedAd, NormalisedReel, TagResponse } from "@cxr/types";
 
 /** Neutral dark backdrop when no brand_color is configured for the tag. */
@@ -69,6 +70,7 @@ export function VideoLayout({
   const { splitActive, playerShare, octoAxis } = useOctoSplit(isActive);
   const { isFullScreen, toggleFullScreen } = useFullScreen();
   const { genAiEnabled } = useGenAI();
+  const { compactBackgroundColor } = useStrategy();
   const instanceId = useInstanceId();
 
   // Ad break — only activates when adObject is present; hook is always called (rules of hooks).
@@ -118,9 +120,9 @@ export function VideoLayout({
     onTimeUpdate(id, currentTime, duration);
   }
 
-  // Compact-layout backdrop: listed brand tags get their override fill; everyone
-  // else gets the neutral dark background.
-  const compactBackground = tagDetails?.brand_color ?? DEFAULT_COMPACT_BACKGROUND;
+  // Compact-layout backdrop: strategy color (client-side per-tag override) wins over
+  // the backend-supplied brand_color; everyone else gets the neutral dark background.
+  const compactBackground = compactBackgroundColor ?? tagDetails?.brand_color ?? DEFAULT_COMPACT_BACKGROUND;
 
   const controlLayerProps = {
     variant,

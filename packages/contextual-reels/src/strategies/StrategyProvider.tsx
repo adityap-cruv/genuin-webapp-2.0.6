@@ -20,6 +20,8 @@ interface StrategyProviderProps {
   children: ReactNode;
   /** Tag the strategy decisions are resolved for. */
   tagId: string;
+  /** Active tag's `brand_id` (from `tagDetails`), if resolved yet. */
+  brandId?: number;
 }
 
 /**
@@ -27,12 +29,12 @@ interface StrategyProviderProps {
  *
  * @example
  * ```tsx
- * <StrategyProvider tagId={tagId}>
+ * <StrategyProvider tagId={tagId} brandId={tagDetails?.brand_id}>
  *   <Feed ... />
  * </StrategyProvider>
  * ```
  */
-export function StrategyProvider({ children, tagId }: StrategyProviderProps): ReactNode {
+export function StrategyProvider({ children, tagId, brandId }: StrategyProviderProps): ReactNode {
   // Roll the experiment bucket once per mount (per page load): the draw is taken
   // inside useMemo keyed on tagId so the bucket stays stable for the session but
   // varies load-to-load. applyExperiment is a no-op for tags with no experiment.
@@ -41,12 +43,12 @@ export function StrategyProvider({ children, tagId }: StrategyProviderProps): Re
   const value = useMemo(
     () =>
       applyExperiment(
-        resolveStrategies(tagId),
+        resolveStrategies(tagId, brandId),
         tagId,
         Math.random(),
         isAdVerificationCrawler()
       ),
-    [tagId]
+    [tagId, brandId]
   );
   return <StrategyContext.Provider value={value}>{children}</StrategyContext.Provider>;
 }

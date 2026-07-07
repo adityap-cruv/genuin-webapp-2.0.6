@@ -2,7 +2,7 @@
  * Tests for the pure strategy resolver cascade.
  *
  * Cascade order (most-specific wins):
- *   DEFAULT → preset bundle → tag inline keys.
+ *   DEFAULT → preset bundle → brand inline (by brandId) → tag inline keys.
  */
 import { describe, it, expect } from "vitest";
 
@@ -67,6 +67,30 @@ describe("strategies/resolveStrategies — cascade", () => {
 
   it("applies a tag's configured initialVolume", () => {
     expect(resolveStrategies(INITIAL_VOLUME_TAG).initialVolume).toBe(0.2);
+  });
+});
+
+describe("strategies/resolveStrategies — brand layer", () => {
+  const PINK_BRAND_ID = 3252;
+
+  it("applies the brand's compactBackgroundColor when brandId matches", () => {
+    expect(resolveStrategies(UNKNOWN_TAG, PINK_BRAND_ID).compactBackgroundColor).toBe("#EC298C");
+  });
+
+  it("leaves compactBackgroundColor undefined for an unconfigured brandId", () => {
+    expect(resolveStrategies(UNKNOWN_TAG, 1).compactBackgroundColor).toBeUndefined();
+  });
+
+  it("leaves compactBackgroundColor undefined when brandId is omitted", () => {
+    expect(resolveStrategies(UNKNOWN_TAG).compactBackgroundColor).toBeUndefined();
+  });
+
+  it("tag inline keys still win over the brand layer", () => {
+    // AD_BREAK_TAG has no compactBackgroundColor override, so brand wins here;
+    // this documents cascade order rather than exercising an override.
+    const result = resolveStrategies(AD_BREAK_TAG, PINK_BRAND_ID);
+    expect(result.compactBackgroundColor).toBe("#EC298C");
+    expect(result.adBreakEnabled).toBe(true);
   });
 });
 

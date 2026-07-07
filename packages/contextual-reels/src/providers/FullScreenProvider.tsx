@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 
 import { useEventBus } from "@cxr/instance/coordination/EventBusContext";
 import { detectDevice } from "@cxr/platform/device";
@@ -38,9 +38,25 @@ const FullScreenContext = createContext<FullScreenContextValue | undefined>(unde
 /** Props for {@link FullScreenProvider}. */
 export interface FullScreenProviderProps {
   children: ReactNode;
+  /**
+   * Active tag's `brand_id` (from `tagDetails`), once resolved. Gates the
+   * fullscreen-failure redirect (see {@link FULLSCREEN_FALLBACK_URL}) — only this
+   * brand redirects; every other brand keeps the manual-fullscreen fallback.
+   */
+  brandId?: number;
 }
 
 const isIOS = detectDevice().osType === "ios";
+
+// Only this brand redirects to the fallback URL on fullscreen failure.
+const FULLSCREEN_REDIRECT_BRAND_ID = 3252;
+
+// Where users land when native fullscreen is unavailable/denied inside an iframe embed,
+// for FULLSCREEN_REDIRECT_BRAND_ID only.
+const FULLSCREEN_FALLBACK_URL = "https://infolinks.begenuin.com/home";
+
+// Fixed embed identifier appended to the fallback URL's query string.
+const FULLSCREEN_FALLBACK_EMBED_ID = "6a4b8a153b428877f20c9bb5";
 
 // Cross-origin parent throws on access — treat as iframe.
 const inIframe = (): boolean => {
@@ -50,6 +66,13 @@ const inIframe = (): boolean => {
     return true;
   }
 };
+
+// TODO(dev): accept videoId param and set it on the URL once ready
+function redirectToFallback(): void {
+  const url = new URL(FULLSCREEN_FALLBACK_URL);
+  url.searchParams.set("embed_id", FULLSCREEN_FALLBACK_EMBED_ID);
+  window.open(url.toString(), "_blank", "noopener,noreferrer");
+}
 
 function getFullscreenElement(): Element | null {
   const doc = document as VendorDocument;
@@ -79,32 +102,68 @@ function exitFS(): Promise<void> | undefined {
  * Provides fullscreen state for the contextual-reels widget.
  *
  * Strategy:
- *  - iOS: Browser Fullscreen API is not supported; always use manual (React state) fullscreen.
- *  - Non-iOS in iframe: attempt Browser Fullscreen API first; fall back to manual on failure.
- *  - Non-iOS not in iframe: attempt Browser Fullscreen API first; fall back to manual on failure.
+ *  - Not in iframe: always use manual (React state) fullscreen.
+ *  - In iframe, iOS: Browser Fullscreen API is not supported; redirect to
+ *    {@link FULLSCREEN_FALLBACK_URL} in a new tab, but only for
+ *    {@link FULLSCREEN_REDIRECT_BRAND_ID} — other brands use manual fullscreen.
+ *  - In iframe, non-iOS: attempt Browser Fullscreen API; on unavailability/denial,
+ *    redirect for {@link FULLSCREEN_REDIRECT_BRAND_ID}, else fall back to manual
+ *    fullscreen.
  *
  * State is scoped to the React tree — no global body-class mutations,
  * so multiple instances on the same page remain isolated.
  */
-export function FullScreenProvider({ children }: FullScreenProviderProps): ReactNode {
+export function FullScreenProvider({ children, brandId }: FullScreenProviderProps): ReactNode {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const bus = useEventBus();
 
+  // brandId resolves after tagDetails loads, post-mount — read the latest value
+  // from a ref so enterFullScreen (memoized once via useCallback) never closes
+  // over a stale undefined.
+  const brandIdRef = useRef(brandId);
+  brandIdRef.current = brandId;
+
+  // Tracks the active video's id (broadcast by LightPlayer via useActiveVideoIdBroadcast)
+  // so the fallback redirect can carry it as `video_id`.
+  const videoIdRef = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    return bus.on("genai:videoId", ({ videoId: id }) => {
+      videoIdRef.current = id;
+    });
+  }, [bus]);
+
+  const enterManualFullScreen = useCallback(() => {
+    setIsFullScreen(true);
+    bus.emit("fullscreen:enter", {});
+  }, [bus]);
+
   const enterFullScreen = useCallback(async () => {
-    // iOS does not support the Browser Fullscreen API — use manual fullscreen directly.
-    // Browser Fullscreen API only attempted inside an iframe on non-iOS.
-    // Non-iframe context and iOS both fall back to manual (React state) fullscreen.
-    if (isIOS || !inIframe()) {
-      setIsFullScreen(true);
-      bus.emit("fullscreen:enter", {});
+    // Not embedded in an iframe — always use manual (React state) fullscreen.
+    if (!inIframe()) {
+      enterManualFullScreen();
+      return;
+    }
+
+    const shouldRedirect = brandIdRef.current === FULLSCREEN_REDIRECT_BRAND_ID;
+
+    // iOS does not support the Browser Fullscreen API inside an iframe.
+    if (isIOS) {
+      if (shouldRedirect) {
+        redirectToFallback();
+      } else {
+        enterManualFullScreen();
+      }
       return;
     }
 
     const promise = requestFS(document.documentElement);
     if (promise == null) {
       // Fullscreen API unavailable (e.g. browser policy, missing permission).
-      setIsFullScreen(true);
-      bus.emit("fullscreen:enter", {});
+      if (shouldRedirect) {
+        redirectToFallback();
+      } else {
+        enterManualFullScreen();
+      }
       return;
     }
 
@@ -113,10 +172,13 @@ export function FullScreenProvider({ children }: FullScreenProviderProps): React
       // State is updated via the fullscreenchange event listener below.
     } catch {
       // Browser denied fullscreen (e.g. not triggered by user gesture, iframe sandbox).
-      setIsFullScreen(true);
-      bus.emit("fullscreen:enter", {});
+      if (shouldRedirect) {
+        redirectToFallback();
+      } else {
+        enterManualFullScreen();
+      }
     }
-  }, [bus]);
+  }, [enterManualFullScreen]);
 
   const exitFullScreen = useCallback(async () => {
     if (getFullscreenElement() != null) {

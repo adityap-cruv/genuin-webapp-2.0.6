@@ -7,7 +7,7 @@
 import { describe, it, expect } from "vitest";
 
 import { DEFAULT_STRATEGIES } from "@cxr/strategies/strategies";
-import { STRATEGY_PRESETS, TAG_STRATEGIES } from "@cxr/strategies/strategyConfig";
+import { BRAND_STRATEGIES, STRATEGY_PRESETS, TAG_STRATEGIES } from "@cxr/strategies/strategyConfig";
 
 const STRATEGY_KEYS = Object.keys(DEFAULT_STRATEGIES);
 
@@ -40,5 +40,17 @@ describe("strategies/strategyConfig — registries", () => {
   it("retains the migrated single-hit and ad-break tag ids", () => {
     expect(TAG_STRATEGIES["6a2fefd87ce338c3a5afc605"]).toBeDefined();
     expect(TAG_STRATEGIES["69b298e3d6a6ad57e7b9a464"]).toBeDefined();
+  });
+
+  it("every brand entry only sets valid Strategies keys", () => {
+    for (const bundle of Object.values(BRAND_STRATEGIES)) {
+      for (const key of Object.keys(bundle)) {
+        expect(STRATEGY_KEYS).toContain(key);
+      }
+    }
+  });
+
+  it("brand 3252 sets the pink compact-backdrop color", () => {
+    expect(BRAND_STRATEGIES[3252]?.compactBackgroundColor).toBe("#EC298C");
   });
 });

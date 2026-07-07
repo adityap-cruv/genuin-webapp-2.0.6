@@ -64,6 +64,18 @@ describe("strategies/StrategyProvider", () => {
     unmount(root, container);
   });
 
+  it("resolves brand-level decisions when brandId is passed", () => {
+    const handle = {} as { value: Strategies };
+    const { root, container } = mount(
+      <StrategyProvider tagId={UNKNOWN_TAG} brandId={3252}>
+        <Consumer handle={handle} />
+      </StrategyProvider>
+    );
+
+    expect(handle.value.compactBackgroundColor).toBe("#EC298C");
+    unmount(root, container);
+  });
+
   it("falls back to all-off defaults without a provider", () => {
     const handle = {} as { value: Strategies };
     const { root, container } = mount(<Consumer handle={handle} />);

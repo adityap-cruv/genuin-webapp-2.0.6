@@ -91,7 +91,7 @@ export default function App({
               onLoaded={setTagDetails}
               onFailed={handleApiFailed}
             />
-            <FullScreenProvider>
+            <FullScreenProvider brandId={tagDetails?.brand_id}>
               <AppOverlay
                 rootTagId={rootTagId}
                 overlayRef={overlayRef}
@@ -104,7 +104,7 @@ export default function App({
                   ) : !tagDetails ? (
                     <FeedSkeleton />
                   ) : (
-                    <StrategyProvider tagId={tagId}>
+                    <StrategyProvider tagId={tagId} brandId={tagDetails.brand_id}>
                       <FeedProvider tagId={tagId}>
                         <AdProvider tagId={tagId} adLayout={adLayout}>
                           <GenAIProvider>

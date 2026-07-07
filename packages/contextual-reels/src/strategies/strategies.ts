@@ -10,7 +10,12 @@
  * behaviour. To add a feature toggle, extend {@link Strategies} and give it a
  * default here; consumers read it through {@link resolveStrategies} unchanged.
  */
-import { STRATEGY_PRESETS, TAG_EXPERIMENTS, TAG_STRATEGIES } from "@cxr/strategies/strategyConfig";
+import {
+  BRAND_STRATEGIES,
+  STRATEGY_PRESETS,
+  TAG_EXPERIMENTS,
+  TAG_STRATEGIES,
+} from "@cxr/strategies/strategyConfig";
 
 /** Resolved feature decisions for the active tag. */
 export interface Strategies {
@@ -51,6 +56,13 @@ export interface Strategies {
    * snaps it back to 0; the user can unmute from there.
    */
   initialVolume: number;
+  /**
+   * Compact-layout backdrop color override (hex). Takes precedence over the
+   * backend-supplied `tagDetails.brand_color` when set — use for tags that need
+   * a fixed brand color regardless of backend config. `undefined` defers to
+   * `tagDetails.brand_color` (see {@link VideoLayout}).
+   */
+  compactBackgroundColor: string | undefined;
 }
 
 /**
@@ -68,20 +80,26 @@ export const DEFAULT_STRATEGIES: Strategies = {
   mutePassbackDelayMs: 3000,
   // 0% by default: plays unmuted-but-silent and shows the unmute prompt.
   initialVolume: 0,
+  compactBackgroundColor: undefined,
 };
 
 /**
- * Resolve all feature decisions for a tag across three layers (most-specific wins):
- *   DEFAULT_STRATEGIES → preset bundle → tag inline keys.
+ * Resolve all feature decisions for a tag across four layers (most-specific wins):
+ *   DEFAULT_STRATEGIES → preset bundle → brand inline (by `brandId`) → tag inline keys.
  *
- * Pure and total: an unknown or empty `tagId` falls through to
+ * Pure and total: an unknown or empty `tagId`/`brandId` falls through to
  * {@link DEFAULT_STRATEGIES}; never throws.
+ *
+ * @param tagId    Active tag id — keys into {@link TAG_STRATEGIES}.
+ * @param brandId  Active tag's `brand_id` (from `tagDetails`) — keys into
+ *                 {@link BRAND_STRATEGIES}. Omit when unresolved yet.
  */
-export function resolveStrategies(tagId: string): Strategies {
+export function resolveStrategies(tagId: string, brandId?: number): Strategies {
   const { preset, ...tagOverrides } = TAG_STRATEGIES[tagId] ?? {};
   return {
     ...DEFAULT_STRATEGIES,
     ...(preset ? STRATEGY_PRESETS[preset] : {}),
+    ...(brandId !== undefined ? BRAND_STRATEGIES[brandId] : {}),
     ...tagOverrides,
   };
 }
@@ -149,4 +167,9 @@ export function isMutePassbackEnabled(tagId: string): boolean {
 /** Returns the initial feed volume (0..1) for the given tag. */
 export function getInitialVolume(tagId: string): number {
   return resolveStrategies(tagId).initialVolume;
+}
+
+/** Returns the compact-backdrop color override (hex) for the given tag, if any. */
+export function getCompactBackgroundColor(tagId: string): string | undefined {
+  return resolveStrategies(tagId).compactBackgroundColor;
 }

@@ -5,7 +5,8 @@ import { act, type ReactElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
-import { EventBusProvider } from "@cxr/instance/coordination/EventBusContext";
+import { EventBusProvider, useEventBus } from "@cxr/instance/coordination/EventBusContext";
+import type { CxrEventBus } from "@cxr/instance/coordination/CxrEventBus";
 import { FullScreenProvider, useFullScreen, type FullScreenContextValue } from "@cxr/providers/FullScreenProvider";
 
 // ---------------------------------------------------------------------------
@@ -14,21 +15,23 @@ import { FullScreenProvider, useFullScreen, type FullScreenContextValue } from "
 
 interface ContextHandle {
   ctx: FullScreenContextValue | null;
+  bus?: CxrEventBus;
 }
 
 function Consumer({ handle }: { handle: ContextHandle }): ReactElement {
   handle.ctx = useFullScreen();
+  handle.bus = useEventBus();
   return <span data-testid="consumer" />;
 }
 
-function mount(handle: ContextHandle): { root: Root; container: HTMLDivElement } {
+function mount(handle: ContextHandle, brandId?: number): { root: Root; container: HTMLDivElement } {
   const container = document.createElement("div");
   document.body.appendChild(container);
   const root = createRoot(container);
   act(() => {
     root.render(
       <EventBusProvider>
-        <FullScreenProvider>
+        <FullScreenProvider brandId={brandId}>
           <Consumer handle={handle} />
         </FullScreenProvider>
       </EventBusProvider>
@@ -350,25 +353,99 @@ describe("FullScreenProvider", () => {
       unmount(root, container);
     });
 
-    it("falls back to manual fullscreen when native requestFullscreen rejects", async () => {
+    it("redirects to the fallback URL when native requestFullscreen rejects (brand 3252)", async () => {
       const requestSpy = vi.fn().mockRejectedValue(new Error("gesture required"));
       stubRequest(requestSpy);
+      const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
 
       const handle: ContextHandle = { ctx: null };
-      const { root, container } = mount(handle);
+      const { root, container } = mount(handle, 3252);
 
       await act(async () => {
         await handle.ctx?.enterFullScreen();
       });
 
       expect(requestSpy).toHaveBeenCalledTimes(1);
-      expect(handle.ctx?.isFullScreen).toBe(true);
+      expect(openSpy).toHaveBeenCalledWith(
+        "https://infolinks.begenuin.com/home?embed_id=6a4b8a153b428877f20c9bb5",
+        "_blank",
+        "noopener,noreferrer"
+      );
+      expect(handle.ctx?.isFullScreen).toBe(false);
 
+      openSpy.mockRestore();
       unmount(root, container);
     });
 
-    it("falls back to manual fullscreen when no requestFullscreen method exists", async () => {
+    it("redirects to the fallback URL when no requestFullscreen method exists (brand 3252)", async () => {
       stubRequest(undefined);
+      const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
+
+      const handle: ContextHandle = { ctx: null };
+      const { root, container } = mount(handle, 3252);
+
+      await act(async () => {
+        await handle.ctx?.enterFullScreen();
+      });
+
+      expect(openSpy).toHaveBeenCalledWith(
+        "https://infolinks.begenuin.com/home?embed_id=6a4b8a153b428877f20c9bb5",
+        "_blank",
+        "noopener,noreferrer"
+      );
+      expect(handle.ctx?.isFullScreen).toBe(false);
+
+      openSpy.mockRestore();
+      unmount(root, container);
+    });
+
+    it("includes video_id in the fallback URL when a video id has been broadcast", async () => {
+      stubRequest(undefined);
+      const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
+
+      const handle: ContextHandle = { ctx: null };
+      const { root, container } = mount(handle, 3252);
+
+      act(() => {
+        handle.bus?.emit("genai:videoId", { videoId: "vid-123" });
+      });
+
+      await act(async () => {
+        await handle.ctx?.enterFullScreen();
+      });
+
+      expect(openSpy).toHaveBeenCalledWith(
+        "https://infolinks.begenuin.com/home?embed_id=6a4b8a153b428877f20c9bb5&video_id=vid-123",
+        "_blank",
+        "noopener,noreferrer"
+      );
+
+      openSpy.mockRestore();
+      unmount(root, container);
+    });
+
+    it("falls back to manual fullscreen (no redirect) when requestFullscreen rejects for a non-3252 brand", async () => {
+      const requestSpy = vi.fn().mockRejectedValue(new Error("gesture required"));
+      stubRequest(requestSpy);
+      const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
+
+      const handle: ContextHandle = { ctx: null };
+      const { root, container } = mount(handle, 9999);
+
+      await act(async () => {
+        await handle.ctx?.enterFullScreen();
+      });
+
+      expect(openSpy).not.toHaveBeenCalled();
+      expect(handle.ctx?.isFullScreen).toBe(true);
+
+      openSpy.mockRestore();
+      unmount(root, container);
+    });
+
+    it("falls back to manual fullscreen (no redirect) when no requestFullscreen method exists and brandId is unresolved", async () => {
+      stubRequest(undefined);
+      const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
 
       const handle: ContextHandle = { ctx: null };
       const { root, container } = mount(handle);
@@ -377,8 +454,10 @@ describe("FullScreenProvider", () => {
         await handle.ctx?.enterFullScreen();
       });
 
+      expect(openSpy).not.toHaveBeenCalled();
       expect(handle.ctx?.isFullScreen).toBe(true);
 
+      openSpy.mockRestore();
       unmount(root, container);
     });
 
@@ -465,9 +544,10 @@ describe("FullScreenProvider", () => {
     it("treats a cross-origin parent (window.top access throwing) as an iframe", () => {
       // Force inIframe()'s try/catch to take the catch path: accessing window.top throws,
       // exactly like a cross-origin embed. With inIframe() === true and non-iOS, the native
-      // path runs; absent any requestFullscreen, it falls back to manual fullscreen.
+      // path runs; absent any requestFullscreen, it redirects to the fallback URL (brand 3252).
       const topDescriptor = Object.getOwnPropertyDescriptor(window, "top");
       const requestDescriptor = Object.getOwnPropertyDescriptor(document.documentElement, "requestFullscreen");
+      const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
       Object.defineProperty(window, "top", {
         configurable: true,
         get: () => {
@@ -481,14 +561,20 @@ describe("FullScreenProvider", () => {
       });
 
       const handle: ContextHandle = { ctx: null };
-      const { root, container } = mount(handle);
+      const { root, container } = mount(handle, 3252);
 
       act(() => {
         handle.ctx?.enterFullScreen();
       });
 
-      expect(handle.ctx?.isFullScreen).toBe(true);
+      expect(openSpy).toHaveBeenCalledWith(
+        "https://infolinks.begenuin.com/home?embed_id=6a4b8a153b428877f20c9bb5",
+        "_blank",
+        "noopener,noreferrer"
+      );
+      expect(handle.ctx?.isFullScreen).toBe(false);
 
+      openSpy.mockRestore();
       if (topDescriptor) {
         Object.defineProperty(window, "top", topDescriptor);
       } else {

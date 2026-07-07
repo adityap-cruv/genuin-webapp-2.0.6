@@ -29,6 +29,18 @@ export type StrategyPreset = keyof typeof STRATEGY_PRESETS;
 export type TagStrategyEntry = Partial<Strategies> & { preset?: StrategyPreset };
 
 /**
+ * Per-brand strategy config, keyed by numeric `brand_id`. Sits between the preset
+ * layer and tag inline keys in the cascade (see {@link resolveStrategies}) — every
+ * tag belonging to the brand gets these values unless the tag overrides them
+ * inline. Change a value here to repaint/reconfigure every tag under that brand
+ * at once, regardless of tag id.
+ */
+export const BRAND_STRATEGIES: Record<number, Partial<Strategies>> = {
+  // Fixed compact-backdrop color for this brand, regardless of backend `brand_color`.
+  3252: { compactBackgroundColor: "#EC298C" },
+};
+
+/**
  * A per-page-load traffic experiment for a tag. When a page load falls into the
  * bucket (probability `sampleRate`), `overrides` are applied on top of the tag's
  * resolved strategies. The roll happens once per `StrategyProvider` mount, so the
@@ -92,7 +104,11 @@ export const TAG_STRATEGIES: Record<string, TagStrategyEntry> = {
   "6a2fefd87ce338c3a5afc605": { singleHitWaterfall: true, initialVolume: 0.2 },
   "6a391232d73aa25887ac2af3": { adBreakEnabled: true, gateOnUnmute: true },
   "69b298e3d6a6ad57e7b9a464": { singleHitWaterfall: true, mutePassback: true, gateOnUnmute: true },
-  "69b298f4d6a6ad57e7b9a499": { singleHitWaterfall: true, mutePassback: true, gateOnUnmute: true },
+  "69b298f4d6a6ad57e7b9a499": {
+    singleHitWaterfall: true,
+    mutePassback: true,
+    gateOnUnmute: true,
+  },
   // gateOnUnmute:true gates the 98% (request waits for unmute); the 2%
   // experiment above ungates the sampled slice. Needed because
   // DEFAULT_STRATEGIES.gateOnUnmute is false, so without this the base would
