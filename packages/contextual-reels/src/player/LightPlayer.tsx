@@ -57,8 +57,20 @@ export function LightPlayer({
   // Keep the ref in sync when the prop changes (avoids stale closure in lifecycle hooks).
   lastUserPlayAtRef.current = lastUserPlayAt;
 
-  const { sendEvent } = useAnalytics();
+  const { sendEvent: sendEventRaw } = useAnalytics();
   const { notifyAutoplayBlocked } = usePlayer();
+
+  // Stamp this video's id onto every player-lifecycle event (video_loaded,
+  // video_started, video_play_started/interrupted, quartiles, complete) so
+  // analytics can attribute each event to its video — mirrors the Web SDK's
+  // per-video `baseAnalyticsData.video_id`. Caller payloads still win on collision.
+  const sendEvent = useCallback(
+    (name: string, payload?: Record<string, unknown>) => {
+      // Omit video_id when absent so we never emit a `video_id: undefined` key.
+      sendEventRaw(name, { ...(videoId ? { video_id: videoId } : {}), ...payload });
+    },
+    [sendEventRaw, videoId]
+  );
 
   // Broadcast active videoId to window for external consumers.
   useActiveVideoIdBroadcast({ videoId });

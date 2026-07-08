@@ -129,14 +129,14 @@ describe("FeedProvider", () => {
     const sendEvent = vi.fn();
     mockUseAnalytics.mockReturnValue({ sendEvent });
     mockCreateFeedGenerator.mockImplementation(({ sendEvent: se }: { sendEvent: (name: string) => void }) => {
-      se("batch_started");
+      se("Batch Started");
       return vi.fn().mockResolvedValue([]);
     });
     render();
     await act(async () => {
       await Promise.resolve();
     });
-    expect(sendEvent).toHaveBeenCalledWith("batch_started");
+    expect(sendEvent).toHaveBeenCalledWith("Batch Started");
   });
 
   it("useFeed throws outside FeedProvider", () => {

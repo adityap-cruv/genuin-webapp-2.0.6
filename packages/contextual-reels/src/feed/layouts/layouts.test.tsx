@@ -24,6 +24,9 @@ vi.mock("../../player/LightPlayer", () => ({
 vi.mock("../../ads/GenAdSlot", () => ({
   GenAdSlot: () => React.createElement("div", { "data-testid": "gen-ad-slot" }),
 }));
+vi.mock("../../providers/AnalyticsProvider", () => ({
+  useAnalytics: () => ({ sendEvent: vi.fn(), setBrandId: vi.fn() }),
+}));
 vi.mock("../../providers/PlayerProvider", () => ({
   usePlayer: vi.fn(() => ({
     isMuted: true,

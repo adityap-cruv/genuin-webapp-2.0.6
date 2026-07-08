@@ -5,14 +5,20 @@ import type { Root } from "react-dom/client";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 let onSetMuted: ((value: boolean) => void) | undefined;
+let mockIsMuted = true;
 
 vi.mock("../providers/PlayerProvider", () => ({
   usePlayer: () => ({
-    isMuted: true,
+    isMuted: mockIsMuted,
     isPlaying: true,
     setPlaying: vi.fn(),
     setMuted: (value: boolean) => onSetMuted?.(value),
   }),
+}));
+
+const { sendEventMock } = vi.hoisted(() => ({ sendEventMock: vi.fn() }));
+vi.mock("../providers/AnalyticsProvider", () => ({
+  useAnalytics: () => ({ sendEvent: sendEventMock, setBrandId: vi.fn() }),
 }));
 
 import { ClickOverlay } from "@cxr/controls/ClickOverlay";
@@ -31,6 +37,8 @@ describe("ClickOverlay", () => {
 
   beforeEach(() => {
     onSetMuted = undefined;
+    mockIsMuted = true;
+    sendEventMock.mockClear();
     testBus = new CxrEventBus();
     container = document.createElement("div");
     document.body.appendChild(container);
@@ -181,5 +189,33 @@ describe("ClickOverlay", () => {
     });
     // Video overlays carry no containerId: skip the emit, still update mute state.
     expect(emitOrder).toEqual(["setMuted"]);
+  });
+
+  it("non-fullscreen: tap-to-unmute tracks Unmuted with by_user", () => {
+    render({ isFullScreen: false });
+    const el = container.querySelector('[data-testid="click-overlay"]')!;
+    act(() => {
+      el.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+    expect(sendEventMock).toHaveBeenCalledWith("Unmuted", { by_user: true });
+  });
+
+  it("does not track Unmuted when already audible (no state change)", () => {
+    mockIsMuted = false;
+    render({ isFullScreen: false });
+    const el = container.querySelector('[data-testid="click-overlay"]')!;
+    act(() => {
+      el.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+    expect(sendEventMock).not.toHaveBeenCalled();
+  });
+
+  it("fullscreen: play/pause tap does not track Unmuted", () => {
+    render({ isFullScreen: true });
+    const el = container.querySelector('[data-testid="click-overlay"]')!;
+    act(() => {
+      el.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+    expect(sendEventMock).not.toHaveBeenCalled();
   });
 });

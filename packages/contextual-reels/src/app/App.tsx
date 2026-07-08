@@ -14,6 +14,7 @@
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { type ReactNode, type RefObject, lazy, useCallback, useEffect, useRef, useState } from "react";
 
+import { EVENT } from "@cxr/analytics/analytics";
 import { CloseButton } from "@cxr/app/CloseButton";
 import { FeedSkeleton } from "@cxr/app/FeedSkeleton";
 import { NoContent } from "@cxr/app/NoContent";
@@ -256,7 +257,7 @@ function TagLoader({ tagId, rootTagId, customizationDetails, adLayout, onLoaded,
         const tagDimensions = adLayoutVariants.find((v) => v.id === adLayout);
         // tag_id is injected by AnalyticsProvider; only the camelCase `tagId`
         // legacy key and the tag dimensions are event-specific here.
-        sendEvent("tag_captured", {
+        sendEvent(EVENT.TAG_CAPTURED, {
           tagId,
           tag_height: tagDimensions?.height,
           tag_width: tagDimensions?.width,

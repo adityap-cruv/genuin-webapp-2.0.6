@@ -7,9 +7,14 @@ import { createRoot } from "react-dom/client";
 import type { Root } from "react-dom/client";
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
+const { setBaseEventContextMock } = vi.hoisted(() => ({ setBaseEventContextMock: vi.fn() }));
+vi.mock("@cxr/providers/AnalyticsProvider", () => ({
+  useAnalytics: () => ({ sendEvent: vi.fn(), setBrandId: vi.fn(), setBaseEventContext: setBaseEventContextMock }),
+}));
+
 import { CxrEventBus } from "@cxr/instance/coordination/CxrEventBus";
 import { EventBusProvider, useEventBus } from "@cxr/instance/coordination/EventBusContext";
-import { PlayerProvider, usePlayer } from "@cxr/providers/PlayerProvider";
+import { DEFAULT_UNMUTE_VOLUME, PlayerProvider, usePlayer } from "@cxr/providers/PlayerProvider";
 import { StrategyProvider } from "@cxr/strategies/StrategyProvider";
 
 interface Captured {
@@ -54,6 +59,7 @@ describe("PlayerProvider", () => {
   let root: Root;
 
   beforeEach(() => {
+    setBaseEventContextMock.mockClear();
     container = document.createElement("div");
     document.body.appendChild(container);
     root = createRoot(container);
@@ -75,6 +81,20 @@ describe("PlayerProvider", () => {
       );
     });
   }
+
+  it("reports the initial volume + mute state to analytics on mount", () => {
+    render();
+    expect(setBaseEventContextMock).toHaveBeenCalledWith({ volume: 0, is_muted: true });
+  });
+
+  it("re-reports player state to analytics when the user unmutes", () => {
+    render();
+    setBaseEventContextMock.mockClear();
+    act(() => {
+      captured.setMuted(false);
+    });
+    expect(setBaseEventContextMock).toHaveBeenCalledWith({ volume: DEFAULT_UNMUTE_VOLUME, is_muted: false });
+  });
 
   it("provides isMuted=true initially (default muted)", () => {
     render();

@@ -46,7 +46,7 @@ export function ReelList({
   const {
     activeIndex,
     visibleIndices,
-    goNext,
+    autoAdvance,
     onTimeUpdate: emitTimeUpdate,
   } = useEmblaFeed(emblaApiRef, {
     itemCount: entries.length,
@@ -78,7 +78,7 @@ export function ReelList({
               tagDetails={tagDetails}
               variant={variant}
               onTimeUpdate={emitTimeUpdate}
-              onAutoAdvance={goNext}
+              onAutoAdvance={autoAdvance}
             />
           </div>
         );

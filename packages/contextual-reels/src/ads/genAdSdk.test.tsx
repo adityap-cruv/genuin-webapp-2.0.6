@@ -772,6 +772,36 @@ describe("ads/useGenAdInstance", () => {
     unmount(root, container);
   });
 
+  it("tracks Ad Paused on a pause callback and nothing on resume", async () => {
+    const { root, container } = mountHook({ ...baseProps, isActive: true });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    sendEventMock.mockClear();
+
+    const onStageStart = lastInitOptions.onStageStart as (d: { stage: string }) => void;
+    const onPlaybackStateChange = lastInitOptions.onPlaybackStateChange as (d: { isPaused: boolean }) => void;
+
+    // The SDK fires a single pause callback per pause (verified live), so a
+    // pause emits `Ad Paused` once.
+    await act(async () => {
+      onStageStart({ stage: "pause" });
+    });
+    expect(sendEventMock.mock.calls.filter(([name]) => name === "Ad Paused")).toHaveLength(1);
+
+    // Resume emits nothing (Web SDK has no ad-resume event).
+    await act(async () => {
+      onStageStart({ stage: "play" });
+      onPlaybackStateChange({ isPaused: false });
+    });
+    expect(sendEventMock.mock.calls.filter(([name]) => name === "Ad Paused")).toHaveLength(1);
+    expect(sendEventMock.mock.calls.filter(([name]) => name === "Ad Started")).toHaveLength(0);
+
+    unmount(root, container);
+  });
+
   it("forwards CTA details through the events.onAdCTA callback", async () => {
     const onAdCTA = vi.fn();
     const { root, container } = mountHook({ ...baseProps, isActive: true, onAdCTA });

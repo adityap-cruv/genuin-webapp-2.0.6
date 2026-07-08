@@ -13,11 +13,13 @@ import { useCallback, useState } from "react";
 import { GenAdSlot } from "@cxr/ads/GenAdSlot";
 import { genAdSlotAdProps } from "@cxr/ads/adSlotProps";
 import type { AdCtaDetails } from "@cxr/ads/genAdSdk";
+import { EVENT } from "@cxr/analytics/analytics";
 import { AdControlLayer } from "@cxr/controls/AdControlLayer";
 import { useInactivityAdvance } from "@cxr/feed/hooks/useInactivityAdvance";
 import { useEventBus } from "@cxr/instance/coordination/EventBusContext";
 import { useInstanceId } from "@cxr/instance/registry/InstanceContext";
 import { useAdWaterfall } from "@cxr/providers/AdProvider";
+import { useAnalytics } from "@cxr/providers/AnalyticsProvider";
 import { useFullScreen } from "@cxr/providers/FullScreenProvider";
 import { usePlayer } from "@cxr/providers/PlayerProvider";
 import type { NormalisedAd } from "@cxr/types";
@@ -45,6 +47,18 @@ export function AdLayout({ ad, isActive, onAutoAdvance }: AdLayoutProps): React.
   const { onAdSuccess, onAdFail, adLayout } = useAdWaterfall();
   const { isFullScreen, toggleFullScreen } = useFullScreen();
   const bus = useEventBus();
+  const analytics = useAnalytics();
+
+  // The ad mute button routes here (via AdControlBar). Mirror the video-mute
+  // path so muting/unmuting an ad also emits `Muted`/`Unmuted` — matches the
+  // Web SDK, where one instrumented toggle serves both video and ad.
+  const handleMuteToggle = useCallback(
+    (nextMuted: boolean, extra?: Record<string, unknown>) => {
+      setMuted(nextMuted);
+      analytics.sendEvent(nextMuted ? EVENT.VIDEO_MUTED : EVENT.VIDEO_UNMUTED, { by_user: true, ...extra });
+    },
+    [analytics]
+  );
 
   // Tracks whether the per-slot waterfall has settled (fill or no-fill).
   // Resets to false whenever GenAdSlot resets via destroySignal (i.e. on every slide change).
@@ -134,7 +148,7 @@ export function AdLayout({ ad, isActive, onAutoAdvance }: AdLayoutProps): React.
         isAdReady={isAdReady}
         ctaDetails={ctaDetails}
         onPlayClick={() => setPlaying(!isPlaying)}
-        onMuteClick={setMuted}
+        onMuteClick={handleMuteToggle}
         onFullScreenClick={handleFullScreenClick}
         containerId={containerId}
       />

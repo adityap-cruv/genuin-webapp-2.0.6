@@ -210,7 +210,7 @@ describe("App", () => {
     expect(getTagMock).toHaveBeenCalledWith("tag-1");
     expect(setBrandIdMock).toHaveBeenCalledWith("brand-9");
     expect(sendEventMock).toHaveBeenCalledWith(
-      "tag_captured",
+      "Tag Captured",
       expect.objectContaining({ tagId: "tag-1", tag_height: 50, tag_width: 320 })
     );
     // Feed provider tree mounts once tagDetails is set.
@@ -222,7 +222,7 @@ describe("App", () => {
     render({ customizationDetails: { delay: 7, extra: "x" } });
     await flushPromises();
 
-    expect(sendEventMock).toHaveBeenCalledWith("tag_captured", expect.any(Object));
+    expect(sendEventMock).toHaveBeenCalledWith("Tag Captured", expect.any(Object));
     // The merged tagDetails flows into the provider tree (rendered).
     expect(container.querySelector('[data-testid="feed-provider"]')).toBeTruthy();
   });
@@ -231,7 +231,7 @@ describe("App", () => {
     getTagMock.mockResolvedValue({ tag_id: "tag-1", brand_id: "b" });
     render({ customizationDetails: { somethingElse: true } });
     await flushPromises();
-    expect(sendEventMock).toHaveBeenCalledWith("tag_captured", expect.any(Object));
+    expect(sendEventMock).toHaveBeenCalledWith("Tag Captured", expect.any(Object));
   });
 
   it("renders the NoContent fallback when the tag fetch fails", async () => {

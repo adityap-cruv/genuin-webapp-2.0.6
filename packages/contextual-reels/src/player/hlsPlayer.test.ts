@@ -228,7 +228,7 @@ describe("useImaPlugin", () => {
       h({ detail: { adsRequest: { adTagUrl: "https://example.com/vast.xml" } } });
     }
 
-    expect(sendEvent).toHaveBeenCalledWith("ad_request", {
+    expect(sendEvent).toHaveBeenCalledWith("Ad Request", {
       ad_url: "https://example.com/vast.xml",
     });
   });
@@ -256,7 +256,7 @@ describe("useImaPlugin", () => {
       h({ getAdData: () => adData });
     }
 
-    expect(sendEvent).toHaveBeenCalledWith("ad_response", expect.objectContaining({ adId: "ad-1" }));
+    expect(sendEvent).toHaveBeenCalledWith("Ad Response", expect.objectContaining({ adId: "ad-1" }));
   });
 
   it("emits ad_start on IMA STARTED event", () => {
@@ -282,7 +282,7 @@ describe("useImaPlugin", () => {
       h({ getAd: () => ({ data: adData }) });
     }
 
-    expect(sendEvent).toHaveBeenCalledWith("ad_start", expect.objectContaining({ adId: "ad-2" }));
+    expect(sendEvent).toHaveBeenCalledWith("Ad Start", expect.objectContaining({ adId: "ad-2" }));
   });
 
   it("emits ad_complete on IMA COMPLETE event", () => {
@@ -308,7 +308,7 @@ describe("useImaPlugin", () => {
       h({ getAd: () => ({ data: adData }) });
     }
 
-    expect(sendEvent).toHaveBeenCalledWith("ad_complete", expect.objectContaining({ adId: "ad-3" }));
+    expect(sendEvent).toHaveBeenCalledWith("Ad Complete", expect.objectContaining({ adId: "ad-3" }));
   });
 
   it("wires the provided onAdError to player.plugins.ima.onAdError", () => {
@@ -417,9 +417,9 @@ describe("useImaPlugin", () => {
     // LOADED: getAdData() returns undefined → `adData ?? {}`.
     for (const h of adsManagerListeners["loaded"] ?? []) h({ getAdData: () => undefined });
 
-    expect(sendEvent).toHaveBeenCalledWith("ad_complete", expect.any(Object));
-    expect(sendEvent).toHaveBeenCalledWith("ad_start", expect.any(Object));
-    expect(sendEvent).toHaveBeenCalledWith("ad_response", expect.any(Object));
+    expect(sendEvent).toHaveBeenCalledWith("Ad Complete", expect.any(Object));
+    expect(sendEvent).toHaveBeenCalledWith("Ad Start", expect.any(Object));
+    expect(sendEvent).toHaveBeenCalledWith("Ad Response", expect.any(Object));
   });
 
   it('calls onEnded when COMPLETE fires and videoDetails.type === "ad"', () => {

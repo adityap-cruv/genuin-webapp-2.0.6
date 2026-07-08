@@ -8,6 +8,11 @@ import React, { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+const { sendEventMock } = vi.hoisted(() => ({ sendEventMock: vi.fn() }));
+vi.mock("@cxr/providers/AnalyticsProvider", () => ({
+  useAnalytics: () => ({ sendEvent: sendEventMock, setBrandId: vi.fn() }),
+}));
+
 import { FullscreenActionRail } from "@cxr/controls/FullscreenActionRail";
 import type { ControlLayerVariant } from "@cxr/controls/control-layer.types";
 import type { NormalisedReel, TagResponse } from "@cxr/types";
@@ -34,7 +39,7 @@ function makeReel(shareString?: string): NormalisedReel {
     ogDetails: null,
     owner: null,
     config: null,
-    video: shareString != null ? { share_string: shareString } : null,
+    video: shareString != null ? { id: "vid-1", description: "A clip", share_string: shareString } : null,
     cta: null,
     playerType: "default",
   } as NormalisedReel;
@@ -45,6 +50,7 @@ describe("FullscreenActionRail", () => {
   let root: Root;
 
   beforeEach(() => {
+    sendEventMock.mockClear();
     container = document.createElement("div");
     document.body.appendChild(container);
     root = createRoot(container);
@@ -136,6 +142,36 @@ describe("FullscreenActionRail", () => {
 
     expect(writeText).toHaveBeenCalledWith("https://share.test/xyz");
     vi.unstubAllGlobals();
+  });
+
+  it("tracks Video Shared when the share button is clicked", () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    vi.stubGlobal("navigator", { clipboard: { writeText } });
+    render({ config: makeConfig({ show_share: true }), item: makeReel("https://share.test/xyz") });
+
+    const share = container.querySelector('[data-testid="bottombar-share"]') as HTMLButtonElement;
+    act(() => {
+      share.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+
+    expect(sendEventMock).toHaveBeenCalledWith("Video Shared", {
+      content_id: "vid-1",
+      title: "A clip",
+      platform: "copy_link",
+    });
+    vi.unstubAllGlobals();
+  });
+
+  it("does not track Video Shared for the spark (open link) button", () => {
+    vi.spyOn(window, "open").mockReturnValue(null);
+    render({ config: makeConfig({ show_spark: true }), item: makeReel("https://share.test/abc") });
+
+    const spark = container.querySelector('[data-testid="bottombar-spark"]') as HTMLButtonElement;
+    act(() => {
+      spark.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+
+    expect(sendEventMock).not.toHaveBeenCalled();
   });
 
   it("stops click propagation so taps never reach a React backdrop handler", () => {

@@ -22,6 +22,7 @@ import {
   notifyAdFill,
   notifyAdNoFill,
 } from "@cxr/ads/waterfall";
+import { EVENT } from "@cxr/analytics/analytics";
 import { AD_LAYOUT, type AdLayoutId } from "@cxr/config";
 import { useEventBus } from "@cxr/instance/coordination/EventBusContext";
 import { useAnalytics } from "@cxr/providers/AnalyticsProvider";
@@ -111,7 +112,7 @@ export function AdProvider({
     notifyAdNoFill();
     const elapsed = Date.now() - renderStartRef.current;
     _logger.debug(`notifyAdNoFill +${elapsed}ms (${(elapsed / 1000).toFixed(2)}s) from page load`);
-    sendEvent("Ad Passback", {
+    sendEvent(EVENT.AD_PASSBACK, {
       tag_height: tagHeight,
       tag_width: tagWidth,
     });

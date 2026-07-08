@@ -3,7 +3,9 @@ import { ShareIcon, SparkIcon } from "@genuin/ui/icons";
 import React from "react";
 
 
+import { EVENT } from "@cxr/analytics/analytics";
 import type { ControlLayerVariant } from "@cxr/controls/control-layer.types";
+import { useAnalytics } from "@cxr/providers/AnalyticsProvider";
 import type { NormalisedReel, TagResponse } from "@cxr/types";
 import { copyToClipboard, openShareLink } from "@cxr/utils/share";
 
@@ -38,6 +40,8 @@ export function FullscreenActionRail({
   variant?: ControlLayerVariant;
   item?: NormalisedReel;
 }): React.JSX.Element | null {
+  // Called before the early returns — hook order must be unconditional.
+  const analytics = useAnalytics();
   if (variant === "iheart") return null;
   if (!config?.show_spark && !config?.show_share) return null;
 
@@ -65,6 +69,11 @@ export function FullscreenActionRail({
           onClick={(e) => {
             e.stopPropagation();
             void copyToClipboard(shareUrl ?? "");
+            analytics.sendEvent(EVENT.VIDEO_SHARED, {
+              content_id: item?.video?.id,
+              title: item?.video?.description,
+              platform: "copy_link",
+            });
           }}>
           <ShareIcon theme="dark" size="lg" />
         </button>

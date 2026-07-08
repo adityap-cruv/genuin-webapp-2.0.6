@@ -23,6 +23,7 @@ const {
   mockUseAdWaterfall,
   mockBusEmit,
   mockUseInactivityAdvance,
+  mockSendEvent,
   capturedGenAdSlotProps,
   capturedAdControlLayerProps,
 } = vi.hoisted(() => ({
@@ -31,6 +32,7 @@ const {
   mockUseAdWaterfall: vi.fn(),
   mockBusEmit: vi.fn(),
   mockUseInactivityAdvance: vi.fn(),
+  mockSendEvent: vi.fn(),
   capturedGenAdSlotProps: [] as Record<string, unknown>[],
   capturedAdControlLayerProps: [] as Record<string, unknown>[],
 }));
@@ -67,6 +69,9 @@ vi.mock("../../providers/FullScreenProvider", () => ({
 }));
 vi.mock("../../providers/AdProvider", () => ({
   useAdWaterfall: () => mockUseAdWaterfall(),
+}));
+vi.mock("../../providers/AnalyticsProvider", () => ({
+  useAnalytics: () => ({ sendEvent: mockSendEvent, setBrandId: vi.fn(), setBaseEventContext: vi.fn() }),
 }));
 
 
@@ -215,6 +220,20 @@ describe("AdLayout handlers", () => {
     expect(setPlaying).toHaveBeenCalledWith(true);
     act(() => (slot["onAdPause"] as () => void)());
     expect(setPlaying).toHaveBeenCalledWith(false);
+  });
+
+  it("ad mute button emits Muted/Unmuted (by_user) and updates player mute state", () => {
+    render();
+    const layer = capturedAdControlLayerProps.at(-1);
+    const onMuteClick = layer?.["onMuteClick"] as (m: boolean) => void;
+
+    act(() => onMuteClick(true));
+    expect(setMuted).toHaveBeenCalledWith(true);
+    expect(mockSendEvent).toHaveBeenCalledWith("Muted", { by_user: true });
+
+    act(() => onMuteClick(false));
+    expect(setMuted).toHaveBeenCalledWith(false);
+    expect(mockSendEvent).toHaveBeenCalledWith("Unmuted", { by_user: true });
   });
 
   it("onWaterfallSuccess forwards to the waterfall's onAdSuccess", () => {

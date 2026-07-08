@@ -98,7 +98,7 @@ describe("useQuartileEvents", () => {
     }
     await tick();
 
-    expect(sendEvent).toHaveBeenCalledWith("video_first_quartile", expect.any(Object));
+    expect(sendEvent).toHaveBeenCalledWith("Video First Quartile", expect.any(Object));
   });
 
   it("emits video_midpoint at 50% progress", async () => {
@@ -123,7 +123,7 @@ describe("useQuartileEvents", () => {
     }
     await tick();
 
-    expect(sendEvent).toHaveBeenCalledWith("video_midpoint", expect.any(Object));
+    expect(sendEvent).toHaveBeenCalledWith("Midpoint", expect.any(Object));
   });
 
   it("emits video_third_quartile at 75% progress", async () => {
@@ -148,7 +148,7 @@ describe("useQuartileEvents", () => {
     }
     await tick();
 
-    expect(sendEvent).toHaveBeenCalledWith("video_third_quartile", expect.any(Object));
+    expect(sendEvent).toHaveBeenCalledWith("Video Third Quartile", expect.any(Object));
   });
 
   it("emits video_completed at 100% progress", async () => {
@@ -173,7 +173,7 @@ describe("useQuartileEvents", () => {
     }
     await tick();
 
-    expect(sendEvent).toHaveBeenCalledWith("video_completed", expect.any(Object));
+    expect(sendEvent).toHaveBeenCalledWith("Video Complete", expect.any(Object));
   });
 
   it("dedupes: q1 never emits twice without reset", async () => {
@@ -202,7 +202,7 @@ describe("useQuartileEvents", () => {
     }
     await tick();
 
-    const calls = sendEvent.mock.calls.filter(([n]) => n === "video_first_quartile");
+    const calls = sendEvent.mock.calls.filter(([n]) => n === "Video First Quartile");
     expect(calls).toHaveLength(1);
   });
 
@@ -228,7 +228,7 @@ describe("useQuartileEvents", () => {
     }
     await tick();
 
-    const before = sendEvent.mock.calls.filter(([n]) => n === "video_first_quartile").length;
+    const before = sendEvent.mock.calls.filter(([n]) => n === "Video First Quartile").length;
     expect(before).toBe(1);
 
     q.resetForPlay(0.05);
@@ -238,7 +238,7 @@ describe("useQuartileEvents", () => {
     }
     await tick();
 
-    const after = sendEvent.mock.calls.filter(([n]) => n === "video_first_quartile").length;
+    const after = sendEvent.mock.calls.filter(([n]) => n === "Video First Quartile").length;
     expect(after).toBe(2);
   });
 
@@ -271,7 +271,7 @@ describe("useQuartileEvents", () => {
     }
     await tick();
 
-    const q1Calls = sendEvent.mock.calls.filter(([n]) => n === "video_first_quartile");
+    const q1Calls = sendEvent.mock.calls.filter(([n]) => n === "Video First Quartile");
     expect(q1Calls).toHaveLength(1);
   });
 
@@ -308,7 +308,7 @@ describe("useQuartileEvents", () => {
     }
     await tick();
 
-    expect(sendEvent).toHaveBeenCalledWith("video_first_quartile", expect.any(Object));
+    expect(sendEvent).toHaveBeenCalledWith("Video First Quartile", expect.any(Object));
   });
 
   it("video_completed fires on ended event if !_quartilesSent.q4", async () => {
@@ -333,7 +333,7 @@ describe("useQuartileEvents", () => {
     }
     await tick();
 
-    expect(sendEvent).toHaveBeenCalledWith("video_completed", expect.any(Object));
+    expect(sendEvent).toHaveBeenCalledWith("Video Complete", expect.any(Object));
   });
 
   it("does NOT re-emit video_completed on ended if q4 already sent by timeupdate", async () => {
@@ -365,7 +365,7 @@ describe("useQuartileEvents", () => {
     }
     await tick();
 
-    const completedCalls = sendEvent.mock.calls.filter(([n]) => n === "video_completed");
+    const completedCalls = sendEvent.mock.calls.filter(([n]) => n === "Video Complete");
     expect(completedCalls).toHaveLength(0);
   });
 
@@ -525,7 +525,7 @@ describe("usePlayStartedEvents", () => {
     await tick();
 
     expect(sendEvent).toHaveBeenCalledWith(
-      "video_play_interrupted",
+      "Video Play Interrupted",
       expect.objectContaining({
         duration: 100,
         watch_time: 30,
@@ -555,8 +555,8 @@ describe("usePlayStartedEvents", () => {
     await tick();
 
     const names = callNames(sendEvent);
-    expect(names).toContain("video_started");
-    expect(names).toContain("video_play_started");
+    expect(names).toContain("Video Started");
+    expect(names).toContain("Video Play Started");
   });
 
   it("emits only video_started when currentTime <= 0.1 and NOT recentClick", async () => {
@@ -581,8 +581,8 @@ describe("usePlayStartedEvents", () => {
     await tick();
 
     const names = callNames(sendEvent);
-    expect(names).toContain("video_started");
-    expect(names).not.toContain("video_play_started");
+    expect(names).toContain("Video Started");
+    expect(names).not.toContain("Video Play Started");
   });
 
   it("emits only video_play_started when currentTime=5.0 and recentClick", async () => {
@@ -607,8 +607,8 @@ describe("usePlayStartedEvents", () => {
     await tick();
 
     const names = callNames(sendEvent);
-    expect(names).toContain("video_play_started");
-    expect(names).not.toContain("video_started");
+    expect(names).toContain("Video Play Started");
+    expect(names).not.toContain("Video Started");
   });
 
   it("emits only video_started when currentTime=5.0 and NOT recentClick", async () => {
@@ -633,8 +633,8 @@ describe("usePlayStartedEvents", () => {
     await tick();
 
     const names = callNames(sendEvent);
-    expect(names).toContain("video_started");
-    expect(names).not.toContain("video_play_started");
+    expect(names).toContain("Video Started");
+    expect(names).not.toContain("Video Play Started");
   });
 
   it("_startedSent dedupe: second playing event in same cycle is ignored", async () => {
@@ -659,7 +659,7 @@ describe("usePlayStartedEvents", () => {
     fire(player._videoEl, "playing");
     await tick();
 
-    const started = callsNamed(sendEvent, "video_started");
+    const started = callsNamed(sendEvent, "Video Started");
     expect(started).toHaveLength(1);
   });
 
@@ -683,7 +683,7 @@ describe("usePlayStartedEvents", () => {
     fire(player._videoEl, "playing");
     await tick();
 
-    const playCalls = callsNamed(sendEvent, "video_play_started");
+    const playCalls = callsNamed(sendEvent, "Video Play Started");
     expect(playCalls).toHaveLength(1);
   });
 
@@ -707,7 +707,7 @@ describe("usePlayStartedEvents", () => {
     // First play cycle
     fire(player._videoEl, "playing");
     await tick();
-    expect(callsNamed(sendEvent, "video_play_started")).toHaveLength(1);
+    expect(callsNamed(sendEvent, "Video Play Started")).toHaveLength(1);
 
     // Pause resets _playSent
     for (const h of vlite["pause"] ?? []) {
@@ -722,7 +722,7 @@ describe("usePlayStartedEvents", () => {
     fire(player._videoEl, "playing");
     await tick();
 
-    expect(callsNamed(sendEvent, "video_play_started")).toHaveLength(2);
+    expect(callsNamed(sendEvent, "Video Play Started")).toHaveLength(2);
   });
 
   it("native play event calls onPlayReset", async () => {
@@ -903,7 +903,7 @@ describe("useQuartileEvents — error/edge branches", () => {
     for (const h of listeners["ended"] ?? []) h();
     await tick();
 
-    expect(sendEvent).toHaveBeenCalledWith("video_completed", { duration: 0, watch_time: 0 });
+    expect(sendEvent).toHaveBeenCalledWith("Video Complete", { duration: 0, watch_time: 0 });
   });
 
   it("rounds non-finite duration/watch_time to 0 in the completed payload", async () => {
@@ -932,7 +932,7 @@ describe("useQuartileEvents — error/edge branches", () => {
     for (const h of listeners["ended"] ?? []) h();
     await tick();
 
-    expect(sendEvent).toHaveBeenCalledWith("video_completed", { duration: 0, watch_time: 0 });
+    expect(sendEvent).toHaveBeenCalledWith("Video Complete", { duration: 0, watch_time: 0 });
   });
 
   it("skips quartile math when duration is 0 (non-positive guard)", async () => {
@@ -996,7 +996,7 @@ describe("usePlayStartedEvents — error/edge branches", () => {
     for (const h of vlite["pause"] ?? []) h();
     await tick();
 
-    expect(sendEvent).toHaveBeenCalledWith("video_play_interrupted", { duration: 0, watch_time: 0 });
+    expect(sendEvent).toHaveBeenCalledWith("Video Play Interrupted", { duration: 0, watch_time: 0 });
   });
 
   it("emits video_started(0,0) and play_started when the playing getCurrentTime rejects", async () => {
@@ -1029,8 +1029,8 @@ describe("usePlayStartedEvents — error/edge branches", () => {
 
     expect(ctCalls).toBeGreaterThan(0);
     const names = (sendEvent.mock.calls as Array<[string, ...unknown[]]>).map(([n]) => n);
-    expect(names).toContain("video_started");
-    expect(names).toContain("video_play_started");
+    expect(names).toContain("Video Started");
+    expect(names).toContain("Video Play Started");
   });
 
   it("uses the player itself as the native target when getInstance is absent", () => {

@@ -22,7 +22,7 @@ let playerNativeEl: HTMLVideoElement | null = null;
 
 // Shared analytics.sendEvent spy. Declared via vi.hoisted so the (hoisted)
 // vi.mock factory below and the tests both reference the same mock instance —
-// LightPlayer calls sendEvent("video_loaded") for video items, and the
+// LightPlayer calls sendEvent("Video Loaded") for video items, and the
 // isVideoItem-branch tests assert against this exact spy.
 const { analyticsSendEvent } = vi.hoisted(() => ({ analyticsSendEvent: vi.fn() }));
 
@@ -249,10 +249,10 @@ describe("LightPlayer", () => {
     sendEvent.mockClear();
     act(() => {
       root.render(
-        createElement(LightPlayer, { ...baseProps, videoDetails: { type: "video" } })
+        createElement(LightPlayer, { ...baseProps, videoId: "vid-lp", videoDetails: { type: "video" } })
       );
     });
-    expect(sendEvent).toHaveBeenCalledWith("video_loaded");
+    expect(sendEvent).toHaveBeenCalledWith("Video Loaded", { video_id: "vid-lp" });
   });
 
   it('treats item as a video item when videoDetails.kind === "video-with-ad"', () => {
@@ -260,10 +260,10 @@ describe("LightPlayer", () => {
     sendEvent.mockClear();
     act(() => {
       root.render(
-        createElement(LightPlayer, { ...baseProps, videoDetails: { kind: "video-with-ad" } })
+        createElement(LightPlayer, { ...baseProps, videoId: "vid-lp", videoDetails: { kind: "video-with-ad" } })
       );
     });
-    expect(sendEvent).toHaveBeenCalledWith("video_loaded");
+    expect(sendEvent).toHaveBeenCalledWith("Video Loaded", { video_id: "vid-lp" });
   });
 
   it("treats item as a video item when videoType is a non-empty string", () => {
@@ -271,10 +271,10 @@ describe("LightPlayer", () => {
     sendEvent.mockClear();
     act(() => {
       root.render(
-        createElement(LightPlayer, { ...baseProps, videoDetails: { videoType: "mp4" } })
+        createElement(LightPlayer, { ...baseProps, videoId: "vid-lp", videoDetails: { videoType: "mp4" } })
       );
     });
-    expect(sendEvent).toHaveBeenCalledWith("video_loaded");
+    expect(sendEvent).toHaveBeenCalledWith("Video Loaded", { video_id: "vid-lp" });
   });
 
   it("treats item as a non-video item when videoType is an empty string", () => {
@@ -285,7 +285,7 @@ describe("LightPlayer", () => {
         createElement(LightPlayer, { ...baseProps, videoDetails: { videoType: "" } })
       );
     });
-    expect(sendEvent).not.toHaveBeenCalledWith("video_loaded");
+    expect(sendEvent).not.toHaveBeenCalledWith("Video Loaded");
   });
 
   it("reads lastUserPlayAt on the native playing event", async () => {

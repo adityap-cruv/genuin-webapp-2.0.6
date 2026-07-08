@@ -29,6 +29,7 @@ const {
   capturedGenAdSlotProps,
   capturedVideoControlProps,
   capturedAdControlProps,
+  sendEventMock,
 } = vi.hoisted(() => ({
   mockLightPlayer: vi.fn(),
   mockOctoSheet: vi.fn(),
@@ -41,6 +42,7 @@ const {
   capturedGenAdSlotProps: [] as Record<string, unknown>[],
   capturedVideoControlProps: [] as Record<string, unknown>[],
   capturedAdControlProps: [] as Record<string, unknown>[],
+  sendEventMock: vi.fn(),
 }));
 
 vi.mock("../../player/LightPlayer", () => ({
@@ -83,6 +85,9 @@ vi.mock("../../instance/registry/InstanceContext", () => ({
   useInstanceId: () => "test-instance",
 }));
 vi.mock("../../providers/PlayerProvider", () => ({ usePlayer: () => mockUsePlayer() }));
+vi.mock("../../providers/AnalyticsProvider", () => ({
+  useAnalytics: () => ({ sendEvent: sendEventMock, setBrandId: vi.fn() }),
+}));
 vi.mock("../../providers/FullScreenProvider", () => ({ useFullScreen: () => mockUseFullScreen() }));
 vi.mock("../../providers/AdProvider", () => ({ useAdWaterfall: () => mockUseAdWaterfall() }));
 vi.mock("../../providers/GenAIProvider", () => ({
@@ -354,6 +359,83 @@ describe("VideoLayout layout branches", () => {
     expect(setPlaying).toHaveBeenCalledWith(false); // isPlaying starts true → toggled false
     act(() => props.onFullScreenClick());
     expect(toggleFullScreen).toHaveBeenCalledTimes(1);
+  });
+
+  it("tracks Unmuted / Video Paused when the user toggles from muted+playing", () => {
+    render();
+    const props = capturedVideoControlProps.at(-1) as {
+      onMuteClick: () => void;
+      onPlayClick: () => void;
+    };
+    act(() => props.onMuteClick()); // muted → unmuted
+    expect(sendEventMock).toHaveBeenCalledWith("Unmuted", { by_user: true });
+    act(() => props.onPlayClick()); // playing → paused
+    expect(sendEventMock).toHaveBeenCalledWith("Video Paused", {
+      by_user: true,
+      position_index: baseReel.id,
+      start_position: 0,
+    });
+  });
+
+  it("tracks Muted / Video Play when the user toggles from unmuted+paused", () => {
+    mockUsePlayer.mockReturnValue({
+      isMuted: false,
+      volume: 1,
+      isPlaying: false,
+      setMuted,
+      setPlaying,
+      setAdBreakActive,
+    });
+    render();
+    const props = capturedVideoControlProps.at(-1) as {
+      onMuteClick: () => void;
+      onPlayClick: () => void;
+    };
+    act(() => props.onMuteClick()); // unmuted → muted
+    expect(sendEventMock).toHaveBeenCalledWith("Muted", { by_user: true });
+    act(() => props.onPlayClick()); // paused → playing
+    expect(sendEventMock).toHaveBeenCalledWith("Video Play", {
+      by_user: true,
+      position_index: baseReel.id,
+      start_position: 0,
+    });
+  });
+
+  it("does NOT emit Video Paused during a fullscreen ad break (only the ad pause is tracked)", () => {
+    mockUseFullScreen.mockReturnValue({ isFullScreen: true, toggleFullScreen });
+    mockUseFullscreenAdBreak.mockReturnValue({ ...adBreakIdle, isAdVisible: true });
+    render({ adObject });
+    const props = capturedVideoControlProps.at(-1) as { onPlayClick: () => void };
+    act(() => props.onPlayClick());
+    expect(setPlaying).toHaveBeenCalled(); // playback state still toggles
+    expect(sendEventMock).not.toHaveBeenCalledWith("Video Paused", expect.anything());
+    expect(sendEventMock).not.toHaveBeenCalledWith("Video Play", expect.anything());
+  });
+
+  it("Video Paused reports the latest playback position as start_position", () => {
+    render();
+    const playerProps = mockLightPlayer.mock.calls.at(-1)?.[0] as {
+      onTimeUpdate: (currentTime: number, duration: number, id: number) => void;
+    };
+    act(() => playerProps.onTimeUpdate(12.5, 60, 0));
+    const props = capturedVideoControlProps.at(-1) as { onPlayClick: () => void };
+    act(() => props.onPlayClick());
+    expect(sendEventMock).toHaveBeenCalledWith("Video Paused", {
+      by_user: true,
+      position_index: baseReel.id,
+      start_position: 12.5,
+    });
+  });
+
+  it("L4 compact unmute overlay tap tracks Unmuted", () => {
+    mockUseAdWaterfall.mockReturnValue({ adLayout: AD_LAYOUT.L4 });
+    render();
+    const overlay = container.querySelector('[data-testid="compact-unmute-overlay"]')!;
+    act(() => {
+      overlay.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+    expect(setMuted).toHaveBeenCalledWith(false);
+    expect(sendEventMock).toHaveBeenCalledWith("Unmuted", { by_user: true });
   });
 
   // ─── Ad break overlay + effects ──────────────────────────────────────────────

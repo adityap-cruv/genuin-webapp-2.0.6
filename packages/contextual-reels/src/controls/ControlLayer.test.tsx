@@ -14,6 +14,9 @@ vi.mock("../instance/registry/InstanceContext", () => ({
 vi.mock("../instance/coordination/EventBusContext", () => ({
   useEventBus: () => ({ on: () => () => undefined, emit: () => undefined }),
 }));
+vi.mock("../providers/AnalyticsProvider", () => ({
+  useAnalytics: () => ({ sendEvent: vi.fn(), setBrandId: vi.fn() }),
+}));
 vi.mock("../providers/PlayerProvider", () => ({
   usePlayer: () => ({ isMuted: true, isPlaying: true, setMuted: vi.fn(), setPlaying: vi.fn() }),
 }));

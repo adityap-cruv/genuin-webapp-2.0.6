@@ -28,6 +28,7 @@ vi.mock("./ReelItem", () => ({
 let capturedNavOptions: UseFeedNavigationOptions | undefined;
 const navResult = {
   goNext: vi.fn(),
+  autoAdvance: vi.fn(),
   emitTimeUpdate: vi.fn(),
 };
 
@@ -39,6 +40,7 @@ vi.mock("./useFeedNavigation", () => ({
       goNext: navResult.goNext,
       goPrev: vi.fn(),
       goTo: vi.fn(),
+      autoAdvance: navResult.autoAdvance,
       onTimeUpdate: navResult.emitTimeUpdate,
       visibleIndices: new Set([0]),
     };
@@ -127,7 +129,7 @@ describe("ReelList", () => {
     expect(container.querySelector('[data-testid="reel-item-1"]')?.getAttribute("data-active")).toBe("false");
   });
 
-  it("forwards goNext as onAutoAdvance and the nav onTimeUpdate as onTimeUpdate to each ReelItem", () => {
+  it("forwards autoAdvance as onAutoAdvance and the nav onTimeUpdate as onTimeUpdate to each ReelItem", () => {
     const entries = [makeReelEntry(0), makeReelEntry(1)];
     act(() => {
       root.render(
@@ -135,7 +137,9 @@ describe("ReelList", () => {
       );
     });
     const first = capturedReelItemProps[0];
-    expect(first?.["onAutoAdvance"]).toBe(navResult.goNext);
+    // Auto-advance must go through the flagged variant so the resulting
+    // Swipe Next analytics event reports auto_swipe: true.
+    expect(first?.["onAutoAdvance"]).toBe(navResult.autoAdvance);
     expect(first?.["onTimeUpdate"]).toBe(navResult.emitTimeUpdate);
   });
 

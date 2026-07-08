@@ -31,7 +31,7 @@ describe("services/createFeedGenerator", () => {
     });
     const reels = await fetchBatch();
     expect(reels).toEqual([{ id: "a" }]);
-    expect(sendEvent.mock.calls.map((c) => c[0])).toEqual(["batch_started", "feed_api_call_completed"]);
+    expect(sendEvent.mock.calls.map((c) => c[0])).toEqual(["Batch Started", "Feed API Call Completed"]);
   });
 
   it("emits batch_completed on subsequent calls", async () => {
@@ -50,9 +50,9 @@ describe("services/createFeedGenerator", () => {
     sendEvent.mockClear();
     await fetchBatch();
     expect(sendEvent.mock.calls.map((c) => c[0])).toEqual([
-      "batch_started",
-      "batch_completed",
-      "feed_api_call_completed",
+      "Batch Started",
+      "Batch Completed",
+      "Feed API Call Completed",
     ]);
   });
 
@@ -68,10 +68,10 @@ describe("services/createFeedGenerator", () => {
     const first = await fetchBatch();
     expect(first).toEqual([]);
     expect(sendEvent.mock.calls.map((c) => c[0])).toEqual([
-      "batch_started",
-      "feed_api_call_completed",
-      "feed_completed",
-      "tag_displayed",
+      "Batch Started",
+      "Feed API Call Completed",
+      "Feed Completed",
+      "Tag Displayed",
     ]);
     sendEvent.mockClear();
     const second = await fetchBatch();
@@ -144,16 +144,16 @@ describe("services/createFeedGenerator", () => {
     await fetchBatch(); // #3 (empty → finalises)
     await fetchBatch(); // #4 (no-op)
     expect(sendEvent.mock.calls.map((c) => c[0])).toEqual([
-      "batch_started",
-      "feed_api_call_completed",
-      "batch_started",
-      "batch_completed",
-      "feed_api_call_completed",
-      "batch_started",
-      "batch_completed",
-      "feed_api_call_completed",
-      "feed_completed",
-      "tag_displayed",
+      "Batch Started",
+      "Feed API Call Completed",
+      "Batch Started",
+      "Batch Completed",
+      "Feed API Call Completed",
+      "Batch Started",
+      "Batch Completed",
+      "Feed API Call Completed",
+      "Feed Completed",
+      "Tag Displayed",
     ]);
   });
 });

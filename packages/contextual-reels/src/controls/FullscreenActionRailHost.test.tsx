@@ -5,7 +5,11 @@
  */
 import React, { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+vi.mock("@cxr/providers/AnalyticsProvider", () => ({
+  useAnalytics: () => ({ sendEvent: vi.fn(), setBrandId: vi.fn() }),
+}));
 
 import { FullscreenActionRailHost } from "@cxr/controls/FullscreenActionRailHost";
 import type { ControlLayerVariant } from "@cxr/controls/control-layer.types";

@@ -5,6 +5,11 @@ import { createRoot } from "react-dom/client";
 import type { Root } from "react-dom/client";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
+const { sendEventMock } = vi.hoisted(() => ({ sendEventMock: vi.fn() }));
+vi.mock("@cxr/providers/AnalyticsProvider", () => ({
+  useAnalytics: () => ({ sendEvent: sendEventMock, setBrandId: vi.fn() }),
+}));
+
 import { useEmblaFeed } from "@cxr/feed/useFeedNavigation";
 import type { UseFeedNavigationResult } from "@cxr/feed/useFeedNavigation";
 
@@ -61,6 +66,7 @@ let captured: UseFeedNavigationResult = {
   goNext: () => {},
   goPrev: () => {},
   goTo: () => {},
+  autoAdvance: () => {},
   onTimeUpdate: () => {},
   visibleIndices: new Set<number>(),
 };
@@ -99,6 +105,7 @@ describe("useEmblaFeed", () => {
   let onTimeUpdate: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
+    sendEventMock.mockClear();
     container = document.createElement("div");
     document.body.appendChild(container);
     onSlideAway = vi.fn();
@@ -247,6 +254,57 @@ describe("useEmblaFeed", () => {
     expect(onSlideEnter).toHaveBeenNthCalledWith(1, 1);
     expect(onSlideEnter).toHaveBeenNthCalledWith(2, 2);
     expect(captured.activeIndex).toBe(2);
+  });
+
+  // ─── Swipe analytics ─────────────────────────────────────────────────────────
+
+  it("tracks Swipe Next with auto_swipe: false when select moves to a higher index", () => {
+    const { api, fireSelect } = makeMockEmblaApi(0);
+    render(api);
+    act(() => {
+      fireSelect(1);
+    });
+    expect(sendEventMock).toHaveBeenCalledWith("Swipe Next", { auto_swipe: false });
+  });
+
+  it("tracks Swipe Previous with auto_swipe: false when select moves to a lower index", () => {
+    const { api, fireSelect } = makeMockEmblaApi(0);
+    render(api);
+    act(() => {
+      fireSelect(2);
+    });
+    act(() => {
+      fireSelect(1);
+    });
+    expect(sendEventMock).toHaveBeenCalledWith("Swipe Previous", { auto_swipe: false });
+  });
+
+  it("tracks Swipe Next with auto_swipe: true when autoAdvance drove the transition", () => {
+    const { api, fireSelect } = makeMockEmblaApi(0);
+    render(api);
+    act(() => {
+      captured.autoAdvance();
+    });
+    expect(api.scrollNext).toHaveBeenCalledTimes(1);
+    act(() => {
+      fireSelect(1); // Embla settles on the next slide
+    });
+    expect(sendEventMock).toHaveBeenCalledWith("Swipe Next", { auto_swipe: true });
+  });
+
+  it("resets the auto_swipe flag after one transition — the next swipe is user-attributed", () => {
+    const { api, fireSelect } = makeMockEmblaApi(0);
+    render(api);
+    act(() => {
+      captured.autoAdvance();
+    });
+    act(() => {
+      fireSelect(1);
+    });
+    act(() => {
+      fireSelect(2); // user swipe after the auto-advance
+    });
+    expect(sendEventMock).toHaveBeenLastCalledWith("Swipe Next", { auto_swipe: false });
   });
 
   it("registers the select listener on the emblaApi", () => {

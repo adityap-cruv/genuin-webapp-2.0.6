@@ -2,8 +2,10 @@
 
 import React from "react";
 
+import { EVENT } from "@cxr/analytics/analytics";
 import type { ClickOverlayProps } from "@cxr/controls/control-layer.types";
 import { useEventBus } from "@cxr/instance/coordination/EventBusContext";
+import { useAnalytics } from "@cxr/providers/AnalyticsProvider";
 import { usePlayer } from "@cxr/providers/PlayerProvider";
 
 function stopProp(e: { stopPropagation(): void }): void {
@@ -26,8 +28,9 @@ export function ClickOverlay({
   containerId,
   expandOnTap = false,
 }: ClickOverlayProps): React.JSX.Element {
-  const { setMuted } = usePlayer();
+  const { isMuted, setMuted } = usePlayer();
   const bus = useEventBus();
+  const analytics = useAnalytics();
   function handleClick(e: React.MouseEvent<HTMLDivElement>): void {
     const target = e.target as Element;
     if (target.closest("a, button, img, [data-no-cta]")) return;
@@ -51,7 +54,12 @@ export function ClickOverlay({
         bus.emit("ad:unmuteRequest", { containerId });
       }
       // Then update React/PlayerProvider state (and emit the `mute:unmuted`
-      // bus event) so the rest of the app stays consistent.
+      // bus event) so the rest of the app stays consistent. Only report the
+      // Unmuted analytics event on a real state change — a tap while already
+      // audible is a no-op.
+      if (isMuted) {
+        analytics.sendEvent(EVENT.VIDEO_UNMUTED, { by_user: true });
+      }
       setMuted(false);
     }
   }

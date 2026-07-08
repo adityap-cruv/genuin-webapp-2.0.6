@@ -395,7 +395,7 @@ describe("usePlayerLifecycle", () => {
     act(() => {
       root.render(createElement(LifecycleShim, { opts: makeOpts({ sendEvent, isVideoItem: true }) }));
     });
-    expect(sendEvent).toHaveBeenCalledWith("video_loaded");
+    expect(sendEvent).toHaveBeenCalledWith("Video Loaded");
   });
 
   it("does NOT emit video_loaded in onReady for non-video items", () => {
@@ -403,7 +403,7 @@ describe("usePlayerLifecycle", () => {
     act(() => {
       root.render(createElement(LifecycleShim, { opts: makeOpts({ sendEvent, isVideoItem: false }) }));
     });
-    expect(sendEvent).not.toHaveBeenCalledWith("video_loaded");
+    expect(sendEvent).not.toHaveBeenCalledWith("Video Loaded");
   });
 
   it("starts playback in onReady when isPlay=true and not supportAds", () => {

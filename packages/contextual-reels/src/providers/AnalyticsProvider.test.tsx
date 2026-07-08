@@ -241,6 +241,62 @@ describe("providers/AnalyticsProvider", () => {
     unmount(root, container);
   });
 
+  it("defaults volume=0 and is_muted=true on events before any player state is reported", () => {
+    let readyCb: (() => void) | undefined;
+    readyMock.mockImplementation((cb: () => void) => {
+      readyCb = cb;
+    });
+    setRudder();
+    trackMock.mockClear();
+    const handle: ConsumerHandle = { send: () => undefined };
+    const { root, container } = mount(
+      <AnalyticsProvider>
+        <Consumer name="evt" handle={handle} />
+      </AnalyticsProvider>
+    );
+    act(() => handle.send());
+    act(() => readyCb?.());
+    const details = (trackMock.mock.calls[0]?.[1] as Record<string, unknown>).event_details as Record<
+      string,
+      unknown
+    >;
+    expect(details).toMatchObject({ volume: 0, is_muted: true, event_record_screen: "embed" });
+    unmount(root, container);
+  });
+
+  it("stamps the latest reported ambient context (volume, is_muted, event_record_screen) onto every event", () => {
+    let readyCb: (() => void) | undefined;
+    readyMock.mockImplementation((cb: () => void) => {
+      readyCb = cb;
+    });
+    setRudder();
+    trackMock.mockClear();
+    let setAmbient: ((partial: Record<string, unknown>) => void) | undefined;
+    const handle: ConsumerHandle = { send: () => undefined };
+    function ReportConsumer(): ReactElement {
+      const { sendEvent, setBaseEventContext } = useAnalytics();
+      setAmbient = setBaseEventContext;
+      handle.send = () => sendEvent("evt", { foo: "bar" });
+      return <span>report-consumer</span>;
+    }
+    const { root, container } = mount(
+      <AnalyticsProvider>
+        <ReportConsumer />
+      </AnalyticsProvider>
+    );
+    // Two independent contributors merge (PlayerProvider-style + FullScreenProvider-style).
+    act(() => setAmbient?.({ volume: 0.4, is_muted: false }));
+    act(() => setAmbient?.({ event_record_screen: "expand" }));
+    act(() => handle.send());
+    act(() => readyCb?.());
+    const details = (trackMock.mock.calls[0]?.[1] as Record<string, unknown>).event_details as Record<
+      string,
+      unknown
+    >;
+    expect(details).toMatchObject({ volume: 0.4, is_muted: false, event_record_screen: "expand" });
+    unmount(root, container);
+  });
+
   it("injects brand_id registered via setBrandId into every event's event_details", () => {
     let readyCb: (() => void) | undefined;
     readyMock.mockImplementation((cb: () => void) => {

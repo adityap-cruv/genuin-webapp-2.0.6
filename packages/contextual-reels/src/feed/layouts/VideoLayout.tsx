@@ -12,11 +12,12 @@
  * for video-with-ad entries. Callers that omit `adObject` see no change.
  */
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { GenAdSlot } from "@cxr/ads/GenAdSlot";
 import { genAdSlotAdProps } from "@cxr/ads/adSlotProps";
 import type { AdCtaDetails } from "@cxr/ads/genAdSdk";
+import { EVENT } from "@cxr/analytics/analytics";
 import { AD_LAYOUT, type AdLayoutId } from "@cxr/config";
 import { AdControlLayer } from "@cxr/controls/AdControlLayer";
 import { CompactUnmuteOverlay, VideoControlLayer } from "@cxr/controls/VideoControlLayer";
@@ -26,6 +27,7 @@ import { OctoSheet } from "@cxr/genai/octo/OctoSheet";
 import { useInstanceId } from "@cxr/instance/registry/InstanceContext";
 import { LightPlayer } from "@cxr/player/LightPlayer";
 import { useAdWaterfall } from "@cxr/providers/AdProvider";
+import { useAnalytics } from "@cxr/providers/AnalyticsProvider";
 import { useFullScreen } from "@cxr/providers/FullScreenProvider";
 import { useGenAI, useOctoSplit } from "@cxr/providers/GenAIProvider";
 import { usePlayer } from "@cxr/providers/PlayerProvider";
@@ -72,6 +74,21 @@ export function VideoLayout({
   const { genAiEnabled } = useGenAI();
   const { compactBackgroundColor } = useStrategy();
   const instanceId = useInstanceId();
+  const analytics = useAnalytics();
+  // This reel's video id, stamped onto every video event (gesture + lifecycle)
+  // so analytics can attribute the event to its video.
+  const videoId = reel.video?.id;
+  // Latest playback position for the Video Play / Video Paused `start_position`
+  // payload field (mirrors the Web SDK's play/pause tracking).
+  const currentTimeRef = useRef(0);
+
+  const handleMuteToggle = useCallback(
+    (nextMuted: boolean, extra?: Record<string, unknown>) => {
+      setMuted(nextMuted);
+      analytics.sendEvent(nextMuted ? EVENT.VIDEO_MUTED : EVENT.VIDEO_UNMUTED, { by_user: true, ...extra });
+    },
+    [setMuted, analytics]
+  );
 
   // Ad break — only activates when adObject is present; hook is always called (rules of hooks).
   const adBreak = useFullscreenAdBreak({
@@ -117,6 +134,7 @@ export function VideoLayout({
   }, [adLayout]);
 
   function handleTimeUpdate(currentTime: number, duration: number, id: number): void {
+    currentTimeRef.current = currentTime;
     onTimeUpdate(id, currentTime, duration);
   }
 
@@ -136,8 +154,21 @@ export function VideoLayout({
     // guards (renderL1/L2/L4) pause the actual video, but the controls reflect user intent.
     isPlay: isActive && isPlaying,
     adLayout,
-    onMuteClick: () => setMuted(!isMuted),
-    onPlayClick: () => setPlaying(!isPlaying),
+    onMuteClick: () => handleMuteToggle(!isMuted, { video_id: videoId }),
+    onPlayClick: () => {
+      const willPlay = !isPlaying;
+      setPlaying(willPlay);
+      // During a fullscreen ad break the on-screen surface is the ad, so a
+      // pause is an ad pause (tracked via genAdSdk → `Ad Paused`), not a video
+      // pause. Skip the video event to avoid double-counting the same gesture.
+      if (adBreak.isAdVisible) return;
+      analytics.sendEvent(willPlay ? EVENT.VIDEO_PLAY : EVENT.VIDEO_PAUSED, {
+        by_user: true,
+        video_id: videoId,
+        position_index: reel.id,
+        start_position: currentTimeRef.current,
+      });
+    },
     onFullScreenClick: toggleFullScreen,
   };
 
@@ -181,7 +212,12 @@ export function VideoLayout({
               isAdReady={isAdBreakReady}
               ctaDetails={adBreakCta}
               onPlayClick={() => setPlaying(!isPlaying)}
-              onMuteClick={setMuted}
+              // Mirror the video-mute path: an ad mute/unmute emits `Muted`/`Unmuted`
+              // too (matches the Web SDK's single instrumented toggle).
+              onMuteClick={(nextMuted) => {
+                setMuted(nextMuted);
+                analytics.sendEvent(nextMuted ? EVENT.VIDEO_MUTED : EVENT.VIDEO_UNMUTED, { by_user: true });
+              }}
               onFullScreenClick={toggleFullScreen}
               containerId={`gen-ad-slot-${instanceId}-${adObject.id}`}
             />
@@ -209,12 +245,19 @@ export function VideoLayout({
       <div
         data-testid="video-layout"
         className="gencl:relative gencl:h-full gencl:w-full gencl:flex gencl:flex-col gencl:overflow-hidden">
-        <CompactUnmuteOverlay isMuted={isMuted} onMuteClick={() => setMuted(false)} />
+        <CompactUnmuteOverlay
+          isMuted={isMuted}
+          onMuteClick={() => {
+            setMuted(false);
+            analytics.sendEvent(EVENT.VIDEO_UNMUTED, { by_user: true, video_id: videoId });
+          }}
+        />
         <div className="gencl:flex gencl:w-full gencl:flex-1 gencl:overflow-hidden">
           <div className="gencl:h-[100px] gencl:shrink-0 gencl:overflow-hidden gencl:aspect-9/16">
             <LightPlayer
               content={reel.videoUrl ?? ""}
               id={reel.id}
+              videoId={videoId}
               poster={reel.thumb ?? undefined}
               volume={volume}
               isPlay={isActive && isPlaying && !adBreak.suppressVideo}
@@ -256,6 +299,7 @@ export function VideoLayout({
             content={reel.videoUrl ?? ""}
             ad={reel.cta?.link}
             id={reel.id}
+            videoId={videoId}
             poster={reel.thumb ?? undefined}
             volume={volume}
             isPlay={isPlayerPlaying}
@@ -318,6 +362,7 @@ export function VideoLayout({
             content={reel.videoUrl ?? ""}
             ad={reel.cta?.link}
             id={reel.id}
+            videoId={videoId}
             poster={reel.thumb ?? undefined}
             volume={volume}
             isPlay={isPlayerPlaying}

@@ -3,8 +3,10 @@ import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { ShareIcon, SparkIcon } from "@genuin/ui/icons";
 import React, { lazy } from "react";
 
+import { EVENT } from "@cxr/analytics/analytics";
 import { assetLink } from "@cxr/config";
 import type { BottomBarSubProps, ControlLayerVariant } from "@cxr/controls/control-layer.types";
+import { useAnalytics } from "@cxr/providers/AnalyticsProvider";
 import { useGenAI, useOctoSplit } from "@cxr/providers/GenAIProvider";
 import type { NormalisedReel, TagResponse } from "@cxr/types";
 import { copyToClipboard, openShareLink } from "@cxr/utils/share";
@@ -98,6 +100,8 @@ function IconButtons({
   isMuted,
   isPlay,
   shareUrl,
+  contentId,
+  contentTitle,
   onMuteClick,
   onPlayClick,
 }: {
@@ -106,10 +110,15 @@ function IconButtons({
   isMuted: boolean;
   isPlay: boolean;
   shareUrl?: string;
+  /** Video id reported as `content_id` on the Video Shared analytics event. */
+  contentId?: string;
+  /** Video title/description reported on the Video Shared analytics event. */
+  contentTitle?: string;
   onMuteClick: () => void;
   onPlayClick: () => void;
 }): React.JSX.Element {
   const isIheart = variant === "iheart";
+  const analytics = useAnalytics();
   const muteSrc = isMuted
     ? `${assetLink}reactions/iheartmedia/cxr/mute.svg`
     : `${assetLink}reactions/iheartmedia/cxr/unmute.svg`;
@@ -171,6 +180,11 @@ function IconButtons({
           onClick={(e) => {
             e.stopPropagation();
             void copyToClipboard(shareUrl ?? "");
+            analytics.sendEvent(EVENT.VIDEO_SHARED, {
+              content_id: contentId,
+              title: contentTitle,
+              platform: "copy_link",
+            });
           }}>
           {isIheart ? (
             <img
@@ -211,6 +225,7 @@ export function DefaultBottomBar({
   onPlayClick,
 }: BottomBarSubProps): React.JSX.Element {
   const { genAiEnabled } = useGenAI();
+  const analytics = useAnalytics();
   const isSmall = isSmallDimensions(dimensions);
   // In fullscreen, compact layouts (320x50/320x100) skip the ResizeObserver, so
   // `dimensions` is {0,0} — fall back to the viewport height (mirrors ProfileRow)
@@ -298,6 +313,8 @@ export function DefaultBottomBar({
               isMuted={isMuted}
               isPlay={isPlay}
               shareUrl={item.video?.share_string}
+              contentId={item.video?.id}
+              contentTitle={item.video?.description}
               onMuteClick={onMuteClick}
               onPlayClick={onPlayClick}
             />
@@ -317,7 +334,14 @@ export function DefaultBottomBar({
               height: isSmall ? "36px" : isFullScreen ? "40px" : "32px",
               backgroundColor: ctaColor,
             }}
-            onClick={(e) => e.stopPropagation()}>
+            onClick={(e) => {
+              e.stopPropagation();
+              analytics.sendEvent(EVENT.EMBED_CTA_CLICKED, {
+                redirection_url: ctaLink,
+                button_name: ctaText,
+                variant,
+              });
+            }}>
             <p
               className="gencl:leading-5 gencl:font-semibold gencl:m-0"
               style={{

@@ -32,6 +32,11 @@ const shareMocks = vi.hoisted(() => ({
 }));
 vi.mock("@cxr/utils/share", () => shareMocks);
 
+const { sendEventMock } = vi.hoisted(() => ({ sendEventMock: vi.fn() }));
+vi.mock("@cxr/providers/AnalyticsProvider", () => ({
+  useAnalytics: () => ({ sendEvent: sendEventMock, setBrandId: vi.fn() }),
+}));
+
 function makeReel(overrides: Partial<NormalisedReel> = {}): NormalisedReel {
   return {
     kind: "video",
@@ -74,6 +79,7 @@ describe("DefaultBottomBar", () => {
     splitActive = false;
     shareMocks.openShareLink.mockClear();
     shareMocks.copyToClipboard.mockClear();
+    sendEventMock.mockClear();
     container = document.createElement("div");
     document.body.appendChild(container);
     root = createRoot(container);
@@ -182,6 +188,61 @@ describe("DefaultBottomBar", () => {
       (container.querySelector('[data-testid="bottombar-share"]') as HTMLButtonElement).click();
     });
     expect(shareMocks.copyToClipboard).toHaveBeenCalledWith("https://begenuin.com/v/x");
+  });
+
+  it("share click tracks Video Shared with the video's content details", () => {
+    render({
+      item: makeReel({
+        video: {
+          id: "vid-9",
+          description: "Test description",
+          slug: "test-video",
+          share_string: "https://begenuin.com/v/x",
+        },
+      }),
+    });
+    act(() => {
+      (container.querySelector('[data-testid="bottombar-share"]') as HTMLButtonElement).click();
+    });
+    expect(sendEventMock).toHaveBeenCalledWith("Video Shared", {
+      content_id: "vid-9",
+      title: "Test description",
+      platform: "copy_link",
+    });
+  });
+
+  it("spark click does not track Video Shared", () => {
+    render({
+      item: makeReel({
+        video: { description: "Test description", slug: "test-video", share_string: "https://begenuin.com/v/x" },
+      }),
+    });
+    act(() => {
+      (container.querySelector('[data-testid="bottombar-spark"]') as HTMLButtonElement).click();
+    });
+    expect(sendEventMock).not.toHaveBeenCalled();
+  });
+
+  it("CTA click tracks Embed CTA Clicked with url, button name and variant", () => {
+    render({
+      variant: "default",
+      tagDetails: {
+        tag_id: "tag-1",
+        config: { show_cta: true },
+        cta: { text: "Learn More", link: "https://example.com" },
+      },
+    });
+    const cta = container.querySelector('[data-testid="bottombar-cta"] a') as HTMLAnchorElement;
+    // Neutralise navigation — jsdom logs an error on anchor navigation.
+    cta.addEventListener("click", (e) => e.preventDefault());
+    act(() => {
+      cta.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+    });
+    expect(sendEventMock).toHaveBeenCalledWith("Embed CTA Clicked", {
+      redirection_url: "https://example.com",
+      button_name: "Learn More",
+      variant: "default",
+    });
   });
 
   it("renders ad-copy when item.cta.ad_copy is set and no OG meta", () => {

@@ -11,6 +11,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
 import { useEventBus } from "@cxr/instance/coordination/EventBusContext";
+import { useAnalytics } from "@cxr/providers/AnalyticsProvider";
 import { useStrategy } from "@cxr/strategies/StrategyProvider";
 
 /**
@@ -72,6 +73,14 @@ export function PlayerProvider({ children }: PlayerProviderProps): ReactNode {
   const [isPlaying, setIsPlaying] = useState(true);
   const [isAdBreakActive, setAdBreakActive] = useState(false);
   const bus = useEventBus();
+  const { setBaseEventContext } = useAnalytics();
+
+  // Publish live volume / mute state so AnalyticsProvider can stamp `volume` +
+  // `is_muted` onto every event (video and ad). Runs on each change, including
+  // volume-slider drags that don't cross the mute threshold.
+  useEffect(() => {
+    setBaseEventContext({ volume, is_muted: isMuted });
+  }, [volume, isMuted, setBaseEventContext]);
 
   // Toggle between silence and a gentle default level. Unmuting from 0 jumps to
   // DEFAULT_UNMUTE_VOLUME; unmuting when already audible leaves the level alone.

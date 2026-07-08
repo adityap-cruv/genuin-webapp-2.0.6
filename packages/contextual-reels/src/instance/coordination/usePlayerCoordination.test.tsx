@@ -9,6 +9,10 @@ import React, { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { describe, it, expect, vi, afterEach } from "vitest";
 
+vi.mock("@cxr/providers/AnalyticsProvider", () => ({
+  useAnalytics: () => ({ sendEvent: vi.fn(), setBrandId: vi.fn(), setBaseEventContext: vi.fn() }),
+}));
+
 import type { CxrEventBus } from "@cxr/instance/coordination/CxrEventBus";
 import { EventBusProvider, useEventBus } from "@cxr/instance/coordination/EventBusContext";
 import { getGlobalMuteCoordinator } from "@cxr/instance/coordination/GlobalMuteCoordinator";

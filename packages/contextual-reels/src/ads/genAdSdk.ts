@@ -301,6 +301,14 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
   // First available ad-source label for analytics
   const adSource = platforms.video || platforms.banner || platforms.native || undefined;
 
+  // Emit `Ad Paused` (matches the Web SDK's ad vocabulary). Ad start is covered
+  // by `onAdStarted` → `AD_STARTED`; the Web SDK binds no ad-resume event, so we
+  // emit nothing on resume.
+  
+  const trackAdPaused = (): void => {
+    sendEvent(EVENT.AD_PAUSED, { ad_source: adSource });
+  };
+
   // destroySignal: force-destroy + reset when it increments
   useEffect(() => {
     if (!destroySignal) return;
@@ -383,7 +391,7 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
               ad_source: platforms[resolvedProvider] || undefined,
             };
             sendEvent(EVENT.AD_RESPONSE_RECEIVED, adEventDetails);
-            sendEvent(EVENT.AD_IMPRESSION_TITLE, adEventDetails);
+            sendEvent(EVENT.AD_IMPRESSION, adEventDetails);
           },
           onAdCompleted: (completedProvider?: AdProviderKind): void => {
             sendEvent(EVENT.AD_COMPLETED, {
@@ -408,7 +416,7 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
             if (msg.includes("401") || msg.includes("403") || msg.includes("404")) {
               sendEvent(EVENT.AD_RENDER_FAILED, details);
             } else {
-              sendEvent(EVENT.AD_ERROR_TITLE, details);
+              sendEvent(EVENT.AD_ERROR, details);
             }
           },
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -437,11 +445,13 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
             if (data.stage === "play") {
               onAdPlayRef.current?.();
             } else if (data.stage === "pause") {
+              trackAdPaused();
               onAdPauseRef.current?.();
             }
           },
           onPlaybackStateChange: (data: { isPaused: boolean }): void => {
             if (data.isPaused) {
+              trackAdPaused();
               onAdPauseRef.current?.();
             } else {
               onAdPlayRef.current?.();
@@ -526,7 +536,7 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
         const GenAd = (window as Window & { GenAd?: { init(o: typeof initOptions): number | null } }).GenAd;
         const sdkInstanceId = GenAd?.init(initOptions);
 
-        sendEvent(EVENT.AD_REQUESTED_TITLE, { ad_source: adSource });
+        sendEvent(EVENT.AD_REQUESTED, { ad_source: adSource });
 
         if (sdkInstanceId != null) {
           instanceIdRef.current = sdkInstanceId;

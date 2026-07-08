@@ -1,6 +1,9 @@
 import type { EmblaCarouselType } from "embla-carousel";
 import { type RefObject, useCallback, useEffect, useRef, useState } from "react";
 
+import { EVENT } from "@cxr/analytics/analytics";
+import { useAnalytics } from "@cxr/providers/AnalyticsProvider";
+
 /** Timer data tracked per-index for video_watch analytics. */
 export type TimerData = { currentTime: number; duration: number };
 
@@ -21,6 +24,12 @@ export interface UseFeedNavigationResult {
   goNext: () => void;
   goPrev: () => void;
   goTo: (index: number) => void;
+  /**
+   * Advance one slide as a NON-user transition (video ended). Identical to
+   * {@link goNext} except the resulting Swipe Next analytics event reports
+   * `auto_swipe: true` — mirrors the Web SDK's `auto_swipe` flag.
+   */
+  autoAdvance: () => void;
   onTimeUpdate: (index: number, currentTime: number, duration: number) => void;
 }
 
@@ -45,6 +54,15 @@ export function useEmblaFeed(
 ): UseFeedNavigationResult {
   const { onSlideAway, onSlideEnter } = options;
 
+  // Read through a ref (matching the onSlideAway/onSlideEnter pattern below) so
+  // the analytics value can never enter handleSelect's dependency array and
+  // re-run its effect on a context change.
+  const analytics = useAnalytics();
+  const analyticsRef = useRef(analytics);
+  analyticsRef.current = analytics;
+  // Set by autoAdvance() just before it scrolls; consumed (and reset) by the
+  // next `select` so that transition reports auto_swipe: true.
+  const autoAdvanceRef = useRef(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [visibleIndices, setVisibleIndices] = useState<Set<number>>(new Set([0]));
   const activeIndexRef = useRef(0);
@@ -67,6 +85,12 @@ export function useEmblaFeed(
     activeIndexRef.current = newIndex;
     setActiveIndex(newIndex);
     onSlideEnterRef.current(newIndex);
+
+    const autoSwipe = autoAdvanceRef.current;
+    autoAdvanceRef.current = false;
+    analyticsRef.current.sendEvent(newIndex > prevIndex ? EVENT.SWIPE_NEXT : EVENT.SWIPE_PREVIOUS, {
+      auto_swipe: autoSwipe,
+    });
   }, [emblaApiRef]);
 
   const handleSlidesInView = useCallback(() => {
@@ -95,9 +119,16 @@ export function useEmblaFeed(
   const goNext = useCallback(() => {
     emblaApiRef.current?.scrollNext();
   }, [emblaApiRef]);
+
+  const autoAdvance = useCallback(() => {
+    autoAdvanceRef.current = true;
+    emblaApiRef.current?.scrollNext();
+  }, [emblaApiRef]);
+
   const goPrev = useCallback(() => {
     emblaApiRef.current?.scrollPrev();
   }, [emblaApiRef]);
+
   const goTo = useCallback(
     (index: number) => {
       emblaApiRef.current?.scrollTo(index);
@@ -110,7 +141,15 @@ export function useEmblaFeed(
     optionsRef.current.onTimeUpdate(index, currentTime, duration);
   }, []);
 
-  return { activeIndex, visibleIndices, goNext, goPrev, goTo, onTimeUpdate: handleTimeUpdate };
+  return {
+    activeIndex,
+    visibleIndices,
+    goNext,
+    goPrev,
+    goTo,
+    autoAdvance,
+    onTimeUpdate: handleTimeUpdate,
+  };
 }
 
 /**

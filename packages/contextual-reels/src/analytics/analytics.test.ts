@@ -151,51 +151,60 @@ describe("EVENT names", () => {
     expect(EVENT).toMatchInlineSnapshot(`
       {
         "AD_CLICKED": "Ad Clicked",
-        "AD_COMPLETE": "ad_complete",
+        "AD_COMPLETE": "Ad Complete",
         "AD_COMPLETED": "Ad Completed",
-        "AD_ERROR": "ad_error",
-        "AD_ERROR_TITLE": "Ad Error",
-        "AD_IMPRESSION_SNAKE": "ad_impression",
-        "AD_IMPRESSION_TITLE": "Ad Impression",
+        "AD_ERROR": "Ad Error",
+        "AD_IMPRESSION": "Ad Impression",
         "AD_MEDIA_QUARTILE": "Ad Media Quartile",
         "AD_PASSBACK": "Ad Passback",
+        "AD_PAUSED": "Ad Paused",
         "AD_RENDERED": "Ad Rendered",
         "AD_RENDER_FAILED": "Ad Render Failed",
-        "AD_REQUEST": "ad_request",
-        "AD_REQUESTED_TITLE": "Ad Requested",
+        "AD_REQUEST": "Ad Request",
+        "AD_REQUESTED": "Ad Requested",
         "AD_REQUEST_FAILED": "Ad Request Failed",
-        "AD_RESPONSE": "ad_response",
+        "AD_RESPONSE": "Ad Response",
         "AD_RESPONSE_RECEIVED": "Ad Response Received",
         "AD_SKIPPED": "Ad Skipped",
-        "AD_START": "ad_start",
+        "AD_START": "Ad Start",
         "AD_STARTED": "Ad Started",
-        "BATCH_COMPLETED": "batch_completed",
-        "BATCH_STARTED": "batch_started",
-        "CTA_CLICK": "cta_click",
-        "FEED_API_CALL_COMPLETED": "feed_api_call_completed",
-        "FEED_COMPLETED": "feed_completed",
-        "SCROLL": "scroll",
-        "SHARE": "share",
-        "SPARK": "spark",
-        "TAG_CAPTURED": "tag_captured",
-        "TAG_DISPLAYED": "tag_displayed",
-        "TAG_INIT": "tag_init",
-        "VIDEO_COMPLETED": "video_completed",
-        "VIDEO_FIRST_QUARTILE": "video_first_quartile",
-        "VIDEO_LOADED": "video_loaded",
-        "VIDEO_MIDPOINT": "video_midpoint",
-        "VIDEO_PLAY_INTERRUPTED": "video_play_interrupted",
-        "VIDEO_PLAY_STARTED": "video_play_started",
-        "VIDEO_STARTED": "video_started",
-        "VIDEO_THIRD_QUARTILE": "video_third_quartile",
-        "VIDEO_WATCH": "video_watch",
+        "BATCH_COMPLETED": "Batch Completed",
+        "BATCH_STARTED": "Batch Started",
+        "CTA_CLICK": "CTA Click",
+        "EMBED_CTA_CLICKED": "Embed CTA Clicked",
+        "EMBED_MAXIMIZED": "Embed Maximized",
+        "EMBED_MINIMIZED": "Embed Minimized",
+        "FEED_API_CALL_COMPLETED": "Feed API Call Completed",
+        "FEED_COMPLETED": "Feed Completed",
+        "SCROLL": "Scroll",
+        "SHARE": "Share",
+        "SPARK": "Spark",
+        "SWIPE_NEXT": "Swipe Next",
+        "SWIPE_PREVIOUS": "Swipe Previous",
+        "TAG_CAPTURED": "Tag Captured",
+        "TAG_DISPLAYED": "Tag Displayed",
+        "TAG_INIT": "Tag Init",
+        "VIDEO_COMPLETED": "Video Complete",
+        "VIDEO_FIRST_QUARTILE": "Video First Quartile",
+        "VIDEO_LOADED": "Video Loaded",
+        "VIDEO_MIDPOINT": "Midpoint",
+        "VIDEO_MUTED": "Muted",
+        "VIDEO_PAUSED": "Video Paused",
+        "VIDEO_PLAY": "Video Play",
+        "VIDEO_PLAY_INTERRUPTED": "Video Play Interrupted",
+        "VIDEO_PLAY_STARTED": "Video Play Started",
+        "VIDEO_SHARED": "Video Shared",
+        "VIDEO_STARTED": "Video Started",
+        "VIDEO_THIRD_QUARTILE": "Video Third Quartile",
+        "VIDEO_UNMUTED": "Unmuted",
+        "VIDEO_WATCH": "Video Watch",
       }
     `);
   });
 
   it("exposes a union type derived from EVENT values", () => {
     const name: EventName = EVENT.BATCH_STARTED;
-    expect(name).toBe("batch_started");
+    expect(name).toBe("Batch Started");
   });
 });
 
@@ -339,7 +348,7 @@ describe("analytics/sendEventLog", () => {
     const rudder = makeRudder();
     sendEventLog(
       {
-        eventName: "video_started",
+        eventName: "Video Started",
         tagDetails: { tag_id: "t-1" },
         videoDetails: {
           video: { id: "v-1", slug: "cool-clip" },
@@ -424,7 +433,7 @@ describe("analytics/sendEventLog", () => {
   it('defaults loop_share_string to "" when videoDetails.loop is missing', () => {
     const rudder = makeRudder();
     sendEventLog(
-      { eventName: "video_started", videoDetails: { video: { id: "v", slug: "s" } } },
+      { eventName: "Video Started", videoDetails: { video: { id: "v", slug: "s" } } },
       {
         rudderanalytics: rudder,
         deviceDetails: DEVICE,

@@ -5,8 +5,16 @@ import { act, type ReactElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
-import { EventBusProvider, useEventBus } from "@cxr/instance/coordination/EventBusContext";
+const { sendEventMock, setBaseEventContextMock } = vi.hoisted(() => ({
+  sendEventMock: vi.fn(),
+  setBaseEventContextMock: vi.fn(),
+}));
+vi.mock("@cxr/providers/AnalyticsProvider", () => ({
+  useAnalytics: () => ({ sendEvent: sendEventMock, setBrandId: vi.fn(), setBaseEventContext: setBaseEventContextMock }),
+}));
+
 import type { CxrEventBus } from "@cxr/instance/coordination/CxrEventBus";
+import { EventBusProvider, useEventBus } from "@cxr/instance/coordination/EventBusContext";
 import { FullScreenProvider, useFullScreen, type FullScreenContextValue } from "@cxr/providers/FullScreenProvider";
 
 // ---------------------------------------------------------------------------
@@ -51,6 +59,8 @@ function unmount(root: Root, container: HTMLDivElement): void {
 
 describe("FullScreenProvider", () => {
   beforeEach(() => {
+    sendEventMock.mockClear();
+    setBaseEventContextMock.mockClear();
     document.body.className = "";
   });
 
@@ -63,6 +73,21 @@ describe("FullScreenProvider", () => {
     const { root, container } = mount(handle);
 
     expect(handle.ctx?.isFullScreen).toBe(false);
+
+    unmount(root, container);
+  });
+
+  it("reports event_record_screen: embed on mount and expand when entering fullscreen", () => {
+    const handle: ContextHandle = { ctx: null };
+    const { root, container } = mount(handle);
+    // Initial (collapsed) render publishes the embed view.
+    expect(setBaseEventContextMock).toHaveBeenCalledWith({ event_record_screen: "embed" });
+
+    setBaseEventContextMock.mockClear();
+    act(() => {
+      handle.ctx?.enterFullScreen();
+    });
+    expect(setBaseEventContextMock).toHaveBeenCalledWith({ event_record_screen: "expand" });
 
     unmount(root, container);
   });
@@ -92,6 +117,23 @@ describe("FullScreenProvider", () => {
     });
 
     expect(handle.ctx?.isFullScreen).toBe(false);
+
+    unmount(root, container);
+  });
+
+  it("tracks Embed Maximized / Embed Minimized on fullscreen enter and exit", () => {
+    const handle: ContextHandle = { ctx: null };
+    const { root, container } = mount(handle);
+
+    act(() => {
+      handle.ctx?.enterFullScreen();
+    });
+    expect(sendEventMock).toHaveBeenCalledWith("Embed Maximized");
+
+    act(() => {
+      handle.ctx?.exitFullScreen();
+    });
+    expect(sendEventMock).toHaveBeenCalledWith("Embed Minimized");
 
     unmount(root, container);
   });
@@ -466,8 +508,9 @@ describe("FullScreenProvider", () => {
       stubRequest(undefined);
       // Vendor-prefixed method is not in the DOM lib types; assigning it exercises the
       // requestFS `??` fallback chain. Justified cast over `any`.
-      (document.documentElement as unknown as { webkitRequestFullscreen?: () => Promise<void> })
-        .webkitRequestFullscreen = webkitRequest;
+      (
+        document.documentElement as unknown as { webkitRequestFullscreen?: () => Promise<void> }
+      ).webkitRequestFullscreen = webkitRequest;
 
       const handle: ContextHandle = { ctx: null };
       const { root, container } = mount(handle);

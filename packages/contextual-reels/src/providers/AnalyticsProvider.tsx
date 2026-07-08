@@ -34,6 +34,15 @@ export interface AnalyticsContextValue {
    * the tag config loads — call once `tagDetails` is available.
    */
   setBrandId: (brandId: number | undefined) => void;
+  /**
+   * Merge fields into the base event payload stamped onto EVERY event's
+   * `event_details`. Providers call this to publish live state that should
+   * accompany all analytics — e.g. PlayerProvider reports `{ volume, is_muted }`,
+   * FullScreenProvider reports `{ event_record_screen }`, and Feed reports the
+   * active `{ video_id }`. Merged (not replaced), so independent contributors
+   * don't clobber each other. Ref-backed → stable identity.
+   */
+  setBaseEventContext: (partial: Record<string, unknown>) => void;
 }
 
 const AnalyticsContext = createContext<AnalyticsContextValue | undefined>(undefined);
@@ -75,9 +84,22 @@ export function AnalyticsProvider({ children, tagId }: AnalyticsProviderProps): 
   // stays referentially stable (its identity must not change when brand_id
   // arrives, or consumer effects keyed on it would re-run).
   const brandIdRef = useRef<number | undefined>(undefined);
+  // Base event payload stamped onto every event. Defaults mirror the widget's
+  // initial state — silent (volume 0, muted) and collapsed (embed view) — so
+  // events emitted before a provider reports still carry sane values. Held in a
+  // ref so `sendEvent` stays referentially stable as the payload changes.
+  const basePayloadRef = useRef<Record<string, unknown>>({
+    volume: 0,
+    is_muted: true,
+    event_record_screen: "embed",
+  });
 
   const setBrandId = useCallback((brandId: number | undefined): void => {
     brandIdRef.current = brandId;
+  }, []);
+
+  const setBaseEventContext = useCallback((partial: Record<string, unknown>): void => {
+    basePayloadRef.current = { ...basePayloadRef.current, ...partial };
   }, []);
 
   useEffect(() => {
@@ -126,13 +148,19 @@ export function AnalyticsProvider({ children, tagId }: AnalyticsProviderProps): 
           ...(tagId !== undefined ? { tag_id: tagId } : {}),
           ...(brandIdRef.current !== undefined ? { brand_id: brandIdRef.current } : {}),
         };
-        // Enqueue — the buffer is a pass-through after `flush()`, so post-ready
-        // calls forward directly to the live emitter set in the effect above.
-        bufferRef.current.enqueue(eventName, { ...identifiers, ...eventDetails });
+        // Base payload first, then identifiers, then caller details win.
+        // Read at call time so each field reflects the moment of emission.
+        const finalPayload: Record<string, unknown> = {
+          ...basePayloadRef.current,
+          ...identifiers,
+          ...eventDetails,
+        };
+        bufferRef.current.enqueue(eventName, finalPayload);
       },
       setBrandId,
+      setBaseEventContext,
     }),
-    [tagId, setBrandId]
+    [tagId, setBrandId, setBaseEventContext]
   );
 
   return <AnalyticsContext.Provider value={value}>{children}</AnalyticsContext.Provider>;

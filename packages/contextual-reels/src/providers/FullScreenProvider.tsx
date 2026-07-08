@@ -1,8 +1,10 @@
 "use client";
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 
+import { EVENT } from "@cxr/analytics/analytics";
 import { useEventBus } from "@cxr/instance/coordination/EventBusContext";
 import { detectDevice } from "@cxr/platform/device";
+import { useAnalytics } from "@cxr/providers/AnalyticsProvider";
 
 // Vendor-prefixed fullscreen methods are not in the standard TypeScript DOM lib.
 // We cast to this interface instead of using `any` or `@ts-ignore`.
@@ -242,6 +244,27 @@ export function FullScreenProvider({ children, brandId }: FullScreenProviderProp
       unsubCollapse();
     };
   }, [bus, enterFullScreen, exitFullScreen]);
+
+  const analytics = useAnalytics();
+
+  // Publish the current view (expand vs embed/card) so AnalyticsProvider stamps
+  // `event_record_screen` onto EVERY event (video and ad), not just the ones
+  // fired here. Key name is what the backend consumes.
+  useEffect(() => {
+    analytics.setBaseEventContext({ event_record_screen: isFullScreen ? "expand" : "embed" });
+  }, [isFullScreen, analytics]);
+
+  // Track expand/collapse under the Web SDK's event names. Subscribing to the
+  // bus (rather than instrumenting each enter/exit code path above) covers the
+  // manual fallbacks AND the native fullscreenchange listener with one hook.
+  useEffect(() => {
+    const unsubEnter = bus.on("fullscreen:enter", () => analytics.sendEvent(EVENT.EMBED_MAXIMIZED));
+    const unsubExit = bus.on("fullscreen:exit", () => analytics.sendEvent(EVENT.EMBED_MINIMIZED));
+    return () => {
+      unsubEnter();
+      unsubExit();
+    };
+  }, [bus, analytics]);
 
   return (
     <FullScreenContext.Provider value={{ isFullScreen, enterFullScreen, exitFullScreen, toggleFullScreen }}>
