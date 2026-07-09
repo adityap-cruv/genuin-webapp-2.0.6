@@ -92,6 +92,9 @@ export const TAG_EXPERIMENTS: Record<string, TagExperiment> = {
 export const TAG_STRATEGIES: Record<string, TagStrategyEntry> = {
   // Dev slot (index.html): start audible at 20%; other defaults unchanged.
   "697c46aa9f432b1a2055e803": { initialVolume: 0.2 },
+  // Start audible at 20% on load (unmuted); other defaults unchanged.
+  "6a39163e92929ebec64d78ab": { initialVolume: 0.2 }, // 320x50
+  "6a3915b692929ebec64d785e": { initialVolume: 0.2 }, // 320x100
   // gateOnUnmute:true gates the 98% (request waits for unmute); the 2%
   // experiment below ungates it. Needed because DEFAULT_STRATEGIES.gateOnUnmute
   // is false, so without this the base would ungate every load. initialVolume
