@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, afterEach } from "vitest";
 
 import { INFOLINKS_PID, STACKED_LAYOUT_TAGS } from "@cxr/config";
 import {
@@ -55,6 +55,25 @@ describe("utils/infolinks", () => {
   it("resolvePageUrl prefers the outermost accessible window href", () => {
     // JSDOM: window is top, so this is window.location.href.
     expect(resolvePageUrl()).toBe(window.location.href);
+  });
+
+  describe("purl loader override", () => {
+    afterEach(() => {
+      delete (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__;
+    });
+
+    it("uses purl from the loader script params over the resolved URL", () => {
+      const override = "https://publisher.com/real-article";
+      (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__ =
+        `&purl=${encodeURIComponent(override)}`;
+      expect(resolvePageUrl()).toBe(override);
+      const frame = createInfolinksFrame({ width: 320, height: 50 });
+      expect(frame.srcdoc).toContain(`"purl":${JSON.stringify(override)}`);
+    });
+
+    it("falls back to auto-resolution when no override is present", () => {
+      expect(resolvePageUrl()).toBe(window.location.href);
+    });
   });
 });
 

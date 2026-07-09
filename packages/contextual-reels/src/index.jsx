@@ -120,7 +120,12 @@ async function init() {
   // Only inject once per page; idempotent if already present.
   if (uniqueNodes.size > 0 && !document.querySelector('meta[name="ad.size"]')) {
     const firstNode = uniqueNodes.values().next().value;
-    const { width, height } = firstNode.getBoundingClientRect();
+    // Use offsetWidth/Height (the element's own layout box), not
+    // getBoundingClientRect() — the latter reports the post-transform box, and
+    // some hosts (e.g. Infolinks) wrap our slot in `transform: scale(...)`
+    // ancestors, which would inflate the injected GAM ad size.
+    const width = firstNode.offsetWidth;
+    const height = firstNode.offsetHeight;
     if (width > 0 && height > 0) {
       const adSizeMeta = document.createElement("meta");
       adSizeMeta.name = "ad.size";
@@ -157,8 +162,15 @@ async function init() {
 
     // Resolve the slot layout up front so we can decide whether this is the
     // stacked 320×100 variant before mounting.
-    const rect = node.getBoundingClientRect();
-    const resolvedLayout = resolveAdLayout(rect.width, rect.height);
+    //
+    // offsetWidth/Height report the element's own layout box and are immune to
+    // ancestor CSS transforms. getBoundingClientRect() reports the post-transform
+    // box, which some hosts inflate: Infolinks wraps our slot in
+    // `transform: scale(...)` containers, so a 320×100 slot measures as ~344×204
+    // there. resolveAdLayout requires an exact size match, so the inflated numbers
+    // resolve to Unknown and the stacked variant fails to activate even when
+    // gen_variant=stacked and the tag id both match.
+    const resolvedLayout = resolveAdLayout(node.offsetWidth, node.offsetHeight);
 
     // Stacked variant: split the slot into two equal halves — our widget mounts
     // into the top row (as the config's `ourLayout`); Infolinks fills the bottom.

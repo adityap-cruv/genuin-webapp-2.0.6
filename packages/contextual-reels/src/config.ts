@@ -127,6 +127,14 @@ export const STACKED_VARIANT_PARAM = "gen_variant";
 /** Value of {@link STACKED_VARIANT_PARAM} that activates the stacked layout. */
 export const STACKED_VARIANT_VALUE = "stacked";
 
+/**
+ * Loader script param that overrides the Infolinks `purl` (publisher attribution
+ * URL). When present, it wins over the auto-resolved page URL — useful when our
+ * frame is cross-origin and cannot read the real page URL on its own. Read from
+ * our own <script src> query, so it can't collide with a publisher's page params.
+ */
+export const INFOLINKS_PURL_PARAM = "purl";
+
 /** Infolinks publisher id used for the bottom Infolinks in-place unit. */
 export const INFOLINKS_PID = 3446242;
 
@@ -176,22 +184,93 @@ export const STACKED_LAYOUT_TAGS: Readonly<Record<string, StackedLayoutConfig>> 
 export const STACKED_LAYOUT_TAG_ID = "6a032e34054c8fcb08582510";
 
 /**
- * Read {@link STACKED_VARIANT_PARAM} from this frame's URL and — when it is not
- * present here — from the top frame's URL. Cross-origin access to
- * `window.top.location` throws a `SecurityError`, which is swallowed (treated as
- * absent). Mirrors {@link isAdVerificationCrawler}'s current-then-top probe.
+ * True when `url` carries `gen_variant=stacked`.
+ *
+ * Checks the parsed query string first, then falls back to a raw substring test
+ * so we still match when the pair is URL-encoded or nested inside another param
+ * (Infolinks forwards it inside its own tracking URLs, e.g.
+ * `...&gen_variant%3Dstacked...`). The raw test tolerates both `=` and `%3D`.
  */
+function urlHasStackedVariant(url: string): boolean {
+  if (!url) return false;
+  try {
+    const parsed = new URL(url, "http://x");
+    if (parsed.searchParams.get(STACKED_VARIANT_PARAM) === STACKED_VARIANT_VALUE) return true;
+  } catch {
+    // not a parseable URL — fall through to the raw test
+  }
+  const needle = `${STACKED_VARIANT_PARAM}=${STACKED_VARIANT_VALUE}`;
+  const decoded = (() => {
+    try {
+      return decodeURIComponent(url);
+    } catch {
+      return url;
+    }
+  })();
+  return decoded.includes(needle);
+}
+
+/**
+ * Whether the stacked variant is requested anywhere in the frame chain.
+ *
+ * The `gen_variant=stacked` signal is not reliably a query param on our own
+ * frame: in the real Infolinks embedding our widget runs inside an `about:srcdoc`
+ * iframe whose own URL carries no query string, and `window.top` (the publisher
+ * page) is cross-origin so its `location` throws `SecurityError`. So we scan
+ * every reachable source instead of just self + top:
+ *
+ *  1. Each ancestor `window` whose `location` we can read (same-origin frames);
+ *     cross-origin reads throw and are skipped, and the walk is bounded by the
+ *     frame chain so it always terminates.
+ *  2. `document.referrer` — carries the parent frame's full URL (query string
+ *     included) even when that parent is cross-origin, which is our best signal
+ *     when the immediate embedder is on another origin.
+ *
+ * Each candidate URL is tested with {@link urlHasStackedVariant}, which also
+ * matches the encoded form Infolinks forwards inside its tracking URLs.
+ */
+/**
+ * Read a single param from the loader script's own query string, captured by the
+ * loader into `window.__CXR_SCRIPT_PARAMS__`. This is the most reliable config
+ * channel from inside a cross-origin `srcdoc` iframe: the partner controls the
+ * loader URL and it lives in our own document. Example:
+ *   <script src=".../gen_ext.min.js?gen_variant=stacked&purl=https%3A%2F%2F..."></script>
+ *
+ * @returns The (URL-decoded) value, or `undefined` when the param is absent.
+ */
+export function getScriptParam(name: string): string | undefined {
+  if (typeof window === "undefined") return undefined;
+  const raw = (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__;
+  if (!raw) return undefined;
+  return new URLSearchParams(raw).get(name) ?? undefined;
+}
+
 export function hasStackedVariant(): boolean {
   if (typeof window === "undefined") return false;
-  const matches = (search: string): boolean =>
-    new URLSearchParams(search).get(STACKED_VARIANT_PARAM) === STACKED_VARIANT_VALUE;
 
-  if (matches(window.location.search)) return true;
-  try {
-    return matches(window.top?.location.search ?? "");
-  } catch {
-    return false;
+  // 1. Loader override — the query string of our own <script src>. Enable
+  //    stacking with:
+  //      <script src=".../gen_ext.min.js?gen_variant=stacked"></script>
+  if (getScriptParam(STACKED_VARIANT_PARAM) === STACKED_VARIANT_VALUE) return true;
+
+  // 2. Walk the ancestor chain, reading each frame's URL where the same-origin
+  //    policy permits it. `win.parent === win` at the top frame terminates.
+  for (let win: Window | null = window; win; win = win === win.parent ? null : win.parent) {
+    try {
+      if (urlHasStackedVariant(win.location.href)) return true;
+    } catch {
+      // cross-origin frame — cannot read its location; keep climbing
+    }
   }
+
+  // 3. The referrer exposes the (possibly cross-origin) embedder's URL.
+  try {
+    if (urlHasStackedVariant(document.referrer)) return true;
+  } catch {
+    // referrer unavailable
+  }
+
+  return false;
 }
 
 /**

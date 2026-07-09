@@ -134,35 +134,54 @@ describe("config/fullscreenAdBreak", () => {
 
 describe("config/stackedLayout", () => {
   /**
-   * Stub `window.location` (search + hostname) and `window.top.location.search`.
-   * Defaults `hostname` to a non-local host so the tag-id gate is exercised;
-   * pass a local host explicitly to test the localhost bypass.
+   * Stub the frame chain that {@link hasStackedVariant} walks.
+   *
+   * `current` is our own frame's query string; `top` is the ancestor frame's.
+   * Both are exposed as `location.href` (a full URL) so the ancestor walk and
+   * `URL` parsing behave like production. Passing `top === "throw"` makes the
+   * ancestor frame's `location` throw a cross-origin `SecurityError`.
+   * `hostname` feeds {@link isLocalhost}; `referrer` stubs `document.referrer`.
    */
-  function setSearch(current: string, top?: string, hostname = "example.com") {
+  function setSearch(current: string, top?: string, hostname = "example.com", referrer = "") {
+    const host = `http://${hostname}/page`;
+    const parentFrame: { parent?: unknown; location: { get href(): string } } = {
+      location: {
+        get href() {
+          if (top === "throw") throw new Error("SecurityError: cross-origin");
+          return `${host}${top ?? ""}`;
+        },
+      },
+    };
+    // Top frame points to itself so the ancestor walk terminates.
+    parentFrame.parent = parentFrame;
+
     Object.defineProperty(window, "location", {
       configurable: true,
-      value: { search: current, hostname },
+      value: { href: `${host}${current}`, search: current, hostname },
+    });
+    Object.defineProperty(window, "parent", {
+      configurable: true,
+      get: () => parentFrame,
     });
     Object.defineProperty(window, "top", {
       configurable: true,
-      get() {
-        if (top === "throw") throw new Error("SecurityError: cross-origin");
-        return { location: { search: top ?? "" } };
-      },
+      get: () => parentFrame,
+    });
+    Object.defineProperty(document, "referrer", {
+      configurable: true,
+      get: () => referrer,
     });
   }
 
   afterEach(() => {
     Object.defineProperty(window, "location", {
       configurable: true,
-      value: { search: "", hostname: "example.com" },
+      value: { href: "http://example.com/", search: "", hostname: "example.com" },
     });
-    Object.defineProperty(window, "top", {
-      configurable: true,
-      get() {
-        return window;
-      },
-    });
+    Object.defineProperty(window, "parent", { configurable: true, get: () => window });
+    Object.defineProperty(window, "top", { configurable: true, get: () => window });
+    Object.defineProperty(document, "referrer", { configurable: true, get: () => "" });
+    delete (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__;
   });
 
   it("detects gen_variant=stacked in the current frame", () => {
@@ -182,6 +201,36 @@ describe("config/stackedLayout", () => {
 
   it("returns false (not throw) when top-frame access is cross-origin blocked", () => {
     setSearch("?foo=bar", "throw");
+    expect(hasStackedVariant()).toBe(false);
+  });
+
+  it("detects the variant via document.referrer when top is cross-origin (Infolinks case)", () => {
+    // Our frame (about:srcdoc) has no query string, the top frame is
+    // cross-origin (throws), but the referrer carries the embedder's URL.
+    setSearch("", "throw", "example.com", "https://publisher.com/article?gen_variant=stacked");
+    expect(hasStackedVariant()).toBe(true);
+  });
+
+  it("detects the variant when Infolinks forwards it URL-encoded in the referrer", () => {
+    setSearch("", "throw", "example.com", "https://ad.gt/getpixels?code=none%26gen_variant%3Dstacked");
+    expect(hasStackedVariant()).toBe(true);
+  });
+
+  it("returns false when the referrer carries a different variant", () => {
+    setSearch("", "throw", "example.com", "https://publisher.com/article?gen_variant=default");
+    expect(hasStackedVariant()).toBe(false);
+  });
+
+  it("detects the variant from the loader script params (window.__CXR_SCRIPT_PARAMS__)", () => {
+    // No frame or referrer signal at all — only the <script src=?gen_variant=stacked>.
+    setSearch("", "throw");
+    (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__ = "&gen_variant=stacked";
+    expect(hasStackedVariant()).toBe(true);
+  });
+
+  it("ignores loader script params carrying a different variant", () => {
+    setSearch("", "throw");
+    (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__ = "&gen_variant=default&foo=1";
     expect(hasStackedVariant()).toBe(false);
   });
 

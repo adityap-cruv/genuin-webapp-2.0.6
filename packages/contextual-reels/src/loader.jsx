@@ -13,26 +13,43 @@
   var CSS_FILENAME = "__CR_CSS_FILENAME__";
   var CDN_BASE = "__CR_CDN_BASE__";
 
-  function resolveBaseUrl() {
+  // Resolve the URL of our own <script> tag. This is the only URL we can read
+  // that the partner fully controls, and it lives in the same document as the
+  // .gen-ext slot — so a query param on it (e.g. ?gen_variant=stacked) is a
+  // reliable signal even inside a cross-origin srcdoc iframe where neither the
+  // frame URL nor window.top is readable.
+  function resolveScriptSrc() {
     try {
       var current = document.currentScript;
-      if (current && current.src) {
-        return current.src.replace(/\/[^/]*$/, "/");
-      }
+      if (current && current.src) return current.src;
       var scripts = document.getElementsByTagName("script");
       for (var i = scripts.length - 1; i >= 0; i--) {
         var src = scripts[i].src || "";
-        if (src.indexOf("gen_ext") !== -1) {
-          return src.replace(/\/[^/]*$/, "/");
-        }
+        if (src.indexOf("gen_ext") !== -1) return src;
       }
     } catch {
-      // Fall through to CDN_BASE
+      // ignore — no readable script src
     }
-    return CDN_BASE;
+    return "";
   }
 
-  var baseUrl = resolveBaseUrl();
+  var scriptSrc = resolveScriptSrc();
+
+  // Expose the script tag's query string so the core can read config the partner
+  // passed via the loader URL (e.g. gen_variant=stacked). Merge rather than
+  // overwrite so multiple loader includes don't clobber each other.
+  try {
+    if (scriptSrc) {
+      var scriptQuery = scriptSrc.indexOf("?") !== -1 ? scriptSrc.slice(scriptSrc.indexOf("?") + 1) : "";
+      if (scriptQuery) {
+        window.__CXR_SCRIPT_PARAMS__ = (window.__CXR_SCRIPT_PARAMS__ || "") + "&" + scriptQuery;
+      }
+    }
+  } catch {
+    // non-fatal — config falls back to other detection paths
+  }
+
+  var baseUrl = scriptSrc ? scriptSrc.replace(/\?.*$/, "").replace(/\/[^/]*$/, "/") : CDN_BASE;
 
   if (CSS_FILENAME) {
     var cssHref = baseUrl + "assets/" + CSS_FILENAME;

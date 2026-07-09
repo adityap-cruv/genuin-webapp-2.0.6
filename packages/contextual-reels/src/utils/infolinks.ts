@@ -9,7 +9,7 @@
  * slot size are supplied per tag via {@link StackedLayoutConfig}.
  */
 
-import { INFOLINKS_PID, type StackedLayoutConfig } from "@cxr/config";
+import { INFOLINKS_PID, INFOLINKS_PURL_PARAM, getScriptParam, type StackedLayoutConfig } from "@cxr/config";
 import { windowLink } from "@cxr/platform/topWindow";
 
 const INFOLINKS_SCRIPT_SRC = "https://resources.infolinks.com/js/infolinks_main.js";
@@ -27,6 +27,9 @@ interface InfolinksSize {
  * our own (often cross-origin) ad iframe it would otherwise default to
  * `about:srcdoc`, which Infolinks cannot attribute — so we resolve the real page
  * URL on our end and inject it:
+ *   0. Loader override — `purl` on our <script src>. When supplied it wins,
+ *      since the partner/Infolinks knows the true page URL and a cross-origin
+ *      frame often cannot resolve it on its own.
  *   1. {@link windowLink} — the outermost accessible window's href (the true
  *      publisher URL when same-origin).
  *   2. `document.referrer` — the page that embedded us (reliable when the top
@@ -35,6 +38,8 @@ interface InfolinksSize {
  * Returns `undefined` when none are available (SSR / no browser).
  */
 export function resolvePageUrl(): string | undefined {
+  const override = getScriptParam(INFOLINKS_PURL_PARAM);
+  if (override) return override;
   if (windowLink) return windowLink;
   if (typeof document !== "undefined" && document.referrer) return document.referrer;
   if (typeof window !== "undefined") return window.location.href;
