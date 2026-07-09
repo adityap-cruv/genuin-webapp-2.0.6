@@ -15,6 +15,7 @@ import { useAnalytics } from "@cxr/providers/AnalyticsProvider";
 import { DEFAULT_UNMUTE_VOLUME } from "@cxr/providers/PlayerProvider";
 import { resyncShadowStyles } from "@cxr/shadow-dom";
 import { useShadowDom } from "@cxr/shadow-dom-context";
+import { useStrategy } from "@cxr/strategies/StrategyProvider";
 
 // ─── GenAd SDK loader ─────────────────────────────────────────────────────────
 
@@ -246,8 +247,15 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
   } = options;
 
   const bus = useEventBus();
-  const { sendEvent } = useAnalytics();
+  const { sendEvent, setBaseEventContext } = useAnalytics();
   const shadowDom = useShadowDom();
+
+  // Tags configured with `initialVolume > 0` want the ad to load audible. When
+  // set, the ad is requested unmuted (bypassing the mute gate) and initialized
+  // at this level instead of the shared `UNMUTE_VOLUME`. `0` keeps the legacy
+  // muted/gated behaviour for every other tag.
+  const { initialVolume } = useStrategy();
+  const wantsAudibleAdStart = initialVolume > 0;
 
   const containerId = `gen-ad-slot-${instanceId}-${id}`;
 
@@ -295,8 +303,11 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
       setRequestArmed(false);
       return;
     }
-    if (!gateOnUnmute || !isMuted) setRequestArmed(true);
-  }, [isActive, isMuted, gateOnUnmute]);
+    // A tag that wants an audible ad start requests immediately regardless of
+    // mute state — the ad itself is initialized unmuted, so waiting for the host
+    // to unmute would defeat the purpose.
+    if (wantsAudibleAdStart || !gateOnUnmute || !isMuted) setRequestArmed(true);
+  }, [isActive, isMuted, gateOnUnmute, wantsAudibleAdStart]);
 
   // First available ad-source label for analytics
   const adSource = platforms.video || platforms.banner || platforms.native || undefined;
@@ -372,13 +383,22 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
         // reach elements inside a shadow root.
         const containerElement = shadowDom ? (containerRef?.current ?? undefined) : undefined;
 
+        // Tags with `initialVolume > 0` request the ad audible: init unmuted at
+        // the configured level. Seed `unmute_blocked: false` on the analytics
+        // base context — it flips to `true` only if the SDK reports a
+        // system-driven force-mute (browser autoplay policy) via onVolumeChange.
+        if (wantsAudibleAdStart) {
+          setBaseEventContext({ unmute_blocked: false });
+        }
+
         const initOptions = {
           containerId,
           ...(containerElement ? { containerElement } : {}),
-          muted: isMutedRef.current,
+          muted: wantsAudibleAdStart ? false : isMutedRef.current,
           // Hand the target level to the SDK at init — it owns volume from here,
-          // so the host never has to clamp it after the play transition.
-          volume: UNMUTE_VOLUME,
+          // so the host never has to clamp it after the play transition. Audible
+          // tags use their configured `initialVolume`; others share UNMUTE_VOLUME.
+          volume: wantsAudibleAdStart ? initialVolume : UNMUTE_VOLUME,
           onWaterfallSuccess: (resolvedProvider: AdProviderKind): void => {
             initInFlightRef.current = false;
             setAdLoaded(true);
@@ -438,6 +458,12 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
             // echoing them back would double-handle or loop. Mirrors
             // gen-ad-container's `onSystemMuteChange` guard.
             if (data.reason === "system") {
+              // Audible-start tag was force-muted by the browser's autoplay
+              // policy — record it so analytics can measure the block rate.
+              // Subsequent ad events on this load carry `unmute_blocked: true`.
+              if (wantsAudibleAdStart && data.isMuted) {
+                setBaseEventContext({ unmute_blocked: true });
+              }
               onMuteClickRef.current?.(data.isMuted);
             }
           },
