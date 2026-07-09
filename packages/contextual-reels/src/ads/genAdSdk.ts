@@ -256,6 +256,10 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
   // muted/gated behaviour for every other tag.
   const { initialVolume } = useStrategy();
   const wantsAudibleAdStart = initialVolume > 0;
+  // Level the ad unmutes to — both at init and on a later user re-unmute. Uses
+  // the tag's configured `initialVolume` when set, else the shared default, so
+  // init and re-unmute stay consistent for any tag value.
+  const unmuteVolume = wantsAudibleAdStart ? initialVolume : UNMUTE_VOLUME;
 
   const containerId = `gen-ad-slot-${instanceId}-${id}`;
 
@@ -398,7 +402,7 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
           // Hand the target level to the SDK at init — it owns volume from here,
           // so the host never has to clamp it after the play transition. Audible
           // tags use their configured `initialVolume`; others share UNMUTE_VOLUME.
-          volume: wantsAudibleAdStart ? initialVolume : UNMUTE_VOLUME,
+          volume: unmuteVolume,
           onWaterfallSuccess: (resolvedProvider: AdProviderKind): void => {
             initInFlightRef.current = false;
             setAdLoaded(true);
@@ -643,14 +647,14 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
       if (!GenAd) return;
 
       if (typeof GenAd.setVolumeByContainer === "function") {
-        GenAd.setVolumeByContainer(containerId, UNMUTE_VOLUME);
+        GenAd.setVolumeByContainer(containerId, unmuteVolume);
       }
       if (typeof GenAd.muteByContainer === "function") {
         GenAd.muteByContainer(containerId, false);
       }
     });
     return unsub;
-  }, [bus, containerId]);
+  }, [bus, containerId, unmuteVolume]);
 
   // Keep SDK mute state in sync with the external isMuted prop for SYSTEM-driven
   // changes (SDK onVolumeChange → setMuted system, programmatic mute, etc.).
