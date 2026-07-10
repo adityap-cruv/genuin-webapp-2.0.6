@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 
 import { resolvePageUrl, resolveAdUrlMacros, resolveVideoAdMacros } from './adUrlMacros';
-import { HOST_URL_MACRO_TOKENS, TRITON_APP_PARAM_TAG_IDS } from './adUrlMacros';
+import { HOST_URL_MACRO_TOKENS } from './adUrlMacros';
 
 // ─── resolveAdUrlMacros ───────────────────────────────────────────────────────
 
@@ -267,7 +267,8 @@ describe("resolveAdUrlMacros — host macro tokens", () => {
 // ─── resolveVideoAdMacros — Triton in-app rewrite ─────────────────────────────
 
 describe("resolveVideoAdMacros — Triton in-app rewrite", () => {
-  const APP_TAG = "6a3915b692929ebec64d785e";
+  // Gate: rewrite fires when host macros carry an app bundle (appb) — the signal
+  // that we are running inside an app webview — not on any per-tag allowlist.
   const MACROS = {
     appb: "com.handcent.app.nextsms",
     appsi: "315697",
@@ -276,17 +277,11 @@ describe("resolveVideoAdMacros — Triton in-app rewrite", () => {
   const tritonUrl =
     "https://cmod-na.live.streamtheworld.com/ondemand/ars?site-url=[PAGE_URL]&dist=[PAGE_URL]&stid=1446814&type=midroll";
 
-  it("allowlists the two app tag ids", () => {
-    expect(TRITON_APP_PARAM_TAG_IDS.has("6a3915b692929ebec64d785e")).toBe(true);
-    expect(TRITON_APP_PARAM_TAG_IDS.has("6a39163e92929ebec64d78ab")).toBe(true);
-  });
-
-  it("rewrites a Triton url for an allowlisted tag: drops site-url, dist=appb, adds app params", () => {
+  it("rewrites a Triton url when appb present: drops site-url, dist=appb, adds app params", () => {
     const result = resolveVideoAdMacros(
       { url: tritonUrl, ads_url: tritonUrl, platform: "tritondigital" },
       "https://page.com",
-      MACROS,
-      APP_TAG
+      MACROS
     ) as { url: string; ads_url: string };
     const u = new URL(result.url);
     expect(u.searchParams.has("site-url")).toBe(false);
@@ -311,8 +306,7 @@ describe("resolveVideoAdMacros — Triton in-app rewrite", () => {
     const result = resolveVideoAdMacros(
       { url: rawUrl, platform: "tritondigital" },
       "https://p.com",
-      MACROS,
-      APP_TAG
+      MACROS
     ) as { url: string };
     // untouched params keep exact bytes
     expect(result.url).toContain("ua=Mozilla/5.0%20(iPhone;%20CPU%20iPhone%20OS%2018_5)");
@@ -336,8 +330,7 @@ describe("resolveVideoAdMacros — Triton in-app rewrite", () => {
         platform: "tritondigital",
       },
       "https://p.com",
-      { appb: "com.x.y" },
-      APP_TAG
+      { appb: "com.x.y" }
     ) as { url: string };
     expect(result.url).not.toContain("site-url");
     expect(result.url).not.toContain("?&");
@@ -345,12 +338,11 @@ describe("resolveVideoAdMacros — Triton in-app rewrite", () => {
     expect(result.url).toContain("dist=com.x.y");
   });
 
-  it("leaves Triton url unchanged for a NON-allowlisted tag", () => {
+  it("leaves Triton url unchanged when no appb (web load, not in-app)", () => {
     const result = resolveVideoAdMacros(
       { url: tritonUrl, platform: "tritondigital" },
       "https://page.com",
-      MACROS,
-      "some-other-tag"
+      {} // no host macros → not an app webview
     ) as { url: string };
     const u = new URL(result.url);
     // site-url present (as resolved page url), no app params
@@ -359,12 +351,11 @@ describe("resolveVideoAdMacros — Triton in-app rewrite", () => {
     expect(u.searchParams.get("dist")).toBe("https://page.com");
   });
 
-  it("leaves a NON-triton url unchanged even for an allowlisted tag", () => {
+  it("leaves a NON-triton url unchanged even when appb present", () => {
     const result = resolveVideoAdMacros(
       { url: "https://other.com?site-url=[PAGE_URL]", platform: "infy" },
       "https://page.com",
-      MACROS,
-      APP_TAG
+      MACROS
     ) as { url: string };
     expect(new URL(result.url).searchParams.get("site-url")).toBe("https://page.com");
   });
@@ -373,8 +364,7 @@ describe("resolveVideoAdMacros — Triton in-app rewrite", () => {
     const result = resolveVideoAdMacros(
       { url: tritonUrl, platform: "tritondigital" },
       "https://page.com",
-      { appsi: "315697" }, // no appb
-      APP_TAG
+      { appsi: "315697" } // appsi but no appb → gate does not fire
     ) as { url: string };
     const u = new URL(result.url);
     expect(u.searchParams.get("dist")).toBe("https://page.com"); // unchanged (appb absent)

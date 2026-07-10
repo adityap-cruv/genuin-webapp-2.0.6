@@ -81,7 +81,6 @@ export interface GenAdSlotProps extends UseGenAdInstanceOptions {
  *   isActive={isActive}
  *   isMuted={isMuted}
  *   platforms={platforms}
- *   tagDetails={tagDetails}
  *   item={item}
  *   destroySignal={destroySignal}
  *   dimensions={dimensions}
@@ -90,13 +89,13 @@ export interface GenAdSlotProps extends UseGenAdInstanceOptions {
  * ```
  */
 export function GenAdSlot(props: GenAdSlotProps): React.JSX.Element {
-  const { dimensions, isFullScreen = false, isPlay, tagDetails, onAdLoadedChange, ...hookProps } = props;
+  const { dimensions, isFullScreen = false, isPlay, onAdLoadedChange, ...hookProps } = props;
 
   // Ref attached to the SDK mount target div so `useGenAdInstance` can read
   // the actual rendered dimensions when computing banner size.
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  const { adLoaded, containerId } = useGenAdInstance({ ...hookProps, isPlaying: isPlay, tagDetails, containerRef });
+  const { adLoaded, containerId } = useGenAdInstance({ ...hookProps, isPlaying: isPlay, containerRef });
 
   // Notify parent when adLoaded changes so AdLayout can gate AdControlLayer rendering.
   useEffect(() => {

@@ -228,7 +228,6 @@ const baseProps: Omit<UseGenAdInstanceOptions, "_loadSdk"> = {
   isActive: false,
   isMuted: false,
   platforms: {},
-  tagDetails: {},
   item: {},
   destroySignal: 0,
 };

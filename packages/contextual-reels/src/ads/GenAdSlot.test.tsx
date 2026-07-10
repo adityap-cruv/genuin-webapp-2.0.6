@@ -61,7 +61,6 @@ const baseProps: GenAdSlotProps = {
   isActive: false,
   isMuted: false,
   platforms: {},
-  tagDetails: {},
   item: {},
   destroySignal: 0,
   dimensions: { width: 300, height: 250 },
@@ -111,7 +110,6 @@ describe("ads/GenAdSlot", () => {
       <GenAdSlot
         {...baseProps}
         isAudioAds={true}
-        tagDetails={{ tag_id: "abc" }}
         dimensions={{ width: 320, height: 100 }}
         adLoaded={true}
       />
@@ -165,7 +163,7 @@ describe("ads/GenAdSlot", () => {
     mockAdLoaded = true;
     mockAdLayout = "mobile-320x50";
     const { root, container } = mount(
-      <GenAdSlot {...baseProps} isAudioAds={false} tagDetails={{ tag_id: "abc" }} adLoaded={true} />
+      <GenAdSlot {...baseProps} isAudioAds={false} adLoaded={true} />
     );
     const slot = container.querySelector('[data-testid="gen-ad-slot"]');
     expect(slot).not.toBeNull();
@@ -179,7 +177,6 @@ describe("ads/GenAdSlot", () => {
       <GenAdSlot
         {...baseProps}
         isAudioAds={true}
-        tagDetails={{ tag_id: "abc" }}
         dimensions={{ width: 320, height: 50 }}
         isFullScreen={false}
         adLoaded={true}
@@ -199,7 +196,6 @@ describe("ads/GenAdSlot", () => {
       <GenAdSlot
         {...baseProps}
         isAudioAds={true}
-        tagDetails={{ tag_id: "abc" }}
         dimensions={{ width: 320, height: 50 }}
         adLoaded={true}
         onFullScreenClick={onFullScreenClick}
@@ -217,7 +213,6 @@ describe("ads/GenAdSlot", () => {
       <GenAdSlot
         {...baseProps}
         isAudioAds={true}
-        tagDetails={{ tag_id: "abc" }}
         dimensions={{ width: 320, height: 100 }}
         isFullScreen={false}
         adLoaded={true}
@@ -237,7 +232,6 @@ describe("ads/GenAdSlot", () => {
       <GenAdSlot
         {...baseProps}
         isAudioAds={false}
-        tagDetails={{ tag_id: "abc" }}
         dimensions={{ width: 300, height: 250 }}
         adLoaded={true}
       />
@@ -254,7 +248,6 @@ describe("ads/GenAdSlot", () => {
       <GenAdSlot
         {...baseProps}
         isAudioAds={true}
-        tagDetails={{ tag_id: "abc" }}
         dimensions={{ width: 320, height: 100 }}
         adLoaded={true}
       />
@@ -271,7 +264,6 @@ describe("ads/GenAdSlot", () => {
       <GenAdSlot
         {...baseProps}
         isAudioAds={true}
-        tagDetails={{ tag_id: "abc" }}
         dimensions={{ width: 320, height: 100 }}
         isFullScreen={false}
         adLoaded={true}
@@ -289,7 +281,6 @@ describe("ads/GenAdSlot", () => {
       <GenAdSlot
         {...baseProps}
         isAudioAds={true}
-        tagDetails={{ tag_id: "abc" }}
         dimensions={{ width: 320, height: 50 }}
         isFullScreen={false}
         adLoaded={true}
@@ -307,7 +298,6 @@ describe("ads/GenAdSlot", () => {
       <GenAdSlot
         {...baseProps}
         isAudioAds={true}
-        tagDetails={{ tag_id: "abc" }}
         dimensions={{ width: 320, height: 100 }}
         isFullScreen={false}
         adLoaded={true}

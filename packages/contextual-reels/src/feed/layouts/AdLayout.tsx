@@ -149,7 +149,6 @@ export function AdLayout({ ad, isActive, onAutoAdvance }: AdLayoutProps): React.
         isActive={isActive}
         isMuted={isMuted}
         isPlay={isPlaying}
-        tagDetails={{}}
         item={{}}
         {...genAdSlotAdProps(ad)}
         isFullScreen={isFullScreen}

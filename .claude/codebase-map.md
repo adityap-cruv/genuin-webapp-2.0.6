@@ -52,6 +52,15 @@
 <!-- Append how non-obvious systems work, with file pointers. Example shape:
 - **<system>** — <one-or-two-line explanation>. (path:line) -->
 
+- **CXR Triton in-app rewrite is gated on `appb` presence, NOT tag id.** `rewriteTritonUrlForApp`
+  (`src/ads/adUrlMacros.ts`) rewrites a `tritondigital` ad URL to an in-app request (drop `site-url`,
+  `dist`=bundle, append `bundle-id`/`store-id`/`store-url`) whenever host macro `appb` is present +
+  `platform === "tritondigital"`. `appb` is the app-webview signal (only the host app supplies a
+  bundle). No per-tag allowlist, no `tagId` threaded to `resolveVideoAdMacros`. Was previously gated
+  on a hardcoded `TRITON_APP_PARAM_TAG_IDS` set — brittle, and standalone-ads reels (`AdLayout`)
+  passed `tagDetails={{}}` so the gate never fired there. History: replaced the allowlist with the
+  `appb` gate (removed `tagDetails` from `useGenAdInstance`/`GenAdSlot` entirely).
+
 - **CXR strategy system** — per-tag feature toggles for the contextual-reels widget. Resolved by
   `resolveStrategies(tagId)` as a 3-layer cascade (most-specific wins): `DEFAULT_STRATEGIES` → preset
   bundle → tag inline keys. Edit behaviour in **one file**:

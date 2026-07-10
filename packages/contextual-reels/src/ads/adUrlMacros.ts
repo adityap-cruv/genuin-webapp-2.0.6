@@ -59,16 +59,6 @@ export const HOST_URL_MACRO_TOKENS: Readonly<Record<string, string>> = {
 };
 
 /**
- * Tag ids whose Triton (`tritondigital`) ad requests are rewritten to in-app
- * form at resolution time — an INTERIM measure until the backend serves app
- * params in its Triton template (see design spec §6). Web tags are unaffected.
- */
-export const TRITON_APP_PARAM_TAG_IDS: ReadonlySet<string> = new Set([
-  "6a3915b692929ebec64d785e", // 320x100 ads-only (app)
-  "6a39163e92929ebec64d78ab", // 320x50 ads-only (app)
-]);
-
-/**
  * Rewrite a Triton on-demand ad URL into an in-app request: drop the web-only
  * `site-url`, point `dist` at the app bundle, and add `bundle-id`/`store-id`/
  * `store-url`. Only the params sourced from present macros are added; a missing
@@ -165,19 +155,18 @@ export function resolveAdUrlMacros(
  * Returns the input unchanged when it contains no `[PAGE_URL]` macros or is
  * not a string/object/array.
  *
- * When `tagId` is allowlisted in {@link TRITON_APP_PARAM_TAG_IDS} and the entry
- * is an object with `platform === "tritondigital"`, its resolved URL fields are
+ * When the host supplied an app bundle (`macros.appb` present) and the entry is
+ * an object with `platform === "tritondigital"`, its resolved URL fields are
  * additionally rewritten into an in-app Triton request (see
- * {@link rewriteTritonUrlForApp}). This is an INTERIM measure — bare-string and
- * non-Triton entries are never rewritten.
- *
- * @param tagId - Tag id used to gate the interim Triton in-app rewrite.
+ * {@link rewriteTritonUrlForApp}). `appb` presence is the signal that we are
+ * running inside an app webview — only the host app can supply a bundle id — so
+ * any app-loaded Triton entry becomes an in-app request, with no per-tag config.
+ * Bare-string and non-Triton entries are never rewritten.
  */
 export function resolveVideoAdMacros(
   videoAd: unknown,
   pageUrl: string,
-  macros: HostMacros = hostMacros,
-  tagId?: string
+  macros: HostMacros = hostMacros
 ): unknown {
   if (!videoAd) return videoAd;
 
@@ -186,16 +175,15 @@ export function resolveVideoAdMacros(
   }
 
   if (Array.isArray(videoAd)) {
-    return videoAd.map((entry) => resolveVideoAdMacros(entry, pageUrl, macros, tagId));
+    return videoAd.map((entry) => resolveVideoAdMacros(entry, pageUrl, macros));
   }
 
   if (typeof videoAd === "object") {
     const ad = videoAd as Record<string, unknown>;
     const patched: Record<string, unknown> = { ...ad };
-    const isTritonAppRewrite =
-      tagId !== undefined &&
-      TRITON_APP_PARAM_TAG_IDS.has(tagId) &&
-      ad.platform === "tritondigital";
+    // App webview (bundle present) + Triton → emit an in-app ad request.
+    // Truthy check mirrors rewriteTritonUrlForApp's own `if (!appb)` guard.
+    const isTritonAppRewrite = Boolean(macros.appb) && ad.platform === "tritondigital";
     for (const key of ["url", "ads_url", "vastUrl"] as const) {
       if (typeof ad[key] === "string") {
         let resolved = resolveAdUrlMacros(ad[key] as string, pageUrl, macros);

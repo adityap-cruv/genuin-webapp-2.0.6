@@ -178,8 +178,6 @@ export interface UseGenAdInstanceOptions {
   videoAdContentVideo?: ContentVideo;
   /** Ad network platform identifiers. */
   platforms: { video?: string; banner?: string; native?: string };
-  /** Tag creative details — used for analytics. */
-  tagDetails: { tag_id?: string };
   /** Feed item object — forwarded to analytics. */
   item: unknown;
   /** Called when an ad provider fills the slot. */
@@ -256,7 +254,6 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
     videoAdAdvertiserDetails,
     videoAdContentVideo,
     platforms,
-    tagDetails,
     // item: _item,
     onWaterfallSuccess,
     onWaterfallFail,
@@ -576,12 +573,7 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
           (initOptions as Record<string, unknown>).native = nativeConfig;
         }
 
-        const resolvedVideoAd = resolveVideoAdMacros(
-          videoAd,
-          resolvePageUrl(),
-          undefined,
-          tagDetails?.tag_id
-        );
+        const resolvedVideoAd = resolveVideoAdMacros(videoAd, resolvePageUrl());
         // Log the resolved primary ad URL on every ad event this slot emits.
         // Setting it into the base event context (rather than each call site)
         // stamps `ad_url` onto AD_REQUESTED below and all subsequent ad events.

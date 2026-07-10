@@ -202,7 +202,6 @@ export function VideoLayout({
             isActive={isActive}
             isMuted={isMuted}
             isPlay={isPlaying}
-            tagDetails={{ tag_id: tagDetails?.tag_id }}
             item={{}}
             {...genAdSlotAdProps(adObject)}
             isFullScreen={isFullScreen}
