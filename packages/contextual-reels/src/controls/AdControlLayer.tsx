@@ -22,6 +22,7 @@ export function AdControlLayer({
   onPlayClick,
   onMuteClick,
   onFullScreenClick,
+  redirectMode,
   variant = "new",
 }: AdControlLayerProps) {
   const isCompact = isCompactLayout(adLayout);
@@ -59,6 +60,7 @@ export function AdControlLayer({
               isFullScreen={isFullScreen}
               layout={layout}
               ctaDetails={ctaDetails}
+              redirectMode={redirectMode}
               onPlayClick={onPlayClick}
               onMuteClick={onMuteClick}
               onFullScreenClick={onFullScreenClick}
@@ -100,6 +102,7 @@ export function AdControlLayer({
         isFullScreen={isFullScreen}
         layout="default"
         ctaDetails={ctaDetails}
+        redirectMode={redirectMode}
         onPlayClick={onPlayClick}
         onMuteClick={onMuteClick}
         onFullScreenClick={onFullScreenClick}

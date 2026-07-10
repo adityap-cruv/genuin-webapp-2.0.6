@@ -50,6 +50,15 @@ export interface AdControlLayerProps {
    * exact slot (instance isolation when multiple ads share one widget bus).
    */
   containerId: string;
+  /**
+   * Fullscreen-redirect mode. Single source of truth is
+   * {@link FullScreenContextValue.isRedirectMode}, read once in `AdLayout` and
+   * threaded down. Required (no default) so the compiler forces every hop to
+   * forward it — a silent `false` default could diverge from the real value.
+   * When true, both the expand button and the Watch button are hidden (the CTA
+   * click-through is carried by the ad tap / linkout button instead).
+   */
+  redirectMode: boolean;
 }
 
 /** Props forwarded to the TopBar router. */
@@ -177,4 +186,12 @@ export interface AdControlBarProps {
   onFullScreenClick?: () => void;
   /** CTA details from the ad SDK — when present, linkout button renders. */
   ctaDetails?: AdCtaDetails | null;
+  /**
+   * Fullscreen-redirect mode. Single source of truth is
+   * {@link FullScreenContextValue.isRedirectMode}, read once in `AdLayout` and
+   * threaded down. Required (no default) so the compiler forces every hop to
+   * forward it. When true, both the expand button and the Watch button are
+   * hidden (the CTA click-through is carried by the ad tap / linkout button).
+   */
+  redirectMode: boolean;
 }

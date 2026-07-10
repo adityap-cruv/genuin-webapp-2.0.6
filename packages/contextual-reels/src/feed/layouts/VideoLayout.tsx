@@ -70,7 +70,7 @@ export function VideoLayout({
   const { adLayout } = useAdWaterfall();
   const { isMuted, volume, isPlaying, setMuted, setPlaying, setAdBreakActive } = usePlayer();
   const { splitActive, playerShare, octoAxis } = useOctoSplit(isActive);
-  const { isFullScreen, toggleFullScreen } = useFullScreen();
+  const { isFullScreen, toggleFullScreen, isRedirectMode } = useFullScreen();
   const { genAiEnabled } = useGenAI();
   const { compactBackgroundColor } = useStrategy();
   const instanceId = useInstanceId();
@@ -223,6 +223,7 @@ export function VideoLayout({
               isMuted={isMuted ?? false}
               isAdReady={isAdBreakReady}
               ctaDetails={adBreakCta}
+              redirectMode={isRedirectMode}
               onPlayClick={() => setPlaying(!isPlaying)}
               // Mirror the video-mute path: an ad mute/unmute emits `Muted`/`Unmuted`
               // too (matches the Web SDK's single instrumented toggle).

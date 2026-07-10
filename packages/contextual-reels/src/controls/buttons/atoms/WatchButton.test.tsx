@@ -28,6 +28,19 @@ describe('WatchButton', () => {
     expect(container.querySelector('button')!.textContent).toContain('Watch');
   });
 
+  it('href mode renders a "Learn More" anchor (no play icon)', () => {
+    act(() => {
+      root.render(<WatchButton isPlay={false} onClick={() => undefined} href="https://cta.example/x" />);
+    });
+    const anchor = container.querySelector('a');
+    expect(anchor).toBeTruthy();
+    expect(anchor!.getAttribute('href')).toBe('https://cta.example/x');
+    expect(anchor!.getAttribute('target')).toBe('_blank');
+    expect(anchor!.textContent).toContain('Learn More');
+    expect(anchor!.querySelector('img')).toBeNull();
+    expect(container.querySelector('button')).toBeNull();
+  });
+
   it('pill variant has rounded-full class', () => {
     act(() => {
       root.render(<WatchButton isPlay={false} onClick={() => undefined} variant="pill" />);

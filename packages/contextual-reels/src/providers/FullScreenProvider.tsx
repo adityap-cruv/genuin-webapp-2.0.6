@@ -33,6 +33,13 @@ export interface FullScreenContextValue {
   exitFullScreen: () => void;
   /** Toggles fullscreen state. */
   toggleFullScreen: () => void;
+  /**
+   * Whether this embed is in fullscreen-redirect mode: the redirect brand
+   * ({@link FULLSCREEN_REDIRECT_BRAND_ID}) running inside an iframe. In this mode
+   * there is no fullscreen to expand into, so ad chrome hides the expand and
+   * Watch buttons, and a tap on the (unmuted) ad opens its CTA instead.
+   */
+  isRedirectMode: boolean;
 }
 
 const FullScreenContext = createContext<FullScreenContextValue | undefined>(undefined);
@@ -124,6 +131,12 @@ export function FullScreenProvider({ children, brandId }: FullScreenProviderProp
   // over a stale undefined.
   const brandIdRef = useRef(brandId);
   brandIdRef.current = brandId;
+
+  // Redirect mode: the redirect brand inside an iframe. Derived from the
+  // `brandId` prop (not the ref) so the context value re-computes when it
+  // resolves post-mount and consumers (ad chrome) re-render. inIframe() is
+  // environment-stable, so this tracks brandId alone.
+  const isRedirectMode = brandId === FULLSCREEN_REDIRECT_BRAND_ID && inIframe();
 
   // Tracks the active video's id (broadcast by LightPlayer via useActiveVideoIdBroadcast)
   // so the fallback redirect can carry it as `video_id`.
@@ -267,7 +280,8 @@ export function FullScreenProvider({ children, brandId }: FullScreenProviderProp
   }, [bus, analytics]);
 
   return (
-    <FullScreenContext.Provider value={{ isFullScreen, enterFullScreen, exitFullScreen, toggleFullScreen }}>
+    <FullScreenContext.Provider
+      value={{ isFullScreen, enterFullScreen, exitFullScreen, toggleFullScreen, isRedirectMode }}>
       {children}
     </FullScreenContext.Provider>
   );

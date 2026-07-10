@@ -45,7 +45,7 @@ export function AdLayout({ ad, isActive, onAutoAdvance }: AdLayoutProps): React.
   const instanceId = useInstanceId();
   const { isMuted, isPlaying, setMuted, setPlaying } = usePlayer();
   const { onAdSuccess, onAdFail, adLayout } = useAdWaterfall();
-  const { isFullScreen, toggleFullScreen } = useFullScreen();
+  const { isFullScreen, toggleFullScreen, isRedirectMode } = useFullScreen();
   const bus = useEventBus();
   const analytics = useAnalytics();
 
@@ -92,6 +92,31 @@ export function AdLayout({ ad, isActive, onAutoAdvance }: AdLayoutProps): React.
   });
 
   function handleAdClick(): void {
+    // Redirect mode (the redirect brand in an iframe) uses a two-stage tap: the
+    // FIRST tap while muted only unmutes — no CTA — so the user hears the ad
+    // before being sent anywhere; once unmuted, a further tap opens the CTA in a
+    // new tab (there is no fullscreen to expand into). Every other embed keeps
+    // the original behavior below.
+    if (isRedirectMode) {
+      if (isMuted) {
+        // Unmute on the first tap. This also satisfies iOS Safari's autoplay
+        // policy, which only honours audio started inside a user gesture. See the
+        // `ad:unmuteRequest` note below for why the emit must be synchronous.
+        if (containerId) {
+          bus.emit("ad:unmuteRequest", { containerId });
+        }
+        setMuted(false);
+        return;
+      }
+      // Already unmuted → this tap is a CTA click: open the SDK CTA url in a new
+      // tab and fire the SDK click signal (mirrors LinkoutButton).
+      if (ctaDetails?.ctaUrl) {
+        window.open(ctaDetails.ctaUrl, "_blank", "noopener,noreferrer");
+      }
+      ctaDetails?.onClick();
+      return;
+    }
+
     // Mirror LinkoutButton: every ad click fires the SDK-provided CTA signal so
     // a tap anywhere on the ad registers the same click as the explicit CTA button.
     ctaDetails?.onClick();
@@ -147,6 +172,7 @@ export function AdLayout({ ad, isActive, onAutoAdvance }: AdLayoutProps): React.
         isMuted={isMuted ?? false}
         isAdReady={isAdReady}
         ctaDetails={ctaDetails}
+        redirectMode={isRedirectMode}
         onPlayClick={() => setPlaying(!isPlaying)}
         onMuteClick={handleMuteToggle}
         onFullScreenClick={handleFullScreenClick}

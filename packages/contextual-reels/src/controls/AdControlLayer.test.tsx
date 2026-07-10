@@ -59,6 +59,7 @@ describe("AdControlLayer — overlay stacking", () => {
       onMuteClick: vi.fn(),
       onFullScreenClick: vi.fn(),
       containerId: "gen-ad-slot-test-1",
+      redirectMode: false,
       ...overrides,
     };
     act(() => {

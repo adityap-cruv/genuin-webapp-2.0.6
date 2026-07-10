@@ -126,7 +126,7 @@ describe("AdLayout handlers", () => {
       setMuted,
       setPlaying,
     });
-    mockUseFullScreen.mockReturnValue({ isFullScreen: false, toggleFullScreen });
+    mockUseFullScreen.mockReturnValue({ isFullScreen: false, toggleFullScreen, isRedirectMode: false });
     mockUseAdWaterfall.mockReturnValue({ onAdSuccess, onAdFail, adLayout: AD_LAYOUT.Unknown });
     container = document.createElement("div");
     document.body.appendChild(container);
@@ -146,7 +146,9 @@ describe("AdLayout handlers", () => {
     });
   }
 
-  it("handleAdClick (non-fullscreen): emits ad:unmuteRequest and unmutes, never toggles play", () => {
+  // ── Non-redirect (default) embeds keep the original tap behavior ──────────
+
+  it("handleAdClick (non-redirect, non-fullscreen): emits ad:unmuteRequest and unmutes, never toggles play", () => {
     render();
     const slot = container.querySelector('[data-testid="ad-layout"]') as HTMLElement;
     act(() => slot.click());
@@ -157,27 +159,65 @@ describe("AdLayout handlers", () => {
     expect(setPlaying).not.toHaveBeenCalled();
   });
 
-  it("handleAdClick (fullscreen): toggles play instead of unmuting", () => {
-    mockUseFullScreen.mockReturnValue({ isFullScreen: true, toggleFullScreen });
+  it("handleAdClick (non-redirect, fullscreen): toggles play and fires the SDK onClick", () => {
+    mockUseFullScreen.mockReturnValue({ isFullScreen: true, toggleFullScreen, isRedirectMode: false });
     mockUsePlayer.mockReturnValue({ isMuted: false, isPlaying: true, setMuted, setPlaying });
     render();
+    const ctaOnClick = vi.fn();
+    act(() => {
+      (lastGenAdSlot()["onAdCTA"] as (cta: { ctaUrl: string; onClick: () => void }) => void)({
+        ctaUrl: "https://cta.example/x",
+        onClick: ctaOnClick,
+      });
+    });
     const slot = container.querySelector('[data-testid="ad-layout"]') as HTMLElement;
     act(() => slot.click());
     expect(setPlaying).toHaveBeenCalledWith(false);
-    expect(mockBusEmit).not.toHaveBeenCalled();
+    expect(ctaOnClick).toHaveBeenCalledTimes(1);
     expect(setMuted).not.toHaveBeenCalled();
   });
 
-  it("handleAdClick fires the SDK ctaDetails.onClick once a CTA is registered", () => {
+  // ── Redirect mode uses the two-stage unmute-then-CTA tap ──────────────────
+
+  it("handleAdClick (redirect, muted): only unmutes — no CTA signal or navigation", () => {
+    mockUseFullScreen.mockReturnValue({ isFullScreen: false, toggleFullScreen, isRedirectMode: true });
+    const openSpy = vi.spyOn(window, "open").mockReturnValue(null);
+    render();
+    const ctaOnClick = vi.fn();
+    act(() => {
+      (lastGenAdSlot()["onAdCTA"] as (cta: { ctaUrl: string; onClick: () => void }) => void)({
+        ctaUrl: "https://cta.example/x",
+        onClick: ctaOnClick,
+      });
+    });
+    const slot = container.querySelector('[data-testid="ad-layout"]') as HTMLElement;
+    act(() => slot.click());
+    expect(setMuted).toHaveBeenCalledWith(false);
+    expect(ctaOnClick).not.toHaveBeenCalled();
+    expect(openSpy).not.toHaveBeenCalled();
+    openSpy.mockRestore();
+  });
+
+  it("handleAdClick (redirect, already unmuted): opens the CTA url and fires the SDK onClick", () => {
+    mockUseFullScreen.mockReturnValue({ isFullScreen: false, toggleFullScreen, isRedirectMode: true });
+    mockUsePlayer.mockReturnValue({ isMuted: false, isPlaying: true, setMuted, setPlaying });
+    const openSpy = vi.spyOn(window, "open").mockReturnValue(null);
     render();
     const ctaOnClick = vi.fn();
     // GenAdSlot reports a CTA — drives the ctaDetails state used by handleAdClick.
     act(() => {
-      (lastGenAdSlot()["onAdCTA"] as (cta: { onClick: () => void }) => void)({ onClick: ctaOnClick });
+      (lastGenAdSlot()["onAdCTA"] as (cta: { ctaUrl: string; onClick: () => void }) => void)({
+        ctaUrl: "https://cta.example/x",
+        onClick: ctaOnClick,
+      });
     });
     const slot = container.querySelector('[data-testid="ad-layout"]') as HTMLElement;
     act(() => slot.click());
+    expect(openSpy).toHaveBeenCalledWith("https://cta.example/x", "_blank", "noopener,noreferrer");
     expect(ctaOnClick).toHaveBeenCalledTimes(1);
+    expect(setMuted).not.toHaveBeenCalled();
+    expect(mockBusEmit).not.toHaveBeenCalled();
+    openSpy.mockRestore();
   });
 
   it("handleWaterfallFail advances the carousel and notifies onAdFail", () => {

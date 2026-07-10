@@ -39,6 +39,7 @@ vi.mock("@cxr/providers/PlayerProvider", () => ({
 const defaultProps = {
   isPlay: false,
   isMuted: false,
+  redirectMode: false,
   onPlayClick: () => undefined,
   onMuteClick: () => undefined,
   onFullScreenClick: () => undefined,

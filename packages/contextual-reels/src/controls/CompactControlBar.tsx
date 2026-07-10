@@ -72,6 +72,20 @@ export interface CompactControlBarProps extends React.HTMLAttributes<HTMLDivElem
    * Video sm ignores this and keeps its ticker-only second row.
    */
   showWatchInSm?: boolean;
+  /**
+   * Fullscreen-redirect mode (ads only). When true the expand button is hidden
+   * (there is no fullscreen to expand into) and the CTA click-through takes over
+   * the Watch slot:
+   *  - md (320×100): the Watch button is dropped; the LinkoutButton carries it.
+   *  - sm (320×50): there is no linkout row, so the Watch button is repointed at
+   *    the CTA url and relabelled "Learn More" (see {@link cta.url}).
+   *
+   * Optional here because this bar is shared with video chrome, which never
+   * redirects and omits it (defaults to false). The single source of truth is
+   * {@link FullScreenContextValue.isRedirectMode}, read in `AdLayout`; the ad
+   * path threads it in explicitly via `AdControlBar`.
+   */
+  redirectMode?: boolean;
 }
 
 /**
@@ -95,6 +109,7 @@ export function CompactControlBar({
   onWatchClick,
   useV2Icons = false,
   showWatchInSm = false,
+  redirectMode = false,
   className,
   ...rest
 }: CompactControlBarProps): React.JSX.Element {
@@ -120,6 +135,16 @@ export function CompactControlBar({
   // Linkout needs the md row height; in sm the CTA only affects Watch sizing.
   const showLinkout = hasCta && size === "md";
   const handleWatch = onWatchClick ?? onFullScreenClick ?? noop;
+  // Redirect mode hides the expand button (there is no fullscreen to expand into).
+  const hideExpand = redirectMode;
+  // Redirect mode + md: the LinkoutButton already carries the CTA click-through,
+  // so the Watch button is dropped. sm has no linkout, so instead of hiding its
+  // Watch button we keep it and repoint it at the CTA url (see `watchHref`).
+  const hideWatch = redirectMode && size === "md";
+  // sm redirect: turn the Watch button into a link-out to the ad CTA. Only when
+  // a CTA url exists to open; otherwise the plain Watch (expand) button stays.
+  const watchHref = redirectMode && size === "sm" && cta?.url ? cta.url : undefined;
+
   // 320×50 (sm) → xs, 320×100 (md) → sm — matches resolveCxrControlSize's collapsed row.
   const v2Size: PlayerControlSize = size === "sm" ? "xs" : "sm";
   // Ad sm: drop the ticker (genAd renders it) and show only a Watch button.
@@ -178,7 +203,9 @@ export function CompactControlBar({
                 size={v2Size}
                 shouldAnimate={false}
               />
-              <ExpandCollapseButtonV2 isFullScreen={isFullScreen} onClick={onFullScreenClick ?? noop} size={v2Size} />
+              {!hideExpand && (
+                <ExpandCollapseButtonV2 isFullScreen={isFullScreen} onClick={onFullScreenClick ?? noop} size={v2Size} />
+              )}
             </>
           ) : (
             <>
@@ -189,7 +216,9 @@ export function CompactControlBar({
                 size={size}
               />
               <PlayPauseButton isPlay={isPlay ?? false} onClick={onPlayClick ?? noop} size={size} />
-              <ExpandCollapseButton isFullScreen={isFullScreen} onClick={onFullScreenClick ?? noop} size={size} />
+              {!hideExpand && (
+                <ExpandCollapseButton isFullScreen={isFullScreen} onClick={onFullScreenClick ?? noop} size={size} />
+              )}
             </>
           )}
         </div>
@@ -243,7 +272,7 @@ export function CompactControlBar({
 
       {/* 320×50 ad layout: genAd renders the description externally, so CXR shows
           only a right-aligned Watch button on the second row (no ticker). */}
-      {showSmWatch && (
+      {showSmWatch && !hideWatch && (
         <div
           data-testid="compact-bar-actions"
           className="gencl:flex gencl:justify-end gencl:z-15 gencl:pointer-events-auto gencl:ml-auto">
@@ -251,7 +280,8 @@ export function CompactControlBar({
               type so the two rows fit within 320×50. */}
           <WatchButton
             isPlay={false}
-            onClick={handleWatch}
+            onClick={watchHref ? cta?.onClick : handleWatch}
+            href={watchHref}
             variant="rect"
             pulse
             style={{ fontSize: "11px", paddingTop: "3px", paddingBottom: "3px" }}
@@ -265,14 +295,16 @@ export function CompactControlBar({
         <div
           data-testid="compact-bar-actions"
           className="gencl:w-full gencl:flex gencl:gap-1 gencl:h-8 gencl:rounded-full gencl:z-15 gencl:pointer-events-auto">
-          <WatchButton
-            isPlay={false}
-            onClick={handleWatch}
-            variant="rect"
-            fullWidth={!showLinkout}
-            pulse
-            style={{ fontSize: "14px" }}
-          />
+          {!hideWatch && (
+            <WatchButton
+              isPlay={false}
+              onClick={handleWatch}
+              variant="rect"
+              fullWidth={!showLinkout}
+              pulse
+              style={{ fontSize: "14px" }}
+            />
+          )}
           {showLinkout && (
             <LinkoutButton href={cta!.url} caption={cta!.caption} logoUrl={cta!.logoUrl} onClick={cta!.onClick} />
           )}

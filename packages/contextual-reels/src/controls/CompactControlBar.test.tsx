@@ -208,4 +208,47 @@ describe("CompactControlBar", () => {
     // sound-on enticement (which silent-start would show here).
     expect(muteIconFile()).toBe("mute.svg");
   });
+
+  describe("redirectMode", () => {
+    const cta = { url: "https://cta.example/x", caption: "Shop Now", onClick: vi.fn() };
+
+    it("hides the expand button", () => {
+      render({ size: "md", cta, redirectMode: true });
+      expect(container.querySelector('[data-testid="topbar-expand"]')).toBeNull();
+    });
+
+    it("md: hides Watch and keeps the Linkout", () => {
+      render({ size: "md", cta, redirectMode: true });
+      expect(container.querySelector('[data-testid="watch-btn"]')).toBeNull();
+      const link = container.querySelector('a[href="https://cta.example/x"]');
+      expect(link).toBeTruthy();
+      expect(link?.textContent).toContain("Shop Now");
+    });
+
+    it("sm: replaces Watch with a 'Learn More' anchor pointing at the CTA url", () => {
+      render({ size: "sm", showWatchInSm: true, cta, redirectMode: true });
+      const watch = container.querySelector('[data-testid="watch-btn"]');
+      expect(watch).toBeTruthy();
+      expect(watch?.tagName).toBe("A");
+      expect(watch?.getAttribute("href")).toBe("https://cta.example/x");
+      expect(watch?.getAttribute("target")).toBe("_blank");
+      expect(watch?.textContent).toContain("Learn More");
+    });
+
+    it("sm: fires the CTA onClick when the Watch anchor is clicked", () => {
+      const onClick = vi.fn();
+      render({ size: "sm", showWatchInSm: true, cta: { ...cta, onClick }, redirectMode: true });
+      act(() => {
+        (container.querySelector('[data-testid="watch-btn"]') as HTMLElement).click();
+      });
+      expect(onClick).toHaveBeenCalledTimes(1);
+    });
+
+    it("sm: with no CTA url the Watch button stays a plain button", () => {
+      render({ size: "sm", showWatchInSm: true, redirectMode: true });
+      const watch = container.querySelector('[data-testid="watch-btn"]');
+      expect(watch).toBeTruthy();
+      expect(watch?.tagName).toBe("BUTTON");
+    });
+  });
 });
