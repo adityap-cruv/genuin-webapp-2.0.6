@@ -295,4 +295,5 @@ Full historical data in [build-metrics/PERFORMANCE_MATRIX.md](build-metrics/PERF
 - [ADR 001 — Drop Swiper](cxr-decisions/001-drop-swiper.md)
 - [ADR 003 — MutationObserver scope](cxr-decisions/003-mutation-observer-scope.md)
 - [ADR 005 — Stacked layout + Infolinks](cxr-decisions/005-stacked-infolinks.md)
+- [ADR 006 — L3 (320×50) audio on unmute](cxr-decisions/006-l3-audio-on-unmute.md)
 - [Bundle baseline & metrics](build-metrics/PERFORMANCE_MATRIX.md)

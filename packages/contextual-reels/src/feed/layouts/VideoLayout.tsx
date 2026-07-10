@@ -115,6 +115,18 @@ export function VideoLayout({
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
+  // L3 (320×50) has no visible player — mount an audio-only player lazily, only
+  // after the user unmutes THIS slide, so a silent unit never decodes video.
+  // `isMuted` is shared feed-wide state, so gate on `isActive` too: otherwise a
+  // single unmute would engage every off-screen VideoLayout at once and mount a
+  // hidden LightPlayer for the whole feed. Once engaged we keep it mounted: a
+  // later re-mute pauses via volume 0 / isPlay, it must not tear the element down
+  // (which would drop audio and reset position).
+  const [l3AudioEngaged, setL3AudioEngaged] = useState(false);
+  useEffect(() => {
+    if (isActive && !isMuted) setL3AudioEngaged(true);
+  }, [isActive, isMuted]);
+
   useLayoutEffect(() => {
     const needsResize = adLayout !== AD_LAYOUT.L3 && adLayout !== AD_LAYOUT.L4;
     if (!needsResize) return;
@@ -227,13 +239,37 @@ export function VideoLayout({
     </div>
   );
 
-  // ─── L3: 320×50 — no player, controls fill bar ─────────────────────────────
+  // ─── L3: 320×50 — controls fill bar; audio-only player mounts on unmute ─────
   function renderL3(): React.JSX.Element {
     return (
       <div
         data-testid="video-layout"
         className="gencl:relative gencl:h-full gencl:w-full gencl:flex gencl:items-center gencl:justify-end gencl:box-border"
         style={{ background: compactBackground }}>
+        {/* Audio-only player: the 50px bar has no room for a frame, so the
+            player is clipped to a 1px offscreen box — the video track still
+            decodes and plays audio. Mounted only once the user has unmuted
+            (l3AudioEngaged) so a silent unit never fetches/decodes video. */}
+        {l3AudioEngaged && (
+          <div
+            aria-hidden="true"
+            className="gencl:absolute gencl:h-px gencl:w-px gencl:overflow-hidden gencl:opacity-0 gencl:pointer-events-none"
+            style={{ left: -9999, top: 0 }}>
+            <LightPlayer
+              content={reel.videoUrl ?? ""}
+              id={reel.id}
+              videoId={videoId}
+              poster={reel.thumb ?? undefined}
+              volume={volume}
+              isPlay={isActive && isPlaying && !adBreak.suppressVideo}
+              hideScrubber={true}
+              tagDetails={{}}
+              videoDetails={reel as unknown as Record<string, unknown>}
+              onTimeUpdate={() => undefined}
+              onEnded={onAutoAdvance}
+            />
+          </div>
+        )}
         <VideoControlLayer animatedBorder={true} {...controlLayerProps} />
       </div>
     );

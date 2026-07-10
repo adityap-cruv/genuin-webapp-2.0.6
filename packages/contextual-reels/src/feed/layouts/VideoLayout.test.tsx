@@ -112,7 +112,6 @@ globalThis.ResizeObserver = class ResizeObserver {
   disconnect(): void {}
 } as unknown as typeof ResizeObserver;
 
-
 const baseReel: NormalisedReel = {
   kind: "video",
   id: 0,
@@ -225,12 +224,66 @@ describe("VideoLayout layout branches", () => {
     expect(container.querySelector('[data-testid="light-player"]')).toBeTruthy();
   });
 
-  // ─── L3 (320×50, no player) ──────────────────────────────────────────────────
-  it("renders no player in L3 (320×50 bar)", () => {
+  // ─── L3 (320×50 bar, audio-only player mounts on unmute) ────────────────────
+  it("mounts no player in L3 while muted (silent unit never decodes video)", () => {
     mockUseAdWaterfall.mockReturnValue({ adLayout: AD_LAYOUT.L3 });
+    // default mock is isMuted: true → never engaged, so no player.
     render();
     expect(container.querySelector('[data-testid="light-player"]')).toBeNull();
     expect(container.querySelector('[data-testid="video-control-layer"]')).toBeTruthy();
+  });
+
+  it("lazily mounts the audio-only player in L3 once the active slide is unmuted", () => {
+    mockUseAdWaterfall.mockReturnValue({ adLayout: AD_LAYOUT.L3 });
+    mockUsePlayer.mockReturnValue({
+      isMuted: false,
+      volume: 0.2,
+      isPlaying: true,
+      setMuted,
+      setPlaying,
+      setAdBreakActive,
+    });
+    render({ isActive: true });
+    expect(container.querySelector('[data-testid="light-player"]')).toBeTruthy();
+    // The player receives the unmuted volume so audio is audible, not silent.
+    const props = mockLightPlayer.mock.calls.at(-1)?.[0] as { volume?: number; isPlay?: boolean };
+    expect(props.volume).toBe(0.2);
+    expect(props.isPlay).toBe(true);
+  });
+
+  it("does NOT mount the L3 audio player on an inactive slide even when unmuted", () => {
+    // isMuted is shared feed-wide state; ReelList keeps every entry mounted and only
+    // the active one gets isActive. A feed-wide unmute must not engage off-screen
+    // slides, or the whole feed would decode media (the no-decode goal).
+    mockUseAdWaterfall.mockReturnValue({ adLayout: AD_LAYOUT.L3 });
+    mockUsePlayer.mockReturnValue({
+      isMuted: false, // unmuted feed-wide…
+      volume: 0.2,
+      isPlaying: true,
+      setMuted,
+      setPlaying,
+      setAdBreakActive,
+    });
+    render({ isActive: false }); // …but this slide is off-screen
+    expect(container.querySelector('[data-testid="light-player"]')).toBeNull();
+  });
+
+  it("L3 video-with-ad: lazy audio player pauses while the ad break suppresses video", () => {
+    mockUseAdWaterfall.mockReturnValue({ adLayout: AD_LAYOUT.L3 });
+    mockUsePlayer.mockReturnValue({
+      isMuted: false, // engaged → audio player mounts
+      volume: 0.2,
+      isPlaying: true,
+      setMuted,
+      setPlaying,
+      setAdBreakActive,
+    });
+    // Ad break on screen → suppressVideo true; reel audio must not play under the ad.
+    mockUseFullscreenAdBreak.mockReturnValue({ ...adBreakIdle, suppressVideo: true });
+    render({ reel: { ...baseReel, kind: "video-with-ad", adObject }, adObject });
+    expect(container.querySelector('[data-testid="light-player"]')).toBeTruthy();
+    const props = mockLightPlayer.mock.calls.at(-1)?.[0] as { isPlay?: boolean };
+    expect(props.isPlay).toBe(false);
   });
 
   // ─── L4 (320×100 thumbnail player + compact unmute) ─────────────────────────
