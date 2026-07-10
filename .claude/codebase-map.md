@@ -61,6 +61,17 @@
   not a feed reel `_id`. Toggles: `genAiEnabled`, `adBreakEnabled`, `gateOnUnmute`,
   `singleHitWaterfall`, `adsDisabled`, `mutePassback` + tunable `mutePassbackDelayMs` (default 3000).
   Full reference: [packages/contextual-reels/docs/STRATEGIES.md](../packages/contextual-reels/docs/STRATEGIES.md).
+- **CXR host macros unresolved = host bug, not ours** — the host webview must substitute its own
+  tilde-delimited macros (`~appb~`, `~loclat~`, `~appn~`, `~appv~`, `~loc~`) with real values BEFORE
+  building the loader `<script src>`. The loader copies that query string verbatim into
+  `window.__CXR_SCRIPT_PARAMS__` (`loader.jsx:41`); `parseHostMacros()` (`src/hostMacros.ts`) reads
+  it. `isUnresolved()` (`src/hostMacros.ts`) drops **both** the curly `{appv}` and tilde `~appv~`
+  forms, so a leaked template never flows into analytics/ad-URLs as a "real" value. Diagnostic:
+  `buildHostParamsDiagnostic()` (`src/analytics/analytics.ts`) reads the RAW bag *before* cleaning and
+  stamps `host_script_params_raw` + `host_params_unresolved` onto the one-time `Tag Captured` event
+  (`src/app/App.tsx:260`) — so it still reports leaked placeholders even though they're now dropped
+  downstream. NOTE: `host_script_params_raw` logs host values verbatim (ifa/deviceid/geo/consent) —
+  privacy sign-off + eventual removal expected.
 - **CXR mutePassback timing** — the passback timer (`MutePassbackGuard`, `src/app/App.tsx`) arms on
   the **first `player:play`** bus event, NOT on mount — so it measures muted *playback*, not the
   tag/feed-load gap. One-shot: a later pause/resume won't restart or re-fire it.

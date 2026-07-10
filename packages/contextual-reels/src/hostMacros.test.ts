@@ -45,6 +45,16 @@ describe("hostMacros", () => {
     expect(parseHostMacros()).toEqual({ appn: "Real" });
   });
 
+  it("drops unresolved tilde literals the host never substituted", async () => {
+    // The app/SSP macro form seen in real webview payloads: ~appb~, ~loclat~, …
+    (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__ =
+      "appb=~appb~&loclat=~loclat~&country=US";
+    const { parseHostMacros } = await loadFresh();
+    // Only the resolved value survives; leaked tilde templates are dropped so
+    // they never reach device_details / page / ad URLs.
+    expect(parseHostMacros()).toEqual({ country: "US" });
+  });
+
   it("returns an empty map when the param bag is absent", async () => {
     const { parseHostMacros } = await loadFresh();
     expect(parseHostMacros()).toEqual({});

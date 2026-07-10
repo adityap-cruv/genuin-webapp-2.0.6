@@ -14,7 +14,7 @@
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { type ReactNode, type RefObject, lazy, useCallback, useEffect, useRef, useState } from "react";
 
-import { EVENT } from "@cxr/analytics/analytics";
+import { EVENT, buildHostParamsDiagnostic } from "@cxr/analytics/analytics";
 import { CloseButton } from "@cxr/app/CloseButton";
 import { FeedSkeleton } from "@cxr/app/FeedSkeleton";
 import { NoContent } from "@cxr/app/NoContent";
@@ -261,6 +261,10 @@ function TagLoader({ tagId, rootTagId, customizationDetails, adLayout, onLoaded,
           tagId,
           tag_height: tagDimensions?.height,
           tag_width: tagDimensions?.width,
+          // One-time diagnostic: the raw host-provided loader script params, so
+          // we can tell whether unresolved macros (~appb~, ~loclat~, …) are the
+          // host sending an unfilled template vs. sending nothing at all.
+          ...buildHostParamsDiagnostic(),
         });
       })
       .catch((err) => {

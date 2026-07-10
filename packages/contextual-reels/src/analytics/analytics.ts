@@ -234,6 +234,47 @@ export function buildHostMacroBlocks(macros: HostMacros): HostMacroBlocks {
 }
 
 /**
+ * Diagnostic snapshot of the raw host-provided loader script params.
+ *
+ * The host app resolves its own macros (`~appb~`, `~loclat~`, …) and passes the
+ * resolved values on the loader `<script src>` query string, which the loader
+ * copies verbatim into `window.__CXR_SCRIPT_PARAMS__` (see hostMacros.ts). When
+ * those macros arrive UNRESOLVED, `parseHostMacros()` drops or keeps them and
+ * the individual `device/user/event` blocks look identical to "host sent
+ * nothing" — you cannot tell the two apart downstream.
+ *
+ * This captures the raw bag verbatim (before `parseHostMacros` cleans it) plus a
+ * computed list of keys whose value is still an unresolved placeholder
+ * (`~x~` or `{x}`), so analytics can distinguish "host sent an unresolved macro
+ * template" from "host sent nothing". Emitted ONCE per load (on Tag Captured),
+ * not on every event — the params are static per load.
+ *
+ * NOTE: the raw string can carry `ifa` / `deviceid` / geo / consent values.
+ * These are already sent individually in `user_details` / `device_details`, but
+ * duplicating them verbatim here is intentional for diagnosis — coordinate with
+ * analytics/privacy owners before relying on it long-term.
+ */
+export function buildHostParamsDiagnostic(): Record<string, unknown> {
+  if (typeof window === "undefined") return {};
+  const raw = (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__ ?? "";
+  if (!raw) return { host_script_params_raw: "", host_params_keys: "", host_params_unresolved: "" };
+
+  const isUnresolvedPlaceholder = (value: string): boolean => {
+    const trimmed = value.trim();
+    return /^\{.*\}$/.test(trimmed) || /^~.*~$/.test(trimmed);
+  };
+
+  const params = [...new URLSearchParams(raw)];
+  const unresolved = params.filter(([, value]) => isUnresolvedPlaceholder(value)).map(([key]) => key);
+
+  return {
+    host_script_params_raw: raw,
+    host_params_keys: params.map(([key]) => key).join(","),
+    host_params_unresolved: unresolved.join(","),
+  };
+}
+
+/**
  * Dispatch a single analytics event. Pure function — see {@link SendEventLogDeps}.
  *
  * No-op (with a console.error) when `deps.rudderanalytics` is missing.

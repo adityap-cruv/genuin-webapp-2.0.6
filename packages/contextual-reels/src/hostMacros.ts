@@ -13,9 +13,16 @@ export interface HostMacros {
   readonly [key: string]: string;
 }
 
-/** True for an unresolved host placeholder the host never substituted, e.g. `{appv}`. */
+/**
+ * True for an unresolved host placeholder the host never substituted. Covers
+ * both delimiter conventions the host may leak: curly `{appv}` and tilde
+ * `~appv~`. Tilde is the app/SSP macro form observed in real webview payloads,
+ * so it must be dropped here — otherwise a leaked `~appb~` flows on as if it
+ * were a real value and pollutes `device_details` / `page` and ad URLs.
+ */
 function isUnresolved(value: string): boolean {
-  return /^\{.*\}$/.test(value.trim());
+  const trimmed = value.trim();
+  return /^\{.*\}$/.test(trimmed) || /^~.*~$/.test(trimmed);
 }
 
 /**

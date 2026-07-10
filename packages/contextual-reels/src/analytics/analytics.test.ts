@@ -8,6 +8,7 @@ import {
   EVENT,
   type EventName,
   buildHostMacroBlocks,
+  buildHostParamsDiagnostic,
   createEventBuffer,
   sendEventLog,
   sendEventLogFromGlobals,
@@ -531,6 +532,43 @@ describe("buildHostMacroBlocks", () => {
     expect(blocks.device).toEqual({});
     expect(blocks.user).toEqual({ ifa: "abc" });
     expect(blocks.event).toEqual({});
+  });
+});
+
+// ─── buildHostParamsDiagnostic ────────────────────────────────────────────────
+
+describe("buildHostParamsDiagnostic", () => {
+  const win = window as unknown as { __CXR_SCRIPT_PARAMS__?: string };
+
+  afterEach(() => {
+    delete win.__CXR_SCRIPT_PARAMS__;
+  });
+
+  it("returns empty fields when the raw bag is absent", () => {
+    delete win.__CXR_SCRIPT_PARAMS__;
+    expect(buildHostParamsDiagnostic()).toEqual({
+      host_script_params_raw: "",
+      host_params_keys: "",
+      host_params_unresolved: "",
+    });
+  });
+
+  it("captures the raw bag verbatim and lists every param key", () => {
+    win.__CXR_SCRIPT_PARAMS__ = "appb=com.foo.bar&appv=1.2.3&ifa=abc-123";
+    const diag = buildHostParamsDiagnostic();
+    expect(diag.host_script_params_raw).toBe("appb=com.foo.bar&appv=1.2.3&ifa=abc-123");
+    expect(diag.host_params_keys).toBe("appb,appv,ifa");
+    expect(diag.host_params_unresolved).toBe("");
+  });
+
+  it("flags tilde and curly placeholders the host never resolved", () => {
+    win.__CXR_SCRIPT_PARAMS__ = "appb=~appb~&appv=1.2.3&loc={loc}&appn=~appn~";
+    const diag = buildHostParamsDiagnostic();
+    // Raw is preserved so consumers see exactly what the host sent.
+    expect(diag.host_script_params_raw).toBe("appb=~appb~&appv=1.2.3&loc={loc}&appn=~appn~");
+    expect(diag.host_params_keys).toBe("appb,appv,loc,appn");
+    // Only the unresolved placeholders are flagged; the real value (appv) is not.
+    expect(diag.host_params_unresolved).toBe("appb,loc,appn");
   });
 });
 
