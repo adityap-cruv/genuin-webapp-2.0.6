@@ -20,9 +20,10 @@ import { ShadowDomProvider, type ShadowDomConfig } from "@cxr/shadow-dom-context
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
 const sendEventMock = vi.fn();
+const setBaseEventContextMock = vi.fn();
 
 vi.mock("../providers/AnalyticsProvider", () => ({
-  useAnalytics: () => ({ sendEvent: sendEventMock }),
+  useAnalytics: () => ({ sendEvent: sendEventMock, setBaseEventContext: setBaseEventContextMock }),
 }));
 
 let testBus: CxrEventBus;
@@ -1038,6 +1039,58 @@ describe("ads/useGenAdInstance", () => {
     expect((options["video"] as { advertiserDetails?: { videoUrl?: string } }).advertiserDetails?.videoUrl).toBe(
       "https://example.com/vast.xml"
     );
+    unmount(root, container);
+  });
+
+  it("stamps ad_url into base event context from a string videoAd", async () => {
+    const { root, container } = mountHook({
+      ...baseProps,
+      isActive: true,
+      videoAd: "https://ads.example.com/vast?x=1",
+    });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(setBaseEventContextMock).toHaveBeenCalledWith(
+      expect.objectContaining({ ad_url: "https://ads.example.com/vast?x=1" })
+    );
+    unmount(root, container);
+  });
+
+  it("stamps ad_url from an object videoAd (first resolved url field)", async () => {
+    const { root, container } = mountHook({
+      ...baseProps,
+      isActive: true,
+      videoAd: { url: "https://ads.example.com/obj-vast?y=2", platform: "video" },
+    });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(setBaseEventContextMock).toHaveBeenCalledWith(
+      expect.objectContaining({ ad_url: "https://ads.example.com/obj-vast?y=2" })
+    );
+    unmount(root, container);
+  });
+
+  it("does not stamp ad_url when no videoAd url is resolvable", async () => {
+    const { root, container } = mountHook({ ...baseProps, isActive: true });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    // No videoAd → no ad_url should ever be stamped into base context.
+    const stampedAdUrl = setBaseEventContextMock.mock.calls.some(
+      ([arg]) => arg && typeof arg === "object" && "ad_url" in arg
+    );
+    expect(stampedAdUrl).toBe(false);
     unmount(root, container);
   });
 

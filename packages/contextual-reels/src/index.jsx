@@ -15,6 +15,7 @@ import { getInstanceRegistry } from "@cxr/instance/registry/InstanceRegistry";
 import { setupCxrShadowDOM } from "@cxr/shadow-dom";
 import { DATA_ATTR_SHADOW_DOM_OPT_IN } from "@cxr/shadow-dom-config";
 import { ShadowDomProvider } from "@cxr/shadow-dom-context";
+import { getHostMacro } from "@cxr/hostMacros";
 
 // New TypeScript App with provider stack + native feed engine.
 const App = lazy(() => import("./app/App"));
@@ -142,7 +143,9 @@ async function init() {
     node.setAttribute("data-cxr-status", "loading");
 
     const instanceId = getOrSetInstanceId(node);
-    const tagId = node.getAttribute("data-tag-id");
+    // Single widget per page (see host-macro design): the loader-src `tagId`
+    // wins when present; otherwise fall back to the per-div data-tag-id.
+    const tagId = getHostMacro("tagId") ?? node.getAttribute("data-tag-id");
     let customizationDetails = {};
     try {
       customizationDetails = JSON.parse(node.getAttribute("data-customization-details") ?? "{}") ?? {};

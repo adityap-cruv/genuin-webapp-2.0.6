@@ -4,6 +4,7 @@
  * Consolidates: eventNames, eventBuffer, sendEventLog.
  */
 
+import { hostMacros as defaultHostMacros, type HostMacros } from "@cxr/hostMacros";
 import type { DeviceDetails } from "@cxr/platform/device";
 import { deepMergeOverwrite } from "@cxr/utils/deepMerge";
 import { createLogger } from "@cxr/utils/logger";
@@ -183,6 +184,53 @@ export interface SendEventLogDeps {
   userId: string;
   windowLink: string | undefined;
   offsite: OffsitePropertiesConfig;
+  /** Captured host macros. Defaults to the module singleton. */
+  hostMacros?: HostMacros;
+}
+
+/** Host macros split into the three analytics blocks they belong in. */
+export interface HostMacroBlocks {
+  device: Record<string, string>;
+  user: Record<string, string>;
+  event: Record<string, string>;
+}
+
+/**
+ * Split captured host macros into analytics blocks by meaning.
+ *
+ * DEFERRED (see design spec §Deferred): the exact target field names must be
+ * confirmed with the analytics consumers. Update THIS function when confirmed —
+ * it is the single source of truth for host-macro analytics placement. Host geo
+ * (country/loc/lat/long) lands in its OWN device fields and never overwrites the
+ * IP-based `geoip` block.
+ */
+export function buildHostMacroBlocks(macros: HostMacros): HostMacroBlocks {
+  const pick = (target: Record<string, string>, field: string, macro: string): void => {
+    const value = macros[macro];
+    if (value !== undefined && value !== "") target[field] = value;
+  };
+
+  const device: Record<string, string> = {};
+  pick(device, "app_name", "appn");
+  pick(device, "app_version", "appv");
+  pick(device, "app_bundle", "appb");
+  pick(device, "app_country", "country");
+  pick(device, "app_loc", "loc");
+  pick(device, "app_lat", "loclat");
+  pick(device, "app_long", "loclong");
+
+  const user: Record<string, string> = {};
+  pick(user, "ifa", "ifa");
+  pick(user, "deviceid", "deviceid");
+  pick(user, "app_store_id", "appsi");
+
+  const event: Record<string, string> = {};
+  pick(event, "gdpr", "gdpr");
+  pick(event, "gdpr_consent", "gdpr_consent");
+  pick(event, "us_privacy", "us_privacy");
+  pick(event, "dnt", "dnt");
+
+  return { device, user, event };
 }
 
 /**
@@ -203,9 +251,16 @@ export function sendEventLog(args: SendEventLogArgs, deps: SendEventLogDeps): vo
   const { eventName, eventDetails = {}, videoDetails = {}, tagDetails = {} } = args;
   const { deviceDetails, userId, windowLink, offsite } = deps;
 
+  const resolvedMacros = deps.hostMacros ?? defaultHostMacros;
+  const macroBlocks = buildHostMacroBlocks(resolvedMacros);
+  // Webview: the host app (appb bundle) is the "page". Overrides windowLink.
+  const page = resolvedMacros.appb ?? windowLink;
+
   const updatedEventDetails: Record<string, unknown> = {
+    // Host macros go first so caller-supplied eventDetails / offsite still win.
+    ...macroBlocks.event,
     ...eventDetails,
-    page: windowLink,
+    page,
     ...(tagDetails.tag_id !== undefined ? { tag_id: tagDetails.tag_id } : {}),
     // Only stamp video fields from videoDetails when present, so a caller that
     // already put video_id / video_share_string on eventDetails (e.g. CXR's
@@ -220,12 +275,17 @@ export function sendEventLog(args: SendEventLogArgs, deps: SendEventLogDeps): vo
     offsite.event_details ?? offsite.eventDetails ?? {}
   );
 
+  // Host macros go first so the real device snapshot / user_id win on any
+  // future key collision — host macros are additive, never clobbering.
   const mergedDeviceDetails = deepMergeOverwrite(
-    deviceDetails as unknown as Record<string, unknown>,
+    { ...macroBlocks.device, ...(deviceDetails as unknown as Record<string, unknown>) },
     offsite.device_details ?? offsite.deviceDetails ?? {}
   );
 
-  const mergedUserDetails = deepMergeOverwrite({ user_id: userId }, offsite.user_details ?? offsite.userDetails ?? {});
+  const mergedUserDetails = deepMergeOverwrite(
+    { ...macroBlocks.user, user_id: userId },
+    offsite.user_details ?? offsite.userDetails ?? {}
+  );
 
   // Immutable: offsite config cannot override the incoming event name.
   const finalEventName = eventName;
@@ -261,5 +321,6 @@ export function sendEventLogFromGlobals(args: SendEventLogArgs, deps: SendEventL
     ...deps,
     rudderanalytics: win.rudderanalytics,
     offsite: win.offsitePropertiesConfig ?? {},
+    hostMacros: defaultHostMacros,
   });
 }

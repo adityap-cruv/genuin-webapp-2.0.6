@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 
 import { resolvePageUrl, resolveAdUrlMacros, resolveVideoAdMacros } from './adUrlMacros';
+import { HOST_URL_MACRO_TOKENS, TRITON_APP_PARAM_TAG_IDS } from './adUrlMacros';
 
 // ─── resolveAdUrlMacros ───────────────────────────────────────────────────────
 
@@ -189,5 +190,194 @@ describe('resolvePageUrl', () => {
         configurable: true,
       });
     }
+  });
+});
+
+// ─── resolveAdUrlMacros — host macro tokens ───────────────────────────────────
+
+describe("resolveAdUrlMacros — host macro tokens", () => {
+  const MACROS = {
+    dnt: "0",
+    gdpr: "1",
+    gdpr_consent: "CONSENT123",
+    loclat: "40.77",
+    loclong: "-73.95",
+    appb: "com.x.y",
+    appsi: "999",
+    appsu: "https://play.google.com/store/apps/details?id=com.x.y",
+  };
+
+  it("substitutes a host token with the URL-encoded macro value", () => {
+    const url = "https://ads.example.com/vast?gdpr=[GDPR]&c=[GDPRCONSENT]";
+    const result = resolveAdUrlMacros(url, "https://p.com/a", MACROS);
+    expect(result).toBe("https://ads.example.com/vast?gdpr=1&c=CONSENT123");
+  });
+
+  it("substitutes multiple occurrences of the same token", () => {
+    const url = "https://ads.example.com?a=[DNT]&b=[DNT]";
+    const result = resolveAdUrlMacros(url, "", MACROS);
+    expect(result).toBe("https://ads.example.com?a=0&b=0");
+  });
+
+  it("leaves a token whose macro is absent untouched", () => {
+    const url = "https://ads.example.com?lat=[LOCATION_LAT]";
+    // MACROS without `loclat`, so the [LOCATION_LAT] token has no value to fill.
+    const withoutLat = { dnt: MACROS.dnt, gdpr: MACROS.gdpr, gdpr_consent: MACROS.gdpr_consent };
+    const result = resolveAdUrlMacros(url, "", withoutLat);
+    expect(result).toBe("https://ads.example.com?lat=[LOCATION_LAT]");
+  });
+
+  it("resolves [PAGE_URL] and host tokens together", () => {
+    const url = "https://ads.example.com?u=[PAGE_URL]&gdpr=[GDPR]";
+    const result = resolveAdUrlMacros(url, "https://p.com/a", MACROS);
+    expect(result).toBe(
+      `https://ads.example.com?u=${encodeURIComponent("https://p.com/a")}&gdpr=1`
+    );
+  });
+
+  it("exposes the documented token map keyed by ad-URL token", () => {
+    expect(HOST_URL_MACRO_TOKENS["[DNT]"]).toBe("dnt");
+    expect(HOST_URL_MACRO_TOKENS["[GDPR]"]).toBe("gdpr");
+  });
+
+  it("substitutes Triton app tokens (bundle/store id/store url encoded)", () => {
+    const url = "https://t.co?bundle-id=[APP_BUNDLE]&store-id=[STORE_ID]&store-url=[STORE_URL]";
+    const result = resolveAdUrlMacros(url, "", MACROS);
+    expect(result).toBe(
+      `https://t.co?bundle-id=com.x.y&store-id=999&store-url=${encodeURIComponent("https://play.google.com/store/apps/details?id=com.x.y")}`
+    );
+  });
+
+  it("exposes the app tokens in the map", () => {
+    expect(HOST_URL_MACRO_TOKENS["[APP_BUNDLE]"]).toBe("appb");
+    expect(HOST_URL_MACRO_TOKENS["[STORE_ID]"]).toBe("appsi");
+    expect(HOST_URL_MACRO_TOKENS["[STORE_URL]"]).toBe("appsu");
+  });
+
+  it("forwards host macros through resolveVideoAdMacros object.url", () => {
+    const result = resolveVideoAdMacros(
+      { url: "https://ads.com?gdpr=[GDPR]" },
+      "https://p.com/a",
+      MACROS
+    );
+    expect((result as { url: string }).url).toBe("https://ads.com?gdpr=1");
+  });
+});
+
+// ─── resolveVideoAdMacros — Triton in-app rewrite ─────────────────────────────
+
+describe("resolveVideoAdMacros — Triton in-app rewrite", () => {
+  const APP_TAG = "6a3915b692929ebec64d785e";
+  const MACROS = {
+    appb: "com.handcent.app.nextsms",
+    appsi: "315697",
+    appsu: "https://play.google.com/store/apps/details?id=com.handcent.app.nextsms",
+  };
+  const tritonUrl =
+    "https://cmod-na.live.streamtheworld.com/ondemand/ars?site-url=[PAGE_URL]&dist=[PAGE_URL]&stid=1446814&type=midroll";
+
+  it("allowlists the two app tag ids", () => {
+    expect(TRITON_APP_PARAM_TAG_IDS.has("6a3915b692929ebec64d785e")).toBe(true);
+    expect(TRITON_APP_PARAM_TAG_IDS.has("6a39163e92929ebec64d78ab")).toBe(true);
+  });
+
+  it("rewrites a Triton url for an allowlisted tag: drops site-url, dist=appb, adds app params", () => {
+    const result = resolveVideoAdMacros(
+      { url: tritonUrl, ads_url: tritonUrl, platform: "tritondigital" },
+      "https://page.com",
+      MACROS,
+      APP_TAG
+    ) as { url: string; ads_url: string };
+    const u = new URL(result.url);
+    expect(u.searchParams.has("site-url")).toBe(false);
+    expect(u.searchParams.get("dist")).toBe("com.handcent.app.nextsms");
+    expect(u.searchParams.get("bundle-id")).toBe("com.handcent.app.nextsms");
+    expect(u.searchParams.get("store-id")).toBe("315697");
+    expect(u.searchParams.get("store-url")).toBe(
+      "https://play.google.com/store/apps/details?id=com.handcent.app.nextsms"
+    );
+    // stid/type preserved
+    expect(u.searchParams.get("stid")).toBe("1446814");
+    expect(u.searchParams.get("type")).toBe("midroll");
+    // ads_url rewritten too
+    expect(new URL(result.ads_url).searchParams.has("site-url")).toBe(false);
+    // raw string must be percent-encoded exactly once (no %2520)
+    expect(result.url).not.toContain("%25");
+  });
+
+  it("preserves original encoding of untouched params (ua/ttag) and drops site-url", () => {
+    const rawUrl =
+      "https://cmod-na.live.streamtheworld.com/ondemand/ars?site-url=https%3A%2F%2Fp.com&dist=https%3A%2F%2Fp.com&stid=1446814&ua=Mozilla/5.0%20(iPhone;%20CPU%20iPhone%20OS%2018_5)&ttag=brand_id:3252&type=midroll";
+    const result = resolveVideoAdMacros(
+      { url: rawUrl, platform: "tritondigital" },
+      "https://p.com",
+      MACROS,
+      APP_TAG
+    ) as { url: string };
+    // untouched params keep exact bytes
+    expect(result.url).toContain("ua=Mozilla/5.0%20(iPhone;%20CPU%20iPhone%20OS%2018_5)");
+    expect(result.url).toContain("ttag=brand_id:3252");
+    expect(result.url).toContain("type=midroll");
+    // site-url gone
+    expect(result.url).not.toContain("site-url=");
+    // dist now appb, app params appended (appb has no reserved chars)
+    expect(result.url).toContain("dist=com.handcent.app.nextsms");
+    expect(result.url).toContain("bundle-id=com.handcent.app.nextsms");
+    expect(result.url).toContain("store-id=315697");
+    expect(result.url).toContain(
+      "store-url=https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dcom.handcent.app.nextsms"
+    );
+  });
+
+  it("removes site-url when it is the first param, leaving no ?& artifact", () => {
+    const result = resolveVideoAdMacros(
+      {
+        url: "https://t.co/ars?site-url=https%3A%2F%2Fp.com&dist=https%3A%2F%2Fp.com&stid=1",
+        platform: "tritondigital",
+      },
+      "https://p.com",
+      { appb: "com.x.y" },
+      APP_TAG
+    ) as { url: string };
+    expect(result.url).not.toContain("site-url");
+    expect(result.url).not.toContain("?&");
+    expect(result.url).not.toContain("&&");
+    expect(result.url).toContain("dist=com.x.y");
+  });
+
+  it("leaves Triton url unchanged for a NON-allowlisted tag", () => {
+    const result = resolveVideoAdMacros(
+      { url: tritonUrl, platform: "tritondigital" },
+      "https://page.com",
+      MACROS,
+      "some-other-tag"
+    ) as { url: string };
+    const u = new URL(result.url);
+    // site-url present (as resolved page url), no app params
+    expect(u.searchParams.get("site-url")).toBe("https://page.com");
+    expect(u.searchParams.has("bundle-id")).toBe(false);
+    expect(u.searchParams.get("dist")).toBe("https://page.com");
+  });
+
+  it("leaves a NON-triton url unchanged even for an allowlisted tag", () => {
+    const result = resolveVideoAdMacros(
+      { url: "https://other.com?site-url=[PAGE_URL]", platform: "infy" },
+      "https://page.com",
+      MACROS,
+      APP_TAG
+    ) as { url: string };
+    expect(new URL(result.url).searchParams.get("site-url")).toBe("https://page.com");
+  });
+
+  it("leaves dist unchanged and skips app params when appb macro is absent", () => {
+    const result = resolveVideoAdMacros(
+      { url: tritonUrl, platform: "tritondigital" },
+      "https://page.com",
+      { appsi: "315697" }, // no appb
+      APP_TAG
+    ) as { url: string };
+    const u = new URL(result.url);
+    expect(u.searchParams.get("dist")).toBe("https://page.com"); // unchanged (appb absent)
+    expect(u.searchParams.has("bundle-id")).toBe(false);
   });
 });

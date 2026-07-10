@@ -79,6 +79,30 @@ export function _resetGenAdSdkSingleton(): void {
   genAdLoadPromise = null;
 }
 
+/**
+ * Extract the primary ad URL from a resolved video-ad value for analytics.
+ *
+ * `resolveVideoAdMacros` returns a string, an object (`url` / `ads_url` /
+ * `vastUrl`), or an array of either. Returns the FIRST resolved URL found, or
+ * `undefined` when none is present. Logged as `ad_url` on ad events; reflects
+ * the URL SENT (primary/highest-CPM entry), not necessarily the vendor that
+ * filled (the SDK does not expose per-vendor fill).
+ *
+ * @param resolvedVideoAd - The value returned by `resolveVideoAdMacros`.
+ * @returns The first resolved ad URL, or `undefined` when none is present.
+ */
+function extractPrimaryAdUrl(resolvedVideoAd: unknown): string | undefined {
+  const first = Array.isArray(resolvedVideoAd) ? resolvedVideoAd[0] : resolvedVideoAd;
+  if (typeof first === "string") return first || undefined;
+  if (first && typeof first === "object") {
+    const o = first as Record<string, unknown>;
+    for (const key of ["url", "ads_url", "vastUrl"] as const) {
+      if (typeof o[key] === "string" && o[key]) return o[key] as string;
+    }
+  }
+  return undefined;
+}
+
 // ─── useGenAdInstance hook ────────────────────────────────────────────────────
 
 /**
@@ -232,7 +256,7 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
     videoAdAdvertiserDetails,
     videoAdContentVideo,
     platforms,
-    // tagDetails: _tagDetails,
+    tagDetails,
     // item: _item,
     onWaterfallSuccess,
     onWaterfallFail,
@@ -552,7 +576,20 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
           (initOptions as Record<string, unknown>).native = nativeConfig;
         }
 
-        const resolvedVideoAd = resolveVideoAdMacros(videoAd, resolvePageUrl());
+        const resolvedVideoAd = resolveVideoAdMacros(
+          videoAd,
+          resolvePageUrl(),
+          undefined,
+          tagDetails?.tag_id
+        );
+        // Log the resolved primary ad URL on every ad event this slot emits.
+        // Setting it into the base event context (rather than each call site)
+        // stamps `ad_url` onto AD_REQUESTED below and all subsequent ad events.
+        const adUrl = extractPrimaryAdUrl(resolvedVideoAd);
+        if (adUrl) {
+          setBaseEventContext({ ad_url: adUrl });
+        }
+
         const videoConfig = normalizeVideoConfig(
           resolvedVideoAd,
           platforms,

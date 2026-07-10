@@ -16,6 +16,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, typ
 import { createEventBuffer, type EventBuffer } from "@cxr/analytics/analytics";
 import { sendEventLog, type OffsitePropertiesConfig, type RudderstackLike } from "@cxr/analytics/analytics";
 import { initializeRudderAnalytics } from "@cxr/analytics/rudderstack";
+import { hostMacros } from "@cxr/hostMacros";
 import { enrichDeviceDetailsWithGeoIp, getDeviceDetailsSnapshot, type DeviceDetails } from "@cxr/platform/device";
 import { windowLink as DEFAULT_WINDOW_LINK } from "@cxr/platform/topWindow";
 import { getIpInfo } from "@cxr/services/api";
@@ -131,6 +132,7 @@ export function AnalyticsProvider({ children, tagId }: AnalyticsProviderProps): 
             userId: DEFAULT_USER_ID,
             windowLink: DEFAULT_WINDOW_LINK,
             offsite: readOffsite(),
+            hostMacros,
           }
         );
       });

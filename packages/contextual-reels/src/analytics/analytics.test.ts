@@ -7,6 +7,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import {
   EVENT,
   type EventName,
+  buildHostMacroBlocks,
   createEventBuffer,
   sendEventLog,
   sendEventLogFromGlobals,
@@ -488,5 +489,136 @@ describe("analytics/sendEventLog", () => {
       expect((payload.event_details as Record<string, unknown>).foo).toBe("bar");
       delete (window as Window & { rudderanalytics?: unknown }).rudderanalytics;
     });
+  });
+});
+
+// ─── buildHostMacroBlocks ─────────────────────────────────────────────────────
+
+describe("buildHostMacroBlocks", () => {
+  it("splits macros into device / user / consent blocks by meaning", () => {
+    const macros = {
+      appn: "My App",
+      appv: "1.1",
+      appb: "com.x.y",
+      ifa: "abc",
+      deviceid: "dev-1",
+      appsi: "999",
+      country: "USA",
+      loc: "New York",
+      loclat: "40.7",
+      loclong: "-73.9",
+      gdpr: "0",
+      gdpr_consent: "",
+      us_privacy: "1---",
+      dnt: "0",
+    };
+    const blocks = buildHostMacroBlocks(macros);
+    expect(blocks.device).toEqual({
+      app_name: "My App",
+      app_version: "1.1",
+      app_bundle: "com.x.y",
+      app_country: "USA",
+      app_loc: "New York",
+      app_lat: "40.7",
+      app_long: "-73.9",
+    });
+    expect(blocks.user).toEqual({ ifa: "abc", deviceid: "dev-1", app_store_id: "999" });
+    expect(blocks.event).toEqual({ gdpr: "0", us_privacy: "1---", dnt: "0" });
+  });
+
+  it("omits keys whose macro is absent", () => {
+    const blocks = buildHostMacroBlocks({ ifa: "abc" });
+    expect(blocks.device).toEqual({});
+    expect(blocks.user).toEqual({ ifa: "abc" });
+    expect(blocks.event).toEqual({});
+  });
+});
+
+describe("sendEventLog — host macros", () => {
+  it("stamps host macro blocks onto the tracked payload", () => {
+    const tracked: Array<{ name: string; payload: Record<string, unknown> }> = [];
+    const rudder = { track: (name: string, payload: Record<string, unknown>) => tracked.push({ name, payload }) };
+
+    sendEventLog(
+      { eventName: "Ad Requested" },
+      {
+        rudderanalytics: rudder,
+        deviceDetails: { device_type: "mobile", os_type: "ios", geoip: {}, user_agent: "ua" },
+        userId: "u1",
+        windowLink: "https://p.com",
+        offsite: {},
+        hostMacros: { appn: "My App", ifa: "abc", us_privacy: "1---" },
+      }
+    );
+
+    const payload = tracked[0]?.payload ?? {};
+    expect((payload.device_details as Record<string, unknown>).app_name).toBe("My App");
+    expect((payload.user_details as Record<string, unknown>).ifa).toBe("abc");
+    expect((payload.event_details as Record<string, unknown>).us_privacy).toBe("1---");
+    expect((payload.device_details as Record<string, unknown>).geoip).toEqual({});
+  });
+
+  it("lets caller eventDetails and the device snapshot win over colliding host macros", () => {
+    const tracked: Array<{ name: string; payload: Record<string, unknown> }> = [];
+    const rudder = { track: (name: string, payload: Record<string, unknown>) => tracked.push({ name, payload }) };
+
+    sendEventLog(
+      { eventName: "Ad Requested", eventDetails: { gdpr: "caller-wins" } },
+      {
+        rudderanalytics: rudder,
+        deviceDetails: { device_type: "mobile", os_type: "ios", geoip: {}, user_agent: "ua" },
+        userId: "real-user",
+        windowLink: "https://p.com",
+        offsite: {},
+        hostMacros: { gdpr: "host-loses", ifa: "abc" },
+      }
+    );
+
+    const payload = tracked[0]?.payload ?? {};
+    // caller-supplied event field wins over host macro of the same name
+    expect((payload.event_details as Record<string, unknown>).gdpr).toBe("caller-wins");
+    // real user_id wins; host user macro still added additively
+    expect((payload.user_details as Record<string, unknown>).user_id).toBe("real-user");
+    expect((payload.user_details as Record<string, unknown>).ifa).toBe("abc");
+  });
+});
+
+describe("sendEventLog — page prefers appb", () => {
+  const makeRudder = (sink: Array<{ name: string; payload: Record<string, unknown> }>) => ({
+    track: (name: string, payload: Record<string, unknown>) => sink.push({ name, payload }),
+  });
+
+  it("uses appb as the page value when present, overriding windowLink", () => {
+    const tracked: Array<{ name: string; payload: Record<string, unknown> }> = [];
+    sendEventLog(
+      { eventName: "Ad Requested" },
+      {
+        rudderanalytics: makeRudder(tracked),
+        deviceDetails: { device_type: "mobile", os_type: "ios", geoip: {}, user_agent: "ua" },
+        userId: "u1",
+        windowLink: "https://real-page.com",
+        offsite: {},
+        hostMacros: { appb: "com.x.y" },
+      }
+    );
+    expect((tracked[0]?.payload.event_details as Record<string, unknown>).page).toBe("com.x.y");
+  });
+
+  it("falls back to windowLink as page when appb absent", () => {
+    const tracked: Array<{ name: string; payload: Record<string, unknown> }> = [];
+    sendEventLog(
+      { eventName: "Ad Requested" },
+      {
+        rudderanalytics: makeRudder(tracked),
+        deviceDetails: { device_type: "mobile", os_type: "ios", geoip: {}, user_agent: "ua" },
+        userId: "u1",
+        windowLink: "https://real-page.com",
+        offsite: {},
+        hostMacros: {},
+      }
+    );
+    expect((tracked[0]?.payload.event_details as Record<string, unknown>).page).toBe(
+      "https://real-page.com"
+    );
   });
 });
