@@ -156,6 +156,48 @@ expect `initialVolume` to produce sound on load.
 
 ---
 
+## Host embed & loader params
+
+A host embeds the widget with one `<script>` tag plus a `.gen-ext` mount element:
+
+```html
+<div class="gen-ext" id="gen-ext-1" data-tag-id="YOUR_TAG_ID"></div>
+<script src="https://media.begenuin.com/cxr/1.0.0/gen_ext.min.js"></script>
+```
+
+Hosts can pass configuration on the **loader `<script src>` query string**. This is the most
+reliable config channel: the query lives in the host's own `<script>` tag, so it is readable even
+when the widget runs inside a cross-origin `srcdoc` iframe (where neither the frame URL nor
+`window.top` can be read). The loader captures the whole query into `window.__CXR_SCRIPT_PARAMS__`;
+the widget reads individual params from there.
+
+| Param            | Value                | Effect                                                                                                 |
+| ---------------- | -------------------- | ------------------------------------------------------------------------------------------------------ |
+| `tagId`          | Tag id string        | Overrides the per-div `data-tag-id`. The loader-src value wins; falls back to `data-tag-id` when absent. |
+| `gen_init_volume`| Number `0`–`1`       | Sets the initial audible volume. Overrides the tag's configured `initialVolume`. See below.            |
+| `gen_variant`    | `stacked`            | Opts a supported slot into the stacked (widget + Infolinks) layout.                                    |
+| `purl`           | URL-encoded page URL | Overrides the Infolinks publisher attribution URL (used with the stacked layout).                      |
+
+### `gen_init_volume` — initial volume override
+
+```html
+<script src="https://media.begenuin.com/cxr/1.0.0/gen_ext.min.js?gen_init_volume=0.5"></script>
+```
+
+- Accepts a number in the inclusive range `0`–`1` (e.g. `0`, `0.5`, `1`).
+- When present and valid it **overrides the tag's configured `initialVolume`** and drives every
+  point where a volume level is applied without a fresh user gesture:
+  - the **on-load** autoplay level,
+  - the **audible-ad-start** level (audible ad requests + init), and
+  - the level a **later manual unmute** (tap / mute-toggle / expand) restores to.
+- An absent, non-numeric, or out-of-range value is **ignored** — the widget falls back to the tag's
+  configured `initialVolume` (or the `0` default).
+- **Subject to the browser autoplay policy** (see [Autoplay & sound](#autoplay--sound)): a non-zero
+  value only produces sound on load in already-trusted contexts. Elsewhere it falls back to silent
+  autoplay until the user gestures, at which point this value becomes the unmute level.
+
+---
+
 ## Public API
 
 After the loader runs, `window.cxr` exposes the public surface:

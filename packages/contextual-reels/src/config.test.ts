@@ -369,3 +369,46 @@ describe("config/isIframe", () => {
     expect(isIframe()).toBe(true);
   });
 });
+
+describe("config/getInitVolumeOverride", () => {
+  const setScriptParams = (value: string) => {
+    (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__ = value;
+  };
+
+  afterEach(() => {
+    delete (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__;
+  });
+
+  it("returns undefined when the param is absent", () => {
+    expect(config.getInitVolumeOverride()).toBeUndefined();
+  });
+
+  it("reads a valid in-range value from the loader script params", () => {
+    setScriptParams("&gen_init_volume=0.5");
+    expect(config.getInitVolumeOverride()).toBe(0.5);
+  });
+
+  it("accepts the boundary values 0 and 1", () => {
+    setScriptParams("&gen_init_volume=0");
+    expect(config.getInitVolumeOverride()).toBe(0);
+    setScriptParams("&gen_init_volume=1");
+    expect(config.getInitVolumeOverride()).toBe(1);
+  });
+
+  it("returns undefined for a non-numeric value", () => {
+    setScriptParams("&gen_init_volume=loud");
+    expect(config.getInitVolumeOverride()).toBeUndefined();
+  });
+
+  it("returns undefined for values outside the 0..1 range", () => {
+    setScriptParams("&gen_init_volume=1.5");
+    expect(config.getInitVolumeOverride()).toBeUndefined();
+    setScriptParams("&gen_init_volume=-0.3");
+    expect(config.getInitVolumeOverride()).toBeUndefined();
+  });
+
+  it("returns undefined for an empty value", () => {
+    setScriptParams("&gen_init_volume=");
+    expect(config.getInitVolumeOverride()).toBeUndefined();
+  });
+});

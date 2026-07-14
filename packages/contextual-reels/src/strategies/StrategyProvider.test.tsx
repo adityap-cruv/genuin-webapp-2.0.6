@@ -8,7 +8,7 @@
  */
 import React, { act, type ReactNode, type ReactElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
-import { describe, it, expect } from "vitest";
+import { afterEach, describe, it, expect } from "vitest";
 
 import { StrategyProvider, useStrategy } from "@cxr/strategies/StrategyProvider";
 import { DEFAULT_STRATEGIES, type Strategies } from "@cxr/strategies/strategies";
@@ -81,6 +81,54 @@ describe("strategies/StrategyProvider", () => {
     const { root, container } = mount(<Consumer handle={handle} />);
 
     expect(handle.value).toEqual(DEFAULT_STRATEGIES);
+    unmount(root, container);
+  });
+});
+
+describe("strategies/StrategyProvider gen_init_volume override", () => {
+  afterEach(() => {
+    delete (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__;
+  });
+
+  it("overrides initialVolume from the gen_init_volume loader param", () => {
+    (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__ = "&gen_init_volume=0.7";
+    const handle = {} as { value: Strategies };
+    const { root, container } = mount(
+      <StrategyProvider tagId={UNKNOWN_TAG}>
+        <Consumer handle={handle} />
+      </StrategyProvider>
+    );
+
+    // Overrides the DEFAULT_STRATEGIES initialVolume (0) for an unconfigured tag.
+    expect(handle.value.initialVolume).toBe(0.7);
+    unmount(root, container);
+  });
+
+  it("wins over a tag's configured initialVolume", () => {
+    // AD_BREAK_TAG has no initialVolume entry, so use the dev slot that does.
+    (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__ = "&gen_init_volume=0.9";
+    const handle = {} as { value: Strategies };
+    const { root, container } = mount(
+      <StrategyProvider tagId="697c46aa9f432b1a2055e803">
+        <Consumer handle={handle} />
+      </StrategyProvider>
+    );
+
+    // Tag config sets initialVolume: 0.2; the param wins.
+    expect(handle.value.initialVolume).toBe(0.9);
+    unmount(root, container);
+  });
+
+  it("ignores an invalid gen_init_volume and keeps the resolved value", () => {
+    (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__ = "&gen_init_volume=2";
+    const handle = {} as { value: Strategies };
+    const { root, container } = mount(
+      <StrategyProvider tagId="697c46aa9f432b1a2055e803">
+        <Consumer handle={handle} />
+      </StrategyProvider>
+    );
+
+    expect(handle.value.initialVolume).toBe(0.2);
     unmount(root, container);
   });
 });

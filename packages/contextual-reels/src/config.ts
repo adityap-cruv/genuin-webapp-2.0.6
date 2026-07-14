@@ -245,6 +245,35 @@ export function getScriptParam(name: string): string | undefined {
   return new URLSearchParams(raw).get(name) ?? undefined;
 }
 
+/**
+ * Loader script param that sets the feed's initial audible volume (0..1). When
+ * present with a valid value it overrides the tag's resolved `initialVolume`
+ * strategy, so it drives every place a volume level is applied without a user
+ * gesture — unmuted-but-audible autoplay, the audible-ad-start level, and the
+ * level a later manual unmute restores to. Read from our own <script src> query
+ * (like {@link getScriptParam}) so it survives a cross-origin `srcdoc` iframe.
+ *   <script src=".../gen_ext.min.js?gen_init_volume=0.5"></script>
+ */
+export const GEN_INIT_VOLUME_PARAM = "gen_init_volume";
+
+/**
+ * Resolve the `gen_init_volume` loader-script override, or `undefined` when it is
+ * absent or invalid.
+ *
+ * Validation is strict: the value must parse to a finite number within the
+ * inclusive `[0, 1]` range. Anything else (missing, non-numeric, or out of range)
+ * returns `undefined` so callers fall back to the tag's resolved `initialVolume`.
+ *
+ * @returns A volume in `[0, 1]`, or `undefined` to defer to strategy config.
+ */
+export function getInitVolumeOverride(): number | undefined {
+  const raw = getScriptParam(GEN_INIT_VOLUME_PARAM);
+  if (raw === undefined || raw.trim() === "") return undefined;
+  const value = Number(raw);
+  if (!Number.isFinite(value) || value < 0 || value > 1) return undefined;
+  return value;
+}
+
 export function hasStackedVariant(): boolean {
   if (typeof window === "undefined") return false;
 

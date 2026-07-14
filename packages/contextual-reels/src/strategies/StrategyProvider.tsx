@@ -6,6 +6,7 @@
  */
 import { createContext, useContext, useMemo, type ReactNode } from "react";
 
+import { getInitVolumeOverride } from "@cxr/config";
 import {
   applyExperiment,
   DEFAULT_STRATEGIES,
@@ -40,16 +41,21 @@ export function StrategyProvider({ children, tagId, brandId }: StrategyProviderP
   // varies load-to-load. applyExperiment is a no-op for tags with no experiment.
   // Ad-verification crawlers (il.advtq) skip the experiment entirely and behave
   // like the un-sampled majority.
-  const value = useMemo(
-    () =>
-      applyExperiment(
-        resolveStrategies(tagId, brandId),
-        tagId,
-        Math.random(),
-        isAdVerificationCrawler()
-      ),
-    [tagId, brandId]
-  );
+  const value = useMemo(() => {
+    const resolved = applyExperiment(
+      resolveStrategies(tagId, brandId),
+      tagId,
+      Math.random(),
+      isAdVerificationCrawler()
+    );
+    // The `gen_init_volume` loader-script param wins over the resolved config
+    // when present and valid — it drives `initialVolume` everywhere (on-load
+    // autoplay level, audible-ad-start, and the manual-unmute restore level).
+    const initVolumeOverride = getInitVolumeOverride();
+    return initVolumeOverride === undefined
+      ? resolved
+      : { ...resolved, initialVolume: initVolumeOverride };
+  }, [tagId, brandId]);
   return <StrategyContext.Provider value={value}>{children}</StrategyContext.Provider>;
 }
 

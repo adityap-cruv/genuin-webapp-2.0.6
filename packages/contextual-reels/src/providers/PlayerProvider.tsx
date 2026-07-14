@@ -32,7 +32,11 @@ export interface PlayerContextValue {
   isAdBreakActive: boolean;
   /** Set the audible volume directly (0..1). */
   setVolume: (volume: number) => void;
-  /** Convenience toggle: `true` silences (volume 0), `false` unmutes to {@link DEFAULT_UNMUTE_VOLUME}. */
+  /**
+   * Convenience toggle: `true` silences (volume 0), `false` unmutes to the tag's
+   * `initialVolume` when set (incl. the `gen_init_volume` override), else
+   * {@link DEFAULT_UNMUTE_VOLUME}.
+   */
   setMuted: (muted: boolean) => void;
   /**
    * Signal that the browser blocked unmuted autoplay. Drops volume to 0 so the
@@ -82,11 +86,20 @@ export function PlayerProvider({ children }: PlayerProviderProps): ReactNode {
     setBaseEventContext({ volume, is_muted: isMuted });
   }, [volume, isMuted, setBaseEventContext]);
 
-  // Toggle between silence and a gentle default level. Unmuting from 0 jumps to
-  // DEFAULT_UNMUTE_VOLUME; unmuting when already audible leaves the level alone.
-  const setMuted = useCallback((muted: boolean) => {
-    setVolume((prev) => (muted ? 0 : prev > 0 ? prev : DEFAULT_UNMUTE_VOLUME));
-  }, []);
+  // Level a manual unmute restores to when currently silent. Honours the tag's
+  // configured `initialVolume` (which the `gen_init_volume` loader param may
+  // override) so an audible-start tag unmutes back to its own level; otherwise
+  // falls back to the shared gentle default.
+  const unmuteRestoreVolume = initialVolume > 0 ? initialVolume : DEFAULT_UNMUTE_VOLUME;
+
+  // Toggle between silence and the restore level. Unmuting from 0 jumps to
+  // `unmuteRestoreVolume`; unmuting when already audible leaves the level alone.
+  const setMuted = useCallback(
+    (muted: boolean) => {
+      setVolume((prev) => (muted ? 0 : prev > 0 ? prev : unmuteRestoreVolume));
+    },
+    [unmuteRestoreVolume]
+  );
 
   useEffect(() => {
     if (isPlaying) {
@@ -111,7 +124,7 @@ export function PlayerProvider({ children }: PlayerProviderProps): ReactNode {
 
   // Expand-view always starts with sound — covers every entry path
   // (expand button, compact tap-to-expand, video:expand, native fullscreen).
-  // Bumps a silent player to DEFAULT_UNMUTE_VOLUME; leaves an audible one as-is.
+  // Bumps a silent player to `unmuteRestoreVolume`; leaves an audible one as-is.
   useEffect(() => {
     const unsubEnter = bus.on("fullscreen:enter", () => setMuted(false));
     return () => unsubEnter();
