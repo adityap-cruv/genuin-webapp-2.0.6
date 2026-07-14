@@ -34,7 +34,7 @@ export interface PlayerContextValue {
   setVolume: (volume: number) => void;
   /**
    * Convenience toggle: `true` silences (volume 0), `false` unmutes to the tag's
-   * `initialVolume` when set (incl. the `gen_init_volume` override), else
+   * `initialVolume` when set (incl. the `GIV` override), else
    * {@link DEFAULT_UNMUTE_VOLUME}.
    */
   setMuted: (muted: boolean) => void;
@@ -87,7 +87,7 @@ export function PlayerProvider({ children }: PlayerProviderProps): ReactNode {
   }, [volume, isMuted, setBaseEventContext]);
 
   // Level a manual unmute restores to when currently silent. Honours the tag's
-  // configured `initialVolume` (which the `gen_init_volume` loader param may
+  // configured `initialVolume` (which the `GIV` loader param may
   // override) so an audible-start tag unmutes back to its own level; otherwise
   // falls back to the shared gentle default.
   const unmuteRestoreVolume = initialVolume > 0 ? initialVolume : DEFAULT_UNMUTE_VOLUME;

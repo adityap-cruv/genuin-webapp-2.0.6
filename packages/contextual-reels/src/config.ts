@@ -252,26 +252,46 @@ export function getScriptParam(name: string): string | undefined {
  * gesture — unmuted-but-audible autoplay, the audible-ad-start level, and the
  * level a later manual unmute restores to. Read from our own <script src> query
  * (like {@link getScriptParam}) so it survives a cross-origin `srcdoc` iframe.
- *   <script src=".../gen_ext.min.js?gen_init_volume=0.5"></script>
+ *   <script src=".../gen_ext.min.js?GIV=0.5"></script>
  */
-export const GEN_INIT_VOLUME_PARAM = "gen_init_volume";
+export const GIV_PARAM = "GIV";
 
 /**
- * Resolve the `gen_init_volume` loader-script override, or `undefined` when it is
- * absent or invalid.
- *
- * Validation is strict: the value must parse to a finite number within the
- * inclusive `[0, 1]` range. Anything else (missing, non-numeric, or out of range)
- * returns `undefined` so callers fall back to the tag's resolved `initialVolume`.
- *
- * @returns A volume in `[0, 1]`, or `undefined` to defer to strategy config.
+ * Per-div attribute form of {@link GIV_PARAM}. Mirrors `data-tag-id`: when the
+ * page-global {@link GIV_PARAM} script param is absent, each `.gen-ext` element
+ * can carry its own initial volume here. The script param (when present) always
+ * wins — the attribute is the fallback.
+ *   <div class="gen-ext" data-tag-id="..." data-giv="0.5"></div>
  */
-export function getInitVolumeOverride(): number | undefined {
-  const raw = getScriptParam(GEN_INIT_VOLUME_PARAM);
-  if (raw === undefined || raw.trim() === "") return undefined;
+export const GIV_DATA_ATTR = "data-giv";
+
+/**
+ * Validate a raw initial-volume value (from the {@link GIV_PARAM} script param or
+ * the {@link GIV_DATA_ATTR} attribute) to a number in the inclusive `[0, 1]`
+ * range, or `undefined` when it is missing/empty/non-numeric/out of range.
+ */
+function parseGivValue(raw: string | null | undefined): number | undefined {
+  if (raw === undefined || raw === null || raw.trim() === "") return undefined;
   const value = Number(raw);
   if (!Number.isFinite(value) || value < 0 || value > 1) return undefined;
   return value;
+}
+
+/**
+ * Resolve the initial-volume override, or `undefined` when neither source
+ * supplies a valid value (callers then fall back to the tag's resolved
+ * `initialVolume`).
+ *
+ * Precedence mirrors tag-id resolution: the page-global {@link GIV_PARAM} script
+ * param wins; the per-div {@link GIV_DATA_ATTR} value (passed as `dataGiv`) is the
+ * fallback. Both are validated to the inclusive `[0, 1]` range — an invalid
+ * script param does not suppress a valid `data-giv` fallback.
+ *
+ * @param dataGiv Raw `data-giv` attribute value for this instance, if any.
+ * @returns A volume in `[0, 1]`, or `undefined` to defer to strategy config.
+ */
+export function getInitVolumeOverride(dataGiv?: string | null): number | undefined {
+  return parseGivValue(getScriptParam(GIV_PARAM)) ?? parseGivValue(dataGiv);
 }
 
 export function hasStackedVariant(): boolean {

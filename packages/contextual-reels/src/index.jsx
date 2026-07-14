@@ -151,6 +151,10 @@ async function init() {
     // Single widget per page (see host-macro design): the loader-src `tagId`
     // wins when present; otherwise fall back to the per-div data-tag-id.
     const tagId = getHostMacro("tagId") ?? node.getAttribute("data-tag-id");
+    // Per-div initial-volume fallback. The page-global GIV script param wins
+    // (resolved in StrategyProvider); this is the per-instance fallback, read
+    // here where the DOM node is available. Raw string — validated downstream.
+    const dataGiv = node.getAttribute("data-giv");
     let customizationDetails = {};
     try {
       customizationDetails = JSON.parse(node.getAttribute("data-customization-details") ?? "{}") ?? {};
@@ -239,6 +243,7 @@ async function init() {
             customizationDetails={customizationDetails}
             adLayout={adLayout}
             instanceId={instanceId}
+            dataGiv={dataGiv}
           />
         </Suspense>
       </ShadowDomProvider>

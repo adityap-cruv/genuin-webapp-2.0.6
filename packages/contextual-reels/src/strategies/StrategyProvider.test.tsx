@@ -85,13 +85,13 @@ describe("strategies/StrategyProvider", () => {
   });
 });
 
-describe("strategies/StrategyProvider gen_init_volume override", () => {
+describe("strategies/StrategyProvider GIV override", () => {
   afterEach(() => {
     delete (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__;
   });
 
-  it("overrides initialVolume from the gen_init_volume loader param", () => {
-    (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__ = "&gen_init_volume=0.7";
+  it("overrides initialVolume from the GIV loader param", () => {
+    (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__ = "&GIV=0.7";
     const handle = {} as { value: Strategies };
     const { root, container } = mount(
       <StrategyProvider tagId={UNKNOWN_TAG}>
@@ -106,7 +106,7 @@ describe("strategies/StrategyProvider gen_init_volume override", () => {
 
   it("wins over a tag's configured initialVolume", () => {
     // AD_BREAK_TAG has no initialVolume entry, so use the dev slot that does.
-    (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__ = "&gen_init_volume=0.9";
+    (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__ = "&GIV=0.9";
     const handle = {} as { value: Strategies };
     const { root, container } = mount(
       <StrategyProvider tagId="697c46aa9f432b1a2055e803">
@@ -119,11 +119,48 @@ describe("strategies/StrategyProvider gen_init_volume override", () => {
     unmount(root, container);
   });
 
-  it("ignores an invalid gen_init_volume and keeps the resolved value", () => {
-    (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__ = "&gen_init_volume=2";
+  it("ignores an invalid GIV and keeps the resolved value", () => {
+    (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__ = "&GIV=2";
     const handle = {} as { value: Strategies };
     const { root, container } = mount(
       <StrategyProvider tagId="697c46aa9f432b1a2055e803">
+        <Consumer handle={handle} />
+      </StrategyProvider>
+    );
+
+    expect(handle.value.initialVolume).toBe(0.2);
+    unmount(root, container);
+  });
+
+  it("falls back to the data-giv prop when no GIV script param is set", () => {
+    const handle = {} as { value: Strategies };
+    const { root, container } = mount(
+      <StrategyProvider tagId={UNKNOWN_TAG} dataGiv="0.4">
+        <Consumer handle={handle} />
+      </StrategyProvider>
+    );
+
+    expect(handle.value.initialVolume).toBe(0.4);
+    unmount(root, container);
+  });
+
+  it("prefers the GIV script param over the data-giv prop", () => {
+    (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__ = "&GIV=0.8";
+    const handle = {} as { value: Strategies };
+    const { root, container } = mount(
+      <StrategyProvider tagId={UNKNOWN_TAG} dataGiv="0.2">
+        <Consumer handle={handle} />
+      </StrategyProvider>
+    );
+
+    expect(handle.value.initialVolume).toBe(0.8);
+    unmount(root, container);
+  });
+
+  it("ignores an invalid data-giv prop and keeps the resolved value", () => {
+    const handle = {} as { value: Strategies };
+    const { root, container } = mount(
+      <StrategyProvider tagId="697c46aa9f432b1a2055e803" dataGiv="loud">
         <Consumer handle={handle} />
       </StrategyProvider>
     );

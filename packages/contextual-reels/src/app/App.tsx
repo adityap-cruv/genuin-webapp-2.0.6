@@ -53,6 +53,12 @@ interface AppProps {
   adLayout?: AdLayoutId;
   /** Unique opaque identifier for this widget instance. */
   instanceId: string;
+  /**
+   * Raw `data-giv` attribute for this instance — the per-div initial-volume
+   * fallback used when the page-global `GIV` script param is absent. Validated
+   * in {@link StrategyProvider}.
+   */
+  dataGiv?: string | null;
 }
 
 /**
@@ -69,6 +75,7 @@ export default function App({
   customizationDetails,
   adLayout = AD_LAYOUT.Unknown,
   instanceId,
+  dataGiv,
 }: AppProps): React.JSX.Element | null {
   const [tagDetails, setTagDetails] = useState<TagResponse | undefined>();
   const [apiFailed, setApiFailed] = useState(false);
@@ -105,7 +112,7 @@ export default function App({
                   ) : !tagDetails ? (
                     <FeedSkeleton />
                   ) : (
-                    <StrategyProvider tagId={tagId} brandId={tagDetails.brand_id}>
+                    <StrategyProvider tagId={tagId} brandId={tagDetails.brand_id} dataGiv={dataGiv}>
                       <FeedProvider tagId={tagId}>
                         <AdProvider tagId={tagId} adLayout={adLayout}>
                           <GenAIProvider>

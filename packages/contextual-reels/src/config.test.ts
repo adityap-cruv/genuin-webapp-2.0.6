@@ -384,31 +384,60 @@ describe("config/getInitVolumeOverride", () => {
   });
 
   it("reads a valid in-range value from the loader script params", () => {
-    setScriptParams("&gen_init_volume=0.5");
+    setScriptParams("&GIV=0.5");
     expect(config.getInitVolumeOverride()).toBe(0.5);
   });
 
   it("accepts the boundary values 0 and 1", () => {
-    setScriptParams("&gen_init_volume=0");
+    setScriptParams("&GIV=0");
     expect(config.getInitVolumeOverride()).toBe(0);
-    setScriptParams("&gen_init_volume=1");
+    setScriptParams("&GIV=1");
     expect(config.getInitVolumeOverride()).toBe(1);
   });
 
   it("returns undefined for a non-numeric value", () => {
-    setScriptParams("&gen_init_volume=loud");
+    setScriptParams("&GIV=loud");
     expect(config.getInitVolumeOverride()).toBeUndefined();
   });
 
   it("returns undefined for values outside the 0..1 range", () => {
-    setScriptParams("&gen_init_volume=1.5");
+    setScriptParams("&GIV=1.5");
     expect(config.getInitVolumeOverride()).toBeUndefined();
-    setScriptParams("&gen_init_volume=-0.3");
+    setScriptParams("&GIV=-0.3");
     expect(config.getInitVolumeOverride()).toBeUndefined();
   });
 
   it("returns undefined for an empty value", () => {
-    setScriptParams("&gen_init_volume=");
+    setScriptParams("&GIV=");
     expect(config.getInitVolumeOverride()).toBeUndefined();
+  });
+
+  // ── data-giv per-div fallback ──────────────────────────────────────────────
+
+  it("falls back to a valid data-giv value when the script param is absent", () => {
+    expect(config.getInitVolumeOverride("0.4")).toBe(0.4);
+  });
+
+  it("validates data-giv the same way (ignores non-numeric / out of range / empty)", () => {
+    expect(config.getInitVolumeOverride("loud")).toBeUndefined();
+    expect(config.getInitVolumeOverride("1.5")).toBeUndefined();
+    expect(config.getInitVolumeOverride("-0.1")).toBeUndefined();
+    expect(config.getInitVolumeOverride("")).toBeUndefined();
+    expect(config.getInitVolumeOverride(null)).toBeUndefined();
+  });
+
+  it("accepts data-giv boundary values 0 and 1", () => {
+    expect(config.getInitVolumeOverride("0")).toBe(0);
+    expect(config.getInitVolumeOverride("1")).toBe(1);
+  });
+
+  it("prefers the script param over data-giv when both are valid", () => {
+    setScriptParams("&GIV=0.8");
+    expect(config.getInitVolumeOverride("0.2")).toBe(0.8);
+  });
+
+  it("falls back to data-giv when the script param is present but invalid", () => {
+    setScriptParams("&GIV=2");
+    expect(config.getInitVolumeOverride("0.3")).toBe(0.3);
   });
 });

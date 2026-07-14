@@ -144,10 +144,10 @@ describe("PlayerProvider", () => {
     expect(captured.volume).toBe(0.2);
   });
 
-  it("restores a manual unmute to the tag's initialVolume (gen_init_volume override)", () => {
-    // gen_init_volume drives initialVolume everywhere, incl. the level a later
+  it("restores a manual unmute to the tag's initialVolume (GIV override)", () => {
+    // GIV drives initialVolume everywhere, incl. the level a later
     // unmute restores to — 0.6 here, distinct from DEFAULT_UNMUTE_VOLUME (0.2).
-    (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__ = "&gen_init_volume=0.6";
+    (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__ = "&GIV=0.6";
     const tree = React.createElement(
       EventBusProvider,
       null,

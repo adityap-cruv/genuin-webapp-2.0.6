@@ -23,6 +23,11 @@ interface StrategyProviderProps {
   tagId: string;
   /** Active tag's `brand_id` (from `tagDetails`), if resolved yet. */
   brandId?: number;
+  /**
+   * Raw `data-giv` attribute for this instance — the per-div fallback for the
+   * initial-volume override when the page-global `GIV` script param is absent.
+   */
+  dataGiv?: string | null;
 }
 
 /**
@@ -35,7 +40,12 @@ interface StrategyProviderProps {
  * </StrategyProvider>
  * ```
  */
-export function StrategyProvider({ children, tagId, brandId }: StrategyProviderProps): ReactNode {
+export function StrategyProvider({
+  children,
+  tagId,
+  brandId,
+  dataGiv,
+}: StrategyProviderProps): ReactNode {
   // Roll the experiment bucket once per mount (per page load): the draw is taken
   // inside useMemo keyed on tagId so the bucket stays stable for the session but
   // varies load-to-load. applyExperiment is a no-op for tags with no experiment.
@@ -48,14 +58,15 @@ export function StrategyProvider({ children, tagId, brandId }: StrategyProviderP
       Math.random(),
       isAdVerificationCrawler()
     );
-    // The `gen_init_volume` loader-script param wins over the resolved config
-    // when present and valid — it drives `initialVolume` everywhere (on-load
-    // autoplay level, audible-ad-start, and the manual-unmute restore level).
-    const initVolumeOverride = getInitVolumeOverride();
+    // The initial-volume override wins over the resolved config when present and
+    // valid — it drives `initialVolume` everywhere (on-load autoplay level,
+    // audible-ad-start, and the manual-unmute restore level). Precedence: the
+    // page-global `GIV` script param first, then this instance's `data-giv`.
+    const initVolumeOverride = getInitVolumeOverride(dataGiv);
     return initVolumeOverride === undefined
       ? resolved
       : { ...resolved, initialVolume: initVolumeOverride };
-  }, [tagId, brandId]);
+  }, [tagId, brandId, dataGiv]);
   return <StrategyContext.Provider value={value}>{children}</StrategyContext.Provider>;
 }
 
