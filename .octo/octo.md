@@ -325,6 +325,7 @@ matching skill before doing the work it covers.
 - **Quality:** `performance` (render/bundle), `accessibility` (WCAG 2.1 AA), `web-design-review`
   (UX/design), `security-audit` (read-only vuln review), `refactor` (behaviour-preserving).
 - **Testing/debug:** `debug` (broken/throwing), `test-runner` (Vitest/Jest unit), `e2e-testing`
-  (Playwright), `eval-feature` (test a just-built feature against its acceptance criteria via
-  approved static/behavioral/llm checks, report a weighted score, then clean up).
+  (Playwright), `eval-feature` (test a just-built feature against its acceptance criteria via approved
+  static/behavioral/llm checks, report a weighted score, then clean up; mandatory
+  pre-PR gate — always run before publishing or creating any pull request).
 - **Process:** `grill-me` (lock down vague requirements), `prd-writer` (write a PRD).

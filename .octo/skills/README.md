@@ -101,11 +101,14 @@ other skill.
   page objects, or selectors in `apps/webapp` E2E or the web-sdk, using the Page Object Model.
   Not for unit/component tests or non-test bugs.
 - `eval-feature`: Use when asked to test/eval a feature the agent just built ("test this
-  feature", "eval what you built", "verify this scenario works") — turn its acceptance
-  criteria into automated static/behavioral/llm checks, get the user to approve the
-  test-plan YAML, run the checks, report a weighted score, then delete every test file
-  created. Self-contained (no eval framework needed) and not tied to PRs. Not for the
-  project's permanent test suite (use `test-runner`/`e2e-testing`).
+  feature", "eval what you built", "verify this scenario works") — AND as a mandatory
+  gate before publishing: whenever the user says "publish"/"create a PR"/"open a PR", or
+  the agent itself is about to open a pull request for feature work, run this skill
+  first and only create the PR after the eval passes (or the user explicitly accepts the
+  failures). Turns acceptance criteria into automated static/behavioral/llm checks, gets
+  the user to approve the test-plan YAML, runs the checks, reports a weighted score,
+  then deletes every test file created. Self-contained (no eval framework needed). Not
+  for the project's permanent test suite (use `test-runner`/`e2e-testing`).
 
 ## Planning & process
 
