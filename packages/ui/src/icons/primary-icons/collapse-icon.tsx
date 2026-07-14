@@ -31,10 +31,10 @@ export function CollapseIcon({ theme, size, className, ...restProps }: CollapseI
       viewBox="0 0 24 24"
       fill="none"
       {...restProps}>
-      <path d="M9 4V9H4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M9 20V15H4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M15 4V9H20" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M15 20V15H20" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M9 4V9H4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+      <path d="M9 20V15H4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+      <path d="M15 4V9H20" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+      <path d="M15 20V15H20" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
     </svg>
   );
 }

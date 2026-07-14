@@ -813,6 +813,7 @@ export function Embed({
                       theme={theme}
                       embedVariant={embedVariant}
                       setSlidesOffsetBefore={setSlidesOffsetBefore}
+                      v2Size={embedVariant === "feed" ? "md" : undefined}
                     />
                   )}
                 </EmbedSwiper>

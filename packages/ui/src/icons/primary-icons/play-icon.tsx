@@ -28,12 +28,14 @@ const playVariant = cva("", {
 type PlayIconPropsType = ComponentProps<"svg"> & VariantProps<typeof playVariant>;
 
 export function PlayIcon({ theme = "light", size, className, strokeWidth = 1.5, ...restProps }: PlayIconPropsType) {
+  // Padded viewBox optically shrinks the solid triangle (~86%) so it sits level
+  // with the lighter pause/mute glyphs instead of reading oversized.
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"
-      viewBox="0 0 24 24"
+      viewBox="-2 -2 28 28"
       fill="none"
       className={cn(playVariant({ theme, size }), className)}
       {...restProps}>

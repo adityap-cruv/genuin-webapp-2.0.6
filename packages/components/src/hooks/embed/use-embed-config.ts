@@ -105,12 +105,15 @@ export function useEmbedConfigs() {
   const { isSafari } = useBrowserDetect();
   const { searchParams } = useSearchParams();
 
-  // Tracks whether the v2 design system experience is enabled via the
-  // `design_system=v2` URL param. Recomputed whenever the search string
-  // changes so consumers stay in sync with client-side navigation.
+  // Tracks whether the v2 design system experience is enabled, either via the
+  // `design_system=v2` URL param (webapp testing) or the `configuration.design_system`
+  // field passed to `Genuin.init()` (per-embed opt-in for web-sdk consumers).
+  // Recomputed whenever the search string or embed data changes.
   const isDesignSystemV2 = useMemo(
-    () => new URLSearchParams(searchParams).get("design_system") === "v2",
-    [searchParams]
+    () =>
+      new URLSearchParams(searchParams).get("design_system") === "v2" ||
+      embedData?.configuration?.design_system === "v2",
+    [searchParams, embedData?.configuration?.design_system]
   );
 
   const isAdsEnabledInIheart = useMemo(() => {

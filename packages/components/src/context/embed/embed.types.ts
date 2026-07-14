@@ -94,6 +94,7 @@ export type ConfigurationType = {
     cover_url?: string;
     thumbnail_url?: string;
   }>;
+  design_system?: "v1" | "v2";
 };
 
 export type ContextualParamsType = {
