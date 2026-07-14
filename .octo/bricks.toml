@@ -1,0 +1,25 @@
+[[brick]]
+id = "root-install"
+name = "Root install"
+default = true
+cwd = "."
+install = '''
+corepack pnpm install --ignore-scripts &&
+node scripts/postinstall-patch-openplayerjs.js
+'''
+
+[[brick]]
+id = "web"
+name = "Web"
+default = true
+cwd = "."
+start = '''
+corepack pnpm --filter @genuin/ui build:styles &&
+corepack pnpm --filter @genuin/components build:styles &&
+corepack pnpm exec concurrently \
+  "corepack pnpm --filter @genuin/ui dev:styles" \
+  "corepack pnpm --filter @genuin/components dev:styles" \
+  "corepack pnpm --filter @genuin/webapp exec next dev --turbo -H 0.0.0.0 -p 4005"
+'''
+port = 4005
+path = "/"

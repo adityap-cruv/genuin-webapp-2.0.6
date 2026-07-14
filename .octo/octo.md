@@ -4,15 +4,20 @@ Single source of truth for working in this repository. All base instructions liv
 this file; reusable procedures live in `.octo/skills/` (indexed in
 `.octo/skills/README.md`). Secrets references (if any) live in `.octo/env.toml`.
 
-> **⚠ ALWAYS-ON MANDATORY SKILLS — check these FIRST, before any other skill.** Three
+> **⚠ ALWAYS-ON MANDATORY SKILLS — check these FIRST, before any other skill.** Four
 > skills are non-negotiable; apply each whenever its trigger appears:
 > 1. **`web-sdk-video-embed-skill`** — any time output must show **video anywhere**
 >    (clip/reel/feed/carousel/contextual feed). Mount a Genuin Web SDK placement/embed;
 >    never a plain `<video>`/`VideoPlayer`/`VideoPage`/`PlayerSwiper`.
-> 2. **`hierarchical-tree`** — any time you build or emit a **Page layout artifact** for
->    the Hierarchical Layout System (wire its `video` slot via skill #1).
+> 2. **`hierarchical-tree`** — any time you create or change a **page, route, homepage,
+>    landing surface, hero/section layout, destination page, or major UI surface**. First
+>    decide whether it should use the Hierarchical Layout System; emit a Page artifact only
+>    when that system applies.
 > 3. **`hierarchical-theme`** — any time a **publisher palette / theming** is introduced
 >    or changed (`.theme-<slug>` + `ThemeName`).
+> 4. **`frontend-patterns`** — any time you create or modify **React/Next UI**,
+>    components, hooks, pages, forms, or styling. Reuse existing components first; create
+>    new components only when no existing component fits.
 > Full triggers in §6 and `.octo/skills/README.md`.
 
 > **Scope note (do not be misled).** A file at `/Users/ajayvaswani/Downloads/CLAUDE.md`
@@ -116,6 +121,13 @@ pnpm format           # prettier --write across the repo
 pnpm test             # web-sdk + webapp Playwright suites (via concurrently)
 ```
 
+**Octo preview rule:** Webapp preview must start from the repo root with `pnpm dev:web`
+whenever possible. If the preview runner invokes the webapp package directly, run
+`pnpm --filter @genuin/webapp styles:build` first, then start `pnpm --filter @genuin/webapp dev`
+or `pnpm --filter @genuin/webapp dev:turbo`. The imports `@genuin/ui/styles` and
+`@genuin/components/styles` are exported CSS build artifacts (`dist/index.css`), so starting
+Next before those files exist can produce intermittent "Module not found" preview failures.
+
 **Dependency strategy** (see `docs/setup/DEPENDENCY_MANAGEMENT.md`): shared deps (React,
 Next, Radix, Tailwind) live in the **root** `package.json` and are hoisted; workspace
 packages declare shared libs as **`peerDependencies`** and reference internal packages with
@@ -130,9 +142,9 @@ a root `.env` is injected via **`env-cmd`** into app/package scripts; per-app `.
 overrides; `packages/web-sdk` layers `.env.<stage>` (+ genai `.env.<stage>`). Only
 **`NEXT_PUBLIC_*`** (Next apps) and **`VITE_*`** (Vite/SDK) names reach the browser;
 Storybook/Vite expose public envs through a `define` block in `.storybook/main.ts`. The Web
-SDK reads `VITE_GEN_SDK_PLACEMENT_ID`, `VITE_GEN_SDK_STYLE_ID`, `VITE_API_KEY`, etc. **Never
-hardcode ids/keys or environment-specific URLs — read from env.** No AWS Secrets Manager is
-used (see `.octo/env.toml`).
+SDK reads `VITE_GEN_SDK_PLACEMENT_ID`, `VITE_GEN_SDK_STYLE_ID`, `VITE_API_KEY`, etc. Use
+project/env values when supplied; otherwise use the current default in
+`web-sdk-video-embed-skill`. No AWS Secrets Manager is used (see `.octo/env.toml`).
 
 ---
 
@@ -155,6 +167,11 @@ used (see `.octo/env.toml`).
 - App Router; **Server Components by default** — add `'use client'` only when interactivity
   is needed. Default to parallel data fetching; avoid RSC waterfalls
   (see `nextjs-server-performance`); reason about caching with `nextjs-cache`.
+- **Existing component first.** For any UI/component prompt, search `packages/components`
+  first, then its Storybook stories/docs for intended APIs. Use or compose an existing
+  high-level component whenever it fits; check `packages/ui` primitives next. Create a new
+  component only when no existing component/story matches, and model the new work from the
+  closest Storybook example.
 - Feature folders inside apps: `feature/`, `components/`, `hooks/`, `utils/`, `types/`.
   Colocate tests next to source (`feature.ts` → `feature.test.ts`). Flat over deep nesting.
 - Build UI with `frontend-patterns`; design component APIs with
@@ -164,6 +181,9 @@ used (see `.octo/env.toml`).
 **Styling — Tailwind v4 (prefixed)**
 - `@genuin/ui` and `@genuin/components` use the **`gencl:`** utility prefix; `@genuin/genai-sdk`
   uses **`gai:`**; the Web SDK wraps styles in **`.gen-sdk-class`**.
+- `@genuin/ui/styles` and `@genuin/components/styles` resolve to built CSS files in
+  `packages/*/dist/index.css`; keep exact `tsconfig` path entries for these subpaths before
+  wildcard package aliases.
 - **`gencl:` utilities silently no-op** until `packages/components` prebuilt CSS
   (`dist/index.css`) is rebuilt — run `pnpm install` (preinstall `build:styles`) or the
   `dev:styles` watcher.
@@ -265,18 +285,21 @@ matching skill before doing the work it covers.
    SDK **placement** (default) or **embed**: a container `<div>` + a guarded
    `window.genuin.init(...)`. You **MUST NOT** emit `VideoPlayer`/`VideoPlayerV2`/`VideoPoster`/
    `VideoPage`/`PlayerSwiper`/a raw `<video>`/a video `<iframe>` for content video. Read source
-   ids from env (`VITE_GEN_SDK_PLACEMENT_ID`/`VITE_GEN_SDK_STYLE_ID`/`VITE_API_KEY`), guard
-   init once via `useRef` + SDK-availability, never call `destroy()` per card. Canonical
+   ids from supplied config/env or the skill's current default, guard init once via `useRef` +
+   SDK-availability, never call `destroy()` per card. Canonical
    reference: `packages/genai/src/components/Chat/CarousalEmbed.tsx`; contract:
    `packages/web-sdk/src/type.ts` (`ConfigByUser`). Pairs with `hierarchical-tree` `video` slots.
 
-2. **`hierarchical-tree` — [MUST USE].** Whenever you build or emit a **Page layout artifact**
-   for the Hierarchical Layout System (any `Page` for article/recap/topic-hub/gallery/section/
-   landing or a brand/advertiser/sponsorship/generative destination), you **MUST** follow this
-   skill: produce a typed `Page` module validated by the Zod schema (`packages/hierarchical-tree/
-   src/schema.ts`), use the `defaultUiRenderers`/`defaultSlotRenderers` registries and breakpoint
-   contract, and wire every `video` slot (`placementId`/`styleId`/`apiKey`/`elementId`) through
-   skill #1. Do NOT hand-roll page layouts that bypass the artifact schema.
+2. **`hierarchical-tree` — [MUST USE].** Whenever you create or change a **page, route,
+   homepage, landing surface, hero/section layout, destination page, or major UI surface**, you
+   **MUST** follow this skill first as a layout-system check. Decide whether the target is already
+   implemented through the Hierarchical Layout System or should be represented as a typed `Page`
+   artifact. If yes, produce a typed `Page` module validated by the Zod schema
+   (`packages/hierarchical-tree/src/schema.ts`), use the `defaultUiRenderers`/
+   `defaultSlotRenderers` registries and breakpoint contract, and wire every `video` slot
+   (`placementId`/`styleId`/`apiKey`/`elementId`) through skill #1. If the target is ordinary
+   React/Next UI, record that decision briefly and continue with `frontend-patterns`; do NOT invent
+   a Page artifact or hand-roll page layouts that bypass an existing artifact schema.
 
 3. **`hierarchical-theme` — [MUST USE].** Whenever a **publisher palette / theming** is
    introduced or changed, you **MUST** follow this skill: add a `.theme-<slug>` block in
@@ -284,11 +307,20 @@ matching skill before doing the work it covers.
    tokens) and extend the `ThemeName` union in `packages/ui/.../theme-provider.tsx`. Do NOT
    introduce brand colors via ad-hoc inline styles or one-off CSS outside this system.
 
+4. **`frontend-patterns` — [MUST USE].** Whenever you create or modify **React components,
+   hooks, Next.js pages, forms, or styling**, you **MUST** follow this skill. Use Server
+   Components by default, apply the repo's React 19 / Next.js 15 / Tailwind v4 conventions, and
+   complete the existing-component-first workflow before creating new UI: search
+   `packages/components` and Storybook stories/docs for a component that fits, reuse or compose it
+   whenever possible, and create a new component only when no existing component matches the UI or
+   ownership boundary. This is what lets a normal user ask for UI changes in plain English without
+   naming internal skills.
+
 ### Use when the task matches (see `skills/README.md` for the full trigger of each)
 
 - **Understanding:** `zoom-out` (map an unfamiliar area first), `codebase-memory` (read/record
   `.claude/codebase-map.md`).
-- **Building:** `frontend-patterns` (React/Next UI), `composition-patterns` (component API
+- **Building:** `frontend-patterns` (React/Next UI, **mandatory**), `composition-patterns` (component API
   design), `nextjs-server-performance` (RSC waterfalls), `nextjs-cache` (caching/ISR).
 - **Quality:** `performance` (render/bundle), `accessibility` (WCAG 2.1 AA), `web-design-review`
   (UX/design), `security-audit` (read-only vuln review), `refactor` (behaviour-preserving).

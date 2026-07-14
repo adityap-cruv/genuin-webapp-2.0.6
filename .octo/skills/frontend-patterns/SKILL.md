@@ -1,6 +1,7 @@
 ---
 name: frontend-patterns
 description: Build React components and frontend UI following this repo's conventions — React 19 (no React.FC, initialized refs), Next.js 15 App Router (Server Components by default), Tailwind v4, TanStack Query v5, atomic design (atoms in packages/ui, molecules/organisms in packages/components). Use when creating or modifying components, hooks, pages, forms, or styling. Do NOT use for performance tuning (use performance), accessibility audits (use accessibility), or writing tests.
+mandatory: true
 ---
 
 # Frontend Development Patterns
@@ -18,6 +19,37 @@ description: Build React components and frontend UI following this repo's conven
 - React Compiler handles most memoization automatically — only add manual memo where you measure a real problem.
 - Zod for validation at all trust boundaries. Return `{ data, error }` from actions/API boundaries.
 - Atomic design: atoms → `packages/ui`, molecules/organisms → `packages/components`, pages → `apps/webapp`.
+- Existing component first: do not create a new component until the workflow below has been completed.
+
+---
+
+## Existing-component-first workflow (mandatory)
+
+Before creating any new UI component for a prompt:
+
+1. Search `packages/components` first. It contains the high-level molecules/organisms this repo
+   expects product UI to reuse.
+2. Check Storybook stories/docs for the closest component API and intended usage:
+   `*.stories.tsx`, `*.stories.mdx`, and `*.doc.mdx` under `packages/components` first, then
+   `packages/ui` if a primitive is needed.
+3. Reuse or compose the closest existing component. Prefer passing supported props, slots,
+   children, variants, or existing subcomponents over duplicating markup.
+4. If the high-level component is close but missing a small supported variant, extend it in its
+   owning package and update/add the matching Storybook story.
+5. Create a new component only when no existing component/story fits the requested behavior or
+   ownership boundary. Model it from the closest Storybook example and place it at the right
+   atomic layer: atoms in `packages/ui`, molecules/organisms in `packages/components`, page-only
+   composition in `apps/webapp`.
+
+Use `rg` before building:
+
+```bash
+rg -n "export function|export const|function .*\\(" packages/components/src
+rg --files packages/components packages/ui apps/webapp | rg "\\.(stories|doc)\\.(tsx|mdx)$"
+```
+
+When a new component is still necessary, state what existing component/story was checked and why it
+did not fit.
 
 ---
 

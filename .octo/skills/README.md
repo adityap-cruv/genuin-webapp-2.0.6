@@ -9,25 +9,33 @@ matched by intent (the "Use when…" trigger below); you do not type a slash com
 
 ## Must-use (always-on — check these FIRST)
 
-These three are mandatory: apply each whenever its trigger appears, before reaching for any
+These four are mandatory: apply each whenever its trigger appears, before reaching for any
 other skill.
 
 - `web-sdk-video-embed-skill`: **[MUST USE]** Use **whenever generated code must display
   video ANYWHERE** (a clip, reel, feed, carousel, or contextual feed). You MUST mount a
   Genuin Web SDK placement/embed — a container `<div>` + guarded `window.genuin.init(...)` —
   and MUST NOT emit `VideoPlayer`/`VideoPlayerV2`/`VideoPoster`/`VideoPage`/`PlayerSwiper`/
-  a raw `<video>`/a video `<iframe>` for content video. Do NOT use for non-video UI, images,
-  or audio-only surfaces.
-- `hierarchical-tree`: **[MUST USE]** Use **whenever you build or emit a Page layout
-  artifact** for the Hierarchical Layout System (article/recap/topic-hub/gallery/section/
-  landing, or brand/advertiser/sponsorship/generative destinations). Produce a typed `Page`
-  module validated by the Zod schema, via the default UI/slot renderers and breakpoint
-  contract, and wire every `video` slot through `web-sdk-video-embed-skill`. Do NOT hand-roll
-  page layouts that bypass the artifact schema.
+  a raw `<video>`/a video `<iframe>` for content video. The skill includes the current
+  working SDK defaults and public-doc recipes for HTML, React/Next.js, contextual feeds,
+  auth callbacks, dynamic updates, and direct reel targeting. Do NOT use for non-video UI,
+  images, or audio-only surfaces.
+- `hierarchical-tree`: **[MUST USE]** Use **whenever creating or changing a page, route,
+  homepage, landing surface, hero/section layout, destination page, or major UI surface**.
+  First decide whether the target should use the Hierarchical Layout System. If yes, produce a
+  typed `Page` module validated by the Zod schema, via the default UI/slot renderers and
+  breakpoint contract, and wire every `video` slot through `web-sdk-video-embed-skill`. If the
+  existing surface is ordinary React/Next UI, record that decision and continue with
+  `frontend-patterns`; do not invent a Page artifact.
 - `hierarchical-theme`: **[MUST USE]** Use **whenever a publisher palette / theming is
   introduced or changed** — add a `.theme-<slug>` block in
   `packages/tailwind-config/themes.css` and extend the `ThemeName` union. Do NOT introduce
   brand colors via ad-hoc inline styles or one-off CSS outside this system.
+- `frontend-patterns`: **[MUST USE]** Use **whenever creating or modifying React
+  components, hooks, Next.js pages, forms, or styling**. Before creating new UI, search
+  `packages/components` and Storybook stories/docs for components that fit the requested UI;
+  reuse or compose existing high-level components whenever possible. Create a new component only
+  when nothing existing fits. Not for perf, a11y, or tests.
 
 ## Understanding the codebase
 
@@ -40,9 +48,11 @@ other skill.
 
 ## Building & frontend
 
-- `frontend-patterns`: Use when creating or modifying React components, hooks, Next.js
+- `frontend-patterns`: **[MUST USE]** Use when creating or modifying React components, hooks, Next.js
   pages, forms, or styling per this repo's React 19 / Next.js 15 App Router / Tailwind v4 /
-  TanStack Query v5 conventions and atomic design. Not for perf, a11y, or tests.
+  TanStack Query v5 conventions and atomic design. Search `packages/components` and its
+  Storybook stories/docs before creating new UI; reuse or compose existing high-level
+  components whenever they fit. Not for perf, a11y, or tests.
 - `seo-geo-optimization`: Use when auditing, fixing, or generating SEO / GEO / AIO surfaces:
   page routes/components, metadata, JSON-LD/schema, Open Graph/Twitter tags, canonicals,
   sitemaps, robots, blog/video/community/brand/profile/entity pages, or requests to show up
@@ -59,7 +69,7 @@ other skill.
   GET Route Handler stopped caching, or you're unsure why a route is dynamic vs static
   (caching, revalidation, ISR, `revalidateTag`/`revalidatePath`, `staleTimes`).
 
-> `hierarchical-tree` and `hierarchical-theme` are also building skills, but they are
+> `hierarchical-tree`, `hierarchical-theme`, and `frontend-patterns` are also building skills, but they are
 > **mandatory** — see the "Must-use" section above.
 
 ## Reviewing & quality

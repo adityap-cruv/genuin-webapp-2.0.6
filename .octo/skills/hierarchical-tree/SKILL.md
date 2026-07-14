@@ -1,12 +1,26 @@
 ---
 name: hierarchical-tree
-description: Generate Page artifacts for the Hierarchical Layout System — given a prompt + pageTypeHint + breakpoints, emit a typed Page TypeScript module per HIERARCHICAL_TREE_SPEC.md.
+description: Mandatory layout-system check for any new or changed page, route, landing surface, homepage section, or major UI section. First decide whether the requested surface should use the Hierarchical Layout System; if yes, emit a typed Page TypeScript artifact per HIERARCHICAL_TREE_SPEC.md. If the existing surface is ordinary React/Next UI, record that decision and proceed with frontend-patterns without hand-rolling a hierarchical artifact.
 mandatory: true
 ---
 
-# Hierarchical Tree — Page Artifact Generator
+# Hierarchical Tree — Layout-System Check + Page Artifact Generator
 
-You are generating a **`Page` TypeScript artifact** for the Hierarchical Layout System. The artifact is a static, committed source file that the runtime walker (`@genuin/hierarchical-tree`) consumes to render a complete page. Your output is read by a validator and a human reviewer; nothing in the agent runtime fixes it for you, so it must be **schema-valid, rule-valid, and visually plausible on the first pass** (you get up to 3 retries to converge before emitting an error).
+This skill has two modes:
+
+1. **Layout-system check** — for any new or changed route, page, landing surface, homepage
+   section, or major UI section, first determine whether the target is already implemented through
+   the Hierarchical Layout System or should be represented as a `Page` artifact.
+2. **Page artifact generation** — when the target is a Hierarchical Layout System surface, generate
+   a **`Page` TypeScript artifact**. The artifact is a static, committed source file that the
+   runtime walker (`@genuin/hierarchical-tree`) consumes to render a complete page. Your output is
+   read by a validator and a human reviewer; nothing in the agent runtime fixes it for you, so it
+   must be **schema-valid, rule-valid, and visually plausible on the first pass** (you get up to 3
+   retries to converge before emitting an error).
+
+If the existing surface is ordinary React/Next UI, do **not** invent a hierarchical artifact. Record
+the decision briefly, then continue with `frontend-patterns` and the existing-component-first
+workflow.
 
 This skill is the full contract. The full spec lives at [../../../docs/hierarchical/HIERARCHICAL_TREE_SPEC.md](../../../docs/hierarchical/HIERARCHICAL_TREE_SPEC.md) for cross-reference, but every rule, type, and budget you need is inline below.
 
@@ -14,7 +28,12 @@ This skill is the full contract. The full spec lives at [../../../docs/hierarchi
 
 ## When to activate
 
-Activate this skill whenever you are asked to produce a `Page` artifact for the Hierarchical Layout System. Typical triggers:
+Activate this skill whenever you are asked to create or change a route, page, homepage, landing
+surface, hero/section layout, destination page, or any major UI surface. Normal users do not need to
+know the skill name; plain-English requests like "create this page", "change the home hero", or
+"build this section" should trigger this layout-system check.
+
+Artifact-generation triggers:
 
 - "Build a topic hub for `<celebrity / show / team>`."
 - "Build a recap page for last night's `<event>`."
@@ -25,7 +44,10 @@ Activate this skill whenever you are asked to produce a `Page` artifact for the 
 - "Produce a Page artifact for `<archetype>` × `<breakpoints>`."
 - Any prompt that arrives with a `pageTypeHint` in `{ article | recap | topic-hub | gallery | section | landing }` and a `breakpoints` array.
 
-Do **not** activate this skill for: routing / auth / data-fetching code, generic React components, or UI primitives. The skill emits *one* artifact: a single `.ts` module that exports a `page: Page` (or, in the failure case, an `error` object). Nothing else.
+Do **not** emit a `Page` artifact for: auth-only work, data-fetching-only code, small generic React
+components, or UI primitives. In those cases this skill is only a routing check. When artifact
+generation does apply, the skill emits *one* artifact: a single `.ts` module that exports a
+`page: Page` (or, in the failure case, an `error` object). Nothing else.
 
 ---
 

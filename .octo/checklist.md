@@ -83,8 +83,9 @@ pnpm deps:validate    # syncpack list-mismatches + depcheck (unused)
 
 ## 8. Manual UI / runtime verification
 
-- Web app: `pnpm dev:web` (or `pnpm --filter @genuin/webapp dev`) → http://localhost:4005;
-  click through the affected route, check both light and `[data-mode="dark"]`.
+- Web app: `pnpm dev:web` → http://localhost:4005; click through the affected route, check
+  both light and `[data-mode="dark"]`. If running the webapp package directly, run
+  `pnpm --filter @genuin/webapp styles:build` first so `@genuin/*/styles` CSS artifacts exist.
 - Web SDK: `pnpm dev:sdk` → exercise the embed in the served test page; verify
   `window.genuin.init(...)` mounts the placement/embed and the player/feed renders.
 - Storybook (for `packages/ui` / `packages/components` changes):
