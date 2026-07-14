@@ -2,13 +2,20 @@
  * Tests for the AnalyticsProvider.
  *
  * Uses raw `react-dom/client` (no `@testing-library/react`) to keep the
- * Phase-1 footprint dependency-clean.
+ * footprint dependency-clean.
  *
  * Goals:
  *  - render children (no UI of its own),
- *  - buffer events emitted before Rudderstack is ready,
- *  - flush the buffer in FIFO order once `ready` fires,
+ *  - buffer events emitted before analytics is ready,
+ *  - flush the buffer in FIFO order once BOTH Rudderstack is ready AND the
+ *    geoip fetch has settled — never before, so no event ships without geoip,
+ *  - stamp the resolved geoip onto every flushed event,
+ *  - never drop events when the geoip fetch fails,
  *  - expose a stable `useAnalytics` hook.
+ *
+ * `getSharedGeoIp` (not `getIpInfo`) is mocked here — `AnalyticsProvider` calls
+ * the shared, never-rejecting cache (see `services/api.ts`), which is the same
+ * one the legacy `index.jsx` bootstrap uses for its `Tag Init` event.
  */
 import { act, type ReactElement, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
@@ -18,7 +25,7 @@ import { AnalyticsProvider, useAnalytics } from "@cxr/providers/AnalyticsProvide
 
 const trackMock = vi.fn();
 const readyMock = vi.fn();
-const getIpInfoMock = vi.fn();
+const getSharedGeoIpMock = vi.fn();
 const initRudderMock = vi.fn();
 
 vi.mock("../analytics/rudderstack", () => ({
@@ -31,7 +38,7 @@ vi.mock("../services/api", async (importOriginal) => {
   const original = await importOriginal<typeof import("../services/api")>();
   return {
     ...original,
-    getIpInfo: () => getIpInfoMock(),
+    getSharedGeoIp: () => getSharedGeoIpMock(),
   };
 });
 
@@ -58,6 +65,25 @@ function unmount(root: Root, container: HTMLDivElement): void {
   container.remove();
 }
 
+/**
+ * Drain the microtasks of the `getIpInfo()` promise chain
+ * (`.then().catch().finally()`) so `geoReady` flips true. Flushing is gated on
+ * geoip settling, so a synchronous `ready()` alone no longer flushes — tests
+ * must let the geoip promise settle too.
+ */
+async function settleGeoip(): Promise<void> {
+  await act(async () => {
+    for (let i = 0; i < 5; i++) await Promise.resolve();
+  });
+}
+
+/** Extract `device_details.geoip` from the Nth `track` call's payload. */
+function geoipOfCall(index: number): Record<string, unknown> {
+  const payload = trackMock.mock.calls[index]?.[1] as Record<string, unknown>;
+  const device = payload.device_details as Record<string, unknown>;
+  return device.geoip as Record<string, unknown>;
+}
+
 interface ConsumerHandle {
   send: () => void;
 }
@@ -72,7 +98,7 @@ describe("providers/AnalyticsProvider", () => {
   beforeEach(() => {
     trackMock.mockReset();
     readyMock.mockReset();
-    getIpInfoMock.mockReset().mockResolvedValue({ city: "BLR" });
+    getSharedGeoIpMock.mockReset().mockResolvedValue({ city: "BLR" });
     initRudderMock.mockReset();
     delete (window as Window & { rudderanalytics?: unknown }).rudderanalytics;
   });
@@ -101,20 +127,16 @@ describe("providers/AnalyticsProvider", () => {
     unmount(root, container);
   });
 
-  it("logs but does not throw when getIpInfo rejects", async () => {
-    getIpInfoMock.mockReset().mockRejectedValueOnce(new Error("boom"));
-    const errSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+  it("does not throw when getSharedGeoIp resolves null (upstream fetch failed)", async () => {
+    // getSharedGeoIp never rejects (see services/api.ts) — a failed geoip
+    // fetch surfaces here as a resolved `null`, not a rejection.
+    getSharedGeoIpMock.mockReset().mockResolvedValueOnce(null);
     const { root, container } = mount(
       <AnalyticsProvider>
         <span />
       </AnalyticsProvider>
     );
-    // Wait one microtask tick for the promise rejection to drain.
-    await act(async () => {
-      await Promise.resolve();
-      await Promise.resolve();
-    });
-    expect(errSpy).toHaveBeenCalledWith("[cxr/analytics-provider]", "error :", expect.any(Error));
+    await settleGeoip();
     unmount(root, container);
   });
 
@@ -133,7 +155,45 @@ describe("providers/AnalyticsProvider", () => {
     unmount(root, container);
   });
 
-  it("flushes buffered events in FIFO order once ready fires", () => {
+  it("does NOT flush on ready alone while the geoip fetch is still pending", async () => {
+    // getSharedGeoIp hangs until we resolve it, so geoip never settles on its own.
+    let resolveGeo: ((v: { city: string }) => void) | undefined;
+    getSharedGeoIpMock.mockReset().mockReturnValue(
+      new Promise<{ city: string }>((resolve) => {
+        resolveGeo = resolve;
+      })
+    );
+    let readyCb: (() => void) | undefined;
+    readyMock.mockImplementation((cb: () => void) => {
+      readyCb = cb;
+    });
+    setRudder();
+    const handle: ConsumerHandle = { send: () => undefined };
+    const { root, container } = mount(
+      <AnalyticsProvider>
+        <Consumer name="race" handle={handle} />
+      </AnalyticsProvider>
+    );
+    act(() => handle.send());
+
+    // Rudderstack becomes ready FIRST — geoip still in flight.
+    act(() => readyCb?.());
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(trackMock).not.toHaveBeenCalled(); // still buffered — the whole point
+
+    // geoip resolves LAST → this is what unblocks the flush.
+    await act(async () => {
+      resolveGeo?.({ city: "BLR" });
+      for (let i = 0; i < 5; i++) await Promise.resolve();
+    });
+    expect(trackMock).toHaveBeenCalledTimes(1);
+    expect(geoipOfCall(0).city_en).toBe("BLR");
+    unmount(root, container);
+  });
+
+  it("flushes buffered events in FIFO order once both ready and geoip settle", async () => {
     let readyCb: (() => void) | undefined;
     readyMock.mockImplementation((cb: () => void) => {
       readyCb = cb;
@@ -151,13 +211,93 @@ describe("providers/AnalyticsProvider", () => {
     });
     expect(trackMock).not.toHaveBeenCalled();
     act(() => readyCb?.());
+    await settleGeoip();
     expect(trackMock).toHaveBeenCalledTimes(2);
     expect(trackMock.mock.calls[0]?.[0]).toBe("first");
     expect(trackMock.mock.calls[1]?.[0]).toBe("first");
     unmount(root, container);
   });
 
-  it("emits directly after flush (post-ready events bypass the buffer)", () => {
+  it("stamps the resolved geoip onto every flushed event", async () => {
+    getSharedGeoIpMock.mockReset().mockResolvedValue({ city: "BLR", country_code: "IN" });
+    let readyCb: (() => void) | undefined;
+    readyMock.mockImplementation((cb: () => void) => {
+      readyCb = cb;
+    });
+    setRudder();
+    const handle: ConsumerHandle = { send: () => undefined };
+    const { root, container } = mount(
+      <AnalyticsProvider>
+        <Consumer name="geo" handle={handle} />
+      </AnalyticsProvider>
+    );
+    act(() => {
+      handle.send();
+      handle.send();
+    });
+    act(() => readyCb?.());
+    await settleGeoip();
+    expect(trackMock).toHaveBeenCalledTimes(2);
+    expect(geoipOfCall(0).city_en).toBe("BLR");
+    expect(geoipOfCall(1).city_en).toBe("BLR");
+    unmount(root, container);
+  });
+
+  it("stamps geoip onto post-flush (live pass-through) events too", async () => {
+    getSharedGeoIpMock.mockReset().mockResolvedValue({ city: "BLR" });
+    let readyCb: (() => void) | undefined;
+    readyMock.mockImplementation((cb: () => void) => {
+      readyCb = cb;
+    });
+    setRudder();
+    const handle: ConsumerHandle = { send: () => undefined };
+    const { root, container } = mount(
+      <AnalyticsProvider>
+        <Consumer name="live" handle={handle} />
+      </AnalyticsProvider>
+    );
+    act(() => readyCb?.());
+    await settleGeoip(); // buffer flushed (empty), now in pass-through mode
+    trackMock.mockClear();
+    act(() => handle.send());
+    expect(trackMock).toHaveBeenCalledTimes(1);
+    expect(geoipOfCall(0).city_en).toBe("BLR");
+    unmount(root, container);
+  });
+
+  it("still flushes buffered events (none dropped) when the geoip fetch fails", async () => {
+    // getSharedGeoIp never rejects — a failed fetch resolves null (logged
+    // upstream inside services/api.ts), which is what unblocks the flush here.
+    getSharedGeoIpMock.mockReset().mockResolvedValueOnce(null);
+    let readyCb: (() => void) | undefined;
+    readyMock.mockImplementation((cb: () => void) => {
+      readyCb = cb;
+    });
+    setRudder();
+    const handle: ConsumerHandle = { send: () => undefined };
+    const { root, container } = mount(
+      <AnalyticsProvider>
+        <Consumer name="degraded" handle={handle} />
+      </AnalyticsProvider>
+    );
+    act(() => handle.send());
+    act(() => readyCb?.());
+    await settleGeoip();
+    // Event is NOT lost — it ships with the normalised empty-field fallback
+    // that `enrichDeviceDetailsWithGeoIp` produces for a null geoip.
+    expect(trackMock).toHaveBeenCalledTimes(1);
+    expect(geoipOfCall(0)).toEqual({
+      city_en: "",
+      country_code: "",
+      country_en: "",
+      ip: "",
+      lat: null,
+      lng: null,
+    });
+    unmount(root, container);
+  });
+
+  it("emits directly after flush (post-ready events bypass the buffer)", async () => {
     let readyCb: (() => void) | undefined;
     readyMock.mockImplementation((cb: () => void) => {
       readyCb = cb;
@@ -170,6 +310,7 @@ describe("providers/AnalyticsProvider", () => {
       </AnalyticsProvider>
     );
     act(() => readyCb?.());
+    await settleGeoip();
     trackMock.mockClear();
     act(() => handle.send());
     expect(trackMock).toHaveBeenCalledTimes(1);
@@ -195,7 +336,7 @@ describe("providers/AnalyticsProvider", () => {
     container.remove();
   });
 
-  it("flushes a buffered event whose payload is undefined (defaults to {})", () => {
+  it("flushes a buffered event whose payload is undefined (defaults to {})", async () => {
     let readyCb: (() => void) | undefined;
     readyMock.mockImplementation((cb: () => void) => {
       readyCb = cb;
@@ -214,13 +355,14 @@ describe("providers/AnalyticsProvider", () => {
     );
     act(() => handle.send());
     act(() => readyCb?.());
+    await settleGeoip();
     expect(trackMock).toHaveBeenCalledTimes(1);
     const payload = trackMock.mock.calls[0]?.[1] as Record<string, unknown>;
     expect(payload.event_details).toBeDefined();
     unmount(root, container);
   });
 
-  it("injects tag_id from prop into every event's event_details", () => {
+  it("injects tag_id from prop into every event's event_details", async () => {
     let readyCb: (() => void) | undefined;
     readyMock.mockImplementation((cb: () => void) => {
       readyCb = cb;
@@ -235,13 +377,14 @@ describe("providers/AnalyticsProvider", () => {
     );
     act(() => handle.send());
     act(() => readyCb?.());
+    await settleGeoip();
     expect(trackMock).toHaveBeenCalledTimes(1);
     const payload = trackMock.mock.calls[0]?.[1] as Record<string, unknown>;
     expect((payload.event_details as Record<string, unknown>).tag_id).toBe("tag-xyz");
     unmount(root, container);
   });
 
-  it("defaults volume=0 and is_muted=true on events before any player state is reported", () => {
+  it("defaults volume=0 and is_muted=true on events before any player state is reported", async () => {
     let readyCb: (() => void) | undefined;
     readyMock.mockImplementation((cb: () => void) => {
       readyCb = cb;
@@ -256,6 +399,7 @@ describe("providers/AnalyticsProvider", () => {
     );
     act(() => handle.send());
     act(() => readyCb?.());
+    await settleGeoip();
     const details = (trackMock.mock.calls[0]?.[1] as Record<string, unknown>).event_details as Record<
       string,
       unknown
@@ -264,7 +408,7 @@ describe("providers/AnalyticsProvider", () => {
     unmount(root, container);
   });
 
-  it("stamps the latest reported ambient context (volume, is_muted, event_record_screen) onto every event", () => {
+  it("stamps the latest reported ambient context (volume, is_muted, event_record_screen) onto every event", async () => {
     let readyCb: (() => void) | undefined;
     readyMock.mockImplementation((cb: () => void) => {
       readyCb = cb;
@@ -289,6 +433,7 @@ describe("providers/AnalyticsProvider", () => {
     act(() => setAmbient?.({ event_record_screen: "expand" }));
     act(() => handle.send());
     act(() => readyCb?.());
+    await settleGeoip();
     const details = (trackMock.mock.calls[0]?.[1] as Record<string, unknown>).event_details as Record<
       string,
       unknown
@@ -297,7 +442,7 @@ describe("providers/AnalyticsProvider", () => {
     unmount(root, container);
   });
 
-  it("injects brand_id registered via setBrandId into every event's event_details", () => {
+  it("injects brand_id registered via setBrandId into every event's event_details", async () => {
     let readyCb: (() => void) | undefined;
     readyMock.mockImplementation((cb: () => void) => {
       readyCb = cb;
@@ -323,6 +468,7 @@ describe("providers/AnalyticsProvider", () => {
     act(() => handle.setBrand(99));
     act(() => handle.send());
     act(() => readyCb?.());
+    await settleGeoip();
     expect(trackMock).toHaveBeenCalledTimes(1);
     const payload = trackMock.mock.calls[0]?.[1] as Record<string, unknown>;
     const details = payload.event_details as Record<string, unknown>;
@@ -331,7 +477,7 @@ describe("providers/AnalyticsProvider", () => {
     unmount(root, container);
   });
 
-  it("omits brand_id when setBrandId has not been called", () => {
+  it("omits brand_id when setBrandId has not been called", async () => {
     let readyCb: (() => void) | undefined;
     readyMock.mockImplementation((cb: () => void) => {
       readyCb = cb;
@@ -346,8 +492,9 @@ describe("providers/AnalyticsProvider", () => {
     );
     act(() => handle.send());
     act(() => readyCb?.());
+    await settleGeoip();
     const payload = trackMock.mock.calls[0]?.[1] as Record<string, unknown>;
-    expect((payload.event_details as Record<string, unknown>)).not.toHaveProperty("brand_id");
+    expect(payload.event_details as Record<string, unknown>).not.toHaveProperty("brand_id");
     unmount(root, container);
   });
 

@@ -17,7 +17,7 @@ vi.mock("../services/feed", () => ({
 }));
 
 vi.mock("../providers/AnalyticsProvider", () => ({
-  useAnalytics: vi.fn(() => ({ sendEvent: vi.fn() })),
+  useAnalytics: vi.fn(() => ({ sendEvent: vi.fn(), setBaseEventContext: vi.fn() })),
 }));
 
 vi.mock("../feed/feedTransforms", () => ({

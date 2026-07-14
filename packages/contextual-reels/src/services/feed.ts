@@ -13,6 +13,19 @@ import { EVENT } from "@cxr/analytics/analytics";
 import { windowLink as defaultWindowLink } from "@cxr/platform/topWindow";
 import { apiFetch, handleResponse, type ResponseLike } from "@cxr/services/api";
 
+/** Promise that resolves when visit_id is available. */
+let visitIdResolve: ((id: string) => void) | undefined;
+export const visitIdPromise = new Promise<string>((resolve) => {
+  visitIdResolve = resolve;
+});
+
+export function setVisitId(id: string): void {
+  if (visitIdResolve) {
+    visitIdResolve(id);
+    visitIdResolve = undefined; // Only resolve once
+  }
+}
+
 /** A single reel record returned by the feed endpoint. */
 /** Video ad payload returned inside an `ads` reel. */
 export interface VideoAd {
@@ -61,6 +74,7 @@ export type Reel = AdReel | LoopReel | Record<string, unknown>;
 interface FeedResponseShape {
   ref?: string;
   reels: Reel[];
+  visit_id: string;
 }
 
 interface FactoryArgs {
@@ -69,7 +83,12 @@ interface FactoryArgs {
   fetchFn?: (url: string, init?: RequestInit) => Promise<Response>;
   /** Emits an analytics event. Provided by the caller so we don't import
    *  `sendEventLog` directly (keeps this module pure / testable). */
-  sendEvent: (eventName: string) => void;
+  sendEvent: (eventName: string, eventDetails?: Record<string, unknown>) => void;
+  /** Stamps visit_id onto all subsequent events' base context. Called once
+   *  per feed load with the API-returned visit_id. */
+  setBaseEventContext?: (partial: Record<string, unknown>) => void;
+  /** Set mandatory data (visit_id) for RudderStack buffering. */
+  setMandatoryData?: (data: Record<string, unknown>) => void;
   /** Resolves the embedding page URL. Defaults to {@link topWindow.windowLink}. */
   getWindowLink?: () => string | undefined;
 }
@@ -84,7 +103,7 @@ interface FactoryArgs {
  * @returns An async function that fetches the next batch of reels.
  */
 export function createFeedGenerator(args: FactoryArgs): () => Promise<Reel[]> {
-  const { tagId, sendEvent } = args;
+  const { tagId, sendEvent, setBaseEventContext, setMandatoryData } = args;
   const fetch_ = args.fetchFn ?? apiFetch;
   const getWindowLink = args.getWindowLink ?? (() => defaultWindowLink);
 
@@ -109,12 +128,19 @@ export function createFeedGenerator(args: FactoryArgs): () => Promise<Reel[]> {
     const response = await fetch_(`/goservices/ad_creative/feed?${params}`);
     const json = (await response.json()) as ResponseLike<FeedResponseShape>;
 
+    const data = handleResponse<FeedResponseShape>(json);
+    refs[tagId] = data.ref;
+
+    // Stamp visit_id onto all subsequent events via base context and buffer.
+    if (data.visit_id) {
+      setVisitId(data.visit_id); // Store globally for index.jsx TAG_INIT
+      setBaseEventContext?.({ visit_id: data.visit_id });
+      setMandatoryData?.({ visit_id: data.visit_id }); // Signal buffer
+    }
+
     if (callCounter > 0) sendEvent(EVENT.BATCH_COMPLETED);
     sendEvent(EVENT.FEED_API_CALL_COMPLETED);
     callCounter += 1;
-
-    const data = handleResponse<FeedResponseShape>(json);
-    refs[tagId] = data.ref;
 
     if (!data.reels.length) {
       sendEvent(EVENT.FEED_COMPLETED);

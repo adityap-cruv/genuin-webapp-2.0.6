@@ -3,27 +3,23 @@
  *
  * Responsibilities:
  *  1. Inject the Rudderstack snippet on mount.
- *  2. Fetch the geoip record and enrich the device-details snapshot.
- *  3. Buffer `sendEvent(...)` calls emitted before Rudderstack is ready.
- *  4. Flush the buffer in FIFO order once `rudderanalytics.ready(cb)` resolves.
+ *  2. Fetch (or reuse) the shared geoip record and enrich the device-details
+ *     snapshot. Failures resolve to an empty geoip block, never reject.
+ *  3. Buffer `sendEvent(...)` calls emitted before analytics is ready.
+ *  4. Flush the buffer in FIFO order once BOTH Rudderstack is ready AND the
+ *     geoip fetch has settled — so every event carries a resolved geoip block.
  *  5. Provide a stable `useAnalytics()` hook with a memoised `sendEvent`.
- *
- * Phase 1 status: standalone — no `.jsx` imports this yet. Phase 2 will wire
- * the legacy `App.jsx` through this provider.
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, type ReactNode } from "react";
 
-import { createEventBuffer, type EventBuffer } from "@cxr/analytics/analytics";
 import { sendEventLog, type OffsitePropertiesConfig, type RudderstackLike } from "@cxr/analytics/analytics";
 import { initializeRudderAnalytics } from "@cxr/analytics/rudderstack";
+import { RudderstackEventBuffer, type MandatoryEventPayload } from "@cxr/analytics/rudderstackBuffer";
 import { hostMacros } from "@cxr/hostMacros";
 import { enrichDeviceDetailsWithGeoIp, getDeviceDetailsSnapshot, type DeviceDetails } from "@cxr/platform/device";
 import { windowLink as DEFAULT_WINDOW_LINK } from "@cxr/platform/topWindow";
-import { getIpInfo } from "@cxr/services/api";
+import { getSharedGeoIp } from "@cxr/services/api";
 import { userId as DEFAULT_USER_ID } from "@cxr/userId";
-import { createLogger } from "@cxr/utils/logger";
-
-const _logger = createLogger("cxr/analytics-provider");
 
 /** Surface exposed via {@link useAnalytics}. */
 export interface AnalyticsContextValue {
@@ -44,6 +40,12 @@ export interface AnalyticsContextValue {
    * don't clobber each other. Ref-backed → stable identity.
    */
   setBaseEventContext: (partial: Record<string, unknown>) => void;
+  /**
+   * Set mandatory event data (visit_id, geoip) for RudderStack buffering.
+   * Called when APIs return data. Buffer auto-flushes when all required
+   * mandatory fields are available.
+   */
+  setMandatoryData: (data: Partial<MandatoryEventPayload>) => void;
 }
 
 const AnalyticsContext = createContext<AnalyticsContextValue | undefined>(undefined);
@@ -80,7 +82,9 @@ function readOffsite(): OffsitePropertiesConfig {
 export function AnalyticsProvider({ children, tagId }: AnalyticsProviderProps): ReactNode {
   // Refs persist across renders without re-triggering effects.
   const deviceRef = useRef<DeviceDetails>(getDeviceDetailsSnapshot());
-  const bufferRef = useRef<EventBuffer>(createEventBuffer());
+  const bufferRef = useRef<RudderstackEventBuffer>(
+    new RudderstackEventBuffer(["visit_id"], 500)
+  );
   // brand_id resolves async after the tag loads. Held in a ref so `sendEvent`
   // stays referentially stable (its identity must not change when brand_id
   // arrives, or consumer effects keyed on it would re-run).
@@ -103,66 +107,77 @@ export function AnalyticsProvider({ children, tagId }: AnalyticsProviderProps): 
     basePayloadRef.current = { ...basePayloadRef.current, ...partial };
   }, []);
 
+  const setMandatoryData = useCallback(
+    (data: Partial<MandatoryEventPayload>): void => {
+      bufferRef.current.setMandatoryData(data);
+    },
+    []
+  );
+
   useEffect(() => {
     initializeRudderAnalytics();
 
-    // Enrich device-details once geoip resolves; errors are non-fatal.
-    getIpInfo()
+    // Arm the buffer with the emitter so it can auto-flush when mandatory data arrives.
+    // This ensures events don't fire to RudderStack before all required data is present.
+    bufferRef.current.setEmitter((eventName, payload) => {
+      sendEventLog(
+        {
+          eventName,
+          eventDetails: (payload as Record<string, unknown> | undefined) ?? {},
+        },
+        {
+          rudderanalytics: readRudderstack(),
+          deviceDetails: deviceRef.current,
+          userId: DEFAULT_USER_ID,
+          windowLink: DEFAULT_WINDOW_LINK,
+          offsite: readOffsite(),
+          hostMacros,
+        }
+      );
+    });
+
+    // Shared geoip fetch (one per page, never rejects): stamp it onto the
+    // device details and signal the buffer.
+    getSharedGeoIp()
       .then((geoip) => {
         deviceRef.current = enrichDeviceDetailsWithGeoIp(deviceRef.current, geoip);
+        bufferRef.current.setMandatoryData({
+          geoip: {
+            country: (geoip as Record<string, unknown>).country as string | undefined,
+            lat: (geoip as Record<string, unknown>).latitude as number | undefined,
+            long: (geoip as Record<string, unknown>).longitude as number | undefined,
+          },
+        });
       })
       .catch((err) => {
-        // Match legacy behaviour: log + continue with an empty geoip block.
-        _logger.error("error :", err);
+        // Non-blocking: mark geoip unavailable so buffer can proceed
+        console.error("Failed to fetch geoip:", err);
+        bufferRef.current.markUnavailable("geoip");
       });
-
-    const rudder = readRudderstack();
-    if (!rudder) return;
-
-    rudder.ready(() => {
-      bufferRef.current.flush((eventName, payload) => {
-        sendEventLog(
-          {
-            eventName,
-            eventDetails: (payload as Record<string, unknown> | undefined) ?? {},
-          },
-          {
-            rudderanalytics: readRudderstack(),
-            deviceDetails: deviceRef.current,
-            userId: DEFAULT_USER_ID,
-            windowLink: DEFAULT_WINDOW_LINK,
-            offsite: readOffsite(),
-            hostMacros,
-          }
-        );
-      });
-    });
   }, []);
 
   const value = useMemo<AnalyticsContextValue>(
     () => ({
       sendEvent(eventName, eventDetails) {
-        // Inject tag_id + brand_id into every event. Omitted when undefined so
-        // we never emit `tag_id: undefined` keys. brand_id is read from the ref
-        // at call time so late-resolving values still attach. Caller-supplied
-        // eventDetails win on key collision.
-        const identifiers = {
-          ...(tagId !== undefined ? { tag_id: tagId } : {}),
-          ...(brandIdRef.current !== undefined ? { brand_id: brandIdRef.current } : {}),
-        };
-        // Base payload first, then identifiers, then caller details win.
-        // Read at call time so each field reflects the moment of emission.
-        const finalPayload: Record<string, unknown> = {
-          ...basePayloadRef.current,
-          ...identifiers,
-          ...eventDetails,
-        };
-        bufferRef.current.enqueue(eventName, finalPayload);
+        // Pass a factory function so payload is computed at flush time,
+        // allowing basePayloadRef updates (like visit_id) to be included in buffered events.
+        bufferRef.current.enqueue(eventName, () => {
+          const identifiers = {
+            ...(tagId !== undefined ? { tag_id: tagId } : {}),
+            ...(brandIdRef.current !== undefined ? { brand_id: brandIdRef.current } : {}),
+          };
+          return {
+            ...basePayloadRef.current,
+            ...identifiers,
+            ...eventDetails,
+          };
+        });
       },
       setBrandId,
       setBaseEventContext,
+      setMandatoryData,
     }),
-    [tagId, setBrandId, setBaseEventContext]
+    [tagId, setBrandId, setBaseEventContext, setMandatoryData]
   );
 
   return <AnalyticsContext.Provider value={value}>{children}</AnalyticsContext.Provider>;

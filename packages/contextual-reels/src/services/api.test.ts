@@ -1,9 +1,17 @@
 /**
  * Tests for `src/services/api.ts`.
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
-import { handleResponse, __createApiFetch, apiFetch, getTag, getIpInfo } from "@cxr/services/api";
+import {
+  handleResponse,
+  __createApiFetch,
+  apiFetch,
+  getTag,
+  getIpInfo,
+  getSharedGeoIp,
+  __resetGeoIpCache,
+} from "@cxr/services/api";
 
 // ─── handleResponse ───────────────────────────────────────────────────────────
 
@@ -271,5 +279,63 @@ describe("services/getIpInfo", () => {
   it("propagates errors from the fetch function", async () => {
     const mockFetch = vi.fn().mockRejectedValue(new Error("network"));
     await expect(getIpInfo(mockFetch)).rejects.toThrow("network");
+  });
+});
+
+// ─── getSharedGeoIp ────────────────────────────────────────────────────────────
+
+describe("services/getSharedGeoIp", () => {
+  const originalFetch = global.fetch;
+
+  beforeEach(() => {
+    __resetGeoIpCache();
+  });
+
+  afterEach(() => {
+    global.fetch = originalFetch;
+  });
+
+  it("fetches geoip via the default apiFetch and resolves the parsed response", async () => {
+    global.fetch = vi.fn().mockResolvedValue(makeFetchResponse({ city: "Bangalore" })) as unknown as typeof fetch;
+
+    const result = await getSharedGeoIp();
+
+    expect(result).toEqual({ city: "Bangalore" });
+  });
+
+  it("caches the result — concurrent/repeat callers share one network call", async () => {
+    const fetchSpy = vi.fn().mockResolvedValue(makeFetchResponse({ city: "Bangalore" }));
+    global.fetch = fetchSpy as unknown as typeof fetch;
+
+    const [first, second] = await Promise.all([getSharedGeoIp(), getSharedGeoIp()]);
+    const third = await getSharedGeoIp();
+
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+    expect(first).toEqual({ city: "Bangalore" });
+    expect(second).toEqual({ city: "Bangalore" });
+    expect(third).toEqual({ city: "Bangalore" });
+  });
+
+  it("resolves null (never rejects) and logs when the underlying fetch fails", async () => {
+    global.fetch = vi.fn().mockRejectedValue(new Error("network")) as unknown as typeof fetch;
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+
+    const result = await getSharedGeoIp();
+
+    expect(result).toBeNull();
+    expect(errSpy).toHaveBeenCalledWith("[cxr/services-api]", "error :", expect.any(Error));
+    errSpy.mockRestore();
+  });
+
+  it("does not retry after a failure — the null result is cached too", async () => {
+    const fetchSpy = vi.fn().mockRejectedValue(new Error("network"));
+    global.fetch = fetchSpy as unknown as typeof fetch;
+    vi.spyOn(console, "error").mockImplementation(() => undefined);
+
+    await getSharedGeoIp();
+    const second = await getSharedGeoIp();
+
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+    expect(second).toBeNull();
   });
 });

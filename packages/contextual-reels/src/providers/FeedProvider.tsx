@@ -50,7 +50,7 @@ interface FeedProviderProps {
  * ```
  */
 export function FeedProvider({ children, tagId }: FeedProviderProps): ReactNode {
-  const { sendEvent } = useAnalytics();
+  const { sendEvent, setBaseEventContext, setMandatoryData } = useAnalytics();
   const { adBreakEnabled, gateOnUnmute, adsDisabled } = useStrategy();
   const [entries, setEntries] = useState<FeedEntry[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -59,7 +59,12 @@ export function FeedProvider({ children, tagId }: FeedProviderProps): ReactNode 
 
   useEffect(() => {
     // createFeedGenerator is scoped to this effect invocation — no ref needed.
-    const fetchFeed = createFeedGenerator({ tagId, sendEvent });
+    const fetchFeed = createFeedGenerator({
+      tagId,
+      sendEvent,
+      setBaseEventContext,
+      setMandatoryData,
+    });
     let cancelled = false;
     setIsLoading(true);
     setFeedFailed(false);

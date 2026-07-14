@@ -5,7 +5,7 @@ import "@cxr/styles/tailwind.css";
 
 import { initializeRudderAnalytics } from "@cxr/analytics/rudderstack";
 import { EVENT, sendEventLogFromGlobals } from "@cxr/analytics/analytics";
-import { getDeviceDetailsSnapshot } from "@cxr/platform/device";
+import { enrichDeviceDetailsWithGeoIp, getDeviceDetailsSnapshot } from "@cxr/platform/device";
 import { userId } from "@cxr/userId";
 import { windowLink } from "@cxr/platform/topWindow";
 import { resolveAdLayout, resolveStackedLayout } from "@cxr/config";
@@ -15,6 +15,8 @@ import { getInstanceRegistry } from "@cxr/instance/registry/InstanceRegistry";
 import { setupCxrShadowDOM } from "@cxr/shadow-dom";
 import { DATA_ATTR_SHADOW_DOM_OPT_IN } from "@cxr/shadow-dom-config";
 import { ShadowDomProvider } from "@cxr/shadow-dom-context";
+import { getSharedGeoIp } from "@cxr/services/api";
+import { visitIdPromise } from "@cxr/services/feed";
 import { getHostMacro } from "@cxr/hostMacros";
 
 // New TypeScript App with provider stack + native feed engine.
@@ -139,6 +141,9 @@ async function init() {
     initializeRudderAnalytics();
   }
 
+  // One shared geoip fetch for the whole page (also reused by AnalyticsProvider).
+  const geoipPromise = uniqueNodes.size > 0 ? getSharedGeoIp() : Promise.resolve(null);
+
   for (const node of uniqueNodes) {
     node.setAttribute("data-cxr-status", "loading");
 
@@ -153,10 +158,32 @@ async function init() {
       // malformed JSON — proceed with empty customization
     }
 
-    sendEventLogFromGlobals(
-      { eventName: EVENT.TAG_INIT, eventDetails: {}, tagDetails: { tag_id: tagId } },
-      { deviceDetails: getDeviceDetailsSnapshot(), userId, windowLink }
-    );
+    // Wait for geoip (via .then, not await, so mount isn't blocked), then send
+    // Tag Init with both geoip and visit_id stamped on.
+    Promise.all([geoipPromise, visitIdPromise])
+      .then(([geoip, visitId]) => {
+        sendEventLogFromGlobals(
+          {
+            eventName: EVENT.TAG_INIT,
+            eventDetails: { visit_id: visitId },
+            tagDetails: { tag_id: tagId },
+          },
+          { deviceDetails: enrichDeviceDetailsWithGeoIp(getDeviceDetailsSnapshot(), geoip), userId, windowLink }
+        );
+      })
+      .catch(() => {
+        // If visitIdPromise never resolves (feed API error), fire TAG_INIT without visit_id
+        geoipPromise.then((geoip) => {
+          sendEventLogFromGlobals(
+            {
+              eventName: EVENT.TAG_INIT,
+              eventDetails: {},
+              tagDetails: { tag_id: tagId },
+            },
+            { deviceDetails: enrichDeviceDetailsWithGeoIp(getDeviceDetailsSnapshot(), geoip), userId, windowLink }
+          );
+        });
+      });
 
     // Register DOM id as alias so window.cxr.expand("gen-ext-2") works
     if (node.id) {

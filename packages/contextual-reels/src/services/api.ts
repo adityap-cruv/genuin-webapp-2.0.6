@@ -7,6 +7,9 @@
 import { apiurl as PROD_API_URL } from "@cxr/config";
 import { windowLink } from "@cxr/platform/topWindow";
 import { userId } from "@cxr/userId";
+import { createLogger } from "@cxr/utils/logger";
+
+const _logger = createLogger("cxr/services-api");
 
 // ─── Response unwrapper ───────────────────────────────────────────────────────
 
@@ -192,4 +195,25 @@ export async function getIpInfo(
   const response = await fetchFn("/goservices/data/ip_info");
   // ip_info returns flat JSON, not the standard { data: {...} } envelope.
   return (await response.json()) as RawGeoIpResponse;
+}
+
+let cachedGeoIp: Promise<RawGeoIpResponse | null> | undefined;
+
+/**
+ * Fetches geoip once and shares the result with every caller. Never rejects
+ * (failure resolves `null`), so callers just `.then` to know it settled.
+ */
+export function getSharedGeoIp(): Promise<RawGeoIpResponse | null> {
+  if (!cachedGeoIp) {
+    cachedGeoIp = getIpInfo().catch((err) => {
+      _logger.error("error :", err);
+      return null;
+    });
+  }
+  return cachedGeoIp;
+}
+
+/** Test-only: reset the module-level geoip cache between test cases. */
+export function __resetGeoIpCache(): void {
+  cachedGeoIp = undefined;
 }
