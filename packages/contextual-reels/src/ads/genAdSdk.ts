@@ -3,7 +3,6 @@
  *   ads/loadGenAdSdk.ts
  *   ads/useGenAdInstance.ts
  */
-
 import { useEffect, useRef, useState } from "react";
 
 import { resolvePageUrl, resolveVideoAdMacros } from "@cxr/ads/adUrlMacros";
@@ -22,7 +21,8 @@ import { useStrategy } from "@cxr/strategies/StrategyProvider";
 // import.meta.env shape is bundler-defined; the `?? {}` fallback is unreachable
 // under Vite/Vitest (env is always defined), hence the v8 ignore.
 /* v8 ignore next */
-const _env: Record<string, string | undefined> = (import.meta as any).env ?? {}; // eslint-disable-line @typescript-eslint/no-explicit-any
+const _env: Record<string, string | undefined> =
+  (import.meta as unknown as { env: Record<string, string | undefined> }).env ?? {};
 
 /** Base URL for the GenAd SDK assets. Set VITE_CXR_GEN_AD_BASE_URL to override. */
 const GEN_AD_BASE_URL: string = _env.VITE_CXR_GEN_AD_BASE_URL ?? "https://media.begenuin.com/ad-sdk/1.0.0";
@@ -340,7 +340,7 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
   // Emit `Ad Paused` (matches the Web SDK's ad vocabulary). Ad start is covered
   // by `onAdStarted` → `AD_STARTED`; the Web SDK binds no ad-resume event, so we
   // emit nothing on resume.
-  
+
   const trackAdPaused = (): void => {
     sendEvent(EVENT.AD_PAUSED, { ad_source: adSource });
   };
@@ -436,7 +436,6 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
               ad_source: platforms[resolvedProvider] || undefined,
             };
             sendEvent(EVENT.AD_RESPONSE_RECEIVED, adEventDetails);
-            sendEvent(EVENT.AD_IMPRESSION, adEventDetails);
           },
           onAdCompleted: (completedProvider?: AdProviderKind): void => {
             sendEvent(EVENT.AD_COMPLETED, {
@@ -522,6 +521,32 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
                 provider: event?.provider,
                 ad_source: (event?.provider && platforms[event.provider]) || adSource,
               });
+            },
+            onAdImpression: (event?: {
+              provider?: AdProviderKind;
+              advertiserDomain?: string;
+              mediaFileUrl?: string;
+            }) => {
+              const adEventDetails = {
+                provider: event?.provider,
+                ad_source: (event?.provider && platforms[event.provider]) || adSource,
+                advertiser_domain: event?.advertiserDomain,
+                media_file_url: event?.mediaFileUrl,
+              };
+              sendEvent(EVENT.AD_IMPRESSION, adEventDetails);
+            },
+            onAdImpressionPixelFire: (event?: {
+              provider?: AdProviderKind;
+              ad_pixel_url?: string;
+              ad_pixel_status_code?: string;
+            }) => {
+              const adEventDetails = {
+                provider: event?.provider,
+                ad_source: (event?.provider && platforms[event.provider]) || adSource,
+                ad_pixel_url: event?.ad_pixel_url,
+                ad_pixel_status_code: event?.ad_pixel_status_code,
+              };
+              sendEvent(EVENT.AD_IMPRESSION_PIXEL_FIRED, adEventDetails);
             },
             onAdStarted: (event?: { provider?: AdProviderKind }): void => {
               sendEvent(EVENT.AD_STARTED, {

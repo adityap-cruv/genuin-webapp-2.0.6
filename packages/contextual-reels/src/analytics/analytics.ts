@@ -54,6 +54,7 @@ export const EVENT = {
   AD_REQUESTED: "Ad Requested",
   AD_RESPONSE_RECEIVED: "Ad Response Received",
   AD_IMPRESSION: "Ad Impression",
+  AD_IMPRESSION_PIXEL_FIRED: "Ad Impression Pixel Fired",
   AD_REQUEST_FAILED: "Ad Request Failed",
   // Title-case events mirrored from gen-ad-container so CXR emits the same
   // analytics vocabulary across both in-feed ad implementations.

@@ -57,7 +57,7 @@ export function AdLayout({ ad, isActive, onAutoAdvance }: AdLayoutProps): React.
       setMuted(nextMuted);
       analytics.sendEvent(nextMuted ? EVENT.VIDEO_MUTED : EVENT.VIDEO_UNMUTED, { by_user: true, ...extra });
     },
-    [analytics]
+    [analytics, setMuted]
   );
 
   // Tracks whether the per-slot waterfall has settled (fill or no-fill).
