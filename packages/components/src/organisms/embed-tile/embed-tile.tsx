@@ -364,7 +364,7 @@ function EmbedPlayer({ postDetails, isActive = false, index, itemSize }: EmbedPl
         isSheetExpanded && "gencl:flex-col gencl:justify-start",
         showIheartBar && !isSheetExpanded && "gencl:flex-col"
       )}
-      {...(!isAdFilled && isSponsored && hidePlayerControls ? { onClick: handleClickOnEmbedTile } : {})}>
+      {...(!isAdFilled && hidePlayerControls ? { onClick: handleClickOnEmbedTile } : {})}>
       <div
         className="gencl:w-full gencl:relative gencl:transition-all gencl:duration-300 gencl:ease-in-out"
         style={{
@@ -419,7 +419,7 @@ function EmbedPlayer({ postDetails, isActive = false, index, itemSize }: EmbedPl
             />
           </SafeSuspense>
         </div>
-        {(isSponsored ? !hidePlayerControls : true) && !(isAdFilled && hideControlsForAd) && (
+        {!hidePlayerControls && !(isAdFilled && hideControlsForAd) && (
           <SafeSuspense fallback={null} errorFallback={null}>
             <ControlLayer
               variant={config.view.isPlacementView ? "placement" : "embed"}

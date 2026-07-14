@@ -91,6 +91,15 @@
   just `--mode production`) and `console.*` is fully stripped in `build:prod`; only `pnpm dev` (vite
   serve) shows them, and only with DevTools console level set to **Verbose**.
 
+- **Embed-tile linkout/controls hidden under 200px tile width** — `embed-tile.tsx`
+  (`packages/components/src/organisms/embed-tile/embed-tile.tsx:349-351,422`): the whole
+  ControlLayer — linkout included — is skipped when `itemSize.width < 200`; the entire tile becomes
+  clickable instead. Originally sponsored-only (`cardLayoutId === 7`, commit f1107d29c); extended to
+  ALL videos (July 2026) so normal videos match sponsored behavior. Grid layout divides container
+  width by columns (`grid-view/grid-layout.ts`, `GRID_GAP = 8`), so a 375px-wide 2-col grid gives
+  ~179px tiles → no linkout in tiles. Linkout inside the tile also renders only on the **active**
+  tile (`control-layer/embed/default-embed.tsx:85`).
+
 ## File pointers
 
 <!-- Append where hard-to-find things live. Format:
