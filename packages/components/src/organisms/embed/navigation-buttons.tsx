@@ -318,21 +318,6 @@ export function NavigationButtonsWithContext({
   const [isPrevDisabled, setIsPrevDisabled] = useState(false);
   const [isNextDisabled, setIsNextDisabled] = useState(false);
   const [hideNavButtons, setHideNavButtons] = useState(false);
-  const [isAdPlaying, setIsAdPlaying] = useState(false);
-
-  // Mirror the `gen-ad-playing` flag the feed-player provider sets on
-  // <html>. Used to hide the carousel arrows during an ad break so the
-  // ad's own controls (skip, click-through) aren't obscured.
-  useEffect(() => {
-    if (typeof document === "undefined") return;
-    const root = document.documentElement;
-    setIsAdPlaying(root.classList.contains("gen-ad-playing"));
-    const observer = new MutationObserver(() => {
-      setIsAdPlaying(root.classList.contains("gen-ad-playing"));
-    });
-    observer.observe(root, { attributeFilter: ["class"] });
-    return () => observer.disconnect();
-  }, []);
 
   const handlePrev = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -428,7 +413,7 @@ export function NavigationButtonsWithContext({
       isNextDisabled={isNextDisabled}
       theme={theme}
       embedVariant={embedVariant}
-      hideNavButtons={hideNavButtons || isAdPlaying || isOctoSheetExpanded}
+      hideNavButtons={hideNavButtons || isOctoSheetExpanded}
       v2Size={v2Size}
     />
   );
