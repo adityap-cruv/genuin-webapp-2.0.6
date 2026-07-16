@@ -13,16 +13,25 @@ import { EVENT } from "@cxr/analytics/analytics";
 import { windowLink as defaultWindowLink } from "@cxr/platform/topWindow";
 import { apiFetch, handleResponse, type ResponseLike } from "@cxr/services/api";
 
-/** Promise that resolves when visit_id is available. */
-let visitIdResolve: ((id: string) => void) | undefined;
-export const visitIdPromise = new Promise<string>((resolve) => {
-  visitIdResolve = resolve;
-});
+/** Per-tagId visit_id promises. Each tagId gets its own promise. */
+const visitIdPromises = new Map<string, Promise<string>>();
+const visitIdResolvers = new Map<string, (id: string) => void>();
 
-export function setVisitId(id: string): void {
-  if (visitIdResolve) {
-    visitIdResolve(id);
-    visitIdResolve = undefined; // Only resolve once
+export function getVisitIdPromise(tagId: string): Promise<string> {
+  if (!visitIdPromises.has(tagId)) {
+    const promise = new Promise<string>((resolve) => {
+      visitIdResolvers.set(tagId, resolve);
+    });
+    visitIdPromises.set(tagId, promise);
+  }
+  return visitIdPromises.get(tagId)!;
+}
+
+export function setVisitId(tagId: string, id: string): void {
+  const resolver = visitIdResolvers.get(tagId);
+  if (resolver) {
+    resolver(id);
+    visitIdResolvers.delete(tagId); // Only resolve once per tagId
   }
 }
 
@@ -133,7 +142,7 @@ export function createFeedGenerator(args: FactoryArgs): () => Promise<Reel[]> {
 
     // Stamp visit_id onto all subsequent events via base context and buffer.
     if (data.visit_id) {
-      setVisitId(data.visit_id); // Store globally for index.jsx TAG_INIT
+      setVisitId(tagId, data.visit_id); // Store per-tagId for index.jsx TAG_INIT
       setBaseEventContext?.({ visit_id: data.visit_id });
       setMandatoryData?.({ visit_id: data.visit_id }); // Signal buffer
     }
