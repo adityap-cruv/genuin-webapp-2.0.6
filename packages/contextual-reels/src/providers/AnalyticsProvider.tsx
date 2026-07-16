@@ -46,6 +46,10 @@ export interface AnalyticsContextValue {
    * mandatory fields are available.
    */
   setMandatoryData: (data: Partial<MandatoryEventPayload>) => void;
+  /**
+   * Mark ad as passback (failed to load). Sets passback: 1 on all subsequent events.
+   */
+  setAdPassback: () => void;
 }
 
 const AnalyticsContext = createContext<AnalyticsContextValue | undefined>(undefined);
@@ -97,7 +101,10 @@ export function AnalyticsProvider({ children, tagId }: AnalyticsProviderProps): 
     volume: 0,
     is_muted: true,
     event_record_screen: "embed",
+    passback: 0,
   });
+  // Track if ad passback occurred for this widget instance
+  const passbackRef = useRef(false);
 
   const setBrandId = useCallback((brandId: number | undefined): void => {
     brandIdRef.current = brandId;
@@ -113,6 +120,11 @@ export function AnalyticsProvider({ children, tagId }: AnalyticsProviderProps): 
     },
     []
   );
+
+  const setAdPassback = useCallback((): void => {
+    passbackRef.current = true;
+    basePayloadRef.current.passback = 1;
+  }, []);
 
   useEffect(() => {
     initializeRudderAnalytics();
@@ -176,8 +188,9 @@ export function AnalyticsProvider({ children, tagId }: AnalyticsProviderProps): 
       setBrandId,
       setBaseEventContext,
       setMandatoryData,
+      setAdPassback,
     }),
-    [tagId, setBrandId, setBaseEventContext, setMandatoryData]
+    [tagId, setBrandId, setBaseEventContext, setMandatoryData, setAdPassback]
   );
 
   return <AnalyticsContext.Provider value={value}>{children}</AnalyticsContext.Provider>;

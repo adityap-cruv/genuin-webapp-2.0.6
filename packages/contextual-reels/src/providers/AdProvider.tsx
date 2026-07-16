@@ -85,7 +85,7 @@ export function AdProvider({
   tagWidth,
   adLayout = AD_LAYOUT.Unknown,
 }: AdProviderProps): ReactNode {
-  const { sendEvent } = useAnalytics();
+  const { sendEvent, setAdPassback } = useAnalytics();
   const bus = useEventBus();
   const { singleHitWaterfall } = useStrategy();
 
@@ -112,11 +112,12 @@ export function AdProvider({
     notifyAdNoFill();
     const elapsed = Date.now() - renderStartRef.current;
     _logger.debug(`notifyAdNoFill +${elapsed}ms (${(elapsed / 1000).toFixed(2)}s) from page load`);
+    setAdPassback(); // Mark widget as passback for all subsequent events (passback: 1)
     sendEvent(EVENT.AD_PASSBACK, {
       tag_height: tagHeight,
       tag_width: tagWidth,
     });
-  }, [singleHitWaterfall, tagHeight, tagWidth, sendEvent]);
+  }, [singleHitWaterfall, tagHeight, tagWidth, sendEvent, setAdPassback]);
 
   useEffect(() => {
     return installGenaiBridge(

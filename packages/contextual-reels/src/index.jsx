@@ -22,6 +22,9 @@ import { getHostMacro } from "@cxr/hostMacros";
 // New TypeScript App with provider stack + native feed engine.
 const App = lazy(() => import("./app/App"));
 
+/** Track tagIds that have fired TAG_INIT (persists across re-inits). */
+const tagIdsWithTagInit = new Set();
+
 /** Generate a unique instance id per node — stable once written to the DOM. */
 function generateInstanceId() {
   return `cxr-${Date.now()}-${Math.floor(Math.random() * 1_000_000)}`;
@@ -162,11 +165,12 @@ async function init() {
       // malformed JSON — proceed with empty customization
     }
 
-    // Wait for geoip and per-tagId visit_id, then send TAG_INIT.
+    // Wait for geoip and per-tagId visit_id, then send TAG_INIT (once per tagId per page).
     // If visit_id fails to load, still fire TAG_INIT with geoip only.
-    const visitIdPromiseForTag = getVisitIdPromise(tagId);
-    Promise.all([geoipPromise, visitIdPromiseForTag.catch(() => undefined)])
-      .then(([geoip, visitId]) => {
+    if (!tagIdsWithTagInit.has(tagId)) {
+      tagIdsWithTagInit.add(tagId);
+      const visitIdPromiseForTag = getVisitIdPromise(tagId);
+      Promise.all([geoipPromise, visitIdPromiseForTag.catch(() => undefined)]).then(([geoip, visitId]) => {
         const eventDetails = visitId ? { visit_id: visitId } : {};
         sendEventLogFromGlobals(
           {
@@ -177,6 +181,7 @@ async function init() {
           { deviceDetails: enrichDeviceDetailsWithGeoIp(getDeviceDetailsSnapshot(), geoip), userId, windowLink }
         );
       });
+    }
 
     // Register DOM id as alias so window.cxr.expand("gen-ext-2") works
     if (node.id) {
