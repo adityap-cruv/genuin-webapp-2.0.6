@@ -239,7 +239,15 @@ export function PlayerList({
     const shouldCalculateDimensions = brandLayoutType === "iheart" && isTablet;
 
     if (!shouldCalculateDimensions) {
-      // Already seeded synchronously in the useState initializer above; nothing to do.
+      // Drop any width measured while we were in the iheart-tablet regime so the
+      // aspect-reel CSS governs sizing again. Critical for the iframe tablet→desktop
+      // transition: entering browser fullscreen grows the viewport from ~900px
+      // (tablet) to the screen width (desktop), which flips isTablet false. Without
+      // this reset the stale measured width (e.g. 159px from the collapsed 340px
+      // height) would persist as an inline style and collapse the reel to a narrow
+      // strip. Only fires when a stale measured value exists, so no extra renders
+      // in the common (already-seeded) case.
+      setSlideDimensions((prev) => (prev && prev.slideWidth ? ({} as any) : prev));
       return;
     }
 
@@ -578,7 +586,12 @@ export function PlayerList({
           ref={containerRef}
           className={cn("gencl:h-full gencl:aspect-reel gencl:relative", isMobile && "gencl:h-full gencl:w-full")}
           style={
-            slideDimensions
+            // Only pin an explicit width when we actually measured one (iheart-tablet).
+            // When slideDimensions is the empty sentinel {} (non-measured / reset after a
+            // tablet→desktop transition), emit no inline width so the aspect-reel CSS
+            // governs — writing `${undefined}px` would be an invalid value the browser
+            // ignores, silently leaving a stale width in place.
+            slideDimensions?.slideWidth
               ? {
                   width: `${slideDimensions.slideWidth}px`,
                 }
