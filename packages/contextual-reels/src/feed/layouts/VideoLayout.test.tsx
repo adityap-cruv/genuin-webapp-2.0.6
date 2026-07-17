@@ -540,6 +540,8 @@ describe("VideoLayout layout branches", () => {
     const handleWaterfallSuccess = vi.fn();
     const handleWaterfallFail = vi.fn();
     const handleAdCompleted = vi.fn();
+    const recordAdBreakResult = vi.fn();
+    mockUseAdWaterfall.mockReturnValue({ adLayout: AD_LAYOUT.L1, recordAdBreakResult });
     mockUseFullscreenAdBreak.mockReturnValue({
       ...adBreakIdle,
       isOverlayMounted: true,
@@ -551,8 +553,14 @@ describe("VideoLayout layout branches", () => {
     });
     render({ adObject });
     const slot = capturedGenAdSlotProps.at(-1) as Record<string, unknown>;
-    expect(slot["onWaterfallSuccess"]).toBe(handleWaterfallSuccess);
-    expect(slot["onWaterfallFail"]).toBe(handleWaterfallFail);
+    // success/fail are wrapped to also record the break result for single-hit
+    // exhaustion; invoking them forwards to the break handler AND records.
+    act(() => (slot["onWaterfallSuccess"] as (p: string) => void)("video"));
+    expect(handleWaterfallSuccess).toHaveBeenCalledWith("video");
+    expect(recordAdBreakResult).toHaveBeenCalledWith(String(adObject.id), true);
+    act(() => (slot["onWaterfallFail"] as () => void)());
+    expect(handleWaterfallFail).toHaveBeenCalledTimes(1);
+    expect(recordAdBreakResult).toHaveBeenCalledWith(String(adObject.id), false);
     expect(slot["onAdCompleted"]).toBe(handleAdCompleted);
     // onAdLoadedChange + onAdCTA update local state without throwing.
     act(() => (slot["onAdLoadedChange"] as (r: boolean) => void)(true));

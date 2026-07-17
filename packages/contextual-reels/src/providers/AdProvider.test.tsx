@@ -5,15 +5,10 @@ import { act, type ReactNode, type ReactElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
-import {
-  installGenaiBridge,
-  shouldCountFill,
-  shouldCountNoFill,
-  notifyAdFill,
-  notifyAdNoFill,
-} from "@cxr/ads/waterfall";
+import { installGenaiBridge, notifyAdFill, notifyAdNoFill } from "@cxr/ads/waterfall";
 import { AD_LAYOUT } from "@cxr/config";
 import { CxrEventBus } from "@cxr/instance/coordination/CxrEventBus";
+import { getInstanceRegistry } from "@cxr/instance/registry/InstanceRegistry";
 import {
   AdProvider,
   useAdWaterfall,
@@ -26,9 +21,10 @@ import {
 // ---------------------------------------------------------------------------
 
 const sendEventMock = vi.fn();
+const setAdPassbackMock = vi.fn();
 
 vi.mock("./AnalyticsProvider", () => ({
-  useAnalytics: () => ({ sendEvent: sendEventMock }),
+  useAnalytics: () => ({ sendEvent: sendEventMock, setAdPassback: setAdPassbackMock }),
 }));
 
 // Mock useEventBus so AdProvider receives a stable pre-created bus.
@@ -38,9 +34,30 @@ vi.mock("../instance/coordination/EventBusContext", () => ({
   useEventBus: () => testBus,
 }));
 
+// AdProvider registers `fireInfolinksImpression` into the InstanceRegistry via
+// useInstanceId(); provide a stable id without an InstanceProvider wrapper.
+const TEST_INSTANCE_ID = "inst-test";
+
+vi.mock("../instance/registry/InstanceContext", () => ({
+  useInstanceId: () => TEST_INSTANCE_ID,
+}));
+
+// Controllable feed state for the single-hit deferred-passback tests.
+type FeedEntryLike = { kind: string };
+let testFeed: { entries: FeedEntryLike[]; activeIndex: number } = { entries: [], activeIndex: 0 };
+
+vi.mock("./FeedProvider", () => ({
+  useFeed: () => testFeed,
+}));
+
+// Controllable strategy — default all-off (singleHitWaterfall: false).
+let testSingleHit = false;
+
+vi.mock("../strategies/StrategyProvider", () => ({
+  useStrategy: () => ({ singleHitWaterfall: testSingleHit }),
+}));
+
 vi.mock("../ads/waterfall", () => ({
-  shouldCountFill: vi.fn(() => true),
-  shouldCountNoFill: vi.fn(() => true),
   notifyAdFill: vi.fn(),
   notifyAdNoFill: vi.fn(),
   installGenaiBridge: vi.fn(() => vi.fn()),
@@ -86,8 +103,8 @@ describe("providers/AdProvider", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     testBus = new CxrEventBus();
-    (shouldCountFill as ReturnType<typeof vi.fn>).mockReturnValue(true);
-    (shouldCountNoFill as ReturnType<typeof vi.fn>).mockReturnValue(true);
+    testFeed = { entries: [], activeIndex: 0 };
+    testSingleHit = false;
     (installGenaiBridge as ReturnType<typeof vi.fn>).mockImplementation(() => vi.fn());
   });
 
@@ -123,7 +140,7 @@ describe("providers/AdProvider", () => {
     container.remove();
   });
 
-  it("calls notifyAdFill when shouldCountFill returns true", () => {
+  it("calls notifyAdFill on the first fill", () => {
     const handle: ContextHandle = { ctx: null };
     const { root, container } = mount(
       <AdProvider tagId="tag1">
@@ -139,8 +156,7 @@ describe("providers/AdProvider", () => {
     unmount(root, container);
   });
 
-  it("does not call notifyAdFill when shouldCountFill returns false", () => {
-    (shouldCountFill as ReturnType<typeof vi.fn>).mockReturnValue(false);
+  it("does not call notifyAdFill again on a repeat fill", () => {
     const handle: ContextHandle = { ctx: null };
     const { root, container } = mount(
       <AdProvider tagId="tag1">
@@ -150,16 +166,20 @@ describe("providers/AdProvider", () => {
 
     act(() => {
       handle.ctx?.onAdSuccess("video");
+      handle.ctx?.onAdSuccess("video");
     });
 
-    expect(notifyAdFill).not.toHaveBeenCalled();
+    expect(notifyAdFill).toHaveBeenCalledTimes(1);
     unmount(root, container);
   });
 
-  it("calls notifyAdNoFill and emits Ad Passback when shouldCountNoFill returns true", () => {
+  it("calls notifyAdNoFill, emits Ad Passback, and destroys on a no-fill", () => {
+    const destroy = vi.fn();
+    getInstanceRegistry().register(TEST_INSTANCE_ID, { destroy });
+    const emitSpy = vi.spyOn(testBus, "emit");
     const handle: ContextHandle = { ctx: null };
     const { root, container } = mount(
-      <AdProvider tagId="tag1" tagHeight={50} tagWidth={320}>
+      <AdProvider tagId="tag1" adLayout={AD_LAYOUT.L3}>
         <Consumer handle={handle} />
       </AdProvider>
     );
@@ -169,6 +189,7 @@ describe("providers/AdProvider", () => {
     });
 
     expect(notifyAdNoFill).toHaveBeenCalledTimes(1);
+    // Dimensions derived from adLayout (L3 = 320×50).
     expect(sendEventMock).toHaveBeenCalledWith(
       "Ad Passback",
       expect.objectContaining({
@@ -176,11 +197,15 @@ describe("providers/AdProvider", () => {
         tag_width: 320,
       })
     );
+    // Passback confirmed → widget torn down.
+    expect(emitSpy).toHaveBeenCalledWith("genad:destroy", {});
+    expect(destroy).toHaveBeenCalledTimes(1);
+
+    getInstanceRegistry().unregister(TEST_INSTANCE_ID);
     unmount(root, container);
   });
 
-  it("does not call notifyAdNoFill when shouldCountNoFill returns false", () => {
-    (shouldCountNoFill as ReturnType<typeof vi.fn>).mockReturnValue(false);
+  it("does not call notifyAdNoFill again on a repeat no-fill (passback already fired)", () => {
     const handle: ContextHandle = { ctx: null };
     const { root, container } = mount(
       <AdProvider tagId="tag1">
@@ -190,9 +215,10 @@ describe("providers/AdProvider", () => {
 
     act(() => {
       handle.ctx?.onAdFail();
+      handle.ctx?.onAdFail();
     });
 
-    expect(notifyAdNoFill).not.toHaveBeenCalled();
+    expect(notifyAdNoFill).toHaveBeenCalledTimes(1);
     unmount(root, container);
   });
 
@@ -252,7 +278,7 @@ describe("providers/AdProvider", () => {
     );
 
     const { root, container } = mount(
-      <AdProvider tagId="tag1" tagHeight={250} tagWidth={300}>
+      <AdProvider tagId="tag1" adLayout={AD_LAYOUT.L2}>
         <span />
       </AdProvider>
     );
@@ -311,6 +337,169 @@ describe("providers/AdProvider", () => {
       </AdProvider>
     );
     expect(handle.ctx?.isAudioOnlyAds).toBe(true);
+    unmount(root, container);
+  });
+
+  // ── fireInfolinksImpression (host-triggered event only) ───────────────────
+
+  it("registers fireInfolinksImpression, which fires the event only (no passback, no destroy)", () => {
+    const destroy = vi.fn();
+    getInstanceRegistry().register(TEST_INSTANCE_ID, { destroy });
+    const emitSpy = vi.spyOn(testBus, "emit");
+
+    const { root, container } = mount(
+      <AdProvider tagId="tag1" adLayout={AD_LAYOUT.L4}>
+        <span />
+      </AdProvider>
+    );
+
+    const controls = getInstanceRegistry().get(TEST_INSTANCE_ID);
+    expect(typeof controls?.fireInfolinksImpression).toBe("function");
+
+    act(() => {
+      controls?.fireInfolinksImpression?.();
+    });
+
+    // Fires Infolinks Impression with dims derived from adLayout (L4 = 320×100).
+    expect(sendEventMock).toHaveBeenCalledWith("Infolinks Impression", {
+      tag_height: 100,
+      tag_width: 320,
+    });
+    // Does NOT run the no-fill path or destroy — that's onAdFail's job now.
+    expect(notifyAdNoFill).not.toHaveBeenCalled();
+    expect(setAdPassbackMock).not.toHaveBeenCalled();
+    expect(sendEventMock).not.toHaveBeenCalledWith("Ad Passback", expect.anything());
+    expect(emitSpy).not.toHaveBeenCalledWith("genad:destroy", {});
+    expect(destroy).not.toHaveBeenCalled();
+
+    getInstanceRegistry().unregister(TEST_INSTANCE_ID);
+    unmount(root, container);
+  });
+
+  // ── single-hit deferred passback ──────────────────────────────────────────
+
+  /** Mount an AdProvider in single-hit mode with a controllable feed. */
+  function mountSingleHit(entries: FeedEntryLike[], activeIndex = 0) {
+    testSingleHit = true;
+    testFeed = { entries, activeIndex };
+    const destroy = vi.fn();
+    getInstanceRegistry().register(TEST_INSTANCE_ID, { destroy });
+    const emitSpy = vi.spyOn(testBus, "emit");
+    const handle: ContextHandle = { ctx: null };
+    const { root, container } = mount(
+      <AdProvider tagId="tag1" adLayout={AD_LAYOUT.L4}>
+        <Consumer handle={handle} />
+      </AdProvider>
+    );
+    return { destroy, emitSpy, handle, root, container };
+  }
+
+  function expectNoPassback(destroy: ReturnType<typeof vi.fn>): void {
+    expect(sendEventMock).not.toHaveBeenCalledWith("Ad Passback", expect.anything());
+    expect(destroy).not.toHaveBeenCalled();
+  }
+
+  it("single-hit: a no-fill before the last index does NOT passback", () => {
+    // Two ad slots; only one no-filled, not at last index.
+    const { destroy, handle, root, container } = mountSingleHit(
+      [{ kind: "ad" }, { kind: "ad" }],
+      0
+    );
+    act(() => handle.ctx?.onAdFail("ad-1"));
+    expectNoPassback(destroy);
+    getInstanceRegistry().unregister(TEST_INSTANCE_ID);
+    unmount(root, container);
+  });
+
+  it("single-hit: passback fires once every ad slot no-fills AND last index reached", () => {
+    // Mounted at the last index so the reached-last effect latches on mount.
+    const { destroy, handle, root, container } = mountSingleHit(
+      [{ kind: "ad" }, { kind: "ad" }],
+      1
+    );
+
+    act(() => handle.ctx?.onAdFail("ad-1"));
+    // One slot reported (1 < 2) → still deferred.
+    expect(sendEventMock).not.toHaveBeenCalledWith("Ad Passback", expect.anything());
+
+    act(() => handle.ctx?.onAdFail("ad-2"));
+    // Both slots reported at the last index, none filled → passback.
+    expect(sendEventMock).toHaveBeenCalledWith("Ad Passback", { tag_height: 100, tag_width: 320 });
+    expect(destroy).toHaveBeenCalledTimes(1);
+
+    getInstanceRegistry().unregister(TEST_INSTANCE_ID);
+    unmount(root, container);
+  });
+
+  it("single-hit: any fill suppresses passback even after full traversal", () => {
+    const { destroy, handle, root, container } = mountSingleHit(
+      [{ kind: "ad" }, { kind: "ad" }],
+      1 // already at last index
+    );
+    act(() => {
+      handle.ctx?.onAdSuccess("video", "ad-1"); // one slot FILLED
+      handle.ctx?.onAdFail("ad-2");
+    });
+    expectNoPassback(destroy);
+    getInstanceRegistry().unregister(TEST_INSTANCE_ID);
+    unmount(root, container);
+  });
+
+  it("single-hit: does not passback while a slot is still pending at the last index", () => {
+    const { destroy, handle, root, container } = mountSingleHit(
+      [{ kind: "ad" }, { kind: "ad" }, { kind: "ad" }],
+      2 // last index, but only 2 of 3 slots reported
+    );
+    act(() => {
+      handle.ctx?.onAdFail("ad-1");
+      handle.ctx?.onAdFail("ad-2");
+    });
+    expectNoPassback(destroy);
+    getInstanceRegistry().unregister(TEST_INSTANCE_ID);
+    unmount(root, container);
+  });
+
+  it("single-hit: the same slot reporting twice does not inflate the tally", () => {
+    const { destroy, handle, root, container } = mountSingleHit(
+      [{ kind: "ad" }, { kind: "ad" }],
+      1 // last index
+    );
+    act(() => {
+      handle.ctx?.onAdFail("ad-1");
+      handle.ctx?.onAdFail("ad-1"); // duplicate — Set dedups
+    });
+    // Only one distinct slot reported → 1 < 2 → no passback.
+    expectNoPassback(destroy);
+    getInstanceRegistry().unregister(TEST_INSTANCE_ID);
+    unmount(root, container);
+  });
+
+  it("single-hit: video-with-ad break counts toward exhaustion", () => {
+    const { destroy, handle, root, container } = mountSingleHit(
+      [{ kind: "ad" }, { kind: "video-with-ad" }],
+      1 // last index
+    );
+    act(() => {
+      handle.ctx?.onAdFail("ad-1");
+      handle.ctx?.recordAdBreakResult("break-1", false); // break no-fill
+    });
+    expect(sendEventMock).toHaveBeenCalledWith("Ad Passback", { tag_height: 100, tag_width: 320 });
+    expect(destroy).toHaveBeenCalledTimes(1);
+    getInstanceRegistry().unregister(TEST_INSTANCE_ID);
+    unmount(root, container);
+  });
+
+  it("single-hit: a video-with-ad break FILL suppresses passback", () => {
+    const { destroy, handle, root, container } = mountSingleHit(
+      [{ kind: "ad" }, { kind: "video-with-ad" }],
+      1 // last index
+    );
+    act(() => {
+      handle.ctx?.onAdFail("ad-1");
+      handle.ctx?.recordAdBreakResult("break-1", true); // break FILLED
+    });
+    expectNoPassback(destroy);
+    getInstanceRegistry().unregister(TEST_INSTANCE_ID);
     unmount(root, container);
   });
 

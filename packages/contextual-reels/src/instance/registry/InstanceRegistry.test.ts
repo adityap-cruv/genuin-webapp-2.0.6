@@ -7,7 +7,8 @@ describe("InstanceRegistry", () => {
     const registry = new InstanceRegistry();
     const controls = { expand: vi.fn(), collapse: vi.fn(), pause: vi.fn() };
     registry.register("inst-1", controls);
-    expect(registry.get("inst-1")).toBe(controls);
+    // register merges into a fresh object, so compare by value not reference.
+    expect(registry.get("inst-1")).toEqual(controls);
   });
 
   it("unregister removes the instance", () => {
@@ -33,13 +34,32 @@ describe("InstanceRegistry", () => {
     expect(all.get("x")).toBeDefined();
   });
 
-  it("register overwrites an existing entry", () => {
+  it("register overwrites overlapping controls but keeps non-overlapping ones", () => {
     const registry = new InstanceRegistry();
     const first = { expand: vi.fn(), collapse: vi.fn(), pause: vi.fn() };
-    const second = { expand: vi.fn(), collapse: vi.fn(), pause: vi.fn() };
+    const secondExpand = vi.fn();
+    const destroy = vi.fn();
     registry.register("inst-1", first);
-    registry.register("inst-1", second);
-    expect(registry.get("inst-1")).toBe(second);
+    // Second call contributes a new `destroy` control and replaces `expand`.
+    registry.register("inst-1", { expand: secondExpand, destroy });
+    const entry = registry.get("inst-1");
+    expect(entry?.expand).toBe(secondExpand); // overlapping key overwritten
+    expect(entry?.collapse).toBe(first.collapse); // non-overlapping key preserved
+    expect(entry?.pause).toBe(first.pause);
+    expect(entry?.destroy).toBe(destroy); // new key merged in
+  });
+
+  it("register merges controls from independent writers for the same instance", () => {
+    const registry = new InstanceRegistry();
+    // Loader-owned writer contributes `destroy`; React-owned writer contributes
+    // the rest — neither should clobber the other's controls.
+    const destroy = vi.fn();
+    const expand = vi.fn();
+    registry.register("inst-1", { destroy });
+    registry.register("inst-1", { expand, collapse: vi.fn(), pause: vi.fn() });
+    const entry = registry.get("inst-1");
+    expect(entry?.destroy).toBe(destroy);
+    expect(entry?.expand).toBe(expand);
   });
 
   it("unregister is a no-op for unknown ids", () => {
@@ -58,7 +78,7 @@ describe("InstanceRegistry", () => {
     registry.register("cxr-internal-1", controls);
     registry.registerAlias("gen-ext-1", "cxr-internal-1");
     // Lookup by DOM id resolves through the alias map to the same controls.
-    expect(registry.get("gen-ext-1")).toBe(controls);
+    expect(registry.get("gen-ext-1")).toEqual(controls);
   });
 
   it("unregister removes the alias pointing at the unregistered instance", () => {
@@ -82,7 +102,7 @@ describe("InstanceRegistry", () => {
     registry.registerAlias("gen-ext-drop", "cxr-drop");
     registry.unregister("cxr-drop");
     // The unrelated alias still resolves.
-    expect(registry.get("gen-ext-keep")).toBe(keep);
+    expect(registry.get("gen-ext-keep")).toEqual(keep);
     expect(registry.get("gen-ext-drop")).toBeUndefined();
   });
 
@@ -102,7 +122,7 @@ describe("InstanceRegistry", () => {
       const registry = getInstanceRegistry();
       const controls = { expand: vi.fn(), collapse: vi.fn(), pause: vi.fn() };
       registry.register("singleton-test", controls);
-      expect(getInstanceRegistry().get("singleton-test")).toBe(controls);
+      expect(getInstanceRegistry().get("singleton-test")).toEqual(controls);
       // cleanup so other tests are not affected
       registry.unregister("singleton-test");
     });

@@ -1,6 +1,5 @@
 /**
  * Ad waterfall — consolidated from:
- *   ads/waterfall.ts (pure gating functions)
  *   ads/waterfallCallbacks.ts (side-effectful embedding-page notifications)
  *   ads/genaiBridge.ts (GenAI SDK event bridge)
  */
@@ -8,48 +7,6 @@ import type { CxrEventBus } from "@cxr/instance/coordination/CxrEventBus";
 import { createLogger } from "@cxr/utils/logger";
 
 const _logger = createLogger("cxr/waterfall");
-
-/**
- * Returns `true` if the fill event should be counted (and thus forwarded).
- *
- * Single-hit tags suppress all fills after the first.
- *
- * @param singleHit         Whether the active tag is single-hit (from `useStrategy`).
- * @param currentFillCount  Number of fills already counted this session.
- *
- * @example
- * ```ts
- * if (shouldCountFill(singleHitWaterfall, fillCount.current)) {
- *   fillCount.current += 1;
- *   notifyAdFill();
- * }
- * ```
- */
-export function shouldCountFill(singleHit: boolean, currentFillCount: number): boolean {
-  if (singleHit && currentFillCount >= 1) return false;
-  return true;
-}
-
-/**
- * Returns `true` if the no-fill event should be counted (and thus forwarded).
- *
- * Single-hit tags suppress all no-fills after the first.
- *
- * @param singleHit           Whether the active tag is single-hit (from `useStrategy`).
- * @param currentNoFillCount  Number of no-fills already counted this session.
- *
- * @example
- * ```ts
- * if (shouldCountNoFill(singleHitWaterfall, noFillCount.current)) {
- *   noFillCount.current += 1;
- *   notifyAdNoFill();
- * }
- * ```
- */
-export function shouldCountNoFill(singleHit: boolean, currentNoFillCount: number): boolean {
-  if (singleHit && currentNoFillCount >= 1) return false;
-  return true;
-}
 
 // ─── Waterfall callbacks ──────────────────────────────────────────────────────
 

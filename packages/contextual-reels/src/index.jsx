@@ -10,7 +10,7 @@ import { userId } from "@cxr/userId";
 import { windowLink } from "@cxr/platform/topWindow";
 import { resolveAdLayout, resolveStackedLayout } from "@cxr/config";
 import { setupStackedRows } from "@cxr/utils/infolinks";
-import { buildPublicApi } from "@cxr/publicApi";
+import { buildPublicApi, installMessageBridge } from "@cxr/publicApi";
 import { getInstanceRegistry } from "@cxr/instance/registry/InstanceRegistry";
 import { setupCxrShadowDOM } from "@cxr/shadow-dom";
 import { DATA_ATTR_SHADOW_DOM_OPT_IN } from "@cxr/shadow-dom-config";
@@ -228,6 +228,18 @@ async function init() {
     const observeTarget = node.parentNode ?? document.body;
     observer.observe(observeTarget, { childList: true });
 
+    // Loader-owned teardown control, invoked by AdProvider after
+    // infolinksImpression fires its events. Disconnect the observer first so its
+    // own unmount path can't race this one.
+    getInstanceRegistry().register(instanceId, {
+      destroy: () => {
+        observer.disconnect();
+        root.unmount();
+        if (node.parentNode) node.parentNode.removeChild(node);
+        node.setAttribute("data-cxr-status", "pending");
+      },
+    });
+
     root.render(
       <ShadowDomProvider config={shadowConfig.enabled ? shadowConfig : null}>
         <Suspense fallback={null}>
@@ -249,5 +261,9 @@ async function init() {
 
 // Build and expose the public API before any instances boot
 window.cxr = buildPublicApi(getInstanceRegistry());
+
+// Iframe embeds: the parent page can't reach this window's `window.cxr`, so
+// accept `{ type: 'cxr:infolinksImpression', instanceId? }` via postMessage.
+installMessageBridge(window.cxr);
 
 init();

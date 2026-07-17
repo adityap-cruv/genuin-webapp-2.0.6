@@ -77,7 +77,7 @@ export function AdLayout({ ad, isActive, onAutoAdvance }: AdLayoutProps): React.
   // embedding page (noAdsCallback) whenever the waterfall fails to fill.
   function handleWaterfallFail(): void {
     advance();
-    onAdFail();
+    onAdFail(String(ad.id));
   }
 
   function handleFullScreenClick(): void {
@@ -161,7 +161,7 @@ export function AdLayout({ ad, isActive, onAutoAdvance }: AdLayoutProps): React.
         destroySignal={isActive ? 0 : 1}
         onWaterfallFail={handleWaterfallFail}
         onAdCompleted={advance}
-        onWaterfallSuccess={onAdSuccess}
+        onWaterfallSuccess={(provider) => onAdSuccess(provider, String(ad.id))}
         onAdLoadedChange={setIsAdReady}
       />
       <AdControlLayer

@@ -276,9 +276,10 @@ describe("AdLayout handlers", () => {
     expect(mockSendEvent).toHaveBeenCalledWith("Unmuted", { by_user: true });
   });
 
-  it("onWaterfallSuccess forwards to the waterfall's onAdSuccess", () => {
+  it("onWaterfallSuccess forwards to onAdSuccess with the slot id", () => {
     render();
-    expect(lastGenAdSlot()["onWaterfallSuccess"]).toBe(onAdSuccess);
+    act(() => (lastGenAdSlot()["onWaterfallSuccess"] as (p: string) => void)("video"));
+    expect(onAdSuccess).toHaveBeenCalledWith("video", String(baseAd.id));
   });
 
   it("onAdLoadedChange toggles the AdControlLayer isAdReady flag", () => {

@@ -67,7 +67,7 @@ export function VideoLayout({
   onAutoAdvance,
   adObject,
 }: VideoLayoutProps): React.JSX.Element {
-  const { adLayout } = useAdWaterfall();
+  const { adLayout, recordAdBreakResult } = useAdWaterfall();
   const { isMuted, volume, isPlaying, setMuted, setPlaying, setAdBreakActive } = usePlayer();
   const { splitActive, playerShare, octoAxis } = useOctoSplit(isActive);
   const { isFullScreen, toggleFullScreen, isRedirectMode } = useFullScreen();
@@ -208,8 +208,14 @@ export function VideoLayout({
             onMuteClick={setMuted}
             onPlayClick={() => setPlaying(!isPlaying)}
             destroySignal={0}
-            onWaterfallSuccess={adBreak.handleWaterfallSuccess}
-            onWaterfallFail={adBreak.handleWaterfallFail}
+            onWaterfallSuccess={(provider) => {
+              recordAdBreakResult(String(adObject.id), true);
+              adBreak.handleWaterfallSuccess(provider);
+            }}
+            onWaterfallFail={() => {
+              recordAdBreakResult(String(adObject.id), false); // record-only — video keeps playing
+              adBreak.handleWaterfallFail();
+            }}
             onAdCompleted={adBreak.handleAdCompleted}
             onAdLoadedChange={setAdBreakReady}
             onAdCTA={setAdBreakCta}

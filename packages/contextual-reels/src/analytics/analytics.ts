@@ -68,6 +68,7 @@ export const EVENT = {
   AD_CLICKED: "Ad Clicked",
   AD_PAUSED: "Ad Paused",
   AD_PASSBACK: "Ad Passback",
+  INFOLINKS_IMPRESSION: "Infolinks Impression",
   CTA_CLICK: "CTA Click",
   SHARE: "Share",
   SPARK: "Spark",

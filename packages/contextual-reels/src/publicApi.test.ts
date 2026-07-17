@@ -1,7 +1,11 @@
-import { describe, it, expect, vi } from "vitest";
+import { afterEach, describe, it, expect, vi } from "vitest";
 
 import { InstanceRegistry } from "@cxr/instance/registry/InstanceRegistry";
-import { buildPublicApi } from "@cxr/publicApi";
+import {
+  INFOLINKS_IMPRESSION_MESSAGE,
+  buildPublicApi,
+  installMessageBridge,
+} from "@cxr/publicApi";
 
 describe("buildPublicApi", () => {
   it("on() returns an unsubscribe function", () => {
@@ -59,5 +63,84 @@ describe("buildPublicApi", () => {
   it("collapse() does not throw for unknown instanceId", () => {
     const api = buildPublicApi(new InstanceRegistry());
     expect(() => api.collapse("ghost")).not.toThrow();
+  });
+
+  it("infolinksImpression(id) calls only the targeted instance's handler", () => {
+    const registry = new InstanceRegistry();
+    const fireA = vi.fn();
+    const fireB = vi.fn();
+    registry.register("inst-a", { fireInfolinksImpression: fireA });
+    registry.register("inst-b", { fireInfolinksImpression: fireB });
+    const api = buildPublicApi(registry);
+    api.infolinksImpression("inst-a");
+    expect(fireA).toHaveBeenCalledOnce();
+    expect(fireB).not.toHaveBeenCalled();
+  });
+
+  it("infolinksImpression() with no target fires every mounted instance", () => {
+    const registry = new InstanceRegistry();
+    const fireA = vi.fn();
+    const fireB = vi.fn();
+    registry.register("inst-a", { fireInfolinksImpression: fireA });
+    registry.register("inst-b", { fireInfolinksImpression: fireB });
+    const api = buildPublicApi(registry);
+    api.infolinksImpression();
+    expect(fireA).toHaveBeenCalledOnce();
+    expect(fireB).toHaveBeenCalledOnce();
+  });
+
+  it("infolinksImpression() tolerates a handler that unregisters mid-iteration", () => {
+    const registry = new InstanceRegistry();
+    const fireB = vi.fn();
+    // First instance's handler destroys itself (unregisters) — the snapshot
+    // taken inside infolinksImpression must keep the iteration stable.
+    registry.register("inst-a", {
+      fireInfolinksImpression: () => registry.unregister("inst-a"),
+    });
+    registry.register("inst-b", { fireInfolinksImpression: fireB });
+    const api = buildPublicApi(registry);
+    expect(() => api.infolinksImpression()).not.toThrow();
+    expect(fireB).toHaveBeenCalledOnce();
+  });
+
+  it("infolinksImpression() does not throw for unknown instanceId", () => {
+    const api = buildPublicApi(new InstanceRegistry());
+    expect(() => api.infolinksImpression("ghost")).not.toThrow();
+  });
+});
+
+describe("installMessageBridge", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("routes an inbound cxr:infolinksImpression message to the api, forwarding instanceId", () => {
+    const api = buildPublicApi(new InstanceRegistry());
+    const spy = vi.spyOn(api, "infolinksImpression");
+    const cleanup = installMessageBridge(api);
+    window.dispatchEvent(
+      new MessageEvent("message", { data: { type: INFOLINKS_IMPRESSION_MESSAGE, instanceId: "inst-1" } })
+    );
+    expect(spy).toHaveBeenCalledWith("inst-1");
+    cleanup();
+  });
+
+  it("ignores unrelated messages", () => {
+    const api = buildPublicApi(new InstanceRegistry());
+    const spy = vi.spyOn(api, "infolinksImpression");
+    const cleanup = installMessageBridge(api);
+    window.dispatchEvent(new MessageEvent("message", { data: { type: "somethingElse" } }));
+    window.dispatchEvent(new MessageEvent("message", { data: "not-an-object" }));
+    expect(spy).not.toHaveBeenCalled();
+    cleanup();
+  });
+
+  it("cleanup removes the listener", () => {
+    const api = buildPublicApi(new InstanceRegistry());
+    const spy = vi.spyOn(api, "infolinksImpression");
+    const cleanup = installMessageBridge(api);
+    cleanup();
+    window.dispatchEvent(new MessageEvent("message", { data: { type: INFOLINKS_IMPRESSION_MESSAGE } }));
+    expect(spy).not.toHaveBeenCalled();
   });
 });

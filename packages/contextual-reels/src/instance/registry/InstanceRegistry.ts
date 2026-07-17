@@ -6,6 +6,10 @@ export interface InstanceControls {
   collapse: () => void;
   /** Pause playback on this instance. */
   pause: () => void;
+  /** Fire the Infolinks Impression analytics event. Registered by AdProvider. */
+  fireInfolinksImpression?: () => void;
+  /** Unmount the React root and remove the host node. Registered by the loader (`index.jsx`). */
+  destroy?: () => void;
 }
 
 let _registry: InstanceRegistry | null = null;
@@ -32,9 +36,14 @@ export class InstanceRegistry {
   /** domId → instanceId alias map */
   private readonly _aliases = new Map<string, string>();
 
-  /** Register controls for the given instanceId. Overwrites any existing entry. */
-  register(instanceId: string, controls: InstanceControls): void {
-    this._instances.set(instanceId, controls);
+  /**
+   * Register controls for the given instanceId. Merges into any existing entry
+   * so the loader (`destroy`) and the React tree (the rest) can each contribute
+   * controls without clobbering the other.
+   */
+  register(instanceId: string, controls: Partial<InstanceControls>): void {
+    const existing = this._instances.get(instanceId);
+    this._instances.set(instanceId, { ...existing, ...controls } as InstanceControls);
   }
 
   /**

@@ -6,48 +6,8 @@
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
-import {
-  shouldCountFill,
-  shouldCountNoFill,
-  notifyAdFill,
-  notifyAdNoFill,
-  installGenaiBridge,
-} from "@cxr/ads/waterfall";
+import { notifyAdFill, notifyAdNoFill, installGenaiBridge } from "@cxr/ads/waterfall";
 import { CxrEventBus } from "@cxr/instance/coordination/CxrEventBus";
-
-describe("ads/waterfall — shouldCountFill", () => {
-  it("returns true when not single-hit, regardless of fill count", () => {
-    expect(shouldCountFill(false, 0)).toBe(true);
-    expect(shouldCountFill(false, 1)).toBe(true);
-    expect(shouldCountFill(false, 99)).toBe(true);
-  });
-
-  it("returns true when single-hit and fill count is 0", () => {
-    expect(shouldCountFill(true, 0)).toBe(true);
-  });
-
-  it("returns false when single-hit and fill count is 1+", () => {
-    expect(shouldCountFill(true, 1)).toBe(false);
-    expect(shouldCountFill(true, 2)).toBe(false);
-    expect(shouldCountFill(true, 10)).toBe(false);
-  });
-});
-
-describe("ads/waterfall — shouldCountNoFill", () => {
-  it("returns true when not single-hit, regardless of noFill count", () => {
-    expect(shouldCountNoFill(false, 0)).toBe(true);
-    expect(shouldCountNoFill(false, 5)).toBe(true);
-  });
-
-  it("returns true when single-hit and noFill count is 0", () => {
-    expect(shouldCountNoFill(true, 0)).toBe(true);
-  });
-
-  it("returns false when single-hit and noFill count is 1+", () => {
-    expect(shouldCountNoFill(true, 1)).toBe(false);
-    expect(shouldCountNoFill(true, 2)).toBe(false);
-  });
-});
 
 // ─── notifyAdFill ─────────────────────────────────────────────────────────────
 
