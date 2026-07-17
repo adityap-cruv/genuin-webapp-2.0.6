@@ -348,7 +348,7 @@ function EmbedPlayer({ postDetails, isActive = false, index, itemSize }: EmbedPl
 
   const isSponsored = postDetails.video?.cardLayoutId === 7; // Sponsored content is determined by cardLayoutId 7
 
-  const hidePlayerControls = isEmbed ? itemSize.width < 200 : false;
+  const hidePlayerControls = isEmbed ? itemSize.width < 150 : false;
 
   const isSheetExpanded = isNonDesktop && isActive && (sheetState === "panel-view" || sheetState === "full-view");
 
