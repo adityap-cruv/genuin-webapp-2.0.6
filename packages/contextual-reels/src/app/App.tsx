@@ -170,7 +170,7 @@ function AppOverlay({
       // child stops propagation (e.g. the mute button).
       onPointerDownCapture={markInteracted}
       onKeyDownCapture={markInteracted}>
-      {!isFullScreen && (adLayout === AD_LAYOUT.L4 || adLayout === AD_LAYOUT.L3) && <CloseButton onClick={onDismiss} />}
+      {/* {!isFullScreen && (adLayout === AD_LAYOUT.L4 || adLayout === AD_LAYOUT.L3) && <CloseButton onClick={onDismiss} />} */}
       {children}
     </div>
   );
