@@ -1,7 +1,9 @@
-import React, { Suspense, lazy } from "react";
+import React, { lazy } from "react";
 import { createRoot } from "react-dom/client";
 
 import "@cxr/styles/tailwind.css";
+
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 
 import { initializeRudderAnalytics } from "@cxr/analytics/rudderstack";
 import { EVENT, sendEventLogFromGlobals } from "@cxr/analytics/analytics";
@@ -18,6 +20,7 @@ import { ShadowDomProvider } from "@cxr/shadow-dom-context";
 import { getSharedGeoIp } from "@cxr/services/api";
 import { getVisitIdPromise } from "@cxr/services/feed";
 import { getHostMacro } from "@cxr/hostMacros";
+import { PixelReporter } from "@cxr/observability/pixel-reporter";
 
 // New TypeScript App with provider stack + native feed engine.
 const App = lazy(() => import("./app/App"));
@@ -149,113 +152,147 @@ async function init() {
 
   for (const node of uniqueNodes) {
     node.setAttribute("data-cxr-status", "loading");
-
     const instanceId = getOrSetInstanceId(node);
-    // Single widget per page (see host-macro design): the loader-src `tagId`
-    // wins when present; otherwise fall back to the per-div data-tag-id.
+    // Hoisted above the try so the catch block (and its pixel report) can
+    // still identify the tag even when the failure happens before the rest
+    // of the per-node body runs.
     const tagId = getHostMacro("tagId") ?? node.getAttribute("data-tag-id");
-    // Per-div initial-volume fallback. The page-global GIV script param wins
-    // (resolved in StrategyProvider); this is the per-instance fallback, read
-    // here where the DOM node is available. Raw string — validated downstream.
-    const dataGiv = node.getAttribute("data-giv");
-    let customizationDetails = {};
-    try {
-      customizationDetails = JSON.parse(node.getAttribute("data-customization-details") ?? "{}") ?? {};
-    } catch {
-      // malformed JSON — proceed with empty customization
-    }
 
-    // Wait for geoip and per-tagId visit_id, then send TAG_INIT (once per tagId per page).
-    // If visit_id fails to load, still fire TAG_INIT with geoip only.
-    if (!tagIdsWithTagInit.has(tagId)) {
-      tagIdsWithTagInit.add(tagId);
-      const visitIdPromiseForTag = getVisitIdPromise(tagId);
-      Promise.all([geoipPromise, visitIdPromiseForTag.catch(() => undefined)]).then(([geoip, visitId]) => {
-        const eventDetails = visitId ? { visit_id: visitId } : {};
-        sendEventLogFromGlobals(
-          {
-            eventName: EVENT.TAG_INIT,
-            eventDetails,
-            tagDetails: { tag_id: tagId },
-          },
-          { deviceDetails: enrichDeviceDetailsWithGeoIp(getDeviceDetailsSnapshot(), geoip), userId, windowLink }
-        );
+    try {
+      // Single widget per page (see host-macro design): the loader-src `tagId`
+      // wins when present; otherwise fall back to the per-div data-tag-id.
+      // Per-div initial-volume fallback. The page-global GIV script param wins
+      // (resolved in StrategyProvider); this is the per-instance fallback, read
+      // here where the DOM node is available. Raw string — validated downstream.
+      const dataGiv = node.getAttribute("data-giv");
+      let customizationDetails = {};
+      try {
+        customizationDetails = JSON.parse(node.getAttribute("data-customization-details") ?? "{}") ?? {};
+      } catch {
+        // malformed JSON — proceed with empty customization
+      }
+
+      // Wait for geoip and per-tagId visit_id, then send TAG_INIT (once per tagId per page).
+      // If visit_id fails to load, still fire TAG_INIT with geoip only.
+      if (!tagIdsWithTagInit.has(tagId)) {
+        tagIdsWithTagInit.add(tagId);
+        const visitIdPromiseForTag = getVisitIdPromise(tagId);
+        Promise.all([geoipPromise, visitIdPromiseForTag.catch(() => undefined)]).then(([geoip, visitId]) => {
+          const eventDetails = visitId ? { visit_id: visitId } : {};
+          sendEventLogFromGlobals(
+            {
+              eventName: EVENT.TAG_INIT,
+              eventDetails,
+              tagDetails: { tag_id: tagId },
+            },
+            { deviceDetails: enrichDeviceDetailsWithGeoIp(getDeviceDetailsSnapshot(), geoip), userId, windowLink }
+          );
+        });
+      }
+
+      // Register DOM id as alias so window.cxr.expand("gen-ext-2") works
+      if (node.id) {
+        getInstanceRegistry().registerAlias(node.id, instanceId);
+      }
+
+      // Resolve the slot layout up front so we can decide whether this is the
+      // stacked 320×100 variant before mounting.
+      //
+      // offsetWidth/Height report the element's own layout box and are immune to
+      // ancestor CSS transforms. getBoundingClientRect() reports the post-transform
+      // box, which some hosts inflate: Infolinks wraps our slot in
+      // `transform: scale(...)` containers, so a 320×100 slot measures as ~344×204
+      // there. resolveAdLayout requires an exact size match, so the inflated numbers
+      // resolve to Unknown and the stacked variant fails to activate even when
+      // gen_variant=stacked and the tag id both match.
+      const resolvedLayout = resolveAdLayout(node.offsetWidth, node.offsetHeight);
+
+      // Stacked variant: split the slot into two equal halves — our widget mounts
+      // into the top row (as the config's `ourLayout`); Infolinks fills the bottom.
+      const stackedConfig = resolveStackedLayout(tagId, resolvedLayout);
+      const mountHost = stackedConfig ? setupStackedRows(node, stackedConfig) : node;
+      const adLayout = stackedConfig ? stackedConfig.ourLayout : resolvedLayout;
+
+      // Enable Shadow DOM by default for style isolation.
+      const DEFAULT_SHADOW_DOM_SUPPORT = true;
+
+      // Shadow DOM remains enabled unless explicitly disabled.
+      const useShadowDom = DEFAULT_SHADOW_DOM_SUPPORT || node.getAttribute(DATA_ATTR_SHADOW_DOM_OPT_IN) === "true";
+      const shadowConfig = useShadowDom ? await mountWithShadow(mountHost) : mountDirect(mountHost);
+      const { mountTarget } = shadowConfig;
+
+      const root = createRoot(mountTarget);
+      // Guards against a double root.unmount(), which React 18+ throws on:
+      // the MutationObserver callback below, the registered `destroy` control
+      // (called by AdProvider's passback AND by PixelReporter's best-effort
+      // teardown on a pre-mount failure), and a node-removal race could
+      // otherwise all fire for the same instance.
+      let destroyed = false;
+      const observer = new MutationObserver(function () {
+        if (!document.contains(node) && !destroyed) {
+          destroyed = true;
+          root.unmount();
+          observer.disconnect();
+          node.setAttribute("data-cxr-status", "pending");
+        }
+      });
+      // Observe the parent so we detect when `node` itself is removed.
+      // In shadow DOM mode React renders into the shadow root — not into `node`
+      // directly — so observing `node`'s own childList would never fire.
+      const observeTarget = node.parentNode ?? document.body;
+      observer.observe(observeTarget, { childList: true });
+
+      // Loader-owned teardown control, invoked by AdProvider after
+      // infolinksImpression fires its events, and by PixelReporter on any
+      // reported failure (see observability/pixel-reporter.ts). Disconnect
+      // the observer first so its own unmount path can't race this one.
+      getInstanceRegistry().register(instanceId, {
+        destroy: () => {
+          if (destroyed) return;
+          destroyed = true;
+          observer.disconnect();
+          root.unmount();
+          if (node.parentNode) node.parentNode.removeChild(node);
+          node.setAttribute("data-cxr-status", "pending");
+        },
+      });
+
+      root.render(
+        <ShadowDomProvider config={shadowConfig.enabled ? shadowConfig : null}>
+          <SafeSuspense
+            fallback={null}
+            errorFallback={null}
+            onError={(error) => {
+              PixelReporter.getInstance().report(instanceId, "render", "render_error", {
+                tagId,
+                width: node.offsetWidth,
+                height: node.offsetHeight,
+                error,
+              });
+            }}>
+            <App
+              tagId={tagId}
+              rootTagId={instanceId}
+              customizationDetails={customizationDetails}
+              adLayout={adLayout}
+              instanceId={instanceId}
+              dataGiv={dataGiv}
+            />
+          </SafeSuspense>
+        </ShadowDomProvider>
+      );
+
+      node.setAttribute("data-cxr-status", "done");
+    } catch (error) {
+      console.error(`[contextual-reels] Failed to initialize widget instance "${instanceId}":`, error);
+      node.setAttribute("data-cxr-status", "pending");
+      PixelReporter.getInstance().report(instanceId, "init", "initialization_error", {
+        tagId,
+        width: node.offsetWidth,
+        height: node.offsetHeight,
+        error,
       });
     }
-
-    // Register DOM id as alias so window.cxr.expand("gen-ext-2") works
-    if (node.id) {
-      getInstanceRegistry().registerAlias(node.id, instanceId);
-    }
-
-    // Resolve the slot layout up front so we can decide whether this is the
-    // stacked 320×100 variant before mounting.
-    //
-    // offsetWidth/Height report the element's own layout box and are immune to
-    // ancestor CSS transforms. getBoundingClientRect() reports the post-transform
-    // box, which some hosts inflate: Infolinks wraps our slot in
-    // `transform: scale(...)` containers, so a 320×100 slot measures as ~344×204
-    // there. resolveAdLayout requires an exact size match, so the inflated numbers
-    // resolve to Unknown and the stacked variant fails to activate even when
-    // gen_variant=stacked and the tag id both match.
-    const resolvedLayout = resolveAdLayout(node.offsetWidth, node.offsetHeight);
-
-    // Stacked variant: split the slot into two equal halves — our widget mounts
-    // into the top row (as the config's `ourLayout`); Infolinks fills the bottom.
-    const stackedConfig = resolveStackedLayout(tagId, resolvedLayout);
-    const mountHost = stackedConfig ? setupStackedRows(node, stackedConfig) : node;
-    const adLayout = stackedConfig ? stackedConfig.ourLayout : resolvedLayout;
-
-    // Enable Shadow DOM by default for style isolation.
-    const DEFAULT_SHADOW_DOM_SUPPORT = true;
-
-    // Shadow DOM remains enabled unless explicitly disabled.
-    const useShadowDom = DEFAULT_SHADOW_DOM_SUPPORT || node.getAttribute(DATA_ATTR_SHADOW_DOM_OPT_IN) === "true";
-    const shadowConfig = useShadowDom ? await mountWithShadow(mountHost) : mountDirect(mountHost);
-    const { mountTarget } = shadowConfig;
-
-    const root = createRoot(mountTarget);
-    const observer = new MutationObserver(function () {
-      if (!document.contains(node)) {
-        root.unmount();
-        observer.disconnect();
-        node.setAttribute("data-cxr-status", "pending");
-      }
-    });
-    // Observe the parent so we detect when `node` itself is removed.
-    // In shadow DOM mode React renders into the shadow root — not into `node`
-    // directly — so observing `node`'s own childList would never fire.
-    const observeTarget = node.parentNode ?? document.body;
-    observer.observe(observeTarget, { childList: true });
-
-    // Loader-owned teardown control, invoked by AdProvider after
-    // infolinksImpression fires its events. Disconnect the observer first so its
-    // own unmount path can't race this one.
-    getInstanceRegistry().register(instanceId, {
-      destroy: () => {
-        observer.disconnect();
-        root.unmount();
-        if (node.parentNode) node.parentNode.removeChild(node);
-        node.setAttribute("data-cxr-status", "pending");
-      },
-    });
-
-    root.render(
-      <ShadowDomProvider config={shadowConfig.enabled ? shadowConfig : null}>
-        <Suspense fallback={null}>
-          <App
-            tagId={tagId}
-            rootTagId={instanceId}
-            customizationDetails={customizationDetails}
-            adLayout={adLayout}
-            instanceId={instanceId}
-            dataGiv={dataGiv}
-          />
-        </Suspense>
-      </ShadowDomProvider>
-    );
-
-    node.setAttribute("data-cxr-status", "done");
   }
 }
 

@@ -1,5 +1,6 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { PixelReporter } from "@cxr/observability/pixel-reporter";
 import { __setEnvForTests, createLogger } from "@cxr/utils/logger";
 
 describe("createLogger", () => {
@@ -55,6 +56,34 @@ describe("createLogger", () => {
       expect(infoSpy).not.toHaveBeenCalled();
       expect(warnSpy).toHaveBeenCalledWith("[cxr/prod]", "w");
       expect(errorSpy).toHaveBeenCalledWith("[cxr/prod]", "e");
+    });
+  });
+
+  describe("error → PixelReporter wiring", () => {
+    beforeEach(() => {
+      PixelReporter.getInstance().reset();
+      vi.spyOn(console, "error").mockImplementation(() => undefined);
+    });
+
+    it("calls PixelReporter.report when .error is invoked, passing the args as the reason context", async () => {
+      const reportSpy = vi.spyOn(PixelReporter.getInstance(), "report");
+      const log = createLogger("cxr/test-namespace");
+      const err = new Error("boom");
+
+      log.error("something broke", err);
+
+      await vi.waitFor(() =>
+        expect(reportSpy).toHaveBeenCalledWith(undefined, "runtime", "runtime_error", { error: ["something broke", err] })
+      );
+    });
+
+    it("still writes to console.error", () => {
+      const consoleSpy = vi.spyOn(console, "error");
+      const log = createLogger("cxr/test-namespace");
+
+      log.error("something broke");
+
+      expect(consoleSpy).toHaveBeenCalledWith("[cxr/test-namespace]", "something broke");
     });
   });
 });

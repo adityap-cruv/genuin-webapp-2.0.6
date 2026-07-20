@@ -9,6 +9,7 @@ import { installGenaiBridge, notifyAdFill, notifyAdNoFill } from "@cxr/ads/water
 import { AD_LAYOUT } from "@cxr/config";
 import { CxrEventBus } from "@cxr/instance/coordination/CxrEventBus";
 import { getInstanceRegistry } from "@cxr/instance/registry/InstanceRegistry";
+import { PixelReporter } from "@cxr/observability/pixel-reporter";
 import {
   AdProvider,
   useAdWaterfall,
@@ -106,6 +107,7 @@ describe("providers/AdProvider", () => {
     testFeed = { entries: [], activeIndex: 0 };
     testSingleHit = false;
     (installGenaiBridge as ReturnType<typeof vi.fn>).mockImplementation(() => vi.fn());
+    PixelReporter.getInstance().reset();
   });
 
   afterEach(() => {
@@ -529,5 +531,87 @@ describe("providers/AdProvider", () => {
     const { root, container } = mount(<OptionalOutsider />);
     expect(received).toBeUndefined();
     unmount(root, container);
+  });
+
+  // ── PixelReporter → onAdFail bridge ──────────────────────────────────────
+
+  it("calls onAdFail (full passback) when PixelReporter reports a failure for this instance", () => {
+    // Mirrors index.jsx's real `destroyed` guard: PixelReporter.report() calls
+    // destroy directly (best-effort, non-React path) AND AdProvider's onFailure
+    // listener calls it again via onAdFail()'s firePassback — both target the
+    // same registered instance, so the real destroy control is idempotent.
+    // A bare vi.fn() here would otherwise (correctly) show 2 calls.
+    let destroyed = false;
+    const destroy = vi.fn(() => {
+      destroyed = true;
+    });
+    getInstanceRegistry().register(TEST_INSTANCE_ID, {
+      destroy: () => {
+        if (destroyed) return;
+        destroy();
+      },
+    });
+    const { root, container } = mount(
+      <AdProvider tagId="tag1" adLayout={AD_LAYOUT.L3}>
+        <span>child</span>
+      </AdProvider>
+    );
+
+    act(() => {
+      PixelReporter.getInstance().report(TEST_INSTANCE_ID, "render", "render_error");
+    });
+
+    expect(notifyAdNoFill).toHaveBeenCalledTimes(1);
+    expect(sendEventMock).toHaveBeenCalledWith("Ad Passback", expect.objectContaining({ tag_height: 50, tag_width: 320 }));
+    expect(destroy).toHaveBeenCalledTimes(1);
+
+    getInstanceRegistry().unregister(TEST_INSTANCE_ID);
+    unmount(root, container);
+  });
+
+  it("PixelReporter's best-effort destroy reaches the registered instance even without AdProvider mounted", () => {
+    const destroy = vi.fn();
+    getInstanceRegistry().register(TEST_INSTANCE_ID, { destroy });
+
+    act(() => {
+      PixelReporter.getInstance().report(TEST_INSTANCE_ID, "init", "initialization_error");
+    });
+
+    expect(destroy).toHaveBeenCalledTimes(1);
+
+    getInstanceRegistry().unregister(TEST_INSTANCE_ID);
+  });
+
+  it("ignores a PixelReporter failure reported for a different instanceId", () => {
+    const { root, container } = mount(
+      <AdProvider tagId="tag1">
+        <span>child</span>
+      </AdProvider>
+    );
+
+    act(() => {
+      PixelReporter.getInstance().report("some-other-instance", "render", "render_error");
+    });
+
+    expect(notifyAdNoFill).not.toHaveBeenCalled();
+    expect(sendEventMock).not.toHaveBeenCalledWith("Ad Passback", expect.anything());
+
+    unmount(root, container);
+  });
+
+  it("unsubscribes from PixelReporter on unmount (no passback after unmount)", () => {
+    const { root, container } = mount(
+      <AdProvider tagId="tag1">
+        <span>child</span>
+      </AdProvider>
+    );
+
+    unmount(root, container);
+
+    act(() => {
+      PixelReporter.getInstance().report(TEST_INSTANCE_ID, "render", "render_error");
+    });
+
+    expect(notifyAdNoFill).not.toHaveBeenCalled();
   });
 });

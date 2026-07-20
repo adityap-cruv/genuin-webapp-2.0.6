@@ -52,6 +52,14 @@ export function createLogger(namespace: string): Logger {
     debug: prod ? noop : (...args: unknown[]) => console.debug(tag, ...args),
     info: prod ? noop : (...args: unknown[]) => console.info(tag, ...args),
     warn: (...args: unknown[]) => console.warn(tag, ...args),
-    error: (...args: unknown[]) => console.error(tag, ...args),
+    error: (...args: unknown[]) => {
+      console.error(tag, ...args);
+      // Lazy import avoids a static cycle: pixel-reporter → config, logger is
+      // imported from nearly everywhere, so a top-level import here risks
+      // circular-import ordering issues in some bundlers.
+      void import("@cxr/observability/pixel-reporter").then(({ PixelReporter }) => {
+        PixelReporter.getInstance().report(undefined, "runtime", "runtime_error", { error: args });
+      });
+    },
   };
 }

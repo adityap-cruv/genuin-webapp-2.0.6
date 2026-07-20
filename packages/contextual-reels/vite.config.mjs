@@ -24,6 +24,7 @@ const CDN_BASE_HOST = nodeEnv === 'production'
   : 'https://media.qa.begenuin.com';
 const CDN_BASE = `${CDN_BASE_HOST}/cxr/${pkgVersion}/`;
 const STABLE_LOADER_NAME = "gen_ext.min.js";
+const PIXEL_URL = process.env.VITE_CXR_PIXEL_URL || "https://api.begenuin.com/goservices/dsp/pixel";
 
 // Replace build-time placeholders in the stable loader so it can resolve the
 // hashed core chunk + CSS asset emitted alongside it.
@@ -53,7 +54,8 @@ const processLoaderPlugin = () => ({
     loaderCode = loaderCode
       .replace(/__CR_CORE_FILENAME__/g, coreFile)
       .replace(/__CR_CSS_FILENAME__/g, cssFile ?? "")
-      .replace(/__CR_CDN_BASE__/g, CDN_BASE);
+      .replace(/__CR_CDN_BASE__/g, CDN_BASE)
+      .replace(/__CR_PIXEL_URL__/g, PIXEL_URL);
     fs.writeFileSync(loaderPath, header + loaderCode, "utf8");
 
     // Keep in-memory bundle in sync so downstream plugins see the patched code.

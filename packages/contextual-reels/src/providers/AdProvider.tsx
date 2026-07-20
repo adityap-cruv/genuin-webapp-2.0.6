@@ -10,6 +10,7 @@ import { AD_LAYOUT, type AdLayoutId, adLayoutVariants } from "@cxr/config";
 import { useEventBus } from "@cxr/instance/coordination/EventBusContext";
 import { useInstanceId } from "@cxr/instance/registry/InstanceContext";
 import { getInstanceRegistry } from "@cxr/instance/registry/InstanceRegistry";
+import { PixelReporter } from "@cxr/observability/pixel-reporter";
 import { useAnalytics } from "@cxr/providers/AnalyticsProvider";
 import { useFeed } from "@cxr/providers/FeedProvider";
 import { useStrategy } from "@cxr/strategies/StrategyProvider";
@@ -152,6 +153,18 @@ export function AdProvider({ children, adLayout = AD_LAYOUT.Unknown }: AdProvide
       () => onAdFail()
     );
   }, [bus, onAdSuccess, onAdFail]);
+
+  // Bridge PixelReporter's failure signal (render/runtime stages — the stages
+  // reachable while this provider is mounted) into the full ad-waterfall
+  // passback: analytics event + widget teardown, not just the best-effort
+  // window callback PixelReporter fires on its own. Filters by instanceId so
+  // a failure reported for a different widget on the same page is ignored.
+  useEffect(() => {
+    return PixelReporter.getInstance().onFailure((event) => {
+      if (event.instanceId !== instanceId) return;
+      onAdFail();
+    });
+  }, [instanceId, onAdFail]);
 
   // Host-triggered via `window.cxr.infolinksImpression(...)`. Registered here —
   // the only scope with sendEvent + tag dimensions.
