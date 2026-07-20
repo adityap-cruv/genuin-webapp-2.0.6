@@ -117,7 +117,7 @@ function extractReason(source: unknown): string | undefined {
 
 /**
  * Build the full `px-script-error` pixel URL. `brandId`/`tagId` are path
- * segments — `brandId` falls back to `"0"` when unknown (e.g. the tag fetch
+ * segments — `brandId` falls back to `"1"` when unknown (e.g. the tag fetch
  * itself is what failed, so `tagDetails.brand_id` was never resolved);
  * `tagId` is expected to always be known (it's the widget's configured tag,
  * available before any fetch). Only host-macro values that were actually
@@ -136,7 +136,7 @@ function buildPixelUrl(
   reason: string | undefined
 ): string {
   const base = resolvePixelBaseUrl();
-  const brandSegment = brandId === undefined || brandId === "" ? "0" : String(brandId);
+  const brandSegment = brandId === undefined || brandId === "" ? "1" : String(brandId);
   const resolvedTagId = tagId && tagId.trim() ? tagId : (readHostMacroBestEffort("tagId") ?? "0");
   const tagSegment = resolvedTagId && resolvedTagId.trim() ? resolvedTagId : "0";
   const path = `${base}/${encodeURIComponent(brandSegment)}/${encodeURIComponent(tagSegment)}/px-script-error`;
@@ -236,7 +236,7 @@ export type PixelFailureListener = (event: PixelFailureEvent) => void;
 export interface PixelReportContext {
   /** Widget's configured tag id — expected to always be known. Falls back to `"0"` when absent. */
   tagId?: string;
-  /** Resolved brand id, only known once the tag fetch succeeds. Falls back to `"0"` when absent. */
+  /** Resolved brand id, only known once the tag fetch succeeds. Falls back to `"1"` when absent. */
   brandId?: string | number;
   /** Ad slot width in px, for the pixel's `w` param. Falls back to `"0"` when absent. */
   width?: number;

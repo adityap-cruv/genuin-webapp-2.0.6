@@ -116,7 +116,7 @@ describe("PixelReporter", () => {
       delete (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__;
     });
 
-    it("puts brandId/tagId as path segments, falling back to 0 when absent", () => {
+    it("puts brandId/tagId as path segments, falling back to 1/0 when absent", () => {
       PixelReporter.getInstance().report("instance-1", "init", "initialization_error", {
         brandId: 42,
         tagId: "tag-abc",
@@ -126,11 +126,11 @@ describe("PixelReporter", () => {
       expect(url.pathname).toBe("/goservices/dsp/pixel/42/tag-abc/px-script-error");
     });
 
-    it("falls back to 0/0 in the path when brandId/tagId are not provided", () => {
+    it("falls back to 1/0 in the path when brandId/tagId are not provided", () => {
       PixelReporter.getInstance().report("instance-1", "init", "initialization_error");
 
       const url = new URL(capturedSrc);
-      expect(url.pathname).toBe("/goservices/dsp/pixel/0/0/px-script-error");
+      expect(url.pathname).toBe("/goservices/dsp/pixel/1/0/px-script-error");
     });
 
     it("uses the initial loader tagId from window.__CXR_SCRIPT_PARAMS__ when no tagId is passed", () => {
@@ -139,7 +139,7 @@ describe("PixelReporter", () => {
       PixelReporter.getInstance().report("instance-1", "init", "initialization_error");
 
       const url = new URL(capturedSrc);
-      expect(url.pathname).toBe("/goservices/dsp/pixel/0/loader-tag/px-script-error");
+      expect(url.pathname).toBe("/goservices/dsp/pixel/1/loader-tag/px-script-error");
     });
 
     it("resolves host macros from window.__CXR_SCRIPT_PARAMS__ into query params", () => {
