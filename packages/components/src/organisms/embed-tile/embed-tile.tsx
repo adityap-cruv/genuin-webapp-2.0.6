@@ -19,6 +19,7 @@ import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
 import { SDKEventEmitter, SDKEventName } from "@genuin/components/lib/sdk-event-emitter";
 import { isMiddlewareOverlayEnabled } from "@genuin/components/lib/utils";
 import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
+import { addIheartCtaCampaign } from "@genuin/components/lib/utils/iheart-url";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { PlayerProvider, usePlayerContext } from "@genuin/components/molecules/feed-player/context";
 import { EmbedMuteButton } from "@genuin/components/molecules/feed-player/control-layer/controls/embed";
@@ -99,6 +100,11 @@ function getLinkoutUrl(linkouts: any): string | null {
 
   return null;
 }
+
+// KFI placement whose iPhone-iframe tile tap should redirect to the video's own Listen
+// Live CTA instead of opening the (non-fullscreenable) expand view.
+// Mirrors KFI_PLACEMENT_IDS in embed.tsx / listen-live-button.tsx.
+const KFI_PLACEMENT_IDS = ["6a58b607d38c51231b98e981"];
 
 const embedTileVariants = cva("gencl:h-full gencl:rounded-lg gencl:overflow-clip gencl:flex gencl:flex-col", {
   variants: {
@@ -215,12 +221,28 @@ type EmbedPlayerProps = {
 
 function EmbedPlayer({ postDetails, isActive = false, index, itemSize }: EmbedPlayerProps) {
   const { isAdPlaying } = usePlayerContext();
-  const { isEmbed } = useBaseContext();
+  const { isEmbed, isInIframe } = useBaseContext();
   const config = useEmbedConfigs();
   const [isAdFilled, setIsAdFilled] = useState(false);
   // Ad types whose creatives should suppress the control layer (banner/display/native).
   const [hideControlsForAd, setHideControlsForAd] = useState(false);
   const { changeActivePlayerType, embedData } = useEmbedContext();
+
+  // KFI + iframe only: on iPhone Safari the fullscreen API is blocked inside an iframe, so
+  // opening the expand view can't go fullscreen. For this placement, redirect the tile tap
+  // to the video's Listen Live CTA instead of opening expand view. Returns true when handled.
+  const isKfiPlacement = !!embedData?.placement_id && KFI_PLACEMENT_IDS.includes(embedData.placement_id);
+  const maybeRedirectInsteadOfExpand = useCallback((): boolean => {
+    if (!isKfiPlacement || !isInIframe) return false;
+    if (typeof document === "undefined") return false;
+    const docEl = document.documentElement as HTMLElement & { webkitRequestFullscreen?: () => void };
+    const noNativeFullscreenApi = !docEl.requestFullscreen && !docEl.webkitRequestFullscreen;
+    if (!noNativeFullscreenApi) return false;
+    const ctaLink = postDetails.video?.linkouts?.[0]?.cta_link;
+    if (!ctaLink) return false;
+    window.open(addIheartCtaCampaign(ctaLink), "_blank", "noopener,noreferrer");
+    return true;
+  }, [isKfiPlacement, isInIframe, postDetails.video?.linkouts]);
   const videoCrop = config.video.videoCrop;
 
   const embedDetails = useSafeEmbedContext();
@@ -261,10 +283,10 @@ function EmbedPlayer({ postDetails, isActive = false, index, itemSize }: EmbedPl
     const prev = prevLinkoutsSheetStateRef.current;
     const userDraggedToExpand = prev === "default-active" && linkoutsSheetState === "expand-view";
     if (linkoutsSheetState === "panel-view" || linkoutsSheetState === "full-view" || userDraggedToExpand) {
-      changeActivePlayerType("expand-view", index);
+      if (!maybeRedirectInsteadOfExpand()) changeActivePlayerType("expand-view", index);
     }
     prevLinkoutsSheetStateRef.current = linkoutsSheetState;
-  }, [linkoutsSheetState, isActive, changeActivePlayerType, index, embedDetails]);
+  }, [linkoutsSheetState, isActive, changeActivePlayerType, index, embedDetails, maybeRedirectInsteadOfExpand]);
 
   // Carousel re-open: when the active video changes to one that has a
   // linkout, ensure "linkouts" is in `activeSheetContentTypes`. Gated on
@@ -326,9 +348,10 @@ function EmbedPlayer({ postDetails, isActive = false, index, itemSize }: EmbedPl
     }
 
     if (config.expandViewConfig.enable) {
+      if (maybeRedirectInsteadOfExpand()) return;
       changeActivePlayerType("expand-view", index);
     }
-  }, [isAdPlaying, changeActivePlayerType, index, postDetails, embedData.card_layout_id]);
+  }, [isAdPlaying, changeActivePlayerType, index, postDetails, embedData.card_layout_id, maybeRedirectInsteadOfExpand]);
 
   // Hide the control layer while an ad is showing, and notify the parent
   // so it can lock the swiper and disable navigation buttons.

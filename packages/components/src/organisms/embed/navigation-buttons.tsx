@@ -4,6 +4,7 @@ import type { PlayerControlSize } from "@genuin/ui/player-controls";
 import type { CSSProperties } from "react";
 import { useCallback, useState, useEffect } from "react";
 
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
@@ -12,6 +13,12 @@ import { markSwipeIntent } from "@genuin/components/organisms/player-swiper/swip
 
 import { useEmbedManagerContext } from "./context";
 import { NavigationButtonsV2 } from "./navigation-buttons-v2";
+
+// DEMO-ONLY: KFI placement whose narrow fixed-width carousel docks the prev/next
+// buttons to the video's edges instead of the default centered row. Every other
+// iHeart carousel keeps the original centered layout untouched.
+// Mirrors KFI_PLACEMENT_IDS in embed.tsx / listen-live-button.tsx / embed-tile.tsx.
+const KFI_PLACEMENT_IDS = ["6a58b607d38c51231b98e981"];
 
 // Common types
 type Theme = "light" | "dark";
@@ -86,6 +93,10 @@ export function NavigationButtons({
   const {
     dimensions: { aspectRatio },
   } = useEmbedConfigs();
+  // DEMO-ONLY gate: edge-docked carousel nav is limited to the KFI placement.
+  const embedDetails = useSafeEmbedContext();
+  const placementId = embedDetails?.embedData?.placement_id;
+  const isKfiPlacement = !!placementId && KFI_PLACEMENT_IDS.includes(placementId);
 
   // Early return if navigation is disabled
   if (!isNavigationControlEnabled || hideNavButtons) return null;
@@ -166,7 +177,7 @@ export function NavigationButtons({
   // iHeart layout - feed gets vertical buttons; 16:9 carousels get centered
   // horizontal buttons below the embed. Other carousels fall through to the
   // standard left/right block.
-  if (isIheartLayout && (!isCarousel || aspectRatio === "16:9")) {
+  if (isIheartLayout && (!isCarousel || aspectRatio === "16:9") && !(isCarousel && isKfiPlacement)) {
     // Define styles based on theme
     const isDarkTheme = theme === "dark";
 
@@ -221,6 +232,7 @@ export function NavigationButtons({
         </div>
       );
     };
+
     return (
       <div className={iheartNavigationDivClasses}>
         <IHeartNavButton
