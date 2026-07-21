@@ -313,21 +313,31 @@ export function sendEventLog(args: SendEventLogArgs, deps: SendEventLogDeps): vo
     ...(videoDetails.video?.id ? { video_id: videoDetails.video.id } : {}),
   };
 
-  const mergedEventDetails = deepMergeOverwrite(
-    updatedEventDetails,
-    offsite.event_details ?? offsite.eventDetails ?? {}
-  );
+  // `offsite` is host-supplied (`window.offsitePropertiesConfig`) — a malformed
+  // value (throwing getter, exotic proxy) must never break event dispatch. The
+  // merge itself is already cycle/depth-guarded (see deepMergeOverwrite); this
+  // is the outer belt-and-suspenders: on ANY merge failure, keep the base block.
+  const safeMerge = <T extends Record<string, unknown>>(baseBlock: T, overlay: unknown): T => {
+    try {
+      return deepMergeOverwrite(baseBlock, overlay ?? {}) as T;
+    } catch (err) {
+      _logger.warn("offsite merge failed; using base block", err);
+      return baseBlock;
+    }
+  };
+
+  const mergedEventDetails = safeMerge(updatedEventDetails, offsite.event_details ?? offsite.eventDetails);
 
   // Host macros go first so the real device snapshot / user_id win on any
   // future key collision — host macros are additive, never clobbering.
-  const mergedDeviceDetails = deepMergeOverwrite(
+  const mergedDeviceDetails = safeMerge(
     { ...macroBlocks.device, ...(deviceDetails as unknown as Record<string, unknown>) },
-    offsite.device_details ?? offsite.deviceDetails ?? {}
+    offsite.device_details ?? offsite.deviceDetails
   );
 
-  const mergedUserDetails = deepMergeOverwrite(
+  const mergedUserDetails = safeMerge(
     { ...macroBlocks.user, user_id: userId },
-    offsite.user_details ?? offsite.userDetails ?? {}
+    offsite.user_details ?? offsite.userDetails
   );
 
   // Immutable: offsite config cannot override the incoming event name.

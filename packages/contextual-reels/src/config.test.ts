@@ -234,6 +234,40 @@ describe("config/stackedLayout", () => {
     expect(hasStackedVariant()).toBe(false);
   });
 
+  it("terminates via MAX_FRAME_WALK when the frame chain never converges", () => {
+    // Nested cross-origin ad frames (SafeFrame/GAM/Infolinks) can return a fresh
+    // WindowProxy identity on every `.parent` access, so `win.parent === win`
+    // never becomes true. Here each frame's location IS readable (no throw to
+    // break the loop) but carries no match — only the hard MAX_FRAME_WALK cap
+    // stops the otherwise-infinite climb. Without the cap this test hangs.
+    let framesVisited = 0;
+    const makeEndlessFrame = (): unknown =>
+      new Proxy(
+        {},
+        {
+          get(_t, prop) {
+            if (prop === "parent") return makeEndlessFrame(); // never === self
+            if (prop === "location") {
+              framesVisited++;
+              return { href: "http://ad-frame.example/none?x=1" }; // readable, no match
+            }
+            return undefined;
+          },
+        }
+      );
+
+    Object.defineProperty(window, "location", {
+      configurable: true,
+      value: { href: "http://example.com/page", search: "", hostname: "example.com" },
+    });
+    Object.defineProperty(window, "parent", { configurable: true, get: () => makeEndlessFrame() });
+    Object.defineProperty(document, "referrer", { configurable: true, get: () => "" });
+
+    // Returns (does not hang) and the walk is bounded — not thousands of frames.
+    expect(hasStackedVariant()).toBe(false);
+    expect(framesVisited).toBeLessThanOrEqual(20);
+  });
+
   it("activates only for the opted-in tag at L4 with the param present", () => {
     setSearch("?gen_variant=stacked");
     expect(shouldUseStackedLayout(STACKED_LAYOUT_TAG_ID, AD_LAYOUT.L4)).toBe(true);

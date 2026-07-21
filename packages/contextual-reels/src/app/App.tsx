@@ -239,7 +239,15 @@ function TagLoader({ tagId, rootTagId, customizationDetails, adLayout, onLoaded,
         let merged = td;
 
         if (customizationDetails) {
-          merged = deepMergeOverwrite(td, customizationDetails) as Record<string, unknown>;
+          // customizationDetails is host-supplied (data-customization-details).
+          // The merge is cycle/depth-guarded, but keep the tag config usable
+          // even if it ever throws — a bad customization must not blank the feed.
+          try {
+            merged = deepMergeOverwrite(td, customizationDetails) as Record<string, unknown>;
+          } catch (mergeErr) {
+            logger.warn("customization merge failed; using tag config as-is", mergeErr);
+            merged = td;
+          }
 
           // Preserve CTA delay from customizationDetails
           const delay = (customizationDetails["delay"] as number | undefined) ?? 3;

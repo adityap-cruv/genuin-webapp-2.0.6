@@ -10,6 +10,8 @@ function makeFetchResponse(body: unknown): Response {
     ok: true,
     status: 200,
     json: () => Promise.resolve(body),
+    // feed now parses via parseJsonResponse, which reads .text() first.
+    text: () => Promise.resolve(JSON.stringify(body)),
   } as unknown as Response;
 }
 

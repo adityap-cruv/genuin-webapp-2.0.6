@@ -11,7 +11,7 @@
  */
 import { EVENT } from "@cxr/analytics/analytics";
 import { windowLink as defaultWindowLink } from "@cxr/platform/topWindow";
-import { apiFetch, handleResponse, type ResponseLike } from "@cxr/services/api";
+import { apiFetch, handleResponse, parseJsonResponse } from "@cxr/services/api";
 
 /** Per-tagId visit_id promises. Each tagId gets its own promise. */
 const visitIdPromises = new Map<string, Promise<string>>();
@@ -135,7 +135,7 @@ export function createFeedGenerator(args: FactoryArgs): () => Promise<Reel[]> {
     if (ref !== undefined) params.set("ref", ref);
 
     const response = await fetch_(`/goservices/ad_creative/feed?${params}`);
-    const json = (await response.json()) as ResponseLike<FeedResponseShape>;
+    const json = await parseJsonResponse<FeedResponseShape>(response);
 
     const data = handleResponse<FeedResponseShape>(json);
     refs[tagId] = data.ref;

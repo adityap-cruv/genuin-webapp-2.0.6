@@ -19,6 +19,28 @@ export interface ResponseLike<T = unknown> {
 }
 
 /**
+ * Parse a `Response` body as JSON, tolerating an empty or non-JSON body.
+ *
+ * `response.json()` throws `Unexpected end of JSON input` (or `Failed to
+ * execute 'json' on 'Response'`) on an empty body — which a gateway returns on
+ * a 204, a truncated/aborted response, or an edge-cached miss. Reading the raw
+ * text first and treating empty/unparseable as `{}` turns that into the clean,
+ * expected `No Data found` path in {@link handleResponse} instead of a raw
+ * parse error that surfaces as an error pixel.
+ *
+ * @returns The parsed shape, or an empty object when the body is empty/invalid.
+ */
+export async function parseJsonResponse<T = unknown>(response: Response): Promise<ResponseLike<T>> {
+  const text = await response.text();
+  if (!text.trim()) return {};
+  try {
+    return JSON.parse(text) as ResponseLike<T>;
+  } catch {
+    return {};
+  }
+}
+
+/**
  * Unwrap a Genuin API response. Returns `response.data.data` when present,
  * otherwise `response.data`. Throws if both are falsy.
  *
@@ -152,7 +174,7 @@ export async function getTag<T = unknown>(
 ): Promise<T> {
   const params = new URLSearchParams({ tag_id: tagId });
   const response = await fetchFn(`/goservices/ad_creative?${params}`);
-  const json = (await response.json()) as ResponseLike<T>;
+  const json = await parseJsonResponse<T>(response);
   return handleResponse<T>(json);
 }
 
@@ -193,8 +215,9 @@ export async function getIpInfo(
   fetchFn: (url: string, init?: RequestInit) => Promise<Response> = apiFetch
 ): Promise<RawGeoIpResponse> {
   const response = await fetchFn("/goservices/data/ip_info");
-  // ip_info returns flat JSON, not the standard { data: {...} } envelope.
-  return (await response.json()) as RawGeoIpResponse;
+  // ip_info returns flat JSON, not the standard { data: {...} } envelope. An
+  // empty/invalid body yields {} — consumers read every field defensively.
+  return (await parseJsonResponse<RawGeoIpResponse>(response)) as RawGeoIpResponse;
 }
 
 let cachedGeoIp: Promise<RawGeoIpResponse | null> | undefined;

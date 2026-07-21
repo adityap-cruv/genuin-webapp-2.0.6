@@ -5,6 +5,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 import {
   handleResponse,
+  parseJsonResponse,
   __createApiFetch,
   apiFetch,
   getTag,
@@ -49,6 +50,19 @@ function makeFetchResponse(body: unknown, status = 200): Response {
     ok: status >= 200 && status < 300,
     status,
     json: () => Promise.resolve(body),
+    // `getTag`/`getIpInfo`/feed now parse via `parseJsonResponse`, which reads
+    // `.text()` first (to tolerate an empty body) — mirror that on the mock.
+    text: () => Promise.resolve(JSON.stringify(body)),
+  } as unknown as Response;
+}
+
+/** A response with a raw text body (empty string, whitespace, or garbage). */
+function makeRawResponse(text: string, status = 200): Response {
+  return {
+    ok: status >= 200 && status < 300,
+    status,
+    json: () => (text.trim() ? Promise.resolve(JSON.parse(text)) : Promise.reject(new SyntaxError("Unexpected end of JSON input"))),
+    text: () => Promise.resolve(text),
   } as unknown as Response;
 }
 
@@ -260,6 +274,44 @@ describe("services/getTag", () => {
     const mockFetch = vi.fn().mockResolvedValue(makeFetchResponse({}));
     await expect(getTag("t-3", mockFetch)).rejects.toThrow("No Data found");
   });
+
+  it('turns an EMPTY body into "No Data found", not a raw JSON parse error', async () => {
+    // Regression: a 204 / truncated / edge-cached-miss response has an empty
+    // body. `response.json()` would throw "Unexpected end of JSON input" (an
+    // error-pixel). parseJsonResponse yields {} → the clean No Data path.
+    const mockFetch = vi.fn().mockResolvedValue(makeRawResponse(""));
+    await expect(getTag("t-empty", mockFetch)).rejects.toThrow("No Data found");
+  });
+
+  it('turns a whitespace-only body into "No Data found"', async () => {
+    const mockFetch = vi.fn().mockResolvedValue(makeRawResponse("   \n  "));
+    await expect(getTag("t-ws", mockFetch)).rejects.toThrow("No Data found");
+  });
+
+  it('turns a non-JSON body into "No Data found", not a parse error', async () => {
+    const mockFetch = vi.fn().mockResolvedValue(makeRawResponse("<html>502 Bad Gateway</html>"));
+    await expect(getTag("t-html", mockFetch)).rejects.toThrow("No Data found");
+  });
+});
+
+// ─── parseJsonResponse ─────────────────────────────────────────────────────────
+
+describe("services/parseJsonResponse", () => {
+  it("parses a normal JSON body", async () => {
+    expect(await parseJsonResponse(makeRawResponse('{"data":{"a":1}}'))).toEqual({ data: { a: 1 } });
+  });
+
+  it("returns {} for an empty body instead of throwing", async () => {
+    expect(await parseJsonResponse(makeRawResponse(""))).toEqual({});
+  });
+
+  it("returns {} for a whitespace-only body", async () => {
+    expect(await parseJsonResponse(makeRawResponse("  \t\n "))).toEqual({});
+  });
+
+  it("returns {} for an unparseable body instead of throwing", async () => {
+    expect(await parseJsonResponse(makeRawResponse("not json at all"))).toEqual({});
+  });
 });
 
 // ─── getIpInfo ────────────────────────────────────────────────────────────────
@@ -279,6 +331,11 @@ describe("services/getIpInfo", () => {
   it("propagates errors from the fetch function", async () => {
     const mockFetch = vi.fn().mockRejectedValue(new Error("network"));
     await expect(getIpInfo(mockFetch)).rejects.toThrow("network");
+  });
+
+  it("returns {} (not a parse error) when the body is empty", async () => {
+    const mockFetch = vi.fn().mockResolvedValue(makeRawResponse(""));
+    await expect(getIpInfo(mockFetch)).resolves.toEqual({});
   });
 });
 

@@ -294,6 +294,14 @@ export function getInitVolumeOverride(dataGiv?: string | null): number | undefin
   return parseGivValue(getScriptParam(GIV_PARAM)) ?? parseGivValue(dataGiv);
 }
 
+/**
+ * Hard cap on the ancestor-frame walk in {@link hasStackedVariant}. Real embeds
+ * nest a handful of frames at most; a higher count means a host frame tree whose
+ * `.parent` never converges to a top window (nested cross-origin ad frames can
+ * return a fresh `WindowProxy` identity per access), which would otherwise spin.
+ */
+const MAX_FRAME_WALK = 20;
+
 export function hasStackedVariant(): boolean {
   if (typeof window === "undefined") return false;
 
@@ -303,12 +311,22 @@ export function hasStackedVariant(): boolean {
   if (getScriptParam(STACKED_VARIANT_PARAM) === STACKED_VARIANT_VALUE) return true;
 
   // 2. Walk the ancestor chain, reading each frame's URL where the same-origin
-  //    policy permits it. `win.parent === win` at the top frame terminates.
-  for (let win: Window | null = window; win; win = win === win.parent ? null : win.parent) {
+  //    policy permits it. Bounded two ways so a pathological host frame tree can
+  //    never hang this: (a) `win.parent === win` at the top frame terminates
+  //    normally; (b) a hard MAX_FRAME_WALK cap backstops hosts where nested
+  //    cross-origin ad frames (SafeFrame/GAM/Infolinks) return a fresh
+  //    `WindowProxy` identity on every `.parent` access, so the identity check
+  //    never fires. The `.parent` access is kept inside the try because reading
+  //    it can itself throw on some sandboxed frames.
+  let win: Window | null = window;
+  for (let i = 0; win && i < MAX_FRAME_WALK; i++) {
     try {
       if (urlHasStackedVariant(win.location.href)) return true;
+      const parent: Window = win.parent;
+      win = parent === win ? null : parent;
     } catch {
-      // cross-origin frame — cannot read its location; keep climbing
+      // cross-origin frame — cannot read location/parent; stop climbing.
+      break;
     }
   }
 
