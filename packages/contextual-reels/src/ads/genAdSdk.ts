@@ -525,12 +525,14 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
             onAdImpression: (event?: {
               provider?: AdProviderKind;
               advertiserDomain?: string;
+              creativeId?: string;
               mediaFileUrl?: string;
             }) => {
               const adEventDetails = {
                 provider: event?.provider,
                 ad_source: (event?.provider && platforms[event.provider]) || adSource,
                 advertiser_domain: event?.advertiserDomain,
+                creative_id: event?.creativeId,
                 media_file_url: event?.mediaFileUrl,
               };
               sendEvent(EVENT.AD_IMPRESSION, adEventDetails);

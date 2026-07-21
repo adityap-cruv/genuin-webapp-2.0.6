@@ -246,6 +246,7 @@ export function GenAdContainer({
                   provider: event?.provider,
                   ad_source: getAdSource(configRef.current, event?.provider),
                   advertiser_domain: event?.advertiserDomain,
+                  creative_id: event?.creativeId,
                   media_file_url: event?.mediaFileUrl,
                 });
               },
