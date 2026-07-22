@@ -6,6 +6,7 @@ import { useLayoutEffect, useMemo, useState } from "react";
 import { useBaseContext } from "@genuin/components/context/base";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import type { CustomizationType } from "@genuin/components/context/embed/embed.types";
+import { isCurrentPageIheartSubdomain } from "@genuin/components/lib/utils/iheart-url";
 import { resolveControlSize } from "@genuin/components/molecules/feed-player/control-layer/player-control-size";
 import type { FeedType } from "@genuin/components/types/post";
 
@@ -469,10 +470,7 @@ export function useEmbedConfigs() {
        */
       showCloseButton: isEmbed ? embedData?.style !== "standard_wall" : false,
       feedDisplayPreference: customization?.feed_display_pref || "default",
-      isIheartArticlePage:
-        brandLayoutType === "iheart" &&
-        typeof window !== "undefined" &&
-        /(^|\.)iheart\.com$/.test(window.location.hostname),
+      isIheartArticlePage: brandLayoutType === "iheart" && isCurrentPageIheartSubdomain(),
     };
   }, [customization, isMobile]);
 

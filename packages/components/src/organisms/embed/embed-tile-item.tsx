@@ -17,6 +17,11 @@ import { EmbedTile } from "../embed-tile";
 import { useEmbedManagerContext } from "./context";
 import { isSlideVisible } from "./utils";
 
+// Demo KFI carousel placement: auto-advance disabled (video ends and stays put;
+// user navigates manually via the edge nav buttons). Scoped to this one placement.
+// Mirrors KFI_PLACEMENT_IDS in embed.tsx / embed-tile.tsx / navigation-buttons.tsx.
+const KFI_NO_AUTO_ADVANCE_PLACEMENT_IDS = ["6a58b607d38c51231b98e981"];
+
 type EmbedItemProps = Omit<ComponentProps<typeof EmbedTile>, "onPlayerIterationEnd" | "isActive"> & {
   index: number;
   /**
@@ -50,7 +55,9 @@ export function EmbedItem({
   const { updateActiveIndex, goToNextVideo, activeIndex } = useEmbedManagerContext();
   const config = useEmbedConfigs();
   const { isPlaying, baseContextManager } = useBaseContext();
-  const { embedEventBus, updateSelectedSection } = useEmbedContext();
+  const { embedEventBus, updateSelectedSection, embedData } = useEmbedContext();
+  const isKfiNoAdvancePlacement =
+    !!embedData?.placement_id && KFI_NO_AUTO_ADVANCE_PLACEMENT_IDS.includes(embedData.placement_id);
   const { isTablet, isMobile } = useDeviceDetection();
   const [isHovering, setIsHovering] = useState(false);
 
@@ -150,6 +157,9 @@ export function EmbedItem({
     (move?: boolean) => {
       // Use intelligent auto-scroll for placement view when enabled
 
+      // Demo KFI carousel: never auto-advance on video end.
+      if (isKfiNoAdvancePlacement) return;
+
       if (move) {
         goToNextVideo(true);
         return;
@@ -166,7 +176,7 @@ export function EmbedItem({
       const useAutoScroll = config.view.isPlacementView && config.video.autoScrollToNextSlide;
       goToNextVideo(useAutoScroll);
     },
-    [goToNextVideo, config, moveToNext, moveToNextTime]
+    [goToNextVideo, config, moveToNext, moveToNextTime, isKfiNoAdvancePlacement]
   );
 
   // Auto-advance logic: Move to next video after moveToNextTime seconds
@@ -182,6 +192,7 @@ export function EmbedItem({
     // 5. user is not hovering over this tile
     // 6. video is in active playing state.
     if (
+      isKfiNoAdvancePlacement ||
       activeIndex !== index ||
       moveToNextTime === 0 ||
       !moveToNext ||
@@ -249,6 +260,7 @@ export function EmbedItem({
     baseContextManager,
     isOctoVisible,
     isAdPlaying,
+    isKfiNoAdvancePlacement,
   ]);
 
   return (
