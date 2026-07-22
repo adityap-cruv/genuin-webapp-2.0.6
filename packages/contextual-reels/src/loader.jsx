@@ -8,11 +8,42 @@
 (function () {
   "use strict";
 
+  var PIXEL_URL = "__CR_PIXEL_URL__";
+
+  // High-level "loader reached" beacon — the FIRST statement executed in the
+  // IIFE. Fires before any script-src/macro/CSS/boot logic so it is a pure,
+  // unconditional "loader ran" signal that can never fire in a partially-booted
+  // or doubtful state. tagId + host macros are unresolved here, so the path uses
+  // "0" and no query params are sent.
+  //
+  // Fired via `new Image()` GET, NOT `navigator.sendBeacon`: the pixel endpoint
+  // is GET-only (POST → 405), and sendBeacon always POSTs — worse, it reports
+  // success on merely queuing the POST, which would mask the 405 and suppress a
+  // fallback. A GET image request matches the endpoint and mirrors the existing
+  // px-script-error pixel. Fail-safe by construction: the whole block is wrapped
+  // so a beacon failure can NEVER interrupt script execution, `Image` is feature-
+  // detected so a WebView without it just no-ops, and a build-placeholder guard
+  // stops a misbuild from firing a bogus request. Note: no client technique can
+  // defeat a host-app CSP that blocks the pixel domain — that must be fixed by
+  // allowlisting the domain on the host side.
+  try {
+    if (PIXEL_URL && PIXEL_URL.indexOf("__CR_") === -1 && typeof Image === "function") {
+      var pxLoUrl = PIXEL_URL + "/0/0/px-lo";
+      new Image().src = pxLoUrl;
+      try {
+        console.log("[contextual-reels][PixelReporter] fired pixel (px-lo):", pxLoUrl);
+      } catch {
+        // console can be absent/throwing in locked-down WebViews — ignore.
+      }
+    }
+  } catch {
+    // Absolutely never let the loader beacon break bootstrap.
+  }
+
   var CXR_VERSION = "1.0.0";
   var CORE_FILENAME = "__CR_CORE_FILENAME__";
   var CSS_FILENAME = "__CR_CSS_FILENAME__";
   var CDN_BASE = "__CR_CDN_BASE__";
-  var PIXEL_URL = "__CR_PIXEL_URL__";
 
   // Resolve the URL of our own <script> tag. This is the only URL we can read
   // that the partner fully controls, and it lives in the same document as the
