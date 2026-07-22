@@ -172,7 +172,9 @@ export function AnalyticsProvider({ children, tagId, preview = false }: Analytic
     });
 
     // Shared geoip fetch (one per page, never rejects): stamp it onto the
-    // device details and signal the buffer.
+    // device details and signal the buffer. Fetched for every tag — including
+    // statically-served ones, which still need geoip on analytics and a real IP
+    // for the ad-URL rewrite (see genAdSdk / adUrlMacros).
     getSharedGeoIp()
       .then((geoip) => {
         deviceRef.current = enrichDeviceDetailsWithGeoIp(deviceRef.current, geoip);

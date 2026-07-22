@@ -20,6 +20,7 @@ export const STRATEGY_PRESETS = {
   iheart: { adBreakEnabled: true, gateOnUnmute: true },
   genaiDemo: { genAiEnabled: true },
   singleHit: { singleHitWaterfall: true },
+  servedStatically: { servedStatically: true },
 } satisfies Record<string, Partial<Strategies>>;
 
 /** Name of a defined preset bundle. */
@@ -93,13 +94,20 @@ export const TAG_STRATEGIES: Record<string, TagStrategyEntry> = {
   // Dev slot (index.html): start audible at 20%; other defaults unchanged.
   // THIS IS FOR QA TESTING ONLY — DO NOT COPY TO PROD TAGS.
   "697c46aa9f432b1a2055e803": { initialVolume: 0.2 },
-  "6a3aa78ba0daccfd439648b8": { initialVolume: 0.2, gateOnUnmute: true, singleHitWaterfall: true },
+  "6a3aa78ba0daccfd439648b8": {
+    initialVolume: 0.2,
+    gateOnUnmute: true,
+    singleHitWaterfall: true,
+    servedStatically: true,
+  },
   "6a3ba4395df1fee89bf0b2e7": { gateOnUnmute: true },
   "6a3aa8244da8cd92d289cc72": { gateOnUnmute: true },
 
-  // Start audible at 20% on load (unmuted); other defaults unchanged.
-  "6a39163e92929ebec64d78ab": { initialVolume: 0.2, singleHitWaterfall: true }, // 320x50
-  "6a3915b692929ebec64d785e": { initialVolume: 0.2, singleHitWaterfall: true }, // 320x100
+  // Start audible at 20% on load (unmuted); served from static fixtures (see
+  // staticTagData.ts) — skips /ad_creative and /feed (/ip_info still fires for
+  // geoip + real client IP on the ad-URL rewrite).
+  "6a39163e92929ebec64d78ab": { initialVolume: 0.2, singleHitWaterfall: true, preset: "servedStatically" }, // 320x50
+  "6a3915b692929ebec64d785e": { initialVolume: 0.2, singleHitWaterfall: true, preset: "servedStatically" }, // 320x100
 
   "6a2fefd87ce338c3a5afc605": { singleHitWaterfall: true, initialVolume: 0.2 },
   "6a391232d73aa25887ac2af3": { adBreakEnabled: true, gateOnUnmute: true },

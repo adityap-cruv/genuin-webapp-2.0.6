@@ -87,6 +87,7 @@ describe("providers/GenAIProvider", () => {
       initialVolume: 0,
       compactBackgroundColor: undefined,
       autoplayEnabled: false,
+      servedStatically: false,
     });
   });
 
@@ -267,6 +268,7 @@ describe("genAiEnabled in context", () => {
       initialVolume: 0,
       compactBackgroundColor: undefined,
       autoplayEnabled: false,
+      servedStatically: false,
     });
 
     const handle = { genAiEnabled: false } as { genAiEnabled: boolean };
@@ -298,6 +300,7 @@ describe("genAiEnabled in context", () => {
       initialVolume: 0,
       compactBackgroundColor: undefined,
       autoplayEnabled: false,
+      servedStatically: false,
     });
     const received: string[] = [];
     const { root } = mount(
@@ -324,6 +327,7 @@ describe("genAiEnabled in context", () => {
       initialVolume: 0,
       compactBackgroundColor: undefined,
       autoplayEnabled: false,
+      servedStatically: false,
     });
     const received: string[] = [];
     const { root } = mount(

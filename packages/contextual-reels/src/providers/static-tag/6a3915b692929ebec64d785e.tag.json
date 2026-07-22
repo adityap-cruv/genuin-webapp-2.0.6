@@ -1,0 +1,43 @@
+{
+  "code": "200",
+  "message": "Tag is loaded.",
+  "data": {
+    "ads_freq": 0,
+    "ads_slot_cpm": 0,
+    "advertiser_logo": 0,
+    "allowed_domains": null,
+    "brand_color": "#898989",
+    "brand_id": 3252,
+    "config": {
+      "show_video_url": false,
+      "show_comments": true,
+      "show_repost": true,
+      "show_share": true,
+      "show_reply": false,
+      "show_save": false,
+      "show_pre_feed_vast": false,
+      "enable_ask_question": false,
+      "show_cta": true,
+      "show_report": false,
+      "show_owner_details": true,
+      "show_logo": true,
+      "show_spark": true,
+      "auto_swipe": true,
+      "on_click": "fullscreen",
+      "disable_profile_redirect": true
+    },
+    "created_at": "2026-06-22T11:00:06.174Z",
+    "created_by": "675715e7b23f35a388989fd2",
+    "cta": {},
+    "customer_id": 0,
+    "feed_limit": 10,
+    "feed_type": "fixed",
+    "genuin_user_name": "675715e7b23f35a388989fd2",
+    "status": "active",
+    "tag_id": "6a3915b692929ebec64d785e",
+    "tag_name": "320x100-ads-only",
+    "tag_type": "ads",
+    "updated_at": "2026-06-23T12:04:41.96Z",
+    "view_type": "interstitial"
+  }
+}

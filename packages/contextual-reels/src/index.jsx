@@ -177,8 +177,8 @@ async function init() {
       // skipped and the widget waits for a `window.cxr.setPreviewConfig` push.
       const preview = node.getAttribute("data-preview") === "true";
 
-      // Wait for geoip and per-tagId visit_id, then send TAG_INIT (once per tagId per page).
-      // If visit_id fails to load, still fire TAG_INIT with geoip only.
+      // Wait for geoip and per-tagId visit_id, then send TAG_INIT (once per tagId
+      // per page). If visit_id fails to load, still fire TAG_INIT with geoip only.
       if (!preview && !tagIdsWithTagInit.has(tagId)) {
         tagIdsWithTagInit.add(tagId);
         const visitIdPromiseForTag = getVisitIdPromise(tagId);

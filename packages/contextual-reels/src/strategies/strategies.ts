@@ -72,6 +72,16 @@ export interface Strategies {
    * Also gates the GenAd request (see {@link useGenAdInstance}).
    */
   autoplayEnabled: boolean;
+  /**
+   * Static AD-only tag. Serves committed per-tag tag-config + feed fixtures (from
+   * `STATIC_TAG_DATA`) and skips `/ad_creative` and `/feed`. `/ip_info` still
+   * fires — geoip stays on analytics and supplies the real client IP for the
+   * ad-URL rewrite. The ad URL is rewritten client-side: real
+   * `navigator.userAgent` for `ua`, `[PAGE_URL]` resolved, and the `ip` param
+   * replaced with the real client IP (stripped only when geoip is unavailable).
+   * Defaults to `false`.
+   */
+  servedStatically: boolean;
 }
 
 /**
@@ -90,6 +100,7 @@ export const DEFAULT_STRATEGIES: Strategies = {
   initialVolume: 0,
   compactBackgroundColor: undefined,
   autoplayEnabled: false,
+  servedStatically: false,
 };
 
 /**

@@ -34,7 +34,7 @@ vi.mock("../instance/InstanceContext", () => ({
 
 // shadowConfig defaults to null (direct/non-shadow mode); the shadow-DOM-init
 // tests below override `.value` to exercise the shadow-mode branches.
-const tagDetailsMock: { value: { shadowConfig: ShadowDomConfig | null } } = {
+const tagDetailsMock: { value: { shadowConfig: ShadowDomConfig | null; tagId?: string } } = {
   value: { shadowConfig: null },
 };
 
@@ -45,11 +45,27 @@ vi.mock("../providers/TagDetailsProvider", () => ({
 // Controllable `initialVolume` — tests override `.value` to exercise the
 // audible-ad-start branches (`wantsAudibleAdStart = initialVolume > 0`), which
 // no other test in this suite drives true.
-const strategyMock: { value: { initialVolume: number } } = { value: { initialVolume: 0 } };
+const strategyMock: { value: { initialVolume: number; servedStatically?: boolean } } = {
+  value: { initialVolume: 0 },
+};
 
 vi.mock("../strategies/StrategyProvider", () => ({
   useStrategy: () => strategyMock.value,
 }));
+
+// Shared geoip — the ad-URL ip rewrite reads this for the real client IP.
+// Defaults to null (fetch unavailable in jsdom); the ip-replace test overrides it.
+// `pending` lets a test hold the geoip promise open to exercise the
+// cancelled-during-await race; when null, resolves immediately with `value`.
+const geoipMock: {
+  value: { ip?: string; query?: string; tip?: string } | null;
+  pending: Promise<{ ip?: string } | null> | null;
+} = { value: null, pending: null };
+vi.mock("../services/api", async (importOriginal) => {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+  const original = await importOriginal<typeof import("../services/api")>();
+  return { ...original, getSharedGeoIp: () => geoipMock.pending ?? Promise.resolve(geoipMock.value) };
+});
 
 // ─── loadGenAdSdk tests ───────────────────────────────────────────────────────
 // Uses vi.resetModules() + dynamic import so each test gets a fresh module
@@ -429,7 +445,11 @@ describe("ads/useGenAdInstance", () => {
     };
 
     await act(async () => {
-      events.onAdImpression({ provider: "video", advertiserDomain: "example.com", mediaFileUrl: "https://example.com/ad.mp4" });
+      events.onAdImpression({
+        provider: "video",
+        advertiserDomain: "example.com",
+        mediaFileUrl: "https://example.com/ad.mp4",
+      });
     });
 
     expect(sendEventMock).toHaveBeenCalledWith(
@@ -1336,6 +1356,139 @@ describe("ads/useGenAdInstance", () => {
     unmount(root, container);
   });
 
+  it("rewrites the ad URL (real ua + real ip) for a registered servedStatically tag", async () => {
+    const uaSpy = vi.spyOn(navigator, "userAgent", "get").mockReturnValue("RealUA/9 (Test)");
+    // A tag that is BOTH flagged servedStatically AND present in STATIC_TAG_IDS.
+    strategyMock.value = { initialVolume: 0, servedStatically: true };
+    tagDetailsMock.value = { shadowConfig: null, tagId: "6a39163e92929ebec64d78ab" };
+    geoipMock.value = { ip: "203.0.113.7" };
+
+    const { root, container } = mountHook({
+      ...baseProps,
+      isActive: true,
+      videoAd: "https://ads.example.com/vast?ua=Mozilla%2FFake&ip=1.2.3.4&x=1",
+    });
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    const stamped = setBaseEventContextMock.mock.calls
+      .map(([arg]) => arg)
+      .find((arg) => arg && typeof arg === "object" && "ad_url" in arg) as { ad_url: string };
+    expect(stamped.ad_url).toContain(`ua=${encodeURIComponent("RealUA/9 (Test)")}`);
+    expect(stamped.ad_url).toContain("ip=203.0.113.7");
+    expect(stamped.ad_url).not.toContain("1.2.3.4");
+    expect(stamped.ad_url).not.toContain("Fake");
+
+    uaSpy.mockRestore();
+    geoipMock.value = null;
+    unmount(root, container);
+  });
+
+  it("strips the ip param (never sends a stale ip) for a static tag when geoip is unavailable", async () => {
+    const uaSpy = vi.spyOn(navigator, "userAgent", "get").mockReturnValue("RealUA/9 (Test)");
+    // Registered static tag, but geoip never resolved → clientIp undefined → strip ip.
+    strategyMock.value = { initialVolume: 0, servedStatically: true };
+    tagDetailsMock.value = { shadowConfig: null, tagId: "6a39163e92929ebec64d78ab" };
+    geoipMock.value = null;
+
+    const { root, container } = mountHook({
+      ...baseProps,
+      isActive: true,
+      videoAd: "https://ads.example.com/vast?ua=Mozilla%2FFake&ip=1.2.3.4&x=1",
+    });
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    const stamped = setBaseEventContextMock.mock.calls
+      .map(([arg]) => arg)
+      .find((arg) => arg && typeof arg === "object" && "ad_url" in arg) as { ad_url: string };
+    // ua still rewritten to the real value; the ip param is removed entirely,
+    // and the surrounding `?…&x=1` separators stay well-formed.
+    expect(stamped.ad_url).toContain(`ua=${encodeURIComponent("RealUA/9 (Test)")}`);
+    expect(stamped.ad_url).not.toContain("ip=");
+    expect(stamped.ad_url).not.toContain("1.2.3.4");
+    expect(stamped.ad_url).toContain("x=1");
+    // No malformed separators from the strip.
+    expect(stamped.ad_url).not.toContain("?&");
+    expect(stamped.ad_url).not.toContain("&&");
+
+    uaSpy.mockRestore();
+    unmount(root, container);
+  });
+
+  it("does NOT rewrite the ad URL for a flagged-but-unregistered tag (half-static → live URL untouched)", async () => {
+    const uaSpy = vi.spyOn(navigator, "userAgent", "get").mockReturnValue("RealUA/9 (Test)");
+    // Flag set, but tagId absent from STATIC_TAG_IDS: this tag falls back to the
+    // real feed, whose ad URL is a live backend URL that must NOT be rewritten.
+    strategyMock.value = { initialVolume: 0, servedStatically: true };
+    tagDetailsMock.value = { shadowConfig: null, tagId: "not-a-registered-static-tag" };
+    geoipMock.value = { ip: "203.0.113.7" };
+
+    const { root, container } = mountHook({
+      ...baseProps,
+      isActive: true,
+      videoAd: "https://ads.example.com/vast?ua=Mozilla%2FFake&ip=1.2.3.4&x=1",
+    });
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    const stamped = setBaseEventContextMock.mock.calls
+      .map(([arg]) => arg)
+      .find((arg) => arg && typeof arg === "object" && "ad_url" in arg) as { ad_url: string };
+    // Byte-identical to the input: neither ua nor ip touched.
+    expect(stamped.ad_url).toBe("https://ads.example.com/vast?ua=Mozilla%2FFake&ip=1.2.3.4&x=1");
+
+    uaSpy.mockRestore();
+    geoipMock.value = null;
+    unmount(root, container);
+  });
+
+  it("does not init GenAd if the slot tears down while the static-tag geoip fetch is in flight", async () => {
+    // Registered static tag → the effect awaits getSharedGeoIp before init. Hold
+    // that promise open, unmount mid-await, then resolve: init must never fire on
+    // the torn-down slot (else a leaked SDK instance the cleanup can't destroy).
+    let resolveGeoip: (v: { ip?: string } | null) => void = () => {};
+    geoipMock.pending = new Promise((resolve) => {
+      resolveGeoip = resolve;
+    });
+    strategyMock.value = { initialVolume: 0, servedStatically: true };
+    tagDetailsMock.value = { shadowConfig: null, tagId: "6a39163e92929ebec64d78ab" };
+
+    const { root, container } = mountHook({
+      ...baseProps,
+      isActive: true,
+      videoAd: "https://ads.example.com/vast?ip=1.2.3.4&x=1",
+    });
+    // Let _loadSdk resolve so the effect reaches the awaited geoip and parks there.
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    expect(genAdInit).not.toHaveBeenCalled();
+
+    // Tear down while geoip is still pending, then resolve it.
+    unmount(root, container);
+    await act(async () => {
+      resolveGeoip({ ip: "203.0.113.7" });
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    // The cancelled re-check after the await must have short-circuited init.
+    expect(genAdInit).not.toHaveBeenCalled();
+
+    geoipMock.pending = null;
+  });
+
   it("stamps ad_url from an object videoAd (first resolved url field)", async () => {
     const { root, container } = mountHook({
       ...baseProps,
@@ -1627,9 +1780,7 @@ describe("useGenAdInstance — shadow root resync", () => {
       await Promise.resolve();
     });
 
-    const shadowLinks = Array.from(
-      shadowRoot.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]')
-    );
+    const shadowLinks = Array.from(shadowRoot.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]'));
     expect(shadowLinks.some((l) => l.href.includes("gen_ad.min.css"))).toBe(true);
 
     unmount(root, container);

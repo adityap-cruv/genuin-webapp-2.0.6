@@ -110,6 +110,17 @@ function tryFloat(value: unknown): number | null {
 }
 
 /**
+ * Extract the client IP from a raw geoip payload, trying the fields the gateway
+ * may use in priority order (`ip` → `query` → `tip`). Returns `undefined` when
+ * none is present or `geoip` is nullish.
+ *
+ * @param geoip  Raw geoip payload returned by {@link getIpInfo}, or null.
+ */
+export function resolveClientIp(geoip: RawGeoIpResponse | null | undefined): string | undefined {
+  return geoip?.ip ?? geoip?.query ?? geoip?.tip ?? undefined;
+}
+
+/**
  * Merge geoip fields into a fresh copy of `device` and return it. Never
  * mutates the caller-supplied object.
  *

@@ -11,6 +11,8 @@ import { EVENT, buildHostParamsDiagnostic } from "@cxr/analytics/analytics";
 import { AD_LAYOUT, type AdLayoutId, adLayoutVariants } from "@cxr/config";
 import { useAnalytics } from "@cxr/providers/AnalyticsProvider";
 import { getTag } from "@cxr/services/api";
+import { getStaticTagData, isStaticTag } from "@cxr/strategies/staticTagData";
+import { resolveStrategies } from "@cxr/strategies/strategies";
 import type { TagResponse } from "@cxr/types";
 import { createLogger } from "@cxr/utils/logger";
 
@@ -113,24 +115,55 @@ export function useTagLoader({
     // a preview widget must not hit the API even before the config arrives.
     if (preview) return;
 
-    if (!tagId || !rootTagId) return;
-
-    setApiFailed(false);
-
-    getTag<Record<string, unknown>>(tagId)
-      .then((td) => {
-        if (cancelled) return;
-        if (!td) {
+    /** Normal path: fetch the tag config from /ad_creative. */
+    const fetchTagFromApi = (): void => {
+      if (!tagId || !rootTagId) return;
+      setApiFailed(false);
+      getTag<Record<string, unknown>>(tagId)
+        .then((td) => {
+          if (cancelled) return;
+          if (!td) {
+            setApiFailed(true);
+            return;
+          }
+          applyResolved(td as TagResponse);
+        })
+        .catch((err) => {
+          if (cancelled) return;
+          logger.error("error::", err);
           setApiFailed(true);
-          return;
-        }
-        applyResolved(td as TagResponse);
-      })
-      .catch((err) => {
-        if (cancelled) return;
-        logger.error("error::", err);
-        setApiFailed(true);
-      });
+        });
+    };
+
+    // Static AD-only tag: serve its committed config verbatim, skip /ad_creative.
+    // Fixtures load lazily (per-tag chunk) via getStaticTagData. If the tag is
+    // flagged servedStatically but has no usable static data — absent from the
+    // registry (config drift), the loader resolves empty, or the chunk fails to
+    // load — fall back to the normal /ad_creative fetch rather than failing.
+    if (isStaticTag(tagId, resolveStrategies(tagId).servedStatically)) {
+      setApiFailed(false);
+      getStaticTagData(tagId)
+        .then((staticEntry) => {
+          if (cancelled) return;
+          if (!staticEntry) {
+            // No static data → hit the API.
+            fetchTagFromApi();
+            return;
+          }
+          // Clone so the forced show_cta mutation never leaks into the fixture.
+          applyResolved(structuredClone(staticEntry.tagConfig));
+        })
+        .catch((err) => {
+          if (cancelled) return;
+          logger.error("static tag load error, falling back to API::", err);
+          fetchTagFromApi();
+        });
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    fetchTagFromApi();
 
     return () => {
       cancelled = true;

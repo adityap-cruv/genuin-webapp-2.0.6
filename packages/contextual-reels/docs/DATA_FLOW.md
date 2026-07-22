@@ -15,8 +15,8 @@ cross-instance coordination.** Read [ARCHITECTURE.md](ARCHITECTURE.md) first for
    `getTag(tagId)` (or, in preview, the client-supplied `previewConfig` verbatim — no fetch) → force
    `config.show_cta=false` → `setBrandId` → fire `TAG_CAPTURED` (a no-op in preview, which is
    analytics-silent). `StrategyProvider` resolves `Strategies` (tag/brand/preset cascade
-   + experiment roll + `GIV` override). `TagDetailsGate` unblocks children once `tagDetails` resolves
-   (else skeleton / `NoContent`).
+   - experiment roll + `GIV` override). `TagDetailsGate` unblocks children once `tagDetails` resolves
+     (else skeleton / `NoContent`).
 
 3. **Feed load** — `FeedProvider` → [`createFeedGenerator(tagId)`](../src/services/feed.ts) →
    `GET /goservices/ad_creative/feed` (fires `Batch Started` / `Batch Completed` /
@@ -24,6 +24,18 @@ cross-instance coordination.** Read [ARCHITECTURE.md](ARCHITECTURE.md) first for
    → [`normaliseFeed(reels, tagId, adBreakEnabled, gateOnUnmute, adsDisabled)`](../src/feed/feedTransforms.ts)
    → `FeedEntry[]` (`video` / `video-with-ad` with an attached `adObject` / `ad`). Empty batch →
    `Feed Completed` + `Tag Displayed`, and further calls short-circuit.
+
+   **Statically-served tags** (`servedStatically` strategy — see
+   [STRATEGIES.md](STRATEGIES.md#statically-served-tags)) diverge at steps 2–3 and 5:
+   `/ad_creative` and `/feed` are **skipped**, served instead from lazy per-tag
+   JSON fixtures ([`staticTagData.ts`](../src/strategies/staticTagData.ts)).
+   `useTagLoader` applies the fixture `tagConfig`; `FeedProvider` serves the
+   fixture `reels`, mints a fresh `crypto.randomUUID()` `visit_id`, and still
+   fires `Batch Started` / `Feed API Call Completed`. `/ip_info` is **not**
+   skipped — geoip is fetched as normal (analytics parity + supplies the ad-URL
+   IP). Any missing/failed fixture falls back to the real API. In step 5 the ad
+   URL is rewritten client-side (real `ua`, real client `ip` from geoip) via the
+   `{ servedStatically, clientIp }` option to `resolveVideoAdMacros`.
 
 4. **Render** — `NativeFeedShim` → `Feed` mounts Embla. `computeSlideMountWindow(activeIndex, visibleIndices)`
    mounts only active/visible slides → `ReelItem` routes to `VideoLayout` or `AdLayout` by layout id

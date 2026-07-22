@@ -17,24 +17,24 @@ Vite build; **not** part of the Next.js webapp — standalone bundle.
 
 ## Directory structure (`src/`)
 
-| Dir | Contents |
-| --- | --- |
-| `app/` | `App.tsx` (root), `FeedTree.tsx` (inner tree + `NativeFeedShim`), `useTagLoader`, `CloseButton`, `NoContent`, `FeedSkeleton` |
-| `providers/` | Analytics, TagDetails(+Gate), FullScreen, Strategy, GenAI, Player, Feed, Ad |
-| `feed/` | `Feed`, `ReelItem`, `ReelSlidePlaceholder`, `useFeedNavigation`, `slideMountWindow`, `activeSlideState`, `feedTransforms`; `layouts/` (Video/Ad), `hooks/` (embla, swipeGate, inactivity, fullscreenAdBreak) |
-| `player/` | `LightPlayer`, `usePlayerLifecycle`, `playerEvents`, `hlsPlayer`, `VideoScrubber` |
-| `ads/` | `genAdSdk`, `GenAdSlot`, `waterfall`, `adConfig`, `adSlotProps`, `adUrlMacros`, `normalizers` — GenAd boundary |
-| `controls/` | Ad/Video control layers, top/bottom bars, `buttons/atoms/` |
-| `strategies/` | `strategies`, `strategyConfig` (edit flags here), `StrategyProvider`, `useMutePassbackGuard` |
-| `instance/` | `InstanceContext`; `coordination/` (CxrEventBus, Global{Mute,Player}Coordinator, usePlayerCoordination, usePublicApiBridge); `registry/` (InstanceRegistry) |
-| `genai/octo/` | `OctoSheet`, `OctoSplitView`, `OctoSdkPanel`, `OctoCountdownStrip`, phase map, sheet config |
-| `monitoring/` | `resourceMonitor`, `useResourceMonitor`, `heavyAdReporter`, `useHeavyAdReporter` (HAI removal detection) |
-| `observability/` | `pixel-reporter` (px-script-error pixels) |
-| `analytics/` | `analytics` (EVENT vocab), `rudderstack`, `rudderstackBuffer` |
-| `platform/` | `device` (os_type incl. `chromium`), `topWindow` |
-| `services/` | `api` (getTag/apiFetch/handleResponse), `feed` (createFeedGenerator, visit_id) |
-| `utils/` | `logger`, `deepMerge`, `infolinks`, `share`, `safeHref`, `ads`, `eventBus` (legacy) |
-| root | `index.jsx` (core init), `loader.jsx` (CDN bootstrap), `publicApi` (`window.cxr`), `config`, `shadow-dom`, `hostMacros`, `userId`, `types` |
+| Dir              | Contents                                                                                                                                                                                                     |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `app/`           | `App.tsx` (root), `FeedTree.tsx` (inner tree + `NativeFeedShim`), `useTagLoader`, `CloseButton`, `NoContent`, `FeedSkeleton`                                                                                 |
+| `providers/`     | Analytics, TagDetails(+Gate), FullScreen, Strategy, GenAI, Player, Feed, Ad                                                                                                                                  |
+| `feed/`          | `Feed`, `ReelItem`, `ReelSlidePlaceholder`, `useFeedNavigation`, `slideMountWindow`, `activeSlideState`, `feedTransforms`; `layouts/` (Video/Ad), `hooks/` (embla, swipeGate, inactivity, fullscreenAdBreak) |
+| `player/`        | `LightPlayer`, `usePlayerLifecycle`, `playerEvents`, `hlsPlayer`, `VideoScrubber`                                                                                                                            |
+| `ads/`           | `genAdSdk`, `GenAdSlot`, `waterfall`, `adConfig`, `adSlotProps`, `adUrlMacros`, `normalizers` — GenAd boundary                                                                                               |
+| `controls/`      | Ad/Video control layers, top/bottom bars, `buttons/atoms/`                                                                                                                                                   |
+| `strategies/`    | `strategies`, `strategyConfig` (edit flags here), `staticTagData` (per-tag statically-served fixtures registry), `StrategyProvider`, `useMutePassbackGuard`                                                  |
+| `instance/`      | `InstanceContext`; `coordination/` (CxrEventBus, Global{Mute,Player}Coordinator, usePlayerCoordination, usePublicApiBridge); `registry/` (InstanceRegistry)                                                  |
+| `genai/octo/`    | `OctoSheet`, `OctoSplitView`, `OctoSdkPanel`, `OctoCountdownStrip`, phase map, sheet config                                                                                                                  |
+| `monitoring/`    | `resourceMonitor`, `useResourceMonitor`, `heavyAdReporter`, `useHeavyAdReporter` (HAI removal detection)                                                                                                     |
+| `observability/` | `pixel-reporter` (px-script-error pixels)                                                                                                                                                                    |
+| `analytics/`     | `analytics` (EVENT vocab), `rudderstack`, `rudderstackBuffer`                                                                                                                                                |
+| `platform/`      | `device` (os_type incl. `chromium`), `topWindow`                                                                                                                                                             |
+| `services/`      | `api` (getTag/apiFetch/handleResponse), `feed` (createFeedGenerator, visit_id)                                                                                                                               |
+| `utils/`         | `logger`, `deepMerge`, `infolinks`, `share`, `safeHref`, `ads`, `eventBus` (legacy)                                                                                                                          |
+| root             | `index.jsx` (core init), `loader.jsx` (CDN bootstrap), `publicApi` (`window.cxr`), `config`, `shadow-dom`, `hostMacros`, `userId`, `types`                                                                   |
 
 ## Entry points
 
@@ -64,6 +64,7 @@ Full detail: [DATA_FLOW.md](docs/DATA_FLOW.md).
 - **Two event systems**: per-instance `CxrEventBus` (internal) vs `window.cxr` (host-facing), bridged by `usePublicApiBridge`. `utils/eventBus.ts` is dead legacy.
 - **HAI (Chrome Heavy Ad Intervention)**: HLS buffer caps + active-slide-only `startLoad` + ad-request gating exist to stay under 4MB/15s/60s. Don't loosen — [AD_REMOVAL_RISK_AUDIT.md](docs/AD_REMOVAL_RISK_AUDIT.md).
 - **Feature flags live only in `strategies/strategyConfig.ts`** ([STRATEGIES.md](docs/STRATEGIES.md)).
+- **`servedStatically` tags** serve config + feed from lazy per-tag fixtures (`strategies/staticTagData.ts`, `providers/static-tag/*.json`) — skip `/ad_creative` + `/feed` (NOT `/ip_info` — geoip stays on analytics + supplies the real client IP), rewrite the ad URL client-side (real `ua`, real client `ip` from geoip; strip `ip` if unavailable), mint a fresh UUID `visit_id` per load, and fall back to the real API on any fixture miss. Consumers: `useTagLoader`, `FeedProvider`, `adUrlMacros`/`genAdSdk`. All gated on the flag **AND** `STATIC_TAG_IDS.has(tagId)` → normal + flagged-but-unregistered tags untouched. ([STRATEGIES.md](docs/STRATEGIES.md#statically-served-tags)).
 - **Partner contracts** (never change w/o approval): loader name `gen_ext.min.js`; postMessage `adFillCallback`/`noAdsCallback`; `window.adFillCallback`/`noAdsCallback`; `EVENT` strings (analytics.ts); `offsitePropertiesConfig` deep-merge; `passback:1` (revenue-critical).
 - **`os_type:'chromium'`** for Linux/ChromeOS Chrome is intentional ([ADR 002](docs/cxr-decisions/002-chromium-os-quirk.md)).
 - Never reuse a `containerId` across live `GenAd.init()` calls; never call `window.GenAd` outside `src/ads/`.

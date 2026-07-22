@@ -1,190 +1,183 @@
-import { describe, it, expect, vi, afterEach } from 'vitest';
+import { describe, it, expect, vi, afterEach } from "vitest";
 
-import { resolvePageUrl, resolveAdUrlMacros, resolveVideoAdMacros } from './adUrlMacros';
-import { HOST_URL_MACRO_TOKENS } from './adUrlMacros';
+import { resolvePageUrl, resolveAdUrlMacros, resolveVideoAdMacros } from "./adUrlMacros";
+import { HOST_URL_MACRO_TOKENS } from "./adUrlMacros";
 
 // ─── resolveAdUrlMacros ───────────────────────────────────────────────────────
 
-describe('resolveAdUrlMacros', () => {
-  it('replaces [PAGE_URL] with the encoded page URL', () => {
-    const url = 'https://ads.example.com/vast?site-url=[PAGE_URL]&stid=1';
-    const result = resolveAdUrlMacros(url, 'https://publisher.com/article');
-    expect(result).toBe(
-      'https://ads.example.com/vast?site-url=https%3A%2F%2Fpublisher.com%2Farticle&stid=1'
-    );
+describe("resolveAdUrlMacros", () => {
+  it("replaces [PAGE_URL] with the encoded page URL", () => {
+    const url = "https://ads.example.com/vast?site-url=[PAGE_URL]&stid=1";
+    const result = resolveAdUrlMacros(url, "https://publisher.com/article");
+    expect(result).toBe("https://ads.example.com/vast?site-url=https%3A%2F%2Fpublisher.com%2Farticle&stid=1");
   });
 
-  it('replaces multiple [PAGE_URL] occurrences', () => {
-    const url = 'https://ads.example.com?url=[PAGE_URL]&ref=[PAGE_URL]';
-    const result = resolveAdUrlMacros(url, 'https://publisher.com/');
-    const encoded = encodeURIComponent('https://publisher.com/');
+  it("replaces multiple [PAGE_URL] occurrences", () => {
+    const url = "https://ads.example.com?url=[PAGE_URL]&ref=[PAGE_URL]";
+    const result = resolveAdUrlMacros(url, "https://publisher.com/");
+    const encoded = encodeURIComponent("https://publisher.com/");
     expect(result).toBe(`https://ads.example.com?url=${encoded}&ref=${encoded}`);
   });
 
-  it('returns the url unchanged when [PAGE_URL] is absent', () => {
-    const url = 'https://ads.example.com/vast?stid=1';
-    expect(resolveAdUrlMacros(url, 'https://publisher.com/')).toBe(url);
+  it("returns the url unchanged when [PAGE_URL] is absent", () => {
+    const url = "https://ads.example.com/vast?stid=1";
+    expect(resolveAdUrlMacros(url, "https://publisher.com/")).toBe(url);
   });
 
-  it('handles empty page URL', () => {
-    const url = 'https://ads.example.com?url=[PAGE_URL]';
-    expect(resolveAdUrlMacros(url, '')).toBe('https://ads.example.com?url=');
+  it("handles empty page URL", () => {
+    const url = "https://ads.example.com?url=[PAGE_URL]";
+    expect(resolveAdUrlMacros(url, "")).toBe("https://ads.example.com?url=");
   });
 });
 
 // ─── resolveVideoAdMacros ─────────────────────────────────────────────────────
 
-describe('resolveVideoAdMacros', () => {
-  const PAGE = 'https://publisher.com/page';
+describe("resolveVideoAdMacros", () => {
+  const PAGE = "https://publisher.com/page";
   const ENCODED = encodeURIComponent(PAGE);
 
-  it('resolves macros in a plain string', () => {
-    expect(resolveVideoAdMacros('https://ads.com?u=[PAGE_URL]', PAGE)).toBe(
-      `https://ads.com?u=${ENCODED}`
-    );
+  it("resolves macros in a plain string", () => {
+    expect(resolveVideoAdMacros("https://ads.com?u=[PAGE_URL]", PAGE)).toBe(`https://ads.com?u=${ENCODED}`);
   });
 
-  it('resolves macros in object.url', () => {
-    const result = resolveVideoAdMacros({ url: 'https://ads.com?u=[PAGE_URL]', platform: 'td' }, PAGE);
+  it("resolves macros in object.url", () => {
+    const result = resolveVideoAdMacros({ url: "https://ads.com?u=[PAGE_URL]", platform: "td" }, PAGE);
     expect((result as { url: string }).url).toBe(`https://ads.com?u=${ENCODED}`);
-    expect((result as { platform: string }).platform).toBe('td');
+    expect((result as { platform: string }).platform).toBe("td");
   });
 
-  it('resolves macros in object.ads_url', () => {
-    const result = resolveVideoAdMacros({ ads_url: 'https://ads.com?u=[PAGE_URL]' }, PAGE);
+  it("resolves macros in object.ads_url", () => {
+    const result = resolveVideoAdMacros({ ads_url: "https://ads.com?u=[PAGE_URL]" }, PAGE);
     expect((result as { ads_url: string }).ads_url).toBe(`https://ads.com?u=${ENCODED}`);
   });
 
-  it('resolves macros in object.vastUrl', () => {
-    const result = resolveVideoAdMacros({ vastUrl: 'https://ads.com?u=[PAGE_URL]' }, PAGE);
+  it("resolves macros in object.vastUrl", () => {
+    const result = resolveVideoAdMacros({ vastUrl: "https://ads.com?u=[PAGE_URL]" }, PAGE);
     expect((result as { vastUrl: string }).vastUrl).toBe(`https://ads.com?u=${ENCODED}`);
   });
 
-  it('resolves macros in each element of an array', () => {
-    const input = [
-      'https://a.com?u=[PAGE_URL]',
-      { url: 'https://b.com?u=[PAGE_URL]' },
-    ];
+  it("resolves macros in each element of an array", () => {
+    const input = ["https://a.com?u=[PAGE_URL]", { url: "https://b.com?u=[PAGE_URL]" }];
     const result = resolveVideoAdMacros(input, PAGE) as unknown[];
     expect(result[0]).toBe(`https://a.com?u=${ENCODED}`);
     expect((result[1] as { url: string }).url).toBe(`https://b.com?u=${ENCODED}`);
   });
 
-  it('returns falsy values unchanged', () => {
+  it("returns falsy values unchanged", () => {
     expect(resolveVideoAdMacros(undefined, PAGE)).toBeUndefined();
     expect(resolveVideoAdMacros(null, PAGE)).toBeNull();
   });
 
-  it('returns non-string/object/array primitives unchanged', () => {
+  it("returns non-string/object/array primitives unchanged", () => {
     expect(resolveVideoAdMacros(42, PAGE)).toBe(42);
   });
 
-  it('does not mutate the original object', () => {
-    const original = { url: 'https://ads.com?u=[PAGE_URL]' };
+  it("does not mutate the original object", () => {
+    const original = { url: "https://ads.com?u=[PAGE_URL]" };
     resolveVideoAdMacros(original, PAGE);
-    expect(original.url).toBe('https://ads.com?u=[PAGE_URL]');
+    expect(original.url).toBe("https://ads.com?u=[PAGE_URL]");
   });
 });
 
 // ─── resolvePageUrl ───────────────────────────────────────────────────────────
 
-describe('resolvePageUrl', () => {
+describe("resolvePageUrl", () => {
   afterEach(() => {
     vi.restoreAllMocks();
     // Restore window.parent to same-window reference
-    Object.defineProperty(global.window, 'parent', {
+    Object.defineProperty(global.window, "parent", {
       value: global.window,
       writable: true,
       configurable: true,
     });
   });
 
-  it('returns window.location.href when not in an iframe', () => {
+  it("returns window.location.href when not in an iframe", () => {
     // window.parent === window (top-level)
-    Object.defineProperty(global.window, 'parent', {
+    Object.defineProperty(global.window, "parent", {
       value: global.window,
       writable: true,
       configurable: true,
     });
-    Object.defineProperty(global.window, 'location', {
-      value: { href: 'https://publisher.com/page' },
+    Object.defineProperty(global.window, "location", {
+      value: { href: "https://publisher.com/page" },
       writable: true,
       configurable: true,
     });
-    expect(resolvePageUrl()).toBe('https://publisher.com/page');
+    expect(resolvePageUrl()).toBe("https://publisher.com/page");
   });
 
-  it('returns parent location href when in same-origin iframe', () => {
+  it("returns parent location href when in same-origin iframe", () => {
     const parentWindow = {
-      location: { href: 'https://publisher.com/embed-page' },
+      location: { href: "https://publisher.com/embed-page" },
     };
-    Object.defineProperty(global.window, 'parent', {
+    Object.defineProperty(global.window, "parent", {
       value: parentWindow,
       writable: true,
       configurable: true,
     });
-    Object.defineProperty(global.window, 'location', {
-      value: { href: 'https://publisher.com/widget' },
+    Object.defineProperty(global.window, "location", {
+      value: { href: "https://publisher.com/widget" },
       writable: true,
       configurable: true,
     });
-    expect(resolvePageUrl()).toBe('https://publisher.com/embed-page');
+    expect(resolvePageUrl()).toBe("https://publisher.com/embed-page");
   });
 
-  it('falls back to document.referrer when in cross-origin iframe', () => {
+  it("falls back to document.referrer when in cross-origin iframe", () => {
     const crossOriginParent = {
       get location(): never {
-        throw new DOMException('Blocked', 'SecurityError');
+        throw new DOMException("Blocked", "SecurityError");
       },
     };
-    Object.defineProperty(global.window, 'parent', {
+    Object.defineProperty(global.window, "parent", {
       value: crossOriginParent,
       writable: true,
       configurable: true,
     });
-    Object.defineProperty(global.document, 'referrer', {
-      value: 'https://publisher.com/cross-origin-page',
+    Object.defineProperty(global.document, "referrer", {
+      value: "https://publisher.com/cross-origin-page",
       writable: true,
       configurable: true,
     });
-    expect(resolvePageUrl()).toBe('https://publisher.com/cross-origin-page');
+    expect(resolvePageUrl()).toBe("https://publisher.com/cross-origin-page");
   });
 
-  it('falls back to window.location.href when cross-origin and no referrer', () => {
+  it("falls back to window.location.href when cross-origin and no referrer", () => {
     const crossOriginParent = {
       get location(): never {
-        throw new DOMException('Blocked', 'SecurityError');
+        throw new DOMException("Blocked", "SecurityError");
       },
     };
-    Object.defineProperty(global.window, 'parent', {
+    Object.defineProperty(global.window, "parent", {
       value: crossOriginParent,
       writable: true,
       configurable: true,
     });
-    Object.defineProperty(global.document, 'referrer', {
-      value: '',
+    Object.defineProperty(global.document, "referrer", {
+      value: "",
       writable: true,
       configurable: true,
     });
-    Object.defineProperty(global.window, 'location', {
-      value: { href: 'https://cdn.example.com/widget.html' },
+    Object.defineProperty(global.window, "location", {
+      value: { href: "https://cdn.example.com/widget.html" },
       writable: true,
       configurable: true,
     });
-    expect(resolvePageUrl()).toBe('https://cdn.example.com/widget.html');
+    expect(resolvePageUrl()).toBe("https://cdn.example.com/widget.html");
   });
 
-  it('returns an empty string when window is undefined (server-side rendering)', () => {
+  it("returns an empty string when window is undefined (server-side rendering)", () => {
     const originalWindow = globalThis.window;
-    Object.defineProperty(globalThis, 'window', {
+    Object.defineProperty(globalThis, "window", {
       value: undefined,
       writable: true,
       configurable: true,
     });
     try {
-      expect(resolvePageUrl()).toBe('');
+      expect(resolvePageUrl()).toBe("");
     } finally {
-      Object.defineProperty(globalThis, 'window', {
+      Object.defineProperty(globalThis, "window", {
         value: originalWindow,
         writable: true,
         configurable: true,
@@ -230,9 +223,7 @@ describe("resolveAdUrlMacros — host macro tokens", () => {
   it("resolves [PAGE_URL] and host tokens together", () => {
     const url = "https://ads.example.com?u=[PAGE_URL]&gdpr=[GDPR]";
     const result = resolveAdUrlMacros(url, "https://p.com/a", MACROS);
-    expect(result).toBe(
-      `https://ads.example.com?u=${encodeURIComponent("https://p.com/a")}&gdpr=1`
-    );
+    expect(result).toBe(`https://ads.example.com?u=${encodeURIComponent("https://p.com/a")}&gdpr=1`);
   });
 
   it("exposes the documented token map keyed by ad-URL token", () => {
@@ -255,11 +246,7 @@ describe("resolveAdUrlMacros — host macro tokens", () => {
   });
 
   it("forwards host macros through resolveVideoAdMacros object.url", () => {
-    const result = resolveVideoAdMacros(
-      { url: "https://ads.com?gdpr=[GDPR]" },
-      "https://p.com/a",
-      MACROS
-    );
+    const result = resolveVideoAdMacros({ url: "https://ads.com?gdpr=[GDPR]" }, "https://p.com/a", MACROS);
     expect((result as { url: string }).url).toBe("https://ads.com?gdpr=1");
   });
 });
@@ -303,11 +290,9 @@ describe("resolveVideoAdMacros — Triton in-app rewrite", () => {
   it("preserves original encoding of untouched params (ua/ttag) and drops site-url", () => {
     const rawUrl =
       "https://cmod-na.live.streamtheworld.com/ondemand/ars?site-url=https%3A%2F%2Fp.com&dist=https%3A%2F%2Fp.com&stid=1446814&ua=Mozilla/5.0%20(iPhone;%20CPU%20iPhone%20OS%2018_5)&ttag=brand_id:3252&type=midroll";
-    const result = resolveVideoAdMacros(
-      { url: rawUrl, platform: "tritondigital" },
-      "https://p.com",
-      MACROS
-    ) as { url: string };
+    const result = resolveVideoAdMacros({ url: rawUrl, platform: "tritondigital" }, "https://p.com", MACROS) as {
+      url: string;
+    };
     // untouched params keep exact bytes
     expect(result.url).toContain("ua=Mozilla/5.0%20(iPhone;%20CPU%20iPhone%20OS%2018_5)");
     expect(result.url).toContain("ttag=brand_id:3252");
@@ -390,11 +375,9 @@ describe("resolveVideoAdMacros — Triton in-app rewrite", () => {
     // No `?` anywhere in the url — exercises BOTH the `dist`-append `?`
     // branch (line 93) and the app-params `?` branch (line 100) taking the
     // "no existing query string" path instead of "&".
-    const result = resolveVideoAdMacros(
-      { url: "https://t.co/ars", platform: "tritondigital" },
-      "https://page.com",
-      { appb: "com.x.y" }
-    ) as { url: string };
+    const result = resolveVideoAdMacros({ url: "https://t.co/ars", platform: "tritondigital" }, "https://page.com", {
+      appb: "com.x.y",
+    }) as { url: string };
     expect(result.url).toBe("https://t.co/ars?dist=com.x.y&bundle-id=com.x.y");
   });
 
@@ -414,5 +397,95 @@ describe("resolveVideoAdMacros — Triton in-app rewrite", () => {
     expect(result.url).not.toContain("&&");
     expect(result.url).not.toContain("?&");
     expect(result.url).toContain("a=1&dist=com.x.y&b=2");
+  });
+});
+
+// ─── resolveVideoAdMacros — servedStatically rewrite ──────────────────────────────
+
+describe("resolveVideoAdMacros — servedStatically rewrite", () => {
+  const PAGE = "https://publisher.com/article";
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("replaces the ua param with the real navigator.userAgent", () => {
+    vi.spyOn(navigator, "userAgent", "get").mockReturnValue("RealUA/1.0 (Test)");
+    const url = "https://ads.com/x?stid=1&ua=Mozilla/5.0%20Fake&type=midroll";
+    const result = resolveVideoAdMacros(url, PAGE, undefined, { servedStatically: true }) as string;
+    expect(result).toContain(`ua=${encodeURIComponent("RealUA/1.0 (Test)")}`);
+    expect(result).not.toContain("Fake");
+  });
+
+  it("falls back to an empty ua when navigator.userAgent is absent", () => {
+    vi.spyOn(navigator, "userAgent", "get").mockReturnValue(undefined as unknown as string);
+    const url = "https://ads.com/x?ua=Mozilla/5.0%20Fake&type=midroll";
+    const result = resolveVideoAdMacros(url, PAGE, undefined, { servedStatically: true }) as string;
+    expect(result).toContain("ua=&type=midroll");
+    expect(result).not.toContain("Fake");
+  });
+
+  it("replaces the ip param value with the real client IP", () => {
+    const url = "https://ads.com/x?stid=1&ip=106.203.213.228&type=midroll";
+    const result = resolveVideoAdMacros(url, PAGE, undefined, {
+      servedStatically: true,
+      clientIp: "8.8.4.4",
+    }) as string;
+    expect(result).toBe("https://ads.com/x?stid=1&ip=8.8.4.4&type=midroll");
+    expect(result).not.toContain("106.203.213.228");
+  });
+
+  it("strips the ip param when no clientIp is available (best-effort fallback)", () => {
+    const url = "https://ads.com/x?stid=1&ip=106.203.213.228&type=midroll";
+    const result = resolveVideoAdMacros(url, PAGE, undefined, { servedStatically: true }) as string;
+    expect(result).not.toContain("ip=");
+    expect(result).not.toContain("&&");
+    expect(result).not.toContain("?&");
+    expect(result).toBe("https://ads.com/x?stid=1&type=midroll");
+  });
+
+  it("strips a trailing ip param (no clientIp) without leaving a dangling &", () => {
+    const url = "https://ads.com/x?stid=1&ip=1.2.3.4";
+    const result = resolveVideoAdMacros(url, PAGE, undefined, { servedStatically: true }) as string;
+    expect(result).toBe("https://ads.com/x?stid=1");
+  });
+
+  it("strips only the real ip param, never a param whose name merely ends in 'ip'", () => {
+    // Regression: the strip must anchor on a `[?&]` param boundary. `myip`/`skip`
+    // end in "ip" but are unrelated params and must survive untouched.
+    const url = "https://ads.com/x?myip=9.9.9.9&skip=yes&ip=106.203.213.228&b=2";
+    const result = resolveVideoAdMacros(url, PAGE, undefined, { servedStatically: true }) as string;
+    expect(result).toBe("https://ads.com/x?myip=9.9.9.9&skip=yes&b=2");
+  });
+
+  it("does not corrupt an unrelated param ending in 'ip' when it precedes the real ip", () => {
+    // Regression for the old unanchored regex, which turned `?skip=yes&ip=X` into
+    // `?skip=X` (mangled the wrong param and left the fake ip in place).
+    const url = "https://ads.com/x?skip=yes&ip=1.1.1.1";
+    const result = resolveVideoAdMacros(url, PAGE, undefined, { servedStatically: true }) as string;
+    expect(result).toBe("https://ads.com/x?skip=yes");
+  });
+
+  it("replaces only the real ua param, never a param whose name ends in 'ua'", () => {
+    vi.spyOn(navigator, "userAgent", "get").mockReturnValue("RealUA/1.0");
+    const url = "https://ads.com/x?lingua=fr&ua=Fake&b=2";
+    const result = resolveVideoAdMacros(url, PAGE, undefined, { servedStatically: true }) as string;
+    expect(result).toBe(`https://ads.com/x?lingua=fr&ua=${encodeURIComponent("RealUA/1.0")}&b=2`);
+  });
+
+  it("still resolves [PAGE_URL] under servedStatically and replaces ip", () => {
+    const url = "https://ads.com/x?site-url=[PAGE_URL]&ip=1.2.3.4";
+    const result = resolveVideoAdMacros(url, PAGE, undefined, {
+      servedStatically: true,
+      clientIp: "9.9.9.9",
+    }) as string;
+    expect(result).toContain(`site-url=${encodeURIComponent(PAGE)}`);
+    expect(result).toContain("ip=9.9.9.9");
+  });
+
+  it("regression: without servedStatically the URL is byte-identical to today", () => {
+    const url = "https://ads.com/x?stid=1&ip=106.203.213.228&ua=Mozilla/5.0%20Fake&type=midroll";
+    expect(resolveVideoAdMacros(url, PAGE)).toBe(url);
+    expect(resolveVideoAdMacros(url, PAGE, undefined, { servedStatically: false })).toBe(url);
   });
 });

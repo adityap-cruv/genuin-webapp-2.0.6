@@ -370,3 +370,24 @@ describe("strategies/__resetWarningsForTesting — dedup reset", () => {
     warn.mockRestore();
   });
 });
+
+describe("servedStatically flag", () => {
+  it("defaults to false", () => {
+    expect(DEFAULT_STRATEGIES.servedStatically).toBe(false);
+  });
+
+  it("resolves false for an unknown tag", () => {
+    expect(resolveStrategies("unknown-static-tag").servedStatically).toBe(false);
+  });
+
+  it("resolves true for the two static AD-only tags via preset", () => {
+    expect(resolveStrategies("6a39163e92929ebec64d78ab").servedStatically).toBe(true);
+    expect(resolveStrategies("6a3915b692929ebec64d785e").servedStatically).toBe(true);
+  });
+
+  it("preserves the tags' other existing overrides", () => {
+    const s = resolveStrategies("6a39163e92929ebec64d78ab");
+    expect(s.initialVolume).toBe(0.2);
+    expect(s.singleHitWaterfall).toBe(true);
+  });
+});

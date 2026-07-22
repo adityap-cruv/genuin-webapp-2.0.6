@@ -11,13 +11,13 @@ in [`src/config.ts`](../src/config.ts); per-tag feature flags live in
 ones are enforced by [`scripts/validateEnv.ts`](../scripts/validateEnv.ts) (runs in `predev` and the
 QA/prod `prebuild`s).
 
-| Var | Purpose | Default |
-| --- | --- | --- |
-| `VITE_CXR_API_BASE_URL` | Genuin API gateway | `https://api.begenuin.com` |
-| `VITE_CXR_RUDDERSTACK_KEY` | Rudderstack write key (never commit the real value) | `""` |
-| `VITE_CXR_RUDDERSTACK_DATA_PLANE_URL` | Rudderstack data plane | `https://etr.begenuin.com` |
-| `VITE_CXR_ASSET_BASE_URL` | CDN base for widget assets | `https://media.begenuin.com/webapp_assets/` |
-| `VITE_CXR_GEN_AD_BASE_URL` | GenAd SDK base URL | — (required) |
+| Var                                   | Purpose                                             | Default                                     |
+| ------------------------------------- | --------------------------------------------------- | ------------------------------------------- |
+| `VITE_CXR_API_BASE_URL`               | Genuin API gateway                                  | `https://api.begenuin.com`                  |
+| `VITE_CXR_RUDDERSTACK_KEY`            | Rudderstack write key (never commit the real value) | `""`                                        |
+| `VITE_CXR_RUDDERSTACK_DATA_PLANE_URL` | Rudderstack data plane                              | `https://etr.begenuin.com`                  |
+| `VITE_CXR_ASSET_BASE_URL`             | CDN base for widget assets                          | `https://media.begenuin.com/webapp_assets/` |
+| `VITE_CXR_GEN_AD_BASE_URL`            | GenAd SDK base URL                                  | — (required)                                |
 
 **Triple env-loading model** (do not conflate the three):
 
@@ -31,13 +31,13 @@ QA/prod `prebuild`s).
 Numeric layout ids drive nearly all branching. `resolveAdLayout(width, height)` maps a slot's exact
 pixel size to an id (any non-exact size → `Unknown`).
 
-| Id | Const | Size | Rendering |
-| --- | --- | --- | --- |
-| 0 | `Unknown` | — | fallback |
-| 1 | `L1` | 300×600 | full player |
-| 2 | `L2` | 300×250 | full player + Octo split overlay |
-| 3 | `L3` | 320×50 | compact bar, no player; audio via lazy offscreen player on unmute ([ADR 006](cxr-decisions/006-l3-audio-on-unmute.md)) |
-| 4 | `L4` | 320×100 | banner with a 100px thumbnail player |
+| Id  | Const     | Size    | Rendering                                                                                                              |
+| --- | --------- | ------- | ---------------------------------------------------------------------------------------------------------------------- |
+| 0   | `Unknown` | —       | fallback                                                                                                               |
+| 1   | `L1`      | 300×600 | full player                                                                                                            |
+| 2   | `L2`      | 300×250 | full player + Octo split overlay                                                                                       |
+| 3   | `L3`      | 320×50  | compact bar, no player; audio via lazy offscreen player on unmute ([ADR 006](cxr-decisions/006-l3-audio-on-unmute.md)) |
+| 4   | `L4`      | 320×100 | banner with a 100px thumbnail player                                                                                   |
 
 ## Stacked layout (widget + Infolinks)
 
@@ -62,8 +62,10 @@ Precedence mirrors tag-id resolution: the page-global `GIV` **script param** win
 not suppress a valid `data-giv`. `getInitVolumeOverride(dataGiv)` resolves it.
 
 ```html
-<script src=".../gen_ext.min.js?GIV=0.5"></script>          <!-- page-global -->
-<div class="gen-ext" data-tag-id="..." data-giv="0.5"></div>  <!-- per-div fallback -->
+<script src=".../gen_ext.min.js?GIV=0.5"></script>
+<!-- page-global -->
+<div class="gen-ext" data-tag-id="..." data-giv="0.5"></div>
+<!-- per-div fallback -->
 ```
 
 ## Host macros
@@ -75,6 +77,21 @@ The loader captures the whole query string into `window.__CXR_SCRIPT_PARAMS__`;
 analytics, and the pixel reporter. Design rulings (geo kept separate from IP geoip; Triton `site-url` is
 web-only; the interim `TRITON_APP_PARAM_TAG_IDS` rewrite allowlist) live in
 [the host-macro design spec](superpowers/specs/2026-07-09-cxr-host-macro-resolution-design.md).
+
+### Statically-served ad-URL rewrite
+
+For `servedStatically` tags (see [STRATEGIES.md](STRATEGIES.md#statically-served-tags)),
+`resolveVideoAdMacros` takes a `{ servedStatically: true, clientIp }` option
+(threaded from [`genAdSdk.ts`](../src/ads/genAdSdk.ts)) that, on top of the normal
+`[PAGE_URL]` / host-macro substitution, rewrites the resolved URL in place: the
+`ua` param is replaced with the real `navigator.userAgent`, and the `ip` param is
+replaced with the real client IP. The IP comes from the shared geoip fetch
+(`getSharedGeoIp` — the same `/ip_info` call analytics uses, so no extra request);
+`genAdSdk` reads it best-effort and passes it as `clientIp`. When no IP is
+available (geoip not resolved / unavailable), `ip` is **stripped** rather than
+sent stale. Both edits are position-independent regex edits, so fixture ad URLs
+may list params in any order. Omitting the option leaves the URL byte-identical to
+the normal path — non-static tags are unaffected.
 
 ## Deploy pipeline
 

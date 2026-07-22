@@ -4,7 +4,12 @@
  */
 import { describe, expect, it, vi } from "vitest";
 
-import { detectDevice, enrichDeviceDetailsWithGeoIp, getDeviceDetailsSnapshot } from "@cxr/platform/device";
+import {
+  detectDevice,
+  enrichDeviceDetailsWithGeoIp,
+  getDeviceDetailsSnapshot,
+  resolveClientIp,
+} from "@cxr/platform/device";
 import type { RawGeoIpResponse } from "@cxr/services/api";
 
 // ─── detectDevice ─────────────────────────────────────────────────────────────
@@ -322,5 +327,19 @@ describe("services/getDeviceDetailsSnapshot", () => {
 
   it("treats explicit `hasTouch=false` distinctly from the navigator default", () => {
     expect(getDeviceDetailsSnapshot(UA_MAC_CHROME, false).os_type).toBe("macos");
+  });
+});
+
+describe("resolveClientIp", () => {
+  it("prefers ip, then query, then tip", () => {
+    expect(resolveClientIp({ ip: "1.1.1.1", query: "2.2.2.2", tip: "3.3.3.3" })).toBe("1.1.1.1");
+    expect(resolveClientIp({ query: "2.2.2.2", tip: "3.3.3.3" })).toBe("2.2.2.2");
+    expect(resolveClientIp({ tip: "3.3.3.3" })).toBe("3.3.3.3");
+  });
+
+  it("returns undefined when no IP field is present or geoip is nullish", () => {
+    expect(resolveClientIp({ city: "Pune" })).toBeUndefined();
+    expect(resolveClientIp(null)).toBeUndefined();
+    expect(resolveClientIp(undefined)).toBeUndefined();
   });
 });

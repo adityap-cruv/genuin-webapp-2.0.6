@@ -363,7 +363,12 @@ describe("providers/AnalyticsProvider", () => {
     act(() => handle.send());
     act(() => readyCb?.());
     await expect(settleGeoip()).resolves.not.toThrow();
-    expect(errSpy).toHaveBeenCalledWith("[cxr/analytics-provider]", "failed to flush event", "bad_event", expect.any(Error));
+    expect(errSpy).toHaveBeenCalledWith(
+      "[cxr/analytics-provider]",
+      "failed to flush event",
+      "bad_event",
+      expect.any(Error)
+    );
     unmount(root, container);
   });
 
@@ -452,10 +457,7 @@ describe("providers/AnalyticsProvider", () => {
     act(() => handle.send());
     act(() => readyCb?.());
     await settleGeoip();
-    const details = (trackMock.mock.calls[0]?.[1] as Record<string, unknown>).event_details as Record<
-      string,
-      unknown
-    >;
+    const details = (trackMock.mock.calls[0]?.[1] as Record<string, unknown>).event_details as Record<string, unknown>;
     expect(details).toMatchObject({ volume: 0, is_muted: true, event_record_screen: "embed" });
     unmount(root, container);
   });
@@ -489,10 +491,7 @@ describe("providers/AnalyticsProvider", () => {
     act(() => handle.send());
     act(() => readyCb?.());
     await settleGeoip();
-    const details = (trackMock.mock.calls[0]?.[1] as Record<string, unknown>).event_details as Record<
-      string,
-      unknown
-    >;
+    const details = (trackMock.mock.calls[0]?.[1] as Record<string, unknown>).event_details as Record<string, unknown>;
     expect(details).toMatchObject({ volume: 0.4, is_muted: false, event_record_screen: "expand" });
     unmount(root, container);
   });
@@ -576,6 +575,21 @@ describe("providers/AnalyticsProvider", () => {
       );
     });
     expect(seen[0]).toBe(seen[1]);
+    unmount(root, container);
+  });
+
+  it("fetches geoip for a servedStatically tag too (parity with normal tags)", async () => {
+    setRudder();
+
+    const { root, container } = mount(
+      <AnalyticsProvider tagId="6a39163e92929ebec64d78ab" preview={false}>
+        <span>child</span>
+      </AnalyticsProvider>
+    );
+    await settleGeoip();
+
+    // Static tags still need geoip on analytics + a real IP for the ad-URL rewrite.
+    expect(getSharedGeoIpMock).toHaveBeenCalled();
     unmount(root, container);
   });
 });

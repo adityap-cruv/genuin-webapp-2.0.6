@@ -9,12 +9,16 @@ import { resolvePageUrl, resolveVideoAdMacros } from "@cxr/ads/adUrlMacros";
 import { normalizeBannerConfig, normalizeNativeConfig, normalizeVideoConfig } from "@cxr/ads/normalizers";
 import type { AdProviderKind } from "@cxr/ads/normalizers";
 import { EVENT } from "@cxr/analytics/analytics";
+import { hostMacros } from "@cxr/hostMacros";
 import { useEventBus } from "@cxr/instance/InstanceContext";
+import { resolveClientIp } from "@cxr/platform/device";
 import { useAnalytics } from "@cxr/providers/AnalyticsProvider";
 import { DEFAULT_UNMUTE_VOLUME } from "@cxr/providers/PlayerProvider";
 import { useTagDetails } from "@cxr/providers/TagDetailsProvider";
+import { getSharedGeoIp } from "@cxr/services/api";
 import { resyncShadowStyles } from "@cxr/shadow-dom";
 import { useStrategy } from "@cxr/strategies/StrategyProvider";
+import { isStaticTag } from "@cxr/strategies/staticTagData";
 import { createLogger } from "@cxr/utils/logger";
 
 const _logger = createLogger("cxr/gen-ad-sdk");
@@ -273,14 +277,14 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
 
   const bus = useEventBus();
   const { sendEvent, setBaseEventContext } = useAnalytics();
-  const { shadowConfig } = useTagDetails();
+  const { shadowConfig, tagId } = useTagDetails();
   const shadowDom = shadowConfig != null;
 
   // Tags configured with `initialVolume > 0` want the ad to load audible. When
   // set, the ad is requested unmuted (bypassing the mute gate) and initialized
   // at this level instead of the shared `UNMUTE_VOLUME`. `0` keeps the legacy
   // muted/gated behaviour for every other tag.
-  const { initialVolume } = useStrategy();
+  const { initialVolume, servedStatically } = useStrategy();
   const wantsAudibleAdStart = initialVolume > 0;
   // Level the ad unmutes to — both at init and on a later user re-unmute. Uses
   // the tag's configured `initialVolume` when set, else the shared default, so
@@ -392,7 +396,7 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
     initInFlightRef.current = true;
 
     _loadSdk()
-      .then(() => {
+      .then(async () => {
         if (cancelled) {
           initInFlightRef.current = false;
           return;
@@ -623,7 +627,33 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
           (initOptions as Record<string, unknown>).native = nativeConfig;
         }
 
-        const resolvedVideoAd = resolveVideoAdMacros(videoAd, resolvePageUrl());
+        // Only rewrite (real ua + real ip) when the tag is actually served
+        // statically — flag AND registry entry (see isStaticTag). A tag flagged
+        // servedStatically but missing its fixtures falls back to the real feed,
+        // whose ad URL is a live backend URL that must NOT be rewritten.
+        const isServedStatically = isStaticTag(tagId, servedStatically);
+        // Best-effort client IP for the ip-param rewrite: read the shared geoip
+        // cache (same fetch analytics uses — no extra request). Never blocks: if it
+        // hasn't resolved yet, `getSharedGeoIp` resolves fast and never rejects; a
+        // null result leaves clientIp undefined → adUrlMacros strips ip instead.
+        let clientIp: string | undefined;
+        if (isServedStatically) {
+          const geoip = await getSharedGeoIp().catch(() => null);
+          // The await above yields the event loop: the slot may have torn down or
+          // re-armed while geoip was in flight. Re-check before init so we never
+          // create an SDK instance the cleanup (which already ran with a null
+          // instanceIdRef, making its destroy a no-op) can't reach — that would
+          // leak the ad and wedge the double-init guard on the next activation.
+          if (cancelled) {
+            initInFlightRef.current = false;
+            return;
+          }
+          clientIp = resolveClientIp(geoip);
+        }
+        const resolvedVideoAd = resolveVideoAdMacros(videoAd, resolvePageUrl(), hostMacros, {
+          servedStatically: isServedStatically,
+          clientIp,
+        });
         // Log the resolved primary ad URL on every ad event this slot emits.
         // Setting it into the base event context (rather than each call site)
         // stamps `ad_url` onto AD_REQUESTED below and all subsequent ad events.

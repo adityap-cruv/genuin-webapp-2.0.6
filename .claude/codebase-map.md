@@ -36,7 +36,7 @@
 - **CXR audible autoplay on `localhost` is an environment artifact, not real behavior.** A unit
   playing with sound on load (no interaction) happens for any of three reasons: (1) an
   **automation/WebDriver browser** (the MCP/DevTools-controlled Chrome) reports `navigator.webdriver:
-  true` and forges `navigator.userActivation` = true on a fresh page, so it always permits audible
+true` and forges `navigator.userActivation` = true on a fresh page, so it always permits audible
   autoplay — this is why a tool-driven page load has sound; (2) Chrome whitelists high-MEI origins
   (`chrome://media-engagement/` — `localhost:3010` sits above the 0.3 threshold from repeated dev
   loads); (3) the profile runs `Autoplay Policy: no-user-gesture-required`. Real first-time users
@@ -89,21 +89,39 @@
   `<StrategyProvider tagId>` memoises the resolved object; `useStrategy()` reads it and degrades to
   `DEFAULT_STRATEGIES` (all-off) outside a provider — never throws. `tagId` is the **embed tag id**,
   not a feed reel `_id`. Toggles: `genAiEnabled`, `adBreakEnabled`, `gateOnUnmute`,
-  `singleHitWaterfall`, `adsDisabled`, `mutePassback` + tunable `mutePassbackDelayMs` (default 3000).
+  `singleHitWaterfall`, `adsDisabled`, `mutePassback` + tunable `mutePassbackDelayMs` (default 3000),
+  `servedStatically` (see below).
   Full reference: [packages/contextual-reels/docs/STRATEGIES.md](../packages/contextual-reels/docs/STRATEGIES.md).
+- **CXR `servedStatically` tags** — a tag whose config + feed are served from committed per-tag JSON
+  fixtures, skipping two network calls (`/ad_creative`, `/feed`) to cut ad-load latency. `/ip_info` is
+  NOT skipped — geoip stays on analytics and supplies the real client IP for the ad-URL rewrite. Two
+  pieces: the `servedStatically` strategy flag (attached via the `servedStatically` preset in
+  `strategyConfig.ts`) + a per-tag data registry `STATIC_TAG_DATA` in
+  `packages/contextual-reels/src/strategies/staticTagData.ts` keyed by tagId. Registry values are
+  **lazy loader thunks** (`() => import()` the tag's two JSON fixtures in `src/providers/static-tag/`),
+  so Vite emits one async chunk per tag and non-static tags load zero fixture bytes; `getStaticTagData`
+  is async, `STATIC_TAG_IDS` is a sync fixture-free `Set`. Fixtures are stored as the full gateway
+  envelope (`{code,message,data}`); the loader unwraps `.data`. Consumers (all no-op for normal tags):
+  `useTagLoader` (skip `/ad_creative`), `FeedProvider` (skip `/feed`, mint fresh `crypto.randomUUID()`
+  visit_id per load), `adUrlMacros`/`genAdSdk` (rewrite ad URL: real `ua`, real client `ip` from the
+  shared geoip fetch; strip `ip` if unavailable). Every static path gates on the flag **AND**
+  `STATIC_TAG_IDS.has(tagId)`, so a flagged-but-unregistered tag behaves like a normal tag (no
+  half-static state). Any missing/failed fixture falls back to the real API. Full analytics parity
+  (geoip included). Full reference:
+  [STRATEGIES.md#statically-served-tags](../packages/contextual-reels/docs/STRATEGIES.md#statically-served-tags).
 - **CXR host macros unresolved = host bug, not ours** — the host webview must substitute its own
   tilde-delimited macros (`~appb~`, `~loclat~`, `~appn~`, `~appv~`, `~loc~`) with real values BEFORE
   building the loader `<script src>`. The loader copies that query string verbatim into
   `window.__CXR_SCRIPT_PARAMS__` (`loader.jsx:41`); `parseHostMacros()` (`src/hostMacros.ts`) reads
   it. `isUnresolved()` (`src/hostMacros.ts`) drops **both** the curly `{appv}` and tilde `~appv~`
   forms, so a leaked template never flows into analytics/ad-URLs as a "real" value. Diagnostic:
-  `buildHostParamsDiagnostic()` (`src/analytics/analytics.ts`) reads the RAW bag *before* cleaning and
+  `buildHostParamsDiagnostic()` (`src/analytics/analytics.ts`) reads the RAW bag _before_ cleaning and
   stamps `host_script_params_raw` + `host_params_unresolved` onto the one-time `Tag Captured` event
   (`src/app/App.tsx:260`) — so it still reports leaked placeholders even though they're now dropped
   downstream. NOTE: `host_script_params_raw` logs host values verbatim (ifa/deviceid/geo/consent) —
   privacy sign-off + eventual removal expected.
 - **CXR mutePassback timing** — the passback timer (`MutePassbackGuard`, `src/app/App.tsx`) arms on
-  the **first `player:play`** bus event, NOT on mount — so it measures muted *playback*, not the
+  the **first `player:play`** bus event, NOT on mount — so it measures muted _playback_, not the
   tag/feed-load gap. One-shot: a later pause/resume won't restart or re-fire it.
 - **CXR fill/passback logs are tag-agnostic** — `notifyAdFill`/`notifyAdNoFill`
   (`src/ads/waterfall.ts`) postMessage to the parent + call `window.adFillCallback`/`noAdsCallback`;
@@ -116,7 +134,7 @@
   from props. Old docs/audits referencing `tagId`/`tagHeight`/`tagWidth`/`adLayout` as
   `AdProvider` props are stale. `AdProvider` now also owns: **single-hit deferred
   passback** (`noFillSlotsRef`/`recordSingleHitNoFill`/`firePassbackIfExhausted` — fires
-  `Ad Passback` only once every ad/`video-with-ad` slot has reported no-fill *and* the
+  `Ad Passback` only once every ad/`video-with-ad` slot has reported no-fill _and_ the
   feed reached its last entry, replacing the old immediate-fire-on-first-fail path for
   `singleHitWaterfall` tags) and **Infolinks Impression** (registers
   `fireInfolinksImpression` on `InstanceRegistry` per `instanceId`; driven by

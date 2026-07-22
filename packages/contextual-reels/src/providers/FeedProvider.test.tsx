@@ -11,16 +11,38 @@ import { normaliseFeed } from "@cxr/feed/feedTransforms";
 import { useAnalytics } from "@cxr/providers/AnalyticsProvider";
 import { FeedProvider, useFeed } from "@cxr/providers/FeedProvider";
 import { usePlayer } from "@cxr/providers/PlayerProvider";
-import { createFeedGenerator } from "@cxr/services/feed";
+import { useTagDetails } from "@cxr/providers/TagDetailsProvider";
+import { createFeedGenerator, setVisitId } from "@cxr/services/feed";
+import { useStrategy } from "@cxr/strategies/StrategyProvider";
+import { getStaticTagData } from "@cxr/strategies/staticTagData";
 import type { FeedEntry, NormalisedReel } from "@cxr/types";
 
 vi.mock("../services/feed", () => ({
   createFeedGenerator: vi.fn(),
+  setVisitId: vi.fn(),
 }));
 
 vi.mock("../providers/AnalyticsProvider", () => ({
-  useAnalytics: vi.fn(() => ({ sendEvent: vi.fn(), setBaseEventContext: vi.fn() })),
+  useAnalytics: vi.fn(() => ({
+    sendEvent: vi.fn(),
+    setBaseEventContext: vi.fn(),
+    setMandatoryData: vi.fn(),
+  })),
 }));
+
+// The default test tagId ("tag-1") is registered so the flag-AND-registry gate
+// passes and the mocked getStaticTagData drives static-vs-fallback behaviour.
+// isStaticTag mirrors production (flag AND registry membership) against the
+// mocked set; declared inside the factory to avoid vi.mock's hoist/TDZ trap.
+vi.mock("../strategies/staticTagData", () => {
+  const staticIds = new Set(["tag-1"]);
+  return {
+    getStaticTagData: vi.fn(),
+    STATIC_TAG_IDS: staticIds,
+    isStaticTag: (tagId: string | null | undefined, servedStatically: boolean) =>
+      servedStatically && tagId != null && staticIds.has(tagId),
+  };
+});
 
 // FeedProvider reads `isAdBreakActive` from usePlayer() (context) to derive
 // isAdActive/activeReel — mount order in FeedTree puts PlayerProvider above it.
@@ -36,7 +58,12 @@ vi.mock("../providers/TagDetailsProvider", () => ({
 }));
 
 vi.mock("../strategies/StrategyProvider", () => ({
-  useStrategy: vi.fn(() => ({ adBreakEnabled: false, gateOnUnmute: false, adsDisabled: false })),
+  useStrategy: vi.fn(() => ({
+    adBreakEnabled: false,
+    gateOnUnmute: false,
+    adsDisabled: false,
+    servedStatically: false,
+  })),
 }));
 
 vi.mock("../feed/feedTransforms", () => ({
@@ -64,9 +91,13 @@ vi.mock("../feed/feedTransforms", () => ({
 }));
 
 const mockCreateFeedGenerator = createFeedGenerator as ReturnType<typeof vi.fn>;
+const mockSetVisitId = setVisitId as ReturnType<typeof vi.fn>;
 const mockUseAnalytics = useAnalytics as ReturnType<typeof vi.fn>;
 const mockUsePlayer = usePlayer as ReturnType<typeof vi.fn>;
 const mockNormaliseFeed = normaliseFeed as ReturnType<typeof vi.fn>;
+const mockUseStrategy = useStrategy as ReturnType<typeof vi.fn>;
+const mockGetStaticTagData = getStaticTagData as ReturnType<typeof vi.fn>;
+const mockUseTagDetails = useTagDetails as ReturnType<typeof vi.fn>;
 
 interface Captured {
   entries: FeedEntry[];
@@ -286,5 +317,178 @@ describe("FeedProvider", () => {
 
     // No throw, no leaked state update on the unmounted tree.
     expect(true).toBe(true);
+  });
+
+  it("serves the static feed and never calls createFeedGenerator for a servedStatically tag", async () => {
+    mockUseStrategy.mockReturnValue({
+      adBreakEnabled: false,
+      gateOnUnmute: false,
+      adsDisabled: false,
+      servedStatically: true,
+    });
+    mockGetStaticTagData.mockResolvedValue({
+      tagConfig: {},
+      feed: [{ type: "ads" }, { type: "ads" }],
+    });
+
+    render();
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(mockCreateFeedGenerator).not.toHaveBeenCalled();
+    expect(captured.entries.length).toBe(2);
+    expect(captured.isLoading).toBe(false);
+  });
+
+  it("emits a freshly generated visit_id for the static entry", async () => {
+    const uuidSpy = vi.spyOn(crypto, "randomUUID").mockReturnValue("11111111-1111-4111-8111-111111111111");
+    const setMandatoryData = vi.fn();
+    const setBaseEventContext = vi.fn();
+    mockUseAnalytics.mockReturnValue({ sendEvent: vi.fn(), setBaseEventContext, setMandatoryData });
+    mockUseStrategy.mockReturnValue({
+      adBreakEnabled: false,
+      gateOnUnmute: false,
+      adsDisabled: false,
+      servedStatically: true,
+    });
+    mockGetStaticTagData.mockResolvedValue({ tagConfig: {}, feed: [{ type: "ads" }] });
+
+    render();
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    const generated = "11111111-1111-4111-8111-111111111111";
+    expect(mockSetVisitId).toHaveBeenCalledWith("tag-1", generated);
+    expect(setMandatoryData).toHaveBeenCalledWith({ visit_id: generated });
+    expect(setBaseEventContext).toHaveBeenCalledWith({ visit_id: generated });
+    uuidSpy.mockRestore();
+  });
+
+  it("still serves the static feed when crypto.randomUUID is unavailable (http:// / older browser)", async () => {
+    // generateUuid (not bare crypto.randomUUID) must handle the insecure-context
+    // case; a throw here would land in the catch and fail the feed despite the
+    // fixture being present locally. Simulate by removing crypto.randomUUID.
+    const originalRandomUUID = crypto.randomUUID;
+    // Intentionally delete to simulate an insecure context (http:// / older browser).
+    delete (crypto as { randomUUID?: unknown }).randomUUID;
+
+    const setMandatoryData = vi.fn();
+    mockUseAnalytics.mockReturnValue({ sendEvent: vi.fn(), setBaseEventContext: vi.fn(), setMandatoryData });
+    mockUseStrategy.mockReturnValue({
+      adBreakEnabled: false,
+      gateOnUnmute: false,
+      adsDisabled: false,
+      servedStatically: true,
+    });
+    mockGetStaticTagData.mockResolvedValue({ tagConfig: {}, feed: [{ type: "ads" }] });
+
+    render();
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    // Feed served (not failed), and a non-empty visit_id was still minted.
+    expect(captured.entries.length).toBe(1);
+    expect(captured.feedFailed).toBe(false);
+    const visitIdArg = setMandatoryData.mock.calls[0]?.[0] as { visit_id?: string } | undefined;
+    expect(visitIdArg?.visit_id).toBeTruthy();
+
+    Object.defineProperty(crypto, "randomUUID", { value: originalRandomUUID, configurable: true });
+  });
+
+  it("emits the feed funnel events for the static entry (BATCH_STARTED, FEED_API_CALL_COMPLETED)", async () => {
+    const sendEvent = vi.fn();
+    mockUseAnalytics.mockReturnValue({
+      sendEvent,
+      setBaseEventContext: vi.fn(),
+      setMandatoryData: vi.fn(),
+    });
+    mockUseStrategy.mockReturnValue({
+      adBreakEnabled: false,
+      gateOnUnmute: false,
+      adsDisabled: false,
+      servedStatically: true,
+    });
+    mockGetStaticTagData.mockResolvedValue({ tagConfig: {}, feed: [{ type: "ads" }] });
+
+    render();
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(sendEvent).toHaveBeenCalledWith("Batch Started");
+    expect(sendEvent).toHaveBeenCalledWith("Feed API Call Completed");
+  });
+
+  it("falls back to the generator when a servedStatically tag has no registry entry", async () => {
+    mockUseStrategy.mockReturnValue({
+      adBreakEnabled: false,
+      gateOnUnmute: false,
+      adsDisabled: false,
+      servedStatically: true,
+    });
+    mockGetStaticTagData.mockResolvedValue(undefined);
+    mockCreateFeedGenerator.mockReturnValue(vi.fn().mockResolvedValue([{ type: "ads" }]));
+
+    render();
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(mockCreateFeedGenerator).toHaveBeenCalled();
+  });
+
+  it("falls back to the generator when the static fixture load rejects", async () => {
+    mockUseStrategy.mockReturnValue({
+      adBreakEnabled: false,
+      gateOnUnmute: false,
+      adsDisabled: false,
+      servedStatically: true,
+    });
+    mockGetStaticTagData.mockRejectedValue(new Error("chunk load failed"));
+    mockCreateFeedGenerator.mockReturnValue(vi.fn().mockResolvedValue([{ type: "ads" }]));
+
+    render();
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    // Static data unavailable → serve the real /feed instead of failing.
+    expect(mockCreateFeedGenerator).toHaveBeenCalled();
+    expect(captured.feedFailed).toBe(false);
+  });
+
+  it("does not consult static data for a flagged-but-unregistered tag (gate is flag AND registry)", async () => {
+    // servedStatically set, but tagId absent from STATIC_TAG_IDS: the gate must
+    // short-circuit so getStaticTagData is never called — same invariant as
+    // useTagLoader / genAdSdk. The tag behaves like a normal tag.
+    mockUseTagDetails.mockReturnValue({ tagId: "unregistered-tag" });
+    mockUseStrategy.mockReturnValue({
+      adBreakEnabled: false,
+      gateOnUnmute: false,
+      adsDisabled: false,
+      servedStatically: true,
+    });
+    mockCreateFeedGenerator.mockReturnValue(vi.fn().mockResolvedValue([{ type: "ads" }]));
+
+    render();
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(mockGetStaticTagData).not.toHaveBeenCalled();
+    expect(mockCreateFeedGenerator).toHaveBeenCalled();
+
+    mockUseTagDetails.mockReturnValue({ tagId: "tag-1" });
   });
 });

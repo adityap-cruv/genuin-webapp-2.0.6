@@ -14,14 +14,17 @@
  */
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
+import { EVENT } from "@cxr/analytics/analytics";
 import { getActiveSlideState } from "@cxr/feed/activeSlideState";
 import { normaliseFeed } from "@cxr/feed/feedTransforms";
 import { useAnalytics } from "@cxr/providers/AnalyticsProvider";
 import { usePlayer } from "@cxr/providers/PlayerProvider";
 import DUMMY_FEED_RESPONSE from "@cxr/providers/dummyFeed.json";
-import { createFeedGenerator } from "@cxr/services/feed";
+import { createFeedGenerator, setVisitId } from "@cxr/services/feed";
 import { useStrategy } from "@cxr/strategies/StrategyProvider";
+import { getStaticTagData, isStaticTag } from "@cxr/strategies/staticTagData";
 import type { FeedEntry, NormalisedReel, Reel } from "@cxr/types";
+import { generateUuid } from "@cxr/userId";
 
 import { useTagDetails } from "./TagDetailsProvider";
 
@@ -69,7 +72,7 @@ interface FeedProviderProps {
 export function FeedProvider({ children }: FeedProviderProps): ReactNode {
   const { sendEvent, setBaseEventContext, setMandatoryData } = useAnalytics();
   const { tagId } = useTagDetails();
-  const { adBreakEnabled, gateOnUnmute, adsDisabled } = useStrategy();
+  const { adBreakEnabled, gateOnUnmute, adsDisabled, servedStatically } = useStrategy();
   const { isAdBreakActive } = usePlayer();
   const [entries, setEntries] = useState<FeedEntry[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -77,13 +80,6 @@ export function FeedProvider({ children }: FeedProviderProps): ReactNode {
   const [feedFailed, setFeedFailed] = useState(false);
 
   useEffect(() => {
-    // createFeedGenerator is scoped to this effect invocation — no ref needed.
-    const fetchFeed = createFeedGenerator({
-      tagId,
-      sendEvent,
-      setBaseEventContext,
-      setMandatoryData,
-    });
     let cancelled = false;
     setIsLoading(true);
     setFeedFailed(false);
@@ -92,13 +88,48 @@ export function FeedProvider({ children }: FeedProviderProps): ReactNode {
       try {
         // Service-layer Reel has looser optional types than domain Reel; cast at this boundary.
         let reels: Reel[];
-        // USE_DUMMY_FEED is gated by `import.meta.env.DEV` and folds to false in
-        // every build (see the const above) — this branch is local-dev-only and
-        // structurally dead in production/test bundles.
-        /* v8 ignore next 3 */
-        if (USE_DUMMY_FEED) {
+        // Fixtures load lazily (per-tag chunk); only a static tag awaits them. A
+        // failed/missing lookup resolves undefined so we fall back to the real
+        // /feed below rather than failing the feed — "static but no data → hit the
+        // API" (matches the useTagLoader fallback). Gated on the flag AND registry
+        // membership — same invariant as useTagLoader / genAdSdk, so a
+        // flagged-but-unregistered tag never pulls a fixture chunk.
+        const isServedStatically = isStaticTag(tagId, servedStatically);
+        const staticEntry = isServedStatically ? await getStaticTagData(tagId).catch(() => undefined) : undefined;
+        if (staticEntry) {
+          // Static AD-only tag: serve the committed feed, skip /feed. Mirror the
+          // analytics createFeedGenerator would emit so the funnel is identical to
+          // a real single populated batch: BATCH_STARTED, then (after "loading")
+          // FEED_API_CALL_COMPLETED. (BATCH_COMPLETED/FEED_COMPLETED/TAG_DISPLAYED
+          // only fire on later or empty batches — not a first populated batch.)
+          sendEvent(EVENT.BATCH_STARTED);
+          // A fresh id is generated per load (the fixture carries no visit_id) so
+          // every session is distinct, mirroring a real /feed response. Emitting
+          // these satisfies the analytics buffer's mandatory `visit_id` gate.
+          // generateUuid (not bare crypto.randomUUID) so an http:// / older-browser
+          // embed — where crypto.randomUUID is absent and throws — still serves the
+          // static feed instead of falling into the catch and failing the feed.
+          const visitId = generateUuid();
+          setVisitId(tagId, visitId);
+          setBaseEventContext?.({ visit_id: visitId });
+          setMandatoryData?.({ visit_id: visitId });
+          sendEvent(EVENT.FEED_API_CALL_COMPLETED);
+          reels = staticEntry.feed;
+        } else if (USE_DUMMY_FEED) {
+          // USE_DUMMY_FEED is gated by `import.meta.env.DEV` and folds to false in
+          // every build (see the const above) — this branch is local-dev-only and
+          // structurally dead in production/test bundles.
+          /* v8 ignore next */
           reels = DUMMY_FEED_RESPONSE.data.reels as unknown as Reel[];
         } else {
+          // createFeedGenerator is scoped to this effect invocation — no ref
+          // needed. Built lazily so a static AD-only tag never constructs it.
+          const fetchFeed = createFeedGenerator({
+            tagId,
+            sendEvent,
+            setBaseEventContext,
+            setMandatoryData,
+          });
           reels = (await fetchFeed()) as unknown as Reel[];
         }
 

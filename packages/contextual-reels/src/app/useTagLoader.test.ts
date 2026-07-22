@@ -23,6 +23,29 @@ vi.mock("@cxr/services/api", () => ({
   getTag: (tagId: string) => getTagMock(tagId),
 }));
 
+// servedStatically gating: default every tag to non-static so the existing suite is
+// unaffected; the static test overrides per-call.
+const resolveStrategiesMock = vi.fn();
+resolveStrategiesMock.mockReturnValue({ servedStatically: false });
+vi.mock("@cxr/strategies/strategies", () => ({
+  resolveStrategies: (tagId: string) => resolveStrategiesMock(tagId),
+}));
+
+const getStaticTagDataMock = vi.fn();
+// Mock registry membership so the SUT's isStaticTag gate passes for the static
+// test's tag id. isStaticTag mirrors production (flag AND registry membership)
+// against the mocked set. Declared inside the factory — vi.mock is hoisted above
+// any outer const, so referencing one here would hit the TDZ.
+vi.mock("@cxr/strategies/staticTagData", () => {
+  const staticIds = new Set(["static-1"]);
+  return {
+    getStaticTagData: (tagId: string) => getStaticTagDataMock(tagId),
+    STATIC_TAG_IDS: staticIds,
+    isStaticTag: (tagId: string | null | undefined, servedStatically: boolean) =>
+      servedStatically && tagId != null && staticIds.has(tagId),
+  };
+});
+
 import { useTagLoader } from "@cxr/app/useTagLoader";
 import { AD_LAYOUT, type AdLayoutId } from "@cxr/config";
 import type { TagResponse } from "@cxr/types";
@@ -66,6 +89,8 @@ describe("useTagLoader", () => {
     vi.clearAllMocks();
     lastResult = null;
     getTagMock.mockResolvedValue({ tag_id: "tag-1", config: {}, brand_id: "brand-9" });
+    // clearAllMocks wipes the default impl — restore non-static as the default.
+    resolveStrategiesMock.mockReturnValue({ servedStatically: false });
   });
 
   afterEach(() => {
@@ -114,6 +139,62 @@ describe("useTagLoader", () => {
 
     // The forced show_cta=false must apply to the clone, not the caller's config.
     expect((preview.config as Record<string, unknown>).show_cta).toBe(true);
+  });
+
+  it("servedStatically tag: uses the static tag config and skips getTag", async () => {
+    resolveStrategiesMock.mockReturnValue({ servedStatically: true });
+    getStaticTagDataMock.mockResolvedValue({
+      tagConfig: { tag_id: "static-1", brand_id: 42, config: { show_cta: true } },
+      feed: [],
+      visitId: "v-static",
+    });
+
+    setup({ tagId: "static-1", rootTagId: "root-1", adLayout: AD_LAYOUT.L3 });
+    await flushPromises();
+
+    expect(getTagMock).not.toHaveBeenCalled();
+    expect(lastResult?.tagDetails?.tag_id).toBe("static-1");
+    // useTagLoader force-disables show_cta on the resolved config
+    expect((lastResult?.tagDetails?.config as Record<string, unknown>)?.show_cta).toBe(false);
+    expect(lastResult?.apiFailed).toBe(false);
+    // still reports the tag
+    expect(sendEventMock).toHaveBeenCalledWith("Tag Captured", expect.objectContaining({ tagId: "static-1" }));
+  });
+
+  it("servedStatically tag: falls back to getTag when the fixture load rejects", async () => {
+    resolveStrategiesMock.mockReturnValue({ servedStatically: true });
+    getStaticTagDataMock.mockRejectedValue(new Error("chunk load failed"));
+    getTagMock.mockResolvedValue({ tag_id: "static-1", config: {}, brand_id: 7 });
+
+    setup({ tagId: "static-1", rootTagId: "root-1" });
+    await flushPromises();
+
+    // Static data unavailable → hit the real API instead of failing.
+    expect(getTagMock).toHaveBeenCalledWith("static-1");
+    expect(lastResult?.tagDetails?.tag_id).toBe("static-1");
+    expect(lastResult?.apiFailed).toBe(false);
+  });
+
+  it("servedStatically tag: falls back to getTag when the loader resolves no data", async () => {
+    resolveStrategiesMock.mockReturnValue({ servedStatically: true });
+    getStaticTagDataMock.mockResolvedValue(undefined);
+    getTagMock.mockResolvedValue({ tag_id: "static-1", config: {}, brand_id: 7 });
+
+    setup({ tagId: "static-1", rootTagId: "root-1" });
+    await flushPromises();
+
+    expect(getTagMock).toHaveBeenCalledWith("static-1");
+    expect(lastResult?.tagDetails?.tag_id).toBe("static-1");
+  });
+
+  it("servedStatically tag not in the registry (drift): falls back to getTag", async () => {
+    resolveStrategiesMock.mockReturnValue({ servedStatically: true });
+    // "drift-tag" is absent from the mocked STATIC_TAG_IDS set, so the SUT's
+    // registry-membership gate fails and it falls through to the normal fetch.
+    setup({ tagId: "drift-tag", rootTagId: "root-1" });
+    await flushPromises();
+
+    expect(getTagMock).toHaveBeenCalledWith("drift-tag");
   });
 
   it("previewConfig absent: falls back to getTag (unchanged)", async () => {
