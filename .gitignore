@@ -81,6 +81,7 @@ next-env.d.ts
 !packages/contextual-reels/public/infolinks-test.html
 !packages/contextual-reels/public/infolinks-inner-320x50.html
 !packages/contextual-reels/public/infolinks-inner-300x300.html
+!packages/contextual-reels/public/cdn-verify.html
 
 packages/web-sdk/stats.json
 # Playwright

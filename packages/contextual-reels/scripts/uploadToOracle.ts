@@ -1,10 +1,12 @@
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import fs from 'fs';
 import path from 'path';
-import { confirm, checkbox } from '@inquirer/prompts';
+
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import chalk from 'chalk';
-import dotenv from 'dotenv';
 import cliProgress from 'cli-progress';
+import dotenv from 'dotenv';
+
+import { getBuildFiles, contentTypeFor } from './buildFiles.js';
 import { purgeBunnyCDN } from './bunnyPurge.js';
 
 type OracleConfig = {
@@ -14,14 +16,20 @@ type OracleConfig = {
   namespace: string;
   accessKeyId: string;
   secretAccessKey: string;
+};
+
+export type UploadOptions = {
+  /** Paths to upload to (already resolved by the orchestrator, e.g. ['cxr/1.0.0']). */
   paths: string[];
+  /** When true, log the intended actions but send nothing. */
+  dryRun: boolean;
 };
 
 /**
  * Loads and validates Oracle Object Storage configuration from .env.common and the
  * env-specific file (.env.qa or .env.production). Returns null if any key is missing.
  */
-async function getOracleConfig(): Promise<OracleConfig | null> {
+export async function getOracleConfig(): Promise<OracleConfig | null> {
   const NODE_ENV = process.env.NODE_ENV ?? 'qa';
 
   const commonEnv = dotenv.config({ path: '.env.common' }).parsed ?? {};
@@ -52,60 +60,9 @@ async function getOracleConfig(): Promise<OracleConfig | null> {
 
   console.log(chalk.green('✓ Oracle Object Storage configuration found'));
   // Oracle's S3-compatible API uses the namespace as the S3 bucket name in PutObjectCommand.
-  return { bucketName: namespace, region, endpointUrl, namespace, accessKeyId, secretAccessKey, paths };
-}
-
-/**
- * Discovers all dist/ files that should be uploaded.
- * QA: includes source maps. Production: excludes source maps.
- */
-function getBuildFiles(): string[] {
-  const NODE_ENV = process.env.NODE_ENV ?? 'qa';
-  const isProduction = NODE_ENV === 'production';
-
-  const allFiles = getFilesRecursively('dist').map((f) => path.join('dist', f));
-
-  const buildFiles = allFiles.filter((file) => {
-    const filename = path.basename(file);
-    const ext = path.extname(file);
-
-    // Stable loader
-    if (filename === 'gen_ext.min.js') return true;
-
-    // Hashed core bundle: gen_ext-[hash].js
-    if (/^gen_ext-[A-Za-z0-9_-]+\.js$/.test(filename)) return true;
-
-    // CSS assets: cxr-[hash].css
-    if (file.includes('assets/') && ext === '.css' && /^cxr-[A-Za-z0-9_-]+\.css$/.test(filename)) return true;
-
-    // Chunks
-    if (file.includes('chunks/') && ext === '.js') return true;
-
-    // Source maps — QA only
-    if (!isProduction && ext === '.map') return true;
-
-    return false;
-  });
-
-  console.log(chalk.blue(`\nDiscovered ${buildFiles.length} files to upload:`));
-  buildFiles.forEach((f) => console.log(chalk.gray(`  • ${f}`)));
-
-  return buildFiles;
-}
-
-/** Recursively lists all files under a directory, returning paths relative to that directory. */
-function getFilesRecursively(dir: string, basePath: string = dir): string[] {
-  if (!fs.existsSync(dir)) return [];
-  const files: string[] = [];
-  for (const item of fs.readdirSync(dir)) {
-    const fullPath = path.join(dir, item);
-    if (fs.statSync(fullPath).isDirectory()) {
-      files.push(...getFilesRecursively(fullPath, basePath));
-    } else {
-      files.push(path.relative(basePath, fullPath));
-    }
-  }
-  return files;
+  // Upload paths come from the caller (deploy.ts), not this config; the S3_UPLOAD_PATHS check
+  // above only gates whether Oracle is considered configured at all.
+  return { bucketName: namespace, region, endpointUrl, namespace, accessKeyId, secretAccessKey };
 }
 
 /** Uploads a single file to Oracle Object Storage, preserving its dist/ subdirectory structure. */
@@ -120,11 +77,7 @@ async function uploadFile(
   const relativePath = path.relative('dist', filePath);
   const oracleKey = `${oracleBucketPath.replace(/^\//, '')}/${relativePath}`;
 
-  const ext = path.extname(filePath).toLowerCase();
-  let contentType = 'application/octet-stream';
-  if (ext === '.js') contentType = 'application/javascript';
-  else if (ext === '.css') contentType = 'text/css';
-  else if (ext === '.map') contentType = 'application/json';
+  const contentType = contentTypeFor(filePath);
 
   const command = new PutObjectCommand({
     Bucket: bucketName,
@@ -144,36 +97,19 @@ async function uploadFile(
 }
 
 /**
- * Main upload function. Entry point for the deploy pipeline.
- *
- * By default (CI mode): reads S3_UPLOAD_PATHS from env and uploads without prompts.
- * With --interactive flag: shows path selection and confirmation prompts.
+ * Uploads the current dist/ build to Oracle Object Storage under each given path,
+ * then purges Bunny CDN for those paths. Prompting/target selection happens upstream.
  */
-export async function uploadBuildsToOracle(): Promise<void> {
-  const isInteractive = process.argv.includes('--interactive');
+export async function uploadBuildsToOracle({ paths, dryRun }: UploadOptions): Promise<void> {
   const oracleConfig = await getOracleConfig();
-  if (!oracleConfig) return;
-
-  const { bucketName, region, endpointUrl, namespace, accessKeyId, secretAccessKey, paths } = oracleConfig;
-
-  let selectedPaths: string[];
-
-  if (isInteractive) {
-    const shouldUpload = await confirm({
-      message: 'Do you want to upload the build files to Oracle Object Storage?',
-      default: false,
-    });
-    if (!shouldUpload) return;
-
-    selectedPaths = await checkbox<string>({
-      message: 'Select the paths where you want to upload the build files:',
-      choices: paths.map((p) => ({ value: p, label: p })),
-      validate: (selected) => selected.length > 0 || 'You must select at least one path',
-    });
-  } else {
-    selectedPaths = paths;
-    console.log(chalk.blue(`\nCI mode: uploading to all configured paths: ${selectedPaths.join(', ')}`));
+  // A selected target with missing config is a hard failure — the deploy was asked to
+  // upload here and cannot. Throw so the orchestrator records it (never a silent success).
+  if (!oracleConfig) {
+    throw new Error('Oracle Object Storage is not configured — cannot upload.');
   }
+
+  const { bucketName, region, endpointUrl, namespace, accessKeyId, secretAccessKey } = oracleConfig;
+  const selectedPaths = paths;
 
   const oracleS3Client = new S3Client({
     region,
@@ -184,7 +120,19 @@ export async function uploadBuildsToOracle(): Promise<void> {
 
   const buildFiles = getBuildFiles();
   if (buildFiles.length === 0) {
-    console.log(chalk.yellow('⚠ No build files found to upload'));
+    throw new Error('No build files found in dist/ — run the build before deploying.');
+  }
+
+  if (dryRun) {
+    console.log(chalk.magenta('\n[dry-run] Oracle — would upload:'));
+    for (const filePath of buildFiles) {
+      const relativePath = path.relative('dist', filePath);
+      for (const uploadPath of selectedPaths) {
+        console.log(chalk.gray(`  • ${bucketName}/${uploadPath.replace(/^\//, '')}/${relativePath}`));
+      }
+    }
+    console.log(chalk.magenta('[dry-run] Oracle — would then purge Bunny CDN for:'));
+    selectedPaths.forEach((p) => console.log(chalk.gray(`  • ${p}`)));
     return;
   }
 
@@ -234,11 +182,6 @@ export async function uploadBuildsToOracle(): Promise<void> {
   } catch (error) {
     progressBar.stop();
     console.error(chalk.red('\n✗ Oracle Object Storage upload failed:'), error);
-    process.exit(1);
+    throw error;
   }
 }
-
-uploadBuildsToOracle().catch((error: unknown) => {
-  console.error(chalk.red('💥 Upload script failed:'), error);
-  process.exit(1);
-});

@@ -147,4 +147,42 @@ export async function invalidateBunnyCDN(filePaths: FilePath[]): Promise<void> {
   await purgeBunnyUrls(urls, apiKey);
 }
 
+/**
+ * Purges the Bunny Storage pull-zone for the given cxr paths, reusing BUNNY_API_KEY.
+ * Non-fatal if BUNNY_API_KEY or BUNNY_STORAGE_PULL_URL is missing.
+ *
+ * @param uploadPaths - Paths just uploaded to Bunny Storage (e.g. ['cxr/1.0.0'])
+ */
+export async function purgeBunnyStorage(uploadPaths: string[]): Promise<void> {
+  const NODE_ENV = process.env.NODE_ENV ?? 'qa';
+  const commonEnv = dotenv.config({ path: '.env.common' }).parsed ?? {};
+  const envFile = NODE_ENV === 'production' ? '.env.production' : '.env.qa';
+  const envConfig = dotenv.config({ path: envFile }).parsed ?? {};
+  const combinedEnv = { ...commonEnv, ...envConfig };
+
+  const apiKey = combinedEnv['BUNNY_API_KEY'];
+  const pullUrl = combinedEnv['BUNNY_STORAGE_PULL_URL'];
+
+  console.log(chalk.blue('\nChecking Bunny Storage purge configuration:'));
+  console.log('API Key:', chalk.yellow(apiKey ? 'set' : 'not set'));
+  console.log('Pull-zone URL:', chalk.yellow(pullUrl ?? 'not set'));
+
+  if (!apiKey || !pullUrl) {
+    console.log(chalk.yellow('⚠ Bunny Storage pull-zone not configured, skipping cache purge'));
+    return;
+  }
+
+  if (uploadPaths.length === 0) {
+    console.log(chalk.yellow('⚠ No upload paths provided, skipping Bunny Storage purge'));
+    return;
+  }
+
+  const base = pullUrl.replace(/\/$/, '');
+  const urlsToPurge = uploadPaths.map((p) => `${base}/${p.replace(/^\//, '')}/*`);
+  console.log(chalk.blue('\nBunny Storage purge URLs:'));
+  urlsToPurge.forEach((url) => console.log(chalk.gray(`  • ${url}`)));
+
+  await purgeBunnyUrls(urlsToPurge, apiKey);
+}
+
 export { getBunnyConfig, constructPurgeUrls, purgeSingleUrl, purgeBunnyUrls };

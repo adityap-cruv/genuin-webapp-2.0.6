@@ -45,22 +45,23 @@ Env loading happens in **two independent places** — this is subtle, so read ca
    Vite bundles are read from `packages/genai/.env.<mode>` — **not** from a local file in
    this package. All vars also have prod-safe defaults in `src/config.ts` (see below), so a
    missing genai env file just falls back to defaults.
-2. **`validate:env` checks a *local* `.env.<mode>`.** The `predev` / `prebuild:qa` /
+2. **`validate:env` checks a _local_ `.env.<mode>`.** The `predev` / `prebuild:qa` /
    `prebuild:prod` hooks run `scripts/validateEnv.ts`, which loads and Zod-validates a
    **local** `packages/contextual-reels/.env.<mode>`. This gate is about catching a
    misconfigured machine before a deploy; it does not feed the build.
 3. **Deploy credentials come from `.env.common`.** `deploy:*` also reads local `./.env.<mode>`
    for the version-manager step, and the Oracle/Bunny upload scripts read `.env.common`.
 
-| Command              | Build vars (bundled)       | Validated (local)  | Deploy creds  |
-| -------------------- | -------------------------- | ------------------ | ------------- |
-| `npm run dev`        | `../genai/.env.development` | `.env.development` | —             |
-| `npm run build:qa`   | `../genai/.env.qa`         | `.env.qa`          | —             |
-| `npm run build:prod` | `../genai/.env.production` | `.env.production`  | —             |
-| `npm run deploy:qa`  | `../genai/.env.qa`         | `.env.qa`          | `.env.common` |
-| `npm run deploy:prod`| `../genai/.env.production` | `.env.production`  | `.env.common` |
+| Command               | Build vars (bundled)        | Validated (local)  | Deploy creds  |
+| --------------------- | --------------------------- | ------------------ | ------------- |
+| `npm run dev`         | `../genai/.env.development` | `.env.development` | —             |
+| `npm run build:qa`    | `../genai/.env.qa`          | `.env.qa`          | —             |
+| `npm run build:prod`  | `../genai/.env.production`  | `.env.production`  | —             |
+| `npm run deploy:qa`   | `../genai/.env.qa`          | `.env.qa`          | `.env.common` |
+| `npm run deploy:prod` | `../genai/.env.production`  | `.env.production`  | `.env.common` |
 
 **Dev setup (one time):**
+
 ```sh
 cp .env.development.example .env.development   # satisfies validate:env
 # Fill in VITE_CXR_RUDDERSTACK_KEY — ask team lead
@@ -68,6 +69,7 @@ cp .env.development.example .env.development   # satisfies validate:env
 ```
 
 **Deploy setup (one time per machine):**
+
 ```sh
 cp .env.qa.example .env.qa                 # fill in VITE_CXR_RUDDERSTACK_KEY + Oracle/Bunny creds
 cp .env.production.example .env.production # fill in VITE_CXR_RUDDERSTACK_KEY + Oracle/Bunny creds
@@ -80,46 +82,74 @@ cp .env.common.example .env.common         # fill in ORACLE_ACCESS_KEY, ORACLE_S
 
 All vars have prod-safe defaults in `src/config.ts`; the env file overrides them at build time.
 
-| Variable                          | Default                                                     | Purpose                              |
-| --------------------------------- | ----------------------------------------------------------- | ------------------------------------ |
-| `VITE_CXR_API_BASE_URL`               | `https://api.begenuin.com`                                  | Genuin API gateway                   |
-| `VITE_CXR_RUDDERSTACK_KEY`            | `""` (analytics silent)                                     | Rudderstack write key                |
-| `VITE_CXR_RUDDERSTACK_DATA_PLANE_URL` | `https://etr.begenuin.com`                                  | Rudderstack data plane               |
-| `VITE_CXR_ASSET_BASE_URL`             | `https://media.begenuin.com/webapp_assets/`                 | Widget static assets (icons, images) |
-| `VITE_CXR_GEN_AD_BASE_URL`            | `https://media.begenuin.com/ad-sdk/in-feed`                 | GenAd SDK bundle CDN                 |
+| Variable                              | Default                                     | Purpose                              |
+| ------------------------------------- | ------------------------------------------- | ------------------------------------ |
+| `VITE_CXR_API_BASE_URL`               | `https://api.begenuin.com`                  | Genuin API gateway                   |
+| `VITE_CXR_RUDDERSTACK_KEY`            | `""` (analytics silent)                     | Rudderstack write key                |
+| `VITE_CXR_RUDDERSTACK_DATA_PLANE_URL` | `https://etr.begenuin.com`                  | Rudderstack data plane               |
+| `VITE_CXR_ASSET_BASE_URL`             | `https://media.begenuin.com/webapp_assets/` | Widget static assets (icons, images) |
+| `VITE_CXR_GEN_AD_BASE_URL`            | `https://media.begenuin.com/ad-sdk/in-feed` | GenAd SDK bundle CDN                 |
 
 ---
 
 ## Deploy pipeline
 
-`deploy:qa` and `deploy:prod` are the build-and-upload deploys. Each runs three steps:
+`deploy:qa` and `deploy:prod` are the full one-command **interactive** deploys — run one
+command and answer the prompts. Each:
 
 1. **Bumps the version** (`package.json`) — interactive prompt (semver patch/minor/major)
 2. **Builds the bundle** — Vite with the correct env file; syncs version into `loader.jsx` first
-3. **Uploads to Oracle Object Storage** — destination path from `S3_UPLOAD_PATHS` in `.env.common`
-
-> **The upload path is NOT auto-derived from the version.** `uploadToOracle.ts` reads the
-> destination from `S3_UPLOAD_PATHS`, so bump that env var to the new `cxr/<version>` before
-> deploying if you want a versioned path.
->
-> **`deploy:*` does NOT purge the CDN.** Run the Bunny purge manually as a 4th step when you
-> overwrite an existing path:
-> ```sh
-> npm run purge:bunny:qa    # or purge:bunny:prod
-> ```
+3. **Prompts for storage targets + paths, then uploads** via `scripts/deploy.ts` —
+   versioned path `cxr/<version>/`. Target and path checkboxes are pre-selected (both
+   targets, current version), so pressing enter through them accepts the defaults:
+   - **Oracle Object Storage**, then purges Bunny CDN (`cxr/<version>/*`)
+   - **Bunny Storage** (zone `infolink`), then purges its pull-zone `ginfo.b-cdn.net/cxr/<version>/*`
 
 ```sh
 npm run deploy:qa    # requires .env.qa + .env.common
 npm run deploy:prod  # requires .env.production + .env.common
 ```
 
-Individual steps if needed:
+Other entry points if needed:
+
 ```sh
-npm run publish:oracle:qa    # upload dist/ to Oracle (QA)
-npm run publish:oracle:prod  # upload dist/ to Oracle (prod)
-npm run purge:bunny:qa       # CDN cache purge (QA)
-npm run purge:bunny:prod     # CDN cache purge (prod)
+npm run publish:qa               # upload dist/ to all targets, NO prompts, NO build (CI)
+npm run publish:prod             # upload dist/ to all targets, NO prompts, NO build (CI)
+npm run publish:interactive:qa   # interactive upload of existing dist/ (skips version bump + build)
+npm run publish:interactive:prod # interactive upload of existing dist/ (skips version bump + build)
+npm run purge:bunny:qa           # standalone Bunny CDN cache purge (QA)
+npm run purge:bunny:prod         # standalone Bunny CDN cache purge (prod)
 ```
+
+To preview an interactive deploy without uploading, add `--dry-run` to the script directly:
+
+```sh
+npx env-cmd -f ./.env.qa cross-env NODE_ENV=qa tsx scripts/deploy.ts --interactive --dry-run
+```
+
+`deploy.ts` accepts `--interactive` (checkbox target/path selection, both pre-selected) and
+`--dry-run` (prints exactly what would be uploaded and purged, sends nothing). Without
+`--interactive` it uploads to **both** Oracle and Bunny Storage using `S3_UPLOAD_PATHS`.
+
+### Verifying a deploy from a CDN
+
+After uploading, confirm the published build actually loads from a CDN host — loader, CSS,
+entry, and every chunk must resolve relative to that host and return `200`:
+
+```sh
+npm run verify:cdn   # serves public/ on http://localhost:8799
+```
+
+Open `http://localhost:8799/cdn-verify.html` and watch the Network panel. Defaults to the
+Bunny pull-zone (`https://ginfo.b-cdn.net`) and version `1.0.0`; override via query params:
+
+```
+?host=https://media.begenuin.com      # Oracle / prod media host
+?host=https://media.qa.begenuin.com   # QA media host
+?version=1.0.0&tag=<tagId>
+```
+
+Serve over HTTP, not `file://` — a `file://` origin blocks the widget's API/analytics calls.
 
 ### Version management
 
@@ -129,6 +159,7 @@ version to construct `CDN_BASE` (`https://media.begenuin.com/cxr/<version>/` for
 `https://media.qa.begenuin.com/cxr/<version>/` for qa/dev).
 
 To bump manually without deploying:
+
 ```sh
 npm version patch   # or minor / major
 ```
@@ -192,12 +223,12 @@ when the widget runs inside a cross-origin `srcdoc` iframe (where neither the fr
 `window.top` can be read). The loader captures the whole query into `window.__CXR_SCRIPT_PARAMS__`;
 the widget reads individual params from there.
 
-| Param            | Value                | Effect                                                                                                 |
-| ---------------- | -------------------- | ------------------------------------------------------------------------------------------------------ |
-| `tagId`          | Tag id string        | Overrides the per-div `data-tag-id`. The loader-src value wins; falls back to `data-tag-id` when absent. |
-| `GIV`            | Number `0`–`1`       | Sets the initial audible volume. Overrides the tag's `initialVolume`; falls back to per-div `data-giv`. See below. |
-| `gen_variant`    | `stacked`            | Opts a supported slot into the stacked (widget + Infolinks) layout.                                    |
-| `purl`           | URL-encoded page URL | Overrides the Infolinks publisher attribution URL (used with the stacked layout).                      |
+| Param         | Value                | Effect                                                                                                             |
+| ------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `tagId`       | Tag id string        | Overrides the per-div `data-tag-id`. The loader-src value wins; falls back to `data-tag-id` when absent.           |
+| `GIV`         | Number `0`–`1`       | Sets the initial audible volume. Overrides the tag's `initialVolume`; falls back to per-div `data-giv`. See below. |
+| `gen_variant` | `stacked`            | Opts a supported slot into the stacked (widget + Infolinks) layout.                                                |
+| `purl`        | URL-encoded page URL | Overrides the Infolinks publisher attribution URL (used with the stacked layout).                                  |
 
 ### `GIV` — initial volume override
 
