@@ -1,7 +1,8 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-# pnpm lint-staged
-
-# Per-package: ESLint uses each package's local eslint.config.mjs
-# pnpm -r --if-present run lint-staged
+# Single root lint-staged pass. ESLint 9 flat config auto-resolves the nearest
+# eslint.config.* for each staged file (per-package config, or the root
+# eslint.config.mjs fallback for packages without one, e.g. contextual-reels).
+# One stash cycle only — no recursive per-package runs, so no index races.
+pnpm lint-staged

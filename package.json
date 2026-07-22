@@ -36,7 +36,7 @@
     "test:ui": "concurrently \"pnpm --filter=@genuin/web-sdk test:ui\" \"pnpm --filter=@genuin/webapp test:ui\"",
     "test:headed": "concurrently \"pnpm --filter=@genuin/web-sdk test:headed\" \"pnpm --filter=@genuin/webapp test:headed\"",
     "test:debug": "concurrently \"pnpm --filter=@genuin/web-sdk test:debug\" \"pnpm --filter=@genuin/webapp test:debug\"",
-    "test:doc":"concurrently \"pnpm --filter=@genuin/web-sdk test:doc\" \"pnpm --filter=@genuin/webapp test:doc\"",
+    "test:doc": "concurrently \"pnpm --filter=@genuin/web-sdk test:doc\" \"pnpm --filter=@genuin/webapp test:doc\"",
     "postinstall": "node scripts/postinstall-patch-openplayerjs.js && pnpm exec playwright install"
   },
   "dependencies": {
@@ -123,5 +123,14 @@
         "eslint-config-standard-with-typescript"
       ]
     }
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,mjs,cjs}": [
+      "eslint --fix --no-warn-ignored",
+      "prettier --write"
+    ],
+    "*.{json,md,css,scss,html,yml,yaml}": [
+      "prettier --write"
+    ]
   }
 }
