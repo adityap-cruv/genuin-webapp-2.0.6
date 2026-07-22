@@ -31,7 +31,6 @@ function validateEnvironment() {
     VITE_CXR_RUDDERSTACK_DATA_PLANE_URL: z.string().url(),
     VITE_CXR_ASSET_BASE_URL: z.string().url(),
     VITE_CXR_GEN_AD_BASE_URL: z.string().url(),
-    VITE_CXR_GENAI_SDK_URL: z.string().url(),
     // Allowed to be empty string — some environments don't have Rudderstack configured
     VITE_CXR_RUDDERSTACK_KEY: z.string(),
   });

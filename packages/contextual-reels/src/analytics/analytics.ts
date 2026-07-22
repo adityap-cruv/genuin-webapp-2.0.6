@@ -68,10 +68,11 @@ export const EVENT = {
   AD_CLICKED: "Ad Clicked",
   AD_PAUSED: "Ad Paused",
   AD_PASSBACK: "Ad Passback",
+  AD_REMOVED: "Ad Removed",
+  CTA_CLICK: "cta_click",
+  SHARE: "share",
+  SPARK: "spark",
   INFOLINKS_IMPRESSION: "Infolinks Impression",
-  CTA_CLICK: "CTA Click",
-  SHARE: "Share",
-  SPARK: "Spark",
 } as const;
 
 /** Union of every analytics event name string emitted by the widget. */
@@ -257,6 +258,8 @@ export function buildHostMacroBlocks(macros: HostMacros): HostMacroBlocks {
  * analytics/privacy owners before relying on it long-term.
  */
 export function buildHostParamsDiagnostic(): Record<string, unknown> {
+  // SSR guard — untestable under Vitest's jsdom environment, which always defines window.
+  /* v8 ignore next */
   if (typeof window === "undefined") return {};
   const raw = (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__ ?? "";
   if (!raw) return { host_script_params_raw: "", host_params_keys: "", host_params_unresolved: "" };

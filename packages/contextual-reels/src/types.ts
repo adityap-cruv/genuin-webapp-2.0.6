@@ -55,6 +55,14 @@ export interface TagResponse {
     variant?: "default" | "iheart";
     /** New Player design absent or any other value, keeps the legacy controls. Read via {@link useNewPlayerControls}.*/
     design_system?: "v1" | "v2";
+    /** Redirect target for a tap on the widget. `"fullscreen"` enables ad expansion. */
+    on_click?: "fullscreen" | string;
+    /** When true, the owner block renders non-clickable (no profile navigation). */
+    disable_profile_redirect?: boolean;
+    /** When true, playback auto-advances to the next reel; false loops the current video. */
+    auto_swipe?: boolean;
+    /** Dashboard override for the GenAI Octo experience. Wins over the strategyConfig allowlist. */
+    enable_ask_question?: boolean;
     [key: string]: unknown;
   } | null;
   /** Display (banner) ad descriptor. */

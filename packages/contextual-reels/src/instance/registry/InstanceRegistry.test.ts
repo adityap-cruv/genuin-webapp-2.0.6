@@ -5,29 +5,37 @@ import { InstanceRegistry, getInstanceRegistry } from "@cxr/instance/registry/In
 describe("InstanceRegistry", () => {
   it("registers and retrieves controls", () => {
     const registry = new InstanceRegistry();
-    const controls = { expand: vi.fn(), collapse: vi.fn(), pause: vi.fn() };
+    const controls = { expand: vi.fn(), collapse: vi.fn() };
     registry.register("inst-1", controls);
     // register merges into a fresh object, so compare by value not reference.
     expect(registry.get("inst-1")).toEqual(controls);
   });
 
+  it("stores and returns a setPreviewConfig control", () => {
+    const registry = new InstanceRegistry();
+    const setPreviewConfig = vi.fn();
+    registry.register("inst-1", { setPreviewConfig });
+    registry.get("inst-1")?.setPreviewConfig?.({ tag_id: "t" });
+    expect(setPreviewConfig).toHaveBeenCalledWith({ tag_id: "t" });
+  });
+
   it("unregister removes the instance", () => {
     const registry = new InstanceRegistry();
-    registry.register("inst-1", { expand: vi.fn(), collapse: vi.fn(), pause: vi.fn() });
+    registry.register("inst-1", { expand: vi.fn(), collapse: vi.fn() });
     registry.unregister("inst-1");
     expect(registry.get("inst-1")).toBeUndefined();
   });
 
   it("getAll returns all registered entries", () => {
     const registry = new InstanceRegistry();
-    registry.register("a", { expand: vi.fn(), collapse: vi.fn(), pause: vi.fn() });
-    registry.register("b", { expand: vi.fn(), collapse: vi.fn(), pause: vi.fn() });
+    registry.register("a", { expand: vi.fn(), collapse: vi.fn() });
+    registry.register("b", { expand: vi.fn(), collapse: vi.fn() });
     expect(registry.getAll().size).toBe(2);
   });
 
   it("getAll returns a readonly view — direct mutation is not possible at the type level", () => {
     const registry = new InstanceRegistry();
-    registry.register("x", { expand: vi.fn(), collapse: vi.fn(), pause: vi.fn() });
+    registry.register("x", { expand: vi.fn(), collapse: vi.fn() });
     const all = registry.getAll();
     // ReadonlyMap has no .set / .delete — we can only assert the type guard at runtime
     expect(typeof (all as Map<string, unknown>).set).toBe("function"); // underlying map still has it
@@ -74,7 +82,7 @@ describe("InstanceRegistry", () => {
 
   it("get resolves a DOM element id via a registered alias", () => {
     const registry = new InstanceRegistry();
-    const controls = { expand: vi.fn(), collapse: vi.fn(), pause: vi.fn() };
+    const controls = { expand: vi.fn(), collapse: vi.fn() };
     registry.register("cxr-internal-1", controls);
     registry.registerAlias("gen-ext-1", "cxr-internal-1");
     // Lookup by DOM id resolves through the alias map to the same controls.
@@ -83,7 +91,7 @@ describe("InstanceRegistry", () => {
 
   it("unregister removes the alias pointing at the unregistered instance", () => {
     const registry = new InstanceRegistry();
-    const controls = { expand: vi.fn(), collapse: vi.fn(), pause: vi.fn() };
+    const controls = { expand: vi.fn(), collapse: vi.fn() };
     registry.register("cxr-internal-1", controls);
     registry.registerAlias("gen-ext-1", "cxr-internal-1");
     registry.unregister("cxr-internal-1");
@@ -94,8 +102,8 @@ describe("InstanceRegistry", () => {
 
   it("unregister leaves aliases for other instances intact", () => {
     const registry = new InstanceRegistry();
-    const keep = { expand: vi.fn(), collapse: vi.fn(), pause: vi.fn() };
-    const drop = { expand: vi.fn(), collapse: vi.fn(), pause: vi.fn() };
+    const keep = { expand: vi.fn(), collapse: vi.fn() };
+    const drop = { expand: vi.fn(), collapse: vi.fn() };
     registry.register("cxr-keep", keep);
     registry.register("cxr-drop", drop);
     registry.registerAlias("gen-ext-keep", "cxr-keep");
@@ -120,7 +128,7 @@ describe("InstanceRegistry", () => {
 
     it("singleton retains state across calls", () => {
       const registry = getInstanceRegistry();
-      const controls = { expand: vi.fn(), collapse: vi.fn(), pause: vi.fn() };
+      const controls = { expand: vi.fn(), collapse: vi.fn() };
       registry.register("singleton-test", controls);
       expect(getInstanceRegistry().get("singleton-test")).toEqual(controls);
       // cleanup so other tests are not affected

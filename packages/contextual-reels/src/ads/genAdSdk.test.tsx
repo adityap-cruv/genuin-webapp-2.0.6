@@ -15,7 +15,7 @@ import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from "vite
 
 import { useGenAdInstance, type UseGenAdInstanceOptions } from "@cxr/ads/genAdSdk";
 import { CxrEventBus } from "@cxr/instance/coordination/CxrEventBus";
-import { ShadowDomProvider, type ShadowDomConfig } from "@cxr/shadow-dom-context";
+import type { ShadowDomConfig } from "@cxr/shadow-dom-config";
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
@@ -28,8 +28,27 @@ vi.mock("../providers/AnalyticsProvider", () => ({
 
 let testBus: CxrEventBus;
 
-vi.mock("../instance/coordination/EventBusContext", () => ({
+vi.mock("../instance/InstanceContext", () => ({
   useEventBus: () => testBus,
+}));
+
+// shadowConfig defaults to null (direct/non-shadow mode); the shadow-DOM-init
+// tests below override `.value` to exercise the shadow-mode branches.
+const tagDetailsMock: { value: { shadowConfig: ShadowDomConfig | null } } = {
+  value: { shadowConfig: null },
+};
+
+vi.mock("../providers/TagDetailsProvider", () => ({
+  useTagDetails: () => tagDetailsMock.value,
+}));
+
+// Controllable `initialVolume` — tests override `.value` to exercise the
+// audible-ad-start branches (`wantsAudibleAdStart = initialVolume > 0`), which
+// no other test in this suite drives true.
+const strategyMock: { value: { initialVolume: number } } = { value: { initialVolume: 0 } };
+
+vi.mock("../strategies/StrategyProvider", () => ({
+  useStrategy: () => strategyMock.value,
 }));
 
 // ─── loadGenAdSdk tests ───────────────────────────────────────────────────────
@@ -227,6 +246,10 @@ const baseProps: Omit<UseGenAdInstanceOptions, "_loadSdk"> = {
   containerRef: { current: null },
   isActive: false,
   isMuted: false,
+  // Ad requests are gated on isPlaying (see "gates the ad request on isPlaying"
+  // below) — default to true here so the existing mute/active-gating tests keep
+  // exercising exactly the condition they were written for.
+  isPlaying: true,
   platforms: {},
   item: {},
   destroySignal: 0,
@@ -239,6 +262,7 @@ describe("ads/useGenAdInstance", () => {
     installGenAd();
     lastInitOptions = {};
     sdkLoader.impl = () => Promise.resolve();
+    strategyMock.value = { initialVolume: 0 };
   });
 
   afterEach(() => {
@@ -293,6 +317,51 @@ describe("ads/useGenAdInstance", () => {
     unmount(root, container);
   });
 
+  it("does not init GenAd while isPlaying is false (autoplay paused, user hasn't tapped play)", async () => {
+    const { root, container } = mountHook({ ...baseProps, isActive: true, isPlaying: false });
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    expect(genAdInit).not.toHaveBeenCalled();
+    unmount(root, container);
+  });
+
+  it("initialises GenAd once isPlaying becomes true", async () => {
+    const { root, container, rerender } = mountHook({ ...baseProps, isActive: true, isPlaying: false });
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    expect(genAdInit).not.toHaveBeenCalled();
+
+    rerender({ ...baseProps, isActive: true, isPlaying: true });
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    expect(genAdInit).toHaveBeenCalledTimes(1);
+    unmount(root, container);
+  });
+
+  it("does not tear down the ad when isPlaying flips back to false after arming (latch, not a live gate)", async () => {
+    const { root, container, rerender } = mountHook({ ...baseProps, isActive: true, isPlaying: true });
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    expect(genAdInit).toHaveBeenCalledTimes(1);
+
+    rerender({ ...baseProps, isActive: true, isPlaying: false });
+    await act(async () => {
+      await Promise.resolve();
+    });
+    // Re-init would double-count the request/impression — the latch keeps the
+    // already-armed slot from tearing down on a mid-play pause.
+    expect(genAdInit).toHaveBeenCalledTimes(1);
+    unmount(root, container);
+  });
+
   it("init is called exactly once even when effect runs twice", async () => {
     const { root, container } = mountHook({ ...baseProps, isActive: true });
 
@@ -339,7 +408,74 @@ describe("ads/useGenAdInstance", () => {
     expect(result.provider).toBe("video");
     expect(onWaterfallSuccess).toHaveBeenCalledWith("video");
     expect(sendEventMock).toHaveBeenCalledWith("Ad Response Received", expect.any(Object));
-    expect(sendEventMock).toHaveBeenCalledWith("Ad Impression", expect.any(Object));
+    // Ad Impression is intentionally NOT fired here — it fires once from the SDK's
+    // own onAdImpression creative event (see the dedicated test below), so a fill
+    // signal and a render signal don't double-count the same impression.
+    expect(sendEventMock).not.toHaveBeenCalledWith("Ad Impression", expect.any(Object));
+
+    unmount(root, container);
+  });
+
+  it("fires Ad Impression from the SDK's onAdImpression creative event, not from onWaterfallSuccess", async () => {
+    const { root, container } = mountHook({ ...baseProps, isActive: true });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    const events = lastInitOptions.events as {
+      onAdImpression: (e?: { provider?: string; advertiserDomain?: string; mediaFileUrl?: string }) => void;
+    };
+
+    await act(async () => {
+      events.onAdImpression({ provider: "video", advertiserDomain: "example.com", mediaFileUrl: "https://example.com/ad.mp4" });
+    });
+
+    expect(sendEventMock).toHaveBeenCalledWith(
+      "Ad Impression",
+      expect.objectContaining({
+        provider: "video",
+        advertiser_domain: "example.com",
+        media_file_url: "https://example.com/ad.mp4",
+      })
+    );
+
+    unmount(root, container);
+  });
+
+  it("fires Ad Impression Pixel Fired from the SDK's onAdImpressionPixelFire event", async () => {
+    const { root, container } = mountHook({ ...baseProps, isActive: true });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    const events = lastInitOptions.events as {
+      onAdImpressionPixelFire: (e?: {
+        provider?: string;
+        ad_pixel_url?: string;
+        ad_pixel_status_code?: string;
+      }) => void;
+    };
+
+    await act(async () => {
+      events.onAdImpressionPixelFire({
+        provider: "video",
+        ad_pixel_url: "https://pixel.example.com/imp?id=1",
+        ad_pixel_status_code: "200",
+      });
+    });
+
+    expect(sendEventMock).toHaveBeenCalledWith(
+      "Ad Impression Pixel Fired",
+      expect.objectContaining({
+        provider: "video",
+        ad_pixel_url: "https://pixel.example.com/imp?id=1",
+        ad_pixel_status_code: "200",
+      })
+    );
 
     unmount(root, container);
   });
@@ -364,6 +500,147 @@ describe("ads/useGenAdInstance", () => {
     expect(result.adLoaded).toBe(false);
     expect(onWaterfallFail).toHaveBeenCalledTimes(1);
     expect(sendEventMock).toHaveBeenCalledWith("Ad Request Failed", expect.any(Object));
+
+    unmount(root, container);
+  });
+
+  it("reports a no-fill when the SDK script fails to load (ad-blocker / network)", async () => {
+    const onWaterfallFail = vi.fn();
+    const emitSpy = vi.spyOn(testBus, "emit");
+    // The injected loader rejects — as when gen_ad.min.js is blocked; no
+    // onWaterfallFail SDK callback can fire, so the .catch must terminalize.
+    sdkLoader.impl = () => Promise.reject(new Error("blocked"));
+
+    const { root, container, result } = mountHook({
+      ...baseProps,
+      isActive: true,
+      onWaterfallFail,
+    });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(result.adLoaded).toBe(false);
+    expect(onWaterfallFail).toHaveBeenCalledTimes(1);
+    expect(sendEventMock).toHaveBeenCalledWith("Ad Request Failed", expect.any(Object));
+    expect(emitSpy).toHaveBeenCalledWith("ad:nofill", {});
+
+    unmount(root, container);
+  });
+
+  it("drops a late waterfall success that arrives after a no-fill (no double terminal event)", async () => {
+    const onWaterfallSuccess = vi.fn();
+    const { root, container, result } = mountHook({
+      ...baseProps,
+      isActive: true,
+      onWaterfallSuccess,
+    });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    // No-fill fires first — sets the `cancelled` flag.
+    await act(async () => {
+      (lastInitOptions.onWaterfallFail as (p: string) => void)("video");
+    });
+    sendEventMock.mockClear();
+
+    // A late success then arrives (SDK callback races the teardown). It must be
+    // dropped: no ad:fill after ad:nofill, no Impression, no success callback.
+    await act(async () => {
+      (lastInitOptions.onWaterfallSuccess as (p: string) => void)("video");
+    });
+
+    expect(result.adLoaded).toBe(false);
+    expect(onWaterfallSuccess).not.toHaveBeenCalled();
+    expect(sendEventMock).not.toHaveBeenCalledWith("Ad Impression", expect.any(Object));
+
+    unmount(root, container);
+  });
+
+  it("fires a terminal event at most once per run (duplicate success is dropped)", async () => {
+    const onWaterfallSuccess = vi.fn();
+    const { root, container } = mountHook({
+      ...baseProps,
+      isActive: true,
+      onWaterfallSuccess,
+    });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    await act(async () => {
+      (lastInitOptions.onWaterfallSuccess as (p: string) => void)("video");
+      // Duplicate SDK callback for the same run — must be ignored.
+      (lastInitOptions.onWaterfallSuccess as (p: string) => void)("video");
+    });
+
+    expect(onWaterfallSuccess).toHaveBeenCalledTimes(1);
+
+    unmount(root, container);
+  });
+
+  it("drops a stale callback from a prior run so it cannot destroy the new run's instance (W4)", async () => {
+    // Run A: activate, SDK inits (instance id 42), capture run A's callbacks.
+    const { root, container, rerender } = mountHook({ ...baseProps, isActive: true });
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    const runAOnAdCompleted = lastInitOptions.onAdCompleted as (p?: string) => void;
+
+    // Swipe away then back: run A cleans up, run B inits with a fresh instance.
+    rerender({ ...baseProps, isActive: false });
+    await act(async () => {
+      await Promise.resolve();
+    });
+    genAdInit.mockReturnValueOnce(99); // run B gets a distinct instance id
+    rerender({ ...baseProps, isActive: true });
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    genAdDestroy.mockClear();
+
+    // Run A's late onAdCompleted fires — it must NOT destroy run B's instance (99).
+    await act(async () => {
+      runAOnAdCompleted("video");
+    });
+
+    expect(genAdDestroy).not.toHaveBeenCalledWith(99);
+
+    unmount(root, container);
+  });
+
+  it("drops a no-fill that arrives after a success in the same run", async () => {
+    const onWaterfallSuccess = vi.fn();
+    const onWaterfallFail = vi.fn();
+    const { root, container, result } = mountHook({
+      ...baseProps,
+      isActive: true,
+      onWaterfallSuccess,
+      onWaterfallFail,
+    });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    await act(async () => {
+      (lastInitOptions.onWaterfallSuccess as (p: string) => void)("video");
+      (lastInitOptions.onWaterfallFail as (p: string) => void)("video");
+    });
+
+    expect(onWaterfallSuccess).toHaveBeenCalledTimes(1);
+    expect(onWaterfallFail).not.toHaveBeenCalled();
+    expect(result.adLoaded).toBe(true);
 
     unmount(root, container);
   });
@@ -1093,6 +1370,64 @@ describe("ads/useGenAdInstance", () => {
     unmount(root, container);
   });
 
+  it("stamps ad_url from the FIRST entry of an array videoAd", async () => {
+    // extractPrimaryAdUrl's `Array.isArray(resolvedVideoAd) ? resolvedVideoAd[0] : ...`
+    // true arm — only exercised by an array-shaped videoAd.
+    const { root, container } = mountHook({
+      ...baseProps,
+      isActive: true,
+      videoAd: ["https://ads.example.com/first.xml", "https://ads.example.com/second.xml"],
+    });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(setBaseEventContextMock).toHaveBeenCalledWith(
+      expect.objectContaining({ ad_url: "https://ads.example.com/first.xml" })
+    );
+    unmount(root, container);
+  });
+
+  it("does not stamp ad_url when the resolved videoAd is an empty string", async () => {
+    // `typeof first === "string"` true, but `first` itself is falsy ("") —
+    // exercises the `first || undefined` false arm.
+    const { root, container } = mountHook({ ...baseProps, isActive: true, videoAd: "" });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    const stampedAdUrl = setBaseEventContextMock.mock.calls.some(
+      ([arg]) => arg && typeof arg === "object" && "ad_url" in arg
+    );
+    expect(stampedAdUrl).toBe(false);
+    unmount(root, container);
+  });
+
+  it("does not stamp ad_url when the resolved videoAd object has no url/ads_url/vastUrl string field", async () => {
+    // extractPrimaryAdUrl's for-loop must fall through every key without
+    // returning (none is a truthy string) and reach `return undefined`.
+    const { root, container } = mountHook({
+      ...baseProps,
+      isActive: true,
+      videoAd: { platform: "video", url: 42, ads_url: "", vastUrl: null },
+    });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    const stampedAdUrl = setBaseEventContextMock.mock.calls.some(
+      ([arg]) => arg && typeof arg === "object" && "ad_url" in arg
+    );
+    expect(stampedAdUrl).toBe(false);
+    unmount(root, container);
+  });
+
   it("calls updateView on fullscreen change so GenAd re-renders for the new viewport", async () => {
     vi.useFakeTimers();
     try {
@@ -1142,6 +1477,110 @@ describe("ads/useGenAdInstance", () => {
     sdkLoader.impl = originalImpl;
 
     expect(genAdInit).not.toHaveBeenCalled();
+  });
+
+  it("drops a rejected SDK load that arrives after the run is already cancelled (no double no-fill)", async () => {
+    // Mirrors "handles cancelled promise" above, but for the REJECT path: the
+    // hook unmounts (cleanup sets `cancelled = true`) before the SDK load
+    // settles, then the load rejects. The `.catch` guard
+    // `if (cancelled || terminalFired) return;` must short-circuit so no
+    // duplicate no-fill/analytics fires after teardown.
+    let rejectLoad!: (reason?: unknown) => void;
+    const deferred = new Promise<void>((_res, rej) => {
+      rejectLoad = rej;
+    });
+
+    const originalImpl = sdkLoader.impl;
+    sdkLoader.impl = () => deferred;
+
+    const onWaterfallFail = vi.fn();
+    const { root, container } = mountHook({ ...baseProps, isActive: true, onWaterfallFail });
+
+    unmount(root, container);
+    sendEventMock.mockClear();
+
+    await act(async () => {
+      rejectLoad(new Error("blocked"));
+      await deferred.catch(() => undefined);
+    });
+
+    sdkLoader.impl = originalImpl;
+
+    // Cancelled before the rejection landed — the catch guard must drop it.
+    expect(onWaterfallFail).not.toHaveBeenCalled();
+    expect(sendEventMock).not.toHaveBeenCalledWith("Ad Request Failed", expect.any(Object));
+  });
+
+  it("requests the ad audible (unmuted, at initialVolume) when the tag's initialVolume > 0", async () => {
+    // wantsAudibleAdStart = initialVolume > 0 — drives:
+    //   - `unmuteVolume` picking `initialVolume` over the shared default (line 286)
+    //   - the init-time `unmute_blocked: false` seed (lines 430-432)
+    //   - `muted: false` at init regardless of the host's mute prop (line 437)
+    strategyMock.value = { initialVolume: 0.5 };
+
+    const { root, container } = mountHook({ ...baseProps, isActive: true, isMuted: true });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(setBaseEventContextMock).toHaveBeenCalledWith({ unmute_blocked: false });
+    expect((lastInitOptions as { muted?: boolean }).muted).toBe(false);
+    expect((lastInitOptions as { volume?: number }).volume).toBe(0.5);
+
+    unmount(root, container);
+  });
+
+  it("records unmute_blocked: true when an audible-start ad is system-force-muted by autoplay policy", async () => {
+    strategyMock.value = { initialVolume: 0.5 };
+
+    const { root, container } = mountHook({ ...baseProps, isActive: true });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    setBaseEventContextMock.mockClear();
+
+    const fireVolume = lastInitOptions.onVolumeChange as (d: {
+      volume: number;
+      isMuted: boolean;
+      reason?: "system" | "user";
+    }) => void;
+
+    await act(async () => {
+      fireVolume({ volume: 0, isMuted: true, reason: "system" });
+    });
+
+    expect(setBaseEventContextMock).toHaveBeenCalledWith({ unmute_blocked: true });
+    unmount(root, container);
+  });
+
+  it("does not record unmute_blocked when a system mute fires but the tag is not audible-start", async () => {
+    // wantsAudibleAdStart is false (default initialVolume 0) — the
+    // `wantsAudibleAdStart && data.isMuted` guard must stay false even though
+    // `data.isMuted` is true, so `unmute_blocked` is never set from this path.
+    const { root, container } = mountHook({ ...baseProps, isActive: true });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    setBaseEventContextMock.mockClear();
+
+    const fireVolume = lastInitOptions.onVolumeChange as (d: {
+      volume: number;
+      isMuted: boolean;
+      reason?: "system" | "user";
+    }) => void;
+
+    await act(async () => {
+      fireVolume({ volume: 0, isMuted: true, reason: "system" });
+    });
+
+    expect(setBaseEventContextMock).not.toHaveBeenCalledWith({ unmute_blocked: true });
+    unmount(root, container);
   });
 });
 
@@ -1309,6 +1748,7 @@ describe("useGenAdInstance — shadow DOM init", () => {
   afterEach(() => {
     uninstallGenAd();
     vi.clearAllMocks();
+    tagDetailsMock.value = { shadowConfig: null };
   });
 
   it("passes containerElement to GenAd.init when running inside shadow DOM", async () => {
@@ -1318,12 +1758,14 @@ describe("useGenAdInstance — shadow DOM init", () => {
     const mountDiv = document.createElement("div");
     shadowRoot.appendChild(mountDiv);
 
-    const shadowConfig: ShadowDomConfig = {
-      enabled: true,
-      hostElement: host,
-      shadowRoot,
-      mountTarget: mountDiv,
-      shadowHostId: "cxr-host-1",
+    tagDetailsMock.value = {
+      shadowConfig: {
+        enabled: true,
+        hostElement: host,
+        shadowRoot,
+        mountTarget: mountDiv,
+        shadowHostId: "cxr-host-1",
+      },
     };
 
     const containerRef: { current: HTMLDivElement } = { current: mountDiv };
@@ -1346,11 +1788,7 @@ describe("useGenAdInstance — shadow DOM init", () => {
     }
 
     act(() => {
-      root.render(
-        <ShadowDomProvider config={shadowConfig}>
-          <Consumer />
-        </ShadowDomProvider>
-      );
+      root.render(<Consumer />);
     });
 
     await act(async () => {
@@ -1373,12 +1811,14 @@ describe("useGenAdInstance — shadow DOM init", () => {
     document.body.appendChild(host);
     const shadowRoot = host.attachShadow({ mode: "open" });
 
-    const shadowConfig: ShadowDomConfig = {
-      enabled: true,
-      hostElement: host,
-      shadowRoot,
-      mountTarget: host,
-      shadowHostId: "cxr-host-2",
+    tagDetailsMock.value = {
+      shadowConfig: {
+        enabled: true,
+        hostElement: host,
+        shadowRoot,
+        mountTarget: host,
+        shadowHostId: "cxr-host-2",
+      },
     };
 
     // shadowDom truthy but containerRef.current === null exercises the
@@ -1403,11 +1843,7 @@ describe("useGenAdInstance — shadow DOM init", () => {
     }
 
     act(() => {
-      root.render(
-        <ShadowDomProvider config={shadowConfig}>
-          <Consumer />
-        </ShadowDomProvider>
-      );
+      root.render(<Consumer />);
     });
 
     await act(async () => {

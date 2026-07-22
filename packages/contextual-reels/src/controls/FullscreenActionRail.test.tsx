@@ -144,6 +144,24 @@ describe("FullscreenActionRail", () => {
     vi.unstubAllGlobals();
   });
 
+  it("passes an empty string to copyToClipboard when there is no share string (item omitted)", () => {
+    // copyToClipboard("") short-circuits before touching the Clipboard API, so
+    // this exercises the `shareUrl ?? ""` fallback without asserting on writeText.
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    vi.stubGlobal("navigator", { clipboard: { writeText } });
+    render({ config: makeConfig({ show_share: true }) });
+
+    const share = container.querySelector('[data-testid="bottombar-share"]') as HTMLButtonElement;
+    expect(() => {
+      act(() => {
+        share.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+      });
+    }).not.toThrow();
+
+    expect(writeText).not.toHaveBeenCalled();
+    vi.unstubAllGlobals();
+  });
+
   it("tracks Video Shared when the share button is clicked", () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
     vi.stubGlobal("navigator", { clipboard: { writeText } });

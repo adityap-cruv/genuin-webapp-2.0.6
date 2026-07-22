@@ -1,0 +1,31 @@
+<!--
+  CXR ad tag snippet for the resource-budget harness.
+
+  This is the markup a publisher embeds. The harness injects it as the body of
+  the "ad-under-test" iframe, then serves the built loader + chunks from the
+  local dist/ dir (passed via --dir) so the loader's relative import() resolves
+  to the local build rather than the CDN.
+
+  The .gen-ext div is the mount point src/index.jsx scans for. data-tag-id must
+  be a tag that returns a fill from the configured (QA) ad API, otherwise the
+  core boots but loads no creative and the budget reads near-zero.
+
+  __CR_TAG_ID__ is a placeholder. When run directly via `pnpm budget` it is a
+  concrete tag id (kept in sync with packages/contextual-reels/index.html). The
+  multi-tag runner (cxr/run-budgets.mjs, `pnpm budget:all`) substitutes it per
+  tag from cxr/tags.mjs before serving the snippet.
+
+  __CR_WIDTH__ / __CR_HEIGHT__ are the mount pixel size. The size drives which
+  ad layout the widget resolves (see resolveAdLayout in src/config.ts): a 320×50
+  slot resolves to L3, which renders NO player and so never fetches the reel
+  video — a very different resource profile from the 320×100 (L4) banner. The
+  runner substitutes these per size × tag; check-tag.mjs defaults them to
+  320×100 when run standalone so `pnpm budget` is unchanged.
+-->
+<div
+  class="gen-ext"
+  id="gen-__CR_TAG_ID__"
+  data-tag-id="__CR_TAG_ID__"
+  style="height: __CR_HEIGHT__px; width: __CR_WIDTH__px; background: #000; display: block; overflow: hidden"
+></div>
+<script src="/gen_ext.min.js"></script>

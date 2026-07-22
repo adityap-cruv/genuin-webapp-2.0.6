@@ -10,7 +10,7 @@
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
-import { useEventBus } from "@cxr/instance/coordination/EventBusContext";
+import { useEventBus } from "@cxr/instance/InstanceContext";
 import { useAnalytics } from "@cxr/providers/AnalyticsProvider";
 import { useStrategy } from "@cxr/strategies/StrategyProvider";
 
@@ -67,14 +67,14 @@ interface PlayerProviderProps {
  * ```
  */
 export function PlayerProvider({ children }: PlayerProviderProps): ReactNode {
-  const { initialVolume } = useStrategy();
+  const { initialVolume, autoplayEnabled } = useStrategy();
   // Start at the tag's configured initialVolume (0 by default — plays unmuted
   // but silent, showing the "unmute" prompt). Lazy init so a later strategy
   // re-resolve doesn't reset a level the user has since changed.
   const [volume, setVolume] = useState(() => initialVolume);
   const isMuted = volume === 0;
-  // Fix #1: autoplay on by default — muted so browsers allow it without a gesture.
-  const [isPlaying, setIsPlaying] = useState(true);
+  // Lazy init from strategy so a later re-resolve doesn't reset user-changed state.
+  const [isPlaying, setIsPlaying] = useState(() => autoplayEnabled);
   const [isAdBreakActive, setAdBreakActive] = useState(false);
   const bus = useEventBus();
   const { setBaseEventContext } = useAnalytics();
@@ -137,6 +137,12 @@ export function PlayerProvider({ children }: PlayerProviderProps): ReactNode {
     setVolume(0);
   }, []);
 
+  // TODO(dev): split into PlayerStateContext (volume/isMuted/isPlaying/
+  // isAdBreakActive) + PlayerActionsContext (the stable setters). `volume`
+  // updates on every volume-slider drag tick, so today every usePlayer()
+  // consumer (LightPlayer, Feed, AdLayout, VideoLayout, ClickOverlay, …)
+  // re-renders per tick even the action-only ones. Splitting is a public-API
+  // change across ~9 consumers — needs team sign-off before doing it.
   const value = useMemo<PlayerContextValue>(
     () => ({
       volume,

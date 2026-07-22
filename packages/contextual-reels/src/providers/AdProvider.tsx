@@ -1,19 +1,20 @@
 /** `AdProvider` — owns ad waterfall fill/no-fill state, single-hit deferred passback, and ad layout config. */
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useRef, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, type ReactNode } from "react";
 
 import type { AdProviderKind } from "@cxr/ads/normalizers";
 import { installGenaiBridge, notifyAdFill, notifyAdNoFill } from "@cxr/ads/waterfall";
 import { EVENT } from "@cxr/analytics/analytics";
 import { AD_LAYOUT, type AdLayoutId, adLayoutVariants } from "@cxr/config";
-import { useEventBus } from "@cxr/instance/coordination/EventBusContext";
-import { useInstanceId } from "@cxr/instance/registry/InstanceContext";
+import { useEventBus, useInstanceId } from "@cxr/instance/InstanceContext";
 import { getInstanceRegistry } from "@cxr/instance/registry/InstanceRegistry";
 import { PixelReporter } from "@cxr/observability/pixel-reporter";
 import { useAnalytics } from "@cxr/providers/AnalyticsProvider";
 import { useFeed } from "@cxr/providers/FeedProvider";
 import { useStrategy } from "@cxr/strategies/StrategyProvider";
+
+import { useTagDetails } from "./TagDetailsProvider";
 
 /** Context value exposed by `useAdWaterfall`. */
 export interface AdWaterfallContextValue {
@@ -39,22 +40,25 @@ const AdWaterfallContext = createContext<AdWaterfallContextValue | undefined>(un
 
 interface AdProviderProps {
   children: ReactNode;
-  /** Retained for analytics and external callers. */
-  tagId: string;
-  /**
-   * The numeric embed layout id — also the source of `tag_height`/`tag_width`
-   * forwarded to the `Ad Passback` and `Infolinks Impression` events.
-   */
-  adLayout?: AdLayoutId;
 }
 
 /**
  * AdProvider — bootstraps ad waterfall state and exposes `useAdWaterfall`.
- * Single source of truth for ad layout config; use `useAdWaterfall()` rather
- * than reading `tagDetails`/`ConfigProvider` directly.
+ *
+ * This is the single source of truth for ad layout configuration.
+ * Components that need the layout variant should call `useAdWaterfall()` rather
+ * than reading from `tagDetails` or `ConfigProvider` directly.
+ *
+ * @example
+ * ```tsx
+ * <AdProvider>
+ *   <ReelItem ... />
+ * </AdProvider>
+ * ```
  */
-export function AdProvider({ children, adLayout = AD_LAYOUT.Unknown }: AdProviderProps): ReactNode {
+export function AdProvider({ children }: AdProviderProps): ReactNode {
   const { sendEvent, setAdPassback } = useAnalytics();
+  const { adLayout } = useTagDetails();
   const bus = useEventBus();
   const instanceId = useInstanceId();
   const { singleHitWaterfall } = useStrategy();
@@ -103,6 +107,7 @@ export function AdProvider({ children, adLayout = AD_LAYOUT.Unknown }: AdProvide
   }, [firePassback]);
 
   /** Fires notifyAdFill once per widget lifetime — same "already filled" flag single-hit uses. */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const onAdSuccess = useCallback((_provider: AdProviderKind, _slotId?: string): void => {
     if (anyFilledRef.current) return;
     anyFilledRef.current = true;
@@ -180,11 +185,15 @@ export function AdProvider({ children, adLayout = AD_LAYOUT.Unknown }: AdProvide
 
   const isAudioOnlyAds = adLayout === AD_LAYOUT.L3 || adLayout === AD_LAYOUT.L4;
 
-  return (
-    <AdWaterfallContext.Provider value={{ onAdSuccess, onAdFail, recordAdBreakResult, adLayout, isAudioOnlyAds }}>
-      {children}
-    </AdWaterfallContext.Provider>
+  // Memoised so consumers only re-render when a field actually changes, not on
+  // every provider re-render. onAdSuccess/onAdFail/recordAdBreakResult are
+  // already useCallback-stable.
+  const value = useMemo<AdWaterfallContextValue>(
+    () => ({ onAdSuccess, onAdFail, recordAdBreakResult, adLayout, isAudioOnlyAds }),
+    [onAdSuccess, onAdFail, recordAdBreakResult, adLayout, isAudioOnlyAds]
   );
+
+  return <AdWaterfallContext.Provider value={value}>{children}</AdWaterfallContext.Provider>;
 }
 
 /**

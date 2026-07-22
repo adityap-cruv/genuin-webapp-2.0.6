@@ -16,7 +16,6 @@ import { buildPublicApi, installMessageBridge } from "@cxr/publicApi";
 import { getInstanceRegistry } from "@cxr/instance/registry/InstanceRegistry";
 import { setupCxrShadowDOM } from "@cxr/shadow-dom";
 import { DATA_ATTR_SHADOW_DOM_OPT_IN } from "@cxr/shadow-dom-config";
-import { ShadowDomProvider } from "@cxr/shadow-dom-context";
 import { getSharedGeoIp } from "@cxr/services/api";
 import { getVisitIdPromise } from "@cxr/services/feed";
 import { getHostMacro } from "@cxr/hostMacros";
@@ -143,12 +142,20 @@ async function init() {
     }
   }
 
-  if (uniqueNodes.size > 0) {
+  // Whether any mounting node is a real (non-preview) embed. Preview instances
+  // (data-preview="true") are analytics-silent, so a page with only preview
+  // widgets must NOT bootstrap Rudderstack or fetch geoip at all.
+  let hasNonPreviewNode = false;
+  uniqueNodes.forEach((node) => {
+    if (node.getAttribute("data-preview") !== "true") hasNonPreviewNode = true;
+  });
+
+  if (hasNonPreviewNode) {
     initializeRudderAnalytics();
   }
 
   // One shared geoip fetch for the whole page (also reused by AnalyticsProvider).
-  const geoipPromise = uniqueNodes.size > 0 ? getSharedGeoIp() : Promise.resolve(null);
+  const geoipPromise = hasNonPreviewNode ? getSharedGeoIp() : Promise.resolve(null);
 
   for (const node of uniqueNodes) {
     node.setAttribute("data-cxr-status", "loading");
@@ -165,20 +172,20 @@ async function init() {
       // (resolved in StrategyProvider); this is the per-instance fallback, read
       // here where the DOM node is available. Raw string — validated downstream.
       const dataGiv = node.getAttribute("data-giv");
-      let customizationDetails = {};
-      try {
-        customizationDetails = JSON.parse(node.getAttribute("data-customization-details") ?? "{}") ?? {};
-      } catch {
-        // malformed JSON — proceed with empty customization
-      }
+      // Dashboard preview mode: keep this instance analytics-silent. When set,
+      // TAG_INIT (and the whole Rudderstack/geoip bootstrap downstream) is
+      // skipped and the widget waits for a `window.cxr.setPreviewConfig` push.
+      const preview = node.getAttribute("data-preview") === "true";
 
       // Wait for geoip and per-tagId visit_id, then send TAG_INIT (once per tagId per page).
       // If visit_id fails to load, still fire TAG_INIT with geoip only.
-      if (!tagIdsWithTagInit.has(tagId)) {
+      if (!preview && !tagIdsWithTagInit.has(tagId)) {
         tagIdsWithTagInit.add(tagId);
         const visitIdPromiseForTag = getVisitIdPromise(tagId);
         Promise.all([geoipPromise, visitIdPromiseForTag.catch(() => undefined)]).then(([geoip, visitId]) => {
-          const eventDetails = visitId ? { visit_id: visitId } : {};
+          let eventDetails = visitId ? { visit_id: visitId } : {};
+          // During initialization, the `passback` value is set to `0` because the user has not yet interacted with the widget.
+          eventDetails = { ...eventDetails, passback: 0 };
           sendEventLogFromGlobals(
             {
               eventName: EVENT.TAG_INIT,
@@ -258,28 +265,27 @@ async function init() {
       });
 
       root.render(
-        <ShadowDomProvider config={shadowConfig.enabled ? shadowConfig : null}>
-          <SafeSuspense
-            fallback={null}
-            errorFallback={null}
-            onError={(error) => {
-              PixelReporter.getInstance().report(instanceId, "render", "render_error", {
-                tagId,
-                width: node.offsetWidth,
-                height: node.offsetHeight,
-                error,
-              });
-            }}>
-            <App
-              tagId={tagId}
-              rootTagId={instanceId}
-              customizationDetails={customizationDetails}
-              adLayout={adLayout}
-              instanceId={instanceId}
-              dataGiv={dataGiv}
-            />
-          </SafeSuspense>
-        </ShadowDomProvider>
+        <SafeSuspense
+          fallback={null}
+          errorFallback={null}
+          onError={(error) => {
+            PixelReporter.getInstance().report(instanceId, "render", "render_error", {
+              tagId,
+              width: node.offsetWidth,
+              height: node.offsetHeight,
+              error,
+            });
+          }}>
+          <App
+            tagId={tagId}
+            rootTagId={instanceId}
+            adLayout={adLayout}
+            instanceId={instanceId}
+            preview={preview}
+            dataGiv={dataGiv}
+            shadowConfig={shadowConfig.enabled ? shadowConfig : null}
+          />
+        </SafeSuspense>
       );
 
       node.setAttribute("data-cxr-status", "done");

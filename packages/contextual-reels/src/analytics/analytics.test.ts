@@ -14,137 +14,6 @@ import {
   sendEventLogFromGlobals,
 } from "@cxr/analytics/analytics";
 import type { DeviceDetails } from "@cxr/platform/device";
-import { deepMergeOverwrite } from "@cxr/utils/deepMerge";
-
-// ─── deepMergeOverwrite ───────────────────────────────────────────────────────
-
-describe("deepMergeOverwrite", () => {
-  it("returns a shallow clone of base when override is undefined", () => {
-    const base = { a: 1, b: 2 };
-    const result = deepMergeOverwrite(base, undefined);
-    expect(result).toEqual({ a: 1, b: 2 });
-    expect(result).not.toBe(base);
-  });
-
-  it("returns a shallow clone of base when override is null", () => {
-    const base = { a: 1 };
-    const result = deepMergeOverwrite(base, null);
-    expect(result).toEqual({ a: 1 });
-    expect(result).not.toBe(base);
-  });
-
-  it("returns a shallow clone of base when override is not an object", () => {
-    const base = { a: 1 };
-    expect(deepMergeOverwrite(base, "foo" as unknown as object)).toEqual({ a: 1 });
-    expect(deepMergeOverwrite(base, 42 as unknown as object)).toEqual({ a: 1 });
-  });
-
-  it("clones an array base via slice when override is not an object", () => {
-    const base = [1, 2, 3];
-    const result = deepMergeOverwrite(base, undefined);
-    expect(result).toEqual([1, 2, 3]);
-    expect(result).not.toBe(base);
-  });
-
-  it("handles null/undefined base by returning empty object clone", () => {
-    expect(deepMergeOverwrite(null, undefined)).toEqual({});
-    expect(deepMergeOverwrite(undefined, undefined)).toEqual({});
-  });
-
-  it("skips undefined values in override", () => {
-    const base = { a: 1, b: 2 };
-    const result = deepMergeOverwrite(base, { a: undefined, b: 5 });
-    expect(result).toEqual({ a: 1, b: 5 });
-  });
-
-  it("skips null values in override", () => {
-    const base = { a: 1, b: 2 };
-    const result = deepMergeOverwrite(base, { a: null, b: 5 });
-    expect(result).toEqual({ a: 1, b: 5 });
-  });
-
-  it("overwrites primitive values from override", () => {
-    const base = { a: 1, b: "x" };
-    const result = deepMergeOverwrite(base, { a: 2, b: "y" });
-    expect(result).toEqual({ a: 2, b: "y" });
-  });
-
-  it("adds new keys from override", () => {
-    const base = { a: 1 };
-    const result = deepMergeOverwrite(base, { b: 2 });
-    expect(result).toEqual({ a: 1, b: 2 });
-  });
-
-  it("accepts both snake_case and camelCase keys", () => {
-    const base = { event_name: "foo" };
-    const result = deepMergeOverwrite(base, { eventName: "bar", other_key: 1 });
-    expect(result).toEqual({ event_name: "foo", eventName: "bar", other_key: 1 });
-  });
-
-  it("recursively merges plain objects", () => {
-    const base = { a: { x: 1, y: 2 }, b: 3 };
-    const result = deepMergeOverwrite(base, { a: { y: 9, z: 4 } });
-    expect(result).toEqual({ a: { x: 1, y: 9, z: 4 }, b: 3 });
-  });
-
-  it("replaces (does NOT merge) array values at leaf level", () => {
-    const base = { tags: [1, 2, 3] };
-    const result = deepMergeOverwrite(base, { tags: [9, 8] });
-    expect(result).toEqual({ tags: [9, 8] });
-  });
-
-  it("treats Date instances as override-as-is (not plain object)", () => {
-    const d = new Date("2024-01-01");
-    const result = deepMergeOverwrite({ when: "old" }, { when: d });
-    expect(result.when).toBe(d);
-  });
-
-  it("treats Map instances as override-as-is (not plain object)", () => {
-    const m = new Map([["k", "v"]]);
-    const result = deepMergeOverwrite({ data: { nested: true } }, { data: m });
-    expect(result.data).toBe(m);
-  });
-
-  it("treats class instances as override-as-is", () => {
-    class Foo {
-      a = 1;
-    }
-    const inst = new Foo();
-    const result = deepMergeOverwrite({ x: { b: 2 } }, { x: inst });
-    expect(result.x).toBe(inst);
-  });
-
-  it("merges 3 levels deep", () => {
-    const base = { a: { b: { c: { d: 1, e: 2 } } } };
-    const result = deepMergeOverwrite(base, { a: { b: { c: { e: 9, f: 3 } } } });
-    expect(result).toEqual({ a: { b: { c: { d: 1, e: 9, f: 3 } } } });
-  });
-
-  it("does not mutate the base object", () => {
-    const base = { a: { x: 1 } };
-    const result = deepMergeOverwrite(base, { a: { y: 2 } });
-    expect(base).toEqual({ a: { x: 1 } });
-    expect(result).toEqual({ a: { x: 1, y: 2 } });
-  });
-
-  it("does not mutate base when mutating result at top level", () => {
-    const base = { a: 1 };
-    const result = deepMergeOverwrite(base, { b: 2 }) as Record<string, number>;
-    result.c = 99;
-    expect(base).toEqual({ a: 1 });
-  });
-
-  it("replaces array when base value is also an array (not plain object)", () => {
-    const base = { items: [1, 2] };
-    const result = deepMergeOverwrite(base, { items: { 0: "a" } });
-    expect(result.items).toEqual({ 0: "a" });
-  });
-
-  it("writes override keys when base is null", () => {
-    const result = deepMergeOverwrite(null, { a: 1, b: 2 });
-    expect(result).toEqual({ a: 1, b: 2 });
-  });
-});
 
 // ─── EVENT vocabulary ─────────────────────────────────────────────────────────
 
@@ -161,6 +30,7 @@ describe("EVENT names", () => {
         "AD_MEDIA_QUARTILE": "Ad Media Quartile",
         "AD_PASSBACK": "Ad Passback",
         "AD_PAUSED": "Ad Paused",
+        "AD_REMOVED": "Ad Removed",
         "AD_RENDERED": "Ad Rendered",
         "AD_RENDER_FAILED": "Ad Render Failed",
         "AD_REQUEST": "Ad Request",
@@ -173,7 +43,7 @@ describe("EVENT names", () => {
         "AD_STARTED": "Ad Started",
         "BATCH_COMPLETED": "Batch Completed",
         "BATCH_STARTED": "Batch Started",
-        "CTA_CLICK": "CTA Click",
+        "CTA_CLICK": "cta_click",
         "EMBED_CTA_CLICKED": "Embed CTA Clicked",
         "EMBED_MAXIMIZED": "Embed Maximized",
         "EMBED_MINIMIZED": "Embed Minimized",
@@ -181,8 +51,8 @@ describe("EVENT names", () => {
         "FEED_COMPLETED": "Feed Completed",
         "INFOLINKS_IMPRESSION": "Infolinks Impression",
         "SCROLL": "Scroll",
-        "SHARE": "Share",
-        "SPARK": "Spark",
+        "SHARE": "share",
+        "SPARK": "spark",
         "SWIPE_NEXT": "Swipe Next",
         "SWIPE_PREVIOUS": "Swipe Previous",
         "TAG_CAPTURED": "Tag Captured",
@@ -280,6 +150,23 @@ describe("createEventBuffer", () => {
     buf.flush(emit);
     expect(emit).toHaveBeenCalledWith("x", undefined);
   });
+
+  it("reports a non-zero size while events are queued and unflushed", () => {
+    const buf = createEventBuffer();
+    expect(buf.size()).toBe(0);
+    buf.enqueue("a", {});
+    expect(buf.size()).toBe(1);
+    buf.enqueue("b", {});
+    expect(buf.size()).toBe(2);
+    expect(buf.isFlushed()).toBe(false);
+  });
+
+  it("reflects isFlushed() as false before flush and true after", () => {
+    const buf = createEventBuffer();
+    expect(buf.isFlushed()).toBe(false);
+    buf.flush(vi.fn());
+    expect(buf.isFlushed()).toBe(true);
+  });
 });
 
 // ─── sendEventLog ─────────────────────────────────────────────────────────────
@@ -319,6 +206,23 @@ describe("analytics/sendEventLog", () => {
       }
     );
     expect(errSpy).toHaveBeenCalledWith("[cxr/analytics]", "RudderAnalytics is not initialized.");
+  });
+
+  it("returns early without throwing when rudderanalytics is missing, regardless of other args", () => {
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    expect(() =>
+      sendEventLog(
+        { eventName: "Video Started", tagDetails: { tag_id: "t-9" }, videoDetails: { video: { id: "v-9" } } },
+        {
+          rudderanalytics: undefined,
+          deviceDetails: DEVICE,
+          userId: USER_ID,
+          windowLink: undefined,
+          offsite: { event_details: { foo: "bar" } },
+        }
+      )
+    ).not.toThrow();
+    expect(errSpy).toHaveBeenCalledTimes(1);
   });
 
   it("emits the canonical payload shape on track()", () => {
@@ -417,6 +321,50 @@ describe("analytics/sendEventLog", () => {
     expect((payload.user_details as Record<string, unknown>).plan).toBe("pro");
   });
 
+  it("keeps the base block and still dispatches when an offsite merge throws", () => {
+    const rudder = makeRudder();
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+
+    // A throwing getter on the offsite overlay makes deepMergeOverwrite blow up when it
+    // reads the property — exercising safeMerge's catch, which must keep the base block
+    // and let dispatch proceed rather than propagating the failure.
+    const hostile: Record<string, unknown> = {};
+    Object.defineProperty(hostile, "boom", {
+      enumerable: true,
+      get() {
+        throw new Error("hostile offsite getter");
+      },
+    });
+
+    expect(() =>
+      sendEventLog(
+        { eventName: "tag_init", tagDetails: { tag_id: "t-1" } },
+        {
+          rudderanalytics: rudder,
+          deviceDetails: DEVICE,
+          userId: USER_ID,
+          windowLink: "https://host.example",
+          offsite: { event_details: hostile },
+        }
+      )
+    ).not.toThrow();
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      "[cxr/analytics]",
+      "offsite merge failed; using base block",
+      expect.any(Error)
+    );
+
+    // Dispatch still happened, with the base event_details block intact (the hostile
+    // overlay contributed nothing).
+    expect(rudder.track).toHaveBeenCalledTimes(1);
+    const payload = rudder.track.mock.calls[0]?.[1] as Record<string, unknown>;
+    const eventDetails = payload.event_details as Record<string, unknown>;
+    expect(eventDetails.tag_id).toBe("t-1");
+    expect(eventDetails.page).toBe("https://host.example");
+    expect(eventDetails.boom).toBeUndefined();
+  });
+
   it("does NOT allow offsite config to override the incoming event name", () => {
     const rudder = makeRudder();
     sendEventLog(
@@ -450,6 +398,94 @@ describe("analytics/sendEventLog", () => {
     expect((payload.event_details as Record<string, unknown>).loop_share_string).toBe("");
   });
 
+  it("omits tag_id from event_details when tagDetails.tag_id is undefined", () => {
+    const rudder = makeRudder();
+    sendEventLog(
+      { eventName: "tag_init", tagDetails: {} },
+      {
+        rudderanalytics: rudder,
+        deviceDetails: DEVICE,
+        userId: USER_ID,
+        windowLink: "https://host.example",
+        offsite: {},
+      }
+    );
+    const payload = rudder.track.mock.calls[0]?.[1] as Record<string, unknown>;
+    expect("tag_id" in (payload.event_details as Record<string, unknown>)).toBe(false);
+  });
+
+  it("omits video_share_string when videoDetails.video.slug is falsy", () => {
+    const rudder = makeRudder();
+    sendEventLog(
+      { eventName: "Video Started", videoDetails: { video: { id: "v-1" } } },
+      {
+        rudderanalytics: rudder,
+        deviceDetails: DEVICE,
+        userId: USER_ID,
+        windowLink: "https://host.example",
+        offsite: {},
+      }
+    );
+    const payload = rudder.track.mock.calls[0]?.[1] as Record<string, unknown>;
+    expect("video_share_string" in (payload.event_details as Record<string, unknown>)).toBe(false);
+    expect((payload.event_details as Record<string, unknown>).video_id).toBe("v-1");
+  });
+
+  it("omits video_id when videoDetails.video.id is falsy", () => {
+    const rudder = makeRudder();
+    sendEventLog(
+      { eventName: "Video Started", videoDetails: { video: { slug: "some-clip" } } },
+      {
+        rudderanalytics: rudder,
+        deviceDetails: DEVICE,
+        userId: USER_ID,
+        windowLink: "https://host.example",
+        offsite: {},
+      }
+    );
+    const payload = rudder.track.mock.calls[0]?.[1] as Record<string, unknown>;
+    expect("video_id" in (payload.event_details as Record<string, unknown>)).toBe(false);
+    expect((payload.event_details as Record<string, unknown>).video_share_string).toBe("some-clip");
+  });
+
+  it("omits both video fields when videoDetails.video is entirely absent", () => {
+    const rudder = makeRudder();
+    sendEventLog(
+      { eventName: "Video Started" },
+      {
+        rudderanalytics: rudder,
+        deviceDetails: DEVICE,
+        userId: USER_ID,
+        windowLink: "https://host.example",
+        offsite: {},
+      }
+    );
+    const payload = rudder.track.mock.calls[0]?.[1] as Record<string, unknown>;
+    const eventDetails = payload.event_details as Record<string, unknown>;
+    expect("video_id" in eventDetails).toBe(false);
+    expect("video_share_string" in eventDetails).toBe(false);
+    expect(eventDetails.loop_share_string).toBe("");
+  });
+
+  it("falls back to the default module-level hostMacros singleton when deps.hostMacros is omitted", () => {
+    const rudder = makeRudder();
+    // No `hostMacros` key at all — exercises the `deps.hostMacros ?? defaultHostMacros` branch.
+    sendEventLog(
+      { eventName: "tag_init" },
+      {
+        rudderanalytics: rudder,
+        deviceDetails: DEVICE,
+        userId: USER_ID,
+        windowLink: "https://host.example",
+        offsite: {},
+      }
+    );
+    expect(rudder.track).toHaveBeenCalledTimes(1);
+    // In jsdom there's no __CXR_SCRIPT_PARAMS__, so the singleton is {} and page falls back to windowLink.
+    const payload = rudder.track.mock.calls[0]?.[1] as Record<string, unknown>;
+    expect((payload.event_details as Record<string, unknown>).page).toBe("https://host.example");
+  });
+
   it("calls track exactly once per invocation", () => {
     const rudder = makeRudder();
     sendEventLog(
@@ -466,6 +502,11 @@ describe("analytics/sendEventLog", () => {
   });
 
   describe("sendEventLogFromGlobals", () => {
+    afterEach(() => {
+      delete (window as Window & { rudderanalytics?: unknown }).rudderanalytics;
+      delete (window as Window & { offsitePropertiesConfig?: unknown }).offsitePropertiesConfig;
+    });
+
     it("defaults offsite to {} when window.offsitePropertiesConfig is absent", () => {
       const rudder = makeRudder();
       (window as Window & { rudderanalytics?: unknown; offsitePropertiesConfig?: unknown }).rudderanalytics = rudder;
@@ -491,6 +532,33 @@ describe("analytics/sendEventLog", () => {
       const payload = rudder.track.mock.calls[0]?.[1] as Record<string, unknown>;
       expect((payload.event_details as Record<string, unknown>).foo).toBe("bar");
       delete (window as Window & { rudderanalytics?: unknown }).rudderanalytics;
+    });
+
+    it("logs an error and does not throw when window.rudderanalytics is absent", () => {
+      const errSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+      delete (window as Window & { rudderanalytics?: unknown }).rudderanalytics;
+      delete (window as Window & { offsitePropertiesConfig?: unknown }).offsitePropertiesConfig;
+      expect(() =>
+        sendEventLogFromGlobals(
+          { eventName: "tag_init" },
+          { deviceDetails: DEVICE, userId: USER_ID, windowLink: "https://host.example" }
+        )
+      ).not.toThrow();
+      expect(errSpy).toHaveBeenCalledWith("[cxr/analytics]", "RudderAnalytics is not initialized.");
+    });
+
+    it("passes deviceDetails, userId and windowLink straight through to sendEventLog", () => {
+      const rudder = makeRudder();
+      (window as Window & { rudderanalytics?: unknown }).rudderanalytics = rudder;
+      sendEventLogFromGlobals(
+        { eventName: "Video Started", tagDetails: { tag_id: "abc" } },
+        { deviceDetails: DEVICE, userId: "custom-user", windowLink: "https://custom.example" }
+      );
+      const payload = rudder.track.mock.calls[0]?.[1] as Record<string, unknown>;
+      expect((payload.user_details as Record<string, unknown>).user_id).toBe("custom-user");
+      expect((payload.event_details as Record<string, unknown>).page).toBe("https://custom.example");
+      expect((payload.event_details as Record<string, unknown>).tag_id).toBe("abc");
+      expect(payload.device_details).toEqual(DEVICE);
     });
   });
 });
@@ -535,6 +603,13 @@ describe("buildHostMacroBlocks", () => {
     expect(blocks.user).toEqual({ ifa: "abc" });
     expect(blocks.event).toEqual({});
   });
+
+  it("omits keys whose macro resolved to an empty string", () => {
+    const blocks = buildHostMacroBlocks({ appn: "", ifa: "", gdpr: "" });
+    expect(blocks.device).toEqual({});
+    expect(blocks.user).toEqual({});
+    expect(blocks.event).toEqual({});
+  });
 });
 
 // ─── buildHostParamsDiagnostic ────────────────────────────────────────────────
@@ -571,6 +646,29 @@ describe("buildHostParamsDiagnostic", () => {
     expect(diag.host_params_keys).toBe("appb,appv,loc,appn");
     // Only the unresolved placeholders are flagged; the real value (appv) is not.
     expect(diag.host_params_unresolved).toBe("appb,loc,appn");
+  });
+
+  it("does not flag values that merely contain tilde/brace characters mid-string", () => {
+    win.__CXR_SCRIPT_PARAMS__ = "foo=abc~def&bar={notfullybraced&baz=trailing}";
+    const diag = buildHostParamsDiagnostic();
+    expect(diag.host_params_keys).toBe("foo,bar,baz");
+    // None of these match the full-string ^{...}$ / ^~...~$ patterns.
+    expect(diag.host_params_unresolved).toBe("");
+  });
+
+  it("trims whitespace before testing for an unresolved placeholder", () => {
+    win.__CXR_SCRIPT_PARAMS__ = `foo=${encodeURIComponent("  ~appb~  ")}`;
+    const diag = buildHostParamsDiagnostic();
+    expect(diag.host_params_unresolved).toBe("foo");
+  });
+
+  it("returns empty fields when the raw bag is an empty string", () => {
+    win.__CXR_SCRIPT_PARAMS__ = "";
+    expect(buildHostParamsDiagnostic()).toEqual({
+      host_script_params_raw: "",
+      host_params_keys: "",
+      host_params_unresolved: "",
+    });
   });
 });
 
@@ -657,8 +755,6 @@ describe("sendEventLog — page prefers appb", () => {
         hostMacros: {},
       }
     );
-    expect((tracked[0]?.payload.event_details as Record<string, unknown>).page).toBe(
-      "https://real-page.com"
-    );
+    expect((tracked[0]?.payload.event_details as Record<string, unknown>).page).toBe("https://real-page.com");
   });
 });

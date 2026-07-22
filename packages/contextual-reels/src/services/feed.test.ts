@@ -3,7 +3,7 @@
  */
 import { describe, it, expect, vi } from "vitest";
 
-import { createFeedGenerator } from "@cxr/services/feed";
+import { createFeedGenerator, getVisitIdPromise, setVisitId } from "@cxr/services/feed";
 
 function makeFetchResponse(body: unknown): Response {
   return {
@@ -126,6 +126,69 @@ describe("services/createFeedGenerator", () => {
     const reels = await fetchBatch();
     expect(reels).toEqual([{ id: "a" }]);
     expect(fetchFn).toHaveBeenCalledTimes(1);
+  });
+
+  it("stamps visit_id onto base + mandatory context and resolves the per-tag visit-id promise", async () => {
+    const sendEvent = vi.fn();
+    const setBaseEventContext = vi.fn();
+    const setMandatoryData = vi.fn();
+    const fetchFn = makeFetch({
+      data: { data: { ref: "r1", reels: [{ id: "a" }], visit_id: "visit-42" } },
+    });
+    const fetchBatch = createFeedGenerator({
+      tagId: "t-visit",
+      fetchFn,
+      sendEvent,
+      setBaseEventContext,
+      setMandatoryData,
+      getWindowLink: () => "https://host.example",
+    });
+
+    // The per-tag promise resolves with the API-returned visit_id once the batch lands.
+    const visitIdPromise = getVisitIdPromise("t-visit");
+    await fetchBatch();
+
+    expect(setBaseEventContext).toHaveBeenCalledWith({ visit_id: "visit-42" });
+    expect(setMandatoryData).toHaveBeenCalledWith({ visit_id: "visit-42" });
+    await expect(visitIdPromise).resolves.toBe("visit-42");
+  });
+
+  it("does not stamp visit_id context when the response omits visit_id", async () => {
+    const sendEvent = vi.fn();
+    const setBaseEventContext = vi.fn();
+    const setMandatoryData = vi.fn();
+    // No visit_id in the payload — the stamping branch must be skipped.
+    const fetchFn = makeFetch({ data: { data: { ref: "r1", reels: [{ id: "a" }] } } });
+    const fetchBatch = createFeedGenerator({
+      tagId: "t-no-visit",
+      fetchFn,
+      sendEvent,
+      setBaseEventContext,
+      setMandatoryData,
+      getWindowLink: () => "https://host.example",
+    });
+    await fetchBatch();
+
+    expect(setBaseEventContext).not.toHaveBeenCalled();
+    expect(setMandatoryData).not.toHaveBeenCalled();
+  });
+
+  it("caches the visit-id promise per tagId and resolves it only once", () => {
+    // Same tagId returns the same promise instance (map-backed cache).
+    const first = getVisitIdPromise("t-cache");
+    const second = getVisitIdPromise("t-cache");
+    expect(first).toBe(second);
+
+    // setVisitId resolves the outstanding promise; a second call is a no-op
+    // (resolver deleted), so the already-settled promise keeps its first value.
+    setVisitId("t-cache", "id-1");
+    setVisitId("t-cache", "id-2");
+    return expect(first).resolves.toBe("id-1");
+  });
+
+  it("setVisitId is a no-op for a tagId with no outstanding promise", () => {
+    // No getVisitIdPromise() was called for this tag — resolver map has no entry.
+    expect(() => setVisitId("t-never-awaited", "id")).not.toThrow();
   });
 
   it("produces the canonical 4-call event sequence end-to-end", async () => {

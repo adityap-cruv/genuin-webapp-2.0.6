@@ -47,7 +47,7 @@ Skill tool. They are tools, **not mandatory steps** — reach for them when a ta
 | Building React components / frontend UI | `frontend-patterns` skill |
 | Performance / accessibility / refactor / unit tests | `performance` / `accessibility` / `refactor` / `test-runner` skill |
 
-Full catalog of skills + agents with trigger phrases: [.claude/skills/README.md](skills/README.md).
+Full catalog of skills + agents with trigger phrases: [.claude/README.md](README.md).
 
 ### Orchestration — chain agents for multi-step work
 

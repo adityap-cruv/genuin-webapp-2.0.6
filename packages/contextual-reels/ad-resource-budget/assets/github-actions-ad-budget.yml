@@ -1,0 +1,61 @@
+# Drop into .github/workflows/ — gates every tag build on the resource budget.
+# Assumes your ad-tag project builds to ./dist/tag.js and that this skill's
+# scripts/ directory is vendored at tools/ad-resource-budget/scripts (adjust paths).
+name: ad-resource-budget
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  budget:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # 1. Build the tag.
+      - name: Install & build tag
+        run: |
+          npm ci
+          npm run build   # must produce ./dist/tag.js
+
+      # 2. Set up the budget harness.
+      - name: Install budget harness
+        working-directory: tools/ad-resource-budget/scripts
+        run: |
+          npm install
+          npx playwright install --with-deps chromium
+
+      # 3a. Unthrottled pass — bytes, requests, initial load, average CPU%.
+      - name: Budget check (unthrottled)
+        working-directory: tools/ad-resource-budget/scripts
+        run: >
+          node check-tag.mjs
+          --dir ../../../dist
+          --entry tag.js
+          --profile medium-rectangle-300x250
+          --out unthrottled-report.json
+
+      # 3b. Throttled pass — total & peak CPU seconds on emulated low-end HW.
+      - name: Budget check (throttled 4x)
+        working-directory: tools/ad-resource-budget/scripts
+        run: >
+          node check-tag.mjs
+          --dir ../../../dist
+          --entry tag.js
+          --profile medium-rectangle-300x250
+          --throttle 4
+          --out throttled-report.json
+
+      # 4. Keep the reports as artifacts for inspection.
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ad-budget-reports
+          path: tools/ad-resource-budget/scripts/*-report.json

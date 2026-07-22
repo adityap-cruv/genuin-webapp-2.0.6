@@ -72,6 +72,11 @@ export const HOST_URL_MACRO_TOKENS: Readonly<Record<string, string>> = {
  */
 function rewriteTritonUrlForApp(url: string, macros: HostMacros): string {
   const appb = macros.appb;
+  // Unreachable via the public API: `resolveVideoAdMacros` only calls this
+  // function when `isTritonAppRewrite` is true, which already requires
+  // `Boolean(macros.appb)` — so `appb` is always truthy here. Kept as a
+  // defensive guard for any future direct caller of this function.
+  /* v8 ignore next 2 */
   if (!appb) return url; // no bundle → cannot form an app request; leave as-is
 
   let result = url;
@@ -97,6 +102,10 @@ function rewriteTritonUrlForApp(url: string, macros: HostMacros): string {
   const appParams = [`bundle-id=${encodedAppb}`];
   if (macros.appsi !== undefined) appParams.push(`store-id=${encodeURIComponent(macros.appsi)}`);
   if (macros.appsu !== undefined) appParams.push(`store-url=${encodeURIComponent(macros.appsu)}`);
+  // Step 2 above always appends a `dist=` param (with `?` or `&`), so `result`
+  // always contains `?` by this point — the `: "?"` side is unreachable in
+  // practice. Kept as a defensive default, not dead code to delete.
+  /* v8 ignore next */
   result += (result.includes("?") ? "&" : "?") + appParams.join("&");
 
   return result;

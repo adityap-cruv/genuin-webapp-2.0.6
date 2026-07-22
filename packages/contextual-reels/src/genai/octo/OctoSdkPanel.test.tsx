@@ -278,3 +278,45 @@ describe("OctoSdkPanel — lifecycle event routing", () => {
     expect(onLifecyclePhase).not.toHaveBeenCalled();
   });
 });
+
+// The lazy `import("@genuin/genai-sdk")` failure path (module rejects) can't be
+// driven by the shared vi.mock above — it always resolves. Isolate this one test
+// with vi.resetModules + a factory that throws, so the dynamic import itself
+// rejects and the panel's .catch branch runs.
+describe("OctoSdkPanel — SDK module load failure", () => {
+  it("logs and clears the loading flag when the dynamic import rejects", async () => {
+    vi.resetModules();
+    vi.doMock("@genuin/genai-sdk", () => {
+      throw new Error("chunk load failed");
+    });
+    const freshLogError = vi.fn();
+    vi.doMock("@cxr/utils/logger", () => ({
+      createLogger: () => ({ debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: freshLogError }),
+    }));
+    vi.doMock("@cxr/userId", () => ({ userId: "user-test" }));
+
+    const { OctoSdkPanel: FreshPanel } = await import("@cxr/genai/octo/OctoSdkPanel");
+
+    const freshContainer = document.createElement("div");
+    document.body.appendChild(freshContainer);
+    const freshRoot = createRoot(freshContainer);
+
+    await act(async () => {
+      freshRoot.render(createElement(FreshPanel, baseProps));
+    });
+    // Flush the rejected dynamic import's microtask queue.
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(freshLogError).toHaveBeenCalledWith("OctoSdkPanel: failed to load @genuin/genai-sdk", expect.any(Error));
+
+    act(() => freshRoot.unmount());
+    freshContainer.remove();
+    vi.doUnmock("@genuin/genai-sdk");
+    vi.doUnmock("@cxr/utils/logger");
+    vi.doUnmock("@cxr/userId");
+    vi.resetModules();
+  });
+});

@@ -136,8 +136,7 @@
 
 /*
  * Widget global rules — cannot be expressed as Tailwind utilities because they
- * target classes applied at runtime (useFullscreenClasses hook, App.tsx root)
- * or rely on global selectors (body).
+ * target classes applied at runtime (App.tsx root) or rely on global selectors (body).
  */
 
 /* Fullscreen overlay — applied by App.tsx when isFullScreen */
@@ -151,26 +150,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-/* Lock host-page scroll while fullscreen is active */
-body.cxr__body--fullscreen {
-  overflow: hidden;
-}
-
-/* Legacy fullscreen toggle — useFullscreenClasses hook toggles these classes on body/overlay.
-   The hook is currently unused (no component calls it); these rules are kept for when it is wired up. */
-body.expand {
-  overflow: hidden;
-}
-
-.cxr__v1.expand {
-  /* !important needed: host-page styles may set position/width/height on the widget root */
-  position: fixed !important;
-  inset: 0;
-  z-index: var(--cxr-z-fullscreen);
-  width: 100% !important;
-  height: 100% !important;
 }
 
 /* vlitejs CSS is not imported — replicate the sizing rules it would have applied. */

@@ -9,6 +9,7 @@ const SIZE_KEYS = Object.keys(SIZES);
 const CONTENT_OPTIONS = [
   { value: CONTENT.VideoAd, label: "Video + Ad" },
   { value: CONTENT.AdOnly, label: "Ad only" },
+  { value: CONTENT.VideoOnly, label: "Video only" },
 ];
 
 // Tailwind classes for the story chrome. The `gencl:` prefix is required (CXR's
@@ -95,7 +96,6 @@ function StoryHarness() {
             key={`${size}-${content}`}
             tagId={CONTENT_TAG_ID[content]}
             rootTagId={ROOT_TAG_ID}
-            customizationDetails={null}
             adLayout={adLayout}
             instanceId="storybook-cxr"
           />
@@ -142,6 +142,7 @@ Use the toolbar above the preview:
 - **Content**: choose what the feed serves.
   - **Video + Ad**: organic video reels (content plays, with an ad break).
   - **Ad only**: standalone ad creatives, no organic video.
+  - **Video only**: organic video reel, no ad break.
 
 ## About the data
 

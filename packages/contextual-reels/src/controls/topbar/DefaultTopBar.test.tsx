@@ -248,5 +248,46 @@ describe("DefaultTopBar", () => {
       expect(leftGroup.querySelectorAll("button").length).toBe(0);
       expect(container.querySelector('[data-testid="topbar-expand"]')).toBeTruthy();
     });
+
+    it("still renders the expand button when expandEnabled is false", () => {
+      render({ variant: "iheart", expandEnabled: false });
+      expect(container.querySelector('[data-testid="topbar-expand"]')).toBeTruthy();
+    });
+  });
+
+  // config.on_click !== "fullscreen" ⇒ expandEnabled=false: the collapsed-state
+  // expand button hides, but the fullscreen collapse button always stays (it's
+  // the only way back out).
+  describe("expandEnabled", () => {
+    it("V2: hides the expand button when collapsed and expandEnabled is false", () => {
+      render({ isFullScreen: false, expandEnabled: false });
+      expect(container.querySelector('[data-testid="topbar-expand"]')).toBeNull();
+    });
+
+    it("V2: still renders the collapse button when fullscreen and expandEnabled is false", () => {
+      render({ isFullScreen: true, expandEnabled: false });
+      expect(container.querySelector('[data-testid="topbar-collapse"]')).toBeTruthy();
+    });
+
+    it("V2: renders the expand button by default (expandEnabled omitted)", () => {
+      render({ isFullScreen: false });
+      expect(container.querySelector('[data-testid="topbar-expand"]')).toBeTruthy();
+    });
+
+    describe("V1 (legacy) controls", () => {
+      beforeEach(() => {
+        useV2Flag = false;
+      });
+
+      it("hides the expand button when collapsed and expandEnabled is false", () => {
+        render({ isFullScreen: false, expandEnabled: false });
+        expect(container.querySelector('[data-testid="topbar-expand"]')).toBeNull();
+      });
+
+      it("still renders the collapse button when fullscreen and expandEnabled is false", () => {
+        render({ isFullScreen: true, expandEnabled: false });
+        expect(container.querySelector('[data-testid="topbar-collapse"]')).toBeTruthy();
+      });
+    });
   });
 });

@@ -2,15 +2,11 @@
 
 import { AD_LAYOUT } from "@cxr/config";
 import { AdControlBar } from "@cxr/controls/ad/AdControlBar";
-import { CompactControlBarOld } from "@cxr/controls/buttons/ControlButtons";
 import type { AdControlLayerProps } from "@cxr/controls/control-layer.types";
 import { isCompactLayout } from "@cxr/utils/ads";
 
 /**
  * AdControlLayer — routes to the correct ad control sub-component based on embed size.
- *
- * variant="new" uses AdControlBar with layout routing.
- * variant="old" uses the legacy CompactControlBarOld for compact sizes.
  */
 export function AdControlLayer({
   isPlay,
@@ -23,7 +19,6 @@ export function AdControlLayer({
   onMuteClick,
   onFullScreenClick,
   redirectMode,
-  variant = "new",
 }: AdControlLayerProps) {
   const isCompact = isCompactLayout(adLayout);
 
@@ -31,7 +26,7 @@ export function AdControlLayer({
   // isAdReady resets per-slide via destroySignal, so this works correctly for every slide.
   if (!isAdReady) return null;
 
-  if (isCompact && !isFullScreen && variant === "new") {
+  if (isCompact && !isFullScreen) {
     const layout = (adLayout === AD_LAYOUT.L3 ? "320x50" : "320x100") as "320x50" | "320x100";
     // 320×100 (L4): GenAd renders its creative thumbnail into the left
     // `aspect-9/16` box of the slot (mirroring video's renderL4, which pins a
@@ -67,29 +62,6 @@ export function AdControlLayer({
             />
           </div>
         </div>
-        {/* <ClickOverlay
-          isFullScreen={isFullScreen}
-          onFullScreenClick={onFullScreenClick}
-          onPlayClick={onPlayClick}
-          containerId={containerId}
-        /> */}
-      </div>
-    );
-  }
-
-  if (isCompact && !isFullScreen && variant === "old") {
-    return (
-      <div className="gencl:relative gencl:h-full gencl:w-full">
-        {/* See note above: raise the bar above the overlay; transparent areas pass clicks through. */}
-        <div className="gencl:relative gencl:z-[2] gencl:h-full gencl:w-full gencl:pointer-events-none">
-          <CompactControlBarOld isPlay={isPlay} isMuted={isMuted} onPlayClick={onPlayClick} onMuteClick={onMuteClick} />
-        </div>
-        {/* <ClickOverlay
-          isFullScreen={isFullScreen}
-          onFullScreenClick={onFullScreenClick}
-          onPlayClick={onPlayClick}
-          containerId={containerId}
-        /> */}
       </div>
     );
   }
@@ -107,15 +79,6 @@ export function AdControlLayer({
         onMuteClick={onMuteClick}
         onFullScreenClick={onFullScreenClick}
       />
-      {/* {!isFullScreen && (
-        <ClickOverlay
-          isFullScreen={isFullScreen}
-          onFullScreenClick={onFullScreenClick}
-          onPlayClick={onPlayClick}
-          containerId={containerId}
-          allowUnmute={false}
-        />
-      )} */}
     </div>
   );
 }

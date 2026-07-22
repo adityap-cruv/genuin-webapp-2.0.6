@@ -60,6 +60,16 @@ describe("hostMacros", () => {
     expect(parseHostMacros()).toEqual({});
   });
 
+  it("returns an empty map when window is undefined (SSR)", async () => {
+    vi.stubGlobal("window", undefined);
+    try {
+      const { parseHostMacros } = await loadFresh();
+      expect(parseHostMacros()).toEqual({});
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
   it("getHostMacro reads a single cleaned value", async () => {
     (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__ = "ifa=xyz&appv=";
     const { getHostMacro } = await loadFresh();

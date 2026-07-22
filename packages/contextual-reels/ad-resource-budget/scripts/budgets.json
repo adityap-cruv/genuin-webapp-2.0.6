@@ -1,0 +1,98 @@
+{
+  "_comment": "Resource budgets for ad tags. 'error' limits are Chrome Heavy Ad Intervention (do not raise). 'warn' limits are IAB New Ad Portfolio targets and scale by ad size via profiles. See ../references/resource-budgets.md.",
+
+  "defaults": {
+    "observeMs": 30000,
+    "settleMs": 1500,
+    "cpuSampleMs": 1000,
+    "cpuThrottle": 1,
+    "runs": 1,
+    "postInteractObserveMs": 10000
+  },
+
+  "limits": {
+    "transferredBytesTotal": {
+      "label": "Total transferred bytes",
+      "max": 4194304,
+      "unit": "bytes",
+      "severity": "error",
+      "warnAtFraction": 0.8,
+      "source": "Chrome Heavy Ad Intervention (4 MB)"
+    },
+    "cpuTotalSeconds": {
+      "label": "Total main-thread CPU",
+      "max": 60,
+      "unit": "s",
+      "severity": "error",
+      "warnAtFraction": 0.8,
+      "source": "Chrome Heavy Ad Intervention (60 s total)"
+    },
+    "cpuPeakWindowSeconds": {
+      "label": "Peak main-thread CPU in window",
+      "max": 15,
+      "windowSeconds": 30,
+      "unit": "s",
+      "severity": "error",
+      "warnAtFraction": 0.8,
+      "source": "Chrome Heavy Ad Intervention (15 s in any 30 s window)"
+    },
+    "initialTransferredBytes": {
+      "label": "Initial load (transferred)",
+      "max": 153600,
+      "unit": "bytes",
+      "severity": "warn",
+      "source": "IAB New Ad Portfolio (~150 KB)"
+    },
+    "initialRequestCount": {
+      "label": "Initial file requests",
+      "max": 15,
+      "unit": "count",
+      "severity": "warn",
+      "source": "IAB New Ad Portfolio"
+    },
+    "subloadRequestCount": {
+      "label": "Host-initiated subload requests",
+      "max": 10,
+      "unit": "count",
+      "severity": "warn",
+      "source": "IAB New Ad Portfolio"
+    },
+    "cpuAveragePercent": {
+      "label": "Average main-thread CPU",
+      "max": 30,
+      "unit": "%",
+      "severity": "warn",
+      "source": "IAB New Ad Portfolio (<=30%)",
+      "skipWhenThrottled": true
+    }
+  },
+
+  "profiles": {
+    "default": {},
+    "medium-rectangle-300x250": {
+      "initialTransferredBytes": { "max": 153600 }
+    },
+    "leaderboard-728x90": {
+      "initialTransferredBytes": { "max": 153600 }
+    },
+    "billboard-970x250": {
+      "initialTransferredBytes": { "max": 204800 }
+    },
+    "financial-300x100": {
+      "initialTransferredBytes": { "max": 51200 }
+    },
+    "video-15s": {
+      "_note": "Adds the IAB 1.1 MB auto-init 15s video allotment on top of initial load.",
+      "initialTransferredBytes": { "max": 1306624 }
+    },
+    "video-30s": {
+      "_note": "Adds the IAB 2.2 MB auto-init 30s video allotment on top of initial load.",
+      "initialTransferredBytes": { "max": 2460160 }
+    },
+    "cxr": {
+      "_note": "Genuin Contextual Reels inline video unit (~320x100). IAB warn limits use the auto-init 15s video allotment (1.1 MB) since the reel autoplays video on load. HAI error limits are Chrome's and are NOT scaled. The subload request count is raised to reflect HLS segmenting (one request per video chunk), which is inherent to streaming video and not a per-request budget concern.",
+      "initialTransferredBytes": { "max": 1306624 },
+      "subloadRequestCount": { "max": 120 }
+    }
+  }
+}

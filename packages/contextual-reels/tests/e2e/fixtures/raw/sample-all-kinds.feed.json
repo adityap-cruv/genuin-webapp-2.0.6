@@ -1,0 +1,38 @@
+{
+  "code": "200",
+  "message": "Feed is loaded.",
+  "data": {
+    "reels": [
+      {
+        "type": "ads",
+        "video_ad": [{ "ads_url": "https://example.com/vast.xml" }],
+        "gate_on_unmute": false
+      },
+      {
+        "type": "reel",
+        "ad_configs": {
+          "video_ad": [{ "ads_url": "https://example.com/vast-organic.xml" }]
+        },
+        "owner": { "nickname": "sample-owner", "profile_image": "https://example.com/owner.png" },
+        "cta": { "link": "", "text": "" },
+        "loop": { "share_string": "", "preview_image": "" },
+        "og_details": {},
+        "video": {
+          "url": "https://example.com/organic-with-ad.m3u8",
+          "thumbnail": "https://example.com/organic-with-ad-thumb.jpg"
+        }
+      },
+      {
+        "type": "reel",
+        "owner": { "nickname": "sample-owner", "profile_image": "https://example.com/owner.png" },
+        "cta": { "link": "", "text": "" },
+        "loop": { "share_string": "", "preview_image": "" },
+        "og_details": {},
+        "video": {
+          "url": "https://example.com/organic-plain.m3u8",
+          "thumbnail": "https://example.com/organic-plain-thumb.jpg"
+        }
+      }
+    ]
+  }
+}

@@ -25,8 +25,10 @@ import { PlayerProvider, usePlayerContext } from "@genuin/components/molecules/f
 import { EmbedMuteButton } from "@genuin/components/molecules/feed-player/control-layer/controls/embed";
 import { DynamicReactionIcon } from "@genuin/components/molecules/reaction-button";
 import { Stats } from "@genuin/components/molecules/stats";
+import type { LinkoutsProps } from "@genuin/components/organisms/linkouts/linkouts";
 import { IFRAME_HEIGHT, IHeartEmbedBar } from "@genuin/components/organisms/player-swiper/iheart/iheart-embed-bar";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+import type { LinkoutsType } from "@genuin/components/react-query/api/linkouts/schema";
 
 import { useEmbedManagerContext } from "../embed/context";
 
@@ -54,7 +56,11 @@ const Linkouts = lazy(() =>
   import("../linkouts").then((m) => ({
     default: m.Linkouts,
   }))
-) as React.ComponentType<any>;
+) as React.ComponentType<LinkoutsProps>;
+
+// Some upstream feeds still return the pre-schema legacy linkout shape
+// (`{ url }` instead of `{ links: [{ link }] }`) — kept only for this fallback read.
+type LegacyLinkout = { cta_link?: string | null; url?: string | null };
 
 /**
  * Helper function to extract the most appropriate URL from linkouts based on priority:
@@ -63,14 +69,14 @@ const Linkouts = lazy(() =>
  * 3. URL from first linkout (legacy format)
  * 4. null if no valid URL found
  */
-function getLinkoutUrl(linkouts: any): string | null {
+function getLinkoutUrl(linkouts: LinkoutsType | LegacyLinkout | null | undefined): string | null {
   if (!linkouts || typeof linkouts !== "object") {
     return null;
   }
 
   // Handle array of linkout objects
   if (Array.isArray(linkouts) && linkouts.length > 0) {
-    const firstLinkout = linkouts[0];
+    const firstLinkout = linkouts[0] as (typeof linkouts)[number] & LegacyLinkout;
 
     // First priority: CTA link
     if (firstLinkout.cta_link) {
@@ -78,13 +84,9 @@ function getLinkoutUrl(linkouts: any): string | null {
     }
 
     // Second priority: First link from links array
-    if (
-      firstLinkout.links &&
-      Array.isArray(firstLinkout.links) &&
-      firstLinkout.links.length > 0 &&
-      firstLinkout.links[0].link
-    ) {
-      return firstLinkout.links[0].link;
+    const firstLink = firstLinkout.links?.[0];
+    if (firstLink?.link) {
+      return firstLink.link;
     }
 
     // Legacy format with url property
@@ -120,7 +122,9 @@ const embedTileVariants = cva("gencl:h-full gencl:rounded-lg gencl:overflow-clip
 export function EmbedTile({
   isActive,
   variant,
-  embedType = 0,
+  // Destructured out (not read) so it doesn't leak onto the DOM element `restProps` spreads onto below.
+
+  embedType,
   postDetails,
   className,
   index,
@@ -250,7 +254,7 @@ function EmbedPlayer({ postDetails, isActive = false, index, itemSize }: EmbedPl
   const layoutType = !showLayout
     ? "responsiveness"
     : getBrandType(embedDetails?.embedData.card_layout_id, embedDetails?.embedData.video_layout_id);
-  const { sheetState, getContentTypeState, hasContentType, openContentType } = useSheetState();
+  const { sheetState, getContentTypeState, openContentType } = useSheetState();
   const { isDesktop } = useDeviceDetectMediaQuery();
   const isNonDesktop = !isDesktop;
 
@@ -316,7 +320,11 @@ function EmbedPlayer({ postDetails, isActive = false, index, itemSize }: EmbedPl
 
     const isBrandPeacock = embedData.brandDetails?.brand_id === 3182;
     if (isBrandPeacock) {
-      const nativeVideoHandler = (window as any).webkit?.messageHandlers?.openNativeVideo;
+      const nativeVideoHandler = (
+        window as Window & {
+          webkit?: { messageHandlers?: { openNativeVideo?: { postMessage: (message: unknown) => void } } };
+        }
+      ).webkit?.messageHandlers?.openNativeVideo;
       if (nativeVideoHandler) {
         nativeVideoHandler.postMessage({
           source: "carousel",
@@ -351,7 +359,16 @@ function EmbedPlayer({ postDetails, isActive = false, index, itemSize }: EmbedPl
       if (maybeRedirectInsteadOfExpand()) return;
       changeActivePlayerType("expand-view", index);
     }
-  }, [isAdPlaying, changeActivePlayerType, index, postDetails, embedData.card_layout_id, maybeRedirectInsteadOfExpand]);
+  }, [
+    isAdPlaying,
+    changeActivePlayerType,
+    index,
+    postDetails,
+    embedData.card_layout_id,
+    embedData.brandDetails?.brand_id,
+    maybeRedirectInsteadOfExpand,
+    config.expandViewConfig.enable,
+  ]);
 
   // Hide the control layer while an ad is showing, and notify the parent
   // so it can lock the swiper and disable navigation buttons.
@@ -432,7 +449,7 @@ function EmbedPlayer({ postDetails, isActive = false, index, itemSize }: EmbedPl
               aria-hidden="true"
               index={index}
               isActive={isActive}
-              adTagObject={(postDetails as any).adTagObject ?? undefined}
+              adTagObject={postDetails.adTagObject ?? undefined}
               onAdFilled={handleAdFilled}
               onAdPlaybackEnd={handleAdPlaybackEnd}
               isSponsored={postDetails.video?.cardLayoutId === 7 || postDetails.video?.videoLayoutId === 6}
@@ -559,7 +576,13 @@ function OutsideComponents({ postDetails }: { postDetails: PostDetailsType }) {
         icon: <CommentIcon theme="light" size="sm" />,
       },
     };
-  }, [contentDisplay, postDetails.video?.sparkCount, postDetails.video?.commentCount]);
+  }, [
+    contentDisplay,
+    view.isPlacementView,
+    postDetails.video?.viewCount,
+    postDetails.video?.sparkCount,
+    postDetails.video?.commentCount,
+  ]);
 
   return (
     <>

@@ -1,5 +1,16 @@
 /**
- * Tests for Feed — Phase 2 FeedEntry.
+ * Tests for Feed — container behaviour (fullscreen box, action rail gating)
+ * and strict virtualization (only the mount window renders a live ReelItem;
+ * other slides render ReelSlidePlaceholder). Feed owns both concerns directly
+ * — there is no separate ReelList component.
+ *
+ * isAdActive/activeReel are read straight from useFeed() (driven here via
+ * mockUseFeed) — FeedProvider derives them, not Feed. See FeedProvider.test.tsx
+ * for that derivation's own coverage.
+ *
+ * useSwipeGate is mocked to a no-op here — it has its own unit tests in
+ * useSwipeGate.test.ts. useGenAI is mocked only for the octoFraction it feeds
+ * into that gate.
  */
 import React from "react";
 import { act } from "react";
@@ -8,29 +19,28 @@ import type { Root } from "react-dom/client";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 import { Feed } from "@cxr/feed/Feed";
+import type { UseFeedNavigationOptions } from "@cxr/feed/useFeedNavigation";
 import type { FeedEntry, TagResponse } from "@cxr/types";
 
-const { mockUseFullScreen, mockUseFeed, mockUseAdWaterfall, mockUsePlayer } = vi.hoisted(() => ({
+const { mockUseFullScreen, mockUseFeed, mockUseAdWaterfall } = vi.hoisted(() => ({
   mockUseFullScreen: vi.fn(() => ({
     isFullScreen: false,
     enterFullScreen: vi.fn(),
     exitFullScreen: vi.fn(),
     toggleFullScreen: vi.fn(),
   })),
-  mockUseFeed: vi.fn(() => ({ entries: [] as FeedEntry[], activeIndex: 0, setActiveIndex: vi.fn() })),
+  mockUseFeed: vi.fn(() => ({
+    entries: [] as FeedEntry[],
+    activeIndex: 0,
+    setActiveIndex: vi.fn(),
+    isAdActive: false,
+    activeReel: undefined as FeedEntry["data"] | undefined,
+  })),
   mockUseAdWaterfall: vi.fn(() => ({
     onAdSuccess: vi.fn(),
     onAdFail: vi.fn(),
     adLayout: "unknown",
     isAudioOnlyAds: false,
-  })),
-  mockUsePlayer: vi.fn(() => ({
-    isMuted: true,
-    isPlaying: true,
-    isAdBreakActive: false,
-    setMuted: vi.fn(),
-    setPlaying: vi.fn(),
-    setAdBreakActive: vi.fn(),
   })),
 }));
 
@@ -47,9 +57,45 @@ vi.mock("embla-carousel", () => ({
   })),
 }));
 
-vi.mock("./ReelList", () => ({
-  ReelList: (props: { entries: FeedEntry[]; tagDetails: TagResponse }) =>
-    React.createElement("div", { "data-testid": "reel-list", "data-count": props.entries.length }),
+/** Captures the props ReelItem receives so callback wiring can be asserted. */
+const capturedReelItemProps: Record<string, unknown>[] = [];
+
+vi.mock("./ReelItem", () => ({
+  ReelItem: (props: { entry: FeedEntry; isActive: boolean }) => {
+    capturedReelItemProps.push(props as unknown as Record<string, unknown>);
+    return React.createElement("div", {
+      "data-testid": `reel-item-${props.entry.data.id}`,
+      "data-active": String(props.isActive),
+    });
+  },
+}));
+
+const mockTagDetails: TagResponse = { tag_id: "tag-1" };
+vi.mock("../providers/TagDetailsProvider", () => ({
+  useTagDetails: () => ({ tagDetails: mockTagDetails, apiFailed: false }),
+}));
+
+// Module-level so each test can drive the navigation state the mount window reads.
+let mockVisibleIndices = new Set<number>([0]);
+let capturedNavOptions: UseFeedNavigationOptions | undefined;
+const navResult = {
+  goNext: vi.fn(),
+  emitTimeUpdate: vi.fn(),
+};
+
+vi.mock("./useFeedNavigation", () => ({
+  useEmblaFeed: vi.fn((_ref: unknown, options: UseFeedNavigationOptions) => {
+    capturedNavOptions = options;
+    return {
+      activeIndex: 0,
+      goNext: navResult.goNext,
+      goPrev: vi.fn(),
+      goTo: vi.fn(),
+      autoAdvance: vi.fn(),
+      onTimeUpdate: navResult.emitTimeUpdate,
+      visibleIndices: mockVisibleIndices,
+    };
+  }),
 }));
 
 vi.mock("@cxr/controls/FullscreenActionRailHost", () => ({
@@ -70,12 +116,12 @@ vi.mock("../providers/FullScreenProvider", () => ({
   useFullScreen: () => mockUseFullScreen(),
 }));
 
-vi.mock("../providers/PlayerProvider", () => ({
-  usePlayer: () => mockUsePlayer(),
+vi.mock("../providers/GenAIProvider", () => ({
+  useGenAI: () => ({ octoFraction: 0 }),
 }));
 
-vi.mock("../providers/GenAIProvider", () => ({
-  useGenAI: () => ({ genAiEnabled: false, octoFraction: 0, setOctoFraction: vi.fn(), octoAxis: 'y', setOctoAxis: vi.fn() }),
+vi.mock("./hooks/useSwipeGate", () => ({
+  useSwipeGate: vi.fn(),
 }));
 
 vi.mock("../providers/FeedProvider", () => ({
@@ -108,39 +154,36 @@ const makeReelEntry = (id: number): FeedEntry => ({
   },
 });
 
-const makeAdEntry = (): FeedEntry =>
-  ({ kind: "ad", data: { kind: "ad", id: 99, active: false } } as unknown as FeedEntry);
-
 const mockEntries: FeedEntry[] = [makeReelEntry(0), makeReelEntry(1)];
-const mockTagDetails: TagResponse = { tag_id: "tag-1" };
-/** Config that turns the fullscreen action rail on. */
-const railTagDetails: TagResponse = { tag_id: "tag-1", config: { show_spark: true } };
 
 describe("Feed", () => {
   let container: HTMLDivElement;
   let root: Root;
 
   beforeEach(() => {
+    capturedReelItemProps.length = 0;
+    capturedNavOptions = undefined;
+    mockVisibleIndices = new Set([0]);
+    navResult.goNext.mockClear();
+    navResult.emitTimeUpdate.mockClear();
     mockUseFullScreen.mockReturnValue({
       isFullScreen: false,
       enterFullScreen: vi.fn(),
       exitFullScreen: vi.fn(),
       toggleFullScreen: vi.fn(),
     });
-    mockUseFeed.mockReturnValue({ entries: [], activeIndex: 0, setActiveIndex: vi.fn() });
+    mockUseFeed.mockReturnValue({
+      entries: [],
+      activeIndex: 0,
+      setActiveIndex: vi.fn(),
+      isAdActive: false,
+      activeReel: undefined,
+    });
     mockUseAdWaterfall.mockReturnValue({
       onAdSuccess: vi.fn(),
       onAdFail: vi.fn(),
       adLayout: "unknown",
       isAudioOnlyAds: false,
-    });
-    mockUsePlayer.mockReturnValue({
-      isMuted: true,
-      isPlaying: true,
-      isAdBreakActive: false,
-      setMuted: vi.fn(),
-      setPlaying: vi.fn(),
-      setAdBreakActive: vi.fn(),
     });
     container = document.createElement("div");
     document.body.appendChild(container);
@@ -154,102 +197,184 @@ describe("Feed", () => {
 
   it("renders a scroll-snap container", () => {
     act(() => {
-      root.render(React.createElement(Feed, { entries: mockEntries, tagDetails: mockTagDetails }));
+      root.render(React.createElement(Feed, { entries: mockEntries }));
     });
     expect(container.querySelector('[data-testid="feed-container"]')).toBeTruthy();
   });
 
-  it("renders ReelList inside the container", () => {
+  it("renders the reel list inside the container", () => {
     act(() => {
-      root.render(React.createElement(Feed, { entries: mockEntries, tagDetails: mockTagDetails }));
+      root.render(React.createElement(Feed, { entries: mockEntries }));
     });
     expect(container.querySelector('[data-testid="reel-list"]')).toBeTruthy();
   });
 
-  it("renders ReelList even when entries array is empty", () => {
+  it("renders the reel list even when entries array is empty", () => {
     act(() => {
-      root.render(React.createElement(Feed, { entries: [], tagDetails: mockTagDetails }));
+      root.render(React.createElement(Feed, { entries: [] }));
     });
     expect(container.querySelector('[data-testid="reel-list"]')).not.toBeNull();
   });
 
-  it("passes entries and tagDetails to ReelList", () => {
-    act(() => {
-      root.render(React.createElement(Feed, { entries: mockEntries, tagDetails: mockTagDetails }));
-    });
-    expect(container.querySelector('[data-testid="reel-list"]')?.getAttribute("data-count")).toBe("2");
-  });
-
-  it("shows the action rail in fullscreen when the active slide is a reel", () => {
+  it("shows the action rail in fullscreen when isAdActive is false", () => {
     mockUseFullScreen.mockReturnValue({
       isFullScreen: true,
       enterFullScreen: vi.fn(),
       exitFullScreen: vi.fn(),
       toggleFullScreen: vi.fn(),
     });
-    mockUseFeed.mockReturnValue({ entries: mockEntries, activeIndex: 0, setActiveIndex: vi.fn() });
+    mockUseFeed.mockReturnValue({
+      entries: mockEntries,
+      activeIndex: 0,
+      setActiveIndex: vi.fn(),
+      isAdActive: false,
+      activeReel: mockEntries[0]?.data,
+    });
     act(() => {
-      root.render(React.createElement(Feed, { entries: mockEntries, tagDetails: railTagDetails }));
+      root.render(React.createElement(Feed, { entries: mockEntries }));
     });
     expect(container.querySelector('[data-testid="fullscreen-action-rail-anchor"]')).toBeTruthy();
   });
 
-  it("passes the active video entry's data as `item` to the action rail, not undefined", () => {
-    // Regression test: NormalisedReel.kind/FeedEntry.kind were widened from the single
-    // literal "reel" to "video" | "video-with-ad", but Feed.tsx still compared
-    // `activeEntry?.kind === "reel"` — a comparison that can never be true, so
-    // `activeReel` (passed as `item`) was silently always `undefined` for every
-    // video slide. This asserts `item` actually carries the active entry's `data`.
+  it("passes useFeed()'s activeReel through to the action rail as `item`", () => {
     mockUseFullScreen.mockReturnValue({
       isFullScreen: true,
       enterFullScreen: vi.fn(),
       exitFullScreen: vi.fn(),
       toggleFullScreen: vi.fn(),
     });
-    mockUseFeed.mockReturnValue({ entries: mockEntries, activeIndex: 0, setActiveIndex: vi.fn() });
+    const activeReel = mockEntries[0]?.data;
+    mockUseFeed.mockReturnValue({
+      entries: mockEntries,
+      activeIndex: 0,
+      setActiveIndex: vi.fn(),
+      isAdActive: false,
+      activeReel,
+    });
     act(() => {
-      root.render(React.createElement(Feed, { entries: mockEntries, tagDetails: railTagDetails }));
+      root.render(React.createElement(Feed, { entries: mockEntries }));
     });
     const anchor = container.querySelector('[data-testid="fullscreen-action-rail-anchor"]');
-    const activeEntry = mockEntries[0];
-    expect(activeEntry).toBeDefined();
-    expect(anchor?.getAttribute("data-item-id")).toBe(String(activeEntry?.data.id));
+    expect(anchor?.getAttribute("data-item-id")).toBe(String(activeReel?.id));
   });
 
-  it("hides the action rail in fullscreen when the active slide is an ad", () => {
-    const entries = [makeReelEntry(0), makeAdEntry()];
+  it("hides the action rail in fullscreen when useFeed()'s isAdActive is true", () => {
     mockUseFullScreen.mockReturnValue({
       isFullScreen: true,
       enterFullScreen: vi.fn(),
       exitFullScreen: vi.fn(),
       toggleFullScreen: vi.fn(),
     });
-    mockUseFeed.mockReturnValue({ entries, activeIndex: 1, setActiveIndex: vi.fn() });
+    mockUseFeed.mockReturnValue({
+      entries: mockEntries,
+      activeIndex: 0,
+      setActiveIndex: vi.fn(),
+      isAdActive: true,
+      activeReel: undefined,
+    });
     act(() => {
-      root.render(React.createElement(Feed, { entries, tagDetails: railTagDetails }));
+      root.render(React.createElement(Feed, { entries: mockEntries }));
     });
     expect(container.querySelector('[data-testid="fullscreen-action-rail-anchor"]')).toBeNull();
   });
 
-  it("hides the action rail while a fullscreen ad break is on screen over a reel", () => {
-    mockUseFullScreen.mockReturnValue({
-      isFullScreen: true,
-      enterFullScreen: vi.fn(),
-      exitFullScreen: vi.fn(),
-      toggleFullScreen: vi.fn(),
-    });
-    mockUseFeed.mockReturnValue({ entries: mockEntries, activeIndex: 0, setActiveIndex: vi.fn() });
-    mockUsePlayer.mockReturnValue({
-      isMuted: true,
-      isPlaying: true,
-      isAdBreakActive: true,
-      setMuted: vi.fn(),
-      setPlaying: vi.fn(),
-      setAdBreakActive: vi.fn(),
-    });
+  // ── Strict virtualization ────────────────────────────────────────────────
+
+  it("mounts only the active entry and renders placeholders for the rest", () => {
+    const entries = Array.from({ length: 5 }, (_, i) => makeReelEntry(i));
+    mockUseFeed.mockReturnValue({ entries, activeIndex: 0, setActiveIndex: vi.fn(), isAdActive: false, activeReel: undefined });
     act(() => {
-      root.render(React.createElement(Feed, { entries: mockEntries, tagDetails: railTagDetails }));
+      root.render(React.createElement(Feed, { entries }));
     });
-    expect(container.querySelector('[data-testid="fullscreen-action-rail-anchor"]')).toBeNull();
+    expect(container.querySelectorAll('[data-testid^="reel-item-"]').length).toBe(1);
+    expect(container.querySelector('[data-testid="reel-item-0"]')).toBeTruthy();
+    expect(container.querySelectorAll('[data-testid="reel-slide-placeholder"]').length).toBe(4);
+  });
+
+  it("keeps every slide wrapper mounted so Embla retains real scroll height", () => {
+    const entries = Array.from({ length: 5 }, (_, i) => makeReelEntry(i));
+    mockUseFeed.mockReturnValue({ entries, activeIndex: 0, setActiveIndex: vi.fn(), isAdActive: false, activeReel: undefined });
+    act(() => {
+      root.render(React.createElement(Feed, { entries }));
+    });
+    const list = container.querySelector('[data-testid="reel-list"]');
+    expect(list?.children.length).toBe(5);
+  });
+
+  it("mounts both the outgoing and incoming slide while a swipe is in view", () => {
+    mockVisibleIndices = new Set([0, 1]);
+    const entries = Array.from({ length: 5 }, (_, i) => makeReelEntry(i));
+    mockUseFeed.mockReturnValue({ entries, activeIndex: 0, setActiveIndex: vi.fn(), isAdActive: false, activeReel: undefined });
+    act(() => {
+      root.render(React.createElement(Feed, { entries }));
+    });
+    expect(container.querySelector('[data-testid="reel-item-0"]')).toBeTruthy();
+    expect(container.querySelector('[data-testid="reel-item-1"]')).toBeTruthy();
+    expect(container.querySelectorAll('[data-testid="reel-slide-placeholder"]').length).toBe(3);
+  });
+
+  it("shifts the mounted window when the active index changes", () => {
+    const entries = Array.from({ length: 5 }, (_, i) => makeReelEntry(i));
+    mockUseFeed.mockReturnValue({ entries, activeIndex: 0, setActiveIndex: vi.fn(), isAdActive: false, activeReel: undefined });
+    act(() => {
+      root.render(React.createElement(Feed, { entries }));
+    });
+    expect(container.querySelector('[data-testid="reel-item-0"]')).toBeTruthy();
+
+    mockVisibleIndices = new Set([2]);
+    mockUseFeed.mockReturnValue({ entries, activeIndex: 2, setActiveIndex: vi.fn(), isAdActive: false, activeReel: undefined });
+    act(() => {
+      root.render(React.createElement(Feed, { entries }));
+    });
+    expect(container.querySelector('[data-testid="reel-item-2"]')).toBeTruthy();
+    expect(container.querySelector('[data-testid="reel-item-0"]')).toBeNull();
+  });
+
+  it("marks only the active mounted entry with data-active=true", () => {
+    mockVisibleIndices = new Set([0, 1]);
+    const entries = [makeReelEntry(0), makeReelEntry(1), makeReelEntry(2)];
+    mockUseFeed.mockReturnValue({ entries, activeIndex: 0, setActiveIndex: vi.fn(), isAdActive: false, activeReel: undefined });
+    act(() => {
+      root.render(React.createElement(Feed, { entries }));
+    });
+    expect(container.querySelector('[data-testid="reel-item-0"]')?.getAttribute("data-active")).toBe("true");
+    expect(container.querySelector('[data-testid="reel-item-1"]')?.getAttribute("data-active")).toBe("false");
+  });
+
+  it("renders no reel items or placeholders when entries is empty", () => {
+    act(() => {
+      root.render(React.createElement(Feed, { entries: [] }));
+    });
+    expect(container.querySelectorAll('[data-testid^="reel-item-"]').length).toBe(0);
+    expect(container.querySelectorAll('[data-testid="reel-slide-placeholder"]').length).toBe(0);
+  });
+
+  it("forwards the nav onTimeUpdate to the mounted ReelItem", () => {
+    act(() => {
+      root.render(React.createElement(Feed, { entries: mockEntries }));
+    });
+    expect(capturedReelItemProps[0]?.["onTimeUpdate"]).toBe(navResult.emitTimeUpdate);
+  });
+
+  it("onAutoAdvance calls goNext unconditionally (not gated on user interaction)", () => {
+    act(() => {
+      root.render(React.createElement(Feed, { entries: mockEntries }));
+    });
+    const advance = capturedReelItemProps[0]?.["onAutoAdvance"] as () => void;
+    act(() => advance());
+    expect(navResult.goNext).toHaveBeenCalledTimes(1);
+  });
+
+  it("passes setActiveIndex as onSlideEnter and no-op defaults for the rest to useEmblaFeed", () => {
+    const setActiveIndex = vi.fn();
+    mockUseFeed.mockReturnValue({ entries: mockEntries, activeIndex: 0, setActiveIndex, isAdActive: false, activeReel: undefined });
+    act(() => {
+      root.render(React.createElement(Feed, { entries: mockEntries }));
+    });
+    expect(capturedNavOptions?.onSlideEnter).toBe(setActiveIndex);
+    expect(() => {
+      capturedNavOptions?.onSlideAway(0, undefined);
+      capturedNavOptions?.onTimeUpdate(0, 0, 0);
+    }).not.toThrow();
   });
 });

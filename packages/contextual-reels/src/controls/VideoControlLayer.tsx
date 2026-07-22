@@ -1,11 +1,16 @@
-import React from "react";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
+import React, { lazy } from "react";
 
 import { AD_LAYOUT } from "@cxr/config";
 import type { VideoControlLayerProps } from "@cxr/controls/control-layer.types";
 import { DefaultControlLayer } from "@cxr/controls/video/DefaultControlLayer";
-import { OctoSheet } from "@cxr/genai/octo/OctoSheet";
-import { useInstanceId } from "@cxr/instance/registry/InstanceContext";
+// Lazy: keeps the GenAI SDK (markdown + icon pipeline) out of the critical path.
+// Only loads when a genAiEnabled tag actually renders the Octo strip.
+const OctoSheet = lazy(() => import("@cxr/genai/octo/OctoSheet").then((m) => ({ default: m.OctoSheet })));
+import { useInstanceId } from "@cxr/instance/InstanceContext";
+import { useFullScreen } from "@cxr/providers/FullScreenProvider";
 import { useGenAI } from "@cxr/providers/GenAIProvider";
+import { useTagDetails } from "@cxr/providers/TagDetailsProvider";
 import { isCompactLayout } from "@cxr/utils/ads";
 
 import { CompactControlBar } from "./CompactControlBar";
@@ -56,7 +61,6 @@ export function CompactUnmuteOverlay({
 export function VideoControlLayer({
   variant,
   item,
-  tagDetails,
   dimensions,
   isActive,
   isFullScreen,
@@ -65,12 +69,18 @@ export function VideoControlLayer({
   adLayout,
   animatedBorder,
   onMuteClick,
+  onLayerUnmuteClick,
   onPlayClick,
   onFullScreenClick,
 }: VideoControlLayerProps): React.JSX.Element {
   // useInstanceId must be called unconditionally (hooks rules).
   const instanceId = useInstanceId();
+  const { tagDetails } = useTagDetails();
+  // Ad expansion is enabled when the tag opts into fullscreen-on-click. An absent
+  // key defaults to enabled to preserve legacy behaviour (expand always shown).
+  const expandEnabled = tagDetails?.config?.on_click === undefined ? true : tagDetails.config.on_click === "fullscreen";
   const { genAiEnabled } = useGenAI();
+  const { isRedirectMode } = useFullScreen();
   const isCompact = isCompactLayout(adLayout);
   // iHeart stays on the legacy controls; everything else gets the V2 icon set.
   const isV2 = useNewPlayerControls() && variant !== "iheart";
@@ -101,15 +111,21 @@ export function VideoControlLayer({
         <div
           data-testid="octo-compact-host"
           className="gencl:relative gencl:w-full gencl:h-full gencl:flex gencl:items-center gencl:gap-2 gencl:px-1">
-          <CompactUnmuteOverlay isMuted={isMuted} onMuteClick={onMuteClick} />
+          <CompactUnmuteOverlay isMuted={isMuted} onMuteClick={onLayerUnmuteClick} />
           {stripProps && (
             <div className="gencl:flex gencl:items-center gencl:w-[226px]">
-              <OctoSheet {...stripProps} />
+              <SafeSuspense fallback={null}>
+                <OctoSheet {...stripProps} />
+              </SafeSuspense>
             </div>
           )}
           <WatchButton
             isPlay={isPlay}
-            onClick={onFullScreenClick}
+            // config.on_click !== "fullscreen": this Watch button is the only
+            // play/pause control in the Octo host layout, so instead of hiding it
+            // (which would strip playback control entirely) it degrades to a
+            // plain play/pause toggle instead of expanding.
+            onClick={expandEnabled ? onFullScreenClick : onPlayClick}
             variant="pill"
             style={{ zIndex: 2, flexShrink: 0 }}
           />
@@ -119,7 +135,7 @@ export function VideoControlLayer({
 
     return (
       <div className="gencl:relative gencl:w-full gencl:h-full gencl:overflow-hidden gencl:flex gencl:flex-col gencl:items-center">
-        <CompactUnmuteOverlay isMuted={isMuted} onMuteClick={onMuteClick} />
+        <CompactUnmuteOverlay isMuted={isMuted} onMuteClick={onLayerUnmuteClick} />
 
         {/* Bar above the overlay (z-2 > z-1); the wrapper passes empty-area
             taps through to the unmute overlay, interactive rows opt back in.
@@ -142,6 +158,8 @@ export function VideoControlLayer({
             onMuteClick={onMuteClick}
             onFullScreenClick={onFullScreenClick}
             onWatchClick={onFullScreenClick}
+            redirectMode={isRedirectMode}
+            expandEnabled={expandEnabled}
             className={is320x50 ? "gencl:gap-0" : ""}
           />
         </div>
@@ -151,7 +169,9 @@ export function VideoControlLayer({
             and non-compact sizes. */}
         {stripProps && (
           <div className="gencl:relative gencl:z-2 gencl:w-full gencl:flex-1 gencl:min-h-0">
-            <OctoSheet {...stripProps} />
+            <SafeSuspense fallback={null}>
+              <OctoSheet {...stripProps} />
+            </SafeSuspense>
           </div>
         )}
       </div>
@@ -160,7 +180,7 @@ export function VideoControlLayer({
 
   // Banner sizes expand to fullscreen on a video tap when not already fullscreen.
   const isBanner = adLayout === AD_LAYOUT.L2 || adLayout === AD_LAYOUT.L1;
-  const expandOnTap = isBanner && !isFullScreen;
+  const expandOnTap = isBanner && !isFullScreen && expandEnabled;
 
   // 300x250 mounts Octo as a full-size overlay over the playing video; there the
   // banner chrome is hidden so only the bare video (still tap-to-expand) shows.
@@ -171,13 +191,13 @@ export function VideoControlLayer({
       isFullScreen={isFullScreen}
       variant={variant}
       item={item}
-      tagDetails={tagDetails}
       dimensions={dimensions}
       isActive={isActive}
       isMuted={isMuted}
       isPlay={isPlay}
       expandOnTap={expandOnTap}
       hideChrome={hideChrome}
+      expandEnabled={expandEnabled}
       onMuteClick={onMuteClick}
       onPlayClick={onPlayClick}
       onFullScreenClick={onFullScreenClick}

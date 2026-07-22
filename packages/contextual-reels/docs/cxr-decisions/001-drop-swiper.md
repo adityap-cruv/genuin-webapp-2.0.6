@@ -1,6 +1,14 @@
 # ADR 001 — Drop Swiper, replace with CSS scroll-snap
 
-**Status**: Accepted
+**Status**: Accepted — **superseded by Embla for the implementation mechanism**
+
+> **Update:** The decision to drop `swiper` stands and is permanent. The *replacement
+> mechanism* described below (CSS `scroll-snap` + `IntersectionObserver`) was later
+> superseded: the feed now uses **`embla-carousel`** (`src/feed/hooks/useEmblaCarousel.ts`
+> + `src/feed/useFeedNavigation.ts`) for vertical snap, view tracking, and programmatic
+> navigation. The `?cxr-engine=swiper` A/B flag below was not retained. This ADR is kept as
+> the record of *why swiper was removed*; see `docs/ARCHITECTURE.md` (Feed) for the current
+> carousel implementation.
 
 ## Context
 

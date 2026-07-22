@@ -5,18 +5,32 @@
  *  1. Create feed generator via createFeedGenerator.
  *  2. Fetch raw reels and apply normaliseFeed.
  *  3. Emit analytics events matching the legacy sequence.
- *  4. Expose useFeed() hook with entries and activeIndex.
+ *  4. Expose useFeed() hook with entries, activeIndex, and the active-slide
+ *     derivation (isAdActive/activeReel) consumers used to compute themselves.
+ *
+ * Mounted below `PlayerProvider` in `FeedTree` (not above, like most other
+ * feed-tree providers) specifically so it can read `usePlayer()` for the
+ * active-slide derivation.
  */
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
+import { getActiveSlideState } from "@cxr/feed/activeSlideState";
 import { normaliseFeed } from "@cxr/feed/feedTransforms";
 import { useAnalytics } from "@cxr/providers/AnalyticsProvider";
+import { usePlayer } from "@cxr/providers/PlayerProvider";
 import DUMMY_FEED_RESPONSE from "@cxr/providers/dummyFeed.json";
 import { createFeedGenerator } from "@cxr/services/feed";
 import { useStrategy } from "@cxr/strategies/StrategyProvider";
-import type { FeedEntry, Reel } from "@cxr/types";
+import type { FeedEntry, NormalisedReel, Reel } from "@cxr/types";
 
-const USE_DUMMY_FEED = false;
+import { useTagDetails } from "./TagDetailsProvider";
+
+// Local-dev toggle: flip true + run `npm run dev` to serve the bundled fixture. The
+// `import.meta.env.DEV &&` guard folds to false in every `vite build`, so the fixture
+// reference dies and Rollup tree-shakes the ~66 KB JSON out — it can never ship.
+const DEV_USE_DUMMY_FEED = false;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- import.meta.env shape is bundler-defined
+const USE_DUMMY_FEED = Boolean((import.meta as any).env?.DEV) && DEV_USE_DUMMY_FEED;
 
 /** Context value exposed via useFeed. */
 export interface FeedContextValue {
@@ -30,13 +44,16 @@ export interface FeedContextValue {
   isLoading: boolean;
   /** True when the feed fetch completed but returned no entries, or threw an error. */
   feedFailed: boolean;
+  /** True when the active slide is an ad, or a fullscreen ad break is on screen over a reel. */
+  isAdActive: boolean;
+  /** The active reel's data, or undefined when the active slide is a bare ad (or out of range). */
+  activeReel: NormalisedReel | undefined;
 }
 
 const FeedContext = createContext<FeedContextValue | undefined>(undefined);
 
 interface FeedProviderProps {
   children: ReactNode;
-  tagId: string;
 }
 
 /**
@@ -44,14 +61,16 @@ interface FeedProviderProps {
  *
  * @example
  * ```tsx
- * <FeedProvider tagId={tagId}>
+ * <FeedProvider>
  *   <Feed ... />
  * </FeedProvider>
  * ```
  */
-export function FeedProvider({ children, tagId }: FeedProviderProps): ReactNode {
+export function FeedProvider({ children }: FeedProviderProps): ReactNode {
   const { sendEvent, setBaseEventContext, setMandatoryData } = useAnalytics();
+  const { tagId } = useTagDetails();
   const { adBreakEnabled, gateOnUnmute, adsDisabled } = useStrategy();
+  const { isAdBreakActive } = usePlayer();
   const [entries, setEntries] = useState<FeedEntry[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -72,9 +91,16 @@ export function FeedProvider({ children, tagId }: FeedProviderProps): ReactNode 
     async function loadFeed(): Promise<void> {
       try {
         // Service-layer Reel has looser optional types than domain Reel; cast at this boundary.
-        const reels = USE_DUMMY_FEED
-          ? (DUMMY_FEED_RESPONSE.data.reels as unknown as Reel[])
-          : ((await fetchFeed()) as unknown as Reel[]);
+        let reels: Reel[];
+        // USE_DUMMY_FEED is gated by `import.meta.env.DEV` and folds to false in
+        // every build (see the const above) — this branch is local-dev-only and
+        // structurally dead in production/test bundles.
+        /* v8 ignore next 3 */
+        if (USE_DUMMY_FEED) {
+          reels = DUMMY_FEED_RESPONSE.data.reels as unknown as Reel[];
+        } else {
+          reels = (await fetchFeed()) as unknown as Reel[];
+        }
 
         if (cancelled) return;
 
@@ -104,9 +130,11 @@ export function FeedProvider({ children, tagId }: FeedProviderProps): ReactNode 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tagId]);
 
+  const { isAdActive, activeReel } = getActiveSlideState(entries, activeIndex, isAdBreakActive);
+
   const value = useMemo<FeedContextValue>(
-    () => ({ entries, activeIndex, setActiveIndex, isLoading, feedFailed }),
-    [entries, activeIndex, isLoading, feedFailed]
+    () => ({ entries, activeIndex, setActiveIndex, isLoading, feedFailed, isAdActive, activeReel }),
+    [entries, activeIndex, isLoading, feedFailed, isAdActive, activeReel]
   );
 
   return <FeedContext.Provider value={value}>{children}</FeedContext.Provider>;

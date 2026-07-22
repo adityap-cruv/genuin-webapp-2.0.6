@@ -220,6 +220,59 @@ describe("useEmblaCarousel enable/disable", () => {
     expect(api.scrollPrev).toHaveBeenCalledTimes(1);
   });
 
+  it("resets an in-flight positive accumulation on a same-gesture reversal to negative", () => {
+    const api = makeApi();
+    vi.mocked(EmblaCarousel).mockReturnValue(api as unknown as EmblaCarouselType);
+    const el = document.createElement("div");
+    const getWheel = captureWheel(el);
+    act(() => hook.viewportRef(el));
+    const wheel = getWheel();
+
+    // Small positive delta — under threshold, no settle fired, accumulator stays
+    // at 10 (not reset by unlock) so the next opposite-sign delta hits the
+    // reversal branch instead of starting from zero.
+    act(() => wheel(makeWheel(10)));
+    expect(api.scrollNext).not.toHaveBeenCalled();
+    expect(api.scrollPrev).not.toHaveBeenCalled();
+
+    // Reversal mid-gesture (delta < 0 while accumulated > 0): the accumulator
+    // resets to 0 before adding this delta, so -15 alone must not cross the
+    // threshold (|-15| < 20) and no scroll should fire yet.
+    act(() => wheel(makeWheel(-15)));
+    expect(api.scrollNext).not.toHaveBeenCalled();
+    expect(api.scrollPrev).not.toHaveBeenCalled();
+
+    // Confirm the accumulator really was reset to 0 (not merely reduced by
+    // 15 to -5): one more -10 must total -25 (reset -15 + -10), crossing the
+    // threshold, rather than -15 (unreset -5 + -10), which would not.
+    act(() => wheel(makeWheel(-10)));
+    expect(api.scrollPrev).toHaveBeenCalledTimes(1);
+  });
+
+  it("resets an in-flight negative accumulation on a same-gesture reversal to positive", () => {
+    const api = makeApi();
+    vi.mocked(EmblaCarousel).mockReturnValue(api as unknown as EmblaCarouselType);
+    const el = document.createElement("div");
+    const getWheel = captureWheel(el);
+    act(() => hook.viewportRef(el));
+    const wheel = getWheel();
+
+    // Small negative delta — under threshold, accumulator stays at -10.
+    act(() => wheel(makeWheel(-10)));
+    expect(api.scrollNext).not.toHaveBeenCalled();
+    expect(api.scrollPrev).not.toHaveBeenCalled();
+
+    // Reversal mid-gesture (delta > 0 while accumulated < 0): accumulator
+    // resets to 0 before adding, so +15 alone must not cross the threshold.
+    act(() => wheel(makeWheel(15)));
+    expect(api.scrollNext).not.toHaveBeenCalled();
+    expect(api.scrollPrev).not.toHaveBeenCalled();
+
+    // One more +10 totals +25 (reset 15 + 10), crossing the threshold.
+    act(() => wheel(makeWheel(10)));
+    expect(api.scrollNext).toHaveBeenCalledTimes(1);
+  });
+
   it("normalises Firefox line-mode (deltaMode 1) and page-mode (deltaMode 2) deltas to px", () => {
     const api = makeApi();
     vi.mocked(EmblaCarousel).mockReturnValue(api as unknown as EmblaCarouselType);

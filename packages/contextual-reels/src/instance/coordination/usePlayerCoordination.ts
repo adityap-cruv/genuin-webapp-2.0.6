@@ -1,9 +1,8 @@
 import { useEffect } from "react";
 
-import { useEventBus } from "@cxr/instance/coordination/EventBusContext";
+import { useEventBus, useInstanceId } from "@cxr/instance/InstanceContext";
 import { getGlobalMuteCoordinator } from "@cxr/instance/coordination/GlobalMuteCoordinator";
 import { getGlobalPlayerCoordinator } from "@cxr/instance/coordination/GlobalPlayerCoordinator";
-import { useInstanceId } from "@cxr/instance/registry/InstanceContext";
 import { usePlayer } from "@cxr/providers/PlayerProvider";
 
 /**

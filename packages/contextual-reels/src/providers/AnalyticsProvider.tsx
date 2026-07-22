@@ -9,6 +9,10 @@
  *  4. Flush the buffer in FIFO order once BOTH Rudderstack is ready AND the
  *     geoip fetch has settled — so every event carries a resolved geoip block.
  *  5. Provide a stable `useAnalytics()` hook with a memoised `sendEvent`.
+ *  6. Track passback state — when `setAdPassback()` is called, set `passback: 1`
+ *     on ALL subsequent events (buffered and post-flush). This is critical for
+ *     ad-loading failures. DO NOT REMOVE OR MODIFY THIS BEHAVIOR without
+ *     explicit review of impact on ad revenue tracking.
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, type ReactNode } from "react";
 
@@ -20,6 +24,9 @@ import { enrichDeviceDetailsWithGeoIp, getDeviceDetailsSnapshot, type DeviceDeta
 import { windowLink as DEFAULT_WINDOW_LINK } from "@cxr/platform/topWindow";
 import { getSharedGeoIp } from "@cxr/services/api";
 import { userId as DEFAULT_USER_ID } from "@cxr/userId";
+import { createLogger } from "@cxr/utils/logger";
+
+const logger = createLogger("cxr/analytics-provider");
 
 /** Surface exposed via {@link useAnalytics}. */
 export interface AnalyticsContextValue {
@@ -62,6 +69,12 @@ interface AnalyticsProviderProps {
   children: ReactNode;
   /** Tag ID injected into every event's `event_details.tag_id`. */
   tagId?: string;
+  /**
+   * Dashboard preview mode. When true this instance emits ZERO analytics:
+   * `sendEvent` is a no-op and neither Rudderstack nor the geoip fetch is
+   * bootstrapped. Distinct from a normal embed, which always reports.
+   */
+  preview?: boolean;
 }
 
 /**
@@ -83,12 +96,10 @@ function readOffsite(): OffsitePropertiesConfig {
 /**
  * AnalyticsProvider — bootstraps Rudderstack + geoip, exposes `useAnalytics`.
  */
-export function AnalyticsProvider({ children, tagId }: AnalyticsProviderProps): ReactNode {
+export function AnalyticsProvider({ children, tagId, preview = false }: AnalyticsProviderProps): ReactNode {
   // Refs persist across renders without re-triggering effects.
   const deviceRef = useRef<DeviceDetails>(getDeviceDetailsSnapshot());
-  const bufferRef = useRef<RudderstackEventBuffer>(
-    new RudderstackEventBuffer(["visit_id"], 500)
-  );
+  const bufferRef = useRef<RudderstackEventBuffer>(new RudderstackEventBuffer(["visit_id", "geoip"], 500));
   // brand_id resolves async after the tag loads. Held in a ref so `sendEvent`
   // stays referentially stable (its identity must not change when brand_id
   // arrives, or consumer effects keyed on it would re-run).
@@ -114,38 +125,50 @@ export function AnalyticsProvider({ children, tagId }: AnalyticsProviderProps): 
     basePayloadRef.current = { ...basePayloadRef.current, ...partial };
   }, []);
 
-  const setMandatoryData = useCallback(
-    (data: Partial<MandatoryEventPayload>): void => {
-      bufferRef.current.setMandatoryData(data);
-    },
-    []
-  );
+  const setMandatoryData = useCallback((data: Partial<MandatoryEventPayload>): void => {
+    bufferRef.current.setMandatoryData(data);
+  }, []);
 
   const setAdPassback = useCallback((): void => {
     passbackRef.current = true;
+    // CRITICAL: Set passback to 1 so all subsequent events include passback: 1
+    // This signals that the ad waterfall failed and affects revenue tracking
     basePayloadRef.current.passback = 1;
   }, []);
 
   useEffect(() => {
+    // Preview mode is analytics-silent: never bootstrap Rudderstack or fetch geoip.
+    if (preview) return;
     initializeRudderAnalytics();
 
-    // Arm the buffer with the emitter so it can auto-flush when mandatory data arrives.
-    // This ensures events don't fire to RudderStack before all required data is present.
-    bufferRef.current.setEmitter((eventName, payload) => {
-      sendEventLog(
-        {
-          eventName,
-          eventDetails: (payload as Record<string, unknown> | undefined) ?? {},
-        },
-        {
-          rudderanalytics: readRudderstack(),
-          deviceDetails: deviceRef.current,
-          userId: DEFAULT_USER_ID,
-          windowLink: DEFAULT_WINDOW_LINK,
-          offsite: readOffsite(),
-          hostMacros,
+    // Arm the buffer with the emitter only once Rudderstack itself signals ready —
+    // arming (and therefore auto-flushing) any earlier would fire events at an
+    // SDK instance that hasn't finished loading. `geoip` (below) is the other
+    // required gate; the buffer auto-flushes once both mandatory fields land.
+    readRudderstack()?.ready(() => {
+      bufferRef.current.setEmitter((eventName, payload) => {
+        try {
+          sendEventLog(
+            {
+              eventName,
+              eventDetails: (payload as Record<string, unknown> | undefined) ?? {},
+            },
+            {
+              rudderanalytics: readRudderstack(),
+              deviceDetails: deviceRef.current,
+              userId: DEFAULT_USER_ID,
+              windowLink: DEFAULT_WINDOW_LINK,
+              offsite: readOffsite(),
+              hostMacros,
+            }
+          );
+        } catch (err) {
+          // A single event's send failure (e.g. rudderanalytics.track throwing on a
+          // malformed payload) must not take down the buffer's flush of every other
+          // queued event.
+          logger.error("failed to flush event", eventName, err);
         }
-      );
+      });
     });
 
     // Shared geoip fetch (one per page, never rejects): stamp it onto the
@@ -166,18 +189,22 @@ export function AnalyticsProvider({ children, tagId }: AnalyticsProviderProps): 
         console.error("Failed to fetch geoip:", err);
         bufferRef.current.markUnavailable("geoip");
       });
-  }, []);
+  }, [preview]);
 
   const value = useMemo<AnalyticsContextValue>(
     () => ({
       sendEvent(eventName, eventDetails) {
+        // Preview mode: swallow every event so nothing reaches the buffer.
+        if (preview) return;
         // Pass a factory function so payload is computed at flush time,
-        // allowing basePayloadRef updates (like visit_id) to be included in buffered events.
+        // allowing basePayloadRef updates (like visit_id, passback) to be included in buffered events.
         bufferRef.current.enqueue(eventName, () => {
           const identifiers = {
             ...(tagId !== undefined ? { tag_id: tagId } : {}),
             ...(brandIdRef.current !== undefined ? { brand_id: brandIdRef.current } : {}),
           };
+          // basePayloadRef includes passback: 0 or 1 depending on ad waterfall state.
+          // eventDetails can override if needed, but passback defaults from base.
           return {
             ...basePayloadRef.current,
             ...identifiers,
@@ -190,7 +217,7 @@ export function AnalyticsProvider({ children, tagId }: AnalyticsProviderProps): 
       setMandatoryData,
       setAdPassback,
     }),
-    [tagId, setBrandId, setBaseEventContext, setMandatoryData, setAdPassback]
+    [tagId, preview, setBrandId, setBaseEventContext, setMandatoryData, setAdPassback]
   );
 
   return <AnalyticsContext.Provider value={value}>{children}</AnalyticsContext.Provider>;

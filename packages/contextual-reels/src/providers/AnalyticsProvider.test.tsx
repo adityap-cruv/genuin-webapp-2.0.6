@@ -17,7 +17,7 @@
  * the shared, never-rejecting cache (see `services/api.ts`), which is the same
  * one the legacy `index.jsx` bootstrap uses for its `Tag Init` event.
  */
-import { act, type ReactElement, type ReactNode } from "react";
+import { act, useEffect, type ReactElement, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
@@ -89,8 +89,14 @@ interface ConsumerHandle {
 }
 
 function Consumer({ name = "evt", handle }: { name?: string; handle: ConsumerHandle }): ReactElement {
-  const { sendEvent } = useAnalytics();
+  const { sendEvent, setMandatoryData } = useAnalytics();
   handle.send = () => sendEvent(name, { foo: "bar" });
+  // Flush is gated on visit_id (a RudderstackEventBuffer required key) in
+  // addition to ready+geoip — set it unconditionally on mount so these tests'
+  // ready/geoip-only assertions aren't blocked by the third, unrelated gate.
+  useEffect(() => {
+    setMandatoryData({ visit_id: "test-visit-id" });
+  }, [setMandatoryData]);
   return <span>consumer</span>;
 }
 
@@ -124,6 +130,26 @@ describe("providers/AnalyticsProvider", () => {
       </AnalyticsProvider>
     );
     expect(initRudderMock).toHaveBeenCalledTimes(1);
+    unmount(root, container);
+  });
+
+  it("preview mode: sendEvent is a no-op and Rudderstack is not initialised", async () => {
+    setRudder();
+    // With preview on, ready() must never be registered — assert it stays uncalled.
+    const handle: ConsumerHandle = { send: () => undefined };
+    const { root, container } = mount(
+      <AnalyticsProvider preview>
+        <Consumer name="preview_event" handle={handle} />
+      </AnalyticsProvider>
+    );
+    // Fire an event, then fully settle: nothing should ship. In preview the
+    // bootstrap effect returns early, so `ready()` is never even registered.
+    act(() => handle.send());
+    await settleGeoip();
+
+    expect(initRudderMock).not.toHaveBeenCalled();
+    expect(readyMock).not.toHaveBeenCalled();
+    expect(trackMock).not.toHaveBeenCalled();
     unmount(root, container);
   });
 
@@ -318,6 +344,29 @@ describe("providers/AnalyticsProvider", () => {
     unmount(root, container);
   });
 
+  it("logs but does not throw when sendEventLog fails to flush an event (malformed payload)", async () => {
+    let readyCb: (() => void) | undefined;
+    readyMock.mockImplementation((cb: () => void) => {
+      readyCb = cb;
+    });
+    setRudder();
+    trackMock.mockImplementationOnce(() => {
+      throw new Error("track failed");
+    });
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    const handle: ConsumerHandle = { send: () => undefined };
+    const { root, container } = mount(
+      <AnalyticsProvider>
+        <Consumer name="bad_event" handle={handle} />
+      </AnalyticsProvider>
+    );
+    act(() => handle.send());
+    act(() => readyCb?.());
+    await expect(settleGeoip()).resolves.not.toThrow();
+    expect(errSpy).toHaveBeenCalledWith("[cxr/analytics-provider]", "failed to flush event", "bad_event", expect.any(Error));
+    unmount(root, container);
+  });
+
   it("useAnalytics throws when called outside an AnalyticsProvider", () => {
     function Outsider(): ReactElement {
       useAnalytics();
@@ -343,8 +392,11 @@ describe("providers/AnalyticsProvider", () => {
     });
     setRudder();
     function NoPayload({ handle }: { handle: ConsumerHandle }): ReactElement {
-      const { sendEvent } = useAnalytics();
+      const { sendEvent, setMandatoryData } = useAnalytics();
       handle.send = () => sendEvent("payloadless");
+      useEffect(() => {
+        setMandatoryData({ visit_id: "test-visit-id" });
+      }, [setMandatoryData]);
       return <span>x</span>;
     }
     const handle: ConsumerHandle = { send: () => undefined };
@@ -418,9 +470,12 @@ describe("providers/AnalyticsProvider", () => {
     let setAmbient: ((partial: Record<string, unknown>) => void) | undefined;
     const handle: ConsumerHandle = { send: () => undefined };
     function ReportConsumer(): ReactElement {
-      const { sendEvent, setBaseEventContext } = useAnalytics();
+      const { sendEvent, setBaseEventContext, setMandatoryData } = useAnalytics();
       setAmbient = setBaseEventContext;
       handle.send = () => sendEvent("evt", { foo: "bar" });
+      useEffect(() => {
+        setMandatoryData({ visit_id: "test-visit-id" });
+      }, [setMandatoryData]);
       return <span>report-consumer</span>;
     }
     const { root, container } = mount(
@@ -454,9 +509,12 @@ describe("providers/AnalyticsProvider", () => {
       setBrand: () => undefined,
     };
     function BrandConsumer(): ReactElement {
-      const { sendEvent, setBrandId } = useAnalytics();
+      const { sendEvent, setBrandId, setMandatoryData } = useAnalytics();
       handle.send = () => sendEvent("evt", { foo: "bar" });
       handle.setBrand = setBrandId;
+      useEffect(() => {
+        setMandatoryData({ visit_id: "test-visit-id" });
+      }, [setMandatoryData]);
       return <span />;
     }
     const { root, container } = mount(

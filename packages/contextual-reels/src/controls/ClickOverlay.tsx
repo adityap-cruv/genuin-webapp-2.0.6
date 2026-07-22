@@ -4,7 +4,7 @@ import React from "react";
 
 import { EVENT } from "@cxr/analytics/analytics";
 import type { ClickOverlayProps } from "@cxr/controls/control-layer.types";
-import { useEventBus } from "@cxr/instance/coordination/EventBusContext";
+import { useEventBus } from "@cxr/instance/InstanceContext";
 import { useAnalytics } from "@cxr/providers/AnalyticsProvider";
 import { usePlayer } from "@cxr/providers/PlayerProvider";
 
@@ -15,8 +15,9 @@ function stopProp(e: { stopPropagation(): void }): void {
 /**
  * Full-area transparent overlay that routes tap to the correct action.
  *
- * - isFullScreen=false, allowUnmute=true  → unmute the ad at a default audible volume (user gesture)
- * - isFullScreen=false, allowUnmute=false → no-op (tap is ignored)
+ * - isFullScreen=false, expandOnTap=false → unmute (default audible volume, user gesture) and
+ *                                            resume playback if currently paused
+ * - isFullScreen=false, expandOnTap=true  → onFullScreenClick (expand instead of unmuting)
  * - isFullScreen=true                     → onPlayClick (play/pause)
  *
  * Stops pointer/touch propagation to prevent scroll interference in embedded contexts.
@@ -28,7 +29,7 @@ export function ClickOverlay({
   containerId,
   expandOnTap = false,
 }: ClickOverlayProps): React.JSX.Element {
-  const { isMuted, setMuted } = usePlayer();
+  const { isMuted, setMuted, isPlaying, setPlaying } = usePlayer();
   const bus = useEventBus();
   const analytics = useAnalytics();
   function handleClick(e: React.MouseEvent<HTMLDivElement>): void {
@@ -61,6 +62,10 @@ export function ClickOverlay({
         analytics.sendEvent(EVENT.VIDEO_UNMUTED, { by_user: true });
       }
       setMuted(false);
+      // Muted + paused: a tap should resume playback too, not just unmute silently.
+      if (!isPlaying) {
+        setPlaying(true);
+      }
     }
   }
 

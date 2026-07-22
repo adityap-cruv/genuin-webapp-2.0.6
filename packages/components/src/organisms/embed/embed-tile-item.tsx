@@ -105,7 +105,7 @@ export function EmbedItem({
   }, [config]);
 
   useEffect(() => {
-    const handleActivePlayerTypeChange = (eventData: any, context: EmbedEventContextType) => {
+    const handleActivePlayerTypeChange = (_eventData: unknown, context: EmbedEventContextType) => {
       if (context.activePlayerType === "embed") {
         setEmbedIsActive(true);
       } else {

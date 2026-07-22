@@ -4,7 +4,7 @@ import { BottomBar } from "@cxr/controls/BottomBar";
 import { ClickOverlay } from "@cxr/controls/ClickOverlay";
 import { TopBar } from "@cxr/controls/TopBar";
 import type { VideoBannerProps } from "@cxr/controls/control-layer.types";
-import { useInstanceId } from "@cxr/instance/registry/InstanceContext";
+import { useInstanceId } from "@cxr/instance/InstanceContext";
 import { useOctoSplit } from "@cxr/providers/GenAIProvider";
 
 /**
@@ -18,13 +18,13 @@ export function DefaultControlLayer({
   isFullScreen,
   variant,
   item,
-  tagDetails,
   dimensions,
   isActive,
   isMuted,
   isPlay,
   expandOnTap,
   hideChrome = false,
+  expandEnabled = true,
   onMuteClick,
   onPlayClick,
   onFullScreenClick,
@@ -43,6 +43,7 @@ export function DefaultControlLayer({
           isMuted={isMuted}
           isPlay={isPlay}
           isActive={isActive}
+          expandEnabled={expandEnabled}
           onMuteClick={onMuteClick}
           onPlayClick={onPlayClick}
           onFullScreenClick={onFullScreenClick}
@@ -65,7 +66,6 @@ export function DefaultControlLayer({
           <BottomBar
             variant={variant}
             item={item}
-            tagDetails={tagDetails}
             dimensions={dimensions}
             isActive={isActive}
             isFullScreen={isFullScreen}

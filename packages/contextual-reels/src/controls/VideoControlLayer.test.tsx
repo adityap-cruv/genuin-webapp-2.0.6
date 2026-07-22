@@ -14,12 +14,11 @@ import React, { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
-
 vi.mock("@cxr/config", () => ({
   AD_LAYOUT: { Unknown: 0, L1: 1, L2: 2, L3: 3, L4: 4 },
 }));
 
-vi.mock("@cxr/instance/registry/InstanceContext", () => ({
+vi.mock("@cxr/instance/InstanceContext", () => ({
   useInstanceId: () => "test-instance",
 }));
 
@@ -27,6 +26,25 @@ vi.mock("@cxr/instance/registry/InstanceContext", () => ({
 const genAiState = vi.hoisted(() => ({ genAiEnabled: false }));
 vi.mock("@cxr/providers/GenAIProvider", () => ({
   useGenAI: () => genAiState,
+}));
+
+const tagDetailsState = vi.hoisted(() => ({
+  tagDetails: undefined as TagResponse | undefined,
+}));
+vi.mock("@cxr/providers/TagDetailsProvider", () => ({
+  useTagDetails: () => ({ tagDetails: tagDetailsState.tagDetails, apiFailed: false }),
+}));
+
+// redirectMode gate — mutable so tests can drive the fullscreen-redirect-brand flag.
+const fullScreenState = vi.hoisted(() => ({ isRedirectMode: false }));
+vi.mock("@cxr/providers/FullScreenProvider", () => ({
+  useFullScreen: () => ({
+    isFullScreen: false,
+    enterFullScreen: vi.fn(),
+    exitFullScreen: vi.fn(),
+    toggleFullScreen: vi.fn(),
+    isRedirectMode: fullScreenState.isRedirectMode,
+  }),
 }));
 
 // useNewPlayerControls toggles the V2 icon set; mutable for the V2/iheart branch.
@@ -56,13 +74,18 @@ vi.mock("@cxr/genai/octo/OctoSheet", () => ({
   OctoSheet: () => React.createElement("div", { "data-testid": "octo-sheet" }),
 }));
 
+const watchButtonProps = vi.hoisted(() => ({ current: null as Record<string, unknown> | null }));
 vi.mock("@cxr/controls/buttons/atoms/WatchButton", () => ({
-  WatchButton: () => React.createElement("div", { "data-testid": "watch-btn" }),
+  WatchButton: (props: Record<string, unknown>) => {
+    watchButtonProps.current = props;
+    return React.createElement("div", { "data-testid": "watch-btn" });
+  },
 }));
 
 import { AD_LAYOUT } from "@cxr/config";
 import { VideoControlLayer, CompactUnmuteOverlay } from "@cxr/controls/VideoControlLayer";
-import type { NormalisedReel, TagResponse } from "@cxr/types";
+import type { TagResponse } from "@cxr/types";
+import type { NormalisedReel } from "@cxr/types";
 
 function makeReel(overrides: Partial<NormalisedReel> = {}): NormalisedReel {
   return {
@@ -96,6 +119,8 @@ describe("VideoControlLayer", () => {
     useV2Flag = true;
     defaultLayerProps.current = null;
     compactBarProps.current = null;
+    watchButtonProps.current = null;
+    tagDetailsState.tagDetails = tagDetails;
     container = document.createElement("div");
     document.body.appendChild(container);
     root = createRoot(container);
@@ -112,7 +137,6 @@ describe("VideoControlLayer", () => {
         React.createElement(VideoControlLayer, {
           variant: "default",
           item: makeReel(),
-          tagDetails,
           dimensions: { width: 300, height: 600 },
           isActive: true,
           isFullScreen: false,
@@ -120,6 +144,7 @@ describe("VideoControlLayer", () => {
           isPlay: true,
           adLayout: AD_LAYOUT.L1,
           onMuteClick: vi.fn(),
+          onLayerUnmuteClick: vi.fn(),
           onPlayClick: vi.fn(),
           onFullScreenClick: vi.fn(),
           ...overrides,
@@ -129,6 +154,15 @@ describe("VideoControlLayer", () => {
   }
 
   const query = (id: string) => container.querySelector(`[data-testid="${id}"]`);
+
+  // OctoSheet is lazy() behind Suspense (kept off the ad-frame critical path), so
+  // it resolves on a microtask after render. Flush it before asserting it mounted.
+  async function flushLazy(): Promise<void> {
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+  }
 
   describe("compact layouts (not fullscreen)", () => {
     it("320x100: renders the CompactControlBar inside the compact wrapper with an unmute overlay", () => {
@@ -150,23 +184,45 @@ describe("VideoControlLayer", () => {
       expect(compactBarProps.current?.size).toBe("sm");
     });
 
-    it("320x100 with GenAI + videoId: mounts the Octo strip below the bar", () => {
+    it("320x100 with GenAI + videoId: mounts the Octo strip below the bar", async () => {
       genAiState.genAiEnabled = true;
       render({ adLayout: AD_LAYOUT.L4 });
+      await flushLazy();
       expect(query("compact-control-bar")).toBeTruthy();
       expect(query("octo-sheet")).toBeTruthy();
       // Octo present → the bar hides its ticker/actions.
       expect(compactBarProps.current?.hideTickerAndActions).toBe(true);
     });
 
-    it("320x50 with GenAI + videoId: Octo REPLACES the bar (host + Watch button)", () => {
+    it("320x50 with GenAI + videoId: Octo REPLACES the bar (host + Watch button)", async () => {
       genAiState.genAiEnabled = true;
       render({ adLayout: AD_LAYOUT.L3 });
+      await flushLazy();
       expect(query("octo-compact-host")).toBeTruthy();
       expect(query("octo-sheet")).toBeTruthy();
       expect(query("watch-btn")).toBeTruthy();
       // The control bar is not rendered in this branch.
       expect(query("compact-control-bar")).toBeNull();
+    });
+
+    it("320x50 Octo host: Watch button expands when on_click is 'fullscreen'", async () => {
+      genAiState.genAiEnabled = true;
+      const onFullScreenClick = vi.fn();
+      const onPlayClick = vi.fn();
+      tagDetailsState.tagDetails = { ...tagDetails, config: { on_click: "fullscreen" } };
+      render({ adLayout: AD_LAYOUT.L3, onFullScreenClick, onPlayClick });
+      await flushLazy();
+      expect(watchButtonProps.current?.onClick).toBe(onFullScreenClick);
+    });
+
+    it("320x50 Octo host: Watch button degrades to play/pause when expand is disabled", async () => {
+      genAiState.genAiEnabled = true;
+      const onFullScreenClick = vi.fn();
+      const onPlayClick = vi.fn();
+      tagDetailsState.tagDetails = { ...tagDetails, config: { on_click: "none" } };
+      render({ adLayout: AD_LAYOUT.L3, onFullScreenClick, onPlayClick });
+      await flushLazy();
+      expect(watchButtonProps.current?.onClick).toBe(onPlayClick);
     });
 
     it("320x50 with GenAI but NO videoId: falls back to the CompactControlBar path", () => {
@@ -187,13 +243,15 @@ describe("VideoControlLayer", () => {
       expect(compactBarProps.current?.useV2Icons).toBe(false);
     });
 
-    it("compact unmute overlay calls onMuteClick only while muted", () => {
+    it("compact unmute overlay calls onLayerUnmuteClick (not onMuteClick) while muted", () => {
       const onMuteClick = vi.fn();
-      render({ adLayout: AD_LAYOUT.L4, isMuted: true, onMuteClick });
+      const onLayerUnmuteClick = vi.fn();
+      render({ adLayout: AD_LAYOUT.L4, isMuted: true, onMuteClick, onLayerUnmuteClick });
       act(() => {
         (query("compact-unmute-overlay") as HTMLElement).click();
       });
-      expect(onMuteClick).toHaveBeenCalledOnce();
+      expect(onLayerUnmuteClick).toHaveBeenCalledOnce();
+      expect(onMuteClick).not.toHaveBeenCalled();
     });
   });
 
@@ -233,6 +291,26 @@ describe("VideoControlLayer", () => {
       genAiState.genAiEnabled = true;
       render({ adLayout: AD_LAYOUT.L2, isFullScreen: true });
       expect(defaultLayerProps.current?.hideChrome).toBe(false);
+    });
+
+    it("on_click 'fullscreen': forwards expandEnabled=true and expandOnTap=true", () => {
+      tagDetailsState.tagDetails = { ...tagDetails, config: { on_click: "fullscreen" } };
+      render({ adLayout: AD_LAYOUT.L1 });
+      expect(defaultLayerProps.current?.expandEnabled).toBe(true);
+      expect(defaultLayerProps.current?.expandOnTap).toBe(true);
+    });
+
+    it("on_click not 'fullscreen': forwards expandEnabled=false and expandOnTap=false", () => {
+      tagDetailsState.tagDetails = { ...tagDetails, config: { on_click: "none" } };
+      render({ adLayout: AD_LAYOUT.L1 });
+      expect(defaultLayerProps.current?.expandEnabled).toBe(false);
+      expect(defaultLayerProps.current?.expandOnTap).toBe(false);
+    });
+
+    it("absent on_click config: defaults expandEnabled to true", () => {
+      tagDetailsState.tagDetails = tagDetails;
+      render({ adLayout: AD_LAYOUT.L1 });
+      expect(defaultLayerProps.current?.expandEnabled).toBe(true);
     });
   });
 });

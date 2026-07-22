@@ -10,6 +10,18 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { CompactControlBar, type CompactControlBarProps } from "@cxr/controls/CompactControlBar";
 import { StrategyProvider } from "@cxr/strategies/StrategyProvider";
 
+// StrategyProvider reads tagId/brandId from useTagDetails() (context), not
+// props. Mock it so the real StrategyProvider resolves the configured tag.
+const { useTagDetailsMock } = vi.hoisted(() => ({
+  useTagDetailsMock: vi.fn(() => ({
+    tagId: undefined as string | undefined,
+    brandId: undefined as number | undefined,
+  })),
+}));
+vi.mock("@cxr/providers/TagDetailsProvider", () => ({
+  useTagDetails: () => useTagDetailsMock(),
+}));
+
 describe("CompactControlBar", () => {
   let container: HTMLDivElement;
   let root: Root;
@@ -21,6 +33,7 @@ describe("CompactControlBar", () => {
   };
 
   beforeEach(() => {
+    useTagDetailsMock.mockReturnValue({ tagId: undefined, brandId: undefined });
     container = document.createElement("div");
     document.body.appendChild(container);
     root = createRoot(container);
@@ -203,12 +216,14 @@ describe("CompactControlBar", () => {
   });
 
   it("audible-config (initialVolume > 0): shows the real muted icon without any interaction", () => {
+    // Tag 6a2fefd87ce338c3a5afc605 is configured with initialVolume: 0.2.
+    // StrategyProvider reads the tagId from useTagDetails(), so drive it there.
+    useTagDetailsMock.mockReturnValue({ tagId: "6a2fefd87ce338c3a5afc605", brandId: undefined });
     act(() => {
-      // Tag 6a3aa8244da8cd92d289cc72 is configured with initialVolume: 0.2.
       root.render(
         React.createElement(
           StrategyProvider,
-          { tagId: "6a3aa8244da8cd92d289cc72" } as React.ComponentProps<typeof StrategyProvider>,
+          null,
           React.createElement(CompactControlBar, { ...baseProps, isMuted: true })
         )
       );
@@ -258,6 +273,55 @@ describe("CompactControlBar", () => {
       const watch = container.querySelector('[data-testid="watch-btn"]');
       expect(watch).toBeTruthy();
       expect(watch?.tagName).toBe("BUTTON");
+    });
+  });
+
+  describe("expandEnabled", () => {
+    it("hides the expand button when expandEnabled is false", () => {
+      render({ size: "md", expandEnabled: false });
+      expect(container.querySelector('[data-testid="topbar-expand"]')).toBeNull();
+    });
+
+    it("shows the expand button when expandEnabled is true", () => {
+      render({ size: "md", expandEnabled: true });
+      expect(container.querySelector('[data-testid="topbar-expand"]')).not.toBeNull();
+    });
+
+    it("shows the expand button by default (expandEnabled omitted)", () => {
+      render({ size: "md" });
+      expect(container.querySelector('[data-testid="topbar-expand"]')).not.toBeNull();
+    });
+
+    // The Watch button is also an expand entry point (handleWatch falls back to
+    // onFullScreenClick), so it hides alongside the dedicated expand button.
+    it("md: hides the Watch button too when expandEnabled is false", () => {
+      render({ size: "md", expandEnabled: false });
+      expect(query("watch-btn")).toBeNull();
+    });
+
+    it("sm: hides the showWatchInSm Watch button when expandEnabled is false", () => {
+      render({ size: "sm", showWatchInSm: true, expandEnabled: false });
+      expect(query("watch-btn")).toBeNull();
+    });
+
+    it("md: still shows the Watch button when expandEnabled is true", () => {
+      render({ size: "md", expandEnabled: true });
+      expect(query("watch-btn")).toBeTruthy();
+    });
+
+    // Redirect mode repoints the sm Watch button at the ad CTA (a real
+    // link-out, not an expand entry point), so it survives expandEnabled=false.
+    it("sm redirect with a CTA url: keeps the link-out Watch button even when expandEnabled is false", () => {
+      render({
+        size: "sm",
+        showWatchInSm: true,
+        redirectMode: true,
+        expandEnabled: false,
+        cta: { url: "https://example.com", caption: "Shop Now" },
+      });
+      const watch = query("watch-btn");
+      expect(watch).toBeTruthy();
+      expect(watch?.getAttribute("href")).toBe("https://example.com");
     });
   });
 });

@@ -6,6 +6,9 @@
 
 // ─── Environment constants ────────────────────────────────────────────────────
 
+// Vitest always defines import.meta.env, so the `?? {}` fallback is unreachable in tests —
+// kept as a defensive guard for bundlers/runtimes that don't populate it.
+/* v8 ignore next */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- import.meta.env shape is bundler-defined
 const _env: Record<string, string | undefined> = (import.meta as any).env ?? {};
 
@@ -20,7 +23,6 @@ export const hostname = "https://begenuin.com";
  * Set VITE_CXR_RUDDERSTACK_KEY in your local .env.development (never commit the real value).
  */
 export const rudderstackKey: string = _env.VITE_CXR_RUDDERSTACK_KEY ?? "";
-console.log({ rudderstackKey: _env.VITE_CXR_RUDDERSTACK_KEY, VITE_CXR_API_BASE_URL: _env.VITE_CXR_API_BASE_URL });
 
 /** Rudderstack data plane URL. Set VITE_CXR_RUDDERSTACK_DATA_PLANE_URL to override. */
 export const rudderstackLink: string = _env.VITE_CXR_RUDDERSTACK_DATA_PLANE_URL ?? "https://etr.begenuin.com";

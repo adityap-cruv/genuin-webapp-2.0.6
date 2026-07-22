@@ -454,6 +454,60 @@
             "url": "https://nxs.begenuin.com/tagxml/customer/3119/tag/3753?&architecture_ds=[DEVICE_SUA_ARCHITECTURE]&device_language=[DEVICE_LANGUAGE]&source_ds=[DEVICE_SUA_SOURCE]&AV_PLCMT=[PLACEMENT_MACRO]&placement_iv=1&device_type=[DEVICE_TYPE]&country_code=[COUNTRY_ID]&ipservice_dg=[DEVICE_GEO_IPSERVICE]&lat_ug=[USER_GEO_LAT]&us_privacy_r=1---&linearity_iv=1&is_lat=[LIMITED_AD_TRACKING]&AV_LONGITUDE=[LOCATION_LON]&ad_breaks=0,0,-1&postroll=1&device_make=[DEVICE_MAKE]&zip=[ZIP_CODE]&AV_WIDTH=[DEVICE_WIDTH]&AV_APPNAME=[APP_NAME]&min_ad_duration=5&city=[CITY]&connectiontype_d=[DEVICE_CONNECTIONTYPE]&ppi_d=[DEVICE_PPI]&AV_PLACEMENT=[VIDEO_PLACEMENT]&AV_APPSTOREURL=[APP_STORE_URL]&device_ipv6=[DEVICE_IPV6]&os=[DEVICE_OS]&carrier_d=[DEVICE_CARRIER]&did=[DID]&midroll_times=&AV_MAKE=[DEVICE_MAKE]&bitness_ds=[DEVICE_SUA_BITNESS]&AV_LATITUDE=[LOCATION_LAT]&AV_DOMAIN=[APP_DOMAIN]&AV_APPPKGNAME=[APP_BUNDLE]&AV_IFA_TYPE=[IFA_TYPE]&skipafter_iv=0&device_model=[DEVICE_MODEL]&langb_d=[DEVICE_LANGB]&type_dg=[DEVICE_GEO_TYPE]&utcoffset_ug=[USER_GEO_UTCOFFSET]&accuracy_ug=[USER_GEO_ACCURACY]&pub_name=[PUBLISHER_NAME]&gender=[GENDER]&id_ap=99&height=[DEVICE_HEIGHT]&len_sc=[CONTENT_LENGTH]&app_version=[APP_VERSION]&model_ds=[DEVICE_SUA_MODEL]&AV_OSVERS=[OS_VERSION]&app_name=[APP_NAME]&bidfloorcur_i=USD&AV_IP=[IP]&ip=[IP]&width=[DEVICE_WIDTH]&geofetch_d=[DEVICE_GEOFETCH]&metro_dg=[DEVICE_GEO_METRO]&browsers_version_ds=[DEVICE_SUA_BROWSERS_VERSION]&city_ug=[USER_GEO_CITY]&osv=[DEVICE_OS_VERSION]&AV_OS=[OS]&utcoffset_dg=[DEVICE_GEO_UTCOFFSET]&AV_CONNECTIONTYPE=[DEVICE_CONNECTIONTYPE]&cb=1782738341106592419&location_lat=[LOCATION_LAT]&location_lon=[LOCATION_LON]&user_id=3FoPF6PiCn7OEgngDXLfuR0MsOp&country_ug=[USER_GEO_COUNTRY]&AV_CONTENT_ID=&ua=[UA]&platform_version_ds=[DEVICE_SUA_PLATFORM_VERSION]&zip_ug=[USER_GEO_ZIP]&AV_APPVERS=[APP_VERSION]&name_s=[CHANNEL_NAME]&accuracy_dg=[DEVICE_ACCURACY]&regionfips104_dg=[DEVICE_GEO_REGIONFIPS104]&session_id=[SESSION_ID]&type_ug=[USER_GEO_TYPE]&ipservice_ug=[USER_GEO_IPSERVICE]&region_ug=[USER_GEO_REGION]&us_privacy=1---&secure_i=1&metro_ug=[USER_GEO_METRO]&AV_USERAGENT=[UA]&url_sc=[CONTENT_URL]&pxratio_d=[DEVICE_PXRATIO]&lon_ug=[USER_GEO_LON]&app_bundle=[APP_BUNDLE]&device_js=[DEVICE_JS]&lastfix_dg=[DEVICE_GEO_LASTFIX]&AV_GDPR=[GDPR]&domain_sp=begenuin.com&skipmin_iv=0&mobile_ds=[DEVICE_SUA_MOBILE]&platform_brand_ds=[DEVICE_SUA_PLATFORM_BRAND]&regionfips104_ug=[USER_GEO_REGIONFIPS104]&lastfix_ug=[USER_GEO_LASTFIX]&AV_REGION=[REGION]&AV_LMT=[LIMITED_AD_TRACKING]&region=[REGION]&AV_CONSENT=[GDPRCONSENT]&AV_DNT=[DNT]&AV_MODEL=[DEVICE_MODEL]&AV_RTB_DEVICE_TYPE=[DEVICE_TYPE]&max_ad_duration=60&browsers_brand_ds=[DEVICE_SUA_BROWSERS_BRAND]&dnt=[DNT]&AV_LANGUAGE=[DEVICE_LANGUAGE]&vid_d=0&hwv=[DEVICE_HWV]&app_domain=[APP_DOMAIN]&app_store_url=[APP_STORE_URL]&AV_TIMESTAMP=1782738341106593531&player_width=[WIDTH]&pos_iv=7&plcmt_iv=1&flashver_d=[DEVICE_FLASHVER]&mccmnc_d=[DEVICE_MCCMNC]&yob=[YOB]&AV_HEIGHT=[DEVICE_HEIGHT]&player_height=[HEIGHT]"
           }
         ]
+      },
+      {
+        "_id": "storybook-video-only-reel",
+        "community": {
+          "name": "Storybook",
+          "slug": "storybook"
+        },
+        "config": {},
+        "cta": {
+          "ad_copy": "",
+          "hashtags": null,
+          "link": "",
+          "show_url_meta": false,
+          "text": ""
+        },
+        "loop": {
+          "description": "Video Only",
+          "name": "Video Only",
+          "preview_image": "",
+          "private": false,
+          "share_string": "https://crunchyroll.qa.begenuin.com/loop/video-only?community=storybook",
+          "slug": "video-only"
+        },
+        "og_details": {},
+        "owner": {
+          "is_avatar": false,
+          "nickname": "storybook",
+          "profile_image": "",
+          "share_string": "https://crunchyroll.qa.begenuin.com/profile/storybook",
+          "username": "Storybook"
+        },
+        "type": "reel",
+        "video": {
+          "created_at": "2026-07-17T00:00:00.000Z",
+          "description_text": "Video Only — no ad break",
+          "description_data": "[\"Video Only \\u2014 no ad break\"]",
+          "id": "storybook-video-only",
+          "link": "",
+          "metadata": {
+            "aspect_ratio": "9:16",
+            "contains_external_videos": false,
+            "duration": "30",
+            "media_type": "video",
+            "resolution": "1080x1920",
+            "size": "0"
+          },
+          "no_of_comments": 0,
+          "no_of_sparks": 0,
+          "share_string": "https://crunchyroll.qa.begenuin.com/video/video-only?community=storybook&loop=video-only",
+          "slug": "video-only",
+          "thumbnail": "",
+          "updated_at": "2026-07-17T00:00:00.000Z",
+          "url": "https://reels-media.s3.us-east-2.amazonaws.com/static/blank_screen/300h/master.m3u8"
+        }
       }
     ]
   }

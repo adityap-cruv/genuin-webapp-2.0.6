@@ -136,10 +136,20 @@ Feature plans for the `molecules/linkout-new` family — scenario configs, ad sl
 
 | File                                                                                         | Purpose                                                          |
 | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| [packages/contextual-reels/README.md](packages/contextual-reels/README.md)                   | CXR widget package guide                                         |
+| [packages/contextual-reels/README.md](packages/contextual-reels/README.md)                   | CXR widget package guide + quick start                          |
+| [packages/contextual-reels/CLAUDE.md](packages/contextual-reels/CLAUDE.md)                   | CXR AI memory map — architecture, dirs, data flow, entry points, testing |
+| [packages/contextual-reels/docs/README.md](packages/contextual-reels/docs/README.md)         | CXR documentation index (single source of truth)                |
+| [packages/contextual-reels/docs/ARCHITECTURE.md](packages/contextual-reels/docs/ARCHITECTURE.md) | CXR module map — entry points, providers, feed/player/ads/controls/strategies/instance/genai |
+| [packages/contextual-reels/docs/DATA_FLOW.md](packages/contextual-reels/docs/DATA_FLOW.md)   | CXR end-to-end flow — tag id → boot → feed → ad → analytics     |
+| [packages/contextual-reels/docs/CONFIGURATION.md](packages/contextual-reels/docs/CONFIGURATION.md) | CXR env, ad layouts, stacked layout, GIV, host macros, deploy   |
+| [packages/contextual-reels/docs/CONTRIBUTING.md](packages/contextual-reels/docs/CONTRIBUTING.md) | CXR TDD, coverage gates, invariants, partner contracts, how-tos |
 | [packages/contextual-reels/docs/STRATEGIES.md](packages/contextual-reels/docs/STRATEGIES.md) | Per-tag strategy system — toggles, the 3-layer cascade, recipes |
-| [packages/contextual-reels/docs/PROJECT.md](packages/contextual-reels/docs/PROJECT.md)       | CXR project context                                             |
 | [packages/contextual-reels/tests/e2e/README.md](packages/contextual-reels/tests/e2e/README.md) | Control-icon E2E suite — harness, fixtures, real-vs-mocked, scenarios |
+| [packages/contextual-reels/src/ads/README.md](packages/contextual-reels/src/ads/README.md)   | GenAd SDK boundary — waterfall, single-hit passback, Infolinks Impression |
+| [packages/contextual-reels/src/player/README.md](packages/contextual-reels/src/player/README.md) | Player lifecycle (HLS/IMA) reference |
+| [packages/contextual-reels/src/feed/hooks/README.md](packages/contextual-reels/src/feed/hooks/README.md) | Feed hooks reference |
+| [packages/contextual-reels/docs/AD_REMOVAL_RISK_AUDIT.md](packages/contextual-reels/docs/AD_REMOVAL_RISK_AUDIT.md) | Historical (2026-07-02) Heavy Ad Intervention / ad-policy risk audit — superseded on AdProvider specifics, see banner |
+| [packages/contextual-reels/docs/AUDIT_TRIAGE_2026-07.md](packages/contextual-reels/docs/AUDIT_TRIAGE_2026-07.md) | Historical (2026-07-09) production-readiness audit triage — fixed / deferred / unverified |
 
 ### CXR decisions (ADRs)
 
@@ -151,6 +161,28 @@ Architecture decision records for the widget. New ADRs go in `docs/cxr-decisions
 | [packages/contextual-reels/docs/cxr-decisions/002-chromium-os-quirk.md](packages/contextual-reels/docs/cxr-decisions/002-chromium-os-quirk.md)             | ADR 002 — Chromium OS quirk               |
 | [packages/contextual-reels/docs/cxr-decisions/003-mutation-observer-scope.md](packages/contextual-reels/docs/cxr-decisions/003-mutation-observer-scope.md) | ADR 003 — MutationObserver document scope |
 | [packages/contextual-reels/docs/cxr-decisions/004-e2e-real-genad.md](packages/contextual-reels/docs/cxr-decisions/004-e2e-real-genad.md)                   | ADR 004 — control-icon E2E runs against real GenAd |
+| [packages/contextual-reels/docs/cxr-decisions/005-stacked-infolinks.md](packages/contextual-reels/docs/cxr-decisions/005-stacked-infolinks.md)             | ADR 005 — stacked layout with an Infolinks in-place unit |
+| [packages/contextual-reels/docs/cxr-decisions/006-l3-audio-on-unmute.md](packages/contextual-reels/docs/cxr-decisions/006-l3-audio-on-unmute.md)           | ADR 006 — L3 (320×50) audio on unmute     |
+
+### CXR ad-resource-budget (skill)
+
+Heavy Ad Intervention / IAB resource-budget enforcement for CXR ad tags & creatives.
+
+| File                                                                                                                                     | Purpose                                        |
+| ----------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| [packages/contextual-reels/ad-resource-budget/SKILL.md](packages/contextual-reels/ad-resource-budget/SKILL.md)                           | Skill entry point — enforces per-build resource budgets |
+| [packages/contextual-reels/ad-resource-budget/cxr/README.md](packages/contextual-reels/ad-resource-budget/cxr/README.md)                 | CXR-specific harness notes |
+| [packages/contextual-reels/ad-resource-budget/scripts/README.md](packages/contextual-reels/ad-resource-budget/scripts/README.md)         | Measurement scripts reference |
+| [packages/contextual-reels/ad-resource-budget/references/resource-budgets.md](packages/contextual-reels/ad-resource-budget/references/resource-budgets.md) | Byte/CPU/request budget thresholds |
+| [packages/contextual-reels/ad-resource-budget/references/measurement-methodology.md](packages/contextual-reels/ad-resource-budget/references/measurement-methodology.md) | How budgets are measured |
+
+### CXR superpowers plans & specs
+
+Feature plans/specs authored via the `superpowers` skill workflow (planning artifacts, not live reference).
+
+| File                                                                                                                                     | Purpose                                        |
+| ----------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| [packages/contextual-reels/docs/superpowers/specs/2026-07-09-cxr-host-macro-resolution-design.md](packages/contextual-reels/docs/superpowers/specs/2026-07-09-cxr-host-macro-resolution-design.md) | Design spec — host macro resolution (Triton app-param rulings) |
 
 ---
 

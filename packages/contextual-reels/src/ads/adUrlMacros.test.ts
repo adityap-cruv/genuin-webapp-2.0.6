@@ -370,4 +370,49 @@ describe("resolveVideoAdMacros — Triton in-app rewrite", () => {
     expect(u.searchParams.get("dist")).toBe("https://page.com"); // unchanged (appb absent)
     expect(u.searchParams.has("bundle-id")).toBe(false);
   });
+
+  it("appends dist=<appb> when the url has no existing dist param (else branch)", () => {
+    // No `dist` param at all, and no `site-url` either — exercises the `dist`
+    // absent branch (appends rather than replaces) while still having a `?`
+    // in the url already, so the `dist` append itself uses the `&` separator.
+    const result = resolveVideoAdMacros(
+      { url: "https://t.co/ars?stid=1446814&type=midroll", platform: "tritondigital" },
+      "https://page.com",
+      { appb: "com.x.y" }
+    ) as { url: string };
+    const u = new URL(result.url);
+    expect(u.searchParams.get("dist")).toBe("com.x.y");
+    expect(u.searchParams.get("bundle-id")).toBe("com.x.y");
+    expect(u.searchParams.get("stid")).toBe("1446814");
+  });
+
+  it("appends dist=<appb> with a leading '?' when the url has no query string at all", () => {
+    // No `?` anywhere in the url — exercises BOTH the `dist`-append `?`
+    // branch (line 93) and the app-params `?` branch (line 100) taking the
+    // "no existing query string" path instead of "&".
+    const result = resolveVideoAdMacros(
+      { url: "https://t.co/ars", platform: "tritondigital" },
+      "https://page.com",
+      { appb: "com.x.y" }
+    ) as { url: string };
+    expect(result.url).toBe("https://t.co/ars?dist=com.x.y&bundle-id=com.x.y");
+  });
+
+  it("collapses a site-url sitting between two params back to a single '&' separator", () => {
+    // site-url flanked by params on both sides — both the leading and
+    // trailing `&` match in the regex, exercising the collapse-to-single-`&`
+    // branch (branch 85's true/true arm) rather than the drop-entirely arm.
+    const result = resolveVideoAdMacros(
+      {
+        url: "https://t.co/ars?a=1&site-url=https%3A%2F%2Fp.com&dist=https%3A%2F%2Fp.com&b=2",
+        platform: "tritondigital",
+      },
+      "https://page.com",
+      { appb: "com.x.y" }
+    ) as { url: string };
+    expect(result.url).not.toContain("site-url");
+    expect(result.url).not.toContain("&&");
+    expect(result.url).not.toContain("?&");
+    expect(result.url).toContain("a=1&dist=com.x.y&b=2");
+  });
 });

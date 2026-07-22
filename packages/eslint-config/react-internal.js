@@ -28,7 +28,18 @@ export default [
     settings: {
       react: { version: "detect" },
       "import/resolver": {
-        typescript: {},
+        // Explicit project glob: the resolver's own tsconfig lookup walks up
+        // from `process.cwd()`, not from each linted file's directory. ESLint
+        // is invoked both from the repo root (root `pnpm lint-staged`) and from
+        // an individual package dir (`pnpm --filter <pkg> lint`) — cover the
+        // tsconfig depth for both: "./tsconfig.json" (cwd = package dir),
+        // "*/tsconfig.json" (cwd = repo root, package one level down), and
+        // "*/*/tsconfig.json" (cwd = repo root, package two levels down, e.g.
+        // apps/webapp or a future nested package).
+        typescript: {
+          project: ["tsconfig.json", "*/tsconfig.json", "*/*/tsconfig.json"],
+          noWarnOnMultipleProjects: true,
+        },
         node: {
           extensions: [".js", ".jsx", ".ts", ".tsx"],
         },

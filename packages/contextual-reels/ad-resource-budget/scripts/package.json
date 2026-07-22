@@ -1,0 +1,20 @@
+{
+  "name": "ad-resource-budget",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Per-build resource-budget gate for JS ad tags (Chrome Heavy Ad Intervention + IAB New Ad Portfolio).",
+  "bin": {
+    "ad-budget-check": "./check-tag.mjs"
+  },
+  "scripts": {
+    "check": "node check-tag.mjs",
+    "postinstall-note": "echo 'Run: npx playwright install chromium'"
+  },
+  "dependencies": {
+    "playwright": "^1.45.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

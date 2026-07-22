@@ -8,7 +8,7 @@
 import { useEffect } from "react";
 
 import { EVENT } from "@cxr/analytics/analytics";
-import { useEventBus } from "@cxr/instance/coordination/EventBusContext";
+import { useEventBus } from "@cxr/instance/InstanceContext";
 import type { PlayerDims, PlayerHandle } from "@cxr/player/types";
 import { createLogger } from "@cxr/utils/logger";
 
@@ -41,10 +41,14 @@ export interface UseQuartileEventsResult {
    * Register `timeupdate` and `ended` listeners on the given player.
    * Must be called once inside the Vlitejs `onReady` callback.
    *
+   * @returns A detach function that removes the registered listeners. Call it from
+   *          the player lifecycle cleanup before `player.destroy()`.
    * @example
-   * attachToPlayer(player);
+   * const detach = attachToPlayer(player);
+   * // later, on cleanup:
+   * detach();
    */
-  attachToPlayer(player: PlayerHandle): void;
+  attachToPlayer(player: PlayerHandle): () => void;
 
   /**
    * Reset quartile deduplication flags for a new play cycle.
@@ -102,8 +106,8 @@ export function useQuartileEvents({
     }
   }
 
-  function attachToPlayer(player: PlayerHandle): void {
-    player.on("ended", () => {
+  function attachToPlayer(player: PlayerHandle): () => void {
+    const onEndedHandler = (): void => {
       _wasEnded = true;
 
       if (!_quartilesSent.q4) {
@@ -121,9 +125,9 @@ export function useQuartileEvents({
       if (isVideoItem && (!videoDetails["ad_placement"] || videoDetails["ad_placement"] !== "end-roll")) {
         onEnded?.();
       }
-    });
+    };
 
-    player.on("timeupdate", () => {
+    const onTimeUpdateHandler = (): void => {
       Promise.all([player.getDuration(), player.getCurrentTime()])
         .then(([duration, currentTime]) => {
           onTimeUpdate?.(currentTime, duration, itemId);
@@ -153,7 +157,16 @@ export function useQuartileEvents({
         .catch(() => {
           // Non-fatal — missing timeupdate data is expected during buffering.
         });
-    });
+    };
+
+    player.on("ended", onEndedHandler);
+    player.on("timeupdate", onTimeUpdateHandler);
+
+    // Detach so the lifecycle cleanup can drop these before destroying the player.
+    return () => {
+      player.off?.("ended", onEndedHandler);
+      player.off?.("timeupdate", onTimeUpdateHandler);
+    };
   }
 
   return { attachToPlayer, resetForPlay };
@@ -195,10 +208,14 @@ export interface UsePlayStartedEventsResult {
    * Register Vlitejs + native event listeners on the given player.
    * Must be called once inside the Vlitejs `onReady` callback.
    *
+   * @returns A detach function that removes the registered listeners. Call it from
+   *          the player lifecycle cleanup before `player.destroy()`.
    * @example
-   * attachToPlayer(player);
+   * const detach = attachToPlayer(player);
+   * // later, on cleanup:
+   * detach();
    */
-  attachToPlayer(player: PlayerHandle): void;
+  attachToPlayer(player: PlayerHandle): () => void;
 }
 
 /**
@@ -216,7 +233,7 @@ export function usePlayStartedEvents({
   getLastUserPlayAt,
   onPlayReset,
 }: UsePlayStartedEventsOptions): UsePlayStartedEventsResult {
-  function attachToPlayer(player: PlayerHandle): void {
+  function attachToPlayer(player: PlayerHandle): () => void {
     // Closure state — NOT React state.
     let _playSent = false;
     let _startedSent = false;
@@ -244,7 +261,7 @@ export function usePlayStartedEvents({
     }
 
     // Vlitejs `pause` — reset deduplication and emit interrupted.
-    player.on("pause", () => {
+    const onPause = (): void => {
       _playSent = false;
       Promise.all([player.getDuration(), player.getCurrentTime()])
         .then(([duration, currentTime]) => {
@@ -256,53 +273,68 @@ export function usePlayStartedEvents({
         .catch(() => {
           sendEvent(EVENT.VIDEO_PLAY_INTERRUPTED, { duration: 0, watch_time: 0 });
         });
-    });
+    };
+    player.on("pause", onPause);
+
+    // Native `play` — new play cycle begins.
+    const onNativePlay = (): void => {
+      _startedSent = false;
+      onPlayReset?.();
+    };
+
+    // Native `playing` — frames are actually rendering.
+    const onNativePlaying = (): void => {
+      if (_startedSent) return;
+      _startedSent = true;
+
+      const recentClick = Date.now() - getLastUserPlayAt() < RECENT_CLICK_WINDOW_MS;
+
+      player
+        .getCurrentTime()
+        .then((ct) => {
+          const isRestart = typeof ct === "number" && ct <= 0.1;
+
+          if (isRestart) {
+            sendVideoStarted();
+            if (recentClick && !_playSent) sendPlayEvent();
+            return;
+          }
+
+          // Not a restart
+          if (recentClick) {
+            if (!_playSent) sendPlayEvent();
+          } else {
+            sendVideoStarted();
+          }
+        })
+        .catch(() => {
+          // Fallback: treat unknown time as a restart
+          sendVideoStarted();
+          if (recentClick && !_playSent) sendPlayEvent();
+        });
+    };
 
     // Attach native element listeners via the player handle or its underlying element.
+    let nativeInst: HTMLVideoElement | null = null;
     try {
       const inst = (player.getInstance?.() ?? player) as HTMLVideoElement & typeof player;
       if (inst && typeof inst.addEventListener === "function") {
-        // Native `play` — new play cycle begins.
-        inst.addEventListener("play", () => {
-          _startedSent = false;
-          onPlayReset?.();
-        });
-
-        // Native `playing` — frames are actually rendering.
-        inst.addEventListener("playing", () => {
-          if (_startedSent) return;
-          _startedSent = true;
-
-          const recentClick = Date.now() - getLastUserPlayAt() < RECENT_CLICK_WINDOW_MS;
-
-          player
-            .getCurrentTime()
-            .then((ct) => {
-              const isRestart = typeof ct === "number" && ct <= 0.1;
-
-              if (isRestart) {
-                sendVideoStarted();
-                if (recentClick && !_playSent) sendPlayEvent();
-                return;
-              }
-
-              // Not a restart
-              if (recentClick) {
-                if (!_playSent) sendPlayEvent();
-              } else {
-                sendVideoStarted();
-              }
-            })
-            .catch(() => {
-              // Fallback: treat unknown time as a restart
-              sendVideoStarted();
-              if (recentClick && !_playSent) sendPlayEvent();
-            });
-        });
+        nativeInst = inst;
+        inst.addEventListener("play", onNativePlay);
+        inst.addEventListener("playing", onNativePlaying);
       }
     } catch (e) {
       _logger.warn("native play listener attach failed", e);
     }
+
+    // Detach so the lifecycle cleanup can drop these before destroying the player.
+    return () => {
+      player.off?.("pause", onPause);
+      if (nativeInst) {
+        nativeInst.removeEventListener("play", onNativePlay);
+        nativeInst.removeEventListener("playing", onNativePlaying);
+      }
+    };
   }
 
   return { attachToPlayer };

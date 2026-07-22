@@ -8,7 +8,7 @@
 (function () {
   "use strict";
 
-  var CXR_VERSION = '1.0.0';
+  var CXR_VERSION = "1.0.0";
   var CORE_FILENAME = "__CR_CORE_FILENAME__";
   var CSS_FILENAME = "__CR_CSS_FILENAME__";
   var CDN_BASE = "__CR_CDN_BASE__";
@@ -126,11 +126,11 @@
     params.set("h", "0");
     params.set("ho", "1");
     params.set("error_type", "network_error");
-    params.set("stage", "sdk_load");
+    params.set("error_stage", "sdk_load");
 
     var reason = err && err.message ? String(err.message) : typeof err === "string" ? err : "";
     if (reason.trim()) {
-      params.set("reason", reason.trim().slice(0, MAX_REASON_LENGTH));
+      params.set("error_reason", reason.trim().slice(0, MAX_REASON_LENGTH));
     }
 
     return path + "?" + params.toString();

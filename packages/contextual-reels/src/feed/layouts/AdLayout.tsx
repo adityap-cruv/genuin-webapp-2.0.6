@@ -8,7 +8,7 @@
  * Phase 2: props use NormalisedAd instead of FeedItem.
  */
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { GenAdSlot } from "@cxr/ads/GenAdSlot";
 import { genAdSlotAdProps } from "@cxr/ads/adSlotProps";
@@ -16,8 +16,7 @@ import type { AdCtaDetails } from "@cxr/ads/genAdSdk";
 import { EVENT } from "@cxr/analytics/analytics";
 import { AdControlLayer } from "@cxr/controls/AdControlLayer";
 import { useInactivityAdvance } from "@cxr/feed/hooks/useInactivityAdvance";
-import { useEventBus } from "@cxr/instance/coordination/EventBusContext";
-import { useInstanceId } from "@cxr/instance/registry/InstanceContext";
+import { useEventBus, useInstanceId } from "@cxr/instance/InstanceContext";
 import { useAdWaterfall } from "@cxr/providers/AdProvider";
 import { useAnalytics } from "@cxr/providers/AnalyticsProvider";
 import { useFullScreen } from "@cxr/providers/FullScreenProvider";
@@ -52,6 +51,7 @@ export function AdLayout({ ad, isActive, onAutoAdvance }: AdLayoutProps): React.
   // The ad mute button routes here (via AdControlBar). Mirror the video-mute
   // path so muting/unmuting an ad also emits `Muted`/`Unmuted` — matches the
   // Web SDK, where one instrumented toggle serves both video and ad.
+  // Button-only: toggles mute, never touches playback (that's handleAdClick's job).
   const handleMuteToggle = useCallback(
     (nextMuted: boolean, extra?: Record<string, unknown>) => {
       setMuted(nextMuted);
@@ -72,6 +72,12 @@ export function AdLayout({ ad, isActive, onAutoAdvance }: AdLayoutProps): React.
   const containerId = `gen-ad-slot-${instanceId}-${ad.id}`;
 
   const advance = onAutoAdvance ?? (() => undefined);
+
+  // Ad entries always autoplay on activation, regardless of the tag's
+  // `autoplayEnabled` strategy (that flag only governs organic video slides).
+  useEffect(() => {
+    if (isActive) setPlaying(true);
+  }, [isActive, setPlaying]);
 
   // Mirror old AdsPlaceholder behaviour: advance the carousel AND notify the
   // embedding page (noAdsCallback) whenever the waterfall fails to fill.
@@ -138,6 +144,8 @@ export function AdLayout({ ad, isActive, onAutoAdvance }: AdLayoutProps): React.
       // Then update React/PlayerProvider state (and emit the `mute:unmuted`
       // bus event) so the rest of the app stays consistent.
       setMuted(false);
+      // Muted + paused: a tap should resume playback too, not just unmute silently.
+      if (!isPlaying) setPlaying(true);
     }
   }
 

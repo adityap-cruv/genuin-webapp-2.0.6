@@ -6,6 +6,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 vi.mock("@cxr/config", () => ({
   assetLink: "https://test.cdn/",
+  apiurl: "https://api.begenuin.com",
   AD_LAYOUT: { Unknown: 0, L1: 1, L2: 2, L3: 3, L4: 4 },
   isCompactLayout: (id: number) => id === 3 || id === 4,
 }));
@@ -21,7 +22,7 @@ vi.mock("../providers/PlayerProvider", () => ({
 
 let testBus: CxrEventBus;
 
-vi.mock("../instance/coordination/EventBusContext", () => ({
+vi.mock("../instance/InstanceContext", () => ({
   useEventBus: () => testBus,
   useOptionalEventBus: () => testBus,
 }));
@@ -54,7 +55,6 @@ describe("AdControlLayer — overlay stacking", () => {
       isFullScreen: false,
       adLayout: AD_LAYOUT.L3,
       isAdReady: true,
-      variant: "new",
       onPlayClick: vi.fn(),
       onMuteClick: vi.fn(),
       onFullScreenClick: vi.fn(),
@@ -74,7 +74,7 @@ describe("AdControlLayer — overlay stacking", () => {
     expect(container.querySelector('[data-testid="mute-btn"]')).toBeNull();
   });
 
-  describe("compact variant=new (320x50)", () => {
+  describe("compact 320x50", () => {
     it("wraps the control bar in a pointer-events-none raised layer", () => {
       // The tap-to-fullscreen ClickOverlay was removed from compact ad layouts, so there is
       // no overlay to stack against. The bar wrapper stays z-[2] + pointer-events-none so its
@@ -108,7 +108,7 @@ describe("AdControlLayer — overlay stacking", () => {
     });
   });
 
-  describe("compact variant=new (320x100)", () => {
+  describe("compact 320x100", () => {
     it("wraps the control bar in a pointer-events-none raised layer", () => {
       // ClickOverlay removed from compact ad layouts (see 320x50 note above).
       render({ adLayout: AD_LAYOUT.L4 });
@@ -131,35 +131,6 @@ describe("AdControlLayer — overlay stacking", () => {
 
     it("play click toggles playback and does NOT open fullscreen", () => {
       const { onPlayClick, onFullScreenClick } = render({ adLayout: AD_LAYOUT.L4 });
-      act(() => {
-        (container.querySelector('[data-testid="play-pause-btn"]') as HTMLButtonElement).click();
-      });
-      expect(onPlayClick).toHaveBeenCalledOnce();
-      expect(onFullScreenClick).not.toHaveBeenCalled();
-    });
-  });
-
-  describe("compact variant=old", () => {
-    it("wraps the legacy control bar in a pointer-events-none raised layer", () => {
-      // ClickOverlay removed from compact ad layouts (see 320x50 note above).
-      render({ adLayout: AD_LAYOUT.L3, variant: "old" });
-      const bar = container.querySelector<HTMLElement>('[data-testid="compact-control-bar"]')!;
-      const barWrapper = bar.closest<HTMLElement>(".gencl\\:z-\\[2\\]");
-      expect(barWrapper).not.toBeNull();
-      expect(barWrapper!.className).toContain("gencl:pointer-events-none");
-    });
-
-    it("mute click does NOT open fullscreen", () => {
-      const { onMuteClick, onFullScreenClick } = render({ adLayout: AD_LAYOUT.L3, variant: "old", isMuted: true });
-      act(() => {
-        (container.querySelector('[data-testid="mute-btn"]') as HTMLButtonElement).click();
-      });
-      expect(onMuteClick).toHaveBeenCalledWith(false);
-      expect(onFullScreenClick).not.toHaveBeenCalled();
-    });
-
-    it("play click toggles playback and does NOT open fullscreen", () => {
-      const { onPlayClick, onFullScreenClick } = render({ adLayout: AD_LAYOUT.L3, variant: "old" });
       act(() => {
         (container.querySelector('[data-testid="play-pause-btn"]') as HTMLButtonElement).click();
       });

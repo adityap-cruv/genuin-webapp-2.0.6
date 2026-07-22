@@ -7,10 +7,12 @@ import { createRoot } from "react-dom/client";
 import type { Root } from "react-dom/client";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
+import { normaliseFeed } from "@cxr/feed/feedTransforms";
 import { useAnalytics } from "@cxr/providers/AnalyticsProvider";
 import { FeedProvider, useFeed } from "@cxr/providers/FeedProvider";
+import { usePlayer } from "@cxr/providers/PlayerProvider";
 import { createFeedGenerator } from "@cxr/services/feed";
-import type { FeedEntry } from "@cxr/types";
+import type { FeedEntry, NormalisedReel } from "@cxr/types";
 
 vi.mock("../services/feed", () => ({
   createFeedGenerator: vi.fn(),
@@ -18,6 +20,23 @@ vi.mock("../services/feed", () => ({
 
 vi.mock("../providers/AnalyticsProvider", () => ({
   useAnalytics: vi.fn(() => ({ sendEvent: vi.fn(), setBaseEventContext: vi.fn() })),
+}));
+
+// FeedProvider reads `isAdBreakActive` from usePlayer() (context) to derive
+// isAdActive/activeReel — mount order in FeedTree puts PlayerProvider above it.
+vi.mock("../providers/PlayerProvider", () => ({
+  usePlayer: vi.fn(() => ({ isAdBreakActive: false })),
+}));
+
+// FeedProvider reads `tagId` from useTagDetails() (context), not a prop, and
+// strategy flags from useStrategy(). Mock both so the harness can drive tagId
+// without mounting the full provider tree.
+vi.mock("../providers/TagDetailsProvider", () => ({
+  useTagDetails: vi.fn(() => ({ tagId: "tag-1" })),
+}));
+
+vi.mock("../strategies/StrategyProvider", () => ({
+  useStrategy: vi.fn(() => ({ adBreakEnabled: false, gateOnUnmute: false, adsDisabled: false })),
 }));
 
 vi.mock("../feed/feedTransforms", () => ({
@@ -46,15 +65,26 @@ vi.mock("../feed/feedTransforms", () => ({
 
 const mockCreateFeedGenerator = createFeedGenerator as ReturnType<typeof vi.fn>;
 const mockUseAnalytics = useAnalytics as ReturnType<typeof vi.fn>;
+const mockUsePlayer = usePlayer as ReturnType<typeof vi.fn>;
+const mockNormaliseFeed = normaliseFeed as ReturnType<typeof vi.fn>;
 
 interface Captured {
   entries: FeedEntry[];
   activeIndex: number;
   isLoading: boolean;
   feedFailed: boolean;
+  isAdActive: boolean;
+  activeReel: NormalisedReel | undefined;
 }
 
-let captured: Captured = { entries: [], activeIndex: 0, isLoading: true, feedFailed: false };
+let captured: Captured = {
+  entries: [],
+  activeIndex: 0,
+  isLoading: true,
+  feedFailed: false,
+  isAdActive: false,
+  activeReel: undefined,
+};
 
 function Consumer(): null {
   const ctx = useFeed();
@@ -68,7 +98,15 @@ describe("FeedProvider", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    captured = { entries: [], activeIndex: 0, isLoading: true, feedFailed: false };
+    mockUsePlayer.mockReturnValue({ isAdBreakActive: false });
+    captured = {
+      entries: [],
+      activeIndex: 0,
+      isLoading: true,
+      feedFailed: false,
+      isAdActive: false,
+      activeReel: undefined,
+    };
     container = document.createElement("div");
     document.body.appendChild(container);
     root = createRoot(container);
@@ -81,7 +119,6 @@ describe("FeedProvider", () => {
 
   function render() {
     const props: React.ComponentProps<typeof FeedProvider> = {
-      tagId: "tag-1",
       children: React.createElement(Consumer),
     };
     act(() => {
@@ -185,6 +222,46 @@ describe("FeedProvider", () => {
     });
     expect(captured.feedFailed).toBe(true);
     expect(captured.isLoading).toBe(false);
+  });
+
+  it("exposes isAdActive=false and the active entry's data as activeReel for a video slide", async () => {
+    const videoEntry: FeedEntry = {
+      kind: "video",
+      data: {
+        kind: "video",
+        id: 0,
+        active: true,
+        videoUrl: null,
+        videoType: null,
+        thumb: null,
+        user: null,
+        community: null,
+        cta: null,
+        loop: null,
+        ogDetails: null,
+        owner: null,
+        config: null,
+        video: null,
+      },
+    };
+    mockNormaliseFeed.mockReturnValueOnce([videoEntry]);
+    mockCreateFeedGenerator.mockReturnValue(vi.fn().mockResolvedValue([{ type: "video" }]));
+    render();
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(captured.isAdActive).toBe(false);
+    expect(captured.activeReel).toBe(videoEntry.data);
+  });
+
+  it("exposes isAdActive=true when isAdBreakActive is true, from usePlayer()", async () => {
+    mockUsePlayer.mockReturnValue({ isAdBreakActive: true });
+    mockCreateFeedGenerator.mockReturnValue(vi.fn().mockResolvedValue([{ type: "video" }]));
+    render();
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(captured.isAdActive).toBe(true);
   });
 
   it("bails out (no state update) when the effect is cancelled before the fetch resolves", async () => {

@@ -104,6 +104,8 @@ export function OctoSdkPanel({
   const prevVideoIdRef = useRef<string | null>(null);
   const prevActivationKeyRef = useRef<number | null>(null);
   const prevRenderModeRef = useRef<"compact" | "full">(renderMode);
+  // Deferred-unmount destroy timer; stored so a rapid remount can cancel it (no double-destroy).
+  const unmountDestroyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [reinitTick, setReinitTick] = useState(0);
 
   const handleContainerRef = useCallback((node: HTMLDivElement | null) => {
@@ -226,10 +228,23 @@ export function OctoSdkPanel({
 
   // Cleanup on true unmount (deferred a tick so React finishes its render).
   useEffect(() => {
+    // Cancel a pending destroy from a prior mount so a remount doesn't get its SDK
+    // killed. This effect's deps are [sdk, dispatchClose]; sdk only transitions
+    // null -> module once and dispatchClose is stable per panelId, so in normal
+    // operation this body runs at most twice and never observes a pending timer
+    // from its own cleanup. It exists to guard React's StrictMode-style
+    // mount -> cleanup -> remount cycle on the same fiber (refs preserved) where a
+    // prior cleanup scheduled the timer. Kept as a defensive teardown.
+    /* v8 ignore next 3 */
+    if (unmountDestroyTimerRef.current) {
+      clearTimeout(unmountDestroyTimerRef.current);
+      unmountDestroyTimerRef.current = null;
+    }
     return () => {
       if (initializedRef.current && sdk) {
         dispatchClose();
-        setTimeout(() => {
+        unmountDestroyTimerRef.current = setTimeout(() => {
+          unmountDestroyTimerRef.current = null;
           try {
             sdk.destroy();
           } catch (err) {

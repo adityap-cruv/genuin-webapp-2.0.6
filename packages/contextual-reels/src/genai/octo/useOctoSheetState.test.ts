@@ -97,6 +97,18 @@ describe("useOctoSheetState — handleSheetStateChange", () => {
     act(() => handle.handleSheetStateChange("mystery" as DynamicSheetState));
     expect(handle.octoSheetState).toBe("mystery");
   });
+
+  it("falls back to priority 0 for an unmapped previous state (no false swipe-down)", () => {
+    render(true);
+    // applyPhase seeds prevStateRef with an unmapped state directly (bypassing
+    // handleSheetStateChange), so the next transition reads `prev` from the
+    // OCTO_STATE_PRIORITY lookup miss rather than the `next` miss above.
+    act(() => handle.applyPhase({ sheetState: "mystery" as DynamicSheetState }));
+    act(() => handle.handleSheetStateChange("expand-view"));
+    // prevPriority falls back to 0, which is not > nextPriority (2), so this is
+    // treated as a normal (upward) transition, not a swipe-down collapse.
+    expect(handle.octoSheetState).toBe("expand-view");
+  });
 });
 
 describe("useOctoSheetState — handleClose", () => {

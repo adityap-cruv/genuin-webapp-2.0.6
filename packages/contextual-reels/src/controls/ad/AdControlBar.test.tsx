@@ -2,14 +2,14 @@ import React, { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
+import { InstanceProvider, useEventBus, useMarkUserInteracted } from "@cxr/instance/InstanceContext";
 import type { CxrEventBus } from "@cxr/instance/coordination/CxrEventBus";
-import { EventBusProvider, useEventBus } from "@cxr/instance/coordination/EventBusContext";
-import { UserInteractionProvider, useMarkUserInteracted } from "@cxr/instance/coordination/UserInteractionTracker";
 
 import { AdControlBar } from "./AdControlBar";
 
 vi.mock("@cxr/config", () => ({
   assetLink: "https://test.cdn/",
+  apiurl: "https://api.begenuin.com",
   AD_LAYOUT: { Unknown: 0, L1: 1, L2: 2, L3: 3, L4: 4 },
 }));
 
@@ -124,6 +124,15 @@ describe("AdControlBar", () => {
       expect(container.querySelector('[data-testid="play-pause-btn"]')).not.toBeNull();
     });
 
+    it("falls back to isPlay=false when isPlay is undefined (V2 cluster)", () => {
+      // Covers the `isPlay ?? false` fallback: renders without throwing when the
+      // caller omits isPlay entirely.
+      act(() => {
+        root.render(<AdControlBar {...defaultProps} layout="default" isPlay={undefined} />);
+      });
+      expect(container.querySelector('[data-testid="play-pause-btn"]')).not.toBeNull();
+    });
+
     it("unmutes on the first tap of the sound-on enticement", () => {
       const onMuteClick = vi.fn();
       act(() => {
@@ -166,12 +175,10 @@ describe("AdControlBar", () => {
       }
       act(() => {
         root.render(
-          <EventBusProvider>
-            <UserInteractionProvider>
-              <Marker />
-              <AdControlBar {...defaultProps} layout="default" isMuted />
-            </UserInteractionProvider>
-          </EventBusProvider>
+          <InstanceProvider instanceId="test-instance">
+            <Marker />
+            <AdControlBar {...defaultProps} layout="default" isMuted />
+          </InstanceProvider>
         );
       });
       const iconBefore = container.querySelector('[data-testid="mute-btn"] img') as HTMLImageElement;
@@ -194,10 +201,10 @@ describe("AdControlBar", () => {
       }
       act(() => {
         root.render(
-          <EventBusProvider>
+          <InstanceProvider instanceId="test-instance">
             <BusGrabber />
             <AdControlBar {...defaultProps} layout="default" isMuted />
-          </EventBusProvider>
+          </InstanceProvider>
         );
       });
       // Before any audio action: enticement hides the real state → "sound on" icon.
@@ -229,9 +236,9 @@ describe("AdControlBar", () => {
       }
       act(() => {
         root.render(
-          <EventBusProvider>
+          <InstanceProvider instanceId="test-instance">
             <Harness />
-          </EventBusProvider>
+          </InstanceProvider>
         );
       });
       // Slot 1 engaged audio earlier — the event fires while slot 2's bar is absent.

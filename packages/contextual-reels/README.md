@@ -6,7 +6,8 @@ JS bundle (`gen_ext.min.js`) from CDN, embedded into host pages via `loader.js`.
 Partners drop in a single `<script>` tag — the widget self-boots, scans for `.gen-ext`
 mount points, and renders isolated React trees with no further setup required.
 
-Full documentation → **[docs/PROJECT.md](docs/PROJECT.md)**
+Full documentation → **[docs/README.md](docs/README.md)** (architecture, data flow, configuration,
+conventions). AI-assistant memory map → **[CLAUDE.md](CLAUDE.md)**.
 
 ---
 
@@ -30,28 +31,40 @@ npm run build:prod                   # Production bundle
 | ----------------- | ------------------------- |
 | `pnpm build:prod` | Passing — 3 s clean build |
 | `pnpm typecheck`  | Passing — 0 errors        |
-| `pnpm test`       | Passing — 685/685         |
+| `pnpm test`       | Passing — 1382/1382       |
 | `pnpm lint`       | Passing — 0 errors        |
 
 ---
 
 ## Environment setup
 
-Vite auto-selects the env file based on `--mode`. Each command loads its own file — no
-commenting/uncommenting needed.
+Env loading happens in **two independent places** — this is subtle, so read carefully:
 
-| Command              | Env file loaded      | Copy from                    |
-| -------------------- | -------------------- | ---------------------------- |
-| `npm run dev`        | `.env.development`   | `.env.development.example`   |
-| `npm run build:qa`   | `.env.qa`            | `.env.qa.example`            |
-| `npm run build:prod` | `.env.production`    | `.env.production.example`    |
-| `npm run deploy:qa`  | `.env.qa` + `.env.common` | `.env.qa.example` + `.env.common.example` |
-| `npm run deploy:prod`| `.env.production` + `.env.common` | `.env.production.example` + `.env.common.example` |
+1. **Build/dev vars come from the sibling `genai` package.** `dev`, `build`, `build:qa`,
+   and `build:prod` run under `env-cmd -f ../genai/.env.<mode>`, so the `VITE_CXR_*` values
+   Vite bundles are read from `packages/genai/.env.<mode>` — **not** from a local file in
+   this package. All vars also have prod-safe defaults in `src/config.ts` (see below), so a
+   missing genai env file just falls back to defaults.
+2. **`validate:env` checks a *local* `.env.<mode>`.** The `predev` / `prebuild:qa` /
+   `prebuild:prod` hooks run `scripts/validateEnv.ts`, which loads and Zod-validates a
+   **local** `packages/contextual-reels/.env.<mode>`. This gate is about catching a
+   misconfigured machine before a deploy; it does not feed the build.
+3. **Deploy credentials come from `.env.common`.** `deploy:*` also reads local `./.env.<mode>`
+   for the version-manager step, and the Oracle/Bunny upload scripts read `.env.common`.
+
+| Command              | Build vars (bundled)       | Validated (local)  | Deploy creds  |
+| -------------------- | -------------------------- | ------------------ | ------------- |
+| `npm run dev`        | `../genai/.env.development` | `.env.development` | —             |
+| `npm run build:qa`   | `../genai/.env.qa`         | `.env.qa`          | —             |
+| `npm run build:prod` | `../genai/.env.production` | `.env.production`  | —             |
+| `npm run deploy:qa`  | `../genai/.env.qa`         | `.env.qa`          | `.env.common` |
+| `npm run deploy:prod`| `../genai/.env.production` | `.env.production`  | `.env.common` |
 
 **Dev setup (one time):**
 ```sh
-cp .env.development.example .env.development
+cp .env.development.example .env.development   # satisfies validate:env
 # Fill in VITE_CXR_RUDDERSTACK_KEY — ask team lead
+# The values Vite actually bundles come from ../genai/.env.development (or src/config.ts defaults)
 ```
 
 **Deploy setup (one time per machine):**
@@ -74,18 +87,26 @@ All vars have prod-safe defaults in `src/config.ts`; the env file overrides them
 | `VITE_CXR_RUDDERSTACK_DATA_PLANE_URL` | `https://etr.begenuin.com`                                  | Rudderstack data plane               |
 | `VITE_CXR_ASSET_BASE_URL`             | `https://media.begenuin.com/webapp_assets/`                 | Widget static assets (icons, images) |
 | `VITE_CXR_GEN_AD_BASE_URL`            | `https://media.begenuin.com/ad-sdk/in-feed`                 | GenAd SDK bundle CDN                 |
-| `VITE_CXR_GENAI_SDK_URL`              | `https://media.begenuin.com/genai-sdk/octo/genai-sdk.es.js` | GenAI SDK bundle CDN                 |
 
 ---
 
 ## Deploy pipeline
 
-`deploy:qa` and `deploy:prod` are the full one-command deploys. Each:
+`deploy:qa` and `deploy:prod` are the build-and-upload deploys. Each runs three steps:
 
 1. **Bumps the version** (`package.json`) — interactive prompt (semver patch/minor/major)
 2. **Builds the bundle** — Vite with the correct env file; syncs version into `loader.jsx` first
-3. **Uploads to Oracle Object Storage** — versioned path `cxr/<version>/`
-4. **Purges Bunny CDN cache** — wildcard purge of `cxr/<version>/*`
+3. **Uploads to Oracle Object Storage** — destination path from `S3_UPLOAD_PATHS` in `.env.common`
+
+> **The upload path is NOT auto-derived from the version.** `uploadToOracle.ts` reads the
+> destination from `S3_UPLOAD_PATHS`, so bump that env var to the new `cxr/<version>` before
+> deploying if you want a versioned path.
+>
+> **`deploy:*` does NOT purge the CDN.** Run the Bunny purge manually as a 4th step when you
+> overwrite an existing path:
+> ```sh
+> npm run purge:bunny:qa    # or purge:bunny:prod
+> ```
 
 ```sh
 npm run deploy:qa    # requires .env.qa + .env.common
@@ -215,9 +236,16 @@ After the loader runs, `window.cxr` exposes the public surface:
 window.cxr.on('play', ({ instanceId }) => { ... })   // subscribe to events
 window.cxr.expand(instanceId)                          // programmatic expand
 window.cxr.collapse(instanceId)                        // programmatic collapse
+window.cxr.infolinksImpression(instanceId?)            // fire Infolinks Impression event (omit id to target all instances)
 ```
 
-Events: `play`, `pause`, `fullscreen:enter`, `fullscreen:exit`, `ad:fill`, `ad:nofill`.
+Events: `play`, `pause`, `fullscreen:enter`, `fullscreen:exit`, `ad:fill`, `ad:nofill`,
+`ad:removed` (fires when Chrome's Heavy-Ad Intervention unloads the ad frame or a
+resource-budget breach removes it).
+
+Iframe embeds can't reach `window.cxr` across the frame boundary — post
+`{ type: 'cxr:infolinksImpression', instanceId? }` to the iframe instead; the widget's
+`installMessageBridge` (`src/publicApi.ts`) listens for it and calls `infolinksImpression`.
 
 ---
 

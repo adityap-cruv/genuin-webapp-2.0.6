@@ -10,9 +10,6 @@ import type { NormalisedReel } from "@cxr/types";
 vi.mock("./bottombar/DefaultBottomBar", () => ({
   DefaultBottomBar: () => React.createElement("div", { "data-testid": "default-bottom-bar" }),
 }));
-vi.mock("./bottombar/FullscreenBottomBar", () => ({
-  FullscreenBottomBar: () => React.createElement("div", { "data-testid": "fullscreen-bottom-bar" }),
-}));
 
 function makeReel(): NormalisedReel {
   return {
@@ -55,7 +52,6 @@ describe("BottomBar router", () => {
         React.createElement(BottomBar, {
           variant: "default",
           item: makeReel(),
-          tagDetails: { tag_id: "tag-1" },
           dimensions: { width: 400, height: 600 },
           isActive: true,
           isFullScreen: false,
@@ -73,13 +69,11 @@ describe("BottomBar router", () => {
   it("variant=default, not fullscreen → DefaultBottomBar", async () => {
     await render({ variant: "default", isFullScreen: false });
     expect(container.querySelector('[data-testid="default-bottom-bar"]')).toBeTruthy();
-    expect(container.querySelector('[data-testid="fullscreen-bottom-bar"]')).toBeNull();
   });
 
   it("variant=default, fullscreen → DefaultBottomBar", async () => {
     await render({ variant: "default", isFullScreen: true });
     expect(container.querySelector('[data-testid="default-bottom-bar"]')).toBeTruthy();
-    expect(container.querySelector('[data-testid="fullscreen-bottom-bar"]')).toBeNull();
   });
 
   it("variant=iheart, not fullscreen → DefaultBottomBar", async () => {
@@ -87,9 +81,8 @@ describe("BottomBar router", () => {
     expect(container.querySelector('[data-testid="default-bottom-bar"]')).toBeTruthy();
   });
 
-  it("variant=iheart, fullscreen → DefaultBottomBar (not FullscreenBottomBar)", async () => {
+  it("variant=iheart, fullscreen → DefaultBottomBar", async () => {
     await render({ variant: "iheart", isFullScreen: true });
     expect(container.querySelector('[data-testid="default-bottom-bar"]')).toBeTruthy();
-    expect(container.querySelector('[data-testid="fullscreen-bottom-bar"]')).toBeNull();
   });
 });

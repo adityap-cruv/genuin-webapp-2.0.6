@@ -8,10 +8,8 @@ import { AD_LAYOUT } from "@cxr/config";
 import { ControlLayer } from "@cxr/controls/ControlLayer";
 import type { NormalisedReel } from "@cxr/types";
 
-vi.mock("../instance/registry/InstanceContext", () => ({
+vi.mock("../instance/InstanceContext", () => ({
   useInstanceId: () => "test-instance",
-}));
-vi.mock("../instance/coordination/EventBusContext", () => ({
   useEventBus: () => ({ on: () => () => undefined, emit: () => undefined }),
 }));
 vi.mock("../providers/AnalyticsProvider", () => ({
@@ -23,6 +21,18 @@ vi.mock("../providers/PlayerProvider", () => ({
 vi.mock("../providers/GenAIProvider", () => ({
   useGenAI: () => ({ genAiEnabled: false }),
   useOctoSplit: () => ({ octoFraction: 0, octoAxis: "y" }),
+}));
+vi.mock("../providers/TagDetailsProvider", () => ({
+  useTagDetails: () => ({ tagDetails: { tag_id: "tag-1" }, apiFailed: false }),
+}));
+vi.mock("../providers/FullScreenProvider", () => ({
+  useFullScreen: () => ({
+    isFullScreen: false,
+    enterFullScreen: vi.fn(),
+    exitFullScreen: vi.fn(),
+    toggleFullScreen: vi.fn(),
+    isRedirectMode: false,
+  }),
 }));
 vi.mock("./TopBar", () => ({
   TopBar: () => React.createElement("div", { "data-testid": "top-bar" }),
@@ -75,7 +85,6 @@ describe("ControlLayer", () => {
         React.createElement(ControlLayer, {
           variant: "default",
           item: makeReel(),
-          tagDetails: { tag_id: "tag-1" },
           dimensions: { width: 400, height: 600 },
           isActive: true,
           isFullScreen: false,
@@ -83,6 +92,7 @@ describe("ControlLayer", () => {
           isPlay: true,
           adLayout: AD_LAYOUT.Unknown,
           onMuteClick: vi.fn(),
+          onLayerUnmuteClick: vi.fn(),
           onPlayClick: vi.fn(),
           onFullScreenClick: vi.fn(),
           ...overrides,

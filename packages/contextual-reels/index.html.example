@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contextual Reels — Layout Preview</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        background: #111;
+        margin: 0;
+        color: #ccc;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          sans-serif;
+      }
+
+      .layout {
+        display: flex;
+        align-items: flex-start;
+        min-height: 100vh;
+      }
+
+      /* ---------- Sidebar / controls ---------- */
+      .sidebar {
+        width: 300px;
+        flex: 0 0 300px;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+        background: #161616;
+        border-right: 1px solid #2a2a2a;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+      }
+      .sidebar h1 {
+        font-size: 14px;
+        font-weight: 600;
+        color: #eee;
+        margin: 0 0 2px;
+      }
+      .sidebar .subtitle {
+        font-size: 11px;
+        color: #777;
+        margin: 0;
+      }
+      .control-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .control-group .group-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #888;
+        font-weight: 600;
+      }
+      fieldset.control-group {
+        border: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      /* Preset chips */
+      .preset-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .preset-chip {
+        font-size: 12px;
+        color: #ccc;
+        background: #222;
+        border: 1px solid #3a3a3a;
+        border-radius: 999px;
+        padding: 5px 10px;
+        cursor: pointer;
+        user-select: none;
+      }
+      .preset-chip:hover {
+        border-color: #555;
+      }
+      .preset-chip.active {
+        background: #3a7afe;
+        border-color: #3a7afe;
+        color: #fff;
+      }
+
+      /* Tag id input — always visible + editable */
+      .tag-input-row {
+        display: flex;
+        gap: 6px;
+      }
+      input[type="text"],
+      input[type="search"] {
+        background: #0d0d0d;
+        border: 1px solid #444;
+        color: #eee;
+        padding: 8px 10px;
+        border-radius: 6px;
+        font-size: 12.5px;
+        width: 100%;
+        font-family: "SF Mono", "Fira Code", monospace;
+      }
+      input[type="text"]:focus {
+        outline: none;
+        border-color: #3a7afe;
+      }
+      .tag-hint {
+        font-size: 11px;
+        color: #666;
+        line-height: 1.4;
+      }
+      .tag-hint strong {
+        color: #999;
+      }
+
+      /* Size checkboxes as cards */
+      .size-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      .size-card {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12.5px;
+        color: #ddd;
+        background: #1e1e1e;
+        border: 1px solid #333;
+        border-radius: 6px;
+        padding: 8px 10px;
+        cursor: pointer;
+      }
+      .size-card:has(input:checked) {
+        border-color: #3a7afe;
+        background: #17223f;
+      }
+      .size-card input {
+        accent-color: #3a7afe;
+      }
+
+      button,
+      .btn {
+        background: #3a7afe;
+        color: #fff;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        width: 100%;
+      }
+      button:hover,
+      .btn:hover {
+        background: #2a63e0;
+      }
+      .btn-secondary {
+        background: #262626;
+        border: 1px solid #3a3a3a;
+        color: #ccc;
+      }
+      .btn-secondary:hover {
+        background: #303030;
+      }
+      .action-row {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      /* ---------- Preview area ---------- */
+      .main {
+        flex: 1;
+        padding: 24px 32px;
+        min-width: 0;
+      }
+      .main-header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .main-header h2 {
+        font-size: 15px;
+        color: #eee;
+        margin: 0;
+      }
+      .active-tag {
+        font-size: 12px;
+        color: #888;
+        font-family: monospace;
+      }
+      .preview-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 28px;
+        align-items: flex-start;
+      }
+      .preview-slot {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        background: #161616;
+        border: 1px solid #262626;
+        border-radius: 10px;
+        padding: 14px;
+      }
+      .preview-slot-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .preview-label {
+        font-size: 12px;
+        color: #bbb;
+        font-weight: 600;
+      }
+      .preview-size-badge {
+        font-size: 10.5px;
+        color: #3a7afe;
+        background: #17223f;
+        border-radius: 4px;
+        padding: 2px 6px;
+        font-family: monospace;
+      }
+      .preview-frame {
+        outline: 1px solid #3a3a3a;
+        background: #0a0a0a;
+      }
+      .empty-state {
+        color: #666;
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div>
+          <h1>Contextual Reels</h1>
+          <p class="subtitle">Layout preview utility</p>
+        </div>
+
+        <form id="config-form">
+          <div class="control-group">
+            <span class="group-label">Tag presets</span>
+            <div class="preset-row" id="preset-row">
+              <span class="preset-chip" data-preset="ad">Ad only</span>
+              <span class="preset-chip" data-preset="video">Video only</span>
+              <span class="preset-chip" data-preset="ad+video">Ad + Video</span>
+            </div>
+          </div>
+
+          <div class="control-group" style="margin-top: 16px">
+            <label class="group-label" for="tag-id-input">Tag id (editable)</label>
+            <div class="tag-input-row">
+              <input
+                type="text"
+                id="tag-id-input"
+                name="tagId"
+                placeholder="e.g. your-tag-id"
+                autocomplete="off"
+                spellcheck="false" />
+            </div>
+            <p class="tag-hint">
+              Pick a preset to fill this in, or type/paste any tag id directly —
+              <strong>this field always drives the render.</strong>
+            </p>
+          </div>
+
+          <div class="control-group" style="margin-top: 18px">
+            <fieldset class="control-group" style="margin: 0">
+              <legend class="group-label" style="margin-bottom: 8px">Sizes to render</legend>
+              <div class="size-grid">
+                <label class="size-card">
+                  <input type="checkbox" name="size" value="320x50" />
+                  320 × 50
+                </label>
+                <label class="size-card">
+                  <input type="checkbox" name="size" value="320x100" />
+                  320 × 100
+                </label>
+                <label class="size-card">
+                  <input type="checkbox" name="size" value="300x250" />
+                  300 × 250
+                </label>
+                <label class="size-card">
+                  <input type="checkbox" name="size" value="300x600" />
+                  300 × 600
+                </label>
+              </div>
+            </fieldset>
+          </div>
+
+          <div class="action-row" style="margin-top: 20px">
+            <button type="submit">Render</button>
+            <button type="button" class="btn-secondary" id="copy-link-btn">Copy shareable link</button>
+          </div>
+        </form>
+      </aside>
+
+      <main class="main">
+        <div class="main-header">
+          <h2>Preview</h2>
+          <span class="active-tag" id="active-tag-display"></span>
+        </div>
+        <div class="preview-grid" id="preview-grid"></div>
+      </main>
+    </div>
+
+    <script>
+      // Default tag ids per type — starting points only; the tag-id input is the source of truth.
+      // Replace these placeholders with your own tag ids.
+      const TAG_PRESETS = {
+        ad: "your-ad-only-tag-id",
+        video: "your-video-only-tag-id",
+        "ad+video": "your-ad-plus-video-tag-id",
+      };
+      const SIZE_LABELS = {
+        "320x50": "Mobile Banner",
+        "320x100": "Mobile Banner",
+        "300x250": "Desktop Medium",
+        "300x600": "Desktop Tall",
+      };
+      const DEFAULT_TAG_ID = TAG_PRESETS.ad;
+      const DEFAULT_SIZES = ["320x100"];
+
+      const params = new URLSearchParams(window.location.search);
+      const tagId = params.get("tagId") || DEFAULT_TAG_ID;
+      const sizes = params.getAll("size").length ? params.getAll("size") : DEFAULT_SIZES;
+
+      // Reverse-lookup: does the current tag id match a known preset? Used only to
+      // highlight the matching chip — the input value itself always wins.
+      const matchingPreset = Object.keys(TAG_PRESETS).find((key) => TAG_PRESETS[key] === tagId);
+
+      const form = document.getElementById("config-form");
+      const tagInput = document.getElementById("tag-id-input");
+      const presetRow = document.getElementById("preset-row");
+
+      tagInput.value = tagId;
+      sizes.forEach((size) => {
+        const checkbox = form.querySelector(`input[name="size"][value="${size}"]`);
+        if (checkbox) checkbox.checked = true;
+      });
+
+      function setActivePreset(presetKey) {
+        presetRow.querySelectorAll(".preset-chip").forEach((chip) => {
+          chip.classList.toggle("active", chip.dataset.preset === presetKey);
+        });
+      }
+      setActivePreset(matchingPreset);
+
+      presetRow.querySelectorAll(".preset-chip").forEach((chip) => {
+        chip.addEventListener("click", () => {
+          tagInput.value = TAG_PRESETS[chip.dataset.preset];
+          setActivePreset(chip.dataset.preset);
+          tagInput.focus();
+        });
+      });
+
+      // Typing a custom id clears the preset highlight unless it happens to match one.
+      tagInput.addEventListener("input", () => {
+        const match = Object.keys(TAG_PRESETS).find((key) => TAG_PRESETS[key] === tagInput.value.trim());
+        setActivePreset(match);
+      });
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const formData = new FormData(form);
+        const nextParams = new URLSearchParams();
+        nextParams.set("tagId", (formData.get("tagId") || "").trim());
+        formData.getAll("size").forEach((size) => nextParams.append("size", size));
+        window.location.search = nextParams.toString();
+      });
+
+      document.getElementById("copy-link-btn").addEventListener("click", async () => {
+        const btn = document.getElementById("copy-link-btn");
+        try {
+          await navigator.clipboard.writeText(window.location.href);
+          const original = btn.textContent;
+          btn.textContent = "Copied!";
+          setTimeout(() => (btn.textContent = original), 1200);
+        } catch {
+          // Clipboard API unavailable (e.g. insecure context) — fail silently.
+        }
+      });
+
+      // Reflect current tag id above the preview grid.
+      document.getElementById("active-tag-display").textContent = tagId ? `data-tag-id: ${tagId}` : "";
+
+      // Build the preview slots before the module script (src/index.jsx) queries `.gen-ext`.
+      const grid = document.getElementById("preview-grid");
+      if (!tagId) {
+        const empty = document.createElement("p");
+        empty.className = "empty-state";
+        empty.textContent = "Enter a tag id and click Render.";
+        grid.appendChild(empty);
+      } else if (!sizes.length) {
+        const empty = document.createElement("p");
+        empty.className = "empty-state";
+        empty.textContent = "Select at least one size and click Render.";
+        grid.appendChild(empty);
+      } else {
+        sizes.forEach((size, index) => {
+          const [width, height] = size.split("x").map(Number);
+          if (!width || !height) return;
+
+          const slot = document.createElement("div");
+          slot.className = "preview-slot";
+
+          const header = document.createElement("div");
+          header.className = "preview-slot-header";
+
+          const label = document.createElement("span");
+          label.className = "preview-label";
+          label.textContent = SIZE_LABELS[size] || "Custom";
+
+          const badge = document.createElement("span");
+          badge.className = "preview-size-badge";
+          badge.textContent = `${width}×${height}`;
+
+          header.appendChild(label);
+          header.appendChild(badge);
+          slot.appendChild(header);
+
+          const adNode = document.createElement("div");
+          adNode.id = `gen-ext-${index + 1}`;
+          adNode.className = "gen-ext preview-frame";
+          adNode.style.width = `${width}px`;
+          adNode.style.height = `${height}px`;
+          adNode.setAttribute("data-tag-id", tagId);
+          slot.appendChild(adNode);
+
+          grid.appendChild(slot);
+        });
+      }
+    </script>
+
+    <script type="module" src="./src/index.jsx"></script>
+  </body>
+</html>

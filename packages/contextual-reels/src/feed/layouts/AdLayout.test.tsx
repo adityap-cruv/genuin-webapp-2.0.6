@@ -55,10 +55,8 @@ vi.mock("../../controls/AdControlLayer", () => ({
 vi.mock("../hooks/useInactivityAdvance", () => ({
   useInactivityAdvance: mockUseInactivityAdvance,
 }));
-vi.mock("../../instance/registry/InstanceContext", () => ({
+vi.mock("../../instance/InstanceContext", () => ({
   useInstanceId: () => "test-instance",
-}));
-vi.mock("../../instance/coordination/EventBusContext", () => ({
   useEventBus: () => ({ emit: mockBusEmit, on: vi.fn(() => () => undefined), off: vi.fn() }),
 }));
 vi.mock("../../providers/PlayerProvider", () => ({
@@ -148,13 +146,32 @@ describe("AdLayout handlers", () => {
 
   // ── Non-redirect (default) embeds keep the original tap behavior ──────────
 
-  it("handleAdClick (non-redirect, non-fullscreen): emits ad:unmuteRequest and unmutes, never toggles play", () => {
+  it("handleAdClick (non-redirect, non-fullscreen): emits ad:unmuteRequest, unmutes, and resumes play when paused", () => {
     render();
+    // Ad entries autoplay on activation (a mount effect, not the click handler
+    // under test) — clear that call so the assertion below isolates the click.
+    setPlaying.mockClear();
     const slot = container.querySelector('[data-testid="ad-layout"]') as HTMLElement;
     act(() => slot.click());
     expect(mockBusEmit).toHaveBeenCalledWith("ad:unmuteRequest", {
       containerId: "gen-ad-slot-test-instance-7",
     });
+    expect(setMuted).toHaveBeenCalledWith(false);
+    // isPlaying is false in this suite's beforeEach — a muted+paused tap must resume playback.
+    expect(setPlaying).toHaveBeenCalledWith(true);
+  });
+
+  it("handleAdClick (non-redirect, non-fullscreen): does not touch play state when already playing", () => {
+    mockUsePlayer.mockReturnValue({
+      isMuted: true,
+      isPlaying: true,
+      setMuted,
+      setPlaying,
+    });
+    render();
+    setPlaying.mockClear();
+    const slot = container.querySelector('[data-testid="ad-layout"]') as HTMLElement;
+    act(() => slot.click());
     expect(setMuted).toHaveBeenCalledWith(false);
     expect(setPlaying).not.toHaveBeenCalled();
   });
@@ -302,5 +319,36 @@ describe("AdLayout handlers", () => {
       root.render(React.createElement(AdLayout, { ad: baseAd, isActive: false }));
     });
     expect(lastGenAdSlot()["destroySignal"]).toBe(1);
+  });
+
+  // ─── Additional branch coverage ──────────────────────────────────────────────
+  it("does not treat the ad as an audio ad when audioAds is absent (falls back to false)", () => {
+    render();
+    // audioAds is typed as a required boolean, but upstream data isn't always
+    // guaranteed to conform — the component guards with `ad.audioAds ?? false`.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- exercising the ?? fallback for malformed data
+    const adWithoutAudioAds = { ...baseAd, audioAds: undefined } as any as NormalisedAd;
+    act(() => {
+      root.render(React.createElement(AdLayout, { ad: adWithoutAudioAds, isActive: true }));
+    });
+    expect(mockUseInactivityAdvance).toHaveBeenLastCalledWith(
+      expect.objectContaining({ isActive: false })
+    );
+  });
+
+  it("defaults isMuted to false in AdControlLayer when usePlayer reports undefined", () => {
+    mockUsePlayer.mockReturnValue({ isMuted: undefined, isPlaying: false, setMuted, setPlaying });
+    render();
+    const layer = capturedAdControlLayerProps.at(-1);
+    expect(layer?.["isMuted"]).toBe(false);
+  });
+
+  it("AdControlLayer onPlayClick toggles play state via setPlaying(!isPlaying)", () => {
+    render();
+    const layer = capturedAdControlLayerProps.at(-1);
+    const onPlayClick = layer?.["onPlayClick"] as () => void;
+    act(() => onPlayClick());
+    // isPlaying starts false in the default mock → toggled to true.
+    expect(setPlaying).toHaveBeenCalledWith(true);
   });
 });

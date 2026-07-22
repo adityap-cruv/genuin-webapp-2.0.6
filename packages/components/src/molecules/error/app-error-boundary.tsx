@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@genuin/ui/button";
-import { RefreshCcw } from "lucide-react";
 import type { ErrorInfo, ReactNode } from "react";
 import { Component } from "react";
 
@@ -95,12 +94,8 @@ export class AppErrorBoundary extends Component<AppErrorBoundaryProps, AppErrorB
           <p className="gencl:mb-4 gencl:text-sm gencl:text-secondary-600">
             Something went wrong while loading this section. Please try again.
           </p>
-          <Button
-            theme="outline"
-            size="sm"
-            onClick={this.retry}
-            className="gencl:flex gencl:items-center gencl:gap-2">
-            <RefreshCcw className="gencl:h-4 gencl:w-4" /> Try again
+          <Button theme="outline" size="sm" onClick={this.retry}>
+            Try again
           </Button>
         </div>
       );

@@ -158,12 +158,46 @@ describe("RudderstackEventBuffer", () => {
       expect(buffer.getQueueSize()).toBe(0);
     });
 
+    it("emits queued events in FIFO order via the explicit flush() loop", () => {
+      // No emitter armed and no mandatory data → events stay queued (never auto-flushed
+      // by checkAndFlush), so the explicit flush(emitter) for-loop is what drains them.
+      buffer.enqueue("event-1", () => ({ order: 1 }));
+      buffer.enqueue("event-2", () => ({ order: 2 }));
+      buffer.enqueue("event-3", () => ({ order: 3 }));
+      expect(buffer.getQueueSize()).toBe(3);
+
+      const emitter = vi.fn();
+      buffer.flush(emitter);
+
+      expect(emitter.mock.calls).toEqual([
+        ["event-1", { order: 1 }],
+        ["event-2", { order: 2 }],
+        ["event-3", { order: 3 }],
+      ]);
+      expect(buffer.getQueueSize()).toBe(0);
+      expect(buffer.getState()).toBe("flushed");
+    });
+
     it("prevents duplicate flush", () => {
       const emitter = vi.fn();
       buffer.setEmitter(emitter);
       buffer.flush(emitter);
       buffer.flush(emitter); // Second flush should be ignored
 
+      expect(buffer.isFlushed()).toBe(true);
+    });
+
+    it("checkAndFlush early-returns once already flushed (setMandatoryData after flush)", () => {
+      const emitter = vi.fn();
+      buffer.flush(emitter); // sets flushed = true
+
+      // setMandatoryData → checkAndFlush must hit the `if (this.flushed) return` guard
+      // and emit nothing new; the buffer stays flushed.
+      buffer.setMandatoryData({ visit_id: "abc123" });
+      buffer.markUnavailable("visit_id");
+
+      expect(emitter).not.toHaveBeenCalled();
+      expect(buffer.getState()).toBe("flushed");
       expect(buffer.isFlushed()).toBe(true);
     });
 

@@ -2,7 +2,7 @@
  * Tests for src/config.ts — merged from config/env, config/constants,
  * config/adLayouts, config/tagAllowLists tests.
  */
-import { afterEach, describe, it, expect } from "vitest";
+import { afterEach, describe, it, expect, vi } from "vitest";
 
 import * as config from "@cxr/config";
 import {
@@ -18,8 +18,10 @@ import {
   shouldUseStackedLayout,
   resolveStackedLayout,
   isLocalhost,
+  getScriptParam,
   STACKED_LAYOUT_TAG_ID,
   STACKED_LAYOUT_TAGS,
+  STACKED_VARIANT_PARAM,
   type AdLayoutId,
 } from "@cxr/config";
 
@@ -363,6 +365,71 @@ describe("config/stackedLayout", () => {
     expect(Object.keys(STACKED_LAYOUT_TAGS)).toEqual(
       expect.arrayContaining([STACKED_LAYOUT_TAG_ID, TAG_300x600])
     );
+  });
+
+  it("falls back to the raw needle test when the referrer is not a parseable URL", () => {
+    // "http://%" fails `new URL()` (caught, falls through) AND fails
+    // `decodeURIComponent` (caught, falls back to the raw string) — the raw
+    // string still contains the needle, so the match still succeeds.
+    setSearch("", "throw", "example.com", "http://%gen_variant=stacked");
+    expect(hasStackedVariant()).toBe(true);
+  });
+
+  it("returns false (not throw) when reading document.referrer itself throws", () => {
+    setSearch("", "throw");
+    const referrerSpy = vi.spyOn(document, "referrer", "get").mockImplementation(() => {
+      throw new Error("referrer blocked");
+    });
+    try {
+      expect(hasStackedVariant()).toBe(false);
+    } finally {
+      referrerSpy.mockRestore();
+    }
+  });
+});
+
+// ─── getScriptParam ───────────────────────────────────────────────────────────
+
+describe("config/getScriptParam", () => {
+  afterEach(() => {
+    delete (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__;
+  });
+
+  it("returns undefined when the named param is absent from a non-empty query", () => {
+    (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__ = "foo=bar";
+    expect(getScriptParam(STACKED_VARIANT_PARAM)).toBeUndefined();
+  });
+
+  it("returns undefined when window is undefined (SSR guard)", () => {
+    vi.stubGlobal("window", undefined);
+    try {
+      expect(getScriptParam(STACKED_VARIANT_PARAM)).toBeUndefined();
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+});
+
+// ─── SSR guards (typeof window === "undefined") ───────────────────────────────
+
+describe("config/ssrGuards", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("hasStackedVariant returns false when window is undefined", () => {
+    vi.stubGlobal("window", undefined);
+    expect(hasStackedVariant()).toBe(false);
+  });
+
+  it("isLocalhost returns false when window is undefined", () => {
+    vi.stubGlobal("window", undefined);
+    expect(isLocalhost()).toBe(false);
+  });
+
+  it("isIframe returns false when window is undefined", () => {
+    vi.stubGlobal("window", undefined);
+    expect(isIframe()).toBe(false);
   });
 });
 

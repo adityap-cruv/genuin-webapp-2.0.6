@@ -37,7 +37,10 @@ type ButtonTheme =
   | undefined;
 type ButtonClickHandler = (e: React.MouseEvent<HTMLButtonElement>) => void;
 
-// Icon component type
+// Icon component type. Each @genuin/ui/icons component has its own narrower
+// theme/size variant union (contravariant in its props), so no single prop
+// type is assignable to all of them — `any` is intentional here.
+
 type IconComponent = React.ComponentType<any>;
 
 // Navigation button creation parameters
@@ -380,7 +383,13 @@ export function NavigationButtonsWithContext({
       setIsPrevDisabled(activeIndex === 0);
       setIsNextDisabled(activeIndex === totalSlides - 1);
     }
-  }, [activeIndex, totalSlides, isIheartLayout, getSlideVisibilityPercentage]);
+  }, [
+    activeIndex,
+    totalSlides,
+    isIheartLayout,
+    getSlideVisibilityPercentage,
+    config.embedSwiperConfigs.useWindowSwiperMode,
+  ]);
 
   // Update disabled state when dependencies change
   useEffect(() => {

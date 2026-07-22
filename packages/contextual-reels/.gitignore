@@ -9,6 +9,14 @@ test-results
 *.log
 .DS_Store
 
+# Ad resource-budget harness reports (regenerated on each `pnpm run budget*`)
+ad-budget-report.json
+ad-budget-report.*.json
+
+# The root .gitignore has a blanket `*.html` rule; the CXR budget snippet is a
+# committed source file, so un-ignore it explicitly.
+!ad-resource-budget/cxr/tag-snippet.html
+
 # Local env files — may contain real credentials; never commit
 .env.development
 .env.production

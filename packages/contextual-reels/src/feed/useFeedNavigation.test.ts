@@ -323,6 +323,21 @@ describe("useEmblaFeed", () => {
     expect(captured.visibleIndices).toEqual(new Set([0, 1, 2]));
   });
 
+  it("does nothing when select fires after the emblaApi is gone", () => {
+    const { api, fireSelect } = makeMockEmblaApi(0);
+    render(api);
+    // Drop the API ref then fire — handleSelect must early-return, not throw,
+    // and must not report any slide-away/enter transition.
+    render(null);
+    expect(() => {
+      act(() => {
+        fireSelect(1);
+      });
+    }).not.toThrow();
+    expect(onSlideAway).not.toHaveBeenCalled();
+    expect(onSlideEnter).not.toHaveBeenCalled();
+  });
+
   it("does nothing when slidesInView fires after the emblaApi is gone", () => {
     const { api, fireSlidesInView } = makeMockEmblaApi(0);
     render(api);

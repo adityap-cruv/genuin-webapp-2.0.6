@@ -11,65 +11,23 @@ import { createRoot } from "react-dom/client";
 import type { Root } from "react-dom/client";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
+import { makeFeedEntry } from "@cxr/__fixtures__/feedEntries";
 import { ReelItem } from "@cxr/feed/ReelItem";
-import type { FeedEntry, NormalisedReel, NormalisedAd, TagResponse } from "@cxr/types";
+import type { FeedEntry } from "@cxr/types";
 
 /** Captures props passed to VideoLayout so tests can assert on forwarded values. */
 const capturedVideoLayoutProps: Record<string, unknown>[] = [];
 
-vi.mock("./layouts", () => ({
-  AdLayout: () => React.createElement("div", { "data-testid": "ad-layout" }),
+vi.mock("@cxr/feed/layouts/VideoLayout", () => ({
   VideoLayout: (props: Record<string, unknown>) => {
     capturedVideoLayoutProps.push(props);
     return React.createElement("div", { "data-testid": "video-layout" });
   },
 }));
 
-const BASE_REEL: NormalisedReel = {
-  kind: "video",
-  id: 0,
-  active: true,
-  videoUrl: null,
-  videoType: null,
-  thumb: null,
-  user: null,
-  community: null,
-  cta: null,
-  loop: null,
-  ogDetails: null,
-  owner: null,
-  config: null,
-  video: null,
-};
-
-const BASE_AD: NormalisedAd = {
-  kind: "ad",
-  id: 1,
-  active: false,
-  videoUrl: null,
-  videoType: null,
-  audioAds: false,
-  videoAds: true,
-  videoAd: "https://example.com/vast.xml",
-  videoAdAdvertiserDetails: undefined,
-  videoAdContentVideo: undefined,
-  displayAd: undefined,
-  nativeAd: undefined,
-  videoPlatform: "gen_video",
-  nativePlatform: undefined,
-  displayPlatform: undefined,
-  adUrl: "https://example.com/vast.xml",
-  gateOnUnmute: false,
-};
-
-const makeReelEntry = (): FeedEntry => ({ kind: "video", data: BASE_REEL });
-const makeVideoWithAdEntry = (): FeedEntry => ({
-  kind: "video-with-ad",
-  data: { ...BASE_REEL, kind: "video-with-ad", adObject: BASE_AD },
-});
-const makeAdEntry = (): FeedEntry => ({ kind: "ad", data: BASE_AD });
-
-const baseTagDetails: TagResponse = { tag_id: "tag-1" };
+vi.mock("@cxr/feed/layouts/AdLayout", () => ({
+  AdLayout: () => React.createElement("div", { "data-testid": "ad-layout" }),
+}));
 
 describe("ReelItem routing", () => {
   let container: HTMLDivElement;
@@ -87,55 +45,58 @@ describe("ReelItem routing", () => {
     document.body.removeChild(container);
   });
 
-  function render(entry: FeedEntry, tagDetails: TagResponse = baseTagDetails) {
-    act(() => {
+  async function render(entry: FeedEntry) {
+    await act(async () => {
       root.render(
-        React.createElement(ReelItem, {
-          entry,
-          isActive: true,
-          tagDetails,
-          onTimeUpdate: () => undefined,
-        })
+        React.createElement(
+          React.Suspense,
+          { fallback: null },
+          React.createElement(ReelItem, {
+            entry,
+            isActive: true,
+            onTimeUpdate: () => undefined,
+          })
+        )
       );
     });
   }
 
-  it("routes ad entry (kind=ad) to AdLayout", () => {
-    render(makeAdEntry());
+  it("routes ad entry (kind=ad) to AdLayout", async () => {
+    await render(makeFeedEntry("ad"));
     expect(container.querySelector('[data-testid="ad-layout"]')).toBeTruthy();
   });
 
-  it("routes reel entry (kind=video) to VideoLayout", () => {
-    render(makeReelEntry());
+  it("routes reel entry (kind=video) to VideoLayout", async () => {
+    await render(makeFeedEntry("video"));
     expect(container.querySelector('[data-testid="video-layout"]')).toBeTruthy();
   });
 
-  it("routes video-with-ad entry to VideoLayout (unified)", () => {
-    render(makeVideoWithAdEntry());
+  it("routes video-with-ad entry to VideoLayout (unified)", async () => {
+    await render(makeFeedEntry("video-with-ad"));
     expect(container.querySelector('[data-testid="video-layout"]')).toBeTruthy();
     // Verify adObject is forwarded so VideoLayout can gate the ad break overlay.
     expect(capturedVideoLayoutProps.some((p) => p["adObject"] != null)).toBe(true);
   });
 
-  it("does not render VideoLayout for an ad entry", () => {
-    render(makeAdEntry());
+  it("does not render VideoLayout for an ad entry", async () => {
+    await render(makeFeedEntry("ad"));
     expect(container.querySelector('[data-testid="video-layout"]')).toBeNull();
   });
 
-  it("does not render AdLayout for a reel entry", () => {
-    render(makeReelEntry());
+  it("does not render AdLayout for a reel entry", async () => {
+    await render(makeFeedEntry("video"));
     expect(container.querySelector('[data-testid="ad-layout"]')).toBeNull();
   });
 
-  it("does not render AdLayout for a video-with-ad entry", () => {
-    render(makeVideoWithAdEntry());
+  it("does not render AdLayout for a video-with-ad entry", async () => {
+    await render(makeFeedEntry("video-with-ad"));
     expect(container.querySelector('[data-testid="ad-layout"]')).toBeNull();
   });
 
-  it("renders an empty fragment for an unrecognised entry kind", () => {
+  it("renders an empty fragment for an unrecognised entry kind", async () => {
     // Defensive fallback: a kind outside the 3-branch router renders nothing.
-    const unknownEntry = { kind: "unknown", data: BASE_REEL } as unknown as FeedEntry;
-    render(unknownEntry);
+    const unknownEntry = { kind: "unknown", data: makeFeedEntry("video").data } as unknown as FeedEntry;
+    await render(unknownEntry);
     expect(container.querySelector('[data-testid="ad-layout"]')).toBeNull();
     expect(container.querySelector('[data-testid="video-layout"]')).toBeNull();
   });

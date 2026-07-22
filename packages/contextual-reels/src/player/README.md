@@ -31,20 +31,29 @@ All analytics calls go through the `sendEvent` function from `useAnalytics()`.
 
 ## HLS gating
 
+- **`hls.js/light` build** — the player dynamically imports `hls.js/light`, not
+  the full `hls.js`. CXR uses only a subset of the API (isSupported, the
+  buffer-limited constructor, loadSource/attachMedia/startLoad/stopLoad/destroy,
+  `MANIFEST_PARSED`, lowest-level pinning) and none of the features the light
+  build drops (alternate audio tracks, subtitles, EME/DRM, low-latency), so the
+  chunk is ~240 KB smaller. Types come from `hls.js` (the light subpath ships no
+  `.d.ts`); see `src/types/hls-light.d.ts`.
+
 - **`autoStartLoad: false`** — HLS.js will not fetch any segments until we
   explicitly call `startLoad()`. This saves mobile bandwidth for off-screen
   slides that are preloaded in the DOM but not yet playing.
 
-- **Immediate `startLoad(-1)` after `attachMedia`** — even though `isPlay` may
-  be `false` at this point, we must call `startLoad` once so that HLS loads
-  enough metadata (the manifest + first segment headers) for the `<video>`
-  element to emit `loadedmetadata`. Without this, Vlitejs blocks in its
-  `onReady` callback forever — a deadlock.
+- **`startLoad(-1)` at mount only for the active slide** — the eager mount-time
+  load is gated on `isPlayRef.current`. The active slide loads immediately (so it
+  plays instantly and Vlitejs can fire `onReady`). Inactive mounted slides do
+  **not** eager-load — every mounted m3u8 slide used to `startLoad(-1)` here,
+  pulling N slides' first segments into Chrome's Heavy Ad Intervention budget.
+  An inactive slide defers its load until it becomes active.
 
-- **`startLoad` / `stopLoad` toggled by `isPlay` after ready** — once the
-  player has fired `onReady` the normal gating takes effect: the swiper sets
-  `isPlay=true` on the active slide and `isPlay=false` on adjacent slides,
-  allowing HLS to pause segment downloads for invisible items.
+- **`startLoad` / `stopLoad` toggled by `isPlay`** — an inactive slide starts
+  loading when the swiper flips `isPlay=true` (this call sits *above* the
+  `isPlayerReady` guard, so a swipe-in before `onReady` still kicks off the load
+  and unblocks `onReady`); an active slide that goes inactive calls `stopLoad()`.
 
 ---
 

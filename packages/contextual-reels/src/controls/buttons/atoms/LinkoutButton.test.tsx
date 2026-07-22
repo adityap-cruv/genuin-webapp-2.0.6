@@ -29,6 +29,16 @@ describe('LinkoutButton', () => {
     expect(anchor.rel).toContain('noopener');
   });
 
+  it('neutralizes a javascript: href to # (XSS guard)', () => {
+    act(() => {
+      root.render(<LinkoutButton href="javascript:alert(1)" caption="Order Now" />);
+    });
+    const anchor = container.querySelector('a')!;
+    // href resolves to the page URL + "#", never the javascript: scheme.
+    expect(anchor.getAttribute('href')).toBe('#');
+    expect(anchor.protocol).not.toBe('javascript:');
+  });
+
   it('shows caption text', () => {
     act(() => {
       root.render(<LinkoutButton href="https://example.com" caption="Shop Now" />);

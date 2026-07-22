@@ -6,10 +6,9 @@
  */
 import React, { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 
-import { EventBusProvider } from "@cxr/instance/coordination/EventBusContext";
-import { InstanceProvider } from "@cxr/instance/registry/InstanceContext";
+import { InstanceProvider } from "@cxr/instance/InstanceContext";
 import { getInstanceRegistry } from "@cxr/instance/registry/InstanceRegistry";
 import { useInstanceRegistration } from "@cxr/instance/registry/useInstanceRegistration";
 
@@ -18,9 +17,9 @@ let root: Root;
 let unmounted = false;
 
 /** Mounts the hook for the given instanceId inside the required providers. */
-function setup(instanceId: string, pause: () => void): void {
+function setup(instanceId: string): void {
   function Consumer(): React.JSX.Element {
-    useInstanceRegistration(pause);
+    useInstanceRegistration();
     return <span />;
   }
   container = document.createElement("div");
@@ -30,9 +29,7 @@ function setup(instanceId: string, pause: () => void): void {
   act(() => {
     root.render(
       <InstanceProvider instanceId={instanceId}>
-        <EventBusProvider>
-          <Consumer />
-        </EventBusProvider>
+        <Consumer />
       </InstanceProvider>
     );
   });
@@ -60,29 +57,22 @@ describe("useInstanceRegistration", () => {
   });
 
   it("registers controls into the InstanceRegistry on mount", () => {
-    setup("inst-reg-1", vi.fn());
+    setup("inst-reg-1");
     expect(getInstanceRegistry().get("inst-reg-1")).toBeDefined();
   });
 
-  it("registered pause control invokes the supplied pause function", () => {
-    const pause = vi.fn();
-    setup("inst-reg-2", pause);
-    getInstanceRegistry().get("inst-reg-2")!.pause();
-    expect(pause).toHaveBeenCalledOnce();
-  });
-
   it("expand control emits video:expand on the per-instance bus", () => {
-    setup("inst-reg-3", vi.fn());
+    setup("inst-reg-3");
     expect(() => getInstanceRegistry().get("inst-reg-3")!.expand()).not.toThrow();
   });
 
   it("collapse control emits video:collapse on the per-instance bus", () => {
-    setup("inst-reg-4", vi.fn());
+    setup("inst-reg-4");
     expect(() => getInstanceRegistry().get("inst-reg-4")!.collapse()).not.toThrow();
   });
 
   it("unregisters from the InstanceRegistry on unmount", () => {
-    setup("inst-reg-5", vi.fn());
+    setup("inst-reg-5");
     expect(getInstanceRegistry().get("inst-reg-5")).toBeDefined();
     teardown();
     expect(getInstanceRegistry().get("inst-reg-5")).toBeUndefined();

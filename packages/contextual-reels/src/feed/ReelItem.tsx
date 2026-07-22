@@ -8,35 +8,42 @@
  *
  * Both video kinds use the unified VideoLayout — the adObject prop
  * gates the ad break overlay internally. ReelItem itself is a pure 3-branch router.
+ *
+ * VideoLayout and AdLayout are loaded via `React.lazy` so their JS (LightPlayer +
+ * control layers + player pipeline, and GenAdSlot + ad SDK, respectively) splits
+ * into separate chunks off the initial index bundle. ReelItem does not own a
+ * Suspense boundary itself — the required one is the Suspense that Feed wraps
+ * around each mounted ReelItem.
  */
+import { lazy } from "react";
+
 import type { ControlLayerVariant } from "@cxr/controls/control-layer.types";
-import { VideoLayout, AdLayout } from "@cxr/feed/layouts";
-import type { FeedEntry, TagResponse } from "@cxr/types";
+import type { FeedEntry } from "@cxr/types";
+
+// VideoLayout (LightPlayer + control layers + player pipeline) and AdLayout
+// (GenAdSlot + ad SDK) load as separate chunks so their JS leaves the initial
+// index bundle. Because Feed only renders ReelItem for the active slide, the
+// chunk downloads exactly when the first slide of that kind activates. The
+// required Suspense boundary is the Suspense in Feed.
+const VideoLayout = lazy(() => import("@cxr/feed/layouts/VideoLayout").then((m) => ({ default: m.VideoLayout })));
+const AdLayout = lazy(() => import("@cxr/feed/layouts/AdLayout").then((m) => ({ default: m.AdLayout })));
 
 /** Props for {@link ReelItem}. */
 interface ReelItemProps {
   entry: FeedEntry;
   isActive: boolean;
-  tagDetails: TagResponse;
   variant?: ControlLayerVariant;
   onTimeUpdate: (index: number, currentTime: number, duration: number) => void;
-  /** Advance the carousel one slide — called on ad fail/complete or video end. */
   onAutoAdvance?: () => void;
 }
 
 /**
  * Route a single feed entry to its layout component.
  *
- * @param props  entry, isActive flag, tagDetails, onTimeUpdate, and onAutoAdvance callback.
+ * @param props  entry, isActive flag, onTimeUpdate, and onAutoAdvance callback.
+ *   tagDetails is read from {@link useTagDetails} by VideoLayout directly.
  */
-export function ReelItem({
-  entry,
-  isActive,
-  tagDetails,
-  variant,
-  onTimeUpdate,
-  onAutoAdvance,
-}: ReelItemProps): React.JSX.Element {
+export function ReelItem({ entry, isActive, variant, onTimeUpdate, onAutoAdvance }: ReelItemProps): React.JSX.Element {
   if (entry.kind === "ad") {
     return <AdLayout ad={entry.data} isActive={isActive} onAutoAdvance={onAutoAdvance} />;
   }
@@ -46,7 +53,6 @@ export function ReelItem({
       <VideoLayout
         reel={entry.data}
         isActive={isActive}
-        tagDetails={tagDetails}
         variant={variant}
         onTimeUpdate={onTimeUpdate}
         onAutoAdvance={onAutoAdvance}
@@ -60,7 +66,6 @@ export function ReelItem({
       <VideoLayout
         reel={entry.data}
         isActive={isActive}
-        tagDetails={tagDetails}
         variant={variant}
         onTimeUpdate={onTimeUpdate}
         onAutoAdvance={onAutoAdvance}

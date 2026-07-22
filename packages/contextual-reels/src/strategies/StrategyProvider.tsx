@@ -7,9 +7,11 @@
 import { createContext, useContext, useMemo, type ReactNode } from "react";
 
 import { getInitVolumeOverride } from "@cxr/config";
+import { useTagDetails } from "@cxr/providers/TagDetailsProvider";
 import {
   applyExperiment,
   DEFAULT_STRATEGIES,
+  getExperimentRoll,
   resolveStrategies,
   type Strategies,
 } from "@cxr/strategies/strategies";
@@ -19,10 +21,6 @@ const StrategyContext = createContext<Strategies | undefined>(undefined);
 
 interface StrategyProviderProps {
   children: ReactNode;
-  /** Tag the strategy decisions are resolved for. */
-  tagId: string;
-  /** Active tag's `brand_id` (from `tagDetails`), if resolved yet. */
-  brandId?: number;
   /**
    * Raw `data-giv` attribute for this instance — the per-div fallback for the
    * initial-volume override when the page-global `GIV` script param is absent.
@@ -33,19 +31,19 @@ interface StrategyProviderProps {
 /**
  * Provide feature decisions for the active tag.
  *
+ * Reads `tagId`/`brandId` from {@link useTagDetails} rather than props —
+ * `TagDetailsProvider` is already an ancestor by the time this mounts.
+ *
  * @example
  * ```tsx
- * <StrategyProvider tagId={tagId} brandId={tagDetails?.brand_id}>
+ * <StrategyProvider dataGiv={dataGiv}>
  *   <Feed ... />
  * </StrategyProvider>
  * ```
  */
-export function StrategyProvider({
-  children,
-  tagId,
-  brandId,
-  dataGiv,
-}: StrategyProviderProps): ReactNode {
+export function StrategyProvider({ children, dataGiv }: StrategyProviderProps): ReactNode {
+  const { tagId, brandId, tagDetails } = useTagDetails();
+
   // Roll the experiment bucket once per mount (per page load): the draw is taken
   // inside useMemo keyed on tagId so the bucket stays stable for the session but
   // varies load-to-load. applyExperiment is a no-op for tags with no experiment.
@@ -55,7 +53,7 @@ export function StrategyProvider({
     const resolved = applyExperiment(
       resolveStrategies(tagId, brandId),
       tagId,
-      Math.random(),
+      getExperimentRoll(tagId),
       isAdVerificationCrawler()
     );
     // The initial-volume override wins over the resolved config when present and
@@ -63,10 +61,16 @@ export function StrategyProvider({
     // audible-ad-start, and the manual-unmute restore level). Precedence: the
     // page-global `GIV` script param first, then this instance's `data-giv`.
     const initVolumeOverride = getInitVolumeOverride(dataGiv);
-    return initVolumeOverride === undefined
-      ? resolved
-      : { ...resolved, initialVolume: initVolumeOverride };
-  }, [tagId, brandId, dataGiv]);
+    const withVolume =
+      initVolumeOverride === undefined ? resolved : { ...resolved, initialVolume: initVolumeOverride };
+
+    // Dashboard `enable_ask_question` wins over the strategyConfig allowlist when present
+    // (drives live preview toggling); an absent key defers to the allowlist.
+    const enableAskQuestion = tagDetails?.config?.enable_ask_question;
+    return typeof enableAskQuestion === "boolean"
+      ? { ...withVolume, genAiEnabled: enableAskQuestion }
+      : withVolume;
+  }, [tagId, brandId, dataGiv, tagDetails?.config?.enable_ask_question]);
   return <StrategyContext.Provider value={value}>{children}</StrategyContext.Provider>;
 }
 

@@ -86,6 +86,12 @@ export interface CompactControlBarProps extends React.HTMLAttributes<HTMLDivElem
    * path threads it in explicitly via `AdControlBar`.
    */
   redirectMode?: boolean;
+  /**
+   * Whether tap-to-expand / the expand button is enabled for this tag. Sourced
+   * from `config.on_click === "fullscreen"`. Absent config ⇒ enabled (default).
+   * Independent of {@link redirectMode}, which is the brand fullscreen-redirect case.
+   */
+  expandEnabled?: boolean;
 }
 
 /**
@@ -110,6 +116,7 @@ export function CompactControlBar({
   useV2Icons = false,
   showWatchInSm = false,
   redirectMode = false,
+  expandEnabled = true,
   className,
   ...rest
 }: CompactControlBarProps): React.JSX.Element {
@@ -135,15 +142,19 @@ export function CompactControlBar({
   // Linkout needs the md row height; in sm the CTA only affects Watch sizing.
   const showLinkout = hasCta && size === "md";
   const handleWatch = onWatchClick ?? onFullScreenClick ?? noop;
-  // Redirect mode hides the expand button (there is no fullscreen to expand into).
-  const hideExpand = redirectMode;
-  // Redirect mode + md: the LinkoutButton already carries the CTA click-through,
-  // so the Watch button is dropped. sm has no linkout, so instead of hiding its
-  // Watch button we keep it and repoint it at the CTA url (see `watchHref`).
-  const hideWatch = redirectMode && size === "md";
+  // Redirect mode hides the expand button (there is no fullscreen to expand into);
+  // so does an ad tag that opted out of expansion (config.on_click !== "fullscreen").
+  const hideExpand = redirectMode || !expandEnabled;
   // sm redirect: turn the Watch button into a link-out to the ad CTA. Only when
   // a CTA url exists to open; otherwise the plain Watch (expand) button stays.
   const watchHref = redirectMode && size === "sm" && cta?.url ? cta.url : undefined;
+  // Redirect mode + md: the LinkoutButton already carries the CTA click-through,
+  // so the Watch button is dropped. sm has no linkout, so instead of hiding its
+  // Watch button we keep it and repoint it at the CTA url (see `watchHref`) — a
+  // real link-out, not an expand entry point, so it survives expandEnabled=false.
+  // Outside redirect mode, Watch IS an expand entry point (handleWatch falls back
+  // to onFullScreenClick), so it hides whenever expand itself is disabled.
+  const hideWatch = (redirectMode && size === "md") || (!expandEnabled && watchHref === undefined);
 
   // 320×50 (sm) → xs, 320×100 (md) → sm — matches resolveCxrControlSize's collapsed row.
   const v2Size: PlayerControlSize = size === "sm" ? "xs" : "sm";
@@ -246,9 +257,7 @@ export function CompactControlBar({
                 WebkitBackdropFilter: "blur(7.5px)",
               }}>
               <div className="cxr-ticker-mask gencl:w-full gencl:max-w-full">
-                <div
-                  className="cxr-ticker-track"
-                  style={{ ["--cxr-ticker-duration" as string]: `${tickerDuration}s` }}>
+                <div className="cxr-ticker-track" style={{ ["--cxr-ticker-duration" as string]: `${tickerDuration}s` }}>
                   {[false, true].map((isClone) => (
                     <span
                       key={isClone ? "clone" : "main"}

@@ -1,9 +1,6 @@
-import { isIframe } from "@cxr/config";
+import { XIcon } from "@genuin/ui/icons/primary-icons/x-icon";
 
 export function CloseButton({ onClick }: { onClick: () => void }): React.JSX.Element | null {
-  // Hide close button inside iframe
-  if (isIframe()) return null;
-
   return (
     <button
       onClick={onClick}
@@ -15,10 +12,7 @@ export function CloseButton({ onClick }: { onClick: () => void }): React.JSX.Ele
         "gencl:-top-[13px] gencl:-right-[2px]",
       ].join(" ")}
       style={{ background: "rgba(0,0,0,0.7)" }}>
-      <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <line x1="1.5" y1="1.5" x2="6.5" y2="6.5" stroke="#fff" strokeWidth="1.4" strokeLinecap="round" />
-        <line x1="6.5" y1="1.5" x2="1.5" y2="6.5" stroke="#fff" strokeWidth="1.4" strokeLinecap="round" />
-      </svg>
+      <XIcon theme="dark" size="xxs" />
     </button>
   );
 }

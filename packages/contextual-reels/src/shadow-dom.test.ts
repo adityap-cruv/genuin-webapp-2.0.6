@@ -8,6 +8,43 @@ import {
   setupCxrShadowDOM,
 } from "@cxr/shadow-dom";
 
+/**
+ * jsdom implements neither constructable stylesheets (`new CSSStyleSheet().replaceSync`)
+ * nor `ShadowRoot.adoptedStyleSheets`. Install a minimal shim so tests can exercise the
+ * adopt path that real browsers take. Each installed piece is torn down in afterEach via
+ * the returned disposers array. Call once per test that needs the adopt path.
+ */
+const shimDisposers: Array<() => void> = [];
+function withConstructableStyleSheets(): void {
+  const proto = CSSStyleSheet.prototype as unknown as { replaceSync?: (text: string) => void };
+  if (typeof proto.replaceSync !== "function") {
+    proto.replaceSync = function replaceSync(this: { __cssText?: string }, text: string) {
+      this.__cssText = text;
+    };
+    shimDisposers.push(() => {
+      delete proto.replaceSync;
+    });
+  }
+  // `adoptedStyleSheets` is a per-ShadowRoot accessor in browsers; shim it as a plain
+  // backing array so setter assignment + `.length` reads work under jsdom.
+  const srProto = ShadowRoot.prototype as unknown as { adoptedStyleSheets?: unknown };
+  if (!("adoptedStyleSheets" in srProto)) {
+    const store = new WeakMap<object, CSSStyleSheet[]>();
+    Object.defineProperty(srProto, "adoptedStyleSheets", {
+      configurable: true,
+      get(this: object) {
+        return store.get(this) ?? [];
+      },
+      set(this: object, sheets: CSSStyleSheet[]) {
+        store.set(this, sheets);
+      },
+    });
+    shimDisposers.push(() => {
+      delete (srProto as { adoptedStyleSheets?: unknown }).adoptedStyleSheets;
+    });
+  }
+}
+
 describe("setupCxrShadowDOM", () => {
   let node: HTMLDivElement;
 
@@ -25,6 +62,7 @@ describe("setupCxrShadowDOM", () => {
   afterEach(() => {
     node.remove();
     vi.unstubAllGlobals();
+    while (shimDisposers.length) shimDisposers.pop()!();
   });
 
   it("attaches a shadow root to the node", async () => {
@@ -46,7 +84,134 @@ describe("setupCxrShadowDOM", () => {
     expect(node.shadowRoot!.querySelectorAll("[data-cxr-mount]")).toHaveLength(1);
   });
 
-  it("clones the CXR CSS link into the shadow root when present in document", async () => {
+  it("adopts the fetched CXR CSS into the shadow root via adoptedStyleSheets (no extra <link> fetch)", async () => {
+    withConstructableStyleSheets();
+    const cssText = ".gencl\\:flex{display:flex}";
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, text: () => Promise.resolve(cssText) }));
+
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "https://cdn.example.com/assets/cxr-abc123.css";
+    link.setAttribute("data-genuin-cxr", "css");
+    document.head.appendChild(link);
+
+    await setupCxrShadowDOM(node);
+
+    // Style lives in a constructed stylesheet, not a second network-fetching <link>.
+    const sheets = node.shadowRoot!.adoptedStyleSheets;
+    expect(sheets.length).toBeGreaterThan(0);
+    expect(node.shadowRoot!.querySelectorAll('link[href*="cxr-abc123.css"]')).toHaveLength(0);
+    link.remove();
+  });
+
+  it("fetches the CXR CSS only once (text reused for both the shadow sheet and @property hoist)", async () => {
+    const cssText = "@property --a{syntax:'<color>';inherits:false;initial-value:red}.gencl\\:flex{display:flex}";
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, text: () => Promise.resolve(cssText) });
+    vi.stubGlobal("fetch", fetchMock);
+    vi.stubGlobal("CSS", { registerProperty: vi.fn() });
+
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "https://cdn.example.com/assets/cxr-abc123.css";
+    link.setAttribute("data-genuin-cxr", "css");
+    document.head.appendChild(link);
+
+    await setupCxrShadowDOM(node);
+
+    const cxrFetches = fetchMock.mock.calls.filter((c) => String(c[0]).includes("cxr-abc123.css"));
+    expect(cxrFetches).toHaveLength(1);
+    link.remove();
+  });
+
+  it("reuses the loaded <link>'s CSSOM (no network fetch) when the sheet is readable", async () => {
+    withConstructableStyleSheets();
+    // The head <link> has already downloaded + parsed cxr.css, so its sheet.cssRules
+    // is populated. jsdom never parses linked CSS, so stub the sheet to model a
+    // production browser where the bytes are already in the CSSOM.
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, text: () => Promise.resolve("") });
+    vi.stubGlobal("fetch", fetchMock);
+    vi.stubGlobal("CSS", { registerProperty: vi.fn() });
+
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "https://cdn.example.com/assets/cxr-abc123.css";
+    link.setAttribute("data-genuin-cxr", "css");
+    document.head.appendChild(link);
+    Object.defineProperty(link, "sheet", {
+      configurable: true,
+      value: {
+        cssRules: [
+          { cssText: "@property --a{syntax:'<color>';inherits:false;initial-value:red}" },
+          { cssText: ".gencl\\:flex{display:flex}" },
+        ],
+      },
+    });
+
+    await setupCxrShadowDOM(node);
+
+    // The whole point of the fix: the stylesheet bytes come from the CSSOM, so
+    // cxr.css is never fetched a second time over the network.
+    const cxrFetches = fetchMock.mock.calls.filter((c) => String(c[0]).includes("cxr-abc123.css"));
+    expect(cxrFetches).toHaveLength(0);
+    // Style still applied from the CSSOM text.
+    expect(node.shadowRoot!.adoptedStyleSheets.length).toBeGreaterThan(0);
+    link.remove();
+  });
+
+  it("falls back to fetch when the <link>'s cssRules are unreadable (cross-origin SecurityError)", async () => {
+    withConstructableStyleSheets();
+    const cssText = ".gencl\\:flex{display:flex}";
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, text: () => Promise.resolve(cssText) });
+    vi.stubGlobal("fetch", fetchMock);
+    vi.stubGlobal("CSS", { registerProperty: vi.fn() });
+
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "https://cdn.example.com/assets/cxr-abc123.css";
+    link.setAttribute("data-genuin-cxr", "css");
+    document.head.appendChild(link);
+    // A cross-origin stylesheet throws SecurityError on cssRules access — the fast
+    // path must swallow it and fall back to the network fetch.
+    Object.defineProperty(link, "sheet", {
+      configurable: true,
+      value: {
+        get cssRules(): never {
+          throw new DOMException("cross-origin", "SecurityError");
+        },
+      },
+    });
+
+    await setupCxrShadowDOM(node);
+
+    const cxrFetches = fetchMock.mock.calls.filter((c) => String(c[0]).includes("cxr-abc123.css"));
+    expect(cxrFetches).toHaveLength(1);
+    link.remove();
+  });
+
+  it("does not duplicate the adopted CXR sheet on second call", async () => {
+    withConstructableStyleSheets();
+    const cssText = ".gencl\\:flex{display:flex}";
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, text: () => Promise.resolve(cssText) }));
+
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "https://cdn.example.com/assets/cxr-abc123.css";
+    link.setAttribute("data-genuin-cxr", "css");
+    document.head.appendChild(link);
+
+    await setupCxrShadowDOM(node);
+    const firstCount = node.shadowRoot!.adoptedStyleSheets.length;
+    await setupCxrShadowDOM(node);
+
+    expect(node.shadowRoot!.adoptedStyleSheets.length).toBe(firstCount);
+    link.remove();
+  });
+
+  it("falls back to cloning the CXR CSS <link> into the shadow root when the fetch fails", async () => {
+    // Fetch failure (offline / CORS) must not leave the shadow root unstyled — a
+    // cloned <link> is the resilient fallback even though it costs a second request.
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false }));
+
     const link = document.createElement("link");
     link.rel = "stylesheet";
     link.href = "https://cdn.example.com/assets/cxr-abc123.css";
@@ -57,20 +222,38 @@ describe("setupCxrShadowDOM", () => {
 
     const shadowLinks = Array.from(node.shadowRoot!.querySelectorAll('link[rel="stylesheet"]')) as HTMLLinkElement[];
     expect(shadowLinks.some((l) => l.href.includes("cxr-abc123.css"))).toBe(true);
+    link.remove();
   });
 
-  it("does not duplicate CXR CSS link on second call", async () => {
+  it("falls back to cloning when constructable sheets are supported but the fetch also fails", async () => {
+    // Covers the `!text` branch inside applyProductionShadowStyle: the fast CSSOM
+    // path is unreadable (cross-origin) AND the network fetch fails, so cachedCssText
+    // never gets populated — must still clone the <link> rather than leave the
+    // shadow root unstyled.
+    withConstructableStyleSheets();
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false }));
+    vi.stubGlobal("CSS", { registerProperty: vi.fn() });
+
     const link = document.createElement("link");
     link.rel = "stylesheet";
     link.href = "https://cdn.example.com/assets/cxr-abc123.css";
     link.setAttribute("data-genuin-cxr", "css");
     document.head.appendChild(link);
+    Object.defineProperty(link, "sheet", {
+      configurable: true,
+      value: {
+        get cssRules(): never {
+          throw new DOMException("cross-origin", "SecurityError");
+        },
+      },
+    });
 
     await setupCxrShadowDOM(node);
-    await setupCxrShadowDOM(node);
 
-    const shadowLinks = Array.from(node.shadowRoot!.querySelectorAll('link[href*="cxr-abc123.css"]'));
-    expect(shadowLinks).toHaveLength(1);
+    const shadowLinks = Array.from(node.shadowRoot!.querySelectorAll('link[rel="stylesheet"]')) as HTMLLinkElement[];
+    expect(shadowLinks.some((l) => l.href.includes("cxr-abc123.css"))).toBe(true);
+    expect(node.shadowRoot!.adoptedStyleSheets.length).toBe(0);
+    link.remove();
   });
 
   it("clones gen_ad.min.css link into shadow root when present in document", async () => {

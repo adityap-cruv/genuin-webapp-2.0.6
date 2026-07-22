@@ -40,7 +40,7 @@ import { isSlideVisible, getFlatActiveIndex } from "./utils";
 // TODO(temp): Remove this KFI dummy-data override. Temporary placement-specific
 // hardcoding — drop once real attribute/linkout data is served from the API.
 /** Placement that receives the KFI station attribute/linkout override. */
-const KFI_PLACEMENT_IDS = ["6a2be0e245aec54862efd9a5", "6a312de7a01f8b8ab6edde5a","6a58b607d38c51231b98e981"];
+const KFI_PLACEMENT_IDS = ["6a2be0e245aec54862efd9a5", "6a312de7a01f8b8ab6edde5a", "6a58b607d38c51231b98e981"];
 const KFI_LINKOUT_URL = "https://iheart.com/live/177";
 /** CTA text the iHeart listen-live button renders (it reads `linkouts[0].cta_text`). */
 const KFI_LINKOUT_CTA_TEXT = "Listen Live";

@@ -9,7 +9,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 import { AD_LAYOUT } from "@cxr/config";
 import type * as ConfigModule from "@cxr/config";
-import type { NormalisedReel, NormalisedAd, TagResponse } from "@cxr/types";
+import type { NormalisedReel, NormalisedAd } from "@cxr/types";
 
 import { useAdWaterfall } from "../../providers/AdProvider";
 import { useFullscreenAdBreak } from "../hooks/useFullscreenAdBreak";
@@ -56,11 +56,8 @@ vi.mock("../hooks/useInactivityAdvance", () => ({
   useInactivityAdvance: mockUseInactivityAdvance,
 }));
 
-vi.mock("../../instance/registry/InstanceContext", () => ({
+vi.mock("../../instance/InstanceContext", () => ({
   useInstanceId: () => "test-instance",
-}));
-
-vi.mock("../../instance/coordination/EventBusContext", () => ({
   useEventBus: () => ({ emit: vi.fn(), on: vi.fn(() => () => undefined), off: vi.fn() }),
 }));
 
@@ -100,6 +97,13 @@ vi.mock("../../providers/GenAIProvider", () => ({
     splitActive: false,
     playerShare: 1,
   })),
+}));
+
+const { hoistedTagDetails } = vi.hoisted(() => ({
+  hoistedTagDetails: { tag_id: "tag-1" } as Record<string, unknown>,
+}));
+vi.mock("../../providers/TagDetailsProvider", () => ({
+  useTagDetails: () => ({ tagDetails: hoistedTagDetails, apiFailed: false }),
 }));
 
 vi.mock("../hooks/useFullscreenAdBreak", () => ({
@@ -154,8 +158,6 @@ const mockReel: NormalisedReel = {
   video: null,
 };
 
-const mockTagDetails: TagResponse = { tag_id: "tag-1" };
-
 describe("VideoLayout (default / fullscreen path)", () => {
   let container: HTMLDivElement;
   let root: Root;
@@ -177,7 +179,6 @@ describe("VideoLayout (default / fullscreen path)", () => {
         React.createElement(VideoLayout, {
           reel: mockReel,
           isActive,
-          tagDetails: mockTagDetails,
           onTimeUpdate: () => undefined,
         })
       );
@@ -232,7 +233,6 @@ describe("VideoLayout L4 (320×100 compact) auto-advance", () => {
         React.createElement(VideoLayout, {
           reel: mockReel,
           isActive: true,
-          tagDetails: mockTagDetails,
           onTimeUpdate: () => undefined,
           onAutoAdvance,
         })
@@ -417,7 +417,6 @@ describe("VideoLayout with adObject (video-with-ad path)", () => {
         React.createElement(VideoLayout, {
           reel: mockReel,
           isActive: true,
-          tagDetails: mockTagDetails,
           onTimeUpdate: () => undefined,
           adObject: mockAdObject,
         })

@@ -10,9 +10,12 @@ import type { NormalisedReel, TagResponse } from "@cxr/types";
 // useOctoSplit drives the "split" branches (sheet owns the surface → every bar
 // element hides). A mutable flag lets individual tests flip splitActive on.
 let splitActive = false;
+// genAiEnabled gates the lazy OctoSheet mount; a mutable flag lets one test
+// flip it on to cover that branch without disturbing the rest of the suite.
+let genAiEnabled = false;
 vi.mock("@cxr/providers/GenAIProvider", () => ({
   useGenAI: vi.fn(() => ({
-    genAiEnabled: false,
+    genAiEnabled,
     octoFraction: 0,
     setOctoFraction: vi.fn(),
     octoAxis: "y" as const,
@@ -26,6 +29,12 @@ vi.mock("@cxr/providers/GenAIProvider", () => ({
   })),
 }));
 
+vi.mock("@cxr/genai/octo/OctoSheet", () => ({
+  OctoSheet: (props: { videoId?: string; tagId: string; host: string }) => (
+    <div data-testid="octo-sheet-stub" data-video-id={props.videoId} data-tag-id={props.tagId} data-host={props.host} />
+  ),
+}));
+
 const shareMocks = vi.hoisted(() => ({
   openShareLink: vi.fn(),
   copyToClipboard: vi.fn(() => Promise.resolve()),
@@ -35,6 +44,11 @@ vi.mock("@cxr/utils/share", () => shareMocks);
 const { sendEventMock } = vi.hoisted(() => ({ sendEventMock: vi.fn() }));
 vi.mock("@cxr/providers/AnalyticsProvider", () => ({
   useAnalytics: () => ({ sendEvent: sendEventMock, setBrandId: vi.fn() }),
+}));
+
+const mockUseTagDetails = vi.hoisted(() => vi.fn());
+vi.mock("@cxr/providers/TagDetailsProvider", () => ({
+  useTagDetails: () => mockUseTagDetails(),
 }));
 
 function makeReel(overrides: Partial<NormalisedReel> = {}): NormalisedReel {
@@ -77,9 +91,11 @@ describe("DefaultBottomBar", () => {
 
   beforeEach(() => {
     splitActive = false;
+    genAiEnabled = false;
     shareMocks.openShareLink.mockClear();
     shareMocks.copyToClipboard.mockClear();
     sendEventMock.mockClear();
+    mockUseTagDetails.mockReturnValue({ tagDetails: mockTagDetails, apiFailed: false });
     container = document.createElement("div");
     document.body.appendChild(container);
     root = createRoot(container);
@@ -90,12 +106,22 @@ describe("DefaultBottomBar", () => {
     document.body.removeChild(container);
   });
 
-  function render(overrides: Partial<React.ComponentProps<typeof DefaultBottomBar>> = {}) {
+  /**
+   * Renders DefaultBottomBar. `tagDetails` is not a component prop — it flows
+   * through {@link useTagDetails}, so passing it here drives the mocked hook's
+   * return value instead of the element's own props.
+   */
+  function render(
+    overrides: Partial<React.ComponentProps<typeof DefaultBottomBar>> & { tagDetails?: TagResponse } = {}
+  ) {
+    const { tagDetails, ...componentOverrides } = overrides;
+    if (tagDetails !== undefined) {
+      mockUseTagDetails.mockReturnValue({ tagDetails, apiFailed: false });
+    }
     act(() => {
       root.render(
         React.createElement(DefaultBottomBar, {
           item: makeReel(),
-          tagDetails: mockTagDetails,
           dimensions: { width: 400, height: 600 },
           isActive: true,
           isFullScreen: false,
@@ -104,7 +130,7 @@ describe("DefaultBottomBar", () => {
           instanceId: "test-instance",
           onMuteClick: vi.fn(),
           onPlayClick: vi.fn(),
-          ...overrides,
+          ...componentOverrides,
         })
       );
     });
@@ -123,6 +149,21 @@ describe("DefaultBottomBar", () => {
   it("hides owner profile when show_owner_details=false", () => {
     render({ tagDetails: { tag_id: "tag-1", config: { show_owner_details: false } } });
     expect(container.querySelector('[data-testid="owner-profile-link"]')).toBeNull();
+  });
+
+  it("renders owner as a non-clickable div when disable_profile_redirect is true", () => {
+    render({ tagDetails: { tag_id: "tag-1", config: { show_owner_details: true, disable_profile_redirect: true } } });
+    const el = container.querySelector('[data-testid="owner-profile-link"]');
+    expect(el).not.toBeNull();
+    expect(el?.tagName).toBe("DIV");
+    expect(el?.getAttribute("href")).toBeNull();
+  });
+
+  it("renders owner as a link when disable_profile_redirect is falsy", () => {
+    render({ tagDetails: { tag_id: "tag-1", config: { show_owner_details: true } } });
+    const el = container.querySelector('[data-testid="owner-profile-link"]');
+    expect(el?.tagName).toBe("A");
+    expect(el?.getAttribute("href")).toContain("alice");
   });
 
   it("renders spark button when show_spark=true", () => {
@@ -326,6 +367,13 @@ describe("DefaultBottomBar", () => {
       expect(onMuteClick).toHaveBeenCalledOnce();
     });
 
+    it("shows the play (not-playing) icon when isPlay is false", () => {
+      render({ variant: "iheart", isPlay: false });
+      const playImg = container.querySelector('[data-testid="bottombar-play"] img') as HTMLImageElement;
+      expect(playImg.getAttribute("src")).toContain("play.svg");
+      expect(playImg.getAttribute("src")).not.toContain("pause.svg");
+    });
+
     it("renders the iheart action rail even in fullscreen", () => {
       render({ variant: "iheart", isFullScreen: true });
       expect(container.querySelector('[data-testid="bottombar-actions"]')).toBeTruthy();
@@ -434,5 +482,28 @@ describe("DefaultBottomBar", () => {
       (container.querySelector('[data-testid="bottombar-mute"]') as HTMLButtonElement).click();
     });
     expect(onMuteClick).toHaveBeenCalledOnce();
+  });
+
+  it("mounts the lazy OctoSheet when genAiEnabled and the reel has a video id", async () => {
+    genAiEnabled = true;
+    render({ item: makeReel({ video: { id: "vid-1", description: "Test description", slug: "test-video" } }) });
+    // Suspense boundary resolves on the next microtask/tick.
+    await act(async () => {
+      await Promise.resolve();
+    });
+    const sheet = container.querySelector('[data-testid="octo-sheet-stub"]');
+    expect(sheet).toBeTruthy();
+    expect(sheet?.getAttribute("data-video-id")).toBe("vid-1");
+    expect(sheet?.getAttribute("data-tag-id")).toBe("tag-1");
+    expect(sheet?.getAttribute("data-host")).toBe("bottombar");
+  });
+
+  it("skips the OctoSheet when genAiEnabled is true but the reel has no video id", async () => {
+    genAiEnabled = true;
+    render({ item: makeReel({ video: { description: "Test description", slug: "test-video" } }) });
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(container.querySelector('[data-testid="octo-sheet-stub"]')).toBeNull();
   });
 });

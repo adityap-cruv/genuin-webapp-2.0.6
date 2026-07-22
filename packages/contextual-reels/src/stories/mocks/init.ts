@@ -16,6 +16,7 @@ import { AD_LAYOUT, type AdLayoutId } from "@cxr/config";
 export const CONTENT = {
   VideoAd: "video-ad",
   AdOnly: "ad-only",
+  VideoOnly: "video-only",
 } as const;
 
 /** A content mode value. */
@@ -25,6 +26,7 @@ export type ContentMode = (typeof CONTENT)[keyof typeof CONTENT];
 export const CONTENT_TAG_ID: Record<ContentMode, string> = {
   [CONTENT.VideoAd]: "storybook-cxr-video-ad",
   [CONTENT.AdOnly]: "storybook-cxr-ad-only",
+  [CONTENT.VideoOnly]: "storybook-cxr-video-only",
 };
 
 /** Shared root tag id for the embedding container. */

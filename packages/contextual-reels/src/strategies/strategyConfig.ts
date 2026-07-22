@@ -91,19 +91,16 @@ export const TAG_EXPERIMENTS: Record<string, TagExperiment> = {
  */
 export const TAG_STRATEGIES: Record<string, TagStrategyEntry> = {
   // Dev slot (index.html): start audible at 20%; other defaults unchanged.
+  // THIS IS FOR QA TESTING ONLY — DO NOT COPY TO PROD TAGS.
   "697c46aa9f432b1a2055e803": { initialVolume: 0.2 },
+  "6a3aa78ba0daccfd439648b8": { initialVolume: 0.2, gateOnUnmute: true, singleHitWaterfall: true },
+  "6a3ba4395df1fee89bf0b2e7": { gateOnUnmute: true },
+  "6a3aa8244da8cd92d289cc72": { gateOnUnmute: true },
+
   // Start audible at 20% on load (unmuted); other defaults unchanged.
-  "6a39163e92929ebec64d78ab": { initialVolume: 0.2 }, // 320x50
-  "6a3915b692929ebec64d785e": { initialVolume: 0.2 }, // 320x100
-  // gateOnUnmute:true gates the 98% (request waits for unmute); the 2%
-  // experiment below ungates it. Needed because DEFAULT_STRATEGIES.gateOnUnmute
-  // is false, so without this the base would ungate every load. initialVolume
-  // stays 0.2 (audible start) for all traffic — the experiment doesn't touch it.
-  "6a3aa8244da8cd92d289cc72": {
-    singleHitWaterfall: true,
-    gateOnUnmute: true,
-    initialVolume: 0.2,
-  },
+  "6a39163e92929ebec64d78ab": { initialVolume: 0.2, singleHitWaterfall: true }, // 320x50
+  "6a3915b692929ebec64d785e": { initialVolume: 0.2, singleHitWaterfall: true }, // 320x100
+
   "6a2fefd87ce338c3a5afc605": { singleHitWaterfall: true, initialVolume: 0.2 },
   "6a391232d73aa25887ac2af3": { adBreakEnabled: true, gateOnUnmute: true },
   "69b298e3d6a6ad57e7b9a464": { singleHitWaterfall: true, mutePassback: true, gateOnUnmute: true },
@@ -112,10 +109,6 @@ export const TAG_STRATEGIES: Record<string, TagStrategyEntry> = {
     mutePassback: true,
     gateOnUnmute: true,
   },
-  // gateOnUnmute:true gates the 98% (request waits for unmute); the 2%
-  // experiment above ungates the sampled slice. Needed because
-  // DEFAULT_STRATEGIES.gateOnUnmute is false, so without this the base would
-  // ungate every load and the override would be a no-op.
   "6a032e34054c8fcb08582510": {
     singleHitWaterfall: true,
     mutePassback: true,

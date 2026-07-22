@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 
-import { useEventBus } from "@cxr/instance/coordination/EventBusContext";
-import { useInstanceId } from "@cxr/instance/registry/InstanceContext";
+import { useEventBus, useInstanceId } from "@cxr/instance/InstanceContext";
 import { getInstanceRegistry } from "@cxr/instance/registry/InstanceRegistry";
 import type { InstanceControls } from "@cxr/instance/registry/InstanceRegistry";
 
@@ -12,18 +11,15 @@ import type { InstanceControls } from "@cxr/instance/registry/InstanceRegistry";
  * Expand and collapse are wired to the per-instance {@link CxrEventBus} so
  * that the public API routes imperative calls through the same event channel
  * used internally.
- *
- * @param pause  Function that pauses playback for this instance.
  */
-export function useInstanceRegistration(pause: () => void): void {
+export function useInstanceRegistration(): void {
   const instanceId = useInstanceId();
   const bus = useEventBus();
 
   useEffect(() => {
-    const controls: InstanceControls = {
+    const controls: Partial<InstanceControls> = {
       expand: () => bus.emit("video:expand", {}),
       collapse: () => bus.emit("video:collapse", {}),
-      pause,
     };
 
     getInstanceRegistry().register(instanceId, controls);
@@ -31,5 +27,5 @@ export function useInstanceRegistration(pause: () => void): void {
     return () => {
       getInstanceRegistry().unregister(instanceId);
     };
-  }, [instanceId, bus, pause]);
+  }, [instanceId, bus]);
 }

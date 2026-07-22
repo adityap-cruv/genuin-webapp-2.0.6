@@ -7,13 +7,21 @@ import { createRoot } from "react-dom/client";
 import type { Root } from "react-dom/client";
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
-const { setBaseEventContextMock } = vi.hoisted(() => ({ setBaseEventContextMock: vi.fn() }));
+const { setBaseEventContextMock, useTagDetailsMock } = vi.hoisted(() => ({
+  setBaseEventContextMock: vi.fn(),
+  useTagDetailsMock: vi.fn(() => ({ tagId: undefined as string | undefined, brandId: undefined as number | undefined })),
+}));
 vi.mock("@cxr/providers/AnalyticsProvider", () => ({
   useAnalytics: () => ({ sendEvent: vi.fn(), setBrandId: vi.fn(), setBaseEventContext: setBaseEventContextMock }),
 }));
+// StrategyProvider reads tagId/brandId from useTagDetails() (context), not a
+// prop. Mock it so the real StrategyProvider resolves the configured tag.
+vi.mock("@cxr/providers/TagDetailsProvider", () => ({
+  useTagDetails: () => useTagDetailsMock(),
+}));
 
+import { InstanceProvider, useEventBus } from "@cxr/instance/InstanceContext";
 import { CxrEventBus } from "@cxr/instance/coordination/CxrEventBus";
-import { EventBusProvider, useEventBus } from "@cxr/instance/coordination/EventBusContext";
 import { DEFAULT_UNMUTE_VOLUME, PlayerProvider, usePlayer } from "@cxr/providers/PlayerProvider";
 import { StrategyProvider } from "@cxr/strategies/StrategyProvider";
 
@@ -60,6 +68,7 @@ describe("PlayerProvider", () => {
 
   beforeEach(() => {
     setBaseEventContextMock.mockClear();
+    useTagDetailsMock.mockReturnValue({ tagId: undefined, brandId: undefined });
     container = document.createElement("div");
     document.body.appendChild(container);
     root = createRoot(container);
@@ -74,8 +83,8 @@ describe("PlayerProvider", () => {
     act(() => {
       root.render(
         React.createElement(
-          EventBusProvider,
-          null,
+          InstanceProvider,
+          { instanceId: "test-instance" },
           React.createElement(PlayerProvider, null, React.createElement(Consumer), React.createElement(BusConsumer))
         )
       );
@@ -101,9 +110,9 @@ describe("PlayerProvider", () => {
     expect(captured.isMuted).toBe(true);
   });
 
-  it("provides isPlaying=true initially (autoplay on by default)", () => {
+  it("provides isPlaying=false initially (autoplay paused for now)", () => {
     render();
-    expect(captured.isPlaying).toBe(true);
+    expect(captured.isPlaying).toBe(false);
   });
 
   it("setMuted updates isMuted", () => {
@@ -112,6 +121,17 @@ describe("PlayerProvider", () => {
       captured.setMuted(false);
     });
     expect(captured.isMuted).toBe(false);
+  });
+
+  it("setMuted(false) leaves an already-audible volume unchanged (does not reset to DEFAULT_UNMUTE_VOLUME)", () => {
+    render();
+    act(() => {
+      captured.setVolume(0.8);
+    });
+    act(() => {
+      captured.setMuted(false);
+    });
+    expect(captured.volume).toBe(0.8);
   });
 
   it("setPlaying updates isPlaying", () => {
@@ -128,13 +148,15 @@ describe("PlayerProvider", () => {
   });
 
   it("seeds initial volume from the active tag's strategy", () => {
-    // Tag 6a3aa8244da8cd92d289cc72 is configured with initialVolume: 0.2.
+    // Tag 6a2fefd87ce338c3a5afc605 is configured with initialVolume: 0.2.
+    // StrategyProvider reads the tagId from useTagDetails(), so drive it there.
+    useTagDetailsMock.mockReturnValue({ tagId: "6a2fefd87ce338c3a5afc605", brandId: undefined });
     const tree = React.createElement(
-      EventBusProvider,
-      null,
+      InstanceProvider,
+      { instanceId: "test-instance" },
       React.createElement(
         StrategyProvider,
-        { tagId: "6a3aa8244da8cd92d289cc72" } as React.ComponentProps<typeof StrategyProvider>,
+        null,
         React.createElement(PlayerProvider, null, React.createElement(Consumer))
       )
     );
@@ -147,13 +169,14 @@ describe("PlayerProvider", () => {
   it("restores a manual unmute to the tag's initialVolume (GIV override)", () => {
     // GIV drives initialVolume everywhere, incl. the level a later
     // unmute restores to — 0.6 here, distinct from DEFAULT_UNMUTE_VOLUME (0.2).
+    useTagDetailsMock.mockReturnValue({ tagId: "aaaabbbbccccdddd11112222", brandId: undefined });
     (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__ = "&GIV=0.6";
     const tree = React.createElement(
-      EventBusProvider,
-      null,
+      InstanceProvider,
+      { instanceId: "test-instance" },
       React.createElement(
         StrategyProvider,
-        { tagId: "aaaabbbbccccdddd11112222" } as React.ComponentProps<typeof StrategyProvider>,
+        null,
         React.createElement(PlayerProvider, null, React.createElement(Consumer))
       )
     );
@@ -194,21 +217,21 @@ describe("PlayerProvider", () => {
     expect(errorCaught).toBe(true);
   });
 
-  it("emits player:play on mount when isPlaying defaults to true", () => {
+  it("emits player:pause on mount when isPlaying defaults to false", () => {
     const emitSpy = vi.spyOn(CxrEventBus.prototype, "emit");
     render();
-    expect(emitSpy).toHaveBeenCalledWith("player:play", {});
+    expect(emitSpy).toHaveBeenCalledWith("player:pause", {});
     emitSpy.mockRestore();
   });
 
-  it("emits player:pause when setPlaying(false) is called", () => {
+  it("emits player:play when setPlaying(true) is called", () => {
     const emitSpy = vi.spyOn(CxrEventBus.prototype, "emit");
     render();
     emitSpy.mockClear();
     act(() => {
-      captured.setPlaying(false);
+      captured.setPlaying(true);
     });
-    expect(emitSpy).toHaveBeenCalledWith("player:pause", {});
+    expect(emitSpy).toHaveBeenCalledWith("player:play", {});
     emitSpy.mockRestore();
   });
 

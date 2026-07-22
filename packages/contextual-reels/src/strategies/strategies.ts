@@ -10,12 +10,16 @@
  * behaviour. To add a feature toggle, extend {@link Strategies} and give it a
  * default here; consumers read it through {@link resolveStrategies} unchanged.
  */
-import {
-  BRAND_STRATEGIES,
-  STRATEGY_PRESETS,
-  TAG_EXPERIMENTS,
-  TAG_STRATEGIES,
-} from "@cxr/strategies/strategyConfig";
+import { BRAND_STRATEGIES, STRATEGY_PRESETS, TAG_EXPERIMENTS, TAG_STRATEGIES } from "@cxr/strategies/strategyConfig";
+import { createLogger } from "@cxr/utils/logger";
+
+const logger = createLogger("cxr/strategies");
+
+/** Tag ids already warned about (unknown-tag drift), so the warning fires once each. */
+const warnedUnknownTags = new Set<string>();
+
+/** sessionStorage key prefix for the per-tag experiment roll (see {@link getExperimentRoll}). */
+const EXP_ROLL_KEY_PREFIX = "cxr:exp-roll:";
 
 /** Resolved feature decisions for the active tag. */
 export interface Strategies {
@@ -63,6 +67,11 @@ export interface Strategies {
    * `tagDetails.brand_color` (see {@link VideoLayout}).
    */
   compactBackgroundColor: string | undefined;
+  /**
+   * Whether the active slide autoplays on mount/activation. Defaults to `false`.
+   * Also gates the GenAd request (see {@link useGenAdInstance}).
+   */
+  autoplayEnabled: boolean;
 }
 
 /**
@@ -78,9 +87,9 @@ export const DEFAULT_STRATEGIES: Strategies = {
   adsDisabled: false,
   mutePassback: false,
   mutePassbackDelayMs: 3000,
-  // 0% by default: plays unmuted-but-silent and shows the unmute prompt.
   initialVolume: 0,
   compactBackgroundColor: undefined,
+  autoplayEnabled: false,
 };
 
 /**
@@ -95,13 +104,45 @@ export const DEFAULT_STRATEGIES: Strategies = {
  *                 {@link BRAND_STRATEGIES}. Omit when unresolved yet.
  */
 export function resolveStrategies(tagId: string, brandId?: number): Strategies {
-  const { preset, ...tagOverrides } = TAG_STRATEGIES[tagId] ?? {};
+  const tagConfig = TAG_STRATEGIES[tagId];
+  // Warn once on an unknown tag: it silently falls back to all-safeguards-off, so surface
+  // the config drift. Empty tagId is not a drift signal.
+  if (!tagConfig && tagId && !warnedUnknownTags.has(tagId)) {
+    warnedUnknownTags.add(tagId);
+    logger.warn(`unknown tag ${tagId} — falling back to DEFAULT_STRATEGIES (all safeguards off)`);
+  }
+  const { preset, ...tagOverrides } = tagConfig ?? {};
   return {
     ...DEFAULT_STRATEGIES,
     ...(preset ? STRATEGY_PRESETS[preset] : {}),
     ...(brandId !== undefined ? BRAND_STRATEGIES[brandId] : {}),
     ...tagOverrides,
   };
+}
+
+/**
+ * Draw (or recall) the experiment bucket roll for a tag, persisted in `sessionStorage`
+ * so the bucket stays stable across reloads (see {@link applyExperiment}). Falls back to
+ * a fresh unpersisted draw when storage is unavailable (SSR / privacy mode); never throws.
+ *
+ * @param tagId Active tag id — keys the persisted roll.
+ * @returns A number in `[0, 1)`.
+ */
+export function getExperimentRoll(tagId: string): number {
+  const key = `${EXP_ROLL_KEY_PREFIX}${tagId}`;
+  try {
+    const stored = window.sessionStorage.getItem(key);
+    if (stored !== null) {
+      const parsed = Number(stored);
+      if (Number.isFinite(parsed) && parsed >= 0 && parsed < 1) return parsed;
+    }
+    const roll = Math.random();
+    window.sessionStorage.setItem(key, String(roll));
+    return roll;
+  } catch {
+    // sessionStorage blocked / SSR — behave like a normal (unpersisted) roll.
+    return Math.random();
+  }
 }
 
 /**
@@ -119,12 +160,7 @@ export function resolveStrategies(tagId: string, brandId?: number): Strategies {
  * @param skip   Skip the experiment entirely (e.g. ad-verification crawlers) —
  *               the load then behaves like the un-sampled majority.
  */
-export function applyExperiment(
-  base: Strategies,
-  tagId: string,
-  roll: number,
-  skip = false
-): Strategies {
+export function applyExperiment(base: Strategies, tagId: string, roll: number, skip = false): Strategies {
   if (skip) return base;
   const experiment = TAG_EXPERIMENTS[tagId];
   if (!experiment || roll >= experiment.sampleRate) return base;
@@ -169,7 +205,20 @@ export function getInitialVolume(tagId: string): number {
   return resolveStrategies(tagId).initialVolume;
 }
 
+/**
+ * Clear the one-time unknown-tag warning set. For test isolation only.
+ * @internal
+ */
+export function __resetWarningsForTesting(): void {
+  warnedUnknownTags.clear();
+}
+
 /** Returns the compact-backdrop color override (hex) for the given tag, if any. */
 export function getCompactBackgroundColor(tagId: string): string | undefined {
   return resolveStrategies(tagId).compactBackgroundColor;
+}
+
+/** Returns whether the active slide should autoplay on mount/activation for the given tag. */
+export function isAutoplayEnabled(tagId: string): boolean {
+  return resolveStrategies(tagId).autoplayEnabled;
 }

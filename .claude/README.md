@@ -1,6 +1,6 @@
 # Skills & Agents Catalog
 
-This repo ships **16 skills** and **9 specialist agents** for Claude Code. This page is the team
+This repo ships **19 skills** and **9 specialist agents** for Claude Code. This page is the team
 reference: what each one does and **what to say to trigger it**.
 
 ## How activation works (no slash commands needed)
@@ -20,7 +20,7 @@ picks the wrong one, name it directly ("use the nextjs-cache skill").
 
 ---
 
-## Skills (16)
+## Skills (19)
 
 ### Understanding the codebase
 | Skill | Use it for | Say something like |
@@ -35,6 +35,9 @@ picks the wrong one, name it directly ("use the nextjs-cache skill").
 | **composition-patterns** | Designing a component's API — compound components, variants over boolean props, provider DI | "too many boolean props", "design this component's API", "make this reusable" |
 | **nextjs-server-performance** | Server Component waterfalls, parallel fetching, RSC-boundary footguns | "this server page is slow", "parallelize these fetches", "RSC waterfall" |
 | **nextjs-cache** | Next 15 caching / ISR / revalidation behaviour | "data is stale", "why is this route dynamic", "set up revalidation" |
+| **hierarchical-theme** | Bootstrap a new publisher palette for the Hierarchical Theme Provider | "add a theme for publisher X", "new brand palette" |
+| **hierarchical-tree** | Generate a typed Page artifact for the Hierarchical Layout System | "create a new page layout", "generate a Page module" |
+| **seo-geo-optimization** | Audit/fix SEO, GEO (AI-citation), and JSON-LD on pages | "optimize for SEO", "add structured data", "show up in ChatGPT/Perplexity" |
 
 ### Reviewing & quality
 | Skill | Use it for | Say something like |

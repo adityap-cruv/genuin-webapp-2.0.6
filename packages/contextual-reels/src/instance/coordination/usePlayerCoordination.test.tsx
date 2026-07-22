@@ -13,12 +13,11 @@ vi.mock("@cxr/providers/AnalyticsProvider", () => ({
   useAnalytics: () => ({ sendEvent: vi.fn(), setBrandId: vi.fn(), setBaseEventContext: vi.fn() }),
 }));
 
+import { InstanceProvider, useEventBus } from "@cxr/instance/InstanceContext";
 import type { CxrEventBus } from "@cxr/instance/coordination/CxrEventBus";
-import { EventBusProvider, useEventBus } from "@cxr/instance/coordination/EventBusContext";
 import { getGlobalMuteCoordinator } from "@cxr/instance/coordination/GlobalMuteCoordinator";
 import { getGlobalPlayerCoordinator } from "@cxr/instance/coordination/GlobalPlayerCoordinator";
 import { usePlayerCoordination } from "@cxr/instance/coordination/usePlayerCoordination";
-import { InstanceProvider } from "@cxr/instance/registry/InstanceContext";
 import { PlayerProvider } from "@cxr/providers/PlayerProvider";
 
 let container: HTMLDivElement;
@@ -40,11 +39,9 @@ function setup(instanceId: string, pause: () => void): void {
   act(() => {
     root.render(
       <InstanceProvider instanceId={instanceId}>
-        <EventBusProvider>
-          <PlayerProvider>
-            <Consumer />
-          </PlayerProvider>
-        </EventBusProvider>
+        <PlayerProvider>
+          <Consumer />
+        </PlayerProvider>
       </InstanceProvider>
     );
   });

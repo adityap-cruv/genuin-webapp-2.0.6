@@ -17,6 +17,7 @@ export type PlayerHandle = {
   getCurrentTime(): Promise<number>;
   getDuration(): Promise<number>;
   on(event: string, handler: (e?: unknown) => void): void;
+  off?(event: string, handler: (e?: unknown) => void): void;
   getInstance?(): HTMLVideoElement | null;
   /** IMA plugin instance, present when ad tag URL provided */
   plugins?: { ima?: { onAdError?: (e: unknown) => void } };

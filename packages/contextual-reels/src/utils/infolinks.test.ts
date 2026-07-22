@@ -95,6 +95,24 @@ describe("utils/setupStackedRows", () => {
     expect(node.lastElementChild?.getAttribute("data-genuin-cxr")).toBe(STACKED_BOTTOM_ATTR);
   });
 
+  it("falls back to the global document when node.ownerDocument is nullish", () => {
+    // Real DOM nodes always have an ownerDocument, so this models a detached/mocked
+    // node whose ownerDocument reads as null — the `?? document` fallback is what
+    // makes createElement (and everything downstream) work at all.
+    const real = makeNode();
+    const fakeNode = {
+      ownerDocument: null,
+      style: real.style,
+      querySelector: () => null,
+      appendChild: (child: Node) => real.appendChild(child),
+    } as unknown as HTMLElement;
+
+    const top = setupStackedRows(fakeNode, CONFIG_320);
+
+    expect(top.getAttribute("data-genuin-cxr")).toBe(STACKED_TOP_ATTR);
+    expect(top.ownerDocument).toBe(document);
+  });
+
   it("puts the Genuin row on top and Infolinks in the bottom row", () => {
     const node = makeNode();
     setupStackedRows(node, CONFIG_320);

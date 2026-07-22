@@ -1,5 +1,6 @@
 "use client";
-import { ShareIcon, SparkIcon } from "@genuin/ui/icons";
+import { ShareIcon } from "@genuin/ui/icons/primary-icons/share-icon";
+import { SparkIcon } from "@genuin/ui/icons/primary-icons/spark-icon";
 import React from "react";
 
 

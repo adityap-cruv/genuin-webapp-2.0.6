@@ -1,6 +1,7 @@
 "use client";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
-import { ShareIcon, SparkIcon } from "@genuin/ui/icons";
+import { ShareIcon } from "@genuin/ui/icons/primary-icons/share-icon";
+import { SparkIcon } from "@genuin/ui/icons/primary-icons/spark-icon";
 import React, { lazy } from "react";
 
 import { EVENT } from "@cxr/analytics/analytics";
@@ -8,7 +9,9 @@ import { assetLink } from "@cxr/config";
 import type { BottomBarSubProps, ControlLayerVariant } from "@cxr/controls/control-layer.types";
 import { useAnalytics } from "@cxr/providers/AnalyticsProvider";
 import { useGenAI, useOctoSplit } from "@cxr/providers/GenAIProvider";
+import { useTagDetails } from "@cxr/providers/TagDetailsProvider";
 import type { NormalisedReel, TagResponse } from "@cxr/types";
+import { safeHref } from "@cxr/utils/safeHref";
 import { copyToClipboard, openShareLink } from "@cxr/utils/share";
 
 const OctoSheet = lazy(() => import("../../genai/octo/OctoSheet").then((m) => ({ default: m.OctoSheet })));
@@ -33,7 +36,7 @@ function ProfileRow({
   isFullScreen,
 }: {
   item: NormalisedReel;
-  tagDetails: TagResponse;
+  tagDetails?: TagResponse;
   dimensions: { width: number; height: number };
   isFullScreen: boolean;
 }): React.JSX.Element | null {
@@ -49,15 +52,11 @@ function ProfileRow({
   const avatarBase = `${assetLink}assets/avatar/`;
   const profileImgSrc = thumb?.startsWith("https://") ? thumb : thumb ? `${avatarBase}${thumb}.gif` : undefined;
   const profileLink = item.owner?.share_string ?? "";
+  const redirectDisabled = Boolean(tagDetails?.config?.disable_profile_redirect);
+  const wrapperCls = "gencl:flex gencl:items-center gencl:gap-2 gencl:no-underline";
 
-  return (
-    <a
-      href={profileLink}
-      data-testid="owner-profile-link"
-      target="_blank"
-      rel="noreferrer"
-      onClick={(e) => e.stopPropagation()}
-      className="gencl:flex gencl:items-center gencl:gap-2 gencl:no-underline">
+  const inner = (
+    <>
       {profileImgSrc && (
         <img
           src={profileImgSrc}
@@ -80,6 +79,28 @@ function ProfileRow({
         }}>
         {item.owner.nickname}
       </p>
+    </>
+  );
+
+  // `disable_profile_redirect` keeps the owner block visible but strips the
+  // click-through so a tap does not navigate to the profile page.
+  if (redirectDisabled) {
+    return (
+      <div data-testid="owner-profile-link" className={wrapperCls}>
+        {inner}
+      </div>
+    );
+  }
+
+  return (
+    <a
+      href={safeHref(profileLink)}
+      data-testid="owner-profile-link"
+      target="_blank"
+      rel="noreferrer"
+      onClick={(e) => e.stopPropagation()}
+      className={wrapperCls}>
+      {inner}
     </a>
   );
 }
@@ -201,6 +222,137 @@ function IconButtons({
   );
 }
 
+/** Shared 2-line-clamp paragraph style for description / OG title / ad-copy text. */
+function ClampedText({
+  children,
+  fontSize,
+  lineHeight,
+  bold = false,
+}: {
+  children: React.ReactNode;
+  fontSize: string;
+  lineHeight: string;
+  bold?: boolean;
+}): React.JSX.Element {
+  return (
+    <p
+      className={`gencl:text-white gencl:m-0 gencl:overflow-hidden gencl:break-words ${bold ? "gencl:font-medium" : ""}`}
+      style={{
+        fontSize,
+        lineHeight,
+        display: "-webkit-box",
+        WebkitLineClamp: 2,
+        WebkitBoxOrient: "vertical",
+      }}>
+      {children}
+    </p>
+  );
+}
+
+/** CTA button — link-through with click analytics. */
+function CtaButton({
+  link,
+  text,
+  textColor,
+  color,
+  isSmall,
+  isFullScreen,
+  variant,
+}: {
+  link: string;
+  text: string;
+  textColor: string;
+  color: string;
+  isSmall: boolean;
+  isFullScreen: boolean;
+  variant?: ControlLayerVariant;
+}): React.JSX.Element {
+  const analytics = useAnalytics();
+  return (
+    <div data-testid="bottombar-cta">
+      <a
+        href={safeHref(link)}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="gencl:flex gencl:items-center gencl:justify-center gencl:w-full gencl:no-underline gencl:rounded-[30px]"
+        style={{
+          height: isSmall ? "36px" : isFullScreen ? "40px" : "32px",
+          backgroundColor: color,
+        }}
+        onClick={(e) => {
+          e.stopPropagation();
+          analytics.sendEvent(EVENT.EMBED_CTA_CLICKED, {
+            redirection_url: link,
+            button_name: text,
+            variant,
+          });
+        }}>
+        <p
+          className="gencl:leading-5 gencl:font-semibold gencl:m-0"
+          style={{
+            fontSize: isSmall ? "14px" : isFullScreen ? "16px" : "14px",
+            color: textColor,
+          }}>
+          {text}
+        </p>
+      </a>
+    </div>
+  );
+}
+
+/**
+ * Ad-copy or OG-meta preview line — OG takes priority when `show_url_meta` is set.
+ * Renders nothing when neither is present.
+ */
+function MetaPreview({
+  showOgMeta,
+  ogDetails,
+  adCopyText,
+  isSmall,
+  fontSize,
+  lineHeight,
+}: {
+  showOgMeta: boolean;
+  ogDetails: NormalisedReel["ogDetails"];
+  adCopyText?: string;
+  isSmall: boolean;
+  fontSize: string;
+  lineHeight: string;
+}): React.JSX.Element | null {
+  if (showOgMeta && ogDetails) {
+    return (
+      <div data-testid="bottombar-og" className="gencl:flex gencl:items-center gencl:gap-2">
+        {ogDetails.og_image && (
+          <img
+            src={ogDetails.og_image}
+            className="gencl:rounded-[4px] gencl:object-cover gencl:shrink-0"
+            style={{
+              width: isSmall ? "36px" : "28px",
+              height: isSmall ? "36px" : "28px",
+            }}
+            alt="preview"
+          />
+        )}
+        <ClampedText fontSize={fontSize} lineHeight={lineHeight} bold>
+          {ogDetails.og_title}
+        </ClampedText>
+      </div>
+    );
+  }
+
+  if (adCopyText) {
+    return (
+      <div data-testid="bottombar-ad-copy">
+        <ClampedText fontSize={fontSize} lineHeight={lineHeight} bold>
+          {adCopyText}
+        </ClampedText>
+      </div>
+    );
+  }
+
+  return null;
+}
+
 /**
  * Instagram-style bottom bar for the `default` and `iheart` variants.
  *
@@ -209,12 +361,11 @@ function IconButtons({
  * - Right: spark?, share? (vertical icon column)
  * - Below: CTA button + ad-copy / OG link preview
  *
- * @param props  BottomBarSubProps
+ * @param props  BottomBarSubProps. tagDetails is read from {@link useTagDetails}.
  */
 export function DefaultBottomBar({
   variant,
   item,
-  tagDetails,
   dimensions,
   isActive,
   isFullScreen,
@@ -224,8 +375,8 @@ export function DefaultBottomBar({
   onMuteClick,
   onPlayClick,
 }: BottomBarSubProps): React.JSX.Element {
+  const { tagDetails } = useTagDetails();
   const { genAiEnabled } = useGenAI();
-  const analytics = useAnalytics();
   const isSmall = isSmallDimensions(dimensions);
   // In fullscreen, compact layouts (320x50/320x100) skip the ResizeObserver, so
   // `dimensions` is {0,0} — fall back to the viewport height (mirrors ProfileRow)
@@ -284,17 +435,9 @@ export function DefaultBottomBar({
           )}
 
           {!splitActive && item.video?.description && (
-            <p
-              className="gencl:text-white gencl:m-0 gencl:overflow-hidden gencl:break-words"
-              style={{
-                fontSize: adFontSize,
-                lineHeight: adLineHeight,
-                display: "-webkit-box",
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: "vertical",
-              }}>
+            <ClampedText fontSize={adFontSize} lineHeight={adLineHeight}>
               {item.video.description}
-            </p>
+            </ClampedText>
           )}
         </div>
 
@@ -324,77 +467,28 @@ export function DefaultBottomBar({
 
       {/* CTA button */}
       {!splitActive && showCta && (
-        <div data-testid="bottombar-cta">
-          <a
-            href={ctaLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="gencl:flex gencl:items-center gencl:justify-center gencl:w-full gencl:no-underline gencl:rounded-[30px]"
-            style={{
-              height: isSmall ? "36px" : isFullScreen ? "40px" : "32px",
-              backgroundColor: ctaColor,
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
-              analytics.sendEvent(EVENT.EMBED_CTA_CLICKED, {
-                redirection_url: ctaLink,
-                button_name: ctaText,
-                variant,
-              });
-            }}>
-            <p
-              className="gencl:leading-5 gencl:font-semibold gencl:m-0"
-              style={{
-                fontSize: isSmall ? "14px" : isFullScreen ? "16px" : "14px",
-                color: ctaTextColor,
-              }}>
-              {ctaText}
-            </p>
-          </a>
-        </div>
+        <CtaButton
+          link={ctaLink}
+          text={ctaText}
+          textColor={ctaTextColor}
+          color={ctaColor}
+          isSmall={isSmall}
+          isFullScreen={isFullScreen}
+          variant={variant}
+        />
       )}
 
       {/* Ad-copy or OG meta — OG takes priority when show_url_meta is set */}
-      {splitActive ? null : item?.cta?.show_url_meta && ogDetails ? (
-        <div data-testid="bottombar-og" className="gencl:flex gencl:items-center gencl:gap-2">
-          {ogDetails.og_image && (
-            <img
-              src={ogDetails.og_image}
-              className="gencl:rounded-[4px] gencl:object-cover gencl:shrink-0"
-              style={{
-                width: isSmall ? "36px" : "28px",
-                height: isSmall ? "36px" : "28px",
-              }}
-              alt="preview"
-            />
-          )}
-          <p
-            className="gencl:text-white gencl:font-medium gencl:overflow-hidden gencl:break-words gencl:m-0"
-            style={{
-              fontSize: adFontSize,
-              lineHeight: adLineHeight,
-              display: "-webkit-box",
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: "vertical",
-            }}>
-            {ogDetails.og_title}
-          </p>
-        </div>
-      ) : adCopyText ? (
-        <div data-testid="bottombar-ad-copy">
-          <p
-            className="gencl:text-white gencl:font-medium gencl:overflow-hidden gencl:break-words gencl:m-0"
-            style={{
-              fontSize: adFontSize,
-              lineHeight: adLineHeight,
-              display: "-webkit-box",
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: "vertical",
-            }}>
-            {adCopyText}
-          </p>
-        </div>
-      ) : null}
+      {!splitActive && (
+        <MetaPreview
+          showOgMeta={Boolean(item?.cta?.show_url_meta)}
+          ogDetails={ogDetails}
+          adCopyText={adCopyText}
+          isSmall={isSmall}
+          fontSize={adFontSize}
+          lineHeight={adLineHeight}
+        />
+      )}
     </div>
   );
 }

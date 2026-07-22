@@ -30,6 +30,14 @@ export interface CxrEventMap {
    * volume/unmute call within the iOS Safari user-gesture window.
    */
   "ad:unmuteRequest": { containerId: string };
+  /**
+   * Chrome's Heavy Ad Intervention actually removed the ad frame. Carries the diagnostic
+   * "why" bundle (browser intervention report + last resource snapshot + widget context)
+   * assembled by `useHeavyAdReporter`. Fired once per removal; mirrored to `window.cxr`.
+   * Typed loosely here to avoid a monitoring→coordination import cycle — the reporter owns
+   * the concrete `AdRemovedPayload` shape.
+   */
+  "ad:removed": Record<string, unknown>;
 }
 
 type Handler<K extends keyof CxrEventMap> = (detail: CxrEventMap[K]) => void;

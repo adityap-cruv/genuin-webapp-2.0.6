@@ -28,7 +28,7 @@
  */
 import { useEffect, useState } from "react";
 
-import { useOptionalEventBus } from "@cxr/instance/coordination/EventBusContext";
+import { useOptionalEventBus } from "@cxr/instance/InstanceContext";
 import { useStrategy } from "@cxr/strategies/StrategyProvider";
 
 /**

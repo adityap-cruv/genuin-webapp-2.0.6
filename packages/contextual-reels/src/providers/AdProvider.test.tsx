@@ -6,7 +6,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 import { installGenaiBridge, notifyAdFill, notifyAdNoFill } from "@cxr/ads/waterfall";
-import { AD_LAYOUT } from "@cxr/config";
+import { AD_LAYOUT, type AdLayoutId } from "@cxr/config";
 import { CxrEventBus } from "@cxr/instance/coordination/CxrEventBus";
 import { getInstanceRegistry } from "@cxr/instance/registry/InstanceRegistry";
 import { PixelReporter } from "@cxr/observability/pixel-reporter";
@@ -28,18 +28,20 @@ vi.mock("./AnalyticsProvider", () => ({
   useAnalytics: () => ({ sendEvent: sendEventMock, setAdPassback: setAdPassbackMock }),
 }));
 
-// Mock useEventBus so AdProvider receives a stable pre-created bus.
-let testBus: CxrEventBus;
-
-vi.mock("../instance/coordination/EventBusContext", () => ({
-  useEventBus: () => testBus,
+// AdProvider reads `adLayout` from useTagDetails() (context), not a prop.
+// Mock it so the harness can drive it without mounting the full provider tree.
+const useTagDetailsMock = vi.fn(() => ({ adLayout: AD_LAYOUT.Unknown as AdLayoutId }));
+vi.mock("./TagDetailsProvider", () => ({
+  useTagDetails: () => useTagDetailsMock(),
 }));
 
-// AdProvider registers `fireInfolinksImpression` into the InstanceRegistry via
-// useInstanceId(); provide a stable id without an InstanceProvider wrapper.
+// Mock useEventBus + useInstanceId so AdProvider receives a stable pre-created
+// bus and a stable id without an InstanceProvider wrapper.
+let testBus: CxrEventBus;
 const TEST_INSTANCE_ID = "inst-test";
 
-vi.mock("../instance/registry/InstanceContext", () => ({
+vi.mock("../instance/InstanceContext", () => ({
+  useEventBus: () => testBus,
   useInstanceId: () => TEST_INSTANCE_ID,
 }));
 
@@ -104,6 +106,7 @@ describe("providers/AdProvider", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     testBus = new CxrEventBus();
+    useTagDetailsMock.mockReturnValue({ adLayout: AD_LAYOUT.Unknown });
     testFeed = { entries: [], activeIndex: 0 };
     testSingleHit = false;
     (installGenaiBridge as ReturnType<typeof vi.fn>).mockImplementation(() => vi.fn());
@@ -116,7 +119,7 @@ describe("providers/AdProvider", () => {
 
   it("renders children", () => {
     const { root, container } = mount(
-      <AdProvider tagId="tag1">
+      <AdProvider>
         <span>child</span>
       </AdProvider>
     );
@@ -145,7 +148,7 @@ describe("providers/AdProvider", () => {
   it("calls notifyAdFill on the first fill", () => {
     const handle: ContextHandle = { ctx: null };
     const { root, container } = mount(
-      <AdProvider tagId="tag1">
+      <AdProvider>
         <Consumer handle={handle} />
       </AdProvider>
     );
@@ -161,7 +164,7 @@ describe("providers/AdProvider", () => {
   it("does not call notifyAdFill again on a repeat fill", () => {
     const handle: ContextHandle = { ctx: null };
     const { root, container } = mount(
-      <AdProvider tagId="tag1">
+      <AdProvider>
         <Consumer handle={handle} />
       </AdProvider>
     );
@@ -176,12 +179,13 @@ describe("providers/AdProvider", () => {
   });
 
   it("calls notifyAdNoFill, emits Ad Passback, and destroys on a no-fill", () => {
+    useTagDetailsMock.mockReturnValue({ adLayout: AD_LAYOUT.L3 });
     const destroy = vi.fn();
     getInstanceRegistry().register(TEST_INSTANCE_ID, { destroy });
     const emitSpy = vi.spyOn(testBus, "emit");
     const handle: ContextHandle = { ctx: null };
     const { root, container } = mount(
-      <AdProvider tagId="tag1" adLayout={AD_LAYOUT.L3}>
+      <AdProvider>
         <Consumer handle={handle} />
       </AdProvider>
     );
@@ -210,7 +214,7 @@ describe("providers/AdProvider", () => {
   it("does not call notifyAdNoFill again on a repeat no-fill (passback already fired)", () => {
     const handle: ContextHandle = { ctx: null };
     const { root, container } = mount(
-      <AdProvider tagId="tag1">
+      <AdProvider>
         <Consumer handle={handle} />
       </AdProvider>
     );
@@ -226,7 +230,7 @@ describe("providers/AdProvider", () => {
 
   it("installs the genai bridge on mount", () => {
     const { root, container } = mount(
-      <AdProvider tagId="tag1">
+      <AdProvider>
         <span />
       </AdProvider>
     );
@@ -239,7 +243,7 @@ describe("providers/AdProvider", () => {
     (installGenaiBridge as ReturnType<typeof vi.fn>).mockReturnValueOnce(cleanupMock);
 
     const { root, container } = mount(
-      <AdProvider tagId="tag1">
+      <AdProvider>
         <span />
       </AdProvider>
     );
@@ -257,7 +261,7 @@ describe("providers/AdProvider", () => {
     });
 
     const { root, container } = mount(
-      <AdProvider tagId="tag1">
+      <AdProvider>
         <span />
       </AdProvider>
     );
@@ -279,8 +283,9 @@ describe("providers/AdProvider", () => {
       }
     );
 
+    useTagDetailsMock.mockReturnValue({ adLayout: AD_LAYOUT.L2 });
     const { root, container } = mount(
-      <AdProvider tagId="tag1" adLayout={AD_LAYOUT.L2}>
+      <AdProvider>
         <span />
       </AdProvider>
     );
@@ -296,10 +301,10 @@ describe("providers/AdProvider", () => {
 
   // ── adLayout / isAudioOnlyAds ─────────────────────────────────────────────
 
-  it("exposes adLayout defaulting to AD_LAYOUT.Unknown when prop is omitted", () => {
+  it("exposes adLayout defaulting to AD_LAYOUT.Unknown when the tag has none", () => {
     const handle: ContextHandle = { ctx: null };
     const { root, container } = mount(
-      <AdProvider tagId="tag1">
+      <AdProvider>
         <Consumer handle={handle} />
       </AdProvider>
     );
@@ -308,10 +313,11 @@ describe("providers/AdProvider", () => {
     unmount(root, container);
   });
 
-  it("exposes the adLayout prop value in context", () => {
+  it("exposes the tag's adLayout value in context", () => {
+    useTagDetailsMock.mockReturnValue({ adLayout: AD_LAYOUT.L2 });
     const handle: ContextHandle = { ctx: null };
     const { root, container } = mount(
-      <AdProvider tagId="tag1" adLayout={AD_LAYOUT.L2}>
+      <AdProvider>
         <Consumer handle={handle} />
       </AdProvider>
     );
@@ -321,9 +327,10 @@ describe("providers/AdProvider", () => {
   });
 
   it("sets isAudioOnlyAds=true for mobile-320x50", () => {
+    useTagDetailsMock.mockReturnValue({ adLayout: AD_LAYOUT.L3 });
     const handle: ContextHandle = { ctx: null };
     const { root, container } = mount(
-      <AdProvider tagId="tag1" adLayout={AD_LAYOUT.L3}>
+      <AdProvider>
         <Consumer handle={handle} />
       </AdProvider>
     );
@@ -332,9 +339,10 @@ describe("providers/AdProvider", () => {
   });
 
   it("sets isAudioOnlyAds=true for mobile-320x100", () => {
+    useTagDetailsMock.mockReturnValue({ adLayout: AD_LAYOUT.L4 });
     const handle: ContextHandle = { ctx: null };
     const { root, container } = mount(
-      <AdProvider tagId="tag1" adLayout={AD_LAYOUT.L4}>
+      <AdProvider>
         <Consumer handle={handle} />
       </AdProvider>
     );
@@ -345,12 +353,13 @@ describe("providers/AdProvider", () => {
   // ── fireInfolinksImpression (host-triggered event only) ───────────────────
 
   it("registers fireInfolinksImpression, which fires the event only (no passback, no destroy)", () => {
+    useTagDetailsMock.mockReturnValue({ adLayout: AD_LAYOUT.L4 });
     const destroy = vi.fn();
     getInstanceRegistry().register(TEST_INSTANCE_ID, { destroy });
     const emitSpy = vi.spyOn(testBus, "emit");
 
     const { root, container } = mount(
-      <AdProvider tagId="tag1" adLayout={AD_LAYOUT.L4}>
+      <AdProvider>
         <span />
       </AdProvider>
     );
@@ -382,6 +391,7 @@ describe("providers/AdProvider", () => {
 
   /** Mount an AdProvider in single-hit mode with a controllable feed. */
   function mountSingleHit(entries: FeedEntryLike[], activeIndex = 0) {
+    useTagDetailsMock.mockReturnValue({ adLayout: AD_LAYOUT.L4 });
     testSingleHit = true;
     testFeed = { entries, activeIndex };
     const destroy = vi.fn();
@@ -389,7 +399,7 @@ describe("providers/AdProvider", () => {
     const emitSpy = vi.spyOn(testBus, "emit");
     const handle: ContextHandle = { ctx: null };
     const { root, container } = mount(
-      <AdProvider tagId="tag1" adLayout={AD_LAYOUT.L4}>
+      <AdProvider>
         <Consumer handle={handle} />
       </AdProvider>
     );
@@ -508,13 +518,14 @@ describe("providers/AdProvider", () => {
   // ── useOptionalAdWaterfall ────────────────────────────────────────────────
 
   it("useOptionalAdWaterfall returns the context value inside an AdProvider", () => {
+    useTagDetailsMock.mockReturnValue({ adLayout: AD_LAYOUT.L2 });
     const handle: ContextHandle = { ctx: null };
     function OptionalConsumer(): ReactElement {
       handle.ctx = useOptionalAdWaterfall() ?? null;
       return <span />;
     }
     const { root, container } = mount(
-      <AdProvider tagId="tag1" adLayout={AD_LAYOUT.L2}>
+      <AdProvider>
         <OptionalConsumer />
       </AdProvider>
     );
@@ -551,8 +562,9 @@ describe("providers/AdProvider", () => {
         destroy();
       },
     });
+    useTagDetailsMock.mockReturnValue({ adLayout: AD_LAYOUT.L3 });
     const { root, container } = mount(
-      <AdProvider tagId="tag1" adLayout={AD_LAYOUT.L3}>
+      <AdProvider>
         <span>child</span>
       </AdProvider>
     );
@@ -584,7 +596,7 @@ describe("providers/AdProvider", () => {
 
   it("ignores a PixelReporter failure reported for a different instanceId", () => {
     const { root, container } = mount(
-      <AdProvider tagId="tag1">
+      <AdProvider>
         <span>child</span>
       </AdProvider>
     );
@@ -601,7 +613,7 @@ describe("providers/AdProvider", () => {
 
   it("unsubscribes from PixelReporter on unmount (no passback after unmount)", () => {
     const { root, container } = mount(
-      <AdProvider tagId="tag1">
+      <AdProvider>
         <span>child</span>
       </AdProvider>
     );

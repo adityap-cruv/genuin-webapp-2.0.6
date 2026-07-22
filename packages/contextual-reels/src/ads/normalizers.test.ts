@@ -4,9 +4,54 @@
  *   ads/normalizeNativeConfig.test.ts
  *   ads/normalizeVideoConfig.test.ts
  */
-import { describe, it, expect } from "vitest";
+import { afterEach, describe, it, expect, vi } from "vitest";
 
-import { normalizeBannerConfig, normalizeNativeConfig, normalizeVideoConfig } from "@cxr/ads/normalizers";
+import {
+  AD_PROVIDER_ARRAY_WARN_THRESHOLD,
+  normalizeBannerConfig,
+  normalizeNativeConfig,
+  normalizeVideoConfig,
+} from "@cxr/ads/normalizers";
+
+// ─── provider-array size guard (W3) ───────────────────────────────────────────
+
+describe("ads/normalizers — oversized provider-array warning (W3)", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  const overSized = (n: number): Array<{ tag_id: string; platform: string }> =>
+    Array.from({ length: n }, (_unused, i) => ({ tag_id: `/${100 + i}/unit_${i}`, platform: "gam" }));
+
+  it("warns when a banner array exceeds the threshold", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    normalizeBannerConfig(overSized(AD_PROVIDER_ARRAY_WARN_THRESHOLD + 1), [320, 50]);
+    expect(warn.mock.calls.some((c) => String(c[1] ?? c[0]).includes("provider array"))).toBe(true);
+  });
+
+  it("does not warn when a banner array is at the threshold", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    normalizeBannerConfig(overSized(AD_PROVIDER_ARRAY_WARN_THRESHOLD), [320, 50]);
+    expect(warn.mock.calls.some((c) => String(c[1] ?? c[0]).includes("provider array"))).toBe(false);
+  });
+
+  it("does not clip the array — all entries are still returned when oversized", () => {
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    const n = AD_PROVIDER_ARRAY_WARN_THRESHOLD + 3;
+    const result = normalizeBannerConfig(overSized(n), [320, 50]);
+    expect(result).toHaveLength(n);
+  });
+
+  it("warns for oversized native and video arrays too", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    normalizeNativeConfig(overSized(AD_PROVIDER_ARRAY_WARN_THRESHOLD + 1));
+    normalizeVideoConfig(
+      Array.from({ length: AD_PROVIDER_ARRAY_WARN_THRESHOLD + 1 }, (_u, i) => `https://vast.example/${i}.xml`)
+    );
+    const warns = warn.mock.calls.filter((c) => String(c[1] ?? c[0]).includes("provider array"));
+    expect(warns.length).toBe(2);
+  });
+});
 
 // ─── normalizeBannerConfig ────────────────────────────────────────────────────
 

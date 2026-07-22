@@ -21,7 +21,7 @@ import { dispatchEvent } from "@cxr/utils/eventBus";
 // Mock useEventBus so useActiveVideoIdBroadcast receives the pre-created testBus.
 let testBus: CxrEventBus;
 
-vi.mock("../instance/coordination/EventBusContext", () => ({
+vi.mock("../instance/InstanceContext", () => ({
   useEventBus: () => testBus,
 }));
 
@@ -41,6 +41,10 @@ function makeQuartilePlayer(eventListeners: Record<string, Array<() => void>> = 
     on: vi.fn((event: string, handler: () => void) => {
       if (!eventListeners[event]) eventListeners[event] = [];
       eventListeners[event]!.push(handler);
+    }),
+    off: vi.fn((event: string, handler: () => void) => {
+      const arr = eventListeners[event];
+      if (arr) eventListeners[event] = arr.filter((h) => h !== handler);
     }),
     _setCurrentTime(ct: number) {
       _currentTime = ct;
@@ -99,6 +103,34 @@ describe("useQuartileEvents", () => {
     await tick();
 
     expect(sendEvent).toHaveBeenCalledWith("Video First Quartile", expect.any(Object));
+  });
+
+  it("detaches its player listeners so no events fire after detach (LK2)", async () => {
+    const listeners: Record<string, Array<() => void>> = {};
+    const player = makeQuartilePlayer(listeners);
+    player._setCurrentTime(50);
+    player._setDuration(100);
+
+    const q = useQuartile({
+      tagDetails: {},
+      videoDetails: {},
+      sendEvent,
+      onTimeUpdate,
+      itemId: 1,
+      onEnded,
+      isVideoItem: true,
+    });
+    const detach = q.attachToPlayer(player as unknown as PlayerHandle);
+    detach();
+
+    // After detach the handler arrays are empty — firing anything is a no-op.
+    for (const h of listeners["timeupdate"] ?? []) h();
+    for (const h of listeners["ended"] ?? []) h();
+    await tick();
+
+    expect(sendEvent).not.toHaveBeenCalled();
+    expect(onEnded).not.toHaveBeenCalled();
+    expect(player.off).toHaveBeenCalled();
   });
 
   it("emits video_midpoint at 50% progress", async () => {
@@ -460,6 +492,10 @@ function makePlayPlayer(vliteListeners: Record<string, Array<(e?: unknown) => vo
       if (!vliteListeners[event]) vliteListeners[event] = [];
       vliteListeners[event]!.push(handler);
     }),
+    off: vi.fn((event: string, handler: (e?: unknown) => void) => {
+      const arr = vliteListeners[event];
+      if (arr) vliteListeners[event] = arr.filter((h) => h !== handler);
+    }),
     _videoEl: videoEl,
     _setCurrentTime(ct: number) {
       _currentTime = ct;
@@ -531,6 +567,35 @@ describe("usePlayStartedEvents", () => {
         watch_time: 30,
       })
     );
+  });
+
+  it("detaches vlite + native listeners so no events fire after detach (LK2)", async () => {
+    const vlite: Record<string, Array<(e?: unknown) => void>> = {};
+    const player = makePlayPlayer(vlite);
+    player._setCurrentTime(0.0);
+    player._setDuration(100);
+    vi.setSystemTime(10000);
+    getLastUserPlayAt.mockReturnValue(9500);
+
+    const hook = usePlayStartedEventsHelper({
+      tagDetails: {},
+      videoDetails: {},
+      sendEvent,
+      getLastUserPlayAt,
+      onPlayReset,
+    });
+    const detach = hook.attachToPlayer(player as unknown as PlayerHandle);
+    detach();
+
+    // Native `playing` after detach must not emit; vlite `pause` array is empty too.
+    fire(player._videoEl, "play");
+    fire(player._videoEl, "playing");
+    for (const h of vlite["pause"] ?? []) h();
+    await tick();
+
+    expect(sendEvent).not.toHaveBeenCalled();
+    expect(onPlayReset).not.toHaveBeenCalled();
+    expect(player.off).toHaveBeenCalled();
   });
 
   it("emits video_started + video_play_started when currentTime <= 0.1 and recentClick", async () => {

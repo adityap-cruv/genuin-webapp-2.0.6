@@ -4,8 +4,8 @@
 
 ## Context
 
-The legacy `device/detect` module (ported from the original CXR code) identifies the
-operating system as `'chromium'` when the user-agent string contains `'CrOS'` or when
+The device-detection module (`src/platform/device.ts`, ported from the original CXR
+code) identifies the operating system as `'chromium'` when the user-agent string contains `'CrOS'` or when
 the browser is Chrome on Linux. This is evaluated **before** the `'android'` and
 `'linux'` checks, so Chrome on Linux and ChromeOS both receive `os_type: 'chromium'`
 rather than `'linux'` or `'chromeos'`.
@@ -16,7 +16,8 @@ deployment. Ad-team dashboards and downstream data models filter on this exact v
 
 ## Decision
 
-Preserve the `'chromium'` branch verbatim in `src/device/detect.ts`. The function
+Preserve the `'chromium'` branch verbatim in `src/platform/device.ts` (`resolveOsType`).
+The function
 signature, evaluation order, and returned string must not change. A JSDoc comment in the
 source file links to this ADR so future contributors do not "fix" it by accident.
 

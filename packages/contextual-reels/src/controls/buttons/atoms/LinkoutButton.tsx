@@ -2,6 +2,8 @@
 
 import React from "react";
 
+import { safeHref } from "@cxr/utils/safeHref";
+
 export interface LinkoutButtonProps {
   /** Click-through URL — renders as an anchor tag. */
   href: string;
@@ -31,7 +33,8 @@ export function LinkoutButton({ href, caption, logoUrl, style, onClick }: Linkou
   return (
     <a
       data-testid="linkout-btn"
-      href={href}
+      // Sanitize: CTA urls come from untrusted ad/feed data — block javascript:/data: hrefs.
+      href={safeHref(href)}
       target="_blank"
       rel="noopener noreferrer"
       className="gencl:flex gencl:items-center gencl:gap-2 gencl:px-1 gencl:h-full gencl:flex-1 gencl:min-w-0 gencl:rounded-lg gencl:bg-black/80 gencl:cursor-pointer gencl:no-underline"

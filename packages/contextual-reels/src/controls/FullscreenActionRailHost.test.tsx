@@ -7,13 +7,20 @@ import React, { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { FullscreenActionRailHost } from "@cxr/controls/FullscreenActionRailHost";
+import type { ControlLayerVariant } from "@cxr/controls/control-layer.types";
+import type { NormalisedReel, TagResponse } from "@cxr/types";
+
 vi.mock("@cxr/providers/AnalyticsProvider", () => ({
   useAnalytics: () => ({ sendEvent: vi.fn(), setBrandId: vi.fn() }),
 }));
 
-import { FullscreenActionRailHost } from "@cxr/controls/FullscreenActionRailHost";
-import type { ControlLayerVariant } from "@cxr/controls/control-layer.types";
-import type { NormalisedReel, TagResponse } from "@cxr/types";
+const tagDetailsState = vi.hoisted(() => ({
+  tagDetails: undefined as TagResponse | undefined,
+}));
+vi.mock("@cxr/providers/TagDetailsProvider", () => ({
+  useTagDetails: () => ({ tagDetails: tagDetailsState.tagDetails, apiFailed: false }),
+}));
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -58,6 +65,7 @@ describe("FullscreenActionRailHost", () => {
     container.remove();
   });
 
+  /** tagDetails flows through the mocked useTagDetails, not a component prop. */
   function render(props: {
     tagDetails: TagResponse;
     variant?: ControlLayerVariant;
@@ -65,8 +73,10 @@ describe("FullscreenActionRailHost", () => {
     isAdActive: boolean;
     item?: NormalisedReel;
   }): void {
+    const { tagDetails, ...rest } = props;
+    tagDetailsState.tagDetails = tagDetails;
     act(() => {
-      root.render(React.createElement(FullscreenActionRailHost, props));
+      root.render(React.createElement(FullscreenActionRailHost, rest));
     });
   }
 

@@ -39,6 +39,9 @@ export default defineConfig({
         // Type-only declarations carry no executable lines.
         "src/types.ts",
         "src/**/*.d.ts",
+        // Storybook-only MSW bootstrap + handlers: loaded by .storybook preview,
+        // never shipped or imported by src runtime code.
+        "src/stories/**",
       ],
       thresholds: {
         perFile: true,

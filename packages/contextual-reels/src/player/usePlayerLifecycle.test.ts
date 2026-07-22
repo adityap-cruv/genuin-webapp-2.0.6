@@ -8,14 +8,18 @@
  * the latest one's player handle. HLS instances created during the m3u8 path are
  * tracked in `hlsInstances` and can have their MANIFEST_PARSED listeners fired.
  */
-import Hls from "hls.js";
+import Hls from "hls.js/light";
 import { act, createElement, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
+import { describe, expect, it, vi, beforeEach, afterEach, type Mock } from "vitest";
+// Resolves to the inline vi.mock below; used to read registerPlugin call args.
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore -- vlitejs ships no official types
+import Vlitejs from "vlitejs";
 
 import { usePlayerLifecycle } from "@cxr/player/usePlayerLifecycle";
 
-import { type HlsInstanceMock } from "../../tests/_mocks/hlsMock";
+import { type HlsInstanceMock, HlsErrorTypes, triggerError } from "../../tests/_mocks/hlsMock";
 import { type PlayerHandleMock } from "../../tests/_mocks/vlitejsMock";
 
 // Track HLS instances created during tests
@@ -98,14 +102,19 @@ vi.mock("vlitejs", async () => {
 vi.mock("vlitejs/plugins/ima.js", () => ({ default: class VliteIma {} }));
 
 // Inline HLS mock
-vi.mock("hls.js", async () => {
-  const { createHlsInstanceMock, HlsEvents: evts } = await import("../../tests/_mocks/hlsMock");
+vi.mock("hls.js/light", async () => {
+  const {
+    createHlsInstanceMock,
+    HlsEvents: evts,
+    HlsErrorTypes: errTypes,
+  } = await import("../../tests/_mocks/hlsMock");
 
   class TrackedHls {
     static isSupported() {
       return hlsSupported;
     }
     static Events = evts;
+    static ErrorTypes = errTypes;
 
     startLoad: HlsInstanceMock["startLoad"];
     stopLoad: HlsInstanceMock["stopLoad"];
@@ -113,6 +122,7 @@ vi.mock("hls.js", async () => {
     loadSource: HlsInstanceMock["loadSource"];
     attachMedia: HlsInstanceMock["attachMedia"];
     detachMedia: HlsInstanceMock["detachMedia"];
+    recoverMediaError: HlsInstanceMock["recoverMediaError"];
     on: HlsInstanceMock["on"];
     off: HlsInstanceMock["off"];
     currentLevel: number;
@@ -131,6 +141,7 @@ vi.mock("hls.js", async () => {
       this.loadSource = m.loadSource;
       this.attachMedia = m.attachMedia;
       this.detachMedia = m.detachMedia;
+      this.recoverMediaError = m.recoverMediaError;
       this.on = m.on;
       this.off = m.off;
       this.currentLevel = m.currentLevel;
@@ -139,7 +150,7 @@ vi.mock("hls.js", async () => {
     }
   }
 
-  return { default: TrackedHls, Events: evts };
+  return { default: TrackedHls, Events: evts, ErrorTypes: errTypes };
 });
 
 // -----------------------------------------------------------------------
@@ -283,6 +294,48 @@ describe("usePlayerLifecycle", () => {
     expect(inst.destroy).toHaveBeenCalled();
   });
 
+  async function mountHls(): Promise<HlsInstanceMock> {
+    await act(async () => {
+      root.render(
+        createElement(LifecycleShim, {
+          opts: makeOpts({ content: "https://example.com/stream.m3u8" }),
+        })
+      );
+    });
+    return hlsInstances[hlsInstances.length - 1]!;
+  }
+
+  it("ignores a non-fatal HLS error", async () => {
+    const inst = await mountHls();
+    act(() => triggerError(inst, { fatal: false, type: HlsErrorTypes.NETWORK_ERROR }));
+    expect(inst.startLoad).not.toHaveBeenCalled();
+    expect(inst.recoverMediaError).not.toHaveBeenCalled();
+    expect(inst.destroy).not.toHaveBeenCalled();
+  });
+
+  it("restarts the load on a fatal network error", async () => {
+    const inst = await mountHls();
+    act(() => triggerError(inst, { fatal: true, type: HlsErrorTypes.NETWORK_ERROR }));
+    expect(inst.startLoad).toHaveBeenCalled();
+  });
+
+  it("recovers once on a fatal media error, then destroys on a second", async () => {
+    const inst = await mountHls();
+    act(() => triggerError(inst, { fatal: true, type: HlsErrorTypes.MEDIA_ERROR }));
+    expect(inst.recoverMediaError).toHaveBeenCalledTimes(1);
+    expect(inst.destroy).not.toHaveBeenCalled();
+    // Recovery didn't help → second media fatal tears the instance down.
+    act(() => triggerError(inst, { fatal: true, type: HlsErrorTypes.MEDIA_ERROR }));
+    expect(inst.recoverMediaError).toHaveBeenCalledTimes(1);
+    expect(inst.destroy).toHaveBeenCalled();
+  });
+
+  it("destroys the instance on an unrecoverable fatal error", async () => {
+    const inst = await mountHls();
+    act(() => triggerError(inst, { fatal: true, type: HlsErrorTypes.OTHER_ERROR }));
+    expect(inst.destroy).toHaveBeenCalled();
+  });
+
   it("does not create HLS instance for mp4 content", () => {
     act(() => {
       root.render(createElement(LifecycleShim, { opts: makeOpts() }));
@@ -347,20 +400,45 @@ describe("usePlayerLifecycle", () => {
     expect(inst.loadSource).toHaveBeenCalledWith("https://example.com/stream.m3u8");
   });
 
-  it("startLoad(-1) called on HLS after attach (unconditional pre-load)", async () => {
+  // Setup ALWAYS starts the load — Vlitejs onReady waits for media data, so an
+  // inactive slide that never loads would deadlock (never become ready, never
+  // play on swipe-in). The HAI-budget suppression for inactive slides happens
+  // *after* onReady (see "gates playback (stopLoad) in onReady when isPlay=false"),
+  // not by skipping the initial load.
+  it("eager-loads HLS at mount only for the active slide (isPlay=true)", async () => {
+    // HAI budget guard: an inactive mounted slide must NOT pull its first
+    // segments at mount — that is the ~6-videos-loading breach. It defers until
+    // it becomes active (covered by the swipe-in test below). The active slide
+    // still loads immediately so it plays instantly.
     await act(async () => {
       root.render(
         createElement(LifecycleShim, {
-          opts: makeOpts({
-            content: "https://example.com/stream.m3u8",
-            isPlay: false,
-          }),
+          opts: makeOpts({ content: "https://example.com/stream.m3u8", isPlay: true }),
         })
       );
     });
+    // Exactly once: the mock's onReady fires synchronously alongside the
+    // manifest-parsed handler, so both startPlayback and the mount-time load
+    // race for this same active slide. Regression guard for a bug where both
+    // paths called startLoad(-1) unconditionally, making hls.js fetch the
+    // first fragment twice (~500 KB wasted per active slide toward HAI).
+    expect(hlsInstances[hlsInstances.length - 1]!.startLoad).toHaveBeenCalledTimes(1);
+    expect(hlsInstances[hlsInstances.length - 1]!.startLoad).toHaveBeenCalledWith(-1);
 
-    const inst = hlsInstances[hlsInstances.length - 1]!;
-    expect(inst.startLoad).toHaveBeenCalledWith(-1);
+    // Fresh tree + fresh instance list so the active slide's async load above
+    // can't bleed into the inactive assertion.
+    act(() => root.unmount());
+    root = createRoot(document.createElement("div"));
+    hlsInstances.length = 0;
+
+    await act(async () => {
+      root.render(
+        createElement(LifecycleShim, {
+          opts: makeOpts({ content: "https://example.com/stream.m3u8", isPlay: false }),
+        })
+      );
+    });
+    expect(hlsInstances[hlsInstances.length - 1]!.startLoad).not.toHaveBeenCalled();
   });
 
   it("IMA plugin NOT registered when no ad prop", () => {
@@ -466,6 +544,23 @@ describe("usePlayerLifecycle", () => {
     expect(lastVlite().player.on).toHaveBeenCalledWith("adsmanager", expect.any(Function));
   });
 
+  // HAI budget guard: the creative media is never preloaded, so a ~1.2 MB audio
+  // spot is not pulled into the un-interacted frame (which alone breaches HAI).
+  // Holds for the active slide too — the reel being measured IS the active slide.
+  it.each([true, false])("never preloads IMA creative media (isPlay=%s)", (isPlay) => {
+    act(() => {
+      root.render(
+        createElement(LifecycleShim, {
+          opts: makeOpts({ ad: "https://example.com/vast.xml", supportAds: true, isPlay }),
+        })
+      );
+    });
+    const cfg = (Vlitejs.registerPlugin as Mock).mock.calls[0]?.[2] as {
+      adsRenderingSettings?: { enablePreloading?: boolean };
+    };
+    expect(cfg.adsRenderingSettings?.enablePreloading).toBe(false);
+  });
+
   it("passes loop=true to Vlitejs when config.auto_swipe is false", () => {
     act(() => {
       root.render(
@@ -560,6 +655,41 @@ describe("usePlayerLifecycle", () => {
     expect(inst.stopLoad).toHaveBeenCalled();
   });
 
+  // Regression: a slide that mounted while inactive is swiped to BEFORE Vlitejs
+  // onReady has fired, so `isPlayerReady` is still false. The HLS load must (re)start
+  // on that isPlay=true flip regardless of readiness — otherwise the video is stuck
+  // with no segment fetch and no `stream.m3u8` request for the newly-active slide.
+  // (This is why the HLS start/stop lives ABOVE the `isPlayerReady` guard.)
+  it("starts HLS load on isPlay true even before the player is ready (inactive-mount → swipe-in)", async () => {
+    deferVliteOnReady = true;
+    let controls!: { setIsPlay: (v: boolean) => void; setVolume: (v: number) => void };
+    await act(async () => {
+      root.render(
+        createElement(ControlledWrapper, {
+          initialOpts: makeOpts({ content: "https://example.com/stream.m3u8", isPlay: false }),
+          onControls: (c) => {
+            controls = c;
+          },
+        })
+      );
+      // Let the async hls.js import resolve so hlsInstanceRef is populated,
+      // while onReady stays deferred (player not ready yet).
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    const inst = lastHls();
+    // Ignore the setup-time load; assert only the swipe-in behaviour.
+    inst.startLoad.mockClear();
+
+    // Swipe-in: activate before the player is ready (isPlayerReady still false).
+    act(() => {
+      controls.setIsPlay(true);
+    });
+
+    expect(inst.startLoad).toHaveBeenCalledWith(-1);
+  });
+
   it("registers a canplay listener and retries play when readyState < 2 on isPlay true", () => {
     const videoEl = { current: createVideoEl(0) } as React.RefObject<HTMLVideoElement | null>;
     const addSpy = vi.spyOn(videoEl.current!, "addEventListener");
@@ -588,6 +718,33 @@ describe("usePlayerLifecycle", () => {
       videoEl.current!.dispatchEvent(new Event("canplay"));
     });
     expect(videoEl.current!.play).toHaveBeenCalled();
+  });
+
+  it("removes the pending canplay listener when isPlay flips back before it fires", () => {
+    const videoEl = { current: createVideoEl(0) } as React.RefObject<HTMLVideoElement | null>;
+    let controls!: { setIsPlay: (v: boolean) => void; setVolume: (v: number) => void };
+    act(() => {
+      root.render(
+        createElement(ControlledWrapper, {
+          initialOpts: makeOpts({ videoEl, isPlay: false }),
+          onControls: (c) => {
+            controls = c;
+          },
+        })
+      );
+    });
+
+    // isPlay true with readyState < 2 → arm the canplay listener.
+    act(() => controls.setIsPlay(true));
+    // Flip back before canplay fires → effect cleanup must remove the listener.
+    act(() => controls.setIsPlay(false));
+
+    (videoEl.current!.play as ReturnType<typeof vi.fn>).mockClear();
+    // A late canplay must NOT resurrect playback — the listener was cleaned up.
+    act(() => {
+      videoEl.current!.dispatchEvent(new Event("canplay"));
+    });
+    expect(videoEl.current!.play).not.toHaveBeenCalled();
   });
 
   it("writes the new volume onto the element when volume prop changes", () => {
@@ -738,6 +895,38 @@ describe("usePlayerLifecycle", () => {
     }).not.toThrow();
   });
 
+  it("warns and continues cleanup when a player-event detach throws on unmount", () => {
+    // logger.warn delegates to console.warn with the "[cxr/player]" tag prefix.
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    act(() => {
+      root.render(createElement(LifecycleShim, { opts: makeOpts() }));
+    });
+    const rec = lastVlite();
+    // The quartile/playStarted detachers returned by attachToPlayer call
+    // `player.off(...)`; making it throw exercises the catch around each detach
+    // in the effect cleanup.
+    rec.player.off.mockImplementation(() => {
+      throw new Error("detach boom");
+    });
+
+    act(() => {
+      root.unmount();
+    });
+    root = createRoot(document.createElement("div"));
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      "[cxr/player]",
+      "Error detaching player event listeners:",
+      expect.any(Error)
+    );
+    // Cleanup continued past the throwing detachers: the player itself was
+    // still paused and destroyed.
+    expect(rec.player.pause).toHaveBeenCalled();
+    expect(rec.player.destroy).toHaveBeenCalled();
+
+    warnSpy.mockRestore();
+  });
+
   it("does not throw when HLS destroy throws on unmount", async () => {
     hlsDestroyShouldThrow = true;
     await act(async () => {
@@ -796,7 +985,7 @@ describe("usePlayerLifecycle", () => {
 
   // ── startPlayback / isPlay-effect rejection branches ─────────────────────
 
-  it("startPlayback calls HLS startLoad(-1) and swallows a tryPlay rejection (isPlay=true + m3u8)", async () => {
+  it("startPlayback swallows a tryPlay rejection without re-issuing startLoad (isPlay=true + m3u8)", async () => {
     deferVliteOnReady = true;
     const videoEl = { current: createVideoEl() } as React.RefObject<HTMLVideoElement | null>;
 
@@ -810,7 +999,12 @@ describe("usePlayerLifecycle", () => {
       await Promise.resolve();
     });
 
+    // Mount already started the load for this active slide (manifest-parsed
+    // handler) — assert that baseline instead of clearing it, since
+    // startPlayback below must NOT call startLoad again for the same instance.
     const inst = lastHls();
+    expect(inst.startLoad).toHaveBeenCalledTimes(1);
+    expect(inst.startLoad).toHaveBeenCalledWith(-1);
     inst.startLoad.mockClear();
     // player.play() throwing synchronously makes the async tryPlay reject, so
     // startPlayback's `.catch(logger.warn)` (line 247) is exercised.
@@ -824,7 +1018,10 @@ describe("usePlayerLifecycle", () => {
       await Promise.resolve();
     });
 
-    expect(inst.startLoad).toHaveBeenCalledWith(-1);
+    // startPlayback must skip startLoad here — it was already started at mount.
+    // Calling it again is the bug this guard fixes: hls.js would issue a second
+    // request for the first fragment, doubling its bytes in the HAI budget.
+    expect(inst.startLoad).not.toHaveBeenCalled();
   });
 
   it("swallows a tryPlay rejection in the isPlay-change effect", async () => {
@@ -953,4 +1150,5 @@ describe("usePlayerLifecycle", () => {
       root = createRoot(document.createElement("div"));
     }).not.toThrow();
   });
+
 });

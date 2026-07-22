@@ -1,12 +1,14 @@
 /**
- * Tests for App.tsx — the orchestrator that mounts the provider tree, fetches
- * the tag config (TagLoader), bridges bus events to the public API
- * (AppRegistrar), arms the mute-passback timer (MutePassbackGuard), and renders
- * the loading / no-content / feed states (NativeFeedShim + Suspense fallback).
+ * Tests for App.tsx — the top-level orchestrator that mounts
+ * InstanceProvider → AnalyticsProvider → TagDetailsProvider, then gates
+ * FeedTree behind TagDetailsGate (loading skeleton / error state / children).
+ *
+ * FeedTree itself (the provider stack, fullscreen overlay, and
+ * NativeFeedShim) is mocked here to a passthrough — its own rendering
+ * behavior is covered by FeedTree.test.tsx.
  *
  * Rendered with raw React + react-dom (this repo does NOT use
- * @testing-library/react). All providers are mocked to passthrough wrappers and
- * the inner hooks are mocked so each branch can be driven independently.
+ * @testing-library/react).
  */
 import React from "react";
 import { act } from "react";
@@ -16,7 +18,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 import App from "@cxr/app/App";
 
-import { AD_LAYOUT } from "../config";
+import { AD_LAYOUT, type AdLayoutId } from "../config";
 
 // ── Provider passthroughs ──────────────────────────────────────────────────
 
@@ -29,125 +31,80 @@ vi.mock("../providers/AnalyticsProvider", () => ({
   useAnalytics: vi.fn(() => ({ sendEvent: sendEventMock, setBrandId: setBrandIdMock })),
 }));
 
-const useStrategyMock = vi.fn(() => ({
-  mutePassback: false,
-  mutePassbackDelayMs: 3000,
-  genAiEnabled: false,
+const useTagDetailsMock = vi.fn(() => ({
+  tagDetails: undefined as Record<string, unknown> | undefined,
+  apiFailed: false,
+  tagId: "tag-1",
+  brandId: undefined as number | undefined,
+  adLayout: AD_LAYOUT.Unknown as AdLayoutId,
 }));
 
-vi.mock("../strategies/StrategyProvider", () => ({
-  StrategyProvider: ({ children }: { children: React.ReactNode }) =>
-    React.createElement("div", { "data-testid": "strategy-provider" }, children),
-  useStrategy: () => useStrategyMock(),
+// Captures the previewConfig prop the TagDetailsProvider was last rendered with.
+let capturedPreviewConfig: Record<string, unknown> | undefined;
+
+vi.mock("../providers/TagDetailsProvider", () => ({
+  TagDetailsProvider: ({
+    children,
+    previewConfig,
+  }: {
+    children: React.ReactNode;
+    previewConfig?: Record<string, unknown>;
+  }) => {
+    capturedPreviewConfig = previewConfig;
+    return React.createElement("div", { "data-testid": "tag-details-provider" }, children);
+  },
+  useTagDetails: () => useTagDetailsMock(),
 }));
 
-const useFeedMock = vi.fn(() => ({
-  entries: [] as unknown[],
-  activeIndex: 0,
-  isLoading: false,
-  feedFailed: false,
+const registerMock = vi.fn();
+vi.mock("../instance/registry/InstanceRegistry", () => ({
+  getInstanceRegistry: () => ({ register: registerMock, unregister: vi.fn() }),
 }));
 
-vi.mock("../providers/FeedProvider", () => ({
-  FeedProvider: ({ children }: { children: React.ReactNode }) =>
-    React.createElement("div", { "data-testid": "feed-provider" }, children),
-  useFeed: () => useFeedMock(),
-}));
-
-const setPlayingMock = vi.fn();
-const usePlayerMock = vi.fn(() => ({ isMuted: true, isPlaying: false, setPlaying: setPlayingMock }));
-
-vi.mock("../providers/PlayerProvider", () => ({
-  PlayerProvider: ({ children }: { children: React.ReactNode }) =>
-    React.createElement("div", { "data-testid": "player-provider" }, children),
-  usePlayer: () => usePlayerMock(),
-}));
-
-const onAdFailMock = vi.fn();
-
-vi.mock("../providers/AdProvider", () => ({
-  AdProvider: ({ children }: { children: React.ReactNode }) =>
-    React.createElement("div", { "data-testid": "ad-provider" }, children),
-  useAdWaterfall: vi.fn(() => ({ onAdSuccess: vi.fn(), onAdFail: onAdFailMock })),
-}));
-
-vi.mock("../providers/GenAIProvider", () => ({
-  GenAIProvider: ({ children }: { children: React.ReactNode }) =>
-    React.createElement("div", { "data-testid": "genai-provider" }, children),
-}));
-
-const useFullScreenMock = vi.fn(() => ({ isFullScreen: false }));
-
-vi.mock("../providers/FullScreenProvider", () => ({
-  FullScreenProvider: ({ children }: { children: React.ReactNode }) =>
-    React.createElement("div", { "data-testid": "fullscreen-provider" }, children),
-  useFullScreen: () => useFullScreenMock(),
-}));
-
-vi.mock("../feed/hooks/useFullscreenClasses", () => ({
-  useFullscreenClasses: vi.fn(),
-}));
-
-vi.mock("../feed/Feed", () => ({
-  Feed: () => React.createElement("div", { "data-testid": "feed" }),
-}));
+// Mirrors the real TagDetailsGate: gates `children` on tagDetails/apiFailed
+// instead of rendering them unconditionally, so tests exercise the same
+// skeleton/error/children branching the real gate does. Default-exported so
+// App's lazy() import resolves the same way it does against the real module.
+vi.mock("../providers/TagDetailsGate", async () => {
+  const { NoContent } = await import("../app/NoContent");
+  const { FeedSkeleton } = await import("../app/FeedSkeleton");
+  function MockTagDetailsGate({ children }: { children: React.ReactNode }): React.ReactNode {
+    const { tagDetails, apiFailed } = useTagDetailsMock();
+    if (apiFailed) return React.createElement(NoContent, { message: "This content is no longer available" });
+    if (!tagDetails) return React.createElement(FeedSkeleton);
+    return children;
+  }
+  return { default: MockTagDetailsGate };
+});
 
 vi.mock("../app/FeedSkeleton", () => ({
   FeedSkeleton: () => React.createElement("div", { "data-testid": "feed-skeleton" }),
 }));
 
-// ── Instance + coordination ─────────────────────────────────────────────────
+vi.mock("../app/FeedTree", () => ({
+  default: ({ onDismiss }: { onDismiss: () => void }) =>
+    React.createElement(
+      "div",
+      { "data-testid": "feed-tree" },
+      React.createElement("button", { "data-testid": "dismiss", onClick: onDismiss })
+    ),
+}));
 
-vi.mock("../instance/registry/InstanceContext", () => ({
+vi.mock("../instance/InstanceContext", () => ({
   InstanceProvider: ({ children }: { children: React.ReactNode }) => children,
-  useInstanceId: vi.fn(() => "test-instance"),
 }));
 
-// A controllable bus: handlers are stored so tests can fire events.
-const busHandlers = new Map<string, Set<() => void>>();
-const busOn = vi.fn((event: string, handler: () => void) => {
-  if (!busHandlers.has(event)) busHandlers.set(event, new Set());
-  busHandlers.get(event)!.add(handler);
-  return () => busHandlers.get(event)?.delete(handler);
-});
-function fireBus(event: string): void {
-  busHandlers.get(event)?.forEach((h) => h());
-}
-const testBus = { on: busOn, emit: vi.fn() };
-
-vi.mock("../instance/coordination/EventBusContext", () => ({
-  EventBusProvider: ({ children }: { children: React.ReactNode }) => children,
-  useEventBus: () => testBus,
-}));
-
-vi.mock("../instance/coordination/UserInteractionTracker", () => ({
-  UserInteractionProvider: ({ children }: { children: React.ReactNode }) => children,
-  useMarkUserInteracted: vi.fn(() => vi.fn()),
-}));
-
-vi.mock("../instance/coordination/usePlayerCoordination", () => ({
-  usePlayerCoordination: vi.fn(),
-}));
-
-vi.mock("../instance/registry/useInstanceRegistration", () => ({
-  useInstanceRegistration: vi.fn(),
-}));
-
-// ── Services ─────────────────────────────────────────────────────────────────
-
-const getTagMock = vi.fn();
-
-vi.mock("../services/api", () => ({
-  getTag: (tagId: string) => getTagMock(tagId),
-}));
-
-
-// Wait for the getTag promise chain (then → setState) to flush.
+// Flushes pending macrotasks so both lazy-loaded chunks (TagDetailsGate, then
+// FeedTree nested inside it) resolve before assertions run. The first dynamic
+// import() of a vi.mock'd module in a test file costs an extra tick or two
+// beyond a warm one, so this flushes more rounds than the two lazy() boundaries
+// alone would need.
 async function flushPromises(): Promise<void> {
-  await act(async () => {
-    await Promise.resolve();
-    await Promise.resolve();
-  });
+  for (let i = 0; i < 6; i++) {
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+  }
 }
 
 describe("App", () => {
@@ -156,25 +113,24 @@ describe("App", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    busHandlers.clear();
-    vi.useRealTimers();
-
-    useStrategyMock.mockReturnValue({ mutePassback: false, mutePassbackDelayMs: 3000, genAiEnabled: false });
-    useFeedMock.mockReturnValue({ entries: [], activeIndex: 0, isLoading: false, feedFailed: false });
-    usePlayerMock.mockReturnValue({ isMuted: true, isPlaying: false, setPlaying: setPlayingMock });
-    useFullScreenMock.mockReturnValue({ isFullScreen: false });
-    getTagMock.mockResolvedValue({ tag_id: "tag-1", config: {}, brand_id: "brand-9" });
+    capturedPreviewConfig = undefined;
+    useTagDetailsMock.mockReturnValue({
+      tagDetails: { tag_id: "tag-1", config: {}, brand_id: "brand-9" },
+      apiFailed: false,
+      tagId: "tag-1",
+      brandId: undefined,
+      adLayout: AD_LAYOUT.Unknown,
+    });
 
     container = document.createElement("div");
     document.body.appendChild(container);
     root = createRoot(container);
-    (window as Window & { cxr?: unknown }).cxr = undefined;
   });
 
   afterEach(() => {
     act(() => root.unmount());
     container.remove();
-    delete (window as Window & { cxr?: unknown }).cxr;
+    delete (window as { cxr?: unknown }).cxr;
   });
 
   function render(props: Partial<React.ComponentProps<typeof App>> = {}): void {
@@ -191,204 +147,82 @@ describe("App", () => {
     });
   }
 
-  it("renders the overlay container and the analytics provider", () => {
+  it("renders the analytics provider and FeedTree once the tag resolves", async () => {
     render();
-    expect(container.querySelector("#overlay-test-instance")).toBeTruthy();
+    await flushPromises();
     expect(container.querySelector('[data-testid="analytics-provider"]')).toBeTruthy();
+    expect(container.querySelector('[data-testid="feed-tree"]')).toBeTruthy();
   });
 
   it("shows the skeleton before the tag config resolves", () => {
-    getTagMock.mockReturnValue(new Promise(() => {})); // never resolves
+    useTagDetailsMock.mockReturnValue({
+      tagDetails: undefined,
+      apiFailed: false,
+      tagId: "tag-1",
+      brandId: undefined,
+      adLayout: AD_LAYOUT.Unknown,
+    }); // never resolves
     render();
     expect(container.querySelector('[data-testid="feed-skeleton"]')).toBeTruthy();
-  });
-
-  it("loads the tag, registers the brand id, and emits tag_captured", async () => {
-    render({ adLayout: AD_LAYOUT.L3 });
-    await flushPromises();
-
-    expect(getTagMock).toHaveBeenCalledWith("tag-1");
-    expect(setBrandIdMock).toHaveBeenCalledWith("brand-9");
-    expect(sendEventMock).toHaveBeenCalledWith(
-      "Tag Captured",
-      expect.objectContaining({ tagId: "tag-1", tag_height: 50, tag_width: 320 })
-    );
-    // Feed provider tree mounts once tagDetails is set.
-    expect(container.querySelector('[data-testid="feed-provider"]')).toBeTruthy();
-  });
-
-  it("merges customizationDetails, preserves the CTA delay, and forces show_cta=false", async () => {
-    getTagMock.mockResolvedValue({ tag_id: "tag-1", config: { show_cta: true }, brand_id: "b" });
-    render({ customizationDetails: { delay: 7, extra: "x" } });
-    await flushPromises();
-
-    expect(sendEventMock).toHaveBeenCalledWith("Tag Captured", expect.any(Object));
-    // The merged tagDetails flows into the provider tree (rendered).
-    expect(container.querySelector('[data-testid="feed-provider"]')).toBeTruthy();
-  });
-
-  it("defaults the CTA delay to 3 when customizationDetails has no cta object", async () => {
-    getTagMock.mockResolvedValue({ tag_id: "tag-1", brand_id: "b" });
-    render({ customizationDetails: { somethingElse: true } });
-    await flushPromises();
-    expect(sendEventMock).toHaveBeenCalledWith("Tag Captured", expect.any(Object));
+    expect(container.querySelector('[data-testid="feed-tree"]')).toBeNull();
   });
 
   it("renders the NoContent fallback when the tag fetch fails", async () => {
-    getTagMock.mockRejectedValue(new Error("gateway down"));
+    useTagDetailsMock.mockReturnValue({
+      tagDetails: undefined,
+      apiFailed: true,
+      tagId: "tag-1",
+      brandId: undefined,
+      adLayout: AD_LAYOUT.Unknown,
+    });
     render();
     await flushPromises();
 
     const noContent = container.querySelector('[data-testid="cxr-no-content"]');
     expect(noContent).toBeTruthy();
     expect(noContent?.textContent).toContain("no longer available");
+    expect(container.querySelector('[data-testid="feed-tree"]')).toBeNull();
   });
 
-  it("does not fetch when tagId or rootTagId is empty", async () => {
-    render({ rootTagId: "" });
-    await flushPromises();
-    expect(getTagMock).not.toHaveBeenCalled();
-  });
-
-  it("renders the close button for L4 layouts and dismisses the widget on click", async () => {
-    render({ adLayout: AD_LAYOUT.L4 });
+  it("preview mode: registers setPreviewConfig that updates the previewConfig", async () => {
+    render({ preview: true });
     await flushPromises();
 
-    const closeBtn = container.querySelector<HTMLButtonElement>('[data-testid="cxr-close"]');
-    expect(closeBtn).toBeTruthy();
+    const controls = registerMock.mock.calls.find((c) => c[0] === "test-instance")?.[1];
+    expect(typeof controls.setPreviewConfig).toBe("function");
 
-    act(() => closeBtn?.click());
-    // After dismissal the App returns null — overlay is gone.
-    expect(container.querySelector("#overlay-test-instance")).toBeNull();
+    act(() => controls.setPreviewConfig({ tag_id: "p1" }));
+    expect(capturedPreviewConfig).toEqual({ tag_id: "p1" });
   });
 
-  it("does not render a close button for non-audio layouts", async () => {
-    render({ adLayout: AD_LAYOUT.Unknown });
-    await flushPromises();
-    expect(container.querySelector('[data-testid="cxr-close"]')).toBeNull();
-  });
-
-  it("does not render a close button in fullscreen even for L3", async () => {
-    useFullScreenMock.mockReturnValue({ isFullScreen: true });
-    render({ adLayout: AD_LAYOUT.L3 });
-    await flushPromises();
-    expect(container.querySelector('[data-testid="cxr-close"]')).toBeNull();
-  });
-
-  // ── NativeFeedShim ─────────────────────────────────────────────────────────
-
-  it("shows the skeleton while the feed is loading", async () => {
-    useFeedMock.mockReturnValue({ entries: [], activeIndex: 0, isLoading: true, feedFailed: false });
+  it("does not register a preview control when not in preview mode", async () => {
     render();
     await flushPromises();
-    expect(container.querySelector('[data-testid="feed-skeleton"]')).toBeTruthy();
+    const controls = registerMock.mock.calls.find((c) => c[0] === "test-instance")?.[1];
+    expect(controls?.setPreviewConfig).toBeUndefined();
   });
 
-  it("shows NoContent when the feed failed", async () => {
-    useFeedMock.mockReturnValue({ entries: [], activeIndex: 0, isLoading: false, feedFailed: true });
+  it('emits "ready" on window.cxr once this instance mounts', async () => {
+    const _emit = vi.fn();
+    (window as { cxr?: unknown }).cxr = { _emit };
+    render({ instanceId: "test-instance" });
+    await flushPromises();
+    expect(_emit).toHaveBeenCalledWith("test-instance", "ready");
+  });
+
+  it('does not throw when window.cxr is absent at mount ("ready" has no listener)', async () => {
+    delete (window as { cxr?: unknown }).cxr;
+    expect(() => render()).not.toThrow();
+    await flushPromises();
+  });
+
+  it("unmounts everything once FeedTree's onDismiss fires", async () => {
     render();
     await flushPromises();
-    expect(container.querySelector('[data-testid="cxr-no-content"]')?.textContent).toContain("No content available");
-  });
+    const dismissBtn = container.querySelector<HTMLButtonElement>('[data-testid="dismiss"]');
+    expect(dismissBtn).toBeTruthy();
 
-  it("shows NoContent when the feed is empty", async () => {
-    useFeedMock.mockReturnValue({ entries: [], activeIndex: 0, isLoading: false, feedFailed: false });
-    render();
-    await flushPromises();
-    expect(container.querySelector('[data-testid="cxr-no-content"]')).toBeTruthy();
-  });
-
-  it("renders the Feed when entries are present", async () => {
-    useFeedMock.mockReturnValue({
-      entries: [{ kind: "reel" }] as unknown[],
-      activeIndex: 0,
-      isLoading: false,
-      feedFailed: false,
-    });
-    getTagMock.mockResolvedValue({ tag_id: "tag-1", config: { variant: "compact" }, brand_id: "b" });
-    render();
-    await flushPromises();
-    expect(container.querySelector('[data-testid="feed"]')).toBeTruthy();
-  });
-
-  // ── AppRegistrar — public API bridge ─────────────────────────────────────────
-
-  it("bridges bus events to window.cxr._emit when the public API is present", async () => {
-    const emit = vi.fn();
-    // The bridge only reads `_emit`; stub just that field (cast through unknown
-    // since the real window.cxr is the full CxrPublicApi surface).
-    window.cxr = { _emit: emit } as unknown as typeof window.cxr;
-
-    useFeedMock.mockReturnValue({
-      entries: [{ kind: "reel" }] as unknown[],
-      activeIndex: 0,
-      isLoading: false,
-      feedFailed: false,
-    });
-    render();
-    await flushPromises();
-
-    act(() => fireBus("player:play"));
-    act(() => fireBus("ad:fill"));
-
-    expect(emit).toHaveBeenCalledWith("test-instance", "play");
-    expect(emit).toHaveBeenCalledWith("test-instance", "ad:fill");
-  });
-
-  it("AppRegistrar is a no-op when window.cxr is absent", async () => {
-    useFeedMock.mockReturnValue({
-      entries: [{ kind: "reel" }] as unknown[],
-      activeIndex: 0,
-      isLoading: false,
-      feedFailed: false,
-    });
-    render();
-    await flushPromises();
-    // No bus subscriptions registered for the public bridge when cxr is missing.
-    expect(() => act(() => fireBus("player:play"))).not.toThrow();
-  });
-
-  // ── MutePassbackGuard ─────────────────────────────────────────────────────────
-
-  it("does not arm the passback timer when the strategy disables mutePassback", async () => {
-    vi.useFakeTimers();
-    useStrategyMock.mockReturnValue({ mutePassback: false, mutePassbackDelayMs: 1000, genAiEnabled: false });
-    useFeedMock.mockReturnValue({
-      entries: [{ kind: "reel" }] as unknown[],
-      activeIndex: 0,
-      isLoading: false,
-      feedFailed: false,
-    });
-    render();
-    // tagDetails was resolved by a real-timer promise mock; switch happened after mount.
-    await act(async () => {
-      await Promise.resolve();
-    });
-    act(() => fireBus("player:play"));
-    act(() => vi.advanceTimersByTime(2000));
-    expect(onAdFailMock).not.toHaveBeenCalled();
-    vi.useRealTimers();
-  });
-
-  it("fires onAdFail after the delay when still muted on first play", async () => {
-    useStrategyMock.mockReturnValue({ mutePassback: true, mutePassbackDelayMs: 1000, genAiEnabled: false });
-    usePlayerMock.mockReturnValue({ isMuted: true, isPlaying: true, setPlaying: setPlayingMock });
-    useFeedMock.mockReturnValue({
-      entries: [{ kind: "reel" }] as unknown[],
-      activeIndex: 0,
-      isLoading: false,
-      feedFailed: false,
-    });
-    render();
-    await flushPromises();
-
-    vi.useFakeTimers();
-    act(() => fireBus("player:play"));
-    // A second play must not re-arm the window.
-    act(() => fireBus("player:play"));
-    act(() => vi.advanceTimersByTime(1000));
-    vi.useRealTimers();
-
-    expect(onAdFailMock).toHaveBeenCalledTimes(1);
+    act(() => dismissBtn?.click());
+    expect(container.querySelector('[data-testid="feed-tree"]')).toBeNull();
   });
 });

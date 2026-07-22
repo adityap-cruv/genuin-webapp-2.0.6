@@ -9,8 +9,8 @@ import React, { act, type ReactNode, type ReactElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
+import { InstanceProvider, useEventBus } from "@cxr/instance/InstanceContext";
 import type { CxrEventBus } from "@cxr/instance/coordination/CxrEventBus";
-import { EventBusProvider, useEventBus } from "@cxr/instance/coordination/EventBusContext";
 import { GenAIProvider, useGenAI, useOctoSplit, type OctoSplit } from "@cxr/providers/GenAIProvider";
 import * as StrategyProviderModule from "@cxr/strategies/StrategyProvider";
 
@@ -31,7 +31,13 @@ function Consumer({ handle }: { handle: ContextHandle }): ReactElement {
 }
 
 /** Records every bus emission for the given event onto `received`. */
-function BusListener({ event, received }: { event: "genai:onFill" | "genai:onNoFill"; received: string[] }): ReactElement {
+function BusListener({
+  event,
+  received,
+}: {
+  event: "genai:onFill" | "genai:onNoFill";
+  received: string[];
+}): ReactElement {
   const bus = useEventBus();
   bus.on(event, () => received.push(event));
   return <span />;
@@ -48,7 +54,7 @@ function mount(ui: ReactNode): { root: Root; container: HTMLDivElement } {
   document.body.appendChild(container);
   const root = createRoot(container);
   act(() => {
-    root.render(<EventBusProvider>{ui}</EventBusProvider>);
+    root.render(<InstanceProvider instanceId="test-instance">{ui}</InstanceProvider>);
   });
   return { root, container };
 }
@@ -80,6 +86,7 @@ describe("providers/GenAIProvider", () => {
       mutePassbackDelayMs: 3000,
       initialVolume: 0,
       compactBackgroundColor: undefined,
+      autoplayEnabled: false,
     });
   });
 
@@ -119,6 +126,24 @@ describe("providers/GenAIProvider", () => {
       </GenAIProvider>
     );
 
+    act(() => handle.setOctoFraction(0.5));
+    expect(handle.octoFraction).toBe(0.5);
+    unmount(root, container);
+  });
+
+  it("setOctoFraction is a no-op when the clamped value matches the current one", () => {
+    const handle = {} as ContextHandle;
+
+    const { root, container } = mount(
+      <GenAIProvider>
+        <Consumer handle={handle} />
+      </GenAIProvider>
+    );
+
+    act(() => handle.setOctoFraction(0.5));
+    expect(handle.octoFraction).toBe(0.5);
+
+    // Same value again (post-clamp) hits the `prev === clamped` guard.
     act(() => handle.setOctoFraction(0.5));
     expect(handle.octoFraction).toBe(0.5);
     unmount(root, container);
@@ -241,6 +266,7 @@ describe("genAiEnabled in context", () => {
       mutePassbackDelayMs: 3000,
       initialVolume: 0,
       compactBackgroundColor: undefined,
+      autoplayEnabled: false,
     });
 
     const handle = { genAiEnabled: false } as { genAiEnabled: boolean };
@@ -271,6 +297,7 @@ describe("genAiEnabled in context", () => {
       mutePassbackDelayMs: 3000,
       initialVolume: 0,
       compactBackgroundColor: undefined,
+      autoplayEnabled: false,
     });
     const received: string[] = [];
     const { root } = mount(
@@ -296,6 +323,7 @@ describe("genAiEnabled in context", () => {
       mutePassbackDelayMs: 3000,
       initialVolume: 0,
       compactBackgroundColor: undefined,
+      autoplayEnabled: false,
     });
     const received: string[] = [];
     const { root } = mount(
@@ -410,6 +438,27 @@ describe("providers/useOctoSplit", () => {
 
     act(() => handle.setAxis?.("x"));
     expect(handle.split?.octoAxis).toBe("x");
+    unmount(root, container);
+  });
+
+  it("setOctoAxis is a no-op when the axis matches the current one", () => {
+    const handle: { split?: OctoSplit; setAxis?: (a: "x" | "y") => void } = {};
+    function Probe(): ReactElement {
+      const { setOctoAxis } = useGenAI();
+      handle.split = useOctoSplit(true);
+      handle.setAxis = setOctoAxis;
+      return React.createElement("div");
+    }
+
+    const { root, container } = mount(
+      <GenAIProvider>
+        <Probe />
+      </GenAIProvider>
+    );
+
+    // Setting to the initial default ("y") hits the `prev === axis` guard.
+    act(() => handle.setAxis?.("y"));
+    expect(handle.split?.octoAxis).toBe("y");
     unmount(root, container);
   });
 });

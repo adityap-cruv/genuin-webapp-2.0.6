@@ -5,16 +5,22 @@ import { act, type ReactElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
-const { sendEventMock, setBaseEventContextMock } = vi.hoisted(() => ({
+const { sendEventMock, setBaseEventContextMock, useTagDetailsMock } = vi.hoisted(() => ({
   sendEventMock: vi.fn(),
   setBaseEventContextMock: vi.fn(),
+  useTagDetailsMock: vi.fn(() => ({ brandId: undefined as number | undefined })),
 }));
 vi.mock("@cxr/providers/AnalyticsProvider", () => ({
   useAnalytics: () => ({ sendEvent: sendEventMock, setBrandId: vi.fn(), setBaseEventContext: setBaseEventContextMock }),
 }));
+// FullScreenProvider reads `brandId` from useTagDetails() (context), not a prop.
+// Mock it so the harness can drive brandId the same way the real provider tree does.
+vi.mock("@cxr/providers/TagDetailsProvider", () => ({
+  useTagDetails: () => useTagDetailsMock(),
+}));
 
+import { InstanceProvider, useEventBus } from "@cxr/instance/InstanceContext";
 import type { CxrEventBus } from "@cxr/instance/coordination/CxrEventBus";
-import { EventBusProvider, useEventBus } from "@cxr/instance/coordination/EventBusContext";
 import { FullScreenProvider, useFullScreen, type FullScreenContextValue } from "@cxr/providers/FullScreenProvider";
 
 // ---------------------------------------------------------------------------
@@ -33,16 +39,17 @@ function Consumer({ handle }: { handle: ContextHandle }): ReactElement {
 }
 
 function mount(handle: ContextHandle, brandId?: number): { root: Root; container: HTMLDivElement } {
+  useTagDetailsMock.mockReturnValue({ brandId });
   const container = document.createElement("div");
   document.body.appendChild(container);
   const root = createRoot(container);
   act(() => {
     root.render(
-      <EventBusProvider>
-        <FullScreenProvider brandId={brandId}>
+      <InstanceProvider instanceId="test-instance">
+        <FullScreenProvider>
           <Consumer handle={handle} />
         </FullScreenProvider>
-      </EventBusProvider>
+      </InstanceProvider>
     );
   });
   return { root, container };
@@ -61,6 +68,7 @@ describe("FullScreenProvider", () => {
   beforeEach(() => {
     sendEventMock.mockClear();
     setBaseEventContextMock.mockClear();
+    useTagDetailsMock.mockReturnValue({ brandId: undefined });
     document.body.className = "";
   });
 

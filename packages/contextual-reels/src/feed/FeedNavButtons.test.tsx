@@ -120,11 +120,56 @@ describe("FeedNavButtons", () => {
     expect(container.querySelector('[data-testid="feed-nav-buttons"]')).toBeNull();
   });
 
+  it("returns null while an ad is active, even though every other gate allows it through", () => {
+    act(() => {
+      root.render(React.createElement(FeedNavButtons, { emblaApiRef, variant: undefined, isAdActive: true }));
+    });
+    expect(container.querySelector('[data-testid="feed-nav-buttons"]')).toBeNull();
+  });
+
+  it("renders normally when isAdActive is omitted (defaults to false)", () => {
+    render();
+    expect(container.querySelector('[data-testid="feed-nav-buttons"]')).toBeTruthy();
+  });
+
   it("tolerates a null Embla API ref without throwing", () => {
     emblaApiRef = { current: null };
     render();
     expect(() =>
       act(() => (container.querySelector('[data-testid="nav-arrow-down"]') as HTMLElement).click())
     ).not.toThrow();
+  });
+});
+
+// isMobile is computed once at module load from detectDevice() (line 17), so it
+// can't be flipped by re-mocking the hook mid-suite — the module must be
+// re-imported fresh with detectDevice mocked to report mobile first.
+describe("FeedNavButtons on a mobile device", () => {
+  it("returns null on mobile even when every other gate would allow it through", async () => {
+    vi.resetModules();
+    vi.doMock("@cxr/platform/device", () => ({
+      detectDevice: () => ({ isMobile: true, osType: "ios", deviceType: "mobile" }),
+    }));
+    vi.doMock("../controls/useNewPlayerControls", () => ({ useNewPlayerControls: () => true }));
+    vi.doMock("../providers/AdProvider", () => ({ useOptionalAdWaterfall: () => ({ adLayout: AD_LAYOUT.L1 }) }));
+    vi.doMock("../providers/FullScreenProvider", () => ({ useFullScreen: () => ({ isFullScreen: true }) }));
+    vi.doMock("../controls/control-size", () => ({ resolveCxrControlSize: () => "lg" }));
+
+    const { FeedNavButtons: MobileFeedNavButtons } = await import("@cxr/feed/FeedNavButtons");
+
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    const emblaRef: React.RefObject<EmblaCarouselType | null> = { current: null };
+    act(() => {
+      root.render(React.createElement(MobileFeedNavButtons, { emblaApiRef: emblaRef, variant: undefined }));
+    });
+
+    expect(container.querySelector('[data-testid="feed-nav-buttons"]')).toBeNull();
+
+    act(() => root.unmount());
+    document.body.removeChild(container);
+    vi.doUnmock("@cxr/platform/device");
+    vi.resetModules();
   });
 });

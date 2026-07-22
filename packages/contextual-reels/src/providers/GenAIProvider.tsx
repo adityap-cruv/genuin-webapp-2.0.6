@@ -9,7 +9,7 @@
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
-import { useEventBus } from "@cxr/instance/coordination/EventBusContext";
+import { useEventBus } from "@cxr/instance/InstanceContext";
 import { useStrategy } from "@cxr/strategies/StrategyProvider";
 
 /** Context value exposed by `useGenAI`. */
@@ -99,6 +99,11 @@ export function GenAIProvider({ children }: GenAIProviderProps): ReactNode {
     };
   }, [bus, genAiEnabled]);
 
+  // TODO(dev): consider splitting the hot octoFraction/octoAxis (updated on
+  // drag/scroll) out of the near-static genAiEnabled + stable setters into a
+  // separate context, so consumers that only read genAiEnabled don't re-render
+  // on every octo update. Lower priority than the PlayerProvider split; the
+  // change-guards on the setters already suppress no-op writes.
   const value = useMemo<GenAIContextValue>(
     () => ({ genAiEnabled, octoFraction, setOctoFraction, octoAxis, setOctoAxis }),
     [genAiEnabled, octoFraction, setOctoFraction, octoAxis, setOctoAxis]

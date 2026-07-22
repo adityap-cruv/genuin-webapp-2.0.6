@@ -1,6 +1,5 @@
 "use client";
 
-import { useBrowserDetect } from "@genuin/ui/hooks";
 import { useLayoutEffect, useMemo, useState } from "react";
 
 import { useBaseContext } from "@genuin/components/context/base";
@@ -103,7 +102,6 @@ export function useEmbedConfigs() {
   const { customization, rootElement, embedData, brandLayoutType } = embedContextData;
   const { brandDetails, isEmbed } = useBaseContext();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
-  const { isSafari } = useBrowserDetect();
   const { searchParams } = useSearchParams();
 
   // Tracks whether the v2 design system experience is enabled, either via the

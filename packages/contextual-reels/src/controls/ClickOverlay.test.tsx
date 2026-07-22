@@ -6,12 +6,14 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 let onSetMuted: ((value: boolean) => void) | undefined;
 let mockIsMuted = true;
+let mockIsPlaying = true;
+const setPlayingMock = vi.fn();
 
 vi.mock("../providers/PlayerProvider", () => ({
   usePlayer: () => ({
     isMuted: mockIsMuted,
-    isPlaying: true,
-    setPlaying: vi.fn(),
+    isPlaying: mockIsPlaying,
+    setPlaying: setPlayingMock,
     setMuted: (value: boolean) => onSetMuted?.(value),
   }),
 }));
@@ -26,7 +28,7 @@ import { CxrEventBus } from "@cxr/instance/coordination/CxrEventBus";
 
 let testBus: CxrEventBus;
 
-vi.mock("../instance/coordination/EventBusContext", () => ({
+vi.mock("../instance/InstanceContext", () => ({
   useEventBus: () => testBus,
 }));
 
@@ -38,6 +40,8 @@ describe("ClickOverlay", () => {
   beforeEach(() => {
     onSetMuted = undefined;
     mockIsMuted = true;
+    mockIsPlaying = true;
+    setPlayingMock.mockClear();
     sendEventMock.mockClear();
     testBus = new CxrEventBus();
     container = document.createElement("div");
@@ -208,6 +212,28 @@ describe("ClickOverlay", () => {
       el.dispatchEvent(new MouseEvent("click", { bubbles: true }));
     });
     expect(sendEventMock).not.toHaveBeenCalled();
+  });
+
+  it("non-fullscreen: muted + paused → unmutes and resumes playback", () => {
+    mockIsMuted = true;
+    mockIsPlaying = false;
+    render({ isFullScreen: false });
+    const el = container.querySelector('[data-testid="click-overlay"]')!;
+    act(() => {
+      el.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+    expect(setPlayingMock).toHaveBeenCalledWith(true);
+  });
+
+  it("non-fullscreen: muted + already playing → does not touch play state", () => {
+    mockIsMuted = true;
+    mockIsPlaying = true;
+    render({ isFullScreen: false });
+    const el = container.querySelector('[data-testid="click-overlay"]')!;
+    act(() => {
+      el.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+    expect(setPlayingMock).not.toHaveBeenCalled();
   });
 
   it("fullscreen: play/pause tap does not track Unmuted", () => {

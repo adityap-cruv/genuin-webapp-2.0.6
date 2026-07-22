@@ -1,29 +1,22 @@
 /**
  * Tests for `src/app/CloseButton.tsx`.
  *
- * Covers both branches of the iframe guard: hidden inside an iframe, rendered
- * otherwise. Rendered with raw React + react-dom per cluster conventions.
+ * CloseButton is now a pure presentational button — it always renders and wires
+ * its `onClick`. (The former iframe-visibility guard moved up to the caller,
+ * `FeedTree`'s `NativeFeedShim`, which decides whether to mount it at all.)
+ * Rendered with raw React + react-dom per cluster conventions.
  */
 import { act, createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { CloseButton } from "@cxr/app/CloseButton";
-import { isIframe } from "@cxr/config";
-
-vi.mock("@cxr/config", () => ({
-  isIframe: vi.fn(() => false),
-}));
-
-const mockIsIframe = isIframe as ReturnType<typeof vi.fn>;
 
 describe("CloseButton", () => {
   let container: HTMLDivElement;
   let root: Root;
 
   beforeEach(() => {
-    vi.clearAllMocks();
-    mockIsIframe.mockReturnValue(false);
     container = document.createElement("div");
     document.body.appendChild(container);
     root = createRoot(container);
@@ -34,7 +27,7 @@ describe("CloseButton", () => {
     container.remove();
   });
 
-  it("renders a clickable close button when not inside an iframe", () => {
+  it("renders a labelled, clickable close button", () => {
     const onClick = vi.fn();
     act(() => {
       root.render(createElement(CloseButton, { onClick }));
@@ -48,15 +41,5 @@ describe("CloseButton", () => {
       button?.click();
     });
     expect(onClick).toHaveBeenCalledTimes(1);
-  });
-
-  it("renders nothing when inside an iframe", () => {
-    mockIsIframe.mockReturnValue(true);
-    act(() => {
-      root.render(createElement(CloseButton, { onClick: vi.fn() }));
-    });
-
-    expect(container.querySelector('[data-testid="cxr-close"]')).toBeNull();
-    expect(container.children).toHaveLength(0);
   });
 });

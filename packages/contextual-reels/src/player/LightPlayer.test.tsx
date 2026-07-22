@@ -57,7 +57,7 @@ vi.mock("vlitejs", async () => {
 
 vi.mock("vlitejs/plugins/ima.js", () => ({ default: class VliteIma {} }));
 
-vi.mock("hls.js", async () => {
+vi.mock("hls.js/light", async () => {
   const { createHlsInstanceMock, HlsEvents } = await import("../../tests/_mocks/hlsMock");
   class MockHls {
     static isSupported() {
@@ -96,7 +96,7 @@ vi.mock("../providers/AnalyticsProvider", () => ({
   useAnalytics: () => ({ sendEvent: analyticsSendEvent }),
 }));
 
-vi.mock("../instance/coordination/EventBusContext", () => ({
+vi.mock("../instance/InstanceContext", () => ({
   useEventBus: () => ({ on: () => () => undefined, emit: () => undefined }),
 }));
 

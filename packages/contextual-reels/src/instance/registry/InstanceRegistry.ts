@@ -10,6 +10,11 @@ export interface InstanceControls {
   fireInfolinksImpression?: () => void;
   /** Unmount the React root and remove the host node. Registered by the loader (`index.jsx`). */
   destroy?: () => void;
+  /**
+   * Replace this instance's tag config live for dashboard preview. Registered
+   * by App; pushed via `window.cxr.setPreviewConfig`. Absent in normal embeds.
+   */
+  setPreviewConfig?: (config: Record<string, unknown>) => void;
 }
 
 let _registry: InstanceRegistry | null = null;

@@ -30,6 +30,7 @@ const {
   capturedVideoControlProps,
   capturedAdControlProps,
   sendEventMock,
+  tagDetails,
 } = vi.hoisted(() => ({
   mockLightPlayer: vi.fn(),
   mockOctoSheet: vi.fn(),
@@ -43,6 +44,7 @@ const {
   capturedVideoControlProps: [] as Record<string, unknown>[],
   capturedAdControlProps: [] as Record<string, unknown>[],
   sendEventMock: vi.fn(),
+  tagDetails: { tag_id: "tag-1" } as TagResponse,
 }));
 
 vi.mock("../../player/LightPlayer", () => ({
@@ -81,7 +83,7 @@ vi.mock("../../controls/AdControlLayer", () => ({
     return React.createElement("div", { "data-testid": "ad-control-layer" });
   },
 }));
-vi.mock("../../instance/registry/InstanceContext", () => ({
+vi.mock("../../instance/InstanceContext", () => ({
   useInstanceId: () => "test-instance",
 }));
 vi.mock("../../providers/PlayerProvider", () => ({ usePlayer: () => mockUsePlayer() }));
@@ -93,6 +95,9 @@ vi.mock("../../providers/AdProvider", () => ({ useAdWaterfall: () => mockUseAdWa
 vi.mock("../../providers/GenAIProvider", () => ({
   useGenAI: () => mockUseGenAI(),
   useOctoSplit: (isActive: boolean) => mockUseOctoSplit(isActive),
+}));
+vi.mock("../../providers/TagDetailsProvider", () => ({
+  useTagDetails: () => ({ tagDetails, apiFailed: false }),
 }));
 vi.mock("../hooks/useFullscreenAdBreak", () => ({
   useFullscreenAdBreak: (opts: unknown) => mockUseFullscreenAdBreak(opts),
@@ -128,8 +133,6 @@ const baseReel: NormalisedReel = {
   config: null,
   video: null,
 };
-
-const tagDetails: TagResponse = { tag_id: "tag-1" };
 
 const adObject: NormalisedAd = {
   kind: "ad",
@@ -209,11 +212,19 @@ describe("VideoLayout layout branches", () => {
         React.createElement(VideoLayout, {
           reel: baseReel,
           isActive: true,
-          tagDetails,
           onTimeUpdate: () => undefined,
           ...props,
         })
       );
+    });
+  }
+
+  // OctoSheet is lazy() behind Suspense (kept off the ad-frame critical path), so
+  // it resolves on a microtask after render. Flush it before asserting it mounted.
+  async function flushLazy(): Promise<void> {
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
     });
   }
 
@@ -252,7 +263,7 @@ describe("VideoLayout layout branches", () => {
   });
 
   it("does NOT mount the L3 audio player on an inactive slide even when unmuted", () => {
-    // isMuted is shared feed-wide state; ReelList keeps every entry mounted and only
+    // isMuted is shared feed-wide state; Feed keeps every entry mounted and only
     // the active one gets isActive. A feed-wide unmute must not engage off-screen
     // slides, or the whole feed would decode media (the no-decode goal).
     mockUseAdWaterfall.mockReturnValue({ adLayout: AD_LAYOUT.L3 });
@@ -325,10 +336,11 @@ describe("VideoLayout layout branches", () => {
     expect(container.querySelector('[data-testid="octo-sheet"]')).toBeNull();
   });
 
-  it("renders the L2 Octo sheet when genAI enabled and reel has a video id", () => {
+  it("renders the L2 Octo sheet when genAI enabled and reel has a video id", async () => {
     mockUseAdWaterfall.mockReturnValue({ adLayout: AD_LAYOUT.L2 });
     mockUseGenAI.mockReturnValue({ genAiEnabled: true });
     render({ reel: { ...baseReel, video: { id: "vid-1" } as NormalisedReel["video"] } });
+    await flushLazy();
     expect(container.querySelector('[data-testid="octo-sheet"]')).toBeTruthy();
     expect(mockOctoSheet).toHaveBeenCalledWith(expect.objectContaining({ host: "split" }));
   });
@@ -589,5 +601,103 @@ describe("VideoLayout layout branches", () => {
     // First LightPlayer call is the underlying video — isPlay must be false.
     const videoProps = mockLightPlayer.mock.calls[0]?.[0] as { isPlay?: boolean };
     expect(videoProps?.isPlay).toBe(false);
+  });
+
+  // ─── Additional branch coverage ──────────────────────────────────────────────
+  it("does not resize when the container ref is not yet attached", () => {
+    // L2 mounts the ResizeObserver via containerRef; if getBoundingClientRect / the
+    // container isn't there yet the effect must bail out on the `!el` branch
+    // without throwing (exercises the falsy `if (!el) return;` guard).
+    mockUseAdWaterfall.mockReturnValue({ adLayout: AD_LAYOUT.L2 });
+    expect(() => render()).not.toThrow();
+  });
+
+  it("falls back to an empty content string when the reel has no videoUrl", () => {
+    render({ reel: { ...baseReel, videoUrl: null } });
+    const props = mockLightPlayer.mock.calls.at(-1)?.[0] as { content?: string };
+    expect(props?.content).toBe("");
+  });
+
+  it("fades the ad break overlay out and disables pointer events when the ad is not visible", () => {
+    mockUseFullscreenAdBreak.mockReturnValue({
+      ...adBreakIdle,
+      isOverlayMounted: true,
+      isAdVisible: false,
+      shouldMountAd: true,
+    });
+    render({ adObject });
+    const overlay = container.querySelector('[data-testid="fullscreen-ad-break"]') as HTMLElement;
+    expect(overlay.style.opacity).toBe("0");
+    expect(overlay.style.pointerEvents).toBe("none");
+  });
+
+  it("shows the ad break overlay and enables pointer events when the ad is visible", () => {
+    mockUseFullscreenAdBreak.mockReturnValue({
+      ...adBreakIdle,
+      isOverlayMounted: true,
+      isAdVisible: true,
+      shouldMountAd: true,
+    });
+    render({ adObject });
+    const overlay = container.querySelector('[data-testid="fullscreen-ad-break"]') as HTMLElement;
+    expect(overlay.style.opacity).toBe("1");
+    expect(overlay.style.pointerEvents).toBe("auto");
+  });
+
+  it("defaults isMuted to false in the ad break control layer when usePlayer reports undefined", () => {
+    mockUsePlayer.mockReturnValue({
+      isMuted: undefined,
+      volume: 1,
+      isPlaying: true,
+      setMuted,
+      setPlaying,
+      setAdBreakActive,
+    });
+    mockUseFullscreenAdBreak.mockReturnValue({
+      ...adBreakIdle,
+      isOverlayMounted: true,
+      isAdVisible: true,
+      shouldMountAd: true,
+    });
+    render({ adObject });
+    const adControl = capturedAdControlProps.at(-1) as Record<string, unknown>;
+    expect(adControl["isMuted"]).toBe(false);
+  });
+
+  it("sends Muted when the ad break control layer's onMuteClick toggles to muted", () => {
+    mockUseFullscreenAdBreak.mockReturnValue({
+      ...adBreakIdle,
+      isOverlayMounted: true,
+      isAdVisible: true,
+      shouldMountAd: true,
+    });
+    render({ adObject });
+    const adControl = capturedAdControlProps.at(-1) as Record<string, unknown>;
+    act(() => (adControl["onMuteClick"] as (m: boolean) => void)(true));
+    expect(setMuted).toHaveBeenCalledWith(true);
+    expect(sendEventMock).toHaveBeenCalledWith("Muted", { by_user: true });
+  });
+
+  it("L2 forwards reel.cta.link as the player ad prop when present", () => {
+    mockUseAdWaterfall.mockReturnValue({ adLayout: AD_LAYOUT.L2 });
+    render({ reel: { ...baseReel, cta: { link: "https://cta.example/l2" } } });
+    const props = mockLightPlayer.mock.calls.at(-1)?.[0] as { ad?: string };
+    expect(props?.ad).toBe("https://cta.example/l2");
+  });
+
+  it("L1 forwards reel.cta.link as the player ad prop when present", () => {
+    render({ reel: { ...baseReel, cta: { link: "https://cta.example/l1" } } });
+    const props = mockLightPlayer.mock.calls.at(-1)?.[0] as { ad?: string };
+    expect(props?.ad).toBe("https://cta.example/l1");
+  });
+
+  it("falls back to an empty tagId for OctoSheet when tagDetails.tag_id is absent", async () => {
+    mockUseAdWaterfall.mockReturnValue({ adLayout: AD_LAYOUT.L2 });
+    mockUseGenAI.mockReturnValue({ genAiEnabled: true });
+    tagDetails.tag_id = undefined as unknown as string;
+    render({ reel: { ...baseReel, video: { id: "vid-1" } as NormalisedReel["video"] } });
+    await flushLazy();
+    expect(mockOctoSheet).toHaveBeenCalledWith(expect.objectContaining({ tagId: "" }));
+    tagDetails.tag_id = "tag-1";
   });
 });

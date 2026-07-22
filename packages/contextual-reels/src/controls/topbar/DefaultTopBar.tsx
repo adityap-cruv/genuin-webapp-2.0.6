@@ -23,6 +23,7 @@ export function DefaultTopBar({
   isMuted,
   isPlay,
   isActive = true,
+  expandEnabled = true,
   onMuteClick,
   onPlayClick,
   onFullScreenClick,
@@ -32,6 +33,10 @@ export function DefaultTopBar({
   const [rightHovered, setRightHovered] = useState(false);
   // No adLayout here — topbar never appears in compact banners; fallback row is correct.
   const v2Size = resolveCxrControlSize(undefined, isFullScreen);
+  // Hide the expand button while collapsed if the tag opted out of expansion;
+  // once fullscreen this same button is the only way to collapse back out, so
+  // it always shows regardless of expandEnabled.
+  const showExpandButton = isFullScreen || expandEnabled;
 
   function stopProp(e: React.MouseEvent) {
     e.stopPropagation();
@@ -40,7 +45,7 @@ export function DefaultTopBar({
   return (
     <div
       data-testid="default-top-bar"
-      className="gencl:absolute gencl:top-0 gencl:left-0 gencl:w-full gencl:flex gencl:items-center gencl:justify-between gencl:px-[15px] gencl:py-[10px]">
+      className="gencl:absolute gencl:top-0 gencl:left-0 gencl:w-full gencl:flex gencl:items-center gencl:justify-between gencl:p-3">
       {/* Left: V1 mute+play. Empty in V2 (all controls moved to right cluster). */}
       <div
         data-testid="topbar-left-group"
@@ -68,11 +73,13 @@ export function DefaultTopBar({
         onMouseLeave={() => setRightHovered(false)}
         className="gencl:flex gencl:items-center gencl:z-[10]">
         {isIheart || !isV2 ? (
-          <ExpandCollapseButton
-            isFullScreen={isFullScreen}
-            onClick={onFullScreenClick}
-            size={isFullScreen ? "xl" : "lg"}
-          />
+          (isIheart || showExpandButton) && (
+            <ExpandCollapseButton
+              isFullScreen={isFullScreen}
+              onClick={onFullScreenClick}
+              size={isFullScreen ? "xl" : "lg"}
+            />
+          )
         ) : (
           <ControlButtonGroup gap="tight">
             <MuteUnmuteButtonV2
@@ -89,7 +96,9 @@ export function DefaultTopBar({
               suppressText={rightHovered}
               shouldAnimate={isFullScreen && isActive}
             />
-            <ExpandCollapseButtonV2 isFullScreen={isFullScreen} onClick={onFullScreenClick} size={v2Size} />
+            {showExpandButton && (
+              <ExpandCollapseButtonV2 isFullScreen={isFullScreen} onClick={onFullScreenClick} size={v2Size} />
+            )}
           </ControlButtonGroup>
         )}
       </div>

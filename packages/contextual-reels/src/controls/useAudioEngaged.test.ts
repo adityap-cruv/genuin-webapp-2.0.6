@@ -26,7 +26,7 @@ let mockBus: CxrEventBus | undefined;
 vi.mock("../strategies/StrategyProvider", () => ({
   useStrategy: () => ({ initialVolume: mockInitialVolume }),
 }));
-vi.mock("../instance/coordination/EventBusContext", () => ({
+vi.mock("../instance/InstanceContext", () => ({
   useOptionalEventBus: () => mockBus,
 }));
 

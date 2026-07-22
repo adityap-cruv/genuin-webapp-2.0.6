@@ -12,7 +12,8 @@
  * for video-with-ad entries. Callers that omit `adObject` see no change.
  */
 
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
+import { lazy, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { GenAdSlot } from "@cxr/ads/GenAdSlot";
 import { genAdSlotAdProps } from "@cxr/ads/adSlotProps";
@@ -23,16 +24,20 @@ import { AdControlLayer } from "@cxr/controls/AdControlLayer";
 import { CompactUnmuteOverlay, VideoControlLayer } from "@cxr/controls/VideoControlLayer";
 import type { ControlLayerVariant } from "@cxr/controls/control-layer.types";
 import { AD_FADE_MS, useFullscreenAdBreak } from "@cxr/feed/hooks/useFullscreenAdBreak";
-import { OctoSheet } from "@cxr/genai/octo/OctoSheet";
-import { useInstanceId } from "@cxr/instance/registry/InstanceContext";
+// Lazy so the GenAI SDK (markdown + icon pipeline) stays off the critical path.
+// It only loads when a genAiEnabled tag actually renders Octo — for video/ad
+// tags without GenAI it never enters the ad-frame HAI budget.
+const OctoSheet = lazy(() => import("@cxr/genai/octo/OctoSheet").then((m) => ({ default: m.OctoSheet })));
+import { useInstanceId } from "@cxr/instance/InstanceContext";
 import { LightPlayer } from "@cxr/player/LightPlayer";
 import { useAdWaterfall } from "@cxr/providers/AdProvider";
 import { useAnalytics } from "@cxr/providers/AnalyticsProvider";
 import { useFullScreen } from "@cxr/providers/FullScreenProvider";
 import { useGenAI, useOctoSplit } from "@cxr/providers/GenAIProvider";
 import { usePlayer } from "@cxr/providers/PlayerProvider";
+import { useTagDetails } from "@cxr/providers/TagDetailsProvider";
 import { useStrategy } from "@cxr/strategies/StrategyProvider";
-import type { NormalisedAd, NormalisedReel, TagResponse } from "@cxr/types";
+import type { NormalisedAd, NormalisedReel } from "@cxr/types";
 
 /** Neutral dark backdrop when no brand_color is configured for the tag. */
 const DEFAULT_COMPACT_BACKGROUND = "#1a1a1a";
@@ -41,7 +46,6 @@ const DEFAULT_COMPACT_BACKGROUND = "#1a1a1a";
 export interface VideoLayoutProps {
   reel: NormalisedReel;
   isActive: boolean;
-  tagDetails: TagResponse;
   variant?: ControlLayerVariant;
   onTimeUpdate: (index: number, currentTime: number, duration: number) => void;
   /** Advance the carousel one slide — called when the video ends. */
@@ -56,17 +60,18 @@ export interface VideoLayoutProps {
  * When `adObject` is supplied the fullscreen ad break overlay is activated on top of
  * the player; video playback is suppressed while the ad is on screen.
  *
- * @param props  reel, isActive, tagDetails, variant, onTimeUpdate, onAutoAdvance, adObject.
+ * @param props  reel, isActive, variant, onTimeUpdate, onAutoAdvance, adObject.
+ *   tagDetails is read from {@link useTagDetails}.
  */
 export function VideoLayout({
   reel,
   isActive,
-  tagDetails,
   variant = "default",
   onTimeUpdate,
   onAutoAdvance,
   adObject,
 }: VideoLayoutProps): React.JSX.Element {
+  const { tagDetails } = useTagDetails();
   const { adLayout, recordAdBreakResult } = useAdWaterfall();
   const { isMuted, volume, isPlaying, setMuted, setPlaying, setAdBreakActive } = usePlayer();
   const { splitActive, playerShare, octoAxis } = useOctoSplit(isActive);
@@ -82,13 +87,23 @@ export function VideoLayout({
   // payload field (mirrors the Web SDK's play/pause tracking).
   const currentTimeRef = useRef(0);
 
-  const handleMuteToggle = useCallback(
+  // Dedicated mute BUTTON tap — toggles mute only, never touches playback.
+  const handleMuteButtonClick = useCallback(
     (nextMuted: boolean, extra?: Record<string, unknown>) => {
       setMuted(nextMuted);
       analytics.sendEvent(nextMuted ? EVENT.VIDEO_MUTED : EVENT.VIDEO_UNMUTED, { by_user: true, ...extra });
     },
     [setMuted, analytics]
   );
+
+  // Layer/overlay tap (ClickOverlay, CompactUnmuteOverlay) — unmuting a paused
+  // video should also resume playback, since a muted+paused tap must not leave
+  // the video sitting on a frozen frame. Never wired to the mute button itself.
+  const handleLayerUnmute = useCallback(() => {
+    setMuted(false);
+    if (!isPlaying) setPlaying(true);
+    analytics.sendEvent(EVENT.VIDEO_UNMUTED, { by_user: true, video_id: videoId });
+  }, [setMuted, isPlaying, setPlaying, analytics, videoId]);
 
   // Ad break — only activates when adObject is present; hook is always called (rules of hooks).
   const adBreak = useFullscreenAdBreak({
@@ -154,10 +169,23 @@ export function VideoLayout({
   // the backend-supplied brand_color; everyone else gets the neutral dark background.
   const compactBackground = compactBackgroundColor ?? tagDetails?.brand_color ?? DEFAULT_COMPACT_BACKGROUND;
 
+  // Fields every renderLN's LightPlayer shares — only isPlay/hideScrubber/onTimeUpdate/
+  // videoMode/ad differ per layout, spread as overrides at each call site.
+  const basePlayerProps = {
+    content: reel.videoUrl ?? "",
+    id: reel.id,
+    videoId,
+    poster: reel.thumb ?? undefined,
+    volume,
+    tagDetails: {},
+    videoDetails: reel as unknown as Record<string, unknown>,
+    onTimeUpdate: () => undefined,
+    onEnded: onAutoAdvance,
+  };
+
   const controlLayerProps = {
     variant,
     item: reel,
-    tagDetails,
     dimensions,
     isActive,
     isFullScreen,
@@ -166,7 +194,8 @@ export function VideoLayout({
     // guards (renderL1/L2/L4) pause the actual video, but the controls reflect user intent.
     isPlay: isActive && isPlaying,
     adLayout,
-    onMuteClick: () => handleMuteToggle(!isMuted, { video_id: videoId }),
+    onMuteClick: () => handleMuteButtonClick(!isMuted, { video_id: videoId }),
+    onLayerUnmuteClick: handleLayerUnmute,
     onPlayClick: () => {
       const willPlay = !isPlaying;
       setPlaying(willPlay);
@@ -262,17 +291,9 @@ export function VideoLayout({
             className="gencl:absolute gencl:h-px gencl:w-px gencl:overflow-hidden gencl:opacity-0 gencl:pointer-events-none"
             style={{ left: -9999, top: 0 }}>
             <LightPlayer
-              content={reel.videoUrl ?? ""}
-              id={reel.id}
-              videoId={videoId}
-              poster={reel.thumb ?? undefined}
-              volume={volume}
+              {...basePlayerProps}
               isPlay={isActive && isPlaying && !adBreak.suppressVideo}
               hideScrubber={true}
-              tagDetails={{}}
-              videoDetails={reel as unknown as Record<string, unknown>}
-              onTimeUpdate={() => undefined}
-              onEnded={onAutoAdvance}
             />
           </div>
         )}
@@ -287,27 +308,10 @@ export function VideoLayout({
       <div
         data-testid="video-layout"
         className="gencl:relative gencl:h-full gencl:w-full gencl:flex gencl:flex-col gencl:overflow-hidden">
-        <CompactUnmuteOverlay
-          isMuted={isMuted}
-          onMuteClick={() => {
-            setMuted(false);
-            analytics.sendEvent(EVENT.VIDEO_UNMUTED, { by_user: true, video_id: videoId });
-          }}
-        />
+        <CompactUnmuteOverlay isMuted={isMuted} onMuteClick={handleLayerUnmute} />
         <div className="gencl:flex gencl:w-full gencl:flex-1 gencl:overflow-hidden">
           <div className="gencl:h-[100px] gencl:shrink-0 gencl:overflow-hidden gencl:aspect-9/16">
-            <LightPlayer
-              content={reel.videoUrl ?? ""}
-              id={reel.id}
-              videoId={videoId}
-              poster={reel.thumb ?? undefined}
-              volume={volume}
-              isPlay={isActive && isPlaying && !adBreak.suppressVideo}
-              tagDetails={{}}
-              videoDetails={reel as unknown as Record<string, unknown>}
-              onTimeUpdate={() => undefined}
-              onEnded={onAutoAdvance}
-            />
+            <LightPlayer {...basePlayerProps} isPlay={isActive && isPlaying && !adBreak.suppressVideo} />
           </div>
           <div
             className="gencl:flex-1 gencl:min-w-0 gencl:flex gencl:flex-col gencl:overflow-hidden"
@@ -338,18 +342,11 @@ export function VideoLayout({
       <div ref={containerRef} data-testid="video-layout" className={containerClassName}>
         <div data-testid="video-layout-player" className={playerClassName}>
           <LightPlayer
-            content={reel.videoUrl ?? ""}
+            {...basePlayerProps}
             ad={reel.cta?.link}
-            id={reel.id}
-            videoId={videoId}
-            poster={reel.thumb ?? undefined}
-            volume={volume}
             isPlay={isPlayerPlaying}
             hideScrubber={true}
-            tagDetails={{}}
-            videoDetails={reel as unknown as Record<string, unknown>}
             onTimeUpdate={handleTimeUpdate}
-            onEnded={onAutoAdvance}
             videoMode="contain"
           />
         </div>
@@ -357,17 +354,19 @@ export function VideoLayout({
           <div
             className="gencl:absolute gencl:top-0 gencl:bottom-0 gencl:right-0 gencl:z-60"
             style={{ left: octoOverlayLeft }}>
-            <OctoSheet
-              instanceId={instanceId}
-              videoId={reel.video.id}
-              brandId={tagDetails?.brand_id}
-              dimensions={playerDimensions}
-              isFullScreen={isFullScreen}
-              isActive={isActive}
-              tagId={tagDetails?.tag_id ?? ""}
-              host="split"
-              adLayoutHint={adLayout as AdLayoutId}
-            />
+            <SafeSuspense fallback={null}>
+              <OctoSheet
+                instanceId={instanceId}
+                videoId={reel.video.id}
+                brandId={tagDetails?.brand_id}
+                dimensions={playerDimensions}
+                isFullScreen={isFullScreen}
+                isActive={isActive}
+                tagId={tagDetails?.tag_id ?? ""}
+                host="split"
+                adLayoutHint={adLayout as AdLayoutId}
+              />
+            </SafeSuspense>
           </div>
         )}
         <VideoControlLayer {...controlLayerProps} dimensions={playerDimensions} />
@@ -401,18 +400,11 @@ export function VideoLayout({
         className="gencl:relative gencl:flex gencl:justify-center gencl:items-center gencl:h-full gencl:w-full gencl:bg-black">
         <div data-testid="video-layout-player" className={playerClassName} style={playerStyle}>
           <LightPlayer
-            content={reel.videoUrl ?? ""}
+            {...basePlayerProps}
             ad={reel.cta?.link}
-            id={reel.id}
-            videoId={videoId}
-            poster={reel.thumb ?? undefined}
-            volume={volume}
             isPlay={isPlayerPlaying}
             hideScrubber={splitActive}
-            tagDetails={{}}
-            videoDetails={reel as unknown as Record<string, unknown>}
             onTimeUpdate={handleTimeUpdate}
-            onEnded={onAutoAdvance}
             videoMode="contain"
           />
         </div>

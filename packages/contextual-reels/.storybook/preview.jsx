@@ -1,8 +1,6 @@
 import { initialize, mswLoader } from "msw-storybook-addon";
 
-import { ShadowDomProvider } from "../src/shadow-dom-context";
-import { EventBusProvider } from "../src/instance/coordination/EventBusContext";
-import { InstanceProvider } from "../src/instance/registry/InstanceContext";
+import { InstanceProvider } from "../src/instance/InstanceContext";
 import { feedHandlers } from "../src/stories/mocks/handlers/feed";
 import { tagHandlers } from "../src/stories/mocks/handlers/tag";
 import "../src/styles/tailwind.css";
@@ -29,11 +27,7 @@ const preview = {
   decorators: [
     (Story) => (
       <InstanceProvider instanceId="storybook-instance">
-        <EventBusProvider>
-          <ShadowDomProvider config={null}>
-            <Story />
-          </ShadowDomProvider>
-        </EventBusProvider>
+        <Story />
       </InstanceProvider>
     ),
   ],

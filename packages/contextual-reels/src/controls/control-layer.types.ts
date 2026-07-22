@@ -1,21 +1,26 @@
 import type { AdCtaDetails } from "@cxr/ads/genAdSdk";
 import type { AdLayoutId } from "@cxr/config";
-import type { NormalisedReel, TagResponse } from "@cxr/types";
+import type { NormalisedReel } from "@cxr/types";
 
 /** Supported UI variant identifiers for the control layer. */
 export type ControlLayerVariant = "default" | "iheart";
 
-/** Full prop surface for the ControlLayer orchestrator. */
+/**
+ * Full prop surface for the ControlLayer orchestrator.
+ *
+ * tagDetails is NOT part of this prop surface — every consumer reads it via
+ * {@link useTagDetails} directly instead of threading it through props.
+ */
 export interface ControlLayerProps {
   variant: ControlLayerVariant;
   item: NormalisedReel;
-  tagDetails: TagResponse;
   dimensions: { width: number; height: number };
   isActive: boolean;
   isFullScreen: boolean;
   isMuted: boolean;
   isPlay: boolean;
   animatedBorder?: boolean;
+  /** Dedicated mute-button tap — toggles mute only, never starts/resumes playback. */
   onMuteClick: () => void;
   onPlayClick: () => void;
   onFullScreenClick: () => void;
@@ -25,6 +30,13 @@ export interface ControlLayerProps {
 export interface VideoControlLayerProps extends ControlLayerProps {
   /** The numeric embed layout id (see `AD_LAYOUT`). */
   adLayout: AdLayoutId;
+  /**
+   * Tap on the compact full-area unmute overlay ({@link CompactUnmuteOverlay}) — unmutes
+   * AND resumes playback if paused, mirroring {@link ClickOverlay}'s layer-tap semantics.
+   * Distinct from {@link ControlLayerProps.onMuteClick}, which drives the dedicated mute
+   * button and must only toggle mute, never start playback.
+   */
+  onLayerUnmuteClick: () => void;
 }
 
 /** Full prop surface for the AdControlLayer. */
@@ -38,7 +50,6 @@ export interface AdControlLayerProps {
    * Controls are hidden while this is false (ad is still loading).
    */
   isAdReady: boolean;
-  variant?: "old" | "new";
   /** CTA details from the ad SDK — when present, linkout button renders with these values. */
   ctaDetails?: AdCtaDetails | null;
   onPlayClick: () => void;
@@ -68,16 +79,27 @@ export interface TopBarProps {
   isMuted: boolean;
   isPlay: boolean;
   isActive?: boolean;
+  /**
+   * Whether tap-to-expand / the expand button is enabled for this tag. Sourced
+   * from `config.on_click === "fullscreen"`. Absent config ⇒ enabled (default).
+   * Only hides the button while collapsed — the collapse button always shows
+   * once fullscreen, since there must be a way back out.
+   */
+  expandEnabled?: boolean;
   onMuteClick: () => void;
   onPlayClick: () => void;
   onFullScreenClick: () => void;
 }
 
-/** Props forwarded to the BottomBar router. */
+/**
+ * Props forwarded to the BottomBar router.
+ *
+ * tagDetails is NOT part of this prop surface — {@link DefaultBottomBar} reads
+ * it via {@link useTagDetails} directly instead of threading it through props.
+ */
 export interface BottomBarProps {
   variant: ControlLayerVariant;
   item: NormalisedReel;
-  tagDetails: TagResponse;
   dimensions: { width: number; height: number };
   isActive: boolean;
   isFullScreen: boolean;
@@ -108,12 +130,17 @@ export type TopBarSubProps = Omit<TopBarProps, "variant"> & { variant?: ControlL
  */
 export type BottomBarSubProps = Omit<BottomBarProps, "variant"> & { variant?: ControlLayerVariant };
 
-/** Props for VideoBanner sub-component (300x600 / 300x250). */
+/**
+ * Props for VideoBanner sub-component (300x600 / 300x250).
+ *
+ * tagDetails is NOT part of this prop surface — {@link BottomBar} (via
+ * {@link DefaultBottomBar}) reads it via {@link useTagDetails} directly instead
+ * of threading it through props.
+ */
 export interface VideoBannerProps {
   isFullScreen: boolean;
   variant: ControlLayerVariant;
   item: NormalisedReel;
-  tagDetails: TagResponse;
   dimensions: { width: number; height: number };
   isActive: boolean;
   isMuted: boolean;
@@ -130,6 +157,11 @@ export interface VideoBannerProps {
    * the chrome. Independent of {@link expandOnTap}. Defaults to false.
    */
   hideChrome?: boolean;
+  /**
+   * Whether the TopBar's expand button should render while collapsed. Sourced
+   * from `config.on_click === "fullscreen"`. Absent config ⇒ enabled (default).
+   */
+  expandEnabled?: boolean;
   onMuteClick: () => void;
   onPlayClick: () => void;
   onFullScreenClick: () => void;

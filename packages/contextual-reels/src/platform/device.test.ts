@@ -2,7 +2,7 @@
  * Tests for `src/platform/device.ts` — merged from:
  * device/detect.test, enrichDeviceDetailsWithGeoIp.test, getDeviceDetailsSnapshot.test.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { detectDevice, enrichDeviceDetailsWithGeoIp, getDeviceDetailsSnapshot } from "@cxr/platform/device";
 import type { RawGeoIpResponse } from "@cxr/services/api";
@@ -135,6 +135,26 @@ describe("detectDevice", () => {
     expect(typeof result.isMobile).toBe("boolean");
     expect(typeof result.osType).toBe("string");
     expect(typeof result.deviceType).toBe("string");
+  });
+
+  it("defensively falls back to an empty UA and no touch when navigator is undefined (SSR)", () => {
+    vi.stubGlobal("navigator", undefined);
+    expect(detectDevice()).toEqual({
+      isMobile: false,
+      osType: "other",
+      deviceType: "desktop",
+    });
+    vi.unstubAllGlobals();
+  });
+
+  it("falls back to an empty string when navigator.userAgent is undefined", () => {
+    vi.stubGlobal("navigator", { maxTouchPoints: 0 });
+    expect(detectDevice()).toEqual({
+      isMobile: false,
+      osType: "other",
+      deviceType: "desktop",
+    });
+    vi.unstubAllGlobals();
   });
 });
 

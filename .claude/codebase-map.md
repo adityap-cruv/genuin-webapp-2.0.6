@@ -47,6 +47,27 @@
   `packages/contextual-reels/src/strategies/strategyConfig.ts` only becomes audible-on-load where the
   browser already trusts the origin.
 
+- **CXR `no-console` is enforced package-locally**, not repo-wide. `packages/eslint-config/base.js`
+  (shared by every workspace) has NO `no-console` rule; only `next.js` (webapp) and the unused
+  `library.js` do. So `console.log` in a shared package lints clean. CXR adds its own
+  `packages/contextual-reels/eslint.config.mjs` that extends the root config and bans `console.log`
+  (allows `console.debug/info/warn/error` for `src/utils/logger.ts`). A repo-wide ban is blocked by
+  ~48 existing `console.log`s across `packages/{components,ui,utils,web-sdk}` — would break their CI;
+  needs team approval to clean up + enable in `base.js`.
+- **CXR `LightPlayer` renders `crossOrigin="true"`** (`src/player/LightPlayer.tsx:116`, cast
+  `as any`). Non-standard but intentional/frozen ("preserved for compat"); the HTML enumerated attr
+  maps any non-`use-credentials` value to `anonymous`, so it behaves as `crossOrigin="anonymous"`.
+  Its test asserts only truthiness, not the literal. Don't "fix" to `"anonymous"` without team sign-off
+  — it's deliberately preserved.
+
+- **CXR has two event buses; `src/utils/eventBus.ts` is dead.** The live one is the per-instance
+  `CxrEventBus` (`src/instance/coordination/CxrEventBus.ts`, consumed via `EventBusContext` +
+  `useEventBus`). The older window-`CustomEvent`-based `src/utils/eventBus.ts` (`dispatchEvent`/
+  `addEventListener` over `CxrEventMap`) has **no production import** — only its own test and
+  `player/playerEvents.test.ts` reference it; not used cross-package either. Candidate for deletion
+  (source + `utils/eventBus.test.ts`) but left in place pending team sign-off (removing it also drops
+  it from the coverage set).
+
 ## Architecture notes
 
 <!-- Append how non-obvious systems work, with file pointers. Example shape:
@@ -90,6 +111,21 @@
   `_logger.debug` lines are no-ops in any `vite build` (`import.meta.env.PROD` is true for build, not
   just `--mode production`) and `console.*` is fully stripped in `build:prod`; only `pnpm dev` (vite
   serve) shows them, and only with DevTools console level set to **Verbose**.
+- **CXR `AdProvider` is prop-less** (as of commit `ad1910f74`, 2026-07-17) — it takes only
+  `{ children }` and reads `adLayout` from `useTagDetails()` (`TagDetailsProvider`), not
+  from props. Old docs/audits referencing `tagId`/`tagHeight`/`tagWidth`/`adLayout` as
+  `AdProvider` props are stale. `AdProvider` now also owns: **single-hit deferred
+  passback** (`noFillSlotsRef`/`recordSingleHitNoFill`/`firePassbackIfExhausted` — fires
+  `Ad Passback` only once every ad/`video-with-ad` slot has reported no-fill *and* the
+  feed reached its last entry, replacing the old immediate-fire-on-first-fail path for
+  `singleHitWaterfall` tags) and **Infolinks Impression** (registers
+  `fireInfolinksImpression` on `InstanceRegistry` per `instanceId`; driven by
+  `window.cxr.infolinksImpression(instanceId?)` in `src/publicApi.ts`, which also exposes
+  an iframe `postMessage({ type: 'cxr:infolinksImpression' })` bridge via
+  `installMessageBridge`). `InstanceRegistry.register()` uses **merge semantics**
+  (`{ ...existing, ...controls }`), not replace — multiple owners (`index.jsx`'s
+  `destroy`, `AdProvider`'s `fireInfolinksImpression`) register their own slice of the
+  same instance's controls without clobbering each other.
 
 - **Embed-tile linkout/controls hidden under 200px tile width** — `embed-tile.tsx`
   (`packages/components/src/organisms/embed-tile/embed-tile.tsx:349-351,422`): the whole

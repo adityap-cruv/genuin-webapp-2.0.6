@@ -9,18 +9,22 @@ import { resolvePageUrl, resolveVideoAdMacros } from "@cxr/ads/adUrlMacros";
 import { normalizeBannerConfig, normalizeNativeConfig, normalizeVideoConfig } from "@cxr/ads/normalizers";
 import type { AdProviderKind } from "@cxr/ads/normalizers";
 import { EVENT } from "@cxr/analytics/analytics";
-import { useEventBus } from "@cxr/instance/coordination/EventBusContext";
+import { useEventBus } from "@cxr/instance/InstanceContext";
 import { useAnalytics } from "@cxr/providers/AnalyticsProvider";
 import { DEFAULT_UNMUTE_VOLUME } from "@cxr/providers/PlayerProvider";
+import { useTagDetails } from "@cxr/providers/TagDetailsProvider";
 import { resyncShadowStyles } from "@cxr/shadow-dom";
-import { useShadowDom } from "@cxr/shadow-dom-context";
 import { useStrategy } from "@cxr/strategies/StrategyProvider";
+import { createLogger } from "@cxr/utils/logger";
+
+const _logger = createLogger("cxr/gen-ad-sdk");
 
 // ─── GenAd SDK loader ─────────────────────────────────────────────────────────
 
 // import.meta.env shape is bundler-defined; the `?? {}` fallback is unreachable
-// under Vite/Vitest (env is always defined), hence the v8 ignore.
-/* v8 ignore next */
+// under Vite/Vitest (env is always defined), hence the v8 ignore. The `next 2`
+// span covers the `?? {}` branch, which lives on the second line of the statement.
+/* v8 ignore next 2 */
 const _env: Record<string, string | undefined> =
   (import.meta as unknown as { env: Record<string, string | undefined> }).env ?? {};
 
@@ -269,7 +273,8 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
 
   const bus = useEventBus();
   const { sendEvent, setBaseEventContext } = useAnalytics();
-  const shadowDom = useShadowDom();
+  const { shadowConfig } = useTagDetails();
+  const shadowDom = shadowConfig != null;
 
   // Tags configured with `initialVolume > 0` want the ad to load audible. When
   // set, the ad is requested unmuted (bypassing the mute gate) and initialized
@@ -322,17 +327,19 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
   // state carries across slides exactly as the product spec requires.
   // `gateOnUnmute=false` (standalone `type:"ads"` slides) bypasses the gate and
   // arms the request immediately on activation.
+  //
+  // Also gated on `isPlaying` (same latch, only deactivation resets it) — keeps
+  // ad-creative bytes out of the un-interacted HAI window while paused.
   const [requestArmed, setRequestArmed] = useState(false);
   useEffect(() => {
     if (!isActive) {
       setRequestArmed(false);
       return;
     }
-    // A tag that wants an audible ad start requests immediately regardless of
-    // mute state — the ad itself is initialized unmuted, so waiting for the host
-    // to unmute would defeat the purpose.
+    if (!isPlaying) return;
+
     if (wantsAudibleAdStart || !gateOnUnmute || !isMuted) setRequestArmed(true);
-  }, [isActive, isMuted, gateOnUnmute, wantsAudibleAdStart]);
+  }, [isActive, isMuted, gateOnUnmute, wantsAudibleAdStart, isPlaying]);
 
   // First available ad-source label for analytics
   const adSource = platforms.video || platforms.banner || platforms.native || undefined;
@@ -378,6 +385,10 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
     if (initInFlightRef.current || instanceIdRef.current != null) return;
 
     let cancelled = false;
+    // At most one terminal event (fill XOR no-fill) per waterfall run. Guards
+    // against a duplicate SDK callback double-counting an impression/passback —
+    // `singleHitWaterfall` only dedups across runs, not within one.
+    let terminalFired = false;
     initInFlightRef.current = true;
 
     _loadSdk()
@@ -425,6 +436,11 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
           // tags use their configured `initialVolume`; others share UNMUTE_VOLUME.
           volume: unmuteVolume,
           onWaterfallSuccess: (resolvedProvider: AdProviderKind): void => {
+            // Drop a fill that is torn down / failed (cancelled) or a duplicate
+            // terminal callback — else ad:fill after ad:nofill reads as a
+            // malformed waterfall.
+            if (cancelled || terminalFired) return;
+            terminalFired = true;
             initInFlightRef.current = false;
             setAdLoaded(true);
             bus.emit("ad:fill", {});
@@ -438,6 +454,9 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
             sendEvent(EVENT.AD_RESPONSE_RECEIVED, adEventDetails);
           },
           onAdCompleted: (completedProvider?: AdProviderKind): void => {
+            // A torn-down run's late completion must not destroy a later run's
+            // instance or reset shared init state.
+            if (cancelled) return;
             sendEvent(EVENT.AD_COMPLETED, {
               provider: completedProvider,
               ad_source: (completedProvider && platforms[completedProvider]) || adSource,
@@ -465,6 +484,10 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
           },
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           onWaterfallFail: (_failedProvider: string): void => {
+            // One terminal event per run — drop a duplicate no-fill, or a
+            // no-fill after a fill has already been reported.
+            if (terminalFired) return;
+            terminalFired = true;
             (window as Window & { GenAd?: { destroy(id: number): void } }).GenAd?.destroy(instanceIdRef.current!);
             cancelled = true;
             instanceIdRef.current = null;
@@ -628,8 +651,20 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
           instanceIdRef.current = sdkInstanceId;
         }
       })
-      .catch(() => {
+      .catch((error) => {
         initInFlightRef.current = false;
+        // A rejected SDK load is the common ad-blocker / network-failure case:
+        // gen_ad.min.js never arrives, so no onWaterfallFail can fire. Without a
+        // terminal here the slot sits silently empty — the parent page gets no
+        // no-fill callback and analytics under-counts requests. Treat it as a
+        // waterfall no-fill (once, unless already terminal).
+        if (cancelled || terminalFired) return;
+        terminalFired = true;
+        _logger.warn("GenAd SDK failed to load — reporting no-fill", error);
+        setAdLoaded(false);
+        bus.emit("ad:nofill", {});
+        sendEvent(EVENT.AD_REQUEST_FAILED, { ad_source: adSource });
+        onWaterfallFailRef.current?.();
       });
 
     return () => {

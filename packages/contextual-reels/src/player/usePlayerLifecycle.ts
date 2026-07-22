@@ -10,6 +10,12 @@
  *   - `usePlayStartedEvents` — play/started/interrupted events
  *   - `useImaPlugin` — IMA ad lifecycle events
  */
+// Types come from "hls.js" (the light build ships no .d.ts and its runtime API
+// is a strict subset). The runtime dynamic import below uses "hls.js/light" —
+// ~34% smaller: it drops alt-audio tracks, subtitles, EME/DRM, and low-latency,
+// none of which CXR uses. CXR only needs isSupported(), the buffer-limited
+// constructor, loadSource/attachMedia/startLoad/stopLoad/destroy, MANIFEST_PARSED
+// and level pinning — all present in the light build.
 import type Hls from "hls.js";
 import { useEffect, useRef, type RefObject } from "react";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -95,6 +101,17 @@ export function usePlayerLifecycle({
   const isPlayRef = useRef(isPlay);
   const volumeRef = useRef(volume);
   const hlsInstanceRef = useRef<Hls | null>(null);
+  // True once startLoad(-1) has been issued for the current hls instance. Both
+  // the manifest-parsed handler (active slide at mount) and startPlayback
+  // (Vlitejs onReady) can independently decide to kick off loading; without this
+  // guard both call startLoad(-1) for the same fresh instance and hls.js issues
+  // two requests for the first fragment — doubling the initial segment's bytes.
+  const hlsLoadStartedRef = useRef(false);
+  // Detaches the MANIFEST_PARSED handler; stored as a closure since the hls.js Events
+  // enum is only in scope inside the dynamic-import callback, not at the cleanup return.
+  const detachHlsManifestHandlerRef = useRef<(() => void) | null>(null);
+  // Analytics-hook detachers, called in cleanup before the player is destroyed.
+  const detachPlayerEventsRef = useRef<Array<() => void>>([]);
 
   const { tryPlay } = useAutoplayFallback({ videoEl, player: currentPlayerRef.current });
 
@@ -154,14 +171,23 @@ export function usePlayerLifecycle({
   useEffect(() => {
     isPlayRef.current = isPlay;
 
+    // Toggle segment loading above the readiness guard: swipe-in can flip isPlay
+    // before onReady, and the load must (re)start regardless or the slide sits
+    // with no segment fetch.
+    if (hlsInstanceRef.current) {
+      if (isPlay) {
+        hlsInstanceRef.current.startLoad(-1);
+        hlsLoadStartedRef.current = true;
+      } else {
+        hlsInstanceRef.current.stopLoad();
+      }
+    }
+
     if (!isPlayerReady.current || !videoEl.current) return;
 
     const video = videoEl.current;
 
     if (isPlay) {
-      if (hlsInstanceRef.current) {
-        hlsInstanceRef.current.startLoad(-1);
-      }
       if (currentPlayerRef.current) {
         // Attempt unmuted play (desiredMuted=false). The element stays unmuted and
         // silence comes from volume 0 — see the volume effect above. If the browser
@@ -180,14 +206,17 @@ export function usePlayerLifecycle({
           }
         };
         video.addEventListener("canplay", onCanPlay, { once: true });
+        // { once: true } only self-removes AFTER firing. If isPlay flips back or the
+        // slide unmounts before `canplay`, the listener lingers and would fire a
+        // stale tryPlay on a paused/torn-down element — so remove it in cleanup.
+        return () => video.removeEventListener("canplay", onCanPlay);
       }
     } else {
-      if (hlsInstanceRef.current) {
-        hlsInstanceRef.current.stopLoad();
-      }
+      // HLS stopLoad already handled above, before the readiness guard.
       currentPlayerRef.current?.pause();
       video.pause();
     }
+    return undefined;
   }, [isPlay]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // --- initialisation (run once on mount) ---
@@ -205,7 +234,7 @@ export function usePlayerLifecycle({
 
     // --- HLS / direct src setup ---
     const setupHlsContent = () => {
-      import("hls.js").then(({ default: HlsClass }) => {
+      import("hls.js/light").then(({ default: HlsClass }) => {
         // Prefer HLS.js wherever it is supported so we can pin the lowest quality
         // and gate segment loading. Native HLS (`canPlayType('…mpegurl')`) is only
         // a fallback for browsers without MSE — notably Safari/iOS. We must NOT
@@ -225,13 +254,32 @@ export function usePlayerLifecycle({
           hlsInstanceRef.current.destroy();
         }
 
-        const hls = new HlsClass({ autoStartLoad: false, startFragPrefetch: false });
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- runtime config property
-        (hls as any).maxBufferSize = 1 * 1000 * 100;
+        // Buffer limits MUST be constructor config — hls.js reads `hls.config.*`
+        // per tick, so assigning `hls.maxBufferSize` after construction is a no-op
+        // (it sets a stray instance property, not the config the buffer controller
+        // reads). maxBufferLength is the binding knob: cap look-ahead to a few
+        // seconds so a slide buffers only what's needed, not the whole video —
+        // which was pulling ~25 MB per active reel and blowing the HAI budget.
+        //
+        // maxBufferLength lowered 6→4 and maxBufferSize 2 MB→1 MB: the reel plays
+        // in a 100 px-tall banner, so less look-ahead is imperceptible but shaves
+        // bytes off the un-interacted HAI window. capLevelToPlayerSize bounds the
+        // chosen rendition to the actual player pixels — a defensive ceiling that
+        // backs up the explicit lowest-level pin in onManifestParsed (if the pin
+        // ever fails to apply, ABR still can't climb past what 320×100 needs).
+        const hls = new HlsClass({
+          autoStartLoad: false,
+          startFragPrefetch: false,
+          maxBufferLength: 4,
+          maxBufferSize: 1 * 1000 * 1000,
+          maxMaxBufferLength: 8,
+          capLevelToPlayerSize: true,
+        });
         hls.loadSource(content);
         hls.attachMedia(video);
 
-        hls.on(HlsClass.Events.MANIFEST_PARSED, () => {
+        // Named so cleanup can `.off()` it (destroy() frees it anyway — symmetry).
+        const onManifestParsed = (): void => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any -- hls.levels
           const levels: Array<{ bitrate: number }> = (hls as any).levels ?? [];
           if (levels.length > 0) {
@@ -245,7 +293,35 @@ export function usePlayerLifecycle({
             // player stays on the lowest rendition.
             hls.currentLevel = lowestIdx;
           }
-        });
+        };
+        hls.on(HlsClass.Events.MANIFEST_PARSED, onManifestParsed);
+
+        // Fatal-error recovery. hls.js delegates fatal errors to the app: without
+        // this handler a transient network/media failure stalls the reel forever
+        // (spinner, no playback, no recovery). Network → resume loading; media →
+        // recover once (a second media fatal means recovery didn't help, so tear
+        // down rather than loop); anything else is unrecoverable → destroy.
+        let mediaRecoveryAttempted = false;
+        const onHlsError = (_event: unknown, data: { fatal?: boolean; type?: string }): void => {
+          if (!data.fatal) return;
+          if (data.type === HlsClass.ErrorTypes.NETWORK_ERROR) {
+            logger.warn("HLS fatal network error — restarting load", data);
+            hls.startLoad();
+          } else if (data.type === HlsClass.ErrorTypes.MEDIA_ERROR && !mediaRecoveryAttempted) {
+            logger.warn("HLS fatal media error — attempting recovery", data);
+            mediaRecoveryAttempted = true;
+            hls.recoverMediaError();
+          } else {
+            logger.error("HLS unrecoverable error — destroying instance", data);
+            hls.destroy();
+          }
+        };
+        hls.on(HlsClass.Events.ERROR, onHlsError);
+
+        detachHlsManifestHandlerRef.current = () => {
+          hls.off(HlsClass.Events.MANIFEST_PARSED, onManifestParsed);
+          hls.off(HlsClass.Events.ERROR, onHlsError);
+        };
 
         // Re-check after the manifest/level work: cleanup may have run while this
         // ran. If so, tear this instance down instead of registering it — cleanup
@@ -261,14 +337,39 @@ export function usePlayerLifecycle({
         }
 
         hlsInstanceRef.current = hls;
-        // Unconditional startLoad to break Vlitejs onReady deadlock.
-        hls.startLoad(-1);
+        // Only the active slide eager-loads at mount. Every mounted slide used to
+        // `startLoad(-1)` here to force Vlitejs `onReady`, then inactive slides
+        // were stopped again right after — but the initial segments were already
+        // in flight, so N mounted slides each pulled their first fragments into
+        // the HAI budget (measured: ~6 videos' worth). An inactive slide instead
+        // defers its load until it becomes active: the `isPlay` effect calls
+        // `startLoad(-1)` on activation (above the readiness guard), which also
+        // lets its deferred `onReady` fire. The active slide still loads instantly.
+        if (isPlayRef.current) {
+          hls.startLoad(-1);
+          hlsLoadStartedRef.current = true;
+        }
       });
     };
 
     const startPlayback = (player: PlayerHandle) => {
-      if (hlsInstanceRef.current) {
+      // Guard against a second startLoad(-1): the manifest-parsed handler above
+      // already starts loading for an active slide at mount, and Vlitejs onReady
+      // resolves independently (separate async init) — without this check both
+      // paths fire startLoad(-1) for the same fresh instance, and hls.js issues
+      // two requests for the first fragment (measured: segment 0 fetched twice
+      // every run, ~500 KB of pure waste toward the HAI budget).
+      // Structurally, this body cannot execute under the current effect
+      // architecture: `hlsInstanceRef.current` and `hlsLoadStartedRef.current`
+      // are always populated together, synchronously, inside the manifest-parsed
+      // `.then()` above (no await boundary between them) — and `startPlayback`
+      // is itself only reachable from onReady when `isPlayRef.current` is true,
+      // which is the same condition that `.then()` callback already checked. Kept
+      // as a defensive guard in case a future refactor decouples the two writes.
+      /* v8 ignore next 4 */
+      if (hlsInstanceRef.current && !hlsLoadStartedRef.current) {
         hlsInstanceRef.current.startLoad(-1);
+        hlsLoadStartedRef.current = true;
       }
       // Attempt unmuted play; silence is governed by volume 0, not by muted.
       tryPlay(player, video, false, () => onAutoplayBlockedRef.current?.()).catch((e) => {
@@ -288,7 +389,16 @@ export function usePlayerLifecycle({
             imaSettings.setLocale("en");
             imaSettings.setAutoPlayAdBreaks(true);
           },
-          adsRenderingSettings: { enablePreloading: true },
+          // Never preload the creative media. IMA requests the VAST on
+          // player-ready regardless, but preloading the (heavy) media file pulls
+          // it into the *un-interacted* frame — and a 30 s audio spot is ~1.2 MB,
+          // enough on its own to breach Chrome's 4 MB Heavy Ad Intervention limit
+          // for the active reel. HAI stops applying once the user interacts, so
+          // fetching the creative lazily at ad-play time (post-interaction) keeps
+          // it out of the budget entirely. The tradeoff is no prefetch head-start;
+          // `adTimeout` still bounds the play-time fetch, degrading to no-fill
+          // rather than a HAI kill of the whole ad frame if it is slow.
+          adsRenderingSettings: { enablePreloading: false },
           debug: false,
         });
       } catch (error) {
@@ -350,9 +460,11 @@ export function usePlayerLifecycle({
           // Notify parent.
           onReadyProp?.(player);
 
-          // Wire analytics hooks.
-          quartile.attachToPlayer(player);
-          playStarted.attachToPlayer(player);
+          // Wire analytics hooks; keep their detachers for cleanup.
+          detachPlayerEventsRef.current = [
+            quartile.attachToPlayer(player),
+            playStarted.attachToPlayer(player),
+          ];
           if (ad) {
             imaPlugin.attachToPlayer(player);
           }
@@ -381,6 +493,16 @@ export function usePlayerLifecycle({
       cancelled = true;
       isPlayerReady.current = false;
 
+      // Detach analytics listeners before destroy so none linger on a reused <video>.
+      for (const detach of detachPlayerEventsRef.current) {
+        try {
+          detach();
+        } catch (error) {
+          logger.warn("Error detaching player event listeners:", error);
+        }
+      }
+      detachPlayerEventsRef.current = [];
+
       if (currentPlayerRef.current) {
         try {
           currentPlayerRef.current.pause();
@@ -393,6 +515,7 @@ export function usePlayerLifecycle({
 
       if (hlsInstanceRef.current) {
         try {
+          detachHlsManifestHandlerRef.current?.();
           // detachMedia before destroy so the element stops receiving segments
           // immediately; destroy alone can leave a tick of buffered audio playing.
           hlsInstanceRef.current.detachMedia();
@@ -401,6 +524,7 @@ export function usePlayerLifecycle({
           logger.warn("Error cleaning up HLS instance:", error);
         }
         hlsInstanceRef.current = null;
+        detachHlsManifestHandlerRef.current = null;
       }
 
       // Hard-stop the element directly. If Vlitejs never reached onReady, the

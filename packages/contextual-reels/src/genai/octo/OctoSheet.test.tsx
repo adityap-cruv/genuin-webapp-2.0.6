@@ -136,6 +136,11 @@ describe("OctoSheet — layout routing (non-fullscreen)", () => {
     expect(strip?.getAttribute("data-variant")).toBe("50");
   });
 
+  it("returns null for L4 on a non-compact host", () => {
+    render({ ...baseProps, adLayoutHint: AD_LAYOUT.L4, host: "bottombar" });
+    expect(container.firstChild).toBeNull();
+  });
+
   it("returns null for a compact layout on a non-compact host", () => {
     render({ ...baseProps, adLayoutHint: AD_LAYOUT.L3, host: "bottombar" });
     expect(container.firstChild).toBeNull();
@@ -144,6 +149,11 @@ describe("OctoSheet — layout routing (non-fullscreen)", () => {
   it("routes the default L1 layout to the ladder for the bottombar host", () => {
     render({ ...baseProps, adLayoutHint: AD_LAYOUT.L1, host: "bottombar" });
     expect(container.querySelector("[data-testid=\"dynamic-sheet\"]")).not.toBeNull();
+  });
+
+  it("returns null for the default L1 layout on a non-bottombar host", () => {
+    render({ ...baseProps, adLayoutHint: AD_LAYOUT.L1, host: "compact" });
+    expect(container.firstChild).toBeNull();
   });
 
   it("measures the layout from dimensions when no hint is given", () => {

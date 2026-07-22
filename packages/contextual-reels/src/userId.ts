@@ -21,6 +21,11 @@
  * @returns A unique string (not a security primitive).
  */
 export function generateUuid(): string {
+  // `typeof globalThis !== "undefined"` can never be false in any real JS
+  // engine (browser, Node, or Node vm sandbox) — globalThis has been a
+  // guaranteed global since ES2020. Kept as a defensive belt-and-braces guard;
+  // its false side is structurally unreachable in tests.
+  /* v8 ignore next */
   const cryptoObj = typeof globalThis !== "undefined" ? globalThis.crypto : undefined;
   if (cryptoObj && typeof cryptoObj.randomUUID === "function") {
     return cryptoObj.randomUUID();

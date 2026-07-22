@@ -19,6 +19,15 @@ vi.mock("../../config", async (importOriginal) => {
 vi.mock("../../providers/FullScreenProvider", () => ({
   useFullScreen: () => ({ isFullScreen: false, enterFullScreen, exitFullScreen: vi.fn(), toggleFullScreen: vi.fn() }),
 }));
+// StrategyProvider (rendered via the SP wrapper) reads tagId/brandId from
+// useTagDetails; without a real TagDetailsProvider in the tree it would throw.
+// Mock it to a harmless superset covering every field any consumer here reads.
+const { useTagDetailsMock } = vi.hoisted(() => ({
+  useTagDetailsMock: vi.fn(() => ({ brandId: undefined, adLayout: 0, tagId: undefined })),
+}));
+vi.mock("@cxr/providers/TagDetailsProvider", () => ({
+  useTagDetails: () => useTagDetailsMock(),
+}));
 // Render the SDK panel as an inert marker so the test focuses on the strip's
 // lifecycle handling, not the real SDK. It invokes the forwarded
 // `onLifecyclePhase` no-op once on mount so that handler is exercised.

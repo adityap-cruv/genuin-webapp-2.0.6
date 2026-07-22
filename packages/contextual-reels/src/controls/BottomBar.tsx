@@ -9,11 +9,8 @@ const DefaultBottomBar = lazy(() =>
 );
 
 /**
- * Routes to the correct BottomBar sub-component.
- *
- * default + fullscreen  → FullscreenBottomBar (youtube style)
- * default + !fullscreen → DefaultBottomBar    (instagram style)
- * iheart  + any         → DefaultBottomBar    (instagram style)
+ * Renders the bottom control bar (instagram-style) for both the default and
+ * iheart variants.
  */
 export function BottomBar({ ...rest }: BottomBarProps): React.JSX.Element {
   return (

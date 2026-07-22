@@ -321,7 +321,7 @@ export class PixelReporter {
         reason
       );
       new Image().src = url;
-      console.log(`[PixelReporter] fired pixel (stage=${stage}, error_type=${errorType}):`, url);
+      console.debug(`[PixelReporter] fired pixel (stage=${stage}, error_type=${errorType}):`, url);
     } catch (err) {
       console.error("PixelReporter: failed to fire error pixel:", err);
     }

@@ -159,12 +159,17 @@ export const TAG_STRATEGIES: Record<string, TagStrategyEntry> = {
   [`src/app/App.tsx`](../src/app/App.tsx). Arms a one-shot timer on the **first**
   `player:play` bus event (not on mount), so the window measures muted *playback*,
   not the tag/feed-load gap. Calls `useAdWaterfall().onAdFail()` if still muted.
-- **`singleHitWaterfall`** — consumed by `AdProvider`
-  ([AdProvider.tsx](../src/providers/AdProvider.tsx)) via `shouldCountFill` /
-  `shouldCountNoFill` in [`src/ads/waterfall.ts`](../src/ads/waterfall.ts). Note:
-  `notifyAdFill` / `notifyAdNoFill` themselves are **tag-agnostic** — they
-  postMessage to the parent frame and call `window.adFillCallback` /
-  `window.noAdsCallback`; the only id-driven gate is the single-hit count.
+- **`singleHitWaterfall`** — consumed entirely inside `AdProvider`
+  ([AdProvider.tsx](../src/providers/AdProvider.tsx)): `recordSingleHitNoFill`
+  tallies per-slot no-fills into `noFillSlotsRef`, and `firePassbackIfExhausted`
+  fires the deferred passback once every ad/video-with-ad slot has reported
+  no-fill and the feed has reached its last entry. `recordAdBreakResult` feeds
+  the same tally for ad-break (`video-with-ad`) results without ever triggering
+  passback directly. `notifyAdFill` / `notifyAdNoFill`
+  ([`src/ads/waterfall.ts`](../src/ads/waterfall.ts)) themselves are
+  **tag-agnostic** — they postMessage to the parent frame and call
+  `window.adFillCallback` / `window.noAdsCallback`; the only id-driven gate is
+  the single-hit count kept in `AdProvider`.
 - **`adBreakEnabled` / `gateOnUnmute` / `adsDisabled`** — consumed by the feed
   transform in [`src/feed/feedTransforms.ts`](../src/feed/feedTransforms.ts)
   (`normaliseReel` / `normaliseFeed`).

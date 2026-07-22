@@ -6,6 +6,26 @@
  *   ads/normalizeVideoConfig.ts
  */
 
+import { createLogger } from "@cxr/utils/logger";
+
+const logger = createLogger("cxr/normalizers");
+
+/**
+ * Provider arrays beyond this size signal backend-contract drift: GenAd attempts every
+ * entry, each adding to the HAI byte budget. We warn (not clip) so a long waterfall isn't
+ * silently truncated.
+ */
+export const AD_PROVIDER_ARRAY_WARN_THRESHOLD = 10;
+
+function warnIfOversizedProviderArray(kind: AdProviderKind, length: number): void {
+  if (length > AD_PROVIDER_ARRAY_WARN_THRESHOLD) {
+    logger.warn(
+      `${kind} provider array has ${length} entries (> ${AD_PROVIDER_ARRAY_WARN_THRESHOLD}); ` +
+        `GenAd will attempt every entry, each adding to the HAI byte budget. Check the backend waterfall contract.`
+    );
+  }
+}
+
 // ─── Ad pipeline types ────────────────────────────────────────────────────────
 
 /** The three ad waterfall provider kinds that GenAd supports. */
@@ -121,6 +141,7 @@ export function normalizeBannerConfig(
   });
 
   if (Array.isArray(displayAd)) {
+    warnIfOversizedProviderArray("banner", displayAd.length);
     return (displayAd as RawDisplayAd[]).map(mapBanner);
   }
 
@@ -156,6 +177,7 @@ export function normalizeNativeConfig(nativeAd: unknown): NativeConfig | NativeC
   });
 
   if (Array.isArray(nativeAd)) {
+    warnIfOversizedProviderArray("native", nativeAd.length);
     return (nativeAd as RawNativeAd[]).map(mapNative);
   }
 
@@ -262,6 +284,7 @@ export function normalizeVideoConfig(
   };
 
   if (Array.isArray(videoAd)) {
+    warnIfOversizedProviderArray("video", videoAd.length);
     return (videoAd as RawVideoAd[]).map(buildEntry).filter((e): e is VideoConfig => e !== null);
   }
 

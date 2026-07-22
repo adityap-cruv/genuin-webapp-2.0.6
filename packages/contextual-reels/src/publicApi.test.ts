@@ -3,6 +3,7 @@ import { afterEach, describe, it, expect, vi } from "vitest";
 import { InstanceRegistry } from "@cxr/instance/registry/InstanceRegistry";
 import {
   INFOLINKS_IMPRESSION_MESSAGE,
+  SET_PREVIEW_CONFIG_MESSAGE,
   buildPublicApi,
   installMessageBridge,
 } from "@cxr/publicApi";
@@ -34,7 +35,7 @@ describe("buildPublicApi", () => {
   it("expand() calls registered expand control", () => {
     const registry = new InstanceRegistry();
     const expand = vi.fn();
-    registry.register("inst-1", { expand, collapse: vi.fn(), pause: vi.fn() });
+    registry.register("inst-1", { expand, collapse: vi.fn() });
     const api = buildPublicApi(registry);
     api.expand("inst-1");
     expect(expand).toHaveBeenCalledOnce();
@@ -43,7 +44,7 @@ describe("buildPublicApi", () => {
   it("collapse() calls registered collapse control", () => {
     const registry = new InstanceRegistry();
     const collapse = vi.fn();
-    registry.register("inst-1", { expand: vi.fn(), collapse, pause: vi.fn() });
+    registry.register("inst-1", { expand: vi.fn(), collapse });
     const api = buildPublicApi(registry);
     api.collapse("inst-1");
     expect(collapse).toHaveBeenCalledOnce();
@@ -107,6 +108,20 @@ describe("buildPublicApi", () => {
     const api = buildPublicApi(new InstanceRegistry());
     expect(() => api.infolinksImpression("ghost")).not.toThrow();
   });
+
+  it("setPreviewConfig() calls the registered control", () => {
+    const registry = new InstanceRegistry();
+    const setPreviewConfig = vi.fn();
+    registry.register("inst-1", { expand: vi.fn(), collapse: vi.fn(), setPreviewConfig });
+    const api = buildPublicApi(registry);
+    api.setPreviewConfig("inst-1", { tag_id: "t" });
+    expect(setPreviewConfig).toHaveBeenCalledWith({ tag_id: "t" });
+  });
+
+  it("setPreviewConfig() is a no-op for an unknown instance", () => {
+    const api = buildPublicApi(new InstanceRegistry());
+    expect(() => api.setPreviewConfig("missing", {})).not.toThrow();
+  });
 });
 
 describe("installMessageBridge", () => {
@@ -142,5 +157,20 @@ describe("installMessageBridge", () => {
     cleanup();
     window.dispatchEvent(new MessageEvent("message", { data: { type: INFOLINKS_IMPRESSION_MESSAGE } }));
     expect(spy).not.toHaveBeenCalled();
+  });
+
+  it("routes cxr:setPreviewConfig to the target instance", () => {
+    const registry = new InstanceRegistry();
+    const setPreviewConfig = vi.fn();
+    registry.register("inst-1", { expand: vi.fn(), collapse: vi.fn(), setPreviewConfig });
+    const api = buildPublicApi(registry);
+    const cleanup = installMessageBridge(api);
+    window.dispatchEvent(
+      new MessageEvent("message", {
+        data: { type: SET_PREVIEW_CONFIG_MESSAGE, instanceId: "inst-1", config: { tag_id: "t" } },
+      })
+    );
+    expect(setPreviewConfig).toHaveBeenCalledWith({ tag_id: "t" });
+    cleanup();
   });
 });

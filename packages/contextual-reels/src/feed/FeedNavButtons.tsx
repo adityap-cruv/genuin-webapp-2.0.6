@@ -21,19 +21,30 @@ export interface FeedNavButtonsProps {
   emblaApiRef: RefObject<EmblaCarouselType | null>;
   /** Control-layer variant — iHeart stays on V1 (no V2 chevrons). */
   variant?: ControlLayerVariant;
+  /** True while an ad is active on the current slide — hides the arrows, since swipe is frozen too. */
+  isAdActive?: boolean;
 }
 
 /** V2-only up/down nav arrows on the right edge of the feed. Returns null for V1. */
-export function FeedNavButtons({ emblaApiRef, variant }: FeedNavButtonsProps): React.JSX.Element | null {
+export function FeedNavButtons({
+  emblaApiRef,
+  variant,
+  isAdActive = false,
+}: FeedNavButtonsProps): React.JSX.Element | null {
   const isV2 = useNewPlayerControls() && variant !== "iheart";
   const adLayout = useOptionalAdWaterfall()?.adLayout;
   const { isFullScreen } = useFullScreen();
+  // SHOW_FEED_NAV_BUTTONS is a hardcoded `true` kill-switch const — its `false`
+  // side is structurally dead in every build until the flag is flipped.
+  /* v8 ignore next */
   if (!SHOW_FEED_NAV_BUTTONS) return null;
   if (!isV2) return null;
   // Mobile navigates by swipe — hide the arrows.
   if (isMobile) return null;
   // Only render in the fullscreen player — hidden in every collapsed/embed view.
   if (!isFullScreen) return null;
+  // Swipe is frozen while an ad is active — hide the arrows too, not just disable them.
+  if (isAdActive) return null;
 
   // Per-layout sizing.
   const navSize = resolveCxrControlSize(adLayout, isFullScreen);

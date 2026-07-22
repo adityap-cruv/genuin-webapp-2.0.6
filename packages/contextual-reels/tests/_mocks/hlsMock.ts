@@ -12,6 +12,7 @@ export interface HlsInstanceMock {
   loadSource: Mock;
   attachMedia: Mock;
   detachMedia: Mock;
+  recoverMediaError: Mock;
   on: Mock;
   off: Mock;
   currentLevel: number;
@@ -20,6 +21,16 @@ export interface HlsInstanceMock {
 
 export const HlsEvents = {
   MANIFEST_PARSED: "hlsManifestParsed",
+  ERROR: "hlsError",
+} as const;
+
+/** Mirrors hls.js `ErrorTypes` — the values the ERROR handler switches on. */
+export const HlsErrorTypes = {
+  NETWORK_ERROR: "networkError",
+  MEDIA_ERROR: "mediaError",
+  KEY_SYSTEM_ERROR: "keySystemError",
+  MUX_ERROR: "muxError",
+  OTHER_ERROR: "otherError",
 } as const;
 
 export function createHlsInstanceMock(): HlsInstanceMock {
@@ -31,6 +42,7 @@ export function createHlsInstanceMock(): HlsInstanceMock {
     loadSource: vi.fn(),
     attachMedia: vi.fn(),
     detachMedia: vi.fn(),
+    recoverMediaError: vi.fn(),
     on: vi.fn((evt: string, cb: (...args: unknown[]) => void) => {
       const list = listeners.get(evt) ?? [];
       list.push(cb);
@@ -55,18 +67,32 @@ export function triggerManifestParsed(inst: HlsInstanceMock, levels: unknown[]):
   }
 }
 
-export function hlsMockFactory(): { default: unknown; Events: typeof HlsEvents } {
+/** Fire the ERROR event with the given error data to all registered listeners. */
+export function triggerError(inst: HlsInstanceMock, data: { fatal?: boolean; type?: string }): void {
+  const list = inst.__listeners.get(HlsEvents.ERROR) ?? [];
+  for (const cb of list) {
+    cb(HlsEvents.ERROR, data);
+  }
+}
+
+export function hlsMockFactory(): {
+  default: unknown;
+  Events: typeof HlsEvents;
+  ErrorTypes: typeof HlsErrorTypes;
+} {
   class Hls {
     public static isSupported(): boolean {
       return true;
     }
     public static Events = HlsEvents;
+    public static ErrorTypes = HlsErrorTypes;
     public startLoad: HlsInstanceMock["startLoad"];
     public stopLoad: HlsInstanceMock["stopLoad"];
     public destroy: HlsInstanceMock["destroy"];
     public loadSource: HlsInstanceMock["loadSource"];
     public attachMedia: HlsInstanceMock["attachMedia"];
     public detachMedia: HlsInstanceMock["detachMedia"];
+    public recoverMediaError: HlsInstanceMock["recoverMediaError"];
     public on: HlsInstanceMock["on"];
     public off: HlsInstanceMock["off"];
     public currentLevel: number;
@@ -80,11 +106,12 @@ export function hlsMockFactory(): { default: unknown; Events: typeof HlsEvents }
       this.loadSource = m.loadSource;
       this.attachMedia = m.attachMedia;
       this.detachMedia = m.detachMedia;
+      this.recoverMediaError = m.recoverMediaError;
       this.on = m.on;
       this.off = m.off;
       this.currentLevel = m.currentLevel;
       this.__listeners = m.__listeners;
     }
   }
-  return { default: Hls, Events: HlsEvents };
+  return { default: Hls, Events: HlsEvents, ErrorTypes: HlsErrorTypes };
 }
