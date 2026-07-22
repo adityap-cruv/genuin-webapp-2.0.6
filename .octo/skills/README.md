@@ -14,12 +14,14 @@ other skill.
 
 - `web-sdk-video-embed-skill`: **[MUST USE]** Use **whenever generated code must display
   video ANYWHERE** (a clip, reel, feed, carousel, or contextual feed). You MUST mount a
-  Genuin Web SDK placement/embed — a container `<div>` + guarded `window.genuin.init(...)` —
-  and MUST NOT emit `VideoPlayer`/`VideoPlayerV2`/`VideoPoster`/`VideoPage`/`PlayerSwiper`/
-  a raw `<video>`/a video `<iframe>` for content video. The skill includes the current
-  working SDK defaults and public-doc recipes for HTML, React/Next.js, contextual feeds,
-  auth callbacks, dynamic updates, and direct reel targeting. Do NOT use for non-video UI,
-  images, or audio-only surfaces.
+  Genuin Web SDK placement — a container `<div>` + guarded `window.genuin.init(...)`. Obtain
+  a valid integer brand ID from hidden context or the user, call only
+  `mcp__data__get_embed_placement_details`, ignore `embeds`, and map the selected placement
+  `id`, one selected `styles[].id`, and the response's top-level `api_key`. Use only
+  `https://media.qa.begenuin.com/sdk/2.0.5/gen_sdk.min.js`; never use env/default identity
+  fallback or `web_code`. You MUST NOT emit an embed, `VideoPlayer`/`VideoPlayerV2`/
+  `VideoPoster`/`VideoPage`/`PlayerSwiper`/a raw `<video>`/a video `<iframe>` for content
+  video. Do NOT use for non-video UI, images, or audio-only surfaces.
 - `hierarchical-tree`: **[MUST USE]** Use **whenever creating or changing a page, route,
   homepage, landing surface, hero/section layout, destination page, or major UI surface**.
   First decide whether the target should use the Hierarchical Layout System. If yes, produce a

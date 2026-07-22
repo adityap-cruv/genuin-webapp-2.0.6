@@ -1,6 +1,6 @@
 ---
 name: web-sdk-video-embed-skill
-description: MANDATORY - whenever generated code must display video ANYWHERE, resolve a Genuin Placement from the configured data MCP, then mount a Genuin Web SDK placement. Preserve MCP/web_code ids, script URL, dimensions, and layout. Never use embeds, env fallback, guessed ids, guessed dimensions, raw video, iframe video, or plain video components.
+description: MANDATORY - whenever generated code must display video ANYWHERE, resolve a Genuin Placement with `mcp__data__get_embed_placement_details` using an integer brand ID, then mount a Genuin Web SDK placement. Use the fixed Genuin SDK 2.0.5 QA script and preserve MCP placement/style/API-key values, dimensions, and layout. Never use embeds, env fallback, guessed ids, guessed dimensions, raw video, iframe video, or plain video components.
 mandatory: true
 ---
 
@@ -26,11 +26,11 @@ Instead emit:
 
 - a stable container element
 - a guarded `window.genuin.init(...)`
-- Placement values resolved from MCP
-- SDK script URL/version from MCP `web_code`
-- container dimensions from MCP placement data or MCP `web_code`
+- Placement identity and layout values resolved from MCP
+- the fixed Genuin SDK 2.0.5 QA script URL
+- container dimensions from the selected MCP placement
 
-The MCP is the source of truth. Do not use `process.env`, `import.meta.env`, hardcoded defaults, guessed SDK ids, guessed script URLs, or guessed dimensions.
+The MCP response is the source of truth for placement identity and layout. The fixed SDK URL in this skill is the only script source. Do not use `process.env`, `import.meta.env`, default SDK ids, guessed SDK ids, alternate script URLs, or guessed dimensions.
 
 ---
 
@@ -64,32 +64,30 @@ Do not activate for:
 
 Resolve values field-by-field in this order:
 
-1. Explicit fields on the MCP-selected placement record.
-2. MCP-returned placement `web_code`.
-3. User clarification if a required value is missing.
-
-`web_code` is the canonical source for SDK script URL/version and any container dimensions or data attributes it includes. Preserve the environment implied by the script URL, for example QA stays QA and prod stays prod.
+1. The selected record in the MCP response `placements` array.
+2. The selected record's `styles` array for one `style_id`.
+3. The MCP response's top-level `api_key`.
+4. The user's placement-record selection when the response has multiple placements.
+5. User clarification only for a missing brand ID or missing dimensions.
+6. The fixed SDK script URL declared in this skill.
 
 Do **not** use env values.
 
 Do **not** use default placement/style/api key values.
 
-Do **not** use default SDK script URLs or hardcoded SDK versions.
-
 Do **not** use embed values.
+
+Do **not** use `web_code`; the new MCP response does not require or return it.
 
 Do **not** invent:
 
 - `placement_id`
 - `style_id`
 - `api_key`
-- SDK script URL
-- SDK version
 - width
 - height
 - dimensions
 - layout
-- `web_code`
 
 ---
 
@@ -97,76 +95,74 @@ Do **not** invent:
 
 The configured MCP server is named `data`.
 
-MCP tools will appear with names like:
+Use exactly this tool for video placement resolution:
 
-- `mcp__data__list_placements`
-- `mcp__data__get_placement`
+- `mcp__data__get_embed_placement_details`
 
-Use the actual available MCP tool names. If exact tool names differ, pick the matching `data` MCP tool that lists or fetches placements.
+Despite `embed` appearing in the tool name, use only the response's `placements` data. Ignore its `embeds` data completely.
 
-Do not use embed tools.
+Do not ask whether to use a Placement or an Embed. Always use Placement. This is separate from asking which placement record to use when the `placements` array contains multiple records.
 
-Do not ask the user to choose Placement or Embed. Always use Placement.
+### Step 1 - Resolve Brand ID
 
-### Step 1 - Resolve Placement
+Before calling MCP, resolve a valid integer `brand_id`:
 
-For every video request, choose **Placement** automatically.
+- Use a valid integer already present in the user request.
+- Use a valid integer from known hidden MCP context when available.
+- Convert a digits-only brand ID string to an integer before the tool call.
+- If the brand ID is missing or is not an integer, ask the user for it and stop until they answer.
 
-Do not ask:
+Do not guess a brand ID. Do not include the brand ID in generated browser code.
 
-> Do you want Placement or Embed?
+### Step 2 - Fetch Placement Details From MCP
 
-For carousel, feed, contextual video surface, dynamic video section, video cards, horizontally scrollable video cards, or "4 to 5 video cards," use Placement.
+Call the tool with this argument shape:
 
-Do not generate video code before placement values are resolved from MCP.
+```json
+{
+  "brand_id": 123
+}
+```
 
-### Step 2 - Fetch Placement Options From MCP
+`brand_id` must be a JSON integer, not a quoted string. Do not pass the MCP URL, auth token, API key, placement ID, or any browser value in this payload.
 
-Call the MCP to fetch available placements.
+One response contains the available placements, their styles and dimensions, and the shared API key. Do not call another placement-list or placement-detail tool.
 
-Show placement options with:
+### Step 3 - Select Placement
+
+Ignore `total_embeds` and `embeds` even when they are populated.
+
+Use the `placements` array:
+
+- If it is empty, return `MCP_NO_VIDEO_PLACEMENT` and stop.
+- If it contains one placement, select it automatically.
+- If it contains multiple placements, show concise options and ask the user to select one.
+
+Show each placement option with:
 
 - name
 - placement_type
-- dimension
-- grid_layout
+- `dimensions.width` x `dimensions.height`
+- `grid_layout.row` x `grid_layout.column`
 
 Keep the list concise. Do not expose raw MCP JSON unless the user asks.
 
-### Step 3 - Fetch Full Selected Placement
+### Step 4 - Select Style And Map Values
 
-After the user selects a placement, call the MCP again if needed to fetch the full selected placement record.
+Map the selected placement without renaming or guessing its values:
 
-The selected placement record must include enough data to render SDK video.
+- selected placement `id` -> SDK `placement_id`
+- one selected `styles[].id` -> SDK `style_id`
+- response top-level `api_key` -> SDK `api_key`
+- selected placement `dimensions.width` and `dimensions.height` -> container dimensions
 
-Required identity values:
+When the selected placement has multiple styles, choose the style whose `title` best matches the user's requested surface or layout. If there is no clear semantic match, choose the first style in response order. Do not interrupt the user to choose a style.
 
-- `placement_id`
-- `style_id`
-- `api_key`
+If the selected placement has no `id`, no usable style, or the response has no top-level `api_key`, return `MCP_INCOMPLETE_VIDEO_PLACEMENT` and stop. Do not ask the user to provide these server-owned values.
 
-Required runtime/loading value:
+### Step 5 - Handle Missing Dimensions And Generate Code
 
-- SDK script URL from placement `web_code`
-
-Required layout values:
-
-- `width` and `height`, OR
-- a `dimension` value that can be translated into width/height or aspect ratio, OR
-- complete placement `web_code` that contains container dimensions/style/layout
-
-Useful additional values:
-
-- placement name
-- placement type
-- grid layout
-- data attributes from `web_code`
-
-### Step 4 - Missing Data
-
-If MCP does not return any required identity, script, or layout value, stop and ask the user for the missing value.
-
-Ask the user for missing dimensions the same way you ask for a missing placement value. Example:
+Ask the user for missing dimensions before generating code. Example:
 
 > MCP returned placement_id/style_id/api_key, but no width/height or usable dimension. What width and height should this placement use?
 
@@ -174,24 +170,19 @@ Never fall back to:
 
 - env values
 - default values
-- hardcoded prod or QA SDK URLs
 - embed values
 - raw video
 - guessed ids
 - guessed dimensions
 
-### Step 5 - Generate Code
-
-Generate Genuin Web SDK code using only MCP-resolved or user-provided values.
-
-If MCP returns complete placement `web_code`, adapt it into the target framework while preserving all SDK ids, dimensions, data attributes, and script version.
+Generate Genuin Web SDK code with identity values resolved from MCP, dimensions resolved from MCP or the user, and the fixed SDK script URL from this skill.
 
 ```ts
 window.genuin?.init({
   container_id: containerRef.current.id,
-  placement_id: '<MCP_PLACEMENT_ID>',
-  style_id: '<MCP_STYLE_ID>',
-  api_key: '<MCP_API_KEY>',
+  placement_id: "<MCP_PLACEMENT_ID>",
+  style_id: "<MCP_STYLE_ID>",
+  api_key: "<MCP_API_KEY>",
 });
 ```
 
@@ -199,21 +190,7 @@ window.genuin?.init({
 
 ## Project MCP Context
 
-Octo Canvas may provide project-specific MCP context from project env keys like:
-
-- GENUIN_MCP_CONTEXT_BRAND_ID
-- GENUIN_MCP_CONTEXT_WORKSPACE_ID
-- GENUIN_MCP_CONTEXT_SHOP_ID
-
-These values are supplied to the agent as hidden context, not to browser code.
-
-When an `mcp__data__...` tool requires one of these fields, pass the known value automatically.
-
-Examples:
-
-- If a tool requires brand_id and known context includes brand_id, pass it.
-- If a tool requires workspace_id and known context includes workspace_id, pass it.
-- If a required value is missing from known context and not present in the user request, ask the user.
+Octo Canvas may provide `brand_id` as hidden MCP context. If it is a valid integer, pass it automatically. Otherwise use a valid brand ID from the user request or ask the user for one before calling MCP.
 
 Do not expose MCP URLs, auth tokens, or secret env values in generated code or chat responses.
 
@@ -225,15 +202,13 @@ Do not make browser code call the MCP directly.
 
 The Genuin SDK script must be loaded before `window.genuin.init(...)` can run.
 
-Use the SDK script URL returned by MCP `web_code`.
+Always use this exact script URL:
 
-If MCP does not return a script URL, stop and ask the user for the SDK script URL/version or ask them to select a placement whose `web_code` includes it.
+```html
+<script src="https://media.qa.begenuin.com/sdk/2.0.5/gen_sdk.min.js"></script>
+```
 
-Do not use a fallback SDK CDN URL or version.
-
-Do not hardcode QA because an example placement used QA.
-
-Do not hardcode prod because the current app defaults to prod.
+This fixed QA URL is an explicit exception to the repository's generic rule against hardcoded environment-specific URLs. Do not read the script URL from MCP, `web_code`, env, project defaults, or user input. Do not substitute another environment or SDK version.
 
 Guard every SDK init on `window.genuin` or the platform's `isSdkLoaded` signal.
 
@@ -241,21 +216,20 @@ Guard every SDK init on `window.genuin` or the platform's `isSdkLoaded` signal.
 
 ## Dimension Rules
 
-Use dimensions returned by MCP when available.
+Use `dimensions` from the selected MCP placement when available.
 
-If MCP returns any of these values, preserve or translate them directly into the generated container:
+Preserve these values directly in the generated container or placement summary:
 
-- width
-- height
-- aspect ratio
-- dimension string
-- grid layout metadata
-- inline `style` from `web_code`
-- container attributes from `web_code`
+- `dimensions.width`
+- `dimensions.height`
+- `dimensions.auto_fit_height`
+- `grid_layout.row`
+- `grid_layout.column`
+- `grid_layout.auto_adjust`
 
 If MCP only gives one dimension value, do **not** invent the other dimension. Ask the user for the missing width or height.
 
-If MCP gives no dimension/layout/web_code, ask the user for width and height before generating code.
+If MCP gives no usable width and height, ask the user for both before generating code.
 
 Do not leave the SDK container with zero height.
 
@@ -265,29 +239,15 @@ Only emit `width: '100%'`, fixed pixel height, aspect ratio, or Tailwind sizing 
 
 ---
 
-## Adapting MCP web_code
+## Mapping MCP Placement Data
 
-If MCP returns placement `web_code`, use it as the canonical source for script loading and container shape.
+The response's `placement_type` and `grid_layout` describe the placement and help the user choose among options. Do not invent SDK init fields for them unless the SDK contract explicitly supports those fields for the requested surface.
 
-When adapting `web_code` into React:
-
-- keep SDK script URL/version unchanged
-- keep `placement_id`
-- keep `style_id`
-- keep `api_key`
-- keep `data-placement-id`
-- keep `data-style-id`
-- keep `data-api-key`
-- keep width/height/dimensions
-- keep placement layout attributes
-- convert inline HTML attributes to React-safe props
-- preserve placement source path
-
-Do not copy unsafe unrelated scripts beyond the Genuin SDK script.
+The response's top-level `api_key` applies to every placement in that response. Do not look for a per-placement API key.
 
 Do not include MCP calls in the generated browser code.
 
-Do not preserve or introduce embed fields.
+Do not copy `total_embeds`, `embeds`, embed IDs, or embed names into SDK config or generated code.
 
 ---
 
@@ -317,40 +277,35 @@ declare global {
       onInternal?: (eventName: string, listener: GenuinEventListener) => (() => void) | void;
       offInternal?: (eventName: string, listener: GenuinEventListener) => void;
     };
-    onGenuinReady?: (genuin: NonNullable<Window['genuin']>) => void;
+    onGenuinReady?: (genuin: NonNullable<Window["genuin"]>) => void;
   }
 }
 ```
 
 ---
 
-## React Recipe - MCP Resolved Placement
+## React/Next.js Recipe - MCP Resolved Placement
 
-Use this pattern when MCP selected a placement and MCP or the user supplied all required values.
+This repository's React surfaces use Next.js. Use this pattern after MCP supplied the required identity values and MCP or the user supplied complete dimensions.
 
-Use Next.js `<Script>` when the route/layout does not already guarantee the same MCP script URL is loaded.
+Use Next.js `<Script>` when the route/layout does not already guarantee that the fixed SDK URL is loaded.
 
 ```tsx
-'use client';
+"use client";
 
-import Script from 'next/script';
-import { useLayoutEffect, useRef, useState } from 'react';
+import Script from "next/script";
+import { useLayoutEffect, useRef, useState } from "react";
+
+const GENUIN_SDK_SCRIPT_URL = "https://media.qa.begenuin.com/sdk/2.0.5/gen_sdk.min.js";
 
 interface GenuinPlacementVideoProps {
-  scriptUrl: string; // MCP web_code value
   placementId: string; // MCP value
   styleId: string; // MCP value
   apiKey: string; // MCP value
   containerStyle: React.CSSProperties; // MCP/user dimensions only
 }
 
-export function GenuinPlacementVideo({
-  scriptUrl,
-  placementId,
-  styleId,
-  apiKey,
-  containerStyle,
-}: GenuinPlacementVideoProps) {
+export function GenuinPlacementVideo({ placementId, styleId, apiKey, containerStyle }: GenuinPlacementVideoProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const isInitializedRef = useRef(false);
   const [isSdkLoaded, setIsSdkLoaded] = useState(false);
@@ -372,14 +327,14 @@ export function GenuinPlacementVideo({
 
   return (
     <>
-      <Script src={scriptUrl} strategy="afterInteractive" onLoad={() => setIsSdkLoaded(true)} />
+      <Script src={GENUIN_SDK_SCRIPT_URL} strategy="afterInteractive" onLoad={() => setIsSdkLoaded(true)} />
       <div ref={containerRef} id={sdkId} className="gen-sdk-class" style={containerStyle} />
     </>
   );
 }
 ```
 
-Do not pass guessed values into this recipe. `scriptUrl`, `placementId`, `styleId`, `apiKey`, and `containerStyle` must come from MCP or user clarification.
+Do not pass guessed values into this recipe. `placementId`, `styleId`, and `apiKey` must come from MCP. `containerStyle` must use MCP dimensions or dimensions supplied by the user. The script URL must remain the fixed URL shown above.
 
 ---
 
@@ -394,21 +349,20 @@ Only use this when generating plain HTML and MCP selected a placement.
   data-placement-id="<MCP_PLACEMENT_ID>"
   data-style-id="<MCP_STYLE_ID>"
   data-api-key="<MCP_API_KEY>"
-  style="<MCP_OR_USER_DIMENSIONS>"
-></div>
+  style="<MCP_OR_USER_DIMENSIONS>"></div>
 
-<script src="<MCP_WEB_CODE_SDK_SCRIPT_URL>" async></script>
+<script src="https://media.qa.begenuin.com/sdk/2.0.5/gen_sdk.min.js"></script>
 <script>
   window.genuin?.init({
-    container_id: '<MCP_OR_USER_CONTAINER_ID>',
-    placement_id: '<MCP_PLACEMENT_ID>',
-    style_id: '<MCP_STYLE_ID>',
-    api_key: '<MCP_API_KEY>',
+    container_id: "<MCP_OR_USER_CONTAINER_ID>",
+    placement_id: "<MCP_PLACEMENT_ID>",
+    style_id: "<MCP_STYLE_ID>",
+    api_key: "<MCP_API_KEY>",
   });
 </script>
 ```
 
-Do not hardcode script URLs or dimensions in generated HTML.
+Use the exact fixed script URL shown above. Do not substitute an MCP, env, user-provided, or alternate URL. Do not hardcode dimensions; use the selected MCP placement dimensions or user clarification.
 
 ---
 
@@ -419,10 +373,10 @@ If the user asks for specific videos and the selected MCP placement supports spe
 ```ts
 window.genuin?.init({
   container_id: containerRef.current.id,
-  placement_id: '<MCP_PLACEMENT_ID>',
-  style_id: '<MCP_STYLE_ID>',
-  api_key: '<MCP_API_KEY>',
-  video_ids: videoIds.join(','),
+  placement_id: "<MCP_PLACEMENT_ID>",
+  style_id: "<MCP_STYLE_ID>",
+  api_key: "<MCP_API_KEY>",
+  video_ids: videoIds.join(","),
   start_video_slug: videoIds[0],
 });
 ```
@@ -433,16 +387,16 @@ window.genuin?.init({
 
 ## Contextual Feed
 
-If the user asks for videos about a topic/location/page context, use the selected placement and pass contextual params if supported by that placement.
+If the user asks for videos about a topic, location, or page context, include contextual params only when the selected placement record or MCP response explicitly reports that the placement supports them. If the response has no contextual capability metadata, omit `contextual_params` and render the resolved placement. Do not infer support from placement name, style title, or `placement_type`.
 
 ```ts
 window.genuin?.init({
   container_id: containerRef.current.id,
-  placement_id: '<MCP_PLACEMENT_ID>',
-  style_id: '<MCP_STYLE_ID>',
-  api_key: '<MCP_API_KEY>',
+  placement_id: "<MCP_PLACEMENT_ID>",
+  style_id: "<MCP_STYLE_ID>",
+  api_key: "<MCP_API_KEY>",
   contextual_params: {
-    page_context: '<TOPIC_OR_PAGE_CONTEXT>',
+    page_context: "<TOPIC_OR_PAGE_CONTEXT>",
     url: window.location.href,
   },
 });
@@ -466,7 +420,7 @@ Do not call `destroy()` per surface.
 
 Every generated React implementation must follow these rules:
 
-1. Load the MCP `web_code` SDK script URL or use an existing loader only if it loads that exact URL.
+1. Load `https://media.qa.begenuin.com/sdk/2.0.5/gen_sdk.min.js` or use an existing loader only if it loads that exact URL.
 2. Init exactly once with `useRef(false)`.
 3. Guard on SDK availability.
 4. Use `useLayoutEffect`.
@@ -496,9 +450,9 @@ Invalid:
 
 ```ts
 window.genuin?.init({
-  container_id: 'gen-sdk',
-  embed_id: '...',
-  api_key: '...',
+  container_id: "gen-sdk",
+  embed_id: "...",
+  api_key: "...",
 });
 ```
 
@@ -506,10 +460,10 @@ Valid:
 
 ```ts
 window.genuin?.init({
-  container_id: '<UNIQUE_CONTAINER_ID>',
-  placement_id: '<MCP_PLACEMENT_ID>',
-  style_id: '<MCP_STYLE_ID>',
-  api_key: '<MCP_API_KEY>',
+  container_id: "<UNIQUE_CONTAINER_ID>",
+  placement_id: "<MCP_PLACEMENT_ID>",
+  style_id: "<MCP_STYLE_ID>",
+  api_key: "<MCP_API_KEY>",
 });
 ```
 
@@ -557,34 +511,35 @@ If video is requested but MCP cannot provide a usable placement, return a struct
 
 ```ts
 export const error = {
-  type: 'cannot_satisfy',
-  code: 'MCP_NO_VIDEO_PLACEMENT',
-  message: 'The data MCP did not return a usable placement for this video request.',
+  type: "cannot_satisfy",
+  code: "MCP_NO_VIDEO_PLACEMENT",
+  message: "The data MCP did not return a usable placement for this video request.",
 } as const;
 ```
 
-If MCP selected a placement but required fields are missing, ask the user for the missing values instead of generating code. Missing values can include:
+If the selected placement has no `id`, has no usable `styles[].id`, or the response has no top-level `api_key`, return a structured error and stop:
 
-- `placement_id`
-- `style_id`
-- `api_key`
-- SDK script URL/version
-- width
-- height
-- dimensions
-- layout
+```ts
+export const error = {
+  type: "cannot_satisfy",
+  code: "MCP_INCOMPLETE_VIDEO_PLACEMENT",
+  message: "The data MCP returned an incomplete video placement.",
+} as const;
+```
+
+If only width or height is missing, ask the user for the missing dimension before generating code. Do not ask the user to supply server-owned placement, style, or API-key values.
 
 If the user asks for a raw non-Genuin video URL, return:
 
 ```ts
 export const error = {
-  type: 'cannot_satisfy',
-  code: 'NON_GENUIN_VIDEO',
-  message: 'Video must be rendered through a Genuin Web SDK placement resolved from MCP.',
+  type: "cannot_satisfy",
+  code: "NON_GENUIN_VIDEO",
+  message: "Video must be rendered through a Genuin Web SDK placement resolved from MCP.",
 } as const;
 ```
 
-Never fall back to raw video, embed, env values, guessed ids, guessed script URLs, or guessed dimensions.
+Never fall back to raw video, embed, env values, guessed ids, alternate script URLs, or guessed dimensions.
 
 ---
 
@@ -593,21 +548,26 @@ Never fall back to raw video, embed, env values, guessed ids, guessed script URL
 Before returning generated code, verify:
 
 - [ ] The skill activated for a video request.
-- [ ] MCP was used to resolve placement values.
-- [ ] Known MCP context values were passed to MCP tools when required.
-- [ ] User selected one MCP placement option when multiple placements were available.
+- [ ] `mcp__data__get_embed_placement_details` was used to resolve placement values.
+- [ ] The tool payload contained only a valid integer `brand_id`.
+- [ ] A missing or invalid brand ID was requested from the user instead of guessed.
+- [ ] Response `embeds` data was ignored completely.
+- [ ] The user selected one placement record when multiple were available; a single placement was selected automatically.
+- [ ] One style was chosen by semantic `title` match, or the first style was used when no title clearly matched.
 - [ ] No env values were used.
 - [ ] No default SDK ids were used.
-- [ ] No hardcoded SDK script URL/version was used.
+- [ ] The SDK URL is exactly `https://media.qa.begenuin.com/sdk/2.0.5/gen_sdk.min.js`.
 - [ ] No raw `<video>` was generated.
 - [ ] No iframe video was generated.
 - [ ] No embed flow or `embed_id` was used.
-- [ ] Placement uses `placement_id`, `style_id`, and `api_key`.
-- [ ] SDK script URL came from MCP `web_code` or user clarification.
+- [ ] `placement_id` came from the selected `placements[].id`.
+- [ ] `style_id` came from the selected placement's chosen `styles[].id`.
+- [ ] `api_key` came from the MCP response's top-level `api_key`.
+- [ ] No `web_code` value was expected or used.
 - [ ] SDK init is guarded and runs once.
 - [ ] Container id is unique.
 - [ ] Container has stable dimensions from MCP or user clarification.
 - [ ] No width or height was guessed.
 - [ ] `video_ids` is CSV if used.
-- [ ] Browser code does not call MCP directly.
+- [ ] Only the agent called MCP; generated browser/runtime code does not call MCP.
 - [ ] No MCP URL/auth token/secret value appears in generated code.

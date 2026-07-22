@@ -6,9 +6,11 @@ this file; reusable procedures live in `.octo/skills/` (indexed in
 
 > **⚠ ALWAYS-ON MANDATORY SKILLS — check these FIRST, before any other skill.** Four
 > skills are non-negotiable; apply each whenever its trigger appears:
+>
 > 1. **`web-sdk-video-embed-skill`** — any time output must show **video anywhere**
->    (clip/reel/feed/carousel/contextual feed). Mount a Genuin Web SDK placement/embed;
->    never a plain `<video>`/`VideoPlayer`/`VideoPage`/`PlayerSwiper`.
+>    (clip/reel/feed/carousel/contextual feed). Resolve a placement through
+>    `mcp__data__get_embed_placement_details` with an integer brand ID, then mount it with
+>    the fixed Genuin SDK 2.0.5 QA script; never use embeds or a plain video component.
 > 2. **`hierarchical-tree`** — any time you create or change a **page, route, homepage,
 >    landing surface, hero/section layout, destination page, or major UI surface**. First
 >    decide whether it should use the Hierarchical Layout System; emit a Page artifact only
@@ -18,10 +20,10 @@ this file; reusable procedures live in `.octo/skills/` (indexed in
 > 4. **`frontend-patterns`** — any time you create or modify **React/Next UI**,
 >    components, hooks, pages, forms, or styling. Reuse existing components first; create
 >    new components only when no existing component fits.
-> Full triggers in §6 and `.octo/skills/README.md`.
+>    Full triggers in §6 and `.octo/skills/README.md`.
 
 > **Scope note (do not be misled).** A file at `/Users/ajayvaswani/Downloads/CLAUDE.md`
-> describes **"Genuin Brand Control Center (BCC)"** — a *different* project (Next.js
+> describes **"Genuin Brand Control Center (BCC)"** — a _different_ project (Next.js
 > **Pages** Router, Bootstrap/SCSS, Zustand, npm). It sits outside this repo and **does
 > not apply here.** The authoritative rules for THIS repo are `.claude/CLAUDE.md`
 > (Turborepo + pnpm + Next.js 15 **App Router** + React 19 + Tailwind v4), which this
@@ -67,24 +69,24 @@ app & pages → `apps/webapp`. Never cross-import between the two apps.
 
 ### apps/
 
-| Area | Purpose | Conventions / key details |
-|---|---|---|
-| `apps/webapp` (`@genuin/webapp`) | Current Next.js 15 App Router web app for the Genuin video community (videos, groups, communities, profiles); white-label/brand theming; NextAuth v5 auth; SSR-first. | App Router with **Server Components by default**, async layouts/pages. `src/` layout: `app/(site)/(new)/...` routes, `app/(api)/api/...` route handlers, `components/{ui,common,layouts,custom,embed,providers}`, `lib/{api,stores,utils,hooks,schemas}`, `services/{analytics,wallet-handler}`. Path aliases `@/*`, `@components`, `@lib`, `@hooks`, `@services`, `@genuin/{ui,components}`. State: Zustand (persisted `genuin-options`, local-storage) + TanStack Query v5 (staleTime ~30s dynamic / ~180s static). Data: axios `instance.ts` with Bearer + `x-brand-id` interceptors. Build: `next build` → standalone (critters critical CSS), `assetPrefix=/next2` in prod, `transpilePackages: [@genuin/components, @genuin/ui]`. Dev on **:4005** (`env-cmd` + `--turbo`). Tests: **Playwright** in `tests/e2e/` (app :4005, mock server :4006), `test2doc` `.mdx` reporter. Files kebab-case. |
-| `apps/legacy-webapp` (`@genuin/legacy-webapp`) | Older Genuin frontend, still built but **excluded from root lint & typecheck** (`--filter=!./apps/legacy-webapp`). | Same stack family (Next 15 App Router, React 19, Tailwind v4, NextAuth v5 beta, Zustand + Immer, TanStack Query, Axios, Rudderstack, Sentry, FingerprintJS). Route groups `(site)`, `(embed)`, `(api)`. ESLint flat config with many migration rules suppressed. **No test suite.** dev `:4005`, start `:4000`. Do not hold new code to this app's relaxed bar — it is legacy. |
+| Area                                           | Purpose                                                                                                                                                               | Conventions / key details                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/webapp` (`@genuin/webapp`)               | Current Next.js 15 App Router web app for the Genuin video community (videos, groups, communities, profiles); white-label/brand theming; NextAuth v5 auth; SSR-first. | App Router with **Server Components by default**, async layouts/pages. `src/` layout: `app/(site)/(new)/...` routes, `app/(api)/api/...` route handlers, `components/{ui,common,layouts,custom,embed,providers}`, `lib/{api,stores,utils,hooks,schemas}`, `services/{analytics,wallet-handler}`. Path aliases `@/*`, `@components`, `@lib`, `@hooks`, `@services`, `@genuin/{ui,components}`. State: Zustand (persisted `genuin-options`, local-storage) + TanStack Query v5 (staleTime ~30s dynamic / ~180s static). Data: axios `instance.ts` with Bearer + `x-brand-id` interceptors. Build: `next build` → standalone (critters critical CSS), `assetPrefix=/next2` in prod, `transpilePackages: [@genuin/components, @genuin/ui]`. Dev on **:4005** (`env-cmd` + `--turbo`). Tests: **Playwright** in `tests/e2e/` (app :4005, mock server :4006), `test2doc` `.mdx` reporter. Files kebab-case. |
+| `apps/legacy-webapp` (`@genuin/legacy-webapp`) | Older Genuin frontend, still built but **excluded from root lint & typecheck** (`--filter=!./apps/legacy-webapp`).                                                    | Same stack family (Next 15 App Router, React 19, Tailwind v4, NextAuth v5 beta, Zustand + Immer, TanStack Query, Axios, Rudderstack, Sentry, FingerprintJS). Route groups `(site)`, `(embed)`, `(api)`. ESLint flat config with many migration rules suppressed. **No test suite.** dev `:4005`, start `:4000`. Do not hold new code to this app's relaxed bar — it is legacy.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 
 ### packages/ — shared layers & SDKs
 
-| Package | Role | Conventions / key details |
-|---|---|---|
-| `packages/ui` (`@genuin/ui`) | **Atoms** — UI primitive library (40+ components) on Radix UI + Tailwind v4 + CVA. | `PascalCase` components; per-component files `[c].tsx`, `[c].test.tsx`, `[c].stories.tsx`, `[c].doc.mdx`, `index.ts`. Tailwind **`gencl:`** prefix; CSS shipped via `./styles` → `dist/index.css`. `forwardRef`, Radix `Slot` for `asChild`; **no `React.FC`**. `cn`/`clsx`/`twMerge` in `lib/utils.ts`; `sanitize.ts` (DOMPurify); shadow-DOM utils for SDK contexts. Theme via CSS-variable `ThemeProvider` (`ThemeName` union in `theme-provider.tsx`). Tests: **Jest + Vitest** (`test: jest && vitest run`) + Storybook v9 (a11y addon). Large explicit per-component exports map (no single barrel). |
-| `packages/components` (`@genuin/components`) | **Molecules / Organisms** — shared business components (feed/embed players, comments, cards, modals, top-bar, side-bar, search…). | React 19, `"use client"` where interactive; Tailwind `gencl:`; PascalCase components in kebab-case folders. State via Context (`Analytics`, `Auth`, `BaseContext`, `Embed`, `Link`, `PlayerImpl`) + TanStack Query v5 hooks. Built with `tsc --build` (published **as source**, `composite: true`). Storybook on **:6005**. Depends on `@genuin/ui` and `@genuin/genai-sdk`. **No package test script** (story-driven Vitest only). |
-| `packages/web-sdk` (`@genuin/web-sdk`) | Embeddable browser **video-feed SDK** — the `window.genuin` global. Vite bundle + loader. | TS + React 19 (JSX only). Class-singleton core (`GenuinSDK`, `EventManager`, `ErrorHandler`, `TokenManager`, `ThemeManager`) in `src/core/`; SDK in `src/sdk/` (`genuin-sdk.ts`, `embed-root.tsx`). **Config contract: `src/type.ts` (`ConfigByUser`)**; global in `src/index.ts`. Styles wrapped in **`.gen-sdk-class`**; shadow-DOM isolation; lazy CSS. **Env-specific builds** (`build`/`build:qa`/`build:prod`) via `cross-env` + `env-cmd` (`.env.<stage>`), `validate:env`, `syncVersion` (currently **v2.0.6**), builds `genai-sdk` first. Outputs `dist/gen_sdk(.min).js` + `genuin-loader.js`. Tests: **Playwright** (`tests/e2e/`, MSW mocks). Publishes to S3 / Oracle / CloudFront, purges Bunny CDN. CDN: `https://media.<env>.begenuin.com/sdk/<version>/gen_sdk.min.js`. |
-| `packages/genai` (`@genuin/genai-sdk`) | Embeddable **AI chat widget** SDK (page/dialog/floater/web-sdk views, markdown, carousel embeds). | Tailwind v4 with **`gai:`** prefix (postcss-prefixwrap on `.genai-sdk-container`). React 19, Vite multi-entry. Global `window.GenAISDK.init/destroy`. **`src/components/Chat/CarousalEmbed.tsx` is the canonical reference for the web-sdk video embed** (see the mandatory skill). Context providers via `AppProviders`; RudderStack analytics. No test runner. |
-| `packages/hierarchical-tree` (`@genuin/hierarchical-tree`) | Runtime walker that **validates + renders serialized Page layout artifacts** with breakpoint support. | `PageRenderer` (`use client` for ResizeObserver) + `defaultUiRenderers` / `defaultSlotRenderers` registries; **Zod schema is the single source of truth** (`src/schema.ts`). Breakpoint picking = largest `minWidth ≤ width`, atomic re-render keyed on breakpoint id. SDK-agnostic: emits embed-target elements for **`video` slots** (resolved props `placementId`/`styleId`/`apiKey`/`elementId`) — the host mounts the Web SDK there. Tests: Vitest + jsdom + RTL. Standalone `src/dev/` Vite QA surface. |
-| `packages/analytics` (`@genuin/analytics`) | Framework-agnostic analytics client (multi-provider, queue, middleware, optional React bindings). | `AnalyticsClient` orchestrates `EventQueue`/`PayloadMerger`/`EventValidator`/`MiddlewareChain`; provider pattern (Rudderstack, Console, `BaseProvider`); React `useAnalytics`/`useTrack`/`useIdentify`/`usePage`. ESM, NodeNext, multiple entrypoints (`.`, `./react`, `./middleware`, `./types`). Type-check only (no build/dist step). |
-| `packages/tailwind-config` (`@genuin/tailwind-config`) | Shared **Tailwind v4** config + per-publisher themes. | CSS-first: `shared-styles.css` (`@import tailwindcss prefix(gencl)`, typography/spacing/breakpoints, custom utils like `.gencl:flex-center`/`.gencl:scrollbar-none`) and `themes.css` (`.theme-<slug>` blocks: genuin, iheart, mcclatchy, us-weekly, artitech, planet-fitness, harley-davidson). Dual tokens `--gencl-primary-*` + `--gencl-color-primary-*` to re-resolve v4's once-evaluated `@theme`. Consumed by `ui`, `components`, `hierarchical-tree`. New palettes via the `hierarchical-theme` skill. |
-| `packages/eslint-config` (`@genuin/eslint-config`) | Shared **ESLint 9 flat** configs. | Modular exports: `./base`, `./library` (base + React), `./next-js` (base + React + Next + TanStack Query), `./react-internal`. Prettier-compatible; import ordering enforced; unused vars are errors (`_`-prefix opts out); private package. |
-| `packages/typescript-config` (`@genuin/typescript-config`) | Shared **tsconfig** presets. | `base.json` (strict ES2022, `noUncheckedIndexedAccess`, `isolatedModules`, NodeNext), `nextjs.json` (ESNext + Bundler, `jsx: preserve`, `noEmit`), `react-library.json` (`jsx: react-jsx`). Config-only. |
+| Package                                                    | Role                                                                                                                              | Conventions / key details                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `packages/ui` (`@genuin/ui`)                               | **Atoms** — UI primitive library (40+ components) on Radix UI + Tailwind v4 + CVA.                                                | `PascalCase` components; per-component files `[c].tsx`, `[c].test.tsx`, `[c].stories.tsx`, `[c].doc.mdx`, `index.ts`. Tailwind **`gencl:`** prefix; CSS shipped via `./styles` → `dist/index.css`. `forwardRef`, Radix `Slot` for `asChild`; **no `React.FC`**. `cn`/`clsx`/`twMerge` in `lib/utils.ts`; `sanitize.ts` (DOMPurify); shadow-DOM utils for SDK contexts. Theme via CSS-variable `ThemeProvider` (`ThemeName` union in `theme-provider.tsx`). Tests: **Jest + Vitest** (`test: jest && vitest run`) + Storybook v9 (a11y addon). Large explicit per-component exports map (no single barrel).                                                                                                                                                                               |
+| `packages/components` (`@genuin/components`)               | **Molecules / Organisms** — shared business components (feed/embed players, comments, cards, modals, top-bar, side-bar, search…). | React 19, `"use client"` where interactive; Tailwind `gencl:`; PascalCase components in kebab-case folders. State via Context (`Analytics`, `Auth`, `BaseContext`, `Embed`, `Link`, `PlayerImpl`) + TanStack Query v5 hooks. Built with `tsc --build` (published **as source**, `composite: true`). Storybook on **:6005**. Depends on `@genuin/ui` and `@genuin/genai-sdk`. **No package test script** (story-driven Vitest only).                                                                                                                                                                                                                                                                                                                                                      |
+| `packages/web-sdk` (`@genuin/web-sdk`)                     | Embeddable browser **video-feed SDK** — the `window.genuin` global. Vite bundle + loader.                                         | TS + React 19 (JSX only). Class-singleton core (`GenuinSDK`, `EventManager`, `ErrorHandler`, `TokenManager`, `ThemeManager`) in `src/core/`; SDK in `src/sdk/` (`genuin-sdk.ts`, `embed-root.tsx`). **Config contract: `src/type.ts` (`ConfigByUser`)**; global in `src/index.ts`. Styles wrapped in **`.gen-sdk-class`**; shadow-DOM isolation; lazy CSS. **Env-specific builds** (`build`/`build:qa`/`build:prod`) via `cross-env` + `env-cmd` (`.env.<stage>`), `validate:env`, `syncVersion` (currently **v2.0.6**), builds `genai-sdk` first. Outputs `dist/gen_sdk(.min).js` + `genuin-loader.js`. Tests: **Playwright** (`tests/e2e/`, MSW mocks). Publishes to S3 / Oracle / CloudFront, purges Bunny CDN. CDN: `https://media.<env>.begenuin.com/sdk/<version>/gen_sdk.min.js`. |
+| `packages/genai` (`@genuin/genai-sdk`)                     | Embeddable **AI chat widget** SDK (page/dialog/floater/web-sdk views, markdown, carousel embeds).                                 | Tailwind v4 with **`gai:`** prefix (postcss-prefixwrap on `.genai-sdk-container`). React 19, Vite multi-entry. Global `window.GenAISDK.init/destroy`. `src/components/Chat/CarousalEmbed.tsx` is a legacy integration example; its env/embed behavior is not canonical for generated video. Use the mandatory skill instead. Context providers via `AppProviders`; RudderStack analytics. No test runner.                                                                                                                                                                                                                                                                                                                                                                                |
+| `packages/hierarchical-tree` (`@genuin/hierarchical-tree`) | Runtime walker that **validates + renders serialized Page layout artifacts** with breakpoint support.                             | `PageRenderer` (`use client` for ResizeObserver) + `defaultUiRenderers` / `defaultSlotRenderers` registries; **Zod schema is the single source of truth** (`src/schema.ts`). Breakpoint picking = largest `minWidth ≤ width`, atomic re-render keyed on breakpoint id. SDK-agnostic: emits embed-target elements for **`video` slots** (resolved props `placementId`/`styleId`/`apiKey`/`elementId`) — the host mounts the Web SDK there. Tests: Vitest + jsdom + RTL. Standalone `src/dev/` Vite QA surface.                                                                                                                                                                                                                                                                            |
+| `packages/analytics` (`@genuin/analytics`)                 | Framework-agnostic analytics client (multi-provider, queue, middleware, optional React bindings).                                 | `AnalyticsClient` orchestrates `EventQueue`/`PayloadMerger`/`EventValidator`/`MiddlewareChain`; provider pattern (Rudderstack, Console, `BaseProvider`); React `useAnalytics`/`useTrack`/`useIdentify`/`usePage`. ESM, NodeNext, multiple entrypoints (`.`, `./react`, `./middleware`, `./types`). Type-check only (no build/dist step).                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `packages/tailwind-config` (`@genuin/tailwind-config`)     | Shared **Tailwind v4** config + per-publisher themes.                                                                             | CSS-first: `shared-styles.css` (`@import tailwindcss prefix(gencl)`, typography/spacing/breakpoints, custom utils like `.gencl:flex-center`/`.gencl:scrollbar-none`) and `themes.css` (`.theme-<slug>` blocks: genuin, iheart, mcclatchy, us-weekly, artitech, planet-fitness, harley-davidson). Dual tokens `--gencl-primary-*` + `--gencl-color-primary-*` to re-resolve v4's once-evaluated `@theme`. Consumed by `ui`, `components`, `hierarchical-tree`. New palettes via the `hierarchical-theme` skill.                                                                                                                                                                                                                                                                           |
+| `packages/eslint-config` (`@genuin/eslint-config`)         | Shared **ESLint 9 flat** configs.                                                                                                 | Modular exports: `./base`, `./library` (base + React), `./next-js` (base + React + Next + TanStack Query), `./react-internal`. Prettier-compatible; import ordering enforced; unused vars are errors (`_`-prefix opts out); private package.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `packages/typescript-config` (`@genuin/typescript-config`) | Shared **tsconfig** presets.                                                                                                      | `base.json` (strict ES2022, `noUncheckedIndexedAccess`, `isolatedModules`, NodeNext), `nextjs.json` (ESNext + Bundler, `jsx: preserve`, `noEmit`), `react-library.json` (`jsx: react-jsx`). Config-only.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 
 ### scripts/ (root utilities)
 
@@ -143,14 +145,17 @@ overrides; `packages/web-sdk` layers `.env.<stage>` (+ genai `.env.<stage>`). On
 **`NEXT_PUBLIC_*`** (Next apps) and **`VITE_*`** (Vite/SDK) names reach the browser;
 Storybook/Vite expose public envs through a `define` block in `.storybook/main.ts`. The Web
 SDK reads `VITE_GEN_SDK_PLACEMENT_ID`, `VITE_GEN_SDK_STYLE_ID`, `VITE_API_KEY`, etc. Use
-project/env values when supplied; otherwise use the current default in
-`web-sdk-video-embed-skill`. No AWS Secrets Manager is used (see `.octo/env.toml`).
+those values only in existing application code that already owns that configuration. For
+generated video surfaces, `web-sdk-video-embed-skill` forbids env/default identity fallback:
+resolve placement/style/API-key values from the data MCP and use its fixed QA SDK URL. No AWS
+Secrets Manager is used (see `.octo/env.toml`).
 
 ---
 
 ## 4. Coding conventions
 
 **Language & runtime**
+
 - TypeScript everywhere, **strict mode**. No `any` without a justified comment. No
   `@ts-ignore`/`@ts-expect-error` without an explanatory comment.
 - **ESM only** — no CommonJS `require()`. Node 20+ (`fetch`, `structuredClone`, ES2022+ ok).
@@ -158,12 +163,14 @@ project/env values when supplied; otherwise use the current default in
   calls initialized (e.g. `useRef<HTMLDivElement>(null)`); React 19 ref-as-prop.
 
 **Style**
+
 - 2-space indent, single quotes, semicolons required, max line length **100**.
 - **Named exports preferred**; descriptive names (no single-letter vars except short lambdas).
 - **No barrel files** that re-export everything — import directly from the source file.
   (`packages/ui` uses an explicit per-component exports map, consistent with this rule.)
 
 **React / Next.js**
+
 - App Router; **Server Components by default** — add `'use client'` only when interactivity
   is needed. Default to parallel data fetching; avoid RSC waterfalls
   (see `nextjs-server-performance`); reason about caching with `nextjs-cache`.
@@ -179,6 +186,7 @@ project/env values when supplied; otherwise use the current default in
   provider DI, children over render props).
 
 **Styling — Tailwind v4 (prefixed)**
+
 - `@genuin/ui` and `@genuin/components` use the **`gencl:`** utility prefix; `@genuin/genai-sdk`
   uses **`gai:`**; the Web SDK wraps styles in **`.gen-sdk-class`**.
 - `@genuin/ui/styles` and `@genuin/components/styles` resolve to built CSS files in
@@ -193,17 +201,20 @@ project/env values when supplied; otherwise use the current default in
   `themes.css` + `ThemeName` union).
 
 **State & data**
+
 - Client state: **Zustand** (persisted where needed) — React Context for provider-tree
   concerns. Zustand is the last resort for cross-cutting state; prefer Context per repo rules.
 - Server state: **TanStack Query v5**. HTTP via the per-app axios `instance.ts` (interceptors
   attach Bearer token + `x-brand-id`). Forms: `react-hook-form` + **Zod** validation.
 
 **Error handling**
+
 - Handle errors explicitly — no swallowed `catch`. Use typed errors (an `AppError` base with a
   `code` field); never throw raw strings. At API boundaries return `{ data, error }` result
   objects instead of throwing. Wrap client trees in error boundaries.
 
 **Security**
+
 - Validate all external data at trust boundaries with **Zod**. Sanitize any rendered
   user/markdown HTML with **DOMPurify**; no `dangerouslySetInnerHTML` without it.
 - API responses return only the fields the client needs; **always paginate** lists.
@@ -212,28 +223,31 @@ project/env values when supplied; otherwise use the current default in
   raise auth/token changes for review.)
 
 **Comments & docs**
-- Comment the *why*, not the *what*. Public functions/exported types get JSDoc. No
+
+- Comment the _why_, not the _what_. Public functions/exported types get JSDoc. No
   commented-out code; use `// TODO(name): …` for known gaps.
 
 **What to avoid**
+
 - No `console.log` in committed code (structured logger instead). No hardcoded secrets/tokens/
-  env-specific URLs. No direct DOM manipulation in React (use refs). No `page.waitForTimeout()`
-  in Playwright. No CommonJS `require()`. No cross-imports between apps in `apps/`.
+  env-specific URLs, except the exact SDK URL mandated by `web-sdk-video-embed-skill`. No
+  direct DOM manipulation in React (use refs). No `page.waitForTimeout()` in Playwright. No
+  CommonJS `require()`. No cross-imports between apps in `apps/`.
 
 **Specialist agents** (in `.claude/agents/`, dispatched by the Agent tool — optional, use when
 the work is big enough to pay for itself; small fixes go inline):
 
-| Agent | Use when |
-|---|---|
-| `planner` | Read-only: explore the codebase and produce a file-by-file implementation plan before coding; "how does X work". |
-| `implementer` | Build a feature/component writing production code (types → implementation → tests) following conventions. |
-| `architect` | Package placement, monorepo/system design, ADRs, where new code lives (packages vs apps). |
-| `debugger` | Root-cause a stubborn bug and apply the minimal safe fix (pairs with the `debug` skill). |
-| `code-reviewer` | Quality/security review of a diff right after writing code; git-history-aware. |
-| `typescript-reviewer` | TypeScript-focused review — type safety, async correctness; runs typecheck/lint. |
-| `security-auditor` | Read-only security audit (auth, injection, secrets, CORS/CSP, CVEs) — never edits. |
-| `e2e-tester` | Write/fix Playwright E2E tests for real user flows (Page Object Model). |
-| `prd-writer` | Write/update/review a PRD with Given/When/Then acceptance criteria. |
+| Agent                 | Use when                                                                                                         |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `planner`             | Read-only: explore the codebase and produce a file-by-file implementation plan before coding; "how does X work". |
+| `implementer`         | Build a feature/component writing production code (types → implementation → tests) following conventions.        |
+| `architect`           | Package placement, monorepo/system design, ADRs, where new code lives (packages vs apps).                        |
+| `debugger`            | Root-cause a stubborn bug and apply the minimal safe fix (pairs with the `debug` skill).                         |
+| `code-reviewer`       | Quality/security review of a diff right after writing code; git-history-aware.                                   |
+| `typescript-reviewer` | TypeScript-focused review — type safety, async correctness; runs typecheck/lint.                                 |
+| `security-auditor`    | Read-only security audit (auth, injection, secrets, CORS/CSP, CVEs) — never edits.                               |
+| `e2e-tester`          | Write/fix Playwright E2E tests for real user flows (Page Object Model).                                          |
+| `prd-writer`          | Write/update/review a PRD with Given/When/Then acceptance criteria.                                              |
 
 Orchestration for substantial multi-step work: `grill-me` (if vague) → `planner` → `implementer`
 → `code-reviewer`/`typescript-reviewer` → `e2e-tester` (only if a user flow). A one-line fix
@@ -244,6 +258,7 @@ skips all of this — do it inline (token economy).
 ## 5. Ownership boundaries & "do NOT" rules
 
 **Requires explicit team approval before changing:**
+
 - Deleting or renaming public API surfaces.
 - Changing shared packages in `packages/` that other packages/apps depend on (affects the
   webapp **and** the SDKs — `@genuin/ui`, `@genuin/components`, `@genuin/genai-sdk`,
@@ -254,13 +269,17 @@ skips all of this — do it inline (token economy).
 - Changing CORS, CSP, or any security-related HTTP headers.
 
 **Hard "do NOT":**
+
 - **Do NOT render content video with a plain video component** — `VideoPlayer`,
   `VideoPlayerV2`, `VideoPoster`, `VideoPage`, `PlayerSwiper`, a raw `<video>`, or a video
-  `<iframe>`. Use the Genuin Web SDK placement/embed instead (see §6 / the mandatory skill).
+  `<iframe>`. Use a data-MCP-resolved Genuin Web SDK placement instead; never use an embed
+  (see §6 / the mandatory skill).
 - Do NOT cross-import between `apps/webapp` and `apps/legacy-webapp`.
 - Do NOT add barrel files, CommonJS, `React.FC`, uninitialized refs, or `any` (without a
   justified comment).
-- Do NOT hardcode secrets, ids, keys, or environment-specific URLs — read from env.
+- Do NOT hardcode secrets, ids, keys, or environment-specific URLs. The sole exception is the
+  exact SDK URL mandated by `web-sdk-video-embed-skill`; video identity values come from MCP,
+  never env or defaults.
 - Do NOT put auth tokens in `localStorage`.
 - Do NOT add `*.stories.*`-style work to legacy surfaces blindly; respect each package's setup.
 - Do NOT introduce new top-level files/folders under `.octo/` — only `octo.md`,
@@ -282,12 +301,17 @@ matching skill before doing the work it covers.
 
 1. **`web-sdk-video-embed-skill` — [MUST USE].** Whenever generated code must display **video
    anywhere** (clip, reel, feed, carousel, contextual feed), you **MUST** mount a Genuin Web
-   SDK **placement** (default) or **embed**: a container `<div>` + a guarded
-   `window.genuin.init(...)`. You **MUST NOT** emit `VideoPlayer`/`VideoPlayerV2`/`VideoPoster`/
-   `VideoPage`/`PlayerSwiper`/a raw `<video>`/a video `<iframe>` for content video. Read source
-   ids from supplied config/env or the skill's current default, guard init once via `useRef` +
-   SDK-availability, never call `destroy()` per card. Canonical
-   reference: `packages/genai/src/components/Chat/CarousalEmbed.tsx`; contract:
+   SDK **placement**: first obtain a valid integer brand ID from hidden context or the user,
+   call `mcp__data__get_embed_placement_details`, ignore its `embeds`, and map the selected
+   `placements[].id`, one selected `styles[].id`, and top-level `api_key`. If multiple
+   placements exist, ask the user to choose; choose one style by semantic title match or the
+   first response-order style. Load only
+   `https://media.qa.begenuin.com/sdk/2.0.5/gen_sdk.min.js`, then mount a container `<div>` +
+   guarded `window.genuin.init(...)`. You **MUST NOT** emit an embed, `VideoPlayer`/
+   `VideoPlayerV2`/`VideoPoster`/`VideoPage`/`PlayerSwiper`/a raw `<video>`/a video `<iframe>`.
+   Never use env/default identity fallback or `web_code`; guard init once via `useRef` +
+   SDK availability, and never call `destroy()` per card. This skill is the canonical source
+   for placement resolution and script loading; the SDK config contract remains
    `packages/web-sdk/src/type.ts` (`ConfigByUser`). Pairs with `hierarchical-tree` `video` slots.
 
 2. **`hierarchical-tree` — [MUST USE].** Whenever you create or change a **page, route,
