@@ -198,6 +198,7 @@ async function getHeaders() {
                     "https://cdn.rudderlabs.com",
                     "https://cdn.jsdelivr.net",
                     "https://*.begenuin.com",
+                    "https://*.preview.qa.begenuin.com",
                     "https://*.vercel-insights.com",
                     ...HOSTS.googleAds.scripts,
                     ...(isDev
@@ -218,6 +219,7 @@ async function getHeaders() {
                     "img-src 'self' data: blob:",
                     HOSTS.media,
                     HOSTS.bunnyCDN,
+                    "https://vz-eee5e913-a30.b-cdn.net",
                     "https://*.picsum.photos https://picsum.photos",
                     ...HOSTS.googleAds.images,
                   ].join(" "),
@@ -228,6 +230,7 @@ async function getHeaders() {
                     HOSTS.media,
                     HOSTS.ssai,
                     HOSTS.bunnyCDN,
+                    "https://vz-eee5e913-a30.b-cdn.net",
                     ...HOSTS.googleAds.media,
                   ].join(" "),
 
@@ -249,6 +252,7 @@ async function getHeaders() {
                     HOSTS.sentry,
                     HOSTS.ssai,
                     HOSTS.bunnyCDN,
+                    "https://vz-eee5e913-a30.b-cdn.net",
                     ...HOSTS.googleAds.connect,
                     ...HOSTS.adHosts,
                   ].join(" "),
@@ -258,6 +262,7 @@ async function getHeaders() {
                     "worker-src 'self' blob:",
                     ...(isDev ? ["http://localhost:*", "ws://localhost:*"] : []),
                     "https://cdn.rudderlabs.com",
+                    "https://vz-eee5e913-a30.b-cdn.net",
                     "https://cdn.jsdelivr.net",
                   ].join(" "),
 
