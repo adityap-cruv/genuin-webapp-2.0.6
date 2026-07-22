@@ -97,12 +97,21 @@ describe("CompactControlBar", () => {
     expect(query("compact-bar-description")).toBeTruthy();
   });
 
-  it("renders a Watch-only actions row in ad sm (showWatchInSm) and drops the ticker", () => {
-    render({ size: "sm", showWatchInSm: true, description: "Rendered by genAd, not shown here" });
+  it("renders a Watch-only actions row in ad sm (showWatchInSm, no description)", () => {
+    // Ad sm passes no description — genAd renders it externally — so only Watch shows.
+    render({ size: "sm", showWatchInSm: true });
     expect(query("compact-bar-actions")).toBeTruthy();
     expect(container.querySelector('[data-testid="watch-btn"]')).toBeTruthy();
-    // genAd owns the description in ad sm, so CXR suppresses its ticker.
     expect(query("compact-bar-description")).toBeNull();
+  });
+
+  it("packs ticker + Watch side by side in video sm (showWatchInSm + description)", () => {
+    render({ size: "sm", showWatchInSm: true, description: "A scrolling caption" });
+    expect(container.querySelector('[data-testid="watch-btn"]')).toBeTruthy();
+    // Both share the second row; the ticker flexes to the leftover width.
+    const ticker = query("compact-bar-description");
+    expect(ticker).toBeTruthy();
+    expect(ticker?.className).toContain("gencl:flex-1");
   });
 
   // Regression for an audible-start compact VIDEO (e.g. tag with initialVolume:0.2).

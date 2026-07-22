@@ -131,6 +131,8 @@ export function VideoControlLayer({
             useV2Icons={isV2}
             identity={{ imageUrl: item.owner?.profile_image, name: item.owner?.nickname }}
             description={item.video?.description}
+            // 320×50 video now shows a Watch button beside its ticker.
+            showWatchInSm={is320x50}
             hideTickerAndActions={Boolean(stripProps)}
             animatedBorder={animatedBorder}
             isPlay={isPlay}
