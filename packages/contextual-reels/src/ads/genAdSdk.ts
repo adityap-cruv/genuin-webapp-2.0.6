@@ -564,18 +564,24 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
               };
               sendEvent(EVENT.AD_IMPRESSION, adEventDetails);
             },
-            onAdImpressionPixelFire: (event?: {
-              provider?: AdProviderKind;
-              ad_pixel_url?: string;
-              ad_pixel_status_code?: string;
-            }) => {
-              const adEventDetails = {
-                provider: event?.provider,
-                ad_source: (event?.provider && platforms[event.provider]) || adSource,
-                ad_pixel_url: event?.ad_pixel_url,
-                ad_pixel_status_code: event?.ad_pixel_status_code,
-              };
-              sendEvent(EVENT.AD_IMPRESSION_PIXEL_FIRED, adEventDetails);
+            // TEMPORARILY DISABLED: the `Ad Impression Pixel Fired` analytics
+            // event is suppressed for now. The handler stays wired (as a no-op)
+            // so the SDK's pixel still fires in gen-ad-container — only CXR's own
+            // analytics emit is paused. To re-enable, restore the parameter and
+            // the sendEvent body below.
+            // TODO(krunal-s): re-enable AD_IMPRESSION_PIXEL_FIRED analytics.
+            onAdImpressionPixelFire: (): void => {
+              // No-op while disabled. When re-enabling, restore the original
+              // signature and body:
+              //   (event?: { provider?: AdProviderKind; ad_pixel_url?: string;
+              //              ad_pixel_status_code?: string }) => {
+              //     sendEvent(EVENT.AD_IMPRESSION_PIXEL_FIRED, {
+              //       provider: event?.provider,
+              //       ad_source: (event?.provider && platforms[event.provider]) || adSource,
+              //       ad_pixel_url: event?.ad_pixel_url,
+              //       ad_pixel_status_code: event?.ad_pixel_status_code,
+              //     });
+              //   }
             },
             onAdStarted: (event?: { provider?: AdProviderKind }): void => {
               sendEvent(EVENT.AD_STARTED, {

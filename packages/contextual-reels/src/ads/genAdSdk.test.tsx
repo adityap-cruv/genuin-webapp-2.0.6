@@ -464,7 +464,11 @@ describe("ads/useGenAdInstance", () => {
     unmount(root, container);
   });
 
-  it("fires Ad Impression Pixel Fired from the SDK's onAdImpressionPixelFire event", async () => {
+  // TEMPORARILY DISABLED: `Ad Impression Pixel Fired` analytics is suppressed
+  // (see onAdImpressionPixelFire in genAdSdk.ts). The handler must stay wired as
+  // a safe no-op that does NOT emit the analytics event. When re-enabling the
+  // event, restore the original "fires ..." assertion.
+  it("does not fire Ad Impression Pixel Fired (temporarily disabled) yet stays a safe no-op", async () => {
     const { root, container } = mountHook({ ...baseProps, isActive: true });
 
     await act(async () => {
@@ -481,6 +485,7 @@ describe("ads/useGenAdInstance", () => {
     };
 
     await act(async () => {
+      // Handler is still wired and invoking it must not throw...
       events.onAdImpressionPixelFire({
         provider: "video",
         ad_pixel_url: "https://pixel.example.com/imp?id=1",
@@ -488,14 +493,8 @@ describe("ads/useGenAdInstance", () => {
       });
     });
 
-    expect(sendEventMock).toHaveBeenCalledWith(
-      "Ad Impression Pixel Fired",
-      expect.objectContaining({
-        provider: "video",
-        ad_pixel_url: "https://pixel.example.com/imp?id=1",
-        ad_pixel_status_code: "200",
-      })
-    );
+    // ...but it must not emit the suppressed analytics event.
+    expect(sendEventMock).not.toHaveBeenCalledWith("Ad Impression Pixel Fired", expect.anything());
 
     unmount(root, container);
   });
