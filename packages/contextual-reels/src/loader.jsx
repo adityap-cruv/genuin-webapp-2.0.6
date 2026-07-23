@@ -15,7 +15,7 @@
   // IIFE. Fires before any script-src/macro/CSS/boot logic so it is a pure,
   // unconditional "loader ran" signal that can never fire in a partially-booted
   // or doubtful state. tagId + host macros are unresolved here, so the path uses
-  // "0" and no query params are sent.
+  // the "1" id placeholder (the server rejects "0") and no query params are sent.
   //
   // Fired via `new Image()` GET, NOT `navigator.sendBeacon`: the pixel endpoint
   // is GET-only (POST → 405), and sendBeacon always POSTs — worse, it reports
@@ -154,9 +154,10 @@
   // No `.gen-ext` node has been read at this point (that's index.jsx's job) —
   // sdk_load failures happen before any widget instance is known. brand_id is
   // never resolvable here (only known after a successful tag fetch); tag_id
-  // falls back to the `tagId` host macro when the host provided one, else "0".
+  // falls back to the `tagId` host macro when the host provided one, else "1"
+  // (the server rejects "0" as an id path segment).
   function buildSdkLoadPixelUrl(err) {
-    var tagId = readHostMacroBestEffort("tagId") || "0";
+    var tagId = readHostMacroBestEffort("tagId") || "1";
     var path = PIXEL_URL + "/1/" + encodeURIComponent(tagId) + "/px-script-error";
 
     var params = new URLSearchParams();

@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { getInstanceRegistry } from "@cxr/instance/registry/InstanceRegistry";
-import { PAGE_LEVEL_KEY, PixelReporter } from "@cxr/observability/pixel-reporter";
+import { PAGE_LEVEL_KEY, PixelReporter, fireTagInitPixel } from "@cxr/observability/pixel-reporter";
 
 describe("PixelReporter", () => {
   let originalImage: typeof Image;
@@ -127,11 +127,11 @@ describe("PixelReporter", () => {
       expect(url.pathname).toBe("/goservices/dsp/pixel/42/tag-abc/px-script-error");
     });
 
-    it("falls back to 1/0 in the path when brandId/tagId are not provided", () => {
+    it("falls back to 1/1 in the path when brandId/tagId are not provided (server rejects 0)", () => {
       PixelReporter.getInstance().report("instance-1", "init", "initialization_error");
 
       const url = new URL(capturedSrc);
-      expect(url.pathname).toBe("/goservices/dsp/pixel/1/0/px-script-error");
+      expect(url.pathname).toBe("/goservices/dsp/pixel/1/1/px-script-error");
     });
 
     it("uses the initial loader tagId from window.__CXR_SCRIPT_PARAMS__ when no tagId is passed", () => {
@@ -335,6 +335,103 @@ describe("PixelReporter", () => {
 
       consoleSpy.mockRestore();
       getInstanceRegistry().unregister("instance-1");
+    });
+  });
+
+  // ── px-ti (tag_init) pixel ────────────────────────────────────────────────
+
+  describe("fireTagInitPixel", () => {
+    let capturedSrc: string;
+
+    beforeEach(() => {
+      capturedSrc = "";
+      // @ts-expect-error -- test stub, not a full Image implementation
+      globalThis.Image = class {
+        set src(value: string) {
+          capturedSrc = value;
+        }
+      };
+    });
+
+    afterEach(() => {
+      delete (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__;
+      delete (window as { __CXR_BUILD_ID__?: string }).__CXR_BUILD_ID__;
+    });
+
+    it("fires the px-ti pixel with brandId/tagId as path segments", () => {
+      fireTagInitPixel({ brandId: 42, tagId: "tag-abc" });
+
+      const url = new URL(capturedSrc);
+      expect(url.pathname).toBe("/goservices/dsp/pixel/42/tag-abc/px-ti");
+    });
+
+    it("falls back to brand 1 in the path when brandId is not resolved yet", () => {
+      fireTagInitPixel({ tagId: "tag-abc" });
+
+      const url = new URL(capturedSrc);
+      expect(url.pathname).toBe("/goservices/dsp/pixel/1/tag-abc/px-ti");
+    });
+
+    it("falls back to the loader tagId, then 1, when no tagId is passed (server rejects 0)", () => {
+      fireTagInitPixel();
+      expect(new URL(capturedSrc).pathname).toBe("/goservices/dsp/pixel/1/1/px-ti");
+
+      (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__ = "tagId=loader-tag";
+      fireTagInitPixel();
+      expect(new URL(capturedSrc).pathname).toBe("/goservices/dsp/pixel/1/loader-tag/px-ti");
+    });
+
+    it("resolves host macros from window.__CXR_SCRIPT_PARAMS__ into query params", () => {
+      (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__ =
+        "appn=com.example.app&country=US&ifa=abc-123";
+
+      fireTagInitPixel({ tagId: "tag-abc" });
+
+      const url = new URL(capturedSrc);
+      expect(url.searchParams.get("appn")).toBe("com.example.app");
+      expect(url.searchParams.get("country")).toBe("US");
+      expect(url.searchParams.get("ifa")).toBe("abc-123");
+      expect(url.searchParams.get("appidfa")).toBe("abc-123");
+    });
+
+    it("defaults passback to 0 and mirrors an explicit value", () => {
+      fireTagInitPixel({ tagId: "tag-abc" });
+      expect(new URL(capturedSrc).searchParams.get("passback")).toBe("0");
+
+      fireTagInitPixel({ tagId: "tag-abc", passback: 1 });
+      expect(new URL(capturedSrc).searchParams.get("passback")).toBe("1");
+    });
+
+    it("stamps bid from window.__CXR_BUILD_ID__, defaulting to 0", () => {
+      fireTagInitPixel({ tagId: "tag-abc" });
+      expect(new URL(capturedSrc).searchParams.get("bid")).toBe("0");
+
+      (window as { __CXR_BUILD_ID__?: string }).__CXR_BUILD_ID__ = "Dk3f9Xa2.b1e05db";
+      fireTagInitPixel({ tagId: "tag-abc" });
+      expect(new URL(capturedSrc).searchParams.get("bid")).toBe("Dk3f9Xa2.b1e05db");
+    });
+
+    it("never throws when Image construction fails", () => {
+      // @ts-expect-error -- test stub that throws on construction
+      globalThis.Image = class {
+        constructor() {
+          throw new Error("Image blocked");
+        }
+      };
+      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+      expect(() => fireTagInitPixel({ tagId: "tag-abc" })).not.toThrow();
+      expect(consoleSpy).toHaveBeenCalled();
+
+      consoleSpy.mockRestore();
+    });
+
+    it("no-ops when Image is unavailable (locked-down WebView)", () => {
+      // @ts-expect-error -- simulate a runtime with no Image constructor
+      globalThis.Image = undefined;
+
+      expect(() => fireTagInitPixel({ tagId: "tag-abc" })).not.toThrow();
+      expect(capturedSrc).toBe("");
     });
   });
 });

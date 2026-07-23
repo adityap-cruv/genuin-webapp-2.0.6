@@ -103,6 +103,58 @@ export interface PixelDimensions {
   height?: number;
 }
 
+/**
+ * Build the `<base>/<brand_id>/<tag_id>/<endpoint>` path shared by every pixel
+ * this module fires. Both id segments fall back to `"1"` when unknown — the
+ * server rejects `"0"` — so `brandId` is `"1"` before the tag fetch resolves it,
+ * and `tagId` falls back to the loader-supplied `tagId` host macro, then `"1"`.
+ * `endpoint` is the trailing segment (`px-script-error`, `px-ti`, …).
+ */
+function buildPixelPath(brandId: string | number | undefined, tagId: string | undefined, endpoint: string): string {
+  const base = resolvePixelBaseUrl();
+  const brandSegment = brandId === undefined || brandId === "" ? "1" : String(brandId);
+  const resolvedTagId = tagId && tagId.trim() ? tagId : (readHostMacroBestEffort("tagId") ?? "1");
+  const tagSegment = resolvedTagId && resolvedTagId.trim() ? resolvedTagId : "1";
+  return `${base}/${encodeURIComponent(brandSegment)}/${encodeURIComponent(tagSegment)}/${endpoint}`;
+}
+
+/**
+ * Seed a `URLSearchParams` with the resolved host macros, matching the pass-through
+ * rules used by the ad-URL/analytics resolution: every cleaned macro is forwarded
+ * verbatim (except the `tagId`, which is a path segment), the pixel-specific host
+ * aliases are applied, and the legacy `ifa`/`d` aliases are preserved.
+ */
+function buildHostMacroParams(): URLSearchParams {
+  const resolvedHostMacros = readResolvedHostMacros();
+  const params = new URLSearchParams();
+
+  for (const [macroName, value] of Object.entries(resolvedHostMacros)) {
+    if (macroName === "tagId") continue;
+    params.set(macroName, value);
+  }
+  for (const [param, macroName] of HOST_MACRO_PIXEL_PARAMS) {
+    const value = resolvedHostMacros[macroName];
+    if (value !== undefined) {
+      params.set(param, value);
+    }
+  }
+
+  // Preserve the legacy pixel aliases for ifa, even when the host only supplied
+  // the canonical `ifa` macro. This keeps the pixel payload consistent with the
+  // existing contract while still forwarding only resolved host values.
+  if (resolvedHostMacros.ifa !== undefined) {
+    if (!params.has("appidfa")) params.set("appidfa", resolvedHostMacros.ifa);
+    if (!params.has("appaid")) params.set("appaid", resolvedHostMacros.ifa);
+    if (!params.has("deviceid")) params.set("deviceid", resolvedHostMacros.ifa);
+  }
+
+  if (resolvedHostMacros.appb !== undefined && !params.has("d")) {
+    params.set("d", resolvedHostMacros.appb);
+  }
+
+  return params;
+}
+
 /** Cap on the `reason` query param so one long error message can't blow up the pixel URL. */
 const MAX_REASON_LENGTH = 200;
 
@@ -150,41 +202,8 @@ function buildPixelUrl(
   errorType: PixelErrorType,
   reason: string | undefined
 ): string {
-  const base = resolvePixelBaseUrl();
-  const brandSegment = brandId === undefined || brandId === "" ? "1" : String(brandId);
-  const resolvedTagId = tagId && tagId.trim() ? tagId : (readHostMacroBestEffort("tagId") ?? "0");
-  const tagSegment = resolvedTagId && resolvedTagId.trim() ? resolvedTagId : "0";
-  const path = `${base}/${encodeURIComponent(brandSegment)}/${encodeURIComponent(tagSegment)}/px-script-error`;
-
-  const resolvedHostMacros = readResolvedHostMacros();
-  const params = new URLSearchParams();
-
-  // Pass through only the host macros that were actually resolved by the
-  // shared parser. This keeps the payload aligned with what the host truly
-  // supplied, without inventing zero-valued fallbacks for missing context.
-  for (const [macroName, value] of Object.entries(resolvedHostMacros)) {
-    if (macroName === "tagId") continue;
-    params.set(macroName, value);
-  }
-  for (const [param, macroName] of HOST_MACRO_PIXEL_PARAMS) {
-    const value = resolvedHostMacros[macroName];
-    if (value !== undefined) {
-      params.set(param, value);
-    }
-  }
-
-  // Preserve the legacy pixel aliases for ifa, even when the host only supplied
-  // the canonical `ifa` macro. This keeps the pixel payload consistent with the
-  // existing contract while still forwarding only resolved host values.
-  if (resolvedHostMacros.ifa !== undefined) {
-    if (!params.has("appidfa")) params.set("appidfa", resolvedHostMacros.ifa);
-    if (!params.has("appaid")) params.set("appaid", resolvedHostMacros.ifa);
-    if (!params.has("deviceid")) params.set("deviceid", resolvedHostMacros.ifa);
-  }
-
-  if (resolvedHostMacros.appb !== undefined && !params.has("d")) {
-    params.set("d", resolvedHostMacros.appb);
-  }
+  const path = buildPixelPath(brandId, tagId, "px-script-error");
+  const params = buildHostMacroParams();
   params.set("w", dimensions.width ? String(dimensions.width) : "0");
   params.set("h", dimensions.height ? String(dimensions.height) : "0");
   params.set("ho", "1");
@@ -196,6 +215,56 @@ function buildPixelUrl(
   }
 
   return `${path}?${params.toString()}`;
+}
+
+/** Optional context a call site can attach to the `px-ti` (tag_init) pixel. */
+export interface TagInitPixelContext {
+  /** Widget's configured tag id — always known at the tag_init call site. */
+  tagId?: string;
+  /**
+   * Resolved brand id. Unknown at the tag_init call site (the tag fetch that
+   * resolves it hasn't completed yet), so it falls back to `"1"` in the path,
+   * matching the early-stage `px-script-error` behaviour.
+   */
+  brandId?: string | number;
+  /**
+   * `passback` flag mirrored onto the pixel — `0` at tag_init since the user
+   * hasn't interacted yet, kept in sync with the Rudderstack `TAG_INIT` payload.
+   */
+  passback?: 0 | 1;
+}
+
+/**
+ * Build the full `px-ti` pixel URL — the pixel equivalent of the Rudderstack
+ * `TAG_INIT` event. Path shape: `<base>/<brand_id>/<tag_id>/px-ti`. Carries the
+ * same resolved host macros + `bid` as every other pixel, plus the `passback`
+ * flag so the pixel funnel matches the analytics `TAG_INIT` at the same site.
+ */
+function buildTagInitPixelUrl(context: TagInitPixelContext): string {
+  const path = buildPixelPath(context.brandId, context.tagId, "px-ti");
+  const params = buildHostMacroParams();
+  params.set("bid", readBuildIdBestEffort());
+  params.set("passback", String(context.passback ?? 0));
+  return `${path}?${params.toString()}`;
+}
+
+/**
+ * Fire the `px-ti` tracking pixel — the pixel-side mirror of the Rudderstack
+ * `TAG_INIT` event, fired from the same call site (`index.jsx`). Unlike
+ * {@link PixelReporter.report} this carries no error semantics and triggers no
+ * ad-passback/teardown — it's a pure lifecycle beacon. Best-effort and fully
+ * self-contained: any failure (missing `Image`, locked-down window) is swallowed
+ * so it can never interfere with analytics dispatch.
+ */
+export function fireTagInitPixel(context: TagInitPixelContext = {}): void {
+  try {
+    if (typeof Image !== "function") return;
+    const url = buildTagInitPixelUrl(context);
+    new Image().src = url;
+    console.debug("[PixelReporter] fired pixel (px-ti):", url);
+  } catch (err) {
+    console.error("PixelReporter: failed to fire px-ti pixel:", err);
+  }
 }
 
 /**
@@ -250,7 +319,7 @@ export type PixelFailureListener = (event: PixelFailureEvent) => void;
 
 /** Optional context a call site may have available when it reports a failure. */
 export interface PixelReportContext {
-  /** Widget's configured tag id — expected to always be known. Falls back to `"0"` when absent. */
+  /** Widget's configured tag id — expected to always be known. Falls back to `"1"` when absent. */
   tagId?: string;
   /** Resolved brand id, only known once the tag fetch succeeds. Falls back to `"1"` when absent. */
   brandId?: string | number;
