@@ -191,6 +191,41 @@ describe("analytics/sendEventLog", () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+    delete (window as { __CXR_BUILD_ID__?: string }).__CXR_BUILD_ID__;
+  });
+
+  it("stamps build_id from window.__CXR_BUILD_ID__ on event_details", () => {
+    (window as { __CXR_BUILD_ID__?: string }).__CXR_BUILD_ID__ = "Dk3f9Xa2.b1e05db";
+    const rudder = makeRudder();
+    sendEventLog(
+      { eventName: "tag_init", tagDetails: { tag_id: "t-1" } },
+      {
+        rudderanalytics: rudder,
+        deviceDetails: DEVICE,
+        userId: USER_ID,
+        windowLink: "https://host.example",
+        offsite: {},
+      }
+    );
+    const payload = rudder.track.mock.calls[0]?.[1] as { event_details: Record<string, unknown> };
+    expect(payload.event_details.build_id).toBe("Dk3f9Xa2.b1e05db");
+  });
+
+  it("defaults build_id to 0 on event_details when no build id global is present", () => {
+    delete (window as { __CXR_BUILD_ID__?: string }).__CXR_BUILD_ID__;
+    const rudder = makeRudder();
+    sendEventLog(
+      { eventName: "tag_init", tagDetails: { tag_id: "t-1" } },
+      {
+        rudderanalytics: rudder,
+        deviceDetails: DEVICE,
+        userId: USER_ID,
+        windowLink: "https://host.example",
+        offsite: {},
+      }
+    );
+    const payload = rudder.track.mock.calls[0]?.[1] as { event_details: Record<string, unknown> };
+    expect(payload.event_details.build_id).toBe("0");
   });
 
   it("console.errors and does NOT call track when rudderanalytics is missing", () => {
@@ -241,6 +276,7 @@ describe("analytics/sendEventLog", () => {
     expect(rudder.track).toHaveBeenCalledWith("tag_init", {
       event_name: "tag_init",
       event_details: {
+        build_id: "0",
         page: "https://host.example",
         tag_id: "t-1",
         video_share_string: undefined,

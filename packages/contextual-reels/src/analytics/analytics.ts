@@ -280,6 +280,25 @@ export function buildHostParamsDiagnostic(): Record<string, unknown> {
 }
 
 /**
+ * Read the build id the loader stamped on `window.__CXR_BUILD_ID__` so every
+ * Rudderstack event is attributable to a specific deployed build (the stable
+ * version string never changes between redeploys). Best-effort — defaults to
+ * `"0"` when the global is absent (SSR/tests/locked-down window).
+ */
+function readBuildId(): string {
+  try {
+    const id = (window as unknown as { __CXR_BUILD_ID__?: string }).__CXR_BUILD_ID__;
+    return id && id.trim() ? id : "0";
+    /* v8 ignore start -- defensive catch: a plain window property read can't throw
+       under jsdom, so this branch is unreachable in tests; only a locked-down/exotic
+       host window (throwing getter) hits it. Ignored rather than faked. */
+  } catch {
+    return "0";
+  }
+  /* v8 ignore stop */
+}
+
+/**
  * Dispatch a single analytics event. Pure function — see {@link SendEventLogDeps}.
  *
  * No-op (with a console.error) when `deps.rudderanalytics` is missing.
@@ -305,6 +324,7 @@ export function sendEventLog(args: SendEventLogArgs, deps: SendEventLogDeps): vo
   const updatedEventDetails: Record<string, unknown> = {
     // Host macros go first so caller-supplied eventDetails / offsite still win.
     ...macroBlocks.event,
+    build_id: readBuildId(),
     ...eventDetails,
     page,
     ...(tagDetails.tag_id !== undefined ? { tag_id: tagDetails.tag_id } : {}),

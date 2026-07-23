@@ -1,5 +1,6 @@
+import { execSync } from "child_process";
 import fs from "fs";
-import { createRequire } from 'module';
+import { createRequire } from "module";
 import { resolve } from "path";
 import { fileURLToPath } from "url";
 
@@ -14,14 +15,12 @@ const nodeEnv = process.env.NODE_ENV || "development";
 const isProduction = nodeEnv === "production";
 
 const _require = createRequire(import.meta.url);
-const { version: pkgVersion } = _require('./package.json');
+const { version: pkgVersion } = _require("./package.json");
 
 // Non-production builds (both 'qa' and 'development') fall back to the QA CDN.
 // Development builds point at the same QA CDN because devs run against QA services
 // and the loader's CDN_BASE is only ever a fallback when document.currentScript fails.
-const CDN_BASE_HOST = nodeEnv === 'production'
-  ? 'https://media.begenuin.com'
-  : 'https://media.qa.begenuin.com';
+const CDN_BASE_HOST = nodeEnv === "production" ? "https://media.begenuin.com" : "https://media.qa.begenuin.com";
 const CDN_BASE = `${CDN_BASE_HOST}/cxr/${pkgVersion}/`;
 const STABLE_LOADER_NAME = "gen_ext.min.js";
 const PIXEL_URL = process.env.VITE_CXR_PIXEL_URL || "https://api.begenuin.com/goservices/dsp/pixel";
@@ -42,6 +41,22 @@ const processLoaderPlugin = () => ({
       throw new Error("[contextual-reels] Could not find hashed core bundle in dist/");
     }
 
+    // Short content hash of the emitted core bundle (gen_ext-<hash>.js) — the
+    // artifact's identity; changes iff the shipped bytes change.
+    const hashMatch = coreFile.match(/^gen_ext-([A-Za-z0-9_-]+)\.js$/);
+    const shortCoreHash = (hashMatch ? hashMatch[1] : "unknown").slice(0, 8);
+
+    // Short git SHA for source provenance. Guarded: a build with no git
+    // available still succeeds, tagged `nogit`.
+    let gitSha = "nogit";
+    try {
+      gitSha = execSync("git rev-parse --short HEAD", { cwd: __dirname }).toString().trim() || "nogit";
+    } catch {
+      gitSha = "nogit";
+    }
+
+    const BUILD_ID = `${shortCoreHash}.${gitSha}`;
+
     const loaderPath = resolve(distDir, STABLE_LOADER_NAME);
     if (!fs.existsSync(loaderPath)) {
       throw new Error(`[contextual-reels] Stable loader not emitted at ${loaderPath}`);
@@ -49,13 +64,14 @@ const processLoaderPlugin = () => ({
 
     const cssFile = assetFiles.find((name) => name.startsWith("cxr") && name.endsWith(".css"));
 
-    const header = `/** Genuin Contextual Reels loader (env: ${nodeEnv}) — built ${new Date().toISOString()} */\n`;
+    const header = `/** Genuin Contextual Reels loader (env: ${nodeEnv}, build: ${BUILD_ID}) — built ${new Date().toISOString()} */\n`;
     let loaderCode = fs.readFileSync(loaderPath, "utf8");
     loaderCode = loaderCode
       .replace(/__CR_CORE_FILENAME__/g, coreFile)
       .replace(/__CR_CSS_FILENAME__/g, cssFile ?? "")
       .replace(/__CR_CDN_BASE__/g, CDN_BASE)
-      .replace(/__CR_PIXEL_URL__/g, PIXEL_URL);
+      .replace(/__CR_PIXEL_URL__/g, PIXEL_URL)
+      .replace(/__CR_BUILD_ID__/g, BUILD_ID);
     fs.writeFileSync(loaderPath, header + loaderCode, "utf8");
 
     // Keep in-memory bundle in sync so downstream plugins see the patched code.

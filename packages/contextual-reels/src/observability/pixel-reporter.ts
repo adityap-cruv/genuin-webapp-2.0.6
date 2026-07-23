@@ -55,6 +55,21 @@ function readHostMacroBestEffort(name: string): string | undefined {
 }
 
 /**
+ * Read the build id the loader stamped on `window.__CXR_BUILD_ID__`. The loader
+ * sets it right after the px-lo beacon; the core reads it here so px-script-error
+ * carries the same id as px-lo. Best-effort — a missing/locked-down window yields
+ * `"0"`, matching how every other unresolved pixel param defaults.
+ */
+function readBuildIdBestEffort(): string {
+  try {
+    const id = (window as unknown as { __CXR_BUILD_ID__?: string }).__CXR_BUILD_ID__;
+    return id && id.trim() ? id : "0";
+  } catch {
+    return "0";
+  }
+}
+
+/**
  * Query params on the `px-script-error` pixel that are sourced from host
  * macros — the pixel's own param name always matches the host macro name
  * (`ifa` → `getHostMacro("ifa")`, etc), except the three IFA aliases which
@@ -175,6 +190,7 @@ function buildPixelUrl(
   params.set("ho", "1");
   params.set("error_type", errorType);
   params.set("error_stage", stage);
+  params.set("bid", readBuildIdBestEffort());
   if (reason && reason.trim()) {
     params.set("error_reason", reason.trim().slice(0, MAX_REASON_LENGTH));
   }

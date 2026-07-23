@@ -114,6 +114,7 @@ describe("PixelReporter", () => {
 
     afterEach(() => {
       delete (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__;
+      delete (window as { __CXR_BUILD_ID__?: string }).__CXR_BUILD_ID__;
     });
 
     it("puts brandId/tagId as path segments, falling back to 1/0 when absent", () => {
@@ -243,6 +244,24 @@ describe("PixelReporter", () => {
       PixelReporter.getInstance().report("instance-1", "init", "initialization_error", { error: { weird: "object" } });
 
       expect(new URL(capturedSrc).searchParams.has("error_reason")).toBe(false);
+    });
+
+    it("stamps bid from window.__CXR_BUILD_ID__ on the pixel", () => {
+      (window as { __CXR_BUILD_ID__?: string }).__CXR_BUILD_ID__ = "Dk3f9Xa2.b1e05db";
+
+      PixelReporter.getInstance().report("instance-1", "init", "initialization_error");
+
+      const url = new URL(capturedSrc);
+      expect(url.searchParams.get("bid")).toBe("Dk3f9Xa2.b1e05db");
+    });
+
+    it("defaults bid to 0 when no build id global is present", () => {
+      delete (window as { __CXR_BUILD_ID__?: string }).__CXR_BUILD_ID__;
+
+      PixelReporter.getInstance().report("instance-1", "init", "initialization_error");
+
+      const url = new URL(capturedSrc);
+      expect(url.searchParams.get("bid")).toBe("0");
     });
   });
 

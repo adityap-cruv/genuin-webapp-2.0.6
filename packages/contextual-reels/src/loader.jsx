@@ -9,6 +9,7 @@
   "use strict";
 
   var PIXEL_URL = "__CR_PIXEL_URL__";
+  var BUILD_ID = "__CR_BUILD_ID__";
 
   // High-level "loader reached" beacon — the FIRST statement executed in the
   // IIFE. Fires before any script-src/macro/CSS/boot logic so it is a pure,
@@ -28,7 +29,8 @@
   // allowlisting the domain on the host side.
   try {
     if (PIXEL_URL && PIXEL_URL.indexOf("__CR_") === -1 && typeof Image === "function") {
-      var pxLoUrl = PIXEL_URL + "/1/1/px-lo";
+      var buildId = BUILD_ID && BUILD_ID.indexOf("__CR_") === -1 ? BUILD_ID : "0";
+      var pxLoUrl = PIXEL_URL + "/1/1/px-lo?bid=" + encodeURIComponent(buildId);
       new Image().src = pxLoUrl;
       try {
         console.log("[contextual-reels][PixelReporter] fired pixel (px-lo):", pxLoUrl);
@@ -38,6 +40,16 @@
     }
   } catch {
     // Absolutely never let the loader beacon break bootstrap.
+  }
+
+  // Expose the build id for the core bundle (pixel-reporter + analytics). Set
+  // AFTER px-lo — px-lo uses the baked-in BUILD_ID constant directly because it
+  // must be the first statement and this global isn't set yet. Best-effort: a
+  // failure here must never break bootstrap.
+  try {
+    window.__CXR_BUILD_ID__ = BUILD_ID && BUILD_ID.indexOf("__CR_") === -1 ? BUILD_ID : "0";
+  } catch {
+    // Never let build-id exposure break bootstrap.
   }
 
   var CXR_VERSION = "1.0.0";
@@ -158,6 +170,7 @@
     params.set("ho", "1");
     params.set("error_type", "network_error");
     params.set("error_stage", "sdk_load");
+    params.set("bid", BUILD_ID && BUILD_ID.indexOf("__CR_") === -1 ? BUILD_ID : "0");
 
     var reason = err && err.message ? String(err.message) : typeof err === "string" ? err : "";
     if (reason.trim()) {
