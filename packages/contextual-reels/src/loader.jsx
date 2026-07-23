@@ -28,7 +28,7 @@
   // allowlisting the domain on the host side.
   try {
     if (PIXEL_URL && PIXEL_URL.indexOf("__CR_") === -1 && typeof Image === "function") {
-      var pxLoUrl = PIXEL_URL + "/0/0/px-lo";
+      var pxLoUrl = PIXEL_URL + "/1/1/px-lo";
       new Image().src = pxLoUrl;
       try {
         console.log("[contextual-reels][PixelReporter] fired pixel (px-lo):", pxLoUrl);
@@ -145,7 +145,7 @@
   // falls back to the `tagId` host macro when the host provided one, else "0".
   function buildSdkLoadPixelUrl(err) {
     var tagId = readHostMacroBestEffort("tagId") || "0";
-    var path = PIXEL_URL + "/0/" + encodeURIComponent(tagId) + "/px-script-error";
+    var path = PIXEL_URL + "/1/" + encodeURIComponent(tagId) + "/px-script-error";
 
     var params = new URLSearchParams();
     for (var i = 0; i < PIXEL_HOST_MACRO_PARAMS.length; i++) {
