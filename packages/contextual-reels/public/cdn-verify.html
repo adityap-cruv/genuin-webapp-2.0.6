@@ -74,7 +74,7 @@
       // No trailing slash on host; we build `${host}/cxr/${version}/gen_ext.min.js`.
       (function () {
         var params = new URLSearchParams(location.search);
-        var host = (params.get("host") || "https://ginfo.b-cdn.net").replace(/\/+$/, "");
+        var host = (params.get("host") || "https://gimedia.begenuin.com").replace(/\/+$/, "");
         var version = params.get("version") || "1.0.0";
         var tag = params.get("tag") || "6a5dfd418405d60d49d17e09";
 

@@ -103,7 +103,7 @@ command and answer the prompts. Each:
    versioned path `cxr/<version>/`. Target and path checkboxes are pre-selected (both
    targets, current version), so pressing enter through them accepts the defaults:
    - **Oracle Object Storage**, then purges Bunny CDN (`cxr/<version>/*`)
-   - **Bunny Storage** (zone `infolink`), then purges its pull-zone `ginfo.b-cdn.net/cxr/<version>/*`
+   - **Bunny Storage** (zone `infolink`), then purges its pull-zone `gimedia.begenuin.com/cxr/<version>/*`
 
 ```sh
 npm run deploy:qa    # requires .env.qa + .env.common
@@ -141,7 +141,7 @@ npm run verify:cdn   # serves public/ on http://localhost:8799
 ```
 
 Open `http://localhost:8799/cdn-verify.html` and watch the Network panel. Defaults to the
-Bunny pull-zone (`https://ginfo.b-cdn.net`) and version `1.0.0`; override via query params:
+Bunny pull-zone (`https://gimedia.begenuin.com`) and version `1.0.0`; override via query params:
 
 ```
 ?host=https://media.begenuin.com      # Oracle / prod media host
