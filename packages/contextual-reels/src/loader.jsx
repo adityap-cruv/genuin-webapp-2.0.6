@@ -11,47 +11,6 @@
   var PIXEL_URL = "__CR_PIXEL_URL__";
   var BUILD_ID = "__CR_BUILD_ID__";
 
-  // High-level "loader reached" beacon — the FIRST statement executed in the
-  // IIFE. Fires before any script-src/macro/CSS/boot logic so it is a pure,
-  // unconditional "loader ran" signal that can never fire in a partially-booted
-  // or doubtful state. tagId + host macros are unresolved here, so the path uses
-  // the "1" id placeholder (the server rejects "0") and no query params are sent.
-  //
-  // Fired via `new Image()` GET, NOT `navigator.sendBeacon`: the pixel endpoint
-  // is GET-only (POST → 405), and sendBeacon always POSTs — worse, it reports
-  // success on merely queuing the POST, which would mask the 405 and suppress a
-  // fallback. A GET image request matches the endpoint and mirrors the existing
-  // px-script-error pixel. Fail-safe by construction: the whole block is wrapped
-  // so a beacon failure can NEVER interrupt script execution, `Image` is feature-
-  // detected so a WebView without it just no-ops, and a build-placeholder guard
-  // stops a misbuild from firing a bogus request. Note: no client technique can
-  // defeat a host-app CSP that blocks the pixel domain — that must be fixed by
-  // allowlisting the domain on the host side.
-  try {
-    if (PIXEL_URL && PIXEL_URL.indexOf("__CR_") === -1 && typeof Image === "function") {
-      var buildId = BUILD_ID && BUILD_ID.indexOf("__CR_") === -1 ? BUILD_ID : "0";
-      var pxLoUrl = PIXEL_URL + "/1/1/px-lo?bid=" + encodeURIComponent(buildId);
-      new Image().src = pxLoUrl;
-      try {
-        console.log("[contextual-reels][PixelReporter] fired pixel (px-lo):", pxLoUrl);
-      } catch {
-        // console can be absent/throwing in locked-down WebViews — ignore.
-      }
-    }
-  } catch {
-    // Absolutely never let the loader beacon break bootstrap.
-  }
-
-  // Expose the build id for the core bundle (pixel-reporter + analytics). Set
-  // AFTER px-lo — px-lo uses the baked-in BUILD_ID constant directly because it
-  // must be the first statement and this global isn't set yet. Best-effort: a
-  // failure here must never break bootstrap.
-  try {
-    window.__CXR_BUILD_ID__ = BUILD_ID && BUILD_ID.indexOf("__CR_") === -1 ? BUILD_ID : "0";
-  } catch {
-    // Never let build-id exposure break bootstrap.
-  }
-
   var CXR_VERSION = "1.0.0";
   var CORE_FILENAME = "__CR_CORE_FILENAME__";
   var CSS_FILENAME = "__CR_CSS_FILENAME__";
@@ -81,16 +40,63 @@
 
   // Expose the script tag's query string so the core can read config the partner
   // passed via the loader URL (e.g. gen_variant=stacked). Merge rather than
-  // overwrite so multiple loader includes don't clobber each other.
+  // overwrite so multiple loader includes don't clobber each other. Captured
+  // BEFORE the px-lo beacon so px-lo can forward the same raw params.
+  var scriptQuery = "";
   try {
     if (scriptSrc) {
-      var scriptQuery = scriptSrc.indexOf("?") !== -1 ? scriptSrc.slice(scriptSrc.indexOf("?") + 1) : "";
+      scriptQuery = scriptSrc.indexOf("?") !== -1 ? scriptSrc.slice(scriptSrc.indexOf("?") + 1) : "";
       if (scriptQuery) {
         window.__CXR_SCRIPT_PARAMS__ = (window.__CXR_SCRIPT_PARAMS__ || "") + "&" + scriptQuery;
       }
     }
   } catch {
     // non-fatal — config falls back to other detection paths
+  }
+
+  // High-level "loader reached" beacon. Fires before CSS/boot logic so it stays
+  // a near-unconditional "loader ran" signal. It runs just after the script-src
+  // query string is captured, and forwards that raw query verbatim alongside
+  // `bid` so analysis can see WHAT params the partner passed, not just THAT the
+  // loader was reached — no cleaning/whitelisting here, the raw source params
+  // are the signal. The capture above is wrapped in its own try/catch so it can
+  // never keep this beacon from firing. tagId is unresolved here, so the path
+  // still uses the "1" id placeholder (the server rejects "0").
+  //
+  // Fired via `new Image()` GET, NOT `navigator.sendBeacon`: the pixel endpoint
+  // is GET-only (POST → 405), and sendBeacon always POSTs — worse, it reports
+  // success on merely queuing the POST, which would mask the 405 and suppress a
+  // fallback. A GET image request matches the endpoint and mirrors the existing
+  // px-script-error pixel. Fail-safe by construction: the whole block is wrapped
+  // so a beacon failure can NEVER interrupt script execution, `Image` is feature-
+  // detected so a WebView without it just no-ops, and a build-placeholder guard
+  // stops a misbuild from firing a bogus request. Note: no client technique can
+  // defeat a host-app CSP that blocks the pixel domain — that must be fixed by
+  // allowlisting the domain on the host side.
+  try {
+    if (PIXEL_URL && PIXEL_URL.indexOf("__CR_") === -1 && typeof Image === "function") {
+      var buildId = BUILD_ID && BUILD_ID.indexOf("__CR_") === -1 ? BUILD_ID : "0";
+      var pxLoUrl = PIXEL_URL + "/1/1/px-lo?bid=" + encodeURIComponent(buildId);
+      if (scriptQuery) pxLoUrl += "&" + scriptQuery;
+      new Image().src = pxLoUrl;
+      try {
+        console.log("[contextual-reels][PixelReporter] fired pixel (px-lo):", pxLoUrl);
+      } catch {
+        // console can be absent/throwing in locked-down WebViews — ignore.
+      }
+    }
+  } catch {
+    // Absolutely never let the loader beacon break bootstrap.
+  }
+
+  // Expose the build id for the core bundle (pixel-reporter + analytics). Set
+  // AFTER px-lo — px-lo uses the baked-in BUILD_ID constant directly because
+  // this global isn't set yet. Best-effort: a failure here must never break
+  // bootstrap.
+  try {
+    window.__CXR_BUILD_ID__ = BUILD_ID && BUILD_ID.indexOf("__CR_") === -1 ? BUILD_ID : "0";
+  } catch {
+    // Never let build-id exposure break bootstrap.
   }
 
   var baseUrl = scriptSrc ? scriptSrc.replace(/\?.*$/, "").replace(/\/[^/]*$/, "/") : CDN_BASE;
