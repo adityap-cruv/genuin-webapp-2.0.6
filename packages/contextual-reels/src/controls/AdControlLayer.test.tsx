@@ -19,7 +19,6 @@ vi.mock("../providers/PlayerProvider", () => ({
   }),
 }));
 
-
 let testBus: CxrEventBus;
 
 vi.mock("../instance/InstanceContext", () => ({
@@ -53,13 +52,13 @@ describe("AdControlLayer — overlay stacking", () => {
       isPlay: true,
       isMuted: true,
       isFullScreen: false,
+      isFullScreenSupported: true,
       adLayout: AD_LAYOUT.L3,
       isAdReady: true,
       onPlayClick: vi.fn(),
       onMuteClick: vi.fn(),
       onFullScreenClick: vi.fn(),
       containerId: "gen-ad-slot-test-1",
-      redirectMode: false,
       ...overrides,
     };
     act(() => {
@@ -72,6 +71,21 @@ describe("AdControlLayer — overlay stacking", () => {
     render({ isAdReady: false });
     expect(container.querySelector('[data-testid="click-overlay"]')).toBeNull();
     expect(container.querySelector('[data-testid="mute-btn"]')).toBeNull();
+  });
+
+  it("hides the expand button in the compact (320x50) route when isFullScreenSupported is false", () => {
+    render({ adLayout: AD_LAYOUT.L3, isFullScreenSupported: false });
+    expect(container.querySelector('[data-testid="topbar-expand"]')).toBeNull();
+  });
+
+  it("hides the expand button in the compact (320x100) route when isFullScreenSupported is false", () => {
+    render({ adLayout: AD_LAYOUT.L4, isFullScreenSupported: false });
+    expect(container.querySelector('[data-testid="topbar-expand"]')).toBeNull();
+  });
+
+  it("hides the expand button in the default (non-compact) route when isFullScreenSupported is false", () => {
+    render({ adLayout: AD_LAYOUT.L1, isFullScreenSupported: false });
+    expect(container.querySelector('[data-testid="topbar-expand"]')).toBeNull();
   });
 
   describe("compact 320x50", () => {

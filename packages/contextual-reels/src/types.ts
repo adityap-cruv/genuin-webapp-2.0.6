@@ -57,6 +57,13 @@ export interface TagResponse {
     design_system?: "v1" | "v2";
     /** Redirect target for a tap on the widget. `"fullscreen"` enables ad expansion. */
     on_click?: "fullscreen" | string;
+    /**
+     * @deprecated No longer read — FullScreenProvider no longer hides or
+     * redirects on fullscreen failure; it always falls back to manual
+     * (in-page) fullscreen instead. Retained on the type for backward
+     * compatibility with existing tag configs.
+     */
+    fullscreen_fallback_url?: string;
     /** When true, the owner block renders non-clickable (no profile navigation). */
     disable_profile_redirect?: boolean;
     /** When true, playback auto-advances to the next reel; false loops the current video. */
@@ -494,6 +501,6 @@ export interface NormalisedAd {
  * - `"ad"`            — standalone ad slot
  */
 export type FeedEntry =
-  | { kind: "video";         data: NormalisedReel }
+  | { kind: "video"; data: NormalisedReel }
   | { kind: "video-with-ad"; data: NormalisedReel }
-  | { kind: "ad";            data: NormalisedAd   };
+  | { kind: "ad"; data: NormalisedAd };

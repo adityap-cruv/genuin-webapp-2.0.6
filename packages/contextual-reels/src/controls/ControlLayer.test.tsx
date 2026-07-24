@@ -31,7 +31,6 @@ vi.mock("../providers/FullScreenProvider", () => ({
     enterFullScreen: vi.fn(),
     exitFullScreen: vi.fn(),
     toggleFullScreen: vi.fn(),
-    isRedirectMode: false,
   }),
 }));
 vi.mock("./TopBar", () => ({

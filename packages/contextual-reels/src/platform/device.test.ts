@@ -8,6 +8,7 @@ import {
   detectDevice,
   enrichDeviceDetailsWithGeoIp,
   getDeviceDetailsSnapshot,
+  isWebView,
   resolveClientIp,
 } from "@cxr/platform/device";
 import type { RawGeoIpResponse } from "@cxr/services/api";
@@ -40,6 +41,39 @@ const MAC_CHROME =
 const LINUX_FIREFOX = "Mozilla/5.0 (X11; Linux x86_64; rv:120.0) Gecko/20100101 Firefox/120.0";
 
 const GOOGLEBOT = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
+
+// ─── isWebView UA fixtures ─────────────────────────────────────────────────────
+
+const IOS_WKWEBVIEW =
+  "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 " + "(KHTML, like Gecko) Mobile/15E148";
+
+const ANDROID_WEBVIEW_WV =
+  "Mozilla/5.0 (Linux; Android 13; Pixel 7; wv) AppleWebKit/537.36 (KHTML, like Gecko) " +
+  "Version/4.0 Chrome/120.0.0.0 Mobile Safari/537.36";
+
+const ANDROID_WEBVIEW_LEGACY =
+  "Mozilla/5.0 (Linux; U; Android 9; Pixel 3 Build/PQ3A.190801.002) AppleWebKit/537.36 " +
+  "(KHTML, like Gecko) Version/4.0 Chrome/71.0.3578.99 Mobile Safari/537.36";
+
+const FACEBOOK_IAB =
+  "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 " +
+  "(KHTML, like Gecko) Mobile/15E148 [FBAN/FBIOS;FBAV/450.0.0.0;]";
+
+const INSTAGRAM_IAB =
+  "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 " +
+  "(KHTML, like Gecko) Mobile/15E148 Instagram 300.0.0.0.0";
+
+const WECHAT_IAB =
+  "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) " +
+  "Version/4.0 Chrome/120.0.0.0 Mobile Safari/537.36 MicroMessenger/8.0.40";
+
+const TIKTOK_IAB =
+  "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 " +
+  "(KHTML, like Gecko) Mobile/15E148 musical_ly_2023800030";
+
+const LINKEDIN_IAB =
+  "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 " +
+  "(KHTML, like Gecko) Mobile/15E148 LinkedInApp";
 
 describe("detectDevice", () => {
   it("recognises iPhone Safari", () => {
@@ -341,5 +375,64 @@ describe("resolveClientIp", () => {
     expect(resolveClientIp({ city: "Pune" })).toBeUndefined();
     expect(resolveClientIp(null)).toBeUndefined();
     expect(resolveClientIp(undefined)).toBeUndefined();
+  });
+});
+
+// ─── isWebView ──────────────────────────────────────────────────────────────────
+
+describe("isWebView", () => {
+  it("detects iOS WKWebView (no Safari token)", () => {
+    expect(isWebView(IOS_WKWEBVIEW)).toBe(true);
+  });
+
+  it("does not flag real Mobile Safari on iOS", () => {
+    expect(isWebView(IPHONE_SAFARI)).toBe(false);
+  });
+
+  it("detects Android WebView via the 'wv' token", () => {
+    expect(isWebView(ANDROID_WEBVIEW_WV)).toBe(true);
+  });
+
+  it("detects legacy Android WebView UA shape", () => {
+    expect(isWebView(ANDROID_WEBVIEW_LEGACY)).toBe(true);
+  });
+
+  it("does not flag real Android Chrome mobile", () => {
+    expect(isWebView(ANDROID_PHONE)).toBe(false);
+  });
+
+  it("detects the Facebook in-app browser", () => {
+    expect(isWebView(FACEBOOK_IAB)).toBe(true);
+  });
+
+  it("detects the Instagram in-app browser", () => {
+    expect(isWebView(INSTAGRAM_IAB)).toBe(true);
+  });
+
+  it("detects the WeChat in-app browser", () => {
+    expect(isWebView(WECHAT_IAB)).toBe(true);
+  });
+
+  it("detects the TikTok in-app browser", () => {
+    expect(isWebView(TIKTOK_IAB)).toBe(true);
+  });
+
+  it("detects the LinkedIn in-app browser", () => {
+    expect(isWebView(LINKEDIN_IAB)).toBe(true);
+  });
+
+  it("does not flag desktop Chrome, Firefox, or Mac Chrome", () => {
+    expect(isWebView(WIN_CHROME)).toBe(false);
+    expect(isWebView(LINUX_FIREFOX)).toBe(false);
+    expect(isWebView(MAC_CHROME)).toBe(false);
+  });
+
+  it("does not flag iPadOS 13+ (Mac UA + touch), matching detectDevice's own carve-out", () => {
+    expect(isWebView(IPAD_OS13_MAC_UA)).toBe(false);
+  });
+
+  it("returns false for an empty/undefined UA", () => {
+    expect(isWebView("")).toBe(false);
+    expect(isWebView(undefined)).toBe(false);
   });
 });

@@ -35,18 +35,6 @@ vi.mock("@cxr/providers/TagDetailsProvider", () => ({
   useTagDetails: () => ({ tagDetails: tagDetailsState.tagDetails, apiFailed: false }),
 }));
 
-// redirectMode gate — mutable so tests can drive the fullscreen-redirect-brand flag.
-const fullScreenState = vi.hoisted(() => ({ isRedirectMode: false }));
-vi.mock("@cxr/providers/FullScreenProvider", () => ({
-  useFullScreen: () => ({
-    isFullScreen: false,
-    enterFullScreen: vi.fn(),
-    exitFullScreen: vi.fn(),
-    toggleFullScreen: vi.fn(),
-    isRedirectMode: fullScreenState.isRedirectMode,
-  }),
-}));
-
 // useNewPlayerControls toggles the V2 icon set; mutable for the V2/iheart branch.
 let useV2Flag = true;
 vi.mock("@cxr/controls/useNewPlayerControls", () => ({

@@ -72,7 +72,6 @@ vi.mock("../../providers/AnalyticsProvider", () => ({
   useAnalytics: () => ({ sendEvent: mockSendEvent, setBrandId: vi.fn(), setBaseEventContext: vi.fn() }),
 }));
 
-
 const baseAd: NormalisedAd = {
   kind: "ad",
   id: 7,
@@ -124,7 +123,11 @@ describe("AdLayout handlers", () => {
       setMuted,
       setPlaying,
     });
-    mockUseFullScreen.mockReturnValue({ isFullScreen: false, toggleFullScreen, isRedirectMode: false });
+    mockUseFullScreen.mockReturnValue({
+      isFullScreen: false,
+      isFullScreenSupported: true,
+      toggleFullScreen,
+    });
     mockUseAdWaterfall.mockReturnValue({ onAdSuccess, onAdFail, adLayout: AD_LAYOUT.Unknown });
     container = document.createElement("div");
     document.body.appendChild(container);
@@ -138,15 +141,13 @@ describe("AdLayout handlers", () => {
 
   function render(onAutoAdvance?: () => void): void {
     act(() => {
-      root.render(
-        React.createElement(AdLayout, { ad: baseAd, isActive: true, onAutoAdvance })
-      );
+      root.render(React.createElement(AdLayout, { ad: baseAd, isActive: true, onAutoAdvance }));
     });
   }
 
-  // ── Non-redirect (default) embeds keep the original tap behavior ──────────
+  // ── Tap behavior ───────────────────────────────────────────────────────────
 
-  it("handleAdClick (non-redirect, non-fullscreen): emits ad:unmuteRequest, unmutes, and resumes play when paused", () => {
+  it("handleAdClick (non-fullscreen): emits ad:unmuteRequest, unmutes, and resumes play when paused", () => {
     render();
     // Ad entries autoplay on activation (a mount effect, not the click handler
     // under test) — clear that call so the assertion below isolates the click.
@@ -161,7 +162,7 @@ describe("AdLayout handlers", () => {
     expect(setPlaying).toHaveBeenCalledWith(true);
   });
 
-  it("handleAdClick (non-redirect, non-fullscreen): does not touch play state when already playing", () => {
+  it("handleAdClick (non-fullscreen): does not touch play state when already playing", () => {
     mockUsePlayer.mockReturnValue({
       isMuted: true,
       isPlaying: true,
@@ -176,8 +177,11 @@ describe("AdLayout handlers", () => {
     expect(setPlaying).not.toHaveBeenCalled();
   });
 
-  it("handleAdClick (non-redirect, fullscreen): toggles play and fires the SDK onClick", () => {
-    mockUseFullScreen.mockReturnValue({ isFullScreen: true, toggleFullScreen, isRedirectMode: false });
+  it("handleAdClick (fullscreen): toggles play and fires the SDK onClick", () => {
+    mockUseFullScreen.mockReturnValue({
+      isFullScreen: true,
+      toggleFullScreen,
+    });
     mockUsePlayer.mockReturnValue({ isMuted: false, isPlaying: true, setMuted, setPlaying });
     render();
     const ctaOnClick = vi.fn();
@@ -192,49 +196,6 @@ describe("AdLayout handlers", () => {
     expect(setPlaying).toHaveBeenCalledWith(false);
     expect(ctaOnClick).toHaveBeenCalledTimes(1);
     expect(setMuted).not.toHaveBeenCalled();
-  });
-
-  // ── Redirect mode uses the two-stage unmute-then-CTA tap ──────────────────
-
-  it("handleAdClick (redirect, muted): only unmutes — no CTA signal or navigation", () => {
-    mockUseFullScreen.mockReturnValue({ isFullScreen: false, toggleFullScreen, isRedirectMode: true });
-    const openSpy = vi.spyOn(window, "open").mockReturnValue(null);
-    render();
-    const ctaOnClick = vi.fn();
-    act(() => {
-      (lastGenAdSlot()["onAdCTA"] as (cta: { ctaUrl: string; onClick: () => void }) => void)({
-        ctaUrl: "https://cta.example/x",
-        onClick: ctaOnClick,
-      });
-    });
-    const slot = container.querySelector('[data-testid="ad-layout"]') as HTMLElement;
-    act(() => slot.click());
-    expect(setMuted).toHaveBeenCalledWith(false);
-    expect(ctaOnClick).not.toHaveBeenCalled();
-    expect(openSpy).not.toHaveBeenCalled();
-    openSpy.mockRestore();
-  });
-
-  it("handleAdClick (redirect, already unmuted): opens the CTA url and fires the SDK onClick", () => {
-    mockUseFullScreen.mockReturnValue({ isFullScreen: false, toggleFullScreen, isRedirectMode: true });
-    mockUsePlayer.mockReturnValue({ isMuted: false, isPlaying: true, setMuted, setPlaying });
-    const openSpy = vi.spyOn(window, "open").mockReturnValue(null);
-    render();
-    const ctaOnClick = vi.fn();
-    // GenAdSlot reports a CTA — drives the ctaDetails state used by handleAdClick.
-    act(() => {
-      (lastGenAdSlot()["onAdCTA"] as (cta: { ctaUrl: string; onClick: () => void }) => void)({
-        ctaUrl: "https://cta.example/x",
-        onClick: ctaOnClick,
-      });
-    });
-    const slot = container.querySelector('[data-testid="ad-layout"]') as HTMLElement;
-    act(() => slot.click());
-    expect(openSpy).toHaveBeenCalledWith("https://cta.example/x", "_blank", "noopener,noreferrer");
-    expect(ctaOnClick).toHaveBeenCalledTimes(1);
-    expect(setMuted).not.toHaveBeenCalled();
-    expect(mockBusEmit).not.toHaveBeenCalled();
-    openSpy.mockRestore();
   });
 
   it("handleWaterfallFail advances the carousel and notifies onAdFail", () => {
@@ -309,9 +270,7 @@ describe("AdLayout handlers", () => {
   it("passes destroySignal=0 when active and toggles inactivity advance for audio ads", () => {
     render();
     expect(lastGenAdSlot()["destroySignal"]).toBe(0);
-    expect(mockUseInactivityAdvance).toHaveBeenCalledWith(
-      expect.objectContaining({ isActive: true })
-    );
+    expect(mockUseInactivityAdvance).toHaveBeenCalledWith(expect.objectContaining({ isActive: true }));
   });
 
   it("passes destroySignal=1 when inactive", () => {
@@ -331,9 +290,7 @@ describe("AdLayout handlers", () => {
     act(() => {
       root.render(React.createElement(AdLayout, { ad: adWithoutAudioAds, isActive: true }));
     });
-    expect(mockUseInactivityAdvance).toHaveBeenLastCalledWith(
-      expect.objectContaining({ isActive: false })
-    );
+    expect(mockUseInactivityAdvance).toHaveBeenLastCalledWith(expect.objectContaining({ isActive: false }));
   });
 
   it("defaults isMuted to false in AdControlLayer when usePlayer reports undefined", () => {

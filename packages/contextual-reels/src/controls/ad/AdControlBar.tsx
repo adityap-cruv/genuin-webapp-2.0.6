@@ -24,12 +24,12 @@ export function AdControlBar({
   isPlay,
   isMuted,
   isFullScreen = false,
+  isFullScreenSupported,
   layout,
   onPlayClick,
   onMuteClick,
   onFullScreenClick,
   ctaDetails,
-  redirectMode,
 }: AdControlBarProps): React.JSX.Element {
   // Mute starts as an enticement: the icon shows "sound on" even while the ad is
   // actually muted, until the user taps it. `muteToggled` flips on that first tap
@@ -76,11 +76,11 @@ export function AdControlBar({
         isPlay={isPlay}
         isMuted={perceivedMuted}
         isFullScreen={isFullScreen}
+        isFullScreenSupported={isFullScreenSupported}
         onPlayClick={onPlayClick}
         onMuteClick={handleMute}
         onFullScreenClick={handleExpand}
         onWatchClick={onFullScreenClick}
-        redirectMode={redirectMode}
         className="gencl:p-1!"
       />
     );
@@ -103,7 +103,9 @@ export function AdControlBar({
             shouldAnimate={false}
           />
           <PlayPauseButtonV2 isPlay={isPlay ?? false} onClick={onPlayClick} size={v2Size} shouldAnimate={false} />
-          {!redirectMode && <ExpandCollapseButtonV2 isFullScreen={isFullScreen} onClick={handleExpand} size={v2Size} />}
+          {isFullScreenSupported && (
+            <ExpandCollapseButtonV2 isFullScreen={isFullScreen} onClick={handleExpand} size={v2Size} />
+          )}
         </ControlButtonGroup>
       </div>
     );
@@ -113,7 +115,7 @@ export function AdControlBar({
       className={`gencl:absolute gencl:top-3 gencl:right-3 gencl:flex gencl:flex-row gencl:items-center gencl:gap-2 gencl:z-[10] gencl:pointer-events-auto`}>
       <PlayPauseButton isPlay={isPlay} onClick={onPlayClick} size="xl" />
       <MuteUnmuteButton isMuted={perceivedMuted} onClick={handleMute} size="xl" />
-      {!redirectMode && <ExpandCollapseButton isFullScreen={isFullScreen} onClick={handleExpand} size="xl" />}
+      {isFullScreenSupported && <ExpandCollapseButton isFullScreen={isFullScreen} onClick={handleExpand} size="xl" />}
     </div>
   );
 }

@@ -73,25 +73,17 @@ export interface CompactControlBarProps extends React.HTMLAttributes<HTMLDivElem
    */
   showWatchInSm?: boolean;
   /**
-   * Fullscreen-redirect mode (ads only). When true the expand button is hidden
-   * (there is no fullscreen to expand into) and the CTA click-through takes over
-   * the Watch slot:
-   *  - md (320×100): the Watch button is dropped; the LinkoutButton carries it.
-   *  - sm (320×50): there is no linkout row, so the Watch button is repointed at
-   *    the CTA url and relabelled "Learn More" (see {@link cta.url}).
-   *
-   * Optional here because this bar is shared with video chrome, which never
-   * redirects and omits it (defaults to false). The single source of truth is
-   * {@link FullScreenContextValue.isRedirectMode}, read in `AdLayout`; the ad
-   * path threads it in explicitly via `AdControlBar`.
-   */
-  redirectMode?: boolean;
-  /**
    * Whether tap-to-expand / the expand button is enabled for this tag. Sourced
    * from `config.on_click === "fullscreen"`. Absent config ⇒ enabled (default).
-   * Independent of {@link redirectMode}, which is the brand fullscreen-redirect case.
    */
   expandEnabled?: boolean;
+  /**
+   * Whether fullscreen is supported in this runtime (from `useFullScreen()`).
+   * When false, Expand and Watch both hide (Watch is a fullscreen entry point
+   * too) — the Linkout button, if present, naturally fills the freed space
+   * since it's the row's only remaining flex child.
+   */
+  isFullScreenSupported?: boolean;
 }
 
 /**
@@ -115,8 +107,8 @@ export function CompactControlBar({
   onWatchClick,
   useV2Icons = false,
   showWatchInSm = false,
-  redirectMode = false,
   expandEnabled = true,
+  isFullScreenSupported = true,
   className,
   ...rest
 }: CompactControlBarProps): React.JSX.Element {
@@ -142,19 +134,13 @@ export function CompactControlBar({
   // Linkout needs the md row height; in sm the CTA only affects Watch sizing.
   const showLinkout = hasCta && size === "md";
   const handleWatch = onWatchClick ?? onFullScreenClick ?? noop;
-  // Redirect mode hides the expand button (there is no fullscreen to expand into);
-  // so does an ad tag that opted out of expansion (config.on_click !== "fullscreen").
-  const hideExpand = redirectMode || !expandEnabled;
-  // sm redirect: turn the Watch button into a link-out to the ad CTA. Only when
-  // a CTA url exists to open; otherwise the plain Watch (expand) button stays.
-  const watchHref = redirectMode && size === "sm" && cta?.url ? cta.url : undefined;
-  // Redirect mode + md: the LinkoutButton already carries the CTA click-through,
-  // so the Watch button is dropped. sm has no linkout, so instead of hiding its
-  // Watch button we keep it and repoint it at the CTA url (see `watchHref`) — a
-  // real link-out, not an expand entry point, so it survives expandEnabled=false.
-  // Outside redirect mode, Watch IS an expand entry point (handleWatch falls back
-  // to onFullScreenClick), so it hides whenever expand itself is disabled.
-  const hideWatch = (redirectMode && size === "md") || (!expandEnabled && watchHref === undefined);
+  // An ad tag that opted out of expansion (config.on_click !== "fullscreen") hides
+  // the expand button; Watch is also an expand entry point (handleWatch falls
+  // back to onFullScreenClick), so it hides alongside it. Same for a runtime
+  // where fullscreen isn't supported at all (webview / no Fullscreen API) —
+  // there's no working expand entry point to offer either way.
+  const hideExpand = !expandEnabled || !isFullScreenSupported;
+  const hideWatch = !expandEnabled || !isFullScreenSupported;
 
   // 320×50 (sm) → xs, 320×100 (md) → sm — matches resolveCxrControlSize's collapsed row.
   const v2Size: PlayerControlSize = size === "sm" ? "xs" : "sm";
@@ -288,11 +274,27 @@ export function CompactControlBar({
                   and type so it fits within 320×50 beside the ticker. */}
               <WatchButton
                 isPlay={false}
-                onClick={watchHref ? cta?.onClick : handleWatch}
-                href={watchHref}
+                onClick={handleWatch}
                 variant="rect"
                 pulse
                 style={{ fontSize: "11px", paddingTop: "3px", paddingBottom: "3px" }}
+              />
+            </div>
+          )}
+          {/* sm's Watch slot is a fullscreen entry point — when fullscreen isn't
+              supported it hides (hideWatch), so an ad with CTA data shows its
+              Linkout there instead of leaving the row empty. 'xs' keeps this
+              compact: caption only, no logo/chevron, capped at ~70px width. */}
+          {showSmWatch && hideWatch && hasCta && (
+            <div
+              data-testid="compact-bar-actions"
+              className="gencl:flex gencl:justify-end gencl:z-15 gencl:pointer-events-auto gencl:shrink-0 gencl:ml-auto gencl:h-6">
+              <LinkoutButton
+                href={cta!.url}
+                caption={cta!.caption}
+                logoUrl={cta!.logoUrl}
+                onClick={cta!.onClick}
+                size="xs"
               />
             </div>
           )}

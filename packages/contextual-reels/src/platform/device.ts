@@ -27,6 +27,12 @@ const ANDROID_MOBILE_RE = /Android.*Mobile/i;
 const WINDOWS_RE = /Windows/i;
 const MAC_RE = /Macintosh|Mac OS X/i;
 const LINUX_RE = /Linux/i;
+const IOS_UA_RE = /iPhone|iPod|iPad/i;
+const SAFARI_TOKEN_RE = /Safari/i;
+const ANDROID_WV_RE = /; ?wv\)/i;
+const ANDROID_LEGACY_WV_RE = /Version\/\d+\.\d+.*Chrome\/\d+\.\d+/i;
+const IN_APP_BROWSER_RE =
+  /FBAN|FBAV|FB_IAB|Instagram|Twitter|Line\/|MicroMessenger|musical_ly|TikTok|Snapchat|LinkedInApp|Pinterest|GSA\//i;
 
 function readNavigatorUa(): string {
   if (typeof navigator === "undefined") return "";
@@ -79,6 +85,30 @@ export function detectDevice(ua?: string, hasTouch?: boolean): DeviceInfo {
     return { isMobile: false, osType: "linux", deviceType: "desktop" };
   }
   return { isMobile: false, osType: "other", deviceType: "desktop" };
+}
+
+/**
+ * Best-effort webview / in-app-browser detection. Heuristic — there is no single
+ * reliable signal across platforms. Errs toward covering the common real-world
+ * webviews (iOS WKWebView, Android WebView, named in-app browsers) rather than
+ * minimizing false positives.
+ *
+ * @param ua User-agent string. Defaults to `navigator.userAgent`.
+ */
+export function isWebView(ua?: string): boolean {
+  const agent = ua ?? readNavigatorUa();
+  if (!agent) return false;
+
+  if (IN_APP_BROWSER_RE.test(agent)) return true;
+
+  // iOS WKWebView drops the Safari token that real Mobile Safari always keeps.
+  if (IOS_UA_RE.test(agent) && !SAFARI_TOKEN_RE.test(agent)) return true;
+
+  if (ANDROID_RE.test(agent) && (ANDROID_WV_RE.test(agent) || ANDROID_LEGACY_WV_RE.test(agent))) {
+    return true;
+  }
+
+  return false;
 }
 
 // ─── Device details shape ─────────────────────────────────────────────────────

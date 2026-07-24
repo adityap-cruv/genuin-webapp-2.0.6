@@ -233,49 +233,6 @@ describe("CompactControlBar", () => {
     expect(muteIconFile()).toBe("mute.svg");
   });
 
-  describe("redirectMode", () => {
-    const cta = { url: "https://cta.example/x", caption: "Shop Now", onClick: vi.fn() };
-
-    it("hides the expand button", () => {
-      render({ size: "md", cta, redirectMode: true });
-      expect(container.querySelector('[data-testid="topbar-expand"]')).toBeNull();
-    });
-
-    it("md: hides Watch and keeps the Linkout", () => {
-      render({ size: "md", cta, redirectMode: true });
-      expect(container.querySelector('[data-testid="watch-btn"]')).toBeNull();
-      const link = container.querySelector('a[href="https://cta.example/x"]');
-      expect(link).toBeTruthy();
-      expect(link?.textContent).toContain("Shop Now");
-    });
-
-    it("sm: replaces Watch with a 'Learn More' anchor pointing at the CTA url", () => {
-      render({ size: "sm", showWatchInSm: true, cta, redirectMode: true });
-      const watch = container.querySelector('[data-testid="watch-btn"]');
-      expect(watch).toBeTruthy();
-      expect(watch?.tagName).toBe("A");
-      expect(watch?.getAttribute("href")).toBe("https://cta.example/x");
-      expect(watch?.getAttribute("target")).toBe("_blank");
-      expect(watch?.textContent).toContain("Learn More");
-    });
-
-    it("sm: fires the CTA onClick when the Watch anchor is clicked", () => {
-      const onClick = vi.fn();
-      render({ size: "sm", showWatchInSm: true, cta: { ...cta, onClick }, redirectMode: true });
-      act(() => {
-        (container.querySelector('[data-testid="watch-btn"]') as HTMLElement).click();
-      });
-      expect(onClick).toHaveBeenCalledTimes(1);
-    });
-
-    it("sm: with no CTA url the Watch button stays a plain button", () => {
-      render({ size: "sm", showWatchInSm: true, redirectMode: true });
-      const watch = container.querySelector('[data-testid="watch-btn"]');
-      expect(watch).toBeTruthy();
-      expect(watch?.tagName).toBe("BUTTON");
-    });
-  });
-
   describe("expandEnabled", () => {
     it("hides the expand button when expandEnabled is false", () => {
       render({ size: "md", expandEnabled: false });
@@ -308,20 +265,74 @@ describe("CompactControlBar", () => {
       render({ size: "md", expandEnabled: true });
       expect(query("watch-btn")).toBeTruthy();
     });
+  });
 
-    // Redirect mode repoints the sm Watch button at the ad CTA (a real
-    // link-out, not an expand entry point), so it survives expandEnabled=false.
-    it("sm redirect with a CTA url: keeps the link-out Watch button even when expandEnabled is false", () => {
+  describe("isFullScreenSupported", () => {
+    it("md: hides the expand button when isFullScreenSupported is false", () => {
+      render({ size: "md", isFullScreenSupported: false });
+      expect(container.querySelector('[data-testid="topbar-expand"]')).toBeNull();
+    });
+
+    it("md: hides the Watch button when isFullScreenSupported is false", () => {
+      render({ size: "md", isFullScreenSupported: false });
+      expect(query("watch-btn")).toBeNull();
+    });
+
+    it("sm: hides the showWatchInSm Watch button when isFullScreenSupported is false", () => {
+      render({ size: "sm", showWatchInSm: true, isFullScreenSupported: false });
+      expect(query("watch-btn")).toBeNull();
+    });
+
+    it("shows expand and Watch by default (isFullScreenSupported omitted)", () => {
+      render({ size: "md" });
+      expect(container.querySelector('[data-testid="topbar-expand"]')).not.toBeNull();
+      expect(query("watch-btn")).toBeTruthy();
+    });
+
+    it("md: the Linkout still renders (and fills the row alone) when Watch hides for isFullScreenSupported: false", () => {
+      render({
+        size: "md",
+        isFullScreenSupported: false,
+        cta: { url: "https://example.com", caption: "Shop Now" },
+      });
+      expect(query("watch-btn")).toBeNull();
+      const link = container.querySelector('a[href="https://example.com"]');
+      expect(link).toBeTruthy();
+      expect(link?.textContent).toContain("Shop Now");
+    });
+
+    it("sm: shows a compact (xs) Linkout in the Watch slot when isFullScreenSupported is false and CTA data is present (ad only)", () => {
       render({
         size: "sm",
         showWatchInSm: true,
-        redirectMode: true,
-        expandEnabled: false,
+        isFullScreenSupported: false,
+        cta: { url: "https://example.com", caption: "Shop Now", logoUrl: "https://logo.png" },
+      });
+      expect(query("watch-btn")).toBeNull();
+      const link = container.querySelector('[data-testid="linkout-btn"]');
+      expect(link).toBeTruthy();
+      expect(link?.textContent).toContain("Shop Now");
+      // xs: no logo, no chevron, capped width.
+      expect(link?.querySelector("img")).toBeNull();
+      expect(link?.querySelector("svg")).toBeNull();
+      expect(link?.className).toContain("max-w-17.5");
+    });
+
+    it("sm: does not show the Linkout in the Watch slot when there is no CTA data (video)", () => {
+      render({ size: "sm", showWatchInSm: true, isFullScreenSupported: false });
+      expect(query("watch-btn")).toBeNull();
+      expect(container.querySelector('[data-testid="linkout-btn"]')).toBeNull();
+    });
+
+    it("sm: does not show the Linkout in the Watch slot when Watch is still shown (isFullScreenSupported: true)", () => {
+      render({
+        size: "sm",
+        showWatchInSm: true,
+        isFullScreenSupported: true,
         cta: { url: "https://example.com", caption: "Shop Now" },
       });
-      const watch = query("watch-btn");
-      expect(watch).toBeTruthy();
-      expect(watch?.getAttribute("href")).toBe("https://example.com");
+      expect(query("watch-btn")).toBeTruthy();
+      expect(container.querySelector('[data-testid="linkout-btn"]')).toBeNull();
     });
   });
 });

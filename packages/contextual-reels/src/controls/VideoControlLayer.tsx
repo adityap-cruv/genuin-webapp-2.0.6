@@ -8,7 +8,6 @@ import { DefaultControlLayer } from "@cxr/controls/video/DefaultControlLayer";
 // Only loads when a genAiEnabled tag actually renders the Octo strip.
 const OctoSheet = lazy(() => import("@cxr/genai/octo/OctoSheet").then((m) => ({ default: m.OctoSheet })));
 import { useInstanceId } from "@cxr/instance/InstanceContext";
-import { useFullScreen } from "@cxr/providers/FullScreenProvider";
 import { useGenAI } from "@cxr/providers/GenAIProvider";
 import { useTagDetails } from "@cxr/providers/TagDetailsProvider";
 import { isCompactLayout } from "@cxr/utils/ads";
@@ -80,13 +79,13 @@ export function VideoControlLayer({
   // key defaults to enabled to preserve legacy behaviour (expand always shown).
   const expandEnabled = tagDetails?.config?.on_click === undefined ? true : tagDetails.config.on_click === "fullscreen";
   const { genAiEnabled } = useGenAI();
-  const { isRedirectMode } = useFullScreen();
   const isCompact = isCompactLayout(adLayout);
   // iHeart stays on the legacy controls; everything else gets the V2 icon set.
   const isV2 = useNewPlayerControls() && variant !== "iheart";
 
   const tagId = tagDetails?.tag_id ?? "";
   const videoId = item.video?.id;
+
   const octoAllowed = !isFullScreen && genAiEnabled && Boolean(videoId);
   const stripProps = octoAllowed
     ? {
@@ -122,9 +121,9 @@ export function VideoControlLayer({
           <WatchButton
             isPlay={isPlay}
             // config.on_click !== "fullscreen": this Watch button is the only
-            // play/pause control in the Octo host layout, so instead of hiding it
-            // (which would strip playback control entirely) it degrades to a
-            // plain play/pause toggle instead of expanding.
+            // play/pause control in the Octo host layout, so instead of hiding
+            // it (which would strip playback control entirely) it degrades to
+            // a plain play/pause toggle. Otherwise it expands.
             onClick={expandEnabled ? onFullScreenClick : onPlayClick}
             variant="pill"
             style={{ zIndex: 2, flexShrink: 0 }}
@@ -158,7 +157,6 @@ export function VideoControlLayer({
             onMuteClick={onMuteClick}
             onFullScreenClick={onFullScreenClick}
             onWatchClick={onFullScreenClick}
-            redirectMode={isRedirectMode}
             expandEnabled={expandEnabled}
             className={is320x50 ? "gencl:gap-0" : ""}
           />

@@ -39,7 +39,7 @@ vi.mock("@cxr/providers/PlayerProvider", () => ({
 const defaultProps = {
   isPlay: false,
   isMuted: false,
-  redirectMode: false,
+  isFullScreenSupported: true,
   onPlayClick: () => undefined,
   onMuteClick: () => undefined,
   onFullScreenClick: () => undefined,
@@ -77,6 +77,14 @@ describe("AdControlBar", () => {
       });
       expect(container.querySelector('[data-testid="watch-btn"]')).not.toBeNull();
     });
+
+    it("hides expand and watch when isFullScreenSupported is false", () => {
+      act(() => {
+        root.render(<AdControlBar {...defaultProps} layout="320x50" isFullScreenSupported={false} />);
+      });
+      expect(container.querySelector('[data-testid="topbar-expand"]')).toBeNull();
+      expect(container.querySelector('[data-testid="watch-btn"]')).toBeNull();
+    });
   });
 
   describe("layout=320x100", () => {
@@ -106,6 +114,22 @@ describe("AdControlBar", () => {
       });
       expect(container.querySelector('[data-testid="linkout-btn"]')).toBeNull();
     });
+
+    it("hides watch (and expand) but keeps linkout when isFullScreenSupported is false", () => {
+      act(() => {
+        root.render(
+          <AdControlBar
+            {...defaultProps}
+            layout="320x100"
+            isFullScreenSupported={false}
+            ctaDetails={{ ctaUrl: "https://x.com", ctaTitle: "Buy Now", advertiserLogo: "", onClick: () => undefined }}
+          />
+        );
+      });
+      expect(container.querySelector('[data-testid="topbar-expand"]')).toBeNull();
+      expect(container.querySelector('[data-testid="watch-btn"]')).toBeNull();
+      expect(container.querySelector('[data-testid="linkout-btn"]')).not.toBeNull();
+    });
   });
 
   describe("layout=default", () => {
@@ -115,6 +139,14 @@ describe("AdControlBar", () => {
       });
       expect(container.querySelector('[data-testid="mute-btn"]')).not.toBeNull();
       expect(container.querySelector('[data-testid="topbar-expand"]')).not.toBeNull();
+    });
+
+    it("hides expand when isFullScreenSupported is false (V2 cluster)", () => {
+      act(() => {
+        root.render(<AdControlBar {...defaultProps} layout="default" isFullScreenSupported={false} />);
+      });
+      expect(container.querySelector('[data-testid="mute-btn"]')).not.toBeNull();
+      expect(container.querySelector('[data-testid="topbar-expand"]')).toBeNull();
     });
 
     it("renders play button", () => {
@@ -266,6 +298,15 @@ describe("AdControlBar", () => {
       expect(container.querySelector('[data-testid="play-pause-btn"]')).not.toBeNull();
       expect(container.querySelector('[data-testid="mute-btn"]')).not.toBeNull();
       expect(container.querySelector('[data-testid="topbar-expand"]')).not.toBeNull();
+    });
+
+    it("hides the legacy expand button when isFullScreenSupported is false", () => {
+      act(() => {
+        root.render(<AdControlBar {...defaultProps} layout="default" isFullScreenSupported={false} />);
+      });
+      expect(container.querySelector('[data-testid="play-pause-btn"]')).not.toBeNull();
+      expect(container.querySelector('[data-testid="mute-btn"]')).not.toBeNull();
+      expect(container.querySelector('[data-testid="topbar-expand"]')).toBeNull();
     });
 
     it("expand tap calls onFullScreenClick", () => {

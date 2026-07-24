@@ -5,16 +5,21 @@ import { act, type ReactElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
-const { sendEventMock, setBaseEventContextMock, useTagDetailsMock } = vi.hoisted(() => ({
+const { sendEventMock, setBaseEventContextMock, loggerInfoMock, useTagDetailsMock } = vi.hoisted(() => ({
   sendEventMock: vi.fn(),
   setBaseEventContextMock: vi.fn(),
-  useTagDetailsMock: vi.fn(() => ({ brandId: undefined as number | undefined })),
+  loggerInfoMock: vi.fn(),
+  useTagDetailsMock: vi.fn<() => { tagId: string; brandId: number | undefined }>(() => ({
+    tagId: "test-tag",
+    brandId: undefined,
+  })),
 }));
 vi.mock("@cxr/providers/AnalyticsProvider", () => ({
   useAnalytics: () => ({ sendEvent: sendEventMock, setBrandId: vi.fn(), setBaseEventContext: setBaseEventContextMock }),
 }));
-// FullScreenProvider reads `brandId` from useTagDetails() (context), not a prop.
-// Mock it so the harness can drive brandId the same way the real provider tree does.
+vi.mock("@cxr/utils/logger", () => ({
+  createLogger: () => ({ debug: vi.fn(), info: loggerInfoMock, warn: vi.fn(), error: vi.fn() }),
+}));
 vi.mock("@cxr/providers/TagDetailsProvider", () => ({
   useTagDetails: () => useTagDetailsMock(),
 }));
@@ -38,8 +43,7 @@ function Consumer({ handle }: { handle: ContextHandle }): ReactElement {
   return <span data-testid="consumer" />;
 }
 
-function mount(handle: ContextHandle, brandId?: number): { root: Root; container: HTMLDivElement } {
-  useTagDetailsMock.mockReturnValue({ brandId });
+function mount(handle: ContextHandle): { root: Root; container: HTMLDivElement } {
   const container = document.createElement("div");
   document.body.appendChild(container);
   const root = createRoot(container);
@@ -68,7 +72,8 @@ describe("FullScreenProvider", () => {
   beforeEach(() => {
     sendEventMock.mockClear();
     setBaseEventContextMock.mockClear();
-    useTagDetailsMock.mockReturnValue({ brandId: undefined });
+    loggerInfoMock.mockClear();
+    useTagDetailsMock.mockReturnValue({ tagId: "test-tag", brandId: undefined });
     document.body.className = "";
   });
 
@@ -81,6 +86,15 @@ describe("FullScreenProvider", () => {
     const { root, container } = mount(handle);
 
     expect(handle.ctx?.isFullScreen).toBe(false);
+
+    unmount(root, container);
+  });
+
+  it("exposes isFullScreenSupported: true outside a webview", () => {
+    const handle: ContextHandle = { ctx: null };
+    const { root, container } = mount(handle);
+
+    expect(handle.ctx?.isFullScreenSupported).toBe(true);
 
     unmount(root, container);
   });
@@ -346,34 +360,82 @@ describe("FullScreenProvider", () => {
   });
 
   // -------------------------------------------------------------------------
-  // Native enter path (only attempted inside an iframe on non-iOS).
-  //
-  // `inIframe()` is forced true by making window.top differ from window.self,
-  // and `requestFullscreen` on documentElement is stubbed per scenario.
+  // enterFullScreen:
+  //  - Not in iframe: always manual (React state) fullscreen. Native
+  //    requestFullscreen is never attempted.
+  //  - In iframe: real Browser Fullscreen API attempted first. On
+  //    unavailability/denial/rejection, falls back to manual (React state)
+  //    fullscreen — every embed always gets some fullscreen experience.
   // -------------------------------------------------------------------------
 
-  describe("native enterFullScreen path (iframe, non-iOS)", () => {
-    let originalRequest: Element["requestFullscreen"] | undefined;
-
-    beforeEach(() => {
-      // Force inIframe() === true.
-      Object.defineProperty(window, "top", {
+  describe("enterFullScreen — not in iframe", () => {
+    it("never calls native requestFullscreen and expands manually", () => {
+      const originalRequest = document.documentElement.requestFullscreen;
+      const requestSpy = vi.fn().mockResolvedValue(undefined);
+      Object.defineProperty(document.documentElement, "requestFullscreen", {
         configurable: true,
-        get: () => ({}) as Window,
+        value: requestSpy,
+        writable: true,
       });
-      originalRequest = document.documentElement.requestFullscreen;
-    });
 
-    afterEach(() => {
-      Object.defineProperty(window, "top", {
-        configurable: true,
-        get: () => window,
+      const handle: ContextHandle = { ctx: null };
+      const { root, container } = mount(handle);
+
+      act(() => {
+        handle.ctx?.enterFullScreen();
       });
+
+      expect(requestSpy).not.toHaveBeenCalled();
+      expect(handle.ctx?.isFullScreen).toBe(true);
+
       Object.defineProperty(document.documentElement, "requestFullscreen", {
         configurable: true,
         value: originalRequest,
         writable: true,
       });
+      unmount(root, container);
+    });
+  });
+
+  describe("enterFullScreen — in iframe", () => {
+    let originalRequest: Element["requestFullscreen"] | undefined;
+    let originalFullscreenEnabled: PropertyDescriptor | undefined;
+    let topDescriptor: PropertyDescriptor | undefined;
+
+    beforeEach(() => {
+      originalRequest = document.documentElement.requestFullscreen;
+      originalFullscreenEnabled = Object.getOwnPropertyDescriptor(document, "fullscreenEnabled");
+      topDescriptor = Object.getOwnPropertyDescriptor(window, "top");
+      Object.defineProperty(document, "fullscreenEnabled", {
+        configurable: true,
+        get: () => true,
+      });
+      // Force inIframe() === true.
+      Object.defineProperty(window, "top", {
+        configurable: true,
+        get: () => ({}) as Window,
+      });
+    });
+
+    afterEach(() => {
+      Object.defineProperty(document.documentElement, "requestFullscreen", {
+        configurable: true,
+        value: originalRequest,
+        writable: true,
+      });
+      if (originalFullscreenEnabled) {
+        Object.defineProperty(document, "fullscreenEnabled", originalFullscreenEnabled);
+      } else {
+        Object.defineProperty(document, "fullscreenEnabled", {
+          configurable: true,
+          get: () => undefined,
+        });
+      }
+      if (topDescriptor) {
+        Object.defineProperty(window, "top", topDescriptor);
+      } else {
+        Object.defineProperty(window, "top", { configurable: true, get: () => window });
+      }
     });
 
     /** Stubs `document.documentElement.requestFullscreen`. */
@@ -385,7 +447,14 @@ describe("FullScreenProvider", () => {
       });
     }
 
-    it("awaits the native requestFullscreen and defers state to fullscreenchange", async () => {
+    function stubFullscreenEnabled(value: boolean): void {
+      Object.defineProperty(document, "fullscreenEnabled", {
+        configurable: true,
+        get: () => value,
+      });
+    }
+
+    it("awaits native requestFullscreen and defers state to fullscreenchange on success", async () => {
       const requestSpy = vi.fn().mockResolvedValue(undefined);
       stubRequest(requestSpy);
 
@@ -403,99 +472,10 @@ describe("FullScreenProvider", () => {
       unmount(root, container);
     });
 
-    it("redirects to the fallback URL when native requestFullscreen rejects (brand 3252)", async () => {
+    it("redirects when requestFullscreen rejects", async () => {
       const requestSpy = vi.fn().mockRejectedValue(new Error("gesture required"));
       stubRequest(requestSpy);
-      const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
-
-      const handle: ContextHandle = { ctx: null };
-      const { root, container } = mount(handle, 3252);
-
-      await act(async () => {
-        await handle.ctx?.enterFullScreen();
-      });
-
-      expect(requestSpy).toHaveBeenCalledTimes(1);
-      expect(openSpy).toHaveBeenCalledWith(
-        "https://infolinks.begenuin.com/home?embed_id=6a4b8a153b428877f20c9bb5",
-        "_blank",
-        "noopener,noreferrer"
-      );
-      expect(handle.ctx?.isFullScreen).toBe(false);
-
-      openSpy.mockRestore();
-      unmount(root, container);
-    });
-
-    it("redirects to the fallback URL when no requestFullscreen method exists (brand 3252)", async () => {
-      stubRequest(undefined);
-      const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
-
-      const handle: ContextHandle = { ctx: null };
-      const { root, container } = mount(handle, 3252);
-
-      await act(async () => {
-        await handle.ctx?.enterFullScreen();
-      });
-
-      expect(openSpy).toHaveBeenCalledWith(
-        "https://infolinks.begenuin.com/home?embed_id=6a4b8a153b428877f20c9bb5",
-        "_blank",
-        "noopener,noreferrer"
-      );
-      expect(handle.ctx?.isFullScreen).toBe(false);
-
-      openSpy.mockRestore();
-      unmount(root, container);
-    });
-
-    it("includes video_id in the fallback URL when a video id has been broadcast", async () => {
-      stubRequest(undefined);
-      const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
-
-      const handle: ContextHandle = { ctx: null };
-      const { root, container } = mount(handle, 3252);
-
-      act(() => {
-        handle.bus?.emit("genai:videoId", { videoId: "vid-123" });
-      });
-
-      await act(async () => {
-        await handle.ctx?.enterFullScreen();
-      });
-
-      expect(openSpy).toHaveBeenCalledWith(
-        "https://infolinks.begenuin.com/home?embed_id=6a4b8a153b428877f20c9bb5&video_id=vid-123",
-        "_blank",
-        "noopener,noreferrer"
-      );
-
-      openSpy.mockRestore();
-      unmount(root, container);
-    });
-
-    it("falls back to manual fullscreen (no redirect) when requestFullscreen rejects for a non-3252 brand", async () => {
-      const requestSpy = vi.fn().mockRejectedValue(new Error("gesture required"));
-      stubRequest(requestSpy);
-      const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
-
-      const handle: ContextHandle = { ctx: null };
-      const { root, container } = mount(handle, 9999);
-
-      await act(async () => {
-        await handle.ctx?.enterFullScreen();
-      });
-
-      expect(openSpy).not.toHaveBeenCalled();
-      expect(handle.ctx?.isFullScreen).toBe(true);
-
-      openSpy.mockRestore();
-      unmount(root, container);
-    });
-
-    it("falls back to manual fullscreen (no redirect) when no requestFullscreen method exists and brandId is unresolved", async () => {
-      stubRequest(undefined);
-      const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
+      stubFullscreenEnabled(true);
 
       const handle: ContextHandle = { ctx: null };
       const { root, container } = mount(handle);
@@ -504,10 +484,61 @@ describe("FullScreenProvider", () => {
         await handle.ctx?.enterFullScreen();
       });
 
-      expect(openSpy).not.toHaveBeenCalled();
-      expect(handle.ctx?.isFullScreen).toBe(true);
+      expect(handle.ctx?.isFullScreen).toBe(false);
+      expect(loggerInfoMock).toHaveBeenCalled();
 
-      openSpy.mockRestore();
+      unmount(root, container);
+    });
+
+    it("redirects when no requestFullscreen method exists on the element", async () => {
+      stubRequest(undefined);
+      stubFullscreenEnabled(true);
+
+      const handle: ContextHandle = { ctx: null };
+      const { root, container } = mount(handle);
+
+      await act(async () => {
+        await handle.ctx?.enterFullScreen();
+      });
+
+      expect(handle.ctx?.isFullScreen).toBe(false);
+      expect(loggerInfoMock).toHaveBeenCalled();
+
+      unmount(root, container);
+    });
+
+    it("redirects when requestFullscreen rejects, regardless of the fullscreenEnabled permission flag", async () => {
+      const requestSpy = vi.fn().mockRejectedValue(new Error("gesture required"));
+      stubRequest(requestSpy);
+      stubFullscreenEnabled(false);
+
+      const handle: ContextHandle = { ctx: null };
+      const { root, container } = mount(handle);
+
+      await act(async () => {
+        await handle.ctx?.enterFullScreen();
+      });
+
+      expect(handle.ctx?.isFullScreen).toBe(false);
+      expect(loggerInfoMock).toHaveBeenCalled();
+
+      unmount(root, container);
+    });
+
+    it("redirects when no requestFullscreen method exists and the permission is denied", async () => {
+      stubRequest(undefined);
+      stubFullscreenEnabled(false);
+
+      const handle: ContextHandle = { ctx: null };
+      const { root, container } = mount(handle);
+
+      await act(async () => {
+        await handle.ctx?.enterFullScreen();
+      });
+
+      expect(handle.ctx?.isFullScreen).toBe(false);
+      expect(loggerInfoMock).toHaveBeenCalled();
+
       unmount(root, container);
     });
 
@@ -531,6 +562,229 @@ describe("FullScreenProvider", () => {
 
       delete (document.documentElement as unknown as { webkitRequestFullscreen?: () => Promise<void> })
         .webkitRequestFullscreen;
+      unmount(root, container);
+    });
+  });
+
+  describe("enterFullScreen — webview", () => {
+    let originalUserAgent: string;
+
+    beforeEach(() => {
+      originalUserAgent = navigator.userAgent;
+    });
+
+    afterEach(() => {
+      Object.defineProperty(navigator, "userAgent", {
+        configurable: true,
+        value: originalUserAgent,
+      });
+    });
+
+    function stubWebviewUserAgent(): void {
+      Object.defineProperty(navigator, "userAgent", {
+        configurable: true,
+        value:
+          "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 " +
+          "(KHTML, like Gecko) Mobile/15E148 [FBAN/FBIOS;FBAV/450.0.0.0;]",
+      });
+    }
+
+    it("reports isFullScreenSupported: false in a webview", () => {
+      stubWebviewUserAgent();
+
+      const handle: ContextHandle = { ctx: null };
+      const { root, container } = mount(handle);
+
+      expect(handle.ctx?.isFullScreenSupported).toBe(false);
+
+      unmount(root, container);
+    });
+
+    it("redirects immediately in a webview without attempting native or manual fullscreen", async () => {
+      stubWebviewUserAgent();
+      const requestSpy = vi.fn().mockResolvedValue(undefined);
+      Object.defineProperty(document.documentElement, "requestFullscreen", {
+        configurable: true,
+        value: requestSpy,
+        writable: true,
+      });
+
+      const handle: ContextHandle = { ctx: null };
+      const { root, container } = mount(handle);
+
+      await act(async () => {
+        await handle.ctx?.enterFullScreen();
+      });
+
+      expect(requestSpy).not.toHaveBeenCalled();
+      expect(handle.ctx?.isFullScreen).toBe(false);
+      expect(loggerInfoMock).toHaveBeenCalled();
+
+      unmount(root, container);
+    });
+  });
+
+  describe("redirectToFullScreen — per-brand destination (opens in a new tab)", () => {
+    let originalUserAgent: string;
+
+    beforeEach(() => {
+      originalUserAgent = navigator.userAgent;
+    });
+
+    afterEach(() => {
+      Object.defineProperty(navigator, "userAgent", {
+        configurable: true,
+        value: originalUserAgent,
+      });
+      vi.restoreAllMocks();
+    });
+
+    function stubWebviewUserAgent(): void {
+      Object.defineProperty(navigator, "userAgent", {
+        configurable: true,
+        value:
+          "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 " +
+          "(KHTML, like Gecko) Mobile/15E148 [FBAN/FBIOS;FBAV/450.0.0.0;]",
+      });
+    }
+
+    /** jsdom doesn't implement window.open navigation; simulate an allowed popup. */
+    function allowPopup() {
+      return vi.spyOn(window, "open").mockReturnValue({} as Window);
+    }
+
+    /** Simulate a popup blocker: window.open returns null. */
+    function blockPopup() {
+      return vi.spyOn(window, "open").mockReturnValue(null);
+    }
+
+    it("opens the configured URL in a new tab for a brand with a redirect entry, in a webview", async () => {
+      const windowOpenSpy = allowPopup();
+      stubWebviewUserAgent();
+      useTagDetailsMock.mockReturnValue({ tagId: "test-tag", brandId: 3252 });
+
+      const handle: ContextHandle = { ctx: null };
+      const { root, container } = mount(handle);
+
+      await act(async () => {
+        await handle.ctx?.enterFullScreen();
+      });
+
+      expect(windowOpenSpy).toHaveBeenCalledWith(
+        "https://infolinks.begenuin.com/home?embed_id=6a4b8a153b428877f20c9bb5",
+        "_blank",
+        "noopener,noreferrer"
+      );
+      expect(handle.ctx?.redirectFailed).toBe(false);
+
+      unmount(root, container);
+    });
+
+    it("opens the configured URL in a new tab from an in-iframe, non-webview enter attempt with no Fullscreen API", async () => {
+      const windowOpenSpy = allowPopup();
+      const topDescriptor = Object.getOwnPropertyDescriptor(window, "top");
+      Object.defineProperty(window, "top", {
+        configurable: true,
+        get: () => ({}) as Window,
+      });
+      const originalRequest = document.documentElement.requestFullscreen;
+      Object.defineProperty(document.documentElement, "requestFullscreen", {
+        configurable: true,
+        value: undefined,
+        writable: true,
+      });
+      useTagDetailsMock.mockReturnValue({ tagId: "test-tag", brandId: 3252 });
+
+      const handle: ContextHandle = { ctx: null };
+      const { root, container } = mount(handle);
+
+      await act(async () => {
+        await handle.ctx?.enterFullScreen();
+      });
+
+      expect(windowOpenSpy).toHaveBeenCalledWith(
+        "https://infolinks.begenuin.com/home?embed_id=6a4b8a153b428877f20c9bb5",
+        "_blank",
+        "noopener,noreferrer"
+      );
+      expect(handle.ctx?.redirectFailed).toBe(false);
+
+      Object.defineProperty(document.documentElement, "requestFullscreen", {
+        configurable: true,
+        value: originalRequest,
+        writable: true,
+      });
+      if (topDescriptor) {
+        Object.defineProperty(window, "top", topDescriptor);
+      } else {
+        Object.defineProperty(window, "top", { configurable: true, get: () => window });
+      }
+      unmount(root, container);
+    });
+
+    it("does not open a tab and logs when the brand has no configured redirect", async () => {
+      const windowOpenSpy = vi.spyOn(window, "open");
+      stubWebviewUserAgent();
+      useTagDetailsMock.mockReturnValue({ tagId: "test-tag", brandId: 9999 });
+
+      const handle: ContextHandle = { ctx: null };
+      const { root, container } = mount(handle);
+
+      await act(async () => {
+        await handle.ctx?.enterFullScreen();
+      });
+
+      expect(windowOpenSpy).not.toHaveBeenCalled();
+      expect(loggerInfoMock).toHaveBeenCalled();
+
+      unmount(root, container);
+    });
+
+    it("starts with redirectFailed: false", () => {
+      useTagDetailsMock.mockReturnValue({ tagId: "test-tag", brandId: 3252 });
+
+      const handle: ContextHandle = { ctx: null };
+      const { root, container } = mount(handle);
+
+      expect(handle.ctx?.redirectFailed).toBe(false);
+
+      unmount(root, container);
+    });
+
+    it("sets redirectFailed: true when window.open is blocked by a popup blocker (returns null)", async () => {
+      const windowOpenSpy = blockPopup();
+      stubWebviewUserAgent();
+      useTagDetailsMock.mockReturnValue({ tagId: "test-tag", brandId: 3252 });
+
+      const handle: ContextHandle = { ctx: null };
+      const { root, container } = mount(handle);
+
+      await act(async () => {
+        await handle.ctx?.enterFullScreen();
+      });
+
+      expect(windowOpenSpy).toHaveBeenCalled();
+      expect(handle.ctx?.redirectFailed).toBe(true);
+
+      unmount(root, container);
+    });
+
+    it("sets redirectFailed: true when window.open throws", async () => {
+      vi.spyOn(window, "open").mockImplementation(() => {
+        throw new Error("blocked");
+      });
+      stubWebviewUserAgent();
+      useTagDetailsMock.mockReturnValue({ tagId: "test-tag", brandId: 3252 });
+
+      const handle: ContextHandle = { ctx: null };
+      const { root, container } = mount(handle);
+
+      await act(async () => {
+        await handle.ctx?.enterFullScreen();
+      });
+
+      expect(handle.ctx?.redirectFailed).toBe(true);
+
       unmount(root, container);
     });
   });
@@ -592,19 +846,19 @@ describe("FullScreenProvider", () => {
       unmount(root, container);
     });
 
-    it("treats a cross-origin parent (window.top access throwing) as an iframe", () => {
+    it("treats a cross-origin parent (window.top access throwing) as an iframe, redirecting when no requestFullscreen exists", async () => {
       // Force inIframe()'s try/catch to take the catch path: accessing window.top throws,
-      // exactly like a cross-origin embed. With inIframe() === true and non-iOS, the native
-      // path runs; absent any requestFullscreen, it redirects to the fallback URL (brand 3252).
+      // exactly like a cross-origin embed. With inIframe() === true and no native
+      // requestFullscreen available, enterFullScreen redirects.
       const topDescriptor = Object.getOwnPropertyDescriptor(window, "top");
-      const requestDescriptor = Object.getOwnPropertyDescriptor(document.documentElement, "requestFullscreen");
-      const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
       Object.defineProperty(window, "top", {
         configurable: true,
         get: () => {
           throw new Error("cross-origin");
         },
       });
+
+      const originalRequest = document.documentElement.requestFullscreen;
       Object.defineProperty(document.documentElement, "requestFullscreen", {
         configurable: true,
         value: undefined,
@@ -612,27 +866,24 @@ describe("FullScreenProvider", () => {
       });
 
       const handle: ContextHandle = { ctx: null };
-      const { root, container } = mount(handle, 3252);
+      const { root, container } = mount(handle);
 
-      act(() => {
-        handle.ctx?.enterFullScreen();
+      await act(async () => {
+        await handle.ctx?.enterFullScreen();
       });
 
-      expect(openSpy).toHaveBeenCalledWith(
-        "https://infolinks.begenuin.com/home?embed_id=6a4b8a153b428877f20c9bb5",
-        "_blank",
-        "noopener,noreferrer"
-      );
       expect(handle.ctx?.isFullScreen).toBe(false);
+      expect(loggerInfoMock).toHaveBeenCalled();
 
-      openSpy.mockRestore();
+      Object.defineProperty(document.documentElement, "requestFullscreen", {
+        configurable: true,
+        value: originalRequest,
+        writable: true,
+      });
       if (topDescriptor) {
         Object.defineProperty(window, "top", topDescriptor);
       } else {
         Object.defineProperty(window, "top", { configurable: true, get: () => window });
-      }
-      if (requestDescriptor) {
-        Object.defineProperty(document.documentElement, "requestFullscreen", requestDescriptor);
       }
       unmount(root, container);
     });
