@@ -246,6 +246,41 @@ describe("PixelReporter", () => {
       expect(new URL(capturedSrc).searchParams.has("error_reason")).toBe(false);
     });
 
+    it("marks retriable=1 for a stale dynamic-import (deploy/cache skew) render failure", () => {
+      // "Failed to fetch dynamically imported module: .../App-<hash>.js" is a
+      // stale-chunk 404 after a deploy — retriable (a reload fixes it), NOT a
+      // code fault. Tagged so analytics can separate deploy-health from real crashes.
+      PixelReporter.getInstance().report("instance-1", "render", "render_error", {
+        error: new Error(
+          "Failed to fetch dynamically imported module: https://media.begenuin.com/cxr/1.0.0/chunks/App-W-ebkHIf.js"
+        ),
+      });
+
+      expect(new URL(capturedSrc).searchParams.get("retriable")).toBe("1");
+    });
+
+    it("marks retriable=1 for the 'Importing a module script failed' chunk error", () => {
+      PixelReporter.getInstance().report("instance-1", "render", "render_error", {
+        error: new Error("Importing a module script failed."),
+      });
+
+      expect(new URL(capturedSrc).searchParams.get("retriable")).toBe("1");
+    });
+
+    it("does NOT mark retriable for a genuine (non-chunk) crash", () => {
+      PixelReporter.getInstance().report("instance-1", "init", "initialization_error", {
+        error: new RangeError("Maximum call stack size exceeded."),
+      });
+
+      expect(new URL(capturedSrc).searchParams.has("retriable")).toBe(false);
+    });
+
+    it("does NOT mark retriable when no reason is available", () => {
+      PixelReporter.getInstance().report("instance-1", "render", "render_error");
+
+      expect(new URL(capturedSrc).searchParams.has("retriable")).toBe(false);
+    });
+
     it("stamps bid from window.__CXR_BUILD_ID__ on the pixel", () => {
       (window as { __CXR_BUILD_ID__?: string }).__CXR_BUILD_ID__ = "Dk3f9Xa2.b1e05db";
 

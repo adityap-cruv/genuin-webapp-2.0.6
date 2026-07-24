@@ -256,6 +256,48 @@ describe("setupCxrShadowDOM", () => {
     link.remove();
   });
 
+  it("falls back to cloning when replaceSync throws (CSS text contains @import)", async () => {
+    // Real-browser failure mode: `new CSSStyleSheet().replaceSync(text)` throws
+    // "@import rules are not allowed when creating stylesheet synchronously" when
+    // the fetched CSS contains an `@import`. This must NOT propagate to init (it
+    // was firing a false px-script-error) — the resilient path is the same
+    // <link> clone used for the other fallbacks, leaving the widget styled.
+    const cssWithImport = '@import url("https://fonts.example.com/x.css");.gencl\\:flex{display:flex}';
+    withConstructableStyleSheets();
+    // Make the shim mimic the browser: reject any text containing an @import.
+    const proto = CSSStyleSheet.prototype as unknown as { replaceSync: (text: string) => void };
+    const originalReplaceSync = proto.replaceSync;
+    proto.replaceSync = function throwingReplaceSync(text: string) {
+      if (text.includes("@import")) {
+        throw new DOMException(
+          "Failed to execute 'replaceSync' on 'CSSStyleSheet': @import rules are not allowed " +
+            "when creating stylesheet synchronously.",
+          "NotAllowedError"
+        );
+      }
+      originalReplaceSync.call(this, text);
+    };
+    shimDisposers.push(() => {
+      proto.replaceSync = originalReplaceSync;
+    });
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, text: () => Promise.resolve(cssWithImport) }));
+    vi.stubGlobal("CSS", { registerProperty: vi.fn() });
+
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "https://cdn.example.com/assets/cxr-import.css";
+    link.setAttribute("data-genuin-cxr", "css");
+    document.head.appendChild(link);
+
+    // No readable CSSOM on the link → forces the fetch path that populates the text.
+    await expect(setupCxrShadowDOM(node)).resolves.not.toThrow();
+
+    const shadowLinks = Array.from(node.shadowRoot!.querySelectorAll('link[rel="stylesheet"]')) as HTMLLinkElement[];
+    expect(shadowLinks.some((l) => l.href.includes("cxr-import.css"))).toBe(true);
+    expect(node.shadowRoot!.adoptedStyleSheets.length).toBe(0);
+    link.remove();
+  });
+
   it("clones gen_ad.min.css link into shadow root when present in document", async () => {
     const link = document.createElement("link");
     link.rel = "stylesheet";

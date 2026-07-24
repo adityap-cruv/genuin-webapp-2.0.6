@@ -127,10 +127,7 @@ function readCssTextFromLink(sourceLink: HTMLLinkElement | null): string | null 
  * the head `<link>` already downloaded the bytes, so no second transfer. Falls
  * back to a network `fetch` only when the sheet's rules aren't readable yet.
  */
-async function fetchAndCachePropertyRules(
-  cssUrl: string,
-  sourceLink?: HTMLLinkElement | null
-): Promise<void> {
+async function fetchAndCachePropertyRules(cssUrl: string, sourceLink?: HTMLLinkElement | null): Promise<void> {
   const resolved = new URL(cssUrl, window.location.href).href;
 
   if (cachedPropertyRules.has(resolved)) return;
@@ -171,10 +168,7 @@ async function fetchAndCachePropertyRules(
   return promise;
 }
 
-async function hoistPropertyRulesFromCssUrl(
-  cssUrl: string,
-  sourceLink?: HTMLLinkElement | null
-): Promise<void> {
+async function hoistPropertyRulesFromCssUrl(cssUrl: string, sourceLink?: HTMLLinkElement | null): Promise<void> {
   await fetchAndCachePropertyRules(cssUrl, sourceLink);
   const resolved = new URL(cssUrl, window.location.href).href;
   cachedPropertyRules.get(resolved)?.forEach(registerPropertyGlobally);
@@ -227,9 +221,19 @@ async function applyProductionShadowStyle(shadowRoot: ShadowRoot, sourceLink: HT
 
   let sheet = cachedStyleSheets.get(resolved);
   if (!sheet) {
-    sheet = new CSSStyleSheet();
-    sheet.replaceSync(text);
-    cachedStyleSheets.set(resolved, sheet);
+    try {
+      const constructed = new CSSStyleSheet();
+      // Throws in real browsers when `text` contains an `@import`
+      // ("@import rules are not allowed when creating stylesheet synchronously").
+      // That's recoverable — a cloned <link> styles the shadow root just as well —
+      // so it must never propagate to init and fire a false px-script-error.
+      constructed.replaceSync(text);
+      sheet = constructed;
+      cachedStyleSheets.set(resolved, sheet);
+    } catch {
+      cloneCxrLinkIntoShadow(shadowRoot, sourceLink);
+      return;
+    }
   }
 
   // Idempotent: adopt only if this sheet isn't already applied to this root.

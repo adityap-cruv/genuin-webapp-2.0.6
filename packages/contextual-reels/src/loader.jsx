@@ -177,6 +177,13 @@
     if (reason.trim()) {
       params.set("error_reason", reason.trim().slice(0, MAX_REASON_LENGTH));
     }
+    // A core-bundle import() failing is almost always deploy/cache skew — a
+    // stale loader pointing at a core filename the CDN has already rotated.
+    // Retriable, not a code fault; tag it so analytics can filter (mirrors the
+    // core PixelReporter's `retriable` discriminator).
+    if (/failed to fetch dynamically imported module|error loading dynamically imported module|importing a module script failed/i.test(reason)) {
+      params.set("retriable", "1");
+    }
 
     return path + "?" + params.toString();
   }

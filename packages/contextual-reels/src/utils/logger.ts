@@ -6,6 +6,20 @@
  * `error` reach the console.
  *
  * Avoids `console.log` entirely (project guardrail).
+ *
+ * `logger.error` is CONSOLE-ONLY. It deliberately does NOT fire a
+ * `px-script-error` pixel: most `.error(...)` call sites report recoverable
+ * failures (geoip fetch blip, analytics flush failure, a caught cross-origin
+ * SecurityError thrown by a host page's ad callback, a static-tag load that
+ * then falls back to the API) after which the widget keeps working. Coupling
+ * the pixel to log severity turned every such log into a false widget-failure
+ * beacon. The pixel is now fired only from the genuinely widget-fatal
+ * boundaries that own that decision — `index.jsx` (init crash + render
+ * `SafeSuspense`) and `loader.jsx` (core bundle failed to load, `sdk_load`).
+ * A partial failure that leaves the widget usable (e.g. one reel's HLS teardown,
+ * a failed analytics flush) is logged here but must NOT report a widget failure.
+ * Any future truly-fatal runtime site should call `PixelReporter.report(...)`
+ * explicitly rather than relying on a log level.
  */
 
 export interface Logger {
@@ -52,14 +66,6 @@ export function createLogger(namespace: string): Logger {
     debug: prod ? noop : (...args: unknown[]) => console.debug(tag, ...args),
     info: prod ? noop : (...args: unknown[]) => console.info(tag, ...args),
     warn: (...args: unknown[]) => console.warn(tag, ...args),
-    error: (...args: unknown[]) => {
-      console.error(tag, ...args);
-      // Lazy import avoids a static cycle: pixel-reporter → config, logger is
-      // imported from nearly everywhere, so a top-level import here risks
-      // circular-import ordering issues in some bundlers.
-      void import("@cxr/observability/pixel-reporter").then(({ PixelReporter }) => {
-        PixelReporter.getInstance().report(undefined, "runtime", "runtime_error", { error: args });
-      });
-    },
+    error: (...args: unknown[]) => console.error(tag, ...args),
   };
 }

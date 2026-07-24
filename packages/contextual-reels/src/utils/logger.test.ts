@@ -59,22 +59,24 @@ describe("createLogger", () => {
     });
   });
 
-  describe("error → PixelReporter wiring", () => {
+  describe("error is console-only (no pixel side effect)", () => {
     beforeEach(() => {
       PixelReporter.getInstance().reset();
       vi.spyOn(console, "error").mockImplementation(() => undefined);
     });
 
-    it("calls PixelReporter.report when .error is invoked, passing the args as the reason context", async () => {
+    it("does NOT fire a px-script-error pixel — logging severity must not signal a widget failure", async () => {
       const reportSpy = vi.spyOn(PixelReporter.getInstance(), "report");
       const log = createLogger("cxr/test-namespace");
       const err = new Error("boom");
 
       log.error("something broke", err);
 
-      await vi.waitFor(() =>
-        expect(reportSpy).toHaveBeenCalledWith(undefined, "runtime", "runtime_error", { error: ["something broke", err] })
-      );
+      // Let any (unwanted) lazy `import(...).then(...)` fully settle before asserting.
+      // A dynamic import resolves across several microtask turns, so a couple of
+      // `await Promise.resolve()` isn't enough — flush generously.
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      expect(reportSpy).not.toHaveBeenCalled();
     });
 
     it("still writes to console.error", () => {

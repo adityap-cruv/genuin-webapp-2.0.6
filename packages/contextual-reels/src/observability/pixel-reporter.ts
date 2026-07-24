@@ -159,6 +159,26 @@ function buildHostMacroParams(): URLSearchParams {
 const MAX_REASON_LENGTH = 200;
 
 /**
+ * Message signatures of a stale dynamic-import failure — a hashed chunk 404s
+ * because the client is running an older `index`/loader than the just-deployed
+ * CDN build (deploy/cache skew). This is RETRIABLE (a reload pulls the current
+ * chunk) and not a code fault, so the pixel tags it `retriable=1` to let
+ * analytics separate deploy-health noise from genuine widget crashes. Matched
+ * across the browser-specific wordings seen in production (Chrome/Firefox/Safari).
+ */
+const RETRIABLE_CHUNK_ERROR_PATTERNS: readonly RegExp[] = [
+  /failed to fetch dynamically imported module/i,
+  /error loading dynamically imported module/i,
+  /importing a module script failed/i,
+];
+
+/** True when `reason` looks like a stale-chunk (deploy-skew) load failure. */
+function isRetriableChunkError(reason: string | undefined): boolean {
+  if (!reason) return false;
+  return RETRIABLE_CHUNK_ERROR_PATTERNS.some((pattern) => pattern.test(reason));
+}
+
+/**
  * Best-effort extraction of a short, human-readable reason from whatever a
  * catch block or logger call captured. Accepts the shapes actually seen at
  * this codebase's call sites: a thrown `Error`, an arbitrary thrown value, or
@@ -212,6 +232,12 @@ function buildPixelUrl(
   params.set("bid", readBuildIdBestEffort());
   if (reason && reason.trim()) {
     params.set("error_reason", reason.trim().slice(0, MAX_REASON_LENGTH));
+  }
+  // Additive discriminator (does NOT touch the fixed error_type taxonomy shared
+  // with web-sdk): flags deploy/cache-skew chunk 404s so analytics can filter
+  // them out of the genuine-crash rate.
+  if (isRetriableChunkError(reason)) {
+    params.set("retriable", "1");
   }
 
   return `${path}?${params.toString()}`;
