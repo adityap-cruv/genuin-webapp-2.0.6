@@ -223,12 +223,12 @@ when the widget runs inside a cross-origin `srcdoc` iframe (where neither the fr
 `window.top` can be read). The loader captures the whole query into `window.__CXR_SCRIPT_PARAMS__`;
 the widget reads individual params from there.
 
-| Param         | Value                | Effect                                                                                                             |
-| ------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `tagId`       | Tag id string        | Overrides the per-div `data-tag-id`. The loader-src value wins; falls back to `data-tag-id` when absent.           |
-| `GIV`         | Number `0`–`1`       | Sets the initial audible volume. Overrides the tag's `initialVolume`; falls back to per-div `data-giv`. See below. |
-| `gen_variant` | `stacked`            | Opts a supported slot into the stacked (widget + Infolinks) layout.                                                |
-| `purl`        | URL-encoded page URL | Overrides the Infolinks publisher attribution URL (used with the stacked layout).                                  |
+| Param         | Value                        | Effect                                                                                                             |
+| ------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `tagId`       | Tag id string                | Overrides the per-div `data-tag-id`. The loader-src value wins; falls back to `data-tag-id` when absent.           |
+| `GIV`         | Number `0`–`1` (`0` ignored) | Sets the initial audible volume. Overrides the tag's `initialVolume`; falls back to per-div `data-giv`. See below. |
+| `gen_variant` | `stacked`                    | Opts a supported slot into the stacked (widget + Infolinks) layout.                                                |
+| `purl`        | URL-encoded page URL         | Overrides the Infolinks publisher attribution URL (used with the stacked layout).                                  |
 
 ### `GIV` — initial volume override
 
@@ -242,7 +242,8 @@ Set the initial volume as a page-global loader-script param **or** a per-div `da
 <div class="gen-ext" data-tag-id="YOUR_TAG_ID" data-giv="0.5"></div>
 ```
 
-- Accepts a number in the inclusive range `0`–`1` (e.g. `0`, `0.5`, `1`).
+- Accepts a number in the range `(0, 1]` (e.g. `0.5`, `1`). **`0` (and negative) values are ignored** —
+  `GIV` exists to raise the initial volume, not to suppress it.
 - **Precedence mirrors `tagId`:** the page-global `GIV` script param wins; the per-div `data-giv`
   attribute is the fallback used when `GIV` is absent (or invalid). `GIV` is page-wide (one loader
   `<script>`), so use `data-giv` when you need a different level per `.gen-ext` on the same page.

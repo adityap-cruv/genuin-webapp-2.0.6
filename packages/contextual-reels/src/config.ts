@@ -248,7 +248,8 @@ export function getScriptParam(name: string): string | undefined {
 }
 
 /**
- * Loader script param that sets the feed's initial audible volume (0..1). When
+ * Loader script param that sets the feed's initial audible volume — a value in
+ * `(0, 1]` (`0` is ignored; GIV raises volume, it never suppresses it). When
  * present with a valid value it overrides the tag's resolved `initialVolume`
  * strategy, so it drives every place a volume level is applied without a user
  * gesture — unmuted-but-audible autoplay, the audible-ad-start level, and the
@@ -269,13 +270,17 @@ export const GIV_DATA_ATTR = "data-giv";
 
 /**
  * Validate a raw initial-volume value (from the {@link GIV_PARAM} script param or
- * the {@link GIV_DATA_ATTR} attribute) to a number in the inclusive `[0, 1]`
- * range, or `undefined` when it is missing/empty/non-numeric/out of range.
+ * the {@link GIV_DATA_ATTR} attribute) to a number in the range `(0, 1]`, or
+ * `undefined` when it is missing/empty/non-numeric/out of range.
+ *
+ * `0` is deliberately rejected: GIV exists to *raise* the initial volume, not to
+ * suppress it. A `0` (or negative) value is ignored so callers fall back to the
+ * tag's resolved `initialVolume` rather than force-muting the feed.
  */
 function parseGivValue(raw: string | null | undefined): number | undefined {
   if (raw === undefined || raw === null || raw.trim() === "") return undefined;
   const value = Number(raw);
-  if (!Number.isFinite(value) || value < 0 || value > 1) return undefined;
+  if (!Number.isFinite(value) || value <= 0 || value > 1) return undefined;
   return value;
 }
 
@@ -286,11 +291,11 @@ function parseGivValue(raw: string | null | undefined): number | undefined {
  *
  * Precedence mirrors tag-id resolution: the page-global {@link GIV_PARAM} script
  * param wins; the per-div {@link GIV_DATA_ATTR} value (passed as `dataGiv`) is the
- * fallback. Both are validated to the inclusive `[0, 1]` range — an invalid
+ * fallback. Both are validated to the range `(0, 1]` — a `0`/negative or invalid
  * script param does not suppress a valid `data-giv` fallback.
  *
  * @param dataGiv Raw `data-giv` attribute value for this instance, if any.
- * @returns A volume in `[0, 1]`, or `undefined` to defer to strategy config.
+ * @returns A volume in `(0, 1]`, or `undefined` to defer to strategy config.
  */
 export function getInitVolumeOverride(dataGiv?: string | null): number | undefined {
   return parseGivValue(getScriptParam(GIV_PARAM)) ?? parseGivValue(dataGiv);

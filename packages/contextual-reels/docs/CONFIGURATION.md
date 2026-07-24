@@ -56,10 +56,11 @@ param **plus** a registered tag id.
 
 ## Initial volume — `GIV`
 
-Sets the feed's initial audible volume `[0, 1]`, overriding the tag's resolved `initialVolume` strategy.
+Sets the feed's initial audible volume `(0, 1]`, overriding the tag's resolved `initialVolume` strategy.
 Precedence mirrors tag-id resolution: the page-global `GIV` **script param** wins; the per-div
-`data-giv` **attribute** is the fallback. Both are validated to `[0, 1]`; an invalid script param does
-not suppress a valid `data-giv`. `getInitVolumeOverride(dataGiv)` resolves it.
+`data-giv` **attribute** is the fallback. Both are validated to `(0, 1]` — **`0` (and negatives) are
+ignored**, since `GIV` exists to raise the initial volume, not to suppress it; an invalid or `0` script
+param does not suppress a valid `data-giv`. `getInitVolumeOverride(dataGiv)` resolves it.
 
 ```html
 <script src=".../gen_ext.min.js?GIV=0.5"></script>

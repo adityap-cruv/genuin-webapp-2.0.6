@@ -362,9 +362,7 @@ describe("config/stackedLayout", () => {
   });
 
   it("registry contains both opted-in tags", () => {
-    expect(Object.keys(STACKED_LAYOUT_TAGS)).toEqual(
-      expect.arrayContaining([STACKED_LAYOUT_TAG_ID, TAG_300x600])
-    );
+    expect(Object.keys(STACKED_LAYOUT_TAGS)).toEqual(expect.arrayContaining([STACKED_LAYOUT_TAG_ID, TAG_300x600]));
   });
 
   it("falls back to the raw needle test when the referrer is not a parseable URL", () => {
@@ -489,11 +487,14 @@ describe("config/getInitVolumeOverride", () => {
     expect(config.getInitVolumeOverride()).toBe(0.5);
   });
 
-  it("accepts the boundary values 0 and 1", () => {
-    setScriptParams("&GIV=0");
-    expect(config.getInitVolumeOverride()).toBe(0);
+  it("accepts the boundary value 1", () => {
     setScriptParams("&GIV=1");
     expect(config.getInitVolumeOverride()).toBe(1);
+  });
+
+  it("ignores GIV=0 — it must raise volume, not suppress it", () => {
+    setScriptParams("&GIV=0");
+    expect(config.getInitVolumeOverride()).toBeUndefined();
   });
 
   it("returns undefined for a non-numeric value", () => {
@@ -501,7 +502,7 @@ describe("config/getInitVolumeOverride", () => {
     expect(config.getInitVolumeOverride()).toBeUndefined();
   });
 
-  it("returns undefined for values outside the 0..1 range", () => {
+  it("returns undefined for values outside the (0, 1] range", () => {
     setScriptParams("&GIV=1.5");
     expect(config.getInitVolumeOverride()).toBeUndefined();
     setScriptParams("&GIV=-0.3");
@@ -527,8 +528,8 @@ describe("config/getInitVolumeOverride", () => {
     expect(config.getInitVolumeOverride(null)).toBeUndefined();
   });
 
-  it("accepts data-giv boundary values 0 and 1", () => {
-    expect(config.getInitVolumeOverride("0")).toBe(0);
+  it("ignores data-giv=0 the same way — accepts only the boundary value 1", () => {
+    expect(config.getInitVolumeOverride("0")).toBeUndefined();
     expect(config.getInitVolumeOverride("1")).toBe(1);
   });
 
@@ -539,6 +540,11 @@ describe("config/getInitVolumeOverride", () => {
 
   it("falls back to data-giv when the script param is present but invalid", () => {
     setScriptParams("&GIV=2");
+    expect(config.getInitVolumeOverride("0.3")).toBe(0.3);
+  });
+
+  it("falls back to data-giv when the script param is GIV=0 (ignored)", () => {
+    setScriptParams("&GIV=0");
     expect(config.getInitVolumeOverride("0.3")).toBe(0.3);
   });
 });
