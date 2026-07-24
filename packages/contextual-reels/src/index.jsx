@@ -68,6 +68,40 @@ async function init() {
   const allNodes = document.querySelectorAll(".gen-ext");
   if (!allNodes.length) return;
 
+  // Boot heartbeat for the host embed's passback watchdog. The core bundle has
+  // now executed and found at least one `.gen-ext` slot to render into, so we
+  // ARE taking over this impression — cancel the embed's passback timer. This
+  // covers the dominant WKWebView leak (Infolinks fires `if_imp`, but our loader
+  // loads, then the core `import()` dies or the frame is torn down before boot),
+  // where nothing in the core — including `notifyAdNoFill` — ever runs to fire
+  // passback itself. Set the flag AND clear the timer directly: the flag guards
+  // against the core booting after the timer already fired, the direct clear
+  // stops a healthy-but-slow boot from being passed back. Both are best-effort —
+  // a locked-down WebView missing either global must never break bootstrap, and
+  // `init()` runs after the loader defined these, so absence just means no
+  // watchdog was installed (e.g. a non-Infolinks embed).
+  //
+  // Late-boot teardown: if the watchdog ALREADY fired passback before we booted
+  // (a healthy-but-slow boot that lost the race), the slot now belongs to the
+  // competitor passback tag. We must not just skip rendering — we must physically
+  // remove our `.gen-ext` node so our (empty) slot can't collide with where the
+  // passback tag renders. Do it before any mount work (no React root is built),
+  // then bail out. Mirrors the registered `destroy` control's node removal, but
+  // reached before `destroy` exists. Best-effort: a removal failure must never
+  // break bootstrap.
+  try {
+    if (window.__CXR_PASSBACK_FIRED__) {
+      allNodes.forEach((node) => {
+        if (node.parentNode) node.parentNode.removeChild(node);
+      });
+      return;
+    }
+    window.__CXR_ALIVE__ = true;
+    if (typeof window.__cxrClearWatchdog === "function") window.__cxrClearWatchdog();
+  } catch {
+    // Never let the heartbeat break bootstrap.
+  }
+
   // Warn about duplicate `id` attributes — partners should use id="gen-ext-1", id="gen-ext-2", etc.
   const idCount = new Map();
   allNodes.forEach((node) => {
