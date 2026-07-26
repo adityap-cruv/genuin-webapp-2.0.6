@@ -3,9 +3,9 @@
  * Feature: Webapp Home Page — Visual Regression
  *
  * Objective:
- * Capture a full-page baseline screenshot of the home feed. Mock backend
- * provides deterministic data so no per-element masking is needed.
- * Video controls are revealed via hover before the snapshot is taken.
+ * Capture a baseline screenshot of the iHeart home composition. Third-party
+ * SDK placements are masked because their video inventory is intentionally
+ * live and non-deterministic.
  */
 
 import { test, expect } from "../_fixtures/mock";
@@ -16,33 +16,25 @@ test.describe("Feature: Webapp Home Page — Visual Regression", () => {
       await page.goto("/home");
     });
 
-    await test.step("Result: Feed section is visible (skeleton has resolved)", async () => {
-      await expect(page.locator("div#gencl-feed-view")).toBeVisible({ timeout: 20_000 });
+    const carouselPlacement = page.getByTestId("iheart-home-carousel-placement").first();
+    const feedPlacement = page.getByTestId("iheart-home-feed-placement").first();
+    const gridPlacement = page.getByTestId("iheart-home-grid-placement").first();
+    const homeMain = page.getByRole("main", { name: "iHeart home" });
+
+    await test.step("Result: New editorial home sections and SDK hosts are visible", async () => {
+      await expect(homeMain).toBeVisible();
+      await expect(carouselPlacement).toBeVisible();
+      await expect(feedPlacement).toBeVisible();
+      await expect(gridPlacement).toBeAttached();
+      await expect(page.getByRole("button", { name: "Starbucks" }).first()).toBeVisible();
+      await expect(page.getByRole("heading", { name: "Featured", exact: true })).toBeVisible();
     });
 
-    await test.step("Result: Video player has mounted", async () => {
-      await page.waitForSelector("video", { state: "attached", timeout: 20_000 });
-    });
-
-    await test.step("Result: Side panel pills are visible (PostSidePanel Suspense resolved)", async () => {
-      await expect(page.locator('[class*="rounded-full"]').first()).toBeVisible({ timeout: 15_000 });
-    });
-
-    await test.step("Result: Comment section has settled (no skeleton rows)", async () => {
-      const commentItem = page.locator(".comment").first();
-      const emptyState = page.getByText("No Comments Yet");
-      const errorState = page.getByText("We're unable to load comments.");
-      await expect(commentItem.or(emptyState).or(errorState)).toBeVisible({ timeout: 15_000 });
-    });
-
-    await test.step("Setup: Hover video to reveal controls overlay", async () => {
-      await page.hover("video", { force: true });
-    });
-
-    await test.step("Result: Full-page screenshot matches baseline", async () => {
-      await expect(page).toHaveScreenshot("home-full-page.png", {
-        fullPage: true,
+    await test.step("Result: Home content screenshot matches baseline", async () => {
+      await expect(homeMain).toHaveScreenshot("home-full-page.png", {
         animations: "disabled",
+        mask: [carouselPlacement, feedPlacement, gridPlacement, homeMain.locator("img")],
+        maskColor: "#e5e7eb",
       });
     });
   });
