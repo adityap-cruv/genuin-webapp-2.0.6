@@ -1,4 +1,5 @@
 import { Avatar } from "@genuin/ui/components/avatar";
+import { Image } from "@genuin/ui/components/image";
 import { ThreeDotsIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "@genuin/ui/popover";
@@ -16,6 +17,7 @@ import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import type { PageType } from "@genuin/components/lib/utils/pages";
 import { Link } from "@genuin/components/molecules/link";
 import { SearchModal } from "@genuin/components/organisms/search-modal";
+import type { AuthUser } from "@genuin/components/types/auth";
 
 import { SideBarActionLinks } from "./sidebar-actions-link";
 
@@ -55,6 +57,19 @@ export function SidebarActions({
 
   return (
     <div className={cn(className, sidebarActionsVariants({ variant }))} {...restProps}>
+      <Link href="/home" onClick={onItemClick}>
+        <div className="gencl:flex gencl:cursor-pointer gencl:items-center gencl:gap-4 gencl:rounded-lg gencl:px-2 gencl:py-2 gencl:hover:bg-secondary-50 gencl:xl:px-3 gencl:xl:py-4">
+          <Image
+            src="https://iheartvip.prototype.begenuin.com/assets/Ellipse%20511.webp"
+            alt=""
+            width={24}
+            height={24}
+            useWebp={false}
+            className="gencl:size-6 gencl:shrink-0 gencl:rounded-full"
+          />
+          <p className="gencl:text-body-1-medium">iHeart</p>
+        </div>
+      </Link>
       {SideBarActionLinks.map((links, index) => {
         // Skip notification and Profile link if user is not logged in
         if ((links.type === "profile" || links.type === "posts") && !user) return null;
@@ -69,8 +84,6 @@ export function SidebarActions({
         if (links.type === "posts" && (isMobile || !camera_enabled || !create_post_enabled)) {
           return null;
         }
-
-        const Icon = links.type !== "profile" ? links.icon : undefined;
 
         return (
           <Link
@@ -133,7 +146,7 @@ type SidebarActionItemProps = {
   type: PageType;
   icon?: React.ElementType;
   text: string;
-  user?: any;
+  user?: AuthUser | null;
   notificationCount?: number;
   isActive: boolean;
   onClick?: () => void;

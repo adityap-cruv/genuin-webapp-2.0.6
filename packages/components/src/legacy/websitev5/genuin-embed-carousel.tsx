@@ -82,8 +82,28 @@ export type GenuinEmbedCarouselProps = GenuinEmbedIdentity & {
   testId?: string;
   /** Optional carousel navigation alignment applied after the SDK mounts. */
   navigationLayout?: "default" | "side-overlay";
+  /** Optional fixed width for each SDK carousel slide. */
+  carouselItemWidth?: number;
+  /** Enables mouse-wheel, pointer-drag, and touch scrolling for a carousel. */
+  enableCarouselScroll?: boolean;
+  /** Expands the SDK host to its slide width so its parent can provide native horizontal scrolling. */
+  nativeHorizontalScroll?: boolean;
   /** Extra classes on the container. */
   className?: string;
+};
+
+type MountedSwiper = {
+  allowTouchMove: boolean;
+  params: {
+    allowTouchMove?: boolean;
+    simulateTouch?: boolean;
+    slidesPerView?: number | "auto";
+    touchReleaseOnEdges?: boolean;
+  };
+  mousewheel?: {
+    enable: () => void;
+  };
+  update: () => void;
 };
 
 /**
@@ -115,6 +135,9 @@ export function GenuinEmbedCarousel({
   containerId,
   testId = "genuin-placement",
   navigationLayout = "default",
+  carouselItemWidth,
+  enableCarouselScroll = false,
+  nativeHorizontalScroll = false,
   className,
 }: GenuinEmbedCarouselProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -160,6 +183,92 @@ export function GenuinEmbedCarousel({
     alignNavigation();
     return () => window.cancelAnimationFrame(animationFrame);
   }, [navigationLayout]);
+
+  useLayoutEffect(() => {
+    if (!carouselItemWidth && !enableCarouselScroll && !nativeHorizontalScroll) return;
+
+    let pollTimer = 0;
+    let observer: MutationObserver | undefined;
+    let resizeObserver: ResizeObserver | undefined;
+
+    const configureCarousel = () => {
+      const shadowRoot = containerRef.current?.shadowRoot;
+      const swiperElement = shadowRoot?.querySelector<HTMLElement>(".swiper");
+      const swiper = (swiperElement as (HTMLElement & { swiper?: MountedSwiper }) | null)?.swiper;
+
+      if (!shadowRoot || !swiperElement || !swiper) {
+        return;
+      }
+
+      window.clearInterval(pollTimer);
+
+      if (carouselItemWidth && !shadowRoot.querySelector("[data-genuin-carousel-sizing]")) {
+        const sizingStyles = document.createElement("style");
+        sizingStyles.dataset.genuinCarouselSizing = "true";
+        sizingStyles.textContent = `
+          .swiper-slide {
+            width: ${carouselItemWidth}px !important;
+            min-width: ${carouselItemWidth}px !important;
+            max-width: ${carouselItemWidth}px !important;
+            flex: 0 0 ${carouselItemWidth}px !important;
+          }
+        `;
+        shadowRoot.appendChild(sizingStyles);
+      }
+
+      const updateNativeTrackWidth = () => {
+        if (!nativeHorizontalScroll || !carouselItemWidth || !containerRef.current) return;
+
+        const slides = shadowRoot.querySelectorAll(".swiper-slide");
+        if (slides.length === 0) return;
+
+        const gap = Number.parseFloat(getComputedStyle(slides.item(0)).marginRight) || 0;
+        const contentWidth = slides.length * carouselItemWidth + Math.max(0, slides.length - 1) * gap;
+        const viewportWidth = containerRef.current.parentElement?.clientWidth ?? 0;
+
+        if (contentWidth > 0) {
+          const trackWidth = `${Math.max(viewportWidth, contentWidth)}px`;
+          containerRef.current.style.setProperty("width", trackWidth, "important");
+          containerRef.current.style.setProperty("min-width", trackWidth, "important");
+        }
+      };
+
+      if (carouselItemWidth) {
+        swiper.params.slidesPerView = "auto";
+      }
+
+      if (enableCarouselScroll) {
+        swiper.allowTouchMove = true;
+        swiper.params.allowTouchMove = true;
+        swiper.params.simulateTouch = true;
+        swiper.params.touchReleaseOnEdges = true;
+        swiper.mousewheel?.enable();
+        swiperElement.style.cursor = "grab";
+        swiperElement.style.touchAction = "pan-y";
+      }
+
+      swiper.update();
+      updateNativeTrackWidth();
+
+      observer = new MutationObserver(() => {
+        swiper.update();
+        updateNativeTrackWidth();
+      });
+      observer.observe(swiperElement, { childList: true, subtree: true });
+
+      resizeObserver = new ResizeObserver(updateNativeTrackWidth);
+      const scrollViewport = containerRef.current?.parentElement;
+      if (scrollViewport) resizeObserver.observe(scrollViewport);
+    };
+
+    pollTimer = window.setInterval(configureCarousel, 250);
+    configureCarousel();
+    return () => {
+      window.clearInterval(pollTimer);
+      observer?.disconnect();
+      resizeObserver?.disconnect();
+    };
+  }, [carouselItemWidth, enableCarouselScroll, nativeHorizontalScroll]);
 
   return (
     <>

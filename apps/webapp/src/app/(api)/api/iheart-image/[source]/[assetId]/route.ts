@@ -2,8 +2,12 @@ import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 const ImageParamsSchema = z.object({
-  source: z.enum(["new_assets", "assets.getty"]),
-  assetId: z.string().regex(/^[a-f0-9]{24}$/),
+  source: z.enum(["new_assets", "assets.getty", "assets.streams", "assets.images", "contest", "url"]),
+  assetId: z.union([
+    z.string().regex(/^[a-f0-9]{24}$/),
+    z.string().regex(/^[A-Za-z0-9][A-Za-z0-9._-]{1,128}$/),
+    z.string().regex(/^[A-Za-z0-9_-]{32,2048}={0,2}$/),
+  ]),
 });
 
 type RouteContext = {
@@ -14,7 +18,8 @@ type RouteContext = {
 };
 
 /**
- * Proxies the two fixed iHeart image collections used by the home page.
+ * Proxies the fixed iHeart image collections, encoded podcast artwork URLs,
+ * and the contest artwork CDN used by iHeart promotion pages.
  *
  * The application CSP intentionally allows only self-hosted and approved
  * publisher image origins. Restricting both path segments keeps this route
@@ -30,7 +35,14 @@ export async function GET(_request: NextRequest, context: RouteContext): Promise
   const { source, assetId } = result.data;
 
   try {
-    const upstreamResponse = await fetch(`https://i.iheart.com/v3/re/${source}/${assetId}`, {
+    const sourcePath = source === "assets.images" ? "assets/images" : source;
+    const upstreamUrl =
+      source === "url"
+        ? `https://i.iheart.com/v3/url/${assetId}?ops=fit%28960%2C960%29`
+        : source === "contest"
+          ? `https://cdn3.aptivada.com/${assetId}`
+          : `https://i.iheart.com/v3/re/${sourcePath}/${assetId}`;
+    const upstreamResponse = await fetch(upstreamUrl, {
       next: { revalidate: 21_600 },
     });
 
