@@ -11,45 +11,52 @@ import {
   TableRow,
   ThemeProvider,
 } from "@genuin/ui";
+import { OctopusIcon } from "@genuin/ui/icons";
 import { ArrowDown, ArrowRight, Play, Radio } from "lucide-react";
 import Image from "next/image";
 import { type FormEvent, useState } from "react";
 
 import { GenuinEmbedCarousel } from "@genuin/components/legacy/websitev5/genuin-embed-carousel";
+import { OctoPanel } from "@genuin/components/molecules/octo-panel";
 
 import styles from "./home.module.css";
 
 const ASSET_ROOT =
   "https://octocanvas-artifacts.s3.ap-south-1.amazonaws.com/sessions/b6695b6a8a0b444699c9337f0723d88e/generated";
-const FOIL_API_KEY = "8a5582af807e98dbad239b749a1cd7fb026831eec1a95d00";
+const IHEART_API_KEY = "1c8c5caa7f9a6a081f713d17ecf82fd7798a95b87f423e3a";
+const OCTO_VIDEO_ID = "462cc7b6-5166-45e4-86ef-21550eb7601e";
+const OCTO_VIDEO_SLUG = "22ff12e2e3801400";
 
 const placements = {
-  reactions: {
-    containerId: "foil-gen-sdk-reactions",
-    styleId: "69f4814de964b815fc224fed",
-    placementId: "69f4814de964b815fc224fec",
-    apiKey: FOIL_API_KEY,
-    width: "100%",
-    maxWidth: "1440px",
-    height: "500px",
+  carousel: {
+    containerId: "foil-hero-video-carousel",
+    styleId: "6a61d6c664ca16025598bd58",
+    placementId: "6a61d6c664ca16025598bd57",
+    apiKey: "e0c7340483c56098b00809c1d25df30e6d2a4c50351102a6",
+    width: "800px",
+    maxWidth: "100%",
+    height: "300px",
   },
-  live: {
-    containerId: "foil-gen-sdk-live",
-    styleId: "69f481d1e964b815fc22502c",
-    placementId: "69f481cbe964b815fc225021",
-    apiKey: FOIL_API_KEY,
-    width: "300px",
-    maxWidth: "300px",
-    height: "600px",
-  },
-  fleet: {
-    containerId: "foil-gen-sdk-fleet",
-    styleId: "69f85cd54e1859a88008a834",
-    placementId: "69f85cd54e1859a88008a833",
-    apiKey: FOIL_API_KEY,
+  feed: {
+    containerId: "foil-hero-video-feed",
+    styleId: "69b7d2236bafa318fdf84319",
+    placementId: "69b7d2236bafa318fdf84318",
+    apiKey: IHEART_API_KEY,
+    configuration: {
+      sections: [{ title: "{{brand_context}}" }],
+    },
     width: "100%",
-    maxWidth: "800px",
-    height: "500px",
+    maxWidth: "100%",
+    height: "460px",
+  },
+  grid: {
+    containerId: "foil-fleet-fan-zone-grid",
+    styleId: "6a27effa807006d6e6ad035e",
+    placementId: "6a27effa807006d6e6ad035d",
+    apiKey: IHEART_API_KEY,
+    width: "800px",
+    maxWidth: "100%",
+    height: "760px",
   },
 } as const;
 
@@ -156,6 +163,28 @@ function SectionHeader({ title, meta }: { title: string; meta: string }) {
   );
 }
 
+function FoilOctoChat() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <OctoPanel
+      videoId={OCTO_VIDEO_ID}
+      videoSlug={OCTO_VIDEO_SLUG}
+      integrationType="placement"
+      integrationId={placements.feed.placementId}
+      renderMode="compact"
+      containLegacyDialog
+      open={isOpen}
+      onOpenChange={setIsOpen}
+      panelClassName={styles.octoPanel}
+      className={styles.octoLauncher}
+      aria-label={isOpen ? "Close Octo chat" : "Open Octo chat"}
+      aria-expanded={isOpen}>
+      <OctopusIcon variant="light" className={styles.octoLauncherIcon} aria-hidden="true" />
+    </OctoPanel>
+  );
+}
+
 export function Home() {
   const [isSubscribed, setIsSubscribed] = useState(false);
 
@@ -175,51 +204,34 @@ export function Home() {
         18–22 kn SW forecast Saturday
       </div>
 
-      <section className={styles.hero} aria-labelledby="foil-hero-title">
-        <Image
-          src={`${ASSET_ROOT}/countdown-hero-bg_v0.png`}
-          alt="Foiling F50 catamaran racing across Auckland water"
-          fill
-          priority
-          sizes="(max-width: 768px) 100vw, 85vw"
-          className={styles.heroImage}
-        />
-        <div className={styles.heroShade} />
-        <div className={styles.heroContent}>
-          <div>
-            <p className={styles.eyebrow}>Next Grand Prix · 20 Mar 2025 · 14:00 NZDT</p>
-            <h1 id="foil-hero-title">Auckland SGP</h1>
-            <div className={styles.countdown} aria-label="Race countdown">
-              {[
-                ["11", "Days"],
-                ["14", "Hours"],
-                ["52", "Min"],
-                ["53", "Sec"],
-              ].map(([value, unit]) => (
-                <span key={unit}>
-                  <strong>{value}</strong>
-                  {unit}
-                </span>
-              ))}
-            </div>
+      <section className={styles.heroPlacements} aria-labelledby="foil-hero-title">
+        <h1 id="foil-hero-title" className={styles.srOnly}>
+          Foil fan videos
+        </h1>
+        <div className={styles.heroPlacementPanel} id="foil-video-carousel">
+          <div className={styles.heroPlacementHeader}>
+            <small>Fan highlights</small>
           </div>
-          <blockquote>
-            “The Aussies’ setup looks tactically brittle — and the Kiwis know it.”
-            <cite>— T. Harding · Foil preview</cite>
-          </blockquote>
+          <Placement {...placements.carousel} label="iHeart fan video carousel" />
+        </div>
+        <div className={styles.heroPlacementPanel} id="foil-video-feed">
+          <div className={styles.heroPlacementHeader}>
+            <small>Latest fan clips</small>
+          </div>
+          <Placement {...placements.feed} label="iHeart contextual video feed" />
         </div>
       </section>
 
-      <section className={styles.liveFeed} aria-labelledby="live-feed-heading">
+      <section className={styles.liveFeed} aria-labelledby="fleet-fan-zone-heading">
         <div className={styles.liveFeedHeading}>
           <span>
             <Radio size={15} />
-            <strong id="live-feed-heading">Live fan feed</strong>
+            <strong id="fleet-fan-zone-heading">Fleet fan zone</strong>
           </span>
-          Scroll to explore
+          Live community
         </div>
-        <div className={styles.phoneFrame}>
-          <Placement {...placements.live} label="Live vertical fan feed" />
+        <div className={styles.gridFrame}>
+          <Placement {...placements.grid} label="iHeart six-video fleet fan zone grid" />
         </div>
         <p className={styles.scrollHint}>
           <ArrowDown size={14} /> Swipe or scroll inside to browse
@@ -254,14 +266,6 @@ export function Home() {
             </article>
           ))}
         </div>
-      </section>
-
-      <section className={styles.sdkSection} aria-labelledby="reactions-heading">
-        <SectionHeader title="Fan Reactions Hub" meta="Powered by Genuin · Live community" />
-        <h2 id="reactions-heading" className={styles.srOnly}>
-          Fan reactions video carousel
-        </h2>
-        <Placement {...placements.reactions} label="Fan reactions carousel" />
       </section>
 
       <section className={styles.contentSection}>
@@ -373,14 +377,6 @@ export function Home() {
         </div>
       </section>
 
-      <section className={styles.sdkSection} aria-labelledby="fleet-zone-heading">
-        <SectionHeader title="Fleet Fan Zone" meta="Join the conversation · Genuin" />
-        <h2 id="fleet-zone-heading" className={styles.srOnly}>
-          Fleet fan video grid
-        </h2>
-        <Placement {...placements.fleet} label="Fleet fan video grid" />
-      </section>
-
       <section className={styles.contentSection}>
         <SectionHeader title="Listen & Watch" meta="New this week" />
         <div className={styles.mediaGrid}>
@@ -462,12 +458,13 @@ export function Home() {
         <p>A new wave in racing media.</p>
         <nav aria-label="Foil footer">
           <a href="#foil-hero-title">SailGP</a>
-          <a href="#reactions-heading">Fan zone</a>
-          <a href="#fleet-zone-heading">The fleet</a>
+          <a href="#fleet-fan-zone-heading">Fan zone</a>
+          <a href="#foil-video-feed">The fleet</a>
           <a href="mailto:tips@thefoil.media">Tip the desk</a>
         </nav>
         <small>© 2026 The Foil · Independent sailing media · Auckland · London · Sydney</small>
       </footer>
+      <FoilOctoChat />
     </ThemeProvider>
   );
 }

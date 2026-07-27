@@ -27,8 +27,9 @@ type GenAISDKModule = {
     containerElement: HTMLElement;
     userId: string;
     brandId: number;
-    view: string;
+    view: "page" | "web-sdk";
     renderMode?: "compact" | "full";
+    uiDensity?: "xs" | "sm" | "base";
     sessionId?: string;
     parentWebSdkInstanceId: string | null;
     parentWebSdkContainerId?: string;
@@ -44,6 +45,39 @@ type GenAISDKModule = {
   destroy: () => void | Promise<void>;
   setWebSdkRenderMode?: (mode: "compact" | "full") => void;
 };
+
+const DEFAULT_GENAI_SDK_URL = "https://media.begenuin.com/genai-sdk/genai-sdk.es.js";
+const DEFAULT_GENAI_SDK_STYLES_URL = "https://media.begenuin.com/genai-sdk/genai-sdk.css";
+const sdkStylesheets = new Map<string, Promise<void>>();
+
+function loadSdkStylesheet(url: string) {
+  const existingPromise = sdkStylesheets.get(url);
+  if (existingPromise) return existingPromise;
+
+  const promise = new Promise<void>((resolve, reject) => {
+    const existingLink = document.querySelector<HTMLLinkElement>(`link[data-genai-sdk-styles="${url}"]`);
+    if (existingLink?.sheet) {
+      resolve();
+      return;
+    }
+
+    const link = existingLink ?? document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = url;
+    link.dataset.genaiSdkStyles = url;
+    link.addEventListener("load", () => resolve(), { once: true });
+    link.addEventListener("error", () => reject(new Error(`Failed to load GenAI SDK styles: ${url}`)), {
+      once: true,
+    });
+
+    if (!existingLink) {
+      document.head.appendChild(link);
+    }
+  });
+
+  sdkStylesheets.set(url, promise);
+  return promise;
+}
 
 /**
  * Custom hook that only runs cleanup on actual component unmount
@@ -82,6 +116,8 @@ type OctoPanelPropsType = {
    */
   variant?: "standalone" | "sheet";
   renderMode?: "compact" | "full";
+  /** SDK surface to render. Defaults to the video-specific web SDK view. */
+  view?: "page" | "web-sdk";
   /** Applies a lifecycle phase event (from the GenAI SDK) — maps to a sheet view upstream. */
   onLifecyclePhase?: (detail: { parentOctoPanelId?: string; phase: string }) => void;
   /**
@@ -96,6 +132,15 @@ type OctoPanelPropsType = {
   integrationId?: string;
   /** Controls auto-prompt behaviour (mode, timings). Falls back to SDK defaults if omitted. */
   autoPromptConfig?: AutoPromptConfig;
+  /** Runtime SDK entrypoint. Defaults to the hosted production bundle. */
+  sdkUrl?: string;
+  /** Runtime SDK stylesheet. Defaults to the hosted production stylesheet. */
+  sdkStylesUrl?: string;
+  /**
+   * Keeps legacy hosted SDK dialog markup inside this panel instead of allowing
+   * its fixed-position dialog to escape to the full viewport.
+   */
+  containLegacyDialog?: boolean;
 } & ComponentProps<"div">;
 
 export type OctoPanelHandle = {
@@ -112,6 +157,55 @@ function createPanelIdentity() {
     panelId: generateUniqueId("octo-panel"),
     key: generateUniqueId("octo-panel-key"),
   } as const;
+}
+
+function containLegacySdkDialog(container: HTMLElement) {
+  const dialogRoot = container.querySelector<HTMLElement>('[data-slot="animated-dialog-root"]');
+  if (!dialogRoot) return;
+
+  const overlay = dialogRoot.querySelector<HTMLElement>('[data-slot="animated-dialog-overlay"]');
+  const content = dialogRoot.querySelector<HTMLElement>('[data-slot="animated-dialog-content"]');
+
+  dialogRoot.style.setProperty("position", "absolute", "important");
+  dialogRoot.style.setProperty("inset", "0", "important");
+  dialogRoot.style.setProperty("padding", "0", "important");
+  overlay?.style.setProperty("display", "none", "important");
+
+  if (content) {
+    content.style.setProperty("width", "100%", "important");
+    content.style.setProperty("height", "100%", "important");
+    content.style.setProperty("max-width", "none", "important");
+    content.style.setProperty("border-radius", "0", "important");
+  }
+
+  // Older hosted bundles do not have the embedded web-sdk view and render the
+  // desktop dialog instead. Remove its desktop history rail in this compact host.
+  const desktopSidebar = dialogRoot.querySelector<HTMLElement>('[class~="gai:w-[280px]"]');
+  desktopSidebar?.style.setProperty("display", "none", "important");
+
+  const heading = dialogRoot.querySelector<HTMLElement>("h1");
+  heading?.style.setProperty("font-size", "28px", "important");
+  heading?.style.setProperty("line-height", "1.15", "important");
+
+  const composer = dialogRoot.querySelector<HTMLTextAreaElement>('textarea[placeholder="Type your message here..."]');
+  let contentStack = composer?.parentElement;
+  while (contentStack && !contentStack.classList.contains("gai:gap-8")) {
+    contentStack = contentStack.parentElement;
+  }
+
+  if (contentStack) {
+    contentStack.style.setProperty("gap", "12px", "important");
+    contentStack.style.setProperty("min-height", "100%", "important");
+    contentStack.style.setProperty("justify-content", "center", "important");
+
+    for (const child of contentStack.children) {
+      if (!(child instanceof HTMLElement) || (composer && child.contains(composer))) continue;
+      const text = child.textContent?.trim() ?? "";
+      if (text.startsWith("Genuin Adaptive Intelligence") || text.startsWith("GenAI Agents")) {
+        child.style.setProperty("display", "none", "important");
+      }
+    }
+  }
 }
 
 /**
@@ -157,10 +251,14 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(functio
     onClose,
     variant = "standalone",
     renderMode,
+    view = "web-sdk",
     onLifecyclePhase,
     integrationType: integrationTypeProp,
     integrationId: integrationIdProp,
     autoPromptConfig,
+    sdkUrl = DEFAULT_GENAI_SDK_URL,
+    sdkStylesUrl = DEFAULT_GENAI_SDK_STYLES_URL,
+    containLegacyDialog = false,
     ...triggerProps
   }: OctoPanelPropsType,
   ref
@@ -354,7 +452,8 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(functio
 
     const loadSDK = async () => {
       try {
-        const module = await import("@genuin/genai-sdk");
+        await loadSdkStylesheet(sdkStylesUrl);
+        const module = await import(/* webpackIgnore: true */ sdkUrl);
         setSDKModule(module as GenAISDKModule);
       } catch (error) {
         console.error("[OctoPanel] Failed to load GenAI SDK:", error);
@@ -364,7 +463,19 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(functio
     };
 
     loadSDK();
-  }, [isOpen, sdkModule, isInitializing]);
+  }, [isOpen, sdkModule, isInitializing, sdkStylesUrl, sdkUrl]);
+
+  useEffect(() => {
+    if (!isOpen || !containerNode || !containLegacyDialog) return;
+
+    const syncLegacyDialog = () => containLegacySdkDialog(containerNode);
+    syncLegacyDialog();
+
+    const observer = new MutationObserver(syncLegacyDialog);
+    observer.observe(containerNode, { childList: true, subtree: true });
+
+    return () => observer.disconnect();
+  }, [containLegacyDialog, containerNode, isOpen]);
 
   /**
    * Effect: Initialize/destroy the GenAI SDK based on panel state and video changes.
@@ -435,8 +546,9 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(functio
         containerElement: effectiveContainer,
         userId: user?.id || "anonymous",
         brandId: brandDetails.brand_id,
-        view: "web-sdk",
+        view,
         renderMode,
+        uiDensity: renderMode === "compact" ? "sm" : "base",
         parentWebSdkInstanceId: parentInstanceId,
         parentWebSdkContainerId: parentContainerId ?? undefined,
         parentWebSdkEmbedId: parentEmbedId ?? undefined,
@@ -482,6 +594,7 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(functio
     integrationType,
     integrationId,
     renderMode,
+    view,
     autoPromptConfig,
   ]);
 

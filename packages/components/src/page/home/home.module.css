@@ -63,35 +63,6 @@
   box-shadow: 0 0 0 6px rgb(230 57 70 / 14%);
 }
 
-.hero {
-  position: relative;
-  min-height: 82vh;
-  overflow: hidden;
-  color: white;
-}
-
-.heroImage {
-  object-fit: cover;
-  object-position: center center;
-}
-
-.heroShade {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, rgb(8 31 56 / 90%) 0%, rgb(8 31 56 / 56%) 48%, rgb(8 31 56 / 36%) 100%);
-}
-
-.heroContent {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(260px, 0.8fr);
-  align-items: end;
-  gap: 48px;
-  padding: clamp(40px, 7vw, 112px) clamp(20px, 4vw, 64px) clamp(32px, 5vw, 72px);
-}
-
-.eyebrow,
 .sectionHeader span,
 .storyCard > span,
 .mediaCard span,
@@ -103,68 +74,40 @@
   text-transform: uppercase;
 }
 
-.eyebrow {
-  margin-bottom: 12px !important;
-  color: rgb(230 57 70 / 24%);
-}
-
-.hero h1 {
-  max-width: 780px;
-  font-family: Montserrat, Arial, sans-serif;
-  font-size: clamp(52px, 8.5vw, 132px);
-  font-weight: 800;
-  line-height: 0.86;
-  letter-spacing: -0.055em;
-  color: rgb(255 255 255 / 17%);
-  text-transform: uppercase;
-}
-
-.countdown {
-  display: flex;
-  gap: clamp(18px, 3vw, 44px);
-  margin-top: 30px;
-}
-
-.countdown span {
+.heroPlacements {
   display: grid;
-  gap: 6px;
-  color: rgb(255 255 255 / 17%);
+  grid-template-columns: minmax(0, 3fr) minmax(320px, 2fr);
+  gap: clamp(16px, 2vw, 28px);
+  padding: clamp(20px, 3vw, 48px);
+  background: var(--foil-navy-deep);
+}
+
+.heroPlacementPanel {
+  min-width: 0;
+  padding: 14px;
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 14%);
+  border-radius: 10px;
+  background: rgb(255 255 255 / 7%);
+}
+
+.heroPlacementHeader {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-bottom: 12px;
+  color: white;
   font-family: "IBM Plex Mono", monospace;
   font-size: 10px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.countdown strong {
-  color: rgb(255 255 255 / 22%);
-  font-size: clamp(26px, 3.5vw, 54px);
-  line-height: 1;
-  letter-spacing: -0.04em;
-}
-
-.hero blockquote {
-  max-width: 410px;
-  justify-self: end;
-  padding-top: 18px;
-  border-top: 2px solid rgb(255 255 255 / 24%);
-  color: rgb(255 255 255 / 72%);
-  font-family: Montserrat, Arial, sans-serif;
-  font-size: clamp(17px, 1.5vw, 22px);
-  font-style: italic;
-  font-weight: 600;
-  line-height: 1.3;
-}
-
-.hero cite {
-  display: block;
-  margin-top: 18px;
-  color: rgb(255 255 255 / 45%);
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 10px;
-  font-style: normal;
-  font-weight: 500;
+  font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+}
+
+.heroPlacementHeader small {
+  color: rgb(255 255 255 / 42%);
+  font: inherit;
 }
 
 .liveFeed {
@@ -190,7 +133,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: min(100%, 360px);
+  width: min(100%, 800px);
   margin-bottom: 18px;
   color: rgb(255 255 255 / 42%);
   font-family: "IBM Plex Mono", monospace;
@@ -206,7 +149,8 @@
   color: white;
 }
 
-.phoneFrame {
+.gridFrame {
+  width: min(800px, 100%);
   max-width: 100%;
   padding: 3px;
   overflow: hidden;
@@ -214,6 +158,12 @@
   border-radius: 18px;
   background: rgb(255 255 255 / 8%);
   box-shadow: 0 30px 80px rgb(0 0 0 / 45%);
+}
+
+.gridFrame .sdkContainer {
+  overflow: hidden;
+  border-radius: 15px;
+  background: white;
 }
 
 .scrollHint {
@@ -810,6 +760,63 @@
   text-transform: uppercase;
 }
 
+.octoLauncher {
+  position: fixed;
+  right: 28px;
+  bottom: 28px;
+  z-index: 60;
+  display: grid;
+  width: 64px;
+  height: 64px;
+  padding: 11px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  box-shadow:
+    0 4px 22px rgb(102 126 234 / 58%),
+    0 0 0 7px rgb(102 126 234 / 16%);
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.octoLauncher:hover {
+  transform: scale(1.06);
+  box-shadow:
+    0 6px 28px rgb(102 126 234 / 68%),
+    0 0 0 9px rgb(102 126 234 / 20%);
+}
+
+.octoLauncher:focus-visible {
+  outline: 3px solid white;
+  outline-offset: 4px;
+}
+
+.octoLauncherIcon {
+  width: 38px;
+  height: 38px;
+  fill: white;
+  stroke: white;
+}
+
+.octoPanel {
+  position: fixed;
+  right: 24px;
+  bottom: 108px;
+  z-index: 59;
+  display: flex;
+  width: min(400px, calc(100vw - 48px));
+  height: min(360px, calc(100vh - 140px));
+  overflow: hidden;
+  flex-direction: column;
+  border: 1px solid var(--foil-border);
+  border-radius: 20px;
+  background: white;
+  box-shadow: 0 24px 70px rgb(8 31 56 / 34%);
+}
+
 .srOnly {
   position: absolute;
   width: 1px;
@@ -822,12 +829,8 @@
 }
 
 @media (max-width: 1024px) {
-  .heroContent {
+  .heroPlacements {
     grid-template-columns: 1fr;
-  }
-
-  .hero blockquote {
-    justify-self: start;
   }
 
   .storyGrid {
@@ -848,27 +851,6 @@
     display: none;
   }
 
-  .hero {
-    min-height: 560px;
-  }
-
-  .heroContent {
-    gap: 32px;
-    padding-bottom: 36px;
-  }
-
-  .hero h1 {
-    font-size: clamp(48px, 17vw, 76px);
-  }
-
-  .hero blockquote {
-    font-size: 15px;
-  }
-
-  .countdown {
-    gap: 18px;
-  }
-
   .sectionHeader {
     align-items: flex-start;
     flex-direction: column;
@@ -879,9 +861,12 @@
     text-align: left;
   }
 
-  .phoneFrame,
-  .phoneFrame > div {
-    max-width: calc(100vw - 40px) !important;
+  .heroPlacements {
+    padding: 14px;
+  }
+
+  .heroPlacementPanel {
+    padding: 10px;
   }
 
   .podium {
@@ -920,6 +905,18 @@
   .footer p,
   .footer small {
     text-align: left;
+  }
+
+  .octoLauncher {
+    right: 20px;
+    bottom: 20px;
+  }
+
+  .octoPanel {
+    inset: 12px 12px 96px;
+    width: auto;
+    height: auto;
+    transform-origin: bottom center;
   }
 }
 
