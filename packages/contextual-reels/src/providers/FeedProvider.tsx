@@ -22,6 +22,7 @@ import { usePlayer } from "@cxr/providers/PlayerProvider";
 import DUMMY_FEED_RESPONSE from "@cxr/providers/dummyFeed.json";
 import { createFeedGenerator, setVisitId } from "@cxr/services/feed";
 import { useStrategy } from "@cxr/strategies/StrategyProvider";
+import { getDebugDeviceFeed } from "@cxr/strategies/debugDevices";
 import { getStaticTagData, isStaticTag } from "@cxr/strategies/staticTagData";
 import type { FeedEntry, NormalisedReel, Reel } from "@cxr/types";
 import { generateUuid } from "@cxr/userId";
@@ -114,7 +115,16 @@ export function FeedProvider({ children }: FeedProviderProps): ReactNode {
           setBaseEventContext?.({ visit_id: visitId });
           setMandatoryData?.({ visit_id: visitId });
           sendEvent(EVENT.FEED_API_CALL_COMPLETED);
-          reels = staticEntry.feed;
+          // Debug test devices are served their own committed VAST feed instead
+          // of the exchange-backed fixture: Infolinks device-targets these
+          // handsets, but Triton fills only intermittently, so the audible-ad
+          // path is otherwise hard to exercise on-device. Everything above still
+          // runs — only the reel contents differ. Resolves undefined for every
+          // ordinary device (no fixture chunk fetched), so the normal static
+          // feed is served. These impressions are SYNTHETIC and are flagged
+          // `forced_fill` on the audio beacon.
+          const debugFeed = await getDebugDeviceFeed(tagId).catch(() => undefined);
+          reels = debugFeed ?? staticEntry.feed;
         } else if (USE_DUMMY_FEED) {
           // USE_DUMMY_FEED is gated by `import.meta.env.DEV` and folds to false in
           // every build (see the const above) — this branch is local-dev-only and

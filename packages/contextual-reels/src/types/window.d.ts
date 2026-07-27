@@ -8,6 +8,29 @@
 import type { BannerConfig, NativeConfig, VideoConfig, AdProviderKind } from "@cxr/ads/normalizers";
 import type { OffsitePropertiesConfig } from "@cxr/analytics/analytics";
 
+/**
+ * The rejection behind an `onAdBlocked` report (GenAd >= 1.24.0, optional).
+ *
+ * GenAd's autoplay guard rail reports `"unmuted_autoplay_restricted"` for *every*
+ * `play()` rejection, but only `NotAllowedError` is a genuine autoplay block — an
+ * `AbortError` (superseded play/pause, interrupted load) is not, and yet gets the
+ * same permanent mute. These fields size that false-positive rate in the field.
+ */
+export interface GenAdBlockedDetails {
+  /**
+   * `audio_vast`: the `play()` rejection's `DOMException.name`.
+   * `ima`: `"AUTOPLAY_DISALLOWED"` when the IMA error code matched exactly, or
+   * `"ima_message_match"` when it was only inferred from the message text.
+   */
+  errorName?: string | null;
+  errorMessage?: string | null;
+  source?: "audio_vast" | "ima";
+}
+// NOTE these types describe GenAd's *intent*, not a runtime guarantee: the SDK
+// loads from a rolling CDN channel (`ad-sdk/1.0.0`) that CXR cannot pin, so a
+// future build can change the payload shape without any type error here. Always
+// coerce these values before use — see `asDiagnosticString` in `ads/genAdSdk.ts`.
+
 /** Options passed to `GenAd.init(...)`. */
 interface GenAdInitOptions {
   containerId: string;
@@ -23,7 +46,21 @@ interface GenAdInitOptions {
   onWaterfallSuccess: (provider: AdProviderKind) => void;
   onWaterfallFail: (provider: string) => void;
   onAdCompleted: () => void;
-  onVolumeChange: (data: { volume: number; isMuted: boolean }) => void;
+  /**
+   * `reason: "system"` means the SDK force-muted itself because the browser
+   * blocked unmuted autoplay. Note the SDK fires this BEFORE writing the media
+   * element, so it reports intent, not realized state.
+   */
+  onVolumeChange: (data: { volume: number; isMuted: boolean; reason?: "system" | "user" }) => void;
+  /**
+   * Fires when browser policy blocks unmuted autoplay (IMA + audio-VAST paths).
+   * The SDK auto-mutes and retries; this is diagnostic only. Currently the only
+   * `reason` the SDK sends is `"unmuted_autoplay_restricted"`.
+   *
+   * `details` is additive in GenAd 1.24.0 and absent on older builds — treat it
+   * as optional and never destructure it unguarded.
+   */
+  onAdBlocked?: (reason: string, details?: GenAdBlockedDetails) => void;
   onStageStart: (data: { stage: string }) => void;
   /** v1.17.0 — fires on every host-controlled or SDK-internal playback state change. */
   onPlaybackStateChange?: (data: { isPaused: boolean; reason?: string }) => void;

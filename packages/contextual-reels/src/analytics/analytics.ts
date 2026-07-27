@@ -69,6 +69,10 @@ export const EVENT = {
   AD_PAUSED: "Ad Paused",
   AD_PASSBACK: "Ad Passback",
   AD_REMOVED: "Ad Removed",
+  // Diagnostic-only: one snapshot of the live ad media element per audible-start
+  // fill, used to localize "volume up but no sound" to the web layer vs the
+  // native audio session (iOS WKWebView). See docs/AUDIO_DIAGNOSTIC_PLAN.md.
+  AUDIO_DIAGNOSTIC: "Audio Diagnostic",
   CTA_CLICK: "cta_click",
   SHARE: "share",
   SPARK: "spark",

@@ -23,16 +23,63 @@ Impression; `GenAdSlot.tsx` owns the per-slot GenAd SDK state.
 
 ## Event → Emitter Table
 
-| Event emitted          | Trigger                             | File              |
-| ---------------------- | ------------------------------------ | ----------------- |
-| `Ad Requested`         | before `GenAd.init()` call          | `GenAdSlot.tsx`   |
-| `Ad Response Received` | `onWaterfallSuccess` callback       | `GenAdSlot.tsx`   |
-| `Ad Impression`        | `onWaterfallSuccess` callback       | `GenAdSlot.tsx`   |
-| `Ad Request Failed`    | `onWaterfallFail` callback          | `GenAdSlot.tsx`   |
-| `Ad Passback`          | waterfall exhausted (see below)     | `AdProvider.tsx`  |
-| `Infolinks Impression` | `window.cxr.infolinksImpression()`  | `AdProvider.tsx`  |
+| Event emitted          | Trigger                                       | File             |
+| ---------------------- | --------------------------------------------- | ---------------- |
+| `Ad Requested`         | before `GenAd.init()` call                    | `GenAdSlot.tsx`  |
+| `Ad Response Received` | `onWaterfallSuccess` callback                 | `GenAdSlot.tsx`  |
+| `Ad Impression`        | `onWaterfallSuccess` callback                 | `GenAdSlot.tsx`  |
+| `Ad Request Failed`    | `onWaterfallFail` callback                    | `GenAdSlot.tsx`  |
+| `Ad Passback`          | waterfall exhausted (see below)               | `AdProvider.tsx` |
+| `Infolinks Impression` | `window.cxr.infolinksImpression()`            | `AdProvider.tsx` |
+| `Audio Diagnostic`     | `onWaterfallSuccess`, audible-start tags only | `genAdSdk.ts`    |
 
 Event name strings are defined in [`../analytics/analytics.ts`](../analytics/analytics.ts) (`EVENT`).
+
+## Audio diagnostic beacon
+
+`Audio Diagnostic` ([`audioDiagnostic.ts`](audioDiagnostic.ts)) fires **once per fill, only for
+tags with `initialVolume > 0`**. It samples the live GenAd media element twice (800ms apart) and
+reports the deltas, so a "volume is up but I hear nothing" report can be localised to a layer:
+
+| Snapshot                                                             | Owner                                                                                                                       |
+| -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `has_audio_track=true`, `element_muted=false`, `time_advancing=true` | **Native** — the OS/audio session is silencing a healthy element (iOS `AVAudioSession` / ring switch). Not fixable from JS. |
+| `ad_blocked_reason` set, or `element_muted=true`                     | Browser autoplay policy blocked unmuted autoplay.                                                                           |
+| `has_audio_track=false` with `audio_track_source="audioTracks"`      | **Ours** — the creative genuinely has no audio track.                                                                       |
+| `has_audio_track=false` with `audio_track_source="awaitingMetadata"` | Inconclusive — sampled before metadata loaded, so the empty track list proves nothing. **Not** a silent creative.           |
+| `has_audio_track=false` with `audio_track_source="unknown"`          | Inconclusive — no signal available on this engine. Not evidence of anything.                                                |
+
+Four things to preserve if you touch this:
+
+- **`webkitAudioDecodedByteCount` does not exist on current iOS.** It was the original design's proof
+  (bytes reaching the decoder) but on-device testing showed `typeof` is `"undefined"`, so
+  `audio_decoding` is `false` there and carries **no information**. `has_audio_track` (from
+  `audioTracks`, which _is_ populated) is the field to read. Don't reintroduce a dependency on the
+  counter.
+- **`element_volume` is always `1` on iOS.** The platform ignores programmatic volume writes entirely
+  (hardware buttons only), so `1` here does **not** mean our configured level failed to apply —
+  compare `configured_volume` for intent.
+- **Query `"video, audio"` and never filter on visibility or size.** The audio-ad path's element is
+  `display: none` by design (a `<video>`, not `<audio>` — Chrome blocks muted autoplay on `<audio>`,
+  and the audio media URL is loaded into a `<video>` for the same reason).
+- **Don't substitute GenAd's `onVolumeChange`/`unmute_blocked` for the element read.** The SDK fires
+  that callback _before_ writing the element, so it reports intent, not realised state — which is
+  exactly the distinction this beacon exists to make.
+
+`audio_track_source` exists so a `false` is never ambiguous between "no audio" and "couldn't tell" —
+the distinction that cost several rounds of on-device debugging to establish. That is also why an
+empty `audioTracks` is only reported as `audioTracks` once `readyState >= HAVE_METADATA`: before
+metadata the list is legitimately empty on a creative that _does_ carry audio, so attributing it to
+the creative would manufacture the exact false positive the field was added to prevent.
+
+`forced_fill` reflects the feed **actually served**, not debug-device eligibility: a missing or
+malformed fixture falls back to the real feed, and flagging that genuine fill would delete it from
+every audibility rate (they all filter `not forced_fill`). Keep it sourced from
+`didServeDebugDeviceFeed`, never from `isDebugDeviceFeed`.
+
+Reachable host-side only because GenAd renders a real element into our container (no iframe) — true
+for the Triton audio-VAST path, **not** for IMA (SDK-private element) or Aniview (cross-origin
+iframe). Full rationale: [`../../docs/AUDIO_DIAGNOSTIC_PLAN.md`](../../docs/AUDIO_DIAGNOSTIC_PLAN.md).
 
 ## Single-Hit `tagIds` & deferred passback
 

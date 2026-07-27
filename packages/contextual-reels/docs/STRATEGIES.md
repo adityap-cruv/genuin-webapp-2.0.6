@@ -250,6 +250,125 @@ No consumer code changes.
 
 ---
 
+## Debug-device feeds (temporary, diagnostic)
+
+**Status: temporary.** This exists to debug the iOS audibility report
+([AUDIO_DIAGNOSTIC_PLAN.md](AUDIO_DIAGNOSTIC_PLAN.md)) on real handsets. Remove
+the registry entries once that investigation closes — see [Removing it](#removing-it).
+
+### Why it exists
+
+Infolinks device-targets our two test handsets so our unit always renders on
+them, but the Triton exchange behind it fills only intermittently — most loads
+end in a **passback**. That makes the audible-ad path nearly impossible to
+exercise on a real device in the real app.
+
+We cannot create fill: the auction happens inside Infolinks' waterfall, and by
+the time `onWaterfallSuccess` or the no-fill passback fires the decision is
+already made. What we _can_ do is bypass the exchange for two known devices, by
+serving them a feed of **static VAST URLs** that always resolve.
+
+### How it works
+
+[`src/strategies/debugDevices.ts`](../src/strategies/debugDevices.ts) mirrors the
+`staticTagData` registry above: a lazy `import()` thunk per device, so a
+non-debug device pulls **zero** fixture bytes and Vite emits one async chunk per
+device, fetched only on a match.
+
+| Export                      | Kind  | Purpose                                                         |
+| --------------------------- | ----- | --------------------------------------------------------------- |
+| `isDebugDeviceFeed(tagId)`  | sync  | Fixture-free membership check — never pulls a chunk.            |
+| `getDebugDeviceFeed(tagId)` | async | That device's reels, or `undefined` (caller falls back).        |
+| `DEBUG_FEED_TAG_IDS`        | Set   | Tags the debug feed may replace. Currently the 320x50 tag only. |
+
+Fixtures live in [`src/providers/debug-device/`](../src/providers/debug-device/)
+as `<lowercase-device-id>.feed.json`, stored as the **full** gateway envelope
+just like the static-tag fixtures. Their reels point at VAST documents served
+from `https://gimedia.begenuin.com/vast/`.
+
+### The gate — both halves required
+
+Same invariant style as `isStaticTag`: a debug device on an unlisted tag, or an
+ordinary device on the debug tag, is **not** a debug load.
+
+1. **Device id** — matched against the `ifa`, `appidfa`, `appaid`, and `deviceid`
+   host macros, **case-insensitively**. iOS reports an uppercase IDFA and Android
+   a lowercase GAID; registry keys are lowercase and lookups are lowercased, so
+   one key matches both. A case-sensitive check would silently miss iOS.
+2. **Tag id** — must be in `DEBUG_FEED_TAG_IDS`.
+
+Only the _existing_ `servedStatically` branch in `FeedProvider` consults this, so
+non-static tags never reach it.
+
+### Load-bearing behaviours
+
+- **`Map`, not an object literal.** `key in obj` walks the prototype chain, so a
+  device id of `"constructor"` or `"__proto__"` would read as a _registered_
+  device and then throw on the loader call. `Map.has()` has no prototype chain.
+  Tests lock this, along with prefix and substring near-misses.
+- **The all-zero advertising id never matches.** Both platforms report
+  `00000000-0000-0000-0000-000000000000` when tracking is denied (iOS ATT) or the
+  id is reset. Treating it as a debug device would serve the debug feed to
+  **every opted-out user in the population**.
+- **Three independent fallbacks, all to normal behaviour.** A `.catch()` at the
+  call site, an `Array.isArray` guard against fixture drift, and the zero-id
+  rejection. Any failure serves the tag's ordinary static feed.
+- **Analytics are untouched.** The swap happens _after_ `BATCH_STARTED`,
+  `visit_id` generation, and `FEED_API_CALL_COMPLETED` — only `reels` differs, so
+  the funnel is byte-identical to an ordinary static load.
+- **`platform` stays `tritondigital`.** This keeps GenAd on the audio-VAST path
+  (`_audioElement`) the audibility bug actually lives on. A video creative would
+  exercise a different code path and prove nothing about the reported symptom.
+
+### `forced_fill` — read this before quoting any audio numbers
+
+Impressions served this way are **synthetic**, and they emit the same
+`Audio Diagnostic` beacon as real fills. Every one carries **`forced_fill: true`**
+([`genAdSdk.ts`](../src/ads/genAdSdk.ts)).
+
+> Any field query reading the audibility rate **MUST** filter
+> `forced_fill != true`. These two handsets are device-targeted by Infolinks and
+> therefore load far more often than ordinary traffic — leaving them in silently
+> biases the numerator in the rate quoted to Infolinks. See
+> [ANALYTICS_QUERYING.md](ANALYTICS_QUERYING.md).
+
+### The VAST documents
+
+Served from `https://gimedia.begenuin.com/vast/` (Bunny pull zone 6193063) and
+referenced **by URL** — the build never reads them.
+
+**CORS is load-bearing.** GenAd fetches VAST with a plain `await fetch(vastUrl)`,
+so a missing `Access-Control-Allow-Origin` makes the browser block the request;
+GenAd then reports no-fill → passback, which looks _identical_ to the Triton
+passback this feature exists to escape. The pull zone currently returns `ACAO: *`.
+If the debug feed ever stops filling, check this first.
+
+Local reference copies under `src/providers/static-vast/` are **gitignored** —
+nothing in the build reads them and they have already drifted from what the CDN
+serves. Treat the CDN as the source of truth.
+
+### Add or change a debug device
+
+1. Drop `<lowercase-device-id>.feed.json` into `src/providers/debug-device/`.
+2. Add a thunk keyed by the **lowercase** id to `DEBUG_FEED_LOADERS`.
+
+No consumer code changes. To cover another tag, add its id to
+`DEBUG_FEED_TAG_IDS` (the 320x100 sibling `6a3915b692929ebec64d785e` is
+deliberately excluded today).
+
+**If the gate silently no-ops** — ordinary passback behaviour on a device you
+expect to match — the likely cause is that the id Infolinks targets differs from
+what the host actually passes. Read `host_script_params_raw` off the
+`tag_captured` event on that handset and compare against the registry keys.
+
+### Removing it
+
+Delete `debugDevices.ts` + its test, the `src/providers/debug-device/` fixtures,
+the two-line swap in `FeedProvider.tsx`, and the `forced_fill` field in
+`genAdSdk.ts`. Nothing else depends on them.
+
+---
+
 ## Forward note
 
 Currently client-side. When the backend serves this config, prepend one layer in

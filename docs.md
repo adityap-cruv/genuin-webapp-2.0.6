@@ -55,11 +55,11 @@ Environment prerequisites, tooling, and dependency management.
 
 Structural documentation about how the repository is organized.
 
-| File                                                                                     | Purpose                               |
-| ---------------------------------------------------------------------------------------- | ------------------------------------- |
-| [docs/architecture/REPO_CONTEXT.md](docs/architecture/REPO_CONTEXT.md)                   | Full repository context and structure |
-| [docs/architecture/MONOREPO_CONVERSION.md](docs/architecture/MONOREPO_CONVERSION.md)     | History of the monorepo conversion    |
-| [docs/architecture/PATH_RESOLUTION_GUIDE.md](docs/architecture/PATH_RESOLUTION_GUIDE.md) | Path resolution and import guide      |
+| File                                                                                     | Purpose                                                          |
+| ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| [docs/architecture/REPO_CONTEXT.md](docs/architecture/REPO_CONTEXT.md)                   | Full repository context and structure                            |
+| [docs/architecture/MONOREPO_CONVERSION.md](docs/architecture/MONOREPO_CONVERSION.md)     | History of the monorepo conversion                               |
+| [docs/architecture/PATH_RESOLUTION_GUIDE.md](docs/architecture/PATH_RESOLUTION_GUIDE.md) | Path resolution and import guide                                 |
 | [docs/architecture/SAFE_SUSPENSE.md](docs/architecture/SAFE_SUSPENSE.md)                 | SafeSuspense pattern, chunk-failure resilience, lint enforcement |
 
 ### Migrations
@@ -121,67 +121,74 @@ Operational docs for the upgrade lifecycle: tracking, deployment, and QA.
 
 Feature plans for the `molecules/linkout-new` family — scenario configs, ad slots, outside / responsive layouts. Authored as living docs alongside the implementation work; new plans go here.
 
-| File                                                                                                                             | Purpose                                                           |
-| -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| [packages/components/docs/linkouts/FULL_DYNAMIC_LINKOUT_PLAN.md](packages/components/docs/linkouts/FULL_DYNAMIC_LINKOUT_PLAN.md) | End-to-end dynamic-linkout scenario picker / state machine plan   |
-| [packages/components/docs/linkouts/RESPONSIVE_LINKOUT_PLAN.md](packages/components/docs/linkouts/RESPONSIVE_LINKOUT_PLAN.md)     | Responsive wide-card layout matrix (size buckets + orientation)   |
-| [packages/components/docs/linkouts/OUTSIDE_LINKOUT_PLAN.md](packages/components/docs/linkouts/OUTSIDE_LINKOUT_PLAN.md)           | Outside (below-the-frame) layout variant for embed scenarios      |
-| [packages/components/docs/linkouts/DYNAMIC_LINKOUT_ADS_PLAN.md](packages/components/docs/linkouts/DYNAMIC_LINKOUT_ADS_PLAN.md)   | Banner / display / video ad fallback rollout for the linkout slot |
-| [packages/components/docs/linkouts/SAMPLE_AD_TAGS.md](packages/components/docs/linkouts/SAMPLE_AD_TAGS.md)                       | Sample ad tags for QA: IMA (video) + GAM (display banner) paths   |
-| [docs/plans/dynamic-sheet-snap/DESIGN.md](docs/plans/dynamic-sheet-snap/DESIGN.md)                                             | `SnapSheet` snap-point engine (continuous velocity-projected drag) — first consumer is linkouts |
+| File                                                                                                                             | Purpose                                                                                         |
+| -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| [packages/components/docs/linkouts/FULL_DYNAMIC_LINKOUT_PLAN.md](packages/components/docs/linkouts/FULL_DYNAMIC_LINKOUT_PLAN.md) | End-to-end dynamic-linkout scenario picker / state machine plan                                 |
+| [packages/components/docs/linkouts/RESPONSIVE_LINKOUT_PLAN.md](packages/components/docs/linkouts/RESPONSIVE_LINKOUT_PLAN.md)     | Responsive wide-card layout matrix (size buckets + orientation)                                 |
+| [packages/components/docs/linkouts/OUTSIDE_LINKOUT_PLAN.md](packages/components/docs/linkouts/OUTSIDE_LINKOUT_PLAN.md)           | Outside (below-the-frame) layout variant for embed scenarios                                    |
+| [packages/components/docs/linkouts/DYNAMIC_LINKOUT_ADS_PLAN.md](packages/components/docs/linkouts/DYNAMIC_LINKOUT_ADS_PLAN.md)   | Banner / display / video ad fallback rollout for the linkout slot                               |
+| [packages/components/docs/linkouts/SAMPLE_AD_TAGS.md](packages/components/docs/linkouts/SAMPLE_AD_TAGS.md)                       | Sample ad tags for QA: IMA (video) + GAM (display banner) paths                                 |
+| [docs/plans/dynamic-sheet-snap/DESIGN.md](docs/plans/dynamic-sheet-snap/DESIGN.md)                                               | `SnapSheet` snap-point engine (continuous velocity-projected drag) — first consumer is linkouts |
 
 ---
 
 ## `packages/contextual-reels/` — CXR widget
 
-| File                                                                                         | Purpose                                                          |
-| -------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| [packages/contextual-reels/README.md](packages/contextual-reels/README.md)                   | CXR widget package guide + quick start                          |
-| [packages/contextual-reels/CLAUDE.md](packages/contextual-reels/CLAUDE.md)                   | CXR AI memory map — architecture, dirs, data flow, entry points, testing |
-| [packages/contextual-reels/docs/README.md](packages/contextual-reels/docs/README.md)         | CXR documentation index (single source of truth)                |
-| [packages/contextual-reels/docs/ARCHITECTURE.md](packages/contextual-reels/docs/ARCHITECTURE.md) | CXR module map — entry points, providers, feed/player/ads/controls/strategies/instance/genai |
-| [packages/contextual-reels/docs/DATA_FLOW.md](packages/contextual-reels/docs/DATA_FLOW.md)   | CXR end-to-end flow — tag id → boot → feed → ad → analytics     |
-| [packages/contextual-reels/docs/CONFIGURATION.md](packages/contextual-reels/docs/CONFIGURATION.md) | CXR env, ad layouts, stacked layout, GIV, host macros, deploy   |
-| [packages/contextual-reels/docs/CONTRIBUTING.md](packages/contextual-reels/docs/CONTRIBUTING.md) | CXR TDD, coverage gates, invariants, partner contracts, how-tos |
-| [packages/contextual-reels/docs/STRATEGIES.md](packages/contextual-reels/docs/STRATEGIES.md) | Per-tag strategy system — toggles, the 3-layer cascade, recipes |
-| [packages/contextual-reels/tests/e2e/README.md](packages/contextual-reels/tests/e2e/README.md) | Control-icon E2E suite — harness, fixtures, real-vs-mocked, scenarios |
-| [packages/contextual-reels/src/ads/README.md](packages/contextual-reels/src/ads/README.md)   | GenAd SDK boundary — waterfall, single-hit passback, Infolinks Impression |
-| [packages/contextual-reels/src/player/README.md](packages/contextual-reels/src/player/README.md) | Player lifecycle (HLS/IMA) reference |
-| [packages/contextual-reels/src/feed/hooks/README.md](packages/contextual-reels/src/feed/hooks/README.md) | Feed hooks reference |
-| [packages/contextual-reels/docs/AD_REMOVAL_RISK_AUDIT.md](packages/contextual-reels/docs/AD_REMOVAL_RISK_AUDIT.md) | Historical (2026-07-02) Heavy Ad Intervention / ad-policy risk audit — superseded on AdProvider specifics, see banner |
-| [packages/contextual-reels/docs/AUDIT_TRIAGE_2026-07.md](packages/contextual-reels/docs/AUDIT_TRIAGE_2026-07.md) | Historical (2026-07-09) production-readiness audit triage — fixed / deferred / unverified |
+| File                                                                                                                                           | Purpose                                                                                                                                         |
+| ---------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| [packages/contextual-reels/README.md](packages/contextual-reels/README.md)                                                                     | CXR widget package guide + quick start                                                                                                          |
+| [packages/contextual-reels/CLAUDE.md](packages/contextual-reels/CLAUDE.md)                                                                     | CXR AI memory map — architecture, dirs, data flow, entry points, testing                                                                        |
+| [packages/contextual-reels/docs/README.md](packages/contextual-reels/docs/README.md)                                                           | CXR documentation index (single source of truth)                                                                                                |
+| [packages/contextual-reels/docs/ARCHITECTURE.md](packages/contextual-reels/docs/ARCHITECTURE.md)                                               | CXR module map — entry points, providers, feed/player/ads/controls/strategies/instance/genai                                                    |
+| [packages/contextual-reels/docs/DATA_FLOW.md](packages/contextual-reels/docs/DATA_FLOW.md)                                                     | CXR end-to-end flow — tag id → boot → feed → ad → analytics                                                                                     |
+| [packages/contextual-reels/docs/CONFIGURATION.md](packages/contextual-reels/docs/CONFIGURATION.md)                                             | CXR env, ad layouts, stacked layout, GIV, host macros, deploy                                                                                   |
+| [packages/contextual-reels/docs/CONTRIBUTING.md](packages/contextual-reels/docs/CONTRIBUTING.md)                                               | CXR TDD, coverage gates, invariants, partner contracts, how-tos                                                                                 |
+| [packages/contextual-reels/docs/STRATEGIES.md](packages/contextual-reels/docs/STRATEGIES.md)                                                   | Per-tag strategy system — toggles, the 3-layer cascade, recipes, statically-served tags, debug-device VAST feeds                                |
+| [packages/contextual-reels/tests/e2e/README.md](packages/contextual-reels/tests/e2e/README.md)                                                 | Control-icon E2E suite — harness, fixtures, real-vs-mocked, scenarios                                                                           |
+| [packages/contextual-reels/src/ads/README.md](packages/contextual-reels/src/ads/README.md)                                                     | GenAd SDK boundary — waterfall, single-hit passback, Infolinks Impression                                                                       |
+| [packages/contextual-reels/src/player/README.md](packages/contextual-reels/src/player/README.md)                                               | Player lifecycle (HLS/IMA) reference                                                                                                            |
+| [packages/contextual-reels/src/feed/hooks/README.md](packages/contextual-reels/src/feed/hooks/README.md)                                       | Feed hooks reference                                                                                                                            |
+| [packages/contextual-reels/docs/AD_REMOVAL_RISK_AUDIT.md](packages/contextual-reels/docs/AD_REMOVAL_RISK_AUDIT.md)                             | Historical (2026-07-02) Heavy Ad Intervention / ad-policy risk audit — superseded on AdProvider specifics, see banner                           |
+| [packages/contextual-reels/docs/AUDIT_TRIAGE_2026-07.md](packages/contextual-reels/docs/AUDIT_TRIAGE_2026-07.md)                               | Historical (2026-07-09) production-readiness audit triage — fixed / deferred / unverified                                                       |
+| [packages/contextual-reels/docs/AUDIO_DIAGNOSTIC_TASK.md](packages/contextual-reels/docs/AUDIO_DIAGNOSTIC_TASK.md)                             | Original problem report — iOS WKWebView "volume up, no sound" on the Infolinks 320x50 audio tag                                                 |
+| [packages/contextual-reels/docs/AUDIO_DIAGNOSTIC_PLAN.md](packages/contextual-reels/docs/AUDIO_DIAGNOSTIC_PLAN.md)                             | `AUDIO_DIAGNOSTIC` beacon — native-vs-web fault localization, why host-side not GenAd, reading the field data                                   |
+| [packages/contextual-reels/docs/ANALYTICS_QUERYING.md](packages/contextual-reels/docs/ANALYTICS_QUERYING.md)                                   | **Querying CXR analytics in ClickHouse** — `temp_adreels_logs` schema, the `data` JSON blob + flattened keys, field reference, recipes, traps   |
+| [packages/contextual-reels/docs/AUDIO_DIAGNOSTIC_FINDINGS.md](packages/contextual-reels/docs/AUDIO_DIAGNOSTIC_FINDINGS.md)                     | Running findings log — audible-start muting: what's established, 7 overturned conclusions, data snapshots, open questions                       |
+| [packages/contextual-reels/docs/AUDIO_DIAGNOSTIC_API_COVERAGE.md](packages/contextual-reels/docs/AUDIO_DIAGNOSTIC_API_COVERAGE.md)             | WebView audio/autoplay API coverage audit (Android + iOS) — proof no signal was missed, with compat citations; 2 plausible candidates disproved |
+| [packages/contextual-reels/docs/AUDIO_DIAGNOSTIC_INFOLINKS_FEEDBACK.md](packages/contextual-reels/docs/AUDIO_DIAGNOSTIC_INFOLINKS_FEEDBACK.md) | Outbound Infolinks ask — the prioritised requests, and the figures not cleared for external use                                                 |
+| [packages/contextual-reels/docs/AUDIO_DIAGNOSTIC_ANALYST_GUIDE.md](packages/contextual-reels/docs/AUDIO_DIAGNOSTIC_ANALYST_GUIDE.md)           | **Analyst entry point** — plain-English orientation, layman gloss on every beacon field, standing queries, traps                                |
 
 ### CXR decisions (ADRs)
 
 Architecture decision records for the widget. New ADRs go in `docs/cxr-decisions/`, numbered sequentially.
 
-| File                                                                                                                                                       | Purpose                                   |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
-| [packages/contextual-reels/docs/cxr-decisions/001-drop-swiper.md](packages/contextual-reels/docs/cxr-decisions/001-drop-swiper.md)                         | ADR 001 — drop Swiper                     |
-| [packages/contextual-reels/docs/cxr-decisions/002-chromium-os-quirk.md](packages/contextual-reels/docs/cxr-decisions/002-chromium-os-quirk.md)             | ADR 002 — Chromium OS quirk               |
-| [packages/contextual-reels/docs/cxr-decisions/003-mutation-observer-scope.md](packages/contextual-reels/docs/cxr-decisions/003-mutation-observer-scope.md) | ADR 003 — MutationObserver document scope |
-| [packages/contextual-reels/docs/cxr-decisions/004-e2e-real-genad.md](packages/contextual-reels/docs/cxr-decisions/004-e2e-real-genad.md)                   | ADR 004 — control-icon E2E runs against real GenAd |
+| File                                                                                                                                                       | Purpose                                                  |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| [packages/contextual-reels/docs/cxr-decisions/001-drop-swiper.md](packages/contextual-reels/docs/cxr-decisions/001-drop-swiper.md)                         | ADR 001 — drop Swiper                                    |
+| [packages/contextual-reels/docs/cxr-decisions/002-chromium-os-quirk.md](packages/contextual-reels/docs/cxr-decisions/002-chromium-os-quirk.md)             | ADR 002 — Chromium OS quirk                              |
+| [packages/contextual-reels/docs/cxr-decisions/003-mutation-observer-scope.md](packages/contextual-reels/docs/cxr-decisions/003-mutation-observer-scope.md) | ADR 003 — MutationObserver document scope                |
+| [packages/contextual-reels/docs/cxr-decisions/004-e2e-real-genad.md](packages/contextual-reels/docs/cxr-decisions/004-e2e-real-genad.md)                   | ADR 004 — control-icon E2E runs against real GenAd       |
 | [packages/contextual-reels/docs/cxr-decisions/005-stacked-infolinks.md](packages/contextual-reels/docs/cxr-decisions/005-stacked-infolinks.md)             | ADR 005 — stacked layout with an Infolinks in-place unit |
-| [packages/contextual-reels/docs/cxr-decisions/006-l3-audio-on-unmute.md](packages/contextual-reels/docs/cxr-decisions/006-l3-audio-on-unmute.md)           | ADR 006 — L3 (320×50) audio on unmute     |
+| [packages/contextual-reels/docs/cxr-decisions/006-l3-audio-on-unmute.md](packages/contextual-reels/docs/cxr-decisions/006-l3-audio-on-unmute.md)           | ADR 006 — L3 (320×50) audio on unmute                    |
 
 ### CXR ad-resource-budget (skill)
 
 Heavy Ad Intervention / IAB resource-budget enforcement for CXR ad tags & creatives.
 
-| File                                                                                                                                     | Purpose                                        |
-| ----------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
-| [packages/contextual-reels/ad-resource-budget/SKILL.md](packages/contextual-reels/ad-resource-budget/SKILL.md)                           | Skill entry point — enforces per-build resource budgets |
-| [packages/contextual-reels/ad-resource-budget/cxr/README.md](packages/contextual-reels/ad-resource-budget/cxr/README.md)                 | CXR-specific harness notes |
-| [packages/contextual-reels/ad-resource-budget/scripts/README.md](packages/contextual-reels/ad-resource-budget/scripts/README.md)         | Measurement scripts reference |
-| [packages/contextual-reels/ad-resource-budget/references/resource-budgets.md](packages/contextual-reels/ad-resource-budget/references/resource-budgets.md) | Byte/CPU/request budget thresholds |
-| [packages/contextual-reels/ad-resource-budget/references/measurement-methodology.md](packages/contextual-reels/ad-resource-budget/references/measurement-methodology.md) | How budgets are measured |
+| File                                                                                                                                                                     | Purpose                                                 |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------- |
+| [packages/contextual-reels/ad-resource-budget/SKILL.md](packages/contextual-reels/ad-resource-budget/SKILL.md)                                                           | Skill entry point — enforces per-build resource budgets |
+| [packages/contextual-reels/ad-resource-budget/cxr/README.md](packages/contextual-reels/ad-resource-budget/cxr/README.md)                                                 | CXR-specific harness notes                              |
+| [packages/contextual-reels/ad-resource-budget/scripts/README.md](packages/contextual-reels/ad-resource-budget/scripts/README.md)                                         | Measurement scripts reference                           |
+| [packages/contextual-reels/ad-resource-budget/references/resource-budgets.md](packages/contextual-reels/ad-resource-budget/references/resource-budgets.md)               | Byte/CPU/request budget thresholds                      |
+| [packages/contextual-reels/ad-resource-budget/references/measurement-methodology.md](packages/contextual-reels/ad-resource-budget/references/measurement-methodology.md) | How budgets are measured                                |
 
 ### CXR superpowers plans & specs
 
 Feature plans/specs authored via the `superpowers` skill workflow (planning artifacts, not live reference).
 
-| File                                                                                                                                     | Purpose                                        |
-| ----------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| File                                                                                                                                                                                               | Purpose                                                        |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
 | [packages/contextual-reels/docs/superpowers/specs/2026-07-09-cxr-host-macro-resolution-design.md](packages/contextual-reels/docs/superpowers/specs/2026-07-09-cxr-host-macro-resolution-design.md) | Design spec — host macro resolution (Triton app-param rulings) |
 
 ---
@@ -258,11 +265,11 @@ Historical records of past reorganization efforts (not active reference material
 > Authored directly (no sync step, no generator). Claude Code reads these on session start / on
 > demand. See [docs/claude-setup-plan.md](docs/claude-setup-plan.md) for the migration rationale.
 
-| File                                                     | Purpose                                                       |
-| -------------------------------------------------------- | ------------------------------------------------------------- |
-| [.claude/CLAUDE.md](.claude/CLAUDE.md)                   | Project rules, conventions, guardrails, agent/skill awareness |
-| [.claude/docs/ai-context.md](.claude/docs/ai-context.md) | React/Next.js patterns, Tailwind v4, env vars                 |
-| [.claude/agents/](.claude/agents/)                       | Specialist subagents (planner, implementer, debugger, …)      |
-| [.claude/skills/README.md](.claude/skills/README.md)     | **Skills & agents catalog** — all 16 skills + 9 agents with trigger phrases |
-| [.claude/skills/](.claude/skills/)                       | Domain skills (debug, e2e-testing, frontend-patterns, …)      |
+| File                                                     | Purpose                                                                             |
+| -------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| [.claude/CLAUDE.md](.claude/CLAUDE.md)                   | Project rules, conventions, guardrails, agent/skill awareness                       |
+| [.claude/docs/ai-context.md](.claude/docs/ai-context.md) | React/Next.js patterns, Tailwind v4, env vars                                       |
+| [.claude/agents/](.claude/agents/)                       | Specialist subagents (planner, implementer, debugger, …)                            |
+| [.claude/skills/README.md](.claude/skills/README.md)     | **Skills & agents catalog** — all 16 skills + 9 agents with trigger phrases         |
+| [.claude/skills/](.claude/skills/)                       | Domain skills (debug, e2e-testing, frontend-patterns, …)                            |
 | [.claude/codebase-map.md](.claude/codebase-map.md)       | Living, team-shared codebase knowledge Claude reads/updates (codebase-memory skill) |

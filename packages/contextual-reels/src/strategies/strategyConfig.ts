@@ -108,6 +108,11 @@ export const TAG_STRATEGIES: Record<string, TagStrategyEntry> = {
   // geoip + real client IP on the ad-URL rewrite).
   "6a39163e92929ebec64d78ab": { initialVolume: 0.2, singleHitWaterfall: true, preset: "servedStatically" }, // 320x50
   "6a3915b692929ebec64d785e": { initialVolume: 0.2, singleHitWaterfall: true, preset: "servedStatically" }, // 320x100
+  // Audible-start tags too, but served from the live exchange rather than fixtures.
+  // The 20% volume is the advertiser requirement, not a test override — these
+  // intentionally bypass the mute gate and start unmuted. Do not "fix" by muting.
+  "6a1fd43b45aec54862ed235d": { initialVolume: 0.2, singleHitWaterfall: true }, // 320x50
+  "6a3aa86e4da8cd92d289ccda": { initialVolume: 0.2, singleHitWaterfall: true }, // 320x50 QA
 
   "6a2fefd87ce338c3a5afc605": { singleHitWaterfall: true, initialVolume: 0.2 },
   "6a391232d73aa25887ac2af3": { adBreakEnabled: true, gateOnUnmute: true },

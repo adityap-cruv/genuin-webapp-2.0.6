@@ -41,6 +41,7 @@ describe("EVENT names", () => {
         "AD_SKIPPED": "Ad Skipped",
         "AD_START": "Ad Start",
         "AD_STARTED": "Ad Started",
+        "AUDIO_DIAGNOSTIC": "Audio Diagnostic",
         "BATCH_COMPLETED": "Batch Completed",
         "BATCH_STARTED": "Batch Started",
         "CTA_CLICK": "cta_click",

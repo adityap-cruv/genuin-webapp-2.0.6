@@ -1,0 +1,63 @@
+{
+  "code": "200",
+  "message": "Feed is loaded.",
+  "data": {
+    "reels": [
+      {
+        "type": "ads",
+        "video_ad": [
+          {
+            "ads_url": "https://gimedia.begenuin.com/vast/betmgm-vast.xml",
+            "cpm": 5,
+            "platform": "tritondigital",
+            "url": "https://gimedia.begenuin.com/vast/betmgm-vast.xml"
+          }
+        ]
+      },
+      {
+        "type": "ads",
+        "video_ad": [
+          {
+            "ads_url": "https://gimedia.begenuin.com/vast/nj-gov-vast.xml",
+            "cpm": 5,
+            "platform": "tritondigital",
+            "url": "https://gimedia.begenuin.com/vast/nj-gov-vast.xml"
+          }
+        ]
+      },
+      {
+        "type": "ads",
+        "video_ad": [
+          {
+            "ads_url": "https://gimedia.begenuin.com/vast/foundersfcu-vast.xml",
+            "cpm": 5,
+            "platform": "tritondigital",
+            "url": "https://gimedia.begenuin.com/vast/foundersfcu-vast.xml"
+          }
+        ]
+      },
+      {
+        "type": "ads",
+        "video_ad": [
+          {
+            "ads_url": "https://gimedia.begenuin.com/vast/sidneyrmc-vast.xml",
+            "cpm": 5,
+            "platform": "tritondigital",
+            "url": "https://gimedia.begenuin.com/vast/sidneyrmc-vast.xml"
+          }
+        ]
+      },
+      {
+        "type": "ads",
+        "video_ad": [
+          {
+            "ads_url": "https://gimedia.begenuin.com/vast/zendwellness-vast.xml",
+            "cpm": 5,
+            "platform": "tritondigital",
+            "url": "https://gimedia.begenuin.com/vast/zendwellness-vast.xml"
+          }
+        ]
+      }
+    ]
+  }
+}

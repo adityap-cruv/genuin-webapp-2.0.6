@@ -14,6 +14,7 @@ import { usePlayer } from "@cxr/providers/PlayerProvider";
 import { useTagDetails } from "@cxr/providers/TagDetailsProvider";
 import { createFeedGenerator, setVisitId } from "@cxr/services/feed";
 import { useStrategy } from "@cxr/strategies/StrategyProvider";
+import { getDebugDeviceFeed } from "@cxr/strategies/debugDevices";
 import { getStaticTagData } from "@cxr/strategies/staticTagData";
 import type { FeedEntry, NormalisedReel } from "@cxr/types";
 
@@ -43,6 +44,12 @@ vi.mock("../strategies/staticTagData", () => {
       servedStatically && tagId != null && staticIds.has(tagId),
   };
 });
+
+// Debug-device gate reads host macros captured at module load; mock it so both
+// branches of the static-feed swap are drivable without touching window state.
+vi.mock("../strategies/debugDevices", () => ({
+  getDebugDeviceFeed: vi.fn(async () => undefined),
+}));
 
 // FeedProvider reads `isAdBreakActive` from usePlayer() (context) to derive
 // isAdActive/activeReel — mount order in FeedTree puts PlayerProvider above it.
@@ -97,6 +104,7 @@ const mockUsePlayer = usePlayer as ReturnType<typeof vi.fn>;
 const mockNormaliseFeed = normaliseFeed as ReturnType<typeof vi.fn>;
 const mockUseStrategy = useStrategy as ReturnType<typeof vi.fn>;
 const mockGetStaticTagData = getStaticTagData as ReturnType<typeof vi.fn>;
+const mockGetDebugDeviceFeed = getDebugDeviceFeed as ReturnType<typeof vi.fn>;
 const mockUseTagDetails = useTagDetails as ReturnType<typeof vi.fn>;
 
 interface Captured {
@@ -129,6 +137,9 @@ describe("FeedProvider", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    // clearAllMocks drops the factory's default return — restore "ordinary
+    // device" so only the tests that opt in take the debug-feed branch.
+    mockGetDebugDeviceFeed.mockResolvedValue(undefined);
     mockUsePlayer.mockReturnValue({ isAdBreakActive: false });
     captured = {
       entries: [],
@@ -340,6 +351,54 @@ describe("FeedProvider", () => {
     expect(mockCreateFeedGenerator).not.toHaveBeenCalled();
     expect(captured.entries.length).toBe(2);
     expect(captured.isLoading).toBe(false);
+  });
+
+  it("swaps in the debug device's VAST feed on a debug test device", async () => {
+    mockGetDebugDeviceFeed.mockResolvedValue([{ type: "ads" }, { type: "ads" }]);
+    mockUseStrategy.mockReturnValue({
+      adBreakEnabled: false,
+      gateOnUnmute: false,
+      adsDisabled: false,
+      servedStatically: true,
+    });
+    // Three reels in the fixture vs two in the debug feed — so the assertion
+    // below can only pass if the swap actually happened.
+    mockGetStaticTagData.mockResolvedValue({
+      tagConfig: {},
+      feed: [{ type: "ads" }, { type: "ads" }, { type: "ads" }],
+    });
+
+    render();
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(captured.entries.length).toBe(2);
+    // The exchange is never consulted for a debug device.
+    expect(mockCreateFeedGenerator).not.toHaveBeenCalled();
+  });
+
+  it("serves the committed fixture, not the debug feed, on an ordinary device", async () => {
+    mockGetDebugDeviceFeed.mockResolvedValue(undefined);
+    mockUseStrategy.mockReturnValue({
+      adBreakEnabled: false,
+      gateOnUnmute: false,
+      adsDisabled: false,
+      servedStatically: true,
+    });
+    mockGetStaticTagData.mockResolvedValue({
+      tagConfig: {},
+      feed: [{ type: "ads" }, { type: "ads" }, { type: "ads" }],
+    });
+
+    render();
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(captured.entries.length).toBe(3);
   });
 
   it("emits a freshly generated visit_id for the static entry", async () => {

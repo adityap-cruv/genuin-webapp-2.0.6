@@ -17,6 +17,15 @@ ad-budget-report.*.json
 # committed source file, so un-ignore it explicitly.
 !ad-resource-budget/cxr/tag-snippet.html
 
+# Local reference copies of the sample VAST documents. The build never reads
+# these — they are served from https://gimedia.begenuin.com/vast/ and referenced
+# by URL from the debug-device feed fixtures. Keep them out of the repo so the
+# CDN stays the single source of truth (the local copies have already drifted).
+# NOTE: src/providers/debug-device/*.feed.json is deliberately NOT ignored —
+# those fixtures are `import()`ed by strategies/debugDevices.ts and the build
+# fails without them.
+src/providers/static-vast/
+
 # Local env files — may contain real credentials; never commit
 .env.development
 .env.production

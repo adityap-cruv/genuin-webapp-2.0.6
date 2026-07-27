@@ -1736,6 +1736,457 @@ describe("ads/useGenAdInstance", () => {
   });
 });
 
+// ─── useGenAdInstance — audio diagnostic beacon ───────────────────────────────
+// Localizes the iOS WKWebView "volume up, no sound" report: proves whether the
+// web layer muted the ad or the native audio session silenced a correctly
+// unmuted element. Instrumentation only — see docs/AUDIO_DIAGNOSTIC_PLAN.md.
+
+describe("useGenAdInstance — audio diagnostic beacon", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    testBus = new CxrEventBus();
+    installGenAd();
+    lastInitOptions = {};
+    sdkLoader.impl = () => Promise.resolve();
+    strategyMock.value = { initialVolume: 0 };
+  });
+
+  afterEach(() => {
+    uninstallGenAd();
+    vi.clearAllMocks();
+  });
+
+  /**
+   * Builds a container holding a media element shaped like the SDK's audio ad:
+   * a `display: none` <video> whose decode counter climbs while playing.
+   */
+  function containerWithMedia(opts: { decoding?: boolean; muted?: boolean; volume?: number; hidden?: boolean } = {}): {
+    current: HTMLDivElement;
+  } {
+    const { decoding = true, muted = false, volume = 0.2, hidden = true } = opts;
+    const div = document.createElement("div");
+    document.body.appendChild(div);
+
+    const media = document.createElement("video");
+    if (hidden) media.style.display = "none";
+    Object.defineProperty(media, "muted", { value: muted, writable: true, configurable: true });
+    Object.defineProperty(media, "volume", { value: volume, writable: true, configurable: true });
+    Object.defineProperty(media, "paused", { value: false, writable: true, configurable: true });
+    Object.defineProperty(media, "readyState", { value: 4, writable: true, configurable: true });
+
+    let time = 0;
+    Object.defineProperty(media, "currentTime", {
+      get: () => (decoding ? (time += 0.4) : 0),
+      configurable: true,
+    });
+    // Models current iOS: audioTracks is the available signal, the legacy
+    // webkitAudioDecodedByteCount counter is absent.
+    Object.defineProperty(media, "audioTracks", {
+      value: { length: decoding ? 1 : 0 },
+      configurable: true,
+    });
+
+    div.appendChild(media);
+    return { current: div };
+  }
+
+  /** Flushes the beacon's deferred query + its 800ms sampling window. */
+  async function flushBeacon(): Promise<void> {
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1000);
+    });
+  }
+
+  /** Returns the payload of the single emitted "Audio Diagnostic" event. */
+  function beaconPayload(): Record<string, unknown> | undefined {
+    const call = sendEventMock.mock.calls.find(([name]) => name === "Audio Diagnostic");
+    return call?.[1] as Record<string, unknown> | undefined;
+  }
+
+  it("emits a beacon on fill for an audible-start tag, reading the hidden media element", async () => {
+    // The 320x50 audio ad's element is display:none by design — the selector
+    // must not filter on visibility, or the affected tag reports nothing.
+    vi.useFakeTimers();
+    strategyMock.value = { initialVolume: 0.2 };
+    const containerRef = containerWithMedia();
+
+    const { root, container } = mountHook({ ...baseProps, isActive: true, containerRef });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    await act(async () => {
+      (lastInitOptions.onWaterfallSuccess as (p: string) => void)("video");
+    });
+    await flushBeacon();
+
+    const payload = beaconPayload();
+    expect(payload).toBeDefined();
+    expect(payload?.element_muted).toBe(false);
+    expect(payload?.element_volume).toBe(0.2);
+    expect(payload?.configured_volume).toBe(0.2);
+    expect(payload?.wants_audible_ad_start).toBe(true);
+    // The conclusive combination on iOS: an audio track exists and playback is
+    // progressing while unmuted => the web layer is healthy, so any silence the
+    // user hears is native. `audio_decoding` is NOT part of this: the byte
+    // counter it needs is absent on current iOS.
+    expect(payload?.has_audio_track).toBe(true);
+    expect(payload?.audio_track_source).toBe("audioTracks");
+    expect(payload?.time_advancing).toBe(true);
+
+    vi.useRealTimers();
+    unmount(root, container);
+  });
+
+  it("measures the audio element, not the decorative content video beside it", async () => {
+    // On-device regression: the audio-ad layout renders a muted, audio-less
+    // content video BEFORE the audio transport. First-match selection reported
+    // element_volume:1 / has_audio_track:false while audio played fine.
+    vi.useFakeTimers();
+    strategyMock.value = { initialVolume: 0.2 };
+
+    const div = document.createElement("div");
+    document.body.appendChild(div);
+
+    // Decoy: muted decoration with no audio track (mirrors the real layout).
+    const decoy = document.createElement("video");
+    decoy.setAttribute("src", "https://cdn.example/decor.mp4");
+    Object.defineProperty(decoy, "muted", { value: true, configurable: true });
+    Object.defineProperty(decoy, "volume", { value: 1, configurable: true });
+    Object.defineProperty(decoy, "audioTracks", { value: { length: 0 }, configurable: true });
+    div.appendChild(decoy);
+
+    // The real transport. Models current iOS: audioTracks populated, and NO
+    // webkitAudioDecodedByteCount (that property is absent on current iOS).
+    const audio = document.createElement("video");
+    audio.style.display = "none";
+    audio.setAttribute("src", "https://media.begenuin.com/audio-ads/spot.mp3");
+    Object.defineProperty(audio, "muted", { value: false, configurable: true });
+    Object.defineProperty(audio, "volume", { value: 0.2, configurable: true });
+    Object.defineProperty(audio, "audioTracks", { value: { length: 1 }, configurable: true });
+    div.appendChild(audio);
+
+    const { root, container } = mountHook({
+      ...baseProps,
+      isActive: true,
+      containerRef: { current: div },
+    });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    await act(async () => {
+      (lastInitOptions.onWaterfallSuccess as (p: string) => void)("video");
+    });
+    await flushBeacon();
+
+    const payload = beaconPayload();
+    expect(payload?.element_volume).toBe(0.2);
+    expect(payload?.element_muted).toBe(false);
+    expect(payload?.has_audio_track).toBe(true);
+    expect(payload?.media_element_count).toBe(2);
+
+    vi.useRealTimers();
+    unmount(root, container);
+  });
+
+  it("does not emit for a non-audible tag (initialVolume 0)", async () => {
+    vi.useFakeTimers();
+    strategyMock.value = { initialVolume: 0 };
+    const containerRef = containerWithMedia();
+
+    const { root, container } = mountHook({ ...baseProps, isActive: true, containerRef });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    await act(async () => {
+      (lastInitOptions.onWaterfallSuccess as (p: string) => void)("video");
+    });
+    await flushBeacon();
+
+    expect(sendEventMock).not.toHaveBeenCalledWith("Audio Diagnostic", expect.any(Object));
+
+    vi.useRealTimers();
+    unmount(root, container);
+  });
+
+  it("stamps ad_blocked_reason when the SDK reports an autoplay block", async () => {
+    vi.useFakeTimers();
+    strategyMock.value = { initialVolume: 0.2 };
+    const containerRef = containerWithMedia({ muted: true, volume: 0 });
+
+    const { root, container } = mountHook({ ...baseProps, isActive: true, containerRef });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    // GenAd fires this on both the IMA and audio-VAST autoplay-block paths.
+    await act(async () => {
+      (lastInitOptions.onAdBlocked as (r: string) => void)("unmuted_autoplay_restricted");
+      (lastInitOptions.onWaterfallSuccess as (p: string) => void)("video");
+    });
+    await flushBeacon();
+
+    const payload = beaconPayload();
+    expect(payload?.ad_blocked_reason).toBe("unmuted_autoplay_restricted");
+    // Autoplay-policy gate rather than native silencing — the other branch of
+    // the decision tree.
+    expect(payload?.element_muted).toBe(true);
+    expect(payload?.element_volume).toBe(0);
+    // GenAd < 1.24.0 sends no details — the fields must be null, not undefined,
+    // so the absence is queryable rather than missing from the payload.
+    expect(payload?.ad_blocked_error_name).toBeNull();
+    expect(payload?.ad_blocked_error_message).toBeNull();
+    expect(payload?.ad_blocked_source).toBeNull();
+
+    vi.useRealTimers();
+    unmount(root, container);
+  });
+
+  it("stamps the rejection details when GenAd reports them", async () => {
+    vi.useFakeTimers();
+    strategyMock.value = { initialVolume: 0.2 };
+    const containerRef = containerWithMedia({ muted: true, volume: 0 });
+
+    const { root, container } = mountHook({ ...baseProps, isActive: true, containerRef });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    // AbortError is the case this instrumentation exists to size: GenAd reports
+    // it as an autoplay block and mutes, but it is not one.
+    await act(async () => {
+      (lastInitOptions.onAdBlocked as (r: string, d?: Record<string, unknown>) => void)("unmuted_autoplay_restricted", {
+        errorName: "AbortError",
+        errorMessage: "The play() request was interrupted.",
+        source: "audio_vast",
+      });
+      (lastInitOptions.onWaterfallSuccess as (p: string) => void)("video");
+    });
+    await flushBeacon();
+
+    const payload = beaconPayload();
+    expect(payload?.ad_blocked_error_name).toBe("AbortError");
+    expect(payload?.ad_blocked_error_message).toBe("The play() request was interrupted.");
+    expect(payload?.ad_blocked_source).toBe("audio_vast");
+
+    vi.useRealTimers();
+    unmount(root, container);
+  });
+
+  it("drops non-string rejection details instead of coercing them", async () => {
+    vi.useFakeTimers();
+    strategyMock.value = { initialVolume: 0.2 };
+    const containerRef = containerWithMedia({ muted: true, volume: 0 });
+
+    const { root, container } = mountHook({ ...baseProps, isActive: true, containerRef });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    // GenAd ships from a rolling CDN channel we cannot pin, so its declared
+    // types are not a runtime guarantee. A non-string must become null, never
+    // "[object Object]" — the analytics column has to stay trustworthy.
+    await act(async () => {
+      (lastInitOptions.onAdBlocked as (r: string, d?: Record<string, unknown>) => void)("unmuted_autoplay_restricted", {
+        errorName: { code: 11 },
+        errorMessage: 42,
+        source: "",
+      });
+      (lastInitOptions.onWaterfallSuccess as (p: string) => void)("video");
+    });
+    await flushBeacon();
+
+    const payload = beaconPayload();
+    expect(payload?.ad_blocked_error_name).toBeNull();
+    expect(payload?.ad_blocked_error_message).toBeNull();
+    expect(payload?.ad_blocked_source).toBeNull();
+
+    vi.useRealTimers();
+    unmount(root, container);
+  });
+
+  it("caps an unbounded error message so one event cannot bloat the payload", async () => {
+    vi.useFakeTimers();
+    strategyMock.value = { initialVolume: 0.2 };
+    const containerRef = containerWithMedia({ muted: true, volume: 0 });
+
+    const { root, container } = mountHook({ ...baseProps, isActive: true, containerRef });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    // IMA's getMessage() can embed an entire VAST URL, and this fires once per
+    // blocked impression.
+    await act(async () => {
+      (lastInitOptions.onAdBlocked as (r: string, d?: Record<string, unknown>) => void)("unmuted_autoplay_restricted", {
+        errorName: "NotAllowedError",
+        errorMessage: "x".repeat(5000),
+        source: "ima",
+      });
+      (lastInitOptions.onWaterfallSuccess as (p: string) => void)("video");
+    });
+    await flushBeacon();
+
+    const payload = beaconPayload();
+    expect(payload?.ad_blocked_error_name).toBe("NotAllowedError");
+    expect((payload?.ad_blocked_error_message as string).length).toBe(300);
+
+    vi.useRealTimers();
+    unmount(root, container);
+  });
+
+  it("normalises partially-populated rejection details to null", async () => {
+    vi.useFakeTimers();
+    strategyMock.value = { initialVolume: 0.2 };
+    const containerRef = containerWithMedia({ muted: true, volume: 0 });
+
+    const { root, container } = mountHook({ ...baseProps, isActive: true, containerRef });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    // GenAd sends `null` for an error with no name/message; the beacon must not
+    // turn that into `undefined` and drop the key.
+    await act(async () => {
+      (lastInitOptions.onAdBlocked as (r: string, d?: Record<string, unknown>) => void)("unmuted_autoplay_restricted", {
+        errorName: null,
+        errorMessage: null,
+        source: "ima",
+      });
+      (lastInitOptions.onWaterfallSuccess as (p: string) => void)("video");
+    });
+    await flushBeacon();
+
+    const payload = beaconPayload();
+    expect(payload?.ad_blocked_error_name).toBeNull();
+    expect(payload?.ad_blocked_error_message).toBeNull();
+    expect(payload?.ad_blocked_source).toBe("ima");
+
+    vi.useRealTimers();
+    unmount(root, container);
+  });
+
+  it("reports null ad_blocked_reason when no block occurred", async () => {
+    vi.useFakeTimers();
+    strategyMock.value = { initialVolume: 0.2 };
+    const containerRef = containerWithMedia();
+
+    const { root, container } = mountHook({ ...baseProps, isActive: true, containerRef });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    await act(async () => {
+      (lastInitOptions.onWaterfallSuccess as (p: string) => void)("video");
+    });
+    await flushBeacon();
+
+    expect(beaconPayload()?.ad_blocked_reason).toBeNull();
+
+    vi.useRealTimers();
+    unmount(root, container);
+  });
+
+  it("no-ops when the fill has no media element (banner / native)", async () => {
+    vi.useFakeTimers();
+    strategyMock.value = { initialVolume: 0.2 };
+    const div = document.createElement("div");
+    document.body.appendChild(div);
+
+    const { root, container } = mountHook({
+      ...baseProps,
+      isActive: true,
+      containerRef: { current: div },
+    });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    await act(async () => {
+      (lastInitOptions.onWaterfallSuccess as (p: string) => void)("banner");
+    });
+    await flushBeacon();
+
+    expect(sendEventMock).not.toHaveBeenCalledWith("Audio Diagnostic", expect.any(Object));
+
+    vi.useRealTimers();
+    unmount(root, container);
+  });
+
+  it("does not emit when the slot is torn down before the element is queried", async () => {
+    vi.useFakeTimers();
+    strategyMock.value = { initialVolume: 0.2 };
+    const containerRef = containerWithMedia();
+
+    const { root, container } = mountHook({ ...baseProps, isActive: true, containerRef });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    await act(async () => {
+      (lastInitOptions.onWaterfallSuccess as (p: string) => void)("video");
+    });
+
+    // Unmount before the deferred query runs at all.
+    unmount(root, container);
+    await flushBeacon();
+
+    expect(sendEventMock).not.toHaveBeenCalledWith("Audio Diagnostic", expect.any(Object));
+
+    vi.useRealTimers();
+  });
+
+  it("drops the reading when the slot is torn down mid-sample", async () => {
+    // Teardown lands between the element query and the 800ms second sample: the
+    // element is now detached, so the reading is meaningless and must not ship.
+    vi.useFakeTimers();
+    strategyMock.value = { initialVolume: 0.2 };
+    const containerRef = containerWithMedia();
+
+    const { root, container } = mountHook({ ...baseProps, isActive: true, containerRef });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    await act(async () => {
+      (lastInitOptions.onWaterfallSuccess as (p: string) => void)("video");
+    });
+
+    // Let the deferred query run (element found, first sample taken) …
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(0);
+    });
+    // … then tear down before the sampling window closes.
+    unmount(root, container);
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1000);
+    });
+
+    expect(sendEventMock).not.toHaveBeenCalledWith("Audio Diagnostic", expect.any(Object));
+
+    vi.useRealTimers();
+  });
+});
+
 // ─── useGenAdInstance — shadow root resync ────────────────────────────────────
 
 describe("useGenAdInstance — shadow root resync", () => {
