@@ -1,0 +1,6 @@
+octo_can_deploy = true
+
+dockerfile = "apps/webapp/Dockerfile"
+build_context = "."
+container_port = 4000
+healthcheck_path = "/"
