@@ -94,30 +94,24 @@ const PROMOTIONS: ContentCard[] = [
   {
     id: "coupon-hunt",
     title: "Bed Bath and Beyond Legendary Coupon Hunt",
-    href: "https://www.iheart.com/promotions/",
+    href: "https://news.iheart.com/promotions/",
     image: "/api/iheart-image/new_assets/69dfe7938a384b396399a676",
   },
   {
     id: "music-festival",
     title: "iHeartRadio Music Festival presented by Capital One Ultimate Fan Sweepstakes",
-    href: "https://news.iheart.com/promotions/iheartradio-music-festival-presented-by-1900411/",
+    href: "https://news.iheart.com/promotions/",
     image: "/api/iheart-image/new_assets/6a4e99194a7dc9af1e8f2649",
   },
   {
     id: "bryan-adams",
     title: "ROLL, WITH iHEART & BRYAN ADAMS NATIONAL FLYAWAY SWEEPSTAKES",
-    href: "https://wnic.iheart.com/promotions/",
+    href: "https://wnic.iheart.com/rules/",
     image: "/api/iheart-image/new_assets/6408faade5c64b6987224c46",
   },
 ];
 
 const ARTICLES: ContentCard[] = [
-  {
-    id: "hilary-duff",
-    title: "Win Tickets To See Hilary Duff!",
-    href: "https://ktu.iheart.com/rules/",
-    image: "/api/iheart-image/new_assets/69dffa6136194a793bfcfca6",
-  },
   {
     id: "travis-kelce",
     title: "Travis Kelce Makes Rare Comment About Taylor Swift Proposal: 'Pretty Epic'",
@@ -165,6 +159,12 @@ const ARTICLES: ContentCard[] = [
     title: "Fork's Sake: Celebrity Stories, Food And Kiwi Humour",
     href: "https://www.iheart.com/podcast/1049-forks-sake-304356408/",
     image: PODCAST_IMAGES.forksSake,
+  },
+  {
+    id: "hilary-duff",
+    title: "Win Tickets To See Hilary Duff!",
+    href: "https://ktu.iheart.com/rules/",
+    image: "/api/iheart-image/new_assets/69dffa6136194a793bfcfca6",
   },
 ];
 
@@ -269,12 +269,16 @@ function HorizontalRail({ children, label }: { children: ReactNode; label: strin
   );
 }
 
+function getIHeartContentHref(section: "articles" | "promotions", card: ContentCard) {
+  const source = encodeURIComponent(card.href);
+  const title = encodeURIComponent(card.title);
+  return `/iheart/${section}/${card.id}?source=${source}&title=${title}`;
+}
+
 function PromotionCard({ card }: { card: ContentCard }) {
   return (
     <a
-      href={card.href}
-      target="_blank"
-      rel="noopener noreferrer"
+      href={getIHeartContentHref("promotions", card)}
       className="gencl:w-[260px] gencl:shrink-0 gencl:snap-start gencl:overflow-hidden gencl:rounded-md gencl:border gencl:border-secondary-150 gencl:bg-white gencl:text-secondary-900 gencl:no-underline">
       <Image
         src={card.image}
@@ -294,9 +298,7 @@ function PromotionCard({ card }: { card: ContentCard }) {
 function ArticleCard({ card }: { card: ContentCard }) {
   return (
     <a
-      href={card.href}
-      target="_blank"
-      rel="noopener noreferrer"
+      href={getIHeartContentHref("articles", card)}
       className="gencl:w-[260px] gencl:shrink-0 gencl:snap-start gencl:overflow-hidden gencl:rounded-md gencl:border gencl:border-secondary-150 gencl:bg-white gencl:text-secondary-900 gencl:no-underline">
       <Image
         src={card.image}

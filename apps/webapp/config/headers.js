@@ -120,6 +120,30 @@ const HOSTS = {
     "https://od-spy.live.streamtheworld.com",
     "https://gov.aniview.com",
   ],
+
+  /**
+   * iHeart editorial media and Aptivada contest experience resources.
+   * These are limited to the hosts used by the internal iHeart content reader.
+   */
+  iHeartContent: {
+    scripts: ["https://campaign.aptivada.com"],
+    images: ["https://*.iheart.com", "https://cdn3.aptivada.com", "https://www.omnycontent.com"],
+    connect: [
+      "https://campaign.aptivada.com",
+      "https://v1.audience.io",
+      "https://xp.audience.io",
+    ],
+    frames: [
+      "https://campaign.aptivada.com",
+      "https://v1.audience.io",
+      "https://xp.audience.io",
+      "https://*.iheart.com",
+      "https://www.youtube.com",
+      "https://www.youtube-nocookie.com",
+      "https://player.vimeo.com",
+      "https://omny.fm",
+    ],
+  },
 };
 
 /**
@@ -200,6 +224,7 @@ async function getHeaders() {
                     "https://*.begenuin.com",
                     "https://*.preview.qa.begenuin.com",
                     "https://*.vercel-insights.com",
+                    ...HOSTS.iHeartContent.scripts,
                     ...HOSTS.googleAds.scripts,
                     ...(isDev
                       ? ["'unsafe-inline'", "'unsafe-eval'", "http://localhost:*", "ws://localhost:*"]
@@ -221,6 +246,7 @@ async function getHeaders() {
                     HOSTS.bunnyCDN,
                     "https://vz-eee5e913-a30.b-cdn.net",
                     "https://*.picsum.photos https://picsum.photos",
+                    ...HOSTS.iHeartContent.images,
                     ...HOSTS.googleAds.images,
                   ].join(" "),
 
@@ -253,6 +279,7 @@ async function getHeaders() {
                     HOSTS.ssai,
                     HOSTS.bunnyCDN,
                     "https://vz-eee5e913-a30.b-cdn.net",
+                    ...HOSTS.iHeartContent.connect,
                     ...HOSTS.googleAds.connect,
                     ...HOSTS.adHosts,
                   ].join(" "),
@@ -270,7 +297,12 @@ async function getHeaders() {
                   `form-action 'self' ${HOSTS.api}`,
 
                   // frame-src: iframes this page is allowed to load (SafeFrame, IMA SDK)
-                  ["frame-src 'self'", ...HOSTS.googleAds.frames, ...(isDev ? ["http://localhost:*"] : [])].join(" "),
+                  [
+                    "frame-src 'self'",
+                    ...HOSTS.iHeartContent.frames,
+                    ...HOSTS.googleAds.frames,
+                    ...(isDev ? ["http://localhost:*"] : []),
+                  ].join(" "),
 
                   // framing
                   `frame-ancestors 'self' ${HOSTS.brandsHost}${isDev ? " http://localhost:*" : ""}`,
