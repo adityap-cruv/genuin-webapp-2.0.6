@@ -114,7 +114,11 @@ export function useEmblaFeed(
 
   // TODO(gap-5): failedAdIds reset on loop-back missing.
   // Old index.jsx reset failedAdIds.current = new Set() inside makeActiveItem when id === 0.
-  // If Embla loop mode is ever enabled, track failed ad IDs here and reset when newIndex === 0.
+  // Loop mode IS enabled by default (`feedLoopEnabled`, see docs/STRATEGIES.md) — the
+  // original note wrongly assumed it was off — so `newIndex === 0` is reachable by
+  // wrapping, not just by scrolling back. To close this, track failed ad IDs here and
+  // reset them when newIndex === 0. Tags with `feedLoopEnabled: false` cannot wrap and
+  // are therefore unaffected.
 
   const goNext = useCallback(() => {
     emblaApiRef.current?.scrollNext();

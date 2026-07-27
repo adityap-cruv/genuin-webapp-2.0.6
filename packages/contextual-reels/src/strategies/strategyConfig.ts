@@ -21,6 +21,8 @@ export const STRATEGY_PRESETS = {
   genaiDemo: { genAiEnabled: true },
   singleHit: { singleHitWaterfall: true },
   servedStatically: { servedStatically: true },
+  // Finite feed: the last slide is a hard stop instead of wrapping to slide 0.
+  noLoop: { feedLoopEnabled: false },
 } satisfies Record<string, Partial<Strategies>>;
 
 /** Name of a defined preset bundle. */
@@ -106,8 +108,20 @@ export const TAG_STRATEGIES: Record<string, TagStrategyEntry> = {
   // Start audible at 20% on load (unmuted); served from static fixtures (see
   // staticTagData.ts) — skips /ad_creative and /feed (/ip_info still fires for
   // geoip + real client IP on the ad-URL rewrite).
-  "6a39163e92929ebec64d78ab": { initialVolume: 0.2, singleHitWaterfall: true, preset: "servedStatically" }, // 320x50
-  "6a3915b692929ebec64d785e": { initialVolume: 0.2, singleHitWaterfall: true, preset: "servedStatically" }, // 320x100
+  // `feedLoopEnabled: false` inline rather than the `noLoop` preset — a tag can
+  // only carry one preset and these already use `servedStatically`.
+  "6a39163e92929ebec64d78ab": {
+    initialVolume: 0.2,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+  }, // 320x50
+  "6a3915b692929ebec64d785e": {
+    initialVolume: 0.2,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+  }, // 320x100
   // Audible-start tags too, but served from the live exchange rather than fixtures.
   // The 20% volume is the advertiser requirement, not a test override — these
   // intentionally bypass the mute gate and start unmuted. Do not "fix" by muting.

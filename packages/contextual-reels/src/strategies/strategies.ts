@@ -82,6 +82,17 @@ export interface Strategies {
    * Defaults to `false`.
    */
   servedStatically: boolean;
+  /**
+   * Whether the feed wraps from the last slide back to the first. Defaults to
+   * `true` (Embla's long-standing behaviour — an ads-only feed replays its
+   * filled slots indefinitely). Set `false` per-tag to make the feed finite:
+   * the last slide becomes a hard stop, so `autoAdvance`/`goNext` on the final
+   * entry is a no-op and the widget rests there instead of returning to slide 0.
+   *
+   * Only affects navigation. It does not change ad requests — `singleHitWaterfall`
+   * already prevents a looped-back slot from re-requesting.
+   */
+  feedLoopEnabled: boolean;
 }
 
 /**
@@ -100,6 +111,9 @@ export const DEFAULT_STRATEGIES: Strategies = {
   initialVolume: 0,
   compactBackgroundColor: undefined,
   autoplayEnabled: false,
+  // Exception to "every feature is off": loop is the pre-existing behaviour for
+  // every tag, so the safe default is on. Only an explicit per-tag `false` opts out.
+  feedLoopEnabled: true,
   servedStatically: false,
 };
 
@@ -232,4 +246,9 @@ export function getCompactBackgroundColor(tagId: string): string | undefined {
 /** Returns whether the active slide should autoplay on mount/activation for the given tag. */
 export function isAutoplayEnabled(tagId: string): boolean {
   return resolveStrategies(tagId).autoplayEnabled;
+}
+
+/** Returns whether the feed wraps last→first for the given tag. Defaults to `true`. */
+export function isFeedLoopEnabled(tagId: string): boolean {
+  return resolveStrategies(tagId).feedLoopEnabled;
 }

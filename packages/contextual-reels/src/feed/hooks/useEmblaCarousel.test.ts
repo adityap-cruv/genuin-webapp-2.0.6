@@ -20,8 +20,7 @@ import type { UseEmblaCarouselResult } from "@cxr/feed/hooks/useEmblaCarousel";
 
 vi.mock("embla-carousel", () => ({ default: vi.fn() }));
 
-interface FakeApi
-  extends Pick<EmblaCarouselType, "scrollNext" | "scrollPrev" | "reInit" | "on" | "off" | "destroy"> {
+interface FakeApi extends Pick<EmblaCarouselType, "scrollNext" | "scrollPrev" | "reInit" | "on" | "off" | "destroy"> {
   /** Invoke the captured `settle` handler to simulate a snap completing. */
   fireSettle: () => void;
 }
@@ -118,9 +117,7 @@ describe("useEmblaCarousel enable/disable", () => {
     act(() => hook.viewportRef(el));
 
     act(() => hook.disable());
-    expect(api.reInit).toHaveBeenLastCalledWith(
-      expect.objectContaining({ watchDrag: false, axis: "y", loop: true })
-    );
+    expect(api.reInit).toHaveBeenLastCalledWith(expect.objectContaining({ watchDrag: false, axis: "y", loop: true }));
 
     act(() => hook.enable());
     // enable() restores the ad-slot predicate (a function), never bare `true` —
@@ -343,5 +340,76 @@ describe("useEmblaCarousel onReady", () => {
     vi.mocked(EmblaCarousel).mockReturnValue(api as unknown as EmblaCarouselType);
     act(() => hook.viewportRef(document.createElement("div")));
     expect(onReady).toHaveBeenCalledWith(api);
+  });
+});
+
+describe("useEmblaCarousel loop option", () => {
+  let container: HTMLDivElement;
+  let root: Root;
+  let hook: UseEmblaCarouselResult;
+
+  /** Mount the hook with an explicit `loop` value (undefined = omit the option). */
+  function mountWith(loop: boolean | undefined): void {
+    function Host(): null {
+      hook = useEmblaCarousel(loop === undefined ? {} : { loop });
+      return null;
+    }
+    container = document.createElement("div");
+    document.body.appendChild(container);
+    root = createRoot(container);
+    act(() => root.render(React.createElement(Host)));
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    act(() => root.unmount());
+    document.body.removeChild(container);
+    vi.restoreAllMocks();
+  });
+
+  it("defaults to loop:true when the option is omitted", () => {
+    const api = makeApi();
+    vi.mocked(EmblaCarousel).mockReturnValue(api as unknown as EmblaCarouselType);
+    mountWith(undefined);
+    act(() => hook.viewportRef(document.createElement("div")));
+
+    expect(vi.mocked(EmblaCarousel)).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ loop: true, containScroll: false })
+    );
+  });
+
+  it("initialises Embla with loop:false and trims snaps when loop is off", () => {
+    const api = makeApi();
+    vi.mocked(EmblaCarousel).mockReturnValue(api as unknown as EmblaCarouselType);
+    mountWith(false);
+    act(() => hook.viewportRef(document.createElement("div")));
+
+    // containScroll must follow loop — otherwise the feed drags past the last slide.
+    expect(vi.mocked(EmblaCarousel)).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ loop: false, containScroll: "trimSnaps" })
+    );
+  });
+
+  it("preserves loop:false across the disable/enable reInit cycle", () => {
+    const api = makeApi();
+    vi.mocked(EmblaCarousel).mockReturnValue(api as unknown as EmblaCarouselType);
+    mountWith(false);
+    act(() => hook.viewportRef(document.createElement("div")));
+
+    // The Octo swipe gate must never silently re-enable looping.
+    act(() => hook.disable());
+    expect(api.reInit).toHaveBeenLastCalledWith(
+      expect.objectContaining({ loop: false, containScroll: "trimSnaps", watchDrag: false })
+    );
+
+    act(() => hook.enable());
+    expect(api.reInit).toHaveBeenLastCalledWith(
+      expect.objectContaining({ loop: false, containScroll: "trimSnaps", watchDrag: expect.any(Function) })
+    );
   });
 });

@@ -19,9 +19,11 @@ import {
   getInitialVolume,
   getCompactBackgroundColor,
   isAutoplayEnabled,
+  isFeedLoopEnabled,
   DEFAULT_STRATEGIES,
   __resetWarningsForTesting,
 } from "@cxr/strategies/strategies";
+import type * as StrategyConfigModule from "@cxr/strategies/strategyConfig";
 
 // IDs migrated into TAG_STRATEGIES (see strategyConfig.ts).
 const AD_BREAK_TAG = "6a391232d73aa25887ac2af3";
@@ -389,5 +391,45 @@ describe("servedStatically flag", () => {
     const s = resolveStrategies("6a39163e92929ebec64d78ab");
     expect(s.initialVolume).toBe(0.2);
     expect(s.singleHitWaterfall).toBe(true);
+  });
+});
+
+describe("feedLoopEnabled flag", () => {
+  it("defaults to true — every tag loops unless it explicitly opts out", () => {
+    expect(DEFAULT_STRATEGIES.feedLoopEnabled).toBe(true);
+  });
+
+  it("resolves true for an unknown tag (loop stays the safe fallback)", () => {
+    expect(resolveStrategies("unknown-loop-tag").feedLoopEnabled).toBe(true);
+  });
+
+  it("resolves true for configured tags that did not opt out", () => {
+    expect(resolveStrategies(SINGLE_HIT_TAG).feedLoopEnabled).toBe(true);
+  });
+
+  it("resolves false for the two static AD-only tags that opted out inline", () => {
+    expect(resolveStrategies("6a39163e92929ebec64d78ab").feedLoopEnabled).toBe(false);
+    expect(resolveStrategies("6a3915b692929ebec64d785e").feedLoopEnabled).toBe(false);
+  });
+
+  it("keeps the opted-out tags' other overrides intact", () => {
+    const s = resolveStrategies("6a39163e92929ebec64d78ab");
+    expect(s.servedStatically).toBe(true);
+    expect(s.singleHitWaterfall).toBe(true);
+    expect(s.initialVolume).toBe(0.2);
+  });
+
+  it("is turned off by the noLoop preset bundle", async () => {
+    // Import the real registry (the mocked STRATEGY_PRESETS above is scoped to
+    // the cascade tests) and assert the bundle carries the opt-out.
+    const { STRATEGY_PRESETS: realPresets } = await vi.importActual<typeof StrategyConfigModule>(
+      "@cxr/strategies/strategyConfig"
+    );
+    expect(realPresets.noLoop).toEqual({ feedLoopEnabled: false });
+  });
+
+  it("exposes a predicate that mirrors the resolver", () => {
+    expect(isFeedLoopEnabled("unknown-loop-tag")).toBe(true);
+    expect(isFeedLoopEnabled(SINGLE_HIT_TAG)).toBe(true);
   });
 });

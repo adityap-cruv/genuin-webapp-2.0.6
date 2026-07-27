@@ -13,6 +13,7 @@ import { InstanceProvider, useEventBus } from "@cxr/instance/InstanceContext";
 import type { CxrEventBus } from "@cxr/instance/coordination/CxrEventBus";
 import { GenAIProvider, useGenAI, useOctoSplit, type OctoSplit } from "@cxr/providers/GenAIProvider";
 import * as StrategyProviderModule from "@cxr/strategies/StrategyProvider";
+import { DEFAULT_STRATEGIES } from "@cxr/strategies/strategies";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -77,17 +78,8 @@ describe("providers/GenAIProvider", () => {
     vi.clearAllMocks();
     // Default: genAiEnabled=true so existing bridge tests pass without change.
     vi.spyOn(StrategyProviderModule, "useStrategy").mockReturnValue({
+      ...DEFAULT_STRATEGIES,
       genAiEnabled: true,
-      adBreakEnabled: false,
-      gateOnUnmute: false,
-      singleHitWaterfall: false,
-      adsDisabled: false,
-      mutePassback: false,
-      mutePassbackDelayMs: 3000,
-      initialVolume: 0,
-      compactBackgroundColor: undefined,
-      autoplayEnabled: false,
-      servedStatically: false,
     });
   });
 
@@ -258,17 +250,8 @@ describe("genAiEnabled in context", () => {
 
   it("exposes genAiEnabled=true from strategy", async () => {
     vi.spyOn(StrategyProviderModule, "useStrategy").mockReturnValue({
+      ...DEFAULT_STRATEGIES,
       genAiEnabled: true,
-      adBreakEnabled: false,
-      gateOnUnmute: false,
-      singleHitWaterfall: false,
-      adsDisabled: false,
-      mutePassback: false,
-      mutePassbackDelayMs: 3000,
-      initialVolume: 0,
-      compactBackgroundColor: undefined,
-      autoplayEnabled: false,
-      servedStatically: false,
     });
 
     const handle = { genAiEnabled: false } as { genAiEnabled: boolean };
@@ -290,17 +273,8 @@ describe("genAiEnabled in context", () => {
 
   it("does NOT emit genai:onFill bus event when genAiEnabled=false", async () => {
     vi.spyOn(StrategyProviderModule, "useStrategy").mockReturnValue({
+      ...DEFAULT_STRATEGIES,
       genAiEnabled: false,
-      adBreakEnabled: false,
-      gateOnUnmute: false,
-      singleHitWaterfall: false,
-      adsDisabled: false,
-      mutePassback: false,
-      mutePassbackDelayMs: 3000,
-      initialVolume: 0,
-      compactBackgroundColor: undefined,
-      autoplayEnabled: false,
-      servedStatically: false,
     });
     const received: string[] = [];
     const { root } = mount(
@@ -317,17 +291,8 @@ describe("genAiEnabled in context", () => {
 
   it("DOES emit genai:onFill bus event when genAiEnabled=true", async () => {
     vi.spyOn(StrategyProviderModule, "useStrategy").mockReturnValue({
+      ...DEFAULT_STRATEGIES,
       genAiEnabled: true,
-      adBreakEnabled: false,
-      gateOnUnmute: false,
-      singleHitWaterfall: false,
-      adsDisabled: false,
-      mutePassback: false,
-      mutePassbackDelayMs: 3000,
-      initialVolume: 0,
-      compactBackgroundColor: undefined,
-      autoplayEnabled: false,
-      servedStatically: false,
     });
     const received: string[] = [];
     const { root } = mount(

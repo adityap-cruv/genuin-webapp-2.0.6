@@ -5,6 +5,12 @@ import { useCallback, useRef } from "react";
 export interface UseEmblaCarouselOptions {
   /** Called after Embla initialises. Useful for syncing external state. */
   onReady?: (api: EmblaCarouselType) => void;
+  /**
+   * Whether the feed wraps from the last slide back to the first. Defaults to
+   * `true` — the pre-existing behaviour for every tag. Pass `false` (from the
+   * `feedLoopEnabled` strategy) to make the last slide a hard stop.
+   */
+  loop?: boolean;
 }
 
 /**
@@ -29,15 +35,25 @@ const skipDragInAdSlot = (_api: EmblaCarouselType, evt: PointerEvent | MouseEven
  * `watchDrag` is a predicate (not a bare `true`) so drags starting inside an ad
  * iframe never begin — see {@link skipDragInAdSlot}. `disable`/`enable` still
  * override it with `false`/the predicate, which wins because it is spread last.
+ *
+ * Built per-instance from `loop` (rather than being a module constant) so the
+ * loop decision is baked in once and every `reInit` reuses it — the invariant
+ * the `enable`/`disable` path depends on.
+ *
+ * `containScroll` follows `loop`: with `loop: false` it must be `"trimSnaps"`,
+ * otherwise Embla keeps the un-contained bounds and the feed can be dragged
+ * into empty space past the final slide.
  */
-const BASE_OPTIONS: EmblaOptionsType = {
-  axis: "y",
-  loop: true,
-  dragFree: false,
-  containScroll: false,
-  duration: 15,
-  watchDrag: skipDragInAdSlot,
-};
+function buildBaseOptions(loop: boolean): EmblaOptionsType {
+  return {
+    axis: "y",
+    loop,
+    dragFree: false,
+    containScroll: loop ? false : "trimSnaps",
+    duration: 15,
+    watchDrag: skipDragInAdSlot,
+  };
+}
 
 export interface UseEmblaCarouselResult {
   /** Callback ref — attach to the viewport div via `ref={viewportRef}`. */
@@ -94,6 +110,14 @@ export function useEmblaCarousel(options?: UseEmblaCarouselOptions): UseEmblaCar
   const onReadyRef = useRef(options?.onReady);
   onReadyRef.current = options?.onReady;
 
+  // Resolved once per mount and held in a ref: the viewport callback is `[]`-stable
+  // (it must be, so Embla initialises synchronously on attach) and enable/disable
+  // reInit from it too. A mid-life `loop` flip would therefore not re-init anyway —
+  // and must not, since the value comes from a per-tag strategy that is fixed for
+  // the widget's lifetime.
+  const baseOptionsRef = useRef<EmblaOptionsType | null>(null);
+  baseOptionsRef.current ??= buildBaseOptions(options?.loop ?? true);
+
   // Swipe-disabled flag — read by the wheel handler and at init time. A ref (not
   // state) so toggling it never re-runs the synchronous viewport callback.
   const disabledRef = useRef(false);
@@ -112,9 +136,10 @@ export function useEmblaCarousel(options?: UseEmblaCarouselOptions): UseEmblaCar
     if (!el) return;
 
     // If disable() ran before mount, init with drag off so the feed starts frozen.
-    // Otherwise use the ad-slot predicate (BASE_OPTIONS) — never bare `true`,
+    // Otherwise use the ad-slot predicate (base options) — never bare `true`,
     // which would re-enable the iframe phantom-drag bug.
-    const api = EmblaCarousel(el, disabledRef.current ? { ...BASE_OPTIONS, watchDrag: false } : BASE_OPTIONS);
+    const baseOptions = baseOptionsRef.current!;
+    const api = EmblaCarousel(el, disabledRef.current ? { ...baseOptions, watchDrag: false } : baseOptions);
 
     // Synchronous assignment — available to all consumers before any child useEffect.
     emblaApiRef.current = api;
@@ -195,7 +220,7 @@ export function useEmblaCarousel(options?: UseEmblaCarouselOptions): UseEmblaCar
   const disable = useCallback((): void => {
     disabledRef.current = true;
     resetWheelRef.current?.();
-    emblaApiRef.current?.reInit({ ...BASE_OPTIONS, watchDrag: false });
+    emblaApiRef.current?.reInit({ ...baseOptionsRef.current!, watchDrag: false });
   }, []);
 
   // Restore swiping: clear the wheel guard, reInit with drag on, reset the
@@ -204,7 +229,7 @@ export function useEmblaCarousel(options?: UseEmblaCarouselOptions): UseEmblaCar
     disabledRef.current = false;
     resetWheelRef.current?.();
     // Restore the predicate (not bare `true`) so ad-slot drag stays suppressed.
-    emblaApiRef.current?.reInit({ ...BASE_OPTIONS, watchDrag: skipDragInAdSlot });
+    emblaApiRef.current?.reInit({ ...baseOptionsRef.current!, watchDrag: skipDragInAdSlot });
   }, []);
 
   return {

@@ -67,17 +67,22 @@ App  →  <StrategyProvider tagId>  →  resolveStrategies(tagId)  →  Strategi
 
 ## Current strategies
 
-| Key                   | Type      | Default | Meaning                                                                                                                                                                                                                                                                                                     |
-| --------------------- | --------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `genAiEnabled`        | `boolean` | `false` | GenAI Octo experience available for this tag.                                                                                                                                                                                                                                                               |
-| `adBreakEnabled`      | `boolean` | `false` | Mock fullscreen ad break fires on organic reel playback (dev/demo fallback when the backend supplies no `ad_configs`).                                                                                                                                                                                      |
-| `gateOnUnmute`        | `boolean` | `false` | Default for `NormalisedAd.gateOnUnmute` when the backend omits `gate_on_unmute`. Suppresses the ad _request_ while muted.                                                                                                                                                                                   |
-| `singleHitWaterfall`  | `boolean` | `false` | Fill / no-fill waterfall callbacks are suppressed after the first per page load.                                                                                                                                                                                                                            |
-| `adsDisabled`         | `boolean` | `false` | Hard kill switch — no ads ever shown. Drops standalone ad slides and strips the organic ad break. Overrides `adBreakEnabled`.                                                                                                                                                                               |
-| `mutePassback`        | `boolean` | `false` | On first `player:play`, start a timer; if still muted when it fires, trigger an ad passback (`onAdFail`). Distinct from `gateOnUnmute` — this passes the slot back rather than just suppressing the request.                                                                                                |
-| `mutePassbackDelayMs` | `number`  | `3000`  | Delay before the `mutePassback` timer fires, measured from the first `player:play`. Ignored unless `mutePassback` is on.                                                                                                                                                                                    |
-| `initialVolume`       | `number`  | `0`     | Volume (0..1) the feed starts at on first load. `0` plays unmuted-but-silent and shows the unmute prompt; set per-tag (e.g. `0.2`) to start audible. A browser autoplay block snaps it back to 0.                                                                                                           |
-| `servedStatically`    | `boolean` | `false` | Serve the tag's config + feed from committed per-tag fixtures — skip `/ad_creative` and `/feed`. `/ip_info` is still fetched (geoip stays on analytics). The ad URL is rewritten client-side (real `ua`, `[PAGE_URL]`, real client `ip` from geoip). See [Statically-served tags](#statically-served-tags). |
+| Key                   | Type      | Default    | Meaning                                                                                                                                                                                                                                                                                                     |
+| --------------------- | --------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `genAiEnabled`        | `boolean` | `false`    | GenAI Octo experience available for this tag.                                                                                                                                                                                                                                                               |
+| `adBreakEnabled`      | `boolean` | `false`    | Mock fullscreen ad break fires on organic reel playback (dev/demo fallback when the backend supplies no `ad_configs`).                                                                                                                                                                                      |
+| `gateOnUnmute`        | `boolean` | `false`    | Default for `NormalisedAd.gateOnUnmute` when the backend omits `gate_on_unmute`. Suppresses the ad _request_ while muted.                                                                                                                                                                                   |
+| `singleHitWaterfall`  | `boolean` | `false`    | Fill / no-fill waterfall callbacks are suppressed after the first per page load.                                                                                                                                                                                                                            |
+| `adsDisabled`         | `boolean` | `false`    | Hard kill switch — no ads ever shown. Drops standalone ad slides and strips the organic ad break. Overrides `adBreakEnabled`.                                                                                                                                                                               |
+| `mutePassback`        | `boolean` | `false`    | On first `player:play`, start a timer; if still muted when it fires, trigger an ad passback (`onAdFail`). Distinct from `gateOnUnmute` — this passes the slot back rather than just suppressing the request.                                                                                                |
+| `mutePassbackDelayMs` | `number`  | `3000`     | Delay before the `mutePassback` timer fires, measured from the first `player:play`. Ignored unless `mutePassback` is on.                                                                                                                                                                                    |
+| `initialVolume`       | `number`  | `0`        | Volume (0..1) the feed starts at on first load. `0` plays unmuted-but-silent and shows the unmute prompt; set per-tag (e.g. `0.2`) to start audible. A browser autoplay block snaps it back to 0.                                                                                                           |
+| `servedStatically`    | `boolean` | `false`    | Serve the tag's config + feed from committed per-tag fixtures — skip `/ad_creative` and `/feed`. `/ip_info` is still fetched (geoip stays on analytics). The ad URL is rewritten client-side (real `ua`, `[PAGE_URL]`, real client `ip` from geoip). See [Statically-served tags](#statically-served-tags). |
+| `feedLoopEnabled`     | `boolean` | **`true`** | Whether the feed wraps from the last slide back to the first. See [Finite feeds](#finite-feeds-feedloopenabled).                                                                                                                                                                                            |
+
+> **`feedLoopEnabled` is the one flag that defaults _on_.** Every other key defaults to
+> off/safe; looping is the pre-existing behaviour for every tag, so the safe default is
+> `true` and only an explicit per-tag `false` opts out.
 
 > Add a new toggle by extending `Strategies` + giving it a default in
 > `DEFAULT_STRATEGIES`. Consumers read it through `useStrategy()` unchanged.
@@ -94,6 +99,7 @@ Defined in [`strategyConfig.ts`](../src/strategies/strategyConfig.ts):
 | `genaiDemo`        | `genAiEnabled`                   |
 | `singleHit`        | `singleHitWaterfall`             |
 | `servedStatically` | `servedStatically`               |
+| `noLoop`           | `feedLoopEnabled: false`         |
 
 Attach to a tag with `{ preset: "iheart", ...inlineOverrides }`. Inline keys win.
 
@@ -366,6 +372,68 @@ what the host actually passes. Read `host_script_params_raw` off the
 Delete `debugDevices.ts` + its test, the `src/providers/debug-device/` fixtures,
 the two-line swap in `FeedProvider.tsx`, and the `forced_fill` field in
 `genAdSdk.ts`. Nothing else depends on them.
+
+---
+
+## Finite feeds (`feedLoopEnabled`)
+
+By default the feed is a **loop**: swiping (or auto-advancing) past the last entry wraps
+to index 0. For an ads-only tag with 5 slots that means the widget replays its filled
+slots indefinitely and never comes to rest.
+
+Set `feedLoopEnabled: false` to make the feed **finite** — the last slide becomes a hard
+stop. Attach the `noLoop` preset, or set the key inline:
+
+```ts
+// strategyConfig.ts → TAG_STRATEGIES
+"<tagId>": { preset: "noLoop" },
+// or alongside other keys:
+"<tagId>": { initialVolume: 0.2, singleHitWaterfall: true, feedLoopEnabled: false },
+```
+
+A tag can carry only **one** preset, so a tag that already uses another bundle (e.g.
+`servedStatically`) must opt out with the inline key rather than `preset: "noLoop"`.
+
+### Tags currently opted out
+
+| Tag id                     | Size    | Why                                                              |
+| -------------------------- | ------- | ---------------------------------------------------------------- |
+| `6a39163e92929ebec64d78ab` | 320×50  | Static AD-only feed — rest on the last slot instead of replaying |
+| `6a3915b692929ebec64d785e` | 320×100 | Static AD-only feed — rest on the last slot instead of replaying |
+
+Both also carry `preset: "servedStatically"`, hence the inline key.
+
+### What it changes
+
+|                                 | `feedLoopEnabled: true` (default) | `feedLoopEnabled: false`       |
+| ------------------------------- | --------------------------------- | ------------------------------ |
+| Embla `loop`                    | `true`                            | `false`                        |
+| Embla `containScroll`           | `false`                           | `"trimSnaps"`                  |
+| Swipe past last slide           | wraps to index 0                  | no-op, rests on the last slide |
+| `autoAdvance()` on the final ad | wraps to index 0                  | no-op                          |
+
+`containScroll` **must** follow `loop`: with `loop: false` and the loop-mode
+`containScroll: false`, Embla keeps its un-contained bounds and the feed can be dragged
+into empty space past the final slide.
+
+### What it does not change
+
+- **Ad requests.** `singleHitWaterfall` already prevents a looped-back slot from
+  re-requesting, so turning looping off does not change fill counts or impressions.
+- **Passback.** The end-of-feed check in
+  [`AdProvider`](../src/providers/AdProvider.tsx) keys off `activeIndex` reaching the last
+  entry, which happens in both modes. A feed where at least one slot filled never fires
+  passback either way.
+- **Slide virtualization.** Every entry keeps a full-height wrapper in both modes — Embla
+  computes translate math from real per-slide height (see [`Feed.tsx`](../src/feed/Feed.tsx)).
+
+### Where it connects
+
+Resolved in [`strategies.ts`](../src/strategies/strategies.ts), read by
+[`Feed.tsx`](../src/feed/Feed.tsx) via `useStrategy()`, and passed as the `loop` option to
+[`useEmblaCarousel`](../src/feed/hooks/useEmblaCarousel.ts). The hook resolves it **once per
+mount** into a per-instance base-options object, so the `enable`/`disable` swipe-gate
+`reInit` calls (used while an Octo sheet is open) can never silently restore looping.
 
 ---
 

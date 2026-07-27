@@ -2,8 +2,9 @@
  * Vertical feed container.
  *
  * Strict virtualization: every entry keeps an in-flow, full-height slide wrapper
- * (Embla `loop:true` computes translate math from real per-slide height, so all
- * wrappers must exist), but only the slides in the mount window
+ * (Embla computes translate math from real per-slide height — required in loop
+ * mode and still assumed when the `feedLoopEnabled` strategy turns looping off,
+ * so all wrappers must exist), but only the slides in the mount window
  * ({@link computeSlideMountWindow}) mount their real `ReelItem` content. Every
  * other slide renders a zero-fetch {@link ReelSlidePlaceholder}, so no
  * off-screen slide fetches a manifest, thumbnail, or ad.
@@ -24,6 +25,7 @@ import { useFeed } from "@cxr/providers/FeedProvider";
 import { useFullScreen } from "@cxr/providers/FullScreenProvider";
 import { useGenAI } from "@cxr/providers/GenAIProvider";
 import { useTagDetails } from "@cxr/providers/TagDetailsProvider";
+import { useStrategy } from "@cxr/strategies/StrategyProvider";
 import type { FeedEntry } from "@cxr/types";
 
 /** 9:16 video-box width — kept in sync with the `fullscreen-video-box` style below. */
@@ -55,9 +57,12 @@ export function Feed({ entries, variant }: FeedProps): React.JSX.Element | null 
   const { isFullScreen } = useFullScreen();
   const { activeIndex, setActiveIndex, isAdActive, activeReel } = useFeed();
   const { octoFraction } = useGenAI();
+  const { feedLoopEnabled } = useStrategy();
 
   // ── Carousel + navigation ────────────────────────────────────────────────
-  const { viewportRef, emblaApiRef, enable, disable } = useEmblaCarousel();
+  // `feedLoopEnabled` defaults to true (every tag loops unless it opts out), so
+  // this is a no-op for existing tags.
+  const { viewportRef, emblaApiRef, enable, disable } = useEmblaCarousel({ loop: feedLoopEnabled });
   const {
     visibleIndices,
     onTimeUpdate: emitTimeUpdate,
