@@ -12,6 +12,7 @@ import { cn } from "../../lib/utils";
  */
 export type ThemeName =
   | "artitech"
+  | "foil"
   | "genuin"
   | "harley-davidson"
   | "iheart"

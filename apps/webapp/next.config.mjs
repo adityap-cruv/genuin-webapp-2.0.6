@@ -27,6 +27,8 @@ const nextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "media.qa.begenuin.com" },
       { protocol: "https", hostname: "media.begenuin.com" },
+      { protocol: "https", hostname: "images.unsplash.com" },
+      { protocol: "https", hostname: "octocanvas-artifacts.s3.ap-south-1.amazonaws.com" },
     ],
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 60,

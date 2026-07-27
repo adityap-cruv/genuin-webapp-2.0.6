@@ -1,0 +1,930 @@
+.home {
+  --foil-bg: #fff;
+  --foil-surface: #f4f6f8;
+  --foil-ink: #111418;
+  --foil-muted: #5a6472;
+  --foil-red: #e63946;
+  --foil-red-dark: #c21f2e;
+  --foil-navy: #0b2a4a;
+  --foil-navy-deep: #081f38;
+  --foil-border: #e2e6eb;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--foil-bg);
+  color: var(--foil-ink);
+  font-family: Inter, Arial, sans-serif;
+  scroll-behavior: smooth;
+}
+
+.home *,
+.home *::before,
+.home *::after {
+  box-sizing: border-box;
+}
+
+.home h1,
+.home h2,
+.home h3,
+.home p {
+  margin: 0;
+}
+
+.raceBar {
+  position: sticky;
+  top: 0;
+  z-index: 7;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 34px;
+  padding: 8px clamp(16px, 3vw, 48px);
+  border-bottom: 1px solid var(--foil-border);
+  background: rgb(244 246 248 / 95%);
+  color: var(--foil-ink);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  backdrop-filter: blur(8px);
+}
+
+.raceBar span:not(.liveDot) {
+  color: var(--foil-muted);
+}
+
+.liveDot {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 8px;
+  border-radius: 50%;
+  background: var(--foil-red);
+  box-shadow: 0 0 0 6px rgb(230 57 70 / 14%);
+}
+
+.hero {
+  position: relative;
+  min-height: 82vh;
+  overflow: hidden;
+  color: white;
+}
+
+.heroImage {
+  object-fit: cover;
+  object-position: center center;
+}
+
+.heroShade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgb(8 31 56 / 90%) 0%, rgb(8 31 56 / 56%) 48%, rgb(8 31 56 / 36%) 100%);
+}
+
+.heroContent {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(260px, 0.8fr);
+  align-items: end;
+  gap: 48px;
+  padding: clamp(40px, 7vw, 112px) clamp(20px, 4vw, 64px) clamp(32px, 5vw, 72px);
+}
+
+.eyebrow,
+.sectionHeader span,
+.storyCard > span,
+.mediaCard span,
+.beyondGrid span {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.eyebrow {
+  margin-bottom: 12px !important;
+  color: rgb(230 57 70 / 24%);
+}
+
+.hero h1 {
+  max-width: 780px;
+  font-family: Montserrat, Arial, sans-serif;
+  font-size: clamp(52px, 8.5vw, 132px);
+  font-weight: 800;
+  line-height: 0.86;
+  letter-spacing: -0.055em;
+  color: rgb(255 255 255 / 17%);
+  text-transform: uppercase;
+}
+
+.countdown {
+  display: flex;
+  gap: clamp(18px, 3vw, 44px);
+  margin-top: 30px;
+}
+
+.countdown span {
+  display: grid;
+  gap: 6px;
+  color: rgb(255 255 255 / 17%);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.countdown strong {
+  color: rgb(255 255 255 / 22%);
+  font-size: clamp(26px, 3.5vw, 54px);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.hero blockquote {
+  max-width: 410px;
+  justify-self: end;
+  padding-top: 18px;
+  border-top: 2px solid rgb(255 255 255 / 24%);
+  color: rgb(255 255 255 / 72%);
+  font-family: Montserrat, Arial, sans-serif;
+  font-size: clamp(17px, 1.5vw, 22px);
+  font-style: italic;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.hero cite {
+  display: block;
+  margin-top: 18px;
+  color: rgb(255 255 255 / 45%);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.liveFeed {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: clamp(48px, 6vw, 80px) 20px;
+  background: radial-gradient(circle at 50% 100%, rgb(230 57 70 / 17%), transparent 35%), var(--foil-navy-deep);
+  color: white;
+}
+
+.liveFeed::before {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 78px;
+  background: linear-gradient(to bottom, white 0%, rgb(255 255 255 / 52%) 18%, transparent 100%);
+  content: "";
+  pointer-events: none;
+}
+
+.liveFeedHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: min(100%, 360px);
+  margin-bottom: 18px;
+  color: rgb(255 255 255 / 42%);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.liveFeedHeading span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+}
+
+.phoneFrame {
+  max-width: 100%;
+  padding: 3px;
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 12%);
+  border-radius: 18px;
+  background: rgb(255 255 255 / 8%);
+  box-shadow: 0 30px 80px rgb(0 0 0 / 45%);
+}
+
+.scrollHint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px !important;
+  color: rgb(255 255 255 / 42%);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.ticker {
+  overflow: hidden;
+  padding: 13px 24px;
+  border-block: 1px solid rgb(255 255 255 / 10%);
+  background: var(--foil-navy-deep);
+  color: rgb(255 255 255 / 83%);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.contentSection,
+.sdkSection {
+  padding: clamp(36px, 5vw, 72px) clamp(18px, 4vw, 64px);
+}
+
+.sdkSection {
+  border-block: 1px solid var(--foil-border);
+  background: var(--foil-surface);
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 26px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--foil-border);
+}
+
+.sectionHeader h2 {
+  font-family: Montserrat, Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.sectionHeader span {
+  color: var(--foil-muted);
+  text-align: right;
+}
+
+.communityRail,
+.calendarRail {
+  display: flex;
+  gap: 18px;
+  padding-bottom: 16px;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scroll-snap-type: inline mandatory;
+}
+
+.communityCard {
+  display: flex;
+  flex: 0 0 clamp(280px, 30vw, 360px);
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--foil-border);
+  border-radius: 14px;
+  background: white;
+  box-shadow: 0 1px 2px rgb(11 42 74 / 6%);
+  scroll-snap-align: start;
+}
+
+.communityImage {
+  position: relative;
+  height: 128px;
+  background: var(--foil-surface);
+}
+
+.communityImage img,
+.storyImage img,
+.calendarImage img,
+.mediaImage img {
+  object-fit: cover;
+}
+
+.communityTitle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px 8px;
+}
+
+.communityTitle h3 {
+  font-family: Montserrat, Arial, sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.communityTitle button {
+  color: #fff !important;
+}
+
+.communityCard > p {
+  min-height: 58px;
+  padding: 0 16px 14px;
+  color: var(--foil-muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.communityStats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: auto;
+  padding: 11px 16px;
+  border-top: 1px solid var(--foil-border);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.sdkContainer {
+  margin-inline: auto;
+  overflow: hidden;
+  border: 1px solid var(--foil-border);
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 1px 2px rgb(11 42 74 / 6%);
+}
+
+.podium {
+  display: grid;
+  grid-template-columns: 1fr 1.12fr 1fr;
+  gap: 18px;
+  align-items: end;
+  margin-bottom: 36px;
+}
+
+.podiumCard,
+.podiumWinner {
+  display: flex;
+  min-height: 190px;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 24px;
+  border: 1px solid var(--foil-border);
+  border-radius: 4px;
+  background: var(--foil-surface);
+}
+
+.podiumWinner {
+  min-height: 225px;
+  border-color: var(--foil-navy);
+  background: var(--foil-navy);
+  color: white;
+}
+
+.podiumCard > span,
+.podiumWinner > span,
+.podiumCard small,
+.podiumWinner small {
+  margin-bottom: 10px;
+  color: var(--foil-muted);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.podiumWinner > span,
+.podiumWinner small {
+  color: rgb(255 255 255 / 65%);
+}
+
+.podiumCard h3,
+.podiumWinner h3 {
+  font-family: Montserrat, Arial, sans-serif;
+  font-size: clamp(22px, 2.7vw, 38px);
+  font-weight: 800;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.podiumCard p,
+.podiumWinner p {
+  margin-block: 6px 18px;
+  color: var(--foil-muted);
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.podiumWinner p {
+  color: rgb(255 255 255 / 66%);
+}
+
+.podiumCard strong,
+.podiumWinner strong {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 18px;
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.standings {
+  min-width: 820px;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.standings th {
+  height: auto;
+  padding: 12px 10px;
+  border-bottom: 2px solid var(--foil-ink);
+  color: var(--foil-ink);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.standings td {
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--foil-border);
+}
+
+.flag {
+  display: inline-block;
+  margin-right: 8px;
+  padding: 2px 6px;
+  border: 1px solid var(--foil-ink);
+  border-radius: 2px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.trendUp {
+  color: #0f7a4d;
+}
+
+.trendDown {
+  color: var(--foil-red-dark);
+}
+
+.storyGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.storyCard {
+  min-width: 0;
+}
+
+.storyImage {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  margin-bottom: 14px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: var(--foil-surface);
+}
+
+.storyCard > span,
+.beyondGrid span {
+  color: var(--foil-red-dark);
+}
+
+.storyCard h3 {
+  margin-top: 7px;
+  font-family: Montserrat, Arial, sans-serif;
+  font-size: clamp(14px, 1.3vw, 19px);
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.storyCard p {
+  margin-top: 12px;
+  color: var(--foil-muted);
+  font-size: 11px;
+}
+
+.calendarCard,
+.calendarNext {
+  display: flex;
+  flex: 0 0 290px;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px;
+  border: 1px solid var(--foil-border);
+  border-radius: 4px;
+  background: var(--foil-surface);
+  scroll-snap-align: start;
+}
+
+.calendarNext {
+  border: 1px solid var(--foil-border);
+  background: white;
+}
+
+.calendarTitle {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.calendarTitle h3 {
+  font-family: Montserrat, Arial, sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.calendarTitle p,
+.calendarCard > p,
+.calendarNext > p {
+  color: var(--foil-muted);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+}
+
+.calendarTitle span {
+  padding: 4px 7px;
+  border: 1px solid var(--foil-navy);
+  border-radius: 2px;
+  color: var(--foil-navy);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.calendarImage {
+  position: relative;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  border-radius: 3px;
+}
+
+.athleteGrid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.athleteCard {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: 3px;
+  background: var(--foil-surface);
+}
+
+.athleteCard > img {
+  object-fit: cover;
+}
+
+.athleteRank {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1;
+  padding: 4px 7px;
+  border-radius: 2px;
+  background: #e5e7eb;
+  color: #64748b;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.athleteInfo {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  padding: 70px 14px 14px;
+  background: linear-gradient(transparent, rgb(8 31 56 / 97%));
+  color: white;
+}
+
+.athleteInfo small,
+.athleteInfo span {
+  color: rgb(255 255 255 / 70%);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 8px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.athleteInfo h3 {
+  margin-top: 5px;
+  font-family: Montserrat, Arial, sans-serif;
+  font-size: clamp(14px, 1.25vw, 19px);
+  font-weight: 800;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.athleteInfo p {
+  margin-block: 3px 8px;
+  color: rgb(255 255 255 / 78%);
+  font-size: 10px;
+}
+
+.mediaGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.mediaCard {
+  display: grid;
+  grid-template-columns: minmax(180px, 42%) 1fr;
+  overflow: hidden;
+  border: 1px solid var(--foil-border);
+  border-radius: 4px;
+  background: var(--foil-surface);
+}
+
+.mediaImage {
+  position: relative;
+  min-height: 220px;
+}
+
+.mediaImage button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  transform: translate(-50%, -50%);
+}
+
+.mediaCard > div:last-child {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 24px;
+}
+
+.mediaCard span {
+  color: #dc2638;
+}
+
+.mediaCard h3 {
+  margin-block: 10px;
+  font-family: Montserrat, Arial, sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.mediaCard p {
+  color: var(--foil-muted);
+  font-size: 12px;
+}
+
+.newsletter {
+  padding: clamp(50px, 7vw, 96px) 20px;
+  background: var(--foil-navy);
+  color: white;
+  text-align: center;
+}
+
+.newsletter > div {
+  width: min(720px, 100%);
+  margin: auto;
+}
+
+.newsletter p {
+  margin-bottom: 10px;
+  color: rgb(255 255 255 / 62%);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.newsletter h2 {
+  font-family: Montserrat, Arial, sans-serif;
+  font-size: clamp(25px, 3.1vw, 44px);
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.newsletter form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  margin: 24px auto 12px;
+}
+
+.newsletter form button {
+  border-color: #f4f4f5 !important;
+  background: #f4f4f5 !important;
+  color: var(--foil-navy) !important;
+}
+
+.newsletter small {
+  color: rgb(255 255 255 / 52%);
+  font-size: 10px;
+}
+
+.beyondGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+
+.beyondGrid article {
+  padding-top: 16px;
+  border-top: 2px solid var(--foil-ink);
+}
+
+.beyondGrid h3 {
+  margin-block: 9px 18px;
+  font-family: Montserrat, Arial, sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.beyondGrid p {
+  color: var(--foil-muted);
+  font-size: 10px;
+}
+
+.footer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+  padding: 50px clamp(20px, 4vw, 64px) 30px;
+  background: var(--foil-ink);
+  color: white;
+}
+
+.wordmark {
+  font-family: Montserrat, Arial, sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+}
+
+.wordmark span {
+  color: white;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+}
+
+.footer p {
+  color: rgb(255 255 255 / 62%);
+  text-align: right;
+}
+
+.footer nav {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.footer a {
+  color: white;
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.footer small {
+  color: rgb(255 255 255 / 42%);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-align: right;
+  text-transform: uppercase;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 1024px) {
+  .heroContent {
+    grid-template-columns: 1fr;
+  }
+
+  .hero blockquote {
+    justify-self: start;
+  }
+
+  .storyGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .athleteGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .mediaCard {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .raceBar span:not(.liveDot) {
+    display: none;
+  }
+
+  .hero {
+    min-height: 560px;
+  }
+
+  .heroContent {
+    gap: 32px;
+    padding-bottom: 36px;
+  }
+
+  .hero h1 {
+    font-size: clamp(48px, 17vw, 76px);
+  }
+
+  .hero blockquote {
+    font-size: 15px;
+  }
+
+  .countdown {
+    gap: 18px;
+  }
+
+  .sectionHeader {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .sectionHeader span {
+    text-align: left;
+  }
+
+  .phoneFrame,
+  .phoneFrame > div {
+    max-width: calc(100vw - 40px) !important;
+  }
+
+  .podium {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .podiumWinner {
+    order: -1;
+  }
+
+  .podiumCard,
+  .podiumWinner {
+    min-height: 165px;
+  }
+
+  .storyGrid,
+  .mediaGrid,
+  .beyondGrid,
+  .footer {
+    grid-template-columns: 1fr;
+  }
+
+  .athleteGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .mediaImage {
+    min-height: 250px;
+  }
+
+  .newsletter form {
+    grid-template-columns: 1fr;
+  }
+
+  .footer p,
+  .footer small {
+    text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home {
+    scroll-behavior: auto;
+  }
+}
