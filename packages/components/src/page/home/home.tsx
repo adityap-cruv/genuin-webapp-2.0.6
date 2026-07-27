@@ -26,9 +26,9 @@ type AudioCard = {
 };
 
 const BREAKFAST_CLUB_PLACEMENT = {
-  styleId: "6a61d6c664ca16025598bd58",
-  placementId: "6a61d6c664ca16025598bd57",
-  apiKey: "e0c7340483c56098b00809c1d25df30e6d2a4c50351102a6",
+  styleId: "69e4f1b665f44f6bb10cb685",
+  placementId: "69e4f1b665f44f6bb10cb684",
+  apiKey: "1c8c5caa7f9a6a081f713d17ecf82fd7798a95b87f423e3a",
 } as const;
 
 const BREAKFAST_CLUB_IMAGE =
@@ -49,65 +49,51 @@ const PODCAST_IMAGES = {
     "/api/iheart-image/url/aHR0cHM6Ly93d3cub21ueWNvbnRlbnQuY29tL2QvcHJvZ3JhbXMvNzc4NGY4NDAtYzI5MS00MjJhLTkyNGItYWQ5MDAwYmJhZDcxL2VjYWE0NmFjLTQ1MjYtNGYxZi1hNjVmLWIzN2QwMDFkMWFkZS9pbWFnZS5qcGc_dD0xNzYxMDExMTYzJnNpemU9TGFyZ2U",
 } as const;
 
-const CONTEST_IMAGES = {
-  gasGiveaway:
-    "/api/iheart-image/contest/eyJrZXkiOiJmaWxlc1wvYXBwX2dyYXBoaWNzXC8yNDQ0Njk2ODJfQ0xBU1NJQ0hJVFNPTERJRVNfMTc4Mjk0Mzc3MC5wbmciLCJidWNrZXQiOiJhcHRpdmFkYS1maWxlcyIsImVkaXRzIjp7InJlc2l6ZSI6eyJ3aWR0aCI6MTYwMCwiaGVpZ2h0IjozMjAwLCJmaXQiOiJpbnNpZGUiLCJ3aXRob3V0RW5sYXJnZW1lbnQiOnRydWV9LCJ0b0Zvcm1hdCI6IndlYnAiLCJ3ZWJwIjp7InF1YWxpdHkiOjEwMCwic21hcnRTdWJzYW1wbGUiOnRydWUsImVmZm9ydCI6NH0sIm9wZXJhdGlvbnMiOlt7Im9wZXJhdGlvbiI6InN0cmlwIn1dfX0=",
-  kehlani:
-    "/api/iheart-image/contest/eyJrZXkiOiJmaWxlc1wvYXBwX2dyYXBoaWNzXC8yNDQ0Njk2ODJfY29udGVzdF8xOTAzOTU5X3N0YW5kYXJkXzE3ODQ1NTcxNzUuanBnIiwiYnVja2V0IjoiYXB0aXZhZGEtZmlsZXMiLCJlZGl0cyI6eyJyZXNpemUiOnsid2lkdGgiOjE2MDAsImhlaWdodCI6MzIwMCwiZml0IjoiaW5zaWRlIiwid2l0aG91dEVubGFyZ2VtZW50Ijp0cnVlfSwidG9Gb3JtYXQiOiJ3ZWJwIiwid2VicCI6eyJxdWFsaXR5IjoxMDAsInNtYXJ0U3Vic2FtcGxlIjp0cnVlLCJlZmZvcnQiOjR9LCJvcGVyYXRpb25zIjpbeyJvcGVyYXRpb24iOiJzdHJpcCJ9XX19",
-  backstreetBoys:
-    "/api/iheart-image/contest/eyJrZXkiOiJmaWxlc1wvYXBwX2dyYXBoaWNzXC8yNDQ0Njk2ODJfY29udGVzdF8xOTA1MDMyX3N0YW5kYXJkXzE3ODQ4OTk2NTguanBnIiwiYnVja2V0IjoiYXB0aXZhZGEtZmlsZXMiLCJlZGl0cyI6eyJyZXNpemUiOnsid2lkdGgiOjE2MDAsImhlaWdodCI6MzIwMCwiZml0IjoiaW5zaWRlIiwid2l0aG91dEVubGFyZ2VtZW50Ijp0cnVlfSwidG9Gb3JtYXQiOiJ3ZWJwIiwid2VicCI6eyJxdWFsaXR5IjoxMDAsInNtYXJ0U3Vic2FtcGxlIjp0cnVlLCJlZmZvcnQiOjR9LCJvcGVyYXRpb25zIjpbeyJvcGVyYXRpb24iOiJzdHJpcCJ9XX19",
-  maybelline:
-    "/api/iheart-image/contest/eyJrZXkiOiJmaWxlc1wvYXBwX2dyYXBoaWNzXC8yNDQ0Njk2ODJfY29udGVzdF8xODUzNDQyX3N0YW5kYXJkXzE3NzAxNTk0MzQucG5nIiwiYnVja2V0IjoiYXB0aXZhZGEtZmlsZXMiLCJlZGl0cyI6eyJyZXNpemUiOnsid2lkdGgiOjE2MDAsImhlaWdodCI6MzIwMCwiZml0IjoiaW5zaWRlIiwid2l0aG91dEVubGFyZ2VtZW50Ijp0cnVlfSwidG9Gb3JtYXQiOiJ3ZWJwIiwid2VicCI6eyJxdWFsaXR5IjoxMDAsInNtYXJ0U3Vic2FtcGxlIjp0cnVlLCJlZmZvcnQiOjR9LCJvcGVyYXRpb25zIjpbeyJvcGVyYXRpb24iOiJzdHJpcCJ9XX19",
+const FEATURED_ARTICLE_IMAGES = {
+  amyWinehouse: "/api/iheart-image/assets.getty/6a63d1bac0765b97e9e958ac",
+  bonJovi: "/api/iheart-image/assets.getty/6a63bd647052bdb7eb74107d",
+  jacobElordi: "/api/iheart-image/new_assets/6a61365af28868e1316089f7",
+  undercoverActor: "/api/iheart-image/new_assets/6a63aa783ad8cc5c1a9528f0",
+  chrisBrown: "/api/iheart-image/new_assets/6a63aa9799701b2d883cbb12",
+  louisTomlinson: "/api/iheart-image/new_assets/6a639c9d4f686da3ab633c37",
 } as const;
 
-const PROMOTIONS: ContentCard[] = [
+const FEATURED_STORIES: ContentCard[] = [
   {
-    id: "great-gas-giveaway",
-    title: "$1,000 Great Gas Giveaway",
-    href: "https://news.iheart.com/promotions/1000-great-gas-giveaway-1898639/",
-    image: CONTEST_IMAGES.gasGiveaway,
+    id: "amy-winehouse-mom-update",
+    title: "Amy Winehouse’s Mom Shares Emotional Update 15 Years After Singer’s Death",
+    href: "https://www.iheart.com/content/2026-07-24-amy-winehouses-mom-shares-emotional-update-15-years-after-singers-death/",
+    image: FEATURED_ARTICLE_IMAGES.amyWinehouse,
   },
   {
-    id: "burlington-ihrmf",
-    title: "Burlington x iHeartRadio Music Festival Flyaway Sweepstakes",
-    href: "https://news.iheart.com/promotions/burlington-x-ihrmf-flyaway-sweeps-1902526/",
-    image: "/api/iheart-image/new_assets/6a4e99194a7dc9af1e8f2649",
+    id: "bon-jovi-concert",
+    title: "Bon Jovi Cuts Concert Short During Comeback Tour: 'Gonna Have To Cool It'",
+    href: "https://www.iheart.com/content/2026-07-24-bon-jovi-cuts-concert-short-during-comeback-tour-gonna-have-to-cool-it/",
+    image: FEATURED_ARTICLE_IMAGES.bonJovi,
   },
   {
-    id: "kehlani-vip-trip",
-    title: "Win An Unforgettable VIP Trip For Two To Los Angeles To See Kehlani Live!",
-    href: "https://news.iheart.com/promotions/win-an-unforgettable-vip-trip-for-1903959/",
-    image: CONTEST_IMAGES.kehlani,
+    id: "jacob-elordi-euphoria",
+    title: "Jacob Elordi Shares BTS Details Of Filming Horrifying ‘Euphoria’ Scene",
+    href: "https://www.iheart.com/content/2026-07-24-jacob-elordi-shares-bts-details-of-filming-horrifying-euphoria-scene/",
+    image: FEATURED_ARTICLE_IMAGES.jacobElordi,
   },
   {
-    id: "backstreet-boys-sphere",
-    title: "Win A VIP Trip To See Backstreet Boys Live At Sphere Las Vegas!",
-    href: "https://news.iheart.com/promotions/win-a-vip-trip-to-see-1905032/",
-    image: CONTEST_IMAGES.backstreetBoys,
+    id: "undercover-actor",
+    title: "Popular Actor Unrecognizable As He Goes Under Cover To Promote New Movie",
+    href: "https://www.iheart.com/content/2026-07-24-popular-actor-unrecognizable-as-he-goes-under-cover-to-promote-new-movie/",
+    image: FEATURED_ARTICLE_IMAGES.undercoverActor,
   },
   {
-    id: "maybelline-bundle",
-    title: "Enter For Your Chance To Win An Exclusive Maybelline Gift Bundle!",
-    href: "https://news.iheart.com/promotions/enter-for-your-chance-to-win-1853442/",
-    image: CONTEST_IMAGES.maybelline,
+    id: "chris-brown-affray-charge",
+    title: "Chris Brown Pleads Guilty To Affray Charge Over U.K. Nightclub Brawl",
+    href: "https://www.iheart.com/content/2026-07-24-chris-brown-pleads-guilty-to-affray-charge-over-uk-nightclub-brawl/",
+    image: FEATURED_ARTICLE_IMAGES.chrisBrown,
   },
   {
-    id: "coupon-hunt",
-    title: "Bed Bath and Beyond Legendary Coupon Hunt",
-    href: "https://news.iheart.com/promotions/",
-    image: "/api/iheart-image/new_assets/69dfe7938a384b396399a676",
-  },
-  {
-    id: "music-festival",
-    title: "iHeartRadio Music Festival presented by Capital One Ultimate Fan Sweepstakes",
-    href: "https://news.iheart.com/promotions/",
-    image: "/api/iheart-image/new_assets/6a4e99194a7dc9af1e8f2649",
-  },
-  {
-    id: "bryan-adams",
-    title: "ROLL, WITH iHEART & BRYAN ADAMS NATIONAL FLYAWAY SWEEPSTAKES",
-    href: "https://wnic.iheart.com/rules/",
-    image: "/api/iheart-image/new_assets/6408faade5c64b6987224c46",
+    id: "louis-tomlinson-memory-lane",
+    title: "Louis Tomlinson Takes 'Trip Down Memory Lane' For One Direction Anniversary",
+    href: "https://www.iheart.com/content/2026-07-24-louis-tomlinson-takes-trip-down-memory-lane-for-one-direction-anniversary/",
+    image: FEATURED_ARTICLE_IMAGES.louisTomlinson,
   },
 ];
 
@@ -124,7 +110,7 @@ const ARTICLES: ContentCard[] = [
     href: "https://khvhradio.iheart.com/content/2026-07-08-judge-allows-lawsuit-over-airplane-window-seats-without-window-to-continue/",
     image: "/api/iheart-image/assets.getty/62bbb9e4b4a70c1a7bf6bb6d",
   },
-  {
+  { 
     id: "the-agenda",
     title: 'The Agenda: "No F Bombs Please..."',
     href: "https://www.iheart.com/podcast/1049-the-agenda-30184388/",
@@ -275,26 +261,6 @@ function getIHeartContentHref(section: "articles" | "promotions", card: ContentC
   return `/iheart/${section}/${card.id}?source=${source}&title=${title}`;
 }
 
-function PromotionCard({ card }: { card: ContentCard }) {
-  return (
-    <a
-      href={getIHeartContentHref("promotions", card)}
-      className="gencl:w-[260px] gencl:shrink-0 gencl:snap-start gencl:overflow-hidden gencl:rounded-md gencl:border gencl:border-secondary-150 gencl:bg-white gencl:text-secondary-900 gencl:no-underline">
-      <Image
-        src={card.image}
-        alt=""
-        width={440}
-        height={230}
-        useWebp={false}
-        className="gencl:h-[140px] gencl:w-full gencl:object-cover"
-      />
-      <p className="gencl:line-clamp-2 gencl:min-h-11 gencl:px-2 gencl:py-2 gencl:text-body-3-bold gencl:leading-snug">
-        {card.title}
-      </p>
-    </a>
-  );
-}
-
 function ArticleCard({ card }: { card: ContentCard }) {
   return (
     <a
@@ -319,7 +285,9 @@ function Waveform() {
   const bars = [9, 14, 20, 12, 26, 17, 30, 13, 23, 16, 27, 11, 20, 14, 9, 18, 25, 12, 22, 15];
 
   return (
-    <span aria-hidden="true" className="gencl:flex gencl:h-8 gencl:flex-1 gencl:items-center gencl:gap-px">
+    <span
+      aria-hidden="true"
+      className="gencl:flex gencl:h-8 gencl:min-w-0 gencl:flex-1 gencl:items-center gencl:justify-between">
       {bars.map((height, index) => (
         <span
           key={`${height}-${index}`}
@@ -398,15 +366,15 @@ export function Home() {
               </div>
             </section>
 
-            <section aria-labelledby="iheart-promotions">
+            <section aria-labelledby="iheart-featured-stories">
               <SectionHeader
-                id="iheart-promotions"
-                title="iHeart Contests & Promotions"
-                href="https://www.iheart.com/promotions/"
+                id="iheart-featured-stories"
+                title="Featured Stories"
+                href="https://www.iheart.com/news/"
               />
-              <HorizontalRail label="iHeart contests and promotions">
-                {PROMOTIONS.map((card) => (
-                  <PromotionCard key={card.id} card={card} />
+              <HorizontalRail label="Featured iHeart stories">
+                {FEATURED_STORIES.map((card) => (
+                  <ArticleCard key={card.id} card={card} />
                 ))}
               </HorizontalRail>
             </section>
