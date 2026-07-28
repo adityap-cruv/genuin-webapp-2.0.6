@@ -61,6 +61,8 @@ export type GenuinEmbedCarouselProps = GenuinEmbedIdentity & {
   className?: string;
   sdkSrc?: string;
   isolated?: boolean;
+  hideHeader?: boolean;
+  hideHorizontalOverflow?: boolean;
   title?: string;
 };
 
@@ -80,6 +82,8 @@ export function GenuinEmbedCarousel({
   className,
   sdkSrc = DEFAULT_SDK_SRC,
   isolated = false,
+  hideHeader = false,
+  hideHorizontalOverflow = false,
   title = "Genuin video placement",
 }: GenuinEmbedCarouselProps) {
   const generatedId = useId().replaceAll(":", "");
@@ -97,6 +101,22 @@ export function GenuinEmbedCarousel({
         margin: 0;
         overflow: hidden;
       }
+      ${
+        hideHeader
+          ? `#${resolvedContainerId} [class~="gencl:relative"] > [class~="gencl:flex"][class~="gencl:shrink-0"] {
+        display: none !important;
+      }`
+          : ""
+      }
+      ${
+        hideHorizontalOverflow
+          ? `#${resolvedContainerId}[data-genuin-internal="true"],
+      #${resolvedContainerId}[data-genuin-internal="true"] * {
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+      }`
+          : ""
+      }
     </style>
   </head>
   <body>
@@ -112,6 +132,70 @@ export function GenuinEmbedCarousel({
       src="${sdkSrc}"
       onload='window.genuin && window.genuin.init(${JSON.stringify(configuration ? { configuration } : {})})'
     ></script>
+    ${
+      hideHorizontalOverflow
+        ? `<script>
+      (() => {
+        let scheduled = false;
+
+        const lockHorizontalOverflow = () => {
+          scheduled = false;
+
+          document.querySelectorAll("*").forEach((element) => {
+            if (element.scrollWidth <= element.clientWidth + 1) return;
+
+            const styles = getComputedStyle(element);
+            const availableWidth =
+              element.clientWidth -
+              parseFloat(styles.paddingLeft || "0") -
+              parseFloat(styles.paddingRight || "0");
+
+            element.style.setProperty("overflow-x", "hidden", "important");
+            element.style.setProperty("overscroll-behavior-x", "none", "important");
+            element.style.setProperty("touch-action", "pan-y", "important");
+            element.scrollLeft = 0;
+
+            Array.from(element.children).forEach((child) => {
+              if (!(child instanceof HTMLElement)) return;
+              if (child.scrollWidth <= availableWidth && child.offsetWidth <= availableWidth) return;
+
+              child.style.setProperty("width", "100%", "important");
+              child.style.setProperty("max-width", availableWidth + "px", "important");
+              child.style.setProperty("min-width", "0", "important");
+              child.style.setProperty("box-sizing", "border-box", "important");
+            });
+          });
+        };
+
+        const scheduleLock = () => {
+          if (scheduled) return;
+          scheduled = true;
+          requestAnimationFrame(lockHorizontalOverflow);
+        };
+
+        new MutationObserver(scheduleLock).observe(document.body, {
+          childList: true,
+          subtree: true,
+        });
+        document.addEventListener(
+          "scroll",
+          (event) => {
+            const target = event.target;
+            if (target instanceof Element && target.scrollLeft !== 0) {
+              target.scrollLeft = 0;
+            }
+          },
+          true
+        );
+        window.addEventListener("load", scheduleLock);
+        window.addEventListener("resize", scheduleLock);
+        scheduleLock();
+        setTimeout(scheduleLock, 250);
+        setTimeout(scheduleLock, 1000);
+      })();
+    </script>`
+        : ""
+    }
   </body>
 </html>`
     : undefined;

@@ -13,6 +13,7 @@ import {
 } from "@genuin/ui";
 import { ArrowRight, Play, Radio } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { type FormEvent, useState } from "react";
 
 import { GenuinEmbedCarousel } from "@genuin/components/legacy/websitev5/genuin-embed-carousel";
@@ -30,10 +31,11 @@ const placements = {
     apiKey: "8a5582af807e98dbad239b749a1cd7fb026831eec1a95d00",
     sdkSrc: "https://media.begenuin.com/sdk/2.0.5/gen_sdk.min.js",
     isolated: true,
+    hideHeader: true,
     title: "The Foil fan video carousel",
     width: "100%",
     maxWidth: "100%",
-    height: "440px",
+    height: "400px",
   },
   feed: {
     containerId: "foil-hero-video-feed",
@@ -42,6 +44,7 @@ const placements = {
     apiKey: "8a5582af807e98dbad239b749a1cd7fb026831eec1a95d00",
     sdkSrc: "https://media.begenuin.com/sdk/2.0.5/gen_sdk.min.js",
     isolated: true,
+    hideHeader: true,
     title: "The Foil live fan video feed",
     configuration: {
       sections: [{ title: "{{brand_context}}" }],
@@ -57,8 +60,9 @@ const placements = {
     apiKey: "8a5582af807e98dbad239b749a1cd7fb026831eec1a95d00",
     sdkSrc: "https://media.begenuin.com/sdk/2.0.5/gen_sdk.min.js",
     isolated: true,
+    hideHorizontalOverflow: true,
     title: "The Foil fleet fan zone grid",
-    width: "800px",
+    width: "920px",
     maxWidth: "100%",
     height: "760px",
   },
@@ -89,6 +93,30 @@ const communities = [
     description: "Weather strategy, tidal windows and course conditions decoded by experts.",
     stats: ["876 Members", "3 Groups", "47 Videos"],
   },
+  {
+    name: "Pit Lane Pass",
+    image: "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=900&q=85",
+    description: "Exclusive crew interviews, dock-out prep and day-of race build-up coverage.",
+    stats: ["3.2K Members", "12 Groups", "201 Videos"],
+  },
+  {
+    name: "Young Guns",
+    image: "https://images.unsplash.com/photo-1520333789090-1afc82db536a?w=900&q=85",
+    description: "Rising stars in SailGP — watch the next generation of champions take flight.",
+    stats: ["654 Members", "4 Groups", "56 Videos"],
+  },
+  {
+    name: "Championship HQ",
+    image: "https://images.unsplash.com/photo-1511467687858-23d96c32e4ae?w=900&q=85",
+    description: "Live standings, points breakdowns and title-race drama from every venue.",
+    stats: ["5.7K Members", "16 Groups", "310 Videos"],
+  },
+  {
+    name: "Ocean & Planet",
+    image: "https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?w=900&q=85",
+    description: "SailGP's sustainability mission — clean oceans, net-zero racing and climate action.",
+    stats: ["988 Members", "6 Groups", "73 Videos"],
+  },
 ] as const;
 
 const standings = [
@@ -106,24 +134,28 @@ const standings = [
 
 const deskStories = [
   {
+    slug: "article-1",
     image: "foil-desk-card-1_v0.png",
     tag: "★ Editor's Pick · Tactical Breakdown",
     title: "Slingsby's start-line gamble was brilliant. It was also wrong.",
     byline: "By T. Harding · 6 min read",
   },
   {
+    slug: "article-2",
     image: "foil-desk-card-2_v0.png",
     tag: "Interview",
     title: 'Outteridge on home water: "We have been waiting three years for this weekend."',
     byline: "By R. Kawhena · 9 min read",
   },
   {
+    slug: "article-3",
     image: "foil-desk-card-3_v0.png",
     tag: "Data Dive",
     title: "Why wing trim is where the Aussies are losing half a knot.",
     byline: "By M. Cole · 8 min read",
   },
   {
+    slug: "article-4",
     image: "foil-desk-card-4_v0.png",
     tag: "Tactical Breakdown",
     title: "Inside the grinder's race: seven minutes of flat-out sprint.",
@@ -140,12 +172,42 @@ const calendar = [
 ] as const;
 
 const athletes = [
-  ["1", "Slingsby", "Tom Slingsby", "AUS · Australia", "Top speed · 53.8 kn"],
-  ["2", "Outteridge", "Nathan Outteridge", "NZL · New Zealand", "Start-line wins · 7 of 11"],
-  ["3", "Delapierre", "Quentin Delapierre", "FRA · France", "Average finish · 3.4"],
+  ["1", "Slingsby", "Tom Slingsby", "AUS · Australia", "Top speed · 53.8 kn", "slingsby"],
+  ["2", "Outteridge", "Nathan Outteridge", "NZL · New Zealand", "Start-line wins · 7 of 11", "outteridge"],
+  ["3", "Delapierre", "Quentin Delapierre", "FRA · France", "Average finish · 3.4", "delapierre"],
   ["4", "Mills", "Dylan Mills", "GBR · Great Britain", "Mark first · 12 of 33"],
   ["11", "Grael", "Martine Grael", "BRA · Brazil", "First-gate conversion · 68%"],
   ["5", "Barceló", "Diego Barceló", "ESP · Spain", "Top speed · 50.1 kn"],
+] as const;
+
+const footerLinkGroups = [
+  {
+    title: "Circuits",
+    links: [
+      ["SailGP", "#foil-hero-title"],
+      ["America's Cup", "#beyond-sailgp"],
+      ["Olympics", "#beyond-sailgp"],
+      ["Offshore", "#beyond-sailgp"],
+    ],
+  },
+  {
+    title: "The Foil",
+    links: [
+      ["About", "/home"],
+      ["Writers", "#foil-desk"],
+      ["Contact", "mailto:tips@thefoil.media"],
+      ["Advertise", "mailto:tips@thefoil.media?subject=Advertising with The Foil"],
+    ],
+  },
+  {
+    title: "Follow",
+    links: [
+      ["YouTube", "#"],
+      ["Instagram", "#"],
+      ["X", "#"],
+      ["RSS", "#"],
+    ],
+  },
 ] as const;
 
 type PlacementProps = (typeof placements)[keyof typeof placements] & { label: string };
@@ -193,6 +255,91 @@ export function Home() {
         <Placement {...placements.carousel} label="iHeart fan video carousel" />
       </section>
 
+      <section className={`${styles.contentSection} ${styles.deskSection}`} id="foil-desk">
+        <SectionHeader title="From the SailGP Desk" meta="Featured stories · Live feed" />
+        <div className={styles.deskFeatureLayout}>
+          <Link
+            href={`/foil/articles/${deskStories[0].slug}`}
+            className={styles.deskLeadStory}
+            aria-label={`Read ${deskStories[0].title}`}>
+            <Image
+              src={`${ASSET_ROOT}/${deskStories[0].image}`}
+              alt=""
+              fill
+              sizes="(max-width: 1024px) 100vw, 38vw"
+            />
+            <div className={styles.deskStoryContent}>
+              <span>{deskStories[0].tag}</span>
+              <h3>{deskStories[0].title}</h3>
+              <p>{deskStories[0].byline}</p>
+            </div>
+          </Link>
+          <div className={styles.deskSupportingStories}>
+            {deskStories.slice(1, 3).map((story) => (
+              <Link
+                href={`/foil/articles/${story.slug}`}
+                className={styles.deskSupportingStory}
+                aria-label={`Read ${story.title}`}
+                key={story.title}>
+                <Image
+                  src={`${ASSET_ROOT}/${story.image}`}
+                  alt=""
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 20vw"
+                />
+                <div className={styles.deskStoryContent}>
+                  <span>{story.tag}</span>
+                  <h3>{story.title}</h3>
+                  <p>{story.byline}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+          <div className={styles.deskFeed} id="foil-video-feed">
+            <Placement {...placements.feed} label="Live fan video feed" />
+          </div>
+        </div>
+      </section>
+
+      <section className={styles.contentSection}>
+        <SectionHeader title="The Fleet" meta="Featured drivers · Season stats" />
+        <div className={styles.athleteGrid}>
+          {athletes.map(([rank, surname, name, nation, stat, slug], index) => {
+            const card = (
+              <>
+                <Image
+                  src={`${ASSET_ROOT}/athlete-${index + 1}_v0.png`}
+                  alt={`Editorial portrait of ${name}`}
+                  fill
+                  sizes="(max-width: 768px) 45vw, 14vw"
+                />
+                <span className={styles.athleteRank}>#{rank}</span>
+                <div className={styles.athleteInfo}>
+                  <small>{stat}</small>
+                  <h3>{surname}</h3>
+                  <p>{name}</p>
+                  <span>{nation}</span>
+                </div>
+              </>
+            );
+
+            return slug ? (
+              <Link
+                href={`/foil/athletes/${slug}`}
+                className={styles.athleteCard}
+                aria-label={`View ${name}'s profile`}
+                key={name}>
+                {card}
+              </Link>
+            ) : (
+              <article className={styles.athleteCard} key={name}>
+                {card}
+              </article>
+            );
+          })}
+        </div>
+      </section>
+
       <section className={styles.liveFeed} aria-labelledby="fleet-fan-zone-heading">
         <div className={styles.liveFeedHeading}>
           <span>
@@ -204,15 +351,7 @@ export function Home() {
         <div className={styles.gridFrame}>
           <Placement {...placements.grid} label="iHeart six-video fleet fan zone grid" />
         </div>
-        {/* <p className={styles.scrollHint}>
-          <ArrowDown size={14} /> Swipe or scroll inside to browse
-        </p> */}
       </section>
-
-      <div className={styles.ticker} aria-label="Race speed ticker">
-        Slingsby · 53.8 kn · Sydney SGP &nbsp; /// &nbsp; Outteridge · 52.4 kn · Halifax SGP &nbsp; /// &nbsp;
-        Delapierre · 51.9 kn · Saint-Tropez
-      </div>
 
       <section className={styles.contentSection}>
         <SectionHeader title="Communities" meta="Explore all →" />
@@ -224,8 +363,8 @@ export function Home() {
               </div>
               <div className={styles.communityTitle}>
                 <h3>{community.name}</h3>
-                <Button theme="secondaryDark" size="sm">
-                  Join
+                <Button asChild theme="secondaryDark" size="sm">
+                  <Link href="/explore">Join</Link>
                 </Button>
               </div>
               <p>{community.description}</p>
@@ -241,100 +380,54 @@ export function Home() {
 
       <section className={styles.contentSection}>
         <SectionHeader title="Season Championship" meta="2025 · Through 8 of 13 events" />
-        <div className={styles.podium}>
-          {[
-            ["02 · Silver", "NZL", "Outteridge", "New Zealand SailGP Team", "62"],
-            ["01 · Leader", "AUS", "Slingsby", "Australia SailGP Team", "74"],
-            ["03 · Bronze", "FRA", "Delapierre", "France SailGP Team", "58"],
-          ].map(([rank, flag, driver, team, points], index) => (
-            <article className={index === 1 ? styles.podiumWinner : styles.podiumCard} key={driver}>
-              <span>{rank}</span>
-              <small>{flag}</small>
-              <h3>{driver}</h3>
-              <p>{team}</p>
-              <strong>{points} pts</strong>
-            </article>
-          ))}
-        </div>
-        <div className={styles.tableWrap}>
-          <Table className={styles.standings}>
-            <TableHeader>
-              <TableRow>
-                {["Rank", "Team", "Driver", "Points", "Last event", "Trend"].map((heading) => (
-                  <TableHead key={heading}>{heading}</TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {standings.map(([rank, flag, team, driver, points, last, trend]) => (
-                <TableRow key={team}>
-                  <TableCell>{rank}</TableCell>
-                  <TableCell>
-                    <span className={styles.flag}>{flag}</span> {team}
-                  </TableCell>
-                  <TableCell>{driver}</TableCell>
-                  <TableCell>{points}</TableCell>
-                  <TableCell>{last}</TableCell>
-                  <TableCell
-                    className={trend.includes("▲") ? styles.trendUp : trend.includes("▼") ? styles.trendDown : ""}>
-                    {trend}
-                  </TableCell>
-                </TableRow>
+        <div className={styles.championshipLayout}>
+          <div className={styles.championshipMain}>
+            <div className={styles.podium}>
+              {[
+                ["02 · Silver", "NZL", "Outteridge", "New Zealand SailGP Team", "62"],
+                ["01 · Leader", "AUS", "Slingsby", "Australia SailGP Team", "74"],
+                ["03 · Bronze", "FRA", "Delapierre", "France SailGP Team", "58"],
+              ].map(([rank, flag, driver, team, points], index) => (
+                <article className={index === 1 ? styles.podiumWinner : styles.podiumCard} key={driver}>
+                  <span>{rank}</span>
+                  <small>{flag}</small>
+                  <h3>{driver}</h3>
+                  <p>{team}</p>
+                  <strong>{points} pts</strong>
+                </article>
               ))}
-            </TableBody>
-          </Table>
-        </div>
-      </section>
-
-      <section className={styles.contentSection}>
-        <SectionHeader title="From the SailGP Desk" meta="Latest · 4 stories" />
-        <div className={styles.storyGrid}>
-          {deskStories.map((story) => (
-            <article className={styles.storyCard} key={story.title}>
-              <div className={styles.storyImage}>
-                <Image src={`${ASSET_ROOT}/${story.image}`} alt="" fill sizes="(max-width: 768px) 80vw, 22vw" />
-              </div>
-              <span>{story.tag}</span>
-              <h3>{story.title}</h3>
-              <p>{story.byline}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className={styles.sdkSection} id="foil-video-feed">
-        <SectionHeader title="Live from the Fleet" meta="Fan feed · Live" />
-        <div className={styles.feedLayout}>
-          <aside className={styles.feedInsight}>
-            <span>Race control</span>
-            <h3>Auckland form guide</h3>
-            <p>The championship picture heading into the next start.</p>
-            <dl>
-              <div>
-                <dt>Leader</dt>
-                <dd>Slingsby · 74 pts</dd>
-              </div>
-              <div>
-                <dt>Chasing</dt>
-                <dd>Outteridge · 62 pts</dd>
-              </div>
-              <div>
-                <dt>Forecast</dt>
-                <dd>18–22 kn SW</dd>
-              </div>
-            </dl>
-          </aside>
-          <div className={styles.feedFrame}>
-            <Placement {...placements.feed} label="Live fan video feed" />
-          </div>
-          <aside className={`${styles.feedInsight} ${styles.feedInsightDark}`}>
-            <span>On the water</span>
-            <h3>What the fleet is talking about</h3>
-            <p>Live reactions, onboard moments and race-week analysis from across the SailGP community.</p>
-            <div className={styles.feedPulse}>
-              <Radio size={16} />
-              Community feed is live
             </div>
+            <div className={styles.tableWrap}>
+              <Table className={styles.standings}>
+                <TableHeader>
+                  <TableRow>
+                    {["Rank", "Team", "Driver", "Points", "Last event", "Trend"].map((heading) => (
+                      <TableHead key={heading}>{heading}</TableHead>
+                    ))}
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {standings.map(([rank, flag, team, driver, points, last, trend]) => (
+                    <TableRow key={team}>
+                      <TableCell>{rank}</TableCell>
+                      <TableCell>
+                        <span className={styles.flag}>{flag}</span> {team}
+                      </TableCell>
+                      <TableCell>{driver}</TableCell>
+                      <TableCell>{points}</TableCell>
+                      <TableCell>{last}</TableCell>
+                      <TableCell
+                        className={trend.includes("▲") ? styles.trendUp : trend.includes("▼") ? styles.trendDown : ""}>
+                        {trend}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+          <aside className={styles.championshipFeed} aria-label="Season championship live fan feed">
+            <Placement {...placements.feed} label="Season championship live fan feed" />
           </aside>
         </div>
       </section>
@@ -357,29 +450,6 @@ export function Home() {
                 <Image src={`${ASSET_ROOT}/${event.image}`} alt="" fill sizes="300px" />
               </div>
               <p>Race intelligence, venue conditions and the storylines that matter.</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className={styles.contentSection}>
-        <SectionHeader title="The Fleet" meta="Featured drivers · Season stats" />
-        <div className={styles.athleteGrid}>
-          {athletes.map(([rank, surname, name, nation, stat], index) => (
-            <article className={styles.athleteCard} key={name}>
-              <Image
-                src={`${ASSET_ROOT}/athlete-${index + 1}_v0.png`}
-                alt={`Editorial portrait of ${name}`}
-                fill
-                sizes="(max-width: 768px) 45vw, 14vw"
-              />
-              <span className={styles.athleteRank}>#{rank}</span>
-              <div className={styles.athleteInfo}>
-                <small>{stat}</small>
-                <h3>{surname}</h3>
-                <p>{name}</p>
-                <span>{nation}</span>
-              </div>
             </article>
           ))}
         </div>
@@ -439,7 +509,7 @@ export function Home() {
         </div>
       </section>
 
-      <section className={styles.contentSection}>
+      <section className={styles.contentSection} id="beyond-sailgp">
         <SectionHeader title="Beyond SailGP" meta="Other circuits · This week" />
         <div className={styles.beyondGrid}>
           {[
@@ -459,18 +529,40 @@ export function Home() {
         </div>
       </section>
 
-      <footer className={styles.footer}>
-        <div className={styles.wordmark}>
-          <span>The</span> Foil
+      <footer className={styles.footer} id="foil-footer">
+        <div className={styles.footerGrid}>
+          <div className={styles.footerBrand}>
+            <Link href="/home" className={styles.wordmark} aria-label="The Foil home">
+              <span>The</span> Foil
+            </Link>
+            <p>A new wave in racing media.</p>
+          </div>
+
+          <div className={styles.footerLinks}>
+            {footerLinkGroups.map((group) => (
+              <div className={styles.footerColumn} key={group.title}>
+                <h3>{group.title}</h3>
+                <nav aria-label={`${group.title} footer links`}>
+                  {group.links.map(([label, href]) => (
+                    <a href={href} key={label}>
+                      {label}
+                    </a>
+                  ))}
+                </nav>
+              </div>
+            ))}
+          </div>
+
+          <div className={`${styles.footerColumn} ${styles.footerTip}`}>
+            <h3>Tip the Desk</h3>
+            <p>
+              Got a lead the league won&apos;t cover? <a href="mailto:tips@thefoil.media">tips@thefoil.media</a>
+            </p>
+          </div>
         </div>
-        <p>A new wave in racing media.</p>
-        <nav aria-label="Foil footer">
-          <a href="#foil-hero-title">SailGP</a>
-          <a href="#fleet-fan-zone-heading">Fan zone</a>
-          <a href="#foil-video-feed">The fleet</a>
-          <a href="mailto:tips@thefoil.media">Tip the desk</a>
-        </nav>
-        <small>© 2026 The Foil · Independent sailing media · Auckland · London · Sydney</small>
+        <small className={styles.footerCopyright}>
+          © 2026 The Foil · Independent sailing media · Auckland · London · Sydney
+        </small>
       </footer>
     </ThemeProvider>
   );

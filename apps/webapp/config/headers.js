@@ -120,6 +120,16 @@ const HOSTS = {
     "https://od-spy.live.streamtheworld.com",
     "https://gov.aniview.com",
   ],
+
+  /**
+   * Exact editorial prototype host used by the internal Foil article reader.
+   */
+  foilArticleFrames: ["https://prototype.thefoil.begenuin.com"],
+
+  /**
+   * Exact asset host used by the Foil prototype artwork.
+   */
+  foilAssets: ["https://octocanvas-artifacts.s3.ap-south-1.amazonaws.com"],
 };
 
 /**
@@ -221,6 +231,7 @@ async function getHeaders() {
                     HOSTS.bunnyCDN,
                     "https://vz-eee5e913-a30.b-cdn.net",
                     "https://*.picsum.photos https://picsum.photos",
+                    ...HOSTS.foilAssets,
                     ...HOSTS.googleAds.images,
                   ].join(" "),
 
@@ -270,7 +281,12 @@ async function getHeaders() {
                   `form-action 'self' ${HOSTS.api}`,
 
                   // frame-src: iframes this page is allowed to load (SafeFrame, IMA SDK)
-                  ["frame-src 'self'", ...HOSTS.googleAds.frames, ...(isDev ? ["http://localhost:*"] : [])].join(" "),
+                  [
+                    "frame-src 'self'",
+                    ...HOSTS.foilArticleFrames,
+                    ...HOSTS.googleAds.frames,
+                    ...(isDev ? ["http://localhost:*"] : []),
+                  ].join(" "),
 
                   // framing
                   `frame-ancestors 'self' ${HOSTS.brandsHost}${isDev ? " http://localhost:*" : ""}`,

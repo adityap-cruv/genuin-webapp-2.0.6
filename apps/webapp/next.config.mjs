@@ -54,7 +54,8 @@ const nextConfig = {
   /**
    * HTTP Headers Configuration
    *
-   * This method imports and applies the HTTP security headers defined in the headers.js module.
+   * This method imports and applies the HTTP security headers defined in the headers.js module,
+   * including the allowlisted sources used by internal Foil pages and artwork.
    * Security headers protect against common web vulnerabilities like XSS, clickjacking, etc.
    *
    * @see /config/headers.js for detailed documentation on each security header
