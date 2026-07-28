@@ -3,7 +3,7 @@
 import Script from "next/script";
 import { useId, useLayoutEffect } from "react";
 
-const SDK_SRC = "https://media.qa.begenuin.com/sdk/2.0.5/gen_sdk.min.js";
+const DEFAULT_SDK_SRC = "https://media.qa.begenuin.com/sdk/2.0.5/gen_sdk.min.js";
 
 type PlacementConfiguration = {
   sections: ReadonlyArray<{
@@ -59,6 +59,9 @@ export type GenuinEmbedCarouselProps = GenuinEmbedIdentity & {
   containerId?: string;
   testId?: string;
   className?: string;
+  sdkSrc?: string;
+  isolated?: boolean;
+  title?: string;
 };
 
 /**
@@ -75,13 +78,62 @@ export function GenuinEmbedCarousel({
   containerId,
   testId = "genuin-placement",
   className,
+  sdkSrc = DEFAULT_SDK_SRC,
+  isolated = false,
+  title = "Genuin video placement",
 }: GenuinEmbedCarouselProps) {
   const generatedId = useId().replaceAll(":", "");
   const resolvedContainerId = containerId ?? `gen-sdk-${generatedId}`;
+  const isolatedDocument = isolated
+    ? `<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+      html, body, #${resolvedContainerId} {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="${resolvedContainerId}"
+      class="gen-sdk-class"
+      data-api-key="${apiKey}"
+      ${embedId ? `data-embed-id="${embedId}"` : ""}
+      ${placementId ? `data-placement-id="${placementId}"` : ""}
+      ${styleId ? `data-style-id="${styleId}"` : ""}
+    ></div>
+    <script
+      src="${sdkSrc}"
+      onload='window.genuin && window.genuin.init(${JSON.stringify(configuration ? { configuration } : {})})'
+    ></script>
+  </body>
+</html>`
+    : undefined;
 
   useLayoutEffect(() => {
+    if (isolated) return;
     scheduleSdkInitialization(configuration);
-  }, [configuration]);
+  }, [configuration, isolated]);
+
+  if (isolated) {
+    return (
+      <iframe
+        title={title}
+        srcDoc={isolatedDocument}
+        data-testid={testId}
+        className={className}
+        allow="autoplay; fullscreen; picture-in-picture"
+        sandbox="allow-forms allow-popups allow-same-origin allow-scripts"
+        style={{ display: "block", width: "100%", height: "100%", border: 0 }}
+      />
+    );
+  }
 
   return (
     <>
@@ -95,7 +147,7 @@ export function GenuinEmbedCarousel({
         className={`gen-sdk-class ${className ?? ""}`.trim()}
         style={{ width: "100%", height: "100%" }}
       />
-      <Script src={SDK_SRC} strategy="afterInteractive" onReady={() => scheduleSdkInitialization(configuration)} />
+      <Script src={sdkSrc} strategy="afterInteractive" onReady={() => scheduleSdkInitialization(configuration)} />
     </>
   );
 }

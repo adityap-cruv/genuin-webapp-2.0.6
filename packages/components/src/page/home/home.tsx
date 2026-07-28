@@ -12,7 +12,7 @@ import {
   ThemeProvider,
 } from "@genuin/ui";
 import { OctopusIcon } from "@genuin/ui/icons";
-import { ArrowDown, ArrowRight, Play, Radio } from "lucide-react";
+import { ArrowRight, Play, Radio } from "lucide-react";
 import Image from "next/image";
 import { type FormEvent, useState } from "react";
 
@@ -23,37 +23,45 @@ import styles from "./home.module.css";
 
 const ASSET_ROOT =
   "https://octocanvas-artifacts.s3.ap-south-1.amazonaws.com/sessions/b6695b6a8a0b444699c9337f0723d88e/generated";
-const IHEART_API_KEY = "1c8c5caa7f9a6a081f713d17ecf82fd7798a95b87f423e3a";
 const OCTO_VIDEO_ID = "462cc7b6-5166-45e4-86ef-21550eb7601e";
 const OCTO_VIDEO_SLUG = "22ff12e2e3801400";
 
 const placements = {
   carousel: {
     containerId: "foil-hero-video-carousel",
-    styleId: "6a61d6c664ca16025598bd58",
-    placementId: "6a61d6c664ca16025598bd57",
-    apiKey: "e0c7340483c56098b00809c1d25df30e6d2a4c50351102a6",
-    width: "800px",
+    styleId: "6a2660f445aec54862ee2f59",
+    placementId: "6a2660f445aec54862ee2f58",
+    apiKey: "8a5582af807e98dbad239b749a1cd7fb026831eec1a95d00",
+    sdkSrc: "https://media.begenuin.com/sdk/2.0.5/gen_sdk.min.js",
+    isolated: true,
+    title: "The Foil fan video carousel",
+    width: "100%",
     maxWidth: "100%",
-    height: "300px",
+    height: "440px",
   },
   feed: {
     containerId: "foil-hero-video-feed",
-    styleId: "69b7d2236bafa318fdf84319",
-    placementId: "69b7d2236bafa318fdf84318",
-    apiKey: IHEART_API_KEY,
+    styleId: "6a032db60ae65ee82495dd73",
+    placementId: "6a032db60ae65ee82495dd72",
+    apiKey: "8a5582af807e98dbad239b749a1cd7fb026831eec1a95d00",
+    sdkSrc: "https://media.begenuin.com/sdk/2.0.5/gen_sdk.min.js",
+    isolated: true,
+    title: "The Foil live fan video feed",
     configuration: {
       sections: [{ title: "{{brand_context}}" }],
     },
     width: "100%",
     maxWidth: "100%",
-    height: "460px",
+    height: "640px",
   },
   grid: {
     containerId: "foil-fleet-fan-zone-grid",
-    styleId: "6a27effa807006d6e6ad035e",
-    placementId: "6a27effa807006d6e6ad035d",
-    apiKey: IHEART_API_KEY,
+    styleId: "69f85cd54e1859a88008a834",
+    placementId: "69f85cd54e1859a88008a833",
+    apiKey: "8a5582af807e98dbad239b749a1cd7fb026831eec1a95d00",
+    sdkSrc: "https://media.begenuin.com/sdk/2.0.5/gen_sdk.min.js",
+    isolated: true,
+    title: "The Foil fleet fan zone grid",
     width: "800px",
     maxWidth: "100%",
     height: "760px",
@@ -154,10 +162,10 @@ function Placement({ width, maxWidth, height, label, ...integration }: Placement
   );
 }
 
-function SectionHeader({ title, meta }: { title: string; meta: string }) {
+function SectionHeader({ title, meta, id }: { title: string; meta: string; id?: string }) {
   return (
     <div className={styles.sectionHeader}>
-      <h2>{title}</h2>
+      <h2 id={id}>{title}</h2>
       <span>{meta}</span>
     </div>
   );
@@ -204,22 +212,11 @@ export function Home() {
         18–22 kn SW forecast Saturday
       </div>
 
-      <section className={styles.heroPlacements} aria-labelledby="foil-hero-title">
+      <section className={styles.heroCarousel} aria-labelledby="foil-hero-title">
         <h1 id="foil-hero-title" className={styles.srOnly}>
-          Foil fan videos
+          Fan Highlights
         </h1>
-        <div className={styles.heroPlacementPanel} id="foil-video-carousel">
-          <div className={styles.heroPlacementHeader}>
-            <small>Fan highlights</small>
-          </div>
-          <Placement {...placements.carousel} label="iHeart fan video carousel" />
-        </div>
-        <div className={styles.heroPlacementPanel} id="foil-video-feed">
-          <div className={styles.heroPlacementHeader}>
-            <small>Latest fan clips</small>
-          </div>
-          <Placement {...placements.feed} label="iHeart contextual video feed" />
-        </div>
+        <Placement {...placements.carousel} label="iHeart fan video carousel" />
       </section>
 
       <section className={styles.liveFeed} aria-labelledby="fleet-fan-zone-heading">
@@ -233,9 +230,9 @@ export function Home() {
         <div className={styles.gridFrame}>
           <Placement {...placements.grid} label="iHeart six-video fleet fan zone grid" />
         </div>
-        <p className={styles.scrollHint}>
+        {/* <p className={styles.scrollHint}>
           <ArrowDown size={14} /> Swipe or scroll inside to browse
-        </p>
+        </p> */}
       </section>
 
       <div className={styles.ticker} aria-label="Race speed ticker">
@@ -328,6 +325,43 @@ export function Home() {
               <p>{story.byline}</p>
             </article>
           ))}
+        </div>
+      </section>
+
+      <section className={styles.sdkSection} id="foil-video-feed">
+        <SectionHeader title="Live from the Fleet" meta="Fan feed · Live" />
+        <div className={styles.feedLayout}>
+          <aside className={styles.feedInsight}>
+            <span>Race control</span>
+            <h3>Auckland form guide</h3>
+            <p>The championship picture heading into the next start.</p>
+            <dl>
+              <div>
+                <dt>Leader</dt>
+                <dd>Slingsby · 74 pts</dd>
+              </div>
+              <div>
+                <dt>Chasing</dt>
+                <dd>Outteridge · 62 pts</dd>
+              </div>
+              <div>
+                <dt>Forecast</dt>
+                <dd>18–22 kn SW</dd>
+              </div>
+            </dl>
+          </aside>
+          <div className={styles.feedFrame}>
+            <Placement {...placements.feed} label="Live fan video feed" />
+          </div>
+          <aside className={`${styles.feedInsight} ${styles.feedInsightDark}`}>
+            <span>On the water</span>
+            <h3>What the fleet is talking about</h3>
+            <p>Live reactions, onboard moments and race-week analysis from across the SailGP community.</p>
+            <div className={styles.feedPulse}>
+              <Radio size={16} />
+              Community feed is live
+            </div>
+          </aside>
         </div>
       </section>
 
