@@ -11,20 +11,16 @@ import {
   TableRow,
   ThemeProvider,
 } from "@genuin/ui";
-import { OctopusIcon } from "@genuin/ui/icons";
 import { ArrowRight, Play, Radio } from "lucide-react";
 import Image from "next/image";
 import { type FormEvent, useState } from "react";
 
 import { GenuinEmbedCarousel } from "@genuin/components/legacy/websitev5/genuin-embed-carousel";
-import { OctoPanel } from "@genuin/components/molecules/octo-panel";
 
 import styles from "./home.module.css";
 
 const ASSET_ROOT =
   "https://octocanvas-artifacts.s3.ap-south-1.amazonaws.com/sessions/b6695b6a8a0b444699c9337f0723d88e/generated";
-const OCTO_VIDEO_ID = "462cc7b6-5166-45e4-86ef-21550eb7601e";
-const OCTO_VIDEO_SLUG = "22ff12e2e3801400";
 
 const placements = {
   carousel: {
@@ -168,28 +164,6 @@ function SectionHeader({ title, meta, id }: { title: string; meta: string; id?: 
       <h2 id={id}>{title}</h2>
       <span>{meta}</span>
     </div>
-  );
-}
-
-function FoilOctoChat() {
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <OctoPanel
-      videoId={OCTO_VIDEO_ID}
-      videoSlug={OCTO_VIDEO_SLUG}
-      integrationType="placement"
-      integrationId={placements.feed.placementId}
-      renderMode="compact"
-      containLegacyDialog
-      open={isOpen}
-      onOpenChange={setIsOpen}
-      panelClassName={styles.octoPanel}
-      className={styles.octoLauncher}
-      aria-label={isOpen ? "Close Octo chat" : "Open Octo chat"}
-      aria-expanded={isOpen}>
-      <OctopusIcon variant="light" className={styles.octoLauncherIcon} aria-hidden="true" />
-    </OctoPanel>
   );
 }
 
@@ -498,7 +472,6 @@ export function Home() {
         </nav>
         <small>© 2026 The Foil · Independent sailing media · Auckland · London · Sydney</small>
       </footer>
-      <FoilOctoChat />
     </ThemeProvider>
   );
 }
