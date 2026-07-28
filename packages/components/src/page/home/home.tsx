@@ -31,6 +31,18 @@ const BREAKFAST_CLUB_PLACEMENT = {
   apiKey: "1c8c5caa7f9a6a081f713d17ecf82fd7798a95b87f423e3a",
 } as const;
 
+const IHEART_FEED_PLACEMENT = {
+  styleId: "69a9752a313806dc008458c9",
+  placementId: "69a9752a313806dc008458c8",
+  apiKey: "1c8c5caa7f9a6a081f713d17ecf82fd7798a95b87f423e3a",
+} as const;
+
+const IHEART_GRID_PLACEMENT = {
+  styleId: "6a27effa807006d6e6ad035e",
+  placementId: "6a27effa807006d6e6ad035d",
+  apiKey: "1c8c5caa7f9a6a081f713d17ecf82fd7798a95b87f423e3a",
+} as const;
+
 const BREAKFAST_CLUB_IMAGE =
   "/api/iheart-image/url/aHR0cHM6Ly93d3cub21ueWNvbnRlbnQuY29tL2QvcHJvZ3JhbXMvZTczYzk5OGUtNmU2MC00MzJmLTg2MTAtYWUyMTAxNDBjNWIxL2E2NjIwNDI4LTY4ZmEtNGI1ZC1hNWFmLWFlMzMwMDVmNjYwZi9pbWFnZS5qcGc_dD0xNzQ5NzYwNDYyJnNpemU9TGFyZ2U";
 
@@ -261,7 +273,50 @@ function getIHeartContentHref(section: "articles" | "promotions", card: ContentC
   return `/iheart/${section}/${card.id}?source=${source}&title=${title}`;
 }
 
-function ArticleCard({ card }: { card: ContentCard }) {
+function ArticleCard({
+  card,
+  variant = "rail",
+}: {
+  card: ContentCard;
+  variant?: "rail" | "hero" | "compact";
+}) {
+  if (variant !== "rail") {
+    return (
+      <a
+        href={getIHeartContentHref("articles", card)}
+        className="gencl:group gencl:relative gencl:block gencl:h-full gencl:w-full gencl:overflow-hidden gencl:rounded-lg gencl:bg-secondary-900 gencl:text-white gencl:no-underline">
+        <Image
+          src={card.image}
+          alt=""
+          width={880}
+          height={540}
+          useWebp={false}
+          className="gencl:absolute gencl:inset-0 gencl:h-full gencl:w-full gencl:object-cover gencl:transition-transform gencl:duration-300 gencl:group-hover:scale-[1.02]"
+        />
+        <span
+          aria-hidden="true"
+          className="gencl:absolute gencl:inset-0 gencl:bg-gradient-to-t gencl:from-black/90 gencl:via-black/10 gencl:to-transparent"
+        />
+        <span className="gencl:absolute gencl:inset-x-0 gencl:bottom-0 gencl:z-10 gencl:block gencl:p-3">
+          <span className="gencl:mb-1 gencl:block gencl:text-[9px] gencl:font-bold gencl:uppercase gencl:tracking-wide gencl:text-white/80">
+            iHeart
+          </span>
+          <span
+            className={
+              variant === "hero"
+                ? "gencl:line-clamp-3 gencl:block gencl:text-body-1-bold gencl:leading-snug"
+                : "gencl:line-clamp-2 gencl:block gencl:text-body-3-bold gencl:leading-snug"
+            }>
+            {card.title}
+          </span>
+          <span className="gencl:mt-2 gencl:block gencl:text-[9px] gencl:font-medium gencl:uppercase gencl:text-white/75">
+            1 min read
+          </span>
+        </span>
+      </a>
+    );
+  }
+
   return (
     <a
       href={getIHeartContentHref("articles", card)}
@@ -372,11 +427,31 @@ export function Home() {
                 title="Featured Stories"
                 href="https://www.iheart.com/news/"
               />
-              <HorizontalRail label="Featured iHeart stories">
-                {FEATURED_STORIES.map((card) => (
-                  <ArticleCard key={card.id} card={card} />
-                ))}
-              </HorizontalRail>
+              <div className="gencl:grid gencl:w-full gencl:max-w-[calc(100vw-24px)] gencl:gap-3 gencl:sm:max-w-[calc(100vw-88px)] gencl:xl:h-[460px] gencl:xl:max-w-[calc(100vw-264px)] gencl:xl:grid-cols-12">
+                <div className="gencl:h-[360px] gencl:xl:col-span-5 gencl:xl:h-full">
+                  {FEATURED_STORIES.slice(0, 1).map((card) => (
+                    <ArticleCard key={card.id} card={card} variant="hero" />
+                  ))}
+                </div>
+
+                <div className="gencl:grid gencl:grid-cols-1 gencl:gap-3 gencl:sm:grid-cols-2 gencl:xl:col-span-3 gencl:xl:grid-cols-1 gencl:xl:grid-rows-2">
+                  {FEATURED_STORIES.slice(1, 3).map((card) => (
+                    <div key={card.id} className="gencl:h-[220px] gencl:xl:h-full">
+                      <ArticleCard card={card} variant="compact" />
+                    </div>
+                  ))}
+                </div>
+
+                <div
+                  className="gencl:h-[600px] gencl:w-full gencl:overflow-hidden gencl:rounded-lg gencl:bg-secondary-50 gencl:xl:col-span-4 gencl:xl:h-full"
+                  aria-label="iHeart recommended video feed">
+                  <GenuinEmbedCarousel
+                    {...IHEART_FEED_PLACEMENT}
+                    containerId="iheart-recommended-feed"
+                    testId="iheart-recommended-feed-placement"
+                  />
+                </div>
+              </div>
             </section>
 
             <section aria-labelledby="iheart-articles">
@@ -397,6 +472,21 @@ export function Home() {
                 ))}
               </HorizontalRail>
               <RailDots />
+            </section>
+
+            <section aria-labelledby="iheart-trending-grid">
+              <SectionHeader id="iheart-trending-grid" title="Trending on iHeart" />
+              <div className="gencl:flex gencl:w-full gencl:max-w-[calc(100vw-24px)] gencl:justify-center gencl:sm:max-w-[calc(100vw-88px)] gencl:xl:max-w-[calc(100vw-264px)]">
+                <div
+                  className="gencl:h-[1200px] gencl:w-full gencl:max-w-[1000px] gencl:overflow-hidden gencl:bg-secondary-50"
+                  aria-label="Trending iHeart video grid">
+                  <GenuinEmbedCarousel
+                    {...IHEART_GRID_PLACEMENT}
+                    containerId="iheart-trending-grid-placement-host"
+                    testId="iheart-trending-grid-placement"
+                  />
+                </div>
+              </div>
             </section>
 
             <section aria-labelledby="iheart-live-categories" className="gencl:pb-4">
