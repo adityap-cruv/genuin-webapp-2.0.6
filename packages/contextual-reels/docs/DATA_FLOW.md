@@ -39,7 +39,7 @@ cross-instance coordination.** Read [ARCHITECTURE.md](ARCHITECTURE.md) first for
 
 4. **Render** — `NativeFeedShim` → `Feed` mounts Embla. `computeSlideMountWindow(activeIndex, visibleIndices)`
    mounts only active/visible slides → `ReelItem` routes to `VideoLayout` or `AdLayout` by layout id
-   (L1–L4). Video → `LightPlayer` (`hls.js/light`, buffer-capped, lowest rendition, active-slide-only
+   (L1–L5). Video → `LightPlayer` (`hls.js/light`, buffer-capped, lowest rendition, active-slide-only
    `startLoad`; vlitejs; quartile/play analytics).
 
 5. **Ad insertion** — `AdLayout` (standalone) or `VideoLayout`'s ad-break overlay mounts `GenAdSlot` →

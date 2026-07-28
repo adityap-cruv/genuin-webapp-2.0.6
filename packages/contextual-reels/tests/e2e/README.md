@@ -35,7 +35,7 @@ stateDiagram-v2
     end note
 ```
 
-Icon glyphs: **`unmute.svg`** = sound-on (enticement *or* real-unmuted);
+Icon glyphs: **`unmute.svg`** = sound-on (enticement _or_ real-unmuted);
 **`mute.svg`** = real-muted. The tests disambiguate enticement-vs-real by also
 checking `<video>.volume` (video slides) or by the next tap's effect (ad slides).
 
@@ -44,14 +44,14 @@ checking `<video>.volume` (video slides) or by the next tap's effect (ad slides)
 Rows are scenarios, columns are the three feed setups. A cell holds the test ID
 that covers it; — = not applicable for that setup (gaps explained below).
 
-| Scenario | A video | B ad | C video+ad | Advance via |
-| --- | :---: | :---: | :---: | --- |
-| **FP** play/pause never flips mute icon | FP-1 | — | FP-1c | — |
-| **MU** mute/unmute cycles real state | MU-1 | MU-1b | (in FP-1c) | — |
-| **XS** engagement persists to next slide | XS-1/2 | XS-1b | XS-1c | swipe (A/C) · completion (B) |
-| **OV** ad-surface tap engages audio | — | OV-1 | — | — |
-| **EX** fullscreen preserves mute state | — | — | EX-1 | expand/collapse |
-| **SZ** size variants render + toggle | SZ-1 (320×50)<br/>SZ-2 (300×250 / 300×600) | — | — | — |
+| Scenario                                 |                                    A video                                     |           B ad            | C video+ad | Advance via                  |
+| ---------------------------------------- | :----------------------------------------------------------------------------: | :-----------------------: | :--------: | ---------------------------- |
+| **FP** play/pause never flips mute icon  |                                      FP-1                                      |             —             |   FP-1c    | —                            |
+| **MU** mute/unmute cycles real state     |                                      MU-1                                      |           MU-1b           | (in FP-1c) | —                            |
+| **XS** engagement persists to next slide |                                     XS-1/2                                     |           XS-1b           |   XS-1c    | swipe (A/C) · completion (B) |
+| **OV** ad-surface tap engages audio      |                                       —                                        |           OV-1            |     —      | —                            |
+| **EX** fullscreen preserves mute state   |                                       —                                        |             —             |    EX-1    | expand/collapse              |
+| **SZ** size variants render + toggle     | SZ-1 (320×50)<br/>SZ-2 (300×250 / 300×600 / 320×480)<br/>SZ-3 (320×480 layout) | SZ-4 (320×480 ad routing) |     —      | —                            |
 
 Gaps, by design: **MU-2** (audible-start, `initialVolume>0`) — no QA tag has
 it, covered by the `CompactControlBar` Vitest unit test. **SY-1 / NF-1**
@@ -65,57 +65,68 @@ Each step is `action → asserted state`. `snd` = `unmute.svg`, `mut` = `mute.sv
 
 **FP-1 / FP-1c — play/pause never flips the mute icon**
 
-| Step | mute icon | play icon |
-| --- | --- | --- |
-| load | `snd` (enticement) | playing |
-| tap play/pause | `snd` (unchanged) | toggled |
-| tap play/pause | `snd` (unchanged) | toggled back |
+| Step           | mute icon          | play icon    |
+| -------------- | ------------------ | ------------ |
+| load           | `snd` (enticement) | playing      |
+| tap play/pause | `snd` (unchanged)  | toggled      |
+| tap play/pause | `snd` (unchanged)  | toggled back |
 
 **MU-1 / MU-1b / (FP-1c tail) — mute cycle toggles the real state**
 
-| Step | mute icon | video.volume¹ |
-| --- | --- | --- |
-| load | `snd` (enticement) | 0 |
-| tap mute → unmute | `snd` | > 0 |
-| tap mute → mute | `mut` | 0 |
-| tap mute → unmute | `snd` | > 0 |
+| Step              | mute icon          | video.volume¹ |
+| ----------------- | ------------------ | ------------- |
+| load              | `snd` (enticement) | 0             |
+| tap mute → unmute | `snd`              | > 0           |
+| tap mute → mute   | `mut`              | 0             |
+| tap mute → unmute | `snd`              | > 0           |
 
 ¹ asserted on video slides (MU-1, FP-1c). On the ad slide (MU-1b) only the icon
 is asserted — the ad has no CXR `<video>`.
 
 **XS-1 / XS-1b / XS-1c — engagement persists across the slide change**
 
-| Step | result |
-| --- | --- |
-| engage + mute on slide 0 (tap mute ×2) | `mut` |
-| advance (swipe for A/C · ad completion for B) | active slide index changes |
-| read next slide | `mut` (real state, **not** a re-shown enticement) |
-| tap mute on next slide | `snd` (toggle works, not stuck) |
-| *(XS-2 only)* tap play/pause on the arrived slide | `mut` unchanged · play toggled |
+| Step                                              | result                                            |
+| ------------------------------------------------- | ------------------------------------------------- |
+| engage + mute on slide 0 (tap mute ×2)            | `mut`                                             |
+| advance (swipe for A/C · ad completion for B)     | active slide index changes                        |
+| read next slide                                   | `mut` (real state, **not** a re-shown enticement) |
+| tap mute on next slide                            | `snd` (toggle works, not stuck)                   |
+| _(XS-2 only)_ tap play/pause on the arrived slide | `mut` unchanged · play toggled                    |
 
 **OV-1 — ad-surface tap engages audio**
 
-| Step | mute icon |
-| --- | --- |
-| load (ad filled) | `snd` (enticement) |
-| tap the ad creative surface (not a control) → unmutes | engaged |
-| tap mute → **mutes** | `mut` |
+| Step                                                  | mute icon          |
+| ----------------------------------------------------- | ------------------ |
+| load (ad filled)                                      | `snd` (enticement) |
+| tap the ad creative surface (not a control) → unmutes | engaged            |
+| tap mute → **mutes**                                  | `mut`              |
 
-The tell: after a surface tap the next mute tap *mutes* (`mut`). Without
-engagement, a first tap on the enticement would *unmute* and stay `snd`.
+The tell: after a surface tap the next mute tap _mutes_ (`mut`). Without
+engagement, a first tap on the enticement would _unmute_ and stay `snd`.
 
 **EX-1 — fullscreen preserves mute state**
 
-| Step | mute icon | fullscreen |
-| --- | --- | --- |
-| engage + mute (tap mute ×2) | `mut` | no |
-| tap expand | `mut` (preserved) | yes |
-| tap collapse | `mut` (preserved) | no |
+| Step                        | mute icon         | fullscreen |
+| --------------------------- | ----------------- | ---------- |
+| engage + mute (tap mute ×2) | `mut`             | no         |
+| tap expand                  | `mut` (preserved) | yes        |
+| tap collapse                | `mut` (preserved) | no         |
 
-**SZ-1 (320×50) / SZ-2 (300×250, 300×600) — size variants**
+**SZ-1 (320×50) / SZ-2 (300×250, 300×600, 320×480) / SZ-3 (320×480) — size variants**
 
-L3 (320×50) uses the compact bar and shows the enticement; L1/L2 use the default
-chrome. Each: a visible mute button toggles the icon to a different state.
+L3 (320×50) uses the compact bar and shows the enticement; L1/L2/L5 use the
+default chrome. SZ-1/SZ-2: a visible mute button toggles the icon to a different
+state.
+
+SZ-3 asserts the 320×480 (L5) **layout resolution** instead — the slot box, the
+injected `meta[name="ad.size"]`, and that the full-player node is present while
+the compact bar is absent. SZ-4 covers the same size on the **ad** path: an
+ads-only tag must reach `AdLayout` + a real `gen-ad-slot-*`, with no compact bar
+and no page errors.
+
+Both read the mounted DOM and never play or tap, so they isolate "did the new
+size register" from anything the media/ad network does — the waterfall's outcome
+is the ad server's business, the routing is ours.
 
 ## How it runs
 
@@ -138,12 +149,12 @@ state is driven by our taps, not Chrome's media-engagement heuristic.
 Only the **feed API is mocked**; everything else runs end-to-end. The rationale
 and tradeoffs are in [ADR 004](../../docs/cxr-decisions/004-e2e-real-genad.md).
 
-| Layer | Status |
-| --- | --- |
-| Tag config + feed (`/goservices/ad_creative[/feed]`) | **Mocked** — verbatim QA responses from `fixtures/raw/` |
-| `ip_info` | Mocked (a fixed US record) |
-| GenAd SDK + ad waterfall | **Real** — loads from the CDN, fills against the live ad server |
-| Content video (Bunny CDN `.m3u8`) | **Real** — plays for genuine playback state |
+| Layer                                                | Status                                                          |
+| ---------------------------------------------------- | --------------------------------------------------------------- |
+| Tag config + feed (`/goservices/ad_creative[/feed]`) | **Mocked** — verbatim QA responses from `fixtures/raw/`         |
+| `ip_info`                                            | Mocked (a fixed US record)                                      |
+| GenAd SDK + ad waterfall                             | **Real** — loads from the CDN, fills against the live ad server |
+| Content video (Bunny CDN `.m3u8`)                    | **Real** — plays for genuine playback state                     |
 
 Because the ad fills for real, an ad slot's control bar appears on a genuine
 fill (tests `waitForAdBar()`), and an ad feed advances when the real ad
@@ -167,11 +178,11 @@ as a real failure — the QA ad config is expected to fill.
 `fixtures/raw/<tagId>.{tag,feed}.json` are verbatim QA responses. The `TAG` map
 in `mountWidget.ts` names them by variation:
 
-| Variation | Reels | Path exercised |
-| --- | --- | --- |
-| `adOnly` | `type:"ads"` + `video_ad` | AdLayout / AdControlBar |
-| `videoPlusAd` | `loop` + ad_config | VideoLayout + ad break |
-| `videoOnly` | `loop` | plain VideoLayout |
+| Variation     | Reels                     | Path exercised          |
+| ------------- | ------------------------- | ----------------------- |
+| `adOnly`      | `type:"ads"` + `video_ad` | AdLayout / AdControlBar |
+| `videoPlusAd` | `loop` + ad_config        | VideoLayout + ad break  |
+| `videoOnly`   | `loop`                    | plain VideoLayout       |
 
 To refresh a fixture: `curl -H "x-user-id: e2e" "https://api.qa.begenuin.com/goservices/ad_creative?tag_id=<id>"`
 (and `…/ad_creative/feed?tag_id=<id>`), saving to the `.tag.json` / `.feed.json`
@@ -181,10 +192,10 @@ files.
 
 The full matrix + expected outcomes are above. This is just the file map:
 
-| Spec file | Scenarios |
-| --- | --- |
-| `controls.video-only.spec.ts` | FP-1, MU-1, XS-1, XS-2 |
-| `controls.audio-ad.spec.ts` | MU-1b, OV-1, XS-1b |
+| Spec file                        | Scenarios                          |
+| -------------------------------- | ---------------------------------- |
+| `controls.video-only.spec.ts`    | FP-1, MU-1, XS-1, XS-2             |
+| `controls.audio-ad.spec.ts`      | MU-1b, OV-1, XS-1b                 |
 | `controls.video-plus-ad.spec.ts` | FP-1c, XS-1c, EX-1, AB-1 (`fixme`) |
-| `controls.sizes.spec.ts` | SZ-1, SZ-2 |
-| `init.spec.ts` | bundle smoke (pre-existing) |
+| `controls.sizes.spec.ts`         | SZ-1, SZ-2, SZ-3, SZ-4             |
+| `init.spec.ts`                   | bundle smoke (pre-existing)        |

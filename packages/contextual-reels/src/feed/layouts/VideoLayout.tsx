@@ -374,7 +374,9 @@ export function VideoLayout({
     );
   }
 
-  // ─── L1: 300×600 / fullscreen — full player ─────────────────────────────────
+  // ─── L1: 300×600 / L5: 320×480 / fullscreen — full player ───────────────────
+  // Both sizes fill their container (h-full/w-full) with a `contain`-fitted 9/16
+  // player, so one render path serves both — L5 needs no branch of its own.
   function renderL1(): React.JSX.Element {
     const isPlayerPlaying = isActive && isPlaying && !splitActive && !adBreak.suppressVideo;
 
@@ -423,6 +425,7 @@ export function VideoLayout({
     if (adLayout === AD_LAYOUT.L3) return renderL3();
     if (adLayout === AD_LAYOUT.L4) return renderL4();
     if (adLayout === AD_LAYOUT.L2) return renderL2();
+    // L1, L5 (320×480) and Unknown all fall through to the full player.
     return renderL1();
   }
 

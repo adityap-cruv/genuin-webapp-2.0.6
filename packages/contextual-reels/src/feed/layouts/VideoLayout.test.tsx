@@ -235,6 +235,14 @@ describe("VideoLayout layout branches", () => {
     expect(container.querySelector('[data-testid="light-player"]')).toBeTruthy();
   });
 
+  // ─── L5 (320×480) — shares the L1 full-player path ──────────────────────────
+  it("renders the full player in L5 (320×480)", () => {
+    mockUseAdWaterfall.mockReturnValue({ adLayout: AD_LAYOUT.L5 });
+    render();
+    expect(container.querySelector('[data-testid="video-layout-player"]')).toBeTruthy();
+    expect(container.querySelector('[data-testid="light-player"]')).toBeTruthy();
+  });
+
   // ─── L3 (320×50 bar, audio-only player mounts on unmute) ────────────────────
   it("mounts no player in L3 while muted (silent unit never decodes video)", () => {
     mockUseAdWaterfall.mockReturnValue({ adLayout: AD_LAYOUT.L3 });

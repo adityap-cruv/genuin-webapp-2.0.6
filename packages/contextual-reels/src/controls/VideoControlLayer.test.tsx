@@ -15,7 +15,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 vi.mock("@cxr/config", () => ({
-  AD_LAYOUT: { Unknown: 0, L1: 1, L2: 2, L3: 3, L4: 4 },
+  AD_LAYOUT: { Unknown: 0, L1: 1, L2: 2, L3: 3, L4: 4, L5: 5 },
 }));
 
 vi.mock("@cxr/instance/InstanceContext", () => ({
@@ -254,6 +254,12 @@ describe("VideoControlLayer", () => {
     it("L2 banner (not fullscreen): expandOnTap true", () => {
       render({ adLayout: AD_LAYOUT.L2 });
       expect(defaultLayerProps.current?.expandOnTap).toBe(true);
+    });
+
+    it("L5 (320×480, not fullscreen): expandOnTap true, hideChrome false", () => {
+      render({ adLayout: AD_LAYOUT.L5 });
+      expect(defaultLayerProps.current?.expandOnTap).toBe(true);
+      expect(defaultLayerProps.current?.hideChrome).toBe(false);
     });
 
     it("L2 with GenAI + videoId (not fullscreen): hideChrome true (Octo owns the chrome)", () => {

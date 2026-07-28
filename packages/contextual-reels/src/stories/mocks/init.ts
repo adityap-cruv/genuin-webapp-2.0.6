@@ -43,6 +43,7 @@ export interface SizeConfig {
 export const SIZES: Record<string, SizeConfig> = {
   "300x600": { adLayout: AD_LAYOUT.L1, width: 300, height: 600 },
   "300x250": { adLayout: AD_LAYOUT.L2, width: 300, height: 250 },
+  "320x480": { adLayout: AD_LAYOUT.L5, width: 320, height: 480 },
   "320x100": { adLayout: AD_LAYOUT.L4, width: 320, height: 100 },
   "320x50": { adLayout: AD_LAYOUT.L3, width: 320, height: 50 },
 };

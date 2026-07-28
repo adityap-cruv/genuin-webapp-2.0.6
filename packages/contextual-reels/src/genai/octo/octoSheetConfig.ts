@@ -58,7 +58,9 @@ export function octoFractionForState(state: DynamicSheetState): number {
 function enabledStatesFor(layoutId: AdLayoutId, isFullScreen: boolean): DynamicSheetState[] {
   if (isFullScreen) return FULL_LADDER;
   switch (layoutId) {
+    // L5 (320×480) is tall enough for the 70% panel (336px), so it keeps L1's full ladder.
     case AD_LAYOUT.L1:
+    case AD_LAYOUT.L5:
       return FULL_LADDER;
     case AD_LAYOUT.L2:
     case AD_LAYOUT.L4:

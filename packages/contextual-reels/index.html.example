@@ -295,6 +295,10 @@
                   320 × 100
                 </label>
                 <label class="size-card">
+                  <input type="checkbox" name="size" value="320x480" />
+                  320 × 480
+                </label>
+                <label class="size-card">
                   <input type="checkbox" name="size" value="300x250" />
                   300 × 250
                 </label>
@@ -333,6 +337,7 @@
       const SIZE_LABELS = {
         "320x50": "Mobile Banner",
         "320x100": "Mobile Banner",
+        "320x480": "Mobile Tall",
         "300x250": "Desktop Medium",
         "300x600": "Desktop Tall",
       };

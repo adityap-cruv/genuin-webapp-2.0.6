@@ -34,9 +34,9 @@ So the harness needs two things the generic flow doesn't provide:
    not a `srcdoc` iframe — a `srcdoc` base URL is `about:srcdoc`, which makes the
    loader's path-based `src` and its `import()` silently fail (0 bytes measured).
 
-## Size axis — 320×50 vs 320×100
+## Size axis — 320×50 vs 320×100 vs 320×480
 
-Mount size is a first-class dimension because it changes *which layout renders*,
+Mount size is a first-class dimension because it changes _which layout renders_,
 not just the box. `resolveAdLayout` (in `src/config.ts`) maps pixel size to a
 layout id, and the layouts differ in what they load:
 
@@ -47,6 +47,10 @@ layout id, and the layouts differ in what they load:
 - **320×100 → L4** ("banner with 100px thumbnail player"). `renderL4` mounts
   `LightPlayer` and autoplays the reel, so the full video/HLS cost lands in the
   un-interacted window. Every 320×100 cell breaches HAI.
+- **320×480 → L5** ("tall mobile unit, full player"). Renders L1's full player,
+  so like L4 it autoplays the reel up front — but into a viewport ~5x taller, the
+  largest mobile surface we mount. It is here to bound the media cost of the new
+  size, not because a different code path loads.
 
 `CXR_SIZES` in `tags.mjs` holds the sizes; the runner keys each report as
 `ad-budget-report.<variation>.<size>.json`. The size reaches the snippet via
@@ -76,11 +80,11 @@ network access to those hosts; an offline run measures only the local loader.
 - **Current matrix (worst-of-3 runs on the latest build):** size decides
   everything.
 
-  | Variation | 320×50 (L3) | 320×100 (L4) |
-  | --- | --- | --- |
-  | ads-only | B · 2.75 MB · 69% | F · 6.90 MB · 173% |
-  | video+ad | B · 2.25 MB · 56% | F · 10.11 MB · 253% |
-  | video-only | B · 1.52 MB · 38% | F · 7.39 MB · 185% |
+  | Variation  | 320×50 (L3)       | 320×100 (L4)        |
+  | ---------- | ----------------- | ------------------- |
+  | ads-only   | B · 2.75 MB · 69% | F · 6.90 MB · 173%  |
+  | video+ad   | B · 2.25 MB · 56% | F · 10.11 MB · 253% |
+  | video-only | B · 1.52 MB · 38% | F · 7.39 MB · 185%  |
 
   **All 320×50 cells pass HAI; all 320×100 cells breach it.** The breach is the
   reel video the L4 banner autoplays, so the fix is on the media side
@@ -88,3 +92,9 @@ network access to those hosts; an offline run measures only the local loader.
   reaches grade A only because of one IAB warn: initial load ~1.26 MB vs the
   ~1.25 MB target (the core JS chunk + CSS), unrelated to the media breach.
   Fill is non-deterministic — always run `--runs 3+`.
+
+  **320×480 (L5) is in `CXR_SIZES` but has no measured column yet.** It renders
+  L1's autoplaying full player, so expect it to breach like L4 (probably worse —
+  a taller viewport can pull a higher rendition), but that is a prediction, not a
+  measurement. Run `budget:all` on a machine where the harness actually loads the
+  feed and fill in the column.

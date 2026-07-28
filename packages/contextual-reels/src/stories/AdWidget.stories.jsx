@@ -136,6 +136,7 @@ Use the toolbar above the preview:
   | --- | --- |
   | **300 × 600** | Desktop tall: full vertical player |
   | **300 × 250** | Desktop rectangle: player with overlay |
+  | **320 × 480** | Mobile tall: full vertical player |
   | **320 × 100** | Mobile banner: thumbnail player + CTA |
   | **320 × 50** | Mobile compact bar |
 

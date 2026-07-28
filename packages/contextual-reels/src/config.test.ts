@@ -85,6 +85,7 @@ describe("config/adLayouts", () => {
       { id: AD_LAYOUT.L2, width: 300, height: 250 },
       { id: AD_LAYOUT.L3, width: 320, height: 50 },
       { id: AD_LAYOUT.L4, width: 320, height: 100 },
+      { id: AD_LAYOUT.L5, width: 320, height: 480 },
     ]);
   });
 
@@ -99,6 +100,7 @@ describe("config/adLayouts", () => {
     [300, 250, AD_LAYOUT.L2],
     [320, 50, AD_LAYOUT.L3],
     [320, 100, AD_LAYOUT.L4],
+    [320, 480, AD_LAYOUT.L5],
   ])("resolves %dx%d to layout id %i", (w, h, expected) => {
     expect(resolveAdLayout(w, h)).toBe(expected);
   });
@@ -107,6 +109,8 @@ describe("config/adLayouts", () => {
     expect(resolveAdLayout(301, 600)).toBe(AD_LAYOUT.Unknown);
     expect(resolveAdLayout(300, 599)).toBe(AD_LAYOUT.Unknown);
     expect(resolveAdLayout(640, 480)).toBe(AD_LAYOUT.Unknown);
+    // 320×480 is L5, but only exactly — a near-miss must not widen into it.
+    expect(resolveAdLayout(320, 481)).toBe(AD_LAYOUT.Unknown);
   });
 });
 

@@ -71,6 +71,7 @@ export const AD_LAYOUT = {
   L2: 2, // desktop 300×250 — full player + Octo overlay
   L3: 3, // mobile 320×50  — compact bar, no player
   L4: 4, // mobile 320×100 — banner with 100px thumbnail player
+  L5: 5, // mobile 320×480 — tall unit, full player (same render path as L1)
 } as const;
 
 /** Numeric layout identifier produced by {@link resolveAdLayout}. */
@@ -84,7 +85,7 @@ export interface AdLayoutVariant {
 }
 
 /**
- * The four pixel-perfect ad sizes the widget supports.
+ * The pixel-perfect ad sizes the widget supports.
  *
  * Order is intentional — the resolver scans front-to-back so the canonical
  * "primary" variant (L1) is listed first for documentation purposes.
@@ -94,6 +95,7 @@ export const adLayoutVariants: readonly AdLayoutVariant[] = [
   { id: AD_LAYOUT.L2, width: 300, height: 250 },
   { id: AD_LAYOUT.L3, width: 320, height: 50 },
   { id: AD_LAYOUT.L4, width: 320, height: 100 },
+  { id: AD_LAYOUT.L5, width: 320, height: 480 },
 ] as const;
 
 /**

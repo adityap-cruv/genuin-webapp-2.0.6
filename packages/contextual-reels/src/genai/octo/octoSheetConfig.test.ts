@@ -8,16 +8,13 @@
 import type { DynamicSheetState } from "@genuin/ui/dynamic-sheet";
 import { describe, it, expect } from "vitest";
 
-import {
-  getOctoSheetConfig,
-  octoFractionForState,
-  type OctoSheetConfigParams,
-} from "@cxr/genai/octo/octoSheetConfig";
+import { getOctoSheetConfig, octoFractionForState, type OctoSheetConfigParams } from "@cxr/genai/octo/octoSheetConfig";
 
 const L1 = { width: 300, height: 600 };
 const L2 = { width: 300, height: 250 };
 const L3 = { width: 320, height: 50 };
 const L4 = { width: 320, height: 100 };
+const L5 = { width: 320, height: 480 };
 const UNKNOWN = { width: 123, height: 456 };
 
 function build(params: Partial<OctoSheetConfigParams> = {}): ReturnType<typeof getOctoSheetConfig> {
@@ -49,6 +46,16 @@ describe("octoFractionForState", () => {
 describe("getOctoSheetConfig — enabled state ladder", () => {
   it("exposes the full ladder for the L1 primary banner", () => {
     expect(build({ dimensions: L1 }).config.enabledStates).toEqual([
+      "default",
+      "default-active",
+      "expand-view",
+      "panel-view",
+      "full-view",
+    ]);
+  });
+
+  it("exposes the full ladder for the tall L5 (320×480) format", () => {
+    expect(build({ dimensions: L5 }).config.enabledStates).toEqual([
       "default",
       "default-active",
       "expand-view",

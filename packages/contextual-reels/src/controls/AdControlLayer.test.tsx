@@ -7,7 +7,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 vi.mock("@cxr/config", () => ({
   assetLink: "https://test.cdn/",
   apiurl: "https://api.begenuin.com",
-  AD_LAYOUT: { Unknown: 0, L1: 1, L2: 2, L3: 3, L4: 4 },
+  AD_LAYOUT: { Unknown: 0, L1: 1, L2: 2, L3: 3, L4: 4, L5: 5 },
   isCompactLayout: (id: number) => id === 3 || id === 4,
 }));
 vi.mock("../providers/PlayerProvider", () => ({

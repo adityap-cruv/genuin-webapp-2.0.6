@@ -104,7 +104,7 @@ describe("OctoSheet — dispatcher gating", () => {
 describe("OctoSheet — fullscreen routing", () => {
   it("routes fullscreen to the ladder only for the bottombar host", () => {
     render({ ...baseProps, isFullScreen: true, host: "bottombar" });
-    expect(container.querySelector("[data-testid=\"dynamic-sheet\"]")).not.toBeNull();
+    expect(container.querySelector('[data-testid="dynamic-sheet"]')).not.toBeNull();
   });
 
   it("renders nothing for non-bottombar hosts in fullscreen", () => {
@@ -116,7 +116,7 @@ describe("OctoSheet — fullscreen routing", () => {
 describe("OctoSheet — layout routing (non-fullscreen)", () => {
   it("routes L2 to the split view for the split host", () => {
     render({ ...baseProps, adLayoutHint: AD_LAYOUT.L2, host: "split" });
-    expect(container.querySelector("[data-testid=\"octo-split-view\"]")).not.toBeNull();
+    expect(container.querySelector('[data-testid="octo-split-view"]')).not.toBeNull();
   });
 
   it("returns null for L2 on a non-split host", () => {
@@ -126,13 +126,13 @@ describe("OctoSheet — layout routing (non-fullscreen)", () => {
 
   it("routes L4 to the 100 countdown strip for the compact host", () => {
     render({ ...baseProps, adLayoutHint: AD_LAYOUT.L4, host: "compact" });
-    const strip = container.querySelector("[data-testid=\"octo-countdown-strip\"]");
+    const strip = container.querySelector('[data-testid="octo-countdown-strip"]');
     expect(strip?.getAttribute("data-variant")).toBe("100");
   });
 
   it("routes L3 to the 50 countdown strip for the compact host", () => {
     render({ ...baseProps, adLayoutHint: AD_LAYOUT.L3, host: "compact" });
-    const strip = container.querySelector("[data-testid=\"octo-countdown-strip\"]");
+    const strip = container.querySelector('[data-testid="octo-countdown-strip"]');
     expect(strip?.getAttribute("data-variant")).toBe("50");
   });
 
@@ -148,7 +148,12 @@ describe("OctoSheet — layout routing (non-fullscreen)", () => {
 
   it("routes the default L1 layout to the ladder for the bottombar host", () => {
     render({ ...baseProps, adLayoutHint: AD_LAYOUT.L1, host: "bottombar" });
-    expect(container.querySelector("[data-testid=\"dynamic-sheet\"]")).not.toBeNull();
+    expect(container.querySelector('[data-testid="dynamic-sheet"]')).not.toBeNull();
+  });
+
+  it("routes L5 (320×480) to the ladder for the bottombar host", () => {
+    render({ ...baseProps, adLayoutHint: AD_LAYOUT.L5, host: "bottombar" });
+    expect(container.querySelector('[data-testid="dynamic-sheet"]')).not.toBeNull();
   });
 
   it("returns null for the default L1 layout on a non-bottombar host", () => {
@@ -158,22 +163,22 @@ describe("OctoSheet — layout routing (non-fullscreen)", () => {
 
   it("measures the layout from dimensions when no hint is given", () => {
     render({ ...baseProps, dimensions: { width: 300, height: 250 }, host: "split" });
-    expect(container.querySelector("[data-testid=\"octo-split-view\"]")).not.toBeNull();
+    expect(container.querySelector('[data-testid="octo-split-view"]')).not.toBeNull();
   });
 });
 
 describe("OctoSheet — ladder behaviour", () => {
   it("renders nothing in the ladder when there is no video", () => {
     render({ ...baseProps, videoId: "", host: "bottombar" });
-    expect(container.querySelector("[data-testid=\"dynamic-sheet\"]")).toBeNull();
+    expect(container.querySelector('[data-testid="dynamic-sheet"]')).toBeNull();
   });
 
   it("opens the sheet and mounts the SDK in compact mode at default state", () => {
     render(baseProps);
-    const sheet = container.querySelector("[data-testid=\"dynamic-sheet\"]");
+    const sheet = container.querySelector('[data-testid="dynamic-sheet"]');
     expect(sheet?.getAttribute("data-is-open")).toBe("true");
     expect(sheet?.getAttribute("data-controlled-state")).toBe("default");
-    const panel = container.querySelector("[data-testid=\"octo-sdk-panel\"]");
+    const panel = container.querySelector('[data-testid="octo-sdk-panel"]');
     expect(panel?.getAttribute("data-render-mode")).toBe("compact");
   });
 
@@ -201,9 +206,9 @@ describe("OctoSheet — ladder behaviour", () => {
     setOctoFraction.mockClear();
     act(() => onLifecyclePhase?.("response"));
 
-    const sheet = container.querySelector("[data-testid=\"dynamic-sheet\"]");
+    const sheet = container.querySelector('[data-testid="dynamic-sheet"]');
     expect(sheet?.getAttribute("data-controlled-state")).toBe("panel-view");
-    const panel = container.querySelector("[data-testid=\"octo-sdk-panel\"]");
+    const panel = container.querySelector('[data-testid="octo-sdk-panel"]');
     expect(panel?.getAttribute("data-render-mode")).toBe("full");
     // panel-view publishes the 0.7 split fraction.
     expect(setOctoFraction).toHaveBeenCalledWith(0.7);
@@ -215,7 +220,7 @@ describe("OctoSheet — ladder behaviour", () => {
       | ((phase: string) => void)
       | undefined;
     act(() => onLifecyclePhase?.("idle"));
-    const sheet = container.querySelector("[data-testid=\"dynamic-sheet\"]");
+    const sheet = container.querySelector('[data-testid="dynamic-sheet"]');
     expect(sheet?.getAttribute("data-controlled-state")).toBe("default");
   });
 

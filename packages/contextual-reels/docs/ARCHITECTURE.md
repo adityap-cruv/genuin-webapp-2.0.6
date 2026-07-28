@@ -7,7 +7,7 @@ tracking pixels.
 
 - **Import alias:** `@cxr/*` → `src/*` (Vite + Vitest + tsconfig).
 - **Tailwind prefixes:** `gencl:` (widget-scoped classes) / `gai:` (GenAI SDK).
-- **Layout ids drive nearly all branching** — `AD_LAYOUT.L1/L2/L3/L4` from [`config.ts`](../src/config.ts).
+- **Layout ids drive nearly all branching** — `AD_LAYOUT.L1–L5` from [`config.ts`](../src/config.ts).
 
 All paths below are relative to the package root. Most source files carry a rich file-level JSDoc
 comment — this doc is the _map_; read the file for the _detail_.
@@ -81,7 +81,7 @@ FeedTree: FullScreenProvider → StrategyProvider → GenAIProvider
   - `useEmblaFeed`, gates swipe via `useSwipeGate([octoFraction>0, isAdActive])`.
 - **`ReelItem.tsx`** — pure 3-branch router by `entry.kind`: `ad` → `AdLayout`, `video-with-ad` →
   `VideoLayout adObject`, `video` → `VideoLayout`. Both layouts lazy-loaded.
-- **`layouts/VideoLayout.tsx`** — per-layout player rendering (`renderL1/L2/L3/L4`; fullscreen → L1).
+- **`layouts/VideoLayout.tsx`** — per-layout player rendering (`renderL1/L2/L3/L4`; L5 shares renderL1; fullscreen → L1).
   Mounts `LightPlayer` + `VideoControlLayer`; L2 mounts `OctoSheet host="split"`; ad-break overlay via
   `useFullscreenAdBreak`; L3 mounts an offscreen audio-only player only after unmute (`l3AudioEngaged`,
   [ADR 006](cxr-decisions/006-l3-audio-on-unmute.md)).

@@ -6,19 +6,19 @@
 // budgets need to diverge). Update the ids here when QA tags rotate.
 export const CXR_TAGS = [
   {
-    id: '6a3aa78ba0daccfd439648b8',
-    variation: 'ads-only',
-    label: 'Ads only (audio ad, no organic video)',
+    id: "6a3aa78ba0daccfd439648b8",
+    variation: "ads-only",
+    label: "Ads only (audio ad, no organic video)",
   },
   {
-    id: '6a3aa86e4da8cd92d289ccda',
-    variation: 'video+ad',
-    label: 'Video + ad config (organic reels with ad slots)',
+    id: "6a3aa86e4da8cd92d289ccda",
+    variation: "video+ad",
+    label: "Video + ad config (organic reels with ad slots)",
   },
   {
-    id: '6a3ba4395df1fee89bf0b2e7',
-    variation: 'video-only',
-    label: 'Video only (organic reels, no ad config)',
+    id: "6a3ba4395df1fee89bf0b2e7",
+    variation: "video-only",
+    label: "Video only (organic reels, no ad config)",
   },
 ];
 
@@ -31,15 +31,18 @@ export const CXR_TAGS = [
  *     the user expands, so the HAI media cost should be far lower.
  *   - 320×100 → L4: banner with a 100px thumbnail player that autoplays the
  *     reel, so the full video/HLS cost lands up front.
- * Measuring both surfaces that collapsed-vs-banner delta per config.
+ *   - 320×480 → L5: full-height player (the L1 render path) at mobile width —
+ *     the heaviest mobile surface, so it bounds the HAI risk for the new size.
+ * Measuring all three surfaces the collapsed-vs-banner-vs-tall delta per config.
  */
 export const CXR_SIZES = [
-  { label: '320x50', width: 320, height: 50 },
-  { label: '320x100', width: 320, height: 100 },
+  { label: "320x50", width: 320, height: 50 },
+  { label: "320x100", width: 320, height: 100 },
+  { label: "320x480", width: 320, height: 480 },
 ];
 
 /** The budget profile every variation is scored against (see scripts/budgets.json). */
-export const CXR_PROFILE = 'cxr';
+export const CXR_PROFILE = "cxr";
 
 /**
  * View modes the harness mounts the tag under. Direct-in-frame is today's
@@ -48,8 +51,8 @@ export const CXR_PROFILE = 'cxr';
  * deployment) rather than mounting it straight into the ad slot's document.
  */
 export const CXR_VIEW_MODES = [
-  { id: 'direct', label: 'Mounted directly in ad-frame body (current default)' },
-  { id: 'iframe', label: 'Wrapped in a same-origin publisher iframe' },
+  { id: "direct", label: "Mounted directly in ad-frame body (current default)" },
+  { id: "iframe", label: "Wrapped in a same-origin publisher iframe" },
 ];
 
 /**
@@ -60,6 +63,6 @@ export const CXR_VIEW_MODES = [
  * is still worth tracking (see report.mjs — reported informationally, not gated).
  */
 export const CXR_INTERACTION_STATES = [
-  { id: 'non-interacted', label: 'Passive observe only (matches Chrome HAI evaluation)' },
-  { id: 'interacted', label: 'Expand + swipe after initial observe window' },
+  { id: "non-interacted", label: "Passive observe only (matches Chrome HAI evaluation)" },
+  { id: "interacted", label: "Expand + swipe after initial observe window" },
 ];

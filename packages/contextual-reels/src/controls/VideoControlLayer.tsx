@@ -177,7 +177,8 @@ export function VideoControlLayer({
   }
 
   // Banner sizes expand to fullscreen on a video tap when not already fullscreen.
-  const isBanner = adLayout === AD_LAYOUT.L2 || adLayout === AD_LAYOUT.L1;
+  // L5 (320×480) renders the same full player as L1, so it taps to expand too.
+  const isBanner = adLayout === AD_LAYOUT.L2 || adLayout === AD_LAYOUT.L1 || adLayout === AD_LAYOUT.L5;
   const expandOnTap = isBanner && !isFullScreen && expandEnabled;
 
   // 300x250 mounts Octo as a full-size overlay over the playing video; there the

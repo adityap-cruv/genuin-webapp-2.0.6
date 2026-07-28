@@ -38,6 +38,7 @@ pixel size to an id (any non-exact size → `Unknown`).
 | 2   | `L2`      | 300×250 | full player + Octo split overlay                                                                                       |
 | 3   | `L3`      | 320×50  | compact bar, no player; audio via lazy offscreen player on unmute ([ADR 006](cxr-decisions/006-l3-audio-on-unmute.md)) |
 | 4   | `L4`      | 320×100 | banner with a 100px thumbnail player                                                                                   |
+| 5   | `L5`      | 320×480 | tall mobile unit — full player (shares L1's render path, controls, and Octo ladder)                                    |
 
 ## Stacked layout (widget + Infolinks)
 

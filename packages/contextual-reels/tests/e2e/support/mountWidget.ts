@@ -31,6 +31,7 @@ export const SIZE = {
   L2: [300, 250],
   L3: [320, 50],
   L4: [320, 100],
+  L5: [320, 480],
 } as const;
 
 export type SizeKey = keyof typeof SIZE;
@@ -92,9 +93,7 @@ export async function mountWidget(page: Page, options: MountOptions): Promise<vo
   const feedBody = loadRaw(tagId, "feed");
 
   // Feed MUST be matched before the broader tag regex.
-  await page.route(FEED_RE, (route) =>
-    route.fulfill({ contentType: "application/json", body: feedBody })
-  );
+  await page.route(FEED_RE, (route) => route.fulfill({ contentType: "application/json", body: feedBody }));
   await page.route(TAG_RE, (route) => {
     if (FEED_RE.test(route.request().url())) return route.fallback();
     return route.fulfill({ contentType: "application/json", body: tagBody });

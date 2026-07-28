@@ -59,7 +59,7 @@ Full detail: [DATA_FLOW.md](docs/DATA_FLOW.md).
 
 ## Load-bearing facts (don't break)
 
-- **`AD_LAYOUT.L1/L2/L3/L4`** (config.ts) drives most branching. L3=320×50 audio-on-unmute ([ADR 006](docs/cxr-decisions/006-l3-audio-on-unmute.md)).
+- **`AD_LAYOUT.L1–L5`** (config.ts) drives most branching. L5=320×480 renders L1's full player. L3=320×50 audio-on-unmute ([ADR 006](docs/cxr-decisions/006-l3-audio-on-unmute.md)).
 - **Volume is source of truth**: `isMuted = volume === 0` (PlayerProvider).
 - **Two event systems**: per-instance `CxrEventBus` (internal) vs `window.cxr` (host-facing), bridged by `usePublicApiBridge`. `utils/eventBus.ts` is dead legacy.
 - **HAI (Chrome Heavy Ad Intervention)**: HLS buffer caps + active-slide-only `startLoad` + ad-request gating exist to stay under 4MB/15s/60s. Don't loosen — [AD_REMOVAL_RISK_AUDIT.md](docs/AD_REMOVAL_RISK_AUDIT.md).

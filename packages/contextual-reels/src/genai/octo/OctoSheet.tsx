@@ -88,7 +88,9 @@ export function OctoSheet(props: OctoSheetProps): React.JSX.Element | null {
       return host === "compact" ? <OctoCountdownStrip {...props} variant="50" /> : null;
     case AD_LAYOUT.Unknown:
       return null;
+    // L5 (320×480) renders the full player (L1 path), so it hosts the same sheet ladder.
     case AD_LAYOUT.L1:
+    case AD_LAYOUT.L5:
     default:
       return host === "bottombar" ? <OctoSheetLadder {...props} /> : null;
   }

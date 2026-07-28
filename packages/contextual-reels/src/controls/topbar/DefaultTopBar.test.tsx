@@ -12,7 +12,7 @@ vi.mock("@cxr/config", () => ({
   assetLink: "https://test.cdn/",
   // resolveCxrControlSize (via control-size.ts) imports AD_LAYOUT from @cxr/config;
   // the mock must include it or control-size's lookup table throws on load.
-  AD_LAYOUT: { Unknown: 0, L1: 1, L2: 2, L3: 3, L4: 4 },
+  AD_LAYOUT: { Unknown: 0, L1: 1, L2: 2, L3: 3, L4: 4, L5: 5 },
 }));
 vi.mock("@cxr/providers/PlayerProvider", () => ({
   usePlayer: () => ({
@@ -184,14 +184,10 @@ describe("DefaultTopBar", () => {
     // mouseover/mouseout events, so dispatch those (with an outside relatedTarget)
     // to drive the setRightHovered handlers.
     act(() => {
-      rightGroup.dispatchEvent(
-        new MouseEvent("mouseover", { bubbles: true, relatedTarget: document.body })
-      );
+      rightGroup.dispatchEvent(new MouseEvent("mouseover", { bubbles: true, relatedTarget: document.body }));
     });
     act(() => {
-      rightGroup.dispatchEvent(
-        new MouseEvent("mouseout", { bubbles: true, relatedTarget: document.body })
-      );
+      rightGroup.dispatchEvent(new MouseEvent("mouseout", { bubbles: true, relatedTarget: document.body }));
     });
     // No throw and the bar still renders — the hover handlers ran.
     expect(container.querySelector('[data-testid="default-top-bar"]')).toBeTruthy();

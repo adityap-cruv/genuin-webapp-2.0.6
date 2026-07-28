@@ -9,6 +9,7 @@ const CONTROL_SIZE_BY_LAYOUT: Record<AdLayoutId, { collapse: PlayerControlSize; 
   [AD_LAYOUT.L2]: { collapse: "sm", fullscreen: "lg" }, // desktop 300×250
   [AD_LAYOUT.L3]: { collapse: "xs", fullscreen: "lg" }, // mobile 320×50
   [AD_LAYOUT.L4]: { collapse: "sm", fullscreen: "lg" }, // mobile 320×100
+  [AD_LAYOUT.L5]: { collapse: "sm", fullscreen: "lg" }, // mobile 320×480
 };
 
 /** Used for `undefined`/default layouts and provider-less test renders. */
