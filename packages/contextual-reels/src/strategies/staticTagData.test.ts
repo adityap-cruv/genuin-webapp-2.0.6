@@ -27,6 +27,14 @@ describe("getStaticTagData", () => {
     expect((b!.tagConfig as { tag_name?: string }).tag_name).toBe("320x100-ads-only");
   });
 
+  it("resolves the 320x480 tag (6a6892e) from its own fixtures", async () => {
+    const entry = await getStaticTagData("6a6892e52ca77d200369fb9e");
+    expect(entry).toBeDefined();
+    expect(entry!.tagConfig.tag_id).toBe("6a6892e52ca77d200369fb9e");
+    expect((entry!.tagConfig as { tag_name?: string }).tag_name).toBe("320x480-ads-only");
+    expect(entry!.feed.length).toBeGreaterThan(0);
+  });
+
   it("resolves the QA tag (6a3aa78) from its own fixtures", async () => {
     const entry = await getStaticTagData("6a3aa78ba0daccfd439648b8");
     expect(entry).toBeDefined();

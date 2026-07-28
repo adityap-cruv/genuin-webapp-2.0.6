@@ -122,6 +122,14 @@ export const TAG_STRATEGIES: Record<string, TagStrategyEntry> = {
     feedLoopEnabled: false,
     preset: "servedStatically",
   }, // 320x100
+  // 320x480 (AD_LAYOUT.L5) sibling of the two above — same brand (3252), same
+  // static Triton ad slots, rendered on L1's full player instead of a banner.
+  "6a6892e52ca77d200369fb9e": {
+    initialVolume: 0.2,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+  }, // 320x480
   // Audible-start tags too, but served from the live exchange rather than fixtures.
   // The 20% volume is the advertiser requirement, not a test override — these
   // intentionally bypass the mute gate and start unmuted. Do not "fix" by muting.

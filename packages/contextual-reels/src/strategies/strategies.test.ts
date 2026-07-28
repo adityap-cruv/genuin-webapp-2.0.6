@@ -382,9 +382,10 @@ describe("servedStatically flag", () => {
     expect(resolveStrategies("unknown-static-tag").servedStatically).toBe(false);
   });
 
-  it("resolves true for the two static AD-only tags via preset", () => {
+  it("resolves true for the static AD-only tags via preset", () => {
     expect(resolveStrategies("6a39163e92929ebec64d78ab").servedStatically).toBe(true);
     expect(resolveStrategies("6a3915b692929ebec64d785e").servedStatically).toBe(true);
+    expect(resolveStrategies("6a6892e52ca77d200369fb9e").servedStatically).toBe(true);
   });
 
   it("preserves the tags' other existing overrides", () => {
@@ -407,9 +408,17 @@ describe("feedLoopEnabled flag", () => {
     expect(resolveStrategies(SINGLE_HIT_TAG).feedLoopEnabled).toBe(true);
   });
 
-  it("resolves false for the two static AD-only tags that opted out inline", () => {
+  it("resolves false for the static AD-only tags that opted out inline", () => {
     expect(resolveStrategies("6a39163e92929ebec64d78ab").feedLoopEnabled).toBe(false);
     expect(resolveStrategies("6a3915b692929ebec64d785e").feedLoopEnabled).toBe(false);
+    expect(resolveStrategies("6a6892e52ca77d200369fb9e").feedLoopEnabled).toBe(false);
+  });
+
+  it("keeps the 320x480 tag's audible-start + single-hit overrides", () => {
+    const s = resolveStrategies("6a6892e52ca77d200369fb9e");
+    expect(s.servedStatically).toBe(true);
+    expect(s.singleHitWaterfall).toBe(true);
+    expect(s.initialVolume).toBe(0.2);
   });
 
   it("keeps the opted-out tags' other overrides intact", () => {

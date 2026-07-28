@@ -400,8 +400,9 @@ A tag can carry only **one** preset, so a tag that already uses another bundle (
 | -------------------------- | ------- | ---------------------------------------------------------------- |
 | `6a39163e92929ebec64d78ab` | 320×50  | Static AD-only feed — rest on the last slot instead of replaying |
 | `6a3915b692929ebec64d785e` | 320×100 | Static AD-only feed — rest on the last slot instead of replaying |
+| `6a6892e52ca77d200369fb9e` | 320×480 | Static AD-only feed — rest on the last slot instead of replaying |
 
-Both also carry `preset: "servedStatically"`, hence the inline key.
+All three also carry `preset: "servedStatically"`, hence the inline key.
 
 ### What it changes
 

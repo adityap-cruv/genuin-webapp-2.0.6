@@ -81,6 +81,13 @@ const STATIC_TAG_LOADERS: Record<string, () => Promise<StaticTagEntry | undefine
     ]);
     return toEntry(tag.default, feed.default);
   },
+  "6a6892e52ca77d200369fb9e": async () => {
+    const [tag, feed] = await Promise.all([
+      import("@cxr/providers/static-tag/6a6892e52ca77d200369fb9e.tag.json"),
+      import("@cxr/providers/static-tag/6a6892e52ca77d200369fb9e.feed.json"),
+    ]);
+    return toEntry(tag.default, feed.default);
+  },
   // QA-testing tag (see strategyConfig.ts). Served statically like the prod tags.
   "6a3aa78ba0daccfd439648b8": async () => {
     const [tag, feed] = await Promise.all([
