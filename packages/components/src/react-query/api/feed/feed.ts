@@ -32,6 +32,34 @@ const feedTypeToNumber: Record<FeedType, number> = {
 // MCC brands support empty sponsorship_id arrays; all others treat [] as unset
 const MCC_BRAND_ID = [3099, 3296, 3180, 2477, 3312];
 
+/**
+ * Feed ranking algorithm sent as `ds_algo` on the placement/sections request.
+ * `default` — backend's standard ranking. `new_first_watched_last` — surface unseen
+ * items first and push already-watched ones to the end.
+ */
+type DsAlgo = "default" | "new_first_watched_last";
+
+/**
+ * Per-placement-id override for `ds_algo`. The field is only added to the
+ * placement/sections request body for placement IDs present in this map — placements
+ * not listed here send no `ds_algo` at all. Keyed by placement id.
+ */
+const DS_ALGO_BY_PLACEMENT: Record<string, DsAlgo> = {};
+
+/**
+ * Resolve the `ds_algo` value to send for a placement feed request.
+ *
+ * Precedence: the `?gen_algo=ds` URL param forces `"default"` for all placements on the page;
+ * otherwise fall back to the per-placement {@link DS_ALGO_BY_PLACEMENT} map. Returns `undefined`
+ * (field omitted) when there is no placement id or no match — so non-placement feeds are untouched.
+ */
+function resolveDsAlgo(placementId?: string): DsAlgo | undefined {
+  if (!placementId) return undefined;
+  const genAlgo = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("gen_algo") : null;
+  if (genAlgo === "ds") return "default";
+  return DS_ALGO_BY_PLACEMENT[placementId];
+}
+
 // TODO: Suggestion unify this api with all the apis for feed in profile/group/community. So that
 // mismatch between response types in the feed apis can be avoided.
 /**
@@ -57,6 +85,9 @@ async function fetchFeed(
     : undefined;
   const brandId: number =
     options?.brandId ?? parseInt(String(requestAxiosInstance.defaults.headers["x-brand-id"] ?? "0"), 10);
+
+  // ds_algo: page-level ?gen_algo=ds override, else the per-placement map. Omitted otherwise.
+  const dsAlgo = resolveDsAlgo(options?.placementId);
 
   // Non-MCC brands: treat empty sponsorship_id array as no sponsorship filter
   if (
@@ -231,6 +262,7 @@ async function fetchFeed(
       requestBody = {
         ...(deviceId && { device_id: deviceId }),
         ...(options?.placementId && { placement_id: options.placementId }),
+        ...(dsAlgo && { ds_algo: dsAlgo }),
         ...(options?.sponsorship_id && { sponsorship_id: options.sponsorship_id }),
         ...(options?.styleId && { style_id: options.styleId }),
         ...(pageParam?.pageSession && { page_session: pageParam.pageSession }),
@@ -267,6 +299,7 @@ async function fetchFeed(
         ...(deviceId && { device_id: deviceId }),
         ...(options?.embedId && { embed_id: options.embedId }),
         ...(options?.placementId && { placement_id: options.placementId }),
+        ...(dsAlgo && { ds_algo: dsAlgo }),
         ...(options?.sponsorship_id && { sponsorship_id: options.sponsorship_id }),
         ...(options?.styleId && { style_id: options.styleId }),
         ...(pageParam?.lastVideoId && { last_video_id: pageParam.lastVideoId }),
