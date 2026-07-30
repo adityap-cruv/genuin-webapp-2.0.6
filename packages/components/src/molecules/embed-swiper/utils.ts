@@ -37,7 +37,8 @@ export function getSlidesPerView(
   clientWidth: number,
   forFeed: boolean,
   aspectRatio?: string,
-  useWindowSwiperMode?: boolean
+  useWindowSwiperMode?: boolean,
+  isIheartArticlePage?: boolean
 ) {
   clientHeight = useWindowSwiperMode ? window.innerHeight : clientHeight;
   const elementHeight = clientHeight;
@@ -63,10 +64,10 @@ export function getSlidesPerView(
     }
     // calculating ratio based on calculated width.
     ratio = elementWidth / calculatedWidth;
-    // Landscape (e.g. 16:9) videos must never show a partial next slide (peek).
-    // A fractional ratio is what produces the peek, so clamp to whole slides;
-    // the rendered slides then stretch to fill the row exactly.
-    if (widthRatio > heightRatio) {
+    // On an iHeart article page, landscape (e.g. 16:9) videos should take only
+    // the width they need and leave any remaining space for the next video to
+    // peek in, instead of stretching to fill the row exactly.
+    if (widthRatio > heightRatio && !isIheartArticlePage) {
       ratio = Math.max(1, Math.floor(ratio));
     }
   }

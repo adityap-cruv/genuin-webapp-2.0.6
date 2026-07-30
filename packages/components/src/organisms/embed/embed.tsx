@@ -329,7 +329,8 @@ export function Embed({
         containerWidth,
         config.view.isFeed,
         embedAspectRatio,
-        config.embedSwiperConfigs.useWindowSwiperMode
+        config.embedSwiperConfigs.useWindowSwiperMode,
+        isIheartArticlePage
       ) ?? 1,
     [
       config.view.isFeed,
@@ -338,6 +339,7 @@ export function Embed({
       spaceBetweenVideos,
       containerWidth,
       config.embedSwiperConfigs.useWindowSwiperMode,
+      isIheartArticlePage,
     ]
   );
 

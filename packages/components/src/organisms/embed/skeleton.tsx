@@ -177,11 +177,7 @@ export function SdkSkeleton({
     // - dynamic-rows: maxHeight (shrinks to content, caps + scrolls).
     // - dynamic-cols: fixed height for the 1fr tracks + horizontal scrollbar.
     const scrollWrapperStyle: React.CSSProperties =
-      mode === "dynamic-rows"
-        ? { maxHeight: usableHeight }
-        : mode === "dynamic-cols"
-          ? { height: usableHeight }
-          : {};
+      mode === "dynamic-rows" ? { maxHeight: usableHeight } : mode === "dynamic-cols" ? { height: usableHeight } : {};
 
     // Mirror GridView's outer box: dynamic-rows shrinks to its content (capped),
     // so the skeleton must NOT reserve the full container height — that is what
@@ -255,7 +251,8 @@ export function SdkSkeleton({
               containerWidth,
               config.view.isFeed,
               config.dimensions.aspectRatio,
-              config.embedSwiperConfigs.useWindowSwiperMode
+              config.embedSwiperConfigs.useWindowSwiperMode,
+              config.layoutConfig.isIheartArticlePage
             ) ?? 1
           }
           containerDimensions={{
