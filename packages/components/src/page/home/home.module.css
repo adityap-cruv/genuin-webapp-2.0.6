@@ -34,9 +34,6 @@
 }
 
 .raceBar {
-  position: sticky;
-  top: 0;
-  z-index: 7;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -79,7 +76,8 @@
 
 .heroCarousel {
   width: 100%;
-  padding-inline: clamp(18px, 4vw, 64px);
+  padding: clamp(12px, 1.4vw, 20px) clamp(18px, 4vw, 64px)
+    clamp(18px, 2vw, 30px);
   overflow: hidden;
   background: white;
 }
@@ -88,6 +86,23 @@
   border: 0;
   border-radius: 0;
   box-shadow: none;
+}
+
+.heroCarouselGrid {
+  display: grid;
+  width: 100%;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(12px, 1.2vw, 20px);
+}
+
+.heroCarouselGrid > * {
+  min-width: 0;
+}
+
+@media (max-width: 700px) {
+  .heroCarouselGrid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .liveFeed {
@@ -162,7 +177,7 @@
 }
 
 .deskSection {
-  padding-top: 8px;
+  padding-top: clamp(12px, 1.2vw, 18px);
 }
 
 .sdkSection {
@@ -292,7 +307,6 @@
 
 .championshipFeed {
   min-width: 0;
-  min-height: 640px;
   overflow: hidden;
   border: 1px solid var(--foil-border);
   border-radius: 8px;
@@ -301,8 +315,6 @@
 }
 
 .championshipFeed .sdkContainer {
-  height: calc(100% + 40px) !important;
-  min-height: calc(100% + 40px) !important;
   border: 0;
   border-radius: 0;
   box-shadow: none;
@@ -325,7 +337,13 @@
   padding: 24px;
   border: 1px solid var(--foil-border);
   border-radius: 4px;
+  appearance: none;
   background: var(--foil-surface);
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  transition: box-shadow 180ms ease, transform 180ms ease;
 }
 
 .podiumWinner {
@@ -333,6 +351,18 @@
   border-color: var(--foil-navy);
   background: var(--foil-navy);
   color: white;
+}
+
+.podiumCard:hover,
+.podiumWinner:hover {
+  box-shadow: 0 12px 28px rgb(11 42 74 / 14%);
+  transform: translateY(-2px);
+}
+
+.podiumCard:focus-visible,
+.podiumWinner:focus-visible {
+  outline: 3px solid var(--foil-red);
+  outline-offset: 3px;
 }
 
 .podiumCard > span,
@@ -406,6 +436,24 @@
   border-bottom: 1px solid var(--foil-border);
 }
 
+.standings tbody tr[role="button"] {
+  cursor: pointer;
+}
+
+.standings tbody tr[role="button"] td {
+  transition: background-color 160ms ease;
+}
+
+.standings tbody tr[role="button"]:hover td,
+.standings tbody tr[role="button"]:focus-visible td {
+  background: var(--foil-surface);
+}
+
+.standings tbody tr[role="button"]:focus-visible {
+  outline: 2px solid var(--foil-red);
+  outline-offset: -2px;
+}
+
 .flag {
   display: inline-block;
   margin-right: 8px;
@@ -429,7 +477,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1.28fr) minmax(250px, 0.68fr) minmax(360px, 1fr);
   gap: 12px;
-  min-height: 640px;
+  min-height: 540px;
 }
 
 .deskLeadStory,
@@ -513,15 +561,12 @@
 }
 
 .deskFeed {
-  height: 640px;
   border: 1px solid var(--foil-border);
   background: white;
   box-shadow: 0 20px 50px rgb(11 42 74 / 12%);
 }
 
 .deskFeed .sdkContainer {
-  height: calc(100% + 40px) !important;
-  min-height: calc(100% + 40px) !important;
   border: 0;
   border-radius: 8px;
   box-shadow: none;
@@ -567,6 +612,7 @@
 
 .calendarCard,
 .calendarNext {
+  appearance: none;
   display: flex;
   flex: 0 0 290px;
   flex-direction: column;
@@ -575,12 +621,33 @@
   border: 1px solid var(--foil-border);
   border-radius: 4px;
   background: var(--foil-surface);
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
   scroll-snap-align: start;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
 }
 
 .calendarNext {
   border: 1px solid var(--foil-border);
   background: white;
+}
+
+.calendarCard:hover,
+.calendarNext:hover {
+  border-color: #9ca8b5;
+  box-shadow: 0 10px 24px rgb(11 42 74 / 10%);
+  transform: translateY(-2px);
+}
+
+.calendarCard:focus-visible,
+.calendarNext:focus-visible {
+  outline: 3px solid var(--foil-navy);
+  outline-offset: 3px;
 }
 
 .calendarTitle {
@@ -633,14 +700,19 @@
 .athleteCard {
   position: relative;
   aspect-ratio: 3 / 4;
+  padding: 0;
+  border: 0;
   overflow: hidden;
   border-radius: 3px;
   background: var(--foil-surface);
   color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: inherit;
   text-decoration: none;
 }
 
-a.athleteCard:focus-visible {
+.athleteCard:focus-visible {
   outline: 3px solid var(--foil-navy);
   outline-offset: 3px;
 }
@@ -711,6 +783,19 @@ a.athleteCard:focus-visible {
   border: 1px solid var(--foil-border);
   border-radius: 4px;
   background: var(--foil-surface);
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.mediaCard:hover,
+.mediaCard:focus-visible {
+  border-color: rgb(19 51 82 / 38%);
+  box-shadow: 0 10px 26px rgb(9 31 53 / 10%);
+  outline: none;
+  transform: translateY(-2px);
 }
 
 .mediaImage {
@@ -748,6 +833,67 @@ a.athleteCard:focus-visible {
 .mediaCard p {
   color: var(--foil-muted);
   font-size: 12px;
+}
+
+.mediaDialogOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  display: grid;
+  width: 100vw;
+  height: 100dvh;
+  place-items: center;
+  padding: 16px;
+  background: rgb(0 0 0 / 50%);
+}
+
+.mediaDialog {
+  position: relative;
+  width: min(520px, 100%);
+  max-width: 520px;
+  padding: 24px;
+  border-radius: 8px;
+  background: white;
+  color: #181b20;
+  box-shadow: 0 20px 55px rgb(15 23 42 / 22%);
+}
+
+.mediaDialogBody {
+  padding: 16px;
+}
+
+.mediaDialogKicker {
+  margin: 0 0 10px;
+  color: #dc2638;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.mediaDialogTitle {
+  max-width: 440px;
+  margin: 0;
+  font-family: Montserrat, Arial, sans-serif;
+  font-size: clamp(21px, 2.1vw, 27px);
+  font-weight: 800;
+  line-height: 1.08;
+}
+
+.mediaDialogDescription {
+  margin: 17px 0 26px;
+  color: #67717e;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.mediaDialogAction {
+  width: fit-content;
+  min-width: 166px;
+  justify-content: center;
+  border-radius: 999px !important;
+  text-transform: uppercase;
 }
 
 .newsletter {
@@ -802,9 +948,26 @@ a.athleteCard:focus-visible {
   gap: 28px;
 }
 
-.beyondGrid article {
+.beyondCard {
+  display: block;
+  width: 100%;
   padding-top: 16px;
   border-top: 2px solid var(--foil-ink);
+  border-right: 0;
+  border-bottom: 0;
+  border-left: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 160ms ease;
+}
+
+.beyondCard:hover,
+.beyondCard:focus-visible {
+  color: var(--foil-red-dark);
 }
 
 .beyondGrid h3 {
@@ -1035,6 +1198,14 @@ a.athleteCard:focus-visible {
   .mediaGrid,
   .beyondGrid {
     grid-template-columns: 1fr;
+  }
+
+  .mediaDialog {
+    padding: 16px;
+  }
+
+  .mediaDialogBody {
+    padding: 8px;
   }
 
   .footer {

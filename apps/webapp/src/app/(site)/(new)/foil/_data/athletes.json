@@ -1,0 +1,112 @@
+{
+  "athletes": [
+    {
+      "slug": "slingsby",
+      "source_url": "https://prototype.thefoil.begenuin.com/TheFoil/athlete-slingsby.html",
+      "name": "Tom Slingsby",
+      "tag": "Athlete Profile · Skipper",
+      "team": "Australia SailGP Team",
+      "role": "Skipper",
+      "rank": "#1 · 74 pts",
+      "hero": {
+        "url": "https://octocanvas-artifacts.s3.ap-south-1.amazonaws.com/sessions/b6695b6a8a0b444699c9337f0723d88e/generated/athlete-1_v0.png",
+        "alt": "Tom Slingsby — Australia SailGP Team Skipper"
+      },
+      "stats": [
+        { "value": "74", "label": "Points" },
+        { "value": "3", "label": "Wins" },
+        { "value": "1.8", "label": "Avg Finish" },
+        { "value": "53.8", "suffix": "kts", "label": "Top Speed" }
+      ],
+      "about_title": "About Tom Slingsby",
+      "about": [
+        "Tom Slingsby is the undisputed benchmark of the SailGP fleet — a skipper whose combination of tactical aggression, meteorological preparation and raw boat speed has made Australia the most feared team on the F50 circuit. His Olympic gold medal from London 2012 in the Laser class was only the beginning of a career that has redefined what elite sailing looks like at the professional level.",
+        "What separates Slingsby from his peers is the completeness of his game. At the start line, he reads pressure windows and position angles with a precision that regularly locks rivals into unfavourable lanes before the first mark. Upwind, his crew's foiling technique in marginal conditions extracts boat speed few teams can match. Downwind, Australia's velocity under Slingsby's tactical direction has led the fleet's top speed rankings across multiple consecutive seasons.",
+        "Beyond the numbers, Slingsby has been a driving force in building Australia SailGP's analytical infrastructure — embedding meteorological modelling, real-time data review and systematic debrief culture into the team's DNA. In a fleet where the margins are measured in tenths of seconds, that institutional edge compounds. His three race wins this season place Australia firmly on championship trajectory."
+      ],
+      "quote": "\"Every start is a new problem. You don't carry last race's solution into this one — the wind doesn't care about yesterday.\" — Tom Slingsby",
+      "results": [
+        ["SailGP Auckland", "Waitematā Harbour", "1st", "5th", "1st", "1st"],
+        ["SailGP Sydney", "Sydney Harbour", "2nd", "1st", "2nd", "1st"],
+        ["SailGP Dubai", "Dubai Creek Harbour", "2nd", "2nd", "3rd", "2nd"],
+        ["SailGP Bermuda", "Great Sound", "3rd", "2nd", "1st", "2nd"]
+      ],
+      "outlook": [
+        "With 74 points and three victories, Slingsby heads into the back half of the season with the kind of lead that only a string of disasters could unwind. His nearest challenger sits 12 points back — a gap that, on current form, would require Australia to finish outside the top three in consecutive events to close. History suggests that won't happen.",
+        "The upcoming Plymouth event presents a sea-breeze-dominated venue where Slingsby has historically thrived. His performance in tide-influenced starts off the English coast in the 2023 season remains one of the most technically impressive pieces of fleet racing in the sport's recent memory. The championship, barring the unexpected, looks like his to lose."
+      ]
+    },
+    {
+      "slug": "outteridge",
+      "source_url": "https://prototype.thefoil.begenuin.com/TheFoil/athlete-outteridge.html",
+      "name": "Nathan Outteridge",
+      "tag": "Athlete Profile · Skipper",
+      "team": "New Zealand SailGP Team",
+      "role": "Skipper",
+      "rank": "#2 · 62 pts",
+      "hero": {
+        "url": "https://octocanvas-artifacts.s3.ap-south-1.amazonaws.com/sessions/b6695b6a8a0b444699c9337f0723d88e/generated/athlete-2_v0.png",
+        "alt": "Nathan Outteridge — New Zealand SailGP Team Skipper"
+      },
+      "stats": [
+        { "value": "62", "label": "Points" },
+        { "value": "2", "label": "Wins" },
+        { "value": "2.4", "label": "Avg Finish" },
+        { "value": "52.1", "suffix": "kts", "label": "Top Speed" }
+      ],
+      "about_title": "About Nathan Outteridge",
+      "about": [
+        "Nathan Outteridge brings a razor-sharp tactical mind and an extraordinary technical pedigree to the New Zealand SailGP helm. A multiple World Champion across multiple classes — from the 49er to the Nacra 17 — Outteridge has spent over two decades at the sharp end of high-performance sailing. His Olympic silver from London 2012 and gold from Rio 2016 in the 49er class cement his place among the sport's elite, and his transition to the F50 circuit has been nothing short of seamless.",
+        "What defines Outteridge's sailing is an almost metronomic commitment to boat speed. Where other skippers seek tactical shortcuts, Outteridge trusts the velocity data. New Zealand's F50 consistently logs some of the highest VMG numbers downwind, a reflection of the team's obsessive focus on sail trim and foil calibration across the full wind range. In overpowered conditions — the kind that reduce other teams to survival mode — the New Zealand boat accelerates.",
+        "His partnership with tactician and grinder crew forms one of the most technically synchronised teams on the circuit. Communication under load, foil transitions in confused chop, and split-second layline calls are areas where New Zealand rarely loses ground. At 62 points and two wins, Outteridge is positioned as the clearest threat to Slingsby's championship lead."
+      ],
+      "quote": "\"Speed solves most problems on the F50. If you're fast enough, tactics become simple.\" — Nathan Outteridge",
+      "results": [
+        ["SailGP Auckland", "Waitematā Harbour", "2nd", "1st", "2nd", "2nd"],
+        ["SailGP Sydney", "Sydney Harbour", "1st", "2nd", "4th", "2nd"],
+        ["SailGP Dubai", "Dubai Creek Harbour", "2nd", "3rd", "2nd", "2nd"],
+        ["SailGP Bermuda", "Great Sound", "3rd", "1st", "3rd", "2nd"]
+      ],
+      "outlook": [
+        "New Zealand's 62-point tally keeps Outteridge firmly in the championship conversation, though the 12-point gap to Slingsby will require Australia to show weakness that has been largely absent this season. Outteridge's strongest asset entering the European leg is his experience racing in tidal and sea-breeze conditions — the kind of venue-specific knowledge that can close gaps quickly in the back half of a season.",
+        "Plymouth, Cadiz and Saint-Tropez represent a stretch of events where the New Zealand team's downwind velocity advantage historically compounds. If Outteridge can convert consistent top-two finishes into race wins, the championship remains genuinely open going into the final Grand Prix."
+      ]
+    },
+    {
+      "slug": "delapierre",
+      "source_url": "https://prototype.thefoil.begenuin.com/TheFoil/athlete-delapierre.html",
+      "name": "Quentin Delapierre",
+      "tag": "Athlete Profile · Skipper",
+      "team": "France SailGP Team",
+      "role": "Skipper",
+      "rank": "#3 · 58 pts",
+      "hero": {
+        "url": "https://octocanvas-artifacts.s3.ap-south-1.amazonaws.com/sessions/b6695b6a8a0b444699c9337f0723d88e/generated/athlete-3_v0.png",
+        "alt": "Quentin Delapierre — France SailGP Team Skipper"
+      },
+      "stats": [
+        { "value": "58", "label": "Points" },
+        { "value": "1", "label": "Wins" },
+        { "value": "2.9", "label": "Avg Finish" },
+        { "value": "51.6", "suffix": "kts", "label": "Top Speed" }
+      ],
+      "about_title": "About Quentin Delapierre",
+      "about": [
+        "Quentin Delapierre is the name the SailGP fleet has been whispering about for two seasons, and in the current campaign he has emphatically announced himself. France's young skipper is a relentless match-racer — aggressive at the start, disciplined on the first beat, and devastatingly effective in light-to-medium air where his anticipation of pressure shifts borders on prescient. His single race win this season came in conditions nobody else navigated cleanly.",
+        "Delapierre's background is steeped in match-racing circuits, where the one-on-one pressure of boat-on-boat combat sharpens tactical instincts that fleet racing alone cannot replicate. That heritage shows every time the France F50 lines up alongside a rival at a gate: Delapierre reads the overlap geometry early, makes his move before it develops, and rarely gives away free boat lengths. In light wind — which many F50 skippers dread — he positively thrives, exploiting marginal pressure pockets with a patience that belies his age.",
+        "The France program has grown considerably under his leadership, investing in shore team analytics and real-time coaching feedback that have tightened the team's pre-start routines and mark-rounding execution. At 58 points and firmly ensconced in third overall, Delapierre has transformed France from a mid-fleet team into a genuine podium contender."
+      ],
+      "quote": "\"In light wind, everyone's looking at the same header. I'm trying to see the one after that.\" — Quentin Delapierre",
+      "results": [
+        ["SailGP Auckland", "Waitematā Harbour", "3rd", "2nd", "4th", "3rd"],
+        ["SailGP Sydney", "Sydney Harbour", "3rd", "3rd", "1st", "2nd"],
+        ["SailGP Dubai", "Dubai Creek Harbour", "4th", "2nd", "2nd", "3rd"],
+        ["SailGP Bermuda", "Great Sound", "2nd", "3rd", "3rd", "3rd"]
+      ],
+      "outlook": [
+        "France enters the European leg of the season in a strong structural position. Third overall and 16 points off the championship lead, Delapierre's best racing is arguably ahead of him. The Cadiz and Saint-Tropez events suit his light-wind tactical profile, and France's team data shows their highest win probability in conditions below 12 knots — which both venues routinely deliver in the autumn calendar window.",
+        "Delapierre's challenge will be consistency in the top bracket: converting the second and third places that fill his results sheet into the outright wins that championship pressure demands. If he can find one more race victory before the final Grand Prix, France will enter the decider as a genuine title threat rather than a spoiler."
+      ]
+    }
+  ]
+}

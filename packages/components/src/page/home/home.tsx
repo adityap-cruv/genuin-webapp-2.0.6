@@ -11,10 +11,11 @@ import {
   TableRow,
   ThemeProvider,
 } from "@genuin/ui";
-import { ArrowRight, Play, Radio } from "lucide-react";
+import { ArrowRight, Play, Radio, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { type FormEvent, useState } from "react";
+import { createPortal } from "react-dom";
 
 import { GenuinEmbedCarousel } from "@genuin/components/legacy/websitev5/genuin-embed-carousel";
 
@@ -30,9 +31,6 @@ const placements = {
     placementId: "6a2660f445aec54862ee2f58",
     apiKey: "8a5582af807e98dbad239b749a1cd7fb026831eec1a95d00",
     sdkSrc: "https://media.begenuin.com/sdk/2.0.5/gen_sdk.min.js",
-    isolated: true,
-    hideHeader: true,
-    title: "The Foil fan video carousel",
     width: "100%",
     maxWidth: "100%",
     height: "400px",
@@ -43,15 +41,22 @@ const placements = {
     placementId: "6a032db60ae65ee82495dd72",
     apiKey: "8a5582af807e98dbad239b749a1cd7fb026831eec1a95d00",
     sdkSrc: "https://media.begenuin.com/sdk/2.0.5/gen_sdk.min.js",
-    isolated: true,
-    hideHeader: true,
-    title: "The Foil live fan video feed",
     configuration: {
       sections: [{ title: "{{brand_context}}" }],
     },
     width: "100%",
     maxWidth: "100%",
-    height: "640px",
+    height: "540px",
+  },
+  championshipFeed: {
+    containerId: "foil-championship-video-feed",
+    styleId: "6a032db60ae65ee82495dd73",
+    placementId: "6a032db60ae65ee82495dd72",
+    apiKey: "8a5582af807e98dbad239b749a1cd7fb026831eec1a95d00",
+    sdkSrc: "https://media.begenuin.com/sdk/2.0.5/gen_sdk.min.js",
+    width: "100%",
+    maxWidth: "100%",
+    height: "746px",
   },
   grid: {
     containerId: "foil-fleet-fan-zone-grid",
@@ -59,14 +64,32 @@ const placements = {
     placementId: "69f85cd54e1859a88008a833",
     apiKey: "8a5582af807e98dbad239b749a1cd7fb026831eec1a95d00",
     sdkSrc: "https://media.begenuin.com/sdk/2.0.5/gen_sdk.min.js",
-    isolated: true,
-    hideHorizontalOverflow: true,
-    title: "The Foil fleet fan zone grid",
     width: "920px",
     maxWidth: "100%",
     height: "760px",
   },
 } as const;
+
+const beyondStories = [
+  {
+    slug: "americas-cup-next-ac75",
+    tag: "America's Cup",
+    title: "Team New Zealand unveils the first AC75 of the next cycle — and it's smaller than anyone expected.",
+    byline: "By R. Kawhena · 5 min read",
+  },
+  {
+    slug: "olympic-49er-hyeres",
+    tag: "Olympic 49er",
+    title: "Italy stamped their authority all over the Bay of Hyères this week. Here's how.",
+    byline: "By F. Rossi · 6 min read",
+  },
+  {
+    slug: "ocean-race-inshore-intensity",
+    tag: "Ocean Race",
+    title: "Offshore at inshore intensity — that is the new reality of ocean racing.",
+    byline: "By S. Larsen · 8 min read",
+  },
+] as const;
 
 const communities = [
   {
@@ -119,18 +142,29 @@ const communities = [
   },
 ] as const;
 
-const standings = [
-  ["01", "AUS", "Australia SailGP Team", "Slingsby", "74", "SYD · 1", "● STEADY"],
-  ["02", "NZL", "New Zealand SailGP Team", "Outteridge", "62", "SYD · 2", "▲ CLIMBING"],
-  ["03", "FRA", "France SailGP Team", "Delapierre", "58", "SYD · 3", "▲ LURKING"],
-  ["04", "GBR", "Emirates GBR SailGP Team", "Mills", "54", "SYD · 5", "▼ STALLING"],
-  ["05", "ESP", "Spain SailGP Team", "Barceló", "47", "SYD · 4", "● STEADY"],
-  ["06", "DEN", "ROCKWOOL Denmark SailGP Team", "Høgh-Christensen", "42", "SYD · 7", "▼ FADING"],
-  ["07", "USA", "United States SailGP Team", "Buchan", "39", "SYD · 6", "▲ CLIMBING"],
-  ["08", "SUI", "Switzerland SailGP Team", "Bjorn", "33", "SYD · 8", "● STEADY"],
-  ["09", "CAN", "Canada SailGP Team", "Saunders", "28", "SYD · 9", "▼ FREEFALL"],
-  ["10", "GER", "Germany SailGP Team", "Ehman", "24", "SYD · 10", "● LURKING"],
-] as const;
+export type ChampionshipEntry = {
+  rank: string;
+  flag: string;
+  team: string;
+  driver: string;
+  points: string;
+  lastEvent: string;
+  trend: string;
+  athleteSlug?: string;
+};
+
+const standings: readonly ChampionshipEntry[] = [
+  { rank: "01", flag: "AUS", team: "Australia SailGP Team", driver: "Slingsby", points: "74", lastEvent: "SYD · 1", trend: "● STEADY", athleteSlug: "slingsby" },
+  { rank: "02", flag: "NZL", team: "New Zealand SailGP Team", driver: "Outteridge", points: "62", lastEvent: "SYD · 2", trend: "▲ CLIMBING", athleteSlug: "outteridge" },
+  { rank: "03", flag: "FRA", team: "France SailGP Team", driver: "Delapierre", points: "58", lastEvent: "SYD · 3", trend: "▲ LURKING", athleteSlug: "delapierre" },
+  { rank: "04", flag: "GBR", team: "Emirates GBR SailGP Team", driver: "Mills", points: "54", lastEvent: "SYD · 5", trend: "▼ STALLING", athleteSlug: "mills" },
+  { rank: "05", flag: "ESP", team: "Spain SailGP Team", driver: "Barceló", points: "47", lastEvent: "SYD · 4", trend: "● STEADY", athleteSlug: "barcelo" },
+  { rank: "06", flag: "DEN", team: "ROCKWOOL Denmark SailGP Team", driver: "Høgh-Christensen", points: "42", lastEvent: "SYD · 7", trend: "▼ FADING", athleteSlug: "hogh-christensen" },
+  { rank: "07", flag: "USA", team: "United States SailGP Team", driver: "Buchan", points: "39", lastEvent: "SYD · 6", trend: "▲ CLIMBING", athleteSlug: "buchan" },
+  { rank: "08", flag: "SUI", team: "Switzerland SailGP Team", driver: "Bjorn", points: "33", lastEvent: "SYD · 8", trend: "● STEADY", athleteSlug: "bjorn" },
+  { rank: "09", flag: "CAN", team: "Canada SailGP Team", driver: "Saunders", points: "28", lastEvent: "SYD · 9", trend: "▼ FREEFALL", athleteSlug: "saunders" },
+  { rank: "10", flag: "GER", team: "Germany SailGP Team", driver: "Ehman", points: "24", lastEvent: "SYD · 10", trend: "● LURKING", athleteSlug: "ehman" },
+];
 
 const deskStories = [
   {
@@ -164,20 +198,43 @@ const deskStories = [
 ] as const;
 
 const calendar = [
-  { venue: "Sydney", dates: "14–16 FEB · AUS", status: "Done", image: "calendar-done-thumb_v0.png" },
-  { venue: "Auckland", dates: "20–22 MAR · NZL", status: "Next up", image: "countdown-hero-bg_v0.png" },
-  { venue: "Saint-Tropez", dates: "17–19 APR · FRA", status: "Upcoming", image: "calendar-upcoming-thumb_v0.png" },
-  { venue: "Plymouth", dates: "15–17 MAY · GBR", status: "Upcoming", image: "calendar-upcoming-thumb_v0.png" },
-  { venue: "Halifax", dates: "12–14 JUN · CAN", status: "Upcoming", image: "calendar-upcoming-thumb_v0.png" },
+  { slug: "sydney", venue: "Sydney", dates: "14–16 FEB · AUS", status: "Done", image: "calendar-done-thumb_v0.png" },
+  { slug: "auckland", venue: "Auckland", dates: "20–22 MAR · NZL", status: "Next up", image: "countdown-hero-bg_v0.png" },
+  { slug: "saint-tropez", venue: "Saint-Tropez", dates: "17–19 APR · FRA", status: "Upcoming", image: "calendar-upcoming-thumb_v0.png" },
+  { slug: "plymouth", venue: "Plymouth", dates: "15–17 MAY · GBR", status: "Upcoming", image: "calendar-upcoming-thumb_v0.png" },
+  { slug: "halifax", venue: "Halifax", dates: "12–14 JUN · CAN", status: "Upcoming", image: "calendar-upcoming-thumb_v0.png" },
 ] as const;
+
+const listenAndWatch = [
+  {
+    image: "podcast-artwork_v0.png",
+    kicker: "EP 47 · Podcast",
+    title: "The Auckland Preview: Can the Kiwis Finally Hold Home Water?",
+    runtime: "48 min",
+    description:
+      "With Nathan Outteridge, driver NZ SailGP Team. 48 minutes of unfiltered race-week analysis before the gun.",
+    action: "Play episode",
+  },
+  {
+    image: "video-breakdown-thumbnail_v0.png",
+    kicker: "Tactical Breakdown",
+    title: "Slingsby's Start-Line Gamble, Frame by Frame",
+    runtime: "12 min",
+    description:
+      "A frame-by-frame tactical breakdown of the start, the pressure shift and the decision that changed the race.",
+    action: "Play breakdown",
+  },
+] as const;
+
+type ListenAndWatchItem = (typeof listenAndWatch)[number];
 
 const athletes = [
   ["1", "Slingsby", "Tom Slingsby", "AUS · Australia", "Top speed · 53.8 kn", "slingsby"],
   ["2", "Outteridge", "Nathan Outteridge", "NZL · New Zealand", "Start-line wins · 7 of 11", "outteridge"],
   ["3", "Delapierre", "Quentin Delapierre", "FRA · France", "Average finish · 3.4", "delapierre"],
-  ["4", "Mills", "Dylan Mills", "GBR · Great Britain", "Mark first · 12 of 33"],
-  ["11", "Grael", "Martine Grael", "BRA · Brazil", "First-gate conversion · 68%"],
-  ["5", "Barceló", "Diego Barceló", "ESP · Spain", "Top speed · 50.1 kn"],
+  ["4", "Mills", "Dylan Mills", "GBR · Great Britain", "Mark first · 12 of 33", "mills"],
+  ["11", "Grael", "Martine Grael", "BRA · Brazil", "First-gate conversion · 68%", "grael"],
+  ["5", "Barceló", "Diego Barceló", "ESP · Spain", "Top speed · 50.1 kn", "barcelo"],
 ] as const;
 
 const footerLinkGroups = [
@@ -229,12 +286,79 @@ function SectionHeader({ title, meta, id }: { title: string; meta: string; id?: 
   );
 }
 
-export function Home() {
+type HomeProps = {
+  onOpenArticle?: (slug: string) => void;
+  onOpenAthlete?: (slug: string) => void;
+  onOpenChampionship?: (entry: ChampionshipEntry) => void;
+  onOpenCalendar?: (slug: string) => void;
+  onOpenBeyond?: (slug: string) => void;
+};
+
+export function Home({
+  onOpenArticle,
+  onOpenAthlete,
+  onOpenChampionship,
+  onOpenCalendar,
+  onOpenBeyond,
+}: HomeProps = {}) {
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const [selectedMedia, setSelectedMedia] = useState<ListenAndWatchItem | null>(null);
 
   function handleSubscribe(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsSubscribed(true);
+  }
+
+  function handlePlaySelectedMedia() {
+    setSelectedMedia(null);
+
+    const expandFeed = (attempt = 0) => {
+      const sdkWindow = window as Window & {
+        genuin?: {
+          expand?: (containerId: string) => void | Promise<void>;
+          SDK?: {
+            expand?: (containerId: string) => void;
+          };
+        };
+        cxr?: {
+          expand?: (instanceId: string) => void;
+        };
+      };
+      const placement = document.getElementById(placements.feed.containerId);
+      const instanceId = placement?.getAttribute("data-instance-id");
+
+      if (sdkWindow.genuin?.expand) {
+        void Promise.resolve(sdkWindow.genuin.expand(placements.feed.containerId)).catch(() => {
+          sdkWindow.cxr?.expand?.(instanceId ?? placements.feed.containerId);
+        });
+        return;
+      }
+
+      if (sdkWindow.genuin?.SDK?.expand) {
+        sdkWindow.genuin.SDK.expand(placements.feed.containerId);
+        return;
+      }
+
+      if (sdkWindow.cxr?.expand && (instanceId || placement)) {
+        sdkWindow.cxr.expand(instanceId ?? placements.feed.containerId);
+        return;
+      }
+
+      if (attempt < 20) {
+        window.setTimeout(() => expandFeed(attempt + 1), 100);
+      }
+    };
+
+    window.requestAnimationFrame(() => expandFeed());
+  }
+
+  function openChampionshipEntry(entry: ChampionshipEntry) {
+    if (entry.athleteSlug && onOpenAthlete) {
+      onOpenAthlete(entry.athleteSlug);
+      return;
+    }
+
+    onOpenChampionship?.(entry);
   }
 
   return (
@@ -252,7 +376,9 @@ export function Home() {
         <h1 id="foil-hero-title" className={styles.srOnly}>
           Fan Highlights
         </h1>
-        <Placement {...placements.carousel} label="iHeart fan video carousel" />
+        <div className={styles.heroCarouselGrid}>
+          <Placement {...placements.carousel} label="Foil fan video carousel" />
+        </div>
       </section>
 
       <section className={`${styles.contentSection} ${styles.deskSection}`} id="foil-desk">
@@ -261,13 +387,13 @@ export function Home() {
           <Link
             href={`/foil/articles/${deskStories[0].slug}`}
             className={styles.deskLeadStory}
-            aria-label={`Read ${deskStories[0].title}`}>
-            <Image
-              src={`${ASSET_ROOT}/${deskStories[0].image}`}
-              alt=""
-              fill
-              sizes="(max-width: 1024px) 100vw, 38vw"
-            />
+            aria-label={`Read ${deskStories[0].title}`}
+            onClick={(event) => {
+              if (!onOpenArticle) return;
+              event.preventDefault();
+              onOpenArticle(deskStories[0].slug);
+            }}>
+            <Image src={`${ASSET_ROOT}/${deskStories[0].image}`} alt="" fill sizes="(max-width: 1024px) 100vw, 38vw" />
             <div className={styles.deskStoryContent}>
               <span>{deskStories[0].tag}</span>
               <h3>{deskStories[0].title}</h3>
@@ -280,13 +406,13 @@ export function Home() {
                 href={`/foil/articles/${story.slug}`}
                 className={styles.deskSupportingStory}
                 aria-label={`Read ${story.title}`}
+                onClick={(event) => {
+                  if (!onOpenArticle) return;
+                  event.preventDefault();
+                  onOpenArticle(story.slug);
+                }}
                 key={story.title}>
-                <Image
-                  src={`${ASSET_ROOT}/${story.image}`}
-                  alt=""
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 20vw"
-                />
+                <Image src={`${ASSET_ROOT}/${story.image}`} alt="" fill sizes="(max-width: 1024px) 100vw, 20vw" />
                 <div className={styles.deskStoryContent}>
                   <span>{story.tag}</span>
                   <h3>{story.title}</h3>
@@ -301,7 +427,7 @@ export function Home() {
         </div>
       </section>
 
-      <section className={styles.contentSection}>
+      <section className={styles.contentSection} id="the-fleet">
         <SectionHeader title="The Fleet" meta="Featured drivers · Season stats" />
         <div className={styles.athleteGrid}>
           {athletes.map(([rank, surname, name, nation, stat, slug], index) => {
@@ -323,18 +449,19 @@ export function Home() {
               </>
             );
 
-            return slug ? (
+            return (
               <Link
                 href={`/foil/athletes/${slug}`}
                 className={styles.athleteCard}
                 aria-label={`View ${name}'s profile`}
+                onClick={(event) => {
+                  if (!onOpenAthlete) return;
+                  event.preventDefault();
+                  onOpenAthlete(slug);
+                }}
                 key={name}>
                 {card}
               </Link>
-            ) : (
-              <article className={styles.athleteCard} key={name}>
-                {card}
-              </article>
             );
           })}
         </div>
@@ -384,17 +511,22 @@ export function Home() {
           <div className={styles.championshipMain}>
             <div className={styles.podium}>
               {[
-                ["02 · Silver", "NZL", "Outteridge", "New Zealand SailGP Team", "62"],
-                ["01 · Leader", "AUS", "Slingsby", "Australia SailGP Team", "74"],
-                ["03 · Bronze", "FRA", "Delapierre", "France SailGP Team", "58"],
-              ].map(([rank, flag, driver, team, points], index) => (
-                <article className={index === 1 ? styles.podiumWinner : styles.podiumCard} key={driver}>
-                  <span>{rank}</span>
-                  <small>{flag}</small>
-                  <h3>{driver}</h3>
-                  <p>{team}</p>
-                  <strong>{points} pts</strong>
-                </article>
+                { label: "02 · Silver", entry: standings[1]! },
+                { label: "01 · Leader", entry: standings[0]! },
+                { label: "03 · Bronze", entry: standings[2]! },
+              ].map(({ label, entry }, index) => (
+                <button
+                  type="button"
+                  className={index === 1 ? styles.podiumWinner : styles.podiumCard}
+                  key={entry.driver}
+                  aria-label={`View ${entry.driver} profile`}
+                  onClick={() => openChampionshipEntry(entry)}>
+                  <span>{label}</span>
+                  <small>{entry.flag}</small>
+                  <h3>{entry.driver}</h3>
+                  <p>{entry.team}</p>
+                  <strong>{entry.points} pts</strong>
+                </button>
               ))}
             </div>
             <div className={styles.tableWrap}>
@@ -407,18 +539,34 @@ export function Home() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {standings.map(([rank, flag, team, driver, points, last, trend]) => (
-                    <TableRow key={team}>
-                      <TableCell>{rank}</TableCell>
+                  {standings.map((entry) => (
+                    <TableRow
+                      key={entry.team}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`View ${entry.driver} championship details`}
+                      onClick={() => openChampionshipEntry(entry)}
+                      onKeyDown={(event) => {
+                        if (event.key !== "Enter" && event.key !== " ") return;
+                        event.preventDefault();
+                        openChampionshipEntry(entry);
+                      }}>
+                      <TableCell>{entry.rank}</TableCell>
                       <TableCell>
-                        <span className={styles.flag}>{flag}</span> {team}
+                        <span className={styles.flag}>{entry.flag}</span> {entry.team}
                       </TableCell>
-                      <TableCell>{driver}</TableCell>
-                      <TableCell>{points}</TableCell>
-                      <TableCell>{last}</TableCell>
+                      <TableCell>{entry.driver}</TableCell>
+                      <TableCell>{entry.points}</TableCell>
+                      <TableCell>{entry.lastEvent}</TableCell>
                       <TableCell
-                        className={trend.includes("▲") ? styles.trendUp : trend.includes("▼") ? styles.trendDown : ""}>
-                        {trend}
+                        className={
+                          entry.trend.includes("▲")
+                            ? styles.trendUp
+                            : entry.trend.includes("▼")
+                              ? styles.trendDown
+                              : ""
+                        }>
+                        {entry.trend}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -427,7 +575,7 @@ export function Home() {
             </div>
           </div>
           <aside className={styles.championshipFeed} aria-label="Season championship live fan feed">
-            <Placement {...placements.feed} label="Season championship live fan feed" />
+            <Placement {...placements.championshipFeed} label="Season championship live fan feed" />
           </aside>
         </div>
       </section>
@@ -436,9 +584,12 @@ export function Home() {
         <SectionHeader title="Season Calendar" meta="2025 · 13 Grand Prix" />
         <div className={styles.calendarRail}>
           {calendar.map((event) => (
-            <article
+            <button
+              type="button"
               className={event.status === "Next up" ? styles.calendarNext : styles.calendarCard}
-              key={event.venue}>
+              key={event.venue}
+              aria-label={`Open ${event.venue} event details`}
+              onClick={() => onOpenCalendar?.(event.slug)}>
               <div className={styles.calendarTitle}>
                 <div>
                   <h3>{event.venue}</h3>
@@ -450,7 +601,7 @@ export function Home() {
                 <Image src={`${ASSET_ROOT}/${event.image}`} alt="" fill sizes="300px" />
               </div>
               <p>Race intelligence, venue conditions and the storylines that matter.</p>
-            </article>
+            </button>
           ))}
         </div>
       </section>
@@ -458,37 +609,147 @@ export function Home() {
       <section className={styles.contentSection}>
         <SectionHeader title="Listen & Watch" meta="New this week" />
         <div className={styles.mediaGrid}>
-          {[
-            [
-              "podcast-artwork_v0.png",
-              "EP 47 · Podcast",
-              "The Auckland Preview: Can the Kiwis Finally Hold Home Water?",
-              "48 min",
-            ],
-            [
-              "video-breakdown-thumbnail_v0.png",
-              "Tactical Breakdown",
-              "Slingsby's Start-Line Gamble, Frame by Frame",
-              "12 min",
-            ],
-          ].map(([image, kicker, title, runtime]) => (
-            <article className={styles.mediaCard} key={title}>
+          {listenAndWatch.map((item) => (
+            <article
+              className={styles.mediaCard}
+              key={item.title}
+              role="button"
+              tabIndex={0}
+              onClick={() => setSelectedMedia(item)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  setSelectedMedia(item);
+                }
+              }}>
               <div className={styles.mediaImage}>
-                <Image src={`${ASSET_ROOT}/${image}`} alt="" fill sizes="(max-width: 768px) 100vw, 40vw" />
-                <Button variant="icon" shape="circle" theme="outline" aria-label={`Open ${title}`}>
+                <Image src={`${ASSET_ROOT}/${item.image}`} alt="" fill sizes="(max-width: 768px) 100vw, 40vw" />
+                <Button
+                  variant="icon"
+                  shape="circle"
+                  theme="outline"
+                  aria-label={`Open ${item.title}`}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setSelectedMedia(item);
+                  }}>
                   <Play size={18} fill="currentColor" />
                 </Button>
               </div>
               <div>
                 <span>
-                  {kicker} · {runtime}
+                  {item.kicker} · {item.runtime}
                 </span>
-                <h3>{title}</h3>
+                <h3>{item.title}</h3>
                 <p>Unfiltered race-week analysis from the SailGP desk.</p>
               </div>
             </article>
           ))}
         </div>
+
+        {selectedMedia && typeof document !== "undefined"
+          ? createPortal(
+              <div
+                className={styles.mediaDialogOverlay}
+                onMouseDown={(event) => {
+                  if (event.currentTarget === event.target) setSelectedMedia(null);
+                }}>
+                <div
+                  className={styles.mediaDialog}
+                  role="dialog"
+                  aria-modal="true"
+                  aria-labelledby="listen-watch-title"
+                  aria-describedby="listen-watch-description">
+              <button
+                type="button"
+                aria-label="Close"
+                onClick={() => setSelectedMedia(null)}
+                style={{
+                  position: "absolute",
+                  top: "20px",
+                  right: "20px",
+                  zIndex: 1,
+                  display: "grid",
+                  width: "28px",
+                  height: "28px",
+                  placeItems: "center",
+                  padding: 0,
+                  border: 0,
+                  background: "transparent",
+                  color: "#181b20",
+                  cursor: "pointer",
+                  opacity: 0.14,
+                }}>
+                <X size={18} />
+              </button>
+                  <div className={styles.mediaDialogBody}>
+                <p
+                  className={styles.mediaDialogKicker}
+                  style={{
+                    margin: "0 0 10px",
+                    color: "#dc2638",
+                    fontFamily: '"IBM Plex Mono", monospace',
+                    fontSize: "11px",
+                    fontWeight: 700,
+                    letterSpacing: "0.14em",
+                    textTransform: "uppercase",
+                  }}>
+                  {selectedMedia.kicker}
+                </p>
+                <h2
+                  id="listen-watch-title"
+                  className={styles.mediaDialogTitle}
+                  style={{
+                    maxWidth: "440px",
+                    margin: 0,
+                    fontFamily: "Montserrat, Arial, sans-serif",
+                    fontSize: "24px",
+                    fontWeight: 800,
+                    lineHeight: 1.08,
+                  }}>
+                  {selectedMedia.title}
+                </h2>
+                <p
+                  id="listen-watch-description"
+                  className={styles.mediaDialogDescription}
+                  style={{
+                    margin: "17px 0 26px",
+                    color: "#d9d9da",
+                    fontSize: "14px",
+                    lineHeight: 1.55,
+                  }}>
+                  {selectedMedia.description}
+                </p>
+                <button
+                  type="button"
+                  className={styles.mediaDialogAction}
+                  onClick={handlePlaySelectedMedia}
+                  style={{
+                    display: "inline-flex",
+                    width: "166px",
+                    minHeight: "40px",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: "0 22px",
+                    border: "1px solid #f4f4f5",
+                    borderRadius: "999px",
+                    background: "#f4f4f5",
+                    color: "white",
+                    fontFamily: "Montserrat, Arial, sans-serif",
+                    fontSize: "12px",
+                    fontWeight: 700,
+                    letterSpacing: "0.06em",
+                    textTransform: "uppercase",
+                    cursor: "pointer",
+                  }}>
+                  {selectedMedia.action}
+                </button>
+                  </div>
+                </div>
+              </div>,
+              document.body
+            )
+          : null}
       </section>
 
       <section className={styles.newsletter}>
@@ -512,19 +773,16 @@ export function Home() {
       <section className={styles.contentSection} id="beyond-sailgp">
         <SectionHeader title="Beyond SailGP" meta="Other circuits · This week" />
         <div className={styles.beyondGrid}>
-          {[
-            [
-              "America's Cup",
-              "Team New Zealand unveils the first AC75 of the next cycle — and it is smaller than anyone expected.",
-            ],
-            ["Olympic 49er", "Italy stamped their authority all over the Bay of Hyères this week. Here is how."],
-            ["Ocean Race", "Offshore at inshore intensity — that is the new reality of ocean racing."],
-          ].map(([tag, title]) => (
-            <article key={title}>
-              <span>{tag}</span>
-              <h3>{title}</h3>
-              <p>6 min read</p>
-            </article>
+          {beyondStories.map((story) => (
+            <button
+              type="button"
+              className={styles.beyondCard}
+              key={story.title}
+              onClick={() => onOpenBeyond?.(story.slug)}>
+              <span>{story.tag}</span>
+              <h3>{story.title}</h3>
+              <p>{story.byline}</p>
+            </button>
           ))}
         </div>
       </section>

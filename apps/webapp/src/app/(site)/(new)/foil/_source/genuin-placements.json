@@ -1,0 +1,98 @@
+{
+  "sdk_script": "https://media.begenuin.com/sdk/2.0.6/gen_sdk.min.js",
+  "placements": [
+    {
+      "id": "gen-sdk-1",
+      "label": "Fan Reactions Hub",
+      "description": "Community reactions after the ticker — race-week pulse",
+      "api_key": "8a5582af807e98dbad239b749a1cd7fb026831eec1a95d00",
+      "style_id": "69f4814de964b815fc224fed",
+      "placement_id": "69f4814de964b815fc224fec",
+      "width": "100%",
+      "max_width": "1440px",
+      "height": "500px"
+    },
+    {
+      "id": "gen-sdk-2",
+      "label": "Live Video Feed",
+      "description": "Vertical scroll video feed — premium hero placement after the countdown",
+      "api_key": "8a5582af807e98dbad239b749a1cd7fb026831eec1a95d00",
+      "style_id": "69f481d1e964b815fc22502c",
+      "placement_id": "69f481cbe964b815fc225021",
+      "width": "300px",
+      "max_width": "300px",
+      "height": "600px",
+      "container_style": "display:flex;justify-content:center;align-items:center;"
+    },
+    {
+      "id": "gen-sdk-3",
+      "label": "Fleet Fan Zone",
+      "description": "Fan engagement zone between athletes and media sections",
+      "api_key": "8a5582af807e98dbad239b749a1cd7fb026831eec1a95d00",
+      "style_id": "69f85cd54e1859a88008a834",
+      "placement_id": "69f85cd54e1859a88008a833",
+      "width": "100%",
+      "max_width": "800px",
+      "height": "500px"
+    },
+    {
+      "id": "gen-sdk-4",
+      "label": "Fleet Fan Zone — Mobile",
+      "description": "Mobile-optimised fan zone (replaces gen-sdk-3 on screens < 768px)",
+      "api_key": "8a5582af807e98dbad239b749a1cd7fb026831eec1a95d00",
+      "style_id": "69f85d7dc002c7c205f337cc",
+      "placement_id": "69f85d7dc002c7c205f337cb",
+      "width": "100%",
+      "max_width": "800px",
+      "height": "500px"
+    }
+  ],
+  "sidebar": {
+    "logo": {
+      "text_top": "THE",
+      "text_main": "FOIL",
+      "link": "https://thefoil.begenuin.com/home"
+    },
+    "cta": {
+      "text": "Become a Creator for The Foil, get rewards 🚀",
+      "action": "creator"
+    },
+    "navigation": [
+      {
+        "label": "Home",
+        "link": "https://thefoil.begenuin.com/home",
+        "icon": "home",
+        "active": true
+      },
+      {
+        "label": "Popular",
+        "link": "https://thefoil.begenuin.com/popular",
+        "icon": "trending"
+      },
+      {
+        "label": "Latest",
+        "link": "https://thefoil.begenuin.com/latest",
+        "icon": "latest"
+      },
+      {
+        "label": "Explore",
+        "link": "https://thefoil.begenuin.com/explore",
+        "icon": "explore"
+      },
+      {
+        "label": "More",
+        "link": "#",
+        "icon": "more"
+      }
+    ],
+    "categories": [
+      { "label": "Tactical Breakdowns 🎯" },
+      { "label": "Data Dives 📊" },
+      { "label": "Interviews 🎙️" },
+      { "label": "Race Reports ⛵" }
+    ],
+    "footer": {
+      "powered_by": "genuin"
+    }
+  }
+}
