@@ -96,6 +96,13 @@ const STATIC_TAG_LOADERS: Record<string, () => Promise<StaticTagEntry | undefine
     ]);
     return toEntry(tag.default, feed.default);
   },
+  "6a3916de30e1406c10507518": async () => {
+    const [tag, feed] = await Promise.all([
+      import("@cxr/providers/static-tag/6a3916de30e1406c10507518.tag.json"),
+      import("@cxr/providers/static-tag/6a3916de30e1406c10507518.feed.json"),
+    ]);
+    return toEntry(tag.default, feed.default);
+  },
 };
 
 /**

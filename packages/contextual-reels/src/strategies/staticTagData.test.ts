@@ -42,6 +42,14 @@ describe("getStaticTagData", () => {
     expect(entry!.feed.length).toBeGreaterThan(0);
   });
 
+  it("resolves the 300x250 tag (6a3916d) from its own fixtures", async () => {
+    const entry = await getStaticTagData("6a3916de30e1406c10507518");
+    expect(entry).toBeDefined();
+    expect(entry!.tagConfig.tag_id).toBe("6a3916de30e1406c10507518");
+    expect((entry!.tagConfig as { tag_name?: string }).tag_name).toBe("300x250-ads-only");
+    expect(entry!.feed.length).toBeGreaterThan(0);
+  });
+
   it("resolves undefined for a non-static tag", async () => {
     expect(await getStaticTagData("not-a-static-tag")).toBeUndefined();
   });

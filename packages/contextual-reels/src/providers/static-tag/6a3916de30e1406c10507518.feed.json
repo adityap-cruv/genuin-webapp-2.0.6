@@ -1,0 +1,64 @@
+{
+  "code": "200",
+  "message": "Feed is loaded.",
+  "data": {
+    "reels": [
+      {
+        "type": "ads",
+        "video_ad": [
+          {
+            "ads_url": "https://cmod-na.live.streamtheworld.com/ondemand/ars?site-url=[PAGE_URL]&dist=[PAGE_URL]&stid=1446814&ip=110.226.114.216&ua=curl/8.7.1&ttag=brand_id:3252&type=midroll&delivery-method=download",
+            "cpm": 5,
+            "platform": "tritondigital",
+            "url": "https://cmod-na.live.streamtheworld.com/ondemand/ars?site-url=[PAGE_URL]&dist=[PAGE_URL]&stid=1446814&ip=110.226.114.216&ua=curl/8.7.1&ttag=brand_id:3252&type=midroll&delivery-method=download"
+          }
+        ]
+      },
+      {
+        "type": "ads",
+        "video_ad": [
+          {
+            "ads_url": "https://cmod-na.live.streamtheworld.com/ondemand/ars?site-url=[PAGE_URL]&dist=[PAGE_URL]&stid=1446814&ip=110.226.114.216&ua=curl/8.7.1&ttag=brand_id:3252&type=midroll&delivery-method=download",
+            "cpm": 5,
+            "platform": "tritondigital",
+            "url": "https://cmod-na.live.streamtheworld.com/ondemand/ars?site-url=[PAGE_URL]&dist=[PAGE_URL]&stid=1446814&ip=110.226.114.216&ua=curl/8.7.1&ttag=brand_id:3252&type=midroll&delivery-method=download"
+          }
+        ]
+      },
+      {
+        "type": "ads",
+        "video_ad": [
+          {
+            "ads_url": "https://cmod-na.live.streamtheworld.com/ondemand/ars?site-url=[PAGE_URL]&dist=[PAGE_URL]&stid=1446814&ip=110.226.114.216&ua=curl/8.7.1&ttag=brand_id:3252&type=midroll&delivery-method=download",
+            "cpm": 5,
+            "platform": "tritondigital",
+            "url": "https://cmod-na.live.streamtheworld.com/ondemand/ars?site-url=[PAGE_URL]&dist=[PAGE_URL]&stid=1446814&ip=110.226.114.216&ua=curl/8.7.1&ttag=brand_id:3252&type=midroll&delivery-method=download"
+          }
+        ]
+      },
+      {
+        "type": "ads",
+        "video_ad": [
+          {
+            "ads_url": "https://cmod-na.live.streamtheworld.com/ondemand/ars?site-url=[PAGE_URL]&dist=[PAGE_URL]&stid=1446814&ip=110.226.114.216&ua=curl/8.7.1&ttag=brand_id:3252&type=midroll&delivery-method=download",
+            "cpm": 5,
+            "platform": "tritondigital",
+            "url": "https://cmod-na.live.streamtheworld.com/ondemand/ars?site-url=[PAGE_URL]&dist=[PAGE_URL]&stid=1446814&ip=110.226.114.216&ua=curl/8.7.1&ttag=brand_id:3252&type=midroll&delivery-method=download"
+          }
+        ]
+      },
+      {
+        "type": "ads",
+        "video_ad": [
+          {
+            "ads_url": "https://cmod-na.live.streamtheworld.com/ondemand/ars?site-url=[PAGE_URL]&dist=[PAGE_URL]&stid=1446814&ip=110.226.114.216&ua=curl/8.7.1&ttag=brand_id:3252&type=midroll&delivery-method=download",
+            "cpm": 5,
+            "platform": "tritondigital",
+            "url": "https://cmod-na.live.streamtheworld.com/ondemand/ars?site-url=[PAGE_URL]&dist=[PAGE_URL]&stid=1446814&ip=110.226.114.216&ua=curl/8.7.1&ttag=brand_id:3252&type=midroll&delivery-method=download"
+          }
+        ]
+      }
+    ],
+    "visit_id": "d9nq462nlm8000cvtneg"
+  }
+}

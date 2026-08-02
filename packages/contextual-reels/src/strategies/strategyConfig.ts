@@ -116,6 +116,12 @@ export const TAG_STRATEGIES: Record<string, TagStrategyEntry> = {
     feedLoopEnabled: false,
     preset: "servedStatically",
   }, // 320x50
+  "6a3916de30e1406c10507518": {
+    initialVolume: 0.2,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+  }, // 300x250
   "6a3915b692929ebec64d785e": {
     initialVolume: 0.2,
     singleHitWaterfall: true,
