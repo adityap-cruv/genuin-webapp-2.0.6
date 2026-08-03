@@ -396,13 +396,23 @@ A tag can carry only **one** preset, so a tag that already uses another bundle (
 
 ### Tags currently opted out
 
-| Tag id                     | Size    | Why                                                              |
-| -------------------------- | ------- | ---------------------------------------------------------------- |
-| `6a39163e92929ebec64d78ab` | 320×50  | Static AD-only feed — rest on the last slot instead of replaying |
-| `6a3915b692929ebec64d785e` | 320×100 | Static AD-only feed — rest on the last slot instead of replaying |
-| `6a6892e52ca77d200369fb9e` | 320×480 | Static AD-only feed — rest on the last slot instead of replaying |
+| Tag id                      | Size    | Why                                                              |
+| --------------------------- | ------- | ---------------------------------------------------------------- |
+| `6a39163e92929ebec64d78ab`  | 320×50  | Static AD-only feed — rest on the last slot instead of replaying |
+| `6a3916de30e1406c10507518`  | 300×250 | Static AD-only feed — rest on the last slot instead of replaying |
+| `6a3915b692929ebec64d785e`  | 320×100 | Static AD-only feed — rest on the last slot instead of replaying |
+| `6a6892e52ca77d200369fb9e`  | 320×480 | Static AD-only feed — rest on the last slot instead of replaying |
+| `6a3aa78ba0daccfd439648b81` | 320×50  | Demo static tag (no DB entry) — single VAST ad reel              |
+| `6a3aa78ba0daccfd439648b82` | 320×100 | Demo static tag (no DB entry) — single VAST ad reel              |
+| `6a3aa78ba0daccfd439648b83` | 300×250 | Demo static tag (no DB entry) — single VAST ad reel              |
+| `6a3aa78ba0daccfd439648b84` | 300×600 | Demo static tag (no DB entry) — single VAST ad reel              |
+| `6a3aa78ba0daccfd439648b85` | 320×480 | Demo static tag (no DB entry) — single VAST ad reel              |
 
-All three also carry `preset: "servedStatically"`, hence the inline key.
+All of these also carry `preset: "servedStatically"`, hence the inline key. The
+`6a3aa78ba0daccfd439648b8[1-5]` set is a **demo-only** group with no backend tag
+record: each serves a single static VAST ad (`gimedia.begenuin.com/vast/betmgm-vast.xml`,
+the shared debug-device creative) purely for demonstration. On any fixture miss they
+fall back to the live API, which 404s (no DB entry) → no-content, never a crash.
 
 ### What it changes
 

@@ -1,0 +1,20 @@
+{
+  "code": "200",
+  "message": "Feed is loaded.",
+  "data": {
+    "reels": [
+      {
+        "type": "ads",
+        "video_ad": [
+          {
+            "ads_url": "https://gimedia.begenuin.com/vast/betmgm-vast.xml",
+            "cpm": 5,
+            "platform": "tritondigital",
+            "url": "https://gimedia.begenuin.com/vast/betmgm-vast.xml"
+          }
+        ]
+      }
+    ],
+    "visit_id": "d9nq462nlm8000cvtneg"
+  }
+}

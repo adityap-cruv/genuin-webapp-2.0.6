@@ -50,6 +50,20 @@ describe("getStaticTagData", () => {
     expect(entry!.feed.length).toBeGreaterThan(0);
   });
 
+  it.each([
+    ["6a3aa78ba0daccfd439648b81", "320x50-ads-only"],
+    ["6a3aa78ba0daccfd439648b82", "320x100-ads-only"],
+    ["6a3aa78ba0daccfd439648b83", "300x250-ads-only"],
+    ["6a3aa78ba0daccfd439648b84", "300x600-ads-only"],
+    ["6a3aa78ba0daccfd439648b85", "320x480-ads-only"],
+  ])("resolves the demo tag %s with a single ad reel", async (tagId, tagName) => {
+    const entry = await getStaticTagData(tagId);
+    expect(entry).toBeDefined();
+    expect(entry!.tagConfig.tag_id).toBe(tagId);
+    expect((entry!.tagConfig as { tag_name?: string }).tag_name).toBe(tagName);
+    expect(entry!.feed).toHaveLength(1);
+  });
+
   it("resolves undefined for a non-static tag", async () => {
     expect(await getStaticTagData("not-a-static-tag")).toBeUndefined();
   });

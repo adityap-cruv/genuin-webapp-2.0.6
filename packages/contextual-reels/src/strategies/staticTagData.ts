@@ -103,6 +103,46 @@ const STATIC_TAG_LOADERS: Record<string, () => Promise<StaticTagEntry | undefine
     ]);
     return toEntry(tag.default, feed.default);
   },
+  // Demo-only static tags (no DB entry) — one Triton ad reel each. 320x50.
+  "6a3aa78ba0daccfd439648b81": async () => {
+    const [tag, feed] = await Promise.all([
+      import("@cxr/providers/static-tag/6a3aa78ba0daccfd439648b81.tag.json"),
+      import("@cxr/providers/static-tag/6a3aa78ba0daccfd439648b81.feed.json"),
+    ]);
+    return toEntry(tag.default, feed.default);
+  },
+  // 320x100
+  "6a3aa78ba0daccfd439648b82": async () => {
+    const [tag, feed] = await Promise.all([
+      import("@cxr/providers/static-tag/6a3aa78ba0daccfd439648b82.tag.json"),
+      import("@cxr/providers/static-tag/6a3aa78ba0daccfd439648b82.feed.json"),
+    ]);
+    return toEntry(tag.default, feed.default);
+  },
+  // 300x250
+  "6a3aa78ba0daccfd439648b83": async () => {
+    const [tag, feed] = await Promise.all([
+      import("@cxr/providers/static-tag/6a3aa78ba0daccfd439648b83.tag.json"),
+      import("@cxr/providers/static-tag/6a3aa78ba0daccfd439648b83.feed.json"),
+    ]);
+    return toEntry(tag.default, feed.default);
+  },
+  // 300x600
+  "6a3aa78ba0daccfd439648b84": async () => {
+    const [tag, feed] = await Promise.all([
+      import("@cxr/providers/static-tag/6a3aa78ba0daccfd439648b84.tag.json"),
+      import("@cxr/providers/static-tag/6a3aa78ba0daccfd439648b84.feed.json"),
+    ]);
+    return toEntry(tag.default, feed.default);
+  },
+  // 320x480
+  "6a3aa78ba0daccfd439648b85": async () => {
+    const [tag, feed] = await Promise.all([
+      import("@cxr/providers/static-tag/6a3aa78ba0daccfd439648b85.tag.json"),
+      import("@cxr/providers/static-tag/6a3aa78ba0daccfd439648b85.feed.json"),
+    ]);
+    return toEntry(tag.default, feed.default);
+  },
 };
 
 /**

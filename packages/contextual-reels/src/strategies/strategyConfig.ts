@@ -136,6 +136,41 @@ export const TAG_STRATEGIES: Record<string, TagStrategyEntry> = {
     feedLoopEnabled: false,
     preset: "servedStatically",
   }, // 320x480
+
+  // Demo-only static tags (no DB entry) — served from committed fixtures with a
+  // single Triton ad reel each. Same static strategy as the tags above. Sizes
+  // per the demo size×tag-id sheet; layout is driven by container px, so the
+  // tag config just carries the descriptive tag_name.
+  "6a3aa78ba0daccfd439648b81": {
+    initialVolume: 0.2,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+  }, // 320x50
+  "6a3aa78ba0daccfd439648b82": {
+    initialVolume: 0.2,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+  }, // 320x100
+  "6a3aa78ba0daccfd439648b83": {
+    initialVolume: 0.2,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+  }, // 300x250
+  "6a3aa78ba0daccfd439648b84": {
+    initialVolume: 0.2,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+  }, // 300x600
+  "6a3aa78ba0daccfd439648b85": {
+    initialVolume: 0.2,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+  }, // 320x480
   // Audible-start tags too, but served from the live exchange rather than fixtures.
   // The 20% volume is the advertiser requirement, not a test override — these
   // intentionally bypass the mute gate and start unmuted. Do not "fix" by muting.
