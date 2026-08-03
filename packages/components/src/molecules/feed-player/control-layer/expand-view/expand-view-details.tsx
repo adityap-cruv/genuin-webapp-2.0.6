@@ -186,9 +186,7 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
       const isStation = attributes.type === "station";
       const slug = attributes.slug;
       const stationId = attributes.station_id;
-      const url = new URL(
-        "https://iheart.com/" + (isStation ? "live/" : "podcast/") + (isStation ? stationId : slug)
-      );
+      const url = new URL("https://iheart.com/" + (isStation ? "live/" : "podcast/") + (isStation ? stationId : slug));
       return addIheartCtaCampaign(url).toString();
     }
 
@@ -437,13 +435,14 @@ const SharedActions = memo(function SharedActions({
   onOctoOpen?: () => void;
   isDesktop: boolean;
 }) {
-  const { isDesignSystemV2 } = useEmbedConfigs();
+  const { isDesignSystemV2Linkouts } = useEmbedConfigs();
   const { hasContentType, openContentType, closeContentType } = useSheetState();
   const { video, group, community } = postDetails;
   if (!video || !community || !group) return null;
   // Mobile action-rail linkout button: tap toggles the in-player linkout
   // (placement="inside" — mobile has no right rail).
-  const showLinkoutAction = isDesignSystemV2 && Array.isArray(video.linkouts) && (video.linkouts?.length ?? 0) > 0;
+  const showLinkoutAction =
+    isDesignSystemV2Linkouts && Array.isArray(video.linkouts) && (video.linkouts?.length ?? 0) > 0;
 
   // Handle iHeart brand controls
   if (brandLayoutType === "iheart") {
@@ -599,7 +598,7 @@ export const ExpandViewDetails = forwardRef<ExpandViewDetailsRef, ExpandViewProp
     positionIndex,
     videoAutoplay,
   } = useExpandViewConfig(postDetails);
-  const { brand, engagement, isDesignSystemV2 } = useEmbedConfigs();
+  const { brand, engagement, isDesignSystemV2Linkouts } = useEmbedConfigs();
   const viewportHeight = useViewportHeight();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
   const [isExpanded, setIsExpanded] = useState(false);
@@ -763,7 +762,7 @@ export const ExpandViewDetails = forwardRef<ExpandViewDetailsRef, ExpandViewProp
             !isOctoVisible &&
             video.linkouts &&
             sheetContentPlacements["linkouts"] !== "outside" &&
-            !(isDesignSystemV2 && isDesktop) && (
+            !(isDesignSystemV2Linkouts && isDesktop) && (
               // Wrapper gives the dynamic `<Linkouts>` (no className slot of its own)
               // a definite flex-1 height so its `height: 100%` resolves; without it
               // the sheet's full-view stays stuck at panel-view size.
@@ -778,7 +777,7 @@ export const ExpandViewDetails = forwardRef<ExpandViewDetailsRef, ExpandViewProp
                   <Linkouts
                     linkouts={video.linkouts}
                     linkoutId={video.linkoutId!}
-                    {...(isDesignSystemV2 ? { variant: "dynamic" as const } : {})}
+                    {...(isDesignSystemV2Linkouts ? { variant: "dynamic" as const } : {})}
                     view="expand"
                     showImmediately={video.linkouts.length > 0 && !video.linkoutId}
                     isActive={isActive}

@@ -178,7 +178,7 @@ export function PlayerList({
     },
     view: { brandLayoutType, websiteType, isAdsEnabledInIheart },
     layoutConfig: { isIheartArticlePage },
-    isDesignSystemV2,
+    isDesignSystemV2Linkouts,
   } = useEmbedConfigs();
 
   // Comment panel state - only auto-open if Octo is NOT enabled (Octo takes priority)
@@ -491,12 +491,12 @@ export function PlayerList({
     const hasLinkout = hasLinkoutId || hasInlineLinkouts;
     if (hasLinkout) {
       // "outside" (desktop right rail) only EXISTS for V2 — <DesktopRightPanels> is
-      // gated on `isDesignSystemV2`. The only host for V1 is the in-player overlay,
+      // gated on `isDesignSystemV2Linkouts`. The only host for V1 is the in-player overlay,
       // whose gate requires placement !== "outside". So restrict "outside" to V2;
       // V1 keeps "inside" on desktop too. Otherwise the V1 linkout flips to "outside"
       // with no renderer and disappears whenever the desktop comments panel is shown.
       // Idempotent, so re-firing on `isAdFilled → false` safely reopens after an ad.
-      openContentType("linkouts", isDesktop && isDesignSystemV2 ? "outside" : "inside", "expand-view");
+      openContentType("linkouts", isDesktop && isDesignSystemV2Linkouts ? "outside" : "inside", "expand-view");
     } else {
       closeContentType("linkouts");
     }
@@ -509,7 +509,7 @@ export function PlayerList({
     openContentType,
     closeContentType,
     isDesktop,
-    isDesignSystemV2,
+    isDesignSystemV2Linkouts,
     isAdFilled,
   ]);
 
@@ -760,7 +760,7 @@ export function PlayerList({
             // V2 only: action-rail linkout button is the entry point to the
             // right-rail panel (Figma). V1 keeps its legacy in-player overlay.
             showLinkout={Boolean(
-              isDesignSystemV2 &&
+              isDesignSystemV2Linkouts &&
                 showExpandView &&
                 filteredPost[activeIndex]?.video?.linkouts &&
                 filteredPost[activeIndex]?.video?.linkouts.length > 0
@@ -894,7 +894,7 @@ export function PlayerList({
       )}
       {/* V1 keeps its standalone comments column here; V2 hosts comments inside
           <DesktopRightPanels> below. Rendering both would double the comments. */}
-      {!isDesignSystemV2 &&
+      {!isDesignSystemV2Linkouts &&
         isCommentOpen &&
         showExpandView &&
         !isAdFilled &&
@@ -947,7 +947,7 @@ export function PlayerList({
 
       {/* Desktop right rail: dynamic linkouts (outside placement) above comments.
           V2 only — v1 keeps its legacy in-player overlay to avoid doubling up. */}
-      {isDesktop && isDesignSystemV2 && (
+      {isDesktop && isDesignSystemV2Linkouts && (
         <SafeSuspense fallback={null}>
           <DesktopRightPanels
             filteredPost={filteredPost}

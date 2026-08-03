@@ -66,6 +66,22 @@ const BRAND_FEATURE_IDS = {
     ]),
     embedIds: new Set(["69c38273686a088a80a25ea2"]),
   },
+  // Forces Design System V2 player controls on, without the `design_system=v2`
+  // URL param, for the listed placements/embeds. Server-side
+  // `configuration.design_system` and the URL param still win independently.
+  designSystemV2: {
+    placementIds: new Set<string>([
+      "6a6b6573ff14e94629700ff7",
+      "6a6b68993fa2d0ac016184c6",
+      "6a6b694aac2eda8576680df7",
+      "6a6b69cdff14e94629701745",
+      "6a6b6c073fa2d0ac01618929",
+      "6a6c7f46ac2eda8576684c10",
+      "6a6c80ed3fa2d0ac0161c90a",
+      "6a3447cd6b7dd1fe9bc9989a",
+    ]),
+    embedIds: new Set<string>([]),
+  },
 };
 
 type EmbedDataSlice =
@@ -104,16 +120,30 @@ export function useEmbedConfigs() {
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
   const { searchParams } = useSearchParams();
 
-  // Tracks whether the v2 design system experience is enabled, either via the
-  // `design_system=v2` URL param (webapp testing) or the `configuration.design_system`
-  // field passed to `Genuin.init()` (per-embed opt-in for web-sdk consumers).
+  // Tracks whether the v2 design system experience is enabled, via any of:
+  // the `design_system=v2` URL param (webapp testing), the
+  // `configuration.design_system` field on the embed/placement API response
+  // (per-embed opt-in for web-sdk consumers), or the `designSystemV2` id
+  // allowlist above (id-scoped rollout, no param or backend change needed).
   // Recomputed whenever the search string or embed data changes.
+  const designSystemPlacementId = embedData?.placement_id;
+  const designSystemEmbedId = embedData?.embed_id;
   const isDesignSystemV2 = useMemo(
     () =>
       new URLSearchParams(searchParams).get("design_system") === "v2" ||
-      embedData?.configuration?.design_system === "v2",
-    [searchParams, embedData?.configuration?.design_system]
+      embedData?.configuration?.design_system === "v2" ||
+      matchesFeature(BRAND_FEATURE_IDS.designSystemV2, {
+        placement_id: designSystemPlacementId,
+        embed_id: designSystemEmbedId,
+      }),
+    [searchParams, embedData?.configuration?.design_system, designSystemPlacementId, designSystemEmbedId]
   );
+
+  // iHeart keeps the v1 linkout experience: its right rail has no comments panel,
+  // so the v2 outside-placement layout leaves a mostly empty desktop column.
+  // TODO(dharmil): to ship v2 linkouts for iHeart too, delete this flag and point
+  // every `isDesignSystemV2Linkouts` consumer back at `isDesignSystemV2`.
+  const isDesignSystemV2Linkouts = isDesignSystemV2 && (brandLayoutType ?? "default") !== "iheart";
 
   const isAdsEnabledInIheart = useMemo(() => {
     return rootElement?.getAttribute("data-ads-enabled") === "true";
@@ -734,6 +764,14 @@ export function useEmbedConfigs() {
      * across the app.
      */
     isDesignSystemV2,
+    /**
+     * V2 gate for the linkout surfaces only: dynamic `<Linkouts>`, the desktop
+     * right-rail panel and its action-rail entry point. iHeart layouts keep the
+     * v1 linkout experience even when v2 is on — the right rail hosts no comments
+     * panel for iHeart, so it renders as a mostly empty column. Player controls
+     * are unaffected; they read {@link isDesignSystemV2}.
+     */
+    isDesignSystemV2Linkouts,
     /**
      * TODO: Productise this — currently hardcoded to a specific embed ID (6980fb600599bd5a2e1011b5).
      * Once validated, this should be driven by an embed-level config flag (e.g. embedData.render_only_single_video)

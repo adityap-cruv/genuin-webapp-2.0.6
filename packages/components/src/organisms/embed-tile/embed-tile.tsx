@@ -513,7 +513,7 @@ function EmbedPlayer({ postDetails, isActive = false, index, itemSize }: EmbedPl
 }
 
 function OutsideComponents({ postDetails }: { postDetails: PostDetailsType }) {
-  const { contentDisplay, responsive, engagement, links, view, video, isDesignSystemV2 } = useEmbedConfigs();
+  const { contentDisplay, responsive, engagement, links, view, video, isDesignSystemV2Linkouts } = useEmbedConfigs();
   const { linkoutHeight } = useEmbedDimensions();
   const { isXs } = responsive;
   const showLinkout = links.showLinkOutside;
@@ -596,7 +596,7 @@ function OutsideComponents({ postDetails }: { postDetails: PostDetailsType }) {
             <Linkouts
               view="embed"
               layout="outside"
-              {...(isDesignSystemV2 ? { variant: "dynamic" as const } : {})}
+              {...(isDesignSystemV2Linkouts ? { variant: "dynamic" as const } : {})}
               isActive={true}
               showImmediately
               linkouts={postDetails.video?.linkouts}

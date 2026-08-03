@@ -86,7 +86,7 @@ export const DefaultEmbed: FC<ControlLayerPropsType> = ({
           <SafeSuspense fallback={null} errorFallback={null}>
             <Linkouts
               view="embed"
-              {...(config.isDesignSystemV2 ? { variant: "dynamic" as const } : {})}
+              {...(config.isDesignSystemV2Linkouts ? { variant: "dynamic" as const } : {})}
               layout="overlay"
               isActive={isActive}
               showImmediately

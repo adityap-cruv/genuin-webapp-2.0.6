@@ -391,7 +391,7 @@ export function Default({
                     <Linkouts
                       isActive={isActive}
                       view="embed"
-                      {...(embedConfig.isDesignSystemV2 ? { variant: "dynamic" as const } : {})}
+                      {...(embedConfig.isDesignSystemV2Linkouts ? { variant: "dynamic" as const } : {})}
                       layout="overlay"
                       linkouts={video.linkouts}
                       linkoutId={video.linkoutId}
