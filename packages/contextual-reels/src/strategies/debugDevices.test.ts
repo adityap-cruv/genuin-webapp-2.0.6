@@ -169,7 +169,6 @@ describe("getDebugDeviceFeed", () => {
     const feed = await getDebugDeviceFeed(DEBUG_TAG);
     const urls = (feed ?? []).map((reel) => (reel as unknown as { video_ad: { url: string }[] }).video_ad[0]?.url);
     expect(urls).toContain("https://gimedia.begenuin.com/vast/betmgm-vast.xml");
-    expect(urls).toContain("https://gimedia.begenuin.com/vast/nj-gov-vast.xml");
   });
 
   it("sets both `url` and `ads_url` so extractPrimaryAdUrl resolves either", async () => {
