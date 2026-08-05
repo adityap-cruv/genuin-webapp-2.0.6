@@ -61,10 +61,7 @@ vi.mock("vlitejs", async () => {
         _name: string,
         _plugin: unknown,
         cfg?: {
-          updateImaSettings?: (s: {
-            setLocale(l: string): void;
-            setAutoPlayAdBreaks(b: boolean): void;
-          }) => void;
+          updateImaSettings?: (s: { setLocale(l: string): void; setAutoPlayAdBreaks(b: boolean): void }) => void;
         }
       ) => {
         if (imaRegisterShouldThrow) throw imaRegisterShouldThrow;
@@ -487,9 +484,7 @@ describe("usePlayerLifecycle", () => {
   it("starts playback in onReady when isPlay=true and not supportAds", () => {
     const videoEl = { current: createVideoEl() } as React.RefObject<HTMLVideoElement | null>;
     act(() => {
-      root.render(
-        createElement(LifecycleShim, { opts: makeOpts({ videoEl, isPlay: true, supportAds: false }) })
-      );
+      root.render(createElement(LifecycleShim, { opts: makeOpts({ videoEl, isPlay: true, supportAds: false }) }));
     });
     expect(lastVlite().player.play).toHaveBeenCalled();
     expect(videoEl.current!.play).toHaveBeenCalled();
@@ -563,9 +558,7 @@ describe("usePlayerLifecycle", () => {
 
   it("passes loop=true to Vlitejs when config.auto_swipe is false", () => {
     act(() => {
-      root.render(
-        createElement(LifecycleShim, { opts: makeOpts({ config: { auto_swipe: false } }) })
-      );
+      root.render(createElement(LifecycleShim, { opts: makeOpts({ config: { auto_swipe: false } }) }));
     });
     const opts = lastVlite().opts as { options?: { loop?: boolean } };
     expect(opts.options?.loop).toBe(true);
@@ -573,9 +566,7 @@ describe("usePlayerLifecycle", () => {
 
   it("passes loop=false to Vlitejs when config.auto_swipe is true", () => {
     act(() => {
-      root.render(
-        createElement(LifecycleShim, { opts: makeOpts({ config: { auto_swipe: true } }) })
-      );
+      root.render(createElement(LifecycleShim, { opts: makeOpts({ config: { auto_swipe: true } }) }));
     });
     const opts = lastVlite().opts as { options?: { loop?: boolean } };
     expect(opts.options?.loop).toBe(false);
@@ -690,6 +681,50 @@ describe("usePlayerLifecycle", () => {
     expect(inst.startLoad).toHaveBeenCalledWith(-1);
   });
 
+  it("plays muted when activating while volume is 0 — iOS ignores .volume, only .muted silences it", () => {
+    // Regression: the isPlay effect used to always attempt an unmuted play
+    // (hardcoded desiredMuted=false), regardless of the app's real mute intent.
+    // On iOS, programmatic .volume writes are ignored (always reads 1), so an
+    // unmuted play() there is genuinely audible even though volume===0 — the
+    // mute icon (driven by volume) shows muted while the video plays out loud.
+    const videoEl = { current: createVideoEl(4) } as React.RefObject<HTMLVideoElement | null>;
+    let controls!: { setIsPlay: (v: boolean) => void; setVolume: (v: number) => void };
+    act(() => {
+      root.render(
+        createElement(ControlledWrapper, {
+          initialOpts: makeOpts({ videoEl, isPlay: false, volume: 0 }),
+          onControls: (c) => {
+            controls = c;
+          },
+        })
+      );
+    });
+
+    act(() => controls.setIsPlay(true));
+
+    expect(videoEl.current!.muted).toBe(true);
+  });
+
+  it("plays unmuted when activating while volume is above 0", () => {
+    const videoEl = { current: createVideoEl(4) } as React.RefObject<HTMLVideoElement | null>;
+    videoEl.current!.muted = true;
+    let controls!: { setIsPlay: (v: boolean) => void; setVolume: (v: number) => void };
+    act(() => {
+      root.render(
+        createElement(ControlledWrapper, {
+          initialOpts: makeOpts({ videoEl, isPlay: false, volume: 0.4 }),
+          onControls: (c) => {
+            controls = c;
+          },
+        })
+      );
+    });
+
+    act(() => controls.setIsPlay(true));
+
+    expect(videoEl.current!.muted).toBe(false);
+  });
+
   it("registers a canplay listener and retries play when readyState < 2 on isPlay true", () => {
     const videoEl = { current: createVideoEl(0) } as React.RefObject<HTMLVideoElement | null>;
     const addSpy = vi.spyOn(videoEl.current!, "addEventListener");
@@ -766,6 +801,48 @@ describe("usePlayerLifecycle", () => {
     });
 
     expect(videoEl.current!.volume).toBeCloseTo(0.42);
+  });
+
+  it("mutes the element when volume drops to 0 — iOS ignores .volume writes, so .muted is the only real lever", () => {
+    const videoEl = { current: createVideoEl() } as React.RefObject<HTMLVideoElement | null>;
+    videoEl.current!.muted = false;
+    let controls!: { setIsPlay: (v: boolean) => void; setVolume: (v: number) => void };
+    act(() => {
+      root.render(
+        createElement(ControlledWrapper, {
+          initialOpts: makeOpts({ videoEl, volume: 0.5 }),
+          onControls: (c) => {
+            controls = c;
+          },
+        })
+      );
+    });
+    expect(videoEl.current!.muted).toBe(false);
+
+    act(() => controls.setVolume(0));
+
+    expect(videoEl.current!.volume).toBe(0);
+    expect(videoEl.current!.muted).toBe(true);
+  });
+
+  it("unmutes the element once volume rises back above 0", () => {
+    const videoEl = { current: createVideoEl() } as React.RefObject<HTMLVideoElement | null>;
+    let controls!: { setIsPlay: (v: boolean) => void; setVolume: (v: number) => void };
+    act(() => {
+      root.render(
+        createElement(ControlledWrapper, {
+          initialOpts: makeOpts({ videoEl, volume: 0 }),
+          onControls: (c) => {
+            controls = c;
+          },
+        })
+      );
+    });
+    expect(videoEl.current!.muted).toBe(true);
+
+    act(() => controls.setVolume(0.3));
+
+    expect(videoEl.current!.muted).toBe(false);
   });
 
   it("does not throw when videoEl.current is null during volume effect", () => {
@@ -849,9 +926,7 @@ describe("usePlayerLifecycle", () => {
   it("falls back to empty video type when the url has no extension", () => {
     const videoEl = { current: createVideoEl() } as React.RefObject<HTMLVideoElement | null>;
     act(() => {
-      root.render(
-        createElement(LifecycleShim, { opts: makeOpts({ videoEl, content: "https://example.com/novel" }) })
-      );
+      root.render(createElement(LifecycleShim, { opts: makeOpts({ videoEl, content: "https://example.com/novel" }) }));
     });
     // Non-m3u8 type → direct src assignment, no HLS instance.
     expect(hlsInstances).toHaveLength(0);
@@ -914,11 +989,7 @@ describe("usePlayerLifecycle", () => {
     });
     root = createRoot(document.createElement("div"));
 
-    expect(warnSpy).toHaveBeenCalledWith(
-      "[cxr/player]",
-      "Error detaching player event listeners:",
-      expect.any(Error)
-    );
+    expect(warnSpy).toHaveBeenCalledWith("[cxr/player]", "Error detaching player event listeners:", expect.any(Error));
     // Cleanup continued past the throwing detachers: the player itself was
     // still paused and destroyed.
     expect(rec.player.pause).toHaveBeenCalled();
@@ -1150,5 +1221,4 @@ describe("usePlayerLifecycle", () => {
       root = createRoot(document.createElement("div"));
     }).not.toThrow();
   });
-
 });

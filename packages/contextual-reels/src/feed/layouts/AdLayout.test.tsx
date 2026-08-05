@@ -104,6 +104,7 @@ describe("AdLayout handlers", () => {
   let root: Root;
   let setMuted: ReturnType<typeof vi.fn>;
   let setPlaying: ReturnType<typeof vi.fn>;
+  let notifyAutoplayBlocked: ReturnType<typeof vi.fn>;
   let onAdSuccess: ReturnType<typeof vi.fn>;
   let onAdFail: ReturnType<typeof vi.fn>;
   let toggleFullScreen: ReturnType<typeof vi.fn>;
@@ -114,6 +115,7 @@ describe("AdLayout handlers", () => {
     capturedAdControlLayerProps.length = 0;
     setMuted = vi.fn();
     setPlaying = vi.fn();
+    notifyAutoplayBlocked = vi.fn();
     onAdSuccess = vi.fn();
     onAdFail = vi.fn();
     toggleFullScreen = vi.fn();
@@ -122,6 +124,7 @@ describe("AdLayout handlers", () => {
       isPlaying: false,
       setMuted,
       setPlaying,
+      notifyAutoplayBlocked,
     });
     mockUseFullScreen.mockReturnValue({
       isFullScreen: false,
@@ -227,17 +230,38 @@ describe("AdLayout handlers", () => {
     expect(toggleFullScreen).toHaveBeenCalledTimes(1);
   });
 
-  it("onPlayClick / onMuteClick / onAdPlay / onAdPause wire through to the player setters", () => {
+  it("onPlayClick / onAdPlay / onAdPause wire through to the player setters", () => {
     render();
     const slot = lastGenAdSlot();
     act(() => (slot["onPlayClick"] as () => void)());
     expect(setPlaying).toHaveBeenCalledWith(true);
-    act(() => (slot["onMuteClick"] as (m: boolean) => void)(true));
-    expect(setMuted).toHaveBeenCalledWith(true);
     act(() => (slot["onAdPlay"] as () => void)());
     expect(setPlaying).toHaveBeenCalledWith(true);
     act(() => (slot["onAdPause"] as () => void)());
     expect(setPlaying).toHaveBeenCalledWith(false);
+  });
+
+  // GenAdSlot's onMuteClick is the SDK's SYSTEM-driven volume-change signal
+  // (browser autoplay policy forcing a silent retry) — not a user tap. It must
+  // only ever force silence via notifyAutoplayBlocked, and never call the
+  // bidirectional setMuted toggle: a global setMuted(true) here would desync
+  // the mute icon and stay latched muted for every ad slot mounted afterwards,
+  // since global volume is the shared source of truth read by every future ad
+  // init (regression: mute state stuck across ad boundaries in Safari).
+  it("GenAdSlot onMuteClick(true) (system-forced silence) drops volume via notifyAutoplayBlocked, not setMuted", () => {
+    render();
+    const slot = lastGenAdSlot();
+    act(() => (slot["onMuteClick"] as (m: boolean) => void)(true));
+    expect(notifyAutoplayBlocked).toHaveBeenCalledTimes(1);
+    expect(setMuted).not.toHaveBeenCalled();
+  });
+
+  it("GenAdSlot onMuteClick(false) (system report) is a no-op — never treated as user unmute intent", () => {
+    render();
+    const slot = lastGenAdSlot();
+    act(() => (slot["onMuteClick"] as (m: boolean) => void)(false));
+    expect(notifyAutoplayBlocked).not.toHaveBeenCalled();
+    expect(setMuted).not.toHaveBeenCalled();
   });
 
   it("ad mute button emits Muted/Unmuted (by_user) and updates player mute state", () => {

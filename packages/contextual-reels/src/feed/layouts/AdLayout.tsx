@@ -42,7 +42,7 @@ export interface AdLayoutProps {
  */
 export function AdLayout({ ad, isActive, onAutoAdvance }: AdLayoutProps): React.JSX.Element {
   const instanceId = useInstanceId();
-  const { isMuted, isPlaying, setMuted, setPlaying } = usePlayer();
+  const { isMuted, isPlaying, setMuted, setPlaying, notifyAutoplayBlocked } = usePlayer();
   const { onAdSuccess, onAdFail, adLayout } = useAdWaterfall();
   const { isFullScreen, isFullScreenSupported, toggleFullScreen } = useFullScreen();
   const bus = useEventBus();
@@ -84,6 +84,19 @@ export function AdLayout({ ad, isActive, onAutoAdvance }: AdLayoutProps): React.
   function handleWaterfallFail(): void {
     advance();
     onAdFail(String(ad.id));
+  }
+
+  // GenAdSlot's onMuteClick is the SDK's SYSTEM-driven volume-change signal
+  // (browser autoplay policy forcing a silent retry) — never a user tap; the
+  // host's own controls own user-initiated toggles via handleMuteToggle. A
+  // system-forced mute must only drop volume to silence, never round-trip
+  // through the bidirectional setMuted — that would desync the mute icon and,
+  // because volume is the shared source of truth every subsequent ad slot
+  // inits from, latch every later ad muted until the user manually unmutes.
+  // A system report of `false` is not real unmute intent either, so it's a
+  // no-op.
+  function handleSystemMuteChange(muted: boolean): void {
+    if (muted) notifyAutoplayBlocked();
   }
 
   function handleFullScreenClick(): void {
@@ -136,7 +149,7 @@ export function AdLayout({ ad, isActive, onAutoAdvance }: AdLayoutProps): React.
         {...genAdSlotAdProps(ad)}
         isFullScreen={isFullScreen}
         onFullScreenClick={handleFullScreenClick}
-        onMuteClick={setMuted}
+        onMuteClick={handleSystemMuteChange}
         onPlayClick={() => setPlaying(!isPlaying)}
         onAdPlay={() => setPlaying(true)}
         onAdPause={() => setPlaying(false)}

@@ -73,7 +73,7 @@ export function VideoLayout({
 }: VideoLayoutProps): React.JSX.Element {
   const { tagDetails } = useTagDetails();
   const { adLayout, recordAdBreakResult } = useAdWaterfall();
-  const { isMuted, volume, isPlaying, setMuted, setPlaying, setAdBreakActive } = usePlayer();
+  const { isMuted, volume, isPlaying, setMuted, setPlaying, setAdBreakActive, notifyAutoplayBlocked } = usePlayer();
   const { splitActive, playerShare, octoAxis } = useOctoSplit(isActive);
   const { isFullScreen, isFullScreenSupported, toggleFullScreen } = useFullScreen();
   const { genAiEnabled } = useGenAI();
@@ -86,6 +86,19 @@ export function VideoLayout({
   // Latest playback position for the Video Play / Video Paused `start_position`
   // payload field (mirrors the Web SDK's play/pause tracking).
   const currentTimeRef = useRef(0);
+
+  // GenAdSlot's onMuteClick is the SDK's SYSTEM-driven volume-change signal
+  // (browser autoplay policy forcing a silent retry) — never a user tap; user
+  // toggles are owned by handleMuteButtonClick / the ad control layer below.
+  // A system-forced mute must only drop volume to silence, never round-trip
+  // through the bidirectional setMuted — that would desync the mute icon and,
+  // because volume is the shared source of truth every subsequent ad slot
+  // inits from, latch every later ad muted until the user manually unmutes.
+  // A system report of `false` is not real unmute intent either, so it's a
+  // no-op.
+  function handleSystemMuteChange(muted: boolean): void {
+    if (muted) notifyAutoplayBlocked();
+  }
 
   // Dedicated mute BUTTON tap — toggles mute only, never touches playback.
   const handleMuteButtonClick = useCallback(
@@ -234,7 +247,7 @@ export function VideoLayout({
             item={{}}
             {...genAdSlotAdProps(adObject)}
             isFullScreen={isFullScreen}
-            onMuteClick={setMuted}
+            onMuteClick={handleSystemMuteChange}
             onPlayClick={() => setPlaying(!isPlaying)}
             destroySignal={0}
             onWaterfallSuccess={(provider) => {
@@ -284,17 +297,20 @@ export function VideoLayout({
         {/* Audio-only player: the 50px bar has no room for a frame, so the
             player is clipped to a 1px offscreen box — the video track still
             decodes and plays audio. Mounted only once the user has unmuted
-            (l3AudioEngaged) so a silent unit never fetches/decodes video. */}
-        {l3AudioEngaged && (
+            (l3AudioEngaged) so a silent unit never fetches/decodes video.
+            Fully unmounted (not merely paused) while a fullscreen ad break is
+            on screen — pause() alone can race with buffered HLS audio or a
+            pending autoplay retry, so unmounting is the only path that
+            guarantees the reel is inaudible under the ad (mirrors the
+            underlying player's own teardown, which hard-stops for the same
+            reason). Re-mounting once the break ends reads fresh volume/isPlay
+            from the live player state, so it comes back in sync. */}
+        {l3AudioEngaged && !adBreak.suppressVideo && (
           <div
             aria-hidden="true"
             className="gencl:absolute gencl:h-px gencl:w-px gencl:overflow-hidden gencl:opacity-0 gencl:pointer-events-none"
             style={{ left: -9999, top: 0 }}>
-            <LightPlayer
-              {...basePlayerProps}
-              isPlay={isActive && isPlaying && !adBreak.suppressVideo}
-              hideScrubber={true}
-            />
+            <LightPlayer {...basePlayerProps} isPlay={isActive && isPlaying} hideScrubber={true} />
           </div>
         )}
         <VideoControlLayer animatedBorder={true} {...controlLayerProps} />
@@ -311,7 +327,9 @@ export function VideoLayout({
         <CompactUnmuteOverlay isMuted={isMuted} onMuteClick={handleLayerUnmute} />
         <div className="gencl:flex gencl:w-full gencl:flex-1 gencl:overflow-hidden">
           <div className="gencl:h-[100px] gencl:shrink-0 gencl:overflow-hidden gencl:aspect-9/16">
-            <LightPlayer {...basePlayerProps} isPlay={isActive && isPlaying && !adBreak.suppressVideo} />
+            {/* Fully unmounted (not merely paused) during a fullscreen ad break —
+                see the L3 comment above for why pause() alone isn't enough. */}
+            {!adBreak.suppressVideo && <LightPlayer {...basePlayerProps} isPlay={isActive && isPlaying} />}
           </div>
           <div
             className="gencl:flex-1 gencl:min-w-0 gencl:flex gencl:flex-col gencl:overflow-hidden"
@@ -330,7 +348,7 @@ export function VideoLayout({
 
     // Left edge of Octo overlay: flush right of the 9/16 player column at 250px tall.
     const octoOverlayLeft = (dimensions.height || 250) * (9 / 16);
-    const isPlayerPlaying = isActive && isPlaying && !splitActive && !adBreak.suppressVideo;
+    const isPlayerPlaying = isActive && isPlaying && !splitActive;
 
     // GenAI: player pinned left of the Octo column. Otherwise centred horizontally.
     const playerClassName =
@@ -341,14 +359,18 @@ export function VideoLayout({
     return (
       <div ref={containerRef} data-testid="video-layout" className={containerClassName}>
         <div data-testid="video-layout-player" className={playerClassName}>
-          <LightPlayer
-            {...basePlayerProps}
-            ad={reel.cta?.link}
-            isPlay={isPlayerPlaying}
-            hideScrubber={true}
-            onTimeUpdate={handleTimeUpdate}
-            videoMode="contain"
-          />
+          {/* Fully unmounted (not merely paused) during a fullscreen ad break —
+              see the L3 comment for why pause() alone isn't enough. */}
+          {!adBreak.suppressVideo && (
+            <LightPlayer
+              {...basePlayerProps}
+              ad={reel.cta?.link}
+              isPlay={isPlayerPlaying}
+              hideScrubber={true}
+              onTimeUpdate={handleTimeUpdate}
+              videoMode="contain"
+            />
+          )}
         </div>
         {genAiEnabled && reel.video?.id && (
           <div
@@ -378,7 +400,7 @@ export function VideoLayout({
   // Both sizes fill their container (h-full/w-full) with a `contain`-fitted 9/16
   // player, so one render path serves both — L5 needs no branch of its own.
   function renderL1(): React.JSX.Element {
-    const isPlayerPlaying = isActive && isPlaying && !splitActive && !adBreak.suppressVideo;
+    const isPlayerPlaying = isActive && isPlaying && !splitActive;
 
     const isHorizontalSplit = splitActive && octoAxis === "x";
     const splitPlayerWidth = isHorizontalSplit ? (dimensions.height || 250) * (9 / 16) : 0;
@@ -401,14 +423,18 @@ export function VideoLayout({
         data-testid="video-layout"
         className="gencl:relative gencl:flex gencl:justify-center gencl:items-center gencl:h-full gencl:w-full gencl:bg-black">
         <div data-testid="video-layout-player" className={playerClassName} style={playerStyle}>
-          <LightPlayer
-            {...basePlayerProps}
-            ad={reel.cta?.link}
-            isPlay={isPlayerPlaying}
-            hideScrubber={splitActive}
-            onTimeUpdate={handleTimeUpdate}
-            videoMode="contain"
-          />
+          {/* Fully unmounted (not merely paused) during a fullscreen ad break —
+              see the L3 comment for why pause() alone isn't enough. */}
+          {!adBreak.suppressVideo && (
+            <LightPlayer
+              {...basePlayerProps}
+              ad={reel.cta?.link}
+              isPlay={isPlayerPlaying}
+              hideScrubber={splitActive}
+              onTimeUpdate={handleTimeUpdate}
+              videoMode="contain"
+            />
+          )}
         </div>
         <div
           className={isHorizontalSplit ? "gencl:absolute gencl:inset-0 gencl:z-70" : undefined}

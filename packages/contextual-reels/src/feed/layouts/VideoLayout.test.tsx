@@ -171,6 +171,7 @@ describe("VideoLayout layout branches", () => {
   let setMuted: ReturnType<typeof vi.fn>;
   let setPlaying: ReturnType<typeof vi.fn>;
   let setAdBreakActive: ReturnType<typeof vi.fn>;
+  let notifyAutoplayBlocked: ReturnType<typeof vi.fn>;
   let toggleFullScreen: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
@@ -182,6 +183,7 @@ describe("VideoLayout layout branches", () => {
     setMuted = vi.fn();
     setPlaying = vi.fn();
     setAdBreakActive = vi.fn();
+    notifyAutoplayBlocked = vi.fn();
     toggleFullScreen = vi.fn();
     mockUsePlayer.mockReturnValue({
       isMuted: true,
@@ -190,6 +192,7 @@ describe("VideoLayout layout branches", () => {
       setMuted,
       setPlaying,
       setAdBreakActive,
+      notifyAutoplayBlocked,
     });
     mockUseFullScreen.mockReturnValue({ isFullScreen: false, toggleFullScreen });
     mockUseAdWaterfall.mockReturnValue({ adLayout: AD_LAYOUT.L1 });
@@ -287,7 +290,11 @@ describe("VideoLayout layout branches", () => {
     expect(container.querySelector('[data-testid="light-player"]')).toBeNull();
   });
 
-  it("L3 video-with-ad: lazy audio player pauses while the ad break suppresses video", () => {
+  it("L3 video-with-ad: audio player fully unmounts while the ad break suppresses video", () => {
+    // Pausing alone left buffered-audio races (the underlying player's cleanup
+    // comment documents pause() as insufficient for guaranteed silence) — the ad
+    // break must unmount LightPlayer entirely, not just flip isPlay=false, so the
+    // reel's audio can never bleed under the ad.
     mockUseAdWaterfall.mockReturnValue({ adLayout: AD_LAYOUT.L3 });
     mockUsePlayer.mockReturnValue({
       isMuted: false, // engaged → audio player mounts
@@ -300,9 +307,7 @@ describe("VideoLayout layout branches", () => {
     // Ad break on screen → suppressVideo true; reel audio must not play under the ad.
     mockUseFullscreenAdBreak.mockReturnValue({ ...adBreakIdle, suppressVideo: true });
     render({ reel: { ...baseReel, kind: "video-with-ad", adObject }, adObject });
-    expect(container.querySelector('[data-testid="light-player"]')).toBeTruthy();
-    const props = mockLightPlayer.mock.calls.at(-1)?.[0] as { isPlay?: boolean };
-    expect(props.isPlay).toBe(false);
+    expect(container.querySelector('[data-testid="light-player"]')).toBeNull();
   });
 
   // ─── L4 (320×100 thumbnail player + compact unmute) ─────────────────────────
@@ -588,8 +593,6 @@ describe("VideoLayout layout branches", () => {
     // Ad-break slot + ad control layer play/mute arrows toggle the player setters.
     act(() => (slot["onPlayClick"] as () => void)());
     expect(setPlaying).toHaveBeenCalledWith(false); // isPlaying starts true → toggled false
-    act(() => (slot["onMuteClick"] as (m: boolean) => void)(false));
-    expect(setMuted).toHaveBeenCalledWith(false);
     const adControl = capturedAdControlProps.at(-1) as Record<string, unknown>;
     act(() => (adControl["onPlayClick"] as () => void)());
     act(() => (adControl["onMuteClick"] as (m: boolean) => void)(true));
@@ -597,7 +600,41 @@ describe("VideoLayout layout branches", () => {
     expect(toggleFullScreen).toHaveBeenCalled();
   });
 
-  it("suppresses video playback while the ad break is on screen", () => {
+  // GenAdSlot's onMuteClick during an ad break is the SDK's SYSTEM-driven
+  // volume-change signal, not a user tap — must only force silence via
+  // notifyAutoplayBlocked, never the bidirectional setMuted toggle (which
+  // would desync the mute icon and latch every later ad slot muted).
+  it("ad-break GenAdSlot onMuteClick(true) drops volume via notifyAutoplayBlocked, not setMuted", () => {
+    mockUseFullscreenAdBreak.mockReturnValue({
+      ...adBreakIdle,
+      isOverlayMounted: true,
+      isAdVisible: true,
+      shouldMountAd: true,
+    });
+    render({ adObject });
+    const slot = capturedGenAdSlotProps.at(-1) as Record<string, unknown>;
+    act(() => (slot["onMuteClick"] as (m: boolean) => void)(true));
+    expect(notifyAutoplayBlocked).toHaveBeenCalledTimes(1);
+    expect(setMuted).not.toHaveBeenCalled();
+  });
+
+  it("ad-break GenAdSlot onMuteClick(false) (system report) is a no-op", () => {
+    mockUseFullscreenAdBreak.mockReturnValue({
+      ...adBreakIdle,
+      isOverlayMounted: true,
+      isAdVisible: true,
+      shouldMountAd: true,
+    });
+    render({ adObject });
+    const slot = capturedGenAdSlotProps.at(-1) as Record<string, unknown>;
+    act(() => (slot["onMuteClick"] as (m: boolean) => void)(false));
+    expect(notifyAutoplayBlocked).not.toHaveBeenCalled();
+    expect(setMuted).not.toHaveBeenCalled();
+  });
+
+  it("fully unmounts the video (not just pauses) while the ad break is on screen", () => {
+    // Pause alone races with buffered HLS audio / a pending tryPlay retry — only
+    // unmounting guarantees the reel can never be heard under the ad.
     mockUseFullscreenAdBreak.mockReturnValue({
       ...adBreakIdle,
       isOverlayMounted: true,
@@ -606,9 +643,32 @@ describe("VideoLayout layout branches", () => {
       suppressVideo: true,
     });
     render({ adObject });
-    // First LightPlayer call is the underlying video — isPlay must be false.
-    const videoProps = mockLightPlayer.mock.calls[0]?.[0] as { isPlay?: boolean };
-    expect(videoProps?.isPlay).toBe(false);
+    expect(container.querySelector('[data-testid="light-player"]')).toBeNull();
+  });
+
+  it("remounts the video with the current mute state once the ad break ends", () => {
+    // The video is destroyed (not just paused) while the ad plays; when the
+    // break ends it must come back in sync with whatever the global mute state
+    // became during the ad — not stale props from before the break started.
+    mockUseFullscreenAdBreak.mockReturnValue({ ...adBreakIdle, suppressVideo: true });
+    render({ adObject });
+    expect(container.querySelector('[data-testid="light-player"]')).toBeNull();
+
+    mockUsePlayer.mockReturnValue({
+      isMuted: false,
+      volume: 0.6,
+      isPlaying: true,
+      setMuted,
+      setPlaying,
+      setAdBreakActive,
+      notifyAutoplayBlocked,
+    });
+    mockUseFullscreenAdBreak.mockReturnValue({ ...adBreakIdle, suppressVideo: false });
+    render({ adObject });
+    expect(container.querySelector('[data-testid="light-player"]')).toBeTruthy();
+    const props = mockLightPlayer.mock.calls.at(-1)?.[0] as { volume?: number; isPlay?: boolean };
+    expect(props.volume).toBe(0.6);
+    expect(props.isPlay).toBe(true);
   });
 
   // ─── Additional branch coverage ──────────────────────────────────────────────

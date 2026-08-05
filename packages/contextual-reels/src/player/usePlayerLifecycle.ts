@@ -157,14 +157,25 @@ export function usePlayerLifecycle({
   });
 
   // --- volume (one-way: provider → element) ---
-  // PlayerProvider is the single source of truth for the audible level. The
-  // element is always unmuted (muted=false); silence is simply volume 0. We only
-  // ever WRITE the provider's volume onto the element — never read it back — so
-  // there is no two-way sync to keep consistent. The mute icon is driven by
-  // `volume === 0` in PlayerProvider.
+  // PlayerProvider is the single source of truth for the audible level; silence
+  // is volume 0 and the mute icon is driven by `volume === 0`. We only ever
+  // WRITE the provider's volume onto the element — never read it back.
+  //
+  // Also mirror it onto `.muted`. On most platforms `.volume = 0` alone is
+  // already silent, but iOS Safari ignores programmatic `.volume` writes
+  // entirely (the element always reports `1` regardless of what's assigned —
+  // volume is under physical/hardware control there). Without `.muted` too, a
+  // muted slide plays fully audible on iOS the moment autoplay is unmuted-
+  // allowed (e.g. once an earlier slide's user gesture unlocked the page) —
+  // the icon shows muted (it reads the provider's volume) while the element is
+  // actually heard. `.muted` is authoritative everywhere, so setting it
+  // alongside volume fixes iOS and is a no-op change in behaviour elsewhere.
   useEffect(() => {
     volumeRef.current = volume;
-    if (videoEl.current) videoEl.current.volume = volume;
+    if (videoEl.current) {
+      videoEl.current.volume = volume;
+      videoEl.current.muted = volume === 0;
+    }
   }, [volume, videoEl]);
 
   // --- isPlay changes after ready ---
@@ -188,19 +199,23 @@ export function usePlayerLifecycle({
     const video = videoEl.current;
 
     if (isPlay) {
+      // Reflect the CURRENT mute intent (volume===0), not a hardcoded unmuted
+      // attempt — the volume effect above already keeps `.muted` in sync for
+      // the steady state, but `tryPlay` also force-applies `.muted` up front
+      // (see hlsPlayer.ts), which matters on iOS: `.volume` writes are ignored
+      // there, so an unconditional unmuted play() would be genuinely audible
+      // even while the provider (and the mute icon) says muted.
       if (currentPlayerRef.current) {
-        // Attempt unmuted play (desiredMuted=false). The element stays unmuted and
-        // silence comes from volume 0 — see the volume effect above. If the browser
-        // blocks unmuted autoplay, tryPlay notifies onAutoplayBlocked (→ provider
-        // drops volume to 0) and falls back to a muted retry.
-        tryPlay(currentPlayerRef.current, video, false, () => onAutoplayBlockedRef.current?.()).catch((e) => {
+        const desiredMuted = volumeRef.current === 0;
+        tryPlay(currentPlayerRef.current, video, desiredMuted, () => onAutoplayBlockedRef.current?.()).catch((e) => {
           logger.warn("tryPlay failed", e);
         });
       }
       if (video.readyState < 2) {
         const onCanPlay = () => {
           if (currentPlayerRef.current) {
-            tryPlay(currentPlayerRef.current, video, false, () => onAutoplayBlockedRef.current?.()).catch(
+            const desiredMuted = volumeRef.current === 0;
+            tryPlay(currentPlayerRef.current, video, desiredMuted, () => onAutoplayBlockedRef.current?.()).catch(
               () => undefined
             );
           }
@@ -371,8 +386,11 @@ export function usePlayerLifecycle({
         hlsInstanceRef.current.startLoad(-1);
         hlsLoadStartedRef.current = true;
       }
-      // Attempt unmuted play; silence is governed by volume 0, not by muted.
-      tryPlay(player, video, false, () => onAutoplayBlockedRef.current?.()).catch((e) => {
+      // Reflect the current mute intent — see the isPlay effect's comment for
+      // why this can't be hardcoded to an unmuted attempt (iOS ignores
+      // `.volume` writes, so an unconditional unmuted play() is genuinely
+      // audible there even while the provider says muted).
+      tryPlay(player, video, volumeRef.current === 0, () => onAutoplayBlockedRef.current?.()).catch((e) => {
         logger.warn("startPlayback failed", e);
       });
     };
@@ -461,10 +479,7 @@ export function usePlayerLifecycle({
           onReadyProp?.(player);
 
           // Wire analytics hooks; keep their detachers for cleanup.
-          detachPlayerEventsRef.current = [
-            quartile.attachToPlayer(player),
-            playStarted.attachToPlayer(player),
-          ];
+          detachPlayerEventsRef.current = [quartile.attachToPlayer(player), playStarted.attachToPlayer(player)];
           if (ad) {
             imaPlugin.attachToPlayer(player);
           }
