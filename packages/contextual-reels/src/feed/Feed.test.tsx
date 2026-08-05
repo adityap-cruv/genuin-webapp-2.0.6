@@ -70,7 +70,7 @@ vi.mock("./ReelItem", () => ({
   },
 }));
 
-const mockTagDetails: TagResponse = { tag_id: "tag-1" };
+const mockTagDetails: TagResponse = { tag_id: "tag-1", brand_color: "#ff0000" };
 vi.mock("../providers/TagDetailsProvider", () => ({
   useTagDetails: () => ({ tagDetails: mockTagDetails, apiFailed: false }),
 }));
@@ -99,11 +99,7 @@ vi.mock("./useFeedNavigation", () => ({
 }));
 
 vi.mock("@cxr/controls/FullscreenActionRailHost", () => ({
-  FullscreenActionRailHost: (props: {
-    isFullScreen: boolean;
-    isAdActive: boolean;
-    item?: { id: number };
-  }) => {
+  FullscreenActionRailHost: (props: { isFullScreen: boolean; isAdActive: boolean; item?: { id: number } }) => {
     if (!props.isFullScreen || props.isAdActive) return null;
     return React.createElement("div", {
       "data-testid": "fullscreen-action-rail-anchor",
@@ -133,7 +129,6 @@ vi.mock("../providers/AdProvider", () => ({
   useOptionalAdWaterfall: () => mockUseAdWaterfall(),
 }));
 
-
 const makeReelEntry = (id: number): FeedEntry => ({
   kind: "video",
   data: {
@@ -153,6 +148,10 @@ const makeReelEntry = (id: number): FeedEntry => ({
     video: null,
   },
 });
+
+/** Minimal ad-kind entry — only `kind`/`id` matter for placeholder-wiring assertions. */
+const makeAdEntry = (id: number): FeedEntry =>
+  ({ kind: "ad", data: { kind: "ad", id, active: false } }) as unknown as FeedEntry;
 
 const mockEntries: FeedEntry[] = [makeReelEntry(0), makeReelEntry(1)];
 
@@ -282,7 +281,13 @@ describe("Feed", () => {
 
   it("mounts only the active entry and renders placeholders for the rest", () => {
     const entries = Array.from({ length: 5 }, (_, i) => makeReelEntry(i));
-    mockUseFeed.mockReturnValue({ entries, activeIndex: 0, setActiveIndex: vi.fn(), isAdActive: false, activeReel: undefined });
+    mockUseFeed.mockReturnValue({
+      entries,
+      activeIndex: 0,
+      setActiveIndex: vi.fn(),
+      isAdActive: false,
+      activeReel: undefined,
+    });
     act(() => {
       root.render(React.createElement(Feed, { entries }));
     });
@@ -291,9 +296,42 @@ describe("Feed", () => {
     expect(container.querySelectorAll('[data-testid="reel-slide-placeholder"]').length).toBe(4);
   });
 
+  it("passes isAd to placeholders so ad slides get the neutral background, video slides keep brand_color", () => {
+    // A video slide (idx 1) and an ad slide (idx 2), both outside the mount
+    // window (activeIndex 0, only idx 0 visible), so both render a real
+    // ReelSlidePlaceholder. The ad slide must take the neutral shimmer base
+    // (#1a1a1a → rgb(26,26,26)); the video slide keeps the tag brand_color
+    // (#ff0000 → rgb(255,0,0)). This locks in the Feed → isAd → placeholder wiring.
+    const entries: FeedEntry[] = [makeReelEntry(0), makeReelEntry(1), makeAdEntry(2)];
+    mockUseFeed.mockReturnValue({
+      entries,
+      activeIndex: 0,
+      setActiveIndex: vi.fn(),
+      isAdActive: false,
+      activeReel: undefined,
+    });
+    act(() => {
+      root.render(React.createElement(Feed, { entries }));
+    });
+    const list = container.querySelector('[data-testid="reel-list"]');
+    const wrappers = list ? Array.from(list.children) : [];
+    const videoPlaceholder = wrappers[1]?.querySelector('[data-testid="reel-slide-placeholder"]');
+    const adPlaceholder = wrappers[2]?.querySelector('[data-testid="reel-slide-placeholder"]');
+
+    expect(videoPlaceholder?.getAttribute("style")).toContain("rgb(255, 0, 0)");
+    expect(adPlaceholder?.getAttribute("style")).toContain("rgb(26, 26, 26)");
+    expect(adPlaceholder?.getAttribute("style")).not.toContain("rgb(255, 0, 0)");
+  });
+
   it("keeps every slide wrapper mounted so Embla retains real scroll height", () => {
     const entries = Array.from({ length: 5 }, (_, i) => makeReelEntry(i));
-    mockUseFeed.mockReturnValue({ entries, activeIndex: 0, setActiveIndex: vi.fn(), isAdActive: false, activeReel: undefined });
+    mockUseFeed.mockReturnValue({
+      entries,
+      activeIndex: 0,
+      setActiveIndex: vi.fn(),
+      isAdActive: false,
+      activeReel: undefined,
+    });
     act(() => {
       root.render(React.createElement(Feed, { entries }));
     });
@@ -304,7 +342,13 @@ describe("Feed", () => {
   it("mounts both the outgoing and incoming slide while a swipe is in view", () => {
     mockVisibleIndices = new Set([0, 1]);
     const entries = Array.from({ length: 5 }, (_, i) => makeReelEntry(i));
-    mockUseFeed.mockReturnValue({ entries, activeIndex: 0, setActiveIndex: vi.fn(), isAdActive: false, activeReel: undefined });
+    mockUseFeed.mockReturnValue({
+      entries,
+      activeIndex: 0,
+      setActiveIndex: vi.fn(),
+      isAdActive: false,
+      activeReel: undefined,
+    });
     act(() => {
       root.render(React.createElement(Feed, { entries }));
     });
@@ -315,14 +359,26 @@ describe("Feed", () => {
 
   it("shifts the mounted window when the active index changes", () => {
     const entries = Array.from({ length: 5 }, (_, i) => makeReelEntry(i));
-    mockUseFeed.mockReturnValue({ entries, activeIndex: 0, setActiveIndex: vi.fn(), isAdActive: false, activeReel: undefined });
+    mockUseFeed.mockReturnValue({
+      entries,
+      activeIndex: 0,
+      setActiveIndex: vi.fn(),
+      isAdActive: false,
+      activeReel: undefined,
+    });
     act(() => {
       root.render(React.createElement(Feed, { entries }));
     });
     expect(container.querySelector('[data-testid="reel-item-0"]')).toBeTruthy();
 
     mockVisibleIndices = new Set([2]);
-    mockUseFeed.mockReturnValue({ entries, activeIndex: 2, setActiveIndex: vi.fn(), isAdActive: false, activeReel: undefined });
+    mockUseFeed.mockReturnValue({
+      entries,
+      activeIndex: 2,
+      setActiveIndex: vi.fn(),
+      isAdActive: false,
+      activeReel: undefined,
+    });
     act(() => {
       root.render(React.createElement(Feed, { entries }));
     });
@@ -333,7 +389,13 @@ describe("Feed", () => {
   it("marks only the active mounted entry with data-active=true", () => {
     mockVisibleIndices = new Set([0, 1]);
     const entries = [makeReelEntry(0), makeReelEntry(1), makeReelEntry(2)];
-    mockUseFeed.mockReturnValue({ entries, activeIndex: 0, setActiveIndex: vi.fn(), isAdActive: false, activeReel: undefined });
+    mockUseFeed.mockReturnValue({
+      entries,
+      activeIndex: 0,
+      setActiveIndex: vi.fn(),
+      isAdActive: false,
+      activeReel: undefined,
+    });
     act(() => {
       root.render(React.createElement(Feed, { entries }));
     });
@@ -367,7 +429,13 @@ describe("Feed", () => {
 
   it("passes setActiveIndex as onSlideEnter and no-op defaults for the rest to useEmblaFeed", () => {
     const setActiveIndex = vi.fn();
-    mockUseFeed.mockReturnValue({ entries: mockEntries, activeIndex: 0, setActiveIndex, isAdActive: false, activeReel: undefined });
+    mockUseFeed.mockReturnValue({
+      entries: mockEntries,
+      activeIndex: 0,
+      setActiveIndex,
+      isAdActive: false,
+      activeReel: undefined,
+    });
     act(() => {
       root.render(React.createElement(Feed, { entries: mockEntries }));
     });

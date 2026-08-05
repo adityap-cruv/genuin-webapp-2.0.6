@@ -108,12 +108,13 @@ export function Feed({ entries, variant }: FeedProps): React.JSX.Element | null 
           <div data-testid="reel-list" className="gencl:flex gencl:flex-col gencl:h-full">
             {entries.map((entry, idx) => {
               const isMounted = mountedIndices.has(idx);
+              const isAd = entry.kind === "ad";
               return (
                 // Wrapper always renders, even as a placeholder — Embla's loop
                 // math needs every slide's real height.
                 <div key={entry.data.id} className="gencl:relative gencl:min-h-0" style={{ flex: "0 0 100%" }}>
                   {isMounted ? (
-                    <SafeSuspense fallback={<ReelSlidePlaceholder tagDetails={tagDetails} />}>
+                    <SafeSuspense fallback={<ReelSlidePlaceholder tagDetails={tagDetails} isAd={isAd} />}>
                       <ReelItem
                         entry={entry}
                         isActive={idx === activeIndex}
@@ -123,7 +124,7 @@ export function Feed({ entries, variant }: FeedProps): React.JSX.Element | null 
                       />
                     </SafeSuspense>
                   ) : (
-                    <ReelSlidePlaceholder tagDetails={tagDetails} />
+                    <ReelSlidePlaceholder tagDetails={tagDetails} isAd={isAd} />
                   )}
                 </div>
               );
