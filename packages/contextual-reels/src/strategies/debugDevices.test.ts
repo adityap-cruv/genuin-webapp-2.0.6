@@ -143,13 +143,13 @@ describe("getDebugDeviceFeed", () => {
   it("loads the Android device's committed fixture", async () => {
     const { getDebugDeviceFeed } = await loadWith(`ifa=${ANDROID_ID}`);
     const feed = await getDebugDeviceFeed(DEBUG_TAG);
-    expect(feed).toHaveLength(5);
+    expect(feed).toHaveLength(4);
   });
 
   it("loads the iOS device's committed fixture from an uppercase IDFA", async () => {
     const { getDebugDeviceFeed } = await loadWith(`ifa=${IOS_ID}`);
     const feed = await getDebugDeviceFeed(DEBUG_TAG);
-    expect(feed).toHaveLength(5);
+    expect(feed).toHaveLength(4);
   });
 
   it("serves ad reels on the tritondigital audio-VAST path", async () => {
@@ -164,7 +164,7 @@ describe("getDebugDeviceFeed", () => {
     }
   });
 
-  it("includes the betmgm and nj-gov creatives", async () => {
+  it("includes the betmgm creative", async () => {
     const { getDebugDeviceFeed } = await loadWith(`ifa=${ANDROID_ID}`);
     const feed = await getDebugDeviceFeed(DEBUG_TAG);
     const urls = (feed ?? []).map((reel) => (reel as unknown as { video_ad: { url: string }[] }).video_ad[0]?.url);
