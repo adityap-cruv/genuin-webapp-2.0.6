@@ -23,6 +23,7 @@ import { addIheartCtaCampaign } from "@genuin/components/lib/utils/iheart-url";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { PlayerProvider, usePlayerContext } from "@genuin/components/molecules/feed-player/context";
 import { EmbedMuteButton } from "@genuin/components/molecules/feed-player/control-layer/controls/embed";
+import { isSponsoredVideo } from "@genuin/components/molecules/feed-player/control-layer/controls/sponsored-tag";
 import { DynamicReactionIcon } from "@genuin/components/molecules/reaction-button";
 import { Stats } from "@genuin/components/molecules/stats";
 import type { LinkoutsProps } from "@genuin/components/organisms/linkouts/linkouts";
@@ -386,7 +387,20 @@ function EmbedPlayer({ postDetails, isActive = false, index, itemSize }: EmbedPl
     setHideControlsForAd(false);
   }, []);
 
-  const isSponsored = postDetails.video?.cardLayoutId === 7; // Sponsored content is determined by cardLayoutId 7
+  const isSponsored = isSponsoredVideo(postDetails.video);
+
+  // V2 iheart always puts the pill in its own header row — the row itself decides
+  // top-left vs top-right by which siblings exist (see iheart-embed.tsx), so this
+  // corner pill only needs to stand down whenever that header will render at all.
+  //
+  // `canShowEngagement` matters: embed.tsx swaps the iheart layer for
+  // ResponsivenessEmbed on tiles too narrow for engagement, and that has no header
+  // to host the pill — without this check such tiles would show no tag at all.
+  // Placement view has no such fallback.
+  const isIheartHeaderRendered =
+    config.isDesignSystemV2 &&
+    config.view.brandLayoutType === "iheart" &&
+    (config.view.isPlacementView || config.responsive.canShowEngagement);
 
   const hidePlayerControls = isEmbed ? itemSize.width < 150 : false;
 
@@ -474,12 +488,15 @@ function EmbedPlayer({ postDetails, isActive = false, index, itemSize }: EmbedPl
             />
           </SafeSuspense>
         )}
-        {isSponsored && !isAdFilled && (
+        {isSponsored && !isAdFilled && !isIheartHeaderRendered && (
           <div
             className={cn(
               "gencl:absolute gencl:top-2 gencl:left-2 gencl:z-50 gencl:flex-center",
               config.isDesignSystemV2
-                ? "gencl:bg-white gencl:rounded-3xl gencl:text-gray-900 gencl:px-2! gencl:py-1!"
+                ? // `text-black`, not `text-gray-900`: the SDK's prebuilt gencl: CSS has
+                  // no gray text utilities, so the label inherited the white overlay
+                  // colour — invisible on the white pill.
+                  "gencl:bg-white gencl:rounded-3xl gencl:text-black gencl:px-2! gencl:py-1!"
                 : "gencl:bg-black/40 gencl:h-8 gencl:px-2 gencl:rounded-[50px] gencl:text-white"
             )}
             style={

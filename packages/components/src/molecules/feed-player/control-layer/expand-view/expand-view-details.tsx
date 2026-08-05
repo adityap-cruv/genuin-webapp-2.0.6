@@ -1,6 +1,7 @@
 "use client";
 import { Avatar } from "@genuin/ui/avatar";
 import { Image } from "@genuin/ui/components/image";
+import { resolveControlSize } from "@genuin/ui/player-controls";
 import { cn, getFormattedDuration, getMonthYear } from "@genuin/ui/utils";
 import type { VariantProps } from "class-variance-authority";
 import { useMemo, memo, useEffect, useState, type ComponentProps, useCallback, useRef, lazy, forwardRef } from "react";
@@ -25,6 +26,7 @@ import type { PostDetailsType } from "@genuin/components/react-query/api/feed/sc
 
 import { usePlayerContext } from "../../context";
 import type { controlLayerVariant } from "../control-layer";
+import { isSponsoredVideo, SponsoredTag } from "../controls/sponsored-tag";
 import { IHeartControls } from "../embed/iheart";
 import { ClipPlayerCTA } from "../embed/iheart/clip-player-cta";
 import { getBaseUrlWithouthighlights } from "../embed/iheart/use-iheart-playback";
@@ -319,29 +321,37 @@ const AdaptiveDescription = memo(function AdaptiveDescription({
   layoutType?: BrandLayoutType;
 }) {
   const { description, createdAt, duration } = video ?? {};
+  const { isDesignSystemV2 } = useEmbedConfigs();
+
+  // In expand view the tag leads the meta row so the 2-line clamp can never
+  // truncate it away.
+  const isSponsored = isDesignSystemV2 && isSponsoredVideo(video);
+  // Expand view fills the viewport, so its pill sizes off viewport width — the same
+  // rule default.tsx uses for the expanded control cluster.
+  const sponsoredTagSize = typeof window !== "undefined" ? resolveControlSize(window.innerWidth) : "lg";
+
+  const metaText = `${getMonthYear(createdAt ?? 0)}${duration ? ` • ${getFormattedDuration(String(duration))}` : ""}`;
 
   const enhancedDescription: ReadMoreTextType = useMemo(() => {
     if (!video) return [];
-    const { description, createdAt, duration } = video;
-    if (type !== "iheart") {
-      return description ? (Array.isArray(description) ? description : [description]) : [];
-    }
+    const descriptionParts = description ? (Array.isArray(description) ? description : [description]) : [];
 
-    const monthYear = getMonthYear(createdAt ?? 0);
-    const durationText = duration ? ` • ${getFormattedDuration(String(duration))}` : "";
+    // Sponsored splits the meta row out into its own block (rendered below) instead
+    // of prepending it into the description paragraph.
+    if (type !== "iheart" || isSponsored) return descriptionParts;
 
     return [
       {
         type: "custom",
-        text: `${monthYear}${durationText}`,
+        text: metaText,
         style: { color: "#ffffff" },
         className:
           "gencl:text-[12px] gencl:font-normal gencl:leading-[20px] gencl:tracking-[-0.35px]! gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]!",
       },
       " ",
-      ...(description ? (Array.isArray(description) ? description : [description]) : []),
+      ...descriptionParts,
     ];
-  }, [type, video]);
+  }, [type, video, isSponsored, description, metaText]);
 
   if (!video) return null;
 
@@ -349,6 +359,14 @@ const AdaptiveDescription = memo(function AdaptiveDescription({
     case "iheart":
       return (
         <div className="gencl:z-10">
+          {isSponsored && (
+            <div className="gencl:flex gencl:items-center gencl:gap-2" style={{ marginBottom: 4 }}>
+              <SponsoredTag size={sponsoredTagSize} />
+              <p className="gencl:text-[12px] gencl:font-normal gencl:leading-[20px] gencl:tracking-[-0.35px]! gencl:text-white! gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]!">
+                {metaText}
+              </p>
+            </div>
+          )}
           <ReadMore
             text={enhancedDescription}
             showExpandText
@@ -364,10 +382,13 @@ const AdaptiveDescription = memo(function AdaptiveDescription({
             showOverlay={true}
             isLineTruncate={false}
             buttonClassName="gencl:text-white! gencl:font-bold gencl:text-[12px] gencl:lg:text-[14px]! gencl:leading-[18px] gencl:tracking-[-0.5px] gencl:align-bottom gencl:hover:no-underline"
-            textClassName="gencl:text-[12px] gencl:font-normal gencl:leading-[20px] gencl:tracking-[-0.35px]! gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]! gencl:text-white! gencl:pt-1!"
+            textClassName={cn(
+              "gencl:text-[12px] gencl:font-normal gencl:leading-[20px] gencl:tracking-[-0.35px]! gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]! gencl:text-white!",
+              !isSponsored && "gencl:pt-1!"
+            )}
             maxLines={2}
             tabIndex={0}
-            aria-label={`${getMonthYear(createdAt ?? 0)}${duration ? ` • ${getFormattedDuration(String(duration))}` : ""} ${Array.isArray(description) ? description.join(" ") : description || ""}, Video description`}
+            aria-label={`${isSponsored ? "Sponsored. " : ""}${metaText} ${Array.isArray(description) ? description.join(" ") : description || ""}, Video description`}
           />
         </div>
       );
@@ -863,7 +884,10 @@ export const ExpandViewDetails = forwardRef<ExpandViewDetailsRef, ExpandViewProp
       )}
       {/* iHeart: Show linkouts below seeker */}
       {/* TODO : iheart phase-2 implementation  */}{" "}
-      {brandLayoutType === "iheart" && (
+      {/* Mirrors ClipPlayerCTA's own bail condition (no slug / no linkouts, e.g. a
+          pure third-party sponsored ad) so this row's h-11 space isn't reserved
+          when the CTA itself would render nothing. */}
+      {brandLayoutType === "iheart" && postDetails.video?.attributes?.slug && postDetails.video.linkouts && (
         <div className="gencl:h-11 gencl:flex gencl:items-center gencl:relative gencl:z-10">
           <ClipPlayerCTA
             websiteType={websiteType}

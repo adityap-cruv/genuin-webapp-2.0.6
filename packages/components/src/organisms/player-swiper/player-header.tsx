@@ -19,6 +19,13 @@ export function PlayerHeader({
   showTitle,
   ...restProps
 }: PlayerHeaderProps) {
+  // `showTitle` only reflects sectioned/non-sectioned mode — it says nothing about
+  // whether this video actually has title text. Videos without one (e.g. a
+  // sponsored ad with no `attributes.title`) still hit `showTitle=true`, rendering
+  // an empty `<p>` that collapses to ~0 height under `line-clamp-1` on WebKit,
+  // pulling the centered back button up near the very top. Gate on real text too.
+  const hasTitle = showTitle && !!title;
+
   return (
     <div
       className="gencl:absolute gencl:top-0 gencl:left-0 gencl:right-0 gencl:z-20 gencl:flex gencl:items-center gencl:p-4 gencl:bg-gradient-to-b gencl:from-black/50 gencl:justify-center gencl:to-transparent"
@@ -34,7 +41,7 @@ export function PlayerHeader({
           }}
           className={cn(
             "gencl:absolute gencl:left-0 gencl:w-11 gencl:h-11",
-            !showTitle && "gencl:size-11! gencl:top-2.5"
+            !hasTitle && "gencl:size-11! gencl:top-2.5"
           )}
           aria-label="Back"
           role="button"
@@ -42,7 +49,7 @@ export function PlayerHeader({
           <ChevronLeftIcon theme="dark" size="lg" aria-hidden="true" />
         </Button>
       )}
-      {showTitle && (
+      {hasTitle && (
         <p
           className="gencl:line-clamp-1 gencl:text-center gencl:font-semibold gencl:text-[18px] gencl:text-white gencl:leading-[24px] gencl:tracking-[-2%] gencl:lg:text-[24px]! gencl:lg:leading-[30px]! gencl:lg:tracking-[-0.5px]! gencl:lg:font-bold! gencl:rounded gencl:px-1"
           // role="heading"

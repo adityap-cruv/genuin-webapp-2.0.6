@@ -79,6 +79,8 @@ const BRAND_FEATURE_IDS = {
       "6a6c7f46ac2eda8576684c10",
       "6a6c80ed3fa2d0ac0161c90a",
       "6a3447cd6b7dd1fe9bc9989a",
+      "6a6628f9a048a511251c4872",
+      "6a662a4da52878ceb469df5c",
     ]),
     embedIds: new Set<string>([]),
   },

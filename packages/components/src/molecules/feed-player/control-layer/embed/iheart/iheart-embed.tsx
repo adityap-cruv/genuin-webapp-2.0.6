@@ -1,6 +1,7 @@
 "use client";
 import { Image } from "@genuin/ui/components/image";
 import { cn, getFormattedDuration, getMonthYear } from "@genuin/ui/lib/utils";
+import { resolveControlSize } from "@genuin/ui/player-controls";
 import React, { useCallback, useEffect, useMemo, useState, useRef } from "react";
 
 import { useBaseContext, useEmbedContext } from "@genuin/components/context";
@@ -15,6 +16,7 @@ import { useEmbedManagerContext } from "@genuin/components/organisms/embed/conte
 
 import { usePlayerContext } from "../../../context";
 import type { ControlLayerPropsType } from "../../control-layer.types";
+import { isSponsoredVideo, SponsoredTag } from "../../controls/sponsored-tag";
 import { OctoExpandSheet } from "../../octo/octo-expand-sheet";
 import { PlacementMetadata } from "../../placement/placement-metadata";
 
@@ -32,6 +34,7 @@ export function IHeartControlLayer({
   onCommentCountChange,
   onMouseEnter,
   onMouseLeave,
+  containerWidth,
   ...restProps
 }: ControlLayerPropsType) {
   const { baseContextManager } = useBaseContext();
@@ -67,6 +70,16 @@ export function IHeartControlLayer({
       <div>{noOfClips}</div>
     </div>
   ) : null;
+
+  // Always joins the header row when sponsored (V2 only) — with artwork/title/
+  // description present it lands top-right (last of 3 children, `justify-between`);
+  // with none of them it's the row's only child, so the same rule puts it
+  // top-left. One flex structure covers both positions; no separate condition.
+  const isSponsored = embedConfigs.isDesignSystemV2 && isSponsoredVideo(postDetails.video);
+  // Size off the TILE width, matching the corner pill in embed-tile.tsx. Using
+  // `responsive.controlSize` here read the whole placement container instead, so a
+  // 1280 px carousel of 337 px tiles rendered an `lg` pill next to `sm` ones.
+  const sponsoredTagSize = containerWidth ? resolveControlSize(containerWidth) : "lg";
 
   const swipeStartYRef = useRef<number>(0);
 
@@ -196,13 +209,13 @@ export function IHeartControlLayer({
       const isStation = !podcastId && !episodeId;
       const isFullEpisode = podcastId && episodeId;
       const url = new URL(
-        'https://iheart.com/' +
-          (isStation ? 'live/' : 'podcast/') +
+        "https://iheart.com/" +
+          (isStation ? "live/" : "podcast/") +
           (isStation ? stationId : slug) +
-          (isFullEpisode ? '/episode/' + episodeId : '')
+          (isFullEpisode ? "/episode/" + episodeId : "")
       );
       const destinationUrl = addIheartCtaCampaign(url);
-      window.open(destinationUrl, '_blank', 'noopener,noreferrer');
+      window.open(destinationUrl, "_blank", "noopener,noreferrer");
     },
     [postDetails.video]
   );
@@ -367,7 +380,9 @@ export function IHeartControlLayer({
         {/* Header Section */}
         {!isActiveOctoSheet && (
           <header className="gencl:absolute gencl:top-0 gencl:w-full gencl:flex gencl:flex-col gencl:justify-between gencl:text-white gencl:p-3">
-            <div className="gencl:flex gencl:justify-between gencl:gap-2">
+            {/* items-start puts artwork, title and pill on one top line — without it
+                the default `stretch` lets a taller neighbour shift the pill down. */}
+            <div className="gencl:flex gencl:items-start gencl:justify-between gencl:gap-2">
               {postDetails.video?.attributes?.image_url && (
                 <Image
                   aspectRatio="square"
@@ -382,29 +397,37 @@ export function IHeartControlLayer({
                   )}
                 />
               )}
-              <div className="gencl:w-full">
-                {postDetails.video?.attributes?.title && (
-                  <p
-                    tabIndex={isVideoWatched ? -1 : 0}
-                    role="button"
-                    onClick={!isVideoWatched ? handleHeaderClick : undefined}
-                    aria-label={`${postDetails.video.attributes?.title}, title`}
-                    className={cn(
-                      "gencl:font-semibold gencl:leading-[18px] gencl:line-clamp-1 gencl:tracking-[-0.2px] gencl:lg:font-semibold! gencl:lg:leading-[24px]! gencl:lg:tracking-[-0.2px]! gencl:cursor-pointer",
-                      websiteType === "polaris" ? "gencl:text-[14px] gencl:lg:text-[17px]!" : "gencl:text-[16px]"
-                    )}>
-                    {postDetails.video.attributes?.title}
-                  </p>
-                )}
-                {postDetails.video?.attributes?.description && (
-                  <p
-                    tabIndex={isVideoWatched ? -1 : 0}
-                    aria-label={`${postDetails.video.attributes?.description}, Video title`}
-                    className="gencl:text-[12px] gencl:font-normal gencl:leading-[16px] gencl:line-clamp-2 gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]!">
-                    {postDetails.video.attributes?.description}
-                  </p>
-                )}
-              </div>
+              {(postDetails.video?.attributes?.title || postDetails.video?.attributes?.description) && (
+                // min-w-0 lets the clamped title/description shrink so the pill keeps
+                // its full width instead of the label wrapping mid-word.
+                <div className="gencl:w-full gencl:min-w-0">
+                  {postDetails.video?.attributes?.title && (
+                    <p
+                      tabIndex={isVideoWatched ? -1 : 0}
+                      role="button"
+                      onClick={!isVideoWatched ? handleHeaderClick : undefined}
+                      aria-label={`${postDetails.video.attributes?.title}, title`}
+                      className={cn(
+                        "gencl:font-semibold gencl:leading-[18px] gencl:line-clamp-1 gencl:tracking-[-0.2px] gencl:lg:font-semibold! gencl:lg:leading-[24px]! gencl:lg:tracking-[-0.2px]! gencl:cursor-pointer",
+                        websiteType === "polaris" ? "gencl:text-[14px] gencl:lg:text-[17px]!" : "gencl:text-[16px]"
+                      )}>
+                      {postDetails.video.attributes?.title}
+                    </p>
+                  )}
+                  {postDetails.video?.attributes?.description && (
+                    <p
+                      tabIndex={isVideoWatched ? -1 : 0}
+                      aria-label={`${postDetails.video.attributes?.description}, Video title`}
+                      className="gencl:text-[12px] gencl:font-normal gencl:leading-[16px] gencl:line-clamp-2 gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]!">
+                      {postDetails.video.attributes?.description}
+                    </p>
+                  )}
+                </div>
+              )}
+              {/* `ml-auto` pins the pill to the row's end regardless of whether artwork/
+                  title/description are present — with them it lands top-right same as
+                  before; alone, it no longer falls back to top-left via `justify-between`. */}
+              {isSponsored && <SponsoredTag size={sponsoredTagSize} className="gencl:self-start gencl:ml-auto" />}
             </div>
           </header>
         )}
