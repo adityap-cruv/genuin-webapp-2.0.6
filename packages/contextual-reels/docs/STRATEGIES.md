@@ -67,18 +67,21 @@ App  →  <StrategyProvider tagId>  →  resolveStrategies(tagId)  →  Strategi
 
 ## Current strategies
 
-| Key                   | Type      | Default    | Meaning                                                                                                                                                                                                                                                                                                     |
-| --------------------- | --------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `genAiEnabled`        | `boolean` | `false`    | GenAI Octo experience available for this tag.                                                                                                                                                                                                                                                               |
-| `adBreakEnabled`      | `boolean` | `false`    | Mock fullscreen ad break fires on organic reel playback (dev/demo fallback when the backend supplies no `ad_configs`).                                                                                                                                                                                      |
-| `gateOnUnmute`        | `boolean` | `false`    | Default for `NormalisedAd.gateOnUnmute` when the backend omits `gate_on_unmute`. Suppresses the ad _request_ while muted.                                                                                                                                                                                   |
-| `singleHitWaterfall`  | `boolean` | `false`    | Fill / no-fill waterfall callbacks are suppressed after the first per page load.                                                                                                                                                                                                                            |
-| `adsDisabled`         | `boolean` | `false`    | Hard kill switch — no ads ever shown. Drops standalone ad slides and strips the organic ad break. Overrides `adBreakEnabled`.                                                                                                                                                                               |
-| `mutePassback`        | `boolean` | `false`    | On first `player:play`, start a timer; if still muted when it fires, trigger an ad passback (`onAdFail`). Distinct from `gateOnUnmute` — this passes the slot back rather than just suppressing the request.                                                                                                |
-| `mutePassbackDelayMs` | `number`  | `5000`     | Delay before the `mutePassback` timer fires, measured from the first `player:play`. Ignored unless `mutePassback` is on.                                                                                                                                                                                    |
-| `initialVolume`       | `number`  | `0`        | Volume (0..1) the feed starts at on first load. `0` plays unmuted-but-silent and shows the unmute prompt; set per-tag (e.g. `0.2`) to start audible. A browser autoplay block snaps it back to 0.                                                                                                           |
-| `servedStatically`    | `boolean` | `false`    | Serve the tag's config + feed from committed per-tag fixtures — skip `/ad_creative` and `/feed`. `/ip_info` is still fetched (geoip stays on analytics). The ad URL is rewritten client-side (real `ua`, `[PAGE_URL]`, real client `ip` from geoip). See [Statically-served tags](#statically-served-tags). |
-| `feedLoopEnabled`     | `boolean` | **`true`** | Whether the feed wraps from the last slide back to the first. See [Finite feeds](#finite-feeds-feedloopenabled).                                                                                                                                                                                            |
+| Key                       | Type      | Default    | Meaning                                                                                                                                                                                                                                                                                                                                                                  |
+| ------------------------- | --------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `genAiEnabled`            | `boolean` | `false`    | GenAI Octo experience available for this tag.                                                                                                                                                                                                                                                                                                                            |
+| `adBreakEnabled`          | `boolean` | `false`    | Mock fullscreen ad break fires on organic reel playback (dev/demo fallback when the backend supplies no `ad_configs`).                                                                                                                                                                                                                                                   |
+| `gateOnUnmute`            | `boolean` | `false`    | Default for `NormalisedAd.gateOnUnmute` when the backend omits `gate_on_unmute`. Suppresses the ad _request_ while muted.                                                                                                                                                                                                                                                |
+| `singleHitWaterfall`      | `boolean` | `false`    | Fill / no-fill waterfall callbacks are suppressed after the first per page load.                                                                                                                                                                                                                                                                                         |
+| `adsDisabled`             | `boolean` | `false`    | Hard kill switch — no ads ever shown. Drops standalone ad slides and strips the organic ad break. Overrides `adBreakEnabled`.                                                                                                                                                                                                                                            |
+| `mutePassback`            | `boolean` | `false`    | On first `player:play`, start a timer; if still muted when it fires, trigger an ad passback (`onAdFail`). Distinct from `gateOnUnmute` — this passes the slot back rather than just suppressing the request.                                                                                                                                                             |
+| `mutePassbackDelayMs`     | `number`  | `5000`     | Delay before the `mutePassback` timer fires, measured from the first `player:play`. Ignored unless `mutePassback` is on.                                                                                                                                                                                                                                                 |
+| `initialVolume`           | `number`  | `0`        | Volume (0..1) the feed starts at on first load. `0` plays unmuted-but-silent and shows the unmute prompt; set per-tag (e.g. `0.2`) to start audible. A browser autoplay block snaps it back to 0.                                                                                                                                                                        |
+| `servedStatically`        | `boolean` | `false`    | Serve the tag's config + feed from committed per-tag fixtures — skip `/ad_creative` and `/feed`. `/ip_info` is still fetched (geoip stays on analytics). The ad URL is rewritten client-side (real `ua`, `[PAGE_URL]`, real client `ip` from geoip). See [Statically-served tags](#statically-served-tags).                                                              |
+| `feedLoopEnabled`         | `boolean` | **`true`** | Whether the feed wraps from the last slide back to the first. See [Finite feeds](#finite-feeds-feedloopenabled).                                                                                                                                                                                                                                                         |
+| `visibilityGate`          | `boolean` | `false`    | Hold feed render until the unit is on screen; passback `unit_hidden` if it stays hidden past `visibilityGateTimeoutMs`; tear down on a later hide (only if `destroyOnHide`). Off = today's unconditional render. **Measurement is decoupled — `unit_visible` is stamped on every tag regardless of this flag** (see [Visibility gate](#visibility-gate-visibilitygate)). |
+| `visibilityGateTimeoutMs` | `number`  | `30_000`   | How long the unit may stay hidden before `visibilityGate` passes it back, measured from the gate's first effect commit. Ignored unless `visibilityGate` is on.                                                                                                                                                                                                           |
+| `destroyOnHide`           | `boolean` | `false`    | Once `visibilityGate` has rendered the unit, a later hide tears it down (no passback) only when `true`. Default off = once visible, the unit stays up. Ignored unless `visibilityGate` is on.                                                                                                                                                                            |
 
 > **`feedLoopEnabled` is the one flag that defaults _on_.** Every other key defaults to
 > off/safe; looping is the pre-existing behaviour for every tag, so the safe default is
@@ -100,6 +103,7 @@ Defined in [`strategyConfig.ts`](../src/strategies/strategyConfig.ts):
 | `singleHit`        | `singleHitWaterfall`             |
 | `servedStatically` | `servedStatically`               |
 | `noLoop`           | `feedLoopEnabled: false`         |
+| `visibilityGate`   | `visibilityGate: true`           |
 
 Attach to a tag with `{ preset: "iheart", ...inlineOverrides }`. Inline keys win.
 
@@ -445,6 +449,83 @@ Resolved in [`strategies.ts`](../src/strategies/strategies.ts), read by
 [`useEmblaCarousel`](../src/feed/hooks/useEmblaCarousel.ts). The hook resolves it **once per
 mount** into a per-instance base-options object, so the `enable`/`disable` swipe-gate
 `reInit` calls (used while an Octo sheet is open) can never silently restore looping.
+
+---
+
+## Visibility gate (`visibilityGate`)
+
+Holds feed render until the `.gen-ext` unit is actually on screen, passes the
+impression back if it never gets there, and (optionally) tears the widget down if
+it leaves the viewport after rendering. Rationale + full state machine:
+[`useFeedVisibilityGate.ts`](../src/app/useFeedVisibilityGate.ts) and the design doc
+[`2026-08-06-cxr-feed-visibility-gate-design.md`](../../../docs/superpowers/specs/2026-08-06-cxr-feed-visibility-gate-design.md).
+
+### Two independent concerns — do not confuse them
+
+The observer runs on **every** tag. The flag only gates what we _do_ with the reading.
+
+1. **Measurement (always on, all traffic).** `useInView` observes the overlay div and
+   `useFeedVisibilityGate` stamps `unit_visible` (boolean) onto every subsequent
+   analytics event via `setLiveEventContext` — a point-in-time snapshot, not the
+   retroactive `setBaseEventContext`. This happens **regardless of `visibilityGate`**,
+   so we collect real on-screen data across all tags _before_ enabling the
+   revenue-touching gate anywhere.
+2. **Gating (behind `visibilityGate`, default off).** Only the render-hold, the
+   `unit_hidden` passback timer, and the `destroyOnHide` teardown are flag-gated. With
+   the flag off, none of them run — render is unconditional, exactly as before.
+
+### `unit_visible_source` — read before trusting any visibility rate
+
+`useInView` **fails open**: a runtime with no `IntersectionObserver`, a disabled
+observer, or an `observe()` that throws all resolve `isVisible` to `true` (revenue must
+never be gated on a missing observer). A silent fail-open `true` is indistinguishable
+from a genuinely-visible unit and would inflate the aggregate rate.
+
+So every `unit_visible` stamp carries `unit_visible_source`
+([`VisibilitySource`](../src/monitoring/useInView.ts)):
+
+| `unit_visible_source` | Meaning                                         | In a visibility rate                  |
+| --------------------- | ----------------------------------------------- | ------------------------------------- |
+| `measured`            | Real `IntersectionObserver` callback fired      | **Count it**                          |
+| `unsupported`         | No IO in runtime, or observer disabled → `true` | **Exclude**                           |
+| `error`               | `observe()` threw (e.g. detached node) → `true` | **Exclude**                           |
+| `pending`             | Attached, first callback not yet delivered      | never stamped (`isVisible` is `null`) |
+
+Compute the rate as
+`count(unit_visible = true AND unit_visible_source = 'measured') / count(unit_visible_source = 'measured')`.
+The `unsupported` / `error` volume itself is a useful signal — it tells you what
+fraction of traffic could not be measured at all.
+
+### `unit_visible_cross_origin` — segment the fragile path
+
+Each measured stamp also carries `unit_visible_cross_origin` (boolean) **once the
+frame context is known** (omitted, not `null`, until then). It comes from the
+observed entry's `rootBounds`: the browser nulls `rootBounds` **only** when the
+observed element sits in a frame cross-origin to the observer's root, so its absence
+is a direct cross-origin-frame signal.
+
+Cross-origin iframes are the dominant embed path _and_ the case where
+`IntersectionObserver`'s cross-frame behaviour is most fragile, so segment the rate by
+this flag: a healthy same-origin rate paired with an implausibly low
+`cross_origin = true` rate points at the measurement, not real hidden units. It does
+**not** change `unit_visible` or `unit_visible_source` — it's a diagnostic dimension.
+
+> **Cross-origin iframes (the dominant embed path) still warrant a real-device
+> check.** Per the `IntersectionObserver` spec the implicit root clips through ancestor
+> frames, so an off-fold iframe _should_ report `false` — but a cross-origin root nulls
+> `rootBounds` and ignores `rootMargin`, so this is exactly where a `measured` reading
+> is least trustworthy. Confirm on a real device — or sanity-check the
+> `cross_origin = true` `measured` rows in the collected data — before enabling
+> `visibilityGate` on any live tag.
+
+### Where it connects
+
+Resolved in [`strategies.ts`](../src/strategies/strategies.ts), observed by
+[`useInView`](../src/monitoring/useInView.ts), driven by
+[`useFeedVisibilityGate`](../src/app/useFeedVisibilityGate.ts) (mounted in
+[`FeedTree.tsx`](../src/app/FeedTree.tsx)'s `NativeFeedShim`), and the passback routes
+through `onUnitFail` on [`AdProvider`](../src/providers/AdProvider.tsx) — which bypasses
+`singleHitWaterfall` (render was held, so no slot ever requested).
 
 ---
 

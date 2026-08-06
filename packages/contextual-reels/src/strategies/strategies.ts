@@ -93,6 +93,35 @@ export interface Strategies {
    * already prevents a looped-back slot from re-requesting.
    */
   feedLoopEnabled: boolean;
+  /**
+   * Viewport visibility gate: hold the feed render until the widget is actually
+   * on screen, pass the impression back if it never gets there, and tear the
+   * widget down if it leaves the viewport after rendering. Defaults to `false`.
+   *
+   * When on, the feed shows the skeleton instead of mounting `Feed` until the
+   * unit intersects the viewport. If it stays hidden for
+   * {@link visibilityGateTimeoutMs}, the whole placement is passed back with
+   * `passback_reason: "unit_hidden"`. After a first visibility, `unit_hidden` can
+   * never fire — a later hide destroys the widget silently instead.
+   *
+   * Distinct from {@link gateOnUnmute} and {@link mutePassback}, which gate on
+   * *audio* engagement: this one gates on whether the unit exists on screen at all.
+   */
+  visibilityGate: boolean;
+  /**
+   * How long the unit may stay hidden before {@link visibilityGate} passes the
+   * placement back, in milliseconds. Measured from the gate's first effect commit
+   * (i.e. once the tag config has resolved and the feed is otherwise ready to
+   * render), not from script load. Ignored unless {@link visibilityGate} is on.
+   */
+  visibilityGateTimeoutMs: number;
+  /**
+   * Once {@link visibilityGate} has rendered the unit at least once, a later hide
+   * tears it down (no passback) only when this is `true`. Defaults to `false` —
+   * once visible, the unit stays up regardless of subsequent visibility. Ignored
+   * unless {@link visibilityGate} is on.
+   */
+  destroyOnHide: boolean;
 }
 
 /**
@@ -115,6 +144,9 @@ export const DEFAULT_STRATEGIES: Strategies = {
   // every tag, so the safe default is on. Only an explicit per-tag `false` opts out.
   feedLoopEnabled: true,
   servedStatically: false,
+  visibilityGate: false,
+  visibilityGateTimeoutMs: 30_000,
+  destroyOnHide: false,
 };
 
 /**

@@ -13,6 +13,18 @@
  *     on ALL subsequent events (buffered and post-flush). This is critical for
  *     ad-loading failures. DO NOT REMOVE OR MODIFY THIS BEHAVIOR without
  *     explicit review of impact on ad revenue tracking.
+ *  7. Two distinct ways for a provider to publish live state onto events —
+ *     don't mix them up:
+ *       - `setBaseEventContext` (basePayloadRef): read INSIDE the deferred
+ *         buffer factory, i.e. at flush time. Retroactive on purpose — it's how
+ *         `passback` backfills onto events that were already buffered before
+ *         the ad waterfall failed (see #6). Right for state a failure should
+ *         rewrite history for.
+ *       - `setLiveEventContext` (liveContextRef): read at `sendEvent()` call
+ *         time, before enqueueing — a point-in-time snapshot. Right for state
+ *         that must reflect what was true when the event fired, not the latest
+ *         value once buffering finally resolves (e.g. `unit_visible` — see
+ *         `useFeedVisibilityGate`).
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, type ReactNode } from "react";
 
@@ -47,6 +59,15 @@ export interface AnalyticsContextValue {
    * don't clobber each other. Ref-backed → stable identity.
    */
   setBaseEventContext: (partial: Record<string, unknown>) => void;
+  /**
+   * Merge fields captured RIGHT NOW into the very next `sendEvent` call only —
+   * unlike {@link setBaseEventContext}, which is read at flush time and is
+   * therefore retroactive, this is snapshotted at enqueue time so a fast-
+   * changing value is stamped with what was true when the event fired, not
+   * whatever it becomes by the time a buffered event actually flushes. See the
+   * module doc comment (point 7) for when to use which.
+   */
+  setLiveEventContext: (partial: Record<string, unknown>) => void;
   /**
    * Set mandatory event data (visit_id, geoip) for RudderStack buffering.
    * Called when APIs return data. Buffer auto-flushes when all required
@@ -116,6 +137,10 @@ export function AnalyticsProvider({ children, tagId, preview = false }: Analytic
   });
   // Track if ad passback occurred for this widget instance
   const passbackRef = useRef(false);
+  // Point-in-time context — snapshotted into each event at sendEvent() call
+  // time (see setLiveEventContext's doc comment). Distinct from basePayloadRef,
+  // which is deliberately read later, at flush time.
+  const liveContextRef = useRef<Record<string, unknown>>({});
 
   const setBrandId = useCallback((brandId: number | undefined): void => {
     brandIdRef.current = brandId;
@@ -123,6 +148,10 @@ export function AnalyticsProvider({ children, tagId, preview = false }: Analytic
 
   const setBaseEventContext = useCallback((partial: Record<string, unknown>): void => {
     basePayloadRef.current = { ...basePayloadRef.current, ...partial };
+  }, []);
+
+  const setLiveEventContext = useCallback((partial: Record<string, unknown>): void => {
+    liveContextRef.current = { ...liveContextRef.current, ...partial };
   }, []);
 
   const setMandatoryData = useCallback((data: Partial<MandatoryEventPayload>): void => {
@@ -198,6 +227,13 @@ export function AnalyticsProvider({ children, tagId, preview = false }: Analytic
       sendEvent(eventName, eventDetails) {
         // Preview mode: swallow every event so nothing reaches the buffer.
         if (preview) return;
+        // Captured NOW, at enqueue time — point-in-time fields (e.g.
+        // unit_visible) must reflect what was true when the event fired, not
+        // whatever liveContextRef becomes by flush time. Contrast with
+        // basePayloadRef below, read inside the deferred factory precisely so
+        // it CAN retroactively backfill (passback) onto already-buffered
+        // events — see the module doc comment (point 7).
+        const liveSnapshot = { ...liveContextRef.current };
         // Pass a factory function so payload is computed at flush time,
         // allowing basePayloadRef updates (like visit_id, passback) to be included in buffered events.
         bufferRef.current.enqueue(eventName, () => {
@@ -209,6 +245,7 @@ export function AnalyticsProvider({ children, tagId, preview = false }: Analytic
           // eventDetails can override if needed, but passback defaults from base.
           return {
             ...basePayloadRef.current,
+            ...liveSnapshot,
             ...identifiers,
             ...eventDetails,
           };
@@ -216,10 +253,11 @@ export function AnalyticsProvider({ children, tagId, preview = false }: Analytic
       },
       setBrandId,
       setBaseEventContext,
+      setLiveEventContext,
       setMandatoryData,
       setAdPassback,
     }),
-    [tagId, preview, setBrandId, setBaseEventContext, setMandatoryData, setAdPassback]
+    [tagId, preview, setBrandId, setBaseEventContext, setLiveEventContext, setMandatoryData, setAdPassback]
   );
 
   return <AnalyticsContext.Provider value={value}>{children}</AnalyticsContext.Provider>;

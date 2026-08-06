@@ -228,6 +228,96 @@ describe("providers/AdProvider", () => {
     unmount(root, container);
   });
 
+  // ── onUnitFail (unit-level passback, e.g. visibility gate timeout) ──────────
+
+  it("onUnitFail passes back with passback_reason and tears the widget down", () => {
+    useTagDetailsMock.mockReturnValue({ adLayout: AD_LAYOUT.L3 });
+    const destroy = vi.fn();
+    getInstanceRegistry().register(TEST_INSTANCE_ID, { destroy });
+    const emitSpy = vi.spyOn(testBus, "emit");
+    const handle: ContextHandle = { ctx: null };
+    const { root, container } = mount(
+      <AdProvider>
+        <Consumer handle={handle} />
+      </AdProvider>
+    );
+
+    act(() => {
+      handle.ctx?.onUnitFail("unit_hidden");
+    });
+
+    expect(notifyAdNoFill).toHaveBeenCalledTimes(1);
+    expect(sendEventMock).toHaveBeenCalledWith(
+      "Ad Passback",
+      expect.objectContaining({
+        tag_height: 50,
+        tag_width: 320,
+        passback_reason: "unit_hidden",
+      })
+    );
+    expect(emitSpy).toHaveBeenCalledWith("genad:destroy", {});
+    expect(destroy).toHaveBeenCalledTimes(1);
+
+    getInstanceRegistry().unregister(TEST_INSTANCE_ID);
+    unmount(root, container);
+  });
+
+  it("onUnitFail bypasses singleHitWaterfall — fires immediately with no slot tally", () => {
+    testSingleHit = true;
+    testFeed = { entries: [{ kind: "ad" }], activeIndex: 0 }; // last index NOT reached
+    const handle: ContextHandle = { ctx: null };
+    const { root, container } = mount(
+      <AdProvider>
+        <Consumer handle={handle} />
+      </AdProvider>
+    );
+
+    act(() => {
+      handle.ctx?.onUnitFail("unit_hidden");
+    });
+
+    expect(notifyAdNoFill).toHaveBeenCalledTimes(1);
+    testSingleHit = false;
+    unmount(root, container);
+  });
+
+  it("does not fire notifyAdNoFill again when onUnitFail follows a prior passback (idempotent)", () => {
+    const handle: ContextHandle = { ctx: null };
+    const { root, container } = mount(
+      <AdProvider>
+        <Consumer handle={handle} />
+      </AdProvider>
+    );
+
+    act(() => {
+      handle.ctx?.onAdFail();
+      handle.ctx?.onUnitFail("unit_hidden");
+    });
+
+    expect(notifyAdNoFill).toHaveBeenCalledTimes(1);
+    // Only the first (onAdFail, reason-less) call reached sendEvent — the
+    // second (onUnitFail) found passbackFiredRef already set and bailed.
+    expect(sendEventMock).toHaveBeenCalledTimes(1);
+    unmount(root, container);
+  });
+
+  it("does not fire onUnitFail's passback again on a repeat call", () => {
+    const handle: ContextHandle = { ctx: null };
+    const { root, container } = mount(
+      <AdProvider>
+        <Consumer handle={handle} />
+      </AdProvider>
+    );
+
+    act(() => {
+      handle.ctx?.onUnitFail("unit_hidden");
+      handle.ctx?.onUnitFail("unit_hidden");
+    });
+
+    expect(notifyAdNoFill).toHaveBeenCalledTimes(1);
+    unmount(root, container);
+  });
+
   it("installs the genai bridge on mount", () => {
     const { root, container } = mount(
       <AdProvider>
@@ -413,10 +503,7 @@ describe("providers/AdProvider", () => {
 
   it("single-hit: a no-fill before the last index does NOT passback", () => {
     // Two ad slots; only one no-filled, not at last index.
-    const { destroy, handle, root, container } = mountSingleHit(
-      [{ kind: "ad" }, { kind: "ad" }],
-      0
-    );
+    const { destroy, handle, root, container } = mountSingleHit([{ kind: "ad" }, { kind: "ad" }], 0);
     act(() => handle.ctx?.onAdFail("ad-1"));
     expectNoPassback(destroy);
     getInstanceRegistry().unregister(TEST_INSTANCE_ID);
@@ -425,10 +512,7 @@ describe("providers/AdProvider", () => {
 
   it("single-hit: passback fires once every ad slot no-fills AND last index reached", () => {
     // Mounted at the last index so the reached-last effect latches on mount.
-    const { destroy, handle, root, container } = mountSingleHit(
-      [{ kind: "ad" }, { kind: "ad" }],
-      1
-    );
+    const { destroy, handle, root, container } = mountSingleHit([{ kind: "ad" }, { kind: "ad" }], 1);
 
     act(() => handle.ctx?.onAdFail("ad-1"));
     // One slot reported (1 < 2) → still deferred.
@@ -574,7 +658,10 @@ describe("providers/AdProvider", () => {
     });
 
     expect(notifyAdNoFill).toHaveBeenCalledTimes(1);
-    expect(sendEventMock).toHaveBeenCalledWith("Ad Passback", expect.objectContaining({ tag_height: 50, tag_width: 320 }));
+    expect(sendEventMock).toHaveBeenCalledWith(
+      "Ad Passback",
+      expect.objectContaining({ tag_height: 50, tag_width: 320 })
+    );
     expect(destroy).toHaveBeenCalledTimes(1);
 
     getInstanceRegistry().unregister(TEST_INSTANCE_ID);

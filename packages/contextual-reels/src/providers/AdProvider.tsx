@@ -16,6 +16,15 @@ import { useStrategy } from "@cxr/strategies/StrategyProvider";
 
 import { useTagDetails } from "./TagDetailsProvider";
 
+/**
+ * Why a passback fired. Emitted as `passback_reason` on the `AD_PASSBACK` event.
+ *
+ * Only the unit-level paths attribute a cause today — the pre-existing no-fill,
+ * mute-timeout, and pixel-failure passbacks send no `passback_reason` at all, so
+ * their event shape is unchanged.
+ */
+export type PassbackReason = "unit_hidden";
+
 /** Context value exposed by `useAdWaterfall`. */
 export interface AdWaterfallContextValue {
   /** Call when an ad provider fills a slot. `slotId` (`ad.id`) enables per-slot dedup for single-hit. */
@@ -25,6 +34,13 @@ export interface AdWaterfallContextValue {
    * destroy immediately. Single-hit: deferred — see `firePassbackIfExhausted`.
    */
   onAdFail: (slotId?: string) => void;
+  /**
+   * Call when the whole placement is unusable independently of any individual ad
+   * slot (e.g. the unit is never on screen). Passes back immediately with
+   * `passback_reason`, **bypassing** the `singleHitWaterfall` deferral — there is
+   * no slot tally to exhaust, because no slot ever requested. Idempotent.
+   */
+  onUnitFail: (reason: PassbackReason) => void;
   /**
    * Record an ad-break (`video-with-ad`) fill/no-fill. Feeds the single-hit
    * exhaustion tally but never triggers passback directly — the video continues.
@@ -79,19 +95,30 @@ export function AdProvider({ children }: AdProviderProps): ReactNode {
   const entriesRef = useRef(entries);
   entriesRef.current = entries;
 
-  /** Fire the passback event once and tear the widget down. Idempotent. */
-  const firePassback = useCallback((): void => {
-    if (passbackFiredRef.current) return;
-    passbackFiredRef.current = true;
-    notifyAdNoFill();
-    setAdPassback(); // Mark widget as passback for all subsequent events (passback: 1)
-    sendEvent(EVENT.AD_PASSBACK, {
-      tag_height: tagHeight,
-      tag_width: tagWidth,
-    });
-    bus.emit("genad:destroy", {});
-    getInstanceRegistry().get(instanceId)?.destroy?.();
-  }, [tagHeight, tagWidth, sendEvent, setAdPassback, bus, instanceId]);
+  /**
+   * Fire the passback event once and tear the widget down. Idempotent.
+   *
+   * @param reason  When supplied, included as `passback_reason` on the
+   *                `AD_PASSBACK` event. Omitted by the pre-existing no-fill /
+   *                mute-timeout / pixel-failure callers — their event shape is
+   *                unchanged.
+   */
+  const firePassback = useCallback(
+    (reason?: PassbackReason): void => {
+      if (passbackFiredRef.current) return;
+      passbackFiredRef.current = true;
+      notifyAdNoFill();
+      setAdPassback(); // Mark widget as passback for all subsequent events (passback: 1)
+      sendEvent(EVENT.AD_PASSBACK, {
+        tag_height: tagHeight,
+        tag_width: tagWidth,
+        ...(reason !== undefined ? { passback_reason: reason } : {}),
+      });
+      bus.emit("genad:destroy", {});
+      getInstanceRegistry().get(instanceId)?.destroy?.();
+    },
+    [tagHeight, tagWidth, sendEvent, setAdPassback, bus, instanceId]
+  );
 
   /** Single-hit gate: fire only once every ad slot reported, none filled, last index reached. */
   const firePassbackIfExhausted = useCallback((): void => {
@@ -132,6 +159,15 @@ export function AdProvider({ children }: AdProviderProps): ReactNode {
       firePassback();
     },
     [singleHitWaterfall, recordSingleHitNoFill, firePassback]
+  );
+
+  // Unit-level failure: bypasses singleHitWaterfall entirely — there is no ad
+  // slot to tally because render was held, so no slot ever requested.
+  const onUnitFail = useCallback(
+    (reason: PassbackReason): void => {
+      firePassback(reason);
+    },
+    [firePassback]
   );
 
   /** Ad-break result — record-only, never fires passback directly (video keeps playing). */
@@ -189,8 +225,8 @@ export function AdProvider({ children }: AdProviderProps): ReactNode {
   // every provider re-render. onAdSuccess/onAdFail/recordAdBreakResult are
   // already useCallback-stable.
   const value = useMemo<AdWaterfallContextValue>(
-    () => ({ onAdSuccess, onAdFail, recordAdBreakResult, adLayout, isAudioOnlyAds }),
-    [onAdSuccess, onAdFail, recordAdBreakResult, adLayout, isAudioOnlyAds]
+    () => ({ onAdSuccess, onAdFail, onUnitFail, recordAdBreakResult, adLayout, isAudioOnlyAds }),
+    [onAdSuccess, onAdFail, onUnitFail, recordAdBreakResult, adLayout, isAudioOnlyAds]
   );
 
   return <AdWaterfallContext.Provider value={value}>{children}</AdWaterfallContext.Provider>;

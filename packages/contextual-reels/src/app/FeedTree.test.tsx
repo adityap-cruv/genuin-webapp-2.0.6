@@ -139,6 +139,15 @@ vi.mock("../strategies/useMutePassbackGuard", () => ({
   useMutePassbackGuard: vi.fn(),
 }));
 
+// Mocked wholesale (rather than mocking its IntersectionObserver/AdProvider
+// dependencies) — its own state machine is covered by
+// app/useFeedVisibilityGate.test.ts; this file only checks that FeedTree
+// respects `shouldRender`.
+const useFeedVisibilityGateMock = vi.fn(() => ({ shouldRender: true, overlayRef: vi.fn() }));
+vi.mock("../app/useFeedVisibilityGate", () => ({
+  useFeedVisibilityGate: () => useFeedVisibilityGateMock(),
+}));
+
 const getSnapshotMock = vi.fn(() => null);
 vi.mock("@cxr/monitoring/useResourceMonitor", () => ({
   useResourceMonitor: vi.fn(() => ({ getSnapshot: getSnapshotMock })),
@@ -171,6 +180,7 @@ describe("FeedTree", () => {
     vi.useRealTimers();
 
     useStrategyMock.mockReturnValue({ mutePassback: false, mutePassbackDelayMs: 3000, genAiEnabled: false });
+    useFeedVisibilityGateMock.mockReturnValue({ shouldRender: true, overlayRef: vi.fn() });
     useFeedMock.mockReturnValue({ entries: [], activeIndex: 0, isLoading: false, feedFailed: false });
     usePlayerMock.mockReturnValue({ isMuted: true, isPlaying: false, setPlaying: setPlayingMock });
     useFullScreenMock.mockReturnValue({ isFullScreen: false });
@@ -211,6 +221,21 @@ describe("FeedTree", () => {
     render();
     await flushPromises();
     expect(container.querySelector('[data-testid="feed-skeleton"]')).toBeTruthy();
+  });
+
+  it("shows the skeleton (not Feed) when the visibility gate is holding render, even with entries loaded", async () => {
+    useFeedVisibilityGateMock.mockReturnValue({ shouldRender: false, overlayRef: vi.fn() });
+    useFeedMock.mockReturnValue({
+      entries: [{ kind: "reel" }] as unknown[],
+      activeIndex: 0,
+      isLoading: false,
+      feedFailed: false,
+    });
+    render();
+    await flushPromises();
+    expect(container.querySelector('[data-testid="feed-skeleton"]')).toBeTruthy();
+    expect(container.querySelector('[data-testid="feed"]')).toBeFalsy();
+    expect(container.querySelector('[data-testid="cxr-no-content"]')).toBeFalsy();
   });
 
   it("shows NoContent when the feed failed", async () => {

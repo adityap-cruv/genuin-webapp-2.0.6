@@ -29,6 +29,7 @@ import { lazy, useCallback, useRef } from "react";
 import { CloseButton } from "@cxr/app/CloseButton";
 import { FeedSkeleton } from "@cxr/app/FeedSkeleton";
 import { NoContent } from "@cxr/app/NoContent";
+import { useFeedVisibilityGate } from "@cxr/app/useFeedVisibilityGate";
 // import { AD_LAYOUT, isIframe } from "@cxr/config";
 import { useEventBus, useInstanceId, useMarkUserInteracted } from "@cxr/instance/InstanceContext";
 import { usePlayerCoordination } from "@cxr/instance/coordination/usePlayerCoordination";
@@ -77,8 +78,15 @@ export default function FeedTree({
  * L3/L4 non-fullscreen) + all feed-mount decisions in one place: registers
  * this instance into InstanceRegistry + GlobalPlayerCoordinator, bridges
  * internal bus events to the window.cxr public API, arms the mute-passback
- * guard, and renders the feed (skeleton while loading, NoContent on
- * failure/empty, otherwise the native Feed).
+ * guard and the visibility gate, and renders the feed (skeleton while
+ * loading or held by the visibility gate, NoContent on failure/empty,
+ * otherwise the native Feed).
+ *
+ * The overlay div itself is the visibility gate's observed element — it
+ * renders unconditionally (unlike `body`, which the gate holds), so it gives
+ * `useFeedVisibilityGate` a stable target for the whole widget lifetime. See
+ * `useFeedVisibilityGate`'s doc comment for the render/passback/teardown state
+ * machine.
  *
  * Must be mounted inside StrategyProvider + PlayerProvider + AdProvider +
  * FullScreenProvider + InstanceProvider. Reads `instanceId` from
@@ -95,6 +103,7 @@ function NativeFeedShim({ onDismiss }: { onDismiss: () => void }): React.JSX.Ele
   const markInteracted = useMarkUserInteracted();
   const { sendEvent } = useAnalytics();
   const pause = useCallback(() => setPlaying(false), [setPlaying]);
+  const { shouldRender, overlayRef } = useFeedVisibilityGate();
 
   useMutePassbackGuard();
   useInstanceRegistration();
@@ -150,7 +159,10 @@ function NativeFeedShim({ onDismiss }: { onDismiss: () => void }): React.JSX.Ele
   const showCloseButton = false;
 
   let body: React.ReactNode;
-  if (isLoading) {
+  if (isLoading || !shouldRender) {
+    // !shouldRender: the visibility gate is holding render (unit not yet on
+    // screen) — same skeleton as the loading state, nothing requests or plays
+    // while hidden.
     body = <FeedSkeleton />;
   } else if (feedFailed || entries.length === 0) {
     body = <NoContent message="No content available" />;
@@ -161,6 +173,7 @@ function NativeFeedShim({ onDismiss }: { onDismiss: () => void }): React.JSX.Ele
 
   return (
     <div
+      ref={overlayRef}
       className={className}
       id={`overlay-${instanceId}`}
       onPointerDownCapture={markInteracted}

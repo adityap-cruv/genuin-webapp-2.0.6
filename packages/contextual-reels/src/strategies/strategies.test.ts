@@ -442,3 +442,45 @@ describe("feedLoopEnabled flag", () => {
     expect(isFeedLoopEnabled(SINGLE_HIT_TAG)).toBe(true);
   });
 });
+
+describe("visibilityGate flag", () => {
+  it("defaults to off — no tag gates on visibility unless it opts in", () => {
+    expect(DEFAULT_STRATEGIES.visibilityGate).toBe(false);
+  });
+
+  it("defaults the hidden window to 30s", () => {
+    expect(DEFAULT_STRATEGIES.visibilityGateTimeoutMs).toBe(30_000);
+  });
+
+  it("resolves off for an unknown tag", () => {
+    expect(resolveStrategies("unknown-visibility-tag").visibilityGate).toBe(false);
+  });
+
+  it("resolves off for every currently configured tag (nothing opted in yet)", () => {
+    expect(resolveStrategies(SINGLE_HIT_TAG).visibilityGate).toBe(false);
+    expect(resolveStrategies("6a39163e92929ebec64d78ab").visibilityGate).toBe(false);
+  });
+
+  it("is turned on by the visibilityGate preset bundle", async () => {
+    // Import the real registry (the mocked STRATEGY_PRESETS above is scoped to
+    // the cascade tests) and assert the bundle carries only the opt-in.
+    const { STRATEGY_PRESETS: realPresets } = await vi.importActual<typeof StrategyConfigModule>(
+      "@cxr/strategies/strategyConfig"
+    );
+    expect(realPresets.visibilityGate).toEqual({ visibilityGate: true });
+  });
+});
+
+describe("destroyOnHide flag", () => {
+  it("defaults to off — once visible, a later hide does not tear the unit down", () => {
+    expect(DEFAULT_STRATEGIES.destroyOnHide).toBe(false);
+  });
+
+  it("resolves off for an unknown tag", () => {
+    expect(resolveStrategies("unknown-destroy-on-hide-tag").destroyOnHide).toBe(false);
+  });
+
+  it("resolves off for every currently configured tag (nothing opted in yet)", () => {
+    expect(resolveStrategies(SINGLE_HIT_TAG).destroyOnHide).toBe(false);
+  });
+});

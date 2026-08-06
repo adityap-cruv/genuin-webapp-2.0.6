@@ -496,6 +496,98 @@ describe("providers/AnalyticsProvider", () => {
     unmount(root, container);
   });
 
+  it("setLiveEventContext snapshots at enqueue time — a later update doesn't retroactively change an earlier buffered event", async () => {
+    let readyCb: (() => void) | undefined;
+    readyMock.mockImplementation((cb: () => void) => {
+      readyCb = cb;
+    });
+    setRudder();
+    trackMock.mockClear();
+    const handle: ConsumerHandle = { send: () => undefined };
+    let setLive: ((partial: Record<string, unknown>) => void) | undefined;
+    function LiveConsumer(): ReactElement {
+      const { sendEvent, setLiveEventContext, setMandatoryData } = useAnalytics();
+      setLive = setLiveEventContext;
+      handle.send = () => sendEvent("evt", {});
+      useEffect(() => {
+        setMandatoryData({ visit_id: "test-visit-id" });
+      }, [setMandatoryData]);
+      return <span />;
+    }
+    const { root, container } = mount(
+      <AnalyticsProvider>
+        <LiveConsumer />
+      </AnalyticsProvider>
+    );
+    // Both events enqueue BEFORE Rudderstack is ready — both sit in the buffer
+    // together, so a flush-time read would let the second update leak onto the
+    // first event. It must not.
+    act(() => setLive?.({ unit_visible: true }));
+    act(() => handle.send()); // event #1 — snapshot unit_visible: true
+    act(() => setLive?.({ unit_visible: false }));
+    act(() => handle.send()); // event #2 — snapshot unit_visible: false
+    act(() => readyCb?.());
+    await settleGeoip();
+
+    const firstDetails = (trackMock.mock.calls[0]?.[1] as Record<string, unknown>).event_details as Record<
+      string,
+      unknown
+    >;
+    const secondDetails = (trackMock.mock.calls[1]?.[1] as Record<string, unknown>).event_details as Record<
+      string,
+      unknown
+    >;
+    expect(firstDetails.unit_visible).toBe(true);
+    expect(secondDetails.unit_visible).toBe(false);
+    unmount(root, container);
+  });
+
+  it("contrasts with setBaseEventContext, which is read at flush time and IS retroactive (by design — passback backfill)", async () => {
+    let readyCb: (() => void) | undefined;
+    readyMock.mockImplementation((cb: () => void) => {
+      readyCb = cb;
+    });
+    setRudder();
+    trackMock.mockClear();
+    const handle: ConsumerHandle = { send: () => undefined };
+    let setBase: ((partial: Record<string, unknown>) => void) | undefined;
+    function BaseConsumer(): ReactElement {
+      const { sendEvent, setBaseEventContext, setMandatoryData } = useAnalytics();
+      setBase = setBaseEventContext;
+      handle.send = () => sendEvent("evt", {});
+      useEffect(() => {
+        setMandatoryData({ visit_id: "test-visit-id" });
+      }, [setMandatoryData]);
+      return <span />;
+    }
+    const { root, container } = mount(
+      <AnalyticsProvider>
+        <BaseConsumer />
+      </AnalyticsProvider>
+    );
+    act(() => setBase?.({ passback: 0 }));
+    act(() => handle.send()); // event #1 — enqueued while passback is still 0
+    act(() => setBase?.({ passback: 1 })); // ad fails AFTER event #1 was already buffered
+    act(() => handle.send()); // event #2
+    act(() => readyCb?.());
+    await settleGeoip();
+
+    const firstDetails = (trackMock.mock.calls[0]?.[1] as Record<string, unknown>).event_details as Record<
+      string,
+      unknown
+    >;
+    const secondDetails = (trackMock.mock.calls[1]?.[1] as Record<string, unknown>).event_details as Record<
+      string,
+      unknown
+    >;
+    // Both flush after passback flipped to 1 — setBaseEventContext is read
+    // inside the deferred factory, so event #1 retroactively picks it up too.
+    // This is the documented, load-bearing behavior setAdPassback relies on.
+    expect(firstDetails.passback).toBe(1);
+    expect(secondDetails.passback).toBe(1);
+    unmount(root, container);
+  });
+
   it("injects brand_id registered via setBrandId into every event's event_details", async () => {
     let readyCb: (() => void) | undefined;
     readyMock.mockImplementation((cb: () => void) => {

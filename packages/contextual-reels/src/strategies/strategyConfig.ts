@@ -23,6 +23,8 @@ export const STRATEGY_PRESETS = {
   servedStatically: { servedStatically: true },
   // Finite feed: the last slide is a hard stop instead of wrapping to slide 0.
   noLoop: { feedLoopEnabled: false },
+  // Hold render until the unit is on screen; passback `unit_hidden` after 30s hidden.
+  visibilityGate: { visibilityGate: true },
 } satisfies Record<string, Partial<Strategies>>;
 
 /** Name of a defined preset bundle. */
