@@ -32,7 +32,7 @@ export function DefaultPlacement({
   containerWidth,
   ...restProps
 }: ControlLayerPropsType) {
-  const { contentDisplay, responsive, view, engagement } = useEmbedConfigs();
+  const { contentDisplay, responsive, view, engagement, isDesignSystemV2Linkouts } = useEmbedConfigs();
   const { isXs } = responsive;
   const { isMobile } = useDeviceDetectMediaQuery();
   const isOctoEnabled = engagement.engagementTools.octo && view.isFeed;
@@ -52,7 +52,7 @@ export function DefaultPlacement({
           <SafeSuspense fallback={null} errorFallback={null}>
             <Linkouts
               view="embed"
-              // variant="dynamic"
+              {...(isDesignSystemV2Linkouts ? { variant: "dynamic" as const } : {})}
               layout="overlay"
               isActive={isActive}
               showImmediately
@@ -64,7 +64,7 @@ export function DefaultPlacement({
         )}
       </>
     ),
-    [contentDisplay.showVideoLinkouts, isActive, postDetails.video?.linkouts, postDetails.video?.linkouts]
+    [contentDisplay.showVideoLinkouts, isActive, postDetails.video?.linkouts, isDesignSystemV2Linkouts]
   );
 
   const socialInteraction = useMemo(() => {
