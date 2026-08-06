@@ -1,7 +1,12 @@
+import {
+  DARK_OVERLAY_20,
+  DARK_OVERLAY_40,
+  PLAYER_CONTROL_SIZE,
+  type PlayerControlSize,
+} from "@genuin/ui/player-controls";
 import { cn } from "@genuin/ui/utils";
 import { cloneElement, isValidElement, type ComponentProps, type ReactElement } from "react";
 
-import { DARK_OVERLAY_20, DARK_OVERLAY_40, PLAYER_CONTROL_SIZE, type PlayerControlSize } from "./player-control-size";
 import { VolumeRing } from "./volume-ring";
 
 type PlayerControlButtonProps = ComponentProps<"div"> & {

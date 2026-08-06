@@ -1,5 +1,6 @@
 "use client";
 import { cn, getAspectRatio } from "@genuin/ui/lib/utils";
+import { resolveControlSize } from "@genuin/ui/player-controls";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 import { useMemo, useState, useEffect, useCallback, lazy } from "react";
@@ -815,7 +816,10 @@ export function Embed({
                       theme={theme}
                       embedVariant={embedVariant}
                       setSlidesOffsetBefore={setSlidesOffsetBefore}
-                      v2Size={embedVariant === "feed" ? "md" : undefined}
+                      // Same width source as the per-tile player controls (default-embed.tsx:
+                      // resolveControlSize(containerWidth)) — a single video tile's own width,
+                      // not the whole carousel/embed container's width.
+                      v2Size={config.isDesignSystemV2 ? resolveControlSize(slideItemSize.width) : undefined}
                     />
                   )}
                 </EmbedSwiper>

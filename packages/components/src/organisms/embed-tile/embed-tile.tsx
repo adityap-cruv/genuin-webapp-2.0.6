@@ -503,7 +503,8 @@ function EmbedPlayer({ postDetails, isActive = false, index, itemSize }: EmbedPl
               config.isDesignSystemV2
                 ? {
                     backdropFilter: "blur(7.5px)",
-                    width: SPONSORED_TAG_SIZE[resolveControlSize(itemSize.width)].width,
+                    // fit-content, not the token's fixed px width — see sponsored-tag.tsx.
+                    width: "fit-content",
                     height: SPONSORED_TAG_SIZE[resolveControlSize(itemSize.width)].height,
                   }
                 : undefined

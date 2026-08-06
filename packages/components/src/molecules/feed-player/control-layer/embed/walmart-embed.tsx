@@ -1,10 +1,17 @@
 import { cn } from "@genuin/ui/lib/utils";
+import { resolveControlSize } from "@genuin/ui/player-controls";
 import { type FC } from "react";
 
 import type { ControlLayerPropsType } from "../control-layer.types";
 import { EmbedControls } from "../controls/embed";
 
-export const WalmartEmbed: FC<ControlLayerPropsType> = ({ postDetails, className, isActive, ...restProps }) => {
+export const WalmartEmbed: FC<ControlLayerPropsType> = ({
+  postDetails,
+  className,
+  isActive,
+  containerWidth,
+  ...restProps
+}) => {
   return (
     <div
       className={cn("gencl:flex gencl:h-full gencl:flex-col gencl:justify-between gencl:relative", className)}
@@ -13,7 +20,7 @@ export const WalmartEmbed: FC<ControlLayerPropsType> = ({ postDetails, className
         <EmbedControls
           onClick={(e) => e.stopPropagation()}
           className={cn("gencl:gap-2 gencl:z-20 gencl:absolute gencl:right-0 gencl:p-2")}
-          size="xs"
+          size={containerWidth ? resolveControlSize(containerWidth) : "xs"}
         />
       ) : (
         <></>

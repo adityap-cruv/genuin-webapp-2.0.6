@@ -11,6 +11,7 @@ import { buildLinkoutsAnalyticsData } from "@genuin/components/organisms/linkout
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 import { usePlayerContext } from "../../../context";
+import { isSponsoredVideo } from "../../controls/sponsored-tag";
 
 // TODO(temp): Remove this KFI dummy-data redirect. Temporary placement-specific
 // hardcoding — drop once real linkout data is served from the API.
@@ -52,14 +53,17 @@ export const ClipPlayerCTA = ({ postDetails, isActive }: ClipPlayerCTAProps) => 
   const isKfiPlacement =
     !!embedDetails?.embedData?.placement_id && KFI_PLACEMENT_IDS.includes(embedDetails.embedData.placement_id);
 
+  const isSponsored = isSponsoredVideo(postDetails.video);
+
   const handleCTAClick = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
 
-      // For the KFI placement only, honour the linkout's explicit destination
-      // (cta_link) directly instead of constructing an iheart.com URL.
+      // Sponsored posts (and the KFI placement) honour the linkout's explicit
+      // destination (cta_link) directly instead of constructing an iheart.com URL
+      // from station/podcast attributes they don't have.
       const ctaLink = postDetails.video?.linkouts?.[0]?.cta_link;
-      if (isKfiPlacement && ctaLink) {
+      if ((isSponsored || isKfiPlacement) && ctaLink) {
         const url = addIheartCtaCampaign(ctaLink);
         track(EventName.LINKOUTS_CLICKED, {
           ...analyticsEventData,
@@ -119,11 +123,13 @@ export const ClipPlayerCTA = ({ postDetails, isActive }: ClipPlayerCTAProps) => 
       // }
       window.open(destinationUrl, "_blank", "noopener,noreferrer");
     },
-    [postDetails, embedDetails, isKfiPlacement, track, EventName.LINKOUTS_CLICKED, analyticsEventData]
+    [postDetails, embedDetails, isKfiPlacement, isSponsored, track, EventName.LINKOUTS_CLICKED, analyticsEventData]
   );
 
-  if (!postDetails.video?.attributes?.slug) return;
-  if (!postDetails.video.linkouts) return;
+  // Sponsored posts have linkouts but no station/podcast slug — let them through.
+  // Label comes straight from linkouts[0].cta_text (Linkouts derives it).
+  if (!isSponsored && !postDetails.video?.attributes?.slug) return;
+  if (!postDetails.video?.linkouts) return;
 
   return (
     <SafeSuspense fallback={null} errorFallback={null}>

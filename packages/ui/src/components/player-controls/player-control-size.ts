@@ -40,18 +40,21 @@ export const PLAYER_CONTROL_FALLBACK_SIZE: PlayerControlSize = "lg";
 export function resolveControlSize(containerWidth: number): PlayerControlSize {
   if (containerWidth < GEN_BP.xs) return PLAYER_CONTROL_FALLBACK_SIZE;
   if (containerWidth < GEN_BP.sm) return "xs";
-  if (containerWidth < GEN_BP.md) return "sm";
+  // todo for demo currently changing the size from sm to md
+  if (containerWidth < GEN_BP.md) return "md";
   if (containerWidth < GEN_BP.lg) return "md";
   return PLAYER_CONTROL_FALLBACK_SIZE;
 }
 
-/** Sponsored pill dimensions (px) per size token. xs/sm/md from Figma; lg/xl scaled up. */
+/** Sponsored pill height (px) + text size per size token. Width is `fit-content`, not
+ * fixed — a fixed width left no visible room for the pill's px-2/py-1 padding at some
+ * tiers. xs/sm/md from Figma; lg/xl scaled up. */
 export const SPONSORED_TAG_SIZE = {
-  xs: { width: 50, height: 16, text: "gencl:text-[9px]" },
-  sm: { width: 68, height: 22, text: "gencl:text-[10px]" },
-  md: { width: 79, height: 24, text: "gencl:text-xs" },
-  lg: { width: 90, height: 28, text: "gencl:text-[13px]" },
-  xl: { width: 100, height: 32, text: "gencl:text-sm" },
+  xs: { height: 16, text: "gencl:text-[9px]" },
+  sm: { height: 22, text: "gencl:text-[10px]" },
+  md: { height: 24, text: "gencl:text-[11px]" },
+  lg: { height: 28, text: "gencl:text-[13px]" },
+  xl: { height: 32, text: "gencl:text-[14px]" },
 } as const;
 
 /** Volume-slider track width (px) per size token. Height follows `token.outer`; xs falls back to sm. */

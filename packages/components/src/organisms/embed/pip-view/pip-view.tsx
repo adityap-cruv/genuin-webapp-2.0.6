@@ -112,6 +112,7 @@ function PipPlayer({
   ...restProps
 }: PipPLayerPropsType) {
   const [isAdFilled, setIsAdFilled] = useState(false);
+  const pipPlayerSize = { height: 180, width: 200 };
 
   return (
     <div
@@ -134,10 +135,7 @@ function PipPlayer({
           adTagObject={(videoDetails as any).adTagObject ?? undefined}
           sponsorshipInfo={videoDetails.sponsored}
           isSponsored={videoDetails.video?.cardLayoutId === 7 || videoDetails.video?.videoLayoutId === 6}
-          playerSize={{
-            height: 180,
-            width: 200,
-          }}
+          playerSize={pipPlayerSize}
           onAdStateChange={setIsAdFilled}
         />
         {!isAdFilled && (
@@ -145,6 +143,7 @@ function PipPlayer({
             variant="embed-pip"
             isActive
             postDetails={videoDetails}
+            containerWidth={pipPlayerSize.width}
             style={{ touchAction: "manipulation" }}
           />
         )}

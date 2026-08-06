@@ -44,7 +44,9 @@ export function SponsoredTag({ size, className }: { size: PlayerControlSize; cla
       )}
       style={{
         backdropFilter: "blur(7.5px)",
-        width: dimensions.width,
+        // fit-content, not the token's fixed px width: at some tiers the fixed width
+        // left no visible room for the px-2/py-1 padding around "Sponsored".
+        width: "fit-content",
         height: dimensions.height,
       }}>
       <p className={dimensions.text}>Sponsored</p>

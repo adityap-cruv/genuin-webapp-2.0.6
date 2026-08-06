@@ -132,7 +132,8 @@ export const Controls = memo(function Controls({
               className="gencl:bg-white gencl:z-50 gencl:rounded-3xl gencl:flex-center gencl:text-gray-900 gencl:px-2! gencl:py-1!"
               style={{
                 backdropFilter: "blur(7.5px)",
-                width: SPONSORED_TAG_SIZE[size].width,
+                // fit-content, not the token's fixed px width — see sponsored-tag.tsx.
+                width: "fit-content",
                 height: SPONSORED_TAG_SIZE[size].height,
               }}>
               <p className={SPONSORED_TAG_SIZE[size].text}>Sponsored</p>

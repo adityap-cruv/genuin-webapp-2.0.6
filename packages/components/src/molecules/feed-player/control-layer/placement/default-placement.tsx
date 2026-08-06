@@ -1,5 +1,6 @@
 import { CommentIcon, PlayIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
+import { resolveControlSize } from "@genuin/ui/player-controls";
 import { useMemo, lazy } from "react";
 
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
@@ -28,6 +29,7 @@ export function DefaultPlacement({
   className,
   isActive,
   onReactionStateChange,
+  containerWidth,
   ...restProps
 }: ControlLayerPropsType) {
   const { contentDisplay, responsive, view, engagement } = useEmbedConfigs();
@@ -167,7 +169,13 @@ export function DefaultPlacement({
 
         {isActive && (
           <div className="gencl:shrink-0">
-            <EmbedControls size={isXs ? "xs" : "sm"} section={postDetails.section} />
+            <EmbedControls
+              // Same source as the nav arrows and other player controls — a single
+              // tile's own width, not the old isXs/isSm ceiling that could never
+              // reach md/lg regardless of tile width.
+              size={containerWidth ? resolveControlSize(containerWidth) : "sm"}
+              section={postDetails.section}
+            />
           </div>
         )}
       </div>

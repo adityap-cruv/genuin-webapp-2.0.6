@@ -1,5 +1,6 @@
 import { Avatar } from "@genuin/ui/components/avatar";
 import { cn } from "@genuin/ui/lib/utils";
+import { resolveControlSize } from "@genuin/ui/player-controls";
 import { type FC } from "react";
 
 import { useEmbedDimensions } from "@genuin/components/hooks/embed/use-embed-dimensions";
@@ -8,7 +9,13 @@ import { ReadMore } from "@genuin/components/molecules/read-more";
 import type { ControlLayerPropsType } from "../control-layer.types";
 import { EmbedControls } from "../controls/embed";
 
-export const TedEmbed: FC<ControlLayerPropsType> = ({ postDetails, className, isActive, ...restProps }) => {
+export const TedEmbed: FC<ControlLayerPropsType> = ({
+  postDetails,
+  className,
+  isActive,
+  containerWidth,
+  ...restProps
+}) => {
   const { containerHeight } = useEmbedDimensions();
 
   const { video, community } = postDetails;
@@ -20,7 +27,10 @@ export const TedEmbed: FC<ControlLayerPropsType> = ({ postDetails, className, is
         <div
           className="gencl:absolute gencl:top-0 gencl:right-0 gencl:py-2 gencl:px-3"
           onClick={(e) => e.stopPropagation()}>
-          <EmbedControls className={cn("gencl:gap-3")} size="xs" />
+          <EmbedControls
+            className={cn("gencl:gap-3")}
+            size={containerWidth ? resolveControlSize(containerWidth) : "xs"}
+          />
         </div>
       )}
 

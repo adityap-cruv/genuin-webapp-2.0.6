@@ -12,6 +12,8 @@ import { addIheartCtaCampaign } from "@genuin/components/lib/utils/iheart-url";
 import { buildLinkoutsAnalyticsData } from "@genuin/components/organisms/linkouts/build-linkouts-analytics-data";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
+import { isSponsoredVideo } from "../../controls/sponsored-tag";
+
 import { useIHeartPlayback } from "./use-iheart-playback";
 
 // TODO(temp): Remove this KFI dummy-data redirect. Temporary placement-specific
@@ -42,11 +44,14 @@ export function IHeartListenLiveButton({ className, videoDetails, info }: IHeart
     info,
     videoDetails,
   });
+  const isSponsored = isSponsoredVideo(videoDetails);
+  const sponsoredCtaLink = videoDetails?.linkouts?.[0]?.cta_link;
+  // Sponsored posts differ only in destination (linkout cta_link); the label
+  // stays whatever cta_text the backend sent (ctaText already resolves to it).
   const { brand } = useEmbedConfigs();
   const embedContext = useSafeEmbedContext();
   const isKfiPlacement =
-    !!embedContext?.embedData?.placement_id &&
-    KFI_PLACEMENT_IDS.includes(embedContext.embedData.placement_id);
+    !!embedContext?.embedData?.placement_id && KFI_PLACEMENT_IDS.includes(embedContext.embedData.placement_id);
   const { track, EventName } = useAnalytics();
   const analyticsEventData = useMemo(
     () =>
@@ -144,11 +149,11 @@ export function IHeartListenLiveButton({ className, videoDetails, info }: IHeart
   }, [videoDetails?.id, track, EventName.LINKOUTS_VIEWED, analyticsEventData]);
 
   const openClipPlayerLink = useCallback(() => {
-    // For the KFI placement only, honour the linkout's explicit destination
-    // (cta_link) directly instead of constructing an iheart.com URL from the
-    // station/podcast attributes.
+    // Sponsored posts (and the KFI placement) honour the linkout's explicit
+    // destination (cta_link) directly instead of constructing an iheart.com URL
+    // from station/podcast attributes they don't have.
     const ctaLink = videoDetails?.linkouts?.[0]?.cta_link;
-    if (isKfiPlacement && ctaLink) {
+    if ((isSponsored || isKfiPlacement) && ctaLink) {
       const url = addIheartCtaCampaign(ctaLink);
       track(EventName.LINKOUTS_CLICKED, {
         ...analyticsEventData,
@@ -194,7 +199,7 @@ export function IHeartListenLiveButton({ className, videoDetails, info }: IHeart
       linkTitle: isGoToEpisode ? "Go to Episode" : isFullEpisode ? "Full Episode" : "Listen Live",
     });
     window.open(destinationUrl, "_blank", "noopener,noreferrer");
-  }, [videoDetails, track, EventName.LINKOUTS_CLICKED, analyticsEventData, isGoToEpisode, isKfiPlacement]);
+  }, [videoDetails, track, EventName.LINKOUTS_CLICKED, analyticsEventData, isGoToEpisode, isKfiPlacement, isSponsored]);
 
   const handleButtonClick = useCallback(
     (e: React.MouseEvent) => {
@@ -224,11 +229,13 @@ export function IHeartListenLiveButton({ className, videoDetails, info }: IHeart
     };
   }, [videoDetails?.id, track, EventName.LINKOUTS_VIEWED, analyticsEventData]);
 
-  if (!ctaText) return null;
+  // Sponsored: show only when a linkout destination exists (no station metadata
+  // is required). Otherwise fall back to the "no cta_text → hide" rule.
+  if (isSponsored ? !sponsoredCtaLink : !ctaText) return null;
 
   // Generate accessible label based on button state
   const getAriaLabel = () => {
-    if (isGoToEpisode) return ctaText;
+    if (isSponsored || isGoToEpisode) return ctaText;
     const state = isPlaying ? "Pressed" : "Not pressed";
     return `${ctaText}, ${state}`;
   };

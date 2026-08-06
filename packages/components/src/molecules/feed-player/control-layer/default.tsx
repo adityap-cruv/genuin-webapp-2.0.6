@@ -317,7 +317,8 @@ export function Default({
                   embedConfig.isDesignSystemV2
                     ? {
                         backdropFilter: "blur(7.5px)",
-                        width: SPONSORED_TAG_SIZE[effectiveControlSize].width,
+                        // fit-content, not the token's fixed px width — see sponsored-tag.tsx.
+                        width: "fit-content",
                         height: SPONSORED_TAG_SIZE[effectiveControlSize].height,
                       }
                     : undefined

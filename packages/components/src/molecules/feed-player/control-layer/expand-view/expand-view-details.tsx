@@ -886,17 +886,21 @@ export const ExpandViewDetails = forwardRef<ExpandViewDetailsRef, ExpandViewProp
       {/* TODO : iheart phase-2 implementation  */}{" "}
       {/* Mirrors ClipPlayerCTA's own bail condition (no slug / no linkouts, e.g. a
           pure third-party sponsored ad) so this row's h-11 space isn't reserved
-          when the CTA itself would render nothing. */}
-      {brandLayoutType === "iheart" && postDetails.video?.attributes?.slug && postDetails.video.linkouts && (
-        <div className="gencl:h-11 gencl:flex gencl:items-center gencl:relative gencl:z-10">
-          <ClipPlayerCTA
-            websiteType={websiteType}
-            postDetails={postDetails}
-            toggleExpandView={toggleExpandView}
-            isActive={isActive}
-          />
-        </div>
-      )}
+          when the CTA itself would render nothing.
+          Sponsored posts carry linkouts but no station/podcast slug — allow the
+          CTA (a "Shop Now" linkout button) through on `isSponsoredVideo` alone. */}
+      {brandLayoutType === "iheart" &&
+        (postDetails.video?.attributes?.slug || isSponsoredVideo(postDetails.video)) &&
+        postDetails.video?.linkouts && (
+          <div className="gencl:h-11 gencl:flex gencl:items-center gencl:relative gencl:z-10">
+            <ClipPlayerCTA
+              websiteType={websiteType}
+              postDetails={postDetails}
+              toggleExpandView={toggleExpandView}
+              isActive={isActive}
+            />
+          </div>
+        )}
     </div>
   );
 });

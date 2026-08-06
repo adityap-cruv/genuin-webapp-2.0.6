@@ -64,6 +64,7 @@ export const ControlLayer = memo(function ControlLayer(props: ControlLayerPropsT
           className={cn(controlLayerVariant({ variant: props.variant ?? "default" }), props.className)}
           style={safariOptimizationStyles}
           adType={props.adType ?? "in-feed"}
+          containerWidth={props.containerWidth}
         />
       </SafeSuspense>
     );

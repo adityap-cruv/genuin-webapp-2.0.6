@@ -1,4 +1,5 @@
 import { cn } from "@genuin/ui/lib/utils";
+import { resolveControlSize } from "@genuin/ui/player-controls";
 import { type FC, lazy } from "react";
 
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
@@ -19,14 +20,20 @@ export const ResponsivenessEmbed: FC<ControlLayerPropsType> = ({
   // Drain non-DOM props so they don't leak via {...restProps} onto the <div>.
   onReactionStateChange: _onReactionStateChange,
   onCommentCountChange: _onCommentCountChange,
-  containerWidth: _containerWidth,
+  containerWidth,
   adType: _adType,
   ...restProps
 }) => {
   const video = postDetails?.video;
   return (
     <div className={cn("gencl:relative gencl:h-full gencl:w-full", className)} {...restProps}>
-      {isActive && <EmbedControls onClick={(e) => e.stopPropagation()} className="gencl:justify-end gencl:p-1" />}
+      {isActive && (
+        <EmbedControls
+          onClick={(e) => e.stopPropagation()}
+          className="gencl:justify-end gencl:p-1"
+          size={containerWidth ? resolveControlSize(containerWidth) : "sm"}
+        />
+      )}
       {isActive && video?.linkouts && (
         <div
           // `embed-carousel-no-swiping` blocks the outer carousel Swiper but not the

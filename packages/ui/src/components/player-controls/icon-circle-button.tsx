@@ -32,9 +32,16 @@ export function IconCircleButton({
   ...rest
 }: IconCircleButtonProps) {
   const token = PLAYER_CONTROL_SIZE[size];
+  // Fill the glyph box at 100% instead of forcing an exact px value onto the <svg>
+  // itself — the icon otherwise has three things fighting to set its size (its own
+  // hardcoded width/height attributes, the `size` variant's Tailwind class, and this
+  // override), which is what let icons render inconsistently against their circle.
+  // The fixed-size wrapper below is the single source of truth; viewBox scaling
+  // (and each icon's own vector-effect="non-scaling-stroke", where present) is
+  // unaffected — same proportional scaling as before, just from one place.
   const sizedIcon = isValidElement(icon)
     ? cloneElement(icon, {
-        style: { width: token.glyph, height: token.glyph, ...icon.props.style },
+        style: { width: "100%", height: "100%", ...icon.props.style },
       })
     : icon;
 
@@ -63,7 +70,11 @@ export function IconCircleButton({
           backdropFilter: `blur(${token.innerBlur}px)`,
           WebkitBackdropFilter: `blur(${token.innerBlur}px)`,
         }}>
-        {sizedIcon}
+        <div
+          className="gencl:flex gencl:flex-shrink-0 gencl:items-center gencl:justify-center"
+          style={{ width: token.glyph, height: token.glyph }}>
+          {sizedIcon}
+        </div>
       </div>
     </div>
   );
