@@ -324,15 +324,17 @@ describe("CompactControlBar", () => {
       expect(container.querySelector('[data-testid="linkout-btn"]')).toBeNull();
     });
 
-    it("sm: does not show the Linkout in the Watch slot when Watch is still shown (isFullScreenSupported: true)", () => {
+    it("sm: shows the Linkout instead of Watch even when fullscreen is supported (isFullScreenSupported: true)", () => {
       render({
         size: "sm",
         showWatchInSm: true,
         isFullScreenSupported: true,
         cta: { url: "https://example.com", caption: "Shop Now" },
       });
-      expect(query("watch-btn")).toBeTruthy();
-      expect(container.querySelector('[data-testid="linkout-btn"]')).toBeNull();
+      expect(query("watch-btn")).toBeNull();
+      const link = container.querySelector('[data-testid="linkout-btn"]');
+      expect(link).toBeTruthy();
+      expect(link?.textContent).toContain("Shop Now");
     });
   });
 });

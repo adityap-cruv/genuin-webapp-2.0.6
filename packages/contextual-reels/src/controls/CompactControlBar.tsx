@@ -144,15 +144,19 @@ export function CompactControlBar({
 
   // 320×50 (sm) → xs, 320×100 (md) → sm — matches resolveCxrControlSize's collapsed row.
   const v2Size: PlayerControlSize = size === "sm" ? "xs" : "sm";
-  // sm Watch button: ad sm always shows it (genAd renders the description
-  // externally); video sm shows it alongside its own ticker on the same row.
-  const showSmWatch = size === "sm" && showWatchInSm && !hideTickerAndActions;
+  // sm Watch button: ad sm shows it only when there's no Linkout CTA to show
+  // instead (320×50 ads default to the Linkout, never the Watch button); video
+  // sm shows it alongside its own ticker on the same row.
+  const showSmWatch = size === "sm" && showWatchInSm && !hideTickerAndActions && !hasCta;
   // Ticker renders for md and for any sm that has a description. When it shares
   // the sm row with the Watch button it flexes to the leftover width so the two
   // never overlap.
   const showTicker = Boolean(description) && !hideTickerAndActions;
-  // sm packs ticker + Watch into one flex row; either alone still fills the row.
-  const smSecondRow = size === "sm" && (showTicker || showSmWatch);
+  // sm's Linkout slot: shown whenever there's CTA data, in place of Watch
+  // (320×50 ads default to the Linkout, never the Watch button).
+  const showSmLinkout = size === "sm" && showWatchInSm && !hideTickerAndActions && hasCta;
+  // sm packs ticker + Watch/Linkout into one flex row; either alone still fills the row.
+  const smSecondRow = size === "sm" && (showTicker || showSmWatch || showSmLinkout);
 
   // Constant scroll speed: derive duration from the measured text width instead
   // of the character count, so long captions don't whip past faster than short
@@ -234,7 +238,7 @@ export function CompactControlBar({
             <div
               data-testid="compact-bar-description"
               className={`gencl:min-w-0 gencl:overflow-hidden gencl:px-1.5 ${
-                showSmWatch ? "gencl:flex-1" : "gencl:w-full"
+                showSmWatch || showSmLinkout ? "gencl:flex-1" : "gencl:w-full"
               }`}
               style={{
                 borderRadius: "6px",
@@ -281,11 +285,10 @@ export function CompactControlBar({
               />
             </div>
           )}
-          {/* sm's Watch slot is a fullscreen entry point — when fullscreen isn't
-              supported it hides (hideWatch), so an ad with CTA data shows its
-              Linkout there instead of leaving the row empty. 'xs' keeps this
-              compact: caption only, no logo/chevron, capped at ~70px width. */}
-          {showSmWatch && hideWatch && hasCta && (
+          {/* sm defaults to the Linkout over Watch whenever CTA data is present —
+              Watch only appears when there's no CTA to show instead. 'xs' keeps
+              this compact: caption only, no logo/chevron, capped at ~70px width. */}
+          {showSmLinkout && (
             <div
               data-testid="compact-bar-actions"
               className="gencl:flex gencl:justify-end gencl:z-15 gencl:pointer-events-auto gencl:shrink-0 gencl:ml-auto gencl:h-6">
