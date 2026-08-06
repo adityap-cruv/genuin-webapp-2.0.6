@@ -89,7 +89,7 @@ true` and forges `navigator.userActivation` = true on a fresh page, so it always
   `<StrategyProvider tagId>` memoises the resolved object; `useStrategy()` reads it and degrades to
   `DEFAULT_STRATEGIES` (all-off) outside a provider — never throws. `tagId` is the **embed tag id**,
   not a feed reel `_id`. Toggles: `genAiEnabled`, `adBreakEnabled`, `gateOnUnmute`,
-  `singleHitWaterfall`, `adsDisabled`, `mutePassback` + tunable `mutePassbackDelayMs` (default 3000),
+  `singleHitWaterfall`, `adsDisabled`, `mutePassback` + tunable `mutePassbackDelayMs` (default 5000),
   `servedStatically` (see below).
   Full reference: [packages/contextual-reels/docs/STRATEGIES.md](../packages/contextual-reels/docs/STRATEGIES.md).
 - **CXR `servedStatically` tags** — a tag whose config + feed are served from committed per-tag JSON

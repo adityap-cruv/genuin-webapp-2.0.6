@@ -107,7 +107,7 @@ export const DEFAULT_STRATEGIES: Strategies = {
   singleHitWaterfall: false,
   adsDisabled: false,
   mutePassback: false,
-  mutePassbackDelayMs: 3000,
+  mutePassbackDelayMs: 5000,
   initialVolume: 0,
   compactBackgroundColor: undefined,
   autoplayEnabled: false,

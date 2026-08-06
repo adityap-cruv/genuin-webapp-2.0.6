@@ -1,9 +1,10 @@
 /**
  * useMutePassbackGuard — for tags with the `mutePassback` strategy: starts a
- * 3-second timer when the first video begins playing (the `player:play` bus
- * event), NOT on mount — so the window measures muted *playback*, not the
- * feed/tag-load gap before any frame is shown. If the user hasn't unmuted
- * before the timer fires, calls `onAdFail` (passback). The timer is armed once
+ * timer (`mutePassbackDelayMs`, default 5s) when the first video begins playing
+ * (the `player:play` bus event), NOT on mount — so the window measures muted
+ * *playback*, not the feed/tag-load gap before any frame is shown. If the user
+ * hasn't unmuted before the timer fires, calls `onAdFail` (passback). The timer
+ * is armed once
  * (first play only) and cancelled if the user unmutes in time.
  *
  * Must be called from a component mounted inside StrategyProvider +

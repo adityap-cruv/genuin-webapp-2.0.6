@@ -66,7 +66,8 @@ export interface TagExperiment {
  * Immediate-request experiment — for 2% of loads, ungate the request
  * (gateOnUnmute:false) so the ad fires on load without waiting for unmute, and
  * suppress the mute-passback so the volume-0 ad runs instead of being passed
- * back after the 3s muted-playback timer. The other 98% stay gated on unmute.
+ * back after the muted-playback timer (`mutePassbackDelayMs`, default 5s). The
+ * other 98% stay gated on unmute.
  * The tag's base is gated (gateOnUnmute:true in TAG_STRATEGIES) so the override
  * is what ungates the sampled slice.
  */
