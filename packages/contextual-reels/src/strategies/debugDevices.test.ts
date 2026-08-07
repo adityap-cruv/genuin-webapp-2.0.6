@@ -42,9 +42,9 @@ describe("isDebugDeviceFeed", () => {
   });
 
   it("does not match a debug device on a tag outside the debug set", async () => {
-    // The 320x100 sibling is deliberately excluded.
+    // A tag id not present in DEBUG_FEED_TAG_IDS is deliberately excluded.
     const { isDebugDeviceFeed } = await loadWith(`ifa=${ANDROID_ID}`);
-    expect(isDebugDeviceFeed("6a3915b692929ebec64d785e")).toBe(false);
+    expect(isDebugDeviceFeed("6a3aa78ba0daccfd439648b8")).toBe(false);
   });
 
   it("does not match when the tag id is null", async () => {
@@ -188,7 +188,7 @@ describe("getDebugDeviceFeed", () => {
 
   it("resolves undefined for a debug device on an unlisted tag", async () => {
     const { getDebugDeviceFeed } = await loadWith(`ifa=${ANDROID_ID}`);
-    await expect(getDebugDeviceFeed("6a3915b692929ebec64d785e")).resolves.toBeUndefined();
+    await expect(getDebugDeviceFeed("6a3aa78ba0daccfd439648b8")).resolves.toBeUndefined();
   });
 
   it("falls back to the static feed when the fixture is malformed", async () => {

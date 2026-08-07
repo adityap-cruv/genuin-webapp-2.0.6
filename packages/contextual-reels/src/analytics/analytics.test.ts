@@ -73,6 +73,7 @@ describe("EVENT names", () => {
         "VIDEO_THIRD_QUARTILE": "Video Third Quartile",
         "VIDEO_UNMUTED": "Unmuted",
         "VIDEO_WATCH": "Video Watch",
+        "VISIBILITY_DIAGNOSTIC": "Visibility Diagnostic",
       }
     `);
   });

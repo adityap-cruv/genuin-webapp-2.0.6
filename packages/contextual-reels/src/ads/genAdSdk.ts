@@ -12,6 +12,7 @@ import type { AdProviderKind } from "@cxr/ads/normalizers";
 import { EVENT } from "@cxr/analytics/analytics";
 import { hostMacros } from "@cxr/hostMacros";
 import { useEventBus } from "@cxr/instance/InstanceContext";
+import { sampleVisibilityDiagnostic } from "@cxr/monitoring/visibilityDiagnostic";
 import { resolveClientIp } from "@cxr/platform/device";
 import { useAnalytics } from "@cxr/providers/AnalyticsProvider";
 import { DEFAULT_UNMUTE_VOLUME } from "@cxr/providers/PlayerProvider";
@@ -487,11 +488,28 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
           setTimeout(() => {
             if (cancelled) return;
             const slot = containerRef?.current;
+            if (!slot) return;
+
+            // Visibility diagnostic: needs only the container and fires for
+            // EVERY fill (media or not) — a natively-hidden unit is exactly what
+            // this beacon exists to catch, and IO v1 (`unit_visible`) cannot see
+            // it. Carries the same `forced_fill` so debug-device synthetic fills
+            // are filterable and audio+visibility correlate per impression.
+            void sampleVisibilityDiagnostic(slot, {
+              wants_audible_ad_start: true,
+              forced_fill: didServeDebugDeviceFeed(tagId),
+            })
+              .then((snapshot) => {
+                if (cancelled || !snapshot) return;
+                sendEvent(EVENT.VISIBILITY_DIAGNOSTIC, snapshot);
+              })
+              .catch(() => undefined);
+
             // Hand over the CONTAINER, not a pre-picked element: the audio-ad
             // layout renders a decorative content video before the real audio
             // transport, and only once decoding starts can the sampler tell them
             // apart. Picking here would lock onto the decoy.
-            if (!slot || !slot.querySelector("video, audio")) return;
+            if (!slot.querySelector("video, audio")) return;
 
             void sampleAudioDiagnostic(slot, {
               ...extra,

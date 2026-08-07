@@ -73,6 +73,13 @@ export const EVENT = {
   // fill, used to localize "volume up but no sound" to the web layer vs the
   // native audio session (iOS WKWebView). See docs/AUDIO_DIAGNOSTIC_PLAN.md.
   AUDIO_DIAGNOSTIC: "Audio Diagnostic",
+  // Diagnostic-only: one snapshot of every candidate viewability signal per
+  // fill (IntersectionObserver v1/v2, requestAnimationFrame liveness, Page
+  // Visibility, MRAID/OMID, geometry). Fired alongside AUDIO_DIAGNOSTIC so
+  // audio + visibility correlate per impression; exists to find which signal
+  // detects a natively-hidden webview (IO v1 cannot). See
+  // docs/VISIBILITY_DIAGNOSTIC_PLAN.md.
+  VISIBILITY_DIAGNOSTIC: "Visibility Diagnostic",
   CTA_CLICK: "cta_click",
   SHARE: "share",
   SPARK: "spark",

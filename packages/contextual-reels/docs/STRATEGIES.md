@@ -285,11 +285,11 @@ serving them a feed of **static VAST URLs** that always resolve.
 non-debug device pulls **zero** fixture bytes and Vite emits one async chunk per
 device, fetched only on a match.
 
-| Export                      | Kind  | Purpose                                                         |
-| --------------------------- | ----- | --------------------------------------------------------------- |
-| `isDebugDeviceFeed(tagId)`  | sync  | Fixture-free membership check — never pulls a chunk.            |
-| `getDebugDeviceFeed(tagId)` | async | That device's reels, or `undefined` (caller falls back).        |
-| `DEBUG_FEED_TAG_IDS`        | Set   | Tags the debug feed may replace. Currently the 320x50 tag only. |
+| Export                      | Kind  | Purpose                                                                            |
+| --------------------------- | ----- | ---------------------------------------------------------------------------------- |
+| `isDebugDeviceFeed(tagId)`  | sync  | Fixture-free membership check — never pulls a chunk.                               |
+| `getDebugDeviceFeed(tagId)` | async | That device's reels, or `undefined` (caller falls back).                           |
+| `DEBUG_FEED_TAG_IDS`        | Set   | Tags the debug feed may replace. Currently five tags (incl. the 320x50 audio tag). |
 
 Fixtures live in [`src/providers/debug-device/`](../src/providers/debug-device/)
 as `<lowercase-device-id>.feed.json`, stored as the **full** gateway envelope
@@ -363,8 +363,7 @@ serves. Treat the CDN as the source of truth.
 2. Add a thunk keyed by the **lowercase** id to `DEBUG_FEED_LOADERS`.
 
 No consumer code changes. To cover another tag, add its id to
-`DEBUG_FEED_TAG_IDS` (the 320x100 sibling `6a3915b692929ebec64d785e` is
-deliberately excluded today).
+`DEBUG_FEED_TAG_IDS`.
 
 **If the gate silently no-ops** — ordinary passback behaviour on a device you
 expect to match — the likely cause is that the id Infolinks targets differs from

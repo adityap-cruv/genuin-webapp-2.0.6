@@ -1839,6 +1839,67 @@ describe("useGenAdInstance — audio diagnostic beacon", () => {
     unmount(root, container);
   });
 
+  it("emits neither beacon when the instance is torn down mid-sample", async () => {
+    // Sampling starts on fill, but both the visibility (500ms) and audio (800ms)
+    // windows are still open when the unit unmounts. The `cancelled` re-check in
+    // each `.then` must swallow the late resolution so no beacon fires for a
+    // slot that is already gone.
+    vi.useFakeTimers();
+    strategyMock.value = { initialVolume: 0.2 };
+    const containerRef = containerWithMedia();
+
+    const { root, container } = mountHook({ ...baseProps, isActive: true, containerRef });
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    await act(async () => {
+      (lastInitOptions.onWaterfallSuccess as (p: string) => void)("video");
+    });
+    // Let the emit's setTimeout(0) fire so both samplers START (promises pending)...
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(0);
+    });
+    // ...then tear down (sets `cancelled`) before either window elapses...
+    unmount(root, container);
+    // ...and drain the windows: both promises resolve into a cancelled instance.
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1000);
+    });
+
+    expect(sendEventMock.mock.calls.find(([name]) => name === "Visibility Diagnostic")).toBeUndefined();
+    expect(sendEventMock.mock.calls.find(([name]) => name === "Audio Diagnostic")).toBeUndefined();
+
+    vi.useRealTimers();
+  });
+
+  it("skips both beacons when the container ref is null on fill", async () => {
+    // With no container there is nothing to measure — the `if (!slot) return`
+    // guard must bail before either sampler runs.
+    vi.useFakeTimers();
+    strategyMock.value = { initialVolume: 0.2 };
+
+    const { root, container } = mountHook({
+      ...baseProps,
+      isActive: true,
+      containerRef: { current: null },
+    });
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    await act(async () => {
+      (lastInitOptions.onWaterfallSuccess as (p: string) => void)("video");
+    });
+    await flushBeacon();
+
+    expect(sendEventMock.mock.calls.find(([name]) => name === "Visibility Diagnostic")).toBeUndefined();
+    expect(sendEventMock.mock.calls.find(([name]) => name === "Audio Diagnostic")).toBeUndefined();
+
+    vi.useRealTimers();
+    unmount(root, container);
+  });
+
   it("measures the audio element, not the decorative content video beside it", async () => {
     // On-device regression: the audio-ad layout renders a muted, audio-less
     // content video BEFORE the audio transport. First-match selection reported

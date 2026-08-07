@@ -37,12 +37,15 @@ import type { Reel } from "@cxr/types";
 const DEVICE_ID_MACRO_KEYS = ["ifa", "appidfa", "appaid", "deviceid"] as const;
 
 /**
- * Tags the debug feed may replace. Restricted to the 320x50 tag the audibility
- * bug is filed against, so a debug handset browsing any other tag sees ordinary
- * production behaviour.
+ * Tags the debug feed may replace. A debug handset browsing any tag outside this
+ * set sees ordinary production behaviour.
  */
 export const DEBUG_FEED_TAG_IDS: ReadonlySet<string> = new Set([
   "6a39163e92929ebec64d78ab", // 320x50 — the reported audio tag
+  "6a3915b692929ebec64d785e",
+  "6a3916de30e1406c10507518",
+  "6a391708a7d9f8da7f6e56ad",
+  "6a6892e52ca77d200369fb9e",
 ]);
 
 /**
