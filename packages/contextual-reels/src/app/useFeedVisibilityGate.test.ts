@@ -16,6 +16,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 let mockIsVisible: boolean | null = null;
 let mockSource: "measured" | "unsupported" | "error" | "pending" = "measured";
 let mockCrossOriginRoot: boolean | null = null;
+let mockTrulyVisible: boolean | null = null;
 const useInViewRefMock = vi.fn();
 const useInViewMock = vi.fn<
   (options?: { enabled?: boolean }) => {
@@ -23,12 +24,14 @@ const useInViewMock = vi.fn<
     isVisible: boolean | null;
     source: typeof mockSource;
     crossOriginRoot: boolean | null;
+    trulyVisible: boolean | null;
   }
 >(() => ({
   ref: useInViewRefMock,
   isVisible: mockIsVisible,
   source: mockSource,
   crossOriginRoot: mockCrossOriginRoot,
+  trulyVisible: mockTrulyVisible,
 }));
 vi.mock("@cxr/monitoring/useInView", () => ({
   useInView: (options?: { enabled?: boolean }) => useInViewMock(options),
@@ -99,6 +102,7 @@ describe("useFeedVisibilityGate", () => {
     mockIsVisible = null;
     mockSource = "measured";
     mockCrossOriginRoot = null;
+    mockTrulyVisible = null;
     testVisibilityGate = false;
     testTimeoutMs = 30_000;
     testDestroyOnHide = false;
@@ -428,6 +432,33 @@ describe("useFeedVisibilityGate", () => {
 
       // Same discipline as unit_visible-while-null: don't stamp an unknown as a
       // value. The field is absent, not `null`.
+      expect(setLiveEventContextMock).toHaveBeenCalledWith({
+        unit_visible: true,
+        unit_visible_source: "measured",
+      });
+    });
+
+    it("stamps unit_truly_visible alongside unit_visible when the consolidated verdict is known", () => {
+      // The field repro: IO v1 says visible, the consolidated verdict says
+      // hidden. Both must be carried so the data can compare them.
+      testVisibilityGate = false;
+      mockIsVisible = true;
+      mockTrulyVisible = false;
+      render();
+
+      expect(setLiveEventContextMock).toHaveBeenCalledWith({
+        unit_visible: true,
+        unit_visible_source: "measured",
+        unit_truly_visible: false,
+      });
+    });
+
+    it("omits unit_truly_visible while the consolidated verdict is unknown (null)", () => {
+      testVisibilityGate = false;
+      mockIsVisible = true;
+      mockTrulyVisible = null;
+      render();
+
       expect(setLiveEventContextMock).toHaveBeenCalledWith({
         unit_visible: true,
         unit_visible_source: "measured",

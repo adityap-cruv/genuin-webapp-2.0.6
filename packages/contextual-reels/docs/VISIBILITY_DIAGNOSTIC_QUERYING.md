@@ -21,48 +21,61 @@ change the `unit_visible` definition. Full rationale:
 
 ---
 
+## ⚠️ Two schemas — know which one you have
+
+There are **two** ways this data is exposed, and the query syntax is completely different. Check which
+one your warehouse gives you before copy-pasting anything below.
+
+**A — the flattened relational view: `rudder_logs.visibility_diagnostic`** (what field runs on
+2026-08 used). Every payload key is already its **own top-level column** with the underscore-flattened
+name (`event_details_io_v2_is_visible`, `device_details_os_type`, `user_details_deviceid`) — a real
+typed column, no JSON extraction. Bools are real Bools, so `NOT event_details_forced_fill` and
+`countIf(event_details_io_v1_intersecting AND NOT event_details_io_v2_is_visible)` work directly. The
+time column is `timestamp`. **This is the form the recipes below are written in.**
+
+**B — the raw blob table: `temp_adreels_logs`** (the audio-doc schema). One JSON blob in a `data`
+column; every field read via `JSONExtractString/Bool/Float(data, 'event_details_…')`; time column is
+`_timestamp`; event filter `event = 'visibility_diagnostic'`. If you are on this table, translate each
+recipe: `event_details_X` → `JSONExtractBool(data,'event_details_X')` (or `…String`/`…Float`), and
+add `and event = 'visibility_diagnostic'`. See
+[ANALYTICS_QUERYING.md → Schema](ANALYTICS_QUERYING.md#schema) for that form's traps (they still
+apply: a missing key extracts as `false`/`''`/`0`, JSON extraction is a full scan, etc.).
+
+The **field semantics** in the reference below are identical across both — only the access syntax
+differs. Two things specific to this beacon regardless of schema:
+
+1. The event is `Visibility Diagnostic` (view B lowercases it to `visibility_diagnostic`).
+2. The interesting fields are **Bools and Floats** — `raf_fps`, `io_v1_ratio`, `computed_opacity`,
+   geometry and viewport are numeric; treat them as such (`round(...)`, not a Bool test).
+
 ## The 30-second version
+
+Schema A (flat columns — the field-tested form):
 
 ```sql
 select
-  JSONExtractString(data, 'device_details_os_type')                as os_type,
-  JSONExtractBool(data,   'event_details_io_v1_intersecting')       as io_v1_intersecting,
-  JSONExtractBool(data,   'event_details_io_v2_is_visible')         as io_v2_is_visible,
-  round(JSONExtractFloat(data, 'event_details_raf_fps'), 1)         as raf_fps,
-  count(*)                                                        as events,
-  uniqExact(JSONExtractString(data, 'event_details_visit_id'))      as visits
-from temp_adreels_logs
-where _timestamp >= now() - interval 6 hour
-  and event = 'visibility_diagnostic'
+  device_details_os_type            as os_type,
+  event_details_io_v1_intersecting  as io_v1_intersecting,
+  event_details_io_v2_is_visible    as io_v2_is_visible,
+  round(event_details_raf_fps, 1)   as raf_fps,
+  count(*)                          as events,
+  uniqExact(event_details_visit_id) as visits
+from rudder_logs.visibility_diagnostic
+where date(timestamp) >= today() - 1
 group by 1, 2, 3, 4
 order by events desc;
 ```
-
-The four schema facts that will each cost you a failed query are **identical to the audio doc** and
-not repeated here — table is `temp_adreels_logs`, everything is one JSON blob in `data`, keys are
-underscore-flattened, `event` is snake_case. Two that are specific to this beacon:
-
-1. **The event name is `visibility_diagnostic`** (SDK sends `"Visibility Diagnostic"`).
-2. **The interesting fields are Bools and Floats, not just Bools** — `raf_fps`, `io_v1_ratio`,
-   `computed_opacity`, and all the geometry/viewport fields need `JSONExtractFloat`, not
-   `JSONExtractBool`.
 
 ---
 
 ## Schema
 
-Same columns (`event`, `_timestamp`, `data`), same underscore-flattening, same event-name transform
-as the audio beacon — see [ANALYTICS_QUERYING.md → Schema](ANALYTICS_QUERYING.md#schema). The
-snapshot lands under `event_details_*`; the analytics layer stamps the same envelope
-(`build_id`, `page`, `tag_id`, `visit_id`, `device_details_*`, `user_details_*`) on this event as on
-every other, so all the common-field queries in the audio doc work unchanged with `event =
-'visibility_diagnostic'`.
-
-### Event-name transform
-
-| SDK sends                 | `event` column          |
-| ------------------------- | ----------------------- |
-| `"Visibility Diagnostic"` | `visibility_diagnostic` |
+Both forms carry the same underscore-flattened keys — the snapshot under `event_details_*`, plus the
+envelope the analytics layer stamps on every event (`build_id`, `page`, `tag_id`, `visit_id`,
+`device_details_*`, `user_details_*`). The only difference is access: **schema A** exposes each as its
+own typed column (`event_details_io_v2_is_visible`); **schema B** nests everything in the `data` JSON
+blob read via `JSONExtract*`. See the "Two schemas" box above. On schema B the common-field traps in
+[ANALYTICS_QUERYING.md → Traps](ANALYTICS_QUERYING.md#traps) apply verbatim.
 
 ---
 
@@ -176,42 +189,41 @@ This is the **opposite** of the audio doc's trap 8. There, `forced_fill` impress
 audibility _rate_ and must be filtered out. Here, the whole investigation started from a
 device-targeted reproduction, so:
 
-- **To study the known-hidden reproduction**, filter _in_: `AND JSONExtractBool(data,
-'event_details_forced_fill')`. This isolates the test handset on the 320×480 L5 tag
+- **To study the known-hidden reproduction**, filter _in_: `AND event_details_forced_fill`. This
+  isolates the test handset on the 320×480 L5 tag
   ([`6a6892e52ca77d200369fb9e`](../src/strategies/strategyConfig.ts)) where the audible-but-invisible
   symptom was confirmed on-device.
 - **To measure the field prevalence** across real traffic (how often does IO v2 disagree with IO v1
-  in the wild), filter it _out_, exactly like the audio rate: `AND NOT JSONExtractBool(data,
-'event_details_forced_fill')`.
+  in the wild), filter it _out_, exactly like the audio rate: `AND NOT event_details_forced_fill`.
 
-Decide which question you are answering before you write the `WHERE`. The debug handset is a
-ground-truth probe, not a sample of the population.
+(Schema B: `JSONExtractBool(data,'event_details_forced_fill')`.) Decide which question you are
+answering before you write the `WHERE`. The debug handset is a ground-truth probe, not a sample of the
+population.
 
 ### V2. A `null` signal is not a "visible" signal — split "unsupported" from "hidden"
 
-Every candidate field is nullable and extracts as `false`/`0` when the API was unsupported or no
-callback arrived (trap 2). For this beacon that ambiguity is dangerous in a specific way:
-`io_v2_is_visible` extracting as `false` can mean **either** "the browser says it is not painted"
-(the finding you want) **or** "IO v2 is unsupported here" (no information). Always gate on the
-support flag:
+Every candidate field reads `false`/`0` when the API was unsupported or no callback arrived. For this
+beacon that ambiguity is dangerous in a specific way: `io_v2_is_visible = false` can mean **either**
+"the browser says it is not painted" (the finding you want) **or** "IO v2 is unsupported here" (no
+information). Always gate on the support flag:
 
 ```sql
 -- IO v2 disagreement, restricted to runtimes that actually support IO v2
 select
-  JSONExtractBool(data, 'event_details_io_v1_intersecting') as io_v1,
-  JSONExtractBool(data, 'event_details_io_v2_is_visible')   as io_v2_visible,
-  count(*) as events,
-  uniqExact(JSONExtractString(data, 'event_details_visit_id')) as visits
-from temp_adreels_logs
-where _timestamp >= now() - interval 24 hour
-  and event = 'visibility_diagnostic'
-  and JSONExtractBool(data, 'event_details_io_v2_supported')          -- <-- gate
+  event_details_io_v1_intersecting  as io_v1,
+  event_details_io_v2_is_visible    as io_v2_visible,
+  count(*)                          as events,
+  uniqExact(event_details_visit_id) as visits
+from rudder_logs.visibility_diagnostic
+where date(timestamp) >= today() - 1
+  and event_details_io_v2_supported          -- <-- gate
 group by 1, 2
 order by events desc;
 ```
 
 Same discipline for `raf_fps` (gate on `raf_supported`), the MRAID fields (gate on `mraid_present`),
-and `document_prerendering` (`JSONHas` it before trusting `false`).
+and `document_prerendering` (confirm the column is populated before trusting `false`). This is the
+`io_v2_supported = 0` iOS lesson from the field: a `false` there is "can't tell", not "hidden".
 
 ---
 
@@ -224,19 +236,18 @@ hidden, to see which signal correctly reports it.
 
 ```sql
 select
-  JSONExtractBool(data,  'event_details_io_v1_intersecting')  as io_v1_intersecting,   -- expect true (the bug)
-  JSONExtractBool(data,  'event_details_io_v2_supported')     as io_v2_supported,
-  JSONExtractBool(data,  'event_details_io_v2_is_visible')    as io_v2_is_visible,      -- candidate fix
-  round(JSONExtractFloat(data, 'event_details_raf_fps'), 1)   as raf_fps,               -- candidate fix
-  JSONExtractString(data, 'event_details_document_visibility_state') as visibility_state,
-  JSONExtractBool(data,  'event_details_mraid_present')       as mraid_present,
-  JSONExtractBool(data,  'event_details_mraid_is_viewable')   as mraid_is_viewable,     -- authoritative if present
-  count(*) as events,
-  uniqExact(JSONExtractString(data, 'event_details_visit_id')) as visits
-from temp_adreels_logs
-where _timestamp >= now() - interval 24 hour
-  and event = 'visibility_diagnostic'
-  and JSONExtractBool(data, 'event_details_forced_fill')       -- <-- the reproduction only
+  event_details_io_v1_intersecting        as io_v1_intersecting,   -- expect true (the bug)
+  event_details_io_v2_supported           as io_v2_supported,
+  event_details_io_v2_is_visible          as io_v2_is_visible,      -- candidate fix
+  round(event_details_raf_fps, 1)         as raf_fps,               -- candidate fix
+  event_details_document_visibility_state as visibility_state,
+  event_details_mraid_present             as mraid_present,
+  event_details_mraid_is_viewable         as mraid_is_viewable,     -- authoritative if present
+  count(*)                                as events,
+  uniqExact(event_details_visit_id)       as visits
+from rudder_logs.visibility_diagnostic
+where date(timestamp) >= today() - 1
+  and event_details_forced_fill       -- <-- the reproduction only
 group by 1, 2, 3, 4, 5, 6, 7
 order by events desc;
 ```
@@ -252,77 +263,89 @@ How often would switching `unit_visible` to IO v2 change the verdict, on genuine
 
 ```sql
 select
-  JSONExtractString(data, 'device_details_os_type')    as os_type,
-  JSONExtractString(data, 'device_details_app_bundle') as app_bundle,
-  count(*) as events,
-  uniqExact(JSONExtractString(data, 'event_details_visit_id')) as visits,
-  countIf(
-    JSONExtractBool(data, 'event_details_io_v1_intersecting')
-    and not JSONExtractBool(data, 'event_details_io_v2_is_visible')
-  ) as v1_yes_v2_no,
-  round(100.0 * countIf(
-    JSONExtractBool(data, 'event_details_io_v1_intersecting')
-    and not JSONExtractBool(data, 'event_details_io_v2_is_visible')
-  ) / count(*), 1) as disagree_pct
-from temp_adreels_logs
-where date(_timestamp) between '2026-08-05' and '2026-08-07'
-  and event = 'visibility_diagnostic'
-  and JSONExtractBool(data, 'event_details_io_v2_supported')     -- only where IO v2 can answer
-  and not JSONExtractBool(data, 'event_details_forced_fill')     -- population, not the probe
+  device_details_os_type            as os_type,
+  device_details_app_bundle         as app_bundle,
+  count(*)                          as events,
+  uniqExact(event_details_visit_id) as visits,
+  countIf(event_details_io_v1_intersecting
+          and not event_details_io_v2_is_visible)                        as v1_yes_v2_no,
+  round(100.0 * countIf(event_details_io_v1_intersecting
+          and not event_details_io_v2_is_visible) / count(*), 1)         as disagree_pct
+from rudder_logs.visibility_diagnostic
+where date(timestamp) between '2026-08-05' and '2026-08-07'
+  and event_details_io_v2_supported     -- only where IO v2 can answer
+  and not event_details_forced_fill     -- population, not the probe
 group by 1, 2
 order by events desc;
 ```
+
+This is the exact query whose fleet output is analysed in
+[VISIBILITY_DIAGNOSTIC_FINDINGS.md §5](VISIBILITY_DIAGNOSTIC_FINDINGS.md). **Note the iOS lesson**: iOS
+rows have `io_v2_supported = 0`, so they are excluded by the gate — for iOS you must read geometry
+(next recipe), not this disagreement rate.
 
 ### rAF liveness distribution (composited vs not)
 
 ```sql
 select
-  JSONExtractString(data, 'device_details_os_type') as os_type,
+  device_details_os_type as os_type,
   multiIf(
-    JSONExtractFloat(data, 'event_details_raf_fps') < 1,  '0-1 fps (not drawn)',
-    JSONExtractFloat(data, 'event_details_raf_fps') < 15, '1-15 fps (throttled)',
-                                                          '15+ fps (live)') as raf_bucket,
-  count(*) as events,
-  uniqExact(JSONExtractString(data, 'event_details_visit_id')) as visits
-from temp_adreels_logs
-where _timestamp >= now() - interval 24 hour
-  and event = 'visibility_diagnostic'
-  and JSONExtractBool(data, 'event_details_raf_supported')
+    event_details_raf_fps < 1,  '0-1 fps (not drawn)',
+    event_details_raf_fps < 15, '1-15 fps (throttled)',
+                                '15+ fps (live)') as raf_bucket,
+  count(*)                          as events,
+  uniqExact(event_details_visit_id) as visits
+from rudder_logs.visibility_diagnostic
+where date(timestamp) >= today() - 1
+  and event_details_raf_supported
 group by 1, 2
 order by 1, 2;
 ```
 
-### Geometry sanity — are hidden units zero-sized or off-screen
+### Geometry sanity — the iOS signal (and the native-hide confirmation)
+
+On iOS this is the ONLY signal (IO v2 absent). The shipped `trulyVisible` rule is
+**area-majority**: hidden ⇔ less than half the rect area is inside the viewport, OR the inner viewport
+is zero. Reproduce that rule rather than the cruder `rect_x < 0` proxy:
 
 ```sql
 select
-  round(JSONExtractFloat(data, 'event_details_rect_width'))  as w,
-  round(JSONExtractFloat(data, 'event_details_rect_height')) as h,
-  JSONExtractString(data, 'event_details_computed_display')    as display,
-  JSONExtractString(data, 'event_details_computed_visibility') as visibility,
-  round(JSONExtractFloat(data, 'event_details_computed_opacity'), 2) as opacity,
-  JSONExtractBool(data, 'event_details_in_viewport') as in_viewport,
-  count(*) as events
-from temp_adreels_logs
-where _timestamp >= now() - interval 24 hour
-  and event = 'visibility_diagnostic'
-  and JSONExtractBool(data, 'event_details_forced_fill')
-group by 1, 2, 3, 4, 5, 6
+  device_details_os_type as os_type,
+  countIf(event_details_viewport_inner_width = 0
+          or event_details_viewport_inner_height = 0)                       as zero_inner_vp,
+  -- area-majority off-screen: visible fraction of the rect <= 0.5
+  countIf(
+    (greatest(0, least(event_details_rect_x + event_details_rect_width,  event_details_viewport_inner_width)
+                 - greatest(event_details_rect_x, 0))
+     * greatest(0, least(event_details_rect_y + event_details_rect_height, event_details_viewport_inner_height)
+                 - greatest(event_details_rect_y, 0)))
+    / nullIf(event_details_rect_width * event_details_rect_height, 0) <= 0.5
+  )                                                                          as area_majority_offscreen,
+  count(*)                          as events,
+  uniqExact(event_details_visit_id) as visits
+from rudder_logs.visibility_diagnostic
+where date(timestamp) >= today() - 1
+  and device_details_os_type = 'ios'
+  and not event_details_forced_fill
+group by 1
 order by events desc;
 ```
 
-If these all read "healthy" (non-zero rect, `display:block`, `visibility:visible`, `opacity:1`,
-`in_viewport:true`) on a unit we know is hidden, that confirms the hiding is native — no DOM geometry
-signal can catch it, and the answer is IO v2 / rAF / MRAID or a partner ask.
+DOM signals (`computed_display`/`visibility`/`opacity`, `in_viewport`) read "healthy" even when the
+unit is natively hidden — that is the whole bug — so do **not** use them as the verdict; the rect +
+inner-viewport combination above is what discriminates.
 
 ### Inspect one raw event
 
-Best first move on this event type — shows every key actually present in the current build.
+Best first move on this event type — shows every field present in the current build.
 
 ```sql
-select data from temp_adreels_logs
-where event = 'visibility_diagnostic' and _timestamp >= now() - interval 1 hour
-limit 1 format Vertical;
+-- schema A: every field is a column
+select * from rudder_logs.visibility_diagnostic
+where date(timestamp) >= today() order by timestamp desc limit 1 format Vertical;
+-- schema B: select data from temp_adreels_logs
+--   where event = 'visibility_diagnostic' and _timestamp >= now() - interval 1 hour
+--   limit 1 format Vertical;
 ```
 
 ---
@@ -339,17 +362,17 @@ select
   v.io_v2_is_visible,
   count(*) as impressions
 from
-  (select JSONExtractString(data,'event_details_visit_id') as visit_id,
-          JSONExtractString(data,'device_details_os_type') as os_type,
-          JSONExtractBool(data,'event_details_element_muted') as element_muted
-   from temp_adreels_logs
-   where _timestamp >= now() - interval 24 hour and event = 'audio_diagnostic') a
+  (select event_details_visit_id   as visit_id,
+          device_details_os_type   as os_type,
+          event_details_element_muted as element_muted
+   from rudder_logs.audio_diagnostic
+   where date(timestamp) >= today() - 1) a
 inner join
-  (select JSONExtractString(data,'event_details_visit_id') as visit_id,
-          JSONExtractBool(data,'event_details_io_v2_is_visible') as io_v2_is_visible
-   from temp_adreels_logs
-   where _timestamp >= now() - interval 24 hour and event = 'visibility_diagnostic'
-     and JSONExtractBool(data,'event_details_io_v2_supported')) v
+  (select event_details_visit_id   as visit_id,
+          event_details_io_v2_is_visible as io_v2_is_visible
+   from rudder_logs.visibility_diagnostic
+   where date(timestamp) >= today() - 1
+     and event_details_io_v2_supported) v
   on a.visit_id = v.visit_id
 group by 1, 2, 3
 order by impressions desc;
@@ -357,6 +380,8 @@ order by impressions desc;
 
 The cell that matters: **audible (`element_muted=false`) AND not visible
 (`io_v2_is_visible=false`)** — the audible-but-invisible impression the whole investigation is about.
+Once `unit_truly_visible` is deployed, join on it directly instead of `io_v2_is_visible` — it already
+folds in the geometry fallback, so it covers iOS too.
 
 ---
 

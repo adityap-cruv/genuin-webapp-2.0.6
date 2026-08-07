@@ -85,7 +85,7 @@ export function useFeedVisibilityGate(): FeedVisibilityGateResult {
   // reading (render/passback/teardown), not whether we take it. `source` rides
   // alongside so the analytics consumer can exclude fail-open readings, and
   // `crossOriginRoot` lets it segment the fragile cross-origin-iframe path.
-  const { ref: overlayRef, isVisible, source, crossOriginRoot } = useInView({});
+  const { ref: overlayRef, isVisible, source, crossOriginRoot, trulyVisible } = useInView({});
 
   const [shouldRender, setShouldRender] = useState<boolean>(() => !visibilityGate);
   const hasBeenVisibleRef = useRef(false);
@@ -161,14 +161,21 @@ export function useFeedVisibilityGate(): FeedVisibilityGateResult {
   // rate can be segmented by frame context — cross-origin iframes (the dominant
   // embed path) are where IntersectionObserver's cross-frame behaviour is most
   // fragile, so their measured readings warrant separate scrutiny.
+  // `unit_truly_visible` is the consolidated verdict (IO v1 ∧ IO v2 / geometry)
+  // stamped ALONGSIDE `unit_visible`, not in place of it — the gate above still
+  // reads the IO-v1-based `isVisible`. Carrying both lets the field data compare
+  // the consolidated signal against today's definition and settle whether to
+  // fold it into the gate later ([VISIBILITY_DIAGNOSTIC_FINDINGS.md]). Stamped
+  // only once measured (not null), same as the others.
   useEffect(() => {
     if (isVisible === null) return;
     setLiveEventContext({
       unit_visible: isVisible,
       unit_visible_source: source,
       ...(crossOriginRoot !== null ? { unit_visible_cross_origin: crossOriginRoot } : {}),
+      ...(trulyVisible !== null ? { unit_truly_visible: trulyVisible } : {}),
     });
-  }, [isVisible, source, crossOriginRoot, setLiveEventContext]);
+  }, [isVisible, source, crossOriginRoot, trulyVisible, setLiveEventContext]);
 
   return { shouldRender, overlayRef };
 }

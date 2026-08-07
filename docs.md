@@ -159,6 +159,7 @@ Feature plans for the `molecules/linkout-new` family — scenario configs, ad sl
 | [packages/contextual-reels/docs/AUDIO_DIAGNOSTIC_ANALYST_GUIDE.md](packages/contextual-reels/docs/AUDIO_DIAGNOSTIC_ANALYST_GUIDE.md)           | **Analyst entry point** — plain-English orientation, layman gloss on every beacon field, standing queries, traps                                                                                                       |
 | [packages/contextual-reels/docs/VISIBILITY_DIAGNOSTIC_PLAN.md](packages/contextual-reels/docs/VISIBILITY_DIAGNOSTIC_PLAN.md)                   | `VISIBILITY_DIAGNOSTIC` beacon — every candidate viewability signal (IO v1/v2, rAF liveness, Page Visibility, MRAID/OMID, geometry) side-by-side to find which detects a natively-hidden WebView; data-collection only |
 | [packages/contextual-reels/docs/VISIBILITY_DIAGNOSTIC_QUERYING.md](packages/contextual-reels/docs/VISIBILITY_DIAGNOSTIC_QUERYING.md)           | **Querying the visibility beacon in ClickHouse** — `visibility_diagnostic` field reference, "which signal flips to hidden" recipes, audio-beacon correlation join, `forced_fill` filtered opposite to the audio doc    |
+| [packages/contextual-reels/docs/VISIBILITY_DIAGNOSTIC_FINDINGS.md](packages/contextual-reels/docs/VISIBILITY_DIAGNOSTIC_FINDINGS.md)           | Running findings log for the visibility investigation — first field capture, audible-but-invisible repro, IO v2 identified as the discriminating signal, rAF ruled out, MRAID absent; prevalence still open            |
 
 ### CXR decisions (ADRs)
 

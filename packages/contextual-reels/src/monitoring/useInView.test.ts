@@ -56,22 +56,57 @@ function installStub(): void {
  * explicitly to simulate the cross-origin-frame nulling.
  */
 function fireEntries(
-  entries: Array<{ isIntersecting: boolean; target?: Element; rootBounds?: DOMRectReadOnly | null }>
+  entries: Array<{
+    isIntersecting: boolean;
+    target?: Element;
+    rootBounds?: DOMRectReadOnly | null;
+    isVisible?: boolean;
+  }>
 ): void {
-  const stub = stubs[stubs.length - 1]!;
+  // When IO v2 is supported the hook creates TWO observers (v1 + a
+  // trackVisibility v2) on the same element; in the browser both receive the
+  // same entry. Drive every stub for the current mount with the same entries so
+  // both callbacks run, exactly as they would live.
   act(() => {
-    stub.callback(
-      entries.map(
-        (e) =>
-          ({
-            isIntersecting: e.isIntersecting,
-            target: e.target ?? stub.observed[0],
-            rootBounds: e.rootBounds === undefined ? ({} as DOMRectReadOnly) : e.rootBounds,
-          }) as IntersectionObserverEntry
-      ),
-      stub as unknown as IntersectionObserver
-    );
+    for (const stub of stubs) {
+      stub.callback(
+        entries.map(
+          (e) =>
+            ({
+              isIntersecting: e.isIntersecting,
+              target: e.target ?? stub.observed[0],
+              rootBounds: e.rootBounds === undefined ? ({} as DOMRectReadOnly) : e.rootBounds,
+              // Only present when the caller drives IO v2 explicitly; left off
+              // otherwise so `"isVisible" in entry` reflects real v2 support.
+              ...(e.isVisible === undefined ? {} : { isVisible: e.isVisible }),
+            }) as IntersectionObserverEntry
+        ),
+        stub as unknown as IntersectionObserver
+      );
+    }
   });
+}
+
+/**
+ * Installs / removes IO v2 support the way the hook detects it — the presence of
+ * `isVisible` on `IntersectionObserverEntry.prototype`. jsdom ships no
+ * `IntersectionObserverEntry` at all, so "supported" synthesises a minimal one.
+ */
+function setIoV2Supported(supported: boolean): void {
+  const win = window as unknown as { IntersectionObserverEntry?: { prototype: Record<string, unknown> } };
+  if (supported) {
+    if (!win.IntersectionObserverEntry) {
+      win.IntersectionObserverEntry = { prototype: {} } as { prototype: Record<string, unknown> };
+    }
+    if (!("isVisible" in win.IntersectionObserverEntry.prototype)) {
+      Object.defineProperty(win.IntersectionObserverEntry.prototype, "isVisible", {
+        value: false,
+        configurable: true,
+      });
+    }
+  } else if (win.IntersectionObserverEntry) {
+    delete win.IntersectionObserverEntry;
+  }
 }
 
 /** Fires the most recently created observer's callback with a single entry. */
@@ -87,15 +122,18 @@ let observedValue: boolean | null;
 let observedSource: "measured" | "unsupported" | "error" | "pending";
 /** Latest `crossOriginRoot` the hook returned, captured on every render. */
 let observedCrossOriginRoot: boolean | null;
+/** Latest `trulyVisible` the hook returned, captured on every render. */
+let observedTrulyVisible: boolean | null;
 let lastNode: HTMLDivElement | null;
 
 /** Mounts a harness that always renders a div and attaches the hook's ref. */
 function setup(options?: UseInViewOptions): void {
   function Harness(): React.JSX.Element {
-    const { ref, isVisible, source, crossOriginRoot } = useInView(options);
+    const { ref, isVisible, source, crossOriginRoot, trulyVisible } = useInView(options);
     observedValue = isVisible;
     observedSource = source;
     observedCrossOriginRoot = crossOriginRoot;
+    observedTrulyVisible = trulyVisible;
     return React.createElement("div", {
       ref: (node: HTMLDivElement | null) => {
         lastNode = node;
@@ -119,8 +157,10 @@ describe("useInView", () => {
     observedValue = undefined as unknown as boolean | null;
     observedSource = undefined as unknown as typeof observedSource;
     observedCrossOriginRoot = undefined as unknown as boolean | null;
+    observedTrulyVisible = undefined as unknown as boolean | null;
     lastNode = null;
     installStub();
+    setIoV2Supported(false);
     window.getComputedStyle = ((element: Element) => realGetComputedStyle(element)) as typeof window.getComputedStyle;
   });
 
@@ -129,6 +169,7 @@ describe("useInView", () => {
     container.remove();
     (window as unknown as { IntersectionObserver: unknown }).IntersectionObserver = realIntersectionObserver;
     window.getComputedStyle = realGetComputedStyle;
+    setIoV2Supported(false);
   });
 
   it("observes the attached element on mount and reports null until the first callback", () => {
@@ -302,5 +343,119 @@ describe("useInView", () => {
     expect(stubs).toHaveLength(0);
     expect(observedValue).toBe(true);
     expect(observedSource).toBe("unsupported");
+  });
+
+  // --- trulyVisible: the consolidated verdict (IO v1 ∧ IO v2 / geometry) ---
+  //
+  // Measurement-only signal that folds the field-confirmed IO v2 signal (and a
+  // geometry fallback where IO v2 is unsupported) on top of today's IO v1
+  // reading. It NEVER weakens the fail-open guarantees `isVisible` gives the
+  // revenue gate — it is an extra field, not a replacement.
+  describe("trulyVisible (consolidated verdict)", () => {
+    /** Positions the target's rect fully on-screen (jsdom inner viewport is 1024×768). */
+    function stubRectOnScreen(): void {
+      lastNode!.getBoundingClientRect = () =>
+        ({ x: 10, y: 10, width: 320, height: 480, top: 10, left: 10, right: 330, bottom: 490 }) as DOMRect;
+    }
+    /** Positions the target's rect collapsed off-screen — the field repro (rect_x/y < 0, tiny). */
+    function stubRectOffScreen(): void {
+      lastNode!.getBoundingClientRect = () =>
+        ({ x: -160, y: -240, width: 320, height: 480, top: -240, left: -160, right: 160, bottom: 240 }) as DOMRect;
+    }
+
+    it("is null before the first callback (same pending semantics as isVisible)", () => {
+      setup();
+      expect(observedTrulyVisible).toBeNull();
+    });
+
+    it("fails open to true when IntersectionObserver is unsupported", () => {
+      (window as unknown as { IntersectionObserver: unknown }).IntersectionObserver =
+        undefined as unknown as typeof IntersectionObserver;
+      setup();
+      expect(observedTrulyVisible).toBe(true);
+    });
+
+    it("is false whenever IO v1 is not intersecting, regardless of v2/geometry", () => {
+      setIoV2Supported(true);
+      setup();
+      stubRectOnScreen();
+      fireEntries([{ isIntersecting: false, isVisible: true }]);
+      expect(observedTrulyVisible).toBe(false);
+    });
+
+    describe("with IO v2 supported", () => {
+      beforeEach(() => setIoV2Supported(true));
+
+      it("is true when IO v1 intersects AND IO v2 reports painted", () => {
+        setup();
+        fireEntries([{ isIntersecting: true, isVisible: true }]);
+        expect(observedValue).toBe(true);
+        expect(observedTrulyVisible).toBe(true);
+      });
+
+      it("is FALSE when IO v1 intersects but IO v2 reports not painted (the field repro)", () => {
+        setup();
+        // io_v1_intersecting: true → isVisible stays true (today's bug); the
+        // consolidated verdict catches the native hide via io_v2_is_visible:false.
+        fireEntries([{ isIntersecting: true, isVisible: false }]);
+        expect(observedValue).toBe(true);
+        expect(observedTrulyVisible).toBe(false);
+      });
+    });
+
+    describe("with IO v2 unsupported (geometry fallback)", () => {
+      it("is true when IO v1 intersects and the rect is on-screen", () => {
+        setup();
+        stubRectOnScreen();
+        fireEntries([{ isIntersecting: true }]);
+        expect(observedValue).toBe(true);
+        expect(observedTrulyVisible).toBe(true);
+      });
+
+      it("is FALSE when IO v1 intersects but the rect is collapsed off-screen", () => {
+        setup();
+        stubRectOffScreen();
+        fireEntries([{ isIntersecting: true }]);
+        expect(observedValue).toBe(true);
+        expect(observedTrulyVisible).toBe(false);
+      });
+
+      it("fails open to true when the geometry read itself throws", () => {
+        setup();
+        // A getBoundingClientRect that throws must never read as hidden — the
+        // consolidated verdict is revenue-adjacent measurement, fail open.
+        lastNode!.getBoundingClientRect = () => {
+          throw new Error("detached");
+        };
+        fireEntries([{ isIntersecting: true }]);
+        expect(observedValue).toBe(true);
+        expect(observedTrulyVisible).toBe(true);
+      });
+    });
+
+    it("degrades to the geometry fallback when the IO v2 observer constructor throws", () => {
+      // Some runtimes advertise isVisible but throw on `trackVisibility`. The v2
+      // observer creation is wrapped; the v1 path and geometry must still work.
+      setIoV2Supported(true);
+      const OriginalStub = (window as unknown as { IntersectionObserver: new (...a: unknown[]) => unknown })
+        .IntersectionObserver;
+      (window as unknown as { IntersectionObserver: unknown }).IntersectionObserver = function (
+        this: unknown,
+        cb: IntersectionObserverCallback,
+        options?: IntersectionObserverInit & { trackVisibility?: boolean }
+      ) {
+        if (options?.trackVisibility) throw new Error("trackVisibility unsupported");
+        return new (OriginalStub as new (...a: unknown[]) => unknown)(cb, options);
+      } as unknown as typeof IntersectionObserver;
+
+      setup();
+      stubRectOffScreen();
+      fireEntries([{ isIntersecting: true }]);
+
+      // v1 still measured true; consolidated verdict falls through to geometry,
+      // which sees the off-screen rect and reports hidden.
+      expect(observedValue).toBe(true);
+      expect(observedTrulyVisible).toBe(false);
+    });
   });
 });
