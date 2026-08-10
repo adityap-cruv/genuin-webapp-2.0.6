@@ -249,19 +249,19 @@ export const TAG_STRATEGIES: Record<string, TagStrategyEntry> = {
 
   "6a2fefd87ce338c3a5afc605": { singleHitWaterfall: true, initialVolume: 0.2 },
   "6a391232d73aa25887ac2af3": { adBreakEnabled: true, gateOnUnmute: true },
-  "69b298e3d6a6ad57e7b9a464": { singleHitWaterfall: true, mutePassback: true, gateOnUnmute: true },
+  "69b298e3d6a6ad57e7b9a464": { singleHitWaterfall: false, mutePassback: true, gateOnUnmute: true },
   "69b298f4d6a6ad57e7b9a499": {
-    singleHitWaterfall: true,
+    singleHitWaterfall: false,
     mutePassback: true,
     gateOnUnmute: true,
   },
   "6a032e34054c8fcb08582510": {
-    singleHitWaterfall: true,
+    singleHitWaterfall: false,
     mutePassback: true,
     gateOnUnmute: true,
   },
   "6a032de445fa9f171bd291cb": {
-    singleHitWaterfall: true,
+    singleHitWaterfall: false,
     mutePassback: true,
     gateOnUnmute: true,
   },
