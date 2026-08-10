@@ -20,6 +20,7 @@ import {
   getCompactBackgroundColor,
   isAutoplayEnabled,
   isFeedLoopEnabled,
+  getSuppressedEvents,
   DEFAULT_STRATEGIES,
   __resetWarningsForTesting,
 } from "@cxr/strategies/strategies";
@@ -482,5 +483,66 @@ describe("destroyOnHide flag", () => {
 
   it("resolves off for every currently configured tag (nothing opted in yet)", () => {
     expect(resolveStrategies(SINGLE_HIT_TAG).destroyOnHide).toBe(false);
+  });
+});
+
+describe("suppressedEvents", () => {
+  const STATIC_320x50 = "6a39163e92929ebec64d78ab";
+
+  it("defaults to an empty list", () => {
+    expect(DEFAULT_STRATEGIES.suppressedEvents).toEqual([]);
+  });
+
+  it("resolves empty for an unknown tag", () => {
+    expect(resolveStrategies("unknown-suppress-tag").suppressedEvents).toEqual([]);
+    expect(getSuppressedEvents("unknown-suppress-tag").size).toBe(0);
+  });
+
+  it("resolves empty for a configured tag that did not opt in", () => {
+    expect(resolveStrategies(SINGLE_HIT_TAG).suppressedEvents).toEqual([]);
+  });
+
+  it("lists the ads-only interstitial noise events for the 320x50 tag", () => {
+    const suppressed = getSuppressedEvents(STATIC_320x50);
+    // Feed/swipe/embed events carry no signal on a single static interstitial.
+    expect(suppressed.has("Scroll")).toBe(true);
+    expect(suppressed.has("Swipe Next")).toBe(true);
+    expect(suppressed.has("Feed Completed")).toBe(true);
+    // servedStatically reads the feed from a fixture — no /feed round-trip.
+    expect(suppressed.has("Feed API Call Completed")).toBe(true);
+    expect(suppressed.has("Embed Maximized")).toBe(true);
+    // High-frequency video churn off the ad creative.
+    expect(suppressed.has("Video Watch")).toBe(true);
+    expect(suppressed.has("Video First Quartile")).toBe(true);
+    // Video-layer lifecycle markers — redundant with the ad funnel on an ads-only tag.
+    expect(suppressed.has("Video Loaded")).toBe(true);
+    expect(suppressed.has("Video Started")).toBe(true);
+    expect(suppressed.has("Video Play Started")).toBe(true);
+    expect(suppressed.has("Video Complete")).toBe(true);
+  });
+
+  it("never suppresses revenue-funnel, boot, or diagnostic events", () => {
+    const suppressed = getSuppressedEvents(STATIC_320x50);
+    for (const keep of [
+      "Tag Init",
+      "Tag Displayed",
+      "Ad Requested",
+      "Ad Impression",
+      "Ad Completed",
+      "Ad Passback",
+      "Infolinks Impression",
+      "Audio Diagnostic",
+      "Visibility Diagnostic",
+    ]) {
+      expect(suppressed.has(keep)).toBe(false);
+    }
+  });
+
+  it("keeps the 320x50 tag's other overrides intact alongside suppression", () => {
+    const s = resolveStrategies(STATIC_320x50);
+    expect(s.servedStatically).toBe(true);
+    expect(s.singleHitWaterfall).toBe(true);
+    expect(s.initialVolume).toBe(0.2);
+    expect(s.feedLoopEnabled).toBe(false);
   });
 });

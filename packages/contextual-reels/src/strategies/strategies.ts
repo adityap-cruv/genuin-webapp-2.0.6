@@ -122,6 +122,21 @@ export interface Strategies {
    * unless {@link visibilityGate} is on.
    */
   destroyOnHide: boolean;
+  /**
+   * Analytics events to suppress for this tag — a per-tag drop list checked at
+   * the single `AnalyticsProvider.sendEvent` choke point. Each string is matched
+   * verbatim against the event name passed to `sendEvent` (the `EVENT` value,
+   * e.g. `"Video Watch"`, NOT the `EVENT.VIDEO_WATCH` constant name). Any listed
+   * event is dropped before it reaches the Rudderstack buffer; everything else
+   * emits unchanged. Defaults to `[]` (suppress nothing).
+   *
+   * Use to trim analytics volume for tags whose experience makes certain events
+   * meaningless — e.g. a 320×50 ads-only interstitial has no scrollable feed, so
+   * `Scroll`/`Swipe *`/`Feed Completed` carry no signal. Never list revenue-funnel
+   * events (`Ad Requested`/`Ad Impression`/`Ad Passback`/`Tag Displayed`, …) —
+   * dropping them silently corrupts fill/impression tracking.
+   */
+  suppressedEvents: readonly string[];
 }
 
 /**
@@ -147,6 +162,7 @@ export const DEFAULT_STRATEGIES: Strategies = {
   visibilityGate: false,
   visibilityGateTimeoutMs: 30_000,
   destroyOnHide: false,
+  suppressedEvents: [],
 };
 
 /**
@@ -283,4 +299,13 @@ export function isAutoplayEnabled(tagId: string): boolean {
 /** Returns whether the feed wraps last→first for the given tag. Defaults to `true`. */
 export function isFeedLoopEnabled(tagId: string): boolean {
   return resolveStrategies(tagId).feedLoopEnabled;
+}
+
+/**
+ * Returns the set of analytics event names suppressed for the given tag, ready
+ * for O(1) membership checks at the `AnalyticsProvider.sendEvent` choke point.
+ * Empty set when the tag suppresses nothing (the default).
+ */
+export function getSuppressedEvents(tagId: string): ReadonlySet<string> {
+  return new Set(resolveStrategies(tagId).suppressedEvents);
 }

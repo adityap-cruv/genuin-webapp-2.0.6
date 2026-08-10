@@ -35,6 +35,7 @@ import { hostMacros } from "@cxr/hostMacros";
 import { enrichDeviceDetailsWithGeoIp, getDeviceDetailsSnapshot, type DeviceDetails } from "@cxr/platform/device";
 import { windowLink as DEFAULT_WINDOW_LINK } from "@cxr/platform/topWindow";
 import { getSharedGeoIp } from "@cxr/services/api";
+import { getSuppressedEvents } from "@cxr/strategies/strategies";
 import { userId as DEFAULT_USER_ID } from "@cxr/userId";
 import { createLogger } from "@cxr/utils/logger";
 
@@ -141,6 +142,12 @@ export function AnalyticsProvider({ children, tagId, preview = false }: Analytic
   // time (see setLiveEventContext's doc comment). Distinct from basePayloadRef,
   // which is deliberately read later, at flush time.
   const liveContextRef = useRef<Record<string, unknown>>({});
+  // Per-tag analytics drop list, resolved once from the pure strategy config
+  // (this provider sits ABOVE StrategyProvider, so it can't read the strategy
+  // context — but `getSuppressedEvents` is a pure fn of `tagId`). Suppressed
+  // events are dropped in `sendEvent` before they ever reach the buffer, so no
+  // downstream stamping (passback/geoip/visit_id) is spent on them.
+  const suppressedEvents = useMemo(() => getSuppressedEvents(tagId ?? ""), [tagId]);
 
   const setBrandId = useCallback((brandId: number | undefined): void => {
     brandIdRef.current = brandId;
@@ -227,6 +234,10 @@ export function AnalyticsProvider({ children, tagId, preview = false }: Analytic
       sendEvent(eventName, eventDetails) {
         // Preview mode: swallow every event so nothing reaches the buffer.
         if (preview) return;
+        // Per-tag suppression: drop noise events for this tag (e.g. a 320×50
+        // ads-only unit has no feed to scroll/swipe) before any buffering or
+        // context stamping. Managed in strategyConfig.ts — see suppressedEvents.
+        if (suppressedEvents.has(eventName)) return;
         // Captured NOW, at enqueue time — point-in-time fields (e.g.
         // unit_visible) must reflect what was true when the event fired, not
         // whatever liveContextRef becomes by flush time. Contrast with
@@ -257,7 +268,16 @@ export function AnalyticsProvider({ children, tagId, preview = false }: Analytic
       setMandatoryData,
       setAdPassback,
     }),
-    [tagId, preview, setBrandId, setBaseEventContext, setLiveEventContext, setMandatoryData, setAdPassback]
+    [
+      tagId,
+      preview,
+      suppressedEvents,
+      setBrandId,
+      setBaseEventContext,
+      setLiveEventContext,
+      setMandatoryData,
+      setAdPassback,
+    ]
   );
 
   return <AnalyticsContext.Provider value={value}>{children}</AnalyticsContext.Provider>;

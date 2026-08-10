@@ -244,6 +244,60 @@ describe("providers/AnalyticsProvider", () => {
     unmount(root, container);
   });
 
+  it("drops per-tag suppressed events but still emits the rest", async () => {
+    // The 320x50 ads-only tag suppresses feed/video-churn noise (strategyConfig).
+    // "Scroll" is on its drop list; "Ad Impression" (revenue funnel) is not.
+    let readyCb: (() => void) | undefined;
+    readyMock.mockImplementation((cb: () => void) => {
+      readyCb = cb;
+    });
+    setRudder();
+
+    function TwoEventConsumer(): ReactElement {
+      const { sendEvent, setMandatoryData } = useAnalytics();
+      useEffect(() => {
+        setMandatoryData({ visit_id: "test-visit-id" });
+        sendEvent("Scroll", { foo: "bar" }); // suppressed for this tag
+        sendEvent("Ad Impression", { foo: "bar" }); // kept
+      }, [sendEvent, setMandatoryData]);
+      return <span>two</span>;
+    }
+
+    const { root, container } = mount(
+      <AnalyticsProvider tagId="6a39163e92929ebec64d78ab" preview={false}>
+        <TwoEventConsumer />
+      </AnalyticsProvider>
+    );
+    act(() => readyCb?.());
+    await settleGeoip();
+
+    // Only the un-suppressed event reaches Rudderstack.
+    expect(trackMock).toHaveBeenCalledTimes(1);
+    expect(trackMock.mock.calls[0]?.[0]).toBe("Ad Impression");
+    unmount(root, container);
+  });
+
+  it("does not suppress any event for a tag with no drop list", async () => {
+    let readyCb: (() => void) | undefined;
+    readyMock.mockImplementation((cb: () => void) => {
+      readyCb = cb;
+    });
+    setRudder();
+    const handle: ConsumerHandle = { send: () => undefined };
+    const { root, container } = mount(
+      <AnalyticsProvider tagId="unknown-no-suppress-tag" preview={false}>
+        <Consumer name="Scroll" handle={handle} />
+      </AnalyticsProvider>
+    );
+    act(() => handle.send());
+    act(() => readyCb?.());
+    await settleGeoip();
+    // "Scroll" is only dropped for tags that list it — here it flows through.
+    expect(trackMock).toHaveBeenCalledTimes(1);
+    expect(trackMock.mock.calls[0]?.[0]).toBe("Scroll");
+    unmount(root, container);
+  });
+
   it("stamps the resolved geoip onto every flushed event", async () => {
     getSharedGeoIpMock.mockReset().mockResolvedValue({ city: "BLR", country_code: "IN" });
     let readyCb: (() => void) | undefined;

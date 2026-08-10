@@ -67,21 +67,22 @@ App  →  <StrategyProvider tagId>  →  resolveStrategies(tagId)  →  Strategi
 
 ## Current strategies
 
-| Key                       | Type      | Default    | Meaning                                                                                                                                                                                                                                                                                                                                                                  |
-| ------------------------- | --------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `genAiEnabled`            | `boolean` | `false`    | GenAI Octo experience available for this tag.                                                                                                                                                                                                                                                                                                                            |
-| `adBreakEnabled`          | `boolean` | `false`    | Mock fullscreen ad break fires on organic reel playback (dev/demo fallback when the backend supplies no `ad_configs`).                                                                                                                                                                                                                                                   |
-| `gateOnUnmute`            | `boolean` | `false`    | Default for `NormalisedAd.gateOnUnmute` when the backend omits `gate_on_unmute`. Suppresses the ad _request_ while muted.                                                                                                                                                                                                                                                |
-| `singleHitWaterfall`      | `boolean` | `false`    | Fill / no-fill waterfall callbacks are suppressed after the first per page load.                                                                                                                                                                                                                                                                                         |
-| `adsDisabled`             | `boolean` | `false`    | Hard kill switch — no ads ever shown. Drops standalone ad slides and strips the organic ad break. Overrides `adBreakEnabled`.                                                                                                                                                                                                                                            |
-| `mutePassback`            | `boolean` | `false`    | On first `player:play`, start a timer; if still muted when it fires, trigger an ad passback (`onAdFail`). Distinct from `gateOnUnmute` — this passes the slot back rather than just suppressing the request.                                                                                                                                                             |
-| `mutePassbackDelayMs`     | `number`  | `5000`     | Delay before the `mutePassback` timer fires, measured from the first `player:play`. Ignored unless `mutePassback` is on.                                                                                                                                                                                                                                                 |
-| `initialVolume`           | `number`  | `0`        | Volume (0..1) the feed starts at on first load. `0` plays unmuted-but-silent and shows the unmute prompt; set per-tag (e.g. `0.2`) to start audible. A browser autoplay block snaps it back to 0.                                                                                                                                                                        |
-| `servedStatically`        | `boolean` | `false`    | Serve the tag's config + feed from committed per-tag fixtures — skip `/ad_creative` and `/feed`. `/ip_info` is still fetched (geoip stays on analytics). The ad URL is rewritten client-side (real `ua`, `[PAGE_URL]`, real client `ip` from geoip). See [Statically-served tags](#statically-served-tags).                                                              |
-| `feedLoopEnabled`         | `boolean` | **`true`** | Whether the feed wraps from the last slide back to the first. See [Finite feeds](#finite-feeds-feedloopenabled).                                                                                                                                                                                                                                                         |
-| `visibilityGate`          | `boolean` | `false`    | Hold feed render until the unit is on screen; passback `unit_hidden` if it stays hidden past `visibilityGateTimeoutMs`; tear down on a later hide (only if `destroyOnHide`). Off = today's unconditional render. **Measurement is decoupled — `unit_visible` is stamped on every tag regardless of this flag** (see [Visibility gate](#visibility-gate-visibilitygate)). |
-| `visibilityGateTimeoutMs` | `number`  | `30_000`   | How long the unit may stay hidden before `visibilityGate` passes it back, measured from the gate's first effect commit. Ignored unless `visibilityGate` is on.                                                                                                                                                                                                           |
-| `destroyOnHide`           | `boolean` | `false`    | Once `visibilityGate` has rendered the unit, a later hide tears it down (no passback) only when `true`. Default off = once visible, the unit stays up. Ignored unless `visibilityGate` is on.                                                                                                                                                                            |
+| Key                       | Type       | Default    | Meaning                                                                                                                                                                                                                                                                                                                                                                                              |
+| ------------------------- | ---------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `genAiEnabled`            | `boolean`  | `false`    | GenAI Octo experience available for this tag.                                                                                                                                                                                                                                                                                                                                                        |
+| `adBreakEnabled`          | `boolean`  | `false`    | Mock fullscreen ad break fires on organic reel playback (dev/demo fallback when the backend supplies no `ad_configs`).                                                                                                                                                                                                                                                                               |
+| `gateOnUnmute`            | `boolean`  | `false`    | Default for `NormalisedAd.gateOnUnmute` when the backend omits `gate_on_unmute`. Suppresses the ad _request_ while muted.                                                                                                                                                                                                                                                                            |
+| `singleHitWaterfall`      | `boolean`  | `false`    | Fill / no-fill waterfall callbacks are suppressed after the first per page load.                                                                                                                                                                                                                                                                                                                     |
+| `adsDisabled`             | `boolean`  | `false`    | Hard kill switch — no ads ever shown. Drops standalone ad slides and strips the organic ad break. Overrides `adBreakEnabled`.                                                                                                                                                                                                                                                                        |
+| `mutePassback`            | `boolean`  | `false`    | On first `player:play`, start a timer; if still muted when it fires, trigger an ad passback (`onAdFail`). Distinct from `gateOnUnmute` — this passes the slot back rather than just suppressing the request.                                                                                                                                                                                         |
+| `mutePassbackDelayMs`     | `number`   | `5000`     | Delay before the `mutePassback` timer fires, measured from the first `player:play`. Ignored unless `mutePassback` is on.                                                                                                                                                                                                                                                                             |
+| `initialVolume`           | `number`   | `0`        | Volume (0..1) the feed starts at on first load. `0` plays unmuted-but-silent and shows the unmute prompt; set per-tag (e.g. `0.2`) to start audible. A browser autoplay block snaps it back to 0.                                                                                                                                                                                                    |
+| `servedStatically`        | `boolean`  | `false`    | Serve the tag's config + feed from committed per-tag fixtures — skip `/ad_creative` and `/feed`. `/ip_info` is still fetched (geoip stays on analytics). The ad URL is rewritten client-side (real `ua`, `[PAGE_URL]`, real client `ip` from geoip). See [Statically-served tags](#statically-served-tags).                                                                                          |
+| `feedLoopEnabled`         | `boolean`  | **`true`** | Whether the feed wraps from the last slide back to the first. See [Finite feeds](#finite-feeds-feedloopenabled).                                                                                                                                                                                                                                                                                     |
+| `visibilityGate`          | `boolean`  | `false`    | Hold feed render until the unit is on screen; passback `unit_hidden` if it stays hidden past `visibilityGateTimeoutMs`; tear down on a later hide (only if `destroyOnHide`). Off = today's unconditional render. **Measurement is decoupled — `unit_visible` is stamped on every tag regardless of this flag** (see [Visibility gate](#visibility-gate-visibilitygate)).                             |
+| `visibilityGateTimeoutMs` | `number`   | `30_000`   | How long the unit may stay hidden before `visibilityGate` passes it back, measured from the gate's first effect commit. Ignored unless `visibilityGate` is on.                                                                                                                                                                                                                                       |
+| `destroyOnHide`           | `boolean`  | `false`    | Once `visibilityGate` has rendered the unit, a later hide tears it down (no passback) only when `true`. Default off = once visible, the unit stays up. Ignored unless `visibilityGate` is on.                                                                                                                                                                                                        |
+| `suppressedEvents`        | `string[]` | `[]`       | Per-tag analytics drop list. Each string is matched verbatim against the event name at the `AnalyticsProvider.sendEvent` choke point; listed events are dropped before the Rudderstack buffer. Use to trim noise for tags whose experience makes certain events meaningless. **Never list revenue-funnel events.** See [Suppressed analytics events](#suppressed-analytics-events-suppressedevents). |
 
 > **`feedLoopEnabled` is the one flag that defaults _on_.** Every other key defaults to
 > off/safe; looping is the pre-existing behaviour for every tag, so the safe default is
@@ -525,6 +526,139 @@ Resolved in [`strategies.ts`](../src/strategies/strategies.ts), observed by
 [`FeedTree.tsx`](../src/app/FeedTree.tsx)'s `NativeFeedShim`), and the passback routes
 through `onUnitFail` on [`AdProvider`](../src/providers/AdProvider.tsx) — which bypasses
 `singleHitWaterfall` (render was held, so no slot ever requested).
+
+---
+
+## Suppressed analytics events (`suppressedEvents`)
+
+A per-tag drop list for analytics noise. Some tags emit events that carry no
+signal for their experience — a 320×50 ads-only interstitial has no scrollable
+feed, so `Scroll` / `Swipe *` are pure volume. And because the tag is
+`servedStatically`, its feed is read from a committed fixture with no `/feed`
+round-trip, so the whole feed-lifecycle vocabulary (`Batch Started/Completed`,
+`Feed API Call Completed`, `Feed Completed`) describes a network call that never
+happens. The video layer (`Video Loaded/Started/Play Started/Complete/Watch`,
+quartiles, `Video Play/Paused/Play Interrupted`) is **also on the list, but as
+defense-in-depth, not a live saving** — this tag's `type: "ads"` entries render
+via `AdLayout` (`GenAdSlot`, no `LightPlayer`), so those events never fire on any
+path today. Listing them pre-empts a future config that routes the tag through
+`VideoLayout`, and lets sibling ads-only tags reuse the same list; the tag
+already emits only ad-funnel + boot + diagnostics without it.
+
+> `Tag Displayed` is deliberately **not** on the list: it only fires on the
+> empty-feed branch (`!data.reels.length` in [feed.ts](../src/services/feed.ts)),
+> which a one-reel fixture never hits — so it is already absent for this tag
+> without suppression.
+
+### How it works
+
+- **One choke point.** Every event flows through `AnalyticsProvider.sendEvent`
+  ([AnalyticsProvider.tsx](../src/providers/AnalyticsProvider.tsx)). The set is
+  resolved once from `getSuppressedEvents(tagId)`
+  ([strategies.ts](../src/strategies/strategies.ts)) — a **pure fn of `tagId`**,
+  so it works even though `AnalyticsProvider` sits _above_ `StrategyProvider` and
+  cannot read the strategy context. A listed event early-returns **before** the
+  Rudderstack buffer, so no geoip / `visit_id` / passback stamping is spent on it.
+- **Matched verbatim** against the event name passed to `sendEvent` — i.e. the
+  `EVENT` _value_ (`"Video Watch"`), not the `EVENT.VIDEO_WATCH` constant name.
+- **Client-side send reduction only.** It trims what the SDK reports. It does
+  **not** touch host-embed pixels (`px-lo` / `px-ti` / passback) — those are a
+  separate layer in the loader/embed HTML.
+
+### Add or change a drop list
+
+Edit one entry in `TAG_STRATEGIES` (no consumer changes). Reference `EVENT.*`
+constants, not raw strings, so a typo is a compile error:
+
+```ts
+// strategyConfig.ts
+"someTag": { suppressedEvents: [EVENT.SCROLL, EVENT.VIDEO_WATCH] },
+```
+
+The shared `ADS_ONLY_INTERSTITIAL_SUPPRESSED` list (feed/swipe/embed + video
+churn) is defined once in `strategyConfig.ts` so sibling ads-only tags can reuse
+the exact same policy without drift.
+
+### Never suppress these
+
+Revenue-funnel (`Ad Requested` / `Ad Response Received` / `Ad Rendered` /
+`Ad Impression` / `Ad Started` / `Ad Completed` / `Ad Request Failed` /
+`Ad Passback` / `Infolinks Impression`), boot (`Tag Init` / `Tag Captured` /
+`Tag Displayed`), and the temporary `Audio Diagnostic` / `Visibility Diagnostic`
+beacons. Dropping a funnel event silently corrupts fill / impression tracking;
+dropping a diagnostic blinds an open investigation.
+
+### Currently opted in
+
+| Tag                        | Size   | List                               |
+| -------------------------- | ------ | ---------------------------------- |
+| `6a39163e92929ebec64d78ab` | 320×50 | `ADS_ONLY_INTERSTITIAL_SUPPRESSED` |
+
+---
+
+## Event surface for the 320×50 ads-only tag (`6a39163e92929ebec64d78ab`)
+
+The full analytics surface for this tag after suppression, so the kept / dropped /
+never-fires partition is captured in one place. Verified against the emit call
+sites, not just the `EVENT` vocabulary.
+
+**Legend:** ✅ raised · 🚫 suppressed by config · ⚪ never fires (structural, not
+suppression) · _(host)_ = host-embed pixel, a separate layer untouched by
+`suppressedEvents`.
+
+### Partition at a glance
+
+| Group            | ✅ Raised                                                                                                                                                                                  | 🚫 Suppressed                                                                                                                                      | ⚪ Never fires                                                                                                                                                                                                                                                                                             |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Boot             | `Tag Init`, `Tag Captured`                                                                                                                                                                 | —                                                                                                                                                  | `Tag Displayed` (empty-feed only)                                                                                                                                                                                                                                                                          |
+| Feed             | —                                                                                                                                                                                          | `Batch Started`, `Batch Completed`, `Feed API Call Completed`, `Feed Completed`                                                                    | —                                                                                                                                                                                                                                                                                                          |
+| Ad funnel        | `Ad Requested`, `Ad Response Received`, `Ad Rendered`, `Ad Impression`, `Ad Started`, `Ad Media Quartile`, `Ad Completed`, `Infolinks Impression`, `Ad Clicked`, `Ad Paused`, `Ad Skipped` | —                                                                                                                                                  | —                                                                                                                                                                                                                                                                                                          |
+| Ad errors        | `Ad Request Failed`, `Ad Passback`, `Ad Render Failed`, `Ad Error`, `Ad Removed`                                                                                                           | —                                                                                                                                                  | mute-timeout & visibility passbacks                                                                                                                                                                                                                                                                        |
+| Diagnostics      | `Audio Diagnostic`, `Visibility Diagnostic`, `Unmuted`, `Muted`                                                                                                                            | —                                                                                                                                                  | —                                                                                                                                                                                                                                                                                                          |
+| Video layer      | —                                                                                                                                                                                          | _(on the list, but see →)_                                                                                                                         | `Video Loaded`, `Video Started`, `Video Play Started`, `Video Complete`, `Video Watch`, `Video First Quartile`, `Midpoint`, `Video Third Quartile`, `Video Play`, `Video Paused`, `Video Play Interrupted` — **never fire** (`type: "ads"` → `AdLayout`, no `LightPlayer`); suppressed as defense-in-depth |
+| Feed nav / embed | —                                                                                                                                                                                          | `Scroll`, `Swipe Next`, `Swipe Previous`, `Embed Maximized`, `Embed Minimized`, `Embed CTA Clicked`, `cta_click`, `share`, `spark`, `Video Shared` | —                                                                                                                                                                                                                                                                                                          |
+
+**Net:** the tag emits **boot + ad-funnel + ad-errors + diagnostics only.** Every
+failure path is preserved — suppression is a name-match that touches nothing in the
+error branches.
+
+### Chronology by scenario
+
+Common prefix (whenever the core boots): `Tag Init` → `Tag Captured` → _(phase 2
+feed events all suppressed / never fire)_ → `Ad Requested`. The path then forks:
+
+| Scenario                              | Events after `Ad Requested`                                                                                                                                                        | Terminal                                                                                      |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| **A — fill + unmute** (happy path)    | `Ad Response Received` → `Ad Rendered` → `Ad Impression` → `Ad Started` → `Infolinks Impression`¹ → `Unmuted` → `Visibility Diagnostic` → `Audio Diagnostic` → `Ad Media Quartile` | `Ad Completed` (12 events total — see [EVENT_REDUCTION_REPORT.md](EVENT_REDUCTION_REPORT.md)) |
+| **B — no-fill** (waterfall empty)     | `Ad Request Failed`                                                                                                                                                                | `Ad Passback` (no reason) + passback pixel _(host)_                                           |
+| **C — SDK never loads** (blocker/net) | `Ad Request Failed` (the `.catch` path; `terminalFired` guard ⇒ one terminal)                                                                                                      | `Ad Passback` + passback pixel _(host)_                                                       |
+| **D — render/runtime fail**           | `Ad Response Received` → **one of** `Ad Render Failed` (HTTP 401/403/404) \| `Ad Error` (any other) — mutually exclusive                                                           | `Ad Passback` + passback pixel _(host)_                                                       |
+| **E — Heavy Ad Intervention**         | …A through `Ad Started`, then Chrome strips the frame                                                                                                                              | `Ad Removed` (breach reason + resource snapshot)                                              |
+| **0 — core never boots**              | _no Rudderstack events at all_                                                                                                                                                     | `px-sle` \| `px-wd` _(host)_ → passback pixel _(host)_                                        |
+
+¹ `Infolinks Impression` only when the host calls `window.cxr.infolinksImpression()`.
+
+**Interaction events** (overlay any live scenario): `Muted` / `Unmuted` re-toggle,
+`Ad Clicked`, `Ad Paused`, `Ad Skipped` all ✅. `Video Paused` / `Video Play
+Interrupted` / `Video Play`, `Scroll` / `Swipe *`, `Embed *`, and CTA/share/spark
+are 🚫 (and mostly can't happen on a single 320×50 interstitial anyway).
+
+**Not applicable to this tag** (⚪): the mute-timeout passback needs
+`mutePassback: true` and the visibility-gate passback (`passback_reason:
+"unit_hidden"`) needs `visibilityGate: true` — neither is set here.
+
+### Non-obvious keeps (look redundant, are not)
+
+- **`Ad Request Failed` + `Ad Passback`** always co-occur on no-fill (B/C) but are
+  distinct signals: the former is "this attempt got no fill" (`ad_source`); the
+  latter is "slot handed to the passback tag" (`tag_height/width` + optional
+  `passback_reason`) and flips `passback: 1` on every later event —
+  revenue-critical. Keep both.
+- **`Ad Rendered` + `Ad Impression`** fire back-to-back with the same payload but
+  are separate SDK callbacks — render-success vs the billable impression. Keep both.
+- **`Audio Diagnostic` + `Visibility Diagnostic`** are one-per-fill and look
+  chatty, but measure different things (audibility vs viewability) and back an open
+  investigation. Keep until it closes.
 
 ---
 

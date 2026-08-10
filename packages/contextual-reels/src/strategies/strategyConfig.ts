@@ -10,7 +10,73 @@
  * Currently client-side. When the backend serves this config, prepend one layer
  * in {@link resolveStrategies} and these registries become the dev/fallback default.
  */
+import { EVENT } from "@cxr/analytics/analytics";
 import type { Strategies } from "@cxr/strategies/strategies";
+
+/**
+ * Events with no signal for a 320×50 / ads-only single-interstitial unit.
+ *
+ * These describe an editorial scrollable-feed experience the unit does not have
+ * (no feed to scroll/swipe, no fullscreen, disabled CTA/share/spark) plus the
+ * high-frequency per-tick video churn that the L3 hidden-audio player would
+ * otherwise emit off the ad creative. The ad-level funnel is covered separately
+ * (`Ad Media Quartile` from the GenAd SDK), so the video quartiles are redundant
+ * here. Revenue-funnel + boot + diagnostic events are deliberately NOT listed.
+ *
+ * Attach via a tag's `suppressedEvents` in {@link TAG_STRATEGIES}. Shared as a
+ * named list so the sibling ads-only tags (300×250, 320×100, 320×480) can reuse
+ * the exact same policy without drift.
+ */
+const ADS_ONLY_INTERSTITIAL_SUPPRESSED: readonly string[] = [
+  // Feed lifecycle — degenerate for a single static fixture entry. A
+  // servedStatically tag reads its feed from a committed fixture (no /feed
+  // call), so the whole feed-lifecycle vocabulary describes a network round-trip
+  // that never happens — including `Feed API Call Completed`. (`Tag Displayed`
+  // is NOT here: it only fires on the empty-feed branch, which a 1-reel fixture
+  // never hits, so it is already absent for this tag.)
+  EVENT.SCROLL,
+  EVENT.SWIPE_NEXT,
+  EVENT.SWIPE_PREVIOUS,
+  EVENT.BATCH_STARTED,
+  EVENT.BATCH_COMPLETED,
+  EVENT.FEED_API_CALL_COMPLETED,
+  EVENT.FEED_COMPLETED,
+  // Embed chrome — a 320×50 banner never maximizes/minimizes.
+  EVENT.EMBED_MAXIMIZED,
+  EVENT.EMBED_MINIMIZED,
+  // Disabled features on this tag's config (show_cta/share/spark off).
+  EVENT.EMBED_CTA_CLICKED,
+  EVENT.CTA_CLICK,
+  EVENT.SHARE,
+  EVENT.SPARK,
+  EVENT.VIDEO_SHARED,
+  // Video playback/quartile events — same defense-in-depth rationale as the
+  // lifecycle markers below: they belong to the `VideoLayout` player pipeline,
+  // which a `type: "ads"` (`AdLayout`) entry never mounts, so they don't fire on
+  // the current ads-only tags. Where they WOULD apply, ad-level quartiles already
+  // come from the GenAd SDK (`Ad Media Quartile`), making these redundant.
+  EVENT.VIDEO_WATCH,
+  EVENT.VIDEO_FIRST_QUARTILE,
+  EVENT.VIDEO_MIDPOINT,
+  EVENT.VIDEO_THIRD_QUARTILE,
+  EVENT.VIDEO_PLAY,
+  EVENT.VIDEO_PAUSED,
+  EVENT.VIDEO_PLAY_INTERRUPTED,
+  // Video-layer lifecycle markers — DEFENSE-IN-DEPTH, not a live saving on the
+  // current ads-only tags. A `type: "ads"` entry renders via `AdLayout`
+  // (`GenAdSlot`, no `LightPlayer`), so the player-event pipeline never attaches
+  // and these never fire today. Listed anyway so (a) a future config that routes
+  // one of these tags through `VideoLayout` (mixed feed) doesn't start doubling
+  // the ad funnel, and (b) sibling ads-only tags reusing this list are covered if
+  // they DO take the video path. Where they would map: `Video Loaded`≈`Ad
+  // Rendered`, `Video Started`/`Video Play Started`≈`Ad Started`,
+  // `Video Complete`≈`Ad Completed` (generic {duration, watch_time}, none of the
+  // ad-meaningful {ad_source, provider} fields).
+  EVENT.VIDEO_LOADED,
+  EVENT.VIDEO_STARTED,
+  EVENT.VIDEO_PLAY_STARTED,
+  EVENT.VIDEO_COMPLETED,
+];
 
 /**
  * Reusable named bundles of toggle values. Attach to a tag via
@@ -118,6 +184,7 @@ export const TAG_STRATEGIES: Record<string, TagStrategyEntry> = {
     singleHitWaterfall: true,
     feedLoopEnabled: false,
     preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
   }, // 320x50
   "6a3916de30e1406c10507518": {
     initialVolume: 0.2,
