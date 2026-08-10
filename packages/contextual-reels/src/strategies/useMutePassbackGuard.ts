@@ -1,11 +1,17 @@
 /**
  * useMutePassbackGuard — for tags with the `mutePassback` strategy: starts a
- * timer (`mutePassbackDelayMs`, default 5s) when the first video begins playing
- * (the `player:play` bus event), NOT on mount — so the window measures muted
- * *playback*, not the feed/tag-load gap before any frame is shown. If the user
- * hasn't unmuted before the timer fires, calls `onAdFail` (passback). The timer
- * is armed once
- * (first play only) and cancelled if the user unmutes in time.
+ * timer (`mutePassbackDelayMs`, default 5s); if the user hasn't unmuted before
+ * it fires, calls `onAdFail` (passback). The timer is armed once and cancelled
+ * if the user unmutes in time.
+ *
+ * Arm point depends on `autoplayEnabled`:
+ * - autoplay ON: arms on the first `player:play` bus event, NOT on mount — so
+ *   the window measures muted *playback*, not the feed/tag-load gap before any
+ *   frame is shown.
+ * - autoplay OFF: nothing will fire `player:play` until the user taps play, so
+ *   waiting for it could leave a muted, unengaged unit un-passed-back
+ *   indefinitely — arms immediately on mount instead (the unit is already
+ *   visible by the time this hook mounts; see `NativeFeedShim`).
  *
  * Must be called from a component mounted inside StrategyProvider +
  * PlayerProvider + AdProvider + EventBusProvider. Side-effect only — returns
@@ -20,7 +26,7 @@ import { useStrategy } from "@cxr/strategies/StrategyProvider";
 import { isAdVerificationCrawler } from "@cxr/utils/ads";
 
 export function useMutePassbackGuard(): void {
-  const { mutePassback, mutePassbackDelayMs } = useStrategy();
+  const { mutePassback, mutePassbackDelayMs, autoplayEnabled } = useStrategy();
   const { isMuted } = usePlayer();
   const { onAdFail } = useAdWaterfall();
   const bus = useEventBus();
@@ -41,16 +47,9 @@ export function useMutePassbackGuard(): void {
 
     let timerId: number | undefined;
 
-    // Once an ad fills, the placement has a terminal `ad:fill`; a later passback
-    // `onAdFail` would emit ad:nofill after it — a double terminal event Google
-    // reads as a malformed waterfall. Track fill so the timer can bail.
-    const unsubFill = bus.on("ad:fill", () => {
-      filledRef.current = true;
-    });
-
-    // Arm on the FIRST play only — a later pause/resume must not restart the
-    // window or re-fire the passback.
-    const unsub = bus.on("player:play", () => {
+    // Arm once — a later pause/resume, or a second `player:play`, must not
+    // restart the window or re-fire the passback.
+    const arm = () => {
       if (armedRef.current) return;
       armedRef.current = true;
 
@@ -60,14 +59,28 @@ export function useMutePassbackGuard(): void {
           onAdFail();
         }
       }, mutePassbackDelayMs);
+    };
+
+    // Once an ad fills, the placement has a terminal `ad:fill`; a later passback
+    // `onAdFail` would emit ad:nofill after it — a double terminal event Google
+    // reads as a malformed waterfall. Track fill so the timer can bail.
+    const unsubFill = bus.on("ad:fill", () => {
+      filledRef.current = true;
     });
+
+    // Autoplay disabled: nothing will fire `player:play` on its own, so arm
+    // right away instead of waiting for a play that may never come.
+    if (!autoplayEnabled) arm();
+
+    const unsub = bus.on("player:play", arm);
 
     return () => {
       unsub();
       unsubFill();
       if (timerId !== undefined) window.clearTimeout(timerId);
     };
-    // mutePassback, onAdFail, and bus are stable for a given tag — run once.
+    // mutePassback, autoplayEnabled, onAdFail, and bus are stable for a given
+    // tag — run once.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 }
