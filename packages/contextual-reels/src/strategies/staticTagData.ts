@@ -143,6 +143,98 @@ const STATIC_TAG_LOADERS: Record<string, () => Promise<StaticTagEntry | undefine
     ]);
     return toEntry(tag.default, feed.default);
   },
+
+  // -------------------------------------------------------------------------
+  // LIVE PRODUCTION ads-only tags (brand 3252) — Infolinks size×tag sheet.
+  // Real DB tags in live traffic. Each reuses the brand-level Triton ad feed
+  // of the 320x50 anchor (6a39163e92929ebec64d78ab) — the ads_url is
+  // brand-level, so the slots are identical (see cxr-static-tag-fixture-recipe).
+  // DO NOT render/request these anywhere on local or in automation — a live
+  // request inflates the real tag's analytics. Only 6a1fd43b45aec54862ed235d
+  // is the network-safe test tag.
+  // -------------------------------------------------------------------------
+  // 320x50-ads-only-2 / -3
+  "6a7c45fcf3f875e5e06dadab": async () => {
+    const [tag, feed] = await Promise.all([
+      import("@cxr/providers/static-tag/6a7c45fcf3f875e5e06dadab.tag.json"),
+      import("@cxr/providers/static-tag/6a39163e92929ebec64d78ab.feed.json"),
+    ]);
+    return toEntry(tag.default, feed.default);
+  },
+  "6a7c465586d060bd42fb5ab7": async () => {
+    const [tag, feed] = await Promise.all([
+      import("@cxr/providers/static-tag/6a7c465586d060bd42fb5ab7.tag.json"),
+      import("@cxr/providers/static-tag/6a39163e92929ebec64d78ab.feed.json"),
+    ]);
+    return toEntry(tag.default, feed.default);
+  },
+  // 320x100-ads-only-2 / -3
+  "6a7c46dcf3f875e5e06daef0": async () => {
+    const [tag, feed] = await Promise.all([
+      import("@cxr/providers/static-tag/6a7c46dcf3f875e5e06daef0.tag.json"),
+      import("@cxr/providers/static-tag/6a39163e92929ebec64d78ab.feed.json"),
+    ]);
+    return toEntry(tag.default, feed.default);
+  },
+  "6a7c46fef3f875e5e06daf19": async () => {
+    const [tag, feed] = await Promise.all([
+      import("@cxr/providers/static-tag/6a7c46fef3f875e5e06daf19.tag.json"),
+      import("@cxr/providers/static-tag/6a39163e92929ebec64d78ab.feed.json"),
+    ]);
+    return toEntry(tag.default, feed.default);
+  },
+  // 300x250-ads-only-2 / -3
+  "6a7c4727fa1b811d815aa00f": async () => {
+    const [tag, feed] = await Promise.all([
+      import("@cxr/providers/static-tag/6a7c4727fa1b811d815aa00f.tag.json"),
+      import("@cxr/providers/static-tag/6a39163e92929ebec64d78ab.feed.json"),
+    ]);
+    return toEntry(tag.default, feed.default);
+  },
+  "6a7c473df3f875e5e06daf87": async () => {
+    const [tag, feed] = await Promise.all([
+      import("@cxr/providers/static-tag/6a7c473df3f875e5e06daf87.tag.json"),
+      import("@cxr/providers/static-tag/6a39163e92929ebec64d78ab.feed.json"),
+    ]);
+    return toEntry(tag.default, feed.default);
+  },
+  // 300x600-ads-only / -2 / -3
+  "6a391708a7d9f8da7f6e56ad": async () => {
+    const [tag, feed] = await Promise.all([
+      import("@cxr/providers/static-tag/6a391708a7d9f8da7f6e56ad.tag.json"),
+      import("@cxr/providers/static-tag/6a39163e92929ebec64d78ab.feed.json"),
+    ]);
+    return toEntry(tag.default, feed.default);
+  },
+  "6a7c476af3f875e5e06dafc1": async () => {
+    const [tag, feed] = await Promise.all([
+      import("@cxr/providers/static-tag/6a7c476af3f875e5e06dafc1.tag.json"),
+      import("@cxr/providers/static-tag/6a39163e92929ebec64d78ab.feed.json"),
+    ]);
+    return toEntry(tag.default, feed.default);
+  },
+  "6a7c479586d060bd42fb5c3c": async () => {
+    const [tag, feed] = await Promise.all([
+      import("@cxr/providers/static-tag/6a7c479586d060bd42fb5c3c.tag.json"),
+      import("@cxr/providers/static-tag/6a39163e92929ebec64d78ab.feed.json"),
+    ]);
+    return toEntry(tag.default, feed.default);
+  },
+  // 320x480-ads-only-2 / -3
+  "6a7c47bf86d060bd42fb5c95": async () => {
+    const [tag, feed] = await Promise.all([
+      import("@cxr/providers/static-tag/6a7c47bf86d060bd42fb5c95.tag.json"),
+      import("@cxr/providers/static-tag/6a39163e92929ebec64d78ab.feed.json"),
+    ]);
+    return toEntry(tag.default, feed.default);
+  },
+  "6a7c47d8f3f875e5e06db080": async () => {
+    const [tag, feed] = await Promise.all([
+      import("@cxr/providers/static-tag/6a7c47d8f3f875e5e06db080.tag.json"),
+      import("@cxr/providers/static-tag/6a39163e92929ebec64d78ab.feed.json"),
+    ]);
+    return toEntry(tag.default, feed.default);
+  },
 };
 
 /**

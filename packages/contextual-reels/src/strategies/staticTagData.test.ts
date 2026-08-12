@@ -64,6 +64,30 @@ describe("getStaticTagData", () => {
     expect(entry!.feed).toHaveLength(1);
   });
 
+  // Live-production Infolinks tags (brand 3252) added from the size×tag sheet.
+  // Each has its own tag fixture but reuses the 320x50 anchor's brand-level
+  // Triton ad feed, so every one resolves the same multi-reel ad feed.
+  it.each([
+    ["6a7c45fcf3f875e5e06dadab", "320x50-ads-only-2"],
+    ["6a7c465586d060bd42fb5ab7", "320x50-ads-only-3"],
+    ["6a7c46dcf3f875e5e06daef0", "320x100-ads-only-2"],
+    ["6a7c46fef3f875e5e06daf19", "320x100-ads-only-3"],
+    ["6a7c4727fa1b811d815aa00f", "300x250-ads-only-2"],
+    ["6a7c473df3f875e5e06daf87", "300x250-ads-only-3"],
+    ["6a391708a7d9f8da7f6e56ad", "300x600-ads-only"],
+    ["6a7c476af3f875e5e06dafc1", "300x600-ads-only-2"],
+    ["6a7c479586d060bd42fb5c3c", "300x600-ads-only-3"],
+    ["6a7c47bf86d060bd42fb5c95", "320x480-ads-only-2"],
+    ["6a7c47d8f3f875e5e06db080", "320x480-ads-only-3"],
+  ])("resolves the prod Infolinks tag %s from its own fixtures", async (tagId, tagName) => {
+    const entry = await getStaticTagData(tagId);
+    expect(entry).toBeDefined();
+    expect(entry!.tagConfig.tag_id).toBe(tagId);
+    expect((entry!.tagConfig as { tag_name?: string }).tag_name).toBe(tagName);
+    // Reused brand-level ad feed from the 320x50 anchor (not a single demo reel).
+    expect(entry!.feed.length).toBeGreaterThan(0);
+  });
+
   it("resolves undefined for a non-static tag", async () => {
     expect(await getStaticTagData("not-a-static-tag")).toBeUndefined();
   });

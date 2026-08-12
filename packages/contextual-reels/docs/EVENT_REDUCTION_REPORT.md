@@ -101,9 +101,11 @@ The rest earn their place as:
 - **Defense-in-depth** — if a future config change ever routed this tag through
   `VideoLayout` (e.g. a mixed feed), the video events would be pre-suppressed
   rather than silently doubling the ad funnel.
-- **Sibling reuse** — the shared `ADS_ONLY_INTERSTITIAL_SUPPRESSED` list is meant
-  to attach to the 300×250 / 320×100 / 320×480 ads-only tags without drift; some
-  of those may take the video path.
+- **Inventory-wide reuse** — the shared `ADS_ONLY_INTERSTITIAL_SUPPRESSED` list is
+  now attached to all 15 Infolinks ads-only prod tags (brand 3252, across 320×50 /
+  320×100 / 300×250 / 300×600 / 320×480) so the whole inventory keeps one suppression
+  policy without drift; the video events also cover any tag that later takes the
+  video path.
 - **Interaction/nav noise** — `Scroll` / `Swipe *` / `Embed *` / CTA·share·spark
   don't fire on a clean impression but would on stray interaction; suppressing
   them caps the ceiling.

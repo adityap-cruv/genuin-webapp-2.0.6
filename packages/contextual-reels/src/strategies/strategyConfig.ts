@@ -14,7 +14,7 @@ import { EVENT } from "@cxr/analytics/analytics";
 import type { Strategies } from "@cxr/strategies/strategies";
 
 /**
- * Events with no signal for a 320×50 / ads-only single-interstitial unit.
+ * Events with no signal for an ads-only single-interstitial unit.
  *
  * These describe an editorial scrollable-feed experience the unit does not have
  * (no feed to scroll/swipe, no fullscreen, disabled CTA/share/spark) plus the
@@ -24,8 +24,9 @@ import type { Strategies } from "@cxr/strategies/strategies";
  * here. Revenue-funnel + boot + diagnostic events are deliberately NOT listed.
  *
  * Attach via a tag's `suppressedEvents` in {@link TAG_STRATEGIES}. Shared as a
- * named list so the sibling ads-only tags (300×250, 320×100, 320×480) can reuse
- * the exact same policy without drift.
+ * named list so the entire ads-only Infolinks inventory (all 15 prod tags across
+ * 320×50, 320×100, 300×250, 300×600, 320×480) applies the exact same policy
+ * without drift.
  */
 const ADS_ONLY_INTERSTITIAL_SUPPRESSED: readonly string[] = [
   // Feed lifecycle — degenerate for a single static fixture entry. A
@@ -41,7 +42,7 @@ const ADS_ONLY_INTERSTITIAL_SUPPRESSED: readonly string[] = [
   EVENT.BATCH_COMPLETED,
   EVENT.FEED_API_CALL_COMPLETED,
   EVENT.FEED_COMPLETED,
-  // Embed chrome — a 320×50 banner never maximizes/minimizes.
+  // Embed chrome — an ads-only interstitial never maximizes/minimizes.
   EVENT.EMBED_MAXIMIZED,
   EVENT.EMBED_MINIMIZED,
   // Disabled features on this tag's config (show_cta/share/spark off).
@@ -174,38 +175,147 @@ export const TAG_STRATEGIES: Record<string, TagStrategyEntry> = {
   "6a3ba4395df1fee89bf0b2e7": { gateOnUnmute: true },
   "6a3aa8244da8cd92d289cc72": { gateOnUnmute: true },
 
-  // Start audible at 20% on load (unmuted); served from static fixtures (see
+  // ===========================================================================
+  // LIVE PRODUCTION Infolinks ads-only tags (brand 3252) — 15 total.
+  //
+  // The full live inventory from the Infolinks size×tag sheet: 3 tags per size
+  // across the 5 supported sizes (organized in size blocks below). All start
+  // audible at 20% on load (unmuted) and are served from static fixtures (see
   // staticTagData.ts) — skips /ad_creative and /feed (/ip_info still fires for
-  // geoip + real client IP on the ad-URL rewrite).
-  // `feedLoopEnabled: false` inline rather than the `noLoop` preset — a tag can
-  // only carry one preset and these already use `servedStatically`.
+  // geoip + the real client IP on the ad-URL rewrite). Each carries the same
+  // config; the -2/-3 siblings reuse the brand-level Triton ad feed of their
+  // size's first (anchor) tag via their loaders in staticTagData.ts.
+  //
+  // All 15 are `type: "ads"` single-interstitial units, so every one drops the
+  // no-signal event vocabulary via `suppressedEvents:
+  // ADS_ONLY_INTERSTITIAL_SUPPRESSED` (the shared list is defined once so the
+  // whole ads-only inventory stays in sync — no per-tag drift).
+  //
+  // `feedLoopEnabled: false` is inline rather than the `noLoop` preset — a tag
+  // can only carry one preset and these already use `servedStatically`.
+  //
+  // ⚠️ THESE ARE PRODUCTION TAGS IN LIVE TRAFFIC — DO NOT render, request, or
+  // point a browser/harness/E2E run at any of these ids on local or in
+  // automation. A single live request inflates the real tag's analytics
+  // (impressions, fill, funnel). The only network-safe sandbox tag is
+  // 6a1fd43b45aec54862ed235d. Offline fixtures for these tags load without a
+  // network call, but never drive an actual ad request against them in tests.
+  // ===========================================================================
+
+  // --- 320x50 ---
   "6a39163e92929ebec64d78ab": {
     initialVolume: 0.2,
     singleHitWaterfall: true,
     feedLoopEnabled: false,
     preset: "servedStatically",
     suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
-  }, // 320x50
-  "6a3916de30e1406c10507518": {
+  }, // 320x50-ads-only
+  "6a7c45fcf3f875e5e06dadab": {
     initialVolume: 0.2,
     singleHitWaterfall: true,
     feedLoopEnabled: false,
     preset: "servedStatically",
-  }, // 300x250
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // 320x50-ads-only-2
+  "6a7c465586d060bd42fb5ab7": {
+    initialVolume: 0.2,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // 320x50-ads-only-3
+
+  // --- 320x100 ---
   "6a3915b692929ebec64d785e": {
     initialVolume: 0.2,
     singleHitWaterfall: true,
     feedLoopEnabled: false,
     preset: "servedStatically",
-  }, // 320x100
-  // 320x480 (AD_LAYOUT.L5) sibling of the two above — same brand (3252), same
-  // static Triton ad slots, rendered on L1's full player instead of a banner.
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // 320x100-ads-only
+  "6a7c46dcf3f875e5e06daef0": {
+    initialVolume: 0.2,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // 320x100-ads-only-2
+  "6a7c46fef3f875e5e06daf19": {
+    initialVolume: 0.2,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // 320x100-ads-only-3
+
+  // --- 300x250 ---
+  "6a3916de30e1406c10507518": {
+    initialVolume: 0.2,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // 300x250-ads-only
+  "6a7c4727fa1b811d815aa00f": {
+    initialVolume: 0.2,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // 300x250-ads-only-2
+  "6a7c473df3f875e5e06daf87": {
+    initialVolume: 0.2,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // 300x250-ads-only-3
+
+  // --- 300x600 ---
+  "6a391708a7d9f8da7f6e56ad": {
+    initialVolume: 0.2,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // 300x600-ads-only
+  "6a7c476af3f875e5e06dafc1": {
+    initialVolume: 0.2,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // 300x600-ads-only-2
+  "6a7c479586d060bd42fb5c3c": {
+    initialVolume: 0.2,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // 300x600-ads-only-3
+
+  // --- 320x480 (AD_LAYOUT.L5) — rendered on L1's full player, not a banner ---
   "6a6892e52ca77d200369fb9e": {
     initialVolume: 0.2,
     singleHitWaterfall: true,
     feedLoopEnabled: false,
     preset: "servedStatically",
-  }, // 320x480
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // 320x480-ads-only
+  "6a7c47bf86d060bd42fb5c95": {
+    initialVolume: 0.2,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // 320x480-ads-only-2
+  "6a7c47d8f3f875e5e06db080": {
+    initialVolume: 0.2,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // 320x480-ads-only-3
 
   // Demo-only static tags (no DB entry) — served from committed fixtures with a
   // single Triton ad reel each. Same static strategy as the tags above. Sizes

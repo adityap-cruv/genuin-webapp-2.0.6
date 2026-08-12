@@ -521,6 +521,37 @@ describe("suppressedEvents", () => {
     expect(suppressed.has("Video Complete")).toBe(true);
   });
 
+  // Every Infolinks ads-only prod tag (all 15, across the 5 sizes) shares the
+  // same suppression policy — they are all `type: "ads"` single-interstitial
+  // units. Asserted here so a sibling that silently loses the list is caught.
+  it.each([
+    "6a39163e92929ebec64d78ab", // 320x50
+    "6a7c45fcf3f875e5e06dadab",
+    "6a7c465586d060bd42fb5ab7",
+    "6a3915b692929ebec64d785e", // 320x100
+    "6a7c46dcf3f875e5e06daef0",
+    "6a7c46fef3f875e5e06daf19",
+    "6a3916de30e1406c10507518", // 300x250
+    "6a7c4727fa1b811d815aa00f",
+    "6a7c473df3f875e5e06daf87",
+    "6a391708a7d9f8da7f6e56ad", // 300x600
+    "6a7c476af3f875e5e06dafc1",
+    "6a7c479586d060bd42fb5c3c",
+    "6a6892e52ca77d200369fb9e", // 320x480
+    "6a7c47bf86d060bd42fb5c95",
+    "6a7c47d8f3f875e5e06db080",
+  ])("suppresses the ads-only interstitial noise events for prod tag %s", (tagId) => {
+    const suppressed = getSuppressedEvents(tagId);
+    // Spot-check one from each category the shared list covers.
+    expect(suppressed.has("Scroll")).toBe(true);
+    expect(suppressed.has("Feed API Call Completed")).toBe(true);
+    expect(suppressed.has("Embed Maximized")).toBe(true);
+    expect(suppressed.has("Video Watch")).toBe(true);
+    expect(suppressed.has("Video Complete")).toBe(true);
+    // Revenue-funnel event is never dropped.
+    expect(suppressed.has("Ad Impression")).toBe(false);
+  });
+
   it("never suppresses revenue-funnel, boot, or diagnostic events", () => {
     const suppressed = getSuppressedEvents(STATIC_320x50);
     for (const keep of [

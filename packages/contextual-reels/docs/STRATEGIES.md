@@ -400,23 +400,54 @@ A tag can carry only **one** preset, so a tag that already uses another bundle (
 
 ### Tags currently opted out
 
-| Tag id                      | Size    | Why                                                              |
-| --------------------------- | ------- | ---------------------------------------------------------------- |
-| `6a39163e92929ebec64d78ab`  | 320×50  | Static AD-only feed — rest on the last slot instead of replaying |
-| `6a3916de30e1406c10507518`  | 300×250 | Static AD-only feed — rest on the last slot instead of replaying |
-| `6a3915b692929ebec64d785e`  | 320×100 | Static AD-only feed — rest on the last slot instead of replaying |
-| `6a6892e52ca77d200369fb9e`  | 320×480 | Static AD-only feed — rest on the last slot instead of replaying |
-| `6a3aa78ba0daccfd439648b81` | 320×50  | Demo static tag (no DB entry) — single VAST ad reel              |
-| `6a3aa78ba0daccfd439648b82` | 320×100 | Demo static tag (no DB entry) — single VAST ad reel              |
-| `6a3aa78ba0daccfd439648b83` | 300×250 | Demo static tag (no DB entry) — single VAST ad reel              |
-| `6a3aa78ba0daccfd439648b84` | 300×600 | Demo static tag (no DB entry) — single VAST ad reel              |
-| `6a3aa78ba0daccfd439648b85` | 320×480 | Demo static tag (no DB entry) — single VAST ad reel              |
+All statically-served tags opt out of looping (`feedLoopEnabled: false`, inline
+alongside `preset: "servedStatically"`), so an ads-only feed rests on its last slot
+instead of replaying. They fall into two groups.
 
-All of these also carry `preset: "servedStatically"`, hence the inline key. The
-`6a3aa78ba0daccfd439648b8[1-5]` set is a **demo-only** group with no backend tag
+#### Infolinks production tags (brand 3252) — 15 total
+
+The live Infolinks ads-only inventory, from the size×tag sheet: **3 tags per size**
+across the 5 supported sizes. All are real DB tags in live traffic — each serves its
+own `/ad_creative` config fixture but **reuses the 320×50 anchor's brand-level Triton
+ad feed** (`6a39163e92929ebec64d78ab.feed.json`); the `ads_url` is brand-level, so the
+slots are identical across the brand (see the fixture recipe). Each carries
+`{ initialVolume: 0.2, singleHitWaterfall: true, feedLoopEnabled: false, preset: "servedStatically" }`.
+
+| Size    | Anchor (original)          | Sibling 2                  | Sibling 3                  |
+| ------- | -------------------------- | -------------------------- | -------------------------- |
+| 320×50  | `6a39163e92929ebec64d78ab` | `6a7c45fcf3f875e5e06dadab` | `6a7c465586d060bd42fb5ab7` |
+| 320×100 | `6a3915b692929ebec64d785e` | `6a7c46dcf3f875e5e06daef0` | `6a7c46fef3f875e5e06daf19` |
+| 300×250 | `6a3916de30e1406c10507518` | `6a7c4727fa1b811d815aa00f` | `6a7c473df3f875e5e06daf87` |
+| 300×600 | `6a391708a7d9f8da7f6e56ad` | `6a7c476af3f875e5e06dafc1` | `6a7c479586d060bd42fb5c3c` |
+| 320×480 | `6a6892e52ca77d200369fb9e` | `6a7c47bf86d060bd42fb5c95` | `6a7c47d8f3f875e5e06db080` |
+
+> ⚠️ **Production tags — never test on local or in automation.** These are live in
+> real traffic; rendering or requesting an ad against any of them inflates that tag's
+> real analytics (impressions, fill, funnel). The offline fixtures load without a
+> network call, but do **not** point a browser / harness / E2E run at these ids. The
+> only network-safe sandbox tag is `6a1fd43b45aec54862ed235d` — see the source comment
+> blocks in `strategyConfig.ts` and `staticTagData.ts`.
+
+All 15 additionally carry `suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED`
+(see [Suppressed analytics events](#suppressed-analytics-events-suppressedevents)) —
+they are all `type: "ads"` single-interstitial units, so the whole ads-only inventory
+shares one suppression policy via the shared list, no per-tag drift.
+
+#### Demo-only tags — 5 total
+
+| Tag id                      | Size    | Why                                                 |
+| --------------------------- | ------- | --------------------------------------------------- |
+| `6a3aa78ba0daccfd439648b81` | 320×50  | Demo static tag (no DB entry) — single VAST ad reel |
+| `6a3aa78ba0daccfd439648b82` | 320×100 | Demo static tag (no DB entry) — single VAST ad reel |
+| `6a3aa78ba0daccfd439648b83` | 300×250 | Demo static tag (no DB entry) — single VAST ad reel |
+| `6a3aa78ba0daccfd439648b84` | 300×600 | Demo static tag (no DB entry) — single VAST ad reel |
+| `6a3aa78ba0daccfd439648b85` | 320×480 | Demo static tag (no DB entry) — single VAST ad reel |
+
+The `6a3aa78ba0daccfd439648b8[1-5]` set is a **demo-only** group with no backend tag
 record: each serves a single static VAST ad (`gimedia.begenuin.com/vast/betmgm-vast.xml`,
 the shared debug-device creative) purely for demonstration. On any fixture miss they
 fall back to the live API, which 404s (no DB entry) → no-content, never a crash.
+(A sixth QA static tag, `6a3aa78ba0daccfd439648b8`, is registered separately for QA.)
 
 ### What it changes
 
@@ -576,8 +607,8 @@ constants, not raw strings, so a typo is a compile error:
 ```
 
 The shared `ADS_ONLY_INTERSTITIAL_SUPPRESSED` list (feed/swipe/embed + video
-churn) is defined once in `strategyConfig.ts` so sibling ads-only tags can reuse
-the exact same policy without drift.
+churn) is defined once in `strategyConfig.ts` and attached to all 15 Infolinks
+ads-only prod tags, so the whole inventory keeps the exact same policy without drift.
 
 ### Never suppress these
 
@@ -590,9 +621,16 @@ dropping a diagnostic blinds an open investigation.
 
 ### Currently opted in
 
-| Tag                        | Size   | List                               |
-| -------------------------- | ------ | ---------------------------------- |
-| `6a39163e92929ebec64d78ab` | 320×50 | `ADS_ONLY_INTERSTITIAL_SUPPRESSED` |
+All 15 Infolinks ads-only prod tags (brand 3252) carry `ADS_ONLY_INTERSTITIAL_SUPPRESSED`
+— the full inventory listed in [Infolinks production tags](#infolinks-production-tags-brand-3252--15-total):
+
+| Tags                                                | Size    | List                               |
+| --------------------------------------------------- | ------- | ---------------------------------- |
+| `6a39163e…78ab`, `6a7c45fc…dadab`, `6a7c4655…5ab7`  | 320×50  | `ADS_ONLY_INTERSTITIAL_SUPPRESSED` |
+| `6a3915b6…785e`, `6a7c46dc…daef0`, `6a7c46fe…daf19` | 320×100 | `ADS_ONLY_INTERSTITIAL_SUPPRESSED` |
+| `6a3916de…7518`, `6a7c4727…aa00f`, `6a7c473d…daf87` | 300×250 | `ADS_ONLY_INTERSTITIAL_SUPPRESSED` |
+| `6a391708…56ad`, `6a7c476a…dafc1`, `6a7c4795…5c3c`  | 300×600 | `ADS_ONLY_INTERSTITIAL_SUPPRESSED` |
+| `6a6892e5…fb9e`, `6a7c47bf…5c95`, `6a7c47d8…b080`   | 320×480 | `ADS_ONLY_INTERSTITIAL_SUPPRESSED` |
 
 ---
 
