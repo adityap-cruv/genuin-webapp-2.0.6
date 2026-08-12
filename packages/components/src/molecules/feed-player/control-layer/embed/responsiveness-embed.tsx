@@ -6,6 +6,7 @@ import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 
 import type { ControlLayerPropsType } from "../control-layer.types";
 import { EmbedControls } from "../controls/embed";
+import { useNewPlayerControls } from "../use-new-player-controls";
 
 const Linkouts = lazy(() =>
   import("@genuin/components/organisms/linkouts").then((m) => ({
@@ -25,13 +26,14 @@ export const ResponsivenessEmbed: FC<ControlLayerPropsType> = ({
   ...restProps
 }) => {
   const video = postDetails?.video;
+  const newUI = useNewPlayerControls();
   return (
     <div className={cn("gencl:relative gencl:h-full gencl:w-full", className)} {...restProps}>
       {isActive && (
         <EmbedControls
           onClick={(e) => e.stopPropagation()}
           className="gencl:justify-end gencl:p-1"
-          size={containerWidth ? resolveControlSize(containerWidth) : "sm"}
+          size={containerWidth && newUI ? resolveControlSize(containerWidth) : "sm"}
         />
       )}
       {isActive && video?.linkouts && (

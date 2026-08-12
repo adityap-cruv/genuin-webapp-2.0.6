@@ -13,6 +13,7 @@ import { Stats } from "../../../stats";
 import type { ControlLayerPropsType } from "../control-layer.types";
 import { EmbedControls } from "../controls/embed";
 import { OctoExpandSheet } from "../octo/octo-expand-sheet";
+import { useNewPlayerControls } from "../use-new-player-controls";
 
 import { PlacementMetadata } from "./placement-metadata";
 
@@ -34,6 +35,7 @@ export function DefaultPlacement({
 }: ControlLayerPropsType) {
   const { contentDisplay, responsive, view, engagement, isDesignSystemV2Linkouts } = useEmbedConfigs();
   const { isXs } = responsive;
+  const newUI = useNewPlayerControls();
   const { isMobile } = useDeviceDetectMediaQuery();
   const isOctoEnabled = engagement.engagementTools.octo && view.isFeed;
   const { octoVisible } = useSheetState();
@@ -173,7 +175,7 @@ export function DefaultPlacement({
               // Same source as the nav arrows and other player controls — a single
               // tile's own width, not the old isXs/isSm ceiling that could never
               // reach md/lg regardless of tile width.
-              size={containerWidth ? resolveControlSize(containerWidth) : "sm"}
+              size={containerWidth && newUI ? resolveControlSize(containerWidth) : "sm"}
               section={postDetails.section}
             />
           </div>
