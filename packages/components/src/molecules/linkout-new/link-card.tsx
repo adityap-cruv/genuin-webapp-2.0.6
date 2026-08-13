@@ -155,6 +155,7 @@ export function LinkCard({
   hideThumb,
   density = "regular",
   compactThumbnailSize,
+  showFullTitle = false,
 }: {
   data: LinkMetaData;
   sheetState: SheetState;
@@ -182,6 +183,8 @@ export function LinkCard({
   density?: "regular" | "compact";
   /** Optional square/rectangular thumbnail dimensions for compact density. */
   compactThumbnailSize?: { width: number; height: number };
+  /** Allow the expanded title to wrap without truncation. */
+  showFullTitle?: boolean;
 }) {
   const isDark = theme === "dark";
   const textPrimary = isDark ? "gencl:text-white" : "gencl:text-secondary-900";
@@ -434,7 +437,12 @@ export function LinkCard({
           <p
             className={cn(
               isCompact
-                ? "gencl:h-5 gencl:text-[14px] gencl:leading-5 gencl:font-semibold gencl:line-clamp-1 gencl:truncate gencl:w-full"
+                ? cn(
+                    "gencl:text-[14px] gencl:leading-5 gencl:font-semibold gencl:w-full",
+                    showFullTitle
+                      ? "gencl:whitespace-normal"
+                      : "gencl:h-5 gencl:line-clamp-1 gencl:truncate"
+                  )
                 : "gencl:text-body-1-semi-bold! gencl:line-clamp-1 gencl:truncate gencl:w-full",
               textPrimary
             )}>
