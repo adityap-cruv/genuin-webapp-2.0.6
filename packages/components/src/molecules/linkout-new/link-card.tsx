@@ -153,6 +153,8 @@ export function LinkCard({
   ctaClassName,
   forceFlexRatio,
   hideThumb,
+  density = "regular",
+  compactThumbnailSize,
 }: {
   data: LinkMetaData;
   sheetState: SheetState;
@@ -176,6 +178,10 @@ export function LinkCard({
   forceFlexRatio?: FlexRatio;
   /** Skip the responsive card's thumb area (host composites its own preview). */
   hideThumb?: boolean;
+  /** Compact preserves the same card structure at the 332×120 placement size. */
+  density?: "regular" | "compact";
+  /** Optional square/rectangular thumbnail dimensions for compact density. */
+  compactThumbnailSize?: { width: number; height: number };
 }) {
   const isDark = theme === "dark";
   const textPrimary = isDark ? "gencl:text-white" : "gencl:text-secondary-900";
@@ -197,37 +203,43 @@ export function LinkCard({
   const isExpand = sheetState === "expand-view";
   const isDetail = sheetState === "panel-view" || sheetState === "full-view";
   const isResponsive = sheetState === "responsive";
+  const isCompact = density === "compact";
+  const compactThumbWidth = compactThumbnailSize?.width ?? 76;
+  const compactThumbHeight = compactThumbnailSize?.height ?? 76;
 
   // Expand-view CTA placement: by default the pill sits full-width below
   // the row; when description+meta is short enough it's promoted inline into
   // the details column. Threshold: details height ≤ 128 - 40 - 4 = 84 px.
-  const [ctaFitsInline, setCtaFitsInline] = useState(false);
+  const [ctaFitsInline, setCtaFitsInline] = useState(isCompact);
   // Natural height of description + meta, used to size the image to the column.
   const [detailsContentHeight, setDetailsContentHeight] = useState(0);
   // Callback ref (not `useLayoutEffect([])`) so the observer re-attaches when
   // the `isExpand` block mounts after an auto-advance — otherwise the visible
   // body and the measurement well disagree and the sheet clips the CTA.
   const observerRef = useRef<ResizeObserver | null>(null);
-  const detailsContentRef = useCallback((el: HTMLDivElement | null) => {
-    observerRef.current?.disconnect();
-    observerRef.current = null;
-    if (!el) return;
-    const FIT_THRESHOLD = 84;
-    const update = () => {
-      const h = el.offsetHeight;
-      setDetailsContentHeight(h);
-      setCtaFitsInline(h <= FIT_THRESHOLD);
-    };
-    update();
-    const observer = new ResizeObserver(update);
-    observer.observe(el);
-    observerRef.current = observer;
-  }, []);
+  const detailsContentRef = useCallback(
+    (el: HTMLDivElement | null) => {
+      observerRef.current?.disconnect();
+      observerRef.current = null;
+      if (!el) return;
+      const FIT_THRESHOLD = isCompact ? 28 : 84;
+      const update = () => {
+        const h = el.offsetHeight;
+        setDetailsContentHeight(h);
+        setCtaFitsInline(isCompact || h <= FIT_THRESHOLD);
+      };
+      update();
+      const observer = new ResizeObserver(update);
+      observer.observe(el);
+      observerRef.current = observer;
+    },
+    [isCompact]
+  );
 
   // When the CTA is promoted inline, size the image to the column's exact
   // height (details + gap + CTA, floored at 84 px) so the row has no blank
   // space. Otherwise the image keeps the grid aspect-square behaviour.
-  const IMAGE_FLOOR_PX = 84;
+  const IMAGE_FLOOR_PX = isCompact ? compactThumbHeight : 84;
   const CTA_INLINE_HEIGHT_PX = 40;
   const CTA_INLINE_GAP_PX = 4;
   const expandImageSize =
@@ -370,7 +382,9 @@ export function LinkCard({
             <p
               className={cn(
                 // line-clamp-2: wraps to two lines before truncating.
-                "gencl:text-body-1-semi-bold! gencl:line-clamp-2 gencl:overflow-hidden gencl:text-ellipsis gencl:w-full",
+                isCompact
+                  ? "gencl:h-5 gencl:text-[14px] gencl:leading-5 gencl:font-semibold gencl:line-clamp-1 gencl:truncate gencl:w-full"
+                  : "gencl:text-body-1-semi-bold! gencl:line-clamp-2 gencl:overflow-hidden gencl:text-ellipsis gencl:w-full",
                 textPrimary
               )}>
               {displayTitle}
@@ -417,7 +431,13 @@ export function LinkCard({
       {isExpand && (
         <div className="gencl:flex gencl:flex-col gencl:gap-2 gencl:w-full gencl:p-2">
           {/* Title */}
-          <p className={cn("gencl:text-body-1-semi-bold! gencl:line-clamp-1 gencl:truncate gencl:w-full", textPrimary)}>
+          <p
+            className={cn(
+              isCompact
+                ? "gencl:h-5 gencl:text-[14px] gencl:leading-5 gencl:font-semibold gencl:line-clamp-1 gencl:truncate gencl:w-full"
+                : "gencl:text-body-1-semi-bold! gencl:line-clamp-1 gencl:truncate gencl:w-full",
+              textPrimary
+            )}>
             {displayTitle}
           </p>
 
@@ -429,8 +449,16 @@ export function LinkCard({
             <LinkCardThumb
               src={data.image}
               alt={displayTitle}
-              className={expandImageSize !== null ? undefined : "gencl:min-h-32 gencl:aspect-square gencl:h-full"}
-              style={expandImageSize !== null ? { width: expandImageSize, height: expandImageSize } : undefined}
+              className={
+                isCompact || expandImageSize !== null ? undefined : "gencl:min-h-32 gencl:aspect-square gencl:h-full"
+              }
+              style={
+                isCompact
+                  ? { width: compactThumbWidth, height: compactThumbHeight }
+                  : expandImageSize !== null
+                    ? { width: expandImageSize, height: expandImageSize }
+                    : undefined
+              }
             />
 
             {/* Details column. When description+meta fits in ≤ 84 px, the
@@ -438,7 +466,13 @@ export function LinkCard({
             <div className="gencl:flex gencl:flex-col gencl:gap-1 gencl:min-w-0">
               <div ref={detailsContentRef} className="gencl:flex gencl:flex-col gencl:gap-1">
                 {data.description && (
-                  <p className={cn("gencl:text-body-3-medium! gencl:w-full gencl:line-clamp-3", textSecondary)}>
+                  <p
+                    className={cn(
+                      isCompact
+                        ? "gencl:h-7 gencl:text-[10px] gencl:leading-3.5 gencl:font-medium gencl:w-full gencl:line-clamp-2"
+                        : "gencl:text-body-3-medium! gencl:w-full gencl:line-clamp-3",
+                      textSecondary
+                    )}>
                     {data.description}
                   </p>
                 )}
