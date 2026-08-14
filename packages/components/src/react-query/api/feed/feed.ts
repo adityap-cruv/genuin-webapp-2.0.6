@@ -6,6 +6,7 @@ import { useAxiosInstance } from "@genuin/components/context/axios";
 import { axiosInstance as globalAxiosInstance } from "@genuin/components/context/axios/context";
 import type { ConfigurationType, EmbedDataType } from "@genuin/components/context/embed/embed.types";
 import { getDeviceId } from "@genuin/components/lib/utils/device-id";
+import { useIpInfo } from "@genuin/components/react-query/api/authentication/ip-info";
 import { queryClient } from "@genuin/components/react-query/client";
 import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
 import { API_PATHS } from "@genuin/components/react-query/paths";
@@ -16,6 +17,7 @@ import { fetchVideoDetails } from "../video";
 
 import { parseFeed } from "./parser";
 import type { AdsPostDetailsType } from "./schema";
+import { buildTargetingSync, type Targeting } from "./targeting";
 // Mapper for FeedType to corresponding numbers
 const feedTypeToNumber: Record<FeedType, number> = {
   HOME: 1,
@@ -75,7 +77,8 @@ async function fetchFeed(
     lastVideoCount?: number;
   },
   options?: UseFeedOptionsType,
-  axiosInstance?: AxiosInstance
+  axiosInstance?: AxiosInstance,
+  ipInfo?: Targeting["location"]
 ) {
   const requestAxiosInstance = axiosInstance ?? globalAxiosInstance;
 
@@ -339,12 +342,21 @@ async function fetchFeed(
   const FORCE_TYPE_3_PLACEMENT_ID = "6a3c5b0dcb0f2cc8d56a2b0d";
   const placementOverride = options?.placementId === FORCE_TYPE_3_PLACEMENT_ID ? { type: 3 } : {};
 
+  // Ad/feed targeting: sync metadata (meta keywords + page url) built here.
+  // Geo-ip `location` is resolved at the useFeed hook level via useIpInfo
+  // (gated so the feed request waits for it) and passed in as `ipInfo` —
+  // merged into the final targeting object below.
+  const metadata = buildTargetingSync();
+  const targeting: Targeting | undefined =
+    metadata || ipInfo ? { ...metadata, ...(ipInfo && { location: ipInfo }) } : undefined;
+
   return await requestAxiosInstance
     .post(url, {
       ...requestBody,
       ...contextualFeedParamsBody,
       ...configurationDataBody,
       ...placementOverride,
+      ...(targeting && { targeting }),
     })
     .then((res) => {
       // if (res.status !== 200) {
@@ -588,7 +600,8 @@ async function createFeedQueryFn(
   feedType: FeedType,
   pageParam: { pageSession?: string; lastVideoId?: string; lastVideoCount?: number } | undefined,
   options?: UseFeedOptionsType,
-  axiosInstance?: AxiosInstance
+  axiosInstance?: AxiosInstance,
+  ipInfo?: Targeting["location"]
 ): Promise<FeedPage> {
   const startVideoSlug = options?.startVideoSlug;
   const hasVideoIds = options?.videoIds && options.videoIds.length > 0;
@@ -601,7 +614,7 @@ async function createFeedQueryFn(
   // Scenario 3: Regular feed - fetch from API
   let feedData = options?.isSingleVideo
     ? createEmptyFeedPage()
-    : await fetchFeed(feedType, pageParam, options, axiosInstance);
+    : await fetchFeed(feedType, pageParam, options, axiosInstance, ipInfo);
 
   // For the first page with a startVideoSlug, ensure the video is included
   const isFirstPage = !pageParam;
@@ -666,11 +679,18 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
   const queryKey = getQueryKeyForFeed(feedType, options);
 
   const axiosInstance = useAxiosInstance();
+  // Shares useIpInfo's cache key, so this dedupes with analytics/other useFeed
+  // instances on the page — only the first ever call actually fetches.
+  const { data: ipInfo, isLoading: isIpInfoLoading } = useIpInfo();
 
   return useInfiniteQuery({
     queryKey,
-    queryFn: ({ pageParam }) => createFeedQueryFn(feedType, pageParam, options, axiosInstance),
-    enabled: options?.enabled !== false,
+    queryFn: ({ pageParam }) => createFeedQueryFn(feedType, pageParam, options, axiosInstance, ipInfo),
+    // Gated on geo-ip settling (success OR failure — isLoading clears either
+    // way) so the feed request always waits for `targeting.location` to be
+    // resolved one way or another before firing, matching the guarantee the
+    // previous non-hook implementation had.
+    enabled: options?.enabled !== false && !isIpInfoLoading,
     initialPageParam: undefined as undefined | { pageSession?: string; lastVideoId?: string; lastVideoCount?: number },
     getNextPageParam: (lastPage, _allPages, lastPageParam) => {
       if (lastPage.endOfFeed) return undefined;

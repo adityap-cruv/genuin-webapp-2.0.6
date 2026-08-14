@@ -6,7 +6,7 @@ import { useAxiosInstance } from "@genuin/components/context/axios";
 import { getQueryKeyForIpInfo } from "../../keys/ip-info";
 import { API_PATHS } from "../../paths";
 
-type Response = {
+export type IpInfoResponse = {
   city: string;
   country: string;
   ip: string;
@@ -32,7 +32,7 @@ async function fetchIpInfo<T>(axiosInstance: AxiosInstance): Promise<T> {
  * React hook for fetching IP geolocation information
  * @returns Query result containing IP geolocation data
  */
-export function useIpInfo<T extends Response>(): UseQueryResult<T> {
+export function useIpInfo<T extends IpInfoResponse>(): UseQueryResult<T> {
   const axiosInstance = useAxiosInstance();
 
   return useQuery<T>({
