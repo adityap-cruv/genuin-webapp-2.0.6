@@ -97,7 +97,7 @@ export const RepeatedCards: Story = {
     await expect(cta.getBoundingClientRect().width).toBe(232);
     await expect(cta.getBoundingClientRect().height).toBe(40);
     await expect(ctaText.getBoundingClientRect().width).toBe(180);
-    await expect(ctaText.getBoundingClientRect().height).toBe(22);
+    await expect(ctaText.getBoundingClientRect().height).toBe(20);
     await expect(getComputedStyle(ctaText).fontWeight).toBe("600");
     await expect(ctaIcon.getBoundingClientRect().width).toBe(24);
     await expect(ctaIcon.getBoundingClientRect().height).toBe(24);

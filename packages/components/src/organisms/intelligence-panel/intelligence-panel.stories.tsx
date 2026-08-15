@@ -3,9 +3,16 @@ import type { ReactNode } from "react";
 import { expect, fn, userEvent, within } from "storybook/test";
 
 import { IntelligenceArticleCard } from "./intelligence-article-card";
+import { IntelligenceCalendarPanel } from "./intelligence-calendar-panel";
+import { IntelligenceLeaderboardPanel } from "./intelligence-leaderboard-panel";
 import { IntelligencePanel, IntelligencePanelSkeleton } from "./intelligence-panel";
 import { IntelligencePanelShell } from "./intelligence-panel-shell";
-import type { IntelligenceArticle, IntelligencePanelLayout } from "./intelligence-panel.types";
+import type {
+  IntelligenceArticle,
+  IntelligenceCalendarEvent,
+  IntelligenceLeaderboardView,
+  IntelligencePanelLayout,
+} from "./intelligence-panel.types";
 
 /** Example presentation metadata as it would arrive with the backend response. */
 const REFERENCE_LAYOUT = {
@@ -67,6 +74,415 @@ const STRESS_ARTICLES = Array.from(
     id: `${UP_NEXT_ARTICLE.id}-${index + 1}`,
   })
 );
+
+const SAILGP_LEADERBOARD_VIEWS = [
+  {
+    id: "season",
+    tabLabel: "Season standings",
+    eyebrow: "Current ranks",
+    title: "Season 6 leaderboard",
+    subtitle: "2026 championship · after Portsmouth",
+    hero: {
+      label: "Season standings",
+      title: "2026 SailGP Championship",
+      meta: "After Portsmouth · 8 of 13 events complete",
+      badge: "S6",
+      image: {
+        ...UP_NEXT_ARTICLE.image,
+        alt: "SailGP fleet racing during the 2026 championship",
+      },
+    },
+    entries: [
+      {
+        id: "aus",
+        position: 1,
+        team: "Australia",
+        participant: "Tom Slingsby",
+        code: "AUS",
+        points: 66,
+        accentColor: "#00843d",
+      },
+      {
+        id: "esp",
+        position: 2,
+        team: "Spain",
+        participant: "Diego Botin",
+        code: "ESP",
+        points: 54,
+        accentColor: "#d71920",
+      },
+      {
+        id: "swe",
+        position: 3,
+        team: "Sweden",
+        participant: "Nathan Outteridge",
+        code: "SWE",
+        points: 47,
+        accentColor: "#1261a0",
+      },
+      {
+        id: "usa",
+        position: 4,
+        team: "United States",
+        participant: "Taylor Canfield",
+        code: "USA",
+        points: 46,
+        accentColor: "#1b365d",
+      },
+      {
+        id: "gbr",
+        position: 5,
+        team: "Great Britain",
+        participant: "Dylan Fletcher",
+        code: "GBR",
+        points: 44,
+        accentColor: "#c8102e",
+      },
+      {
+        id: "fra",
+        position: 6,
+        team: "France",
+        participant: "Quentin Delapierre",
+        code: "FRA",
+        points: 36,
+        accentColor: "#243c8f",
+      },
+      {
+        id: "can",
+        position: 7,
+        team: "Canada",
+        participant: "Giles Scott",
+        code: "CAN",
+        points: 31,
+        accentColor: "#e31837",
+      },
+      {
+        id: "ger",
+        position: 8,
+        team: "Germany",
+        participant: "Erik Heil",
+        code: "GER",
+        points: 28,
+        accentColor: "#202020",
+      },
+      {
+        id: "sui",
+        position: 9,
+        team: "Switzerland",
+        participant: "Sébastien Schneiter",
+        code: "SUI",
+        points: 25,
+        accentColor: "#d52b1e",
+      },
+      {
+        id: "den",
+        position: 10,
+        team: "Denmark",
+        participant: "Nicolai Sehested",
+        code: "DEN",
+        points: 24,
+        accentColor: "#c60c30",
+      },
+      {
+        id: "ita",
+        position: 11,
+        team: "Italy",
+        participant: "Phil Robertson",
+        code: "ITA",
+        points: 22,
+        accentColor: "#008c45",
+      },
+      {
+        id: "nzl",
+        position: 12,
+        team: "New Zealand",
+        participant: "Peter Burling",
+        code: "NZL",
+        points: 14,
+        accentColor: "#111111",
+      },
+      {
+        id: "bra",
+        position: 13,
+        team: "Brazil",
+        participant: "Paul Goodison",
+        code: "BRA",
+        points: 8,
+        accentColor: "#009c3b",
+      },
+    ],
+  },
+  {
+    id: "event",
+    tabLabel: "Latest event",
+    eyebrow: "Portsmouth results",
+    title: "Spain take the win",
+    subtitle: "Great Britain Sail Grand Prix · final",
+    hero: {
+      label: "Event results",
+      title: "Great Britain Sail Grand Prix",
+      meta: "Portsmouth · 25–26 July 2026",
+      badge: "R8",
+      image: {
+        ...UP_NEXT_ARTICLE.image,
+        alt: "SailGP boats competing in close racing",
+      },
+    },
+    entries: [
+      {
+        id: "event-esp",
+        position: 1,
+        team: "Spain",
+        participant: "Diego Botin",
+        code: "ESP",
+        points: 10,
+        accentColor: "#d71920",
+      },
+      {
+        id: "event-swe",
+        position: 2,
+        team: "Sweden",
+        participant: "Nathan Outteridge",
+        code: "SWE",
+        points: 9,
+        accentColor: "#1261a0",
+      },
+      {
+        id: "event-can",
+        position: 3,
+        team: "Canada",
+        participant: "Giles Scott",
+        code: "CAN",
+        points: 8,
+        accentColor: "#e31837",
+      },
+      {
+        id: "event-sui",
+        position: 4,
+        team: "Switzerland",
+        participant: "Sébastien Schneiter",
+        code: "SUI",
+        points: 7,
+        accentColor: "#d52b1e",
+      },
+      {
+        id: "event-nzl",
+        position: 5,
+        team: "New Zealand",
+        participant: "Peter Burling",
+        code: "NZL",
+        points: 6,
+        accentColor: "#111111",
+      },
+      {
+        id: "event-usa",
+        position: 6,
+        team: "United States",
+        participant: "Taylor Canfield",
+        code: "USA",
+        points: 5,
+        accentColor: "#1b365d",
+      },
+      {
+        id: "event-aus",
+        position: 7,
+        team: "Australia",
+        participant: "Tom Slingsby",
+        code: "AUS",
+        points: 4,
+        accentColor: "#00843d",
+      },
+      {
+        id: "event-fra",
+        position: 8,
+        team: "France",
+        participant: "Quentin Delapierre",
+        code: "FRA",
+        points: 3,
+        accentColor: "#243c8f",
+      },
+      {
+        id: "event-den",
+        position: 9,
+        team: "Denmark",
+        participant: "Nicolai Sehested",
+        code: "DEN",
+        points: 2,
+        accentColor: "#c60c30",
+      },
+      {
+        id: "event-ger",
+        position: 10,
+        team: "Germany",
+        participant: "Erik Heil",
+        code: "GER",
+        points: 1,
+        accentColor: "#202020",
+      },
+      {
+        id: "event-gbr",
+        position: 11,
+        team: "Great Britain",
+        participant: "Dylan Fletcher",
+        code: "GBR",
+        points: 0,
+        accentColor: "#c8102e",
+      },
+      {
+        id: "event-ita",
+        position: 12,
+        team: "Italy",
+        participant: "Phil Robertson",
+        code: "ITA",
+        points: 0,
+        accentColor: "#008c45",
+      },
+      {
+        id: "event-bra",
+        position: 13,
+        team: "Brazil",
+        participant: "Martine Grael",
+        code: "BRA",
+        points: 0,
+        accentColor: "#009c3b",
+      },
+    ],
+  },
+] satisfies readonly IntelligenceLeaderboardView[];
+
+const SAILGP_EVENTS = [
+  {
+    id: "perth",
+    title: "Oracle Perth Sail Grand Prix",
+    location: "Perth, Australia",
+    dateLabel: "17 – 18 Jan 2026",
+    startDate: "2026-01-17",
+    endDate: "2026-01-18",
+    href: "https://thefoil.com/series/sailgp/events/oracle-perth-sail-grand-prix-presented-by-kpmg/",
+    status: "complete",
+  },
+  {
+    id: "auckland",
+    title: "ITM New Zealand Sail Grand Prix | Auckland",
+    location: "Auckland, New Zealand",
+    dateLabel: "14 – 15 Feb 2026",
+    startDate: "2026-02-14",
+    endDate: "2026-02-15",
+    href: "https://thefoil.com/series/sailgp/events/itm-new-zealand-sail-grand-prix-auckland/",
+    status: "complete",
+  },
+  {
+    id: "sydney",
+    title: "KPMG Sydney Sail Grand Prix",
+    location: "Sydney, Australia",
+    dateLabel: "28 Feb – 1 Mar 2026",
+    startDate: "2026-02-28",
+    endDate: "2026-03-01",
+    href: "https://thefoil.com/series/sailgp/events/kpmg-sydney-sail-grand-prix/",
+    status: "complete",
+  },
+  {
+    id: "rio",
+    title: "Enel Rio Sail Grand Prix",
+    location: "Rio de Janeiro, Brazil",
+    dateLabel: "11 – 12 Apr 2026",
+    startDate: "2026-04-11",
+    endDate: "2026-04-12",
+    href: "https://thefoil.com/series/sailgp/events/enel-rio-sail-grand-prix/",
+    status: "complete",
+  },
+  {
+    id: "bermuda",
+    title: "Apex Group Bermuda Sail Grand Prix",
+    location: "Great Sound, Bermuda",
+    dateLabel: "9 – 10 May 2026",
+    startDate: "2026-05-09",
+    endDate: "2026-05-10",
+    href: "https://thefoil.com/series/sailgp/events/apex-group-bermuda-sail-grand-prix/",
+    status: "complete",
+  },
+  {
+    id: "new-york",
+    title: "Mubadala New York Sail Grand Prix",
+    location: "New York, USA",
+    dateLabel: "30 – 31 May 2026",
+    startDate: "2026-05-30",
+    endDate: "2026-05-31",
+    href: "https://thefoil.com/series/sailgp/events/mubadala-new-york-sail-grand-prix/",
+    status: "complete",
+  },
+  {
+    id: "halifax",
+    title: "Canada Sail Grand Prix | Halifax",
+    location: "Halifax, Canada",
+    dateLabel: "20 – 21 Jun 2026",
+    startDate: "2026-06-20",
+    endDate: "2026-06-21",
+    href: "https://thefoil.com/series/sailgp/events/canada-sail-grand-prix-halifax/",
+    status: "complete",
+  },
+  {
+    id: "portsmouth",
+    title: "Emirates Great Britain Sail Grand Prix | Portsmouth",
+    location: "Portsmouth, United Kingdom",
+    dateLabel: "25 – 26 Jul 2026",
+    startDate: "2026-07-25",
+    endDate: "2026-07-26",
+    href: "https://thefoil.com/series/sailgp/events/emirates-great-britain-sail-grand-prix-portsmouth/",
+    status: "complete",
+  },
+  {
+    id: "sassnitz",
+    title: "Rockwool Germany Sail Grand Prix | Sassnitz",
+    location: "Sassnitz, Rügen Island, Germany",
+    dateLabel: "22 – 23 Aug 2026",
+    startDate: "2026-08-22",
+    endDate: "2026-08-23",
+    href: "https://thefoil.com/series/sailgp/events/rockwool-germany-sail-grand-prix-sassnitz/",
+    status: "next",
+    image: UP_NEXT_ARTICLE.image,
+  },
+  {
+    id: "valencia",
+    title: "Spain Sail Grand Prix | Valencia",
+    location: "Valencia, Spain",
+    dateLabel: "5 – 6 Sep 2026",
+    startDate: "2026-09-05",
+    endDate: "2026-09-06",
+    href: "https://thefoil.com/series/sailgp/events/spain-sail-grand-prix-valencia/",
+    status: "upcoming",
+  },
+  {
+    id: "geneva",
+    title: "Rolex Switzerland Sail Grand Prix | Geneva",
+    location: "Geneva, Switzerland",
+    dateLabel: "19 – 20 Sep 2026",
+    startDate: "2026-09-19",
+    endDate: "2026-09-20",
+    href: "https://thefoil.com/series/sailgp/events/rolex-switzerland-sail-grand-prix-geneva/",
+    status: "upcoming",
+  },
+  {
+    id: "dubai",
+    title: "Emirates Dubai Sail Grand Prix",
+    location: "Dubai, United Arab Emirates",
+    dateLabel: "21 – 22 Nov 2026",
+    startDate: "2026-11-21",
+    endDate: "2026-11-22",
+    href: "https://thefoil.com/series/sailgp/events/emirates-dubai-sail-grand-prix-presented-by-dp-world/",
+    status: "upcoming",
+  },
+  {
+    id: "abu-dhabi",
+    title: "Mubadala Abu Dhabi Season Grand Final",
+    location: "Abu Dhabi, United Arab Emirates",
+    dateLabel: "28 – 29 Nov 2026",
+    startDate: "2026-11-28",
+    endDate: "2026-11-29",
+    href: "https://thefoil.com/series/sailgp/events/mubadala-abu-dhabi-sail-grand-prix-2026-season-grand-final/",
+    status: "upcoming",
+  },
+] satisfies readonly IntelligenceCalendarEvent[];
 
 function StoryFrame({ children, width = 382, height = 520 }: { children: ReactNode; width?: number; height?: number }) {
   return (
@@ -353,5 +769,86 @@ export const Loading: Story = {
     await expect(canvasElement.querySelectorAll('[data-slot="skeleton"]')).toHaveLength(20);
     await userEvent.click(canvas.getByRole("button", { name: "Close Intelligence" }));
     await expect(args.onClose).toHaveBeenCalledTimes(1);
+  },
+};
+
+/** The Foil's SailGP standings adapted to the compact Intelligence surface. */
+export const SailGpLeaderboard: Story = {
+  args: {
+    onClose: fn(),
+  },
+  render: ({ onClose }) => (
+    <StoryFrame>
+      <IntelligenceLeaderboardPanel
+        size={REFERENCE_LAYOUT.panel}
+        views={SAILGP_LEADERBOARD_VIEWS}
+        defaultViewId="season"
+        sourceLabel="The Foil"
+        fullStandingsHref="https://thefoil.com/series/sailgp/results/"
+        onClose={onClose}
+      />
+    </StoryFrame>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const panel = canvasElement.querySelector<HTMLElement>('[data-slot="intelligence-leaderboard-panel"]');
+    const scrollContent = canvasElement.querySelector<HTMLElement>('[data-slot="intelligence-panel-scroll-content"]');
+    const seasonTab = canvas.getByRole("tab", { name: "Season standings" });
+    const eventTab = canvas.getByRole("tab", { name: "Latest event" });
+    const fullStandings = canvas.getByRole("link", { name: "Full standings" });
+
+    await expect(panel).not.toBeNull();
+    await expect(scrollContent!.scrollHeight).toBeGreaterThan(scrollContent!.clientHeight);
+    await expect(seasonTab).toHaveAttribute("aria-selected", "true");
+    await expect(canvas.getByRole("heading", { name: "Season 6 leaderboard" })).toBeInTheDocument();
+    await expect(canvas.getByRole("heading", { name: "2026 SailGP Championship" })).toBeInTheDocument();
+    await expect(canvas.getAllByRole("row")).toHaveLength(14);
+    await expect(fullStandings).toHaveAttribute("href", "https://thefoil.com/series/sailgp/results/");
+    await expect(fullStandings).toHaveAttribute("target", "_blank");
+
+    await userEvent.click(eventTab);
+    await expect(eventTab).toHaveAttribute("aria-selected", "true");
+    await expect(canvas.getByRole("heading", { name: "Spain take the win" })).toBeInTheDocument();
+    await expect(canvas.getByRole("heading", { name: "Great Britain Sail Grand Prix" })).toBeInTheDocument();
+    await expect(canvas.getByText("Great Britain Sail Grand Prix · final")).toBeInTheDocument();
+    await expect(canvas.getByText("Portsmouth · 25–26 July 2026")).toBeInTheDocument();
+
+    await userEvent.click(seasonTab);
+    await expect(seasonTab).toHaveAttribute("aria-selected", "true");
+  },
+};
+
+/** The Foil's SailGP calendar adapted to the compact Intelligence surface. */
+export const SailGpCalendar: Story = {
+  args: {
+    onClose: fn(),
+  },
+  render: ({ onClose }) => (
+    <StoryFrame>
+      <IntelligenceCalendarPanel
+        size={REFERENCE_LAYOUT.panel}
+        title="Season 6 Event Calendar"
+        year={2026}
+        events={SAILGP_EVENTS}
+        sourceLabel="The Foil"
+        fullCalendarHref="https://thefoil.com/series/sailgp/events/"
+        onClose={onClose}
+      />
+    </StoryFrame>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const panel = canvasElement.querySelector<HTMLElement>('[data-slot="intelligence-calendar-panel"]');
+
+    await expect(panel).not.toBeNull();
+    await expect(canvas.getByRole("heading", { name: "Season 6 Event Calendar" })).toBeInTheDocument();
+    await expect(canvas.getByText("Full season view")).toBeInTheDocument();
+    await expect(canvas.queryByText("Monthly view")).not.toBeInTheDocument();
+    await expect(canvas.queryByRole("tablist", { name: "Calendar view" })).not.toBeInTheDocument();
+    await expect(canvas.getByText("13 events")).toBeInTheDocument();
+    await expect(canvas.getByRole("link", { name: "Full calendar" })).toHaveAttribute(
+      "href",
+      "https://thefoil.com/series/sailgp/events/"
+    );
   },
 };

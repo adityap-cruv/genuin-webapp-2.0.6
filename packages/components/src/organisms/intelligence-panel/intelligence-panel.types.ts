@@ -104,3 +104,79 @@ export interface IntelligencePanelSkeletonProps extends Omit<IntelligencePanelSh
   /** Number of Up Next card placeholders. @default 4 */
   cardCount?: number;
 }
+
+/** A single ranked participant shown in an Intelligence leaderboard. */
+export type IntelligenceLeaderboardEntry = {
+  /** Stable identity used when switching between leaderboard views. */
+  id: string;
+  /** Rank supplied by the standings source. */
+  position: number;
+  /** Primary team or participant name. */
+  team: string;
+  /** Supporting participant name, such as a driver or captain. */
+  participant: string;
+  /** Short visual identifier, such as AUS or ESP. */
+  code: string;
+  /** Score displayed in the points column. */
+  points: number;
+  /** Optional team colour used as a restrained visual accent. */
+  accentColor?: string;
+};
+
+/** One selectable set of standings, such as season or event results. */
+export type IntelligenceLeaderboardView = {
+  id: string;
+  tabLabel: string;
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+  /** Optional visual context identifying the championship or event. */
+  hero?: {
+    label: string;
+    title: string;
+    meta: string;
+    badge: string;
+    image: IntelligenceArticleImage;
+  };
+  entries: readonly IntelligenceLeaderboardEntry[];
+};
+
+/** Props for a leaderboard composed inside the shared Intelligence shell. */
+export interface IntelligenceLeaderboardPanelProps extends Omit<IntelligencePanelShellProps, "children"> {
+  /** Standings views presented in the compact tab switcher. */
+  views: readonly IntelligenceLeaderboardView[];
+  /** Initially selected view. Falls back to the first view. */
+  defaultViewId?: string;
+  /** Destination for the complete standings on the source site. */
+  fullStandingsHref: string;
+  /** Visible source name in the panel footer. */
+  sourceLabel: string;
+}
+
+/** Lifecycle state used to distinguish past and upcoming calendar events. */
+export type IntelligenceCalendarEventStatus = "complete" | "next" | "upcoming";
+
+/** An event displayed in the compact Intelligence calendar. */
+export type IntelligenceCalendarEvent = {
+  id: string;
+  title: string;
+  location: string;
+  /** Human-readable range, for example "22 – 23 Aug 2026". */
+  dateLabel: string;
+  /** ISO calendar date used for month grouping. */
+  startDate: string;
+  /** ISO calendar date used to highlight multi-day events. */
+  endDate: string;
+  href: string;
+  status: IntelligenceCalendarEventStatus;
+  image?: IntelligenceArticleImage;
+};
+
+/** Props for The Foil-inspired event calendar inside Intelligence. */
+export interface IntelligenceCalendarPanelProps extends Omit<IntelligencePanelShellProps, "children"> {
+  title: string;
+  year: number;
+  events: readonly IntelligenceCalendarEvent[];
+  fullCalendarHref: string;
+  sourceLabel: string;
+}
