@@ -1,5 +1,6 @@
 export * from "./authentication-modal";
 export * from "./community-card";
+export * from "./contextual";
 export * from "./details-page-topbar";
 export * from "./embed";
 export * from "./embed-tile";

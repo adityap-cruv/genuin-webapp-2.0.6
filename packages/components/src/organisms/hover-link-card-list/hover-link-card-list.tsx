@@ -1,12 +1,21 @@
 "use client";
 
 import { cn } from "@genuin/ui/lib/utils";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { motion } from "motion/react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { LinkCard, type LinkMetaData } from "@genuin/components/molecules/linkout-new/link-card";
 
+export type ContextualLinkMetaData = LinkMetaData & {
+  video_id?: string | null;
+};
+
 export interface HoverLinkCardListProps {
-  items: readonly LinkMetaData[];
+  items: readonly ContextualLinkMetaData[];
+  activeVideoId?: string | null;
+  /** Keep the item matching `activeVideoId` visually expanded and scrolled to the top. */
+  pinActiveItemToTop?: boolean;
+  showContainerBorder?: boolean;
   width?: number | string;
   height?: number | string;
   gap?: number;
@@ -18,7 +27,7 @@ export interface HoverLinkCardListProps {
   animationDurationMs?: number;
   ariaLabel?: string;
   className?: string;
-  onLinkClick?: (item: LinkMetaData, index: number) => void;
+  onLinkClick?: (item: ContextualLinkMetaData, index: number) => void;
 }
 
 function usePrefersReducedMotion() {
@@ -45,6 +54,8 @@ function usePrefersReducedMotion() {
  */
 export function HoverLinkCardList({
   items,
+  activeVideoId,
+  pinActiveItemToTop = false,
   width = 332,
   height = 387,
   gap = 8,
@@ -55,10 +66,20 @@ export function HoverLinkCardList({
   rotationIntervalMs = 3000,
   animationDurationMs = 500,
   ariaLabel = "Related links",
+  showContainerBorder = true,
   className,
   onLinkClick,
 }: HoverLinkCardListProps) {
-  const fallbackExpandedIndex = Math.min(Math.max(initialExpandedIndex, 0), Math.max(items.length - 1, 0));
+  const orderedItems = useMemo(() => {
+    const entries = items.map((item, sourceIndex) => ({
+      item,
+      sourceIndex,
+      key: `${item.video_id ?? item.link}-${sourceIndex}`,
+    }));
+    return entries;
+  }, [items]);
+
+  const fallbackExpandedIndex = Math.min(Math.max(initialExpandedIndex, 0), Math.max(orderedItems.length - 1, 0));
   const [activeIndex, setActiveIndex] = useState(fallbackExpandedIndex);
   const [isInteractionPaused, setIsInteractionPaused] = useState(false);
   const [isSliding, setIsSliding] = useState(false);
@@ -70,6 +91,7 @@ export function HoverLinkCardList({
   const prefersReducedMotion = usePrefersReducedMotion();
   const normalizedDuration = Math.max(0, animationDurationMs);
   const tailSpace = typeof height === "number" ? Math.max(0, height - 80) : 307;
+  const isControlledPinned = pinActiveItemToTop && Boolean(activeVideoId);
 
   const alignItemToTop = useCallback((index: number) => {
     const section = sectionRef.current;
@@ -82,9 +104,58 @@ export function HoverLinkCardList({
     section.scrollTop += itemTop - sectionTop - paddingTop;
   }, []);
 
+  const scrollItemToTop = useCallback(
+    (index: number, animate = true) => {
+      const section = sectionRef.current;
+      const item = trackRef.current?.querySelector<HTMLElement>(`[data-item-index="${index}"]`);
+      if (!section || !item) return;
+
+      const sectionTop = section.getBoundingClientRect().top;
+      const itemTop = item.getBoundingClientRect().top;
+      const paddingTop = Number.parseFloat(getComputedStyle(section).paddingTop) || 0;
+      const maxScrollTop = Math.max(0, section.scrollHeight - section.clientHeight);
+      const rawTarget = itemTop - sectionTop - paddingTop + section.scrollTop;
+      const target = Math.max(0, Math.min(rawTarget, maxScrollTop));
+
+      if (animate && !prefersReducedMotion) {
+        section.scrollTo({ top: target, behavior: "smooth" });
+        return;
+      }
+
+      section.scrollTop = target;
+    },
+    [prefersReducedMotion]
+  );
+
+  const queueScrollToIndex = useCallback(
+    (index: number) => {
+      if (animationFrameRef.current !== null) {
+        window.cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = null;
+      }
+
+      animationFrameRef.current = window.requestAnimationFrame(() => {
+        animationFrameRef.current = window.requestAnimationFrame(() => {
+          scrollItemToTop(index);
+        });
+      });
+    },
+    [scrollItemToTop]
+  );
+
+  useEffect(() => {
+    if (!activeVideoId) return;
+
+    const matchedIndex = orderedItems.findIndex(({ item }) => item.video_id === activeVideoId);
+    if (matchedIndex < 0) return;
+
+    setActiveIndex(matchedIndex);
+    queueScrollToIndex(matchedIndex);
+  }, [activeVideoId, orderedItems, queueScrollToIndex]);
+
   const startAdvance = useCallback(() => {
     const nextIndex = activeIndex + 1;
-    if (nextIndex >= items.length || isSliding) return;
+    if (nextIndex >= orderedItems.length || isSliding) return;
 
     const section = sectionRef.current;
     const currentItem = trackRef.current?.querySelector<HTMLElement>(`[data-item-index="${activeIndex}"]`);
@@ -133,14 +204,14 @@ export function HoverLinkCardList({
     };
 
     animationFrameRef.current = window.requestAnimationFrame(animateScroll);
-  }, [activeIndex, alignItemToTop, isSliding, items.length, normalizedDuration, prefersReducedMotion]);
+  }, [activeIndex, alignItemToTop, isSliding, normalizedDuration, orderedItems.length, prefersReducedMotion]);
 
   useEffect(() => {
-    if (!autoRotate || isInteractionPaused || isSliding || activeIndex >= items.length - 1) return;
+    if (!autoRotate || isInteractionPaused || isSliding || activeIndex >= orderedItems.length - 1) return;
 
     const timer = window.setTimeout(startAdvance, Math.max(0, rotationIntervalMs));
     return () => window.clearTimeout(timer);
-  }, [activeIndex, autoRotate, isInteractionPaused, isSliding, items.length, rotationIntervalMs, startAdvance]);
+  }, [activeIndex, autoRotate, isInteractionPaused, isSliding, orderedItems.length, rotationIntervalMs, startAdvance]);
 
   useEffect(
     () => () => {
@@ -155,7 +226,8 @@ export function HoverLinkCardList({
     const cardElements = trackRef.current?.querySelectorAll<HTMLElement>("[data-item-index]");
     if (!section || !cardElements?.length || isAutoScrollingRef.current) return;
 
-    const contentTop = section.getBoundingClientRect().top + (Number.parseFloat(getComputedStyle(section).paddingTop) || 0);
+    const contentTop =
+      section.getBoundingClientRect().top + (Number.parseFloat(getComputedStyle(section).paddingTop) || 0);
     let closestIndex = activeIndex;
     let closestDistance = Number.POSITIVE_INFINITY;
 
@@ -170,7 +242,29 @@ export function HoverLinkCardList({
     setActiveIndex(closestIndex);
   }, [activeIndex]);
 
-  if (items.length === 0) return null;
+  const selectCard = useCallback(
+    (item: ContextualLinkMetaData, index: number) => {
+      // Preserve the top-level page scroll position — clicking a focusable
+      // card can cause the browser to scroll the viewport to the element.
+      // Remember the current window scroll and restore it after the
+      // internal list scroll finishes so the page doesn't jump.
+      const pageScrollX = window.scrollX || window.pageXOffset;
+      const pageScrollY = window.scrollY || window.pageYOffset;
+
+      setActiveIndex(index);
+      queueScrollToIndex(index);
+
+      // Restore page scroll shortly after the list's scroll animation
+      // completes. Use normalizedDuration as a guide; add a small buffer.
+      const restoreDelay = Math.max(0, normalizedDuration) + 60;
+      window.setTimeout(() => window.scrollTo(pageScrollX, pageScrollY), restoreDelay);
+
+      onLinkClick?.(item, index);
+    },
+    [onLinkClick, queueScrollToIndex]
+  );
+
+  if (orderedItems.length === 0) return null;
 
   return (
     <section
@@ -178,7 +272,7 @@ export function HoverLinkCardList({
       aria-label={ariaLabel}
       className={cn(
         "gencl:box-border gencl:overflow-y-auto gencl:rounded-xl gencl:bg-white gencl:p-1",
-        "gencl:ring-1 gencl:ring-secondary-200 gencl:ring-inset",
+        showContainerBorder && "gencl:ring-1 gencl:ring-secondary-200 gencl:ring-inset",
         className
       )}
       style={{ width, height, overflowAnchor: "none" }}
@@ -187,17 +281,17 @@ export function HoverLinkCardList({
       }}
       onMouseLeave={() => {
         if (pauseOnHover) setIsInteractionPaused(false);
-        if (!isSliding) syncActiveCardWithScroll();
+        if (!isSliding && !isControlledPinned) syncActiveCardWithScroll();
       }}
       onFocusCapture={() => setIsInteractionPaused(true)}
       onBlurCapture={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget)) {
           setIsInteractionPaused(false);
-          if (!isSliding) syncActiveCardWithScroll();
+          if (!isSliding && !isControlledPinned) syncActiveCardWithScroll();
         }
       }}
       onScroll={() => {
-        if (isAutoScrollingRef.current) return;
+        if (isAutoScrollingRef.current || isControlledPinned) return;
         if (scrollEndTimerRef.current !== null) window.clearTimeout(scrollEndTimerRef.current);
         scrollEndTimerRef.current = window.setTimeout(syncActiveCardWithScroll, 120);
       }}>
@@ -209,20 +303,29 @@ export function HoverLinkCardList({
           gap,
           paddingBottom: tailSpace,
         }}>
-        {items.map((item, index) => {
+        {orderedItems.map(({ item, key }, index) => {
           const isActive = activeIndex === index;
 
           return (
-            <div
-              key={`${item.link}-${index}`}
+            <motion.div
+              layout={false}
+              transition={{
+                layout: {
+                  duration: normalizedDuration / 1000,
+                  ease: [0.22, 1, 0.36, 1],
+                },
+              }}
+              key={key}
               data-slot="hover-link-card-item"
               data-item-index={index}
+              data-video-id={item.video_id ?? undefined}
               data-expanded={isActive ? "true" : "false"}
+              onClick={() => selectCard(item, index)}
               onMouseEnter={() => {
-                if (pauseOnHover && !isSliding) setActiveIndex(index);
+                if (pauseOnHover && !isSliding && !isControlledPinned) setActiveIndex(index);
               }}
               onFocusCapture={() => {
-                if (!isSliding) setActiveIndex(index);
+                if (!isSliding && !isControlledPinned) setActiveIndex(index);
               }}>
               <LinkCard
                 data={item}
@@ -233,9 +336,10 @@ export function HoverLinkCardList({
                 theme="light"
                 ctaText={ctaText}
                 ctaLink={item.link}
-                onClick={() => onLinkClick?.(item, index)}
+                onClick={() => selectCard(item, index)}
+                onCtaClick={() => selectCard(item, index)}
               />
-            </div>
+            </motion.div>
           );
         })}
       </div>
