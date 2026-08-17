@@ -6,6 +6,7 @@ export * from "./embed";
 export * from "./embed-tile";
 export * from "./error-state-component";
 export * from "./event-carousel";
+export * from "./event-surface";
 export * from "./generic-details";
 export * from "./group-card";
 export * from "./group-posts";

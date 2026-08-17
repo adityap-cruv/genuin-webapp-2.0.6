@@ -1,0 +1,24 @@
+/*
+ * Only the static grid scaffolding lives here. Every dimension the consumer can
+ * set (width/height/tracks/gap) is applied inline from props — Tailwind v4
+ * cannot emit classes for runtime values, and hardcoding them here would defeat
+ * the "flexible width and height" contract.
+ */
+
+.surface {
+  display: grid;
+  box-sizing: border-box;
+  /* Without this, a grid item wider than its track pushes the whole surface
+     past its container instead of scrolling/clipping inside it. */
+  min-width: 0;
+  min-height: 0;
+}
+
+.panel {
+  position: relative;
+  box-sizing: border-box;
+  /* Same reasoning as above, applied per cell: grid items default to
+     min-width/min-height:auto, which lets overflowing content blow the track. */
+  min-width: 0;
+  min-height: 0;
+}

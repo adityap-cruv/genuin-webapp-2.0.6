@@ -7,6 +7,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { LinkCard, type LinkMetaData } from "@genuin/components/molecules/linkout-new/link-card";
 
 export type ContextualLinkMetaData = LinkMetaData & {
+  /**
+   * Stable identifier for this item. Optional so existing callers keep working;
+   * consumers that need one (e.g. broadcasting an `item:select` on an
+   * `EventSurface`) should fall back to `link`, which is naturally unique.
+   */
+  id?: string;
   video_id?: string | null;
 };
 
