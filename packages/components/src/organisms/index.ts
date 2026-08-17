@@ -27,3 +27,4 @@ export * from "./side-info";
 export * from "./top-bar";
 export * from "./trending-groups-card";
 export * from "./trending-profiles-list";
+export * from "./video-carousel";
