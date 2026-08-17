@@ -74,7 +74,7 @@ export function EmbedProvider({
         previousActiveIndex: -1,
         sectionList: [],
         isSectioned: false,
-        containerInView: true,
+        containerInView: false,
         skipTimeOffsetOnce: false,
         followStatuses: initialFollowStatuses,
         // Only disable swiper for iHeart layout with startVideoSlug and action=share
