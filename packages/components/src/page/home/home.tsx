@@ -339,6 +339,27 @@ export function Home() {
           />
           <EventCarousel events={UPCOMING_RACES} ariaLabel="Upcoming races" />
         </section>
+
+        {/* Section 3 — Top Categories (video carousel + heading). */}
+        <section
+          aria-labelledby="top-categories-heading"
+          className="gencl:flex gencl:w-full gencl:flex-col gencl:gap-3">
+          <SectionHeader
+            id="top-categories-heading"
+            imageUrl={SECTION_LOGO}
+            imageAlt="The Foil"
+            heading="Top Categories in The Foil"
+            subHeading="You might like"
+          />
+          <div style={{ height: 440 }}>
+            <VideoCarousel
+              feedType="HOME"
+              externalFeedData={DESK_FEED_DATA}
+              ctaText="Read More"
+              containerClassName="gencl:h-full"
+            />
+          </div>
+        </section>
       </div>
     </div>
   );
