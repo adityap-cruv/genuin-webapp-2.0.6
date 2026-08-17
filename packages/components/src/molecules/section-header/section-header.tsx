@@ -49,7 +49,7 @@ export function SectionHeader({
         {heading && (
           <Heading
             data-slot="section-header-heading"
-            className="gencl:text-body-1-semi-bold gencl:line-clamp-1"
+            className="gencl:text-body-0-semi-bold gencl:line-clamp-1"
             style={headingStyle}>
             {heading}
           </Heading>
@@ -57,7 +57,7 @@ export function SectionHeader({
         {subHeading && (
           <p
             data-slot="section-header-sub-heading"
-            className="gencl:text-body-2-medium gencl:text-secondary-300 gencl:line-clamp-1"
+            className="gencl:text-body-1-medium gencl:text-secondary-300 gencl:line-clamp-1"
             style={subHeadingStyle}>
             {subHeading}
           </p>

@@ -424,8 +424,6 @@ export function Contextual({
         imageAlt={header.iconAlt ?? ""}
         heading={header.heading}
         subHeading={header.subHeading}
-        headingStyle={{ fontSize: 20, lineHeight: 1.15 }}
-        subHeadingStyle={{ fontSize: 14, lineHeight: 1.15, marginTop: 1 }}
       />
 
       <div

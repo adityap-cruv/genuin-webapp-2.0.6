@@ -169,6 +169,16 @@ export const TwoWayVideoMapping: Story = {
       expect.any(Number),
       expect.objectContaining({ video_id: "video-2" })
     );
+    const heading = canvasElement.querySelector<HTMLElement>('[data-slot="section-header-heading"]');
+    const subHeading = canvasElement.querySelector<HTMLElement>('[data-slot="section-header-sub-heading"]');
+    if (heading) {
+      await expect(getComputedStyle(heading).fontSize).toBe("16px");
+      await expect(getComputedStyle(heading).fontWeight).toBe("600");
+    }
+    if (subHeading) {
+      await expect(getComputedStyle(subHeading).fontSize).toBe("14px");
+      await expect(getComputedStyle(subHeading).fontWeight).toBe("500");
+    }
   },
 };
 
