@@ -1,8 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState, lazy, type CSSProperties } from "react";
-import { RemoveScroll } from "react-remove-scroll";
-import { XIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
 import type { Swiper } from "swiper/types";
 import { SwiperSlide } from "swiper/react";
@@ -16,6 +14,7 @@ import { ErrorState } from "@genuin/components/molecules/error-state";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { GestureProvider } from "@genuin/components/molecules/gestures/context";
 import { NavigationButtonsV2 } from "@genuin/components/organisms/embed/navigation-buttons-v2";
+import { VideoFeedExpandView } from "@genuin/components/organisms/video-feed/video-feed";
 import { attachSwipeIntent, isUserSwipe } from "@genuin/components/organisms/player-swiper/swipe-intent";
 import { SwiperImplementation } from "@genuin/components/organisms/player-swiper/swiper-implementation";
 import { calculateSlideDimensions } from "@genuin/components/organisms/player-swiper/utils";
@@ -36,12 +35,6 @@ import type {
 const ExpandViewLoader = lazy(() =>
   import("@genuin/components/organisms/embed/expand-view/expand-view-loader").then((m) => ({
     default: m.ExpandViewLoader,
-  }))
-);
-
-const FeedView = lazy(() =>
-  import("@genuin/components/templates/feed").then((m) => ({
-    default: m.FeedView,
   }))
 );
 
@@ -82,6 +75,7 @@ export function VideoCarouselView({
   ctaText,
   playOnHover = true,
   autoAdvanceOnEnd = true,
+  showNavigation = true,
   onCtaClick,
   onActiveIndexChange,
   onActiveVideoChange,
@@ -346,7 +340,7 @@ export function VideoCarouselView({
                   width: `${slideDimensions.slideWidth}px`,
                   height: `${slideDimensions.slideHeight}px`,
                 }}>
-                {({ isActive, isNext, isPrev, isVisible }) => (
+                {({ isNext, isPrev, isVisible }) => (
                   <VideoCarouselCard
                     post={post}
                     index={index}
@@ -376,7 +370,7 @@ export function VideoCarouselView({
       </div>
 
       {/* Navigation Arrows for non-mobile viewports */}
-      {!isMobile && posts.length > 0 && (
+      {showNavigation && !isMobile && posts.length > 0 && (
         <NavigationButtonsV2
           embedVariant="carousel"
           onPrev={handleGoPrev}
@@ -387,42 +381,25 @@ export function VideoCarouselView({
         />
       )}
 
-      {/* Standalone Expand View Modal */}
+      {/* Standalone Expand View — reuses the VideoFeed expand implementation
+          (its own portalled full-screen FeedView), which is the one that works. */}
       {!embedDetails && showExpandView && (
-        <SafeSuspense fallback={null} errorFallback={null}>
-          <RemoveScroll>
-            <div className="gen-sdk-class gen-sdk-expand-view gencl:fixed gencl:inset-0 gencl:z-[9999] gencl:h-screen gencl:w-screen gencl:bg-black">
-              {/* Top-Right Cross Button to close expand view */}
-              <button
-                type="button"
-                aria-label="Close expand view"
-                onClick={closeExpandView}
-                className="gencl:fixed gencl:right-6 gencl:top-6 gencl:z-[10000] gencl:flex gencl:h-10 gencl:w-10 gencl:cursor-pointer gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-secondary-800/90 gencl:text-white gencl:backdrop-blur-md gencl:transition-all hover:gencl:bg-secondary-700 hover:gencl:scale-105 active:gencl:scale-95 gencl:border gencl:border-white/10 gencl:shadow-xl">
-                <XIcon theme="dark" size="md" />
-              </button>
-
-              <FeedView
-                startIndex={activeIndex}
-                defaultExpandView
-                onCloseExpandView={closeExpandView}
-                variant="expand"
-                platform="sdk"
-                isSectioned={isSectioned}
-                feedData={feedData}
-                embedOptions={{
-                  actions: {
-                    comments: true,
-                    share: true,
-                    reaction: true,
-                    repost: true,
-                  },
-                }}
-                onActiveIndexChange={setActiveIndex}
-                disableNativeFullscreenApi
-              />
-            </div>
-          </RemoveScroll>
-        </SafeSuspense>
+        <VideoFeedExpandView
+          data={{
+            posts: feedData.videos,
+            queryKey: feedData.queryKey,
+            isLoading: feedData.isLoading,
+            isError: false,
+            hasNextPage: feedData.hasNextPage,
+            isFetchingNextPage: feedData.isFetchingNextPage,
+            fetchNextPage: feedData.fetchNextPage,
+            totalVideos: feedData.totalVideos,
+            pageSession: feedData.pageSession,
+          }}
+          startIndex={activeIndex}
+          onClose={closeExpandView}
+          onActiveIndexChange={setActiveIndex}
+        />
       )}
 
       {feedData.isLoading && <div className="gencl:sr-only">Loading video carousel</div>}
@@ -455,6 +432,7 @@ export function VideoCarousel({
   ctaText,
   playOnHover = true,
   autoAdvanceOnEnd = true,
+  showNavigation = true,
   onCtaClick,
   onActiveIndexChange,
   onActiveVideoChange,
@@ -537,6 +515,7 @@ export function VideoCarousel({
             ctaText={ctaText}
             playOnHover={playOnHover}
             autoAdvanceOnEnd={autoAdvanceOnEnd}
+            showNavigation={showNavigation}
             onCtaClick={onCtaClick}
             onActiveIndexChange={onActiveIndexChange}
             onActiveVideoChange={onActiveVideoChange}

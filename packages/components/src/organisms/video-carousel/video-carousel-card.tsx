@@ -1,26 +1,18 @@
 "use client";
 
-import { memo, useCallback, useEffect, useMemo, useState, lazy } from "react";
+import { memo, useCallback, useMemo, lazy } from "react";
 import { ChevronRight } from "lucide-react";
 import { cn, detectAccessibilityMode } from "@genuin/ui/lib/utils";
-import { CollapseIcon, ExpandIcon } from "@genuin/ui/icons";
-import { IconCircleButton, type PlayerControlSize } from "@genuin/ui/player-controls";
+import { type PlayerControlSize } from "@genuin/ui/player-controls";
 import { useSwiper } from "swiper/react";
 
 import { VideoTypes } from "@genuin/components/context";
 import { useBaseContext } from "@genuin/components/context/base";
-import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
-import type { EmbedEventContextType } from "@genuin/components/context/embed/event-bus";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-import { SDKEventEmitter, SDKEventName } from "@genuin/components/lib/sdk-event-emitter";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { PlayerProvider } from "@genuin/components/molecules/feed-player/context/provider";
-import { usePlayerContext } from "@genuin/components/molecules/feed-player/context/context";
-import {
-  EmbedMuteButton,
-  EmbedPlayButton,
-} from "@genuin/components/molecules/feed-player/control-layer/controls/embed-v2";
+import { Controls } from "@genuin/components/molecules/feed-player/control-layer/controls/controls-v2";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
 import { FEED_SKELETON_THEME, PlayerSkeleton } from "@genuin/components/templates/feed/feed-skeleton";
 
@@ -65,101 +57,25 @@ export function formatVideoDate(dateString?: string | number | null): string {
   }
 }
 
-/** Expand/collapse button with exact embed carousel behavior */
-function CarouselExpandButton({
-  size = "sm",
-  section,
-  videoId,
-  index,
-}: {
-  size?: PlayerControlSize;
-  section?: any;
-  videoId?: string;
-  index: number;
-}) {
-  const embedDetails = useSafeEmbedContext();
-  const { showExpandView, toggleExpandView } = usePlayerContext();
-  const { setActiveIndex } = useFeedContext();
-  const { brand_id } = useBaseContext().brandDetails ?? {};
-  const [isExpandView, setIsExpandView] = useState(false);
-
-  useEffect(() => {
-    if (!embedDetails?.embedEventBus) return;
-    function handleActivePlayerTypeChange(_eventData: any, context: EmbedEventContextType) {
-      setIsExpandView(context.activePlayerType === "expand-view");
-    }
-
-    embedDetails.embedEventBus.on("activePlayerTypeChange", handleActivePlayerTypeChange);
-    return () => {
-      embedDetails.embedEventBus.off("activePlayerTypeChange", handleActivePlayerTypeChange);
-    };
-  }, [embedDetails?.embedEventBus]);
-
-  const handleClick = useCallback(
-    (e: React.MouseEvent) => {
-      e.stopPropagation();
-      setActiveIndex(index);
-      if (embedDetails) {
-        embedDetails.changeActivePlayerType("expand-view", index);
-        if (section) {
-          embedDetails.updateSelectedSection(section);
-        }
-      } else {
-        toggleExpandView?.();
-      }
-
-      if (!isExpandView) {
-        SDKEventEmitter.emit(SDKEventName.VIDEO_CLICKED, {
-          videoId: videoId ?? "",
-        });
-
-        const isBrandPeacock = brand_id === 3182;
-        if (isBrandPeacock) {
-          const nativeVideoHandler = (window as any).webkit?.messageHandlers?.openNativeVideo;
-          if (nativeVideoHandler) {
-            nativeVideoHandler.postMessage({
-              source: "carousel",
-              videoId: videoId ?? "",
-            });
-          }
-        }
-      }
-    },
-    [brand_id, embedDetails, index, isExpandView, section, toggleExpandView, videoId]
-  );
-
-  const isExpanded = embedDetails ? isExpandView : showExpandView;
-
-  return (
-    <IconCircleButton
-      size={size}
-      className="gencl:cursor-pointer"
-      onClick={handleClick}
-      icon={!isExpanded ? <ExpandIcon theme="dark" /> : <CollapseIcon theme="dark" />}
-    />
-  );
-}
-
 /**
- * Top control buttons cluster (mute, play/pause, expand) and bottom metadata overlay.
+ * Bottom overlay for a carousel card: metadata (date • duration • description),
+ * the Read More CTA, and pagination dots. The top-right player controls
+ * (mute · play/pause · expand) are rendered separately by the shared `Controls`
+ * component — the same one VideoFeed uses.
  */
 function CardOverlay({
   post,
   index,
   totalCards = 4,
-  controlSize = "sm",
   ctaText,
   onCtaClick,
 }: {
   post: VideoCarouselCardProps["post"];
   index: number;
   totalCards?: number;
-  controlSize?: PlayerControlSize;
   ctaText?: string;
   onCtaClick?: VideoCarouselCardProps["onCtaClick"];
 }) {
-  const [isControlsHovered, setIsControlsHovered] = useState(false);
-
   const { video, community, owner } = post;
   const linkout = video?.linkouts?.[0];
   const resolvedCtaText =
@@ -230,25 +146,8 @@ function CardOverlay({
 
   return (
     <div
-      className="gencl:absolute gencl:inset-0 gencl:z-10 gencl:flex gencl:h-full gencl:w-full gencl:flex-col gencl:justify-between gencl:p-3"
+      className="gencl:absolute gencl:inset-0 gencl:z-10 gencl:flex gencl:h-full gencl:w-full gencl:flex-col gencl:justify-end gencl:p-3"
       onClick={(e) => e.stopPropagation()}>
-      {/* Top Controls: 3 Embed Carousel Controls (Mute, Play/Pause, Expand/Collapse) */}
-      <div
-        className="gencl:flex gencl:w-full gencl:items-center gencl:justify-end"
-        onMouseEnter={() => setIsControlsHovered(true)}
-        onMouseLeave={() => setIsControlsHovered(false)}>
-        <div className="gencl:flex gencl:items-center gencl:gap-1.5">
-          <EmbedMuteButton size={controlSize} />
-          <EmbedPlayButton size={controlSize} />
-          <CarouselExpandButton
-            size={controlSize}
-            section={(post as any).section}
-            videoId={post.video?.id}
-            index={index}
-          />
-        </div>
-      </div>
-
       {/* Bottom Overlay: Metadata + Read More CTA + Pagination Dots */}
       <div className="gencl:relative gencl:flex gencl:w-full gencl:flex-col gencl:gap-2">
         {/* Gradient backdrop behind text and CTA */}
@@ -317,7 +216,6 @@ export const VideoCarouselCard = memo(function VideoCarouselCard({
   post,
   index,
   totalCards,
-  isActive,
   isNext,
   isPrev,
   isVisible,
@@ -335,7 +233,7 @@ export const VideoCarouselCard = memo(function VideoCarouselCard({
 }: VideoCarouselCardProps) {
   const { showExpandView, toggleExpandView, activeIndex, setActiveIndex } = useFeedContext();
   const { theme } = useBaseContext();
-  const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
+  const { isMobile } = useDeviceDetectMediaQuery();
   const { video: videoConfig } = useEmbedConfigs();
   const swiper = useSwiper();
   const isAccessibilityMode = useMemo(() => detectAccessibilityMode(), []);
@@ -446,12 +344,24 @@ export const VideoCarouselCard = memo(function VideoCarouselCard({
             </SafeSuspense>
           </div>
 
-          {/* Custom Overlay matching screenshot */}
+          {/* Top-right player controls (mute · play/pause · expand) — same shared
+              `Controls` component VideoFeed uses; shown only on the active card. */}
+          {isCardActive && (
+            <SafeSuspense fallback={null} errorFallback={null}>
+              <Controls
+                variant="default"
+                enableExpand
+                size={controlSize}
+                className="gencl:top-0! gencl:p-3!"
+              />
+            </SafeSuspense>
+          )}
+
+          {/* Bottom overlay: metadata, Read More CTA, pagination dots */}
           <CardOverlay
             post={post}
             index={index}
             totalCards={totalCards}
-            controlSize={controlSize}
             ctaText={ctaText}
             onCtaClick={onCtaClick}
           />

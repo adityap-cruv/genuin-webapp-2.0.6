@@ -452,6 +452,7 @@ export function VideoFeed({
   groupId,
   posts: staticPosts,
   enabled,
+  activeVideoId,
   autoAdvance = true,
   loop = false,
   showControls = true,
@@ -553,6 +554,18 @@ export function VideoFeed({
     announcedFirstRef.current = true;
     onActiveVideoChange?.(posts[0], 0);
   }, [posts, onActiveVideoChange]);
+
+  // Controlled active video: slide to `activeVideoId` when it changes. Reads the
+  // swiper's current index directly so this only reacts to the prop, not to the
+  // feed's own scroll (which would fight a manual scroll).
+  useEffect(() => {
+    if (!activeVideoId) return;
+    const swiper = swiperRef.current;
+    if (!swiper || swiper.destroyed) return;
+    const targetIndex = posts.findIndex((post) => post.video?.id === activeVideoId);
+    if (targetIndex < 0 || targetIndex === swiper.activeIndex) return;
+    swiper.slideTo(targetIndex, SLIDE_SPEED_MS);
+  }, [activeVideoId, posts]);
 
   // Set when a video ended on the last loaded slide while the next page was still
   // loading; consumed by the effect below as soon as more slides exist.

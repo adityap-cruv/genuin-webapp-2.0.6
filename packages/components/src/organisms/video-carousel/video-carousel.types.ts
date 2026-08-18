@@ -66,6 +66,8 @@ export interface VideoCarouselViewProps {
   ctaText?: string;
   playOnHover?: boolean;
   autoAdvanceOnEnd?: boolean;
+  /** Show the prev/next navigation arrows on non-mobile viewports (default: true). */
+  showNavigation?: boolean;
   onCtaClick?: (post: PostDetailsType, e: React.MouseEvent) => void;
   onActiveIndexChange?: (index: number) => void;
   onActiveVideoChange?: (details: ActiveVideoDetails) => void;
@@ -98,6 +100,8 @@ export interface VideoCarouselProps
   playOnHover?: boolean;
   /** Whether to automatically advance and play the next video when current ends (default: true) */
   autoAdvanceOnEnd?: boolean;
+  /** Show the prev/next navigation arrows on non-mobile viewports (default: true) */
+  showNavigation?: boolean;
   /** Callback fired when a card's CTA/Read More button is clicked */
   onCtaClick?: (post: PostDetailsType, e: React.MouseEvent) => void;
   /** Callback fired when active slide index changes */

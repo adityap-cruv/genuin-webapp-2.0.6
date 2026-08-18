@@ -39,6 +39,11 @@ export type VideoFeedProps = Omit<ComponentProps<"section">, "children"> &
     width?: number | string;
     /** Tile height in px (or any CSS height). Defaults to 387 on desktop/tablet, 215 on mobile. */
     height?: number | string;
+    /**
+     * Controlled active video. When it changes to a video present in the feed, the
+     * feed scrolls to that video — lets a sibling (e.g. a link list) drive playback.
+     */
+    activeVideoId?: string;
     /** Called whenever the active (playing) video changes. */
     onActiveVideoChange?: (post: PostDetailsType, index: number) => void;
     /** Called when the expanded (full-view) state toggles. */
