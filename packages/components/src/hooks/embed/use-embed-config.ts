@@ -761,9 +761,9 @@ export function useEmbedConfigs() {
     brand,
     embedSwiperConfigs,
     /**
-     * True when the embed URL contains `design_system=v2`. Gates the v2
-     * design system experience (e.g. dynamic linkouts, v2 player controls)
-     * across the app.
+     * True when the v2 design system experience is active (dynamic linkouts,
+     * v2 player controls, etc.). Native webapp defaults to v2; SDK embeds
+     * default to v1 and opt in via `?design_system=v2`.
      */
     isDesignSystemV2,
     /**
