@@ -37,18 +37,58 @@ import type { FeedData } from "@genuin/components/templates/feed/feed.type";
  */
 const SECTION_LOGO = "/images/home/the-foil-logo.jpg";
 
-/** T-Mobile brand mark (magenta) — placeholder, same inline-SVG approach as SECTION_LOGO. */
-const TMOBILE_LOGO = `data:image/svg+xml,${encodeURIComponent(
-  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">' +
-    '<rect width="40" height="40" rx="10" fill="#e20074"/>' +
-    '<text x="20" y="28" font-family="Arial, Helvetica, sans-serif" font-size="22"' +
-    ' font-weight="700" fill="#ffffff" text-anchor="middle">T</text>' +
-    "</svg>"
-)}`;
+/** T-Mobile sponsor mark, served as a webapp static asset
+ * (`apps/webapp/public/images/home/tmobile-logo.png`). */
+const TMOBILE_LOGO = "/images/home/tmobile-logo.png";
 
 /** Placeholder thumbnail (matches the EventCarousel/SectionHeader story fixtures). */
 const EVENT_IMAGE =
   "https://thefoil.com/media/xjPn5tb1VybfsEuZ4Y9J9RiSHePy3sFR2qDTv3tu7Ic/resize:fill-down:336:258/gravity:ce/quality:60/dpr:1/2025/12/ricardo-pinto-sailgp-1-1.png";
+
+/**
+ * Distinct thefoil.com photos (imgproxy URLs pulled from the live homepage) so
+ * each section's editorial cards show on-topic imagery instead of one shared
+ * placeholder. Grouped by beat.
+ */
+const IMG = {
+  // SailGP
+  sailgpNewYork:
+    "https://thefoil.com/media/06KbODg1b2NE6ub1rAATrrJyOcvaXwhMBbnZdt-Y5jM/resize:fill-down:532:300/gravity:fp:0.4787792084:0.701049749/quality:60/dpr:1/2026/06/new-york-sailgp-statue-of-liberty-2026.jpg",
+  sailgpSimonBruty:
+    "https://thefoil.com/media/2Q6FUB7wQVNMPhK1pyngvw4iYy_M-CfGaoK0gX24c28/resize:fill-down:532:300/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/06/sb1-9984-simon-bruty-sailgp.jpg",
+  sailgpFelixDiemer:
+    "https://thefoil.com/media/bMJRf8vtuHxM8aSkwzHSuEnUPXFmUxByyCq8v6YWufk/resize:fill-down:455:256/gravity:fp:0.5:0.5/quality:60/dpr:1/2025/12/felix-diemer-sailgp-1.png",
+  sailgpGeneva:
+    "https://thefoil.com/media/a6cGRGkzMRAekl7Z91CPwxhZSUR75vK1dUqwmTV4kiE/resize:fill-down:455:256/gravity:fp:0.5:0.5/quality:60/dpr:2/2026/01/sailgp-geneva-event.png",
+  sailgpSamoVidic:
+    "https://thefoil.com/media/AkEim6m0U1cJz2068elEZnJEdGZzKG6_RMvmMZ0HojI/resize:fill-down:690:388/gravity:fp:0.5127659574:0.5173727167/quality:60/dpr:2/2026/06/sv3-3959-samo-vidic-for-sailgp.jpg",
+  sailgpLosAngeles:
+    "https://thefoil.com/media/0xvDzqK_ocsrk8QsiMqmO2OBKXRnpBJcpdMKshQsHUA/resize:fill-down:500:280/gravity:ce/quality:60/dpr:1/2026/01/los-angeles-memorial-coliseum.jpg",
+  // America's Cup
+  acGrantAustralia:
+    "https://thefoil.com/media/Dbo6UstAFKh-9o6Qh0JyqXWJE8qsGooCci0O5ZqDGiM/resize:fill-down:532:300/gravity:fp:0.5:0.5/quality:60/dpr:2/2026/06/grant-auacannouncement-imageteamauac.jpg",
+  acAc75:
+    "https://thefoil.com/media/34W_UmIkJNtv9FDguxtAFJU4v84RwtefndIpAl3HA8Y/resize:fill-down:690:388/gravity:fp:0.501010101:0.7302059011/quality:60/dpr:1/2026/08/ac75s-pierre-bouras-sam-thom-america-s-cup-png.png",
+  acValencia:
+    "https://thefoil.com/media/dBTTONdJFQWIf2atg27IKK_tQtdgVuHqlJ6eIv7jACU/resize:fill-down:540:295/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/01/nochesanjuan-valencia-4-1.jpg",
+  acAuckland:
+    "https://thefoil.com/media/cEU2dqX2riTz_QNbWdMf2JFR4GUC9CxGFkxKPebEY2I/resize:fill-down:532:300/gravity:fp:0.6278381625:0.3250833809/quality:60/dpr:2/2026/08/black-foils-auckland-2026-brett-phibbs.jpg",
+  acDesign:
+    "https://thefoil.com/media/dtwoxDuA6lLEBMIsdFmKtcF-fieju814c7HeIuHU0mo/resize:fill-down:532:300/gravity:fp:0.1914893617:0.4600980829/quality:60/dpr:1/2026/05/A8I5xxHXMuY.jpg",
+  // Offshore / classic 600-milers
+  offshorePace:
+    "https://thefoil.com/media/bgdhVu68q7INeuPCNx7QiT9_HZemTlB5HoCWAe46xgs/resize:fill-down:690:388/gravity:fp:0.54:0.525974026/quality:60/dpr:1/2026/08/pace-line-honours-craig-nutter-pace.jpeg",
+  offshoreNorthstar:
+    "https://thefoil.com/media/88hujdjXkimh2hjECgSbi8G11dmmrQgPo1mSEJHk3mg/resize:fill-down:690:388/gravity:fp:0.4804597701:0.5023331499/quality:60/dpr:1/2026/02/northstar1.jpeg",
+  offshoreCowes:
+    "https://thefoil.com/media/435501a6atGLMO65acWV1U7cqN3mQ4o880afpK5xfxw/resize:fill-down:540:295/gravity:fp:0.3212765957:0.4967784486/quality:60/dpr:2/2026/07/cowes-week-2018.jpg",
+  offshoreRp3:
+    "https://thefoil.com/media/6RfWX6qzUiTXpUp1DjkLs8YS4WDoTtrwnUtGTdlOefM/resize:fill-down:690:388/gravity:fp:0.5:0.7960871928/quality:60/dpr:1/2026/08/rp3-9614.jpg",
+  offshoreMl3:
+    "https://thefoil.com/media/281DBEJEmQO6DT5Mg-QujQa5nPnq5Se_C0IkBg61ujM/resize:fill-down:690:388/gravity:fp:0.5:0.5/quality:60/dpr:2/2026/06/ml3-7515.jpg",
+  offshoreGeneric:
+    "https://thefoil.com/media/1c_B4FpWYUwQxFQPqJ3guvvsujw5XyOK6AecZmtyfKI/resize:fill-down:540:295/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/03/54620591537-354128013c-k.jpg",
+} as const;
 
 /* -------------------------------------------------------------------------- */
 /* Community-driven sections                                                    */
@@ -241,22 +281,91 @@ function buildVideoTags(posts: PostDetailsType[]): VideoTag[] {
   });
 }
 
-/** Resolve a community by group id first, then community id. */
-function resolveCommunity(groupId?: string, communityId?: string): DeskCommunity | undefined {
-  if (!groupId && !communityId) return undefined;
-  return (
-    (groupId ? COMMUNITIES.find((community) => community.groupId === groupId) : undefined) ??
-    (communityId ? COMMUNITIES.find((community) => community.communityId === communityId) : undefined)
-  );
-}
+/* -------------------------------------------------------------------------- */
+/* Per-section editorial content (dummy). Each news / Intelligence panel gets    */
+/* its OWN themed set, so no two panels show the same articles. Written in the    */
+/* style of thefoil.com's beats — these are placeholders, not real articles.     */
+/* -------------------------------------------------------------------------- */
 
-/** The first video belonging to a community (group first, then community). */
-function firstVideoIdForCommunity(community: DeskCommunity, videoTags: VideoTag[]): string | undefined {
-  return (
-    videoTags.find((tag) => tag.groupId === community.groupId)?.videoId ??
-    videoTags.find((tag) => tag.communityId === community.communityId)?.videoId
-  );
-}
+/** Section 1 "Latest News" — the SailGP beat. */
+const SAILGP_NEWS: IntelligenceArticle[] = [
+  {
+    id: "sailgp-news-1",
+    title: "SailGP and America's Cup: can they coexist?",
+    href: "https://thefoil.com/news/sailgp-americas-cup-coexist",
+    image: { src: IMG.sailgpNewYork, alt: "SailGP and America's Cup" },
+  },
+  {
+    id: "sailgp-news-2",
+    title: "Inside the Rockwool Germany Sail Grand Prix",
+    href: "https://thefoil.com/news/rockwool-germany-grand-prix",
+    image: { src: IMG.sailgpSimonBruty, alt: "Rockwool Germany Sail Grand Prix" },
+  },
+  {
+    id: "sailgp-news-3",
+    title: "Spain hit 99 km/h in the fleet's fastest run yet off Sassnitz",
+    href: "https://thefoil.com/news/fleet-fastest-run",
+    image: { src: IMG.sailgpFelixDiemer, alt: "SailGP fastest run" },
+  },
+  {
+    id: "sailgp-news-4",
+    title: "Season 6 standings: three teams still in the title hunt",
+    href: "https://thefoil.com/news/season-6-standings",
+    image: { src: IMG.sailgpGeneva, alt: "SailGP season standings" },
+  },
+  {
+    id: "sailgp-news-5",
+    title: "New Zealand vs Australia: the rivalry defining the season",
+    href: "https://thefoil.com/news/new-zealand-australia-rivalry",
+    image: { src: IMG.sailgpSamoVidic, alt: "New Zealand vs Australia" },
+  },
+  {
+    id: "sailgp-news-6",
+    title: "Grand Final preview: everything on the line in Abu Dhabi",
+    href: "https://thefoil.com/news/grand-final-preview",
+    image: { src: IMG.sailgpLosAngeles, alt: "SailGP Grand Final" },
+  },
+];
+
+/** Tmobile "Relevant News" — the classic 600-mile offshore beat. */
+const CLASSIC_600_NEWS: IntelligenceArticle[] = [
+  {
+    id: "classic-600-news-1",
+    title: "Rolex China Sea Race: the fleet sets sail from Hong Kong",
+    href: "https://thefoil.com/news/rolex-china-sea-race",
+    image: { src: IMG.offshorePace, alt: "Rolex China Sea Race" },
+  },
+  {
+    id: "classic-600-news-2",
+    title: "RORC Caribbean 600: records tumble in a breezy edition",
+    href: "https://thefoil.com/news/rorc-caribbean-600",
+    image: { src: IMG.offshoreNorthstar, alt: "RORC Caribbean 600" },
+  },
+  {
+    id: "classic-600-news-3",
+    title: "Rolex Middle Sea Race: 606 miles around Sicily",
+    href: "https://thefoil.com/news/rolex-middle-sea-race",
+    image: { src: IMG.offshoreCowes, alt: "Rolex Middle Sea Race" },
+  },
+  {
+    id: "classic-600-news-4",
+    title: "Rolex Fastnet Race: the making of a modern classic",
+    href: "https://thefoil.com/news/rolex-fastnet-race",
+    image: { src: IMG.offshoreRp3, alt: "Rolex Fastnet Race" },
+  },
+  {
+    id: "classic-600-news-5",
+    title: "Rolex Sydney Hobart: 628 miles to Constitution Dock",
+    href: "https://thefoil.com/news/rolex-sydney-hobart",
+    image: { src: IMG.offshoreMl3, alt: "Rolex Sydney Hobart" },
+  },
+  {
+    id: "classic-600-news-6",
+    title: "The 600-milers every offshore sailor dreams of",
+    href: "https://thefoil.com/news/classic-600-milers",
+    image: { src: IMG.offshoreGeneric, alt: "Classic 600-milers" },
+  },
+];
 
 const INTELLIGENCE_LAYOUT: IntelligencePanelLayout = {
   panel: { width: "100%", height: "100%" },
@@ -280,12 +389,19 @@ const INTELLIGENCE_LAYOUT: IntelligencePanelLayout = {
 /* (its "wheel", the focused card grows); picking a link plays that video.      */
 /* -------------------------------------------------------------------------- */
 
+// The Latest Videos section is the America's Cup community, so its related-link
+// "wheel" is a set of America's Cup podcasts (distinct from every other section).
 const PODCAST_TITLES = [
-  "Podcast: SailGP vs America's Cup: Can they coexist?",
-  "Podcast: Can anyone beat New Zealand?",
   "Podcast: America's Cup is back! The fleet reacts",
-  "'Like watching jet fighters dance on water'",
-  "Podcast: Inside the Rockwool Germany Grand Prix",
+  "Podcast: Can anyone stop New Zealand?",
+  "Podcast: The AC75 arms race, decoded",
+  "Podcast: Defenders vs challengers — who has the edge?",
+  "Podcast: From Auckland to Barcelona",
+  "Podcast: Inside the design war reshaping the Cup",
+  "Podcast: Cyclors, foils and the human engine",
+  "Podcast: The nationality rule debate",
+  "Podcast: Barcelona's wind — friend or foe?",
+  "Podcast: What the next Protocol means for the Cup",
 ];
 
 /** A related link tagged with group/community for the videoId -> group -> community fallback. */
@@ -297,7 +413,7 @@ function buildLinkArticles(videoTags: VideoTag[], posts: PostDetailsType[]): Lin
     id: `interview-link-${index + 1}`,
     video_id: tag.videoId,
     link: `https://thefoil.com/podcast/episode-${index + 1}`,
-    title: PODCAST_TITLES[index] ?? `Podcast episode ${index + 1}`,
+    title: PODCAST_TITLES[index] ?? `Podcast: America's Cup weekly, part ${index + 1}`,
     description:
       "Click here to listen on Spotify and other platforms. Sailing has never been healthier — on this week's pod, that's exactly the promise we dig into.",
     image: posts[index]?.video?.thumbnail ?? EVENT_IMAGE,
@@ -326,7 +442,7 @@ const INTERVIEW_FEATURED_ARTICLE: IntelligenceArticle = {
   id: "interview-featured",
   title: "'Full steam ahead and scrambling to keep our heads above water': Grant Simmer on Australia's Cup comeback",
   href: "https://thefoil.com/interviews/grant-simmer",
-  image: { src: EVENT_IMAGE, alt: "Grant Simmer interview" },
+  image: { src: IMG.acGrantAustralia, alt: "Grant Simmer interview" },
 };
 
 /** Secondary interviews below the featured one — gives the panel content to scroll. */
@@ -335,25 +451,25 @@ const INTERVIEW_UP_NEXT_ARTICLES: IntelligenceArticle[] = [
     id: "interview-2",
     title: "The new AC75 class, explained: what changed and why",
     href: "https://thefoil.com/interviews/ac75-class",
-    image: { src: EVENT_IMAGE, alt: "AC75 class" },
+    image: { src: IMG.acAc75, alt: "AC75 class" },
   },
   {
     id: "interview-3",
     title: "Defenders vs challengers: who really has the edge?",
     href: "https://thefoil.com/interviews/defenders-vs-challengers",
-    image: { src: EVENT_IMAGE, alt: "Defenders vs challengers" },
+    image: { src: IMG.acValencia, alt: "Defenders vs challengers" },
   },
   {
     id: "interview-4",
     title: "From Auckland to Barcelona: the Cup finds a new home",
     href: "https://thefoil.com/interviews/auckland-to-barcelona",
-    image: { src: EVENT_IMAGE, alt: "Auckland to Barcelona" },
+    image: { src: IMG.acAuckland, alt: "Auckland to Barcelona" },
   },
   {
     id: "interview-5",
     title: "Inside the design war that's reshaping the fleet",
     href: "https://thefoil.com/interviews/design-war",
-    image: { src: EVENT_IMAGE, alt: "Design war" },
+    image: { src: IMG.acDesign, alt: "Design war" },
   },
 ];
 
@@ -429,13 +545,12 @@ function DeskVideoPanel({ feedData, videoTags }: { feedData: FeedData; videoTags
  * Right panel: the intelligence articles. Features the article for whatever
  * video is playing, and broadcasts `item:select` when the user picks an article.
  */
-function DeskNewsPanel({ videoTags }: { videoTags: VideoTag[] }) {
+function DeskNewsPanel({ articles, videoTags }: { articles: IntelligenceArticle[]; videoTags: VideoTag[] }) {
   const emit = useEmit();
-  // The intelligence data is decided ONCE from the FIRST video's community/group.
-  // It does NOT change when the active video (or its community) changes.
-  const community = resolveCommunity(videoTags[0]?.groupId, videoTags[0]?.communityId) ?? COMMUNITIES[0]!;
-  const featured = community.articles[0]!;
-  const upNext = community.articles.slice(1);
+  // This section's editorial set is fixed (passed in); it does not change with
+  // the active video. The first article is featured, the rest fill Up Next.
+  const featured = articles[0]!;
+  const upNext = articles.slice(1);
 
   return (
     <IntelligencePanel
@@ -444,13 +559,12 @@ function DeskNewsPanel({ videoTags }: { videoTags: VideoTag[] }) {
       layout={INTELLIGENCE_LAYOUT}
       onClose={() => undefined}
       onArticleSelect={(article) => {
-        // Selecting an article plays a video of THIS community/group (mapping by
-        // community/group, not a specific video id).
-        const targetVideoId = firstVideoIdForCommunity(community, videoTags);
+        // Selecting an article plays this section's first video (the bus target).
+        const targetVideoId = videoTags[0]?.videoId;
         if (!targetVideoId) return;
         emit("item:select", {
           itemId: article.id,
-          index: community.articles.findIndex((entry) => entry.id === article.id),
+          index: articles.findIndex((entry) => entry.id === article.id),
           videoId: targetVideoId,
         });
       }}
@@ -575,7 +689,7 @@ const UPCOMING_RACES: EventCarouselItem[] = [
   {
     id: "rockwool-germany-sail-gp-2026",
     heading: "Rockwool Germany Sail Grand Prix | Sassnitz",
-    image: { src: EVENT_IMAGE },
+    image: { src: IMG.sailgpSimonBruty },
     start_date: "2026-08-22",
     end_date: "2026-08-23",
     location: "Sassnitz, Rügen Island, Germany",
@@ -584,7 +698,7 @@ const UPCOMING_RACES: EventCarouselItem[] = [
   {
     id: "spain-sail-gp-2026",
     heading: "Spain Sail Grand Prix | Valencia",
-    image: { src: EVENT_IMAGE },
+    image: { src: IMG.acValencia },
     start_date: "2026-09-05",
     end_date: "2026-09-06",
     location: "Valencia, Spain",
@@ -593,29 +707,29 @@ const UPCOMING_RACES: EventCarouselItem[] = [
   {
     id: "rolex-switzerland-sail-gp-2026",
     heading: "Rolex Switzerland Sail Grand Prix | Geneva",
-    image: { src: EVENT_IMAGE },
+    image: { src: IMG.sailgpGeneva },
     start_date: "2026-09-19",
     end_date: "2026-09-20",
     location: "Geneva, Switzerland",
     cta: { label: "Read More", href: "/events/rolex-switzerland-sail-grand-prix-geneva" },
   },
   {
-    id: "rockwool-germany-sail-gp-2026-repeat",
-    heading: "Rockwool Germany Sail Grand Prix | Sassnitz",
-    image: { src: EVENT_IMAGE },
-    start_date: "2026-08-22",
-    end_date: "2026-08-23",
-    location: "Sassnitz, Rügen Island, Germany",
-    cta: { label: "Read More", href: "/events/rockwool-germany-sail-grand-prix-sassnitz-2" },
+    id: "france-sail-gp-2026",
+    heading: "France Sail Grand Prix | Saint-Tropez",
+    image: { src: IMG.sailgpSamoVidic },
+    start_date: "2026-09-26",
+    end_date: "2026-09-27",
+    location: "Saint-Tropez, France",
+    cta: { label: "Read More", href: "/events/france-sail-grand-prix-saint-tropez" },
   },
   {
-    id: "spain-sail-gp-2026-repeat",
-    heading: "Spain Sail Grand Prix | Valencia",
-    image: { src: EVENT_IMAGE },
-    start_date: "2026-09-05",
-    end_date: "2026-09-06",
-    location: "Valencia, Spain",
-    cta: { label: "Read More", href: "/events/spain-sail-grand-prix-valencia-2" },
+    id: "emirates-dubai-sail-gp-2026",
+    heading: "Emirates Dubai Sail Grand Prix | Dubai",
+    image: { src: IMG.sailgpLosAngeles },
+    start_date: "2026-11-28",
+    end_date: "2026-11-29",
+    location: "Dubai, United Arab Emirates",
+    cta: { label: "Read More", href: "/events/emirates-dubai-sail-grand-prix-dubai" },
   },
 ];
 
@@ -694,7 +808,7 @@ export function Home() {
               subHeading="Latest News"
             />
             <div className="gencl:min-h-0 gencl:flex-1">
-              <DeskNewsPanel videoTags={deskTags} />
+              <DeskNewsPanel articles={SAILGP_NEWS} videoTags={deskTags} />
             </div>
           </EventSurfacePanel>
         </EventSurface>
@@ -800,7 +914,7 @@ export function Home() {
             <SectionHeader
               imageUrl={TMOBILE_LOGO}
               imageAlt="T-Mobile"
-              heading={sponsored.groupName ?? sponsored.communityName}
+              heading="Tmobile"
               subHeading={HOME_SECTIONS.sponsoredGrid.subHeading}
             />
             <div className="gencl:min-h-0 gencl:flex-1">
@@ -816,7 +930,7 @@ export function Home() {
               subHeading="Relevant News"
             />
             <div className="gencl:min-h-0 gencl:flex-1">
-              <DeskNewsPanel videoTags={sponsoredTags} />
+              <DeskNewsPanel articles={CLASSIC_600_NEWS} videoTags={sponsoredTags} />
             </div>
           </EventSurfacePanel>
         </EventSurface>
