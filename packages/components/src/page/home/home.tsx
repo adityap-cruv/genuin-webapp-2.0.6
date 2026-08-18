@@ -292,37 +292,37 @@ const SAILGP_NEWS: IntelligenceArticle[] = [
   {
     id: "sailgp-news-1",
     title: "SailGP and America's Cup: can they coexist?",
-    href: "https://thefoil.com/news/sailgp-americas-cup-coexist",
+    href: "https://thefoil.com/news/the-questions-that-remain-following-new-york-sailgp/",
     image: { src: IMG.sailgpNewYork, alt: "SailGP and America's Cup" },
   },
   {
     id: "sailgp-news-2",
     title: "Inside the Rockwool Germany Sail Grand Prix",
-    href: "https://thefoil.com/news/rockwool-germany-grand-prix",
+    href: "https://thefoil.com/series/sailgp/events/rockwool-germany-sail-grand-prix-sassnitz/",
     image: { src: IMG.sailgpSimonBruty, alt: "Rockwool Germany Sail Grand Prix" },
   },
   {
     id: "sailgp-news-3",
     title: "Spain hit 99 km/h in the fleet's fastest run yet off Sassnitz",
-    href: "https://thefoil.com/news/fleet-fastest-run",
+    href: "https://thefoil.com/series/sailgp/events/emirates-dubai-sail-grand-prix-presented-by-dp-world/",
     image: { src: IMG.sailgpFelixDiemer, alt: "SailGP fastest run" },
   },
   {
     id: "sailgp-news-4",
     title: "Season 6 standings: three teams still in the title hunt",
-    href: "https://thefoil.com/news/season-6-standings",
+    href: "https://thefoil.com/series/sailgp/events/rolex-switzerland-sail-grand-prix-geneva/",
     image: { src: IMG.sailgpGeneva, alt: "SailGP season standings" },
   },
   {
     id: "sailgp-news-5",
     title: "New Zealand vs Australia: the rivalry defining the season",
-    href: "https://thefoil.com/news/new-zealand-australia-rivalry",
+    href: "https://thefoil.com/news/andy-rice-rates-the-fleet-after-canada-sailgp/",
     image: { src: IMG.sailgpSamoVidic, alt: "New Zealand vs Australia" },
   },
   {
     id: "sailgp-news-6",
     title: "Grand Final preview: everything on the line in Abu Dhabi",
-    href: "https://thefoil.com/news/grand-final-preview",
+    href: "https://thefoil.com/series/sailgp/events/mubadala-abu-dhabi-sail-grand-prix-2026-season-grand-final-presented-by-abu-dhabi-sports-council/",
     image: { src: IMG.sailgpLosAngeles, alt: "SailGP Grand Final" },
   },
 ];
@@ -332,37 +332,37 @@ const CLASSIC_600_NEWS: IntelligenceArticle[] = [
   {
     id: "classic-600-news-1",
     title: "Rolex China Sea Race: the fleet sets sail from Hong Kong",
-    href: "https://thefoil.com/news/rolex-china-sea-race",
+    href: "https://thefoil.com/news/how-pace-took-line-honours-in-the-2026-round-britain-and-ireland-race-one-chapter-at-a-time/",
     image: { src: IMG.offshorePace, alt: "Rolex China Sea Race" },
   },
   {
     id: "classic-600-news-2",
     title: "RORC Caribbean 600: records tumble in a breezy edition",
-    href: "https://thefoil.com/news/rorc-caribbean-600",
+    href: "https://thefoil.com/news/the-safest-is-when-you-re-pushing-hard-billy-gooderham-explains-flight-control/",
     image: { src: IMG.offshoreNorthstar, alt: "RORC Caribbean 600" },
   },
   {
     id: "classic-600-news-3",
     title: "Rolex Middle Sea Race: 606 miles around Sicily",
-    href: "https://thefoil.com/news/rolex-middle-sea-race",
+    href: "https://thefoil.com/news/freddie-carr-cowes-week-turns-200-why-britain-s-greatest-regatta-still-means-everything/",
     image: { src: IMG.offshoreCowes, alt: "Rolex Middle Sea Race" },
   },
   {
     id: "classic-600-news-4",
     title: "Rolex Fastnet Race: the making of a modern classic",
-    href: "https://thefoil.com/news/rolex-fastnet-race",
+    href: "https://thefoil.com/news/the-week-in-racing-10-august-26/",
     image: { src: IMG.offshoreRp3, alt: "Rolex Fastnet Race" },
   },
   {
     id: "classic-600-news-5",
     title: "Rolex Sydney Hobart: 628 miles to Constitution Dock",
-    href: "https://thefoil.com/news/rolex-sydney-hobart",
+    href: "https://thefoil.com/news/rate-the-fleet-andy-rice-s-verdict-on-sailgp-new-york/",
     image: { src: IMG.offshoreMl3, alt: "Rolex Sydney Hobart" },
   },
   {
     id: "classic-600-news-6",
     title: "The 600-milers every offshore sailor dreams of",
-    href: "https://thefoil.com/news/classic-600-milers",
+    href: "https://thefoil.com/news/luca-rizzotti-bought-a-moth-in-2007-and-accidentally-started-a-movement/",
     image: { src: IMG.offshoreGeneric, alt: "Classic 600-milers" },
   },
 ];
@@ -390,18 +390,36 @@ const INTELLIGENCE_LAYOUT: IntelligencePanelLayout = {
 /* -------------------------------------------------------------------------- */
 
 // The Latest Videos section is the America's Cup community, so its related-link
-// "wheel" is a set of America's Cup podcasts (distinct from every other section).
-const PODCAST_TITLES = [
-  "Podcast: America's Cup is back! The fleet reacts",
-  "Podcast: Can anyone stop New Zealand?",
-  "Podcast: The AC75 arms race, decoded",
-  "Podcast: Defenders vs challengers — who has the edge?",
-  "Podcast: From Auckland to Barcelona",
-  "Podcast: Inside the design war reshaping the Cup",
-  "Podcast: Cyclors, foils and the human engine",
-  "Podcast: The nationality rule debate",
-  "Podcast: Barcelona's wind — friend or foe?",
-  "Podcast: What the next Protocol means for the Cup",
+// "wheel" is a set of real The Foil podcast episodes (title + link to the episode).
+const PODCASTS: { title: string; link: string }[] = [
+  {
+    title: "Podcast: SailGP vs America's Cup — can they coexist?",
+    link: "https://thefoil.com/news/podcast-sailgp-vs-america-s-cup-can-they-coexist/",
+  },
+  {
+    title: "Podcast: Can anyone beat New Zealand to win the 38th America's Cup?",
+    link: "https://thefoil.com/news/podcast-can-anyone-beat-new-zealand-to-win-the-38th-america-s-cup/",
+  },
+  {
+    title: "Podcast: America's Cup is back — the full Cagliari debrief",
+    link: "https://thefoil.com/news/podcast-america-s-cup-is-back-the-full-cagliari-debrief/",
+  },
+  {
+    title: "Podcast extra: Mozzy and Freddie preview the AC38 Cagliari prelim",
+    link: "https://thefoil.com/news/podcast-extra-mozzy-and-freddie-preview-the-ac38-cagliari-prelim/",
+  },
+  {
+    title: "Podcast: 'It starts with a dream' — Glenn Ashby on Australia's AC38 challenge",
+    link: "https://thefoil.com/news/podcast-it-starts-with-a-dream-glenn-ashby-on-australia-s-ac38-challenge-the-foil-podcast-ep-20/",
+  },
+  {
+    title: "Podcast: The six American sailors chosen to take back the Cup",
+    link: "https://thefoil.com/news/podcast-the-six-american-sailors-chosen-to-take-back-the-cup/",
+  },
+  {
+    title: "Podcast Ep 8: Sydney SailGP preview & Quentin Delapierre on safety",
+    link: "https://thefoil.com/news/podcast-ep-8-sydney-sailgp-preview-and-quentin-delapierre-on-safety/",
+  },
 ];
 
 /** A related link tagged with group/community for the videoId -> group -> community fallback. */
@@ -412,8 +430,8 @@ function buildLinkArticles(videoTags: VideoTag[], posts: PostDetailsType[]): Lin
   return videoTags.map((tag, index) => ({
     id: `interview-link-${index + 1}`,
     video_id: tag.videoId,
-    link: `https://thefoil.com/podcast/episode-${index + 1}`,
-    title: PODCAST_TITLES[index] ?? `Podcast: America's Cup weekly, part ${index + 1}`,
+    link: PODCASTS[index]?.link ?? "https://thefoil.com/news/",
+    title: PODCASTS[index]?.title ?? `The Foil Podcast — episode ${index + 1}`,
     description:
       "Click here to listen on Spotify and other platforms. Sailing has never been healthier — on this week's pod, that's exactly the promise we dig into.",
     image: posts[index]?.video?.thumbnail ?? EVENT_IMAGE,
@@ -441,7 +459,7 @@ function resolveLinkVideoId(
 const INTERVIEW_FEATURED_ARTICLE: IntelligenceArticle = {
   id: "interview-featured",
   title: "'Full steam ahead and scrambling to keep our heads above water': Grant Simmer on Australia's Cup comeback",
-  href: "https://thefoil.com/interviews/grant-simmer",
+  href: "https://thefoil.com/news/full-steam-ahead-and-scrambling-to-keep-our-heads-above-water-grant-simmer-on-australia-s-cup-comeback/",
   image: { src: IMG.acGrantAustralia, alt: "Grant Simmer interview" },
 };
 
@@ -450,25 +468,25 @@ const INTERVIEW_UP_NEXT_ARTICLES: IntelligenceArticle[] = [
   {
     id: "interview-2",
     title: "The new AC75 class, explained: what changed and why",
-    href: "https://thefoil.com/interviews/ac75-class",
+    href: "https://thefoil.com/news/the-week-in-racing-10-august-26/",
     image: { src: IMG.acAc75, alt: "AC75 class" },
   },
   {
     id: "interview-3",
     title: "Defenders vs challengers: who really has the edge?",
-    href: "https://thefoil.com/interviews/defenders-vs-challengers",
+    href: "https://thefoil.com/series/sailgp/events/spain-sail-grand-prix-valencia/",
     image: { src: IMG.acValencia, alt: "Defenders vs challengers" },
   },
   {
     id: "interview-4",
     title: "From Auckland to Barcelona: the Cup finds a new home",
-    href: "https://thefoil.com/interviews/auckland-to-barcelona",
+    href: "https://thefoil.com/news/the-real-story-behind-the-black-foils-new-sailgp-recruits/",
     image: { src: IMG.acAuckland, alt: "Auckland to Barcelona" },
   },
   {
     id: "interview-5",
     title: "Inside the design war that's reshaping the fleet",
-    href: "https://thefoil.com/interviews/design-war",
+    href: "https://thefoil.com/news/podcast-extra-mozzy-and-freddie-preview-the-ac38-cagliari-prelim/",
     image: { src: IMG.acDesign, alt: "Design war" },
   },
 ];
@@ -502,6 +520,18 @@ function buildGridPosts(posts: PostDetailsType[]): PostDetailsType[] {
 }
 
 /**
+ * A video card's "Read More" target: its own feed linkout if it has one, else a
+ * relevant The Foil page. Opened in a new tab.
+ */
+function openVideoReadMore(post: PostDetailsType, fallbackUrl: string) {
+  const linkout = post.video?.linkouts?.[0] as
+    | { cta_link?: string; links?: Array<{ url?: string }> }
+    | undefined;
+  const url = linkout?.cta_link ?? linkout?.links?.[0]?.url ?? fallbackUrl;
+  if (typeof window !== "undefined") window.open(url, "_blank", "noopener,noreferrer");
+}
+
+/**
  * Left panel: the video carousel. Broadcasts the active video and follows
  * article selections from the news panel.
  */
@@ -524,6 +554,7 @@ function DeskVideoPanel({ feedData, videoTags }: { feedData: FeedData; videoTags
       showNavigation={false}
       activeVideoId={activeVideoId}
       containerClassName="gencl:h-full"
+      onCtaClick={(post) => openVideoReadMore(post, "https://thefoil.com/series/sailgp/")}
       onActiveVideoChange={(details) => {
         // Map the active video to its synthetic group/community via the side table
         // (the feed's own ids are not distinct enough for the demo).
@@ -702,7 +733,10 @@ const UPCOMING_RACES: EventCarouselItem[] = [
     start_date: "2026-08-22",
     end_date: "2026-08-23",
     location: "Sassnitz, Rügen Island, Germany",
-    cta: { label: "Read More", href: "/events/rockwool-germany-sail-grand-prix-sassnitz" },
+    cta: {
+      label: "Read More",
+      href: "https://thefoil.com/series/sailgp/events/rockwool-germany-sail-grand-prix-sassnitz/",
+    },
   },
   {
     id: "spain-sail-gp-2026",
@@ -711,7 +745,10 @@ const UPCOMING_RACES: EventCarouselItem[] = [
     start_date: "2026-09-05",
     end_date: "2026-09-06",
     location: "Valencia, Spain",
-    cta: { label: "Read More", href: "/events/spain-sail-grand-prix-valencia" },
+    cta: {
+      label: "Read More",
+      href: "https://thefoil.com/series/sailgp/events/spain-sail-grand-prix-valencia/",
+    },
   },
   {
     id: "rolex-switzerland-sail-gp-2026",
@@ -720,7 +757,10 @@ const UPCOMING_RACES: EventCarouselItem[] = [
     start_date: "2026-09-19",
     end_date: "2026-09-20",
     location: "Geneva, Switzerland",
-    cta: { label: "Read More", href: "/events/rolex-switzerland-sail-grand-prix-geneva" },
+    cta: {
+      label: "Read More",
+      href: "https://thefoil.com/series/sailgp/events/rolex-switzerland-sail-grand-prix-geneva/",
+    },
   },
   {
     id: "france-sail-gp-2026",
@@ -729,7 +769,7 @@ const UPCOMING_RACES: EventCarouselItem[] = [
     start_date: "2026-09-26",
     end_date: "2026-09-27",
     location: "Saint-Tropez, France",
-    cta: { label: "Read More", href: "/events/france-sail-grand-prix-saint-tropez" },
+    cta: { label: "Read More", href: "https://thefoil.com/series/" },
   },
   {
     id: "emirates-dubai-sail-gp-2026",
@@ -738,7 +778,10 @@ const UPCOMING_RACES: EventCarouselItem[] = [
     start_date: "2026-11-28",
     end_date: "2026-11-29",
     location: "Dubai, United Arab Emirates",
-    cta: { label: "Read More", href: "/events/emirates-dubai-sail-grand-prix-dubai" },
+    cta: {
+      label: "Read More",
+      href: "https://thefoil.com/series/sailgp/events/emirates-dubai-sail-grand-prix-presented-by-dp-world/",
+    },
   },
 ];
 
@@ -903,6 +946,7 @@ export function Home() {
               ctaText="Read More"
               showNavigation={false}
               containerClassName="gencl:h-full"
+              onCtaClick={(post) => openVideoReadMore(post, "https://thefoil.com/series/")}
             />
           </div>
         </section>
