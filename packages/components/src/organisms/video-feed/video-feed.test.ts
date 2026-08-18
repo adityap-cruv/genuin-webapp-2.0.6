@@ -86,19 +86,19 @@ describe("resolveVideoFeedQuery", () => {
     });
   });
 
-  it("communityId → FEED_V1 with community_ids", () => {
+  it("communityId → HOME feed with community_ids", () => {
     expect(resolveVideoFeedQuery({ communityId: "c1" }).options).toEqual({ isInIframe: false, communityIds: ["c1"] });
   });
 
-  it("groupId → FEED_V1 with loop_ids (groupIds)", () => {
+  it("groupId → HOME feed with loop_ids (groupIds)", () => {
     const result = resolveVideoFeedQuery({ groupId: "g1" });
-    expect(result.feedType).toBe("FEED_V1");
+    expect(result.feedType).toBe("HOME");
     expect(result.options).toEqual({ isInIframe: false, groupIds: ["g1"] });
   });
 
   it("videoId + communityId → community feed with the video prepended", () => {
     expect(resolveVideoFeedQuery({ videoId: "v1", communityId: "c1" })).toEqual({
-      feedType: "FEED_V1",
+      feedType: "HOME",
       options: { isInIframe: false, communityIds: ["c1"], initialVideoIds: ["v1"] },
       hasSource: true,
     });

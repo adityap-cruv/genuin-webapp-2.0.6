@@ -4,7 +4,7 @@
  * VideoFeed — vertical, auto-advancing video feed for our own pages, composed only from the
  * existing production pieces (same pipeline the web-sdk embed uses):
  *
- *   data      → `useFeed` (`FEED_V1` with community_ids / loop_ids, or `VIDEO` with video ids)
+ *   data      → `useFeed` (`HOME` with community_ids / loop_ids, or `VIDEO` with video ids)
  *   tile      → `PlayerProvider → FeedPlayer → controls-v2 Controls` + "date • duration • description"
  *   expand    → the real full-screen `FeedView variant="expand"` (actions, comments, linkouts)
  *   scrolling → Swiper (vertical), wheel / touch / keyboard, auto-advance on video end
@@ -14,16 +14,7 @@
 
 import { cn, getFormattedDuration, getMonthYear } from "@genuin/ui/lib/utils";
 import type { PlayerControlSize } from "@genuin/ui/player-controls";
-import {
-  lazy,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ReactNode,
-} from "react";
+import { lazy, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { RemoveScroll } from "react-remove-scroll";
 import { A11y, Keyboard, Mousewheel } from "swiper/modules";
@@ -73,7 +64,7 @@ const FeedView = lazy(() => import("@genuin/components/templates/feed").then((m)
  * | Props                              | Request                                                    |
  * | ---------------------------------- | ---------------------------------------------------------- |
  * | `videoId` only / `videoIds`        | `GET /goservices/feed/video` (single page, ids as given)   |
- * | `communityId` / `groupId`          | `POST /goservices/feed/v1/home` `community_ids`/`loop_ids` |
+ * | `communityId` / `groupId`          | `POST /goservices/feed/v1/home` (`type: 1`) + `community_ids`/`loop_ids` |
  * | `videoId` + community/group        | same feed, `videoId` prepended as the first slide          |
  */
 export function resolveVideoFeedQuery({
@@ -88,7 +79,9 @@ export function resolveVideoFeedQuery({
   const explicitIds = videoIds?.length ? videoIds : videoId && !hasScope ? [videoId] : undefined;
 
   return {
-    feedType: explicitIds ? "VIDEO" : "FEED_V1",
+    // `HOME` (not `FEED_V1`): the API rejects a body without `type`/embed/placement (412),
+    // and the `HOME` request still carries `community_ids` / `loop_ids`.
+    feedType: explicitIds ? "VIDEO" : "HOME",
     options: {
       isInIframe: false,
       ...(explicitIds ? { videoIds: explicitIds } : {}),
@@ -158,7 +151,6 @@ export function buildVideoMetaText(video: VideoLike | null | undefined): string 
 
 // ─── Data hook ──────────────────────────────────────────────────────────────────────────────────────
 
-
 export function isPlayablePost(post: PostDetailsType | AdsPostDetailsType): post is PostDetailsType {
   return (post as AdsPostDetailsType).type !== "ads" && Boolean(post.video?.id && post.video?.source);
 }
@@ -167,7 +159,11 @@ export function isPlayablePost(post: PostDetailsType | AdsPostDetailsType): post
  * Data layer of `VideoFeed`. Returns a flat, ad-free list of playable posts plus
  * pagination handles. When `posts` is passed the hook is a no-op pass-through.
  */
-export function useVideoFeedData({ posts: staticPosts, enabled = true, ...source }: VideoFeedSourceProps): VideoFeedData {
+export function useVideoFeedData({
+  posts: staticPosts,
+  enabled = true,
+  ...source
+}: VideoFeedSourceProps): VideoFeedData {
   const videoIdsKey = source.videoIds?.join(",");
   const { feedType, options, hasSource } = useMemo(
     () => resolveVideoFeedQuery(source),
@@ -228,7 +224,6 @@ export function useVideoFeedData({ posts: staticPosts, enabled = true, ...source
 
 /** Top-right control size — `sm` token: 24 px outer · 18 px inner · 12 px glyph, on every device. */
 export const VIDEO_FEED_CONTROL_SIZE: PlayerControlSize = "sm";
-
 
 /**
  * One slide of `VideoFeed`: `PlayerProvider → FeedPlayer + top-right Controls
@@ -347,7 +342,6 @@ export function VideoFeedSlide({
 }
 
 // ─── Expand view (full-screen FeedView) ────────────────────────────────────────────────────────────────
-
 
 /**
  * Full-screen "expand view" of `VideoFeed` — the same `FeedView variant="expand"` the
@@ -529,7 +523,6 @@ export function VideoFeed({
   const handleExpandIndexChange = useCallback((index: number) => {
     expandIndexRef.current = index;
   }, []);
-
 
   const handleSlideChange = useCallback(
     (swiper: SwiperType) => {

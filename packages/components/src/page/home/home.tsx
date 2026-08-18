@@ -1,17 +1,22 @@
-
 "use client";
 
 import { useMemo, useState } from "react";
 
 import { useBaseContext } from "@genuin/components/context/base";
-import { SectionHeader } from "@genuin/components/molecules/section-header/section-header";
 import { ErrorState } from "@genuin/components/molecules/error-state";
+import { SectionHeader } from "@genuin/components/molecules/section-header/section-header";
 import { EventCarousel } from "@genuin/components/organisms/event-carousel/event-carousel";
 import type { EventCarouselItem } from "@genuin/components/organisms/event-carousel/event-carousel.types";
 import { EventSurface, EventSurfacePanel } from "@genuin/components/organisms/event-surface/event-surface";
-import { useEmit, useLatestEvent, useSurfaceEvent } from "@genuin/components/organisms/event-surface/event-surface-context";
-import { IntelligencePanel } from "@genuin/components/organisms/intelligence-panel/intelligence-panel";
+import {
+  useEmit,
+  useLatestEvent,
+  useSurfaceEvent,
+} from "@genuin/components/organisms/event-surface/event-surface-context";
+import { HoverLinkCardList } from "@genuin/components/organisms/hover-link-card-list";
+import type { ContextualLinkMetaData } from "@genuin/components/organisms/hover-link-card-list";
 import { IntelligenceArticleCard } from "@genuin/components/organisms/intelligence-panel/intelligence-article-card";
+import { IntelligencePanel } from "@genuin/components/organisms/intelligence-panel/intelligence-panel";
 import { IntelligencePanelShell } from "@genuin/components/organisms/intelligence-panel/intelligence-panel-shell";
 import type {
   IntelligenceArticle,
@@ -20,25 +25,17 @@ import type {
 import { VideoCarousel } from "@genuin/components/organisms/video-carousel/video-carousel";
 import { VideoFeed } from "@genuin/components/organisms/video-feed/video-feed";
 import { VideoGrid } from "@genuin/components/organisms/video-grid/video-grid";
-import { HoverLinkCardList } from "@genuin/components/organisms/hover-link-card-list";
-import type { ContextualLinkMetaData } from "@genuin/components/organisms/hover-link-card-list";
 import { useFeed } from "@genuin/components/react-query/api/feed";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
 import type { FeedData } from "@genuin/components/templates/feed/feed.type";
 
 /**
- * Publisher/brand mark shown beside the section heading. Rendered inline as a
- * self-contained SVG data URI so the page has no external asset dependency.
- * TODO(home): swap for the real publisher logo once the asset pipeline is wired.
+ * Publisher/brand mark shown beside the section heading — The Foil "F" logo, served as a
+ * webapp static asset (`apps/webapp/public/images/home/the-foil-logo.jpg`). Communities that
+ * have their own avatar override it (see `useSectionFeed`).
  */
-const SECTION_LOGO = `data:image/svg+xml,${encodeURIComponent(
-  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">' +
-    '<rect width="40" height="40" rx="10" fill="#000000"/>' +
-    '<text x="20" y="28" font-family="Arial, Helvetica, sans-serif" font-size="22"' +
-    ' font-weight="700" fill="#ffffff" text-anchor="middle">F</text>' +
-    "</svg>"
-)}`;
+const SECTION_LOGO = "/images/home/the-foil-logo.jpg";
 
 /** T-Mobile brand mark (magenta) — placeholder, same inline-SVG approach as SECTION_LOGO. */
 const TMOBILE_LOGO = `data:image/svg+xml,${encodeURIComponent(
@@ -52,6 +49,105 @@ const TMOBILE_LOGO = `data:image/svg+xml,${encodeURIComponent(
 /** Placeholder thumbnail (matches the EventCarousel/SectionHeader story fixtures). */
 const EVENT_IMAGE =
   "https://thefoil.com/media/xjPn5tb1VybfsEuZ4Y9J9RiSHePy3sFR2qDTv3tu7Ic/resize:fill-down:336:258/gravity:ce/quality:60/dpr:1/2025/12/ricardo-pinto-sailgp-1-1.png";
+
+/* -------------------------------------------------------------------------- */
+/* Community-driven sections                                                    */
+/*                                                                             */
+/* Every video component on the page shows ONE community (optionally narrowed  */
+/* to a group) of the current brand, and its SectionHeader shows that           */
+/* community's real name / avatar from the feed API. Change the ids here.       */
+/*                                                                             */
+/* The Foil (QA brand 3840) — community uuid → groups (uuid):                   */
+/*   SailGP              48ebbb76-3213-4faf-b626-0ade6ceb256f                    */
+/*     Season 6          49c36846-ef58-4d20-a97e-139454f06d02                    */
+/*   America's Cup       dde76c1a-9adb-4347-a44f-eae4b3d622ab                    */
+/*     Videos            4ca45d6b-f7f1-4af7-a66c-69c266e0ee7f                    */
+/*     Opinion/Analysis  2c6cc49a-9824-4171-8f64-b7f752e05ae8                    */
+/*   Olympics            90e35b26-32e0-4fa4-94fe-e0821f76948a                    */
+/*     LA 2028           8a4ba163-de60-4c57-998c-d2d4a2e7324d                    */
+/*   Round-the-World     88f19de9-cda6-48fc-8896-7af03b62bea8                    */
+/*     Opinion/Analysis  ef26d576-0fca-4442-b950-608ed3b42fec                    */
+/*   Classic 600-Milers  5e0a78dd-ff62-4c6a-a3cc-c6fc7dd36950                    */
+/*     Youth             f8b3f7a9-4bd6-4a72-9390-d84c35b9fed9                    */
+/*     Videos            6eca912a-eccc-4e2a-9609-687c54572d9f                    */
+/*   Other Sailing       24f3f015-2e3f-4f23-9d1a-0a7097830485                    */
+/*     Interviews        2f398e21-cfb4-405d-b4b8-9e9d70e3e1fc                    */
+/* -------------------------------------------------------------------------- */
+
+type SectionSource = {
+  /** Community uuid (`community_ids` on `/goservices/feed/v1/home`). */
+  communityId: string;
+  /** Optional group uuid (`loop_ids`) to narrow the community further. */
+  groupId?: string;
+  /** Header sub-heading (the API has no community tagline). */
+  subHeading: string;
+};
+
+const HOME_SECTIONS = {
+  /** Section 1 — video carousel + intelligence. */
+  desk: { communityId: "48ebbb76-3213-4faf-b626-0ade6ceb256f", subHeading: "Insight, action and spotlight" },
+  /** Latest Videos (VideoFeed) + related links + interviews panel. */
+  latestVideos: { communityId: "dde76c1a-9adb-4347-a44f-eae4b3d622ab", subHeading: "Fresh Insights" },
+  /** Top Categories carousel. */
+  topCategories: { communityId: "90e35b26-32e0-4fa4-94fe-e0821f76948a", subHeading: "You might like" },
+  /** Sponsored grid + relevant news. */
+  sponsoredGrid: { communityId: "5e0a78dd-ff62-4c6a-a3cc-c6fc7dd36950", subHeading: "Brought to you by Tmobile" },
+} satisfies Record<string, SectionSource>;
+
+/** What a section knows about its community once the feed has answered. */
+type SectionFeed = {
+  feedData: FeedData;
+  posts: PostDetailsType[];
+  /** Real community name from the feed (falls back to a placeholder while loading). */
+  communityName: string;
+  /** Community avatar from the feed, else the brand mark. */
+  communityImage: string;
+  /** Group name when the section is narrowed to a group. */
+  groupName?: string;
+  isLoading: boolean;
+};
+
+/**
+ * One community's (or group's) feed for a section — the same brand-scoped request
+ * `VideoFeed`/`VideoGrid` make (`useFeed("HOME", { communityIds, groupIds })` — `HOME` sends
+ * `type: 1`, which the API requires; `FEED_V1` without it is rejected with 412).
+ */
+function useSectionFeed(source: SectionSource): SectionFeed {
+  const { isInIframe, brandDetails } = useBaseContext();
+  const options = useMemo(
+    () => ({
+      isInIframe,
+      brandId: brandDetails.brand_id ?? undefined,
+      communityIds: [source.communityId],
+      ...(source.groupId ? { groupIds: [source.groupId] } : {}),
+    }),
+    [isInIframe, brandDetails.brand_id, source.communityId, source.groupId]
+  );
+  const { data, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } = useFeed("HOME", options);
+  const posts = useMemo(() => data?.pages.flatMap((page) => page.feed) ?? [], [data]);
+  const feedData: FeedData = useMemo(
+    () => ({
+      queryKey: getQueryKeyForFeed("HOME", options),
+      videos: posts,
+      isLoading,
+      hasNextPage: hasNextPage ?? false,
+      isFetchingNextPage,
+      fetchNextPage,
+      totalVideos: data?.pages[0]?.totalVideos,
+      pageSession: data?.pages[0]?.pageSession,
+    }),
+    [posts, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage, data, options]
+  );
+  const first = posts[0];
+  return {
+    feedData,
+    posts,
+    communityName: first?.community?.name ?? "…",
+    communityImage: first?.community?.profileImage ?? SECTION_LOGO,
+    groupName: source.groupId ? (first?.group?.name ?? undefined) : undefined,
+    isLoading,
+  };
+}
 
 /* -------------------------------------------------------------------------- */
 /* Section 1 — SaleGP Desk (video carousel) <-> Latest News (intelligence)     */
@@ -222,16 +318,13 @@ function resolveLinkVideoId(
   if (videoId && linkArticles.some((article) => article.video_id === videoId)) return videoId;
   const byGroup = groupId ? linkArticles.find((article) => article.groupId === groupId) : undefined;
   if (byGroup?.video_id) return byGroup.video_id;
-  const byCommunity = communityId
-    ? linkArticles.find((article) => article.communityId === communityId)
-    : undefined;
+  const byCommunity = communityId ? linkArticles.find((article) => article.communityId === communityId) : undefined;
   return byCommunity?.video_id ?? null;
 }
 
 const INTERVIEW_FEATURED_ARTICLE: IntelligenceArticle = {
   id: "interview-featured",
-  title:
-    "'Full steam ahead and scrambling to keep our heads above water': Grant Simmer on Australia's Cup comeback",
+  title: "'Full steam ahead and scrambling to keep our heads above water': Grant Simmer on Australia's Cup comeback",
   href: "https://thefoil.com/interviews/grant-simmer",
   image: { src: EVENT_IMAGE, alt: "Grant Simmer interview" },
 };
@@ -275,9 +368,8 @@ const INTERVIEW_CARD_LAYOUT = { ...INTELLIGENCE_LAYOUT.articleCard, height: "aut
  * "Sponsored" pill (top-left) and the linkout CTA bar below, the same as the
  * standalone VideoGrid component. */
 function buildGridPosts(posts: PostDetailsType[]): PostDetailsType[] {
-  const demoLinkouts = posts.find(
-    (post) => Array.isArray(post.video?.linkouts) && post.video.linkouts.length
-  )?.video?.linkouts;
+  const demoLinkouts = posts.find((post) => Array.isArray(post.video?.linkouts) && post.video.linkouts.length)?.video
+    ?.linkouts;
 
   return posts.map((post) => ({
     ...post,
@@ -286,9 +378,7 @@ function buildGridPosts(posts: PostDetailsType[]): PostDetailsType[] {
           ...post.video,
           cardLayoutId: 7,
           linkouts:
-            Array.isArray(post.video.linkouts) && post.video.linkouts.length
-              ? post.video.linkouts
-              : demoLinkouts,
+            Array.isArray(post.video.linkouts) && post.video.linkouts.length ? post.video.linkouts : demoLinkouts,
           linkoutId: post.video.linkoutId ?? 4046,
         }
       : post.video,
@@ -343,8 +433,7 @@ function DeskNewsPanel({ videoTags }: { videoTags: VideoTag[] }) {
   const emit = useEmit();
   // The intelligence data is decided ONCE from the FIRST video's community/group.
   // It does NOT change when the active video (or its community) changes.
-  const community =
-    resolveCommunity(videoTags[0]?.groupId, videoTags[0]?.communityId) ?? COMMUNITIES[0]!;
+  const community = resolveCommunity(videoTags[0]?.groupId, videoTags[0]?.communityId) ?? COMMUNITIES[0]!;
   const featured = community.articles[0]!;
   const upNext = community.articles.slice(1);
 
@@ -406,12 +495,7 @@ function InterviewsVideoPanel({ posts, videoTags }: { posts: PostDetailsType[]; 
 function InterviewsLinkPanel({ linkArticles }: { linkArticles: LinkArticle[] }) {
   const emit = useEmit();
   const active = useLatestEvent("video:change");
-  const activeLinkVideoId = resolveLinkVideoId(
-    active?.videoId,
-    active?.groupId,
-    active?.communityId,
-    linkArticles
-  );
+  const activeLinkVideoId = resolveLinkVideoId(active?.videoId, active?.groupId, active?.communityId, linkArticles);
 
   return (
     <HoverLinkCardList
@@ -466,8 +550,9 @@ function TmobileGridPanel({ gridPosts, videoTags }: { gridPosts: PostDetailsType
     <VideoGrid
       posts={gridPosts}
       columns={2}
-      tileWidth={540}
-      tileHeight={320}
+      // 500×296 tiles (16:9-ish) → 2 columns ≈ 1008 px, leaving more room for the news panel.
+      tileWidth={500}
+      tileHeight={296}
       onActiveVideoChange={(post, index) => {
         const tag = videoTags.find((entry) => entry.videoId === post.video?.id);
         emit("video:change", {
@@ -535,52 +620,25 @@ const UPCOMING_RACES: EventCarouselItem[] = [
 ];
 
 export function Home() {
-  // The whole page is driven by the brand's HOME feed — the same brand-scoped
-  // request the old `<Feed feedType="HOME" />` made. Which brand this resolves to
-  // is decided app-side (the `config_params` cookie → brand config → brand-scoped
-  // axios instance), so pointing the app at a different brand swaps this data.
-  const { isInIframe, brandDetails } = useBaseContext();
-  const feedQueryOptions = useMemo(
-    () => ({ isInIframe, brandId: brandDetails.brand_id ?? undefined }),
-    [isInIframe, brandDetails.brand_id]
-  );
-  const { data, isLoading, isError, hasNextPage, isFetchingNextPage, fetchNextPage } = useFeed(
-    "HOME",
-    feedQueryOptions
-  );
+  // Every section is driven by ONE community (or group) of the current brand — see
+  // HOME_SECTIONS. Which brand this resolves to is decided app-side (the
+  // `config_params` cookie → brand config → brand-scoped axios instance).
+  const desk = useSectionFeed(HOME_SECTIONS.desk);
+  const latest = useSectionFeed(HOME_SECTIONS.latestVideos);
+  const topCategories = useSectionFeed(HOME_SECTIONS.topCategories);
+  const sponsored = useSectionFeed(HOME_SECTIONS.sponsoredGrid);
 
-  const posts = useMemo(() => data?.pages.flatMap((page) => page.feed) ?? [], [data]);
+  // Synthetic group/community + related-link overlays, derived from each section's feed.
+  const deskTags = useMemo(() => buildVideoTags(desk.posts), [desk.posts]);
+  const latestTags = useMemo(() => buildVideoTags(latest.posts), [latest.posts]);
+  const linkArticles = useMemo(() => buildLinkArticles(latestTags, latest.posts), [latestTags, latest.posts]);
+  const sponsoredTags = useMemo(() => buildVideoTags(sponsored.posts), [sponsored.posts]);
+  const gridPosts = useMemo(() => buildGridPosts(sponsored.posts), [sponsored.posts]);
 
-  // One shared FeedData for every carousel/feed on the page (single network call,
-  // consistent data across sections; the carousels drive pagination on scroll).
-  const feedData: FeedData = useMemo(
-    () => ({
-      queryKey: getQueryKeyForFeed("HOME", feedQueryOptions),
-      videos: posts,
-      isLoading,
-      hasNextPage: hasNextPage ?? false,
-      isFetchingNextPage,
-      fetchNextPage,
-      totalVideos: data?.pages[0]?.totalVideos,
-      pageSession: data?.pages[0]?.pageSession,
-    }),
-    [posts, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage, data, feedQueryOptions]
-  );
+  const anyLoading = desk.isLoading || latest.isLoading || topCategories.isLoading || sponsored.isLoading;
+  const totalPosts = desk.posts.length + latest.posts.length + topCategories.posts.length + sponsored.posts.length;
 
-  // Synthetic group/community + related-link overlays, derived from the live feed.
-  const videoTags = useMemo(() => buildVideoTags(posts), [posts]);
-  const linkArticles = useMemo(() => buildLinkArticles(videoTags, posts), [videoTags, posts]);
-  const gridPosts = useMemo(() => buildGridPosts(posts), [posts]);
-
-  if (isError) {
-    return (
-      <div className="gencl:h-full gencl:overflow-auto">
-        <ErrorState type="ERROR" />
-      </div>
-    );
-  }
-
-  if (isLoading && posts.length === 0) {
+  if (anyLoading && totalPosts === 0) {
     return (
       <div
         className="gencl:flex gencl:h-full gencl:items-center gencl:justify-center gencl:p-6"
@@ -591,7 +649,7 @@ export function Home() {
     );
   }
 
-  if (posts.length === 0) {
+  if (!anyLoading && totalPosts === 0) {
     return (
       <div className="gencl:h-full gencl:overflow-auto">
         <ErrorState type="NO_CONTENT" />
@@ -601,31 +659,42 @@ export function Home() {
 
   return (
     <div className="gencl:h-full gencl:overflow-auto">
-      <div className="gencl:flex gencl:w-full gencl:flex-col gencl:gap-6 gencl:p-4 gencl:sm:p-6!">
+      <div className="gencl:flex gencl:w-full gencl:flex-col">
         {/* Section 1 — video carousel + intelligence, contextually linked via the bus. */}
         <EventSurface
           ariaLabel="SaleGP desk and latest news"
-          columns="minmax(0, 2fr) minmax(0, 1fr)"
+          className="gencl:p-6"
+          // Carousel ≈ 71 % / Intelligence ≈ 29 % — the panel is kept narrow so the
+          // carousel shows more cards.
+          columns="minmax(0, 2.5fr) minmax(0, 1fr)"
           gap="lg"
-          height={500}>
+          // Breathing room to the LEFT of the intelligence panel (20 px).
+          columnGap="ml"
+          // 500 px of content + 2 × 24 px section padding.
+          height={548}>
           <EventSurfacePanel id="video" className="gencl:flex gencl:min-w-0 gencl:flex-col gencl:gap-3">
             <SectionHeader
-              imageUrl={SECTION_LOGO}
-              imageAlt="The Foil"
-              heading="SaleGP Desk"
-              subHeading="Insight, action and spotlight on SailGP"
+              imageUrl={desk.communityImage}
+              imageAlt={desk.communityName}
+              heading={desk.groupName ?? desk.communityName}
+              subHeading={HOME_SECTIONS.desk.subHeading}
             />
-            <div className="gencl:min-h-0 gencl:flex-1">
-              <DeskVideoPanel feedData={feedData} videoTags={videoTags} />
+            {/* `overflow-hidden`: the carousel must stay inside its column and never
+                paint under the intelligence panel next to it. */}
+            <div className="gencl:min-h-0 gencl:min-w-0 gencl:flex-1 gencl:overflow-hidden gencl:rounded-xl">
+              <DeskVideoPanel feedData={desk.feedData} videoTags={deskTags} />
             </div>
           </EventSurfacePanel>
 
           <EventSurfacePanel id="news" className="gencl:flex gencl:min-w-0 gencl:flex-col gencl:gap-3">
-            {/* Spacer (header height) so the intelligence panel aligns with the video
-                content instead of the "SaleGP Desk" header above it. */}
-            <div aria-hidden style={{ height: 42 }} />
+            <SectionHeader
+              imageUrl={desk.communityImage}
+              imageAlt={desk.communityName}
+              heading={desk.communityName}
+              subHeading="Latest News"
+            />
             <div className="gencl:min-h-0 gencl:flex-1">
-              <DeskNewsPanel videoTags={videoTags} />
+              <DeskNewsPanel videoTags={deskTags} />
             </div>
           </EventSurfacePanel>
         </EventSurface>
@@ -633,7 +702,7 @@ export function Home() {
         {/* Section 2 — Upcoming races. */}
         <section
           aria-labelledby="upcoming-races-heading"
-          className="gencl:flex gencl:w-full gencl:flex-col gencl:gap-3">
+          className="gencl:flex gencl:w-full gencl:flex-col gencl:gap-3 gencl:p-6">
           <SectionHeader
             id="upcoming-races-heading"
             imageUrl={SECTION_LOGO}
@@ -647,23 +716,25 @@ export function Home() {
         {/* Section — Latest Videos + related links (bus-linked) + Latest Interviews.
             Fixed height so every column (incl. the Intelligence panel) is height-
             constrained and scrolls internally instead of growing to its content. */}
-        <section className="gencl:flex gencl:w-full gencl:gap-4" style={{ height: 460 }}>
+        <section className="gencl:flex gencl:w-full gencl:gap-4 gencl:p-6" style={{ height: 508 }}>
           <EventSurface
             ariaLabel="Latest videos and related links"
             width="auto"
             style={{ flex: "2 1 0%" }}
             columns="minmax(0, 1.7fr) minmax(0, 1fr)"
             gap="md"
+            // Extra room to the LEFT of the hover-link list (24 px).
+            columnGap="lg"
             height={460}>
             <EventSurfacePanel id="video" className="gencl:flex gencl:min-w-0 gencl:flex-col gencl:gap-3">
               <SectionHeader
-                imageUrl={SECTION_LOGO}
-                imageAlt="The Foil"
-                heading="Latest Videos"
-                subHeading="Fresh Insights"
+                imageUrl={latest.communityImage}
+                imageAlt={latest.communityName}
+                heading={latest.groupName ?? latest.communityName}
+                subHeading={HOME_SECTIONS.latestVideos.subHeading}
               />
-              <div className="gencl:min-h-0 gencl:flex-1">
-                <InterviewsVideoPanel posts={posts} videoTags={videoTags} />
+              <div className="gencl:min-h-0 gencl:min-w-0 gencl:flex-1 gencl:overflow-hidden gencl:rounded-xl">
+                <InterviewsVideoPanel posts={latest.posts} videoTags={latestTags} />
               </div>
             </EventSurfacePanel>
             <EventSurfacePanel id="links" className="gencl:flex gencl:min-w-0 gencl:flex-col gencl:gap-3">
@@ -677,12 +748,13 @@ export function Home() {
             </EventSurfacePanel>
           </EventSurface>
 
-          <div className="gencl:flex gencl:min-w-0 gencl:flex-col gencl:gap-3" style={{ flex: "1 1 0%" }}>
+          {/* Narrower than the video+links surface (2 : 0.75) so the interviews panel stays compact. */}
+          <div className="gencl:flex gencl:min-w-0 gencl:flex-col gencl:gap-3" style={{ flex: "0.75 1 0%" }}>
             <SectionHeader
-              imageUrl={SECTION_LOGO}
-              imageAlt="The Foil"
-              heading="Latest Interviews"
-              subHeading="Fresh Insights"
+              imageUrl={latest.communityImage}
+              imageAlt={latest.communityName}
+              heading={latest.communityName}
+              subHeading="Latest Interviews"
             />
             <div className="gencl:min-h-0 gencl:flex-1">
               <InterviewsIntelligencePanel />
@@ -693,18 +765,18 @@ export function Home() {
         {/* Section 3 — Top Categories (video carousel + heading). */}
         <section
           aria-labelledby="top-categories-heading"
-          className="gencl:flex gencl:w-full gencl:flex-col gencl:gap-3">
+          className="gencl:flex gencl:w-full gencl:flex-col gencl:gap-3 gencl:p-6">
           <SectionHeader
             id="top-categories-heading"
-            imageUrl={SECTION_LOGO}
-            imageAlt="The Foil"
-            heading="Top Categories in The Foil"
-            subHeading="You might like"
+            imageUrl={topCategories.communityImage}
+            imageAlt={topCategories.communityName}
+            heading={topCategories.groupName ?? topCategories.communityName}
+            subHeading={HOME_SECTIONS.topCategories.subHeading}
           />
-          <div style={{ height: 440 }}>
+          <div className="gencl:overflow-hidden gencl:rounded-xl" style={{ height: 440 }}>
             <VideoCarousel
               feedType="HOME"
-              externalFeedData={feedData}
+              externalFeedData={topCategories.feedData}
               ctaText="Read More"
               showNavigation={false}
               containerClassName="gencl:h-full"
@@ -717,30 +789,34 @@ export function Home() {
             (same behaviour as Section 1 — decided on load, doesn't change). */}
         <EventSurface
           ariaLabel="Tmobile grid and relevant news"
+          className="gencl:p-6"
           columns="max-content minmax(0, 1fr)"
           gap="lg"
+          // Breathing room to the LEFT of the news panel (32 px).
+          columnGap="ml"
+          // Header row (42 + 12 gap) + 2 × 296 px tiles + 8 px grid gap + 2 × 24 px padding.
           height={702}>
           <EventSurfacePanel id="grid" className="gencl:flex gencl:min-w-0 gencl:flex-col gencl:gap-3">
             <SectionHeader
               imageUrl={TMOBILE_LOGO}
               imageAlt="T-Mobile"
-              heading="Tmobile"
-              subHeading="Brought to you by Tmobile"
+              heading={sponsored.groupName ?? sponsored.communityName}
+              subHeading={HOME_SECTIONS.sponsoredGrid.subHeading}
             />
             <div className="gencl:min-h-0 gencl:flex-1">
-              <TmobileGridPanel gridPosts={gridPosts} videoTags={videoTags} />
+              <TmobileGridPanel gridPosts={gridPosts} videoTags={sponsoredTags} />
             </div>
           </EventSurfacePanel>
 
           <EventSurfacePanel id="news" className="gencl:flex gencl:min-w-0 gencl:flex-col gencl:gap-3">
             <SectionHeader
-              imageUrl={SECTION_LOGO}
-              imageAlt="The Foil"
-              heading="Relevant News"
-              subHeading="Fresh Insights"
+              imageUrl={sponsored.communityImage}
+              imageAlt={sponsored.communityName}
+              heading={sponsored.communityName}
+              subHeading="Relevant News"
             />
             <div className="gencl:min-h-0 gencl:flex-1">
-              <DeskNewsPanel videoTags={videoTags} />
+              <DeskNewsPanel videoTags={sponsoredTags} />
             </div>
           </EventSurfacePanel>
         </EventSurface>
