@@ -856,7 +856,7 @@ export function Home() {
             <SectionHeader
               imageUrl={desk.communityImage}
               imageAlt={desk.communityName}
-              heading={desk.communityName}
+              heading="Offshore Legends"
               subHeading="Latest News"
             />
             <div className="gencl:min-h-0 gencl:flex-1">
@@ -919,7 +919,7 @@ export function Home() {
             <SectionHeader
               imageUrl={latest.communityImage}
               imageAlt={latest.communityName}
-              heading={latest.communityName}
+              heading="Round-the-World"
               subHeading="Latest Interviews"
             />
             <div className="gencl:min-h-0 gencl:flex-1">
