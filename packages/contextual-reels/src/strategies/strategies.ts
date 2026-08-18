@@ -69,7 +69,11 @@ export interface Strategies {
   compactBackgroundColor: string | undefined;
   /**
    * Whether the active slide autoplays on mount/activation. Defaults to `false`.
-   * Also gates the GenAd request (see {@link useGenAdInstance}).
+   *
+   * Governs ORGANIC VIDEO slides only — it does not gate the GenAd request. A
+   * `type: "ads"` slide renders via `AdLayout`, which requests independently of
+   * this flag (see the note in `feed/layouts/AdLayout.tsx`). It also selects the
+   * arm point for the mute-passback timer (`useMutePassbackGuard`).
    */
   autoplayEnabled: boolean;
   /**
@@ -89,8 +93,10 @@ export interface Strategies {
    * the last slide becomes a hard stop, so `autoAdvance`/`goNext` on the final
    * entry is a no-op and the widget rests there instead of returning to slide 0.
    *
-   * Only affects navigation. It does not change ad requests — `singleHitWaterfall`
-   * already prevents a looped-back slot from re-requesting.
+   * Only affects navigation; it does not change ad requests. Note that
+   * {@link singleHitWaterfall} does NOT prevent a looped-back slot from
+   * re-requesting either — it only defers the no-fill passback (see
+   * `AdProvider.onAdFail`). A looped feed genuinely re-requests per slot.
    */
   feedLoopEnabled: boolean;
   /**

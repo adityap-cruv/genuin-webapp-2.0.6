@@ -3,6 +3,14 @@
  *
  * Resolves strategies once per tag and shares the result so providers and
  * components read decisions instead of recomputing allowlist checks.
+ *
+ * Full precedence, least to most specific — {@link resolveStrategies} owns the
+ * first four, this provider adds the rest:
+ *
+ *   DEFAULT_STRATEGIES → preset → brand → tag inline
+ *     → traffic experiment ({@link applyExperiment})
+ *     → initial-volume override (`GIV` script param, then `data-giv`)
+ *     → dashboard `enable_ask_question`
  */
 import { createContext, useContext, useMemo, type ReactNode } from "react";
 
@@ -61,15 +69,12 @@ export function StrategyProvider({ children, dataGiv }: StrategyProviderProps): 
     // audible-ad-start, and the manual-unmute restore level). Precedence: the
     // page-global `GIV` script param first, then this instance's `data-giv`.
     const initVolumeOverride = getInitVolumeOverride(dataGiv);
-    const withVolume =
-      initVolumeOverride === undefined ? resolved : { ...resolved, initialVolume: initVolumeOverride };
+    const withVolume = initVolumeOverride === undefined ? resolved : { ...resolved, initialVolume: initVolumeOverride };
 
     // Dashboard `enable_ask_question` wins over the strategyConfig allowlist when present
     // (drives live preview toggling); an absent key defers to the allowlist.
     const enableAskQuestion = tagDetails?.config?.enable_ask_question;
-    return typeof enableAskQuestion === "boolean"
-      ? { ...withVolume, genAiEnabled: enableAskQuestion }
-      : withVolume;
+    return typeof enableAskQuestion === "boolean" ? { ...withVolume, genAiEnabled: enableAskQuestion } : withVolume;
   }, [tagId, brandId, dataGiv, tagDetails?.config?.enable_ask_question]);
   return <StrategyContext.Provider value={value}>{children}</StrategyContext.Provider>;
 }

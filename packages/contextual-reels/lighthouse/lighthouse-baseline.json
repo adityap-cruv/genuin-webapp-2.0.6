@@ -1,0 +1,33 @@
+{
+  "cellCount": 9,
+  "tags": ["6a3aa78ba0daccfd439648b8", "6a3aa86e4da8cd92d289ccda", "6a3ba4395df1fee89bf0b2e7"],
+  "sizes": ["320x50", "320x100", "320x480"],
+  "desktop": {
+    "performance": 0.7022222222222223,
+    "accessibility": 0.8688888888888889,
+    "bestPractices": 0.9600000000000001,
+    "seo": 0.8,
+    "fcp": 1501.0969900000002,
+    "lcp": 3378.3207388888895,
+    "tbt": 0,
+    "cls": 0.000332902547938009,
+    "speedIndex": 3112.8098260463275,
+    "bootupTime": 68.34544444444451,
+    "mainthreadWork": 384.90622222222237,
+    "totalByteWeight": 2100101
+  },
+  "mobile": {
+    "performance": 0.6344444444444445,
+    "accessibility": 0.8744444444444445,
+    "bestPractices": 0.9600000000000001,
+    "seo": 0.8,
+    "fcp": 3624.210140555556,
+    "lcp": 7071.245559999999,
+    "tbt": 20.333333333333332,
+    "cls": 0.00011631605504440026,
+    "speedIndex": 7280.690030888898,
+    "bootupTime": 441.0853333333335,
+    "mainthreadWork": 1364.6675555555591,
+    "totalByteWeight": 1909289.5555555555
+  }
+}

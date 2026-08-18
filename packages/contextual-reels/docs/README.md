@@ -36,9 +36,20 @@ isolated React tree per `.gen-ext` mount point on a partner page.
 
 ## Testing
 
+- **[TEST_SETUP.md](TEST_SETUP.md) — end-to-end guide to the testing framework**: architecture, test
+  environments, every test type, the flows a test takes, structure, execution, dependencies, test
+  data, reporting, best practices. Start here if you're new to the suite.
+- **[TESTING.md](TESTING.md) — every test category, what it covers, when to run it, and its measured
+  execution time.** Start here to decide what to run; the pre-push gate is ~35 s.
 - Unit/component: **Vitest + jsdom**, colocated `*.test.ts(x)` next to each source file. Run `pnpm test`,
   `pnpm test:coverage` (per-file thresholds in [`../vitest.config.ts`](../vitest.config.ts)).
-- E2E: **Playwright** against the built `dist/`. See [`../tests/e2e/README.md`](../tests/e2e/README.md)
-  and [ADR 004](cxr-decisions/004-e2e-real-genad.md).
+- E2E: **Playwright** against the built `dist/` — 65 tests across `chromium`, `mobile-chrome` and
+  `webkit`. See [`../tests/e2e/README.md`](../tests/e2e/README.md) and
+  [ADR 004](cxr-decisions/004-e2e-real-genad.md).
+- **[QA_FIXTURE_REQUESTS.md](QA_FIXTURE_REQUESTS.md)** — ad-ops handoff: the two QA fixtures that
+  unblock four documented E2E gaps, plus a probable live `TAG_EXPERIMENTS` config bug.
+- **[LIGHTHOUSE.md](LIGHTHOUSE.md)** — 2026-08-17 Lighthouse baseline, averaged across the full
+  `CXR_TAGS × CXR_SIZES` 9-cell matrix (desktop perf 70 / mobile 63). `pnpm lighthouse` re-measures
+  and fails on regression past tolerance against the committed baseline; manual, like `pnpm budget`.
 - Per-module READMEs with deeper local detail: [`../src/ads/README.md`](../src/ads/README.md),
   [`../src/player/README.md`](../src/player/README.md), [`../src/feed/hooks/README.md`](../src/feed/hooks/README.md).

@@ -59,6 +59,11 @@ jobs:
             labels+=("pkg:web-sdk")
           fi
 
+          # Check for contextual-reels package changes
+          if echo "$CHANGED_FILES" | grep -q "^packages/contextual-reels/"; then
+            labels+=("pkg:contextual-reels")
+          fi
+
           # Check for utils package changes
           if echo "$CHANGED_FILES" | grep -q "^packages/utils/"; then
             labels+=("pkg:utils")

@@ -35,15 +35,18 @@
     "budget:all": "node ad-resource-budget/cxr/run-budgets.mjs",
     "budget:build": "npm run build && npm run budget",
     "budget:all:build": "npm run build && npm run budget:all",
+    "lighthouse": "node lighthouse/cxr/run-lighthouse.mjs",
+    "lighthouse:save-baseline": "node lighthouse/cxr/run-lighthouse.mjs --save-baseline",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint src/",
+    "lint": "eslint src/ tests/",
     "format": "prettier --write .",
     "storybook": "storybook dev -p 6007",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "fixtures:check": "node tests/e2e/fixtures/check-drift.mjs"
   },
   "dependencies": {
     "@genuin/components": "workspace:*",

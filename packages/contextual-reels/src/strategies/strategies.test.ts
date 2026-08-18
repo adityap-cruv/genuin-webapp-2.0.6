@@ -28,9 +28,11 @@ import type * as StrategyConfigModule from "@cxr/strategies/strategyConfig";
 
 // IDs migrated into TAG_STRATEGIES (see strategyConfig.ts).
 const AD_BREAK_TAG = "6a391232d73aa25887ac2af3";
-// Single-hit + mute-passback both ride on this tag (see strategyConfig.ts).
-const SINGLE_HIT_TAG = "69b298e3d6a6ad57e7b9a464";
+// Mute-passback + gate-on-unmute ride on this tag. It carried singleHitWaterfall
+// too until #515 turned it off, so single-hit assertions use SINGLE_HIT_TAG below.
 const MUTE_PASSBACK_TAG = "69b298e3d6a6ad57e7b9a464";
+// 320x50 ads-only tag — one of the entries that still enables singleHitWaterfall.
+const SINGLE_HIT_TAG = "6a39163e92929ebec64d78ab";
 const UNKNOWN_TAG = "aaaabbbbccccdddd11112222";
 // Configured with initialVolume: 0.2 (see strategyConfig.ts).
 const INITIAL_VOLUME_TAG = "6a2fefd87ce338c3a5afc605";
@@ -406,7 +408,7 @@ describe("feedLoopEnabled flag", () => {
   });
 
   it("resolves true for configured tags that did not opt out", () => {
-    expect(resolveStrategies(SINGLE_HIT_TAG).feedLoopEnabled).toBe(true);
+    expect(resolveStrategies(MUTE_PASSBACK_TAG).feedLoopEnabled).toBe(true);
   });
 
   it("resolves false for the static AD-only tags that opted out inline", () => {
@@ -440,7 +442,7 @@ describe("feedLoopEnabled flag", () => {
 
   it("exposes a predicate that mirrors the resolver", () => {
     expect(isFeedLoopEnabled("unknown-loop-tag")).toBe(true);
-    expect(isFeedLoopEnabled(SINGLE_HIT_TAG)).toBe(true);
+    expect(isFeedLoopEnabled(MUTE_PASSBACK_TAG)).toBe(true);
   });
 });
 
@@ -458,7 +460,7 @@ describe("visibilityGate flag", () => {
   });
 
   it("resolves off for every currently configured tag (nothing opted in yet)", () => {
-    expect(resolveStrategies(SINGLE_HIT_TAG).visibilityGate).toBe(false);
+    expect(resolveStrategies(MUTE_PASSBACK_TAG).visibilityGate).toBe(false);
     expect(resolveStrategies("6a39163e92929ebec64d78ab").visibilityGate).toBe(false);
   });
 
@@ -482,7 +484,7 @@ describe("destroyOnHide flag", () => {
   });
 
   it("resolves off for every currently configured tag (nothing opted in yet)", () => {
-    expect(resolveStrategies(SINGLE_HIT_TAG).destroyOnHide).toBe(false);
+    expect(resolveStrategies(MUTE_PASSBACK_TAG).destroyOnHide).toBe(false);
   });
 });
 
@@ -499,7 +501,7 @@ describe("suppressedEvents", () => {
   });
 
   it("resolves empty for a configured tag that did not opt in", () => {
-    expect(resolveStrategies(SINGLE_HIT_TAG).suppressedEvents).toEqual([]);
+    expect(resolveStrategies(MUTE_PASSBACK_TAG).suppressedEvents).toEqual([]);
   });
 
   it("lists the ads-only interstitial noise events for the 320x50 tag", () => {

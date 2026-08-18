@@ -117,7 +117,7 @@ export function resolveAdLayout(width = 0, height = 0): AdLayoutId {
 // A stacked slot is split into two equal halves: our widget on top and an
 // Infolinks in-place unit below. Two tags opt in today:
 //   - 320×100 (L4): top 320×50 (our L3) + bottom 320×50 Infolinks.
-//   - 300×600 (L1): top 300×300 (our L2) + bottom 300×300 Infolinks.
+//   - 300×600 (L1): top 300×300 (our L1) + bottom 300×300 Infolinks.
 // Activation requires the `gen_variant=stacked` URL param (this frame or the top
 // frame) plus a matching tag id — relaxed to any matching slot size on
 // localhost so either layout can be tested without the production tag id.
