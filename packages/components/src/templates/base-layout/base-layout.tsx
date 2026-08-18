@@ -85,7 +85,10 @@ export function BaseLayout({
         {!isMobile && layoutConfig.showSideBar && <SideBar className="gencl:sm:block! gencl:hidden" />}
         <section
           className={cn(
-            "gencl:w-full gencl:flex-grow gencl:!h-full gencl:relative",
+            // min-w-0 lets this flex item shrink to the available width instead of growing
+            // to its content's intrinsic size; without it, horizontally-scrolling children
+            // (e.g. carousels) overflow and get clipped by <main>'s overflow-clip.
+            "gencl:w-full gencl:min-w-0 gencl:flex-grow gencl:!h-full gencl:relative",
             variant === "embed-expand-view" && "gencl:xl:px-15",
             className
           )}

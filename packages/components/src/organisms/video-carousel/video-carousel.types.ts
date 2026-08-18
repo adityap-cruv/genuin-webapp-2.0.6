@@ -51,6 +51,12 @@ export type VideoCarouselCardProps = {
 export interface VideoCarouselViewProps {
   feedData: FeedData;
   startIndex?: number;
+  /**
+   * Controlled active video. When this changes to a video present in the feed,
+   * the carousel slides to it. Reacting only to changes (not to the carousel's
+   * own index) keeps it from fighting a user swipe.
+   */
+  activeVideoId?: string;
   isSectioned?: boolean;
   responsiveConfig?: Partial<VideoCarouselResponsiveConfig>;
   cardWidth?: number | string;
@@ -70,6 +76,12 @@ export interface VideoCarouselViewProps {
 export interface VideoCarouselProps
   extends Omit<ComponentPropsWithoutRef<"div">, "onActiveIndexChange">,
     Omit<FeedWithDataPropsType, "className" | "style"> {
+  /**
+   * Controlled active video. When it changes to a video in the feed, the
+   * carousel slides to that video — lets a sibling (e.g. an article list) drive
+   * which video plays.
+   */
+  activeVideoId?: string;
   /** Optional custom responsive settings for mobile, tablet, and desktop */
   responsiveConfig?: Partial<VideoCarouselResponsiveConfig>;
   /** Fixed card width override (e.g. 260 or "260px") */

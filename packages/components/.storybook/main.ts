@@ -6,15 +6,15 @@ import type { StorybookConfig } from "@storybook/react-vite";
 import remarkGfm from "remark-gfm";
 import tsconfigPaths from "vite-tsconfig-paths";
 
-const require = createRequire(import.meta.url);
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const localRequire = createRequire(import.meta.url);
+const storybookDir = dirname(fileURLToPath(import.meta.url));
 
 /**
  * This function is used to resolve the absolute path of a package.
  * It is needed in projects that use Yarn PnP or are set up within a monorepo.
  */
 function getAbsolutePath(value: string) {
-  return dirname(require.resolve(join(value, "package.json")));
+  return dirname(localRequire.resolve(join(value, "package.json")));
 }
 const config: StorybookConfig = {
   stories: [
@@ -54,7 +54,7 @@ const config: StorybookConfig = {
       ...config,
       plugins: [
         ...(config.plugins || []),
-        tsconfigPaths({ projects: [join(__dirname, "../tsconfig.storybook.json")] }),
+        tsconfigPaths({ projects: [join(storybookDir, "../tsconfig.storybook.json")] }),
       ],
       build: {
         ...config.build,
@@ -68,7 +68,7 @@ const config: StorybookConfig = {
         dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime"],
         alias: {
           ...config.resolve?.alias,
-          "@hooks": join(__dirname, "../src/hooks"),
+          "@hooks": join(storybookDir, "../src/hooks"),
           // Swap the production GenAd container for a storybook-only
           // stub that renders the Figma banner creative directly,
           // so stories exercise the real `<DynamicLinkouts content>`
@@ -76,7 +76,7 @@ const config: StorybookConfig = {
           // lazy-loading `gen_ad.min.js` or hitting ad networks.
           // See `_gen-ad-container-mock.tsx`.
           "@genuin/components/molecules/feed-player/gen-ad-container": join(
-            __dirname,
+            storybookDir,
             "../src/organisms/linkouts/_gen-ad-container-mock.tsx"
           ),
         },

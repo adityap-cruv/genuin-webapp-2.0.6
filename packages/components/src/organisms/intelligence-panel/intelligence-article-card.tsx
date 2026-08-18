@@ -37,6 +37,7 @@ export function IntelligenceArticleCard({
   layout,
   label,
   imagePosition = "bottom",
+  onSelect,
   className,
   style,
   ...props
@@ -59,6 +60,14 @@ export function IntelligenceArticleCard({
 
       <Link
         href={article.href}
+        onClick={
+          onSelect
+            ? (event) => {
+                event.preventDefault();
+                onSelect(article);
+              }
+            : undefined
+        }
         className={cn(
           ARTICLE_LINK_FOCUS_CLASS,
           "gencl:group gencl:flex gencl:min-w-0 gencl:flex-1 gencl:flex-col gencl:rounded-sm",

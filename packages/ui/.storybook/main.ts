@@ -9,15 +9,15 @@ import tsconfigPaths from "vite-tsconfig-paths";
 // `require` and `__dirname` are not defined when this config is evaluated as
 // pure ESM (e.g. by the Storybook vitest addon). Shim them via import.meta —
 // same approach as packages/components/.storybook/main.ts.
-const require = createRequire(import.meta.url);
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const localRequire = createRequire(import.meta.url);
+const storybookDir = dirname(fileURLToPath(import.meta.url));
 
 /**
  * This function is used to resolve the absolute path of a package.
  * It is needed in projects that use Yarn PnP or are set up within a monorepo.
  */
 function getAbsolutePath(value: string) {
-  return dirname(require.resolve(join(value, "package.json")));
+  return dirname(localRequire.resolve(join(value, "package.json")));
 }
 const config: StorybookConfig = {
   stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
@@ -54,8 +54,8 @@ const config: StorybookConfig = {
         ...config.resolve,
         alias: {
           ...config.resolve?.alias,
-          "@genuin/ui/components": resolve(__dirname, "../src/components"),
-          "@hooks": resolve(__dirname, "../src/hooks"),
+          "@genuin/ui/components": resolve(storybookDir, "../src/components"),
+          "@hooks": resolve(storybookDir, "../src/hooks"),
         },
       },
     };

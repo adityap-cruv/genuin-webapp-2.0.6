@@ -35,9 +35,16 @@ type FeaturedArticleProps = {
   article: IntelligenceArticle;
   layout: IntelligenceFeaturedArticleLayout;
   readMoreLabel: string;
+  onSelect?: (article: IntelligenceArticle) => void;
 };
 
-function FeaturedArticle({ article, layout, readMoreLabel }: FeaturedArticleProps) {
+function FeaturedArticle({ article, layout, readMoreLabel, onSelect }: FeaturedArticleProps) {
+  const handleSelect = onSelect
+    ? (event: React.MouseEvent) => {
+        event.preventDefault();
+        onSelect(article);
+      }
+    : undefined;
   return (
     <article
       data-slot="intelligence-featured-article"
@@ -57,6 +64,7 @@ function FeaturedArticle({ article, layout, readMoreLabel }: FeaturedArticleProp
       <div className="gencl:absolute gencl:inset-x-0 gencl:bottom-0 gencl:flex gencl:flex-col gencl:items-start gencl:gap-2 gencl:p-3">
         <Link
           href={article.href}
+          onClick={handleSelect}
           className={cn(
             FOCUS_CLASS,
             "gencl:max-w-3xl gencl:rounded-sm gencl:text-white gencl:no-underline gencl:hover:text-secondary-100"
@@ -98,6 +106,7 @@ export const IntelligencePanel = React.forwardRef<HTMLElement, IntelligencePanel
     onClose,
     readMoreLabel = "Read more",
     upNextLabel = "Up Next",
+    onArticleSelect,
     className,
     ...props
   },
@@ -111,7 +120,12 @@ export const IntelligencePanel = React.forwardRef<HTMLElement, IntelligencePanel
       onClose={onClose}
       className={className}
       {...props}>
-      <FeaturedArticle article={featuredArticle} layout={layout.featuredArticle} readMoreLabel={readMoreLabel} />
+      <FeaturedArticle
+        article={featuredArticle}
+        layout={layout.featuredArticle}
+        readMoreLabel={readMoreLabel}
+        onSelect={onArticleSelect}
+      />
 
       {upNextArticles.length > 0 && (
         <div
@@ -128,6 +142,7 @@ export const IntelligencePanel = React.forwardRef<HTMLElement, IntelligencePanel
               layout={layout.articleCard}
               label={upNextLabel}
               imagePosition="bottom"
+              onSelect={onArticleSelect}
             />
           ))}
         </div>

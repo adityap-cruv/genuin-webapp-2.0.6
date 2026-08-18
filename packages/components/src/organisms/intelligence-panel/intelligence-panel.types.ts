@@ -60,7 +60,8 @@ export type IntelligenceArticle = {
 export type IntelligenceArticleCardImagePosition = "top" | "bottom";
 
 /** Props for an article card shared by grid and feed layouts. */
-export interface IntelligenceArticleCardProps extends Omit<ComponentPropsWithoutRef<"article">, "children"> {
+export interface IntelligenceArticleCardProps
+  extends Omit<ComponentPropsWithoutRef<"article">, "children" | "onSelect"> {
   /** Article content and destination. */
   article: IntelligenceArticle;
   /** Presentation values supplied by the consuming response. */
@@ -69,6 +70,12 @@ export interface IntelligenceArticleCardProps extends Omit<ComponentPropsWithout
   label?: string;
   /** Whether artwork appears before or after the headline. @default "bottom" */
   imagePosition?: IntelligenceArticleCardImagePosition;
+  /**
+   * Called when the card is activated. When provided, the card's default link
+   * navigation is prevented so the consumer can react (e.g. drive a paired video)
+   * instead of navigating away.
+   */
+  onSelect?: (article: IntelligenceArticle) => void;
 }
 
 type IntelligencePanelSectionProps = Omit<ComponentPropsWithoutRef<"section">, "children">;
@@ -95,6 +102,12 @@ export interface IntelligencePanelProps extends Omit<IntelligencePanelShellProps
   readMoreLabel?: string;
   /** Label rendered above every secondary article. @default "Up Next" */
   upNextLabel?: string;
+  /**
+   * Called when the user activates an article (featured headline or an Up Next
+   * card). When provided, the article's default link navigation is prevented so
+   * the consumer can react — e.g. play the matching video on a paired surface.
+   */
+  onArticleSelect?: (article: IntelligenceArticle) => void;
 }
 
 /** Props for the matching loading placeholder. */

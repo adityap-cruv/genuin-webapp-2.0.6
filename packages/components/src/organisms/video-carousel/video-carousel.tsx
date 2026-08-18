@@ -72,6 +72,7 @@ const DEFAULT_RESPONSIVE_CONFIG: VideoCarouselResponsiveConfig = {
 export function VideoCarouselView({
   feedData,
   startIndex = 0,
+  activeVideoId,
   isSectioned = false,
   responsiveConfig,
   cardWidth,
@@ -176,6 +177,19 @@ export function VideoCarouselView({
     observer.observe(node);
     return () => observer.disconnect();
   }, [responsiveSlidesPerView, cardAspectRatio, cardWidth, cardHeight, spaceBetween]);
+
+  // Controlled active video: slide to `activeVideoId` when it changes. activeIndex
+  // is read through a ref so this effect does NOT re-run on the carousel's own
+  // index changes (which would yank a user swipe back).
+  const activeIndexRef = useRef(activeIndex);
+  activeIndexRef.current = activeIndex;
+
+  useEffect(() => {
+    if (!activeVideoId || !swiper || swiper.destroyed) return;
+    const targetIndex = posts.findIndex((post) => post.video?.id === activeVideoId);
+    if (targetIndex < 0 || targetIndex === activeIndexRef.current) return;
+    swiper.slideTo(targetIndex);
+  }, [activeVideoId, swiper, posts]);
 
   // Infinite feed prefetching
   useEffect(() => {
@@ -432,6 +446,7 @@ export function VideoCarousel({
   isSectioned,
   externalFeedData,
   startIndex = 0,
+  activeVideoId,
   responsiveConfig,
   cardWidth,
   cardHeight,
@@ -512,6 +527,7 @@ export function VideoCarousel({
           <VideoCarouselView
             feedData={feedData}
             startIndex={startIndex}
+            activeVideoId={activeVideoId}
             isSectioned={isSectioned}
             responsiveConfig={responsiveConfig}
             cardWidth={cardWidth}
