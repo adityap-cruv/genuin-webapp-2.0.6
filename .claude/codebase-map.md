@@ -89,6 +89,18 @@ true` and forges `navigator.userActivation` = true on a fresh page, so it always
   `design_system=v2` / embed config. No ↑↓ arrows (by request). Expand = `VideoFeedExpandView`:
   `createPortal(document.body)` + `RemoveScroll` + `templates/feed` `FeedView variant="expand"
   defaultExpandView platform="webapp"` — the same component the SDK's `EmbedExpandView` mounts.
+- **`VideoGrid` organism** (`packages/components/src/organisms/video-grid/`) — grid of video tiles:
+  2×2 desktop (tiles 518×291, 8 px gap → 1044×590), 1×4 mobile (382×215 → 382×884),
+  `VIDEO_GRID_TILE_SIZE`. Same data props as `VideoFeed` (imports `useVideoFeedData`,
+  `buildVideoMetaText`, `VideoFeedExpandView`, `VIDEO_FEED_CONTROL_SIZE` from it — video-feed
+  itself is NOT modified). Own `VideoGridTile`: `PlayerProvider(isEmbed) → FeedPlayer` +
+  `SponsoredTag` + controls-v2 on the active tile + bottom stack (meta line 8 px above the linkout
+  chip). Linkout chip = `molecules/linkout-new/linkouts-dynamic` `DynamicLinkouts` used DIRECTLY
+  (not the `organisms/linkouts` wrapper, which is untouched) with `effectiveVideoWidth =
+  VIDEO_GRID_LINKOUT_LAYOUT_WIDTH (249)` + `disableAutoAdvance` — the card picks its layout by
+  width bucket (`linkouts-sheet-config.ts`: <250 chip · <300 default · <400 active · ≥400 expanded
+  card) and outside the embed context that width is 0. One active tile plays; auto-advance moves
+  to the next tile and wraps; tap a tile to activate. No "…" more button exists in `controls-v2`.
 - **`RootPortal` renders `null` outside SDK mode** (`molecules/root-portal/root-portal.tsx`:
   `if (!isEmbed || !containerElement) return null`) — but its effects still paint
   `document.body` black/fixed when `useShadowDOM` is false. Don't use it from webapp-mode code;
