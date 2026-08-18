@@ -616,12 +616,21 @@ function InterviewsLinkPanel({ linkArticles }: { linkArticles: LinkArticle[] }) 
       items={linkArticles}
       activeVideoId={activeLinkVideoId}
       pinActiveItemToTop
+      // One card per scroll gesture (the next card snaps to the top, expands and its video plays).
+      stepScroll
       autoRotate={false}
       showContainerBorder={false}
       ctaText="Read More"
       width="100%"
       height="100%"
       onLinkClick={(item, index) => {
+        if (item.video_id) {
+          emit("item:select", { itemId: item.id ?? item.link, index, videoId: item.video_id });
+        }
+      }}
+      // Manual scroll: the card that lands at the top expands AND its video plays —
+      // same bus event as a click, so the VideoFeed slides to that video.
+      onActiveItemChange={(item, index) => {
         if (item.video_id) {
           emit("item:select", { itemId: item.id ?? item.link, index, videoId: item.video_id });
         }

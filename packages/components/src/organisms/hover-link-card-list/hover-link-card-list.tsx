@@ -34,6 +34,19 @@ export interface HoverLinkCardListProps {
   ariaLabel?: string;
   className?: string;
   onLinkClick?: (item: ContextualLinkMetaData, index: number) => void;
+  /**
+   * Fired when the USER changes the expanded card by scrolling the list (the card that
+   * lands at the top becomes the expanded one). Not fired for programmatic scrolls
+   * (`activeVideoId` changes, auto-rotate, click) — use it to make the video follow the
+   * list, e.g. `onActiveItemChange={(item) => playVideo(item.video_id)}`.
+   */
+  onActiveItemChange?: (item: ContextualLinkMetaData, index: number) => void;
+  /**
+   * Step scrolling: each wheel/trackpad gesture moves exactly ONE card (the next card
+   * scrolls to the top and expands) instead of free scrolling; touch scrolling expands
+   * the card nearest the top. Fires `onActiveItemChange` for every step. @default false
+   */
+  stepScroll?: boolean;
 }
 
 function usePrefersReducedMotion() {
@@ -75,6 +88,8 @@ export function HoverLinkCardList({
   showContainerBorder = true,
   className,
   onLinkClick,
+  onActiveItemChange,
+  stepScroll = false,
 }: HoverLinkCardListProps) {
   const orderedItems = useMemo(() => {
     const entries = items.map((item, sourceIndex) => ({
@@ -94,6 +109,8 @@ export function HoverLinkCardList({
   const animationFrameRef = useRef<number | null>(null);
   const scrollEndTimerRef = useRef<number | null>(null);
   const isAutoScrollingRef = useRef(false);
+  /** Timestamp until which `scroll` events are ours (smooth `scrollTo`), not the user's. */
+  const programmaticScrollUntilRef = useRef(0);
   const prefersReducedMotion = usePrefersReducedMotion();
   const normalizedDuration = Math.max(0, animationDurationMs);
   const tailSpace = typeof height === "number" ? Math.max(0, height - 80) : 307;
@@ -123,6 +140,10 @@ export function HoverLinkCardList({
       const rawTarget = itemTop - sectionTop - paddingTop + section.scrollTop;
       const target = Math.max(0, Math.min(rawTarget, maxScrollTop));
 
+      // Mark the upcoming scroll events as programmatic so `onScroll` doesn't treat
+      // them as the user scrolling (which would re-sync the active card mid-animation).
+      programmaticScrollUntilRef.current = Date.now() + (animate && !prefersReducedMotion ? 800 : 100);
+
       if (animate && !prefersReducedMotion) {
         section.scrollTo({ top: target, behavior: "smooth" });
         return;
@@ -135,6 +156,9 @@ export function HoverLinkCardList({
 
   const queueScrollToIndex = useCallback(
     (index: number) => {
+      // Arm the guard NOW: the expanding/collapsing cards reflow the list before the
+      // rAF-deferred scroll runs, and that reflow already emits `scroll` events.
+      programmaticScrollUntilRef.current = Math.max(programmaticScrollUntilRef.current, Date.now() + 1000);
       if (animationFrameRef.current !== null) {
         window.cancelAnimationFrame(animationFrameRef.current);
         animationFrameRef.current = null;
@@ -227,7 +251,7 @@ export function HoverLinkCardList({
     []
   );
 
-  const syncActiveCardWithScroll = useCallback(() => {
+  const syncActiveCardWithScroll = useCallback((notify = false) => {
     const section = sectionRef.current;
     const cardElements = trackRef.current?.querySelectorAll<HTMLElement>("[data-item-index]");
     if (!section || !cardElements?.length || isAutoScrollingRef.current) return;
@@ -246,7 +270,63 @@ export function HoverLinkCardList({
     });
 
     setActiveIndex(closestIndex);
+    if (notify && closestIndex !== activeIndex) {
+      const entry = orderedItems[closestIndex];
+      if (entry) onActiveItemChange?.(entry.item, closestIndex);
+    }
+  }, [activeIndex, orderedItems, onActiveItemChange]);
+
+  // Step scrolling — one card per wheel gesture. Registered natively (non-passive) so the
+  // default free scroll can be prevented.
+  //
+  // Gesture detection uses the events' own `timeStamp`s (when the OS generated them), NOT
+  // the time we process them: on a busy main thread (many videos, animations) events are
+  // delivered late and bunched, and a wall-clock cooldown then either splits one gesture
+  // into several steps or swallows a real one ("random" jumps / stuck). A gesture ends when
+  // there is a quiet gap between events, or the direction reverses.
+  const intendedIndexRef = useRef(activeIndex);
+  useEffect(() => {
+    intendedIndexRef.current = activeIndex;
   }, [activeIndex]);
+  const lastWheelTsRef = useRef(-Infinity);
+  const lastWheelDirectionRef = useRef(0);
+  const lastStepTsRef = useRef(-Infinity);
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!stepScroll || !section) return;
+
+    const GESTURE_GAP_MS = 50; // quiet time (between events) that ends a gesture
+    const MIN_STEP_INTERVAL_MS = 100; // never two steps closer than this (event time)
+    const MIN_DELTA = 4; // ignore sub-pixel jitter only — the FIRST real event steps immediately
+
+    const onWheel = (event: WheelEvent) => {
+      event.preventDefault();
+      if (Math.abs(event.deltaY) < MIN_DELTA) return;
+      const ts = event.timeStamp;
+      const direction = event.deltaY > 0 ? 1 : -1;
+      const gap = ts - lastWheelTsRef.current;
+      const isNewGesture = gap > GESTURE_GAP_MS || direction !== lastWheelDirectionRef.current;
+      lastWheelTsRef.current = ts;
+      lastWheelDirectionRef.current = direction;
+      if (!isNewGesture) return; // inertia / continuation of the gesture that already stepped
+      if (ts - lastStepTsRef.current < MIN_STEP_INTERVAL_MS) return;
+
+      // Base the step on the index we last INTENDED (updated synchronously) — under jank
+      // React may not have re-rendered yet and `activeIndex` would be stale.
+      const nextIndex = Math.max(0, Math.min(orderedItems.length - 1, intendedIndexRef.current + direction));
+      if (nextIndex === intendedIndexRef.current) return;
+      lastStepTsRef.current = ts;
+      intendedIndexRef.current = nextIndex;
+      setIsInteractionPaused(true);
+      setActiveIndex(nextIndex);
+      queueScrollToIndex(nextIndex);
+      const entry = orderedItems[nextIndex];
+      if (entry) onActiveItemChange?.(entry.item, nextIndex);
+    };
+
+    section.addEventListener("wheel", onWheel, { passive: false });
+    return () => section.removeEventListener("wheel", onWheel);
+  }, [stepScroll, orderedItems, queueScrollToIndex, onActiveItemChange]);
 
   const selectCard = useCallback(
     (item: ContextualLinkMetaData, index: number) => {
@@ -281,6 +361,9 @@ export function HoverLinkCardList({
         showContainerBorder && "gencl:ring-1 gencl:ring-secondary-200 gencl:ring-inset",
         className
       )}
+      // NB: no CSS scroll-snap here even in step mode — the cards change height when they
+      // expand/collapse and a mandatory snap re-snaps on every reflow, which chains into
+      // extra steps. Touch scrolling relies on the nearest-card sync instead.
       style={{ width, height, overflowAnchor: "none" }}
       onMouseEnter={() => {
         if (pauseOnHover) setIsInteractionPaused(true);
@@ -297,9 +380,11 @@ export function HoverLinkCardList({
         }
       }}
       onScroll={() => {
-        if (isAutoScrollingRef.current || isControlledPinned) return;
+        // Ignore our own scrolls (auto-rotate, pin-to-active, click); a real user scroll
+        // expands the card that lands at the top and reports it to the parent.
+        if (isAutoScrollingRef.current || Date.now() < programmaticScrollUntilRef.current) return;
         if (scrollEndTimerRef.current !== null) window.clearTimeout(scrollEndTimerRef.current);
-        scrollEndTimerRef.current = window.setTimeout(syncActiveCardWithScroll, 120);
+        scrollEndTimerRef.current = window.setTimeout(() => syncActiveCardWithScroll(true), 120);
       }}>
       <div
         ref={trackRef}
