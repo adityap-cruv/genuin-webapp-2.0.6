@@ -683,7 +683,7 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
   // instances on the page — only the first ever call actually fetches.
   const { data: ipInfo, isLoading: isIpInfoLoading } = useIpInfo();
 
-  return useInfiniteQuery({
+  const query = useInfiniteQuery({
     queryKey,
     queryFn: ({ pageParam }) => createFeedQueryFn(feedType, pageParam, options, axiosInstance, ipInfo),
     // Gated on geo-ip settling (success OR failure — isLoading clears either
@@ -719,6 +719,14 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
     refetchIntervalInBackground: options?.refetchIntervalInBackground,
     placeholderData: options?.placeholderData && !options?.startVideoSlug ? options.placeholderData : undefined,
   });
+
+  // Keep useFeed in the loading state while geo-ip is still resolving. The
+  // query itself reports isLoading=false while disabled (enabled gated on
+  // !isIpInfoLoading), so surface the upstream loading state explicitly.
+  return {
+    ...query,
+    isLoading: query.isLoading || isIpInfoLoading,
+  };
 };
 
 type QueryData = ReturnType<typeof useFeed>["data"];
