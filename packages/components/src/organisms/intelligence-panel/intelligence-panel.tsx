@@ -69,7 +69,11 @@ function FeaturedArticle({ article, layout, readMoreLabel, onSelect }: FeaturedA
             FOCUS_CLASS,
             "gencl:max-w-3xl gencl:rounded-sm gencl:text-white gencl:no-underline gencl:hover:text-secondary-100"
           )}>
-          <Heading as="h3" level="headline-4" weight="bold" className="gencl:text-body-0-semi-bold! gencl:font-bold!">
+          <Heading
+            as="h3"
+            level="headline-4"
+            weight="bold"
+            className="gencl:line-clamp-2 gencl:text-body-0-semi-bold! gencl:font-bold!">
             {article.title}
           </Heading>
         </Link>

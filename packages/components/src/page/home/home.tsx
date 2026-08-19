@@ -132,6 +132,10 @@ const HOME_SECTIONS = {
   topCategories: { communityId: "90e35b26-32e0-4fa4-94fe-e0821f76948a", subHeading: "You might like" },
   /** Sponsored grid + relevant news. */
   sponsoredGrid: { communityId: "5e0a78dd-ff62-4c6a-a3cc-c6fc7dd36950", subHeading: "Brought to you by Tmobile" },
+  /** Section 1 Intelligence ("Latest News") — its own community, shown as editorial cards. */
+  deskNews: { communityId: "24f3f015-2e3f-4f23-9d1a-0a7097830485", subHeading: "Latest News" },
+  /** Latest Videos "Latest Interviews" — its own community, shown as editorial cards. */
+  interviews: { communityId: "88f19de9-cda6-48fc-8896-7af03b62bea8", subHeading: "Latest Interviews" },
 } satisfies Record<string, SectionSource>;
 
 /** What a section knows about its community once the feed has answered. */
@@ -497,6 +501,31 @@ const INTERVIEW_ARTICLES: IntelligenceArticle[] = [INTERVIEW_FEATURED_ARTICLE, .
 /** "auto" height so each image-first card sizes to its content (image + title). */
 const INTERVIEW_CARD_LAYOUT = { ...INTELLIGENCE_LAYOUT.articleCard, height: "auto" };
 
+/**
+ * Render a community's REAL feed posts as Intelligence editorial cards: the video
+ * thumbnail becomes the image, its title/description the headline, and the video's
+ * canonical share URL the "Read more" link. Falls back to `fallback` while the feed
+ * is still empty/loading (the panel always needs at least one card).
+ */
+function postsToArticles(posts: PostDetailsType[], fallback: IntelligenceArticle[]): IntelligenceArticle[] {
+  const articles = posts.flatMap((post, index): IntelligenceArticle[] => {
+    const video = post.video;
+    if (!video) return [];
+    const title = video.attributes?.title || video.descritptionText || post.community?.name || "Untitled";
+    return [
+      {
+        id: video.id || `article-${index}`,
+        title,
+        href: video.shareUrl || video.clickableUrl || "https://thefoil.com/",
+        image: { src: video.thumbnail || EVENT_IMAGE, alt: title },
+      },
+    ];
+  });
+  // Real posts first, then top up with the fallback set so a sparse community
+  // (e.g. one with a single post) still fills the panel. Capped at 8 cards.
+  return [...articles, ...fallback].slice(0, 8);
+}
+
 /** Mark the live posts sponsored (cardLayoutId 7) and give every tile a linkout —
  * the exact transformation the VideoGrid story uses — so each tile shows the
  * "Sponsored" pill (top-left) and the linkout CTA bar below, the same as the
@@ -676,11 +705,11 @@ function InterviewsLinkPanel({ linkArticles }: { linkArticles: LinkArticle[] }) 
  * IntelligenceArticleCard with `imagePosition="top"`: big image on top, title
  * below). Scrolls inside its fixed-height column.
  */
-function InterviewsIntelligencePanel() {
+function InterviewsIntelligencePanel({ articles }: { articles: IntelligenceArticle[] }) {
   return (
     <IntelligencePanelShell size={{ width: "100%", height: "100%" }} onClose={() => undefined}>
       <div className="gencl:mt-2 gencl:flex gencl:flex-col gencl:gap-2">
-        {INTERVIEW_ARTICLES.map((article) => (
+        {articles.map((article) => (
           <IntelligenceArticleCard
             key={article.id}
             article={article}
@@ -793,6 +822,9 @@ export function Home() {
   const latest = useSectionFeed(HOME_SECTIONS.latestVideos);
   const topCategories = useSectionFeed(HOME_SECTIONS.topCategories);
   const sponsored = useSectionFeed(HOME_SECTIONS.sponsoredGrid);
+  // Intelligence panels are driven by their OWN communities (shown as editorial cards).
+  const deskNews = useSectionFeed(HOME_SECTIONS.deskNews);
+  const interviews = useSectionFeed(HOME_SECTIONS.interviews);
 
   // Synthetic group/community + related-link overlays, derived from each section's feed.
   const deskTags = useMemo(() => buildVideoTags(desk.posts), [desk.posts]);
@@ -800,6 +832,11 @@ export function Home() {
   const linkArticles = useMemo(() => buildLinkArticles(latestTags, latest.posts), [latestTags, latest.posts]);
   const sponsoredTags = useMemo(() => buildVideoTags(sponsored.posts), [sponsored.posts]);
   const gridPosts = useMemo(() => buildGridPosts(sponsored.posts), [sponsored.posts]);
+  const deskNewsArticles = useMemo(() => postsToArticles(deskNews.posts, SAILGP_NEWS), [deskNews.posts]);
+  const interviewArticles = useMemo(
+    () => postsToArticles(interviews.posts, INTERVIEW_ARTICLES),
+    [interviews.posts]
+  );
 
   const anyLoading = desk.isLoading || latest.isLoading || topCategories.isLoading || sponsored.isLoading;
   const totalPosts = desk.posts.length + latest.posts.length + topCategories.posts.length + sponsored.posts.length;
@@ -854,13 +891,13 @@ export function Home() {
 
           <EventSurfacePanel id="news" className="gencl:flex gencl:min-w-0 gencl:flex-col gencl:gap-3">
             <SectionHeader
-              imageUrl={desk.communityImage}
-              imageAlt={desk.communityName}
-              heading="Offshore Legends"
+              imageUrl={deskNews.communityImage}
+              imageAlt={deskNews.communityName}
+              heading={deskNews.communityName}
               subHeading="Latest News"
             />
             <div className="gencl:min-h-0 gencl:flex-1">
-              <DeskNewsPanel articles={SAILGP_NEWS} videoTags={deskTags} />
+              <DeskNewsPanel articles={deskNewsArticles} videoTags={deskTags} />
             </div>
           </EventSurfacePanel>
         </EventSurface>
@@ -917,13 +954,13 @@ export function Home() {
           {/* Narrower than the video+links surface (2 : 0.75) so the interviews panel stays compact. */}
           <div className="gencl:flex gencl:min-w-0 gencl:flex-col gencl:gap-3" style={{ flex: "0.75 1 0%" }}>
             <SectionHeader
-              imageUrl={latest.communityImage}
-              imageAlt={latest.communityName}
-              heading="Round-the-World"
+              imageUrl={interviews.communityImage}
+              imageAlt={interviews.communityName}
+              heading={interviews.communityName}
               subHeading="Latest Interviews"
             />
             <div className="gencl:min-h-0 gencl:flex-1">
-              <InterviewsIntelligencePanel />
+              <InterviewsIntelligencePanel articles={interviewArticles} />
             </div>
           </div>
         </section>

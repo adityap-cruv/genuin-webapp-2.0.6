@@ -80,7 +80,7 @@ export function IntelligenceArticleCard({
           as="h3"
           level="headline-4"
           weight="bold"
-          className="gencl:text-body-1-bold! gencl:leading-5! gencl:font-bold!">
+          className="gencl:line-clamp-2 gencl:text-body-1-bold! gencl:leading-5! gencl:font-bold!">
           {article.title}
         </Heading>
 
