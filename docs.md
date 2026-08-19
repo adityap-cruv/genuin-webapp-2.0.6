@@ -11,21 +11,22 @@ When looking for a doc, start here. When adding a new doc, register it here.
 
 ## Where to put new docs
 
-| What you're writing                              | Where it goes                                |
-| ------------------------------------------------ | -------------------------------------------- |
-| Environment / tooling prerequisites              | `docs/setup/`                                |
-| Repo structure, monorepo decisions, path guides  | `docs/architecture/`                         |
-| Technology migration guide (framework, CSS, etc) | `docs/migrations/`                           |
-| Upgrade status, deployment procedures, QA        | `docs/upgrades/`                             |
-| SDK bundle, chunk, lazy-loading analysis         | `packages/web-sdk/docs/performance/`         |
-| SDK infrastructure (CDN, CSS versioning, deps)   | `packages/web-sdk/docs/infrastructure/`      |
-| SDK migration (build tools, validators)          | `packages/web-sdk/docs/migrations/`          |
-| Historical SDK reorganization records            | `packages/web-sdk/docs/history/`             |
-| Components-package feature plans (linkouts etc.) | `packages/components/docs/<feature-folder>/` |
-| CXR widget system docs / ADRs                    | `packages/contextual-reels/docs/`            |
-| Component-package QA test fixtures (XML, MP4 …)  | `packages/<name>/.storybook/qa-fixtures/`    |
-| Per-package usage instructions                   | `packages/<name>/README.md`                  |
-| Per-app usage instructions                       | `apps/<name>/README.md`                      |
+| What you're writing                               | Where it goes                                |
+| ------------------------------------------------- | -------------------------------------------- |
+| Environment / tooling prerequisites               | `docs/setup/`                                |
+| Repo structure, monorepo decisions, path guides   | `docs/architecture/`                         |
+| Technology migration guide (framework, CSS, etc)  | `docs/migrations/`                           |
+| Upgrade status, deployment procedures, QA         | `docs/upgrades/`                             |
+| Search / generative-engine optimization (SEO/GEO) | `docs/seo/`                                  |
+| SDK bundle, chunk, lazy-loading analysis          | `packages/web-sdk/docs/performance/`         |
+| SDK infrastructure (CDN, CSS versioning, deps)    | `packages/web-sdk/docs/infrastructure/`      |
+| SDK migration (build tools, validators)           | `packages/web-sdk/docs/migrations/`          |
+| Historical SDK reorganization records             | `packages/web-sdk/docs/history/`             |
+| Components-package feature plans (linkouts etc.)  | `packages/components/docs/<feature-folder>/` |
+| CXR widget system docs / ADRs                     | `packages/contextual-reels/docs/`            |
+| Component-package QA test fixtures (XML, MP4 …)   | `packages/<name>/.storybook/qa-fixtures/`    |
+| Per-package usage instructions                    | `packages/<name>/README.md`                  |
+| Per-app usage instructions                        | `apps/<name>/README.md`                      |
 
 ---
 
@@ -88,6 +89,16 @@ Operational docs for the upgrade lifecycle: tracking, deployment, and QA.
 | [docs/upgrades/UPGRADE_DEPLOYMENT_GUIDE.md](docs/upgrades/UPGRADE_DEPLOYMENT_GUIDE.md)   | Safe deployment procedures             |
 | [docs/upgrades/UPGRADE_TESTING_CHECKLIST.md](docs/upgrades/UPGRADE_TESTING_CHECKLIST.md) | Post-upgrade testing checklist         |
 | [docs/upgrades/QA_PRIORITIZED_FILES.md](docs/upgrades/QA_PRIORITIZED_FILES.md)           | QA branch prioritized file list        |
+
+---
+
+### SEO / GEO
+
+Search and generative-engine optimization for video watch-pages.
+
+| File                                           | Purpose                                                                    |
+| ---------------------------------------------- | -------------------------------------------------------------------------- |
+| [docs/seo/video-geo.md](docs/seo/video-geo.md) | Video SEO/GEO: field map, canonicalization, status, and backend follow-ups |
 
 ---
 

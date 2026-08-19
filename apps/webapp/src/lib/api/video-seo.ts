@@ -22,7 +22,10 @@ export type VideoSeoData = {
   description?: string;
   /** Raw progressive mp4 — never the m3u8 stream or the page URL. */
   contentUrl?: string;
+  /** Primary (largest) thumbnail — the required `VideoObject.thumbnailUrl` fallback. */
   thumbnailUrl?: string;
+  /** All available thumbnail sizes (largest first); emitted as the `thumbnailUrl` array. */
+  thumbnailUrls?: string[];
   /** ISO-8601 (e.g. `PT2M14S`). */
   duration?: string;
   /** ISO-8601 upload date. */
@@ -33,17 +36,35 @@ export type VideoSeoData = {
   canonicalUrl: string;
   viewCount?: number;
   likeCount?: number;
+  commentCount?: number;
+  shareCount?: number;
   author?: {
     name: string;
     url?: string;
     /** True when the owner is a brand → emit as `Organization`, else `Person`. */
     isBrand: boolean;
+    /** Author bio → `author.description` (entity clarity / E-E-A-T). */
+    description?: string;
+    /** Author avatar/logo → `author.image` (and `logo` when an Organization). */
+    image?: string;
   };
   /** Community the video belongs to — crawlable entity context for GEO. */
   community?: { name: string; description?: string; url?: string };
   /** Loop/group the video belongs to — crawlable entity context for GEO. */
   loop?: { name: string; description?: string; url?: string };
   shareUrl?: string;
+  /**
+   * Full spoken transcript of the clip. The single highest-value GEO signal —
+   * AI answer engines ingest text, not pixels — so when present it is rendered
+   * on-page and emitted as `VideoObject.transcript`. Optional and never
+   * fabricated: many clips have none yet.
+   */
+  transcript?: string;
+  /**
+   * Public topic tags (from `attributes.video_keywords`), normalized without the
+   * leading `#` and with internal/system entries stripped. Feeds `keywords`.
+   */
+  tags?: string[];
 };
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -105,6 +126,60 @@ export function parseResolution(resolution?: string | null): { width: number; he
 }
 
 /**
+ * Resolve pixel dimensions from `meta_data`, handling both backend formats: an
+ * explicit `"1080x1920"` resolution, or a single short-side value
+ * (`resolution: "1080"`) plus an `aspect_ratio` (`"9:16"`, read as width:height).
+ * In the single-value form the number is the shorter side (1080p short side) and
+ * the aspect ratio supplies the longer side and orientation. Returns null when
+ * neither format yields usable dimensions — never guesses.
+ */
+export function resolveDimensions(
+  resolution?: string | null,
+  aspectRatio?: string | null
+): { width: number; height: number } | null {
+  const explicit = parseResolution(resolution);
+  if (explicit) return explicit;
+
+  const shortSide = resolution && /^\d{2,5}$/.test(resolution.trim()) ? Number(resolution.trim()) : null;
+  const ratio = aspectRatio?.match(/^(\d{1,2})\s*:\s*(\d{1,2})$/);
+  if (!shortSide || !ratio) return null;
+  const wRatio = Number(ratio[1]);
+  const hRatio = Number(ratio[2]);
+  if (!wRatio || !hRatio) return null;
+  // aspect_ratio is width:height; the stored value is the shorter side.
+  return wRatio <= hRatio
+    ? { width: shortSide, height: Math.round((shortSide * hRatio) / wRatio) } // portrait/square
+    : { width: Math.round((shortSide * wRatio) / hRatio), height: shortSide }; // landscape
+}
+
+/**
+ * Backend `video_keywords` can include internal/system entries (e.g. pipeline or
+ * layout tags like `mcc-vertical`) that shouldn't surface as public tags. Backend
+ * has been asked for a clean public-tags field; until then, strip the known
+ * internal namespaces here.
+ */
+const INTERNAL_TAG_RE = /^mcc-/i;
+
+/** Collapse a transcript value to trimmed text, or undefined when empty/non-string. */
+export function normalizeTranscript(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  const text = value.trim();
+  return text ? text : undefined;
+}
+
+/**
+ * Normalize tags from either an array or a comma/space-separated string into a
+ * deduped list without the leading `#`. Returns undefined when there are none.
+ */
+export function normalizeTags(value: unknown): string[] | undefined {
+  const raw = Array.isArray(value) ? value : typeof value === "string" ? value.split(/[,\s]+/) : [];
+  const tags = raw
+    .map((tag) => (typeof tag === "string" ? tag.replace(/^#/, "").trim() : ""))
+    .filter((tag) => tag.length > 0 && !INTERNAL_TAG_RE.test(tag));
+  return tags.length ? Array.from(new Set(tags)) : undefined;
+}
+
+/**
  * Build a schema.org `VideoObject` from normalized video data, omitting any
  * field that is missing rather than emitting an empty string (which fails
  * structured-data validation). Returns null when the required `name` is absent.
@@ -131,37 +206,59 @@ export function buildVideoJsonLd(data: VideoSeoData): Record<string, unknown> | 
   jsonLd.description =
     data.description?.trim() || data.loop?.description?.trim() || data.community?.description?.trim() || "";
 
-  // TODO(seo): empty - required field "thumbnailUrl" not in ecosystem for this video
-  jsonLd.thumbnailUrl = data.thumbnailUrl || "";
+  // thumbnailUrl is REQUIRED. Emit all available sizes as an array (Google
+  // supports and prefers multiple); fall back to the single primary, then to an
+  // empty string so the key is always present (per the missing-data rule).
+  // TODO(seo): empty when no thumbnail exists in our ecosystem for this video.
+  jsonLd.thumbnailUrl = data.thumbnailUrls?.length ? data.thumbnailUrls : data.thumbnailUrl || "";
   // TODO(seo): empty - required field "uploadDate" not in ecosystem for this video
   jsonLd.uploadDate = data.uploadDate || "";
 
   // duration and contentUrl are optional/recommended — omit when absent.
   if (data.duration) jsonLd.duration = data.duration;
   if (data.contentUrl) jsonLd.contentUrl = data.contentUrl;
+  // No embedUrl: contentUrl (the raw mp4) is present and is Google's preferred
+  // source, so an embed/player URL is not needed for VideoObject.
+
+  // transcript is the strongest GEO signal — AI engines cite the text they can
+  // read. Emit only when a real transcript exists; never synthesize one.
+  const transcript = data.transcript?.trim();
+  if (transcript) jsonLd.transcript = transcript;
+
+  // keywords aids topical understanding; drawn only from real tags.
+  if (data.tags?.length) jsonLd.keywords = data.tags.join(", ");
+
+  // Site-level publisher (the platform), distinct from author (the creator/brand).
+  jsonLd.publisher = { "@type": "Organization", name: "Genuin" };
 
   if (data.author?.name) {
+    const image = data.author.image;
     jsonLd.author = {
       "@type": data.author.isBrand ? "Organization" : "Person",
       name: data.author.name,
       ...(data.author.url ? { url: data.author.url } : {}),
+      ...(data.author.description ? { description: data.author.description } : {}),
+      // `image` applies to both; `logo` is Organization-specific.
+      ...(image ? { image } : {}),
+      ...(image && data.author.isBrand ? { logo: image } : {}),
     };
   }
 
   const interactions: Array<Record<string, unknown>> = [];
-  if (typeof data.viewCount === "number") {
-    interactions.push({
-      "@type": "InteractionCounter",
-      interactionType: { "@type": "WatchAction" },
-      userInteractionCount: data.viewCount,
-    });
-  }
-  if (typeof data.likeCount === "number") {
-    interactions.push({
-      "@type": "InteractionCounter",
-      interactionType: { "@type": "LikeAction" },
-      userInteractionCount: data.likeCount,
-    });
+  const counters: Array<[string, number | undefined]> = [
+    ["WatchAction", data.viewCount],
+    ["LikeAction", data.likeCount],
+    ["CommentAction", data.commentCount],
+    ["ShareAction", data.shareCount],
+  ];
+  for (const [action, count] of counters) {
+    if (typeof count === "number") {
+      interactions.push({
+        "@type": "InteractionCounter",
+        interactionType: { "@type": action },
+        userInteractionCount: count,
+      });
+    }
   }
   if (interactions.length) jsonLd.interactionStatistic = interactions;
 
@@ -211,20 +308,29 @@ export const getVideoSeoData = cache(async (slug: string): Promise<VideoSeoData 
     const owner = (video.owner ?? item.owner) as Record<string, any> | undefined;
     const community = item.community as Record<string, any> | undefined;
     const loop = item.loop as Record<string, any> | undefined;
-    const dims = parseResolution(video?.meta_data?.resolution);
+    const attributes = video.attributes as Record<string, any> | undefined;
+    const dims = resolveDimensions(video?.meta_data?.resolution, video?.meta_data?.aspect_ratio);
 
-    // A video's caption is its natural title/description, but many clips have
-    // none. Fall back to the most specific real context available so every
-    // video still gets a non-empty <h1> and VideoObject.name (JSON-LD requires
-    // a name). Description stays caption-only — omitted rather than fabricated.
+    // Prefer the backend's dedicated `attributes.video_title` (a real, human
+    // headline). Fall back to the caption, then the most specific real context,
+    // so every video still gets a non-empty <h1> and VideoObject.name (JSON-LD
+    // requires a name). Description stays caption-only — omitted, never fabricated.
+    const videoTitle = (attributes?.video_title as string | undefined)?.trim();
     const caption = (video.description_text as string | undefined)?.trim();
     const authorName = owner?.name || owner?.username;
     const title =
+      videoTitle ||
       caption ||
       (loop?.group_name as string | undefined) ||
       (community?.name ? `${community.name} on Genuin` : undefined) ||
       (authorName ? `Video by ${authorName}` : undefined) ||
       "Video on Genuin";
+
+    // All thumbnail sizes, largest first, deduped — emitted as the thumbnailUrl array.
+    const thumbnails = [video.thumbnail_url_l, video.thumbnail_url, video.thumbnail_url_s].filter(
+      (url): url is string => typeof url === "string" && url.trim().length > 0
+    );
+    const authorImage = (owner?.profile_image_l || owner?.profile_image) as string | undefined;
 
     return {
       slug,
@@ -233,20 +339,26 @@ export const getVideoSeoData = cache(async (slug: string): Promise<VideoSeoData 
       description: caption || undefined,
       // Raw mp4 for contentUrl/og:video — the m3u8 stream is not valid for either.
       contentUrl: video.media_url || undefined,
-      thumbnailUrl: video.thumbnail_url || video.thumbnail_url_l || undefined,
+      thumbnailUrl: thumbnails[0],
+      thumbnailUrls: thumbnails.length ? Array.from(new Set(thumbnails)) : undefined,
       duration: toIsoDuration(video.duration, video?.meta_data?.duration) ?? undefined,
       uploadDate: epochToIso(video.conversation_at) ?? undefined,
       width: dims?.width,
       height: dims?.height,
       viewCount: typeof video.no_of_views === "number" ? video.no_of_views : undefined,
       likeCount: typeof video.no_of_sparks === "number" ? video.no_of_sparks : undefined,
-      author: owner?.name || owner?.username
-        ? {
-            name: owner.name || owner.username,
-            url: owner.share_url || undefined,
-            isBrand: !!owner.brand,
-          }
-        : undefined,
+      commentCount: typeof video.no_of_comments === "number" ? video.no_of_comments : undefined,
+      shareCount: typeof video.no_of_shares === "number" ? video.no_of_shares : undefined,
+      author:
+        owner?.name || owner?.username
+          ? {
+              name: owner.name || owner.username,
+              url: owner.share_url || undefined,
+              isBrand: !!owner.brand,
+              description: (owner.bio as string | undefined)?.trim() || undefined,
+              image: authorImage,
+            }
+          : undefined,
       community: community?.name
         ? {
             name: community.name,
@@ -262,6 +374,16 @@ export const getVideoSeoData = cache(async (slug: string): Promise<VideoSeoData 
           }
         : undefined,
       shareUrl: video.share_url || undefined,
+      // Public topic tags — confirmed field: `attributes.video_keywords`.
+      tags: normalizeTags(attributes?.video_keywords),
+      // TODO(seo): the feed exposes an `is_transcribed` flag but not the
+      // transcript TEXT yet (asked backend to add it). These reads are defensive
+      // across likely field names so the on-page transcript and
+      // VideoObject.transcript light up the moment backend ships it, no further
+      // frontend change needed.
+      transcript: normalizeTranscript(
+        video.transcript ?? video.transcription ?? attributes?.transcript ?? attributes?.video_transcript
+      ),
     };
   } catch {
     // Match fetchMetadata's soft-fail: never throw out of metadata generation.

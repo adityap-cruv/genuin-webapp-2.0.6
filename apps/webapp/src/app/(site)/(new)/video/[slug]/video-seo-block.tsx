@@ -2,9 +2,10 @@ import type { VideoSeoData } from "@lib/api/video-seo";
 
 /**
  * Server-rendered SEO/GEO text block for the (otherwise client-rendered) video
- * page. Emits crawlable body text — an `<h1>`, description, author link, and
- * engagement counts — into the initial HTML so crawlers and AI engines have
- * something citable, and so the page ships exactly one `<h1>`.
+ * page. Emits crawlable content into the initial HTML so crawlers and AI engines
+ * have something citable, and so the page ships exactly one `<h1>`: the title,
+ * the transcript when available, description, author link, tags, and engagement
+ * counts.
  *
  * Rendered `sr-only`: present in the DOM and read by crawlers/screen readers,
  * visually deferred to the client player that hydrates on top. The text mirrors
@@ -26,11 +27,14 @@ export function VideoSeoBlock({ data }: { data: VideoSeoData }) {
     <section className="sr-only" data-seo-block>
       <h1>{title}</h1>
       {hasDistinctDescription ? <p>{description}</p> : null}
+      {data.transcript ? (
+        <section aria-label="Transcript">
+          <h2>Transcript</h2>
+          <p>{data.transcript}</p>
+        </section>
+      ) : null}
       {data.author?.name ? (
-        <p>
-          By{" "}
-          {data.author.url ? <a href={data.author.url}>{data.author.name}</a> : <span>{data.author.name}</span>}
-        </p>
+        <p>By {data.author.url ? <a href={data.author.url}>{data.author.name}</a> : <span>{data.author.name}</span>}</p>
       ) : null}
       {publishedLabel && data.uploadDate ? (
         <p>
@@ -50,13 +54,13 @@ export function VideoSeoBlock({ data }: { data: VideoSeoData }) {
       ) : null}
       {data.loop?.name ? (
         <p>
-          Posted in{" "}
-          {data.loop.url ? <a href={data.loop.url}>{data.loop.name}</a> : <span>{data.loop.name}</span>}
+          Posted in {data.loop.url ? <a href={data.loop.url}>{data.loop.name}</a> : <span>{data.loop.name}</span>}
           {data.loop.description ? `. ${data.loop.description}` : ""}
         </p>
       ) : null}
       {views ? <p>{views} views</p> : null}
       {likes ? <p>{likes} likes</p> : null}
+      {data.tags?.length ? <p>Tags: {data.tags.map((tag) => `#${tag}`).join(" ")}</p> : null}
     </section>
   );
 }
