@@ -29,20 +29,20 @@ which fetches `/goservices/feed/video` and maps it to `VideoSeoData`.
 
 Confirmed against the live `/goservices/feed/video` response.
 
-| `VideoSeoData`                                      | Feed field                                                                            | Notes                                                                      |
-| --------------------------------------------------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| `title`                                             | `attributes.video_title` → caption fallback                                           | Real human headline preferred over the caption.                            |
-| `description`                                       | `description_text`                                                                    | Caption; omitted, never fabricated.                                        |
-| `contentUrl`                                        | `media_url`                                                                           | Raw mp4 (never `media_url_m3u8`). Google's preferred source.               |
-| `thumbnailUrl` + `thumbnailUrls`                    | `thumbnail_url` / `_l` / `_s`                                                         | Emitted as an array (all sizes, largest first).                            |
-| `duration`                                          | `duration` / `meta_data.duration`                                                     | ISO-8601 via `toIsoDuration()`.                                            |
-| `uploadDate`                                        | `conversation_at`                                                                     | ISO-8601 via `epochToIso()`.                                               |
-| `width`/`height`                                    | `meta_data.resolution` (+ `aspect_ratio`)                                             | `resolveDimensions()` handles `"1080x1920"` and `"1080"`+`"9:16"`.         |
-| `viewCount`/`likeCount`/`commentCount`/`shareCount` | `no_of_views`/`_sparks`/`_comments`/`_shares`                                         | → `interactionStatistic` (Watch/Like/Comment/Share).                       |
-| `author`                                            | `owner.*` — name/url/`isBrand`; `bio`→`description`, `profile_image_l`→`image`/`logo` | Rich author entity for E-E-A-T / GEO.                                      |
-| `community` / `loop`                                | `community.*` / `loop.*`                                                              | Entity context for GEO.                                                    |
-| `tags`                                              | `attributes.video_keywords`                                                           | Internal entries (e.g. `mcc-vertical`) stripped via `INTERNAL_TAG_RE`.     |
-| `transcript`                                        | — (not yet in payload)                                                                | Feed exposes only `is_transcribed`; read is pre-wired for when text ships. |
+| `VideoSeoData`                                      | Feed field                                                                            | Notes                                                                                                                          |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `title`                                             | `attributes.video_title` → caption (`toTitle`)                                        | Real title preferred; else a concise headline derived from the caption's first sentence. `cleanText` collapses doubled quotes. |
+| `description`                                       | `description_text` (`cleanText`)                                                      | Real caption; preferred over meta_data's generic description for `<meta name=description>`.                                    |
+| `contentUrl`                                        | `media_url`                                                                           | Raw mp4 (never `media_url_m3u8`). Google's preferred source.                                                                   |
+| `thumbnailUrl` + `thumbnailUrls`                    | `thumbnail_url` / `_l` / `_s`                                                         | Emitted as an array (all sizes, largest first).                                                                                |
+| `duration`                                          | `duration` / `meta_data.duration`                                                     | ISO-8601 via `toIsoDuration()`.                                                                                                |
+| `uploadDate`                                        | `conversation_at`                                                                     | ISO-8601 via `epochToIso()`.                                                                                                   |
+| `width`/`height`                                    | `meta_data.resolution` (+ `aspect_ratio`)                                             | `resolveDimensions()` handles `"1080x1920"` and `"1080"`+`"9:16"`.                                                             |
+| `viewCount`/`likeCount`/`commentCount`/`shareCount` | `no_of_views`/`_sparks`/`_comments`/`_shares`                                         | → `interactionStatistic` (Watch/Like/Comment/Share).                                                                           |
+| `author`                                            | `owner.*` — name/url/`isBrand`; `bio`→`description`, `profile_image_l`→`image`/`logo` | Rich author entity for E-E-A-T / GEO.                                                                                          |
+| `community` / `loop`                                | `community.*` / `loop.*`                                                              | Entity context for GEO.                                                                                                        |
+| `tags`                                              | `attributes.video_keywords`                                                           | Internal entries (e.g. `mcc-vertical`) stripped via `INTERNAL_TAG_RE`.                                                         |
+| `transcript`                                        | — (not yet in payload)                                                                | Feed exposes only `is_transcribed`; read is pre-wired for when text ships.                                                     |
 
 No `embedUrl`: `contentUrl` is present and is Google's preferred source, so an
 embed URL is not needed for `VideoObject`.
@@ -67,7 +67,7 @@ the canonical consolidates those variants to the clean URL.
 
 - Apex self-canonical (`getOgUrl`).
 - `VideoObject` enrichment: real `video_title`, filtered `video_keywords`,
-  `publisher`, dimensions (`resolveDimensions`), pre-wired `transcript`.
+  dimensions (`resolveDimensions`), pre-wired `transcript`.
 - Author as a rich entity (`bio`→`description`, `profile_image_l`→`image`/`logo`),
   multi-size `thumbnailUrl` array, and comment/share counts in
   `interactionStatistic`.
@@ -93,8 +93,11 @@ the canonical consolidates those variants to the clean URL.
   `iheart.begenuin.com/sitemap/index.xml`, currently unsubmitted → pages
   "unknown to Google") and add server-rendered internal links to individual
   video pages (the client-rendered feed is a crawl dead-end).
-- **Whitelabel `publisher`:** on customer domains the publisher is arguably the
-  brand, not Genuin — decide before rolling to those domains.
+- **Brand identity is backend-owned:** the frontend deliberately synthesizes no
+  brand name. On whitelabel domains the brand is the customer (iHeart, …), not
+  Genuin, so `VideoObject` emits no `publisher` and title/description fall back to
+  backend-supplied values — never a hardcoded "Genuin". (Pre-existing generic
+  fallbacks like `og:site_name` remain; backend owns making those brand-aware.)
 - **SSR-ing the client player:** deprioritized — video results already generate,
   so it is not the bottleneck. Revisit only if the GSC Video-indexing report lags.
 

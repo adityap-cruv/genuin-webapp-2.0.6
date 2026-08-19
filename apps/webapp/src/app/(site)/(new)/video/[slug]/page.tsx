@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 
 import { getOgUrl } from "@/lib/utils";
 import { fetchMetadata } from "@lib/api/meta-data";
-import { buildVideoJsonLd, getVideoSeoData } from "@lib/api/video-seo";
+import { buildVideoJsonLd, getVideoSeoData, toTitle } from "@lib/api/video-seo";
 import { PATH_NAME } from "@lib/utils/constants/path";
 
 import { VideoSeoBlock } from "./video-seo-block";
@@ -76,10 +76,13 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
     ? videoDetails.preview_image
     : `${process.env.NEXT_PUBLIC_HOST_URL}${videoDetails?.preview_image}`;
 
-  const title = videoDetails?.title || seoData?.title || "Short Video | Genuin";
+  // Prefer the concise, feed-derived title (seoData) over meta_data's raw title,
+  // which is the full caption; derive a headline from it as a last resort.
+  const title = seoData?.title || toTitle(videoDetails?.title) || "Short Video | Genuin";
+  // Prefer the real caption over meta_data's generic "Watch videos on Genuin".
   const description =
-    videoDetails?.description ||
     seoData?.description ||
+    videoDetails?.description ||
     "Watch this short video on Genuin - your destination for engaging short-form video content";
 
   // Only emit video-player unfurl tags when we have a real media file. A player

@@ -180,6 +180,36 @@ export function normalizeTags(value: unknown): string[] | undefined {
 }
 
 /**
+ * Clean caption/description text for SEO: collapse the doubled quotes (`""` → `"`)
+ * seen in some feed content and normalize all whitespace/newlines to single
+ * spaces. Returns undefined when empty.
+ */
+export function cleanText(value?: string | null): string | undefined {
+  const clean = value?.replace(/""/g, '"').replace(/\s+/g, " ").trim();
+  return clean || undefined;
+}
+
+/**
+ * Derive a concise headline from a long caption when a video has no dedicated
+ * title. Takes the first sentence; if that is still too long (or there is no
+ * sentence break), truncates at a word boundary with an ellipsis. Used only as a
+ * fallback — a real `attributes.video_title` is always preferred.
+ */
+export function toTitle(value?: string | null, maxLen = 100): string | undefined {
+  const clean = cleanText(value);
+  if (!clean) return undefined;
+  const firstSentence = clean.split(/(?<=[.!?])\s/)[0] ?? clean;
+  const base = firstSentence.length >= 15 ? firstSentence : clean;
+  if (base.length <= maxLen) return base;
+  return (
+    base
+      .slice(0, maxLen)
+      .replace(/\s+\S*$/, "")
+      .trim() + "…"
+  );
+}
+
+/**
  * Build a schema.org `VideoObject` from normalized video data, omitting any
  * field that is missing rather than emitting an empty string (which fails
  * structured-data validation). Returns null when the required `name` is absent.
@@ -228,8 +258,9 @@ export function buildVideoJsonLd(data: VideoSeoData): Record<string, unknown> | 
   // keywords aids topical understanding; drawn only from real tags.
   if (data.tags?.length) jsonLd.keywords = data.tags.join(", ");
 
-  // Site-level publisher (the platform), distinct from author (the creator/brand).
-  jsonLd.publisher = { "@type": "Organization", name: "Genuin" };
+  // No hardcoded publisher: on whitelabel domains the publisher is the brand
+  // (e.g. iHeart), not Genuin. Brand identity is resolved on the backend, so we
+  // don't manufacture a platform publisher here.
 
   if (data.author?.name) {
     const image = data.author.image;
@@ -315,12 +346,15 @@ export const getVideoSeoData = cache(async (slug: string): Promise<VideoSeoData 
     // headline). Fall back to the caption, then the most specific real context,
     // so every video still gets a non-empty <h1> and VideoObject.name (JSON-LD
     // requires a name). Description stays caption-only — omitted, never fabricated.
-    const videoTitle = (attributes?.video_title as string | undefined)?.trim();
-    const caption = (video.description_text as string | undefined)?.trim();
+    // Prefer the real title; otherwise derive a short headline from the caption
+    // (a full caption can be 600+ chars — unusable as a title/<h1>). cleanText
+    // also collapses the doubled quotes some captions carry.
+    const videoTitle = cleanText(attributes?.video_title as string | undefined);
+    const caption = cleanText(video.description_text as string | undefined);
     const authorName = owner?.name || owner?.username;
     const title =
       videoTitle ||
-      caption ||
+      toTitle(caption) ||
       (loop?.group_name as string | undefined) ||
       (community?.name ? `${community.name} on Genuin` : undefined) ||
       (authorName ? `Video by ${authorName}` : undefined) ||
