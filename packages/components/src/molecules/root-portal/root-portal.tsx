@@ -57,7 +57,9 @@ const BRAND_OVERLAY_Z_INDEX: Record<number, string> = {
   // Mike iheart
   1729: "11",
   // Sports Server
-  3275: "12"
+  3275: "12",
+  // next-dailyfaceoff
+  3331: "2147483647",
 };
 
 const getOverlayZIndexByBrandId = (brandId?: number): string | undefined => {
