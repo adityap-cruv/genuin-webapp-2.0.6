@@ -51,6 +51,7 @@ Environment prerequisites, tooling, and dependency management.
 | [docs/setup/LINTING.md](docs/setup/LINTING.md)                             | ESLint and Prettier configuration                                          |
 | [docs/setup/TSCONFIG.md](docs/setup/TSCONFIG.md)                           | TypeScript configuration — shared presets, per-package setup, path aliases |
 | [docs/setup/DEPENDENCY_MANAGEMENT.md](docs/setup/DEPENDENCY_MANAGEMENT.md) | Dependency management strategy                                             |
+| [docs/setup/GRAPHIFY.md](docs/setup/GRAPHIFY.md)                           | Graphify code knowledge-graph — prerequisites, build, and usage            |
 
 ### Architecture
 

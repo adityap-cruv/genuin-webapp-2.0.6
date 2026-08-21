@@ -93,3 +93,7 @@ packages/web-sdk/stats.json
 **/trace.zip
 
 apps/legacy-webapp
+
+# graphify trial artifacts (large generated graph output + install backup)
+**/graphify-out/
+.claude/settings.json.graphify-bak

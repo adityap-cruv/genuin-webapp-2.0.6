@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+# Rebuild the graphify graph after a commit (or nudge if the CLI isn't installed).
+# Optional/graceful — see scripts/graphify-hook.sh; never blocks the commit.
+sh "$(dirname -- "$0")/../scripts/graphify-hook.sh" commit

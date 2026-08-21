@@ -1,0 +1,5 @@
+# Keep large graphify output out of Claude Code's context / prompt cache
+graph.json
+**/graph.json
+graphify-out/
+**/graphify-out/
