@@ -1,13 +1,30 @@
 import { VideoPage } from "@genuin/components/page/video";
+import { createEmptyFeedPage } from "@genuin/components/react-query/api/feed";
+import { parseFeed } from "@genuin/components/react-query/api/feed/parser";
+import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
+import { makeServerQueryClient } from "@genuin/components/react-query/server-client";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { getOgUrl } from "@/lib/utils";
+import { VideoLinks } from "@components/common/video-links";
 import { fetchMetadata } from "@lib/api/meta-data";
-import { buildVideoJsonLd, getVideoSeoData, toTitle } from "@lib/api/video-seo";
+import { buildVideoJsonLd, getVideoFeedResponse, getVideoSeoData, toTitle } from "@lib/api/video-seo";
 import { PATH_NAME } from "@lib/utils/constants/path";
 
 import { VideoSeoBlock } from "./video-seo-block";
+
+/**
+ * Options bag that identifies the video feed's cache entry. Must byte-match
+ * (after key-relevant filtering) what `VideoPage` passes to
+ * `useFeed("VIDEO", ...)` (`packages/components/src/page/video/video.tsx`) —
+ * same keys, same order — or the seeded query silently fails to hydrate and
+ * the client refetches.
+ */
+function getVideoFeedOptions(slug: string) {
+  return { isSingleVideo: true, isInIframe: false, startVideoSlug: slug };
+}
 
 type PageProps = {
   params: Promise<{
@@ -28,6 +45,37 @@ export default async function Component(props: PageProps) {
   const seoData = await getVideoSeoData(params.slug);
   const jsonLd = seoData ? buildVideoJsonLd(seoData) : null;
 
+  // Same React cache()'d call getVideoSeoData already made above — this is a
+  // cache hit, not a second upstream request. Seeds the client's useFeed
+  // cache with the feed the server already fetched, so <VideoPage> adopts it
+  // instead of re-fetching /goservices/feed/video on mount.
+  const feedResponse = await getVideoFeedResponse(params.slug);
+  const rawFeeds = feedResponse?.feeds ?? [];
+
+  // Fail open: an empty/missing feed response means there's nothing useful to
+  // seed. Skip hydration entirely rather than risk seeding a bad shape — the
+  // client hook falls back to its normal fetch, exactly like today.
+  let hydratedState: ReturnType<typeof dehydrate> | undefined;
+  if (rawFeeds.length > 0) {
+    // Mirror the client's fetchVideoDetails filter exactly (keeps ads items,
+    // drops only the middleware "all_caught_up" marker) so the seeded page is
+    // structurally identical to what the client would have produced.
+    const filteredFeeds = rawFeeds.filter((item) => item.type !== "all_caught_up");
+    const page1 = {
+      ...createEmptyFeedPage(),
+      feed: parseFeed(filteredFeeds, false),
+    };
+
+    const qc = makeServerQueryClient();
+    qc.setQueryData(getQueryKeyForFeed("VIDEO", getVideoFeedOptions(params.slug)), {
+      pages: [page1],
+      pageParams: [undefined],
+    });
+    hydratedState = dehydrate(qc);
+  }
+
+  const videoPage = <VideoPage videoId={params.slug} />;
+
   return (
     <>
       {jsonLd ? (
@@ -35,7 +83,18 @@ export default async function Component(props: PageProps) {
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       ) : null}
       {seoData ? <VideoSeoBlock data={seoData} /> : null}
-      <VideoPage videoId={params.slug} />
+      {/* Streamed via Suspense — the related-feed fetch stays off the critical path.
+          afterVideoId seeds pagination from the current video so each page links to
+          the videos after it — coverage chains instead of repeating page 1. */}
+      {seoData ? (
+        <VideoLinks
+          currentSlug={seoData.slug}
+          loopSlug={seoData.loop?.slug}
+          communitySlug={seoData.community?.slug}
+          afterVideoId={seoData.videoId}
+        />
+      ) : null}
+      {hydratedState ? <HydrationBoundary state={hydratedState}>{videoPage}</HydrationBoundary> : videoPage}
     </>
   );
 }

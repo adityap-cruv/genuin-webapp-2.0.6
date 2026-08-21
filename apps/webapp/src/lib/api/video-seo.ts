@@ -1,3 +1,4 @@
+import type { FeedResponseFromGoApi } from "@genuin/components/react-query/api/feed/types";
 import axios from "axios";
 import { headers } from "next/headers";
 import { cache } from "react";
@@ -18,6 +19,8 @@ import { PATH_NAME } from "../utils/constants/path";
  */
 export type VideoSeoData = {
   slug: string;
+  /** Video uuid — used as the related-feed pagination cursor (`afterVideoId`). */
+  videoId?: string;
   title?: string;
   description?: string;
   /** Raw progressive mp4 — never the m3u8 stream or the page URL. */
@@ -48,10 +51,10 @@ export type VideoSeoData = {
     /** Author avatar/logo → `author.image` (and `logo` when an Organization). */
     image?: string;
   };
-  /** Community the video belongs to — crawlable entity context for GEO. */
-  community?: { name: string; description?: string; url?: string };
-  /** Loop/group the video belongs to — crawlable entity context for GEO. */
-  loop?: { name: string; description?: string; url?: string };
+  /** Community the video belongs to — crawlable entity context for GEO. `slug` feeds related-video discovery. */
+  community?: { name: string; slug?: string; description?: string; url?: string };
+  /** Loop/group the video belongs to — crawlable entity context for GEO. `slug` feeds related-video discovery. */
+  loop?: { name: string; slug?: string; description?: string; url?: string };
   shareUrl?: string;
   /**
    * Full spoken transcript of the clip. The single highest-value GEO signal —
@@ -296,15 +299,55 @@ export function buildVideoJsonLd(data: VideoSeoData): Record<string, unknown> | 
   return jsonLd;
 }
 
+/** Raw `{ data: data }` body of a `/goservices/feed/video` response — undecoded feed items. */
+export type VideoFeedResponse = {
+  feeds?: FeedResponseFromGoApi;
+  end_of_feed?: boolean;
+};
+
 /**
- * Fetch the SEO-relevant fields for a single video, request-scoped.
+ * Fetch the raw `/goservices/feed/video` response for a single video, request-scoped.
  *
  * Mirrors `fetchMetadata`: a fresh, direct `axios.get` per request (never the
  * shared `axiosInstance` singleton, whose auth token / brand id are set by
  * runtime interceptors and would leak across concurrent server requests).
  *
+ * Wrapped in React `cache()` so every caller within the same request (SEO
+ * extraction, hydration seeding, `generateMetadata`) shares a single upstream
+ * request.
+ *
+ * @returns The raw `data` slice of the response, or null when the slug is
+ *   empty or the fetch fails.
+ */
+export const getVideoFeedResponse = cache(async (slug: string): Promise<VideoFeedResponse | null> => {
+  if (!slug) return null;
+
+  try {
+    const headersList = await headers();
+    const host = headersList.get("host") ?? "";
+    const config = getConfig(host);
+
+    const params: Record<string, unknown> = {
+      ...(UUID_RE.test(slug) ? { uuid: slug } : { slug }),
+      ...(config?.domain !== undefined && { domain: config.domain }),
+      ...(config?.subdomain !== undefined && { subdomain: config.subdomain }),
+    };
+
+    const response = await axios.get(toHttpUrl(process.env.NEXT_PUBLIC_API_URL) + "/goservices/feed/video", {
+      params,
+    });
+
+    return (response?.data?.data as VideoFeedResponse | undefined) ?? null;
+  } catch {
+    return null;
+  }
+});
+
+/**
+ * Fetch the SEO-relevant fields for a single video, request-scoped.
+ *
  * Wrapped in React `cache()` so `generateMetadata` and the page component share
- * a single upstream request per render.
+ * a single upstream request per render (via `getVideoFeedResponse`).
  *
  * @returns Normalized data, or null when the video is not found / the fetch fails
  *   (caller should then skip JSON-LD rather than emit hollow markup).
@@ -318,17 +361,8 @@ export const getVideoSeoData = cache(async (slug: string): Promise<VideoSeoData 
     const config = getConfig(host);
     const canonicalUrl = getOgUrl(PATH_NAME.video(slug), config?.domain, config?.subdomain);
 
-    const params: Record<string, unknown> = {
-      ...(UUID_RE.test(slug) ? { uuid: slug } : { slug }),
-      ...(config?.domain !== undefined && { domain: config.domain }),
-      ...(config?.subdomain !== undefined && { subdomain: config.subdomain }),
-    };
-
-    const response = await axios.get(toHttpUrl(process.env.NEXT_PUBLIC_API_URL) + "/goservices/feed/video", {
-      params,
-    });
-
-    const feeds: unknown[] = response?.data?.data?.feeds ?? [];
+    const feedResponse = await getVideoFeedResponse(slug);
+    const feeds: unknown[] = feedResponse?.feeds ?? [];
     const item = feeds.find(
       (entry): entry is Record<string, any> =>
         !!entry && typeof entry === "object" && (entry as any).type !== "ads" && !!(entry as any).video
@@ -368,6 +402,7 @@ export const getVideoSeoData = cache(async (slug: string): Promise<VideoSeoData 
 
     return {
       slug,
+      videoId: (video.uuid as string | undefined) || undefined,
       canonicalUrl,
       title,
       description: caption || undefined,
@@ -396,6 +431,7 @@ export const getVideoSeoData = cache(async (slug: string): Promise<VideoSeoData 
       community: community?.name
         ? {
             name: community.name,
+            slug: (community.slug as string | undefined) || undefined,
             description: community.description || undefined,
             url: community.share_url || undefined,
           }
@@ -403,6 +439,7 @@ export const getVideoSeoData = cache(async (slug: string): Promise<VideoSeoData 
       loop: loop?.group_name
         ? {
             name: loop.group_name,
+            slug: (loop.slug as string | undefined) || undefined,
             description: loop.group_description || undefined,
             url: loop.share_url || undefined,
           }

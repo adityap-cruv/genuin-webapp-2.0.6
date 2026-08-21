@@ -443,9 +443,13 @@ type UseFeedOptionsType = {
 export type FeedPage = Awaited<ReturnType<typeof fetchFeed>>;
 
 /**
- * Default empty feed page structure used when no feed data is available
+ * Default empty feed page structure used when no feed data is available.
+ *
+ * Exported so server components can build a `FeedPage` (e.g. to seed
+ * `HydrationBoundary` for `/video/[slug]`) with the exact same structural
+ * shape `createFeedQueryFn` produces on the client — see `video/[slug]/page.tsx`.
  */
-const createEmptyFeedPage = (): FeedPage => ({
+export const createEmptyFeedPage = (): FeedPage => ({
   feed: [],
   hasSection: false,
   pageSession: null,

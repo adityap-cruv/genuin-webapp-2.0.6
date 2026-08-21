@@ -20,7 +20,14 @@ in the initial HTML:
 - OG / Twitter tags + canonical — `generateMetadata()` in the page.
 - A server-rendered `sr-only` text block — `VideoSeoBlock` (h1, transcript, tags,
   author, counts) so there is crawlable/citable text.
+- Server-rendered `sr-only` internal links to sibling videos — `VideoLinks` (same
+  loop first, then community) so each watch page is a crawl hub, not a dead-end.
 - The video sitemap + `og:video` (video discovery signals).
+
+> Where these blocks render differs by release line: on **2.0.5** the JSON-LD,
+> `VideoSeoBlock`, and `VideoLinks` render in the route `layout.tsx` — outside the
+> `loading.tsx` Suspense boundary, so they land in the initial JS-free HTML; on
+> **2.0.6** they render in `page.tsx`.
 
 The single source of normalized data is `getVideoSeoData()` (`lib/api/video-seo.ts`),
 which fetches `/goservices/feed/video` and maps it to `VideoSeoData`.
@@ -72,6 +79,12 @@ the canonical consolidates those variants to the clean URL.
   multi-size `thumbnailUrl` array, and comment/share counts in
   `interactionStatistic`.
 - Server-rendered on-page transcript + tags (`VideoSeoBlock`).
+- Server-rendered internal links to sibling videos (`VideoLinks`), streamed
+  `sr-only`, host-scoped and fail-safe (2.5s feed timeout, `afterVideoId` cursor so
+  coverage chains across the catalog) — turns each watch page into a crawl hub.
+- Feed hydration: the server-fetched `/goservices/feed/video` is seeded into the
+  client `useFeed` cache (`HydrationBoundary`) so the client adopts it instead of
+  re-fetching on mount. Perf/dedup, not an SEO signal.
 
 ### Needs backend (Go)
 
@@ -91,8 +104,8 @@ the canonical consolidates those variants to the clean URL.
 
 - **Discovery:** submit brand-subdomain sitemaps to GSC (e.g.
   `iheart.begenuin.com/sitemap/index.xml`, currently unsubmitted → pages
-  "unknown to Google") and add server-rendered internal links to individual
-  video pages (the client-rendered feed is a crawl dead-end).
+  "unknown to Google"). The other half of this — server-rendered internal links
+  to individual video pages — is now shipped (see Done).
 - **Brand identity is backend-owned:** the frontend deliberately synthesizes no
   brand name. On whitelabel domains the brand is the customer (iHeart, …), not
   Genuin, so `VideoObject` emits no `publisher` and title/description fall back to
@@ -111,3 +124,77 @@ Google Search Console:
   canonical bug above).
 - **Video indexing report** — coverage; the signal that decides whether SSR-ing
   the player is worth doing.
+
+---
+
+## Diagnosis: discovery ≠ indexing (2026-08-20)
+
+GSC data for `sc-domain:begenuin.com`, pulled via the URL Inspection + Search
+Analytics APIs. This is the reference for *why* the video pages aren't ranking
+despite a healthy sitemap — read it before assuming the sitemap or markup is
+broken.
+
+### robots.txt + sitemap are healthy — not the problem
+
+- `robots.txt`: `Disallow:` (allows all) and declares `Sitemap:
+  https://begenuin.com/sitemap/index.xml`.
+- Sitemap index: 200, well-formed, 11 children incl. 8 paginated video sitemaps.
+- GSC: `sitemap/index.xml` submitted, **0 errors / 0 warnings**, re-downloaded
+  daily. Google is reading the sitemap fine.
+
+### The funnel (90-day window)
+
+The Sitemaps page's "7,672 videos" is a **discovery** count ("Google parsed these
+URLs from your file"), *not* an indexed count. Indexing is three stages down:
+
+| Stage                                             | Count | Where it shows        |
+| ------------------------------------------------- | ----: | --------------------- |
+| **Discovered** (URLs parsed from sitemap)         | 7,672 | Sitemaps page         |
+| **Crawled + in web index** (any web impression)   |   829 | Search Analytics      |
+| **Video-indexed** (surfaced in video results)     |    51 | Video indexing report |
+| impressions / clicks (video surface, 90d)         | 155 / 2 |                     |
+
+The Sitemaps count and the Video-indexing count measure different stages and were
+never meant to match. Uncrawled URLs never appear in the Video-indexing report at
+all, which is why it "looks like it's missing videos."
+
+### Two leaks (both confirmed via URL Inspection)
+
+1. **Most URLs are never crawled — the big leak.** Four URLs pulled straight from
+   the sitemap all returned **"URL is unknown to Google"** (no `lastCrawlTime`, no
+   canonical). Discovered ≠ crawled: Google won't spend crawl budget on 7.6k URLs
+   from a sitemap alone without importance signals. Root cause: **no internal
+   links** to watch pages (the feed is client-rendered → a crawl dead-end). Google
+   deprioritizes URLs known *only* from a sitemap.
+2. **The crawled ones were poisoned by the old canonical.** Pages crawled before
+   the fix declared `canonical → app.begenuin.com` (a redirecting host) → filed as
+   *"Alternate page with proper canonical tag"* → not indexed. The `getOgUrl` fix
+   corrects this, but only takes effect **on re-crawl**.
+
+### Levers, by impact
+
+1. **Server-rendered internal links to watch pages (shipped)** — the decisive fix
+   for the "unknown to Google" bulk. Turns discovered→crawled; lands on re-crawl.
+   Sitemaps and Request Indexing cannot substitute for this at 7.6k scale.
+2. **Canonical fix (shipped)** — unblocks leak #2; lands on re-crawl.
+3. **Sitemap resubmit + genuine `<lastmod>`** — minor re-crawl nudge for the
+   already-crawled set. (No bulk "recrawl domain" exists; the old
+   `google.com/ping?sitemap=` endpoint was removed in 2023.)
+4. **Request Indexing** (URL Inspection, UI-only, ~10–20/day) — force-crawl the
+   top ~20 pages that matter now. Not viable at scale. There is **no** API for it
+   (URL Inspection API is read-only; the Indexing API is only for `JobPosting` /
+   `BroadcastEvent`).
+
+### Sitemap content bugs found in passing (backend)
+
+- **`<video:title>` is the account name** (`Genuin`) on every URL, not
+  `attributes.video_title` — every video looks identically titled to Google.
+- **`<lastmod>` is the request date** (today on all 1,000 URLs/page), not the
+  video's real change time — trains Google to distrust the freshness signal.
+
+### Also in GSC sitemaps (cleanup)
+
+- `begenuin.com/sitemap/static/index.xml` submitted separately **and** as a child
+  of the index (double submission), 17 warnings — drop the standalone submission.
+- `media.begenuin.com/sitemap/sitemap.xml` — stale legacy sitemap (2024), 66,783
+  web + 6,179 video URLs on the CDN host — being removed.

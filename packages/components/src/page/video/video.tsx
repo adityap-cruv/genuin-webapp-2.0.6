@@ -22,6 +22,12 @@ export function VideoPage({ videoId }: { videoId: string }) {
     isSingleVideo: true,
     isInIframe: false,
     startVideoSlug: videoId,
+    // Server-seeded first page (video/[slug]/page.tsx) is treated as fresh for
+    // 60s, so refetchOnMount's default ("refetch only if stale") skips the
+    // redundant client fetch instead of re-requesting on every mount.
+    // staleTime/refetchOnMount are excluded from the cache key (keys/feed.ts),
+    // so this does not change which cache entry the query reads/writes.
+    staleTime: 60_000,
   };
   const { data, isLoading, isError } = useFeed("VIDEO", videoParams);
   const queryKey = getQueryKeyForFeed("VIDEO", videoParams);

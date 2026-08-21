@@ -1,6 +1,7 @@
 import { type Metadata } from "next";
 
 import { getOgUrl } from "@/lib/utils";
+import { VideoLinks } from "@components/common/video-links";
 import { fetchMetadata } from "@lib/api/meta-data";
 import { PATH_NAME } from "@lib/utils/constants/path";
 
@@ -13,7 +14,13 @@ interface Props {
 
 export default async function GroupPage({ params }: Props) {
   const resolvedParams = await params;
-  return <GroupClientPage slug={resolvedParams.slug} />;
+  return (
+    <>
+      <GroupClientPage slug={resolvedParams.slug} />
+      {/* Crawlable links to this group's videos, streamed off the critical path. One feed call. */}
+      <VideoLinks currentSlug="" loopSlug={resolvedParams.slug} />
+    </>
+  );
 }
 
 interface GroupDataType {
