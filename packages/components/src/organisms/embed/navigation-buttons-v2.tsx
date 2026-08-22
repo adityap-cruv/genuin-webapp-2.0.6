@@ -3,6 +3,8 @@ import type { CSSProperties } from "react";
 
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 
+const FIXED_NAV_CONTROL_SIZE: PlayerControlSize = "md";
+
 type EmbedVariant = "grid" | "carousel" | "feed" | "dynamic" | "standard_wall" | "expand_only" | undefined;
 type ButtonClickHandler = (e: React.MouseEvent<HTMLButtonElement>) => void;
 
@@ -12,7 +14,7 @@ interface NavigationButtonsV2Props {
   onNext: ButtonClickHandler;
   isPrevDisabled?: boolean;
   isNextDisabled?: boolean;
-  /** Double-circle size token. @default "lg" */
+  /** Retained for call-site compatibility; V2 navigation renders at a fixed small size. */
   size?: PlayerControlSize;
   /** Colour theme for the solid double-circle fill. @default "dark" */
   theme?: "light" | "dark";
@@ -23,7 +25,7 @@ interface NavigationButtonsV2Props {
  * Carousel renders left/right; every other variant renders the vertical up/down
  * pair. iHeart is handled by the legacy buttons, not here. Solid fill + glyph
  * colours mirror the legacy V1 palette so the arrows stay visible on dark
- * backdrops. Defaults to `lg` but the caller can override per view via `size`.
+ * backdrops. Navigation uses a fixed size across placements.
  */
 export function NavigationButtonsV2({
   embedVariant,
@@ -31,7 +33,7 @@ export function NavigationButtonsV2({
   onNext,
   isPrevDisabled = false,
   isNextDisabled = false,
-  size = "lg",
+  size: _requestedSize = FIXED_NAV_CONTROL_SIZE,
   theme = "dark",
 }: NavigationButtonsV2Props) {
   const { isIOS, isMac } = useDeviceDetection();
@@ -54,7 +56,7 @@ export function NavigationButtonsV2({
       direction={direction}
       disabled={disabled}
       onClick={onClick}
-      size={size}
+      size={FIXED_NAV_CONTROL_SIZE}
       theme={theme}
       style={safariOptimizationStyles}
       stopPropagation={false}

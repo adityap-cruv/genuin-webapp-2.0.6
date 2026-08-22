@@ -99,6 +99,10 @@ const DesktopRightPanels = lazy(() =>
   import("./desktop-right-panels").then((m) => ({ default: m.DesktopRightPanels }))
 );
 
+const IntelligenceChatSidePanel = lazy(() =>
+  import("./intelligence-chat-side-panel").then((m) => ({ default: m.IntelligenceChatSidePanel }))
+);
+
 /**
  * A Suspense fallback that occupies the same positioned box as the lazy component
  * it stands in for, with the spinner centered inside. Bare `<Loader />` collapses to
@@ -192,6 +196,9 @@ export function PlayerList({
   const { value: isOctoOpen, setValue: setOctoOpen } = useBoolean(
     isDesktop && !isIpad && showEngagementTools && isOctoToolEnabled
   );
+  // Intelligence chat panel state - opened from the action rail's sparkle icon;
+  // mutually exclusive with the comments and OCTO right-rail panels.
+  const { value: isIntelligenceOpen, setValue: setIntelligenceOpen } = useBoolean(false);
   const octoPanelRef = useRef<OctoPanelHandle | null>(null);
   const lastOctoVideoIdRef = useRef<string | null>(null);
   const embedDetails = useSafeEmbedContext();
@@ -767,7 +774,26 @@ export function PlayerList({
             )}
             linkoutThumbnail={filteredPost[activeIndex]?.video?.linkouts?.[0]?.links?.[0]?.image ?? null}
             isLinkoutsOpen={hasContentType("linkouts")}
+            // Sparkle action: expanded desktop view only — the right rail hosts the panel.
+            showIntelligence={showExpandView && isDesktop}
+            isIntelligenceOpen={isIntelligenceOpen}
             actionWrapper={{
+              INTELLIGENCE: (defaultNode) => (
+                <span
+                  key={"intelligence-panel-" + filteredPost[activeIndex]?.video?.id}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const nextState = !isIntelligenceOpen;
+                    if (nextState) {
+                      // One right-rail panel at a time (matches comments ⇄ OCTO).
+                      if (isCommentOpen) setCommentOpen(false);
+                      if (isOctoOpen) setOctoOpen(false);
+                    }
+                    setIntelligenceOpen(nextState);
+                  }}>
+                  {defaultNode}
+                </span>
+              ),
               LINKOUT: (defaultNode) => (
                 <span
                   onClick={(e) => {
@@ -841,8 +867,9 @@ export function PlayerList({
                     key={"feed-comment-box" + filteredPost[activeIndex]?.video?.id}
                     onClick={() => {
                       if (showExpandView) {
-                        // Close OCTO if open
+                        // Close OCTO / Intelligence if open
                         if (isOctoOpen) setOctoOpen(false);
+                        if (!isCommentOpen && isIntelligenceOpen) setIntelligenceOpen(false);
                         // Toggle comments
                         toggleComment();
                       }
@@ -874,6 +901,9 @@ export function PlayerList({
                       const nextState = !isOctoOpen;
                       if (nextState && isCommentOpen) {
                         setCommentOpen(false);
+                      }
+                      if (nextState && isIntelligenceOpen) {
+                        setIntelligenceOpen(false);
                       }
                       setOctoOpen(nextState);
                     }}>
@@ -940,6 +970,28 @@ export function PlayerList({
                 }}
                 onClose={() => setOctoOpen(false)}
                 panelClassName="gencl:h-full"
+              />
+            </SafeSuspense>
+          </div>
+        )}
+
+      {/* Intelligence chat: opened from the rail's sparkle action. Keyed by video so
+          the thread resets when the active video changes. */}
+      {isIntelligenceOpen &&
+        showExpandView &&
+        !isAdFilled &&
+        filteredPost[activeIndex] &&
+        brandLayoutType !== "iheart" &&
+        isDesktop && (
+          <div className="gencl:max-w-118 gencl:w-full gencl:h-full gencl:hidden gencl:sm:block! gencl:py-6">
+            <SafeSuspense
+              errorFallback={null}
+              fallback={<SidePanelSkeleton theme={theme === "light" ? "light" : "dark"} showPostDetails={false} />}>
+              <IntelligenceChatSidePanel
+                key={"intelligence-chat-" + (filteredPost[activeIndex].video?.id ?? "")}
+                videoId={filteredPost[activeIndex].video?.id ?? ""}
+                onClose={() => setIntelligenceOpen(false)}
+                className="gencl:h-full"
               />
             </SafeSuspense>
           </div>

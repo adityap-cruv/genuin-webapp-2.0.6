@@ -95,6 +95,14 @@ export type ConfigurationType = {
     thumbnail_url?: string;
   }>;
   design_system?: "v1" | "v2";
+  /**
+   * Opts into the v2 player-control cluster (mute -> play/pause -> expand, top
+   * right) on its own. `design_system: "v2"` also turns on dynamic linkouts,
+   * the sponsored-badge treatment and width-derived control sizing; this field
+   * is for embeds that want the controls without the rest of that rollout.
+   * Ignored when `design_system` is already "v2".
+   */
+  player_controls?: "v1" | "v2";
 };
 
 export type ContextualParamsType = {

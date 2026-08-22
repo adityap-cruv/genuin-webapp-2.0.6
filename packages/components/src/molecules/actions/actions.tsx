@@ -2,6 +2,7 @@ import { CommentIcon, LinkIcon, RepostIcon, ShareIcon, ThreeDotsIcon } from "@ge
 import { cn } from "@genuin/ui/utils";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
+import { Sparkle } from "lucide-react";
 import { type ComponentProps, type ReactNode, cloneElement, isValidElement, useMemo } from "react";
 import { lazy } from "react";
 
@@ -34,7 +35,7 @@ const RepostModal = lazy(() =>
   import("@genuin/components/organisms/repost-modal/repost-modal").then((m) => ({ default: m.RepostModal }))
 );
 
-type ActionType = "REPOST" | "REACTION" | "COMMENT" | "SHARE" | "LINKOUT" | "MORE" | "OCTO";
+type ActionType = "REPOST" | "REACTION" | "COMMENT" | "SHARE" | "LINKOUT" | "MORE" | "OCTO" | "INTELLIGENCE";
 
 // Define a new type for the context object
 type ActionWrapperContextType = {
@@ -80,6 +81,13 @@ type ActionsPropsType = ComponentProps<"div"> & {
   /** Whether to show the linkout icon. Defaults to true. */
   showLinkout?: boolean;
   isLinkoutsOpen?: boolean;
+  /**
+   * Whether to show the Intelligence (sparkle) action that opens the Intelligence
+   * chat panel. Opt-in so existing rails are unaffected. Defaults to false.
+   */
+  showIntelligence?: boolean;
+  /** Highlights the Intelligence action while its panel is open. */
+  isIntelligenceOpen?: boolean;
   actionWrapper?: Partial<Record<ActionType, (defaultNode: ReactNode, context: ActionWrapperContextType) => ReactNode>>;
 } & VariantProps<typeof actionVariants>;
 
@@ -89,6 +97,7 @@ const defaultActionWrappers: Record<
   (defaultNode: ReactNode, context: ActionWrapperContextType) => ReactNode
 > = {
   OCTO: (node) => node,
+  INTELLIGENCE: (node) => node,
   LINKOUT: (node) => node,
   REPOST: (node, _context) => {
     const { authenticationStatus, handleAuthCallback } = useAuthContext();
@@ -283,6 +292,8 @@ export function Actions({
   isLinkoutsOpen = false,
   linkoutThumbnail,
   showLinkout = false,
+  showIntelligence = false,
+  isIntelligenceOpen = false,
   onClick,
   ...restProps
 }: ActionsPropsType) {
@@ -304,6 +315,20 @@ export function Actions({
           icon: <OctoActionIcon size={32} />,
           actionType: "OCTO" as const,
           tooltipText: "Octo",
+        }
+      : null,
+    // INTELLIGENCE ACTION - opens the Intelligence chat panel (Figma sparkle icon)
+    showIntelligence
+      ? {
+          icon: (
+            <Sparkle
+              aria-hidden="true"
+              strokeWidth={1.75}
+              className={theme === "dark" ? "gencl:text-white" : "gencl:text-secondary-900"}
+            />
+          ),
+          actionType: "INTELLIGENCE" as const,
+          tooltipText: "Intelligence",
         }
       : null,
     showLinkout
@@ -419,6 +444,10 @@ export function Actions({
         }
 
         const isCommentActionOpen = action.actionType === "COMMENT" && isCommentBoxOpen;
+        const isActionPanelOpen =
+          isCommentActionOpen ||
+          (action.actionType === "LINKOUT" && isLinkoutsOpen) ||
+          (action.actionType === "INTELLIGENCE" && isIntelligenceOpen);
         const defaultNode = (
           <TooltipAction
             icon={iconElement}
@@ -426,7 +455,7 @@ export function Actions({
             variant={theme}
             iconSize={isOctoAction ? "fill" : "default"}
             className={cn(
-              isCommentActionOpen || (action.actionType === "LINKOUT" && isLinkoutsOpen)
+              isActionPanelOpen
                 ? theme === "dark"
                   ? "gencl:bg-secondary-800"
                   : "gencl:bg-secondary-50 gencl:border-secondary-50"
@@ -435,7 +464,7 @@ export function Actions({
               //   ? "gencl:bg-transparent gencl:hover:bg-transparent gencl:border-0 gencl:shadow-none"
               //   : undefined
             )}
-            disableTooltip={isCommentActionOpen || (action.actionType === "LINKOUT" && isLinkoutsOpen)}
+            disableTooltip={isActionPanelOpen}
           />
         );
         if (actionWrapper?.[action.actionType]) {

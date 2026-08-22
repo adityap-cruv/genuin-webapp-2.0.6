@@ -84,10 +84,16 @@ type IntelligencePanelSectionProps = Omit<ComponentPropsWithoutRef<"section">, "
 export interface IntelligencePanelShellProps extends IntelligencePanelSectionProps {
   /** Content rendered beneath the shared Intelligence header. */
   children: ReactNode;
-  /** Panel dimensions supplied by the consuming response. */
-  size: IntelligencePanelSize;
+  /**
+   * Panel dimensions supplied by the consuming response. When omitted the
+   * panel fills its parent (100% × 100%), which is the right default for
+   * full-screen mobile sheets and flex/grid slots.
+   */
+  size?: IntelligencePanelSize;
   /** Called when the user activates the close control. */
   onClose: () => void;
+  /** Optional content pinned beneath the scroll area (e.g. a chat composer). */
+  footer?: ReactNode;
 }
 
 /** Props for the data-driven Intelligence panel. */
@@ -154,8 +160,8 @@ export type IntelligenceLeaderboardView = {
   entries: readonly IntelligenceLeaderboardEntry[];
 };
 
-/** Props for a leaderboard composed inside the shared Intelligence shell. */
-export interface IntelligenceLeaderboardPanelProps extends Omit<IntelligencePanelShellProps, "children"> {
+/** Data props for the shell-less leaderboard body. */
+export interface IntelligenceLeaderboardContentProps {
   /** Standings views presented in the compact tab switcher. */
   views: readonly IntelligenceLeaderboardView[];
   /** Initially selected view. Falls back to the first view. */
@@ -165,6 +171,11 @@ export interface IntelligenceLeaderboardPanelProps extends Omit<IntelligencePane
   /** Visible source name in the panel footer. */
   sourceLabel: string;
 }
+
+/** Props for a leaderboard composed inside the shared Intelligence shell. */
+export interface IntelligenceLeaderboardPanelProps
+  extends Omit<IntelligencePanelShellProps, "children">,
+    IntelligenceLeaderboardContentProps {}
 
 /** Lifecycle state used to distinguish past and upcoming calendar events. */
 export type IntelligenceCalendarEventStatus = "complete" | "next" | "upcoming";
@@ -185,11 +196,16 @@ export type IntelligenceCalendarEvent = {
   image?: IntelligenceArticleImage;
 };
 
-/** Props for The Foil-inspired event calendar inside Intelligence. */
-export interface IntelligenceCalendarPanelProps extends Omit<IntelligencePanelShellProps, "children"> {
+/** Data props for the shell-less calendar body. */
+export interface IntelligenceCalendarContentProps {
   title: string;
   year: number;
   events: readonly IntelligenceCalendarEvent[];
   fullCalendarHref: string;
   sourceLabel: string;
 }
+
+/** Props for The Foil-inspired event calendar inside Intelligence. */
+export interface IntelligenceCalendarPanelProps
+  extends Omit<IntelligencePanelShellProps, "children" | "title">,
+    IntelligenceCalendarContentProps {}

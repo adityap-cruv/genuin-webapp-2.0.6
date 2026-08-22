@@ -12,7 +12,6 @@ import { useNewPlayerControls } from "@genuin/components/molecules/feed-player/c
 import { markSwipeIntent } from "@genuin/components/organisms/player-swiper/swipe-intent";
 
 import { useEmbedManagerContext } from "./context";
-import { NavigationButtonsV2 } from "./navigation-buttons-v2";
 
 // DEMO-ONLY: KFI placement whose narrow fixed-width carousel docks the prev/next
 // buttons to the video's edges instead of the default centered row. Every other
@@ -89,7 +88,6 @@ export function NavigationButtons({
   isPrevDisabled = false,
   isNextDisabled = false,
   hideNavButtons,
-  v2Size,
 }: NavigationButtonsProps) {
   const { isIOS, isMac } = useDeviceDetection();
   const isV2 = useNewPlayerControls();
@@ -108,23 +106,8 @@ export function NavigationButtons({
   const embedVariant = providedEmbedVariant;
   const isCarousel = embedVariant === "carousel";
 
-  // Design System V2: double-circle arrows for every variant except iHeart,
-  // which keeps its bespoke coloured buttons below. These buttons always overlay
-  // the dark video, so they force the "dark" palette (white circle, dark glyph)
-  // regardless of the page theme — matching the legacy V1 embed arrows.
-  if (isV2 && !isIheartLayout) {
-    return (
-      <NavigationButtonsV2
-        embedVariant={embedVariant}
-        onPrev={onPrev}
-        onNext={onNext}
-        isPrevDisabled={isPrevDisabled}
-        isNextDisabled={isNextDisabled}
-        size={v2Size}
-        theme="dark"
-      />
-    );
-  }
+  // V2 placements navigate by swipe/drag only; no directional buttons are rendered.
+  if (isV2) return null;
 
   // Theme configuration
   const iconTheme = theme === "dark" ? "dark" : "light";

@@ -12,6 +12,7 @@ export * from "./group-card";
 export * from "./group-posts";
 export * from "./hover-link-card-list";
 export * from "./image-cropper";
+export * from "./intelligence-chat";
 export * from "./intelligence-panel";
 export * from "./linkouts";
 export * from "./member-list";

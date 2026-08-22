@@ -17,13 +17,13 @@ export { EmbedPlayButton, EmbedExpandButton } from "./embed-v2";
  */
 export function EmbedControls(props: ComponentProps<typeof EmbedControlsV2>) {
   const newUI = useNewPlayerControls();
-  if (newUI) return <EmbedControlsV2 {...props} />;
+  if (newUI) return <EmbedControlsV2 {...props} size="md" />;
   return <EmbedControlsOld {...(props as ComponentProps<typeof EmbedControlsOld>)} />;
 }
 
 /** Mute/unmute button styled for embed control bars — V2 or old per the flag. */
 export function EmbedMuteButton(props: ComponentProps<typeof EmbedMuteButtonV2>) {
   const newUI = useNewPlayerControls();
-  if (newUI) return <EmbedMuteButtonV2 {...props} />;
+  if (newUI) return <EmbedMuteButtonV2 {...props} size="md" />;
   return <EmbedMuteButtonOld {...(props as ComponentProps<typeof EmbedMuteButtonOld>)} />;
 }

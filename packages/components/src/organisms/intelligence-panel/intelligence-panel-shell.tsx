@@ -10,6 +10,8 @@ import type { IntelligencePanelShellProps } from "./intelligence-panel.types";
 
 const PANEL_TITLE = "Intelligence";
 
+const FILL_PARENT_SIZE = { width: "100%", height: "100%" } as const;
+
 const PANEL_CLASS = cn(
   "gencl:@container gencl:flex gencl:max-h-full gencl:min-h-0 gencl:max-w-full gencl:flex-col",
   "gencl:overflow-hidden gencl:rounded-xl gencl:bg-white gencl:p-2 gencl:text-black",
@@ -44,8 +46,9 @@ function IntelligencePanelHeader({ headingId, onClose }: IntelligencePanelHeader
           id={headingId}
           as="h2"
           level="headline-4"
-          className="gencl:h-4 gencl:w-fit gencl:truncate gencl:text-body-2-medium! gencl:leading-4! gencl:font-medium! gencl:text-secondary-900">
-          {PANEL_TITLE}
+          className="gencl:w-fit gencl:truncate gencl:font-medium! gencl:text-secondary-900"
+          style={{ fontSize: "12px", lineHeight: "16px" }}>
+          <span style={{ fontSize: "12px", lineHeight: "16px" }}>{PANEL_TITLE}</span>
         </Heading>
       </div>
 
@@ -87,7 +90,16 @@ function IntelligencePanelHeader({ headingId, onClose }: IntelligencePanelHeader
  */
 export const IntelligencePanelShell = React.forwardRef<HTMLElement, IntelligencePanelShellProps>(
   function IntelligencePanelShell(
-    { children, size, onClose, className, style, "aria-labelledby": ariaLabelledBy, ...props },
+    {
+      children,
+      size = FILL_PARENT_SIZE,
+      onClose,
+      footer,
+      className,
+      style,
+      "aria-labelledby": ariaLabelledBy,
+      ...props
+    },
     ref
   ) {
     const headingId = React.useId();
@@ -104,6 +116,7 @@ export const IntelligencePanelShell = React.forwardRef<HTMLElement, Intelligence
         <div data-slot="intelligence-panel-scroll-content" className={SCROLL_CONTENT_CLASS}>
           {children}
         </div>
+        {footer}
       </section>
     );
   }

@@ -9,7 +9,11 @@ import * as React from "react";
 import { Link } from "@genuin/components/molecules/link";
 
 import { IntelligencePanelShell } from "./intelligence-panel-shell";
-import type { IntelligenceCalendarEvent, IntelligenceCalendarPanelProps } from "./intelligence-panel.types";
+import type {
+  IntelligenceCalendarContentProps,
+  IntelligenceCalendarEvent,
+  IntelligenceCalendarPanelProps,
+} from "./intelligence-panel.types";
 
 const MONTH_NAMES = [
   "January",
@@ -124,14 +128,81 @@ function EventRow({ event }: { event: IntelligenceCalendarEvent }) {
   );
 }
 
+/**
+ * Shell-less calendar body. Renders the header, next-event card, schedule,
+ * and footer so it can be composed inside the Intelligence shell or as a
+ * block in an Intelligence chat response.
+ */
+export function IntelligenceCalendarContent({
+  title,
+  year,
+  events,
+  fullCalendarHref,
+  sourceLabel,
+}: IntelligenceCalendarContentProps) {
+  const nextEvent = events.find((event) => event.status === "next");
+
+  return (
+    <div className="gencl:mt-2 gencl:flex gencl:min-h-full gencl:flex-col gencl:gap-3 gencl:bg-secondary-900 gencl:p-3 gencl:text-white">
+      <header>
+        <Text as="p" size="body-4" weight="medium" className="gencl:mb-1 gencl:text-[10px]! gencl:text-[#ef2525]">
+          SailGP Events
+        </Text>
+        <Heading
+          as="h3"
+          level="headline-3"
+          weight="bold"
+          className="gencl:text-[25px]! gencl:leading-[1.05]! gencl:font-bold! gencl:tracking-[-0.035em] gencl:text-white">
+          {title}
+        </Heading>
+      </header>
+
+      {nextEvent && <NextEventCard event={nextEvent} />}
+
+      <section aria-label={`${year} full season schedule`}>
+        <div className="gencl:flex gencl:h-9 gencl:items-center gencl:justify-between gencl:border-b gencl:border-white">
+          <div>
+            <Text as="p" size="body-4" weight="bold" className="gencl:text-[11px]! gencl:text-white">
+              Full season view
+            </Text>
+            <Text as="p" size="body-4" className="gencl:text-[8px]! gencl:text-secondary-400">
+              {year}
+            </Text>
+          </div>
+          <Text as="p" size="body-4" className="gencl:text-[9px]! gencl:text-secondary-400">
+            {events.length} events
+          </Text>
+        </div>
+
+        <div>
+          {events.map((event) => (
+            <EventRow key={event.id} event={event} />
+          ))}
+        </div>
+      </section>
+
+      <footer className="gencl:flex gencl:items-center gencl:justify-between gencl:gap-3 gencl:pb-2">
+        <Text as="p" size="body-4" className="gencl:text-[9px]! gencl:text-secondary-400">
+          Source: {sourceLabel}
+        </Text>
+        <Link
+          href={fullCalendarHref}
+          className="gencl:inline-flex gencl:h-7 gencl:items-center gencl:gap-1 gencl:bg-[#ed1c24] gencl:px-3 gencl:text-[9px] gencl:font-medium gencl:text-white gencl:no-underline gencl:hover:brightness-95"
+          style={{ clipPath: "polygon(0 0, 100% 0, 100% 70%, 88% 100%, 0 100%)" }}>
+          Full calendar
+          <ArrowUpRight aria-hidden="true" className="gencl:size-3" />
+        </Link>
+      </footer>
+    </div>
+  );
+}
+
 /** The Foil-inspired full-season event calendar for Intelligence. */
 export const IntelligenceCalendarPanel = React.forwardRef<HTMLElement, IntelligenceCalendarPanelProps>(
   function IntelligenceCalendarPanel(
     { title, year, events, fullCalendarHref, sourceLabel, size, onClose, className, ...props },
     ref
   ) {
-    const nextEvent = events.find((event) => event.status === "next");
-
     return (
       <IntelligencePanelShell
         ref={ref}
@@ -140,57 +211,13 @@ export const IntelligenceCalendarPanel = React.forwardRef<HTMLElement, Intellige
         onClose={onClose}
         className={className}
         {...props}>
-        <div className="gencl:mt-2 gencl:flex gencl:min-h-full gencl:flex-col gencl:gap-3 gencl:bg-secondary-900 gencl:p-3 gencl:text-white">
-          <header>
-            <Text as="p" size="body-4" weight="medium" className="gencl:mb-1 gencl:text-[10px]! gencl:text-[#ef2525]">
-              SailGP Events
-            </Text>
-            <Heading
-              as="h3"
-              level="headline-3"
-              weight="bold"
-              className="gencl:text-[25px]! gencl:leading-[1.05]! gencl:font-bold! gencl:tracking-[-0.035em] gencl:text-white">
-              {title}
-            </Heading>
-          </header>
-
-          {nextEvent && <NextEventCard event={nextEvent} />}
-
-          <section aria-label={`${year} full season schedule`}>
-            <div className="gencl:flex gencl:h-9 gencl:items-center gencl:justify-between gencl:border-b gencl:border-white">
-              <div>
-                <Text as="p" size="body-4" weight="bold" className="gencl:text-[11px]! gencl:text-white">
-                  Full season view
-                </Text>
-                <Text as="p" size="body-4" className="gencl:text-[8px]! gencl:text-secondary-400">
-                  {year}
-                </Text>
-              </div>
-              <Text as="p" size="body-4" className="gencl:text-[9px]! gencl:text-secondary-400">
-                {events.length} events
-              </Text>
-            </div>
-
-            <div>
-              {events.map((event) => (
-                <EventRow key={event.id} event={event} />
-              ))}
-            </div>
-          </section>
-
-          <footer className="gencl:flex gencl:items-center gencl:justify-between gencl:gap-3 gencl:pb-2">
-            <Text as="p" size="body-4" className="gencl:text-[9px]! gencl:text-secondary-400">
-              Source: {sourceLabel}
-            </Text>
-            <Link
-              href={fullCalendarHref}
-              className="gencl:inline-flex gencl:h-7 gencl:items-center gencl:gap-1 gencl:bg-[#ed1c24] gencl:px-3 gencl:text-[9px] gencl:font-medium gencl:text-white gencl:no-underline gencl:hover:brightness-95"
-              style={{ clipPath: "polygon(0 0, 100% 0, 100% 70%, 88% 100%, 0 100%)" }}>
-              Full calendar
-              <ArrowUpRight aria-hidden="true" className="gencl:size-3" />
-            </Link>
-          </footer>
-        </div>
+        <IntelligenceCalendarContent
+          title={title}
+          year={year}
+          events={events}
+          fullCalendarHref={fullCalendarHref}
+          sourceLabel={sourceLabel}
+        />
       </IntelligencePanelShell>
     );
   }

@@ -4,10 +4,20 @@ import { useOctoAnalytics } from '@/adapters/analytics/hooks';
 import { useSessionContext } from '@/stores/session/context';
 import { useUIContext } from '@/stores/ui/context';
 
-type KoahAdWidgetProps = {
+import KoahSDKLoader from './KoahSDKLoader';
+
+export type KoahAdWidgetProps = {
     userMessage: string | null;
     aiResponse: string;
     messageId: string;
+    /** Render outside the GenAI provider tree while retaining the existing Koah implementation. */
+    standalone?: boolean;
+};
+
+type KoahAdWidgetRuntimeProps = Omit<KoahAdWidgetProps, 'standalone'> & {
+    currentSessionId: string | null;
+    isWebSdkView: boolean;
+    analytics?: ReturnType<typeof useOctoAnalytics>['analytics'];
 };
 
 // Copy Koah's native styles into shadow root so they can apply
@@ -32,17 +42,19 @@ const injectKoahStyles = (container: HTMLElement): void => {
     }
 };
 
-const KoahAdWidget = ({ userMessage, aiResponse, messageId }: KoahAdWidgetProps) => {
-    const { currentSessionId } = useSessionContext();
-    const { view } = useUIContext();
-    const { analytics } = useOctoAnalytics();
+const KoahAdWidgetRuntime = ({
+    userMessage,
+    aiResponse,
+    messageId,
+    currentSessionId,
+    isWebSdkView,
+    analytics,
+}: KoahAdWidgetRuntimeProps) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [adServed, setAdServed] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const processedRef = useRef(false);
     const processingStartTime = useRef<number>(0);
-
-    const isWebSdkView = view === 'web-sdk';
 
     const processAd = useCallback(
         async (currentAiResponse: string) => {
@@ -55,7 +67,7 @@ const KoahAdWidget = ({ userMessage, aiResponse, messageId }: KoahAdWidgetProps)
             processingStartTime.current = Date.now();
 
             // Track: Ad processing started
-            analytics.trackKoahAdProcessingStarted({
+            analytics?.trackKoahAdProcessingStarted({
                 message_id: messageId,
                 user_message: userMessage,
                 session_id: currentSessionId || undefined,
@@ -74,7 +86,7 @@ const KoahAdWidget = ({ userMessage, aiResponse, messageId }: KoahAdWidgetProps)
 
                         // Track: Ad served successfully
                         const processingTime = Date.now() - processingStartTime.current;
-                        analytics.trackKoahAdServed({
+                        analytics?.trackKoahAdServed({
                             message_id: messageId,
                             user_message: userMessage,
                             processing_time_ms: processingTime,
@@ -86,7 +98,7 @@ const KoahAdWidget = ({ userMessage, aiResponse, messageId }: KoahAdWidgetProps)
                         setIsLoading(false);
 
                         // Track: No ad available
-                        analytics.trackKoahAdNoFill({
+                        analytics?.trackKoahAdNoFill({
                             message_id: messageId,
                             user_message: userMessage,
                             reason: 'onNoFill callback triggered',
@@ -100,7 +112,7 @@ const KoahAdWidget = ({ userMessage, aiResponse, messageId }: KoahAdWidgetProps)
                     setIsLoading(false);
 
                     // Track: No ad served (returned false)
-                    analytics.trackKoahAdNoFill({
+                    analytics?.trackKoahAdNoFill({
                         message_id: messageId,
                         user_message: userMessage,
                         reason: 'koah.process returned false',
@@ -113,7 +125,7 @@ const KoahAdWidget = ({ userMessage, aiResponse, messageId }: KoahAdWidgetProps)
                 setIsLoading(false);
 
                 // Track: Ad processing failed
-                analytics.trackKoahAdProcessingFailed({
+                analytics?.trackKoahAdProcessingFailed({
                     message_id: messageId,
                     error_message: error instanceof Error ? error.message : String(error),
                     error_stack: error instanceof Error ? error.stack : undefined,
@@ -134,7 +146,7 @@ const KoahAdWidget = ({ userMessage, aiResponse, messageId }: KoahAdWidgetProps)
             // Check if click is within the Koah ad container
             if (containerRef.current?.contains(target)) {
                 // Track: Ad clicked
-                analytics.trackKoahAdClicked({
+                analytics?.trackKoahAdClicked({
                     message_id: messageId,
                     user_message: userMessage || '',
                     ad_element: target.tagName.toLowerCase(),
@@ -184,7 +196,7 @@ const KoahAdWidget = ({ userMessage, aiResponse, messageId }: KoahAdWidgetProps)
 
             // Track: SDK load timeout
             if (!window.koah) {
-                analytics.trackKoahSdkLoadTimeout({
+                analytics?.trackKoahSdkLoadTimeout({
                     message_id: messageId,
                     timeout_ms: 5000,
                     session_id: currentSessionId || undefined,
@@ -209,6 +221,34 @@ const KoahAdWidget = ({ userMessage, aiResponse, messageId }: KoahAdWidgetProps)
     }
 
     return <div ref={containerRef} className='adsbykoah gai:w-full gai:text-black' />;
+};
+
+function ProviderKoahAdWidget(props: Omit<KoahAdWidgetProps, 'standalone'>) {
+    const { currentSessionId } = useSessionContext();
+    const { view } = useUIContext();
+    const { analytics } = useOctoAnalytics();
+
+    return (
+        <KoahAdWidgetRuntime
+            {...props}
+            currentSessionId={currentSessionId}
+            isWebSdkView={view === 'web-sdk'}
+            analytics={analytics}
+        />
+    );
+}
+
+function StandaloneKoahAdWidget(props: Omit<KoahAdWidgetProps, 'standalone'>) {
+    return (
+        <>
+            <KoahSDKLoader />
+            <KoahAdWidgetRuntime {...props} currentSessionId={null} isWebSdkView />
+        </>
+    );
+}
+
+export const KoahAdWidget = ({ standalone = false, ...props }: KoahAdWidgetProps) => {
+    return standalone ? <StandaloneKoahAdWidget {...props} /> : <ProviderKoahAdWidget {...props} />;
 };
 
 export default KoahAdWidget;

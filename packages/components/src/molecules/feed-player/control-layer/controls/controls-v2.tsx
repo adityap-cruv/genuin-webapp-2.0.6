@@ -22,6 +22,8 @@ import { AnimatedPlayButton } from "./control-buttons";
 import { AnimatedMuteIcon } from "./control-buttons";
 import { EmbedControls } from "./embed-v2";
 
+const FIXED_PLAYER_CONTROL_SIZE: PlayerControlSize = "md";
+
 const controlsVariants = cva("gencl:transition-all gencl:z-20 gencl:flex gencl:w-full gencl:justify-between", {
   variants: {
     variant: {
@@ -48,7 +50,7 @@ const controlsVariants = cva("gencl:transition-all gencl:z-20 gencl:flex gencl:w
 type ControlButtonsPropsType = ComponentProps<"div"> & {
   showCloseButton?: boolean;
   enableExpand?: boolean;
-  /** Size for all player control buttons. @default "md" */
+  /** Responsive size used by adjacent control metadata. Player buttons use a fixed small size. */
   size?: PlayerControlSize;
 } & VariantProps<typeof controlsVariants> &
   (
@@ -146,15 +148,23 @@ export const Controls = memo(function Controls({
           {!hidePlayerControls && (
             <ControlButtonGroup gap="liberal">
               {showMuteButton && (
-                <AnimatedMuteIcon shouldAnimate={shouldAnimateMuteUnmute} size={size} suppressText={isBoxHovered} />
+                <AnimatedMuteIcon
+                  shouldAnimate={shouldAnimateMuteUnmute}
+                  size={FIXED_PLAYER_CONTROL_SIZE}
+                  suppressText={isBoxHovered}
+                />
               )}
               {showPlayButton && (
-                <AnimatedPlayButton shouldAnimate={shouldAnimatePlayPause} size={size} suppressText={isBoxHovered} />
+                <AnimatedPlayButton
+                  shouldAnimate={shouldAnimatePlayPause}
+                  size={FIXED_PLAYER_CONTROL_SIZE}
+                  suppressText={isBoxHovered}
+                />
               )}
 
               {!isMobile && enableExpand && (
                 <ExpandCollapseButton
-                  size={size}
+                  size={FIXED_PLAYER_CONTROL_SIZE}
                   onClick={toggleExpandView}
                   ariaLabel={showExpandView ? "Collapse" : "Expand"}
                   icon={showExpandView ? <CollapseIcon theme="dark" /> : <ExpandIcon theme="dark" />}
@@ -163,7 +173,7 @@ export const Controls = memo(function Controls({
 
               {isMobile && showCloseButton && getSearchParams("feed") !== "1" && !pathname.includes("/video") && (
                 <ExpandCollapseButton
-                  size={size}
+                  size={FIXED_PLAYER_CONTROL_SIZE}
                   onClick={toggleExpandView}
                   ariaLabel="Collapse"
                   icon={<CollapseIcon theme="dark" />}
@@ -176,7 +186,7 @@ export const Controls = memo(function Controls({
 
       {isMobile && isEmbed && !hidePlayerControls && showExpandView && !isSponsored && (
         <ExpandCollapseButton
-          size={size}
+          size={FIXED_PLAYER_CONTROL_SIZE}
           onClick={toggleExpandView}
           ariaLabel={showExpandView ? "Collapse" : "Expand"}
           icon={showExpandView ? <CollapseIcon theme="dark" /> : <ExpandIcon theme="dark" />}
@@ -192,7 +202,10 @@ export const Controls = memo(function Controls({
           ) : (
             <div />
           )}
-          <EmbedControls className={cn(spacing === "liberal" && "gencl:gap-3")} size={size} />
+          <EmbedControls
+            className={cn(spacing === "liberal" && "gencl:gap-3")}
+            size={FIXED_PLAYER_CONTROL_SIZE}
+          />
         </div>
       )}
     </div>

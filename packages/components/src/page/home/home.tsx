@@ -1,18 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useBaseContext } from "@genuin/components/context/base";
-import { ErrorState } from "@genuin/components/molecules/error-state";
 import { SectionHeader } from "@genuin/components/molecules/section-header/section-header";
 import { EventCarousel } from "@genuin/components/organisms/event-carousel/event-carousel";
 import type { EventCarouselItem } from "@genuin/components/organisms/event-carousel/event-carousel.types";
 import { EventSurface, EventSurfacePanel } from "@genuin/components/organisms/event-surface/event-surface";
-import {
-  useEmit,
-  useLatestEvent,
-  useSurfaceEvent,
-} from "@genuin/components/organisms/event-surface/event-surface-context";
+import { useEmit, useLatestEvent } from "@genuin/components/organisms/event-surface/event-surface-context";
 import { HoverLinkCardList } from "@genuin/components/organisms/hover-link-card-list";
 import type { ContextualLinkMetaData } from "@genuin/components/organisms/hover-link-card-list";
 import { IntelligenceArticleCard } from "@genuin/components/organisms/intelligence-panel/intelligence-article-card";
@@ -22,9 +17,6 @@ import type {
   IntelligenceArticle,
   IntelligencePanelLayout,
 } from "@genuin/components/organisms/intelligence-panel/intelligence-panel.types";
-import { VideoCarousel } from "@genuin/components/organisms/video-carousel/video-carousel";
-import { VideoFeed } from "@genuin/components/organisms/video-feed/video-feed";
-import { VideoGrid } from "@genuin/components/organisms/video-grid/video-grid";
 import { useFeed } from "@genuin/components/react-query/api/feed";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
@@ -137,6 +129,112 @@ const HOME_SECTIONS = {
   /** Latest Videos "Latest Interviews" — its own community, shown as editorial cards. */
   interviews: { communityId: "88f19de9-cda6-48fc-8896-7af03b62bea8", subHeading: "Latest Interviews" },
 } satisfies Record<string, SectionSource>;
+
+/* -------------------------------------------------------------------------- */
+/* Genuin SDK placements                                                       */
+/*                                                                             */
+/* Every video surface on this page is a Genuin Web SDK placement, not a local  */
+/* feed component: the placement owns which videos it shows, so adding or       */
+/* removing a video in the placement is reflected here with no code change.     */
+/* The sizes are the ones each placement was designed against — the surrounding */
+/* section heights are derived from them.                                       */
+/* -------------------------------------------------------------------------- */
+
+type PlacementSource = {
+  /** `placement_id` from the embed snippet. */
+  placementId: string;
+  /** `style_id` from the embed snippet. */
+  styleId: string;
+  /** Design width of the placement, in px. */
+  width: number;
+  /** Design height of the placement, in px. */
+  height: number;
+};
+
+const HOME_PLACEMENTS = {
+  /** Section 1 — carousel beside the Latest News intelligence panel. */
+  desk: {
+    placementId: "6a86fefe1b5332711228a547",
+    styleId: "6a86fefe1b5332711228a548",
+    width: 1044,
+    height: 520,
+  },
+  /** Latest Videos — feed beside the related-links wheel. */
+  latestVideos: {
+    placementId: "6a8712d44fc9bb6b22ea8c7a",
+    styleId: "6a8712d44fc9bb6b22ea8c7b",
+    width: 688,
+    height: 387,
+  },
+  /** Top Categories — full-width carousel. */
+  topCategories: {
+    placementId: "6a8713aa1b5332711228b24b",
+    styleId: "6a8713aa1b5332711228b24c",
+    width: 1400,
+    height: 365,
+  },
+  /** Sponsored (T-Mobile) — grid beside the Relevant News panel. */
+  sponsoredGrid: {
+    placementId: "6a7c797ae26bf2c127deb952",
+    styleId: "6a7c797ae26bf2c127deb953",
+    width: 1000,
+    height: 568,
+  },
+} satisfies Record<string, PlacementSource>;
+
+/**
+ * Hosted Genuin Web SDK bundle (QA).
+ *
+ * 2.0.6, not 2.0.5: the 2.0.5 build loads `hls.js@latest` off jsDelivr at runtime,
+ * which is where the `HTMLVideoElement.onError` / buffer-stall noise comes from.
+ * 2.0.6 ships the pinned `hls.js@1` (see `packages/ui/.../video-player/registry.ts`).
+ *
+ * Override with `NEXT_PUBLIC_GENUIN_SDK_URL` to point the placements at a locally
+ * built bundle (`pnpm --filter @genuin/web-sdk serve:dev` →
+ * `http://localhost:3000/gen_sdk.js`) — the only way to see unreleased
+ * `packages/components` changes on these placements. Same variable the
+ * webapp's `GenuinSdkLoader` reads.
+ */
+const GENUIN_SDK_SRC =
+  process.env.NEXT_PUBLIC_GENUIN_SDK_URL ?? "https://media.qa.begenuin.com/sdk/2.0.6/gen_sdk.min.js";
+
+/** Public client embed key — public by design, scoped to the brand's placements. */
+const GENUIN_API_KEY = "018b5a9408d982482ee586511456679c1cc1f4bc4adc5dc2";
+
+/**
+ * A placement container. Pure markup: the SDK finds it by id/class on `init()` and
+ * boots it from these `data-*` attributes — the multi-embed form from
+ * `packages/web-sdk/index.multi.html.example`, which is what lets several
+ * placements share one page.
+ *
+ * Content is owned by the placement, not by this page: videos added to or removed
+ * from the placement show up here with no code change.
+ */
+function PlacementContainer({
+  id,
+  placement,
+  width = "100%",
+  ariaLabel,
+}: {
+  /** Unique per container — the SDK tells embeds apart by element id. */
+  id: string;
+  placement: PlacementSource;
+  width?: number | string;
+  ariaLabel: string;
+}) {
+  return (
+    <div
+      id={`gen-sdk-${id}`}
+      className="gen-sdk-class"
+      data-placement-id={placement.placementId}
+      data-style-id={placement.styleId}
+      data-api-key={GENUIN_API_KEY}
+      data-testid={`genuin-placement-${id}`}
+      aria-label={ariaLabel}
+      style={{ width, height: placement.height }}
+    />
+  );
+}
 
 /** What a section knows about its community once the feed has answered. */
 type SectionFeed = {
@@ -526,81 +624,6 @@ function postsToArticles(posts: PostDetailsType[], fallback: IntelligenceArticle
   return [...articles, ...fallback].slice(0, 8);
 }
 
-/** Mark the live posts sponsored (cardLayoutId 7) and give every tile a linkout —
- * the exact transformation the VideoGrid story uses — so each tile shows the
- * "Sponsored" pill (top-left) and the linkout CTA bar below, the same as the
- * standalone VideoGrid component. */
-function buildGridPosts(posts: PostDetailsType[]): PostDetailsType[] {
-  const demoLinkouts = posts.find((post) => Array.isArray(post.video?.linkouts) && post.video.linkouts.length)?.video
-    ?.linkouts;
-
-  return posts.map((post) => ({
-    ...post,
-    video: post.video
-      ? {
-          ...post.video,
-          cardLayoutId: 7,
-          linkouts:
-            Array.isArray(post.video.linkouts) && post.video.linkouts.length ? post.video.linkouts : demoLinkouts,
-          linkoutId: post.video.linkoutId ?? 4046,
-        }
-      : post.video,
-  })) as PostDetailsType[];
-}
-
-/**
- * A video card's "Read More" target: its own feed linkout if it has one, else a
- * relevant The Foil page. Opened in a new tab.
- */
-function openVideoReadMore(post: PostDetailsType, fallbackUrl: string) {
-  const linkout = post.video?.linkouts?.[0] as
-    | { cta_link?: string; links?: Array<{ url?: string }> }
-    | undefined;
-  const url = linkout?.cta_link ?? linkout?.links?.[0]?.url ?? fallbackUrl;
-  if (typeof window !== "undefined") window.open(url, "_blank", "noopener,noreferrer");
-}
-
-/**
- * Left panel: the video carousel. Broadcasts the active video and follows
- * article selections from the news panel.
- */
-function DeskVideoPanel({ feedData, videoTags }: { feedData: FeedData; videoTags: VideoTag[] }) {
-  const emit = useEmit();
-  // Controlled active video, kept in sync with the carousel so a later article
-  // selection is always a real change (and never yanks a manual swipe back).
-  const [activeVideoId, setActiveVideoId] = useState<string | undefined>(undefined);
-
-  // React to an article selection from the other panel: play that video.
-  useSurfaceEvent("item:select", (payload) => {
-    if (payload.videoId) setActiveVideoId(payload.videoId);
-  });
-
-  return (
-    <VideoCarousel
-      feedType="HOME"
-      externalFeedData={feedData}
-      ctaText="Read More"
-      showNavigation={false}
-      activeVideoId={activeVideoId}
-      containerClassName="gencl:h-full"
-      onCtaClick={(post) => openVideoReadMore(post, "https://thefoil.com/series/sailgp/")}
-      onActiveVideoChange={(details) => {
-        // Map the active video to its synthetic group/community via the side table
-        // (the feed's own ids are not distinct enough for the demo).
-        const tag = videoTags.find((entry) => entry.videoId === details.videoId);
-        setActiveVideoId(details.videoId);
-        emit("video:change", {
-          videoId: details.videoId,
-          groupId: tag?.groupId ?? "",
-          communityId: tag?.communityId ?? "",
-          index: details.index,
-          previousVideoId: null,
-        });
-      }}
-    />
-  );
-}
-
 /**
  * Right panel: the intelligence articles. Features the article for whatever
  * video is playing, and broadcasts `item:select` when the user picks an article.
@@ -626,36 +649,6 @@ function DeskNewsPanel({ articles, videoTags }: { articles: IntelligenceArticle[
           itemId: article.id,
           index: articles.findIndex((entry) => entry.id === article.id),
           videoId: targetVideoId,
-        });
-      }}
-    />
-  );
-}
-
-/** Left panel: the VideoFeed. Broadcasts the active video and follows link selections. */
-function InterviewsVideoPanel({ posts, videoTags }: { posts: PostDetailsType[]; videoTags: VideoTag[] }) {
-  const emit = useEmit();
-  const [activeVideoId, setActiveVideoId] = useState<string | undefined>(undefined);
-
-  useSurfaceEvent("item:select", (payload) => {
-    if (payload.videoId) setActiveVideoId(payload.videoId);
-  });
-
-  return (
-    <VideoFeed
-      posts={posts}
-      activeVideoId={activeVideoId}
-      width="100%"
-      height="100%"
-      onActiveVideoChange={(post, index) => {
-        const tag = videoTags.find((entry) => entry.videoId === post.video?.id);
-        setActiveVideoId(post.video?.id);
-        emit("video:change", {
-          videoId: post.video?.id ?? "",
-          groupId: tag?.groupId ?? "",
-          communityId: tag?.communityId ?? "",
-          index,
-          previousVideoId: null,
         });
       }}
     />
@@ -719,34 +712,6 @@ function InterviewsIntelligencePanel({ articles }: { articles: IntelligenceArtic
         ))}
       </div>
     </IntelligencePanelShell>
-  );
-}
-
-/**
- * Video grid for the Tmobile section. Broadcasts the active video (same as the
- * Section 1 video panel). The Relevant News panel is fixed to the first video's
- * community, so it doesn't react to changes.
- */
-function TmobileGridPanel({ gridPosts, videoTags }: { gridPosts: PostDetailsType[]; videoTags: VideoTag[] }) {
-  const emit = useEmit();
-  return (
-    <VideoGrid
-      posts={gridPosts}
-      columns={2}
-      // 500×296 tiles (16:9-ish) → 2 columns ≈ 1008 px, leaving more room for the news panel.
-      tileWidth={500}
-      tileHeight={296}
-      onActiveVideoChange={(post, index) => {
-        const tag = videoTags.find((entry) => entry.videoId === post.video?.id);
-        emit("video:change", {
-          videoId: post.video?.id ?? "",
-          groupId: tag?.groupId ?? "",
-          communityId: tag?.communityId ?? "",
-          index,
-          previousVideoId: null,
-        });
-      }}
-    />
   );
 }
 
@@ -814,7 +779,15 @@ const UPCOMING_RACES: EventCarouselItem[] = [
   },
 ];
 
-export function Home() {
+/**
+ * One full copy of the home page's content.
+ *
+ * Rendered repeatedly by `Home` for the infinite scroll, so every DOM id it emits
+ * is namespaced with `instance` — most importantly the Genuin placement containers,
+ * which the SDK keys by element id (two containers sharing an id would leave the
+ * second one un-booted).
+ */
+function HomeSections({ instance }: { instance: number }) {
   // Every section is driven by ONE community (or group) of the current brand — see
   // HOME_SECTIONS. Which brand this resolves to is decided app-side (the
   // `config_params` cookie → brand config → brand-scoped axios instance).
@@ -831,50 +804,27 @@ export function Home() {
   const latestTags = useMemo(() => buildVideoTags(latest.posts), [latest.posts]);
   const linkArticles = useMemo(() => buildLinkArticles(latestTags, latest.posts), [latestTags, latest.posts]);
   const sponsoredTags = useMemo(() => buildVideoTags(sponsored.posts), [sponsored.posts]);
-  const gridPosts = useMemo(() => buildGridPosts(sponsored.posts), [sponsored.posts]);
   const deskNewsArticles = useMemo(() => postsToArticles(deskNews.posts, SAILGP_NEWS), [deskNews.posts]);
-  const interviewArticles = useMemo(
-    () => postsToArticles(interviews.posts, INTERVIEW_ARTICLES),
-    [interviews.posts]
-  );
+  const interviewArticles = useMemo(() => postsToArticles(interviews.posts, INTERVIEW_ARTICLES), [interviews.posts]);
 
-  const anyLoading = desk.isLoading || latest.isLoading || topCategories.isLoading || sponsored.isLoading;
-  const totalPosts = desk.posts.length + latest.posts.length + topCategories.posts.length + sponsored.posts.length;
-
-  if (anyLoading && totalPosts === 0) {
-    return (
-      <div
-        className="gencl:flex gencl:h-full gencl:items-center gencl:justify-center gencl:p-6"
-        role="status"
-        aria-live="polite">
-        <span className="gencl:text-secondary-500">Loading…</span>
-      </div>
-    );
-  }
-
-  if (!anyLoading && totalPosts === 0) {
-    return (
-      <div className="gencl:h-full gencl:overflow-auto">
-        <ErrorState type="NO_CONTENT" />
-      </div>
-    );
-  }
+  // NOTE: the page is intentionally NOT gated on the feed queries. The four video
+  // surfaces are Genuin SDK placements that load their own content, so a slow or
+  // empty community feed must not block or hide them — it only affects the section
+  // headers and the editorial panels, which have their own fallbacks.
 
   return (
-    <div className="gencl:h-full gencl:overflow-auto">
+    <div className="gencl:w-full">
       <div className="gencl:flex gencl:w-full gencl:flex-col">
         {/* Section 1 — video carousel + intelligence, contextually linked via the bus. */}
         <EventSurface
           ariaLabel="SaleGP desk and latest news"
-          className="gencl:p-6"
-          // Carousel ≈ 71 % / Intelligence ≈ 29 % — the panel is kept narrow so the
-          // carousel shows more cards.
-          columns="minmax(0, 2.5fr) minmax(0, 1fr)"
+          className="gencl:p-5"
+          // Match the Latest Interviews placement: content 2fr / Intelligence 0.75fr.
+          columns="minmax(0, 2fr) minmax(0, 0.75fr)"
           gap="lg"
-          // Breathing room to the LEFT of the intelligence panel (20 px).
-          columnGap="ml"
-          // 500 px of content + 2 × 24 px section padding.
-          height={548}>
+          columnGap="md"
+          // 520 px placement + 42 px header + 12 px gap + 2 × 20 px section padding.
+          height={614}>
           <EventSurfacePanel id="video" className="gencl:flex gencl:min-w-0 gencl:flex-col gencl:gap-3">
             <SectionHeader
               imageUrl={desk.communityImage}
@@ -885,7 +835,11 @@ export function Home() {
             {/* `overflow-hidden`: the carousel must stay inside its column and never
                 paint under the intelligence panel next to it. */}
             <div className="gencl:min-h-0 gencl:min-w-0 gencl:flex-1 gencl:overflow-hidden gencl:rounded-xl">
-              <DeskVideoPanel feedData={desk.feedData} videoTags={deskTags} />
+              <PlacementContainer
+                id={`home-desk-${instance}`}
+                placement={HOME_PLACEMENTS.desk}
+                ariaLabel="SailGP videos"
+              />
             </div>
           </EventSurfacePanel>
 
@@ -904,10 +858,10 @@ export function Home() {
 
         {/* Section 2 — Upcoming races. */}
         <section
-          aria-labelledby="upcoming-races-heading"
-          className="gencl:flex gencl:w-full gencl:flex-col gencl:gap-3 gencl:p-6">
+          aria-labelledby={`upcoming-races-heading-${instance}`}
+          className="gencl:flex gencl:w-full gencl:flex-col gencl:gap-3 gencl:p-5">
           <SectionHeader
-            id="upcoming-races-heading"
+            id={`upcoming-races-heading-${instance}`}
             imageUrl={SECTION_LOGO}
             imageAlt="The Foil"
             heading="Upcoming races: leading edge in action"
@@ -919,16 +873,17 @@ export function Home() {
         {/* Section — Latest Videos + related links (bus-linked) + Latest Interviews.
             Fixed height so every column (incl. the Intelligence panel) is height-
             constrained and scrolls internally instead of growing to its content. */}
-        <section className="gencl:flex gencl:w-full gencl:gap-4 gencl:p-6" style={{ height: 508 }}>
+        <section className="gencl:flex gencl:w-full gencl:gap-4 gencl:p-5" style={{ height: 481 }}>
           <EventSurface
             ariaLabel="Latest videos and related links"
             width="auto"
             style={{ flex: "2 1 0%" }}
             columns="minmax(0, 1.7fr) minmax(0, 1fr)"
             gap="md"
-            // Extra room to the LEFT of the hover-link list (24 px).
-            columnGap="lg"
-            height={460}>
+            // Keep the video, links, and Intelligence spacing consistent (16 px).
+            columnGap="md"
+            // 387 px placement + 42 px header + 12 px gap.
+            height={441}>
             <EventSurfacePanel id="video" className="gencl:flex gencl:min-w-0 gencl:flex-col gencl:gap-3">
               <SectionHeader
                 imageUrl={latest.communityImage}
@@ -937,7 +892,11 @@ export function Home() {
                 subHeading={HOME_SECTIONS.latestVideos.subHeading}
               />
               <div className="gencl:min-h-0 gencl:min-w-0 gencl:flex-1 gencl:overflow-hidden gencl:rounded-xl">
-                <InterviewsVideoPanel posts={latest.posts} videoTags={latestTags} />
+                <PlacementContainer
+                  id={`home-latest-videos-${instance}`}
+                  placement={HOME_PLACEMENTS.latestVideos}
+                  ariaLabel="Latest videos"
+                />
               </div>
             </EventSurfacePanel>
             <EventSurfacePanel id="links" className="gencl:flex gencl:min-w-0 gencl:flex-col gencl:gap-3">
@@ -967,23 +926,20 @@ export function Home() {
 
         {/* Section 3 — Top Categories (video carousel + heading). */}
         <section
-          aria-labelledby="top-categories-heading"
-          className="gencl:flex gencl:w-full gencl:flex-col gencl:gap-3 gencl:p-6">
+          aria-labelledby={`top-categories-heading-${instance}`}
+          className="gencl:flex gencl:w-full gencl:flex-col gencl:gap-3 gencl:p-5">
           <SectionHeader
-            id="top-categories-heading"
+            id={`top-categories-heading-${instance}`}
             imageUrl={topCategories.communityImage}
             imageAlt={topCategories.communityName}
             heading={topCategories.groupName ?? topCategories.communityName}
             subHeading={HOME_SECTIONS.topCategories.subHeading}
           />
-          <div className="gencl:overflow-hidden gencl:rounded-xl" style={{ height: 440 }}>
-            <VideoCarousel
-              feedType="HOME"
-              externalFeedData={topCategories.feedData}
-              ctaText="Read More"
-              showNavigation={false}
-              containerClassName="gencl:h-full"
-              onCtaClick={(post) => openVideoReadMore(post, "https://thefoil.com/series/")}
+          <div className="gencl:overflow-hidden gencl:rounded-xl" style={{ height: 365 }}>
+            <PlacementContainer
+              id={`home-top-categories-${instance}`}
+              placement={HOME_PLACEMENTS.topCategories}
+              ariaLabel="Top categories"
             />
           </div>
         </section>
@@ -993,13 +949,13 @@ export function Home() {
             (same behaviour as Section 1 — decided on load, doesn't change). */}
         <EventSurface
           ariaLabel="Tmobile grid and relevant news"
-          className="gencl:p-6"
-          columns="max-content minmax(0, 1fr)"
+          className="gencl:p-5"
+          // Match the Latest Interviews placement: content 2fr / Intelligence 0.75fr.
+          columns="minmax(0, 2fr) minmax(0, 0.75fr)"
           gap="lg"
-          // Breathing room to the LEFT of the news panel (32 px).
-          columnGap="ml"
-          // Header row (42 + 12 gap) + 2 × 296 px tiles + 8 px grid gap + 2 × 24 px padding.
-          height={702}>
+          columnGap="md"
+          // 568 px placement + 42 px header + 12 px gap + 2 × 20 px section padding.
+          height={662}>
           <EventSurfacePanel id="grid" className="gencl:flex gencl:min-w-0 gencl:flex-col gencl:gap-3">
             <SectionHeader
               imageUrl={TMOBILE_LOGO}
@@ -1007,8 +963,14 @@ export function Home() {
               heading="Tmobile"
               subHeading={HOME_SECTIONS.sponsoredGrid.subHeading}
             />
-            <div className="gencl:min-h-0 gencl:flex-1">
-              <TmobileGridPanel gridPosts={gridPosts} videoTags={sponsoredTags} />
+            <div className="gencl:min-h-0 gencl:min-w-0 gencl:w-full gencl:flex-1">
+              {/* Match the placement's configured design size so its height is not scaled. */}
+              <PlacementContainer
+                id={`home-sponsored-grid-${instance}`}
+                placement={HOME_PLACEMENTS.sponsoredGrid}
+                width={HOME_PLACEMENTS.sponsoredGrid.width}
+                ariaLabel="Sponsored videos"
+              />
             </div>
           </EventSurfacePanel>
 
@@ -1019,12 +981,97 @@ export function Home() {
               heading={sponsored.communityName}
               subHeading="Relevant News"
             />
-            <div className="gencl:min-h-0 gencl:flex-1">
+            <div className="gencl:min-h-0" style={{ height: 568 }}>
               <DeskNewsPanel articles={CLASSIC_600_NEWS} videoTags={sponsoredTags} />
             </div>
           </EventSurfacePanel>
         </EventSurface>
       </div>
+    </div>
+  );
+}
+
+/**
+ * The home page: one copy of `HomeSections` per "page", appended forever as the
+ * reader scrolls.
+ *
+ * The content of each copy is identical — this is a deliberately endless feed of the
+ * same page, not paginated data. Each copy re-mounts the four Genuin placements under
+ * fresh container ids, so the SDK boots them independently.
+ *
+ * Section data is fetched once and shared: every copy calls the same `useFeed` query
+ * keys, so react-query serves later copies from cache.
+ */
+export function Home() {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const [copies, setCopies] = useState(1);
+
+  // Load the SDK, then let it boot the placement containers — the same
+  // `window.genuin.init(...)` the hosted embed snippet calls, just run after React
+  // has committed the containers. Re-runs when a copy is appended so the new
+  // containers get booted too; the SDK skips the ones it has already handled.
+  //
+  // `configuration` is global to the init call, so every container on this page —
+  // including any placement added later — inherits it. `player_controls: "v2"`
+  // keeps the v2 control cluster (mute → play/pause → expand, top-right) in both
+  // the inline placement and the expanded view; without it the SDK falls back to
+  // the v1 controls, which split the cluster and drop the volume ring.
+  //
+  // Deliberately NOT `design_system: "v2"`: that also switches linkouts to the
+  // dynamic sheet, changes the sponsored-badge treatment and makes control sizes
+  // width-derived — none of which this page wants yet. Adding a placement here
+  // needs no change to the id allowlist in `hooks/embed/use-embed-config.ts`.
+  useEffect(() => {
+    let cancelled = false;
+    const init = () => {
+      if (!cancelled) window.genuin?.init({ configuration: { player_controls: "v2" } });
+    };
+
+    const existing = document.querySelector<HTMLScriptElement>(`script[src="${GENUIN_SDK_SRC}"]`);
+    if (existing) {
+      if (window.genuin?.init) init();
+      else existing.addEventListener("load", init, { once: true });
+    } else {
+      const script = document.createElement("script");
+      script.src = GENUIN_SDK_SRC;
+      script.async = true;
+      script.addEventListener("load", init, { once: true });
+      document.head.appendChild(script);
+    }
+
+    return () => {
+      cancelled = true;
+    };
+  }, [copies]);
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return undefined;
+
+    // `root` is the page's own scroll container, not the viewport — the layout
+    // scrolls inside this component, so a viewport-rooted observer would never fire.
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // One copy per crossing: appending pushes the sentinel back out of the
+        // margin, and the next scroll brings it in again.
+        if (entries.some((entry) => entry.isIntersecting)) setCopies((count) => count + 1);
+      },
+      { root: scrollRef.current, rootMargin: "800px 0px" }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={scrollRef} className="gencl:h-full gencl:overflow-auto">
+      {Array.from({ length: copies }, (_, index) => (
+        <HomeSections key={index} instance={index} />
+      ))}
+      {/* Scroll tripwire — appending happens when this comes within 800 px of the
+          bottom of the scroll container. */}
+      <div ref={sentinelRef} aria-hidden style={{ height: 1 }} />
     </div>
   );
 }

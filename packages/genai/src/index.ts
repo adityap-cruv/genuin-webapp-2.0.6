@@ -1,6 +1,8 @@
 import { SDKLifecycle, type SDKConfig } from './core/SDKLifecycle';
 import './styles/index.css';
 
+export { KoahAdWidget, type KoahAdWidgetProps } from './components/Chat/KoahAdWidget';
+
 const lifecycle = new SDKLifecycle();
 
 export function init(config: SDKConfig) {

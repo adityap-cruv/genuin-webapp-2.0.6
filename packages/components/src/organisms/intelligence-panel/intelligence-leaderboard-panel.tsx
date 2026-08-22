@@ -10,6 +10,7 @@ import { Link } from "@genuin/components/molecules/link";
 
 import { IntelligencePanelShell } from "./intelligence-panel-shell";
 import type {
+  IntelligenceLeaderboardContentProps,
   IntelligenceLeaderboardEntry,
   IntelligenceLeaderboardPanelProps,
   IntelligenceLeaderboardView,
@@ -174,16 +175,118 @@ function LeaderboardTable({ view }: { view: IntelligenceLeaderboardView }) {
   );
 }
 
-/** Compact adaptation of The Foil's standings treatment for Intelligence. */
+/**
+ * Shell-less leaderboard body. Renders the tab switcher, hero, table, and
+ * footer so it can be composed anywhere — inside the Intelligence panel
+ * shell or as a block in an Intelligence chat response.
+ */
+export function IntelligenceLeaderboardContent({
+  views,
+  defaultViewId,
+  fullStandingsHref,
+  sourceLabel,
+}: IntelligenceLeaderboardContentProps) {
+  const tabsId = React.useId();
+  const [selectedViewId, setSelectedViewId] = React.useState(defaultViewId ?? views[0]?.id);
+  const selectedView = views.find((view) => view.id === selectedViewId) ?? views[0];
+
+  return (
+    <>
+      {selectedView ? (
+        <div className="gencl:mt-2 gencl:flex gencl:min-h-full gencl:flex-col gencl:gap-3 gencl:bg-secondary-900 gencl:p-3 gencl:text-white">
+          <FoilSectionHeader view={selectedView} />
+
+          <LeaderboardHero view={selectedView} />
+
+          {views.length > 1 && (
+            <div role="tablist" aria-label="Leaderboard view" className="gencl:grid gencl:grid-cols-2 gencl:gap-2">
+              {views.map((view, viewIndex) => {
+                const isSelected = view.id === selectedView.id;
+
+                return (
+                  <button
+                    key={view.id}
+                    id={`${tabsId}-tab-${view.id}`}
+                    type="button"
+                    role="tab"
+                    aria-selected={isSelected}
+                    aria-controls={`${tabsId}-panel`}
+                    tabIndex={isSelected ? 0 : -1}
+                    onClick={() => setSelectedViewId(view.id)}
+                    onKeyDown={(event) => {
+                      if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+
+                      event.preventDefault();
+                      const nextIndex =
+                        event.key === "Home"
+                          ? 0
+                          : event.key === "End"
+                            ? views.length - 1
+                            : (viewIndex + (event.key === "ArrowRight" ? 1 : -1) + views.length) % views.length;
+                      const nextView = views[nextIndex];
+                      if (!nextView) return;
+
+                      setSelectedViewId(nextView.id);
+                      event.currentTarget.parentElement
+                        ?.querySelectorAll<HTMLButtonElement>('[role="tab"]')
+                        [nextIndex]?.focus();
+                    }}
+                    className={cn(
+                      "gencl:h-9 gencl:border gencl:px-2 gencl:text-[9px] gencl:font-medium gencl:transition-colors",
+                      "gencl:focus-visible:outline-none gencl:focus-visible:ring-2 gencl:focus-visible:ring-[#d4ad00]",
+                      isSelected
+                        ? "gencl:border-[#d4ad00] gencl:bg-[#d4ad00] gencl:text-black"
+                        : "gencl:border-white/50 gencl:bg-secondary-900 gencl:text-white gencl:hover:bg-white/10"
+                    )}
+                    style={isSelected ? { clipPath: ACTIVE_TAB_CLIP } : undefined}>
+                    {view.tabLabel}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          <div
+            id={`${tabsId}-panel`}
+            role={views.length > 1 ? "tabpanel" : undefined}
+            aria-labelledby={views.length > 1 ? `${tabsId}-tab-${selectedView.id}` : undefined}>
+            <LeaderboardTable view={selectedView} />
+          </div>
+
+          <footer className="gencl:flex gencl:items-center gencl:justify-between gencl:gap-3 gencl:pb-2">
+            <Text as="p" size="body-4" className="gencl:text-[9px]! gencl:text-secondary-400">
+              Source: {sourceLabel}
+            </Text>
+            <Link
+              href={fullStandingsHref}
+              className={cn(
+                "gencl:inline-flex gencl:h-7 gencl:items-center gencl:gap-1 gencl:bg-[#ed1c24] gencl:px-3 gencl:text-[9px] gencl:font-medium",
+                "gencl:text-white gencl:no-underline gencl:transition-[filter] gencl:hover:brightness-95",
+                "gencl:focus-visible:outline-none gencl:focus-visible:ring-2 gencl:focus-visible:ring-black"
+              )}
+              style={{ clipPath: "polygon(0 0, 100% 0, 100% 70%, 88% 100%, 0 100%)" }}>
+              Full standings
+              <ArrowUpRight aria-hidden="true" className="gencl:size-3" />
+            </Link>
+          </footer>
+        </div>
+      ) : (
+        <div className="gencl:flex gencl:min-h-48 gencl:items-center gencl:justify-center gencl:px-6 gencl:text-center">
+          <Text as="p" size="body-3" className="gencl:text-secondary-500">
+            Standings are not available yet.
+          </Text>
+        </div>
+      )}
+    </>
+  );
+}
+
+/** Compact standings table inspired by The Foil, composed inside the Intelligence shell. */
 export const IntelligenceLeaderboardPanel = React.forwardRef<HTMLElement, IntelligenceLeaderboardPanelProps>(
   function IntelligenceLeaderboardPanel(
     { views, defaultViewId, fullStandingsHref, sourceLabel, size, onClose, className, ...props },
     ref
   ) {
-    const tabsId = React.useId();
-    const [selectedViewId, setSelectedViewId] = React.useState(defaultViewId ?? views[0]?.id);
-    const selectedView = views.find((view) => view.id === selectedViewId) ?? views[0];
-
     return (
       <IntelligencePanelShell
         ref={ref}
@@ -192,91 +295,12 @@ export const IntelligenceLeaderboardPanel = React.forwardRef<HTMLElement, Intell
         onClose={onClose}
         className={className}
         {...props}>
-        {selectedView ? (
-          <div className="gencl:mt-2 gencl:flex gencl:min-h-full gencl:flex-col gencl:gap-3 gencl:bg-secondary-900 gencl:p-3 gencl:text-white">
-            <FoilSectionHeader view={selectedView} />
-
-            <LeaderboardHero view={selectedView} />
-
-            {views.length > 1 && (
-              <div role="tablist" aria-label="Leaderboard view" className="gencl:grid gencl:grid-cols-2 gencl:gap-2">
-                {views.map((view, viewIndex) => {
-                  const isSelected = view.id === selectedView.id;
-
-                  return (
-                    <button
-                      key={view.id}
-                      id={`${tabsId}-tab-${view.id}`}
-                      type="button"
-                      role="tab"
-                      aria-selected={isSelected}
-                      aria-controls={`${tabsId}-panel`}
-                      tabIndex={isSelected ? 0 : -1}
-                      onClick={() => setSelectedViewId(view.id)}
-                      onKeyDown={(event) => {
-                        if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
-
-                        event.preventDefault();
-                        const nextIndex =
-                          event.key === "Home"
-                            ? 0
-                            : event.key === "End"
-                              ? views.length - 1
-                              : (viewIndex + (event.key === "ArrowRight" ? 1 : -1) + views.length) % views.length;
-                        const nextView = views[nextIndex];
-                        if (!nextView) return;
-
-                        setSelectedViewId(nextView.id);
-                        event.currentTarget.parentElement
-                          ?.querySelectorAll<HTMLButtonElement>('[role="tab"]')
-                          [nextIndex]?.focus();
-                      }}
-                      className={cn(
-                        "gencl:h-9 gencl:border gencl:px-2 gencl:text-[9px] gencl:font-medium gencl:transition-colors",
-                        "gencl:focus-visible:outline-none gencl:focus-visible:ring-2 gencl:focus-visible:ring-[#d4ad00]",
-                        isSelected
-                          ? "gencl:border-[#d4ad00] gencl:bg-[#d4ad00] gencl:text-black"
-                          : "gencl:border-white/50 gencl:bg-secondary-900 gencl:text-white gencl:hover:bg-white/10"
-                      )}
-                      style={isSelected ? { clipPath: ACTIVE_TAB_CLIP } : undefined}>
-                      {view.tabLabel}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-
-            <div
-              id={`${tabsId}-panel`}
-              role={views.length > 1 ? "tabpanel" : undefined}
-              aria-labelledby={views.length > 1 ? `${tabsId}-tab-${selectedView.id}` : undefined}>
-              <LeaderboardTable view={selectedView} />
-            </div>
-
-            <footer className="gencl:flex gencl:items-center gencl:justify-between gencl:gap-3 gencl:pb-2">
-              <Text as="p" size="body-4" className="gencl:text-[9px]! gencl:text-secondary-400">
-                Source: {sourceLabel}
-              </Text>
-              <Link
-                href={fullStandingsHref}
-                className={cn(
-                  "gencl:inline-flex gencl:h-7 gencl:items-center gencl:gap-1 gencl:bg-[#ed1c24] gencl:px-3 gencl:text-[9px] gencl:font-medium",
-                  "gencl:text-white gencl:no-underline gencl:transition-[filter] gencl:hover:brightness-95",
-                  "gencl:focus-visible:outline-none gencl:focus-visible:ring-2 gencl:focus-visible:ring-black"
-                )}
-                style={{ clipPath: "polygon(0 0, 100% 0, 100% 70%, 88% 100%, 0 100%)" }}>
-                Full standings
-                <ArrowUpRight aria-hidden="true" className="gencl:size-3" />
-              </Link>
-            </footer>
-          </div>
-        ) : (
-          <div className="gencl:flex gencl:min-h-48 gencl:items-center gencl:justify-center gencl:px-6 gencl:text-center">
-            <Text as="p" size="body-3" className="gencl:text-secondary-500">
-              Standings are not available yet.
-            </Text>
-          </div>
-        )}
+        <IntelligenceLeaderboardContent
+          views={views}
+          defaultViewId={defaultViewId}
+          fullStandingsHref={fullStandingsHref}
+          sourceLabel={sourceLabel}
+        />
       </IntelligencePanelShell>
     );
   }

@@ -1,5 +1,16 @@
 // Type definitions for @genuin/genai-sdk
 
+import type { ComponentType } from 'react';
+
+export interface KoahAdWidgetProps {
+    userMessage: string | null;
+    aiResponse: string;
+    messageId: string;
+    standalone?: boolean;
+}
+
+export const KoahAdWidget: ComponentType<KoahAdWidgetProps>;
+
 export interface GenAISDKConfig {
     userId: string;
     brandId: number;
