@@ -4,14 +4,19 @@ import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 
 import type { HomeDataPage, HomeLayoutManifest } from "./contract";
 
-/** Base URL of the isolated home BFF (serves BOTH the layout manifest and the data pages). */
-const HOME_BFF_URL = process.env.NEXT_PUBLIC_HOME_BFF_URL ?? "http://localhost:4000";
+/**
+ * Base URL of the home data source (serves BOTH the layout manifest and the data pages).
+ * INTEGRATION SEAM:
+ *  - UNSET (default) → same-origin Next API routes (`/api/home/*`) — the dummy backend bundled in
+ *    the webapp. This is what the simple one-container deploy uses (no CORS, no host to configure).
+ *  - SET → an external backend (a real BFF) serving the SAME contract. Switching is one env var.
+ */
+const HOME_BFF_URL = process.env.NEXT_PUBLIC_HOME_BFF_URL ?? "";
 
 async function fetchJson<T>(path: string): Promise<T> {
-  const response = await fetch(new URL(path, HOME_BFF_URL).toString(), {
-    headers: { accept: "application/json" },
-  });
-  if (!response.ok) throw new Error(`Home BFF request failed: ${response.status} (${path})`);
+  const url = HOME_BFF_URL ? new URL(path, HOME_BFF_URL).toString() : path;
+  const response = await fetch(url, { headers: { accept: "application/json" } });
+  if (!response.ok) throw new Error(`Home data request failed: ${response.status} (${path})`);
   return (await response.json()) as T;
 }
 

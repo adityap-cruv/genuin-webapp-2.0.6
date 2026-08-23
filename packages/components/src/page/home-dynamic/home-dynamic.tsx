@@ -182,30 +182,26 @@ export function HomeDynamic() {
     return () => cancelAnimationFrame(frame);
   }, [pageCount]);
 
-  if (layoutQuery.isLoading || feed.isLoading) {
-    return (
-      <div className="gencl:h-full gencl:overflow-auto">
-        <CenteredMessage>Loading…</CenteredMessage>
-      </div>
-    );
-  }
-
-  if (layoutQuery.isError || feed.isError || !layoutQuery.data) {
-    return (
-      <div className="gencl:h-full gencl:overflow-auto">
-        <ErrorState type="ERROR" />
-      </div>
-    );
-  }
-
   const layout = layoutQuery.data;
   const pages = feed.data?.pages ?? [];
+  const isInitialLoading = layoutQuery.isLoading || feed.isLoading;
+  const isError = layoutQuery.isError || feed.isError || (!isInitialLoading && !layout);
 
+  // ALWAYS render the scroll container so `scrollRef`/`sentinelRef` are attached from the very
+  // first render — otherwise the infinite-scroll observer can miss them (its effect re-runs on
+  // [hasNextPage,…], which may not change on the loading→loaded transition if the feed query
+  // resolved before the layout query). Loading/error render INSIDE the container.
   return (
     <div ref={scrollRef} className="gencl:h-full gencl:overflow-auto">
-      {pages.map((page) => (
-        <PageBlock key={page.metadata.pageSession} page={page} layout={layout} rootRef={scrollRef} />
-      ))}
+      {layout &&
+        pages.map((page) => (
+          <PageBlock key={page.metadata.pageSession} page={page} layout={layout} rootRef={scrollRef} />
+        ))}
+      {isError ? (
+        <ErrorState type="ERROR" />
+      ) : isInitialLoading ? (
+        <CenteredMessage>Loading…</CenteredMessage>
+      ) : null}
       <div ref={sentinelRef} aria-hidden style={{ height: 1 }} />
       {isFetchingNextPage && <CenteredMessage>Loading more…</CenteredMessage>}
     </div>

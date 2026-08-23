@@ -8,6 +8,7 @@ import {
   useEffect,
   useId,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -324,41 +325,57 @@ function PlacementWidget({ node, data }: WidgetRenderProps) {
   const placementId = typeof node.config?.placementId === "string" ? node.config.placementId : "";
   const apiKey = typeof node.config?.apiKey === "string" ? node.config.apiKey : "";
 
-  // Forward contextual flow: when THIS placement's embed changes its active video, the SDK
-  // emits `player:videoChanged` with its instance id + index. Record that index on the bus so
-  // the linked article/list highlights the item at the same position. Filtered by instance id
-  // so block-2's placement never drives block-1's list.
+  // Latest bus setter in a ref so the SDK listener registers ONCE and never re-subscribes when the
+  // bus value changes (it changes on every setActiveIndex). `setActiveIndex` itself is stable.
+  const setActiveIndexRef = useRef(bus?.setActiveIndex);
+  setActiveIndexRef.current = bus?.setActiveIndex;
+
+  // Forward contextual flow: when THIS placement's embed changes its active video, the SDK emits
+  // `player:videoChanged` with its instance id + index. Record that index on the bus so the linked
+  // article/list highlights the item at the same position (filtered by instance id).
+  //
+  // We RETRY until `window.genuin.onInternal` exists — it can lag the script's `load` event, and if
+  // we bail early the listener would never attach until something forced a re-subscribe (e.g. a
+  // click). Registering reliably on mount is what makes the video→article highlight work from the
+  // START, on automatic scroll, without needing a click first.
   useEffect(() => {
-    if (typeof window === "undefined" || !bus) return;
+    if (typeof window === "undefined") return;
     let unsubscribe: (() => void) | undefined;
     let cancelled = false;
-    loadGenuinSdk()
-      .then(() => {
-        if (cancelled) return;
-        const genuin = window.genuin;
-        if (!genuin?.onInternal) return;
-        // The SDK's `onInternal` returns an unsubscribe fn at runtime, though its global
-        // type declares `void`; capture it defensively.
-        const off: unknown = genuin.onInternal("player:videoChanged", (raw: unknown) => {
-          // The SDK's event manager delivers a wrapper `{ type, payload, timestamp, embedId }`
-          // (see web-sdk core/events.ts) — the real data is under `.payload` (same reason the
-          // embed provider reads `props.payload`). Unwrap it, tolerating an unwrapped payload too.
-          const wrapper = raw as { payload?: { instanceId?: string; index?: number } };
-          const event = (wrapper?.payload ?? wrapper) as { instanceId?: string; index?: number };
-          const myInstanceId = document.getElementById(domId)?.getAttribute("data-instance-id");
-          if (!myInstanceId || event.instanceId !== myInstanceId) return;
-          if (typeof event.index === "number") bus.setActiveIndex(node.id, event.index);
-        });
-        if (typeof off === "function") unsubscribe = off as () => void;
-      })
-      .catch(() => {
-        /* SDK unavailable — no forward flow. */
+    let retry: ReturnType<typeof setTimeout> | undefined;
+    let attempts = 0;
+
+    const register = () => {
+      if (cancelled) return;
+      const genuin = window.genuin;
+      if (!genuin?.onInternal) {
+        if (attempts++ < 40) retry = setTimeout(register, 200); // SDK not fully ready yet.
+        return;
+      }
+      // The SDK's `onInternal` returns an unsubscribe fn at runtime though its global type says
+      // `void`; capture it defensively.
+      const off: unknown = genuin.onInternal("player:videoChanged", (raw: unknown) => {
+        // The SDK delivers a wrapper `{ type, payload, timestamp, embedId }` (web-sdk core/events.ts)
+        // — the real data is under `.payload` (same reason the embed provider reads `props.payload`).
+        const wrapper = raw as { payload?: { instanceId?: string; index?: number } };
+        const event = (wrapper?.payload ?? wrapper) as { instanceId?: string; index?: number };
+        const myInstanceId = document.getElementById(domId)?.getAttribute("data-instance-id");
+        if (!myInstanceId || event.instanceId !== myInstanceId) return;
+        if (typeof event.index === "number") setActiveIndexRef.current?.(node.id, event.index);
       });
+      if (typeof off === "function") unsubscribe = off as () => void;
+    };
+
+    loadGenuinSdk().then(register).catch(() => {
+      /* SDK unavailable — no forward flow. */
+    });
+
     return () => {
       cancelled = true;
+      if (retry) clearTimeout(retry);
       unsubscribe?.();
     };
-  }, [bus, domId, node.id]);
+  }, [domId, node.id]);
 
   // Reverse contextual flow: when a linked article selects an index (written to this widget's
   // bus key), tell THIS placement's running embed to slide to it — scoped by the placement's
@@ -489,10 +506,12 @@ function HoverLinkCardListWidget({ node, data, dataMap }: WidgetRenderProps) {
   });
 
   // Index relay (matches home.tsx): the placement reports its active position to the bus; we
-  // highlight the item at that index. Highlight is by `video_id` (what HoverLinkCardList
-  // matches on), so map the active index → that item's id.
-  const activeIndex = bus?.getActiveIndex(key);
-  const activeVideoId = activeIndex != null ? items[activeIndex]?.video_id ?? null : null;
+  // highlight the item at that index. Highlight is by `video_id` (what HoverLinkCardList matches
+  // on), so map the active index → that item's id. Before the first forward event, default to the
+  // FIRST item so the list is mapped to the (index-0) video from page load — display-only, no
+  // reverse emit (that's driven by the bus, which this default does not write to).
+  const activeIndex = bus?.getActiveIndex(key) ?? 0;
+  const activeVideoId = items[activeIndex]?.video_id ?? null;
 
   return (
     <WidgetFrame

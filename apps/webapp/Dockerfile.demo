@@ -1,0 +1,65 @@
+# Dockerfile.demo — self-contained single-container demo of the Genuin webapp.
+#
+# Differs from the official apps/webapp/Dockerfile in two ways the current code REQUIRES:
+#   1. Builds @genuin/genai-sdk in-image — `next build` imports it (KoahAdWidget, via the
+#      intelligence-chat panel) and its dist is gitignored/dockerignored.
+#   2. Builds the modified @genuin/web-sdk and bundles it into public/sdk, so the placements
+#      load YOUR SDK (contextual video↔article mapping + intelligence chat), served same-origin
+#      at /sdk/gen_sdk.min.js.
+# The home page's "backend" is the webapp's own /api/home/* routes (dummy data), so there is
+# NO separate BFF container and NO NEXT_PUBLIC_HOME_BFF_URL to configure.
+
+## Stage 1: builder ────────────────────────────────────────────────────────────
+FROM node:20.12.0-alpine AS base
+WORKDIR /app
+RUN apk add --no-cache libc6-compat python3 make g++
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable && corepack prepare pnpm@8.15.3 --activate
+
+# Copy the whole monorepo (dist/.env excluded by .dockerignore), then install.
+COPY . .
+RUN pnpm install --frozen-lockfile
+
+# 1) genai — needed by `next build`. Build DIRECTLY (bypass the validate:env wall); pass the Koah
+#    ad token so the ad above the intelligence chat shows. Other genai vars default to empty →
+#    the assistant runs on its built-in dev mock data, which is fine for a demo.
+ARG VITE_GENAI_KOAH_PUBLISHER_ID="4d4c2923-96ae-4b8f-bede-5acb9145b936"
+RUN cd packages/genai \
+ && VITE_GENAI_KOAH_PUBLISHER_ID="$VITE_GENAI_KOAH_PUBLISHER_ID" pnpm exec cross-env NODE_ENV=development tsc -b \
+ && VITE_GENAI_KOAH_PUBLISHER_ID="$VITE_GENAI_KOAH_PUBLISHER_ID" pnpm exec cross-env NODE_ENV=development vite build --mode development
+
+# 2) modified web-sdk → bundle into the webapp's public assets (served at /sdk/…).
+RUN cd packages/web-sdk \
+ && pnpm exec cross-env NODE_ENV=qa vite build \
+ && mkdir -p /app/apps/webapp/public/sdk \
+ && cp -r dist/. /app/apps/webapp/public/sdk/ \
+ && find /app/apps/webapp/public/sdk -name '*.map' -delete
+
+# 3) Demo NEXT_PUBLIC_* (statically inlined by next build). Same-origin dummy backend ⇒
+#    NEXT_PUBLIC_HOME_BFF_URL is intentionally UNSET. CURRENT_ENV=local so assets serve from "/".
+ARG NEXT_PUBLIC_CURRENT_ENV=local
+ARG NEXT_PUBLIC_GENUIN_SDK_URL=/sdk/gen_sdk.min.js
+ENV NEXT_PUBLIC_CURRENT_ENV=$NEXT_PUBLIC_CURRENT_ENV
+ENV NEXT_PUBLIC_GENUIN_SDK_URL=$NEXT_PUBLIC_GENUIN_SDK_URL
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Full webapp env (API base urls, brand config, etc.) comes from a mounted secret — same as the
+# official Dockerfile. Provide apps/webapp/.env.production.local at build time.
+RUN --mount=type=secret,id=env_file,target=apps/webapp/.env.production.local \
+    pnpm --filter @genuin/webapp run build
+
+## Stage 2: runner ─────────────────────────────────────────────────────────────
+FROM node:20.12.0-alpine AS runner
+ENV NODE_ENV=production
+ENV PORT=4000
+ENV NEXT_TELEMETRY_DISABLED=1
+RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
+
+COPY --from=base --chown=nextjs:nodejs /app/apps/webapp/.next/standalone /apps/standalone
+COPY --from=base --chown=nextjs:nodejs /app/apps/webapp/.next/static/ /apps/standalone/apps/webapp/.next/static/
+COPY --from=base --chown=nextjs:nodejs /app/apps/webapp/public/ /apps/standalone/apps/webapp/public/
+
+USER nextjs
+EXPOSE 4000
+CMD ["node", "/apps/standalone/apps/webapp/server.js"]
