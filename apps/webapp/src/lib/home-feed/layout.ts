@@ -39,9 +39,10 @@ const HOME_LAYOUT: HomeLayoutManifest = {
   rows: [
     {
       id: "row-1",
-      gridTemplateColumns: "minmax(0, 2.5fr) minmax(0, 1fr)",
-      height: 500,
-      columnGap: 20,
+      gridTemplateColumns: "minmax(0, 2fr) minmax(0, 0.75fr)",
+      height: 574,
+      padding: 20,
+      columnGap: 16,
       children: [
         {
           type: "widget",
@@ -64,15 +65,18 @@ const HOME_LAYOUT: HomeLayoutManifest = {
       id: "row-2",
       gridTemplateColumns: "minmax(0, 1fr)",
       height: 190,
+      padding: 20,
       children: [
         { type: "widget", id: "upcoming_races", component: "event_carousel", dataKey: "upcoming_races" },
       ],
     },
     {
       id: "row-3",
-      gridTemplateColumns: "minmax(0, 1.7fr) minmax(0, 1fr) minmax(0, 1fr)",
-      height: 460,
-      columnGap: 20,
+      // Video + links together occupy 2fr; Intelligence matches every other panel at 0.75fr.
+      gridTemplateColumns: "minmax(0, 1.259fr) minmax(0, 0.741fr) minmax(0, 0.75fr)",
+      height: 441,
+      padding: 20,
+      columnGap: 16,
       children: [
         {
           type: "widget",
@@ -101,7 +105,8 @@ const HOME_LAYOUT: HomeLayoutManifest = {
     {
       id: "row-4",
       gridTemplateColumns: "minmax(0, 1fr)",
-      height: 498,
+      height: 419,
+      padding: 20,
       children: [
         {
           type: "widget",
@@ -115,9 +120,10 @@ const HOME_LAYOUT: HomeLayoutManifest = {
     },
     {
       id: "row-5",
-      gridTemplateColumns: "minmax(0, 1.8fr) minmax(0, 1fr)",
-      height: 654,
-      columnGap: 20,
+      gridTemplateColumns: "minmax(0, 2fr) minmax(0, 0.75fr)",
+      height: 622,
+      padding: 20,
+      columnGap: 16,
       children: [
         { type: "widget", id: "tmobile", component: "video_grid", dataKey: "tmobile", config: GRID_PLACEMENT },
         {

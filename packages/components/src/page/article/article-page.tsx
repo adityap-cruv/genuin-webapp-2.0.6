@@ -78,7 +78,7 @@ function scheduleGenuinInit() {
   if (typeof window === "undefined" || initHandle !== null) return;
   initHandle = window.requestAnimationFrame(() => {
     initHandle = null;
-    (window as GenuinWindow).genuin?.init?.({});
+    (window as GenuinWindow).genuin?.init?.({ configuration: { player_controls: "v2" } });
   });
 }
 
@@ -120,7 +120,9 @@ function GenuinPlacement({ placement }: { placement: PlacementConfig }) {
 /** Right-rail placement: the vertical "feed" placement (the page wraps it sticky). */
 function ArticleFeedPlacement() {
   return (
-    <div className="gencl:overflow-hidden gencl:rounded-xl" style={{ width: "100%", height: 640 }}>
+    <div
+      className="gen-article-reveal gen-article-reveal-delay-3 gencl:overflow-hidden gencl:rounded-xl"
+      style={{ width: "100%", height: 640 }}>
       <GenuinPlacement placement={PLACEMENTS.feed} />
     </div>
   );
@@ -129,7 +131,9 @@ function ArticleFeedPlacement() {
 /** Hero placement: the wide "carousel" placement, full-width right under the headline. */
 function ArticleCarouselPlacement() {
   return (
-    <div className="gencl:my-8 gencl:overflow-hidden gencl:rounded-xl" style={{ width: "100%", height: 400 }}>
+    <div
+      className="gen-article-reveal gen-article-reveal-delay-1 gencl:my-8 gencl:overflow-hidden gencl:rounded-xl"
+      style={{ width: "100%", height: 400 }}>
       <GenuinPlacement placement={PLACEMENTS.carousel} />
     </div>
   );
@@ -140,18 +144,17 @@ function ArticleCarouselPlacement() {
  * (which scroll by design), the grid must show ALL its tiles at once with NO internal scrollbar.
  *
  * The SDK renders the grid inside a shadow root / iframe and sizes its scroll viewport to the
- * container height AT `init()` time — so the container must already be tall enough on the first
- * render (JS that grows the box afterwards can neither see past that boundary nor resize the
- * cached viewport). For a 3-column × 2-row grid of 9:16 tiles the natural content height is
- * ~1.2× the width regardless of the actual column width, so an aspect ratio (not a fixed px
- * height) sizes the box correctly at every width. `1000 / 1280` errs slightly tall so no tile
- * is ever clipped — a small amount of empty space is preferable to a scrollbar.
+ * container height AT `init()` time — so the container must have the placement's configured
+ * ratio on the first render. The placement is configured as 1000 × 890 with 3:4 tiles in a
+ * 3-column × 2-row grid: two rows of 3:4 thirds need ~0.89 x the width, and the rest covers the
+ * grid's gaps. The 3:4 tiles are deliberately taller than the 16:9 sources — the resulting
+ * letterboxing is accepted in exchange for a larger tile.
  */
 function ArticleGridPlacement() {
   return (
     <div
-      className="gencl:my-8 gencl:overflow-hidden gencl:rounded-xl"
-      style={{ width: "100%", aspectRatio: "1000 / 1280" }}>
+      className="gen-article-reveal gencl:mt-8 gencl:overflow-hidden gencl:rounded-xl"
+      style={{ width: "100%", aspectRatio: "1000 / 890" }}>
       <GenuinPlacement placement={PLACEMENTS.grid} />
     </div>
   );
@@ -180,6 +183,18 @@ const KIND_LABEL: Record<Article["kind"], string> = {
  * matching `BREAKPOINTS.DESKTOP`.
  */
 const ARTICLE_LAYOUT_CSS = `
+.gen-article-page { scroll-behavior: smooth; }
+.gen-article-reveal {
+  opacity: 0;
+  animation: gen-article-rise 620ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.gen-article-reveal-delay-1 { animation-delay: 80ms; }
+.gen-article-reveal-delay-2 { animation-delay: 160ms; }
+.gen-article-reveal-delay-3 { animation-delay: 240ms; }
+@keyframes gen-article-rise {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 .gen-article-cols { margin-top: 24px; display: flex; flex-direction: column; gap: 32px; align-items: stretch; }
 .gen-article-main { min-width: 0; }
 .gen-article-rail { width: 100%; min-width: 0; flex-shrink: 0; }
@@ -192,6 +207,10 @@ const ARTICLE_LAYOUT_CSS = `
   /* Grid finale spans the article content column only (not the 340px rail + 32px gap),
      left-aligned so it sits exactly within the content's left and right borders. */
   .gen-article-finale { width: calc(100% - 372px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gen-article-page { scroll-behavior: auto; }
+  .gen-article-reveal { opacity: 1; animation: none; }
 }
 `;
 
@@ -247,7 +266,9 @@ export function ArticlePage({ article }: { article: Article }) {
   const bylineParts = [article.author, article.publishedAt].filter(Boolean);
 
   return (
-    <div style={{ height: "100%", overflow: "auto", background: "#ffffff" }}>
+    <div
+      className="gen-article-page"
+      style={{ height: "100%", overflow: "auto", background: "#ffffff" }}>
       <style>{ARTICLE_LAYOUT_CSS}</style>
       <div style={{ width: "100%", padding: "32px 20px" }}>
         <Link
@@ -262,7 +283,7 @@ export function ArticlePage({ article }: { article: Article }) {
         </Link>
 
         {/* Full-width headline block, above the hero placement. */}
-        <header className="gencl:mt-4">
+        <header className="gen-article-reveal gencl:mt-4">
           <Text
             as="p"
             size="body-3"
@@ -314,7 +335,7 @@ export function ArticlePage({ article }: { article: Article }) {
         {/* 2. BODY — article text (LEFT) + sticky feed placement (RIGHT rail). Two columns on
             desktop, stacked on mobile, via CSS so it's correct on the first SSR paint. */}
         <div className="gen-article-cols">
-          <article className="gen-article-main">
+          <article className="gen-article-main gen-article-reveal gen-article-reveal-delay-2">
             <div className="gencl:mb-6 gencl:overflow-hidden gencl:rounded-xl gencl:bg-secondary-100">
               <Image
                 src={article.heroImage.src}
@@ -332,7 +353,7 @@ export function ArticlePage({ article }: { article: Article }) {
           </article>
 
           <aside className="gen-article-rail">
-            <div className="gen-article-rail-sticky">
+            <div className="gen-article-rail-sticky gen-article-reveal gen-article-reveal-delay-3">
               <ArticleFeedPlacement />
             </div>
           </aside>

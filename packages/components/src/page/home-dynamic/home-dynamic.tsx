@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+  type RefObject,
+} from "react";
 
 import { ErrorState } from "@genuin/components/molecules/error-state";
 
@@ -57,9 +64,22 @@ function NodeRenderer({ node, dataMap }: { node: LayoutNode; dataMap: DataMap })
  * One row: a CSS grid with the manifest's explicit column template and a fixed content height
  * (matching /home per-section). The single row track fills that height so cells stretch.
  */
-function RowRenderer({ row, dataMap }: { row: LayoutRow; dataMap: DataMap }) {
+function RowRenderer({
+  row,
+  dataMap,
+  index,
+}: {
+  row: LayoutRow;
+  dataMap: DataMap;
+  index: number;
+}) {
   return (
-    <div className="gencl:w-full" style={{ padding: 24 }}>
+    <div
+      className="gen-home-row gencl:w-full"
+      style={{
+        padding: row.padding ?? 24,
+        "--gen-home-delay": `${Math.min(index, 5) * 70}ms`,
+      } as CSSProperties}>
       <div
         style={{
           display: "grid",
@@ -125,8 +145,8 @@ function PageBlock({
     <div ref={ref}>
       <BlockVisibilityContext.Provider value={isNear}>
         <WidgetBusProvider>
-          {layout.rows.map((row) => (
-            <RowRenderer key={row.id} row={row} dataMap={page.data} />
+          {layout.rows.map((row, index) => (
+            <RowRenderer key={row.id} row={row} dataMap={page.data} index={index} />
           ))}
         </WidgetBusProvider>
       </BlockVisibilityContext.Provider>
@@ -144,6 +164,23 @@ function CenteredMessage({ children }: { children: ReactNode }) {
     </div>
   );
 }
+
+const HOME_MOTION_CSS = `
+.gen-home-motion { scroll-behavior: smooth; }
+.gen-home-row {
+  opacity: 0;
+  animation: gen-home-rise 620ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: var(--gen-home-delay, 0ms);
+}
+@keyframes gen-home-rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gen-home-motion { scroll-behavior: auto; }
+  .gen-home-row { opacity: 1; animation: none; }
+}
+`;
 
 export function HomeDynamic() {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -192,7 +229,8 @@ export function HomeDynamic() {
   // [hasNextPage,…], which may not change on the loading→loaded transition if the feed query
   // resolved before the layout query). Loading/error render INSIDE the container.
   return (
-    <div ref={scrollRef} className="gencl:h-full gencl:overflow-auto">
+    <div ref={scrollRef} className="gen-home-motion gencl:h-full gencl:overflow-auto">
+      <style>{HOME_MOTION_CSS}</style>
       {layout &&
         pages.map((page) => (
           <PageBlock key={page.metadata.pageSession} page={page} layout={layout} rootRef={scrollRef} />
