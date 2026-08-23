@@ -103,7 +103,11 @@ export type EmbedEventNameType =
   | "centerActiveSlide"
   | "followStatusChange"
   | "disableCaughtUpEvent"
-  | "updateResourceTracking";
+  | "updateResourceTracking"
+  /** Host-driven "navigate this instance's feed/carousel to a video id" (payload: { videoId }). */
+  | "goToVideoId"
+  /** Host-driven "navigate this instance's feed/carousel to an index" (payload: { index }). */
+  | "goToIndex";
 
 /**
  * Creates a new event bus instance for embed functionality

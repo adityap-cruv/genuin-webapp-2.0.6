@@ -58,21 +58,17 @@ export function formatVideoDate(dateString?: string | number | null): string {
 }
 
 /**
- * Bottom overlay for a carousel card: metadata (date • duration • description),
- * the Read More CTA, and pagination dots. The top-right player controls
+ * Bottom overlay for a carousel card: metadata (date • duration • description)
+ * and the Read More CTA. The top-right player controls
  * (mute · play/pause · expand) are rendered separately by the shared `Controls`
  * component — the same one VideoFeed uses.
  */
 function CardOverlay({
   post,
-  index,
-  totalCards = 4,
   ctaText,
   onCtaClick,
 }: {
   post: VideoCarouselCardProps["post"];
-  index: number;
-  totalCards?: number;
   ctaText?: string;
   onCtaClick?: VideoCarouselCardProps["onCtaClick"];
 }) {
@@ -140,15 +136,11 @@ function CardOverlay({
     [ctaHref, onCtaClick, post]
   );
 
-  // Determine number of pagination dots to render (bounded between 3 and 6)
-  const dotsCount = Math.max(3, Math.min(6, totalCards));
-  const activeDotIndex = index % dotsCount;
-
   return (
     <div
       className="gencl:absolute gencl:inset-0 gencl:z-10 gencl:flex gencl:h-full gencl:w-full gencl:flex-col gencl:justify-end gencl:p-3"
       onClick={(e) => e.stopPropagation()}>
-      {/* Bottom Overlay: Metadata + Read More CTA + Pagination Dots */}
+      {/* Bottom Overlay: Metadata + Read More CTA */}
       <div className="gencl:relative gencl:flex gencl:w-full gencl:flex-col gencl:gap-2">
         {/* Gradient backdrop behind text and CTA */}
         <div
@@ -191,21 +183,6 @@ function CardOverlay({
             </div>
             <ChevronRight className="gencl:size-4 gencl:shrink-0 gencl:text-white/80 gencl:transition-transform gencl:group-hover:translate-x-0.5" />
           </div>
-
-          {/* Pagination Dots */}
-          <div className="gencl:flex gencl:w-full gencl:items-center gencl:justify-center gencl:gap-1.5 gencl:pt-0.5">
-            {Array.from({ length: dotsCount }).map((_, dotIdx) => (
-              <span
-                key={dotIdx}
-                className={cn(
-                  "gencl:size-1.5 gencl:rounded-full gencl:transition-all gencl:duration-300",
-                  dotIdx === activeDotIndex
-                    ? "gencl:bg-white gencl:scale-110"
-                    : "gencl:bg-white/35"
-                )}
-              />
-            ))}
-          </div>
         </div>
       </div>
     </div>
@@ -215,7 +192,6 @@ function CardOverlay({
 export const VideoCarouselCard = memo(function VideoCarouselCard({
   post,
   index,
-  totalCards,
   isNext,
   isPrev,
   isVisible,
@@ -224,6 +200,8 @@ export const VideoCarouselCard = memo(function VideoCarouselCard({
   controlSize = "sm",
   ctaText,
   playOnHover = true,
+  expanded = false,
+  onToggleExpand,
   onCardHover,
   onCardClick,
   onPlayerIterationEnd,
@@ -231,13 +209,15 @@ export const VideoCarouselCard = memo(function VideoCarouselCard({
   className,
   style,
 }: VideoCarouselCardProps) {
-  const { showExpandView, toggleExpandView, activeIndex, setActiveIndex } = useFeedContext();
+  const { activeIndex, setActiveIndex } = useFeedContext();
   const { theme } = useBaseContext();
   const { isMobile } = useDeviceDetectMediaQuery();
   const { video: videoConfig } = useEmbedConfigs();
   const swiper = useSwiper();
   const isAccessibilityMode = useMemo(() => detectAccessibilityMode(), []);
-  const isCardActive = index === activeIndex;
+  // While the expand overlay is open no inline card is "active" — the inline player
+  // pauses (one video, one player) and the top-right controls hide, matching VideoFeed.
+  const isCardActive = index === activeIndex && !expanded;
   const shouldRenderPlayer =
     isAccessibilityMode || isCardActive || isNext || isPrev || isVisible || isInitialSlide;
 
@@ -293,8 +273,8 @@ export const VideoCarouselCard = memo(function VideoCarouselCard({
           explicitLoop={false}
           videoId={post.video?.id ?? ""}
           videoUrl={post.video?.source ?? ""}
-          showExpandView={showExpandView}
-          toggleExpandView={toggleExpandView}
+          showExpandView={expanded}
+          toggleExpandView={onToggleExpand}
           swiper={swiper}
           index={index}
           updateActiveIndex={handleUpdateActiveIndex}
@@ -357,14 +337,8 @@ export const VideoCarouselCard = memo(function VideoCarouselCard({
             </SafeSuspense>
           )}
 
-          {/* Bottom overlay: metadata, Read More CTA, pagination dots */}
-          <CardOverlay
-            post={post}
-            index={index}
-            totalCards={totalCards}
-            ctaText={ctaText}
-            onCtaClick={onCtaClick}
-          />
+          {/* Bottom overlay: metadata + Read More CTA */}
+          <CardOverlay post={post} ctaText={ctaText} onCtaClick={onCtaClick} />
         </PlayerProvider>
       ) : (
         <PlayerSkeleton

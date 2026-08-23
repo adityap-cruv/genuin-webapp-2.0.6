@@ -11,6 +11,17 @@ import { cva } from "class-variance-authority";
 import { ChevronRight } from "lucide-react";
 import { useLayoutEffect, useRef, useState } from "react";
 
+import { Link } from "@genuin/components/molecules/link";
+
+/**
+ * A linkout href is "external" when it names a host/protocol (thefoil.com,
+ * mailto:, tel:, protocol-relative). Same-origin app paths (`/article/…`) are
+ * internal and should navigate in the same tab, not a new one.
+ */
+function isExternalHref(href: string): boolean {
+  return /^(https?:|mailto:|tel:|\/\/)/.test(href);
+}
+
 // ── LinkCardThumb ────────────────────────────────────────────────
 //
 // Square thumbnail with rounded corners; the caller sets the outer
@@ -101,6 +112,37 @@ export function LinkCardInlineCta({ href, label, theme = "dark", className, onCl
   // Both themes share a dark pill with white content (see `inlineCta`).
   void theme;
   const iconStrokeClass = "gencl:stroke-white";
+  const content = (
+    <>
+      <span className={inlineCtaLabel}>{label}</span>
+      <ChevronRight className={cn(inlineCtaArrow, iconStrokeClass)} />
+    </>
+  );
+
+  // Internal app paths (`/article/…`) navigate in the SAME tab via the app
+  // router (Next.js `<Link>` through the shared Link molecule) — a same-domain
+  // page, not a popup. `stopPropagation` keeps the enclosing card's click (e.g.
+  // play-this-video) from also firing; we don't `preventDefault`, so the router
+  // still navigates. External URLs fall through to the JS `window.open` path
+  // below (a native link steals the horizontal touchmove Swiper needs).
+  if (!isExternalHref(href)) {
+    return (
+      <Link
+        href={href}
+        aria-label={label}
+        draggable={false}
+        style={{ touchAction: "pan-y", userSelect: "none" }}
+        onPointerDown={(e) => e.stopPropagation()}
+        onClick={(e) => {
+          e.stopPropagation();
+          onClick?.(e);
+        }}
+        className={cn(inlineCta({ theme }), "gencl:no-underline", className)}>
+        {content}
+      </Link>
+    );
+  }
+
   return (
     <div
       role="link"
@@ -130,8 +172,7 @@ export function LinkCardInlineCta({ href, label, theme = "dark", className, onCl
         }
       }}
       className={cn(inlineCta({ theme }), className)}>
-      <span className={inlineCtaLabel}>{label}</span>
-      <ChevronRight className={cn(inlineCtaArrow, iconStrokeClass)} />
+      {content}
     </div>
   );
 }

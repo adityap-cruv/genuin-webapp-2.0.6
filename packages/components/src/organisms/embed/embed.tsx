@@ -527,6 +527,43 @@ export function Embed({
     };
   }, [fetchNextPage, isLoading, hasNextPage, isFetchingNextPage, videos, swiper]);
 
+  // Host-driven inline navigation: map the requested video id to its index in this feed and
+  // slide the running swiper to it. The swiper's own slideChange then makes it active/plays —
+  // same as a user swipe. Scoped upstream (embed provider re-broadcasts only for this instance).
+  useEffect(() => {
+    function handleGoToVideoId(eventData: { videoId?: string }) {
+      const targetVideoId = eventData?.videoId;
+      if (!targetVideoId || !swiper || swiper.destroyed) return;
+      const targetIndex = filteredPost.findIndex((post) => post.video?.id === targetVideoId);
+      if (targetIndex >= 0 && swiper.activeIndex !== targetIndex) {
+        swiper.slideTo(targetIndex, 300);
+      }
+    }
+
+    embedEventBus.on("goToVideoId", handleGoToVideoId);
+    return () => {
+      embedEventBus.off("goToVideoId", handleGoToVideoId);
+    };
+  }, [embedEventBus, swiper, filteredPost]);
+
+  // Host-driven inline navigation by index (index-based contextual mapping). Slides the
+  // running swiper straight to the requested index — the swiper's slideChange then makes it
+  // active/plays. Scoped upstream (embed provider re-broadcasts only for this instance).
+  useEffect(() => {
+    function handleGoToIndex(eventData: { index?: number }) {
+      const targetIndex = eventData?.index;
+      if (typeof targetIndex !== "number" || !swiper || swiper.destroyed) return;
+      if (targetIndex >= 0 && targetIndex < filteredPost.length && swiper.activeIndex !== targetIndex) {
+        swiper.slideTo(targetIndex, 300);
+      }
+    }
+
+    embedEventBus.on("goToIndex", handleGoToIndex);
+    return () => {
+      embedEventBus.off("goToIndex", handleGoToIndex);
+    };
+  }, [embedEventBus, swiper, filteredPost]);
+
   /**
    * Calculates the total number of slides to display based on the device type.
    *

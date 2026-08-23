@@ -27,7 +27,6 @@ export type ActiveVideoDetails = {
 export type VideoCarouselCardProps = {
   post: PostDetailsType;
   index: number;
-  totalCards?: number;
   isActive: boolean;
   isNext: boolean;
   isPrev: boolean;
@@ -38,6 +37,10 @@ export type VideoCarouselCardProps = {
   controlSize?: PlayerControlSize;
   ctaText?: string;
   playOnHover?: boolean;
+  /** Whether the full-screen expand view is open — pauses the inline player and hides its controls. */
+  expanded?: boolean;
+  /** Toggle the full-screen expand view (fired by the card's expand control). */
+  onToggleExpand?: () => void;
   onCardHover?: (index: number) => void;
   onCardClick?: (index: number) => void;
   onPlayerIterationEnd?: (index: number) => void;
@@ -51,6 +54,10 @@ export type VideoCarouselCardProps = {
 export interface VideoCarouselViewProps {
   feedData: FeedData;
   startIndex?: number;
+  /** Open the expand view on mount. */
+  defaultExpandView?: boolean;
+  /** Called when the expand view closes. */
+  onCloseExpandView?: () => void;
   /**
    * Controlled active video. When this changes to a video present in the feed,
    * the carousel slides to it. Reacting only to changes (not to the carousel's

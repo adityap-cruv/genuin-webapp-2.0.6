@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo } from "react";
 
 import { useBaseContext } from "@genuin/components/context/base";
 import { SectionHeader } from "@genuin/components/molecules/section-header/section-header";
@@ -17,6 +17,8 @@ import type {
   IntelligenceArticle,
   IntelligencePanelLayout,
 } from "@genuin/components/organisms/intelligence-panel/intelligence-panel.types";
+import { articleHref } from "@genuin/components/page/article/article-data";
+import { HomeDynamic } from "@genuin/components/page/home-dynamic/home-dynamic";
 import { useFeed } from "@genuin/components/react-query/api/feed";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
@@ -394,37 +396,37 @@ const SAILGP_NEWS: IntelligenceArticle[] = [
   {
     id: "sailgp-news-1",
     title: "SailGP and America's Cup: can they coexist?",
-    href: "https://thefoil.com/news/the-questions-that-remain-following-new-york-sailgp/",
+    href: articleHref("the-questions-that-remain-following-new-york-sailgp"),
     image: { src: IMG.sailgpNewYork, alt: "SailGP and America's Cup" },
   },
   {
     id: "sailgp-news-2",
     title: "Inside the Rockwool Germany Sail Grand Prix",
-    href: "https://thefoil.com/series/sailgp/events/rockwool-germany-sail-grand-prix-sassnitz/",
+    href: articleHref("rockwool-germany-sail-grand-prix-sassnitz"),
     image: { src: IMG.sailgpSimonBruty, alt: "Rockwool Germany Sail Grand Prix" },
   },
   {
     id: "sailgp-news-3",
     title: "Spain hit 99 km/h in the fleet's fastest run yet off Sassnitz",
-    href: "https://thefoil.com/series/sailgp/events/emirates-dubai-sail-grand-prix-presented-by-dp-world/",
+    href: articleHref("emirates-dubai-sail-grand-prix-presented-by-dp-world"),
     image: { src: IMG.sailgpFelixDiemer, alt: "SailGP fastest run" },
   },
   {
     id: "sailgp-news-4",
     title: "Season 6 standings: three teams still in the title hunt",
-    href: "https://thefoil.com/series/sailgp/events/rolex-switzerland-sail-grand-prix-geneva/",
+    href: articleHref("rolex-switzerland-sail-grand-prix-geneva"),
     image: { src: IMG.sailgpGeneva, alt: "SailGP season standings" },
   },
   {
     id: "sailgp-news-5",
     title: "New Zealand vs Australia: the rivalry defining the season",
-    href: "https://thefoil.com/news/andy-rice-rates-the-fleet-after-canada-sailgp/",
+    href: articleHref("andy-rice-rates-the-fleet-after-canada-sailgp"),
     image: { src: IMG.sailgpSamoVidic, alt: "New Zealand vs Australia" },
   },
   {
     id: "sailgp-news-6",
     title: "Grand Final preview: everything on the line in Abu Dhabi",
-    href: "https://thefoil.com/series/sailgp/events/mubadala-abu-dhabi-sail-grand-prix-2026-season-grand-final-presented-by-abu-dhabi-sports-council/",
+    href: articleHref("mubadala-abu-dhabi-sail-grand-prix-2026-season-grand-final-presented-by-abu-dhabi-sports-council"),
     image: { src: IMG.sailgpLosAngeles, alt: "SailGP Grand Final" },
   },
 ];
@@ -434,37 +436,37 @@ const CLASSIC_600_NEWS: IntelligenceArticle[] = [
   {
     id: "classic-600-news-1",
     title: "Rolex China Sea Race: the fleet sets sail from Hong Kong",
-    href: "https://thefoil.com/news/how-pace-took-line-honours-in-the-2026-round-britain-and-ireland-race-one-chapter-at-a-time/",
+    href: articleHref("how-pace-took-line-honours-in-the-2026-round-britain-and-ireland-race-one-chapter-at-a-time"),
     image: { src: IMG.offshorePace, alt: "Rolex China Sea Race" },
   },
   {
     id: "classic-600-news-2",
     title: "RORC Caribbean 600: records tumble in a breezy edition",
-    href: "https://thefoil.com/news/the-safest-is-when-you-re-pushing-hard-billy-gooderham-explains-flight-control/",
+    href: articleHref("the-safest-is-when-you-re-pushing-hard-billy-gooderham-explains-flight-control"),
     image: { src: IMG.offshoreNorthstar, alt: "RORC Caribbean 600" },
   },
   {
     id: "classic-600-news-3",
     title: "Rolex Middle Sea Race: 606 miles around Sicily",
-    href: "https://thefoil.com/news/freddie-carr-cowes-week-turns-200-why-britain-s-greatest-regatta-still-means-everything/",
+    href: articleHref("freddie-carr-cowes-week-turns-200-why-britain-s-greatest-regatta-still-means-everything"),
     image: { src: IMG.offshoreCowes, alt: "Rolex Middle Sea Race" },
   },
   {
     id: "classic-600-news-4",
     title: "Rolex Fastnet Race: the making of a modern classic",
-    href: "https://thefoil.com/news/the-week-in-racing-10-august-26/",
+    href: articleHref("the-week-in-racing-10-august-26"),
     image: { src: IMG.offshoreRp3, alt: "Rolex Fastnet Race" },
   },
   {
     id: "classic-600-news-5",
     title: "Rolex Sydney Hobart: 628 miles to Constitution Dock",
-    href: "https://thefoil.com/news/rate-the-fleet-andy-rice-s-verdict-on-sailgp-new-york/",
+    href: articleHref("rate-the-fleet-andy-rice-s-verdict-on-sailgp-new-york"),
     image: { src: IMG.offshoreMl3, alt: "Rolex Sydney Hobart" },
   },
   {
     id: "classic-600-news-6",
     title: "The 600-milers every offshore sailor dreams of",
-    href: "https://thefoil.com/news/luca-rizzotti-bought-a-moth-in-2007-and-accidentally-started-a-movement/",
+    href: articleHref("luca-rizzotti-bought-a-moth-in-2007-and-accidentally-started-a-movement"),
     image: { src: IMG.offshoreGeneric, alt: "Classic 600-milers" },
   },
 ];
@@ -496,31 +498,31 @@ const INTELLIGENCE_LAYOUT: IntelligencePanelLayout = {
 const PODCASTS: { title: string; link: string }[] = [
   {
     title: "Podcast: SailGP vs America's Cup — can they coexist?",
-    link: "https://thefoil.com/news/podcast-sailgp-vs-america-s-cup-can-they-coexist/",
+    link: articleHref("podcast-sailgp-vs-america-s-cup-can-they-coexist"),
   },
   {
     title: "Podcast: Can anyone beat New Zealand to win the 38th America's Cup?",
-    link: "https://thefoil.com/news/podcast-can-anyone-beat-new-zealand-to-win-the-38th-america-s-cup/",
+    link: articleHref("podcast-can-anyone-beat-new-zealand-to-win-the-38th-america-s-cup"),
   },
   {
     title: "Podcast: America's Cup is back — the full Cagliari debrief",
-    link: "https://thefoil.com/news/podcast-america-s-cup-is-back-the-full-cagliari-debrief/",
+    link: articleHref("podcast-america-s-cup-is-back-the-full-cagliari-debrief"),
   },
   {
     title: "Podcast extra: Mozzy and Freddie preview the AC38 Cagliari prelim",
-    link: "https://thefoil.com/news/podcast-extra-mozzy-and-freddie-preview-the-ac38-cagliari-prelim/",
+    link: articleHref("podcast-extra-mozzy-and-freddie-preview-the-ac38-cagliari-prelim"),
   },
   {
     title: "Podcast: 'It starts with a dream' — Glenn Ashby on Australia's AC38 challenge",
-    link: "https://thefoil.com/news/podcast-it-starts-with-a-dream-glenn-ashby-on-australia-s-ac38-challenge-the-foil-podcast-ep-20/",
+    link: articleHref("podcast-it-starts-with-a-dream-glenn-ashby-on-australia-s-ac38-challenge-the-foil-podcast-ep-20"),
   },
   {
     title: "Podcast: The six American sailors chosen to take back the Cup",
-    link: "https://thefoil.com/news/podcast-the-six-american-sailors-chosen-to-take-back-the-cup/",
+    link: articleHref("podcast-the-six-american-sailors-chosen-to-take-back-the-cup"),
   },
   {
     title: "Podcast Ep 8: Sydney SailGP preview & Quentin Delapierre on safety",
-    link: "https://thefoil.com/news/podcast-ep-8-sydney-sailgp-preview-and-quentin-delapierre-on-safety/",
+    link: articleHref("podcast-ep-8-sydney-sailgp-preview-and-quentin-delapierre-on-safety"),
   },
 ];
 
@@ -561,7 +563,7 @@ function resolveLinkVideoId(
 const INTERVIEW_FEATURED_ARTICLE: IntelligenceArticle = {
   id: "interview-featured",
   title: "'Full steam ahead and scrambling to keep our heads above water': Grant Simmer on Australia's Cup comeback",
-  href: "https://thefoil.com/news/full-steam-ahead-and-scrambling-to-keep-our-heads-above-water-grant-simmer-on-australia-s-cup-comeback/",
+  href: articleHref("full-steam-ahead-and-scrambling-to-keep-our-heads-above-water-grant-simmer-on-australia-s-cup-comeback"),
   image: { src: IMG.acGrantAustralia, alt: "Grant Simmer interview" },
 };
 
@@ -570,25 +572,25 @@ const INTERVIEW_UP_NEXT_ARTICLES: IntelligenceArticle[] = [
   {
     id: "interview-2",
     title: "The new AC75 class, explained: what changed and why",
-    href: "https://thefoil.com/news/the-week-in-racing-10-august-26/",
+    href: articleHref("the-week-in-racing-10-august-26"),
     image: { src: IMG.acAc75, alt: "AC75 class" },
   },
   {
     id: "interview-3",
     title: "Defenders vs challengers: who really has the edge?",
-    href: "https://thefoil.com/series/sailgp/events/spain-sail-grand-prix-valencia/",
+    href: articleHref("spain-sail-grand-prix-valencia"),
     image: { src: IMG.acValencia, alt: "Defenders vs challengers" },
   },
   {
     id: "interview-4",
     title: "From Auckland to Barcelona: the Cup finds a new home",
-    href: "https://thefoil.com/news/the-real-story-behind-the-black-foils-new-sailgp-recruits/",
+    href: articleHref("the-real-story-behind-the-black-foils-new-sailgp-recruits"),
     image: { src: IMG.acAuckland, alt: "Auckland to Barcelona" },
   },
   {
     id: "interview-5",
     title: "Inside the design war that's reshaping the fleet",
-    href: "https://thefoil.com/news/podcast-extra-mozzy-and-freddie-preview-the-ac38-cagliari-prelim/",
+    href: articleHref("podcast-extra-mozzy-and-freddie-preview-the-ac38-cagliari-prelim"),
     image: { src: IMG.acDesign, alt: "Design war" },
   },
 ];
@@ -600,38 +602,13 @@ const INTERVIEW_ARTICLES: IntelligenceArticle[] = [INTERVIEW_FEATURED_ARTICLE, .
 const INTERVIEW_CARD_LAYOUT = { ...INTELLIGENCE_LAYOUT.articleCard, height: "auto" };
 
 /**
- * Render a community's REAL feed posts as Intelligence editorial cards: the video
- * thumbnail becomes the image, its title/description the headline, and the video's
- * canonical share URL the "Read more" link. Falls back to `fallback` while the feed
- * is still empty/loading (the panel always needs at least one card).
+ * Right panel: the intelligence articles. The editorial set is fixed (passed in);
+ * each card links to its on-domain `/article/<slug>` page (see `articleHref`), so
+ * picking an article navigates there in the same tab rather than driving the video
+ * bus. No `onArticleSelect` is passed, so the card's own href does the navigating.
  */
-function postsToArticles(posts: PostDetailsType[], fallback: IntelligenceArticle[]): IntelligenceArticle[] {
-  const articles = posts.flatMap((post, index): IntelligenceArticle[] => {
-    const video = post.video;
-    if (!video) return [];
-    const title = video.attributes?.title || video.descritptionText || post.community?.name || "Untitled";
-    return [
-      {
-        id: video.id || `article-${index}`,
-        title,
-        href: video.shareUrl || video.clickableUrl || "https://thefoil.com/",
-        image: { src: video.thumbnail || EVENT_IMAGE, alt: title },
-      },
-    ];
-  });
-  // Real posts first, then top up with the fallback set so a sparse community
-  // (e.g. one with a single post) still fills the panel. Capped at 8 cards.
-  return [...articles, ...fallback].slice(0, 8);
-}
-
-/**
- * Right panel: the intelligence articles. Features the article for whatever
- * video is playing, and broadcasts `item:select` when the user picks an article.
- */
-function DeskNewsPanel({ articles, videoTags }: { articles: IntelligenceArticle[]; videoTags: VideoTag[] }) {
-  const emit = useEmit();
-  // This section's editorial set is fixed (passed in); it does not change with
-  // the active video. The first article is featured, the rest fill Up Next.
+function DeskNewsPanel({ articles }: { articles: IntelligenceArticle[] }) {
+  // The first article is featured, the rest fill Up Next.
   const featured = articles[0]!;
   const upNext = articles.slice(1);
 
@@ -641,16 +618,6 @@ function DeskNewsPanel({ articles, videoTags }: { articles: IntelligenceArticle[
       upNextArticles={upNext}
       layout={INTELLIGENCE_LAYOUT}
       onClose={() => undefined}
-      onArticleSelect={(article) => {
-        // Selecting an article plays this section's first video (the bus target).
-        const targetVideoId = videoTags[0]?.videoId;
-        if (!targetVideoId) return;
-        emit("item:select", {
-          itemId: article.id,
-          index: articles.findIndex((entry) => entry.id === article.id),
-          videoId: targetVideoId,
-        });
-      }}
     />
   );
 }
@@ -729,7 +696,7 @@ const UPCOMING_RACES: EventCarouselItem[] = [
     location: "Sassnitz, Rügen Island, Germany",
     cta: {
       label: "Read More",
-      href: "https://thefoil.com/series/sailgp/events/rockwool-germany-sail-grand-prix-sassnitz/",
+      href: articleHref("rockwool-germany-sail-grand-prix-sassnitz"),
     },
   },
   {
@@ -741,7 +708,7 @@ const UPCOMING_RACES: EventCarouselItem[] = [
     location: "Valencia, Spain",
     cta: {
       label: "Read More",
-      href: "https://thefoil.com/series/sailgp/events/spain-sail-grand-prix-valencia/",
+      href: articleHref("spain-sail-grand-prix-valencia"),
     },
   },
   {
@@ -753,7 +720,7 @@ const UPCOMING_RACES: EventCarouselItem[] = [
     location: "Geneva, Switzerland",
     cta: {
       label: "Read More",
-      href: "https://thefoil.com/series/sailgp/events/rolex-switzerland-sail-grand-prix-geneva/",
+      href: articleHref("rolex-switzerland-sail-grand-prix-geneva"),
     },
   },
   {
@@ -763,7 +730,7 @@ const UPCOMING_RACES: EventCarouselItem[] = [
     start_date: "2026-09-26",
     end_date: "2026-09-27",
     location: "Saint-Tropez, France",
-    cta: { label: "Read More", href: "https://thefoil.com/series/" },
+    cta: { label: "Read More", href: articleHref("france-sail-grand-prix-saint-tropez") },
   },
   {
     id: "emirates-dubai-sail-gp-2026",
@@ -774,7 +741,7 @@ const UPCOMING_RACES: EventCarouselItem[] = [
     location: "Dubai, United Arab Emirates",
     cta: {
       label: "Read More",
-      href: "https://thefoil.com/series/sailgp/events/emirates-dubai-sail-grand-prix-presented-by-dp-world/",
+      href: articleHref("emirates-dubai-sail-grand-prix-presented-by-dp-world"),
     },
   },
 ];
@@ -799,13 +766,15 @@ function HomeSections({ instance }: { instance: number }) {
   const deskNews = useSectionFeed(HOME_SECTIONS.deskNews);
   const interviews = useSectionFeed(HOME_SECTIONS.interviews);
 
-  // Synthetic group/community + related-link overlays, derived from each section's feed.
-  const deskTags = useMemo(() => buildVideoTags(desk.posts), [desk.posts]);
+  // Related-link overlay for the Latest Videos "wheel" (HoverLinkCardList), derived from
+  // that section's live feed (one link per video).
   const latestTags = useMemo(() => buildVideoTags(latest.posts), [latest.posts]);
   const linkArticles = useMemo(() => buildLinkArticles(latestTags, latest.posts), [latestTags, latest.posts]);
-  const sponsoredTags = useMemo(() => buildVideoTags(sponsored.posts), [sponsored.posts]);
-  const deskNewsArticles = useMemo(() => postsToArticles(deskNews.posts, SAILGP_NEWS), [deskNews.posts]);
-  const interviewArticles = useMemo(() => postsToArticles(interviews.posts, INTERVIEW_ARTICLES), [interviews.posts]);
+  // The intelligence panels render the curated editorial sets directly (each card
+  // links to its on-domain /article/<slug> page). We intentionally do NOT map the
+  // live community feed into these panels: those posts are videos with external
+  // shareUrl links and no article page, so they'd open a broken new tab. The feeds
+  // are still fetched for the panels' SectionHeader (real community name/avatar).
 
   // NOTE: the page is intentionally NOT gated on the feed queries. The four video
   // surfaces are Genuin SDK placements that load their own content, so a slow or
@@ -851,7 +820,7 @@ function HomeSections({ instance }: { instance: number }) {
               subHeading="Latest News"
             />
             <div className="gencl:min-h-0 gencl:flex-1">
-              <DeskNewsPanel articles={deskNewsArticles} videoTags={deskTags} />
+              <DeskNewsPanel articles={SAILGP_NEWS} />
             </div>
           </EventSurfacePanel>
         </EventSurface>
@@ -919,7 +888,7 @@ function HomeSections({ instance }: { instance: number }) {
               subHeading="Latest Interviews"
             />
             <div className="gencl:min-h-0 gencl:flex-1">
-              <InterviewsIntelligencePanel articles={interviewArticles} />
+              <InterviewsIntelligencePanel articles={INTERVIEW_ARTICLES} />
             </div>
           </div>
         </section>
@@ -981,8 +950,8 @@ function HomeSections({ instance }: { instance: number }) {
               heading={sponsored.communityName}
               subHeading="Relevant News"
             />
-            <div className="gencl:min-h-0" style={{ height: 568 }}>
-              <DeskNewsPanel articles={CLASSIC_600_NEWS} videoTags={sponsoredTags} />
+            <div className="gencl:min-h-0 gencl:flex-1">
+              <DeskNewsPanel articles={CLASSIC_600_NEWS} />
             </div>
           </EventSurfacePanel>
         </EventSurface>
@@ -992,86 +961,37 @@ function HomeSections({ instance }: { instance: number }) {
 }
 
 /**
- * The home page: one copy of `HomeSections` per "page", appended forever as the
- * reader scrolls.
+ * The home page. MERGED: `/home` now runs the backend-driven `home-dynamic` engine —
+ * BFF-supplied layout + per-page content, infinite scroll, and the working video↔article
+ * contextual mapping. The BFF layout uses THIS page's placement ids (see the isolated
+ * `genuin-home-bff`), so the same intelligence-chat-enabled placements render here.
  *
- * The content of each copy is identical — this is a deliberately endless feed of the
- * same page, not paginated data. Each copy re-mounts the four Genuin placements under
- * fresh container ids, so the SDK boots them independently.
- *
- * Section data is fetched once and shared: every copy calls the same `useFeed` query
- * keys, so react-query serves later copies from cache.
+ * The previous frontend infinite scroll (a `copies` counter + IntersectionObserver that
+ * repeated the same static `HomeSections`) is commented out below — superseded by the
+ * home-dynamic infinite scroll. (`HomeSections` and the static section content above are
+ * kept for reference; git history has the old `Home` verbatim.)
  */
 export function Home() {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const sentinelRef = useRef<HTMLDivElement>(null);
-  const [copies, setCopies] = useState(1);
-
-  // Load the SDK, then let it boot the placement containers — the same
-  // `window.genuin.init(...)` the hosted embed snippet calls, just run after React
-  // has committed the containers. Re-runs when a copy is appended so the new
-  // containers get booted too; the SDK skips the ones it has already handled.
-  //
-  // `configuration` is global to the init call, so every container on this page —
-  // including any placement added later — inherits it. `player_controls: "v2"`
-  // keeps the v2 control cluster (mute → play/pause → expand, top-right) in both
-  // the inline placement and the expanded view; without it the SDK falls back to
-  // the v1 controls, which split the cluster and drop the volume ring.
-  //
-  // Deliberately NOT `design_system: "v2"`: that also switches linkouts to the
-  // dynamic sheet, changes the sponsored-badge treatment and makes control sizes
-  // width-derived — none of which this page wants yet. Adding a placement here
-  // needs no change to the id allowlist in `hooks/embed/use-embed-config.ts`.
-  useEffect(() => {
-    let cancelled = false;
-    const init = () => {
-      if (!cancelled) window.genuin?.init({ configuration: { player_controls: "v2" } });
-    };
-
-    const existing = document.querySelector<HTMLScriptElement>(`script[src="${GENUIN_SDK_SRC}"]`);
-    if (existing) {
-      if (window.genuin?.init) init();
-      else existing.addEventListener("load", init, { once: true });
-    } else {
-      const script = document.createElement("script");
-      script.src = GENUIN_SDK_SRC;
-      script.async = true;
-      script.addEventListener("load", init, { once: true });
-      document.head.appendChild(script);
-    }
-
-    return () => {
-      cancelled = true;
-    };
-  }, [copies]);
-
-  useEffect(() => {
-    const sentinel = sentinelRef.current;
-    if (!sentinel) return undefined;
-
-    // `root` is the page's own scroll container, not the viewport — the layout
-    // scrolls inside this component, so a viewport-rooted observer would never fire.
-    const observer = new IntersectionObserver(
-      (entries) => {
-        // One copy per crossing: appending pushes the sentinel back out of the
-        // margin, and the next scroll brings it in again.
-        if (entries.some((entry) => entry.isIntersecting)) setCopies((count) => count + 1);
-      },
-      { root: scrollRef.current, rootMargin: "800px 0px" }
-    );
-
-    observer.observe(sentinel);
-    return () => observer.disconnect();
-  }, []);
-
-  return (
-    <div ref={scrollRef} className="gencl:h-full gencl:overflow-auto">
-      {Array.from({ length: copies }, (_, index) => (
-        <HomeSections key={index} instance={index} />
-      ))}
-      {/* Scroll tripwire — appending happens when this comes within 800 px of the
-          bottom of the scroll container. */}
-      <div ref={sentinelRef} aria-hidden style={{ height: 1 }} />
-    </div>
-  );
+  return <HomeDynamic />;
 }
+
+/*
+ * ── Legacy frontend infinite scroll (COMMENTED OUT — replaced by <HomeDynamic/>) ──
+ * Repeated one static `HomeSections` per "page", appended forever via a `copies`
+ * counter + IntersectionObserver, and booted the placements with
+ * `window.genuin.init({ configuration: { player_controls: "v2" } })`.
+ *
+ * export function Home() {
+ *   const scrollRef = useRef<HTMLDivElement>(null);
+ *   const sentinelRef = useRef<HTMLDivElement>(null);
+ *   const [copies, setCopies] = useState(1);
+ *   useEffect(() => { ... window.genuin?.init({ configuration: { player_controls: "v2" } }) ... }, [copies]);
+ *   useEffect(() => { ...IntersectionObserver → setCopies(c => c + 1)... }, []);
+ *   return (
+ *     <div ref={scrollRef} className="gencl:h-full gencl:overflow-auto">
+ *       {Array.from({ length: copies }, (_, index) => <HomeSections key={index} instance={index} />)}
+ *       <div ref={sentinelRef} aria-hidden style={{ height: 1 }} />
+ *     </div>
+ *   );
+ * }
+ */

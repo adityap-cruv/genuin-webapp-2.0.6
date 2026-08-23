@@ -37,6 +37,12 @@ export enum SDKEventName {
   PLAY_IHEART_CONTENT = "playIHeartContent",
   VIDEO_CLICKED = "onVideoClicked",
   RESIZE = "onResize",
+  /**
+   * Embed → host: the active video changed (user swipe / autoplay advance). Scoped per
+   * instance via `payload.instanceId` so a host with many placements can attribute it.
+   * Payload: `{ instanceId, index }`. Drives the forward contextual flow (video → article).
+   */
+  PLAYER_VIDEO_CHANGED = "player:videoChanged",
 }
 
 /**
@@ -58,6 +64,16 @@ export enum SDKListenerEventName {
   PLAY_CHANGE_IHEART_CONTENT = "player:onMiniPlayerPlayChange",
   THEME_CHANGE = "sdk:themeChange",
   MUTE_CHANGE = "onMuteChange",
+  /**
+   * Host → embed: navigate the running feed/carousel to a specific video, inline (no expand).
+   * Scoped per instance via `payload.instanceId`. Payload: `{ instanceId, videoId }`.
+   */
+  PLAYER_GO_TO_VIDEO = "player:goToVideo",
+  /**
+   * Host → embed: navigate the running feed/carousel to a specific index, inline (no expand).
+   * Scoped per instance via `payload.instanceId`. Payload: `{ instanceId, index }`.
+   */
+  PLAYER_GO_TO_INDEX = "player:goToIndex",
 }
 
 /**
@@ -234,6 +250,16 @@ export type PlayChangeIHeartContentPayload = {
 };
 
 /**
+ * Payload emitted when the embed's active video changes (forward contextual flow).
+ */
+export interface SDKPlayerVideoChangedPayload {
+  /** SDK instance id of the embed that changed (from the container's `data-instance-id`). */
+  instanceId?: string;
+  /** 0-based index of the now-active video in the embed's flat feed. */
+  index: number;
+}
+
+/**
  * Type mapping for SDK event payloads
  * Maps each event name to its corresponding payload type
  */
@@ -259,6 +285,7 @@ export type SDKEventPayloadMap = {
   [SDKEventName.PLAY_IHEART_CONTENT]: PlayIheartContentPayload;
   [SDKEventName.VIDEO_CLICKED]: SDKVideoClickedPayload;
   [SDKEventName.RESIZE]: SDKResizePayload;
+  [SDKEventName.PLAYER_VIDEO_CHANGED]: SDKPlayerVideoChangedPayload;
 };
 
 /**

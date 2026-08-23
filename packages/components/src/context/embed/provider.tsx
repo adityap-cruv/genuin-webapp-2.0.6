@@ -10,7 +10,7 @@ import { EmbedContext, type FollowStatusItem } from "./context";
 import { createEmbedRouter } from "./embed-router";
 import type { EmbedDataType } from "./embed.types";
 import { createEmbedEventBus } from "./event-bus";
-import type { ActivePlayerType } from "./event-bus";
+import type { ActivePlayerType, EmbedEventContextType } from "./event-bus";
 import { useFollowStatus } from "./hooks";
 
 type EmbedProviderProps = {
@@ -196,16 +196,63 @@ export function EmbedProvider({
       }
     };
 
+    // Host → embed inline navigation. Scope to THIS instance (same rule as the handlers
+    // above), then re-broadcast on this instance's own event bus, where the component that
+    // holds the swiper + post list (embed.tsx) maps the video id to an index and slides.
+    const handleGoToVideo = (props: any) => {
+      const payload = props.payload;
+      const instanceId = container.getAttribute("data-instance-id");
+      const isTargetedToThisInstance = payload?.instanceId
+        ? instanceId === payload.instanceId
+        : (payload?.placementId && payload.placementId === stateEmbedData.placement_id) ||
+          (payload?.embedId && payload.embedId === stateEmbedData.embed_id);
+
+      if (payload && isTargetedToThisInstance && payload.videoId) {
+        embedEventBus.emit("goToVideoId", { videoId: payload.videoId });
+      }
+    };
+
+    // Host → embed inline navigation by index (same scoping as handleGoToVideo). embed.tsx
+    // slides the swiper straight to the index — used by the index-based contextual mapping.
+    const handleGoToIndex = (props: any) => {
+      const payload = props.payload;
+      const instanceId = container.getAttribute("data-instance-id");
+      const isTargetedToThisInstance = payload?.instanceId
+        ? instanceId === payload.instanceId
+        : (payload?.placementId && payload.placementId === stateEmbedData.placement_id) ||
+          (payload?.embedId && payload.embedId === stateEmbedData.embed_id);
+
+      if (payload && isTargetedToThisInstance && typeof payload.index === "number") {
+        embedEventBus.emit("goToIndex", { index: payload.index });
+      }
+    };
+
+    // Embed → host forward contextual flow: when the active video changes, tell the host
+    // (scoped to THIS instance) so it can highlight the linked article/list item at that index.
+    const handleActiveIndexForward = (_eventData: unknown, context: EmbedEventContextType) => {
+      const instanceId = container.getAttribute("data-instance-id");
+      SDKEventEmitter.emit(SDKEventName.PLAYER_VIDEO_CHANGED, {
+        instanceId: instanceId ?? undefined,
+        index: context.activeIndex,
+      });
+    };
+
     SDKEventEmitter.on(SDKListenerEventName.UPDATE_CONTEXTUAL_PARAMS, handleUpdateContextualParams);
     SDKEventEmitter.on(SDKListenerEventName.UPDATE_START_VIDEO_SLUG, handleUpdateStartVideoSlug);
     SDKEventEmitter.on(SDKListenerEventName.EXPAND_EMBED, handleExpandEmbed);
     SDKEventEmitter.on(SDKListenerEventName.COLLAPSE_EMBED, handleCollapseEmbed);
+    SDKEventEmitter.on(SDKListenerEventName.PLAYER_GO_TO_VIDEO, handleGoToVideo);
+    SDKEventEmitter.on(SDKListenerEventName.PLAYER_GO_TO_INDEX, handleGoToIndex);
+    embedEventBus.on("activeIndexChange", handleActiveIndexForward);
 
     return () => {
       SDKEventEmitter.off(SDKListenerEventName.UPDATE_CONTEXTUAL_PARAMS, handleUpdateContextualParams);
       SDKEventEmitter.off(SDKListenerEventName.UPDATE_START_VIDEO_SLUG, handleUpdateStartVideoSlug);
       SDKEventEmitter.off(SDKListenerEventName.EXPAND_EMBED, handleExpandEmbed);
       SDKEventEmitter.off(SDKListenerEventName.COLLAPSE_EMBED, handleCollapseEmbed);
+      SDKEventEmitter.off(SDKListenerEventName.PLAYER_GO_TO_VIDEO, handleGoToVideo);
+      SDKEventEmitter.off(SDKListenerEventName.PLAYER_GO_TO_INDEX, handleGoToIndex);
+      embedEventBus.off("activeIndexChange", handleActiveIndexForward);
     };
   }, [stateEmbedData, isExpandViewDisabled]);
 

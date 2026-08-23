@@ -76,13 +76,15 @@ export function VideoCarouselView({
   playOnHover = true,
   autoAdvanceOnEnd = true,
   showNavigation = true,
+  defaultExpandView = false,
+  onCloseExpandView,
   onCtaClick,
   onActiveIndexChange,
   onActiveVideoChange,
   className,
   style,
 }: VideoCarouselViewProps) {
-  const { setActiveIndex, activeIndex, showExpandView, closeExpandView } = useFeedContext();
+  const { setActiveIndex, activeIndex } = useFeedContext();
   const embedDetails = useSafeEmbedContext();
   const { track, EventName } = useAnalytics();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
@@ -96,6 +98,12 @@ export function VideoCarouselView({
     slidesPerView: number;
   } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Expand view — mirrors VideoFeed: a local `expanded` flag drives a portalled
+  // full-screen FeedView (no native fullscreen). `expandIndexRef` tracks the slide
+  // the user leaves the expanded feed on, applied back to the inline carousel on close.
+  const [expanded, setExpanded] = useState(defaultExpandView);
+  const expandIndexRef = useRef(startIndex);
 
   const mergedConfig = useMemo(
     () => ({
@@ -291,16 +299,35 @@ export function VideoCarouselView({
     swiper.slideTo(targetIndex);
   }, [slidesPerGroup, swiper]);
 
-  useEffect(() => {
-    if (!showExpandView) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        closeExpandView();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [showExpandView, closeExpandView]);
+  // Open on the currently active slide; snapshot it so close can restore the inline
+  // carousel to wherever the user navigated inside the expanded feed.
+  const openExpand = useCallback(() => {
+    expandIndexRef.current = swiper?.activeIndex ?? activeIndex;
+    setExpanded(true);
+  }, [swiper, activeIndex]);
+
+  const closeExpand = useCallback(() => {
+    setExpanded(false);
+    onCloseExpandView?.();
+    // Restore the inline carousel to the slide the user left the expanded feed on.
+    // `slideTo` drives `handleSlideChange`, which updates `activeIndex` and fires the
+    // active-index / active-video callbacks — no need to set them here as well.
+    const target = expandIndexRef.current;
+    if (swiper && !swiper.destroyed && swiper.activeIndex !== target) {
+      swiper.slideTo(target, 0);
+    }
+  }, [swiper, onCloseExpandView]);
+
+  const toggleExpand = useCallback(() => {
+    if (expanded) closeExpand();
+    else openExpand();
+  }, [expanded, openExpand, closeExpand]);
+
+  // Keeps `expandIndexRef` in sync while the user scrolls the expanded feed
+  // (applied to the inline carousel by `closeExpand`).
+  const handleExpandIndexChange = useCallback((index: number) => {
+    expandIndexRef.current = index;
+  }, []);
 
   if (isPrevDisabled && isNextDisabled && !hasContent) {
     return <ErrorState type="NO_CONTENT" />;
@@ -344,8 +371,7 @@ export function VideoCarouselView({
                   <VideoCarouselCard
                     post={post}
                     index={index}
-                    totalCards={posts.length}
-                    isActive={index === activeIndex}
+                    isActive={index === activeIndex && !expanded}
                     isNext={isNext}
                     isPrev={isPrev}
                     isVisible={isVisible}
@@ -355,6 +381,8 @@ export function VideoCarouselView({
                     controlSize={controlSize}
                     ctaText={ctaText}
                     playOnHover={playOnHover}
+                    expanded={expanded}
+                    onToggleExpand={toggleExpand}
                     onCardHover={handleCardHover}
                     onCardClick={handleCardClick}
                     onPlayerIterationEnd={handlePlayerIterationEnd}
@@ -382,8 +410,9 @@ export function VideoCarouselView({
       )}
 
       {/* Standalone Expand View — reuses the VideoFeed expand implementation
-          (its own portalled full-screen FeedView), which is the one that works. */}
-      {!embedDetails && showExpandView && (
+          (its own portalled full-screen FeedView), the same mechanism VideoFeed
+          uses: a local `expanded` flag, no native fullscreen. */}
+      {!embedDetails && expanded && (
         <VideoFeedExpandView
           data={{
             posts: feedData.videos,
@@ -396,9 +425,9 @@ export function VideoCarouselView({
             totalVideos: feedData.totalVideos,
             pageSession: feedData.pageSession,
           }}
-          startIndex={activeIndex}
-          onClose={closeExpandView}
-          onActiveIndexChange={setActiveIndex}
+          startIndex={expandIndexRef.current}
+          onClose={closeExpand}
+          onActiveIndexChange={handleExpandIndexChange}
         />
       )}
 
@@ -496,10 +525,10 @@ export function VideoCarousel({
   }
 
   return (
-    <FeedContextProvider
-      defaultExpandView={defaultExpandView}
-      onCloseExpandView={onCloseExpandView}
-      variant="page">
+    // Expand view is managed locally by VideoCarouselView (like VideoFeed) — the
+    // FeedContextProvider here only supplies the shared `activeIndex`, so its native
+    // fullscreen behaviour is disabled to avoid it fighting the portalled expand view.
+    <FeedContextProvider variant="page" disableNativeFullscreenApi>
       <GestureProvider isInIframe={isInIframe}>
         <div className={cn("gencl:relative gencl:h-full gencl:w-full", containerClassName)}>
           <VideoCarouselView
@@ -516,6 +545,8 @@ export function VideoCarousel({
             playOnHover={playOnHover}
             autoAdvanceOnEnd={autoAdvanceOnEnd}
             showNavigation={showNavigation}
+            defaultExpandView={defaultExpandView}
+            onCloseExpandView={onCloseExpandView}
             onCtaClick={onCtaClick}
             onActiveIndexChange={onActiveIndexChange}
             onActiveVideoChange={onActiveVideoChange}
