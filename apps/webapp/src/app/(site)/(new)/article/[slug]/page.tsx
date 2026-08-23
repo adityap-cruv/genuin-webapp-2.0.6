@@ -1,5 +1,5 @@
-import { ArticlePage } from "@genuin/components/page/article/article-page";
 import { getArticleBySlug } from "@genuin/components/page/article/article-data";
+import { ArticlePage } from "@genuin/components/page/article/article-page";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 
