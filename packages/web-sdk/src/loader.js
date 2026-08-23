@@ -174,26 +174,17 @@
   }
 
   function getCSSUrl() {
-    let cssUrl;
-    if (
-      __DEV_ENVIRONMENT__ ||
-      SDK_BASE_URL.includes("localhost") ||
-      SDK_BASE_URL.includes("192.168") ||
-      SDK_BASE_URL.includes("127.0.0.1")
-    ) {
-      // In development or local serving, use the same base URL detection as the JS SDK
-      if (SDK_BASE_URL.startsWith("http") || SDK_BASE_URL.startsWith("/")) {
-        // Absolute URL or root-relative path
-        cssUrl = SDK_BASE_URL + "assets/__CSS_FILENAME_PLACEHOLDER__";
-      } else {
-        // Relative path - resolve relative to current page
-        const baseUrl = new URL(window.location.href);
-        cssUrl = new URL(SDK_BASE_URL + "assets/__CSS_FILENAME_PLACEHOLDER__", baseUrl).href;
-      }
-    } else {
-      cssUrl = `__MEDIA_BASE_URL__/sdk/__SDK_VERSION_PATH__assets/__CSS_FILENAME_PLACEHOLDER__`;
+    // The CSS asset always ships next to the loaded SDK bundle (dist/assets/…), so derive its URL
+    // from SDK_BASE_URL (the directory the SDK script was loaded from). This is correct whether the
+    // SDK is served from the CDN (…/sdk/<version>/ → …/sdk/<version>/assets/…) or self-hosted
+    // same-origin (…/sdk/ → …/sdk/assets/…). A hard-coded CDN path would 404 when self-hosting.
+    if (SDK_BASE_URL.startsWith("http") || SDK_BASE_URL.startsWith("/")) {
+      // Absolute URL or root-relative path
+      return SDK_BASE_URL + "assets/__CSS_FILENAME_PLACEHOLDER__";
     }
-    return cssUrl;
+    // Relative path - resolve relative to current page
+    const baseUrl = new URL(window.location.href);
+    return new URL(SDK_BASE_URL + "assets/__CSS_FILENAME_PLACEHOLDER__", baseUrl).href;
   }
 
   /**
