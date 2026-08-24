@@ -244,11 +244,14 @@ export async function RedirectHandler({
       const bccUrl = process.env.NEXT_PUBLIC_BCC_URL || "https://brands.qa.begenuin.com";
 
       // Check if the app is running locally, is embedded in an iframe from BCC_URL,
-      // or explicitly has the sec-fetch-dest header set to 'iframe'
+      // or explicitly has the sec-fetch-dest header set to 'iframe'.
+      // Vercel demo hosts (*.vercel.app) are treated like localhost so the brand content-gate is
+      // skipped — the deploy URL changes per build, so the 7-day auth cookie can never persist.
       if (
         host.includes("localhost") ||
         host.includes("127.0.0.1") ||
         host.startsWith("192.168.") ||
+        host.endsWith(".vercel.app") ||
         (secFetchDest === "iframe" && referer && referer.includes(bccUrl))
       ) {
         return children;
