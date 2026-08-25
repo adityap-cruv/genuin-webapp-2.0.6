@@ -217,13 +217,38 @@ function GenuinPlacement({
   styleId,
   placementId,
   apiKey,
+  mobileStyleId,
+  mobilePlacementId,
 }: {
   domId: string;
   styleId: string;
   placementId: string;
   apiKey: string;
+  mobileStyleId?: string;
+  mobilePlacementId?: string;
 }) {
+  const hasMobilePlacement = Boolean(mobileStyleId && mobilePlacementId);
+  const [viewport, setViewport] = useState<"mobile" | "desktop" | null>(hasMobilePlacement ? null : "desktop");
+
   useEffect(() => {
+    if (!hasMobilePlacement) {
+      setViewport("desktop");
+      return;
+    }
+
+    const mediaQuery = window.matchMedia("(max-width: 767px)");
+    const syncViewport = () => setViewport(mediaQuery.matches ? "mobile" : "desktop");
+    syncViewport();
+    mediaQuery.addEventListener("change", syncViewport);
+    return () => mediaQuery.removeEventListener("change", syncViewport);
+  }, [hasMobilePlacement]);
+
+  const useMobilePlacement = viewport === "mobile" && hasMobilePlacement;
+  const activeStyleId = useMobilePlacement ? mobileStyleId! : styleId;
+  const activePlacementId = useMobilePlacement ? mobilePlacementId! : placementId;
+
+  useEffect(() => {
+    if (viewport === null) return;
     let cancelled = false;
     loadGenuinSdk()
       .then(() => {
@@ -235,14 +260,19 @@ function GenuinPlacement({
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [viewport, activeStyleId, activePlacementId]);
+
+  if (viewport === null) {
+    return <div style={{ width: "100%", height: "100%" }} />;
+  }
 
   return (
     <div
+      key={`${activeStyleId}-${activePlacementId}`}
       id={domId}
       className="gen-sdk-class"
-      data-style-id={styleId}
-      data-placement-id={placementId}
+      data-style-id={activeStyleId}
+      data-placement-id={activePlacementId}
       data-api-key={apiKey}
       style={{ width: "100%", height: "100%" }}
     />
@@ -286,10 +316,14 @@ function WidgetFrame({
       {frame.showHeader !== false && (
         <SectionHeader imageUrl={logo} imageAlt={imageAlt} heading={heading} subHeading={subHeading} />
       )}
-      {frame.topSpacerPx ? <div aria-hidden style={{ height: frame.topSpacerPx }} /> : null}
+      {frame.topSpacerPx ? (
+        <div className="gen-home-spacer" aria-hidden style={{ height: frame.topSpacerPx }} />
+      ) : null}
       <div
         className={cn(
-          "gencl:min-h-0 gencl:min-w-0 gencl:flex-1",
+          // `gen-widget-body` is the content box below the header — the mobile stylesheet sizes
+          // it by an `intrinsicSize` ratio, so the header's own height is never counted in.
+          "gen-widget-body gencl:min-h-0 gencl:min-w-0 gencl:flex-1",
           frame.rounded && "gencl:rounded-xl",
           frame.overflowHidden && "gencl:overflow-hidden",
           frame.border && "gencl:ring-1 gencl:ring-secondary-200"
@@ -398,7 +432,18 @@ function PlacementWidget({ node, data }: WidgetRenderProps) {
       logo={data.header?.logo}
       wrapper={node.wrapper}>
       {show && styleId && placementId ? (
-        <GenuinPlacement domId={domId} styleId={styleId} placementId={placementId} apiKey={apiKey} />
+        <GenuinPlacement
+          domId={domId}
+          styleId={styleId}
+          placementId={placementId}
+          apiKey={apiKey}
+          mobileStyleId={
+            typeof node.config?.mobileStyleId === "string" ? node.config.mobileStyleId : undefined
+          }
+          mobilePlacementId={
+            typeof node.config?.mobilePlacementId === "string" ? node.config.mobilePlacementId : undefined
+          }
+        />
       ) : (
         <VideoPlaceholder />
       )}
@@ -439,13 +484,19 @@ function IntelligenceCardListWidget({ node, data }: WidgetRenderProps) {
       logo={data.header?.logo}
       wrapper={node.wrapper}>
       <IntelligencePanelShell size={{ width: "100%", height: "100%" }} onClose={() => undefined}>
-        <div className="gencl:mt-2 gencl:flex gencl:flex-col gencl:gap-2">
+        <div
+          className={cn(
+            "gencl:flex gencl:h-full gencl:min-h-0 gencl:flex-col gencl:gap-2 gencl:overflow-y-auto gencl:pt-2",
+            "gencl:scroll-smooth gencl:snap-y gencl:snap-mandatory gencl:overscroll-contain",
+            "gencl:[scrollbar-width:none] gencl:[&::-webkit-scrollbar]:hidden"
+          )}>
           {articles.map((article) => (
             <IntelligenceArticleCard
               key={article.id}
               article={toArticle(article)}
               layout={INTERVIEW_CARD_LAYOUT}
               imagePosition="top"
+              className="gencl:shrink-0 gencl:snap-start gencl:snap-always"
             />
           ))}
         </div>

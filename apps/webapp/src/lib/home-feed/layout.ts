@@ -31,6 +31,8 @@ const TOP_CATEGORIES_CAROUSEL_PLACEMENT = {
 const GRID_PLACEMENT = {
   styleId: "6a7c797ae26bf2c127deb953",
   placementId: "6a7c797ae26bf2c127deb952",
+  mobileStyleId: "6a8ca2d85826203d1554ac37",
+  mobilePlacementId: "6a8ca2d85826203d1554ac36",
   apiKey: PLACEMENT_API_KEY,
 };
 
@@ -125,7 +127,16 @@ const HOME_LAYOUT: HomeLayoutManifest = {
       padding: 20,
       columnGap: 16,
       children: [
-        { type: "widget", id: "tmobile", component: "video_grid", dataKey: "tmobile", config: GRID_PLACEMENT },
+        {
+          type: "widget",
+          id: "tmobile",
+          component: "video_grid",
+          dataKey: "tmobile",
+          config: GRID_PLACEMENT,
+          // Mirrors the placement's own `dimensions` (2 columns x 2 rows of 16:9 tiles).
+          intrinsicSize: { width: 1000, height: 568 },
+          mobileIntrinsicSize: { width: 382, height: 664 },
+        },
         {
           type: "widget",
           id: "relevant_news",

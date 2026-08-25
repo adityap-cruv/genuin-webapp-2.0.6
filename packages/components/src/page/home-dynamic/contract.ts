@@ -40,6 +40,15 @@ export type WidgetNode = {
   component: ComponentType;
   dataKey: string;
   config?: Record<string, unknown>;
+  /**
+   * The widget's own natural size — for an SDK placement, the `dimensions` configured on it
+   * (e.g. a 2x2 16:9 grid authored at 1000 x 568). Only the RATIO is used. Stacked on mobile the
+   * cell is sized by this instead of the row height, so an embed that draws at its own aspect
+   * ratio never leaves dead space below itself.
+  */
+  intrinsicSize?: { width: number; height: number };
+  /** Optional mobile placement size used below the phone breakpoint. */
+  mobileIntrinsicSize?: { width: number; height: number };
   dependsOn?: DependsOn;
   wrapper?: WidgetWrapper;
 };

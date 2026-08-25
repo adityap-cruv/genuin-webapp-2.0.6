@@ -28,15 +28,35 @@ import { useHomeFeed, useHomeLayout } from "./use-home-data";
 
 type DataMap = Record<string, WidgetData>;
 
-/** One widget filling its grid cell; the registry entry adapts the data to a component. */
+/**
+ * One widget filling its grid cell; the registry entry adapts the data to a component.
+ *
+ * A widget that declares an `intrinsicSize` publishes that ratio to the stylesheet; stacked on
+ * mobile the cell is then sized by the ratio rather than by the row height (see the mobile block
+ * in HOME_MOTION_CSS). An SDK grid embed draws at its OWN aspect ratio and cannot stretch, so a
+ * cell taller than that ratio is dead space below the tiles.
+ */
 function WidgetRenderer({ node, dataMap }: { node: WidgetNode; dataMap: DataMap }) {
   const data = dataMap[node.dataKey];
   const Entry = COMPONENT_REGISTRY[node.component];
   // Skip gracefully on missing data / unknown component (forward-compatible with a backend
   // that ships content or components an older client doesn't know yet).
   if (!data || !Entry) return null;
+  const { intrinsicSize, mobileIntrinsicSize } = node;
   return (
-    <div className="gencl:min-h-0 gencl:min-w-0">
+    <div
+      className="gencl:min-h-0 gencl:min-w-0"
+      data-fit={intrinsicSize ? "intrinsic" : undefined}
+      style={
+        intrinsicSize
+          ? ({
+              "--gen-widget-ratio": `${intrinsicSize.width} / ${intrinsicSize.height}`,
+              "--gen-widget-mobile-ratio": mobileIntrinsicSize
+                ? `${mobileIntrinsicSize.width} / ${mobileIntrinsicSize.height}`
+                : undefined,
+            } as CSSProperties)
+          : undefined
+      }>
       <Entry node={node} data={data} dataMap={dataMap} />
     </div>
   );
@@ -61,8 +81,14 @@ function NodeRenderer({ node, dataMap }: { node: LayoutNode; dataMap: DataMap })
 }
 
 /**
- * One row: a CSS grid with the manifest's explicit column template and a fixed content height
- * (matching /home per-section). The single row track fills that height so cells stretch.
+ * One row: a CSS grid with the manifest's explicit column template and a fixed content height.
+ *
+ * The height is deliberately INDEPENDENT of the window width. The SDK placements measure their
+ * container once, at `init()`, and never re-lay-out afterwards: their drawn height is frozen at
+ * whatever the cell was on first render. So any width-driven height (a fluid `aspect-ratio`, a
+ * `vw` unit) is cut off from the bottom the moment the user drags the window narrower — the cell
+ * shrinks, the embed does not. A per-breakpoint height has the same problem at each crossing.
+ * Columns are `fr`-based and reflow freely; only the height must stay put.
  */
 function RowRenderer({
   row,
@@ -73,19 +99,33 @@ function RowRenderer({
   dataMap: DataMap;
   index: number;
 }) {
+  // A widget that draws at its own ratio (an SDK grid embed) DEFINES its row's height: it fills
+  // the width and derives its height from the placement's ratio, so a row track fixed at the
+  // authored height leaves dead space under it on narrow screens and is overrun on wide ones.
+  // Unlike the carousel/feed embeds this one does re-lay-out on resize, so a width-driven height
+  // is safe here. The row's siblings (internally-scrolling panels) simply stretch to match.
+  const isRatioDriven = row.children.some(
+    (child) => child.type === "widget" && child.intrinsicSize !== undefined
+  );
+
   return (
     <div
       className="gen-home-row gencl:w-full"
       style={{
         padding: row.padding ?? 24,
         "--gen-home-delay": `${Math.min(index, 5) * 70}ms`,
+        // Read back by the mobile stylesheet as each stacked cell's minimum height.
+        "--gen-home-cell-h": `${row.height}px`,
       } as CSSProperties}>
       <div
+        className="gen-home-grid"
+        data-rows={isRatioDriven ? "ratio" : undefined}
         style={{
           display: "grid",
           gridTemplateColumns: row.gridTemplateColumns,
-          gridTemplateRows: "minmax(0, 1fr)",
-          height: row.height,
+          gridTemplateRows: isRatioDriven ? "minmax(0, auto)" : "minmax(0, 1fr)",
+          width: "100%",
+          height: isRatioDriven ? "auto" : row.height,
           gap: row.gap ?? 16,
           columnGap: row.columnGap,
           alignItems: "stretch",
@@ -179,6 +219,57 @@ const HOME_MOTION_CSS = `
 @media (prefers-reduced-motion: reduce) {
   .gen-home-motion { scroll-behavior: auto; }
   .gen-home-row { opacity: 1; animation: none; }
+}
+
+/* A widget declaring an intrinsicSize (an SDK grid embed) draws at exactly that ratio, filling
+   the width. Its CONTENT box therefore carries the ratio — the cell adds its section header on
+   top — at every screen size, so the tiles never leave dead space below them nor spill past the
+   section. The flex:none stops the frame's flex-1 from stretching it. */
+.gen-home-grid > [data-fit="intrinsic"] .gen-widget-body {
+  flex: none;
+  aspect-ratio: var(--gen-widget-ratio);
+}
+/* In such a row the ratio widget alone decides the height. Its siblings are internally-scrolling
+   panels whose natural content is far taller than any section; size containment keeps them out of
+   the track calculation so they stretch to the ratio instead of dictating a 1400px row. */
+.gen-home-grid[data-rows="ratio"] > :not([data-fit="intrinsic"]) { contain: size; }
+
+/* Below the desktop breakpoint every row collapses to a single column, so the manifest's
+   side-by-side cells stack in source order — exactly the reading order of the mobile design.
+   The manifest's row height is a DESKTOP figure (one row of cells side by side); stacked, it
+   becomes each cell's MINIMUM height instead, capped at 70vh so a tall row can never fill more
+   than most of a phone screen. Everything here is an override of the renderer's inline styles,
+   hence the !important flags — the layout contract itself is untouched. */
+@media (max-width: 1023px) {
+  /* The top bar is fixed and only desktop reserves room for it (base-layout sizes <main> at
+     100% - 64px there), so the scroller pads itself by the bar's height on mobile. */
+  .gen-home-motion { padding-top: 64px; }
+  .gen-home-row { padding: 16px !important; }
+  .gen-home-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: none !important;
+    grid-auto-rows: auto;
+    /* Stacked, the row is as tall as its cells — the desktop aspect-ratio sizing does not apply. */
+    aspect-ratio: auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    row-gap: 24px !important;
+  }
+  /* A FIXED height per stacked cell, not min-height: the news/link panels scroll internally, so
+     letting them grow to their content turned one row into ~3000px of page. Capped at 70vh so a
+     tall row never exceeds most of a phone screen. */
+  .gen-home-grid > * { height: min(var(--gen-home-cell-h, 420px), 70vh); }
+  /* …except a widget that draws at its own ratio — it is sized by the base rule below. */
+  .gen-home-grid > [data-fit="intrinsic"] { height: auto; }
+  /* Desktop-only alignment spacer (keeps a headerless panel level with its neighbour's header);
+     stacked, there is no neighbour to align to. */
+  .gen-home-spacer { display: none; }
+}
+@media (max-width: 767px) {
+  .gen-home-grid > [data-fit="intrinsic"] .gen-widget-body {
+    aspect-ratio: var(--gen-widget-mobile-ratio, var(--gen-widget-ratio));
+  }
 }
 `;
 
