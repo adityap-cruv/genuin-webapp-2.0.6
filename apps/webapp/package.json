@@ -10,7 +10,7 @@
     "dev:prod": "env-cmd -f ../../.env.production next dev -p 4005",
     "dev:turbo": "env-cmd -f ../../.env NEXT_TURBO=true next dev --turbo -p 4005",
     "build": "next build",
-    "build:vercel": "cd ../../packages/genai && VITE_GENAI_KOAH_PUBLISHER_ID=4d4c2923-96ae-4b8f-bede-5acb9145b936 pnpm exec cross-env NODE_ENV=development tsc -b && VITE_GENAI_KOAH_PUBLISHER_ID=4d4c2923-96ae-4b8f-bede-5acb9145b936 pnpm exec cross-env NODE_ENV=development vite build --mode development && cd ../web-sdk && pnpm exec cross-env NODE_ENV=qa vite build && mkdir -p ../../apps/webapp/public/sdk && cp -r dist/. ../../apps/webapp/public/sdk/ && cd ../../apps/webapp && pnpm exec next build",
+    "build:vercel": "cd ../../packages/genai && VITE_GENAI_KOAH_PUBLISHER_ID=4d4c2923-96ae-4b8f-bede-5acb9145b936 pnpm exec cross-env NODE_ENV=development tsc -b && VITE_GENAI_KOAH_PUBLISHER_ID=4d4c2923-96ae-4b8f-bede-5acb9145b936 pnpm exec cross-env NODE_ENV=development vite build --mode development && cd ../web-sdk && VITE_GENAI_KOAH_PUBLISHER_ID=4d4c2923-96ae-4b8f-bede-5acb9145b936 pnpm exec cross-env NODE_ENV=qa vite build && mkdir -p ../../apps/webapp/public/sdk && cp -r dist/. ../../apps/webapp/public/sdk/ && cd ../../apps/webapp && pnpm exec next build",
     "start": "next start -p 4000",
     "lint": "eslint .",
     "format": "prettier --write .",

@@ -866,6 +866,13 @@ export default defineConfig({
     "import.meta.env.VITE_RUDDERSTACK_URL": JSON.stringify(
       process.env.NEXT_PUBLIC_RUDDERSTACK_URL || process.env.RUDDERSTACK_URL || "https://rudderstack.qa.begenuin.com"
     ),
+    // Koah ads publisher token — read by @genuin/genai-sdk's KoahSDKLoader as
+    // import.meta.env.VITE_GENAI_KOAH_PUBLISHER_ID at build time. MUST be defined here: this config's
+    // explicit import.meta.env.* defines suppress vite's auto-population of other VITE_* vars, so an
+    // env-file / shell value alone never reaches the bundle. Falls back to the demo token.
+    "import.meta.env.VITE_GENAI_KOAH_PUBLISHER_ID": JSON.stringify(
+      process.env.VITE_GENAI_KOAH_PUBLISHER_ID || "4d4c2923-96ae-4b8f-bede-5acb9145b936"
+    ),
     "import.meta.env.NEXT_PUBLIC_MEDIA_BASE_URL": JSON.stringify(
       process.env.NEXT_PUBLIC_MEDIA_BASE_URL || process.env.MEDIA_BASE_URL || "https://media.qa.begenuin.com"
     ),
