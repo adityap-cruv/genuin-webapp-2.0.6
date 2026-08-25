@@ -70,7 +70,7 @@ const IMG = {
 };
 
 const FOIL_LOGO = "/images/home/the-foil-logo.jpg";
-const TMOBILE_LOGO = "/images/home/tmobile-logo.png";
+const MUSTO_LOGO = "/images/home/musto-logo.png";
 
 const PODCAST_DESC =
   "Click here to listen on Spotify and other platforms. Sailing has never been healthier — on this week's pod, that's exactly the promise we dig into.";
@@ -404,7 +404,7 @@ function basePageData(): Record<string, WidgetData> {
     },
     tmobile: {
       id: "tmobile",
-      header: { heading: "Tmobile", subHeading: "Brought to you by Tmobile", logo: TMOBILE_LOGO },
+      header: { heading: "Musto", subHeading: "Sponsored · Performance sailing kit", logo: MUSTO_LOGO },
       source: { feedType: "HOME", communityId: COMMUNITIES[4]! },
       sponsored: true,
       ctaText: "Order Now",

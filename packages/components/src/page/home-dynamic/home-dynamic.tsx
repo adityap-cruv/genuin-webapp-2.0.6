@@ -21,6 +21,7 @@ import type {
   WidgetData,
   WidgetNode,
 } from "./contract";
+import { HomeDynamicSkeleton } from "./home-dynamic-skeleton";
 import { useHomeFeed, useHomeLayout } from "./use-home-data";
 
 // ─── Layout renderer (walks the BFF layout tree, joins widgets to content by dataKey) ────
@@ -333,7 +334,7 @@ export function HomeDynamic() {
       {isError ? (
         <ErrorState type="ERROR" />
       ) : isInitialLoading ? (
-        <CenteredMessage>Loading…</CenteredMessage>
+        <HomeDynamicSkeleton />
       ) : null}
       <div ref={sentinelRef} aria-hidden style={{ height: 1 }} />
       {isFetchingNextPage && <CenteredMessage>Loading more…</CenteredMessage>}
