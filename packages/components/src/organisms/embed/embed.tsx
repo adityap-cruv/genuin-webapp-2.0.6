@@ -719,9 +719,31 @@ export function Embed({
               </SafeSuspense>
               <SafeSuspense
                 fallback={
-                  <div style={{ height: availableHeight }} className="gencl:flex gencl:gap-2 gencl:overflow-hidden">
+                  // Match the real EmbedSwiper's slide geometry exactly so the
+                  // lazy-load fallback doesn't render differently-positioned tiles
+                  // that shift horizontally once the swiper mounts.
+                  //
+                  // Swiper (v11) sizes each slide as:
+                  //   slideSize = (containerWidth - (slidesPerView - 1) * spaceBetween) / slidesPerView
+                  // and lays them out with spaceBetween between slides. Using the
+                  // naive containerWidth / slidesPerView (which ignores the gap eaten
+                  // by spaceBetween) makes every slide a few px too wide, so the
+                  // inter-slide gaps drift left cumulatively when the swiper takes
+                  // over. Replicate swiper's formula here and use spaceBetweenVideos
+                  // as the flex gap so the pitch is identical.
+                  <div
+                    style={{ height: availableHeight, gap: spaceBetweenVideos }}
+                    className="gencl:flex gencl:overflow-hidden">
                     {Array.from({ length: Math.max(1, Math.ceil(slidesPerView)) }).map((_, idx) => (
-                      <ShimmerSlide key={`swiper-fallback-${idx}`} />
+                      <div
+                        key={`swiper-fallback-${idx}`}
+                        style={{
+                          width: (containerWidth - (slidesPerView - 1) * spaceBetweenVideos) / slidesPerView,
+                          height: availableHeight,
+                          flex: "0 0 auto",
+                        }}>
+                        <ShimmerSlide />
+                      </div>
                     ))}
                   </div>
                 }

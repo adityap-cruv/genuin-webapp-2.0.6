@@ -3,11 +3,10 @@ import { Skeleton } from "@genuin/ui/components/skeleton";
 import { cn, getAspectRatio } from "@genuin/ui/lib/utils";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
-import type { ComponentProps } from "react";
+import React, { type ComponentProps } from "react";
 import { SwiperSlide } from "swiper/react";
 
 import { useBaseContext } from "@genuin/components/context";
-import { useEmbedContext } from "@genuin/components/context/embed";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useEmbedDimensions } from "@genuin/components/hooks/embed/use-embed-dimensions";
 import { EmbedSwiper } from "@genuin/components/molecules/embed-swiper";
@@ -57,7 +56,6 @@ export function SdkSkeleton({
   spaceBetweenVideos: number;
   availableHeight: number;
 }) {
-  const { embedData } = useEmbedContext();
   const config = useEmbedConfigs();
   const { headerHeight } = useEmbedDimensions();
   const isGridLayout = config.view.isGrid;
@@ -221,7 +219,7 @@ export function SdkSkeleton({
     );
   }
 
-  // Otherwise render carousel/feed skeleton layout
+  // Otherwise render carousel/feed skeleton layout.
   return (
     <div
       className={cn(
@@ -265,9 +263,9 @@ export function SdkSkeleton({
           {skeletonItems.map((_, idx) => {
             return (
               <SwiperSlide className="gencl:h-full gencl:w-full" key={idx}>
-                <Skeleton
+                <div
                   className={cn(
-                    "gencl:h-full gencl:w-full",
+                    "gencl:h-full gencl:w-full gencl:rounded-md",
                     theme === "dark" ? "gencl:bg-secondary-800" : "gencl:bg-secondary-100"
                   )}
                 />

@@ -966,7 +966,7 @@ export class GenuinSDK {
       const { shadowRoot } = host;
       if (!shadowRoot) return;
       shadowRoot.querySelectorAll(selector).forEach((el) => {
-         if (
+        if (
           el instanceof HTMLElement &&
           // A real nested host is explicitly marked, or carries a publisher
           // embed/placement/style data-attr. SDK-internal inner roots have none.
@@ -1030,7 +1030,7 @@ export class GenuinSDK {
         const existingInstanceId = element.getAttribute("data-instance-id");
 
         if (existingInstanceId && this.sdkElements[existingInstanceId]) {
-           // This is the parent container — skip only this one. `continue`, not
+          // This is the parent container — skip only this one. `continue`, not
           // `return`: a `return` aborts the whole loop, leaving any sibling
           // pending containers (incl. the actual nested child) uninitialized.
           continue;
@@ -1087,6 +1087,18 @@ export class GenuinSDK {
 
       // Propagate the resolved flag so downstream consumers see the same value.
       extractedData.useShadowDOM = useShadowDOM;
+
+      // Lock container dimensions before showing skeleton to prevent width/height
+      // jumps when skeleton items (with flex-shrink: 0 + aspect-ratio) load.
+      // Only lock if container already has non-zero dimensions (layout-dependent).
+      const currentWidth = element.clientWidth;
+      const currentHeight = element.clientHeight;
+      if (currentWidth > 0 && !element.style.width) {
+        element.style.width = `${currentWidth}px`;
+      }
+      if (currentHeight > 0 && !element.style.height) {
+        element.style.height = `${currentHeight}px`;
+      }
 
       // Show loading skeleton immediately (inside shadow root when enabled)
       loadLoadingView(shadowTarget, extractedData.theme);
@@ -1606,7 +1618,7 @@ export class GenuinSDK {
    * @returns The initialization status: 'pending', 'loading', or 'done'.
    */
   private getInitializationStatus(element: HTMLElement): InitializationStatus {
-        // Backstop: never treat SDK-rendered internal chrome as a fresh container.
+    // Backstop: never treat SDK-rendered internal chrome as a fresh container.
     // The selector already excludes these, but defaulting them to "done" here
     // means even a stray internal node can never be mounted into.
     if (element.hasAttribute(GENUIN_INTERNAL_ATTR)) {

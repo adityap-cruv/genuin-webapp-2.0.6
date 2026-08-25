@@ -36,10 +36,22 @@ export function useEmbedDimensions() {
 
   // State to hold observed dimensions as an object, seeded from the cache so a
   // remount (e.g. the Suspense fallback swap) starts already measured.
+  // If not in cache and root exists, initialize with current clientWidth/Height
+  // to prevent Size B flicker (falling through to 100px defaults before ResizeObserver fires).
   const [observedDimensions, setObservedDimensions] = useState<{
     width?: number;
     height?: number;
-  }>(() => (root && measuredDimensionsCache.has(root) ? measuredDimensionsCache.get(root)! : {}));
+  }>(() => {
+    if (!root) return {};
+    if (measuredDimensionsCache.has(root)) return measuredDimensionsCache.get(root)!;
+    // Immediate measurement before ResizeObserver — prevents DEFAULT fallback
+    const width = root.clientWidth;
+    const height = root.clientHeight;
+    if (width > 0 && height > 0) {
+      return { width, height };
+    }
+    return {};
+  });
 
   useEffect(() => {
     if (!root) return;
@@ -120,8 +132,11 @@ export function useEmbedDimensions() {
           : 38
         : 0;
 
-    const containerHeight = observedDimensions.height ?? config.dimensions.containerHeight ?? DEFAULT_HEIGHT;
-    const containerWidth = observedDimensions.width ?? config.dimensions.containerWidth ?? DEFAULT_WIDTH;
+    // Prefer observed dimensions (ResizeObserver), fall back to config dimensions
+    // (publisher-set), only use defaults if neither exist. Never let defaults
+    // override config — that causes Size B flicker during initial measurement.
+    const containerHeight = observedDimensions.height ?? (config.dimensions.containerHeight || DEFAULT_HEIGHT);
+    const containerWidth = observedDimensions.width ?? (config.dimensions.containerWidth || DEFAULT_WIDTH);
 
     // True once the host has a real measured size. observedDimensions is only
     // ever set from a positive measurement (see the effect above), so a defined
