@@ -37,8 +37,8 @@ const TOP_CATEGORIES_CAROUSEL_PLACEMENT = {
 const GRID_PLACEMENT = {
   styleId: "6a8d7df90ab638a100b16f74",
   placementId: "6a8d7df90ab638a100b16f73",
-  mobileStyleId: "6a8ca2d85826203d1554ac37",
-  mobilePlacementId: "6a8ca2d85826203d1554ac36",
+  mobileStyleId: "6a8d98dfceb52d9183e7e2e6",
+  mobilePlacementId: "6a8d98dfceb52d9183e7e2e5",
   apiKey: PLACEMENT_API_KEY,
 };
 
@@ -104,7 +104,8 @@ const W_TMOBILE: WidgetNode = {
   // used — stacked on mobile the cell is sized by this instead of the row height, so the embed never
   // leaves dead space below itself.
   intrinsicSize: { width: 1000, height: 568 },
-  mobileIntrinsicSize: { width: 382, height: 664 },
+  // "Musto Mobile" is a different placement: 1 column x 3 rows of 16:9 tiles at 383 x 664.
+  mobileIntrinsicSize: { width: 383, height: 664 },
 };
 const W_RELEVANT_NEWS: WidgetNode = {
   type: "widget",
