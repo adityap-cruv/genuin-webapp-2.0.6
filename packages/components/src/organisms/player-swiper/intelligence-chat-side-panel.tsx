@@ -15,7 +15,15 @@ import {
 import { KoahAdWidget } from "@genuin/genai-sdk";
 import { cn } from "@genuin/ui/lib/utils";
 
-const RESPONSE_DELAY_MS = 600;
+// ── Intelligence chat transport (THE INTEGRATION SEAM) ───────────────────────────────────────
+// The panel POSTs the prompt here and renders the IntelligenceResponseBlock[] it returns. Today
+// this points at the same-origin dummy backend (apps/webapp → /api/intelligence/chat). To go live,
+// set VITE_INTELLIGENCE_CHAT_URL to the real endpoint at SDK build time (or swap the dummy route's
+// body for the real service). The request/response contract below stays identical, so nothing in
+// the UI changes.
+const INTELLIGENCE_CHAT_URL =
+  (import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env
+    ?.VITE_INTELLIGENCE_CHAT_URL ?? "/api/intelligence/chat";
 const KOAH_PUBLISHER_ID = (
   import.meta as ImportMeta & { env?: Record<string, string | undefined> }
 ).env?.VITE_GENAI_KOAH_PUBLISHER_ID;
@@ -70,9 +78,24 @@ function createKoahTestMock(): NonNullable<KoahTestWindow["koah"]> {
   };
 }
 
+/** Lightweight context about the active video, sent to the backend so replies can reference it. */
+export type IntelligenceChatVideoContext = {
+  title?: string;
+  description?: string;
+  community?: string;
+  linkoutTitle?: string;
+  linkoutDescription?: string;
+};
+
 type IntelligenceChatSidePanelProps = {
   /** Active video — the thread is scoped to it; remount (key) on change to reset. */
   videoId: string;
+  /**
+   * What the SDK knows about the active video (title, description, community, linkout). Sent with
+   * each prompt so the (dummy) backend can ground its reply in the current clip. Optional — the real
+   * backend derives this from `videoId`, so it can safely ignore it.
+   */
+  videoContext?: IntelligenceChatVideoContext;
   /** Called when the user activates the panel's close control. */
   onClose: () => void;
   className?: string;
@@ -90,28 +113,88 @@ function assistantMessage(id: string, blocks: readonly IntelligenceResponseBlock
   return { id, role: "assistant", blocks, status: "complete" };
 }
 
-// TODO(sanidhya): replace with the real genai transport (`packages/genai`) — this
-// placeholder only proves the rail → panel flow until the stream is wired in.
-function placeholderResponse(prompt: string, seq: number): IntelligenceResponseBlock[] {
+/** One prior turn, serialized to plain text, sent so the backend has multi-turn context. */
+type ChatHistoryTurn = { role: "user" | "assistant"; content: string };
+
+/** Flatten a block to plain text (user-text `text`, or a text block's title + paragraphs). */
+function blockToText(block: IntelligenceResponseBlock): string {
+  const props = (block.props ?? {}) as { text?: string; title?: string; paragraphs?: readonly string[] };
+  if (typeof props.text === "string") return props.text;
+  const parts: string[] = [];
+  if (props.title) parts.push(props.title);
+  if (props.paragraphs) parts.push(...props.paragraphs);
+  return parts.join("\n");
+}
+
+/** Serialize the whole thread into compact history turns for the backend. */
+function toHistory(messages: readonly IntelligenceChatMessage[]): ChatHistoryTurn[] {
+  return messages
+    .map((message) => ({
+      role: message.role,
+      content: message.blocks.map(blockToText).filter(Boolean).join("\n").trim(),
+    }))
+    .filter((turn) => turn.content);
+}
+
+// Calls the Intelligence chat backend. Contract:
+//   POST { videoId, prompt, seq, context, history } -> { blocks: IntelligenceResponseBlock[] }
+// Swapping in the real backend means changing INTELLIGENCE_CHAT_URL (or the dummy route's body) —
+// this function and the panel stay the same.
+async function requestIntelligenceReply(
+  input: {
+    videoId: string;
+    prompt: string;
+    seq: number;
+    context?: IntelligenceChatVideoContext;
+    history?: ChatHistoryTurn[];
+  },
+  signal: AbortSignal
+): Promise<IntelligenceResponseBlock[]> {
+  const res = await fetch(INTELLIGENCE_CHAT_URL, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(input),
+    signal,
+  });
+  if (!res.ok) throw new Error(`Intelligence chat request failed: ${res.status}`);
+  const data = (await res.json()) as { blocks?: IntelligenceResponseBlock[] };
+  return data.blocks ?? [];
+}
+
+// Shown only if the request fails — keeps the thread readable instead of stalling silently.
+function errorResponse(seq: number): IntelligenceResponseBlock[] {
   const props: IntelligenceTextBlockProps = {
-    paragraphs: [
-      `You asked: "${prompt}".`,
-      "Intelligence isn't connected to a live source for this video yet — answers will appear here once it is.",
-    ],
+    paragraphs: ["Sorry — something went wrong fetching that answer. Please try again."],
   };
-  return [{ id: `text-${seq}`, type: INTELLIGENCE_BLOCK_TYPES.text, props }];
+  return [{ id: `error-${seq}`, type: INTELLIGENCE_BLOCK_TYPES.text, props }];
 }
 
 /**
  * Desktop right-rail host for the Intelligence chat panel in the expanded
  * player. Owns the per-video thread state; the panel itself stays controlled.
  */
-export function IntelligenceChatSidePanel({ videoId, onClose, className }: IntelligenceChatSidePanelProps) {
+export function IntelligenceChatSidePanel({
+  videoId,
+  videoContext,
+  onClose,
+  className,
+}: IntelligenceChatSidePanelProps) {
   const [messages, setMessages] = useState<readonly IntelligenceChatMessage[]>([]);
   const [isResponding, setIsResponding] = useState(false);
   const [koahTestReady, setKoahTestReady] = useState(!USE_KOAH_TEST_MOCK);
   const seqRef = useRef(0);
-  const timeoutRef = useRef<number | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
+  // Keep the latest context in a ref so handleSend stays stable (deps: [videoId]) yet always sends
+  // the current video's context.
+  const videoContextRef = useRef(videoContext);
+  useEffect(() => {
+    videoContextRef.current = videoContext;
+  }, [videoContext]);
+  // Mirror the thread in a ref so handleSend can send prior turns without depending on `messages`.
+  const messagesRef = useRef(messages);
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
 
   useEffect(() => {
     if (!USE_KOAH_TEST_MOCK) return;
@@ -131,11 +214,9 @@ export function IntelligenceChatSidePanel({ videoId, onClose, className }: Intel
     };
   }, []);
 
-  // Drop any in-flight placeholder reply if the panel unmounts (close / video change).
+  // Abort any in-flight request if the panel unmounts (close / video change).
   useEffect(() => {
-    return () => {
-      if (timeoutRef.current !== null) window.clearTimeout(timeoutRef.current);
-    };
+    return () => abortRef.current?.abort();
   }, []);
 
   const handleSend = useCallback(
@@ -143,11 +224,25 @@ export function IntelligenceChatSidePanel({ videoId, onClose, className }: Intel
       const seq = ++seqRef.current;
       setMessages((prev) => [...prev, userMessage(`${videoId}-u-${seq}`, text)]);
       setIsResponding(true);
-      timeoutRef.current = window.setTimeout(() => {
-        setMessages((prev) => [...prev, assistantMessage(`${videoId}-a-${seq}`, placeholderResponse(text, seq))]);
-        setIsResponding(false);
-        timeoutRef.current = null;
-      }, RESPONSE_DELAY_MS);
+
+      abortRef.current?.abort();
+      const controller = new AbortController();
+      abortRef.current = controller;
+
+      requestIntelligenceReply(
+        { videoId, prompt: text, seq, context: videoContextRef.current, history: toHistory(messagesRef.current) },
+        controller.signal
+      )
+        .then((blocks) => {
+          setMessages((prev) => [...prev, assistantMessage(`${videoId}-a-${seq}`, blocks)]);
+        })
+        .catch(() => {
+          if (controller.signal.aborted) return; // unmounted or superseded — ignore
+          setMessages((prev) => [...prev, assistantMessage(`${videoId}-a-${seq}`, errorResponse(seq))]);
+        })
+        .finally(() => {
+          if (!controller.signal.aborted) setIsResponding(false);
+        });
     },
     [videoId]
   );

@@ -180,12 +180,16 @@ function PageBlock({
     return () => observer.disconnect();
   }, [rootRef]);
 
+  // Prefer the page's OWN layout (backend-driven per-iteration variation); fall back to the shared
+  // manifest for pages/backends that don't send one.
+  const effectiveLayout = page.layout ?? layout;
+
   // Own bus per page so page 1's carousel never drives page 2's panels.
   return (
     <div ref={ref}>
       <BlockVisibilityContext.Provider value={isNear}>
         <WidgetBusProvider>
-          {layout.rows.map((row, index) => (
+          {effectiveLayout.rows.map((row, index) => (
             <RowRenderer key={row.id} row={row} dataMap={page.data} index={index} />
           ))}
         </WidgetBusProvider>

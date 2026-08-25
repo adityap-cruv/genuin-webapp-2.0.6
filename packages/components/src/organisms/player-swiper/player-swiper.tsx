@@ -990,6 +990,15 @@ export function PlayerList({
               <IntelligenceChatSidePanel
                 key={"intelligence-chat-" + (filteredPost[activeIndex].video?.id ?? "")}
                 videoId={filteredPost[activeIndex].video?.id ?? ""}
+                videoContext={{
+                  title: filteredPost[activeIndex].video?.attributes?.title ?? undefined,
+                  description: filteredPost[activeIndex].video?.attributes?.description ?? undefined,
+                  community:
+                    filteredPost[activeIndex].community?.name ?? filteredPost[activeIndex].group?.name ?? undefined,
+                  linkoutTitle: filteredPost[activeIndex].video?.linkouts?.[0]?.links?.[0]?.title ?? undefined,
+                  linkoutDescription:
+                    filteredPost[activeIndex].video?.linkouts?.[0]?.links?.[0]?.description ?? undefined,
+                }}
                 onClose={() => setIntelligenceOpen(false)}
                 className="gencl:h-full"
               />

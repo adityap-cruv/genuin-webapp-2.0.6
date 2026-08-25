@@ -127,4 +127,10 @@ export type HomeDataPage = {
   metadata: { page: string; schemaVersion: number; pageSession: string; pageIndex: number };
   pagination: { cursor: string | null; nextCursor: string | null; endOfFeed: boolean };
   data: Record<string, WidgetData>;
+  /**
+   * Optional per-page layout. When present, this page renders with its OWN layout instead of the
+   * shared manifest from `/api/home/layout` — so the backend can vary the structure per infinite-
+   * scroll iteration. Falls back to the shared manifest when omitted.
+   */
+  layout?: HomeLayoutManifest;
 };

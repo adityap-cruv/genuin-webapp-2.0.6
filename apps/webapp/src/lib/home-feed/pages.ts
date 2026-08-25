@@ -5,7 +5,16 @@
 // `HomeDataPage` (the frontend + the API route never change). Types come from the frontend contract so
 // the dummy and the real backend share ONE source of truth for the shape.
 
-import type { HomeDataPage, WidgetData } from "@genuin/components/page/home-dynamic/contract";
+import { getArticleBySlug } from "@genuin/components/page/article/article-data";
+import type {
+  ArticleData,
+  EventData,
+  HomeDataPage,
+  LinkItemData,
+  WidgetData,
+} from "@genuin/components/page/home-dynamic/contract";
+
+import { getHomeLayoutForPage } from "./layout";
 
 /**
  * Community pool (The Foil QA brand). The base page uses a fixed assignment; later pages rotate the
@@ -65,6 +74,115 @@ const TMOBILE_LOGO = "/images/home/tmobile-logo.png";
 
 const PODCAST_DESC =
   "Click here to listen on Spotify and other platforms. Sailing has never been healthier — on this week's pod, that's exactly the promise we dig into.";
+
+// ─── Editorial pool — real stories from thefoil.com (2026-08-25) ──────────────────────────────────
+// Page 1 uses the hand-curated content in basePageData(); pages 2+ pull DIFFERENT articles from this
+// pool via varyWidget(), so each infinite-scroll iteration shows fresh editorial. Only titles / hero
+// images / links are used. SEAM: when the real backend lands, varyWidget maps its response instead.
+type PoolArticle = { slug: string; title: string; image: string; desc: string };
+
+const ARTICLE_POOL: PoolArticle[] = [
+  { slug: "the-week-in-racing-24-august-26", title: "The week in racing – 24 August '26", image: "https://thefoil.com/media/fyOQZBfU_g5YeedI347I43cwARP09ukJ1dRDdN3XF0I/resize:fill-down:850:500/gravity:fp:0.3595744681:0.3743615093/quality:60/dpr:1/2026/08/138a2341-peter-brogger-ilca.jpg", desc: "F50s found a new gear in Sassnitz, the America's Cup lawyers are still busy, and two junior world champions emerged." },
+  { slug: "flying-roos-hit-high-five-with-victory-in-sassnitz", title: "Flying Roos hit high five with victory in Sassnitz", image: "https://thefoil.com/media/BdlC5UIxTylK26eNkVoAfU388-gOxuqKz8CSsX-Y6Nk/resize:fill-down:690:388/gravity:fp:0.4787472036:0.6386820846/quality:60/dpr:1/2026/08/jl206387.jpg", desc: "Bonds Flying Roos beat NorthStar Canada, Los Gallos and Black Foils for their fifth SailGP season win." },
+  { slug: "flying-roos-and-black-foils-lead-the-way-in-germany", title: "Flying Roos and Black Foils lead the way in Germany", image: "https://thefoil.com/media/NNb4DtCTPtZShEt-6LdvgHQTi8SPkbNtcR99cIawY40/resize:fill-down:690:388/gravity:fp:0.758974359:0.8208106473/quality:60/dpr:1/2026/08/fd1-0713.jpg", desc: "Leading teams at the Germany Sail Grand Prix day one, with a new SailGP speed record set." },
+  { slug: "black-foils-dominate-practice-day-in-sassnitz", title: "Black Foils dominate practice day in Sassnitz", image: "https://thefoil.com/media/sfEU1EC1ADnEWMSxAFjCV90hscMHSO0NrwQVvnxZrPY/resize:fill-down:690:388/gravity:fp:0.6787096774:0.5812742086/quality:60/dpr:1/2026/08/260821-sailgp-sassnitz-the-foil-ls1-3878.jpg", desc: "New Zealand's Black Foils set the benchmark in a three-race practice session." },
+  { slug: "plans-uncovered-to-reinvent-sailgp-s-race-weekend-news-even-to-the-sailors", title: "Plans uncovered to reinvent SailGP's race weekend", image: "https://thefoil.com/media/4VuyF-wFzDEjovsQXItmgj349qoEU1bP95n2xJbldIM/resize:fill-down:690:388/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/08/jl108682-1.jpg", desc: "SailGP is exploring new format concepts, reconsidering the current race-weekend structure." },
+  { slug: "andy-rice-a-good-worlds-for-gbr-and-a-good-worlds-for-the-470-class", title: "Andy Rice: A good Worlds for GBR, and for the 470 Class", image: "https://thefoil.com/media/CxqVH27Gkk4cj5ZFmExBBvQ76uSmVy-6172HPyItfEE/resize:fill-down:690:388/gravity:fp:0.5010989011:0.3081960898/quality:60/dpr:1/2026/08/55457634027-d7ba2b7d10-o.jpg", desc: "Analysis of the Olympic class future, with a focus on age-related concerns in the 470." },
+  { slug: "full-steam-ahead-and-scrambling-to-keep-our-heads-above-water-grant-simmer-on-australia-s-cup-comeback", title: "'Full steam ahead': Grant Simmer on Australia's Cup comeback", image: "https://thefoil.com/media/Z4trZSW3ehVrVFS3qWOILawnTQl_Pv_9-z_lS_AD6qY/resize:fill-down:690:388/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/06/grant-auacannouncement-imageteamauac.jpg", desc: "The Australia II navigator on the effort behind the current America's Cup comeback." },
+  { slug: "rising-stars-nathan-berger-the-17-year-old-wingfoiler-beating-his-heroes", title: "Rising Stars: Nathan Berger, the 17-year-old wingfoiler", image: "https://thefoil.com/media/6jqFsZkVz92e9pViFIC9cvcOgfOK1JayU4J0n2Ya0i8/resize:fill-down:690:388/gravity:fp:0.5757575758:0.4289940828/quality:60/dpr:1/2026/05/nathan-berger8.jpg", desc: "The first Rising Stars feature profiles a young athlete already competing internationally." },
+  { slug: "luca-rizzotti-bought-a-moth-in-2007-and-accidentally-started-a-movement", title: "Luca Rizzotti bought a Moth and accidentally started a movement", image: "https://thefoil.com/media/E3aCJ86SfKfu9q-SMKv2amCZNdndXRn09tP4ign_y9g/resize:fill-down:690:388/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/03/54620591537-354128013c-k.jpg", desc: "The Italian sailor whose Moth purchase influenced a broader foiling movement." },
+  { slug: "the-safest-is-when-you-re-pushing-hard-billy-gooderham-explains-flight-control", title: "'The safest is when you're pushing hard' – Billy Gooderham on flight control", image: "https://thefoil.com/media/88hujdjXkimh2hjECgSbi8G11dmmRQgPo1mSEJHk3mg/resize:fill-down:690:388/gravity:fp:0.4804597701:0.5023331499/quality:60/dpr:1/2026/02/northstar1.jpeg", desc: "The NorthStar SailGP flight controller on F50 foil-control techniques and safety." },
+  { slug: "podcast-ep-8-sydney-sailgp-preview-and-quentin-delapierre-on-safety", title: "Podcast Ep. 8 – Sydney SailGP preview + Quentin Delapierre", image: "https://thefoil.com/media/ihj1Pyj8LlC_gRNMb35ovuqM5c7DB4gr2gpZlpwfgE/resize:fill-down:690:388/gravity:fp:0.4045977011:0.1304243587/quality:60/dpr:1/2026/02/S6ComfUT55I.jpg", desc: "A podcast episode addressing safety concerns following the Auckland collision." },
+  { slug: "the-olympian-windsurfer-with-a-golden-future-far-beyond-la-2028", title: "The Olympian windsurfer with a golden future beyond LA 2028", image: "https://thefoil.com/media/U8j6sq1yq50MNqneZqWV-fKQwvMWiJ23hK4IqlF_wBM/resize:fill-down:690:388/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/02/grae-morris-2.jpeg", desc: "A profile of Australian windsurfer Grae Morris and his prospects beyond the Olympics." },
+  { slug: "podcast-can-anyone-beat-new-zealand-to-win-the-38th-america-s-cup", title: "Podcast: Can anyone beat New Zealand to win the 38th America's Cup?", image: "https://thefoil.com/media/DKNOTHYBJW-95Y9EeOQwx462bvV0HJVYFbaIEkadvhQ/resize:fill-down:690:388/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/07/foil-podcast-ep27.jpg", desc: "Can any of the six challengers really take on and beat Emirates Team New Zealand?" },
+  { slug: "podcast-sailgp-vs-america-s-cup-can-they-coexist", title: "Podcast: SailGP vs America's Cup – can they coexist?", image: "https://thefoil.com/media/OklF53Inp_snGNaLlSc_Z7oc8gG_XysfQ3vfUfQQsOk/resize:fill-down:690:388/gravity:fp:0.4962835906:0.6871458395/quality:60/dpr:1/2026/07/pod26thumb.jpg", desc: "A discussion of the competitive dynamics between the two major sailing formats." },
+  { slug: "podcast-america-s-cup-is-back-the-full-cagliari-debrief", title: "Podcast: America's Cup is back! The full Cagliari debrief", image: "https://thefoil.com/media/7yQYWbI8NieP3mVI3ibnGNpQjB4jVpQljfTe2PijaA/resize:fill-down:690:388/gravity:fp:0.3041738136:0.4733671339/quality:60/dpr:1/2026/05/e8tkvl1yBE4.jpg", desc: "The episode analysing the preliminary America's Cup regatta results in Cagliari." },
+  { slug: "like-watching-jet-fighters-dance-on-water-how-luna-rossa-lit-up-the-ac38-opener", title: "'Like watching jet fighters dance on water': Luna Rossa lights up the AC38 opener", image: "https://thefoil.com/media/mCW3wLqDh3sqRtydzwNhMci-7EoafPBWtqZn5iZ8gQM/resize:fill-down:690:388/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/05/2zBK_WJOXyM.jpg", desc: "Coverage of Luna Rossa's strong performance at the AC38 Cagliari opener." },
+  { slug: "podcast-extra-mozzy-and-freddie-preview-the-ac38-cagliari-prelim", title: "Podcast Extra: Mozzy and Freddie preview the AC38 Cagliari prelim", image: "https://thefoil.com/media/Pdz6pWSetC2coPjMqbNjYUjLhhRZ52S_gxCpmwiGVSk/resize:fill-down:690:388/gravity:fp:0.1914893617:0.4600980829/quality:60/dpr:1/2026/05/A8I5xxHXMuY.jpg", desc: "A bonus episode previewing the AC38 preliminary regatta." },
+  { slug: "podcast-it-starts-with-a-dream-glenn-ashby-on-australia-s-ac38-challenge-the-foil-podcast-ep-20", title: "Podcast: 'It starts with a dream' – Glenn Ashby on Australia's AC38 challenge", image: "https://thefoil.com/media/IV15mSl5M0bQKFpgnjbtf8NcXEb1Ur1YQBmCaI5br_w/resize:fill-down:690:388/gravity:fp:0.4638297872:0.294248774/quality:60/dpr:1/2026/05/SUASYivtly8.jpg", desc: "'The time is now,' says Glenn Ashby on Team Australia's newly-minted Cup challenge." },
+  { slug: "freddie-carr-cowes-week-turns-200-why-britain-s-greatest-regatta-still-means-everything", title: "Freddie Carr: Cowes Week turns 200 – why it still means everything", image: "https://thefoil.com/media/D9-BwEUpx2zkordmXhfkesEf3umA15CkbUq_0hVLUFk/resize:fill-down:690:388/gravity:fp:0.3212765957:0.4967784486/quality:60/dpr:1/2026/07/cowes-week-2018.jpg", desc: "Why the historic British regatta still matters in the modern sailing calendar." },
+  { slug: "freddie-carr-winging-it-at-half-time-in-sailgp", title: "Freddie Carr: winging it at half-time in SailGP", image: "https://thefoil.com/media/1iyA3HxN0dBlrtWrFrClGhvEmC088eDTOXoEX2XqirA/resize:fill-down:690:388/gravity:fp:0.3738738739:0.7896640827/quality:60/dpr:1/2026/06/ab305255.jpg", desc: "A mid-season performance analysis of the SailGP teams, backed by the numbers." },
+  { slug: "andy-rice-rates-the-fleet-after-canada-sailgp", title: "Andy Rice rates the fleet after Canada SailGP", image: "https://thefoil.com/media/qKjnrDjyAPpM3cBcH277RkMeUBqSXdeGFzwHNmpN4rY/resize:fill-down:690:388/gravity:fp:0.5127659574:0.5173727167/quality:60/dpr:1/2026/06/sv3-3959-samo-vidic-for-sailgp.jpg", desc: "Post-race analysis, with Los Gallos' strategic move the season's standout moment." },
+  { slug: "after-the-new-york-crash-what-should-sailgp-actually-do-the-foil-community-weighs-in", title: "After the New York crash, what should SailGP actually do?", image: "https://thefoil.com/media/EDze0rwkrUx65k8kq9Lwu9oSHPCEuRO6nTICXHbiUnE/resize:fill-down:690:388/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/06/sb1-9984-simon-bruty-sailgp.jpg", desc: "A community discussion sparked by the collision at the New York SailGP." },
+  { slug: "the-questions-that-remain-following-new-york-sailgp", title: "The questions that remain following New York SailGP", image: "https://thefoil.com/media/Um8anF-sXKcm8j780JjLYBS9DIkHC8GfcXQjrug28Xs/resize:fill-down:690:388/gravity:fp:0.4787792084:0.701049749/quality:60/dpr:1/2026/06/new-york-sailgp-statue-of-liberty-2026.jpg", desc: "From a three-boat collision to a grand final that divided opinion." },
+];
+
+type PoolEvent = { slug: string; heading: string; image: string; startDate: string; endDate: string; location: string };
+
+const EVENT_POOL: PoolEvent[] = [
+  { slug: "the-ocean-race-atlantic", heading: "The Ocean Race Atlantic", image: "https://thefoil.com/media/0IFpwb4HJabWEJukldoszeTslP9-KwJiWsr1dItg4qM/resize:fill-down:460:240/gravity:fp:0.4787792084:0.701049749/quality:60/dpr:1/2026/08/tora1.webp", startDate: "2026-09-01", endDate: "2026-09-01", location: "Atlantic Ocean" },
+  { slug: "spain-sail-grand-prix-valencia", heading: "Spain Sail Grand Prix | Valencia", image: "https://thefoil.com/media/iPBCq3_vvcFn6JcR7RXGUjAUYxDugVCydAXGxRUu5hI/resize:fill-down:460:240/gravity:fp:0.4787792084:0.701049749/quality:60/dpr:1/2026/01/nochesanjuan-valencia-4-1.jpg", startDate: "2026-09-05", endDate: "2026-09-06", location: "Valencia, Spain" },
+  { slug: "rolex-switzerland-sail-grand-prix-geneva", heading: "Rolex Switzerland Sail Grand Prix | Geneva", image: "https://thefoil.com/media/dakrdWO1K6E-9HkB-ty70MpQpJZphrX0yOUwtJVMzW4/resize:fill-down:460:240/gravity:fp:0.4787792084:0.701049749/quality:60/dpr:1/2026/01/sailgp-geneva-event.png", startDate: "2026-09-19", endDate: "2026-09-20", location: "Geneva, Switzerland" },
+  { slug: "emirates-dubai-sail-grand-prix-presented-by-dp-world", heading: "Emirates Dubai Sail Grand Prix", image: "https://thefoil.com/media/Xu7BYqNK4JOlhDFN95CM5vkEx1z5Tz816mIqhhnPdJo/resize:fill-down:460:240/gravity:fp:0.4787792084:0.701049749/quality:60/dpr:1/2025/12/felix-diemer-sailgp-1.png", startDate: "2026-11-21", endDate: "2026-11-22", location: "Dubai, United Arab Emirates" },
+  { slug: "mubadala-abu-dhabi-sail-grand-prix-2026-season-grand-final-presented-by-abu-dhabi-sports-council", heading: "Mubadala Abu Dhabi Sail Grand Prix | Grand Final", image: "https://thefoil.com/media/0JCAfHmgCbRgdzpa3E9qPnx0gbAcsLKZfYfHpml5698/resize:fill-down:460:240/gravity:fp:0.4787792084:0.701049749/quality:60/dpr:1/2025/12/ricardo-pinto-sailgp-5-1.png", startDate: "2026-11-28", endDate: "2026-11-29", location: "Abu Dhabi, United Arab Emirates" },
+];
+
+/** On-domain `/article/<slug>` when we have a demo page for it; else the real thefoil.com article. */
+function poolHref(slug: string, base: "news" | "events"): string {
+  return getArticleBySlug(slug) ? `/article/${slug}` : `https://thefoil.com/${base}/${slug}/`;
+}
+
+/** Wrap an index into a pool array (handles negatives). */
+function poolAt<T>(arr: readonly T[], index: number): T {
+  return arr[((index % arr.length) + arr.length) % arr.length]!;
+}
+
+/** `count` article cards from the pool starting at `offset`; ids prefixed for React-key uniqueness. */
+function poolArticles(offset: number, count: number, idPrefix: string): ArticleData[] {
+  return Array.from({ length: count }, (_, i) => {
+    const article = poolAt(ARTICLE_POOL, offset + i);
+    return {
+      id: `${idPrefix}-${i}`,
+      title: article.title,
+      href: poolHref(article.slug, "news"),
+      image: { src: article.image, alt: article.title },
+    };
+  });
+}
+
+/** `count` link cards for the related-links widget. */
+function poolLinks(offset: number, count: number, idPrefix: string): LinkItemData[] {
+  return Array.from({ length: count }, (_, i) => {
+    const article = poolAt(ARTICLE_POOL, offset + i);
+    return {
+      id: `${idPrefix}-${i}`,
+      link: poolHref(article.slug, "news"),
+      title: article.title,
+      description: article.desc,
+      brand: "The Foil",
+      website: "thefoil.com",
+      image: article.image,
+    };
+  });
+}
+
+/** `count` event cards for the upcoming-races widget. */
+function poolEvents(offset: number, count: number, idPrefix: string): EventData[] {
+  return Array.from({ length: count }, (_, i) => {
+    const event = poolAt(EVENT_POOL, offset + i);
+    return {
+      id: `${idPrefix}-${i}`,
+      heading: event.heading,
+      image: { src: event.image },
+      startDate: event.startDate,
+      endDate: event.endDate,
+      location: event.location,
+      cta: { label: "Read More", href: poolHref(event.slug, "events") },
+    };
+  });
+}
+
+/** Spread widgets across the pool so different panels on the same page don't repeat each other. */
+function widgetSeed(id: string): number {
+  const seeds: Record<string, number> = {
+    "latest-news": 0,
+    "latest-interviews": 6,
+    "related-links": 12,
+    "relevant-news": 3,
+    "upcoming-races": 0,
+  };
+  return seeds[id] ?? 0;
+}
 
 /** Base (page-1) content for every widget, keyed by dataKey. Matches the layout manifest. */
 function basePageData(): Record<string, WidgetData> {
@@ -346,46 +464,33 @@ function rotateCommunity(communityId: string, n: number): string {
   return COMMUNITIES[(idx + n) % COMMUNITIES.length]!;
 }
 
-/** Vary one widget for page N: fresh ids, rotated community, and a page marker on titles. */
+/**
+ * Vary one widget for page N (N ≥ 1): rotate the video community AND swap the editorial content
+ * (featured/up-next articles, interview cards, related links, events) for a DIFFERENT slice of the
+ * thefoil.com pool, so each infinite-scroll iteration shows fresh articles instead of repeating
+ * page 1. Page 0 (the first page) keeps its hand-curated content untouched.
+ */
 function varyWidget(widget: WidgetData, pageIndex: number): WidgetData {
   if (pageIndex === 0) return widget;
   const suffix = `-p${pageIndex + 1}`;
-  const marker = `Page ${pageIndex + 1} · `;
-  const withMarker = (text: string) => `${marker}${text}`;
+  const idBase = `${widget.id}${suffix}`;
+  // Per-page, per-widget offset into the pool: each page steps forward; each widget starts at its own
+  // seed so panels on the same page don't repeat each other.
+  const offset = pageIndex * 7 + widgetSeed(widget.id);
 
   return {
     ...widget,
-    id: `${widget.id}${suffix}`,
+    id: idBase,
     source: widget.source
       ? { ...widget.source, communityId: rotateCommunity(widget.source.communityId, pageIndex) }
       : undefined,
-    featuredArticle: widget.featuredArticle
-      ? {
-          ...widget.featuredArticle,
-          id: `${widget.featuredArticle.id}${suffix}`,
-          title: withMarker(widget.featuredArticle.title),
-        }
+    featuredArticle: widget.featuredArticle ? poolArticles(offset, 1, `${idBase}-feat`)[0] : undefined,
+    upNextArticles: widget.upNextArticles
+      ? poolArticles(offset + 1, widget.upNextArticles.length, `${idBase}-up`)
       : undefined,
-    upNextArticles: widget.upNextArticles?.map((article) => ({
-      ...article,
-      id: `${article.id}${suffix}`,
-      title: withMarker(article.title),
-    })),
-    articles: widget.articles?.map((article) => ({
-      ...article,
-      id: `${article.id}${suffix}`,
-      title: withMarker(article.title),
-    })),
-    events: widget.events?.map((event) => ({
-      ...event,
-      id: `${event.id}${suffix}`,
-      heading: withMarker(event.heading),
-    })),
-    items: widget.items?.map((item) => ({
-      ...item,
-      id: `${item.id}${suffix}`,
-      title: withMarker(item.title),
-    })),
+    articles: widget.articles ? poolArticles(offset, widget.articles.length, `${idBase}-art`) : undefined,
+    events: widget.events ? poolEvents(offset, widget.events.length, `${idBase}-evt`) : undefined,
+    items: widget.items ? poolLinks(offset, widget.items.length, `${idBase}-link`) : undefined,
   };
 }
 
@@ -424,6 +529,9 @@ function buildPage(pageIndex: number): HomeDataPage {
       nextCursor: cursorForIndex(pageIndex + 1),
       endOfFeed: false,
     },
+    // Per-page layout: each iteration rotates through the layout variants so the feed doesn't
+    // repeat the same structure. The frontend falls back to the shared manifest if this is absent.
+    layout: getHomeLayoutForPage(pageIndex),
     data,
   };
 }
