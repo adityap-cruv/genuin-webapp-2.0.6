@@ -1,6 +1,5 @@
 export * from "./authentication-modal";
 export * from "./community-card";
-export * from "./contextual";
 export * from "./details-page-topbar";
 export * from "./embed";
 export * from "./embed-tile";
@@ -28,4 +27,3 @@ export * from "./side-info";
 export * from "./top-bar";
 export * from "./trending-groups-card";
 export * from "./trending-profiles-list";
-export * from "./video-carousel";

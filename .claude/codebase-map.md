@@ -73,34 +73,6 @@ true` and forges `navigator.userActivation` = true on a fresh page, so it always
 <!-- Append how non-obvious systems work, with file pointers. Example shape:
 - **<system>** — <one-or-two-line explanation>. (path:line) -->
 
-- **`VideoFeed` organism** (`packages/components/src/organisms/video-feed/`) — standalone vertical
-  video feed for our own pages (not the SDK, no placement/embed ids): `videoId | videoIds |
-  communityId | groupId | posts` → `resolveVideoFeedQuery` → production `useFeed` (`VIDEO` with
-  `videoIds`, or `FEED_V1` with `communityIds`/`groupIds`; `videoId`+scope ⇒ `initialVideoIds`).
-  Standard organism shape: `video-feed.tsx` (sections: query mapping · meta line · data hook ·
-  slide · expand view · component) + `video-feed.types.ts` + `index.ts` + story + test. Slides =
-  `PlayerProvider(isEmbed) → FeedPlayer → controls-v2 Controls` (pinned `sm` = 24/18/12 px) + own
-  `date • duration • description` line (`buildVideoMetaText`, same rules as
-  `placement-metadata.tsx`, `text-body-2-medium` 12px/500). Fixed size 688×387 desktop / 382×215
-  mobile (`VIDEO_FEED_SIZE`). Auto-advance = `PlayerProvider` `isEmbed` path →
-  `onPlayerIterationEnd` → `swiper.slideNext()`; prefetches next page 3 slides before the end and
-  advances when it lands. Uses `swiper/react` directly (`SwiperImplementation` needs
-  `FeedContext`). Renders `controls-v2` directly because the `Controls` switcher is gated on
-  `design_system=v2` / embed config. No ↑↓ arrows (by request). Expand = `VideoFeedExpandView`:
-  `createPortal(document.body)` + `RemoveScroll` + `templates/feed` `FeedView variant="expand"
-  defaultExpandView platform="webapp"` — the same component the SDK's `EmbedExpandView` mounts.
-- **`VideoGrid` organism** (`packages/components/src/organisms/video-grid/`) — grid of video tiles:
-  2×2 desktop (tiles 518×291, 8 px gap → 1044×590), 1×4 mobile (382×215 → 382×884),
-  `VIDEO_GRID_TILE_SIZE`. Same data props as `VideoFeed` (imports `useVideoFeedData`,
-  `buildVideoMetaText`, `VideoFeedExpandView`, `VIDEO_FEED_CONTROL_SIZE` from it — video-feed
-  itself is NOT modified). Own `VideoGridTile`: `PlayerProvider(isEmbed) → FeedPlayer` +
-  `SponsoredTag` + controls-v2 on the active tile + bottom stack (meta line 8 px above the linkout
-  chip). Linkout chip = `molecules/linkout-new/linkouts-dynamic` `DynamicLinkouts` used DIRECTLY
-  (not the `organisms/linkouts` wrapper, which is untouched) with `effectiveVideoWidth =
-  VIDEO_GRID_LINKOUT_LAYOUT_WIDTH (249)` + `disableAutoAdvance` — the card picks its layout by
-  width bucket (`linkouts-sheet-config.ts`: <250 chip · <300 default · <400 active · ≥400 expanded
-  card) and outside the embed context that width is 0. One active tile plays; auto-advance moves
-  to the next tile and wraps; tap a tile to activate. No "…" more button exists in `controls-v2`.
 - **`RootPortal` renders `null` outside SDK mode** (`molecules/root-portal/root-portal.tsx`:
   `if (!isEmbed || !containerElement) return null`) — but its effects still paint
   `document.body` black/fixed when `useShadowDOM` is false. Don't use it from webapp-mode code;
@@ -109,7 +81,7 @@ true` and forges `navigator.userActivation` = true on a fresh page, so it always
   storybook browser project, and `storybookTest` fails to load `.storybook/main.ts` under
   `vitest run` locally. Run plain `*.test.ts` files with an ad-hoc config (`vite-tsconfig-paths` +
   `environment: "jsdom"`). `lottie-web` (via `@genuin/ui`) touches canvas at import — stub
-  `HTMLCanvasElement.prototype.getContext` in `vi.hoisted` (see `video-feed.test.ts`).
+  `HTMLCanvasElement.prototype.getContext` in `vi.hoisted`.
 
 
 - **CXR Triton in-app rewrite is gated on `appb` presence, NOT tag id.** `rewriteTritonUrlForApp`
