@@ -324,7 +324,7 @@ export async function setupMainShadowDOM(container: HTMLElement): Promise<HTMLEl
     if (!container.style.marginRight) {
       container.style.marginRight = "0px";
     }
-    container.setAttribute("data-genuin-host", "true");
+
     shadowRoot = container.attachShadow({ mode: "open" });
     shadowRoot.appendChild(root);
     resetContainerStyles(root);
@@ -337,7 +337,8 @@ export async function setupMainShadowDOM(container: HTMLElement): Promise<HTMLEl
   if (shadowRoot) {
     await ensureStylesInShadowRoot(shadowRoot);
   }
-
+  // Mark the container as a GenUI host so the scanner ignores it on re-init and finding the inner root for the shadCN compoenents.
+  container.setAttribute("data-genuin-host", "true");
   // Propagate gen-sdk-class to the inner root so CSS scoping rules apply inside the shadow DOM.
   root?.classList.add("gen-sdk-class");
 
