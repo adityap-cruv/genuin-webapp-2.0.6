@@ -30,7 +30,7 @@ export interface NavArrowButtonProps {
   stopPropagation?: boolean;
 }
 
-/** Context-free V2 nav arrow: IconCircleButton + NavChevron with solid fill for dark video. */
+/** Context-free V2 nav arrow: IconCircleButton + NavChevron, Dark Overlay fill per Figma. */
 export function NavArrowButton({
   direction,
   disabled = false,

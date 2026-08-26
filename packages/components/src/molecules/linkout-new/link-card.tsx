@@ -64,7 +64,7 @@ function MetaRow({
   if (website) {
     if (items.length > 0) items.push(sep("website"));
     items.push(
-      <span key="website" className="gencl:shrink-0 gencl:overflow-hidden gencl:text-ellipsis gencl:whitespace-nowrap">
+      <span key="website" className="gencl:min-w-0 gencl:overflow-hidden gencl:text-ellipsis gencl:whitespace-nowrap">
         {website}
       </span>
     );
@@ -101,7 +101,7 @@ function MetaRow({
     items.push(
       <span
         key="downloads"
-        className="gencl:flex gencl:items-center gencl:gap-1 gencl:shrink-0 gencl:overflow-hidden gencl:text-ellipsis gencl:whitespace-nowrap">
+        className="gencl:flex gencl:items-center gencl:gap-1 gencl:min-w-0 gencl:overflow-hidden gencl:text-ellipsis gencl:whitespace-nowrap">
         <Download className="gencl:size-3 gencl:shrink-0" />
         {downloads}
       </span>
@@ -118,9 +118,7 @@ function MetaRow({
   if (address) {
     if (items.length > 0) items.push(sep("address"));
     items.push(
-      <span
-        key="address"
-        className="gencl:shrink-0 gencl:min-w-0 gencl:overflow-hidden gencl:text-ellipsis gencl:whitespace-nowrap">
+      <span key="address" className="gencl:min-w-0 gencl:overflow-hidden gencl:text-ellipsis gencl:whitespace-nowrap">
         {address}
       </span>
     );
@@ -153,6 +151,7 @@ export function LinkCard({
   ctaClassName,
   forceFlexRatio,
   hideThumb,
+  onTitleMarqueeDuration,
 }: {
   data: LinkMetaData;
   sheetState: SheetState;
@@ -176,11 +175,14 @@ export function LinkCard({
   forceFlexRatio?: FlexRatio;
   /** Skip the responsive card's thumb area (host composites its own preview). */
   hideThumb?: boolean;
+  /** `pl-xs`/`pl-sml` only: reports the title `MarqueeText`'s scroll-pass
+   *  duration (ms), `null` when it fits and isn't scrolling. Lets the host's
+   *  chip→default auto-advance timer wait for a full pass to finish. */
+  onTitleMarqueeDuration?: (durationMs: number | null) => void;
 }) {
   const isDark = theme === "dark";
   const textPrimary = isDark ? "gencl:text-white" : "gencl:text-secondary-900";
   const textSecondary = isDark ? "gencl:text-white/80" : "gencl:text-secondary-700";
-  const iconStroke = isDark ? "gencl:stroke-white" : "gencl:stroke-secondary-900";
   const cardBg = isDark ? "gencl:bg-secondary-900" : "gencl:bg-white";
   const thumbPlaceholderBg = isDark ? "gencl:bg-secondary-800" : "gencl:bg-secondary-100";
   const thumbPlaceholderIcon = isDark ? "gencl:text-white/60" : "gencl:text-secondary-400";
@@ -191,8 +193,12 @@ export function LinkCard({
   const isPlXs = sheetState === "pl-xs";
   const isPlSml = sheetState === "pl-sml";
   // `default` and `default-active` share the same body (thumb + title +
-  // inline CTA); they differ only in sheet chrome.
+  // inline CTA). They differ in sheet chrome AND in title length: `default`
+  // is the compact resting card (title clamped to 1 line → shorter, ~64 tall),
+  // `default-active` reveals the 2-line title (~84 tall). The thumb fills the
+  // column, so those heights drive its size — no hardcoded per-state value.
   const isDefaultLike = sheetState === "default" || sheetState === "default-active";
+  const isDefaultResting = sheetState === "default";
   // Only `expand-view` uses the rich card with description / meta.
   const isExpand = sheetState === "expand-view";
   const isDetail = sheetState === "panel-view" || sheetState === "full-view";
@@ -224,15 +230,19 @@ export function LinkCard({
     observerRef.current = observer;
   }, []);
 
-  // When the CTA is promoted inline, size the image to the column's exact
-  // height (details + gap + CTA, floored at 84 px) so the row has no blank
-  // space. Otherwise the image keeps the grid aspect-square behaviour.
-  const IMAGE_FLOOR_PX = 84;
+  // Expand-view thumb = a SQUARE that FILLS the details-row height (no
+  // hardcoded floor — the size falls out of the content, ~108 per Figma).
+  // Two cases, both measured off `detailsContentHeight` (the desc + meta
+  // wrapper): CTA promoted inline → row = details + gap + CTA; CTA below the
+  // grid → row = details only. Explicit px — NOT `aspect-square` + `h-full`,
+  // which blew the width up on iOS Safari and covered the title.
   const CTA_INLINE_HEIGHT_PX = 40;
   const CTA_INLINE_GAP_PX = 4;
   const expandImageSize =
-    ctaFitsInline && detailsContentHeight > 0
-      ? Math.max(IMAGE_FLOOR_PX, detailsContentHeight + CTA_INLINE_GAP_PX + CTA_INLINE_HEIGHT_PX)
+    detailsContentHeight > 0
+      ? ctaFitsInline
+        ? detailsContentHeight + CTA_INLINE_GAP_PX + CTA_INLINE_HEIGHT_PX
+        : detailsContentHeight
       : null;
 
   // Chip body is always dark (translucent inside, solid outside); the panel
@@ -289,6 +299,7 @@ export function LinkCard({
         <MarqueeText
           text={displayTitle}
           className={cn("gencl:text-body-2-medium! gencl:flex-1 gencl:min-w-0 gencl:text-left", chipText)}
+          onScrollDurationChange={onTitleMarqueeDuration}
         />
         <ChevronRight className={cn("gencl:size-4 gencl:shrink-0", chipIconStroke)} />
       </a>
@@ -336,6 +347,7 @@ export function LinkCard({
         <MarqueeText
           text={displayTitle}
           className={cn("gencl:flex-1 gencl:min-w-0 gencl:text-body-1-semi-bold! gencl:text-left", chipText)}
+          onScrollDurationChange={onTitleMarqueeDuration}
         />
         <ChevronRight className={cn("gencl:size-6 gencl:shrink-0", chipIconStroke)} />
       </a>
@@ -348,43 +360,58 @@ export function LinkCard({
   if (isDefaultLike) {
     const ctaDisplayText = ctaLabel;
     const ctaHref = ctaLink || data.link;
-    const hasThumb = !!data.image;
+    // Fixed-px square per state (Figma: default 64, default-active 84). Explicit
+    // width AND height — NOT `aspect-square` + `h-full`, which let iOS Safari
+    // derive the width from the tall row and blow the thumb up over the title.
+    const thumbSizePx = isDefaultResting ? 64 : 84;
     return (
       <div
         className={cn(
-          // With a thumb: grid `auto_1fr` so the thumb is a square sized to
-          // the row height. Without one: flat block so the details column
-          // spans the full card (the grid would strand it in the `auto` track).
+          // Grid `auto_1fr` so the thumb is a square sized to the row height.
+          // A thumb always renders now (image, or the chain-link placeholder
+          // via `fallback`), so the layout is always the two-column grid.
           "gencl:relative gencl:w-full gencl:p-2 gencl:rounded-lg",
-          hasThumb ? "gencl:grid gencl:grid-cols-[auto_1fr] gencl:gap-2" : "gencl:block",
+          "gencl:grid gencl:grid-cols-[auto_1fr] gencl:gap-2",
           textPrimary
         )}>
-        {/* Thumbnail — fixed 64×64 (`w-16 h-16 shrink-0`). The earlier
-            aspect-square + h-full recipe resolved wider on iOS Safari and
-            pushed the title behind the image. */}
-        <LinkCardThumb src={data.image} className="gencl:w-16 gencl:h-16 gencl:shrink-0" />
-        <div className="gencl:flex gencl:flex-col gencl:gap-1 gencl:flex-1 gencl:min-w-0">
-          {/* Title falls back to the URL; the CTA then reads "Learn more"
-              so the URL isn't duplicated. */}
-          {displayTitle && (
-            <p
-              className={cn(
-                // line-clamp-2: wraps to two lines before truncating.
-                "gencl:text-body-1-semi-bold! gencl:line-clamp-2 gencl:overflow-hidden gencl:text-ellipsis gencl:w-full",
-                textPrimary
-              )}>
-              {displayTitle}
-            </p>
-          )}
-          {ctaDisplayText && (
-            <LinkCardInlineCta
-              href={ctaHref}
-              label={ctaDisplayText}
-              theme={isDark ? "dark" : "light"}
-              onClick={onCtaClick}
-              className="gencl:w-full"
-            />
-          )}
+        {/* Thumbnail — fixed-px square (see `thumbSizePx`). Explicit width +
+            height keep iOS Safari from resolving the width off the tall row.
+            `fallback` shows the generic linkout glyph when the link has no image. */}
+        <LinkCardThumb
+          src={data.image}
+          fallback
+          theme={theme}
+          className="gencl:shrink-0"
+          style={{ width: thumbSizePx, height: thumbSizePx }}
+        />
+        {/* Outer column stretches to the row (grid default), centering the
+            content when the thumb makes the row taller than the text. */}
+        <div className="gencl:flex gencl:flex-col gencl:justify-center gencl:flex-1 gencl:min-w-0">
+          <div className="gencl:flex gencl:flex-col gencl:gap-2">
+            {/* Title falls back to the URL; the CTA then reads "Learn more"
+                so the URL isn't duplicated. */}
+            {displayTitle && (
+              <p
+                className={cn(
+                  // `default` clamps to 1 line (compact, ~64 card); `default-active`
+                  // reveals 2 lines (~84). The thumb fills whichever height results.
+                  "gencl:text-body-1-semi-bold! gencl:overflow-hidden gencl:text-ellipsis gencl:w-full",
+                  isDefaultResting ? "gencl:line-clamp-1" : "gencl:line-clamp-2",
+                  textPrimary
+                )}>
+                {displayTitle}
+              </p>
+            )}
+            {ctaDisplayText && (
+              <LinkCardInlineCta
+                href={ctaHref}
+                label={ctaDisplayText}
+                theme={isDark ? "dark" : "light"}
+                onClick={onCtaClick}
+                className="gencl:w-full"
+              />
+            )}
+          </div>
         </div>
       </div>
     );
@@ -423,19 +450,20 @@ export function LinkCard({
 
           {/* Image + Details row */}
           <div className="gencl:grid gencl:grid-cols-[auto_1fr] gencl:gap-2 gencl:w-full">
-            {/* Thumbnail — grid aspect-square (128 px floor) normally;
-                when the CTA is promoted inline, an explicit pixel square
-                matching the column height (see `expandImageSize`). */}
+            {/* Thumbnail — explicit-px square filling the details-row height
+                (see `expandImageSize`); no `aspect-square`/floor. The `84` is a
+                first-paint fallback before the observer measures, not a clamp. */}
             <LinkCardThumb
               src={data.image}
               alt={displayTitle}
-              className={expandImageSize !== null ? undefined : "gencl:min-h-32 gencl:aspect-square gencl:h-full"}
-              style={expandImageSize !== null ? { width: expandImageSize, height: expandImageSize } : undefined}
+              fallback
+              theme={theme}
+              style={{ width: expandImageSize ?? 84, height: expandImageSize ?? 84 }}
             />
 
             {/* Details column. When description+meta fits in ≤ 84 px, the
                 CTA is promoted here (`mt-auto`); otherwise it renders below. */}
-            <div className="gencl:flex gencl:flex-col gencl:gap-1 gencl:min-w-0">
+            <div className="gencl:flex gencl:flex-col gencl:gap-2 gencl:min-w-0">
               <div ref={detailsContentRef} className="gencl:flex gencl:flex-col gencl:gap-1">
                 {data.description && (
                   <p className={cn("gencl:text-body-3-medium! gencl:w-full gencl:line-clamp-3", textSecondary)}>
@@ -518,6 +546,8 @@ export function LinkCard({
             <LinkCardThumb
               src={data.image}
               alt={displayTitle}
+              fallback
+              theme={theme}
               className={cn(
                 "gencl:aspect-square",
                 sheetState === "full-view" ? "gencl:h-full gencl:max-w-full" : "gencl:w-full gencl:max-w-[280px]"

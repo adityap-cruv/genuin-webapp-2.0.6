@@ -33,19 +33,15 @@ export function Ad({ className, adType, containerWidth, ...restProps }: AdProps)
   const embedConfig = useEmbedConfigs();
   const { isDesktop } = useDeviceDetectMediaQuery();
 
-  // Match the player controls' size in each context, exactly how they compute it:
-  //    - expand view → viewport width (like default.tsx)
-  //    - embed tile  → the tile's own width (like default-embed.tsx)
+  // Size the mute control off the tile/container width in BOTH collapsed and
+  // expand views — same as the player controls (default.tsx Fix A / default-embed.tsx).
+  // Previously expand view sized off `window.innerWidth`, which resolved a narrow
+  // ad placement in a wide browser window to `lg` (oversized cluster/slider) —
+  // the GEN-10346/GEN-10349 bug. containerWidth is the ad's own tile width, so it
+  // stays correct in a carousel where the whole-SDK width would over-count.
   const playerControlSize = useMemo(
-    () =>
-      embedConfig.isDesignSystemV2
-        ? showExpandView && typeof window !== "undefined"
-          ? resolveControlSize(window.innerWidth)
-          : containerWidth
-            ? resolveControlSize(containerWidth)
-            : "lg"
-        : "md",
-    [embedConfig.isDesignSystemV2, showExpandView, containerWidth]
+    () => (embedConfig.isDesignSystemV2 ? (containerWidth ? resolveControlSize(containerWidth) : "lg") : "md"),
+    [embedConfig.isDesignSystemV2, containerWidth]
   );
   //  TODO: hardcoded because Figma design and real size conflict.
   const effectiveControlSize = embedConfig.view.brandLayoutType === "iheart" ? "md" : playerControlSize;
@@ -63,7 +59,10 @@ export function Ad({ className, adType, containerWidth, ...restProps }: AdProps)
         )}
         onClick={(e) => e.stopPropagation()}>
         {isV2 ? (
-          <AnimatedMuteIconNew shouldAnimate={muted} enableVolumeSlider={false} size={effectiveControlSize} />
+          // Volume slider only in expand view — the tile/collapsed embed view
+          // stays icon-only (no hover slider), matching the rest of the ad
+          // control layer's expand-only affordances.
+          <AnimatedMuteIconNew shouldAnimate={muted} size={effectiveControlSize} enableVolumeSlider={showExpandView} />
         ) : (
           <AnimatedMuteIconOld shouldAnimate={muted} enableVolumeSlider={false} alwaysLarge />
         )}

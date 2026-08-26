@@ -2,6 +2,7 @@
 
 import { Loader } from "@genuin/ui/components/loader";
 import { abbreviateNumber, cn } from "@genuin/ui/lib/utils";
+import { resolveControlSize } from "@genuin/ui/player-controls";
 import type { ComponentProps } from "react";
 import { useEffect, useState, useRef, useMemo, useCallback, lazy } from "react";
 import type { Swiper } from "swiper/types";
@@ -179,6 +180,7 @@ export function PlayerList({
     view: { brandLayoutType, websiteType, isAdsEnabledInIheart },
     layoutConfig: { isIheartArticlePage },
     isDesignSystemV2Linkouts,
+    isDesignSystemV2,
   } = useEmbedConfigs();
 
   // Comment panel state - only auto-open if Octo is NOT enabled (Octo takes priority)
@@ -740,6 +742,10 @@ export function PlayerList({
             postsLength={filteredPost.length}
             theme={theme}
             size={websiteType === "polaris" ? "lg" : "xl"}
+            // Match the expand-view player controls' size (also resolveControlSize off
+            // the swiper's own width — see player.tsx: `containerWidth={swiper.width}`),
+            // instead of the fixed lg/xl this fell back to via NavigationButtonV2's default.
+            v2Size={isDesignSystemV2 && activeSwiper?.width ? resolveControlSize(activeSwiper.width) : undefined}
             disable={isAdFilled}
           />
         </SafeSuspense>

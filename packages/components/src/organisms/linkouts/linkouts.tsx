@@ -6,10 +6,12 @@ import type { ComponentProps } from "react";
 import { useEffect, useState, useMemo, lazy } from "react";
 
 import { useAnalytics } from "@genuin/components/context/analytics/context";
+import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
 import { useShowLinkouts } from "@genuin/components/hooks/use-show-linkouts";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import type { LinkoutSlotContent } from "@genuin/components/molecules/linkout-new/types";
 import { buildLinkoutsAnalyticsData } from "@genuin/components/organisms/linkouts/build-linkouts-analytics-data";
+import { LinkoutLoadingIndicator } from "@genuin/components/organisms/linkouts/linkout-loading-indicator";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { useGetLinkouts } from "@genuin/components/react-query/api/linkouts/get-linkouts";
 import type { LinkoutsType } from "@genuin/components/react-query/api/linkouts/schema";
@@ -86,6 +88,17 @@ export type LinkoutsProps = {
    * host an IAB banner ad instead of a link card.
    */
   dynamicContent?: LinkoutSlotContent;
+  /** Forwarded to `<DynamicLinkouts>`'s `effectiveVideoWidth` override — pass the
+   *  real player tile width for hosts without an `EmbedProvider` (e.g. webapp). */
+  effectiveVideoWidth?: number;
+  /** Forwarded to `<DynamicLinkouts>`'s `containerHeight` override — same webapp
+   *  caveat, feeds the 50% reveal-gate denominator. */
+  containerHeight?: number;
+  /** Forwarded to `<DynamicLinkouts>`'s `hostHorizontalInset` — set when the
+   *  caller's wrapper already applies the horizontal inset for its other,
+   *  non-self-inset siblings (e.g. description text), so the panel doesn't
+   *  double it with its own `mx-2`. */
+  hostHorizontalInset?: boolean;
 } & ComponentProps<"div"> &
   VariantProps<typeof linkOutVariant>;
 
@@ -105,6 +118,9 @@ export function Linkouts({
   handleCTAClick,
   onSwiperToggle,
   dynamicContent,
+  effectiveVideoWidth,
+  containerHeight,
+  hostHorizontalInset,
   ...restProps
 }: LinkoutsProps) {
   const { showLinkouts } = useShowLinkouts({ linkoutId, isActive });
@@ -117,6 +133,12 @@ export function Linkouts({
     staleTime: 1000 * 60,
   });
   const { track, EventName } = useAnalytics();
+  // Carried linkout reveal state (chip / default / expand-view / …), read off
+  // the shared bus so the loading skeleton mirrors the exact card the user left
+  // the tile in — the reveal state carries tile→expand. Only consumed for the
+  // dynamic-expand skeleton below.
+  const { getContentTypeState } = useSheetState();
+  const carriedLinkoutState = getContentTypeState("linkouts");
   const trackingKey = `${linkoutId ?? 0}:${positionIndex ?? 0}`;
   const [isVisible, setIsVisible] = useState(showImmediately);
   const [shouldRender, setShouldRender] = useState(showImmediately || showLinkouts);
@@ -221,11 +243,27 @@ export function Linkouts({
     return sortedLinks.length === 1 ? "single" : "multi";
   }, [variantProp, sortedLinks.length]);
 
+  // In the expand view the linkout slot must not read as empty while the
+  // linkout is still resolving. The outer `<Linkouts>` chunk is normally
+  // pre-warmed by the tile, so its Suspense boundary never suspends; the
+  // visible gap is this component's own pre-paint window below (`isLoading`
+  // fetch, or the `!shouldRender` appear-delay). Bridge that window with a
+  // shape-neutral placeholder — but only for the dynamic expand variant, so
+  // the tile/embed overlays keep their existing (placeholder-free) behaviour.
+  const isDynamicExpand = view === "expand" && resolvedVariant === "dynamic";
+
   // ─── Guard rails ──────────────────────────────────────────────────────────
-  if (isLoading) return <div className="gencl:p-4 animate-pulse">Loading…</div>;
+  if (isLoading)
+    return isDynamicExpand ? (
+      <LinkoutLoadingIndicator state={carriedLinkoutState} />
+    ) : (
+      <div className="gencl:p-4 animate-pulse">Loading…</div>
+    );
   if (isError || !linkouts || linkouts.length === 0) return null;
-  if (!shouldRender) return null;
+  // Genuinely nothing to render (no links and no CTA) → stay empty, no placeholder.
   if (!linkoutData || (!linkoutData.links?.length && !linkoutData.cta_text)) return null;
+  // Content exists but hasn't painted yet (appear-delay / first mount): placeholder in expand.
+  if (!shouldRender) return isDynamicExpand ? <LinkoutLoadingIndicator state={carriedLinkoutState} /> : null;
 
   const animationClasses = showImmediately
     ? "gencl:w-full"
@@ -246,7 +284,9 @@ export function Linkouts({
   switch (resolvedVariant) {
     case "dynamic":
       return (
-        <SafeSuspense fallback={null} errorFallback={null}>
+        <SafeSuspense
+          fallback={isDynamicExpand ? <LinkoutLoadingIndicator state={carriedLinkoutState} /> : null}
+          errorFallback={null}>
           <DynamicLinkouts
             links={sortedLinks}
             ctaText={effectiveCTAText}
@@ -257,6 +297,10 @@ export function Linkouts({
             analyticsEventData={analyticsEventData}
             onSwiperToggle={onSwiperToggle}
             content={dynamicContent}
+            videoId={videoDetails?.id}
+            effectiveVideoWidth={effectiveVideoWidth}
+            containerHeight={containerHeight}
+            hostHorizontalInset={hostHorizontalInset}
           />
         </SafeSuspense>
       );

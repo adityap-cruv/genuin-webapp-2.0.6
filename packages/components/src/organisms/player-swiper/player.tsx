@@ -36,24 +36,35 @@ const FeedPlayer = lazy(() =>
 
 /**
  * Inner component that lives inside PlayerProvider so it can access player context.
- * Pauses the video when the octo sheet is in full-view or panel-view, and resumes when not.
+ * Pauses the video when the octo OR linkouts sheet is in full-view / panel-view,
+ * and resumes ONLY the pause it caused itself.
  */
 function SheetStatePlaybackController({ isActive }: { isActive: boolean }) {
-  const { pause, play } = usePlayerContext();
+  const { pause, play, buttonAction } = usePlayerContext();
   const { getContentTypeState, sheetState } = useSheetState();
+  // True only while THIS controller is the one holding the video paused. Gates
+  // the resume so a compact linkout transition (e.g. default → default-active)
+  // can't blindly re-play a video the user paused, and a manual pause taken
+  // while the panel is open survives the panel closing.
+  const [pausedBySheet, setPausedBySheet] = useState(false);
 
   useEffect(() => {
     if (!isActive) return;
 
-    const octoState = getContentTypeState("octo");
-    const shouldPause = octoState === "full-view" || octoState === "panel-view";
+    const isPanelOrFull = (state: string) => state === "panel-view" || state === "full-view";
+    const shouldPause = isPanelOrFull(getContentTypeState("octo")) || isPanelOrFull(getContentTypeState("linkouts"));
 
     if (shouldPause) {
-      pause(false);
-    } else {
-      play(false);
+      if (!pausedBySheet) {
+        pause(false);
+        setPausedBySheet(true);
+      }
+    } else if (pausedBySheet) {
+      setPausedBySheet(false);
+      // Skip resume if the user paused manually while the panel was open.
+      if (buttonAction !== "PAUSE") play(false);
     }
-  }, [sheetState, isActive, pause, play, getContentTypeState]);
+  }, [sheetState, isActive, pause, play, getContentTypeState, buttonAction, pausedBySheet]);
 
   return null;
 }
@@ -314,6 +325,7 @@ export function Player({
                 // Applies GPU acceleration to prevent layer flickering on iOS devices during animations
                 className="gencl:translate-x-0"
                 containerWidth={swiper.width}
+                containerHeight={swiper.height}
                 adType={post.video?.adUrl ? "in-stream" : "in-feed"}
               />
             </SafeSuspense>

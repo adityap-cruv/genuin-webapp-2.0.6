@@ -8,15 +8,16 @@
 import { Image } from "@genuin/ui/components/image";
 import { cn } from "@genuin/ui/lib/utils";
 import { cva } from "class-variance-authority";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, ExternalLink } from "lucide-react";
 import { useLayoutEffect, useRef, useState } from "react";
 
 // ── LinkCardThumb ────────────────────────────────────────────────
 //
 // Square thumbnail with rounded corners; the caller sets the outer
-// dimensions via `className` / `style`. Returns `null` when `src` is
-// missing so the row reflows (the LinkIcon in the sheet header keeps
-// the link's visual identity).
+// dimensions via `className` / `style`. When `src` is missing it either
+// renders `null` (default — the row reflows) or, with `fallback`, a
+// generic chain-link (`ExternalLink`) placeholder so every card view
+// shows the same "linkout" glyph the chip already uses.
 
 // `gencl:block` is non-optional: the `<span>` wrapper is inline by default,
 // so without it the span's line box stays 0×0 inside non-flex/grid parents
@@ -44,12 +45,43 @@ export interface LinkCardThumbProps {
   /** Outer dimensions / flex behavior — caller decides. */
   className?: string;
   style?: React.CSSProperties;
+  /** When set and `src` is missing, render a generic linkout (chain-link)
+   *  placeholder instead of `null`. Matches the chip's no-image treatment. */
+  fallback?: boolean;
+  /** Placeholder colors follow the card theme. */
+  theme?: "light" | "dark";
 }
 
-export function LinkCardThumb({ src, alt = "", radius = "md", className, style }: LinkCardThumbProps) {
-  // No image → render nothing so the row reflows; the LinkIcon in the
-  // sheet header keeps the link's visual identity.
-  if (!src) return null;
+export function LinkCardThumb({
+  src,
+  alt = "",
+  radius = "md",
+  className,
+  style,
+  fallback = false,
+  theme = "dark",
+}: LinkCardThumbProps) {
+  if (!src) {
+    // No image and no fallback requested → render nothing so the row reflows.
+    if (!fallback) return null;
+    // Generic linkout glyph on a tinted square — same treatment as the chip
+    // (pl-sml) and responsive card, so all views agree when a link has no image.
+    const isDark = theme === "dark";
+    const placeholderBg = isDark ? "gencl:bg-secondary-800" : "gencl:bg-secondary-100";
+    const placeholderIcon = isDark ? "gencl:text-white/60" : "gencl:text-secondary-400";
+    return (
+      <span
+        className={cn(
+          thumbWrap({ radius }),
+          "gencl:flex gencl:items-center gencl:justify-center",
+          placeholderBg,
+          className
+        )}
+        style={style}>
+        <ExternalLink className={cn("gencl:size-6", placeholderIcon)} />
+      </span>
+    );
+  }
   return (
     <span className={cn(thumbWrap({ radius }), className)} style={style}>
       <Image src={src} alt={alt} className="gencl:absolute gencl:inset-0 gencl:size-full gencl:object-cover" />
@@ -130,7 +162,11 @@ export function LinkCardInlineCta({ href, label, theme = "dark", className, onCl
         }
       }}
       className={cn(inlineCta({ theme }), className)}>
-      <span className={inlineCtaLabel}>{label}</span>
+      {/* Marker for the off-screen well (linkout-expand-height-well.tsx) to detect
+          ellipsis truncation via scrollWidth vs clientWidth. No effect on live render. */}
+      <span data-cta-label className={inlineCtaLabel}>
+        {label}
+      </span>
       <ChevronRight className={cn(inlineCtaArrow, iconStrokeClass)} />
     </div>
   );
@@ -150,6 +186,13 @@ export interface MarqueeTextProps {
   gapPx?: number;
   /** Scroll speed in px/s. */
   pxPerSecond?: number;
+  /**
+   * Reports one full scroll pass's duration in ms once measured (`null` when
+   * the text fits and isn't scrolling). Lets a caller with a fixed timer —
+   * e.g. the chip's auto-advance-to-`default` — wait for at least one full
+   * pass before tearing the chip down. See `[[project_linkout_marquee_reset_debug]]`.
+   */
+  onScrollDurationChange?: (durationMs: number | null) => void;
 }
 
 /**
@@ -157,7 +200,13 @@ export interface MarqueeTextProps {
  * Measures via ResizeObserver so the marquee turns on / off as the
  * container width changes (e.g. chip resizes in storybook).
  */
-export function MarqueeText({ text, className, gapPx = 32, pxPerSecond = 50 }: MarqueeTextProps) {
+export function MarqueeText({
+  text,
+  className,
+  gapPx = 32,
+  pxPerSecond = 50,
+  onScrollDurationChange,
+}: MarqueeTextProps) {
   const containerRef = useRef<HTMLSpanElement>(null);
   const textRef = useRef<HTMLSpanElement>(null);
   const [needsScroll, setNeedsScroll] = useState(false);
@@ -175,7 +224,11 @@ export function MarqueeText({ text, className, gapPx = 32, pxPerSecond = 50 }: M
       const overflowing = textW > containerW + 1;
       setNeedsScroll(overflowing);
       if (overflowing) {
-        setDuration(Math.max(3, (textW + gapPx) / pxPerSecond));
+        const next = Math.max(3, (textW + gapPx) / pxPerSecond);
+        setDuration(next);
+        onScrollDurationChange?.(next * 1000);
+      } else {
+        onScrollDurationChange?.(null);
       }
     };
     recompute();
@@ -183,6 +236,9 @@ export function MarqueeText({ text, className, gapPx = 32, pxPerSecond = 50 }: M
     ro.observe(container);
     ro.observe(t);
     return () => ro.disconnect();
+    // `onScrollDurationChange` intentionally excluded — callers pass an inline
+    // setter; including it would re-run (and re-report) on every parent render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [text, gapPx, pxPerSecond]);
 
   return (

@@ -7,6 +7,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperType } from "swiper/types";
 
 import { useAnalytics } from "@genuin/components/context/analytics/context";
+import { useBaseContext } from "@genuin/components/context/base/context";
 import type { SheetState } from "@genuin/components/context/base/event-bus";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
@@ -26,6 +27,18 @@ import type { LinkData } from "@genuin/components/react-query/api/linkouts/schem
 
 import { findBannerConfigForSize, pickBannerAdSize, type BannerAdSize } from "./banner-ad-picker";
 import { LinkCard } from "./link-card";
+import { computeCtaFitGate } from "./linkout-cta-fit-gate";
+import {
+  combineRevealGates,
+  computeRevealGate,
+  gateRevealStates,
+  GATED_REVEAL_STATES,
+  isGatedRevealState,
+  isRevealTargetAllowed,
+  type GatedRevealState,
+} from "./linkout-expand-gate";
+import { LinkoutExpandHeightWell, type LinkoutWellMeasurement } from "./linkout-expand-height-well";
+import { linkoutTransition, type LinkoutState } from "./linkout-state-machine";
 import type { LinkoutSlotContent } from "./types";
 import { useLinkoutContainerSize } from "./use-linkout-container-size";
 
@@ -40,12 +53,25 @@ const LazySnapSheet = lazy(() =>
 // auto-advance intro states (non-drag); chip / responsive are single-snap.
 const DRAG_STATES: SheetState[] = ["expand-view", "panel-view", "full-view"];
 
+// Last video id we ran the reveal-reset for, keyed to the (stable, per-SDK-
+// instance) base event bus. A component ref can't hold this: the carousel tile
+// REMOUNTS when the expand view closes, so a ref resets to null and the same
+// video reads as "new" → the reveal restarts at the chip on every exit. Keying
+// to the bus survives the remount, so returning to the same video keeps its
+// state. WeakMap (not a plain module var) avoids leaking across SDK instances.
+const lastResetVideoIdByBus = new WeakMap<object, string>();
+
 // Continuous theme cross-fade colours, mixed against `--gn-sheet-progress`
 // (0 = expand/dark surface → white text; 1 = panel/light surface → dark text).
 // The var is published by SnapSheet (`themeProgress`) every drag frame; it
 // defaults to 0 (dark) outside the drag-chain states.
 const SHEET_FG_MIX = "color-mix(in srgb, white, var(--gencl-secondary-900) calc(var(--gn-sheet-progress, 0) * 100%))";
 const SHEET_PILL_MIX = "color-mix(in srgb, rgba(255,255,255,0.6), #BEC2C7 calc(var(--gn-sheet-progress, 0) * 100%))";
+
+// Close btn corner math (see the `default`-only close btn below). Matches
+// `gencl:size-3` (12px) and the panel's own `mx-2` self-inset (8px).
+const CLOSE_BTN_HALF_PX = 6;
+const PANEL_GAP_PX = 8;
 
 // Map a scenario height ("auto" | "70vh" | "100%" | "95px" | number) to a
 // SnapSheet height. `vh` is approximated as container-% (the in-player frame
@@ -66,7 +92,7 @@ function toSnapHeight(h: unknown): SnapPoint["height"] {
  * can't drag far enough to cross the expand/panel midpoint (URL-bar gesture
  * eats upward motion), so tap is the reliable way to advance.
  */
-function DragPillTapTarget({ onTap }: { onTap: () => void }) {
+function DragPillTapTarget({ onTap, style }: { onTap: () => void; style?: CSSProperties }) {
   const downRef = useRef<{ x: number; y: number } | null>(null);
   return (
     <div
@@ -78,8 +104,9 @@ function DragPillTapTarget({ onTap }: { onTap: () => void }) {
       tabIndex={0}
       aria-label="Expand linkout"
       // iOS Safari hijacks vertical drags as page scroll without
-      // `touch-action: none` — the sheet can't follow the move.
-      style={{ touchAction: "none" }}
+      // `touch-action: none` — the sheet can't follow the move. `style` lets the
+      // caller override the py-2/-my-2 hit-area spacing (e.g. exact 4px in panel).
+      style={{ touchAction: "none", ...style }}
       onPointerDown={(e) => {
         downRef.current = { x: e.clientX, y: e.clientY };
       }}
@@ -138,15 +165,25 @@ export interface DynamicLinkoutsProps {
   isActive: boolean;
   view?: "embed" | "expand" | "default" | "responsive" | null | undefined;
   layout?: "overlay" | "outside" | null | undefined;
+  /** Forwarded to `getLinkoutsConfig` — set when the host wrapper already applies
+   *  the 8 px horizontal inset itself (it pads other siblings with no inset of
+   *  their own), so the panel skips its usual self-provided `mx-2`. */
+  hostHorizontalInset?: boolean;
   /** For `view="responsive"`: `"default"` hides description + chips,
    *  `"expand"` shows everything. */
   responsiveState?: "default" | "expand";
   analyticsEventData: ReturnType<typeof buildLinkoutsAnalyticsData>;
   onSwiperToggle?: (isOpen: boolean) => void;
-  /** Override effectiveVideoWidth from embed context. Used in Storybook/testing. */
+  /** Override effectiveVideoWidth from embed context. Used in Storybook/testing, and in
+   *  production by hosts (e.g. the webapp) that don't run inside an `EmbedProvider` —
+   *  there `useEmbedConfigs().responsive.effectiveVideoWidth` is always 0. */
   effectiveVideoWidth?: number;
   /** Override aspect ratio from embed context. Used in Storybook/testing (e.g. "16:9"). */
   aspectRatio?: string;
+  /** Override the reveal gate's frame-height denominator from embed context. Same
+   *  webapp caveat as `effectiveVideoWidth` — `useEmbedConfigs().responsive.containerHeight`
+   *  is always 0 there, which fails the 50% gate open (see `computeRevealGate`). */
+  containerHeight?: number;
   /** Bypass the scenario's time-based auto-advance. Used by the Storybook
    *  Dynamic View harness so the variant is purely width-driven. */
   disableAutoAdvance?: boolean;
@@ -175,6 +212,10 @@ export interface DynamicLinkoutsProps {
   /** For `view="responsive"`: skip the thumb/image area when a separate
    *  preview is composed above the card. */
   hideThumb?: boolean;
+  /** Active video id. Drives the "global per video" reveal reset: the reveal
+   *  restarts at the chip only when a genuinely new video becomes active, so
+   *  returning from expand to the same video keeps its state. */
+  videoId?: string;
 }
 
 export function DynamicLinkouts({
@@ -184,10 +225,12 @@ export function DynamicLinkouts({
   isActive,
   view,
   layout,
+  hostHorizontalInset,
   analyticsEventData,
   onSwiperToggle,
   effectiveVideoWidth: effectiveVideoWidthProp,
   aspectRatio: aspectRatioProp,
+  containerHeight: containerHeightProp,
   disableAutoAdvance = false,
   responsiveState = "default",
   showResponsiveGrid = false,
@@ -197,6 +240,7 @@ export function DynamicLinkouts({
   ctaClassName,
   forceFlexRatio,
   hideThumb,
+  videoId,
 }: DynamicLinkoutsProps) {
   // Resolve from the `content` prop or the back-compat link-shape props.
   const resolvedContent: LinkoutSlotContent = useMemo<LinkoutSlotContent>(
@@ -205,25 +249,33 @@ export function DynamicLinkouts({
   );
   const isBannerAdMode = resolvedContent.kind === "banner-ad";
   const [currentLinkIdx, setCurrentLinkIdx] = useState(0);
+  // Chip title marquee's scroll-pass duration, reported by `<LinkCard>`; `null`
+  // when the title fits (no scroll) or hasn't measured yet. Feeds the
+  // chip→default auto-advance timer below so it doesn't tear the chip down
+  // mid-scroll. See [[project_linkout_marquee_reset_debug]].
+  const [chipMarqueeDurationMs, setChipMarqueeDurationMs] = useState<number | null>(null);
   const { track, EventName } = useAnalytics();
+  // Stable, per-SDK-instance bus — used only as the WeakMap key that persists
+  // the reveal-reset marker across the tile's expand-close remount.
+  const { baseEventBus } = useBaseContext();
   const {
     hasContentType,
     getContentTypeState,
     setContentTypeState,
-    resetSheet,
     toggleContentType,
-    openContentType,
     closeContentType,
     sheetContentPlacements,
+    sheetContentStates,
   } = useSheetState();
 
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
   const {
-    responsive: { effectiveVideoWidth: contextVideoWidth },
+    responsive: { effectiveVideoWidth: contextVideoWidth, containerHeight: contextFrameHeightPx },
     dimensions: { aspectRatio: contextAspectRatio },
   } = useEmbedConfigs();
   const effectiveVideoWidth = effectiveVideoWidthProp ?? contextVideoWidth;
   const aspectRatio = aspectRatioProp ?? contextAspectRatio;
+  const frameHeightPx = containerHeightProp ?? contextFrameHeightPx;
   const rawLinkoutsState = getContentTypeState("linkouts");
   const linkoutPlacement = sheetContentPlacements["linkouts"];
   // Memoize so `config` references stay stable; a fresh object each render
@@ -244,16 +296,21 @@ export function DynamicLinkouts({
         linkoutPlacement,
         linkoutsState: rawLinkoutsState,
         layout,
+        hostHorizontalInset,
       }),
-    [view, isMobile, effectiveVideoWidth, aspectRatio, linkoutPlacement, rawLinkoutsState, layout]
+    [view, isMobile, effectiveVideoWidth, aspectRatio, linkoutPlacement, rawLinkoutsState, layout, hostHorizontalInset]
   );
-  // DynamicSheet only fires `onStateChange` on transitions, never pushing
-  // its `initialState` on mount — so the parent reads "default" until then.
-  // Prefer the scenario's intended initial state to bridge that gap.
-  // Banner-ad mode locks to `default` (no transitions/auto-advance).
+  // DynamicSheet only fires `onStateChange` on transitions, never pushing its
+  // `initialState` on mount — so before anything is set the event bus has no
+  // "linkouts" entry and we fall back to the scenario's initial state to bridge
+  // that gap. Detect "unset" by the ABSENCE of the key (not by value==="default")
+  // — otherwise a real transition INTO `default` (SS2 of the placement reveal,
+  // whose initialState is the `pl-sml` chip) is misread as unset and snaps back
+  // to the chip, freezing the reveal at SS1. Banner-ad mode locks to `default`.
+  const hasExplicitLinkoutsState = sheetContentStates["linkouts"] !== undefined;
   const linkoutsState: SheetState = isBannerAdMode
     ? "default"
-    : rawLinkoutsState !== "default"
+    : hasExplicitLinkoutsState
       ? rawLinkoutsState
       : (baseConfig.initialState ?? "default");
 
@@ -320,17 +377,104 @@ export function DynamicLinkouts({
   // state + every other enabled drag state, using a definite config height, a
   // cached measured height, or skipped if never measured yet.
   const sheetOpen = isActive && hasContentType("linkouts");
-  const enabledStates = (baseConfig.enabledStates ?? []) as SheetState[];
+  // Stable identity across renders (the `?? []` fallback would mint a new array
+  // otherwise) so the gate's memo doesn't invalidate every render.
+  const enabledStates = useMemo(() => (baseConfig.enabledStates ?? []) as SheetState[], [baseConfig.enabledStates]);
   const heightsCfg = (baseConfig.heights ?? {}) as Partial<Record<SheetState, unknown>>;
   const [measuredAuto, setMeasuredAuto] = useState<Partial<Record<SheetState, number>>>({});
   const handleAutoMeasure = useCallback((id: string, px: number) => {
     setMeasuredAuto((prev) => (Math.abs((prev[id as SheetState] ?? 0) - px) > 1 ? { ...prev, [id]: px } : prev));
   }, []);
+
+  // ── Reveal 50%-height gate (per-transition) ──────────────────────────────
+  // The reveal grows pl-sml→default→expand-view (timed, 3s per hop), with
+  // default-active a hover/tap branch off default. Any of the three card states
+  // can grow tall enough to cover >50% of the video frame. Before EVERY reveal
+  // transition the host checks the target against the gate and blocks the hop
+  // when it doesn't fit. Panel/full (explicit drag) are never gated.
+  //
+  // Scope (see plan-reveal-v2.md, decision D): the tile reveal on mobile+desktop
+  // and mobile expand. Desktop expand is a different (right-rail) layout, so it
+  // is excluded.
+  const isExpandMobile = scenario === "expand-mobile";
+  const isEmbedReveal = view === "embed" && layout === "overlay";
+  const gateApplies = isEmbedReveal || isExpandMobile;
+
+  // Numerator: tallest link's BODY height per gated state, from the off-screen
+  // well. Denominator: the video frame height (`containerHeight`), reused from
+  // embed config's container ResizeObserver — no new observer added here.
+  const [revealBodyByState, setRevealBodyByState] = useState<Partial<Record<GatedRevealState, number>>>({});
+  // Whether ANY link's CTA label would render truncated at that state, from the
+  // same off-screen well (see linkout-cta-fit-gate.ts).
+  const [ctaTruncatedByState, setCtaTruncatedByState] = useState<Partial<Record<GatedRevealState, boolean>>>({});
+  const handleRevealMeasure = useCallback((measurement: LinkoutWellMeasurement) => {
+    setRevealBodyByState((prev) => {
+      const changed = (Object.keys(measurement.bodyPxByState) as GatedRevealState[]).some(
+        (s) => Math.abs((prev[s] ?? 0) - measurement.bodyPxByState[s]) > 1
+      );
+      return changed ? measurement.bodyPxByState : prev;
+    });
+    setCtaTruncatedByState((prev) => {
+      const changed = (Object.keys(measurement.ctaTruncatedByState) as GatedRevealState[]).some(
+        (s) => (prev[s] ?? false) !== measurement.ctaTruncatedByState[s]
+      );
+      return changed ? measurement.ctaTruncatedByState : prev;
+    });
+  }, []);
+
+  // Pure gate math (see linkout-expand-gate.ts + linkout-cta-fit-gate.ts). A
+  // state is allowed only if it BOTH stays under 50% of the frame AND doesn't
+  // truncate the CTA label — combined into one `RevealFits` map so every existing
+  // consumer below (auto-advance check, demotion effect, `gateRevealStates`)
+  // enforces both gates without knowing there are two. Fail-open until the well
+  // and the frame have measured, so the reveal is never blocked on first paint.
+  // Memoized so its identity is stable across renders that don't change the
+  // inputs — the auto-advance effect depends on it, and a fresh object each
+  // render would reset the 3s timer on every re-render (video-time ticks, drag
+  // progress, …).
+  const revealFits = useMemo(() => {
+    const heightFits = computeRevealGate({ gateApplies, bodyPxByState: revealBodyByState, frameHeightPx });
+    if (!gateApplies) return heightFits; // ungated: fail-open, same as computeRevealGate alone.
+    // A state fits only if it clears BOTH gates (AND-merge).
+    return combineRevealGates(heightFits, computeCtaFitGate(ctaTruncatedByState));
+  }, [gateApplies, revealBodyByState, ctaTruncatedByState, frameHeightPx]);
+  // The set the reveal/drag paths reason about. Drops any gated card state that
+  // breaches 50%; chips + panel/full pass through untouched. Memoized for the
+  // same identity-stability reason (feeds the demotion effect + snap math).
+  const effectiveEnabledStates = useMemo(
+    () => gateRevealStates(enabledStates, revealFits),
+    [enabledStates, revealFits]
+  );
+
+  // Safety net for a carried-in / frame-shrunk state that no longer fits: demote
+  // to the tallest lower reveal state that still fits. The auto-advance + hover
+  // gates prevent entering a too-tall state in the first place; this catches the
+  // rest (state carried tile→expand before measurements landed, frame shrink).
+  useEffect(() => {
+    if (!gateApplies || !isGatedRevealState(linkoutsState) || revealFits[linkoutsState]) return;
+    // Weakest → strongest gated reveal order (single source: the gate module).
+    const order = [...GATED_REVEAL_STATES];
+    const idx = order.indexOf(linkoutsState);
+    const lower = order
+      .slice(0, idx)
+      .reverse()
+      .find((s) => effectiveEnabledStates.includes(s));
+    // When no lower GATED state fits (e.g. `default`'s CTA truncates at idx 0), drop
+    // to the reveal's chip (`pl-*`) rather than `initialState`. For the tile reveal
+    // `initialState` IS the chip, so this is a no-op there; for expand scenarios
+    // `initialState` is `default`, so falling back to it would be a no-op and leave
+    // the CTA truncated — the chip is the real "never truncate" floor. Chips are
+    // never gated, so a chip in `effectiveEnabledStates` always fits.
+    const chip = effectiveEnabledStates.find((s) => s.startsWith("pl-"));
+    setContentTypeState("linkouts", lower ?? chip ?? baseConfig.initialState ?? "default");
+  }, [gateApplies, revealFits, linkoutsState, effectiveEnabledStates, baseConfig.initialState, setContentTypeState]);
   const currentSnap: SnapPoint = {
     id: linkoutsState,
     height: toSnapHeight(heightsCfg[linkoutsState] ?? "auto"),
   };
-  const otherDragSnaps: SnapPoint[] = DRAG_STATES.filter((s) => s !== linkoutsState && enabledStates.includes(s))
+  const otherDragSnaps: SnapPoint[] = DRAG_STATES.filter(
+    (s) => s !== linkoutsState && effectiveEnabledStates.includes(s)
+  )
     .map((s): SnapPoint | null => {
       const h = toSnapHeight(heightsCfg[s]);
       if (h !== "auto") return { id: s, height: h }; // definite (panel/full)
@@ -352,16 +496,92 @@ export function DynamicLinkouts({
     DRAG_STATES.includes(linkoutsState) || linkoutsState === "default" || linkoutsState === "default-active";
   const sheetDisabled = isBannerAdMode || !isDragOrigin || snapPoints.length <= 1;
 
-  // Time-based auto-advance (e.g. `default-active → expand-view`), formerly
-  // owned by the dynamic-sheet. SnapSheet is pure-controlled, so the host
-  // drives it. Off when the host opts out or in banner-ad mode.
+  // Placement reveal flow (SS1 chip → SS2 `default` → SS3 `default-active`):
+  // the linkout sheet state is GLOBAL per content type (event bus — see
+  // use-sheet-state.ts). The reveal must restart at the chip for a genuinely
+  // NEW video, but NOT when the same video re-activates (returning from expand
+  // to the tile) — that restart was the "expand → back → pl-sml" bug. So key
+  // the reset to `videoId` via the shared state machine, not `isActive`.
+  //
+  // Tile-only (`isEmbedReveal`): the expand instance mounts fresh with an empty
+  // ref, so a view-agnostic reset there would misread the carried state as a
+  // new video and clobber it. Expand always CARRIES; only the carousel tile
+  // restarts the reveal. (`isEmbedReveal` is defined up with the reveal gate.)
+  useEffect(() => {
+    if (!isActive || isBannerAdMode || !isEmbedReveal || !videoId) return;
+    // Read the marker from the bus-keyed map, NOT a ref: the tile remounts on
+    // expand-close, so a ref would forget we already revealed this video and
+    // restart the chip. The map survives the remount → returning to the same
+    // video is a no-op (carries the state the user left it in).
+    const prev = lastResetVideoIdByBus.get(baseEventBus) ?? null;
+    const decided = linkoutTransition(
+      { state: linkoutsState as LinkoutState, lastVideoId: prev },
+      { type: "ACTIVATE_VIDEO", videoId },
+      enabledStates as LinkoutState[]
+    );
+    lastResetVideoIdByBus.set(baseEventBus, videoId);
+    // New video → restart at the scenario's chip (preserves pl-xs vs pl-sml).
+    // Same video → no-op (carry). `decided` confirms the reset decision.
+    if (prev !== videoId && decided.state !== linkoutsState) {
+      setContentTypeState("linkouts", baseConfig.initialState ?? "default");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isActive, videoId]);
+
+  // Time-based auto-advance (e.g. SS1 chip → SS2 `default`), formerly owned by
+  // the dynamic-sheet. SnapSheet is pure-controlled, so the host drives it.
+  // Off when the host opts out or in banner-ad mode.
   useEffect(() => {
     if (disableAutoAdvance || isBannerAdMode || !sheetOpen) return;
     const rule = (baseConfig.autoAdvance ?? []).find((r) => r.from === linkoutsState);
     if (!rule) return;
-    const timer = setTimeout(() => setContentTypeState("linkouts", rule.to), rule.delayMs);
+    // 50%-height gate: don't auto-advance into a card state that would breach
+    // half the frame (e.g. chip→default or default→expand-view on a short tile).
+    // Ungated targets (panel/full) always pass. Re-runs when `revealFits`
+    // changes (well/frame re-measure), so a hop unblocked later still fires.
+    if (!isRevealTargetAllowed(rule.to, revealFits)) return;
+    // Chip → default races the chip's own title marquee: a fixed `delayMs`
+    // (e.g. 3000ms) tears the chip down mid-scroll for any title whose full
+    // pass takes longer, restarting it forever on every re-entry. Wait for
+    // at least one full pass. `chipMarqueeDurationMs` is `null` for a title
+    // that fits (doesn't scroll) or hasn't reported yet — falls back to the
+    // configured delay either way. See [[project_linkout_marquee_reset_debug]].
+    const delayMs = rule.from.startsWith("pl-")
+      ? Math.max(rule.delayMs ?? 0, chipMarqueeDurationMs ?? 0)
+      : rule.delayMs;
+    const timer = setTimeout(() => setContentTypeState("linkouts", rule.to), delayMs);
     return () => clearTimeout(timer);
-  }, [linkoutsState, sheetOpen, disableAutoAdvance, isBannerAdMode, baseConfig.autoAdvance, setContentTypeState]);
+  }, [
+    linkoutsState,
+    sheetOpen,
+    disableAutoAdvance,
+    isBannerAdMode,
+    baseConfig.autoAdvance,
+    revealFits,
+    chipMarqueeDurationMs,
+    setContentTypeState,
+  ]);
+
+  // SS2 → SS3 trigger: advance the resting `default` card to `default-active`
+  // (adds the favicon/URL header) on interaction. Tap is the primary trigger
+  // (works on touch + desktop); it stops propagation so tapping the linkout
+  // advances the reveal instead of bubbling to the tile's open-expand handler.
+  // Hover is a desktop-only accelerator. View-AGNOSTIC now (drives the shared
+  // machine's USER_ACTION), so `default` → `default-active` fires in the expand
+  // view too — previously it was gated to embed and stuck in expand. The
+  // reducer no-ops outside `default` / when `default-active` isn't enabled.
+  const advanceDefaultToActive = (stopEvent?: () => void) => {
+    if (isBannerAdMode) return;
+    const next = linkoutTransition(
+      // USER_ACTION ignores lastVideoId — pass null.
+      { state: linkoutsState as LinkoutState, lastVideoId: null },
+      { type: "USER_ACTION" },
+      effectiveEnabledStates as LinkoutState[]
+    );
+    if (next.state === linkoutsState) return;
+    stopEvent?.();
+    setContentTypeState("linkouts", next.state);
+  };
 
   // 8 px header padding across active states; desktop "outside" bumps to
   // `sm:p-3!` for the wider expand layout.
@@ -414,7 +634,25 @@ export function DynamicLinkouts({
   // State only affects favicon, title typography, and close-button presence.
   const renderHeaderForState = (state: SheetState) => {
     const isDefault = isDefaultStateOf(state);
-    return (
+    // Panel/full-view: Figma places the drag grabber on its own centred bar
+    // ABOVE the title/close row. Other active states keep it inline in the row.
+    const isPanelOrFull = isPanelOrFullStateOf(state);
+    const dragPill =
+      !isDefault && !baseConfig.disableDragAndSwipe ? (
+        <DragPillTapTarget
+          // Panel/full stacks the grabber above the row: drop the -my-2 pull and
+          // use a 4px inset so there's exactly 4px above the bar and 4px to the title.
+          style={isPanelOrFull ? { marginTop: 0, marginBottom: 0, paddingTop: 4, paddingBottom: 4 } : undefined}
+          onTap={() => {
+            const order: SheetState[] = ["default-active", "expand-view", "panel-view", "full-view"];
+            const enabled = effectiveEnabledStates.length ? effectiveEnabledStates : order;
+            const currentIdx = order.indexOf(linkoutsState);
+            const next = order.slice(currentIdx + 1).find((s) => enabled.includes(s));
+            if (next) setContentTypeState("linkouts", next);
+          }}
+        />
+      ) : null;
+    const headerRow = (
       <div
         className={cn(
           "gencl:w-full gencl:flex gencl:gap-2 gencl:justify-between gencl:items-center gencl:rounded-lg gencl:z-[99999]",
@@ -458,21 +696,9 @@ export function DynamicLinkouts({
           </p>
         </div>
         {/* Inline drag indicator in the top-nav row (replaces the sheet's
-            standalone pill, suppressed via `showIndicator: false`). Pointer
-            events bubble to the sheet's drag handler. Colour is inline —
-            translucent classes aren't always emitted into the SDK CSS bundle.
-            Tap advances one state (iOS Safari can't always drag far enough). */}
-        {!isDefault && !baseConfig.disableDragAndSwipe && (
-          <DragPillTapTarget
-            onTap={() => {
-              const order: SheetState[] = ["default-active", "expand-view", "panel-view", "full-view"];
-              const enabled = baseConfig.enabledStates ?? order;
-              const currentIdx = order.indexOf(linkoutsState);
-              const next = order.slice(currentIdx + 1).find((s) => enabled.includes(s));
-              if (next) setContentTypeState("linkouts", next);
-            }}
-          />
-        )}
+            standalone pill, suppressed via `showIndicator: false`). Panel/full
+            render the grabber ABOVE the row instead (see below), per Figma. */}
+        {!isPanelOrFull && dragPill}
         {/* Close button. Wrapped in a flex-1 group so it sits right-aligned
             and the drag pill stays visually centred against the title. */}
         {!isDefault && (
@@ -480,6 +706,11 @@ export function DynamicLinkouts({
             <button
               type="button"
               aria-label="Close"
+              // Close-button overhang differs by view: the tile insets it 4px
+              // (`right: 4`); the expand view pushes it 4px past the card edge
+              // (`right: -4`) per design. `position: relative` keeps it in the
+              // flex row so the drag pill stays centred against the title.
+              style={{ position: "relative", right: view === "expand" ? -4 : 4 }}
               // Stop pointer events so the adjacent pill's tap detector
               // can't read this release as a state-advancing tap, and the
               // outer feed Swiper doesn't snag the touch.
@@ -499,6 +730,17 @@ export function DynamicLinkouts({
         )}
       </div>
     );
+
+    // Panel/full-view: stack the grabber on its own centred bar above the row.
+    if (isPanelOrFull && dragPill) {
+      return (
+        <div className="gencl:w-full gencl:flex gencl:flex-col gencl:items-center" onClick={(e) => e.stopPropagation()}>
+          {dragPill}
+          {headerRow}
+        </div>
+      );
+    }
+    return headerRow;
   };
 
   // Pagination is controlled here so dots / nav can render outside the body.
@@ -728,89 +970,165 @@ export function DynamicLinkouts({
   const siblingDotsVisible = view === "embed" && showDots && !isPanelOrFullState && !isResponsiveState;
   return (
     <div ref={linkoutContainerRef} data-slot="dynamic-linkouts" style={wrapperStyle}>
+      {/* Off-screen well feeding both reveal gates (50%-height + CTA-text-
+          truncation): measures the tallest link's body height AND whether any
+          link's CTA label would truncate, PER gated state (default /
+          default-active / expand-view), so each reveal hop can decide whether
+          entering that state fits before it happens. Mounted wherever the gate
+          applies (tile reveal on mobile+desktop, mobile expand). */}
+      {gateApplies && links.length > 0 && linkoutContainerSize.w > 0 && (
+        <LinkoutExpandHeightWell
+          links={links}
+          theme={baseConfig.theme}
+          // Match the live card's EFFECTIVE width, not the raw container. In the
+          // gated reveal states the panel renders `w-[calc(100%-16px)] mx-2`
+          // (2 × PANEL_GAP_PX inset) UNLESS the host already inset it
+          // (`hostHorizontalInset`). Measuring at full container width over-
+          // estimates the space, so a knife's-edge CTA/description that only
+          // fits in the wider well would truncate/grow taller in the narrower
+          // live card and slip past the gate. See linkouts-sheet-config.ts.
+          widthPx={
+            hostHorizontalInset ? linkoutContainerSize.w : Math.max(0, linkoutContainerSize.w - 2 * PANEL_GAP_PX)
+          }
+          // Raw page-level CTA: `LinkCard` resolves `ctaText || link.title ||
+          // "Learn more"` per card, matching the live card exactly (incl.
+          // multi-link, where each card falls back to its own title).
+          ctaText={ctaText}
+          onMeasure={handleRevealMeasure}
+        />
+      )}
       <SafeSuspense fallback={null}>
-        {sheetOpen && (
-          <LazySnapSheet
-            // Fresh instance when the slot flips between link and banner-ad.
-            key={isBannerAdMode ? "linkouts-banner-ad" : "linkouts-link"}
-            snapPoints={snapPoints}
-            activeId={linkoutsState}
-            onSnap={(id) => setContentTypeState("linkouts", id as SheetState)}
-            disabled={sheetDisabled}
-            theme={baseConfig.theme}
-            // Continuously cross-fade the surface dark↔light across the
-            // expand↔panel drag (publishes `--gn-sheet-progress` the header reads
-            // for its text/icons), only in the drag-chain states.
-            themeProgress={!isBannerAdMode && (linkoutsState === "expand-view" || isPanelOrFullState)}
-            // Header owns the inline pill (DragPillTapTarget) + tap-to-advance,
-            // so the sheet renders no standalone pill and no tap handler.
-            showIndicator={false}
-            tapToAdvance={false}
-            // One drag = one state step in the drag direction (states are far
-            // apart, so "next/previous" is the intent and it can't skip a state).
-            stepByStep
-            projectionMs={120}
-            // Resolve panel/full `%` against the stable viewport, not the
-            // player-resized parent (keeps snap targets fixed mid-drag).
-            containerHeight={sheetContainerHeight}
-            // Publish the drag overshoot (height above the expand snap) and the
-            // raw live height so the video resizes continuously both ways:
-            // expand→panel shrinks via overshoot (full at expand rest),
-            // panel↔full tiles via raw height. Embed overlay has no player
-            // frame to target, so these are inert there.
-            overshootVar="--gn-linkout-overshoot-h"
-            heightVar="--gn-linkout-h"
-            // Pause the outer feed swiper while the sheet is being dragged.
-            onDragStateChange={handleDragState}
-            // Cache each state's measured `auto` height so off-screen auto
-            // states (e.g. expand-view) stay reachable as drag targets.
-            onAutoMeasure={handleAutoMeasure}
-            header={shouldShowHeaderForState(linkoutsState) ? renderHeaderForState(linkoutsState) : undefined}
-            footer={shouldShowFooterForState(linkoutsState) ? renderFooterForState(linkoutsState) : undefined}
-            // Drop header/footer separators in panel/full + outside layouts.
-            headerClassName={isPanelOrFullState || layout === "outside" ? "gencl:border-0" : undefined}
-            footerClassName={cn(footerClassName(linkoutsState), isPanelOrFullState && "gencl:border-0")}
-            // Banner-ad hugs the ad (w-fit, centred); else the scenario panel class.
-            className={isBannerAdMode ? "gencl:rounded-lg! gencl:w-fit! gencl:mx-auto!" : className(linkoutsState)}>
-            <SafeSuspense fallback={null}>
-              <LinkoutItem
-                linkoutsState={linkoutsState}
-                links={links}
-                onLinkClick={handleLinkItemClick}
-                theme={baseConfig.theme}
-                swiperRef={swiperRef}
-                activeIdx={currentLinkIdx}
-                onActiveIndexChange={setCurrentLinkIdx}
-                ctaText={ctaText || links[currentLinkIdx]?.title || "Learn more"}
-                ctaLink={ctaLink || links[currentLinkIdx]?.link}
-                onCtaClick={handleCTAClick}
-                responsiveState={responsiveState}
-                showResponsiveGrid={showResponsiveGrid}
-                forceOrientation={forceOrientation}
-                ctaClassName={ctaClassName}
-                forceFlexRatio={forceFlexRatio}
-                hideThumb={hideThumb}
-                slidesPerView={peekSlidesPerView}
-                spaceBetween={peekSpaceBetween}
-                bannerAd={
-                  hasRenderableAd && pickedBannerConfig
-                    ? {
-                        config: pickedBannerConfig,
-                        brandId: resolvedContent.kind === "banner-ad" ? resolvedContent.brandId : undefined,
-                      }
-                    : undefined
-                }
-              />
-            </SafeSuspense>
-          </LazySnapSheet>
-        )}
+        {/* Escape wrapper: panel's `overflow: hidden` clips every descendant,
+            so the close btn below must be a sibling of the panel, not nested
+            inside it (e.g. inside `<LinkCard>`), to poke past its edge. */}
+        <div
+          style={{ position: "relative" }}
+          // SS2 → SS3: tap advances `default` → `default-active` (stops
+          // propagation so it doesn't bubble to the tile's open-expand); hover
+          // is a desktop accelerator. Scoped to the CARD here — NOT the
+          // full-height `data-slot` overlay — so tapping the video/title opens
+          // the expand view and leaves the linkout in `default`. No-ops outside
+          // the `default` state / non-embed views.
+          onClick={(e) => advanceDefaultToActive(() => e.stopPropagation())}
+          onMouseEnter={() => advanceDefaultToActive()}>
+          {sheetOpen && (
+            <LazySnapSheet
+              // Fresh instance when the slot flips between link and banner-ad.
+              key={isBannerAdMode ? "linkouts-banner-ad" : "linkouts-link"}
+              snapPoints={snapPoints}
+              activeId={linkoutsState}
+              onSnap={(id) => setContentTypeState("linkouts", id as SheetState)}
+              disabled={sheetDisabled}
+              theme={baseConfig.theme}
+              // Continuously cross-fade the surface dark↔light across the
+              // expand↔panel drag (publishes `--gn-sheet-progress` the header reads
+              // for its text/icons), only in the drag-chain states.
+              themeProgress={!isBannerAdMode && (linkoutsState === "expand-view" || isPanelOrFullState)}
+              // Header owns the inline pill (DragPillTapTarget) + tap-to-advance,
+              // so the sheet renders no standalone pill and no tap handler.
+              showIndicator={false}
+              tapToAdvance={false}
+              // One drag = one state step in the drag direction (states are far
+              // apart, so "next/previous" is the intent and it can't skip a state).
+              stepByStep
+              projectionMs={120}
+              // Resolve panel/full `%` against the stable viewport, not the
+              // player-resized parent (keeps snap targets fixed mid-drag).
+              containerHeight={sheetContainerHeight}
+              // Publish the drag overshoot (height above the expand snap) and the
+              // raw live height so the video resizes continuously both ways:
+              // expand→panel shrinks via overshoot (full at expand rest),
+              // panel↔full tiles via raw height. Embed overlay has no player
+              // frame to target, so these are inert there.
+              overshootVar="--gn-linkout-overshoot-h"
+              heightVar="--gn-linkout-h"
+              // Pause the outer feed swiper while the sheet is being dragged.
+              onDragStateChange={handleDragState}
+              // Cache each state's measured `auto` height so off-screen auto
+              // states (e.g. expand-view) stay reachable as drag targets.
+              onAutoMeasure={handleAutoMeasure}
+              header={shouldShowHeaderForState(linkoutsState) ? renderHeaderForState(linkoutsState) : undefined}
+              footer={shouldShowFooterForState(linkoutsState) ? renderFooterForState(linkoutsState) : undefined}
+              // Drop header/footer separators in panel/full + outside layouts.
+              headerClassName={isPanelOrFullState || layout === "outside" ? "gencl:border-0" : undefined}
+              footerClassName={cn(footerClassName(linkoutsState), isPanelOrFullState && "gencl:border-0")}
+              // Banner-ad hugs the ad (w-fit, centred); else the scenario panel class.
+              className={isBannerAdMode ? "gencl:rounded-lg! gencl:w-fit! gencl:mx-auto!" : className(linkoutsState)}>
+              <SafeSuspense fallback={null}>
+                <LinkoutItem
+                  linkoutsState={linkoutsState}
+                  links={links}
+                  onLinkClick={handleLinkItemClick}
+                  theme={baseConfig.theme}
+                  swiperRef={swiperRef}
+                  activeIdx={currentLinkIdx}
+                  onActiveIndexChange={setCurrentLinkIdx}
+                  ctaText={ctaText || links[currentLinkIdx]?.title || "Learn more"}
+                  ctaLink={ctaLink || links[currentLinkIdx]?.link}
+                  onCtaClick={handleCTAClick}
+                  responsiveState={responsiveState}
+                  showResponsiveGrid={showResponsiveGrid}
+                  forceOrientation={forceOrientation}
+                  ctaClassName={ctaClassName}
+                  forceFlexRatio={forceFlexRatio}
+                  hideThumb={hideThumb}
+                  slidesPerView={peekSlidesPerView}
+                  spaceBetween={peekSpaceBetween}
+                  onTitleMarqueeDuration={setChipMarqueeDurationMs}
+                  bannerAd={
+                    hasRenderableAd && pickedBannerConfig
+                      ? {
+                          config: pickedBannerConfig,
+                          brandId: resolvedContent.kind === "banner-ad" ? resolvedContent.brandId : undefined,
+                        }
+                      : undefined
+                  }
+                />
+              </SafeSuspense>
+            </LazySnapSheet>
+          )}
+          {/* `default`-only close btn: sibling of panel, not descendant, so
+              panel's `overflow: hidden` doesn't clip it. Centered on the
+              panel's actual top-right corner: offset = panel's own gap on
+              that side minus half the btn size, so it always sits half-in
+              half-out of the card regardless of which width bucket/card
+              size is loaded. Vertically the panel never has its own margin
+              (gap 0) → top is always -CLOSE_BTN_HALF_PX. Horizontally the
+              panel self-insets by PANEL_GAP_PX via `mx-2` UNLESS it's the
+              in-player expand panel (no margin, ever — expandPanelClassName)
+              or the host already applies its own inset (hostHorizontalInset) —
+              see linkouts-sheet-config.ts. */}
+          {sheetOpen && linkoutsState === "default" && !isBannerAdMode && (
+            <button
+              type="button"
+              aria-label="Close"
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleSheetClose();
+              }}
+              style={{
+                position: "absolute",
+                top: -CLOSE_BTN_HALF_PX,
+                right: (view === "expand" || hostHorizontalInset ? 0 : PANEL_GAP_PX) - CLOSE_BTN_HALF_PX,
+                zIndex: 100000,
+              }}
+              className={cn(
+                "gencl:flex gencl:items-center gencl:justify-center gencl:size-3 gencl:shrink-0 gencl:rounded-full gencl:border-0 gencl:cursor-pointer gencl:backdrop-blur-sm",
+                baseConfig.theme === "light" ? "gencl:bg-secondary-50" : "gencl:bg-secondary-900/50"
+              )}>
+              <XIcon theme={baseConfig.theme === "light" ? "light" : "dark"} size="xxs" />
+            </button>
+          )}
+        </div>
         {/* Sibling dots / desktop nav. Skipped for panel/full-view (dots
           render in the footer) and `responsive` (dots live in the card).
-          In the embed overlay, `-mb-2` pulls the block down into the host's
-          8 px compact inset so the dots aren't double-spaced (see
+          In the embed overlay, the host's 8 px compact inset is split
+          4 px above (card → dots) and 4 px below (dots → scrubber) instead
+          of stacking on top of the panel with 0 gap (see
           `siblingDotsVisible`). */}
         {showDots && !isPanelOrFullState && !isResponsiveState && (
-          <div className="gencl:w-full" style={siblingDotsVisible ? { marginBottom: -8 } : undefined}>
+          <div className="gencl:w-full" style={siblingDotsVisible ? { marginTop: 4, marginBottom: -4 } : undefined}>
             {useDesktopNav ? (
               // Desktop: arrow + dots + arrow inline. Mobile dots-only is the
               // fallback branch below.

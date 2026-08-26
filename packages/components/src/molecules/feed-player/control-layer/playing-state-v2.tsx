@@ -3,15 +3,16 @@ import { UnmuteIcon } from "@genuin/ui/icons";
 import { PlayIcon } from "@genuin/ui/icons";
 import { PauseIcon } from "@genuin/ui/icons";
 import { Loader } from "@genuin/ui/loader";
-import { IconCircleButton } from "@genuin/ui/player-controls";
+import { IconCircleButton, type PlayerControlSize } from "@genuin/ui/player-controls";
 import { cn } from "@genuin/ui/utils";
 import type { ComponentProps } from "react";
 
 import { usePlayerContext } from "../context/context";
 
-
 export type PlayingStateProps = ComponentProps<"div"> & {
   showOnlyPlayAction?: boolean;
+  /** Double-circle size token — match the player controls' resolveControlSize. @default "xl" */
+  size?: PlayerControlSize;
 };
 
 /**
@@ -32,7 +33,7 @@ function getAriaLabelForAction(action: string | null): string {
   }
 }
 
-export function PlayingState({ className, showOnlyPlayAction = false, ...restProps }: PlayingStateProps) {
+export function PlayingState({ className, showOnlyPlayAction = false, size = "xl", ...restProps }: PlayingStateProps) {
   const { playingState, buttonAction, pausedBySystem } = usePlayerContext();
 
   // System pause UI must remain stable across active/index/src transitions.
@@ -42,7 +43,7 @@ export function PlayingState({ className, showOnlyPlayAction = false, ...restPro
         key="system-pause"
         className="gencl:flex gencl:flex-col gencl:items-center gencl:gap-2 gencl:absolute gencl:h-full gencl:w-full gencl:justify-center">
         <IconCircleButton
-          size="xl"
+          size={size}
           role="status"
           aria-live="polite"
           icon={<PauseIcon theme="dark" aria-hidden="true" />}
@@ -83,7 +84,7 @@ export function PlayingState({ className, showOnlyPlayAction = false, ...restPro
       return (
         <IconCircleButton
           key={buttonAction}
-          size="xl"
+          size={size}
           role="status"
           aria-live="polite"
           aria-label={getAriaLabelForAction(buttonAction)}
@@ -103,7 +104,7 @@ export function PlayingState({ className, showOnlyPlayAction = false, ...restPro
     return (
       <IconCircleButton
         key={buttonAction}
-        size="xl"
+        size={size}
         role="status"
         aria-live="polite"
         aria-label={getAriaLabelForAction(buttonAction)}
@@ -139,7 +140,7 @@ export function PlayingState({ className, showOnlyPlayAction = false, ...restPro
   return (
     <IconCircleButton
       key={buttonAction}
-      size="xl"
+      size={size}
       role="status"
       aria-live="polite"
       aria-label={ariaLabel}

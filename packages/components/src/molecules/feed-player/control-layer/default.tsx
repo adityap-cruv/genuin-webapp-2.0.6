@@ -1,16 +1,18 @@
 import { Button } from "@genuin/ui/button";
 import { cn } from "@genuin/ui/lib/utils";
-import { SPONSORED_TAG_SIZE, resolveControlSize } from "@genuin/ui/player-controls";
-import React, { useCallback } from "react";
+import { resolveControlSize, SPONSORED_TAG_SIZE } from "@genuin/ui/player-controls";
+import React, { lazy, useCallback, useEffect, useRef, useState } from "react";
 
 import { useAuthContext } from "@genuin/components/context";
 import { useBaseContext } from "@genuin/components/context/base";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { useDoubleClick } from "@genuin/components/hooks/use-double-click";
 import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
+import { shouldPromoteToPlayerExpand } from "@genuin/components/molecules/linkout-new/linkout-expand-promotion";
 import { PlaybackSpeedCapsule } from "@genuin/components/molecules/playback-speed/speed-capsule";
 import { DynamicReactionIcon, ReactionButton } from "@genuin/components/molecules/reaction-button";
 
@@ -20,16 +22,17 @@ import { usePlayerContext } from "../context/context";
 import type { ControlLayerPropsType } from "./control-layer.types";
 import { Controls } from "./controls";
 import { VideoEditActionButtons } from "./controls/control-buttons";
+import { isSponsoredVideo } from "./controls/sponsored-tag";
 import { PlayingState } from "./playing-state";
 import { Scrubber } from "./scrubber";
 
-const ExpandViewDetails = React.lazy(() =>
+const ExpandViewDetails = lazy(() =>
   import("./expand-view").then((m) => ({
     default: m.ExpandViewDetails,
   }))
 );
 
-const Linkouts = React.lazy(() =>
+const Linkouts = lazy(() =>
   import("@genuin/components/organisms/linkouts").then((m) => ({
     default: m.Linkouts,
   }))
@@ -54,11 +57,13 @@ export function Default({
   editCoverImage,
   expandViewDetails = true,
   containerWidth,
+  containerHeight,
   ...restProps
 }: ControlLayerPropsType) {
   const { brandDetails, playbackSpeed, isEmbed } = useBaseContext();
   const {
     showExpandView,
+    toggleExpandView,
     togglePlay,
     toggleMuted,
     muted,
@@ -70,17 +75,73 @@ export function Default({
   } = usePlayerContext();
   const { hideGestureOverlay } = useGestureOverlayManager();
   const { isMobile, isTablet, isIpad } = useDeviceDetection();
+  // Viewport-based mobile signal (≤640px). The UA-based `isMobile`/`isTablet`
+  // above miss DevTools responsive mode / a narrow desktop window (desktop UA +
+  // mobile viewport), so the expand branch below fell through to the in-player
+  // `view="embed"` overlay instead of `ExpandViewDetails` (`view="expand"`) —
+  // the whole linkout expand-mobile reveal machine (incl. the CTA-truncation
+  // gate) then never engaged and card titles rendered cut off. The rest of the
+  // linkout pipeline (scenario/placement/gates) already keys off this viewport
+  // hook, so aligning the branch here removes the mismatch. `Default` is the
+  // webapp-only control layer (never inside `EmbedProvider`), so a mobile-width
+  // viewport here always means a real/emulated mobile user.
+  const { isMobile: isViewportMobile } = useDeviceDetectMediaQuery();
   const embedConfig = useEmbedConfigs();
   const { user } = useAuthContext();
   const brandLayoutType = embedConfig.view.brandLayoutType;
-  const { sheetState } = useSheetState();
+  const { isDesignSystemV2Linkouts } = embedConfig;
+  const { sheetState, getContentTypeState, setContentTypeState } = useSheetState();
   const isSheetOpen = sheetState === "panel-view" || sheetState === "full-view";
 
+  // Tile view has no room to grow a panel/full-view linkout sheet in place —
+  // promote the whole player into its expand view instead, same intent as
+  // the web-sdk tile (`embed-tile.tsx`). On desktop this lands the linkout in
+  // the right-rail side panel (`DesktopRightPanels`) instead of an in-tile
+  // drag sheet; see `player-swiper.tsx`'s `openContentType("linkouts", ...)`
+  // effect for that routing. V2-only: `isDesignSystemV2Linkouts` is what the
+  // panel/full-view states even come from (`linkouts-dynamic.tsx`) — V1 cards
+  // (including iHeart's, which stays on V1) never reach those states, so this
+  // naturally excludes iHeart without hardcoding a brand check.
+  const linkoutsSheetState = getContentTypeState("linkouts");
+  // Previous linkout state kept in state (not a value-ref, per repo convention).
+  // `shouldPromoteToPlayerExpand` needs the prior state to tell a user drag
+  // (`default-active` → `expand-view`) apart from the timed auto-advance
+  // (`default` → `expand-view`) — only the former promotes.
+  const [prevLinkoutsSheetState, setPrevLinkoutsSheetState] = useState(linkoutsSheetState);
+  useEffect(() => {
+    if (prevLinkoutsSheetState === linkoutsSheetState) return; // no transition this render
+    const prev = prevLinkoutsSheetState;
+    setPrevLinkoutsSheetState(linkoutsSheetState); // record for the next transition
+    if (!isDesignSystemV2Linkouts || !isActive || showExpandView) return;
+    if (shouldPromoteToPlayerExpand(prev, linkoutsSheetState)) {
+      // Cap panel-view/full-view down to expand-view before promoting — same
+      // cap `expand-view-loader.tsx` (SDK) applies on exit, and for the same
+      // reason: the tile's drag-sheet reading (`panel-view`/`full-view`) has
+      // no meaning once we're in the side-panel/full expand layout, and
+      // `player.tsx`'s video-height calc reads that stale state directly
+      // (`calc(100% - var(--gn-linkout-h, 100%))` for full-view) — left
+      // uncapped, the video collapses to ~0 height the instant expand-view
+      // mounts, since the new layout never publishes `--gn-linkout-h`.
+      if (linkoutsSheetState === "panel-view" || linkoutsSheetState === "full-view") {
+        setContentTypeState("linkouts", "expand-view");
+      }
+      toggleExpandView?.();
+    }
+  }, [
+    linkoutsSheetState,
+    prevLinkoutsSheetState,
+    isActive,
+    showExpandView,
+    toggleExpandView,
+    isDesignSystemV2Linkouts,
+    setContentTypeState,
+  ]);
+
   // Ref to programmatically trigger reaction button click
-  const reactionButtonRef = React.useRef<HTMLButtonElement>(null);
+  const reactionButtonRef = useRef<HTMLButtonElement>(null);
 
   // State for showing reaction icon temporarily on double-click
-  const [showReactionIcon, setShowReactionIcon] = React.useState(false);
+  const [showReactionIcon, setShowReactionIcon] = useState(false);
 
   // Use the useDoubleClick hook for iheart layout
   const handleIHeartClick = useDoubleClick({
@@ -163,15 +224,25 @@ export function Default({
   const { video } = postDetails;
   if (!video) return null;
 
+  const isSponsored = isSponsoredVideo(video);
+
   const hideControlsThreshold = embedConfig.isDesignSystemV2 ? 151 : 200;
   const hidePlayerControls =
     isEmbed && containerWidth ? ((containerWidth ?? 0) < hideControlsThreshold ? true : false) : false;
-  // Expand view sizes from the viewport, embed view from the container.
-  // `typeof window` guard keeps it SSR-safe (deep-linked expand view).
+  // DS v2 sizes controls off the actual player container width (the `containerWidth`
+  // prop, e.g. `swiper.width` from player.tsx) for BOTH the collapsed tile and the
+  // expand view. Expand view previously sized off `window.innerWidth`, which resolved
+  // to `lg` (48px) on any wide browser window even for a narrow placement — oversizing
+  // the control cluster and the volume slider (GEN-10346 Issue-1 / GEN-10349).
+  // NOTE: this is `Default` — the webapp (non-embed) control layer, never rendered
+  // inside an `EmbedProvider` — so `embedConfig.responsive.controlSize` (which reads
+  // `rootElement` off the EmbedContext) is always stuck at `resolveControlSize(0)` =
+  // "xs" here. Use the local `containerWidth` prop directly instead, matching the fix
+  // already applied to default-placement.tsx / ad.tsx / *-embed.tsx.
   const effectiveControlSize = embedConfig.isDesignSystemV2
-    ? showExpandView && typeof window !== "undefined"
-      ? resolveControlSize(window.innerWidth)
-      : embedConfig.responsive.controlSize
+    ? containerWidth
+      ? resolveControlSize(containerWidth)
+      : "lg"
     : "lg";
 
   switch (brandLayoutType) {
@@ -205,7 +276,7 @@ export function Default({
             }}
           />
 
-          {(showExpandView || isMobile || isTablet) && expandViewDetails && (
+          {(showExpandView || isMobile || isTablet || isViewportMobile) && expandViewDetails && (
             <SafeSuspense fallback={null} errorFallback={null}>
               <ExpandViewDetails
                 postDetails={postDetails}
@@ -217,11 +288,16 @@ export function Default({
                 onCommentCountChange={onCommentCountChange}
                 variant={variant}
                 className={cn(playbackSpeed.speed !== 1 && "gencl:invisible")}
+                // Webapp has no `EmbedProvider`; forward the real tile size so the
+                // in-expand linkout reveal gates see real numbers, not 0.
+                containerWidth={containerWidth}
+                containerHeight={containerHeight}
               />
             </SafeSuspense>
           )}
           <PlayingState
             showOnlyPlayAction={true}
+            size={effectiveControlSize}
             className={cn(
               "gencl:absolute gencl:left-1/2 gencl:top-1/2 gencl:flex gencl:items-center",
               "gencl:justify-center gencl:h-16 gencl:w-16",
@@ -291,20 +367,17 @@ export function Default({
                 isMobile || isTablet || isIpad
                   ? `${!isSectioned && showExpandView && "gencl:top-0"}`
                   : "gencl:group-hover:opacity-100 gencl:group-hover:pointer-events-auto gencl:opacity-0 gencl:pointer-events-none gencl:transition-opacity gencl:duration-300",
-                video.videoLayoutId === 6 &&
-                  !isMobile &&
-                  !embedConfig.isDesignSystemV2 &&
-                  "gencl:left-0 gencl:w-[calc(100%-134px)]",
+                isSponsored && !isMobile && !embedConfig.isDesignSystemV2 && "gencl:left-0 gencl:w-[calc(100%-134px)]",
                 isSheetOpen && "gencl:hidden"
               )}
               variant={isSectioned ? "sectioned" : "default"}
               size={effectiveControlSize}
-              isSponsored={video.videoLayoutId === 6}
+              isSponsored={isSponsored}
               hidePlayerControls={hidePlayerControls}
             />
 
             {/* Sponsored badge sits outside Controls so desktop hover opacity-0 doesn't hide it. */}
-            {video.videoLayoutId === 6 && !isMobile && (
+            {isSponsored && !isMobile && (
               <div
                 className={cn(
                   "gencl:absolute gencl:top-4 gencl:z-50",
@@ -352,7 +425,7 @@ export function Default({
              * This is the expand view details.
              * It will show the details of the post. If post is expanded.
              */}
-            {(showExpandView || isMobile || isTablet) && expandViewDetails ? (
+            {(showExpandView || isMobile || isTablet || isViewportMobile) && expandViewDetails ? (
               <SafeSuspense fallback={null} errorFallback={null}>
                 <ExpandViewDetails
                   postDetails={postDetails}
@@ -364,6 +437,10 @@ export function Default({
                   onCommentCountChange={onCommentCountChange}
                   variant={variant}
                   className={cn(playbackSpeed.speed !== 1 && "gencl:hidden gencl:transition-all")}
+                  // Webapp has no `EmbedProvider`; forward the real tile size so the
+                  // in-expand linkout reveal gates see real numbers, not 0.
+                  containerWidth={containerWidth}
+                  containerHeight={containerHeight}
                 />
               </SafeSuspense>
             ) : (
@@ -400,6 +477,13 @@ export function Default({
                       totalVideos={totalVideos}
                       positionIndex={positionIndex}
                       autoplay={embedConfig.video.videoAutoplay}
+                      // Webapp never wraps in `EmbedProvider`, so `useEmbedConfigs().responsive`
+                      // (effectiveVideoWidth/containerHeight) is always 0 there — override with the
+                      // real player tile size (same fix as `effectiveControlSize` above) so the
+                      // scenario picker and the 50% reveal gate see real numbers instead of locking
+                      // into the chip-only bucket / failing open.
+                      effectiveVideoWidth={containerWidth}
+                      containerHeight={containerHeight}
                     />
                   </SafeSuspense>
                 )}
@@ -410,6 +494,7 @@ export function Default({
              * This is the player's state whether it is playing or paused or buffering.
              */}
             <PlayingState
+              size={effectiveControlSize}
               className={cn(
                 "gencl:absolute gencl:left-1/2 gencl:top-1/2 gencl:flex gencl:items-center",
                 "gencl:justify-center gencl:h-16 gencl:w-16",

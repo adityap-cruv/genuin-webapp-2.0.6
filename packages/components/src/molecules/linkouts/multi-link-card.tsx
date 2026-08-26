@@ -218,7 +218,7 @@ export const MultiLinkCard = ({
       }}>
       <div
         className={cn(
-          "gencl:w-full gencl:flex-1 gencl:text-start gencl:flex! gencl:items-center gencl:gap-2 gencl:line-clamp-2 gencl:overflow-auto gencl:flex-nowrap gencl:scrollbar-hide",
+          "gencl:w-full gencl:flex-1 gencl:text-start gencl:flex! gencl:items-center gencl:gap-2 gencl:line-clamp-2 gencl:overflow-auto gencl:flex-nowrap gencl:scrollbar-none",
           isEmbed && "gencl:gap-1"
         )}>
         {visibleLinks.map((link, index) => (

@@ -5,11 +5,15 @@ const HIDE_DURATION = 3000;
 
 type AnimatedTextProps = {
   text: string;
-  /** Max visible width in px when expanded. @default 110 */
-  width?: number;
+  /** Expanded box width (px) — fixed per caller's size token, not measured. */
+  width: number;
+  /** Expanded box height (px) — fixed per caller's size token. */
+  height: number;
+  /** Classes for the text itself — font size and any padding (e.g. "gencl:text-[10px]"). */
+  textClassName: string;
   /** When true, immediately collapses and stops cycling. */
   stop: boolean;
- /** Show the "Tap to unmute" pill once per mount instead of cycling. @default false */
+  /** Show the "Tap to unmute" pill once per mount instead of cycling. @default false */
   once?: boolean;
   /** Reports the pill's actual expanded/collapsed state so the parent can size around it. */
   onVisibleChange?: (visible: boolean) => void;
@@ -18,7 +22,9 @@ type AnimatedTextProps = {
 /** Text pill that expands/collapses on repeat while `stop` is false. */
 export const AnimatedText = memo(function AnimatedText({
   text,
-  width = 110,
+  width,
+  height,
+  textClassName,
   stop,
   once = false,
   onVisibleChange,
@@ -101,12 +107,20 @@ export const AnimatedText = memo(function AnimatedText({
 
   return (
     <div
-      className="gencl:text-body-1-medium gencl:flex gencl:min-w-0 gencl:overflow-hidden gencl:whitespace-nowrap gencl:transition-[max-width,opacity] gencl:duration-500 gencl:ease-in-out"
+      // Duration/easing matched to the parent pill's own max-width transition
+      // (mute-button-view.tsx) and the icon's shrink transition — all three
+      // fire off the same `visible`/`textVisible` trigger. A slower clock here
+      // (previously 500ms vs the pill's 350ms) let this box keep growing after
+      // the pill's `overflow: hidden` had already stopped, clipping the last
+      // character mid-reveal.
+      className="gencl:flex gencl:min-w-0 gencl:items-center gencl:overflow-hidden gencl:whitespace-nowrap gencl:transition-[max-width,opacity] gencl:duration-[350ms] gencl:ease-in-out"
       style={{
         maxWidth: visible ? `${width}px` : "0px",
         opacity: visible ? 1 : 0,
       }}>
-      <p className="gencl:text-white gencl:pl-[6px] gencl:pr-4">{text}</p>
+      <p className={`gencl:text-white ${textClassName}`} style={{ width, height, lineHeight: `${height}px` }}>
+        {text}
+      </p>
     </div>
   );
 });

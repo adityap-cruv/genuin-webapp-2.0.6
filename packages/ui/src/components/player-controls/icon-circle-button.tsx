@@ -18,6 +18,10 @@ type IconCircleButtonProps = Omit<ComponentProps<"div">, "children"> & {
   outerBg?: string;
   /** Inner circle background. @default translucent DARK_OVERLAY_40 */
   innerBg?: string;
+  /** Shrink the outer wrapper to the inner circle's own diameter (`token.inner`) —
+   * for states with no visible outer ring, so the wrapper doesn't reserve dead
+   * space around the icon (e.g. the "tap to unmute" pill, per Figma). */
+  hideOuterRing?: boolean;
 };
 
 /** Design-system double-circle control button: lighter outer ring around a darker inner circle with a centered icon. */
@@ -27,11 +31,13 @@ export function IconCircleButton({
   volPct,
   outerBg = DARK_OVERLAY_20,
   innerBg = DARK_OVERLAY_40,
+  hideOuterRing = false,
   className,
   style,
   ...rest
 }: IconCircleButtonProps) {
   const token = PLAYER_CONTROL_SIZE[size];
+  const outerSize = hideOuterRing ? token.inner : token.outer;
   // Fill the glyph box at 100% instead of forcing an exact px value onto the <svg>
   // itself — the icon otherwise has three things fighting to set its size (its own
   // hardcoded width/height attributes, the `size` variant's Tailwind class, and this
@@ -39,9 +45,14 @@ export function IconCircleButton({
   // The fixed-size wrapper below is the single source of truth; viewBox scaling
   // (and each icon's own vector-effect="non-scaling-stroke", where present) is
   // unaffected — same proportional scaling as before, just from one place.
+  // `strokeWidth` comes from the band token so stroked control glyphs (play,
+  // expand/collapse, nav) thin/thicken with the circle size per the design
+  // spec. Placed before the spread so an explicit per-icon `style.strokeWidth`
+  // still wins. Note: icons that hardcode `stroke-width` on inner <path>
+  // elements won't inherit this svg-level value — verify visually.
   const sizedIcon = isValidElement(icon)
     ? cloneElement(icon, {
-        style: { width: "100%", height: "100%", ...icon.props.style },
+        style: { width: "100%", height: "100%", strokeWidth: `${token.stroke}px`, ...icon.props.style },
       })
     : icon;
 
@@ -52,15 +63,15 @@ export function IconCircleButton({
         className
       )}
       style={{
-        width: token.outer,
-        height: token.outer,
+        width: outerSize,
+        height: outerSize,
         background: outerBg,
         backdropFilter: outerBg === "transparent" ? undefined : `blur(${token.outerBlur}px)`,
         WebkitBackdropFilter: outerBg === "transparent" ? undefined : `blur(${token.outerBlur}px)`,
         ...style,
       }}
       {...rest}>
-      {volPct !== undefined && <VolumeRing volPct={volPct} inner={token.inner} />}
+      {volPct !== undefined && <VolumeRing volPct={volPct} inner={token.inner} outer={outerSize} />}
       <div
         className="gencl:flex gencl:flex-shrink-0 gencl:items-center gencl:justify-center gencl:rounded-full"
         style={{

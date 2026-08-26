@@ -24,6 +24,7 @@ import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { PlayerProvider, usePlayerContext } from "@genuin/components/molecules/feed-player/context";
 import { EmbedMuteButton } from "@genuin/components/molecules/feed-player/control-layer/controls/embed";
 import { isSponsoredVideo } from "@genuin/components/molecules/feed-player/control-layer/controls/sponsored-tag";
+import { shouldPromoteToPlayerExpand } from "@genuin/components/molecules/linkout-new/linkout-expand-promotion";
 import { DynamicReactionIcon } from "@genuin/components/molecules/reaction-button";
 import { Stats } from "@genuin/components/molecules/stats";
 import type { LinkoutsProps } from "@genuin/components/organisms/linkouts/linkouts";
@@ -285,9 +286,7 @@ function EmbedPlayer({ postDetails, isActive = false, index, itemSize }: EmbedPl
       prevLinkoutsSheetStateRef.current = linkoutsSheetState;
       return;
     }
-    const prev = prevLinkoutsSheetStateRef.current;
-    const userDraggedToExpand = prev === "default-active" && linkoutsSheetState === "expand-view";
-    if (linkoutsSheetState === "panel-view" || linkoutsSheetState === "full-view" || userDraggedToExpand) {
+    if (shouldPromoteToPlayerExpand(prevLinkoutsSheetStateRef.current, linkoutsSheetState)) {
       if (!maybeRedirectInsteadOfExpand()) changeActivePlayerType("expand-view", index);
     }
     prevLinkoutsSheetStateRef.current = linkoutsSheetState;

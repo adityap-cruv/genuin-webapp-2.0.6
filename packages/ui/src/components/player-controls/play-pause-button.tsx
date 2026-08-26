@@ -1,18 +1,16 @@
 "use client";
-import {
-  memo,
-  useEffect,
-  useState,
-  type ComponentProps,
-  type CSSProperties,
-  type ReactElement,
-} from "react";
+import { memo, useEffect, useState, type ComponentProps, type CSSProperties, type ReactElement } from "react";
 
 import { cn } from "../../lib/utils";
 
 import { AnimatedText } from "./animated-text";
 import { IconCircleButton } from "./icon-circle-button";
-import { DARK_OVERLAY_20, PLAYER_CONTROL_SIZE, type PlayerControlSize } from "./player-control-size";
+import {
+  DARK_OVERLAY_20,
+  PLAYER_CONTROL_SIZE,
+  TAP_TO_UNMUTE_SIZE,
+  type PlayerControlSize,
+} from "./player-control-size";
 
 type IconNode = ReactElement<{ style?: CSSProperties }>;
 
@@ -65,6 +63,12 @@ export const PlayPauseButton = memo(function PlayPauseButton({
     setStopAnimating(!shouldAnimate);
   }, [shouldAnimate]);
   const token = PLAYER_CONTROL_SIZE[sizeProp];
+  // Share the "Tap to unmute" per-size text scale so the play hint matches the
+  // mute hint's font size at every token (was a fixed body-1-medium/110×20 box,
+  // which read ~4px larger than the mute pill at `md`). "Tap to play" is shorter
+  // than "Tap to unmute", so the token width already fits; add back the static
+  // pl-[6px]/pr-4 padding (22px) so the padded box never clips the text.
+  const tapText = TAP_TO_UNMUTE_SIZE[sizeProp].text;
   // Pill open → wrapper gets the bg; otherwise IconCircleButton's ring would double-stack.
   const showPill = showAnimatedText && !stopAnimating;
   // `once`: stay mounted across pause→resume so the latch survives the whole video.
@@ -103,7 +107,16 @@ export const PlayPauseButton = memo(function PlayPauseButton({
         icon={isPlaying ? pauseIcon : playIcon}
         className="gencl:flex-shrink-0"
       />
-      {mountText && <AnimatedText text="Tap to play" width={110} once={once} stop={textStop} />}
+      {mountText && (
+        <AnimatedText
+          text="Tap to play"
+          width={tapText.width}
+          height={tapText.height}
+          textClassName={`${tapText.className} gencl:pl-[6px] gencl:pr-4`}
+          once={once}
+          stop={textStop}
+        />
+      )}
     </div>
   );
 });

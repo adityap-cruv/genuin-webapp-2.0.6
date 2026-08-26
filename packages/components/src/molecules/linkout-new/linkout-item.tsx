@@ -45,6 +45,7 @@ function AutoCycleView({
   ctaText,
   ctaLink,
   onCtaClick,
+  onTitleMarqueeDuration,
 }: {
   links: LinkMetaData[];
   sheetState: SheetState;
@@ -55,6 +56,8 @@ function AutoCycleView({
   ctaText?: string;
   ctaLink?: string;
   onCtaClick?: (e: React.MouseEvent) => void;
+  /** Forwarded to `<LinkCard>` — chip title marquee duration, see there. */
+  onTitleMarqueeDuration?: (durationMs: number | null) => void;
 }) {
   const current = links[activeIdx];
   if (!current) return null;
@@ -68,6 +71,7 @@ function AutoCycleView({
       ctaText={ctaText}
       ctaLink={ctaLink}
       onCtaClick={onCtaClick}
+      onTitleMarqueeDuration={onTitleMarqueeDuration}
     />
   );
 }
@@ -151,7 +155,7 @@ export function LinkoutCarouselDots({
   return (
     <div
       className={cn(
-        "gencl:flex gencl:gap-2 gencl:items-center gencl:justify-center gencl:py-1",
+        "gencl:flex gencl:gap-2 gencl:items-center gencl:justify-center gencl:py-2",
         widthMode === "fixed-334" ? "gencl:w-[334px] gencl:mx-auto" : "gencl:w-full"
       )}>
       {Array.from({ length: total }).map((_, idx) => (
@@ -195,6 +199,7 @@ export function LinkoutItem({
   hideThumb,
   slidesPerView,
   spaceBetween,
+  onTitleMarqueeDuration,
 }: {
   links: LinkData[];
   linkoutsState: SheetState;
@@ -238,6 +243,9 @@ export function LinkoutItem({
   /** Swiper override (used by the expand-desktop-outside peek layout). */
   slidesPerView?: number | "auto";
   spaceBetween?: number;
+  /** Chip-only (`pl-xs`/`pl-sml`): forwarded to `<AutoCycleView>` →
+   *  `<LinkCard>`'s title marquee, see there. */
+  onTitleMarqueeDuration?: (durationMs: number | null) => void;
 }) {
   const { brandDetails } = useBaseContext();
   const generatedAdSlotId = useId();
@@ -287,7 +295,10 @@ export function LinkoutItem({
   const linksWithMetadata: LinkMetaData[] = links.map((l) => ({
     link: l.link,
     title: l.title,
-    image: l.image ?? brandDetails.logo,
+    // Normalize the API's `""` (no thumbnail) to `undefined` so `<LinkCardThumb
+    // fallback>` renders the generic linkout glyph — NOT the brand logo — for
+    // every view, matching the chip's no-image treatment.
+    image: l.image?.trim() || undefined,
     // Per-link brand/website override the brandDetails fallback when present.
     brand: l.brand ?? brandDetails.name,
     website: l.website ?? brandDetails.website,
@@ -314,6 +325,7 @@ export function LinkoutItem({
         ctaText={ctaText}
         ctaLink={ctaLink}
         onCtaClick={onCtaClick}
+        onTitleMarqueeDuration={onTitleMarqueeDuration}
       />
     );
   }

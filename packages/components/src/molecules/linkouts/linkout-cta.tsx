@@ -37,19 +37,21 @@ export const LinkoutCTA = ({
         shape="default"
         variant="default"
         className={cn(
-          "gencl:w-full gencl:text-body-1-semi-bold! gencl:transition-all gencl:text-white gencl:bg-black gencl:hover:bg-black/80 gencl:flex gencl:gap-2 gencl:justify-between gencl:items-center gencl:px-3 gencl:py-2 gencl:rounded-lg!",
+          // Panel/full CTA per Figma (node 15912-202432): Body-0 semibold (16/22),
+          // 24px chevron, pl-12/pr-8/py-8. Was Body-1 (14px) + 16px icon — too small.
+          "gencl:w-full gencl:text-body-0-semi-bold! gencl:transition-all gencl:text-white gencl:bg-black gencl:hover:bg-black/80 gencl:flex gencl:gap-2 gencl:justify-between gencl:items-center gencl:pl-3 gencl:pr-2 gencl:py-2 gencl:rounded-lg!",
           className
         )}
         onClick={handleCTAClick}
         disabled={isDisabled || isLoading}>
         <div className="gencl:flex gencl:gap-2 gencl:items-center gencl:w-[90%]">
-          {showIcon && <LinkIcon className="gencl:size-4 gencl:shrink-0 gencl:stroke-white" />}
+          {showIcon && <LinkIcon className="gencl:size-6 gencl:shrink-0 gencl:stroke-white" />}
           <p className="gencl:line-clamp-1 gencl:truncate">{ctaText}</p>
         </div>
         {isLoading ? (
-          <Loader className={cn("gencl:size-4 gencl:shrink-0 gencl:animate-spin gencl:stroke-white")} />
+          <Loader className={cn("gencl:size-6 gencl:shrink-0 gencl:animate-spin gencl:stroke-white")} />
         ) : (
-          <ChevronRightIcon className={cn("gencl:size-4 gencl:shrink-0 gencl:stroke-white")} />
+          <ChevronRightIcon className={cn("gencl:size-6 gencl:shrink-0 gencl:stroke-white")} />
         )}
       </Button>
     </Link>

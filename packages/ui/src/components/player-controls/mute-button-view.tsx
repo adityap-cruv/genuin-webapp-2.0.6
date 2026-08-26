@@ -1,12 +1,5 @@
 "use client";
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type CSSProperties,
-  type ReactElement,
-} from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactElement } from "react";
 
 import { cn } from "../../lib/utils";
 
@@ -16,13 +9,12 @@ import {
   DARK_OVERLAY_20,
   DARK_OVERLAY_40,
   PLAYER_CONTROL_SIZE,
+  TAP_TO_UNMUTE_SIZE,
   VOLUME_SLIDER_WIDTH,
   type PlayerControlSize,
 } from "./player-control-size";
 
 const TRANSITION_MS = 300;
-/** "Tap to unmute" label width. Caps the text and sizes the outer shell. */
-const TAP_TEXT_WIDTH = 124;
 
 type IconNode = ReactElement<{ style?: CSSProperties }>;
 
@@ -81,6 +73,7 @@ export function MuteButtonView({
   ariaLabel,
 }: MuteButtonViewProps) {
   const token = PLAYER_CONTROL_SIZE[sizeProp];
+  const tapSize = TAP_TO_UNMUTE_SIZE[sizeProp];
   const [showVolumeSlider, setShowVolumeSlider] = useState(false);
   const [stopText, setStopText] = useState(!shouldAnimate);
   // Tracks the tap-text pill's real expanded state so the shell only widens while text is shown.
@@ -153,7 +146,13 @@ export function MuteButtonView({
   };
 
   const volPct = muted ? 0 : Math.max(0, Math.min(100, volume));
-  const showPill = showVolumeSlider || (muted && !stopText);
+  // Gated on `textVisible` (AnimatedText's *actual* on-screen state), not just
+  // "currently muted" — the text cycles on/off every 3s while muted, and the
+  // icon must only shrink to `token.inner` during the windows it's really shown,
+  // per Figma (TAP_TO_UNMUTE_SIZE). Using `muted && !stopText` alone kept the
+  // icon shrunk for the entire muted duration, including the "hidden" phases.
+  const showTapText = muted && !stopText && textVisible;
+  const showPill = showVolumeSlider || showTapText;
 
   // Slider track width scales with the button size token.
   const sliderWidth = VOLUME_SLIDER_WIDTH[sizeProp];
@@ -166,7 +165,7 @@ export function MuteButtonView({
       aria-label={ariaLabel}
       onClick={handleClick}
       className={cn(
-        "gencl:group gencl:cursor-pointer gencl:flex gencl:z-50 gencl:items-center gencl:justify-start gencl:overflow-hidden gencl:rounded-full gencl:transition-[max-width,gap,padding-right,background-color]",
+        "gencl:group gencl:cursor-pointer gencl:flex gencl:z-50 gencl:items-center gencl:justify-start gencl:overflow-hidden gencl:rounded-full gencl:transition-[max-width,gap,padding-left,padding-right,background-color]",
         className
       )}
       style={{
@@ -174,10 +173,11 @@ export function MuteButtonView({
         maxWidth: showVolumeSlider
           ? expandedWidth
           : textVisible
-            ? token.outer + TAP_TEXT_WIDTH
+            ? token.inner + tapSize.padLeft + tapSize.gap + tapSize.text.width + tapSize.padRight
             : token.outer,
-        gap: showVolumeSlider ? 4 : 0,
-        paddingRight: showVolumeSlider ? 12 : 0,
+        gap: showVolumeSlider ? 4 : textVisible ? tapSize.gap : 0,
+        paddingLeft: textVisible && !showVolumeSlider ? tapSize.padLeft : 0,
+        paddingRight: showVolumeSlider ? 12 : textVisible ? tapSize.padRight : 0,
         backdropFilter: `blur(${token.outerBlur}px)`,
         WebkitBackdropFilter: `blur(${token.outerBlur}px)`,
         background: showPill ? DARK_OVERLAY_20 : "transparent",
@@ -186,21 +186,30 @@ export function MuteButtonView({
       }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}>
-      {/* Speaker double-circle — reuses IconCircleButton. Ring hides when the slider is open. */}
+      {/* Speaker double-circle — reuses IconCircleButton. Ring hides when the slider is open
+          or the tap-to-unmute text is showing (shrinks to `inner`, per Figma). */}
       <IconCircleButton
         size={sizeProp}
         outerBg={showPill ? "transparent" : DARK_OVERLAY_20}
         innerBg={showVolumeSlider ? "transparent" : DARK_OVERLAY_40}
         volPct={!showVolumeSlider ? volPct : undefined}
         icon={muted ? muteIcon : unmuteIcon}
-        className="gencl:overflow-hidden gencl:flex-shrink-0"
+        hideOuterRing={showTapText}
+        // Duration/easing matched to the outer pill's own transition below and
+        // to AnimatedText's text-box transition — all three fire from the same
+        // `textVisible` trigger, so a mismatched clock let the text's box keep
+        // growing after the pill's `overflow: hidden` had already stopped,
+        // clipping the last character mid-reveal. Same clock, no more clipping.
+        className="gencl:overflow-hidden gencl:flex-shrink-0 gencl:transition-[width,height] gencl:duration-[350ms] gencl:ease-in-out"
       />
 
       {/* Always rendered while muted so the width-collapse animation plays on unmute. */}
       {muted && (
         <AnimatedText
           text="Tap to unmute"
-          width={TAP_TEXT_WIDTH}
+          width={tapSize.text.width}
+          height={tapSize.text.height}
+          textClassName={tapSize.text.className}
           once={once}
           stop={stopText || suppressText}
           onVisibleChange={setTextVisible}

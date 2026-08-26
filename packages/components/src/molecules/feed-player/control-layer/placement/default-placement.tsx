@@ -61,6 +61,11 @@ export function DefaultPlacement({
               linkouts={postDetails.video?.linkouts}
               linkoutId={postDetails.video?.linkoutId}
               videoDetails={postDetails.video}
+              // The bottom-layout wrapper (below) already applies an 8 px
+              // horizontal `p-2` inset shared with description/stats siblings
+              // that have no inset of their own — the panel must not add its
+              // own `mx-2` on top, or it double-insets vs those siblings.
+              hostHorizontalInset
             />
           </SafeSuspense>
         )}
@@ -140,7 +145,12 @@ export function DefaultPlacement({
             contentDisplay.sectionDetailsPosition === "overlay_on_bottom" && noOfClips,
             contentDisplay.sectionDetailsPosition === "overlay_on_bottom" && sectionDetails,
             contentDisplay.videoDetailsPosition === "overlay_on_bottom" && videoDetails,
-            contentDisplay.videoDetailsPosition === "overlay_on_bottom" && !isOctoEnabled && linkoutSection,
+            // The linkout is a bottom-pinned sheet: it always belongs in the
+            // bottom overlay, independent of where the video-DETAILS text sits.
+            // (Previously gated on `videoDetailsPosition === "overlay_on_bottom"`,
+            // which silently dropped the linkout whenever details were on top —
+            // the embed path has no such coupling.)
+            !isOctoEnabled && linkoutSection,
             contentDisplay.socialInteractionCountsPosition === "overlay_on_bottom" && socialInteraction,
           ].filter(Boolean),
     }),

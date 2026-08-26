@@ -9,6 +9,7 @@ import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { usePathname } from "@genuin/components/hooks/use-pathname";
 import { useSearchParams } from "@genuin/components/hooks/use-search-params";
+import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { SideBar } from "@genuin/components/organisms/side-bar";
 import { TopBar } from "@genuin/components/organisms/top-bar";
@@ -44,6 +45,8 @@ export function BaseLayout({
   const pathname = usePathname();
   const { searchParams, getSearchParams } = useSearchParams();
   const { layoutConfig } = useEmbedConfigs();
+  const { getContentTypeState } = useSheetState();
+  const isLinkoutFullView = getContentTypeState("linkouts") === "full-view";
 
   // Update shouldUseDarkTheme when searchParams or pathname changes
   const [shouldUseDarkTheme, setShouldUseDarkTheme] = useState(false);
@@ -68,9 +71,11 @@ export function BaseLayout({
 
   return (
     <>
-      {!(isAdPlaying && isMobile) && (layoutConfig.showNavigationBar || layoutConfig.showBackAndCloseButton) && (
-        <TopBar theme={shouldUseDarkTheme && isMobile ? "dark" : "light"} style={{ zIndex: 9 }} variant={variant} />
-      )}
+      {!(isAdPlaying && isMobile) &&
+        !(isLinkoutFullView && isMobile) &&
+        (layoutConfig.showNavigationBar || layoutConfig.showBackAndCloseButton) && (
+          <TopBar theme={shouldUseDarkTheme && isMobile ? "dark" : "light"} style={{ zIndex: 9 }} variant={variant} />
+        )}
       <main
         className={cn(
           "gencl:sm:flex gencl:overflow-clip gencl:relative gencl:bg-white",
