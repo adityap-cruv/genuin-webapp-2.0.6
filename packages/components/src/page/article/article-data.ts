@@ -72,43 +72,191 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
   "the-week-in-racing-31-august-26": {
     slug: "the-week-in-racing-31-august-26",
     kind: "news",
-    title: "The week in racing - 31 August ‘26",
+    title: "The week in racing - 31 August '26",
     standfirst:
-      "A first Hungarian ILCA 7 world title, a reshaped 52 Super Series fight and a fast Atlantic crossing headline the week in sailing.",
+      "This week we've seen a new ILCA 7 world champion crowned in Dublin Bay, the 52 Super Series title race turned on its head in Lanzarote, and the IMOCA fleet limbering up for a transatlantic sprint that gets under way on Tuesday. Plenty more on the horizon too, with three more world championships kicking off in the next week. Let's get into it…",
     author: "Benedict Donovan, Deputy Editor",
     publishedAt: "31st August 2026 8:09pm",
     heroImage: {
-      src: "https://thefoil.com/media/mEob3-vvRywjK5WGiYDMwmaHASqp4I5G721zCToGbHI/resize:fill-down:1200:630/g:ce/quality:60/dpr:1/2026/08/ilca-mens-medal-race76900-jordan-roberts-down-under-sail.jpg",
-      alt: "ILCA 7 fleet racing in Dublin Bay",
+      src: "https://thefoil.com/media/V2AOSGzowX882GEvCSH1btIYLouzhrxlvmXJFvPz9nQ/resize:fill-down:1500:500/gravity:fp:0.5340425532:0.5096842222/quality:60/dpr:1/2026/08/ilca-mens-medal-race76900-jordan-roberts-down-under-sail.jpg",
+      alt: "The week in racing - 31 August '26",
     },
     body: [
       {
         type: "heading",
-        text: "Vadnai makes Hungarian sailing history",
+        text: "Vadnai writes Hungary into the record books at ILCA 7 Worlds",
       },
       {
         type: "paragraph",
-        text: "Jonatán Vadnai became Hungary's first ILCA 7 world champion in Dún Laoghaire. A 4-1 final-day score lifted him to the title on 47 points and delivered his country's first medal of any colour in the class.",
+        text: 'Hungary had never won a sailing world title in the ILCA 7 fleet, nor a medal of any colour, so Jonatán Vadnai\'s victory at Dún Laoghaire last week is a proper landmark. He came into the final day needing a big score and delivered exactly that, a 4-1 sealing the title on 47 points. "Yesterday I had a super tough day, and thanks to this new format, I was back in the game," said Vadnai. "I just went for it, and I\'m so happy I managed to do it."',
+      },
+      {
+        type: "paragraph",
+        text: "The win clearly meant a lot to the 28-year-old Hungarian: \"I've been sailing this boat since I was a little kid, and I've always looked up to the idols in this class and the World Championship titles. We have this beautiful blue plaque with the biggest names in sailing, and to write my name there is just really incredible – especially coming from Hungary. We're not a huge sailing nation, and it means so much. I believe we have a lot of talent coming up, but we haven't had many results yet – we're starting to perform. So I hope the young guys back home can see this and jump in a boat, and feel motivated that they can do it too.\"",
+      },
+      {
+        type: "paragraph",
+        text: "Behind him, Matt Wearn was the man everyone was watching. The Australian had won every Sailing Grand Slam event he'd raced this season, arriving in Dublin as the man to beat, only to sit ninth overnight going into the final day. He answered with a win and a second to jump to silver, his seventh ILCA 7 Worlds medal.",
+      },
+      {
+        type: "paragraph",
+        text: "\"Crossing the finish line, I didn't really have any idea what the scores were,\" Wearn said after. \"I knew it was going to be super close, but to come away with a Silver medal feels pretty good. I think it's probably a bit of experience showing – I've had plenty of regattas over the years where it hasn't gone well and I haven't been able to pick myself up, and you learn from that too. This year has been really good for me, and I haven't had to do that as much – a bit of a shame it happened at the Worlds, so I just had to keep chipping away. It goes to show you need to keep the consistency there and save every point you can, to make sure you're in the hunt towards the end of the regatta.\"",
+      },
+      {
+        type: "paragraph",
+        text: "Mickey Beckett took bronze for Britain, edging out a fleet so tightly bunched that just three points separated the top seven when the racing was done. The next ILCA 7 Worlds isn't far off, at the Fortaleza 2027 World Sailing Championships in January, which will double as the first LA 2028 qualification event. Full results here.",
       },
       {
         type: "heading",
-        text: "The 52 Super Series tightens in Lanzarote",
+        text: "52SS: Platoon Aviation seal fourth Royal Cup crown in Puerto Calero",
       },
       {
         type: "paragraph",
-        text: "The Royal Cup shifted the championship picture before the final regatta. Changing breeze and close TP52 racing kept the leading crews under pressure and ensured the season would remain open into its last stop.",
+        text: 'Platoon Aviation banked their fourth Royal Cup title in Puerto Calero, a result that marked a proper return to form for Harm Müller-Spreer\'s German crew, two years on from their last regatta win in Valencia, September 2024. They wrapped it up with a race to spare. "It is a while since that has been achieved in the 52 SUPER SERIES," said Müller-Spreer. "For me it feels good, very special on the day after the donor of the Cup passed away, King Harald … I am very proud, a bit emotional but we need to focus because right now, we are 11 points ahead in the whole season and if somebody told me that before, that we\'d be here after this week, 11 points ahead, I would sign it right away."',
+      },
+      {
+        type: "paragraph",
+        text: "The real battle was for second place. Brazil's Crioula, helmed by brothers Eduardo and Renato Plass, spent most of the week picking their way up from the back of the fleet, only to snatch the runner-up spot on the final day by a single point from Turkey's Provezza – cruel timing for Ergin Imre's crew, who'd sat second overall going into that last race. \"Finally a great result!\" said Crioula co-owner Plass. \"After bad starts and bad days we came from the back of the fleet. We never started first, always the last or 11th place but we managed to get there. We never gave up. That's our thing.\"",
+      },
+      {
+        type: "paragraph",
+        text: "It wasn't such a happy week for Takashi Okura's Sled. The reigning champions arrived with a commanding 17-point championship lead and left trailing Platoon Aviation in second by 11, after a broken forestay ram cost them time and results ahead of October's finale in Valencia, where Platoon now carry the advantage. \"We didn't do a good job on the last race,\" said Sled tactician Francesco Bruni. \"I'm not very happy with how I sailed the week and unfortunately, we lost a lot of points. But, I mean, we are still a strong team, we still in touch for a potential win of the season, so we will fight it out in Valencia.\"",
+      },
+      {
+        type: "paragraph",
+        text: "We streamed the whole regatta on The Foil's YouTube channel – catch up on the replays here, and check full results and standings here.",
       },
       {
         type: "heading",
-        text: "A transatlantic sprint begins",
+        text: "Scheidt and Sperry seal Star Europeans crown in Medemblik",
       },
       {
         type: "paragraph",
-        text: "The Ocean Race Atlantic starts from New York on 1 September, sending six mixed-gender IMOCA crews on a 3,300-nautical-mile course to Lorient. New-generation boats from DMG MORI and Team Malizia add an immediate design contest to the race.",
+        text: "Last week 70 teams from 17 nations headed to Medemblik for the Star Europeans, and by the end of a rain-lashed week it was Robert Scheidt and Austin Sperry who stood clear. The five-time Olympic medallist and his American crew wrapped up the title with a race to spare, riding out squalls that reduced visibility to nothing on the final downwind of the deciding race before rounding it off with two more wins on the last day for four victories out of seven overall.",
       },
       {
         type: "paragraph",
-        text: "The week ahead also brings the Maxi Yacht Rolex Cup in Porto Cervo, the J/70 World Championship in Cascais and the iQFOiL World Championship in Weymouth.",
+        text: '"Today was very tough, especially physically," said Scheidt. "The German team pushed us to the limit, hats off to them. In the first race they were ahead of us going into the final run, but we made the right call to gybe early as the wind shifted. Suddenly we saw the finish line in front of us and managed to pass five boats. That race put us in a better position, but they kept fighting all the way through the second race."',
+      },
+      {
+        type: "paragraph",
+        text: "Italy's Diego Negri and Sergio Lambertenghi took second overall, with Germany's Nick Heuwinkel and Jesper Spehr completing the podium in third and picking up the U30 European title along the way. Next up for the class: the North American Championship in October, followed by the Worlds in Miami in November. Full results here.",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/_-Q4BiqRZ_uNwoEMGUE9Ce8zMB_jIWZaD0OPUTZthak/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/stareuros-matias-capizzano-iscyra.webp",
+        alt: "Matias Capizzano / ISCYRA",
+        caption: "Matias Capizzano / ISCYRA",
+      },
+      {
+        type: "heading",
+        text: "NYYC challenges America's Cup Partnership over Deed of Gift",
+      },
+      {
+        type: "paragraph",
+        text: "The America's Cup's oldest institution has gone legal on the event's newest one. New York Yacht Club, which held the Cup for 132 years before losing it to Australia in 1983, has asked the New York Attorney General's Charities Bureau to examine whether the newly formed America's Cup Partnership can be squared with the Deed of Gift – the 1887 charitable trust that's governed the event since the trophy first landed in New York.",
+      },
+      {
+        type: "paragraph",
+        text: "NYYC's argument centres on structure. The Deed sets up a two-way relationship: Defender and Challenger of Record agree the terms of each match by mutual consent, cycle by cycle. The Club contends the ACP creates a standing authority the Deed never envisaged, one that under its Protocol could effectively block a club's challenge if it refuses to join, and that could set rules for matches involving clubs not yet in the picture. NYYC also wants the AG to obtain the ACP's undisclosed Partnership Agreements, arguing the whole restructuring has happened without transparency or court approval. Expect this one to run and run before it's settled.",
+      },
+      {
+        type: "heading",
+        text: "TO WATCH THIS WEEK:",
+      },
+      {
+        type: "heading",
+        text: "The Ocean Race Atlantic sets sail from New York to Lorient",
+      },
+      {
+        type: "paragraph",
+        text: "The IMOCA fleet is back in action this week as The Ocean Race Atlantic gets underway, starting from New York on 1 September for a straight 3,300-nautical mile sprint across to Lorient, with the fleet expected in as little as eight days if the Gulf Stream cooperates. Six mixed-gender crews take on the North Atlantic, each boat carrying two women and two men, with an on-board reporter aboard every boat this time round.",
+      },
+      {
+        type: "paragraph",
+        text: "Where things get really interesting, though, is in the boats themselves. Two brand new IMOCAs race for the first time here: DMG MORI Global One, featuring a striking, America's Cup-inspired bustle running the length of the hull, up against Team Malizia's twin-chined new build, an evolution of designer Antoine Koch's previous winners.",
+      },
+      {
+        type: "paragraph",
+        text: "Both teams are already convinced they're onto something quick. \"The boat is like a rocketship,\" said DMG MORI's Sam Davies. \"Once it starts going you are like: 'Whoa! Are we really going that quick and we haven't even trimmed the sails yet.'\" Malizia's Boris Herrmann was similarly blown away: \"We knew after five minutes of flight that this is something spectacular. The boat is amazing.\"",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/aI-JWxf3UcHgHJABmV-IEy0iMWdpyrlGboOmBTrm9D0/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/260712-mlz-imoca-dronestills-ac-still009.jpg",
+        alt: "Team Malizia",
+        caption: "Team Malizia",
+      },
+      {
+        type: "paragraph",
+        text: "On the North Atlantic, Davies added: \"One of the keys to doing well on this course is not to expect anything classic, to expect the unexpected, and to have no ideas of what it's going to be like before you leave because, at any time of year, the north Atlantic is pretty crazy. This is going to be a quick race, so it's going to be a no-regrets-race where every second counts and you can sleep when you get to the finish.\"",
+      },
+      {
+        type: "paragraph",
+        text: "Three earlier-generation boats (11th Hour Racing, United by the Ocean, Embrace The Challenge) and one 2007-vintage non-foiler (MSIG Europe) round out the fleet. If conditions are right, there's even a chance of the 24-hour distance record of 641 nautical miles coming under threat.",
+      },
+      {
+        type: "paragraph",
+        text: "Last week we got an exclusive look aboard Malizia 4 with Will Harris ahead of the start. See it for yourself here:",
+      },
+      {
+        type: "heading",
+        text: "The ILCA 6 Women's fleet takes over Dublin Bay next",
+      },
+      {
+        type: "paragraph",
+        text: "There's hardly a pause in Dún Laoghaire before the women's fleet is back for the ILCA 6 Women's Worlds, running 5-12 September on the same Dublin Bay waters that just delivered Vadnai's win. Over 100 sailors from more than 40 countries are entered, headed by reigning champion Louise Cervera, with Belgium's Emma Plasschaert, Italy's Chiara Benini Floriani and Britain's Daisy Collingridge all fancied to trouble her. Home hopes rest on Paris Olympian Eve McMahon and the returning Annalise Murphy, while Greece's Hermione Ghicas – fresh off the Youth Worlds title – could be the fleet's wildcard.",
+      },
+      {
+        type: "heading",
+        text: "iQFOiL Worlds arrive in Weymouth",
+      },
+      {
+        type: "paragraph",
+        text: "The iQFOiL Worlds take place in Weymouth-Portland from 4-12 September, with the final Medal Series spots only decided this week at a tense Last Chance Qualifier in Silvaplana. Switzerland's Loïc Huguenin and Poland's Michał Maziarka booked automatic Grand Final places, while Britain's Abi Smith carries good form into the women's fleet. Among the 184 competitors are Britain's defending champions Andy Brown and Emma Wilson, headlining a stacked home fleet, with Brown facing stiff competition from fellow Brits Sam Sills and Finn Hawkins. Keep an eye on Britain's Charlie Baker, too – he only booked his senior Worlds spot after winning last week's iQFOiL Youth & Junior International Games. We'll be streaming all the action on The Foil's YouTube channel, from 7 to 12 September.",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/JFYz2flaQe2_KjRc6EkcANk8wxQoicsyb2HAdEZqAOY/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/iqfoil-qualifiers-copy.jpg",
+        alt: "International iQFOiL Class",
+        caption: "International iQFOiL Class",
+      },
+      {
+        type: "heading",
+        text: "J/70 Worlds bring 120 teams to Cascais",
+      },
+      {
+        type: "paragraph",
+        text: "Cascais hosts the J/70 Worlds from 4-12 September, with the fast-growing one-design sportboat class pulling in over 120 teams from more than 30 countries. Reigning European champions Empeiria, skippered by John Heaton, arrive as favourites after July's Barcelona win, but Spain's Hang Ten and Brazil's OceanPact – both podium finishers at the Europeans – will also fancy their chances.",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/WxGDYy-F_qKpygByTEdxQZNftzxI5owZUjLnF9S2C2E/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/j70-neuza-aires-pereira-cascais-j-70-summer-cup-copy.jpg",
+        alt: "Neuza Aires Pereira / Cascais J/70 Summer Cup",
+        caption: "Neuza Aires Pereira / Cascais J/70 Summer Cup",
+      },
+      {
+        type: "heading",
+        text: "Maxi Yacht Rolex Cup returns to Porto Cervo",
+      },
+      {
+        type: "paragraph",
+        text: "Porto Cervo hosts the Maxi Yacht Rolex Cup from 6-12 September, the sport's grandest superyacht regatta now in its fifth decade, drawing a fleet of 50 boats all over 18 metres long. Paul Cayard returns aboard the ClubSwan 80 My Song, his association with the event stretching back to its first edition in 1985.",
+      },
+      {
+        type: "paragraph",
+        text: '"Ever since Rolex first supported the Maxi Yacht Rolex Cup over 40 years ago, it has always been the defining moment of the year, where you put all your work on the table," says Cayard. "It was racing at competitions like this where I gained the skills and tools of my profession. I learned how to manage teams, develop strategies, think about boat preparation as well as tuning sails and other equipment on a large scale. It is a privilege to have been part of the very beginning of this impactful partnership."',
+      },
+      {
+        type: "paragraph",
+        text: "Coming off a year in which he's already claimed the Star and Etchells world titles, Cayard arrives in typically formidable form. Among the 50-strong fleet, past winners Galateia, H20 and Leopard 3 all return to defend on the Costa Smeralda.",
+      },
+      {
+        type: "heading",
+        text: "SailGP debuts in Valencia",
+      },
+      {
+        type: "paragraph",
+        text: "Valencia gets its first taste of SailGP this week (5-6 September) as the F50 fleet finally gets to race the old America's Cup waters from 2007. Spain's Diego Botín and Florián Trittel head into their home event with back-to-back wins in Halifax and Portsmouth, a podium in every Grand Prix so far this season, and the home fans – the self-styled 'Marea Roja' – expected in force. As usual we'll be there to bring you all the latest over the race weekend.",
       },
     ],
     source: {
@@ -121,41 +269,325 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
     kind: "news",
     title: "Rate the fleet: Andy Rice on Sassnitz SailGP",
     standfirst:
-      "Andy Rice assesses a Germany Sail Grand Prix shaped by split-fleet imbalance, extreme speed and difficult tactical conditions.",
+      "Despite the gusty, squally conditions on Saturday, Sassnitz repeated the Portsmouth miracle of 13 boats starting the weekend and all 13 completing the weekend. The split fleet racing between Groups A and B really seems to be making the race track a safer place to be.",
     author: "Andy Rice, Senior Contributor",
     publishedAt: "27th August 2026 2:41pm",
     heroImage: {
-      src: "https://thefoil.com/media/gMKzLo51XG0f-bdYGtYcg5tK2rAaq94rI6wy0sm5D3M/resize:fill-down:1200:630/g:ce/quality:60/dpr:1/2026/08/rp3-3823.jpg",
-      alt: "SailGP fleet racing at Sassnitz",
+      src: "https://thefoil.com/media/B5wy-NCith7W18uw1I5vM66g7a9IIGoNszXby1KS7Jg/resize:fill-down:1500:500/gravity:fp:0.5404255319:0.5701663967/quality:60/dpr:1/2026/08/rp3-3823.jpg",
+      alt: "Rate the fleet: Andy Rice on Sassnitz SailGP",
     },
     body: [
       {
+        type: "paragraph",
+        text: "However, the Groups were very imbalanced in terms of quality. Although just six boats in Group B, this was the much harder fleet, and some of my rankings reflect this.",
+      },
+      {
+        type: "paragraph",
+        text: "Here's a reminder of the standings after five thrilling races in Group B:",
+      },
+      {
+        type: "paragraph",
+        text: "1 Canada 17 2 Australia 15 3 Sweden 14 4 Germany 12 5 Great Britain 9 6 United States 8",
+      },
+      {
+        type: "paragraph",
+        text: "Of these six, five still had a shot at qualifying through to the four-boat final as they headed into the final race. Only the USA missed the cut, and even Taylor Canfield and his team weren't sailing that badly.",
+      },
+      {
+        type: "paragraph",
+        text: "Even though there were seven teams in Group A, there was a clear divide between the top three and the rest. It was effectively a three-horse race between New Zealand, Spain and France, with the other four making up the numbers.",
+      },
+      {
+        type: "paragraph",
+        text: "Here's a reminder of the standings after five not-quite-as-thrilling races in Group A:",
+      },
+      {
+        type: "paragraph",
+        text: "1 New Zealand 19 2 Spain 16 3 France 14 4 Switzerland 9 5 Denmark 8 6 Italy 7 7 Brazil 0",
+      },
+      {
+        type: "paragraph",
+        text: "With that imbalance between Groups A and B in mind, as well as my usual sense of who's on the rise and who's on the decline, here are my rankings for Sassnitz.",
+      },
+      {
         type: "heading",
-        text: "Canada lead Rice's order",
-      },
-      {
-        type: "paragraph",
-        text: "NorthStar Canada top the assessment after qualifying from the more competitive group and recovering repeatedly in patchy breeze. A difficult final start cost them the win, but second place confirmed a team moving in the right direction.",
+        text: "Ricey's Order",
       },
       {
         type: "heading",
-        text: "Australia turn resilience into victory",
+        text: "1. Canada (NorthStar SailGP)",
       },
       {
         type: "paragraph",
-        text: "The Flying Roos combined consistently strong starts with stable high-speed handling. After setbacks in the fleet races, Tom Slingsby's crew controlled the final and collected their fifth event victory of the season.",
+        text: "Finished: 2nd",
+      },
+      {
+        type: "paragraph",
+        text: "Driver Giles Scott demonstrated remarkable resilience, steering Canada through a dramatic weekend of well-executed recoveries. Despite suffering a starting penalty in Race 4 of Group B, Scott was able to sniff out clear paths through patchy breeze to climb from the back of the fleet into top finishes. Canada secured their place in the final by prevailing in that nailbiter of a battle in Race 5. In the four-boat final, a mistimed approach to the line was a bad error that opened the door to Australia seizing the lead. But across the finish line, Canada managed to keep their boat moving just enough to nose ahead of Spain and New Zealand to grab second place overall.",
+      },
+      {
+        type: "paragraph",
+        text: "Verdict: Top qualifier from the toughest group, and a team on the rise",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/QYZkGlnQc8OoqP8Hg1hGI0hbJQCx0CVxjUG5d5WFj-8/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/rp2-0798-1.jpg",
+        alt: "Ricardo Pinto / SailGP",
+        caption: "Ricardo Pinto / SailGP",
       },
       {
         type: "heading",
-        text: "New Zealand and France show their pace",
+        text: "2. Australia (Bonds Flying Roos)",
       },
       {
         type: "paragraph",
-        text: "The Black Foils dominated Group A before finishing fourth in the final, while France set a new SailGP speed record of 107.63km/h. Spain completed the podium despite an unusually uneven weekend.",
+        text: "Finished: 1st",
       },
       {
         type: "paragraph",
-        text: "Rice's wider rankings reward teams that handled the hardest group and the unstable conditions rather than simply following the final event order.",
+        text: "Tom Slingsby's crew delivered a masterclass in high-speed control and tactical execution to secure their fifth event win of the season. The Flying Roos dominated Day 1 in heavy air, winning two of their three Group B races with rock-solid stability while competitors struggled in the 24-knot squalls. Despite a setback in Race 3b where a missed tack relegated them to last, they were still leading Group B overnight. By some margin Australia were the best starters on both days of the weekend, so it was surprising to see them struggle to reach the four-boat final. After being unceremoniously dumped from first to fifth in that patchy fourth Group B race, Slingsby and the team held their nerve. Once in the final, Slingsby capitalised on Canada's start-line error, breaking away early and achieving 100% flight time to cross comfortably ahead as the rest of the fleet fell off their foils in the dying wind.",
+      },
+      {
+        type: "paragraph",
+        text: "Verdict: Best starters in the fleet, and huge team resilience",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/-1HCyJZiB4VWlzOhyfV2on_cBwFfz3GiERoWCi4BZ5k/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/ab300052.jpg",
+        alt: "Andrew Baker / SailGP",
+        caption: "Andrew Baker / SailGP",
+      },
+      {
+        type: "heading",
+        text: "3. New Zealand (Black Foils)",
+      },
+      {
+        type: "paragraph",
+        text: "Finished: 4th",
+      },
+      {
+        type: "paragraph",
+        text: "Pete Burling's Black Foils dominated Group A on Saturday, putting on a clinic in pristine boat speed and positioning to post a 1-2-3 record and become the first team to qualify for the final. However, after reaching their first four-boat final of the season, their good run of form came to an end. Held up by Canada's error at the start line, the Kiwis picked up a boundary penalty while trying to squeeze Spain in the dying moments of the race, leaving them on the wrong side of a photo-finish with Los Gallos and having to settle for 4th and last place across the line.",
+      },
+      {
+        type: "paragraph",
+        text: "Verdict: Dominated Group A and deserved better in the final",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/Tr3pkMExfAh3pqgtxHLXjeEjIDgExQHsDXqP0aROZpc/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/rp2-0112.jpg",
+        alt: "Ricardo Pinto / SailGP",
+        caption: "Ricardo Pinto / SailGP",
+      },
+      {
+        type: "heading",
+        text: "4. France (DS Automobiles France)",
+      },
+      {
+        type: "paragraph",
+        text: "Finished: 6th",
+      },
+      {
+        type: "paragraph",
+        text: "Quentin Delapierre's squad proved to be the fastest team on the water, officially setting a new SailGP outright speed record of 107.63 km/h (58.1 knots) during Race 3 of Group A. They backed up their raw pace with a fleet race victory in Race 2 earlier. Despite their top-end speed, recurring foil spin-outs and boat-handling errors in Sunday's shifty conditions caused them to finish 6th in Race 5a, narrowly losing the final Group A qualifying spot to Spain. Even so, the French are showing strong signs of getting back to the kind of form we saw in Perth at the start of the year. Leigh McMillan's return to the wing trimming must be a part of that resurgence.",
+      },
+      {
+        type: "paragraph",
+        text: "Verdict: The band is back together and they're almost back in tune",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/fFaT-RwpZgn11Ls9VxZGedmokVDcZcNWG8f24MPNF20/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/jl205258.jpg",
+        alt: "Jason Ludlow / SailGP",
+        caption: "Jason Ludlow / SailGP",
+      },
+      {
+        type: "heading",
+        text: "5. Spain (Los Gallos)",
+      },
+      {
+        type: "paragraph",
+        text: "Finished: 3rd",
+      },
+      {
+        type: "paragraph",
+        text: 'Diego Botín\'s aggressive, high-risk approach yielded another podium finish for Los Gallos. There were times on Saturday when their approach looked too high-risk. Botín went for a gap at the windward mark inside France and incurred a predictable penalty, and they finished an unnecessary last in that particular race. However, as ever, the team repeatedly showed their ability to turn the tide under pressure. Highlights included a victory in Race 3a and a signature "French start" in Race 5a to lock in their final spot. Despite starting last in the final, Spain sliced through to 2nd at gate three before ultimately taking 3rd overall, maintaining their 2nd-place ranking in the global season standings.',
+      },
+      {
+        type: "paragraph",
+        text: "Verdict: The shakiest Spanish performance for a while, yet still they made the final",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/9pdDV0a9O4S-MMKHQaW7daIPPL_hGovRL2-whwoYnV0/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/rp2-9469.jpg",
+        alt: "Ricardo Pinto / SailGP",
+        caption: "Ricardo Pinto / SailGP",
+      },
+      {
+        type: "heading",
+        text: "6. Sweden (Artemis)",
+      },
+      {
+        type: "paragraph",
+        text: "Finished: 5th",
+      },
+      {
+        type: "paragraph",
+        text: "Nathan Outteridge brought his trademark consistency to Group B, opening the regatta with three consecutive 3rd-place finishes. However there were times when even the usually conservative Outteridge pushed the limits in high-speed traffic, executing one of the closest passes of the weekend by ducking Australia by just 50 cm at 70 km/h in Race 5b. However, a poor rounding and subsequent penalty in Race 4b cost the Swedes vital points, leaving them just shy of qualifying for the three-boat final battle.",
+      },
+      {
+        type: "paragraph",
+        text: "Verdict: Good, solid performers with flashes of brilliance. Not yet shown the flair to win",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/0uy5zxbw3sX94uQeSWLd9JtpJqg49iiN_Gcawy-zlnU/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/rp3-3833-2.jpg",
+        alt: "Ricardo Pinto / SailGP",
+        caption: "Ricardo Pinto / SailGP",
+      },
+      {
+        type: "heading",
+        text: "7. Germany (Deutsche Bank Germany)",
+      },
+      {
+        type: "paragraph",
+        text: "Finished: 7th",
+      },
+      {
+        type: "paragraph",
+        text: 'Erik Kosegarten Heil\'s home team experienced an extreme "snakes and ladders" regatta in front of the Sassnitz crowd. Sailing with the 18-meter wing in patchy breeze, their starts were binary: flat-footed when missing gusts, but dominant when hitting them cleanly. Germany thrilled home fans by winning both Race 3b (at the end of Saturday) and Race 4b (at the start of Sunday) by staying fully foiling while the rest of the fleet splashed down. However, low scores from early races meant a place in the final was hard for the Germans to achieve.',
+      },
+      {
+        type: "paragraph",
+        text: "Verdict: As Erik has said all season, when they can get off the line the Germans are capable of winning",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/njaIRKCdp9vzT9GXFnLUUWfKQ-hbUQg8xlACEecXN7s/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/fd2-3454.jpg",
+        alt: "Felix Diemer / SailGP",
+        caption: "Felix Diemer / SailGP",
+      },
+      {
+        type: "heading",
+        text: "8. Great Britain (Emirates GBR)",
+      },
+      {
+        type: "paragraph",
+        text: "Finished: 9th",
+      },
+      {
+        type: "paragraph",
+        text: "A 9th-place finish masks what was otherwise a reasonably competitive performance by Dylan Fletcher's crew. Emirates GBR set an early practice speed record of 56.6 knots and finished 2nd in Race 2b in a brutally tight Group B. Going into the final group race just two points off the lead, a disappointing 6th-place finish in Race 5b dropped them significantly on the overall event leaderboard. Lower than they probably deserved. Fletcher said there were reasons to be optimistic from their performance, and I think I believe him.",
+      },
+      {
+        type: "paragraph",
+        text: "Verdict: Not their world-beating form, but still better than a 9th-place finish",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/KF32PkmflFcOl0EMQcAICaWfVaDyd4kvwTNJo6As3n0/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/rp3-3642.jpg",
+        alt: "Ricardo Pinto / SailGP",
+        caption: "Ricardo Pinto / SailGP",
+      },
+      {
+        type: "heading",
+        text: "9. USA (US SailGP Team)",
+      },
+      {
+        type: "paragraph",
+        text: "Finished: 11th",
+      },
+      {
+        type: "paragraph",
+        text: "Taylor Canfield's American entry showed strong tactical positioning but suffered from costly execution errors at critical moments. The team lost positions to layline misjudgments in Race 1b and splashed down while leading gate two in Race 5b. Finishing tied on points with Great Britain in Group B, the fine margins of the leaderboard left them in 11th overall.",
+      },
+      {
+        type: "paragraph",
+        text: "Verdict: Losing momentum from their great season start, but still in the hunt for the grand final",
+      },
+      {
+        type: "heading",
+        text: "10. Switzerland (Explora Swiss)",
+      },
+      {
+        type: "paragraph",
+        text: "Finished: 8th",
+      },
+      {
+        type: "paragraph",
+        text: "The Swiss team showed clear improvements in straight-line speed, highlighted by rounding mark one alongside New Zealand in Race 1a to earn a 2nd-place finish. Boat handling under pressure remains their primary obstacle, as severe wobbles and foil drops during gate roundings in gusty moments were costing them positions throughout the weekend.",
+      },
+      {
+        type: "paragraph",
+        text: "Verdict: Not as impressive as they've been in recent events. Need to rediscover the emerging magic in Valencia",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/8OG2SiBzRe5T2Ln5KZaZsuTm1m_E6NhR-enzFnIpgCs/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/jn1-5209-1.jpg",
+        alt: "Jonathan Nackstrand / SailGP",
+        caption: "Jonathan Nackstrand / SailGP",
+      },
+      {
+        type: "heading",
+        text: "11. Denmark (ROCKWOOL Racing)",
+      },
+      {
+        type: "paragraph",
+        text: "Finished: 10th",
+      },
+      {
+        type: "paragraph",
+        text: "Nicolai Sehested's crew struggled with foil stability and flight control in the choppy Sassnitz conditions. Although they briefly touched 106 km/h in Race 3a before a heavy nosedive, the team was unable to maintain consistent speed through manoeuvres, ultimately losing their title as the league's fastest boat to France.",
+      },
+      {
+        type: "paragraph",
+        text: "Verdict: Sehested believed the teams had been making progress in the training before the event, but it didn't show in the racing",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/YnOEat_NJSZEUPGcNp32JC8PHbSNQ5HnuV-YS-LxKes/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/fd2-4125.jpg",
+        alt: "Felix Diemer / SailGP",
+        caption: "Felix Diemer / SailGP",
+      },
+      {
+        type: "heading",
+        text: "12. Italy (Red Bull Italy)",
+      },
+      {
+        type: "paragraph",
+        text: "Finished: 12th",
+      },
+      {
+        type: "paragraph",
+        text: "Italy opened their weekend with a promising 3rd-place finish in Race 1a, showing sharp course reading in the opening heat. However, they were unable to maintain that momentum in the heavy-breeze squalls, frequently falling off the pace and being outmanoeuvred by the top Group A contenders.",
+      },
+      {
+        type: "paragraph",
+        text: "Verdict: Phil Robertson said there were good signs of progress, but surely this team aspires to much better",
+      },
+      {
+        type: "heading",
+        text: "13. Brazil (Mubadala Brazil)",
+      },
+      {
+        type: "paragraph",
+        text: "Finished: 13th",
+      },
+      {
+        type: "paragraph",
+        text: "The Brazilian team finished at the bottom of the standings with 0 points across the event. Their starting statistics are woeful, and things don't get much better on the open race course. Martine Grael's team have reached a point late in the season where they might as well try some big experiments like they did with the Grael-Goodison switcharound in Halifax. The current setup isn't working.",
+      },
+      {
+        type: "paragraph",
+        text: "Verdict: Training time in Pensacola can't come soon enough for Brazil",
+      },
+      {
+        type: "paragraph",
+        text: "Germany SailGP final order",
+      },
+      {
+        type: "paragraph",
+        text: "1 Australia 10 2 Canada 9 3 Spain 8 4 New Zealand 7 5 Sweden 6 6 France 5 7 Germany 4 8 Switzerland 3 9 Great Britain 2 10 Denmark 1 11 USA 0 12 Italy 0 13 Brazil 0",
       },
     ],
     source: {
@@ -168,33 +600,57 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
     kind: "news",
     title: "Luna Rossa test new rudder – and take a knock",
     standfirst:
-      "A revised rudder gave Luna Rossa useful data in Cagliari before an afternoon loss of control exposed the limits of the new configuration.",
+      "After a fortnight off, Luna Rossa were back on the water off Cagliari yesterday with something new to try on the boat. A reworked rudder – extra blade area up top, less down low, built to sharpen the leading edge – had been fitted over the break, and the sailing team wasted no time putting it through its paces. The morning session, sailed in a gentle seven to nine knots, went smoothly enough. The calm didn't last into the afternoon.",
     author: "Benedict Donovan, Deputy Editor",
     publishedAt: "27th August 2026 11:10am",
     heroImage: {
-      src: "https://thefoil.com/media/HLzTMMiNRo7BBMxBRINZ4GDsNvtbw_N44jsl-aufD-I/resize:fill-down:1200:630/g:ce/quality:60/dpr:1/2026/08/260826-lr-b3-d20-207.jpg",
-      alt: "Luna Rossa testing its AC75 off Cagliari",
+      src: "https://thefoil.com/media/J6JMBf-QUrNfZ7DOC8HexlhFY02qMtk4SOlMUAojfDE/resize:fill-down:1500:500/gravity:fp:0.496969697:0.4424662796/quality:60/dpr:1/2026/08/260826-lr-b3-d20-207.jpg",
+      alt: "Luna Rossa test new rudder – and take a knock",
     },
     body: [
       {
         type: "heading",
-        text: "A new blade goes on trial",
+        text: "When the rudder let go",
       },
       {
         type: "paragraph",
-        text: "Luna Rossa returned to the water after a two-week break with a reshaped rudder carrying more area near the top and less lower down. The team used a light morning session off Cagliari to work through the first checks.",
+        text: "Working through a string of full-throttle bear-aways and gybes, sailing with the windward foil half-buried, the AC75 pushed the new blade to its limits – and found them. Mid bear-away, the rudder ventilated and stalled, and for a moment the crew had nothing to steer with.",
+      },
+      {
+        type: "paragraph",
+        text: '"We lost the rudder, so we didn\'t have any more control of the blade, the yaw of the boat," Vittorio Bissaro, Luna Rossa\'s flight controller and trimmer told the Cup recon team. "That led the boat to bear away, and pass through the power zone. It was a dangerous situation. So the reaction there was just making sure to put the rudder in the water. So don\'t care about the bow, the distance of the bow from the water. Just keep the elevator in the water, because what really can cause damage in that situation is popping the rudder. So I think it was a well managed save."',
+      },
+      {
+        type: "paragraph",
+        text: "The boat pitched bow-up hard and thudded back down onto the hull, but there was no damage, and the crew were back sailing within minutes.",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/2M7BmUtnnYaYcVTvuWM45r5-SgobK8NLMahEcYaGcBM/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/260826-lr-b3-d20-209.jpg",
+        alt: "Ivo Rovira / America's Cup",
+        caption: "Ivo Rovira / America's Cup",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/5frfIKikoybu2PoRO_nbNkZH9WLxTvx17nExG9tSwtw/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/260826-lr-b3-d20-213.jpg",
+        alt: "Ivo Rovira / America's Cup",
+        caption: "Ivo Rovira / America's Cup",
       },
       {
         type: "heading",
-        text: "The afternoon exposes the limit",
+        text: "A productive scare",
       },
       {
         type: "paragraph",
-        text: "As the crew increased the load through fast bear-aways and gybes, the rudder ventilated and stalled. Flight controller Vittorio Bissaro described a brief loss of steering and yaw control before the boat was brought back under command.",
+        text: 'That moment aside, it was – by Luna Rossa\'s own account – a good day back. "It was the first day after the holiday, a long break," Bissaro says. "We had a lot of stuff to test and it was super productive. We ticked all the boxes."',
       },
       {
         type: "paragraph",
-        text: "The incident interrupted the session but also supplied the engineering team with clear information about the working range of the revised blade as the AC75 programme builds towards its next competitive test.",
+        text: 'Pitch control remains the team\'s ongoing preoccupation as they push their pre-start routines harder, sailing tighter, faster circles with a sharper bow-up attitude through the corners. "It\'s not easy," Bissaro admits, "because today we had a very nice bow up, harder attack... sometimes we are still struggling to keep everything in control. But it\'s a long process and we are happy with the pace so far."',
+      },
+      {
+        type: "paragraph",
+        text: "Five sessions and 135 foiling minutes later, Luna Rossa called it a day just after 3pm. They're back out on the water on Friday.",
       },
     ],
     source: {
@@ -207,41 +663,291 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
     kind: "news",
     title: "Freddie Carr: The SailGP teams that must decide to stick or twist",
     standfirst:
-      "With Season 6 entering its decisive phase, SailGP teams must choose between roster changes and giving existing combinations more time.",
+      "As season six of SailGP moves towards the sharp end, there are clearly teams having seasons they will be proud of. They have improved on where they were 12 months ago, won events, made podiums and put themselves into the fight for the Grand Final.",
     author: "Freddie Carr, Senior Contributor",
     publishedAt: "25th August 2026 6:00pm",
     heroImage: {
-      src: "https://thefoil.com/media/Nke01VR-k1qZL82Rwri60kjT7jiawrqQiiHUclRRRr0/resize:fill-down:1200:630/g:ce/quality:60/dpr:1/2026/08/fd2-2946.jpg",
-      alt: "SailGP crews competing at Sassnitz",
+      src: "https://thefoil.com/media/B1OMLimzgqxV81G12eBWsSDP-s7FsGIb_V9Sk0nnN6I/resize:fill-down:1500:500/gravity:fp:0.5179487179:0.8522603875/quality:60/dpr:1/2026/08/fd2-2946.jpg",
+      alt: "Freddie Carr: The SailGP teams that must decide to stick or twist",
     },
     body: [
       {
+        type: "paragraph",
+        text: "Conversely, there are teams that have stood still or regressed. They will not be meeting their targets and expectations, and the uncomfortable conversations about why that has happened will already be taking place.",
+      },
+      {
+        type: "paragraph",
+        text: "That leaves team CEOs and owners with one of the biggest decisions in professional sport. Do you trust the athletes and coaching staff you currently have, believing that more time together will eventually deliver the performance? Or do you dive into the transfer market and look for somebody who can change the level of the team immediately?",
+      },
+      {
+        type: "paragraph",
+        text: "Do you stick, or do you twist?",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/pZONKwQNxAiCS_jWTSwhQNs-J9AGqPw8SJQ7u_y2qaY/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/jl206519.jpg",
+        alt: "Jason Ludlow/SailGP",
+        caption: "Jason Ludlow/SailGP",
+      },
+      {
         type: "heading",
-        text: "One move can reshape a fleet",
+        text: "The domino effect",
       },
       {
         type: "paragraph",
-        text: "Carr uses Iain Jensen's move to the Flying Roos as the clearest example of a transfer improving an already strong programme. Australia have won five of the first nine events and look more complete across the boat.",
+        text: "We saw during the last off-season how one transfer can create a domino effect across the entire fleet. The arrival of Artemis opened another set of positions within SailGP, with Chris Draper leaving the Bonds Flying Roos to join the new Swedish outfit. It allowed Draper to start building racing relationships with several of his Emirates Team New Zealand team-mates under the Swedish flag, but it also created a very important vacancy onboard the Australian boat.",
+      },
+      {
+        type: "paragraph",
+        text: "That vacancy was filled by Iain Jensen, who moved from Emirates GBR into the wing-trimmer position alongside Tom Slingsby. With the benefit of hindsight, that might prove to be the transfer of the season.",
+      },
+      {
+        type: "paragraph",
+        text: "In my opinion, Jensen is currently the best sailor in SailGP. He joined an Australian team that was already operating at a top-tier level and somehow helped raise it again to a standard the rest of the fleet has struggled to match. The Flying Roos have won five of the opening nine events this season, and while you can never put that level of improvement down to one athlete, I believe Jensen's arrival has played a huge part in it.",
+      },
+      {
+        type: "paragraph",
+        text: "He has fitted into an already talented and highly experienced squad, but he has also added something. Whether that is his communication, his understanding of the F50, his relationship with Slingsby or simply the consistency with which he performs his role, the Australian boat now looks incredibly complete.",
+      },
+      {
+        type: "paragraph",
+        text: "That is the attraction of the transfer market. Find the right person and you can change the level of the entire group.",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/oc67tau-GydJBSGUAAX6pELTQENgnsZsrzKNYE0GRmM/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/rp3-3833-1.jpg",
+        alt: "Ricardo Pinto/SailGP",
+        caption: "Ricardo Pinto/SailGP",
       },
       {
         type: "heading",
-        text: "A professional transfer market emerges",
+        text: "Signing on the dotted line",
       },
       {
         type: "paragraph",
-        text: "SailGP's athlete framework is giving teams more control over recruitment and retention. Small, long-term squads mean that a single signing, reserve promotion or role change can have an outsized effect.",
+        text: "SailGP's most recent off-season saw around 20 significant athlete moves and new signings across the league. With only 13 teams and relatively small sailing squads, that represents a substantial reshuffling of the available talent. It also shows that SailGP's transfer market is starting to feel like a proper part of the sport.",
+      },
+      {
+        type: "paragraph",
+        text: "The Athlete Transfer Framework is essentially SailGP putting some formal structure around how sailors move between teams. We are obviously not talking about Premier League numbers, but the principle is becoming increasingly similar. Athletes are contracted to teams, there are defined periods in which movement can happen, and teams now have far more ability to protect the talent they have identified, developed and invested in.",
+      },
+      {
+        type: "paragraph",
+        text: "If another team wants one of those sailors, their contractual position matters.",
+      },
+      {
+        type: "paragraph",
+        text: "That is a significant change for professional sailing. For years, sailors have effectively been guns for hire. You finished one campaign, picked up the phone, spoke to another team and moved on to the next job. There was very little long-term protection for either the sailor or the team, because so much of the sport was built around campaigns with a defined finishing date.",
+      },
+      {
+        type: "paragraph",
+        text: "SailGP is slowly moving away from that model towards something much more recognisable as a professional sports league. The teams are becoming long-term sporting franchises, and that means their athlete rosters have genuine value.",
+      },
+      {
+        type: "paragraph",
+        text: "Finding young talent, developing it, getting those sailors under contract and then retaining your best people becomes part of building a successful team. It is no longer simply about selecting the best available group for the next regatta. You have to think about what your squad might look like in two, five or even ten years.",
       },
       {
         type: "heading",
-        text: "Change is not the only answer",
+        text: "Taking a leaf from football",
       },
       {
         type: "paragraph",
-        text: "The improved United States team shows the value of keeping faith with a roster, while Rockwool Racing are pursuing more foiling time together. Other teams may look towards emerging America's Cup talent as they plan for Season 7.",
+        text: "The really interesting question is where this goes next. Could we eventually reach a point where one SailGP team pays another a meaningful transfer fee for a world-class driver, flight controller or wing trimmer? Could identifying and developing the next generation of SailGP athletes become a genuine financial asset for a team?",
       },
       {
         type: "paragraph",
-        text: "For the lower half of the standings, the decision is broader than replacing athletes: coaching, preparation, role allocation and time on the water may be equally important.",
+        text: "That would have sounded slightly ridiculous a few years ago. Now it really doesn't.",
+      },
+      {
+        type: "paragraph",
+        text: "SailGP wants to become a genuine global sports league, and if that is where it is going, a proper transfer market – where the best athletes have real sporting and financial value – feels like another inevitable step along the way.",
+      },
+      {
+        type: "paragraph",
+        text: "I have probably got my transfer head on because the European football window has only days remaining and the numbers involved are mind-blowing. At the time of writing, there have been 1109 completed transfers across Europe's five biggest leagues, accounting for around £4.9 billion in transfer value.",
+      },
+      {
+        type: "paragraph",
+        text: "The fundamental questions SailGP teams are now asking themselves mirror what happens at football clubs. If you are sitting in the bottom half of the SailGP championship and have not yet made an event podium, how are you going to change that?",
+      },
+      {
+        type: "paragraph",
+        text: "Are you going to enter the transfer market, or are you going to trust the process?",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/vtyK_gBgBGnnGLT3wvUdddV7sl7kdWCaS0KFadGiBW8/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/rp2-6742.jpg",
+        alt: "Ricardo Pinto/SailGP",
+        caption: "Ricardo Pinto/SailGP",
+      },
+      {
+        type: "heading",
+        text: "The internal rotation option",
+      },
+      {
+        type: "paragraph",
+        text: "Changing one of the six athletes onboard does not necessarily mean trying to take an established SailGP sailor from another team. That is only one option available to an underperforming programme.",
+      },
+      {
+        type: "paragraph",
+        text: "You could rotate people within your existing squad and change positions onboard, as we saw from Brazil in Halifax. Sometimes the talent is already there, but the combination or distribution of roles is not quite right. Moving an athlete into a different position can alter the communication onboard, improve decision-making or simply allow somebody's natural strengths to have a greater influence on the boat.",
+      },
+      {
+        type: "paragraph",
+        text: "You could also promote one of your reserve sailors. The lower-ranked teams are receiving additional training time, and those extra days could reveal an athlete already sitting inside the programme who deserves an opportunity. When you are struggling for results, introducing somebody hungry and determined to prove themselves can shake up the entire group.",
+      },
+      {
+        type: "paragraph",
+        text: "The answer might not be changing an athlete at all. It could be changing the coaching structure, the training programme or the way the team prepares for each event. The performance gap might be technical, tactical or caused by a simple lack of time sailing together.",
+      },
+      {
+        type: "heading",
+        text: "The America's Cup talent feed",
+      },
+      {
+        type: "paragraph",
+        text: "The final option is to look outside the existing SailGP fraternity.",
+      },
+      {
+        type: "paragraph",
+        text: "There are several sailors racing AC40s in the America's Cup world who looked extremely impressive in Cagliari and will be back on stage in Naples in a few weeks. They already understand high-speed foiling, complex onboard systems and the communication required to race these boats properly. They might not have raced an F50, but the transition is nowhere near as large as it once would have been.",
+      },
+      {
+        type: "paragraph",
+        text: "If I were running recruitment for a SailGP team, two names from outside the current athlete pool would be right at the top of my list: Marco Gradoni and Margherita Porro.",
+      },
+      {
+        type: "paragraph",
+        text: "Gradoni is arguably the standout young sailor of his generation. He became the first sailor to win three consecutive Optimist World Championships, was named World Sailor of the Year at just 15 and then led Luna Rossa to victory in the 2024 Youth America's Cup.",
+      },
+      {
+        type: "paragraph",
+        text: "More importantly for a SailGP team looking at him today, he is becoming increasingly integrated into Luna Rossa's senior programme. He is gaining serious AC40 time alongside and against sailors such as Peter Burling and double Olympic champion Ruggero Tita. That is an extraordinary environment in which to learn, and every hour he spends there is adding to his value.",
+      },
+      {
+        type: "paragraph",
+        text: "Gradoni has the results, the age, the foiling experience and an enormous ceiling. In transfer-market language, he is not simply somebody who might improve your team today. He is somebody around whom you could potentially build a team for the next decade.",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/7tCkFUiwAa7iRKcLBsEpCz7clcml1u63g905ndvxWPE/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/38c-260121-ir205448b.jpg",
+        alt: "Ian Roman/America's Cup",
+        caption: "Ian Roman/America's Cup",
+      },
+      {
+        type: "paragraph",
+        text: "Porro could be just as valuable. A multiple youth world champion, she progressed through the 29er, WASZP and Nacra 17 before joining Luna Rossa. She was co-helm when the Italians won the inaugural Women's America's Cup in Barcelona in 2024, and since then Luna Rossa have continued to invest heavily in her development.",
+      },
+      {
+        type: "paragraph",
+        text: "She is receiving significant time driving the AC40 ahead of Naples and already has experience winning under pressure on the America's Cup stage. She is young, technically experienced and comfortable in high-speed foiling boats. Most importantly, she has already shown that she can deliver when the result really matters.",
+      },
+      {
+        type: "paragraph",
+        text: "As SailGP teams increasingly look for young athletes who can be developed into major roles within a squad, Porro ticks an awful lot of boxes.",
+      },
+      {
+        type: "paragraph",
+        text: "Gradoni and Porro would undoubtedly be two of the hottest young properties in a developing SailGP transfer market. The challenge for any team trying to recruit them would be convincing them that SailGP can offer a pathway as attractive as the one they already have inside Luna Rossa.",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/pEF5lm1sRaLGcKwmdMlNfyHfEd-TSnKEiIYgWntmq9g/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/38c-260121-ir205397b.jpg",
+        alt: "Ian Roman/America's Cup",
+        caption: "Ian Roman/America's Cup",
+      },
+      {
+        type: "heading",
+        text: "Trusting the process",
+      },
+      {
+        type: "paragraph",
+        text: "But do you need a major new signing, or do you trust the people you already have? The perfect example is the United States SailGP Team.",
+      },
+      {
+        type: "paragraph",
+        text: "After a woeful season five in which they finished last, the message coming from Mike Buckley, Taylor Canfield and the rest of the group was always consistent: we trust the roster, we believe in the direction we are taking and we will get there.",
+      },
+      {
+        type: "paragraph",
+        text: "Not many people believed them. Now we are all eating our hats.",
+      },
+      {
+        type: "paragraph",
+        text: "The USA are comfortably the most improved team in season six. They won their first SailGP event in Sydney and currently sit fifth overall, giving themselves a genuine opportunity to reach the three-boat Grand Final if they can finish the season strongly.",
+      },
+      {
+        type: "paragraph",
+        text: "They did not panic. They did not tear the squad apart or go charging into the transfer market searching for a quick fix. They made small adjustments, kept working and became better as a unit.",
+      },
+      {
+        type: "paragraph",
+        text: "That decision has paid dividends, and they deserve enormous respect for holding their nerve. It is easy to talk about trusting the process when things are going well. It is much harder to do it when you are finishing last and everybody outside the team is questioning whether the process is working.",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/ocy3N96W5QEVb529ChF9KYIjocmNE3JKVuoGWCdw634/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/fd2-2824.jpg",
+        alt: "Felix Diemer/SailGP",
+        caption: "Felix Diemer/SailGP",
+      },
+      {
+        type: "paragraph",
+        text: "I believe Rockwool Racing are thinking along similar lines. They strongly believe in the quality of the athletes they have, but the issue is that they might not sail together often enough compared with the people they are racing against.",
+      },
+      {
+        type: "paragraph",
+        text: "Many of their rivals also have America's Cup roles and could be foiling for as many as 20 days a month. That time matters. The more hours you spend sailing high-speed foiling boats, the more natural the communication, timing and decision-making become.",
+      },
+      {
+        type: "paragraph",
+        text: "The Danes appear ready to double down by entering other foiling championships outside SailGP. The aim is to increase their time on the water and build the racing relationships that only develop through proper repetitions as a crew.",
+      },
+      {
+        type: "paragraph",
+        text: "You can analyse all the data you like, spend hours in the simulator and hold endless debriefs, but there is no complete replacement for sailing together. If the Danish team believe the athletes are good enough, then increasing their time racing foiling boats could be the change that unlocks the performance.",
+      },
+      {
+        type: "paragraph",
+        text: "More repetitions should equal better performance when they return to the F50.",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/UqdnBZQ-51BXBN1ZXW_0C-opyoYVCESJxfdFavtt7yY/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/fd2-4767.jpg",
+        alt: "Felix Diemer/SailGP",
+        caption: "Felix Diemer/SailGP",
+      },
+      {
+        type: "heading",
+        text: "Every point counts",
+      },
+      {
+        type: "paragraph",
+        text: "We are now entering a fascinating point in the calendar. The top seven teams are fully focused on making the Grand Final. Every start, every place gained and every championship point could prove decisive over the final four events.",
+      },
+      {
+        type: "paragraph",
+        text: "For the teams in the bottom half of the table, however, the planning for Season Seven should already have started.",
+      },
+      {
+        type: "paragraph",
+        text: "Do they need an established SailGP athlete who can immediately change the level of the boat? Could one of their reserves step into a bigger role? Is there an America's Cup sailor outside the league capable of becoming the next major SailGP star? Or does the existing group simply need more time, better coaching and more opportunities to sail together?",
+      },
+      {
+        type: "paragraph",
+        text: "There is no single correct answer.",
+      },
+      {
+        type: "paragraph",
+        text: "The Flying Roos show what one outstanding signing can add to an already successful team. The United States show what can happen when an organisation refuses to panic and gives its existing group time to develop. Rockwool may now show whether increasing the number of racing repetitions can transform an established squad without changing the personnel.",
+      },
+      {
+        type: "paragraph",
+        text: "The teams at the bottom of the championship cannot stand still. But changing the performance does not always mean changing the people.",
+      },
+      {
+        type: "paragraph",
+        text: "That is the decision now facing them. Stick – or twist?",
       },
     ],
     source: {
@@ -252,43 +958,115 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
   "the-week-in-racing-24-august-26": {
     slug: "the-week-in-racing-24-august-26",
     kind: "news",
-    title: "The week in racing - 24 August ‘26",
+    title: "The week in racing - 24 August '26",
     standfirst:
-      "A SailGP speed record, an America's Cup legal dispute and two new youth world champions lead the weekly racing review.",
+      "The F50s found a new gear in Sassnitz, America's Cup's lawyers are still busy, and two new junior world champions emerged in Denmark – there's a lot to get through from the last seven days. Here's the rundown, plus what to watch out for next.",
     author: "Benedict Donovan, Deputy Editor",
     publishedAt: "24th August 2026 7:33pm",
     heroImage: {
-      src: "https://thefoil.com/media/fyOQZBfU_g5YeedI347I43cwARP09ukJ1dRDdN3XF0I/resize:fill-down:850:500/gravity:fp:0.3595744681:0.3743615093/quality:60/dpr:1/2026/08/138a2341-peter-brogger-ilca.jpg",
-      alt: "ILCA racing photographed by Peter Brøgger",
+      src: "https://thefoil.com/media/zm1hWBQgXAUXwE1GYVNZFsXeioZqhzDag3AeNHbB_X0/resize:fill-down:1500:500/gravity:fp:0.3595744681:0.3743615093/quality:60/dpr:1/2026/08/138a2341-peter-brogger-ilca.jpg",
+      alt: "The week in racing - 24 August '26",
     },
     body: [
       {
         type: "heading",
-        text: "Sassnitz delivers two extremes",
+        text: "Sassnitz serves up a speed record and a runaway final",
       },
       {
         type: "paragraph",
-        text: "France reached 107.63km/h to set a new SailGP speed record, while Australia's Flying Roos later won a final that slowed dramatically as the breeze faded. It was their fifth event victory of the season.",
+        text: "Sunday's Final in Sassnitz produced one of the stranger finishes of the season. Tom Slingsby's Flying Roos built such a lead that they'd stepped ashore for the trophy while NorthStar, Los Gallos and the Black Foils were still crawling towards the finish off the foils – a fifth win of the season for Australia, by three minutes nine seconds.",
+      },
+      {
+        type: "paragraph",
+        text: 'Saturday\'s headline act was DS Team France smashing SailGP\'s speed record – 107.63km/h (58.1 knots) in the final race of the day, well clear of the old 103.93km/h mark set by Rockwool Racing at the same venue last year. "I was definitely on the edge and it was quite scary on that last bear-away," said driver Quentin Delapierre. "I was just focusing on not putting too much pressure on the foil. At this speed, the first boundary comes up very quickly!"',
+      },
+      {
+        type: "paragraph",
+        text: "Makes you wonder if an AC75 will ever top that speed; the Cup's fastest pace on record is still 55.6 knots (102.97km/h), set by Ineos Britannia in Barcelona.",
       },
       {
         type: "heading",
-        text: "The America's Cup dispute continues",
+        text: "The America's Cup turns 175, and the lawyers are still at it",
       },
       {
         type: "paragraph",
-        text: "New filings added detail to the disagreement between Athena Racing and Ineos over the British campaign's AC75 and other assets. The case remained unresolved as the America's Cup marked its 175th anniversary.",
+        text: "Speaking of Britannia – well, we still don't know who really owns it. New court documents published on 18 August, as part of Athena Racing's amended Defence in the ongoing ownership battle, reveal the fate of a peace offer that could have avoided all this. Back in April, Ben Ainslie wrote to Ineos asking them to let Athena keep the disputed AC75 and other 2024 assets to compete in AC38. Athena initially told the court they'd had no reply.",
+      },
+      {
+        type: "paragraph",
+        text: "The amended filing now says Ineos rejected the proposal outright, in a letter sent just nine days after Athena's original complaint about the silence. The actual contract between the two parties still hasn't been made public. Ineos has until 15 September to respond.",
+      },
+      {
+        type: "paragraph",
+        text: "The America's Cup, meanwhile, turned 175 on Saturday. In all that time, only four nations have ever won it – proof just how hard it is to lift the oldest continually contested trophy in sport.",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/9xTw0fw7lwYP7oudhho6vJZFTDMs0EssG8yFMnqceek/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/britannia-job-vermeulen-america-s-cup.jpg",
+        alt: "Job Vermeulen / America's Cup",
+        caption: "Job Vermeulen / America's Cup",
       },
       {
         type: "heading",
-        text: "Youth titles decided in Aarhus",
+        text: "Aarhus crowns two new Youth World Champions",
       },
       {
         type: "paragraph",
-        text: "Erik Scheidt won the men's ILCA 6 Youth Worlds with a race to spare. Hermionie Ghicas overturned a one-point deficit by winning all three final-day races to claim the women's title.",
+        text: 'Brazil\'s Erik Scheidt – son of 5x Olympic medallist Robert – took the ILCA 6 Youth Worlds title in Aarhus, wrapping up the men\'s crown with a race to spare and a title and a title he was happy to put down to his father\'s influence. "My father is always by my side and helps me a lot with the psychological side," said Scheidt. "I had some expectations coming into the championship, but I did not expect to win this week. In the end, I think consistency was the key."',
       },
       {
         type: "paragraph",
-        text: "The preview section turns towards the 52 Super Series in Lanzarote, the ILCA 7 Men's Worlds in Dublin Bay and the Star European Championship in Medemblik.",
+        text: "In the women's fleet, Greece's Hermionie Ghicas turned a one-point deficit into gold by sweeping all three races on the final day, denying Ireland's Sienna Wright. \"I felt very comfortable on the boat with this wind and I'm very happy I managed to be strong both mentally, physically and tactically on the water,\" said Ghicas after. Full results here.",
+      },
+      {
+        type: "heading",
+        text: "TO WATCH THIS WEEK:",
+      },
+      {
+        type: "heading",
+        text: "52 Super Series returns to Lanzarote for round #4",
+      },
+      {
+        type: "paragraph",
+        text: "Puerto Calero, Lanzarote hosts the fourth of five 2026 season regattas from Tuesday 25 to Saturday 29 August, with 13 teams back in the breeze for the second Lanzarote stop in as many months. Takashi Okura's Sled lead the circuit standings after winning the season's first two regattas, but a wobbly finish at Marina Rubicon has left the door open – Harm Müller-Spreer's Platoon Aviation trail by just 17 points and fancy closing the gap over the days ahead.",
+      },
+      {
+        type: "paragraph",
+        text: '"We are sailing well, well enough to have won at Marina Rubicon if we had not torn five or six kites," says Müller-Spreer. "And 17 points is nothing considering there should be 20 races left to sail this season. We believe we can still win the season title. That is our objective, to win the 2026 championship."',
+      },
+      {
+        type: "paragraph",
+        text: 'One of the big stories of the season so far belongs to Jean-Luc Petithuguenin\'s Paprec, whose fairytale maiden win at Marina Rubicon – their first since joining the circuit back in 2012 – has the French crew riding a wave of confidence into Lanzarote. "We know where we are strong and where we are weak," says Paprec mainsheet trimmer Stéphane Névé. "And if it is breezy again we can have a very strong event but now 50 per cent of the fleet can win a regatta. But now we know we can do it we will be working doubly hard."',
+      },
+      {
+        type: "paragraph",
+        text: "Andrea Lacorte's Alkedo, runners-up by just two points last time out, will be desperate to go one better. The Foil is streaming every race live on YouTube this week – tune in for five days of tight, tactical TP52 racing.",
+      },
+      {
+        type: "heading",
+        text: "Matt Wearn chases a third ILCA 7 world title in Dublin",
+      },
+      {
+        type: "paragraph",
+        text: "Dun Laoghaire, Ireland hosts the ILCA 7 Men's Worlds from Tuesday to Sunday, with 141 sailors from 45 countries fighting it out on Dublin Bay – the first time the venue's held an Olympic-class Worlds. Netherland's defending champion Willem Wiersema is back, but the man to beat is Australia's Matt Wearn: after a perfect Grand Slam season – wins at Palma, Hyères and San Pedro – he arrives chasing a third world title. Just as the Flying Roos look unstoppable in SailGP, so does Wearn in the Laser.",
+      },
+      {
+        type: "paragraph",
+        text: '"I think it\'s pretty obvious that Matt Wearn is number one, and maybe Micky Beckett and Elliot Hanson are number two and three at the moment, with Pavlos [Kontides] right in the mix," says German sailor Philipp Buhl. "The thing is, in this class... every competitor gets a brand-new, identical boat – it\'s so simple and so amazing. Everybody is on exactly the same equipment, which means even Matt Wearn, having won every event he\'s competed in this year, still needs to show up and deliver in every single race, over the whole six days." Track the results here.',
+      },
+      {
+        type: "heading",
+        text: "Road to Miami's Star Worlds runs through Medemblik",
+      },
+      {
+        type: "paragraph",
+        text: "Medemblik, Netherlands hosts the Star European Championship from Monday to Saturday, returning to the Dutch venue exactly 25 years after it staged the 2001 Star Worlds. It's a stacked fleet – 76 teams, over 20 countries, and 12 former Star World Champions among them. One to to watch is 3x Star World Champ Robert Scheidt, racing the week after his son Erik took the ILCA 6 Youth World title. The Europeans double as a key staging post for November's Star Worlds in Miami, where Frithjof Kleen (who's also racing in Medemblik this week) and Paul Cayard defend the Gold Star.",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/hvrZ5LQJhXqeDL16quVczAgWpTuwmVbQU3Vz-9HU8yA/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/star-euros.webp",
+        alt: "Martina Orsini",
+        caption: "Martina Orsini",
       },
     ],
     source: {
@@ -301,41 +1079,173 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
     kind: "news",
     title: "Flying Roos hit high five with victory in Sassnitz",
     standfirst:
-      "Australia mastered a weather-disrupted final to claim a fifth SailGP event win and extend their championship advantage.",
+      "Australia's Bonds Flying Roos comfortably beat NorthStar Canada, Spain's Los Gallos and New Zealand's Black Foils to take their fifth win of the SailGP season in the final at Sassnitz and strengthen their position at the top of the championship standings.",
     author: "Benedict Donovan, Deputy Editor",
     publishedAt: "23rd August 2026 2:40pm",
     heroImage: {
-      src: "https://thefoil.com/media/BdlC5UIxTylK26eNkVoAfU388-gOxuqKz8CSsX-Y6Nk/resize:fill-down:690:388/gravity:fp:0.4787472036:0.6386820846/quality:60/dpr:1/2026/08/jl206387.jpg",
-      alt: "The Flying Roos racing at the Germany Sail Grand Prix",
+      src: "https://thefoil.com/media/A8o2ox77mXdW18xveKYkY5q6wcYt-IsnN0mVIyP2l68/resize:fill-down:1500:500/gravity:fp:0.4787472036:0.6386820846/quality:60/dpr:1/2026/08/jl206387.jpg",
+      alt: "Flying Roos hit high five with victory in Sassnitz",
     },
     body: [
       {
-        type: "heading",
-        text: "Squalls scramble the fleet",
-      },
-      {
         type: "paragraph",
-        text: "Patchy rain and large changes in pressure turned Sunday's fleet races into a test of keeping the F50s foiling. Germany and Canada made decisive gains while several leading crews were caught in low-speed patches.",
+        text: "Here's how it played out, as fortunes swung on the Baltic waters.",
       },
       {
         type: "heading",
-        text: "Four teams reach the final",
+        text: "Rain rolls in to change the game",
       },
       {
         type: "paragraph",
-        text: "Canada and Australia qualified from Group B, with New Zealand and Spain advancing from Group A. France missed out despite having set the weekend's outright speed record.",
+        text: "Sunday in Sassnitz was never going to be straightforward. Rain squalls rolled in off the Baltic all morning, dragging the breeze around and punching holes right across the racecourse. In the unpredictable conditions, just keeping the boats up on their foils would turn out to be half the battle.",
+      },
+      {
+        type: "paragraph",
+        text: "Saturday had left the Black Foils and France on top of Group A, the Flying Roos and Artemis leading Group B. Would they be able to hold on to make it into the four-boat final?",
       },
       {
         type: "heading",
-        text: "Australia escape early",
+        text: "Race 4b: Germany fly as the fleet flounders",
       },
       {
         type: "paragraph",
-        text: "NorthStar's early approach compressed the chasing boats and gave Tom Slingsby a clear route from the start. Australia stayed in flight and established a lead that survived even as the wind disappeared near the finish.",
+        text: "It was carnage for the opening race of the day: two boats over at the start, NorthStar dumped to the back while Tom Slingsby nailed the timing to lead round mark one ahead of Emirates GBR and Artemis. Artemis's race unravelled at gate two – a horrible rounding dropped the Swedes off their foils, then a penalty for failing to keep clear of the US turned second place into sixth in just a few seconds.",
       },
       {
         type: "paragraph",
-        text: "Canada drifted through for second ahead of Spain and New Zealand. The result moved the Flying Roos to 76 championship points, 14 clear of Los Gallos.",
+        text: "The race, though, belonged to Germany. Erik Heil stole the lead from the Aussies upwind and – with the racecourse now a patchwork of breeze and dead air – kept his boat flying while the rest splashed down.",
+      },
+      {
+        type: "paragraph",
+        text: "Behind the runaway Germans it was snakes and ladders, and nobody climbed better than the Canadians, first back on the foils to turn their start-line disaster into second, a full 1min 15sec behind Germany. Artemis recovered to third ahead of Emirates GBR, with the Roos fifth and the US last.",
+      },
+      {
+        type: "paragraph",
+        text: "Race 4b 1 Germany 2 Canada 3 Sweden 4 Great Britain 5 Australia 6 United States",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/uTUNKYLDawLFHlNBin5wGYgm1JsWUFwogJderSjvrEY/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/fd3-6862.jpg",
+        alt: "Felix Diemer/SailGP",
+        caption: "Felix Diemer/SailGP",
+      },
+      {
+        type: "heading",
+        text: "Race 4a: Black Foils book the final early",
+      },
+      {
+        type: "paragraph",
+        text: "Group A's opener was neck and neck off the line between France and the Black Foils, but the Kiwis' pace had them leading by the first mark, with Mubadala Brazil rounding third and promptly pinged for not giving room. France's afternoon started going wrong on leg two: manoeuvring away early on the second leg dropped Quentin Delapierre's crew to fifth.",
+      },
+      {
+        type: "paragraph",
+        text: "Nobody was catching the Black Foils out front, and behind them Los Gallos climbed from fifth to second, holding it all the way to the line. France recovered to third, after riding out a hairy moment exiting gate four and then defending a late attack from Rockwool Racing. A second race win put the Kiwis into the final with a race to spare; the real scrap, France v Spain for Group A's last spot, was still to come.",
+      },
+      {
+        type: "paragraph",
+        text: "Race 4a 1 New Zealand 2 Spain 3 France 4 Denmark 5 Switzerland 6 Brazil 7 Italy",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/OXW1hPCmjBWuvxtNna4ALAA_lQ2WhIyeLIosM_K9GlY/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/jn1-6955.jpg",
+        alt: "Jonathan Nackland/SailGP",
+        caption: "Jonathan Nackland/SailGP",
+      },
+      {
+        type: "heading",
+        text: "Race 5b: NorthStar hold their nerve",
+      },
+      {
+        type: "paragraph",
+        text: "With the top four in Group B covered by a single point, the last fleet race was effectively a knockout. Taylor Canfield's US crew nailed the start to lead round mark one ahead of Artemis and the Flying Roos, but got wide at gate two and splashed down.",
+      },
+      {
+        type: "paragraph",
+        text: "Artemis inherited the lead, but it didn't last. Just before gate four the Roos, NorthStar and Artemis converged, crossing with barely 50cm to spare at over 70km/h. But no penalty came, and Giles Scott's Canadians emerged in front. They never looked back: race win, and the final booked. Behind, Slingsby dragged the Roos through to second, dashing Swedish hopes of the final, and the US nipped past a deflated Artemis for third.",
+      },
+      {
+        type: "paragraph",
+        text: "Race 5b 1 Canada 2 Australia 3 United States 4 Sweden 5 Germany 6 Great Britain",
+      },
+      {
+        type: "paragraph",
+        text: "Standings in Group B 1 Canada 17 2 Australia 15 3 Sweden 14 4 Germany 12 5 Great Britain 9 6 United States 8",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/7R0X6ONF5xs_TQnuDLa6-Y0zYqEwPvm8r5EUc5OUuDw/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/rp2-0798.jpg",
+        alt: "Ricardo Pinto/SailGP",
+        caption: "Ricardo Pinto/SailGP",
+      },
+      {
+        type: "heading",
+        text: "Race 5a: Spain beat France at their own game",
+      },
+      {
+        type: "paragraph",
+        text: "Diego Botín pulled off what Los Gallos have been calling the 'French start', weaving through the middle of the pack to fire off the line clear ahead. The Spanish led at mark one at and simply sailed away.",
+      },
+      {
+        type: "paragraph",
+        text: "For Quentin Delapierre's crew it was looking dire by leg three: fifth, needing to make up two places to make the final. By gate four Los Gallos were 19 seconds clear of Rockwool Racing, and they controlled it to the finish for a decisive win – and with it, a place in the Sassnitz final alongside the Black Foils, the Flying Roos and NorthStar Canada.",
+      },
+      {
+        type: "paragraph",
+        text: "\"It's super hard to achieve, so we don't take it for granted,\" said Botín on the water, now chasing a third straight event win. France's consolation: officially the fastest crew in SailGP.",
+      },
+      {
+        type: "paragraph",
+        text: "Race 5a 1 Spain 2 Denmark 3 Italy 4 New Zealand 5 Switzerland 6 France 7 Brazil",
+      },
+      {
+        type: "paragraph",
+        text: "Standings in Group A 1 New Zealand 19 2 Spain 16 3 France 14 4 Switzerland 9 5 Denmark 8 6 Italy 7 7 Brazil 0",
+      },
+      {
+        type: "heading",
+        text: "Final: Won fast, finished slow",
+      },
+      {
+        type: "paragraph",
+        text: "NorthStar promptly handed Australia a gift at the start. Coming into the line too early, they bailed out to avoid a penalty and slowed up the Black Foils and Los Gallos behind. The Roos pounced and flew off into a lead they'd never lose.",
+      },
+      {
+        type: "paragraph",
+        text: "NorthStar then dropped off the foils before gate two, falling to third as the chasing trio swapped places in the gusts – Los Gallos, last off the start, sliced past the Black Foils at gate three for second. Out front Slingsby sailed his own race, and the Roos crossed comfortably – a first event win since New York.",
+      },
+      {
+        type: "paragraph",
+        text: "Then the wind died. All three of the chasing pack came off their foils at the penultimate mark for a tense, slow-motion finish. The Black Foils, penalised for squeezing Los Gallos at the boundary, had to drop astern, and Canada drifted slightly less slowly than the rest to take second from Spain, with the Kiwis fourth.",
+      },
+      {
+        type: "paragraph",
+        text: "Final 1 Australia 2 Canada 3 Spain 4 New Zealand",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/G3a8lD4gbQLaDDQ4v9XZSyv2Z1J9ThtjFeeQUU8EQvo/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/jl206300.jpg",
+        alt: "Jason Ludlow/SailGP",
+        caption: "Jason Ludlow/SailGP",
+      },
+      {
+        type: "heading",
+        text: "Five wins and counting",
+      },
+      {
+        type: "paragraph",
+        text: "That's five event wins this season for the Flying Roos, who leave Germany on 76 points – a full 14 clear of Los Gallos in second, whose back-to-back winning run is over. Artemis remain third on 53 despite missing the Sassnitz final, still waiting for a first event win since joining the league. And the reigning champions' slide goes on: Emirates GBR could only manage ninth here and now sit fourth overall, level on points with the US.",
+      },
+      {
+        type: "paragraph",
+        text: "It caps a weekend that swung from a new outright speed record to a final decided at walking pace, with Sunday's five races producing five different winners. Whatever Sassnitz threw at this fleet, it was Tom Slingsby's crew who handled it best, and they head into this final stage of the season looking formidable.",
+      },
+      {
+        type: "paragraph",
+        text: "Germany SailGP final order 1 Australia 10 2 Canada 9 3 Spain 8 4 New Zealand 7 5 Sweden 6 6 France 5 7 Germany 4 8 Switzerland 3 9 Great Britain 2 10 Denmark 1 11 USA 0 12 Italy 0 13 Brazil 0",
+      },
+      {
+        type: "paragraph",
+        text: "SailGP 2026 championship standings 1 Australia 76 2 Spain 62 3 Sweden 53 4 Great Britain 46 5 United States 46 6 France 41 7 Canada 40 8 Germany 32 9 Switzerland 28 10 Denmark 25 11 Italy 22 12 New Zealand 21 13 Brazil 8",
       },
     ],
     source: {
@@ -348,37 +1258,225 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
     kind: "news",
     title: "Flying Roos and Black Foils lead the way in Germany",
     standfirst:
-      "Australia and New Zealand topped their groups after a high-speed first day at Sassnitz, where France set a new league record.",
+      "The Bonds Flying Roos and Black Foils lead the way at the end of day one at the Germany Sail Grand Prix, on a bright and breezy day that featured a new record top speed being set for SailGP.",
     author: "Benedict Donovan, Deputy Editor",
     publishedAt: "22nd August 2026 2:37pm",
     heroImage: {
-      src: "https://thefoil.com/media/NNb4DtCTPtZShEt-6LdvgHQTi8SPkbNtcR99cIawY40/resize:fill-down:690:388/gravity:fp:0.758974359:0.8208106473/quality:60/dpr:1/2026/08/fd1-0713.jpg",
-      alt: "SailGP racing on the opening day in Germany",
+      src: "https://thefoil.com/media/tORW2FZKCYDW4Lo-k3bVFxSJFYsWHS6yMjsBEVqAiJI/resize:fill-down:1500:500/gravity:fp:0.758974359:0.8208106473/quality:60/dpr:1/2026/08/fd1-0713.jpg",
+      alt: "Flying Roos and Black Foils lead the way in Germany",
     },
     body: [
       {
-        type: "heading",
-        text: "Australia control Group B",
+        type: "paragraph",
+        text: "In Group B, Australia got off to a flier with a pair of wins in the first two races – but then finished sixth and last in the third. They lead Artemis Sweden by one point after Nathan Outteridge's crew proved super-consistent with a trio of third places.",
       },
       {
         type: "paragraph",
-        text: "The Flying Roos opened with two wins before finishing sixth in the final race of the day. Their combination of starting accuracy and stable handling left them one point ahead of a consistent Artemis Sweden.",
-      },
-      {
-        type: "heading",
-        text: "The Black Foils return to the front",
+        text: "But the overnight standings are tight. NorthStar Canada, Emirates Great Britain, Deutsche Bank Germany and even the United States will still be hoping for a stellar Sunday to make the top two in the group and qualify for the four-boat final.",
       },
       {
         type: "paragraph",
-        text: "New Zealand won the first Group A race and backed it up with second and fourth places. France and Spain shared the other wins, keeping qualification open for the second day.",
-      },
-      {
-        type: "heading",
-        text: "France reset the speed record",
+        text: "In Group A, running second on Saturday, New Zealand's Black Foils won the opener and followed up with a second and fourth to top the group standings. DS Automobiles France won the second race – and in the third flew to a top speed of 107.63km/h (58.1 knots) to set a stunning new record in the league.",
       },
       {
         type: "paragraph",
-        text: "DS Team France recorded 107.63km/h in the third Group A race. The mark surpassed the previous SailGP record and capped a day run with the smaller 18-metre wings in winds above 20 knots.",
+        text: "The French sit second in the standings ahead of Spain, who recovered from a poor opening two races to win the third in Group A.",
+      },
+      {
+        type: "heading",
+        text: "The sizzle in Sassnitz",
+      },
+      {
+        type: "paragraph",
+        text: "Sassnitz turned it on for day one of the Rockwool Germany Sail Grand Prix. With winds topping 24 knots, the fleet went out on the 18-metre wingsails with high-speed foils and rudders. Emirates GBR had already clocked 56.6 knots (104.8km/h) in pre-race practice, breaking the race record. The question was whether anyone would do it again within a race.",
+      },
+      {
+        type: "paragraph",
+        text: "Group A = Los Gallos, Explora Swiss, the Black Foils, DS Team France, ROCKWOOL Racing, Red Bull Italy, Mubadala Brazil",
+      },
+      {
+        type: "paragraph",
+        text: "Group B = Artemis, NorthStar Canada, the US, BONDS Flying Roos, Germany, Emirates GBR.",
+      },
+      {
+        type: "paragraph",
+        text: "Home team first, so Group B had the honours.",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/_wgDHPZ2WCHIgEe-25kw2ucY74ZoWCM4wdUpUam3_yM/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/fd1-0657.jpg",
+        alt: "Felix Diemer/SailGP",
+        caption: "Felix Diemer/SailGP",
+      },
+      {
+        type: "heading",
+        text: "Race 1b: Roos first, home team last",
+      },
+      {
+        type: "paragraph",
+        text: "The Flying Roos nailed the start, rounded mark 1 in first and then absolutely sent it down the second leg, hitting 94km/h at first mark with NorthStar Canada right behind them. Not a good start for the home team, though: Germany sat last after a rocky opening tangled up with the Brits at the bottom of the line.",
+      },
+      {
+        type: "paragraph",
+        text: "By the third leg the USA had taken second, but Giles Scott swooped in at gate 3 to put NorthStar ahead of the Americans. A splashdown after the next gate got loose and cost the Canadians metres, but they held second. Australia, meanwhile, were streaking away – 15 seconds clear of Canada and then 24 seconds ahead at the finish.",
+      },
+      {
+        type: "paragraph",
+        text: '"Sassnitz really turns it on for us," said Tom Slingsby on the water, before adding that speed records weren\'t on the agenda: "If it happens organically, we\'ll take it, but we\'re not looking for it."',
+      },
+      {
+        type: "paragraph",
+        text: "Nightmare finish for the US. Having sailed a tactically brilliant upwind leg, Taylor Canfield misjudged the final layline by a couple of seconds, slipped from second to fourth and let both Canada and Artemis get away. Dylan Fletcher's crew put the pressure on the Americans but took fifth, with the home team dead last.",
+      },
+      {
+        type: "paragraph",
+        text: "Race 1b 1 Australia 2 Canada 3 Sweden 4 United States 5 Great Britain 6 Germany",
+      },
+      {
+        type: "heading",
+        text: "Race 1a: Burling's back",
+      },
+      {
+        type: "paragraph",
+        text: "Switzerland and New Zealand nailed the start, rounding mark 1 side by side at close to 95km/h before the Black Foils surged ahead to lead. Spain, meanwhile, ended up near the back. Diego Botín pushed hard – perhaps too hard – and it looked like Los Gallos were about to steal third from France at gate 3, but the French had entered the zone first and Spain didn't have the room to dive in and were handed a go-behind penalty.",
+      },
+      {
+        type: "paragraph",
+        text: "With the Black Foils and Explora Swiss holding the front two spots to the finish, Red Bull Italy read the course well to jump to third ahead of France in fourth.",
+      },
+      {
+        type: "paragraph",
+        text: '"Actually quite a nice first race," said Pete Burling after. "We\'re back, starting to perform more at the pointy end of the fleet."',
+      },
+      {
+        type: "paragraph",
+        text: "That penalty cost Spain big time. Having briefly got up to third – illegally – they dropped to sixth and then behind Brazil to ultimately finish last. A rare mistake from the form team, a classic risky move that didn't pay off this time, and it happened to be against their America's Cup mates at La Roche-Posay Racing Team.",
+      },
+      {
+        type: "paragraph",
+        text: "Race 1a 1 New Zealand 2 Switzerland 3 Italy 4 France 5 Denmark 6 Brazil 7 Spain",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/DL80Mul-9jB7tprr9bw8ejUVFQti8jMRLOXLQcQt2FM/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/rp1-2588.jpg",
+        alt: "Ricardo Pinto/SailGP",
+        caption: "Ricardo Pinto/SailGP",
+      },
+      {
+        type: "heading",
+        text: "Race 2b: Rock solid Roos",
+      },
+      {
+        type: "paragraph",
+        text: "Tom Slingsby executed the perfect start, controlling the fleet to cross in first, but Nathan Outteridge kept on his case down the second leg, the Swedes right behind the Aussies. Slingsby pushed Artemis wide at gate 2 and then darted inside so there was no overlap – tactical racing at 60km/h.",
+      },
+      {
+        type: "paragraph",
+        text: "From there it was all about control. The Flying Roos looked rock solid stable while everyone else was getting thrown around in the gusts, a boat-handling masterclass the Roos made look effortless.",
+      },
+      {
+        type: "paragraph",
+        text: "Emirates GBR had a rocky start in fifth but did a great job getting back, climbing to second by gate 3 and picking the right-hand turns all the way up the course.",
+      },
+      {
+        type: "paragraph",
+        text: "Once again the Flying Roos took the race, well ahead of the chasing pack. The Brits needed a good result and that's what they got, crossing second six seconds ahead of Artemis in third. Another fourth for the US, another poor result for the Germans in fifth, and Canada last after digging the bow into the Baltic on a round-up.",
+      },
+      {
+        type: "paragraph",
+        text: "Race 2b 1 Australia 2 Great Britain 3 Sweden 4 United States 5 Germany 6 Canada",
+      },
+      {
+        type: "heading",
+        text: "Race 2a: France find their Sassnitz form",
+      },
+      {
+        type: "paragraph",
+        text: "France nailed it from the start. Quentin Delapierre was hammer down, hitting 94km/h before mark 1, and maintained control at the front from there. Much better from Spain in second after their last-place finish, but the Black Foils were chasing hard despite an early boundary penalty.",
+      },
+      {
+        type: "paragraph",
+        text: "Massive gusts were piling down the course, and all teams were struggling to stay in control. Gate 3 was absolute carnage: Spain made a mess of the top mark, broke the boundary and dropped off the foils, while the Swiss had their own wobble, allowing Denmark to go from fifth to third.",
+      },
+      {
+        type: "paragraph",
+        text: "Huge win for France. That was their first fleet race win since Perth at the start of the season. Also winners in Sassnitz last year, the big breeze seems to suit them. The Black Foils followed up their opening win with second, Rockwool Racing recovered well for third, form team Los Gallos had dropped to fourth by the finish, and Switzerland went from second to fifth.",
+      },
+      {
+        type: "paragraph",
+        text: "Race 2a 1 France 2 New Zealand 3 Denmark 4 Spain 5 Switzerland 6 Italy 7 Brazil",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/ZnQKDVB_FEwzmzURui11RJKmrVFOuLW6S0oGR69cFzA/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/br6-1005.jpg",
+        alt: "Benjamin Rosewall/SailGP",
+        caption: "Benjamin Rosewall/SailGP",
+      },
+      {
+        type: "heading",
+        text: "Race 3b: Heil saves the day",
+      },
+      {
+        type: "paragraph",
+        text: "Germany hadn't been doing well today, but they led the start and rounded mark 1 in first in front of the home crowd, 10km/h quicker than anyone around them. Behind them NorthStar and the US were pushing hard. Australia hit 100kmh at mark 1, the first to do so in racing, though in fourth. Behind them two more big teams, Emirates GBR and Artemis, were right at the back.",
+      },
+      {
+        type: "paragraph",
+        text: 'The Germans were given a penalty for sailing out of bounds, handing Canada the lead, but it didn\'t last: a big windshift gave Erik Heil a passing lane back past NorthStar and the home team held on to win by a wide margin. "It was a bad beginning to the day and we needed that to bring us back in the game," said Heil immediately after. "It was actually the only start we executed so I think I have to dive into starts tonight, and make some more starts possible tomorrow."',
+      },
+      {
+        type: "paragraph",
+        text: "Behind Germany it was much closer. NorthStar picked up their second podium of the day, while the US relinquished third in a crazy finish that saw Artemis and GBR slingshot around the Americans for third and fourth. And after back-to-back race wins, the Flying Roos finished dead last.",
+      },
+      {
+        type: "paragraph",
+        text: "Race 3b 1 Germany 2 Canada 3 Sweden 4 Great Britain 5 United States 6 Australia",
+      },
+      {
+        type: "heading",
+        text: "Race 3a: France set the pace, Spain take the win",
+      },
+      {
+        type: "paragraph",
+        text: "A squall came in for the final race of the day, and with it the big numbers. Denmark and Los Gallos rocketed off the line, but mark 1 was carnage. Rockwool Racing briefly set a new record at 106km/h before getting too high on the foils and losing control into a nosedive, then France went round at 107.63km/h – a whopping 58.1 knots and a new SailGP speed record.",
+      },
+      {
+        type: "paragraph",
+        text: "France used that pace to lead, but Spain found the dark water on the left of the course and stole it from them by the midpoint. Los Gallos needed a result after a seventh and a fourth, and they held on to the finish, touching 100km/h on the final gate to win.",
+      },
+      {
+        type: "paragraph",
+        text: "The Black Foils pushed France but Delapierre's crew held on to second, with Burling's squad third, and the Swiss snatched fourth from Italy right at the line.",
+      },
+      {
+        type: "paragraph",
+        text: "Race 3a 1 Spain 2 France 3 New Zealand 4 Switzerland 5 Italy 6 Denmark 7 Brazil",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/XcWeBSUmOOtDvYM9-VzB4v7e7_MIP3fgN5uaEGNisgY/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/rp2-7577.jpg",
+        alt: "Ricardo Pinto/SailGP",
+        caption: "Ricardo Pinto/SailGP",
+      },
+      {
+        type: "heading",
+        text: "Five winners after six races",
+      },
+      {
+        type: "paragraph",
+        text: "So after six races and five different winners, the Black Foils and France top Group A, the Kiwis leading the overall leaderboard on 12 points. In Group B it's the Flying Roos and Artemis, with just one point between them after that sixth for Australia. Los Gallos looked a bit shaken after a couple of poor results, but turned it round at the end with a race win and sit just outside the top two.",
+      },
+      {
+        type: "paragraph",
+        text: "Teams were absolutely sending it out there today, with France's 107.63km/h the new record to beat. Join us tomorrow for two more fleet races per group and the four-boat final to see who takes the title in Sassnitz.",
+      },
+      {
+        type: "paragraph",
+        text: "Group A standings at the end of Day 1 1 New Zealand 12 2 France 11 3 Spain 7 4 Switzerland 7 5 Italy 4 6 Denmark 4 7 Brazil 0",
+      },
+      {
+        type: "paragraph",
+        text: "Group B standings at the end of Day 1 1 Australia 10 2 Sweden 9 3 Canada 8 4 Great Britain 7 5 Germany 6 6 United States 5",
       },
     ],
     source: {
@@ -391,33 +1489,55 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
     kind: "news",
     title: "Black Foils dominate practice day in Sassnitz",
     standfirst:
-      "New Zealand set the practice benchmark in marginal foiling conditions before the Germany Sail Grand Prix.",
+      "The Black Foils from New Zealand set the benchmark on the waters off Sassnitz, after a three-race practice session on Friday afternoon in marginal foiling conditions.",
     author: "Andy Rice, Senior Contributor",
     publishedAt: "21st August 2026 6:30pm",
     heroImage: {
-      src: "https://thefoil.com/media/sfEU1EC1ADnEWMSxAFjCV90hscMHSO0NrwQVvnxZrPY/resize:fill-down:690:388/gravity:fp:0.6787096774:0.5812742086/quality:60/dpr:1/2026/08/260821-sailgp-sassnitz-the-foil-ls1-3878.jpg",
-      alt: "Black Foils practising off Sassnitz",
+      src: "https://thefoil.com/media/MUC_x0oTfmV3TKhn1vb3B7bVVF-hMs_RP_kXvXVfsKA/resize:fill-down:1500:500/gravity:fp:0.6787096774:0.5812742086/quality:60/dpr:1/2026/08/260821-sailgp-sassnitz-the-foil-ls1-3878.jpg",
+      alt: "Black Foils dominate practice day in Sassnitz",
     },
     body: [
       {
-        type: "heading",
-        text: "New Zealand set the early standard",
+        type: "paragraph",
+        text: "Pete Burling's crew dominated Group A with a 1-1-2 record during official practice racing for the SailGP event in Germany. Spain finished second in the seven-boat fleet, recording 2-4-1.",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/zlnwj3dutuBN_SK7hUX_U3DvrzL9knDertxi5CVmJJ0/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/260821-sailgp-sassnitz-the-foil-ls1-3878.jpg",
+        alt: "Lewis Smith / The Foil",
+        caption: "Lewis Smith / The Foil",
       },
       {
         type: "paragraph",
-        text: "Pete Burling's crew recorded 1-1-2 in the three Group A practice races. Their strongest recovery came after rounding the first mark in fifth and maintaining flight better than the boats ahead.",
-      },
-      {
-        type: "heading",
-        text: "Group B ends level",
+        text: "New Zealand's standout drive came in Race 2. After a sluggish start left them off the foils alongside several competitors, the Kiwis rounded Mark 1 in fifth place before carving through the fleet to secure victory, maintaining flight better than anyone in the patchy air.",
       },
       {
         type: "paragraph",
-        text: "Australia and Artemis Sweden both finished practice on seven points. Nathan Outteridge's decisive start in the second race showed how quickly a short-lived opening could alter the order.",
+        text: "Group B finished in a dead heat. Australia scored 1-5-1 to tally seven points, a total matched by Nathan Outteridge's Swedish Artemis entry with 4-1-2. Outteridge took Race 2 after spotting a late opening near the windward end of the starting line, bearing away into a gap to lead at Mark 1 before extending his advantage. The bold manoeuvre proved that Outteridge is ready to pounce on short-lived openings - a style more commonly associated with the French or Spanish teams.",
       },
       {
         type: "paragraph",
-        text: "The practice session used the 24-metre rig in marginal breeze, while stronger weekend conditions were expected to bring the smaller 18-metre wing into play.",
+        text: "The windward end offered strong position but carried heavy risk; both Italy and Switzerland were shut out there in separate starts.",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/2qWVbHMLW-EYl5fDHvrWjr6_ERrGlZpVkdb4mR6hHj0/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/fd1-3593.jpg",
+        alt: "Felix Diemer / SailGP",
+        caption: "Felix Diemer / SailGP",
+      },
+      {
+        type: "paragraph",
+        text: "It's easy to read too much into practice results. On Friday teams contended with marginal foiling conditions using the medium-sized 24-metre rig. The weekend forecast looks forward to some full-on conditions, prompting a likely shift to the smaller 18-metre wing. While offshore gusts over the stadium and Adrenaline Lounge will keep the breeze patchy near the start line, staying on the foils in the open course should pose little trouble.",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/YbXIOqkNv13yBMfxQZUc5cIEi5-q3Rs8Uovlnx4B6Ns/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/260821-sailgp-sassnitz-the-foil-ls1-4014.jpg",
+        alt: "Lewis Smith / The Foil",
+        caption: "Lewis Smith / The Foil",
+      },
+      {
+        type: "paragraph",
+        text: "Diego Botín's Spanish team enters as my event favourite and a victory here would mark three in a row. The expansive Sassnitz racecourse offers a rare opportunity room for teams to stretch their legs and use some raw boat speed, which could work to the advantage of, say, Australia and possibly Great Britain into play if the British can recover from disappointing performances in Halifax and Portsmouth. With the season finale drawing ever closer, there are some other teams who know that they will need to get on the podium this weekend if they're to sustain any hope of reaching the big showdown in Abu Dhabi this November. They'll need to show more than they did in today's practice session, and topple some of the usual suspects who have set the early pace in Sassnitz.",
       },
     ],
     source: {
@@ -430,37 +1550,164 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
     kind: "news",
     title: "Plans uncovered to reinvent SailGP's race weekend – news even to the sailors",
     standfirst:
-      "A short-lived fan survey revealed possible group draws, tiered racing and scoring changes for a future SailGP format.",
+      "SailGP are seemingly wrestling with their current format – is it the best version of itself it can be? A survey that went out last night reveals some of the concepts the league is weighing up. It was only live for a couple of hours, but The Foil caught the lot.",
     author: "Benedict Donovan, Deputy Editor",
     publishedAt: "21st August 2026 11:41am",
     heroImage: {
-      src: "https://thefoil.com/media/4VuyF-wFzDEjovsQXItmgj349qoEU1bP95n2xJbldIM/resize:fill-down:690:388/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/08/jl108682-1.jpg",
-      alt: "SailGP fleet racing under a proposed new weekend format",
+      src: "https://thefoil.com/media/-4ZPD175LZGrzt5b0a_99PwDZ5keWWbtLdZk4vpeaNs/resize:fill-down:1500:500/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/08/jl108682-1.jpg",
+      alt: "Plans uncovered to reinvent SailGP's race weekend – news even to the sailors",
     },
     body: [
       {
-        type: "heading",
-        text: "Three ways to form the groups",
+        type: "paragraph",
+        text: "Curiously, the drivers themselves don't appear to have been in the loop: when we put the graphic below to them at the Sassnitz press conference this morning, it was news to them.",
       },
       {
         type: "paragraph",
-        text: "The survey compared using previous event standings, a tiered random draw and a live drivers' draft. Each option attempts to balance competitive groups without making the weekend predictable.",
+        text: "Early days, clearly, but the survey revealed plenty about where the league might be heading. We've broken it all down below…",
       },
       {
         type: "heading",
-        text: "Tiered racing and a final qualifier",
+        text: "Sorting the grid",
       },
       {
         type: "paragraph",
-        text: "One proposal would move the strongest boats into a Sunday Tier 1, place the remaining teams in Tier 2 and then combine them in a last-chance race for the final Grand Final position.",
+        text: "This is the real thrust of the survey: with the mid-season shift to split fleets, how do you keep the racing both fair and entertaining? SailGP are toying with three ideas.",
+      },
+      {
+        type: "paragraph",
+        text: "1- Previous Event Standings",
+      },
+      {
+        type: "paragraph",
+        text: "Seeding based purely on the last event's final results, which is what's in place now. The snag with the current setup is that many of the top teams never actually go head-to-head across a weekend until they reach the final. The next idea looks like an attempt to fix that.",
+      },
+      {
+        type: "paragraph",
+        text: "2- Tiered Random Draw (pictured)",
+      },
+      {
+        type: "paragraph",
+        text: "Teams are split into three tiers based on the previous event (top 4, middle 6, bottom 4), then groups are drawn at random from within those tiers. Variety, but with the groups kept broadly balanced. On The Foil Podcast a few weeks back we kicked around a similar tiered system – introducing Gold and Silver fleets – and it sparked a bit of disagreement within the team about fairness.",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/2cO0zBNeyy8Of0IXQv2l0rFwp6UZFD-cnTRiaElTCaM/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/weekend-racing-format-proposal.jpeg",
+        alt: "Weekend Racing Format Proposal",
+      },
+      {
+        type: "paragraph",
+        text: "3- Drivers Draft",
+      },
+      {
+        type: "paragraph",
+        text: "This is the one we at The Foil are most excited about. The top two drivers from the last event become captains and pick their own group opponents in a live, broadcast draw – like choosing teams in the playground. Except the best won't necessarily be picked first: to make life easier, a captain might deliberately load up on weaker rivals. It'd add an intriguing new layer to a race weekend, and hands teams a real incentive to finish in that top two.",
+      },
+      {
+        type: "paragraph",
+        text: "Underneath it all, this is a question about what fans really want: randomised matchups, even if they're lopsided, or groups engineered for balance. Worth noting too that these ideas assume a fleet of 14, so they're most likely aimed at next season rather than the closing events of season 6 and its 13-boat fleet.",
       },
       {
         type: "heading",
-        text: "Scoring and presentation could change too",
+        text: "Two days, two tiers, one last chance",
       },
       {
         type: "paragraph",
-        text: "The ideas included larger rewards for race winners and clearer graphics, explainers and live standings for fans. The concepts appeared to target a possible 14-team 2027 season rather than the closing stages of Season 6.",
+        text: 'Here\'s how SailGP explains the proposed "Tiered Group Racing" in its own words:',
+      },
+      {
+        type: "paragraph",
+        text: "Day 1 Qualification (6 Races, 3 per group)",
+      },
+      {
+        type: "paragraph",
+        text: "Teams compete in two separate groups. Overall performance in these groups directly determines a team's tier placement for Sunday.",
+      },
+      {
+        type: "paragraph",
+        text: "Day 2 Finals (6 Races inc. grand final)",
+      },
+      {
+        type: "paragraph",
+        text: "The top 4 teams from each Day 1 group combine to form an elite Tier 1. The bottom 3 teams from each group combine to form Tier 2.",
+      },
+      {
+        type: "paragraph",
+        text: "The Path to the Grand Final:",
+      },
+      {
+        type: "paragraph",
+        text: "Tier 1 completes 2 races, with the top 3 overall boats qualifying for the Grand Final.",
+      },
+      {
+        type: "paragraph",
+        text: "Tier 2 completes 2 races.",
+      },
+      {
+        type: "paragraph",
+        text: "The top 3 boats from Tier 2 merge with the remaining 5 Tier 1 boats in a last chance qualifier race.",
+      },
+      {
+        type: "paragraph",
+        text: "The winner of this race secures the fourth and final Grand Final position.",
+      },
+      {
+        type: "paragraph",
+        text: "- - - - - - - - - - -",
+      },
+      {
+        type: "paragraph",
+        text: "The survey wants to gauge what fans find exciting and what they find baffling. It asks whether they're drawn to the scramble to make Tier 1, the raised stakes down in Tier 2, the sudden-death last chance qualifier, or the drama of a four-boat grand final. It also asks whether the group splits, the tier placements or the qualifier itself might trip fans up.",
+      },
+      {
+        type: "paragraph",
+        text: "All the different tiers and stages may look confusing on paper, but my colleague at The Foil Andy Rice assures us that 'once people have seen it once, they'll get it.' Lewis Smith, meanwhile, has spotted an intriguing wrinkle – under this format the top three skip the third race entirely. Is that a help or a hindrance? On one hand it's a breather and a final spot already banked; on the other, the top three could turn up cold and out of rhythm just as the grand final fires up.",
+      },
+      {
+        type: "paragraph",
+        text: "And all this talk of a four-boat final has us increasingly convinced that's where the championship grand final is heading, with the fleet fighting for four – not three – spots in the winner-takes-all title race. Whether that's on the cards for season six, with only a handful of events left, not even the teams seem to know.",
+      },
+      {
+        type: "heading",
+        text: "Reward the winners, widen the gaps?",
+      },
+      {
+        type: "paragraph",
+        text: "Another revelation: SailGP are also weighing up a change to the scoring, handing more points to the higher-placed teams across both the season championship and individual races. In the survey's own words, it's a choice between keeping the points tight versus heavily rewarding race wins.",
+      },
+      {
+        type: "paragraph",
+        text: "That flies in the face of SailGP's long-held desire to keep the league level – most obviously the open data shared between teams so no one runs away with an advantage. Weight the points towards the front and you risk a widening gulf between the haves and the have-nots.",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/qSKmN6CilQRPPKrubpGXEON1VhpN13qwguJUIUVJxRw/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/go1-9917.jpg",
+        alt: "Gary Oakley / SailGP",
+        caption: "Gary Oakley / SailGP",
+      },
+      {
+        type: "heading",
+        text: "Bringing fans up to speed",
+      },
+      {
+        type: "paragraph",
+        text: 'Finally, SailGP are clearly concerned with making the rules, scoring and standings clearer to their audience. The survey floats a whole menu of fixes: sharper broadcast graphics and live leaderboards, commentators taking more time to walk viewers through the rules mid-race, bite-sized social explainers, and a pre-race segment that breaks down the format before racing begins. For fans in the stadium there\'s talk of big-screen live standings, 60-second explainer videos in the fan zone, a "live event guide" in the app, and even QR codes dotted around the venue linking to a "how it works" sheet.',
+      },
+      {
+        type: "paragraph",
+        text: "All useful stuff for newcomers, no doubt – though seasoned fans might find this hand-holding a bit much. It's a tricky balance to strike when you're trying to pull in a new crowd.",
+      },
+      {
+        type: "paragraph",
+        text: "The survey signs off with a question that we'd also like to put to you: 'What would make the 2027 format more thrilling and enjoyable to watch?'",
+      },
+      {
+        type: "paragraph",
+        text: 'There\'s plenty in here that has us at The Foil excited. Nevertheless, in a league that never sits still, every tweak brings knock-on effects nobody sees coming, for the teams as well as the fans (exhibit A: the so-called "Group of Death"). Does anything in here jump out at you? Let us know in the comments.',
+      },
+      {
+        type: "paragraph",
+        text: "We'll do some digging over the weekend in Sassnitz to find out what the athletes make of all this – once they've had a chance to read this and get up to speed, of course! – so stay tuned across our channels.",
       },
     ],
     source: {
@@ -473,41 +1720,87 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
     kind: "news",
     title: "Andy Rice: A good Worlds for GBR, and a good Worlds for the 470 Class",
     standfirst:
-      "A record mixed-fleet entry, a British world title and a successful medal series strengthen the 470's Olympic case.",
+      "The future of the 470 as an Olympic class is under scrutiny, as it is for the Nacra 17 catamaran and the men's and women's kiteboarding classes. All of them have their obvious weaknesses, the 470 being that it is now the oldest of the Olympic events. When it first featured at the Montreal Olympics in 1976, the 470 was considered to be a fast boat, cutting edge for its time. Now it's very run-of-the-mill, but maybe that's not such a problem.",
     author: "Andy Rice, Senior Contributor",
     publishedAt: "19th August 2026 7:17pm",
     heroImage: {
-      src: "https://thefoil.com/media/CxqVH27Gkk4cj5ZFmExBBvQ76uSmVy-6172HPyItfEE/resize:fill-down:690:388/gravity:fp:0.5010989011:0.3081960898/quality:60/dpr:1/2026/08/55457634027-d7ba2b7d10-o.jpg",
-      alt: "Mixed 470 racing at the 2026 World Championship",
+      src: "https://thefoil.com/media/PoOZr8Sce7tlhLwaN_643Mi71ygmzFNwDszcLfWseuA/resize:fill-down:1500:500/gravity:fp:0.5010989011:0.3081960898/quality:60/dpr:1/2026/08/55457634027-d7ba2b7d10-o.jpg",
+      alt: "Andy Rice: A good Worlds for GBR, and a good Worlds for the 470 Class",
     },
     body: [
       {
-        type: "heading",
-        text: "An established class under review",
+        type: "paragraph",
+        text: "While fast foilers might appear to be more exciting at first glance, the slowness of the 470 in light to medium airs is partly what makes it a fascinating game of chess. The 470 is probably the most representative of the broad spectrum of sailing that takes place around the world beyond the Olympic bubble. When the waves and the wind really kick up, the 470 laps it all up. It just gets faster and faster and, in the right hands, can handle pretty much any conditions up to 35 knots in big, nasty seas.",
       },
       {
         type: "paragraph",
-        text: "The 470 is the oldest class on the current Olympic sailing programme and faces scrutiny before Brisbane 2032. Rice argues that its tactical racing and ability to handle a wide range of conditions remain valuable.",
-      },
-      {
-        type: "heading",
-        text: "A strong turnout in Enoshima",
+        text: "With the 470 under the spotlight, possibly on the chopping block for Brisbane 2032 and decision time at the World Sailing annual conference this November, the class needed a good world championship. The risk of it taking place in Enoshima, the venue for the Tokyo 2020 Olympic Regatta, would be that numbers might be diminished, being so far from the epicentre of Olympic competition in Europe.",
       },
       {
         type: "paragraph",
-        text: "Seventy-four teams entered the Worlds, the largest fleet since the mixed format began. Light conditions limited the venue's range, but the size and depth of the entry supported the class's international case.",
-      },
-      {
-        type: "heading",
-        text: "Great Britain hold their nerve",
+        text: "However, the entry of 74 teams was the highest since the start of the Mixed 470 era five years ago. Unfortunately the wind did not really play fair, much as it failed to show up for the Games five years earlier. This is a pity, because Enoshima can deliver amazing big-wind, big-wave conditions. But mostly this was a light air affair. I was brought in as a remote commentator for the final three days of competition, working as part of an 'as live' production.",
       },
       {
         type: "paragraph",
-        text: "Martin Wrigley and Bettine Harris recovered from a difficult first medal race to win the next and secure their first world title. Germany took silver and Spain's defending champions finished with bronze.",
+        text: "Ever since Pedro Martinez from the Sailing Energy crew in Spain pioneered the 'as live' concept earlier this season with the dash-for-cash fun races that he filmed with the ILCA and Nacra 17 fleets (I remote commentated on these races too), the idea has taken firmer hold.",
       },
       {
         type: "paragraph",
-        text: "The event also demonstrated a more focused media approach and offered useful evidence as the class prepares to defend its place on the Olympic programme.",
+        text: "Of course, there's nothing to touch the raw excitement of a real live production, but there's not much to touch the high costs and huge logistical challenges of making a live production work reliably. In an age where most sailors below the age of 50 are consuming their media through Instagram, YouTube and the dreaded TikTok, arguably the most important media output is through these channels. Most people are consuming the highlights at a time that's convenient to them. Live doesn't matter as much as it did, although for the major events there is the irreplaceable buzz of enjoying and enduring the nailbiting highs and lows of the shared experience.",
+      },
+      {
+        type: "paragraph",
+        text: "For the final two days my co-commentator was Igor Marenic who, with helmsman Šime Fantela, won Croatia's first ever Olympic sailing gold at Rio 2016 when they beat the Aussie favourites Matt Belcher and Will Ryan into silver. Igor also recently became the president of 470 International, and has been wise enough to hire Polish media expert Karolina Soltaniuk to promote the class through all the popular channels. Media output has never been high on the 470's agenda, and that lack of self-promotion is partly what sees the class up for Olympic review. The 470 has a great story to tell, and it's good to see the class at last putting a higher priority on media.",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/TgIWqXBgJKSF01iG2CH7MwaTHeinwVg7xzx7RFglPN0/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/55468990246-3947136768-o.jpg",
+        alt: "470 Olympic Sailing / Junichi Hirai",
+        caption: "470 Olympic Sailing / Junichi Hirai",
+      },
+      {
+        type: "paragraph",
+        text: "After commentating on the 49er, 49erFX and Nacra 17 World Championships in France a few months ago, this would be my second go at trying to make sense of the new medal race format that was voted in at the end of last year. Trying to work out who had won the FX Worlds after multiple boats crossed the line in short order was excruciating. It took minutes before we could semi-confidently call the actual winners, the Norwegian team of Pia Dahl Andersen and Nora Edland.",
+      },
+      {
+        type: "paragraph",
+        text: "Even though I was commentating on a recording sent to me from Japan via WeTransfer, I still didn't want to see what happened before recording my commentary. Trying to keep it spontaneous. After watching the yellow bib wearers - Martin Wrigley and Bettine Harris - suffer an awful first medal race, I wondered if fate was going to work against them. But the British team held their nerve, winning the second race and taking their first world title in fine style.",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/47Y-TTFY1MKRr13OYG5rkRvKfSupJbUdwFlX_5AjKHc/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/55469386105-4e2288c55a-o.jpg",
+        alt: "470 Olympic Sailing / Junichi Hirai",
+        caption: "470 Olympic Sailing / Junichi Hirai",
+      },
+      {
+        type: "paragraph",
+        text: "Seeing Theresa Löffler and Christopher Hoerr come back from an awful start in the final race - stopped dead on the line as the gun fired - and then bouncing back to rise from fourth to second overall, that was a vindication of the new medal series format. I still haven't seen enough either way to condone or condemn the new format, but the final day of the 470 Worlds was a mark in its favour.",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/dGnOTf_tI1c-_NUSindSx5t49E4CH6TXDdDx1ohsW5E/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/55465259134-f28b5387e5-o.jpg",
+        alt: "470 Olympic Sailing / Junichi Hirai",
+        caption: "470 Olympic Sailing / Junichi Hirai",
+      },
+      {
+        type: "paragraph",
+        text: "While the Germans won a surprise silver, the team to lose out were local heroes Tetsuya Isozaki and Yuri Seki who missed out on the podium. Bronze went to the outgoing World Champions of 2025, Spain's Jordi Xammar and Marta Cardona. Bronze is the same colour of medal that Xammar won with Nico Rodriguez in the men's 470 at the Tokyo 2020 Games five years earlier.",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/QSH2mLu_2CBvSeiKM64MyYPV9XhV8owBrpDULdPnOQA/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/55460877643-46e9572325-o.jpg",
+        alt: "470 Olympic Sailing / Junichi Hirai",
+        caption: "470 Olympic Sailing / Junichi Hirai",
+      },
+      {
+        type: "paragraph",
+        text: "This was a good Worlds not just for the medallists but for the Japanese hosts, and the 470 class generally. The success of this event will provide some useful ammunition in the class's bid to retain its 50-year Olympic status for a while longer.",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/Rj8N43bQRED37of3YbOijXAdX9fyNQ2HsNU4zwN5NKg/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/08/55459009265-82e1ca07dc-o.jpg",
+        alt: "470 Olympic Sailing / Junichi Hirai",
+        caption: "470 Olympic Sailing / Junichi Hirai",
       },
     ],
     source: {
@@ -520,35 +1813,27 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
     kind: "event",
     title: "The Ocean Race Atlantic",
     standfirst:
-      "Six mixed-gender IMOCA crews race 3,300 nautical miles from New York to Lorient in a direct transatlantic sprint.",
-    eventDate: "1 September 2026",
-    location: "New York to Lorient",
+      "The Ocean Race Atlantic starts 1 September, sending six fully-crewed IMOCA teams from New York to Lorient, France, on a transatlantic sprint of roughly 3,600 nautical miles. It's the first point-to-point race in the event's 50-year history – no stopovers, just a straight dash across the Atlantic, with every boat carrying a mandatory 50-50 crew split plus an On Board Reporter (OBR).",
     heroImage: {
-      src: "https://thefoil.com/media/0IFpwb4HJabWEJukldoszeTslP9-KwJiWsr1dItg4qM/resize:fill-down:460:240/gravity:fp:0.4787792084:0.701049749/quality:60/dpr:1/2026/08/tora1.webp",
-      alt: "IMOCA racing in The Ocean Race Atlantic",
+      src: "https://thefoil.com/media/jLDnOtI9zVLwE88umhPoSchUzO_fxgHGpd1R9cLVMus/resize:fill-down:1500:500/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/08/tora1.webp",
+      alt: "The Ocean Race Atlantic",
     },
     body: [
       {
-        type: "heading",
-        text: "A direct North Atlantic test",
+        type: "paragraph",
+        text: "The race sits deliberately in the calendar. It follows last year's Ocean Race Europe out of Kiel and doubles as a shakedown for the next round-the-world race, starting from Alicante in January 2027 – a live test of pace, crew rotation, and communication before the bigger campaign begins.",
       },
       {
         type: "paragraph",
-        text: "The fleet leaves New York for a 3,300-nautical-mile passage to Lorient. Fast routing through the Gulf Stream could put the leading boats in France in little more than a week.",
-      },
-      {
-        type: "heading",
-        text: "New boats enter the race",
+        text: "Confirmed entries include Hermann's Team Malizia, Kojiro Shiraishi' DMG Mori Sailing Team, Francesca Clapcich Powered by 11th Hour Racing, Paul Meilhat's United by the Ocean, Oliver Heer Ocean Racing, and Conrad Colman's MSIG Europe, with an onboard ocean science programme running throughout alongside Impact Partner 11th Hour Racing.",
       },
       {
         type: "paragraph",
-        text: "DMG MORI Global One and Team Malizia's latest IMOCA make their first competitive appearances. Their contrasting hull concepts add a design comparison to a fleet that also includes the reigning European champions.",
-      },
-      {
-        type: "paragraph",
-        text: "Every entry sails with two women, two men and an onboard reporter, combining sporting competition with continuous coverage from the Atlantic.",
+        text: "Several of the skippers arrive with recent transatlantic form. Paul Meilhat and Boris Herrmann both raced this stretch of ocean before, and Herrmann's crew already holds the 24-hour distance record from the last round-the-world race.",
       },
     ],
+    eventDate: "1 Sep 2026",
+    location: "New York - Lorient",
     source: {
       name: "The Foil",
       url: "https://thefoil.com/events/the-ocean-race-atlantic/",
@@ -559,41 +1844,87 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
     kind: "interview",
     title: "Rising Stars: Nathan Berger, the 17-year-old wingfoiler beating his heroes",
     standfirst:
-      "The Tarifa-based teenager reached a World Tour final, launched his own board and is already challenging athletes he grew up watching.",
+      "This is the first in our Rising Stars series, on the young athletes in sailing and foiling who are making the rest of the field sit up and take notice.",
     author: "Benedict Donovan, Deputy Editor",
     publishedAt: "2nd May 2026 10:11am",
     heroImage: {
-      src: "https://thefoil.com/media/6jqFsZkVz92e9pViFIC9cvcOgfOK1JayU4J0n2Ya0i8/resize:fill-down:690:388/gravity:fp:0.5757575758:0.4289940828/quality:60/dpr:1/2026/05/nathan-berger8.jpg",
-      alt: "Wingfoiler Nathan Berger competing on the GWA World Tour",
+      src: "https://thefoil.com/media/USlycg-OgXTZHUVxCTTrHbiI6X8V9JpZmhUzp4LF1OE/resize:fill-down:1500:500/gravity:fp:0.5757575758:0.4289940828/quality:60/dpr:1/2026/05/nathan-berger8.jpg",
+      alt: "Rising Stars: Nathan Berger, the 17-year-old wingfoiler beating his heroes",
     },
     body: [
       {
-        type: "heading",
-        text: "A breakthrough at 17",
+        type: "paragraph",
+        text: "Last week in Leucate, at the season-opening stop of the GWA Wing Foil World Tour, Nathan Berger knocked out several of the sport's top names – including the reigning world champion – on his way to a debut final. Currently ranked 15th in the world, he finished fourth. When we caught up a few days later, Nathan was celebrating his 17th birthday. He's certainly not wasting any time.",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/dc_X7k8_Oxq8K8HcCBS1V9FGYUNGrlDg0mQf9U7nGOI/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/05/nathan-berger-gwa-1.jpg",
+        alt: "Lukas K Stiller",
+        caption: "Lukas K Stiller",
       },
       {
         type: "paragraph",
-        text: "Nathan Berger eliminated several leading riders, including the reigning world champion, on his way to the final at the GWA Wing Foil World Tour opener in Leucate. He finished fourth days before his seventeenth birthday.",
+        text: "Wingfoil freestyle sits at the noisier, more acrobatic end of the foiling world. It's not exactly like racing, but the equipment, the physical demands and the mental game of competing at the top of the sport will all be familiar to a sailing audience. And Nathan, who lives and trains in Tarifa at the southern tip of Spain where the Atlantic meets the Mediterranean, is a case study in what it takes to build a career on the water from scratch.",
       },
       {
-        type: "heading",
-        text: "Learning in Tarifa",
-      },
-      {
-        type: "paragraph",
-        text: "Berger first tried wingfoiling with his father's equipment at 12 and learned through repeated crashes on the same afternoon. Training in Tarifa has since exposed him to a wide range of wind and water conditions.",
-      },
-      {
-        type: "heading",
-        text: "Designing equipment around freestyle",
+        type: "image",
+        src: "https://thefoil.com/media/GCu-8EOhWfjo0ILRoPT23C8rBx4V1JRyMPd_3spdVRs/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/05/nathan-berger2.jpg",
+        alt: "Celtia Rebolledo Heil",
+        caption: "Celtia Rebolledo Heil",
       },
       {
         type: "paragraph",
-        text: "A year of prototypes with KT Foiling produced a shorter, wider board designed around landing freestyle tricks cleanly. Berger balances that equipment work and competition with school, gym training and a strong focus on avoiding injury.",
+        text: "In Nathan's case, that career began almost by accident. His dad had taken up wingfoiling a few years earlier, and one afternoon he came in from the water exhausted, left his gear on the sand and walked away. His 12-year-old son was watching. \"I saw people winging around me and I thought, 'I'm going to try,'\" Nathan tells The Foil, \"I just took it and flew away. I learned that day on my own.\" Two hours of crashing later, he was foiling out and back. He couldn't gybe, couldn't really stop, so he kept going, clearly a natural. His dad watched from the shore, apparently speechless. They've been on the water together almost every day since.",
       },
       {
         type: "paragraph",
-        text: "He left the opening event fourth in the standings and headed to his home stop in Tarifa aiming to keep progressing towards the top of the world ranking.",
+        text: 'What Tarifa offers, Nathan explains, is not just consistent wind but variety. Conditions there can mimic Brazil one week and northern France the next. "Some people can be insanely good in strong wind," he says, "but then if they get light conditions in a competition, they are blocked and they don\'t know what to do." That range of experience, he believes, gives him a meaningful edge, one that delivered his second Spanish championship title in nearby Chiclana just weeks ago.',
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/vTXNkwIGK4HPjXFWqLOwuG2VBFNwJxrwmTglGRVr6to/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/05/nathan-berger1.png",
+        alt: "Celtia Rebolledo Heil",
+        caption: "Celtia Rebolledo Heil",
+      },
+      {
+        type: "paragraph",
+        text: "Away from the water he brings that same adaptability. When Leucate's wind went AWOL for the first half of the week, he grabbed a skateboard or an electric foil and got on with enjoying himself. While many athletes at the top levels have visualisation routines, pre-competition rituals, structured mental preparation, Nathan's approach is almost the opposite. \"What works best for me is not to think about it,\" he says. \"If I train my mental state too much I get more nervous. When I don't train too much, I'm chill. And when I'm chill, I'm more confident and I feel like I can do more.\"",
+      },
+      {
+        type: "paragraph",
+        text: 'Staying healthy, he\'ll tell you, is as much a competitive advantage as anything he does on the water. He goes to the gym, sleeps well, limits time on the water, all while balancing his school studies. "My mentality is just to not get injured," he says, "because that\'s what allows you to keep progressing. It\'s what makes you better than others."',
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/kSRNTLh1zEEacdNxWbLYM0mTG7p_i3xW4G9nk0i5p98/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/05/nathan-berger6-1.jpg",
+        alt: "Celtia Rebolledo Heil",
+        caption: "Celtia Rebolledo Heil",
+      },
+      {
+        type: "paragraph",
+        text: "Then there's the board. Nathan recently had his own pro model launched by KT Foiling – the same brand whose chief shaper, Keith Teboul, works with all-round watersports legend Kai Lenny. What's interesting is that the impetus didn't come from KT's design team. The company's background is in speed and wave performance, but Nathan had a completely different set of needs. \"As a freestyler, we don't care how fast the board goes in planing,\" he explains. \"I like when you do a trick and you don't get stuck in the water – you're wingfoiling as if you'd never done a jump. The [existing] boards weren't really meant for that, so I told them I was looking for something wider and shorter.\" None of KT's other athletes had ever come to them with a brief like it. A year of prototypes, testing and iteration later, and the finished board is now on the market with his name on it.",
+      },
+      {
+        type: "paragraph",
+        text: 'Nathan is candid about where the current ceiling is. To take the next step, he needs to unlock what he calls the "crazy factor" – more risk, more commitment in the air. But he won\'t be rushed into it. "If you go crazy and you do it well, it goes really well," he says. "But it can go really badly, too. So I\'m taking that step by step." Ask him what advice he\'d give to anyone who wants to follow in his path, and he has a considered answer: "Do it your way. Figure out how you do things, because everybody\'s different."',
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/dCdpzAGWY_iO2WVQGOy6Km8HnHh3ZLMCntasmJ5HBFs/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/05/nathan-berger3.jpg",
+        alt: "Celtia Rebolledo Heil",
+        caption: "Celtia Rebolledo Heil",
+      },
+      {
+        type: "paragraph",
+        text: 'After Leucate, Nathan is fourth in the overall standings after one event. He heads next to Tarifa – his home break – knowing the conditions better than almost anyone out there. "I\'m so stoked," he said after last week\'s final. "Beating all these guys I looked up to since I was starting – getting into that final – is insane with the level there is right now." He knows what he wants from the rest of the season. "That\'s my biggest goal of course," he says when asked about the number one spot. "I don\'t know if I will achieve it, but I will do everything to get there."',
+      },
+      {
+        type: "paragraph",
+        text: "At 17, Nathan is already playing a longer game than most, and from where we're sitting, it looks like he's just warming up. Watch this space.",
+      },
+      {
+        type: "paragraph",
+        text: "Photography © Celtia Rebolledo Heil @celtia__",
       },
     ],
     source: {
@@ -606,41 +1937,145 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
     kind: "interview",
     title: "The Olympian windsurfer with a golden future far beyond LA 2028",
     standfirst:
-      "Olympic silver medallist Grae Morris is using wingfoil and downwind-foil racing to expand his skills on the road to Los Angeles and Brisbane.",
+      "Having worn the yellow bib going into the winner-takes-all medal race final at Paris 2024, Grae Morris might be forgiven for harbouring a few regrets at missing out on Olympic gold.",
     author: "Andy Rice, Senior Contributor",
     publishedAt: "7th February 2026 7:35am",
     heroImage: {
-      src: "https://thefoil.com/media/U8j6sq1yq50MNqneZqWV-fKQwvMWiJ23hK4IqlF_wBM/resize:fill-down:690:388/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/02/grae-morris-2.jpeg",
-      alt: "Australian Olympic windsurfer Grae Morris",
+      src: "https://thefoil.com/media/b9ONUV8khTo013lRmWjZ2YqR0-jXn1wRSv_SAKJsNMA/resize:fill-down:1500:500/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/02/grae-morris-2.jpeg",
+      alt: "The Olympian windsurfer with a golden future far beyond LA 2028",
     },
     body: [
       {
+        type: "paragraph",
+        text: "But the young Australian windsurfer is not built that way. Aged only 20 when he took Olympic silver on the iQFOiL board at Paris 2024, Morris displays a maturity way beyond his years. A man mountain and a big character in every sense, he's sharp, quick-witted and funny. Morris appears to wear life very lightly, yet he rarely drinks alcohol and takes his professional career very seriously.",
+      },
+      {
+        type: "paragraph",
+        text: "While Morris is working hard towards Olympic gold at the Los Angeles 2028 Games, the Sydney sailor has been taking an unorthodox approach to his campaign since the end of the Paris cycle.",
+      },
+      {
+        type: "paragraph",
+        text: '"It\'s been a great time since Paris," Morris tells The Foil. "I mean, my life has definitely changed a lot. I\'ve been able to travel around, go to different schools across Australia. And I think the best part for me was just showing off an Olympic medal to a lot of aspiring athletes, inspiring kids.',
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/7tsOuLAAy_FIXb-FzFbqiDo7NEC4QtKSKGixVyjFhtw/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/02/grae-morris-wins.jpg",
+        alt: "Grae Morris wins",
+      },
+      {
         type: "heading",
-        text: "An all-round approach to LA 2028",
+        text: "All-round waterman",
       },
       {
         type: "paragraph",
-        text: "Grae Morris won iQFOiL silver at Paris 2024 at the age of 20. Rather than narrowing his programme immediately, he has used wingfoil and SUP downwind events to learn new handling, tactical and mental skills.",
+        text: "\"I had an absolutely great time after the Games, and then I've also made myself a bit more flexible with how I want to approach my next campaign. So I've started doing a few different sports and trying new things. Last year I finished off my IQ racing and then decided to travel around and do a winging event and then a SUP downwind foiling event. It was an awesome experience, opened my eyes to some different racing, different learnings. And I get to bring it all forward into my next year of the campaign.\"",
+      },
+      {
+        type: "paragraph",
+        text: "Whereas most Olympic athletes stay in their lane and focus on getting as good as possible at their specialist interest, Morris is actively opting for a more diversified approach of cross-training and cross-learning. So why does he think this unorthodox approach is going to work for him?",
+      },
+      {
+        type: "paragraph",
+        text: "\"I'm not sure if it will necessarily work, but I'm very much taking advantage of the fact that I'm quite young. And while I'm young, I have a great body that can do a lot of different things. And I kind of just want to explore and make sure I don't leave anything behind.",
       },
       {
         type: "heading",
-        text: "Choosing difficult situations",
+        text: "Fear of failure… but doing it anyway",
       },
       {
         type: "paragraph",
-        text: "Morris deliberately enters disciplines where he is not the favourite. A sixth place at his first Formula Wing World Championship showed how existing racecraft could compensate while his speed and board handling developed.",
+        text: "\"Being able to have the flexibility to travel around and do these different sports is... sure, it's scary. I might end up in a different area of the fleet than what I'm used to or where I want to be. But it's also things I can learn and take back into my Olympic campaign, which is overall the most important; winning a gold medal is still the main goal. And so yeah, I think you gotta go through some downs to appreciate the highs.",
+      },
+      {
+        type: "paragraph",
+        text: "\"And it's the same in sailing. I've got to explore different crafts, explore different results to appreciate the high results and how to learn how to stay with the high results in every craft by just trying it all, and not leaving anything on the table.\"",
+      },
+      {
+        type: "paragraph",
+        text: "Morris embraces the pressure of performing in the iQFOiL, and rather than rising above the fray and solidifying his position at the top of the pecking order, seems to enjoy putting himself in jeopardy. One way of doing that is hurling himself into new challenges, such as taking part in his first wingfoil racing event last October when Morris competed in the Formula Wing World Championships in Sardinia.",
+      },
+      {
+        type: "paragraph",
+        text: "\"It's nice that the iQFOiL is so tough and that we've got such a great fleet that you're never guaranteed a good result,\" he says. \"No matter how confident or how good you actually are, it's never actually guaranteed. I work very, very hard to maintain a top 10 or a top 20 result in any event that I do on the IQ.",
       },
       {
         type: "heading",
-        text: "SailGP remains a future target",
+        text: "Putting himself on the back foot",
       },
       {
         type: "paragraph",
-        text: "Time around the Flying Roos has given Morris a close look at F50 preparation and high-pressure racing. His immediate priorities remain Olympic gold in Los Angeles and a home Games in Brisbane before a possible move into SailGP.",
+        text: "\"Being able to go to a winging event where I don't have expectations of a top 20, I don't have expectations of winning, it's just a bit more freeing and I can explore a different kind of mental state and how I approach it mentally.\"",
       },
       {
         type: "paragraph",
-        text: "The sudden-death formats common to modern windsurfing have made pressure part of his routine, and he sees that experience as useful preparation for every stage of his career.",
+        text: 'Morris wanted to see how he would cope in the middle to back of the fleet. "I went into the Wing Worlds with no expectations of myself. I knew I had the racing and the tactical skills but board handling and [lack of] speed were potentially my downfall. So how I was gonna turn tactics and turn a tactical race into giving me a result rather than trying to compete against the other guys on speed, which was just gonna be impossible. I just had to use what I knew I was good at to help me get a good result and then over time I got a little faster, a little more board handling and that opened up my boundaries.',
+      },
+      {
+        type: "paragraph",
+        text: '"Those [improvements] helped me have a little bit more fun on the race course. So yeah, just constant learning really." For all of his low expectations at the Formula Wing Worlds, Morris ended up sixth overall, beating many full-time professionals at their own game.',
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/DkGDRYDL2l3gN9lgGmQfOF-quvlQwnhP9qZHOdT30ac/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/02/grae-morris.png",
+        alt: "The Foil",
+        caption: "The Foil",
+      },
+      {
+        type: "heading",
+        text: "Aiming for SailGP, but not yet",
+      },
+      {
+        type: "paragraph",
+        text: "The Foil caught up with Morris during the SailGP Grand Prix in Perth. Having just completed a block of training with his Perth-based coach Arthur Brett, Morris was given access-all-areas as a guest of the Bonds Flying Roos team. His association with the Aussie SailGP team actually goes deeper still.",
+      },
+      {
+        type: "paragraph",
+        text: "\"Tom Slingsby is a member of my sailing club, Woollahra, in Sydney. I remember as a kid going down to sail on my Bic Techno [youth windsurfing board] and he would be there fiddling with his Moth. I've been around him for a long time, just got to watch him for the past 10 years or so and learn from him.",
+      },
+      {
+        type: "paragraph",
+        text: '"At SailGP I was fortunate enough to just come [to the team base] and hang out and learn a little bit more. Mainly it\'s just an opportunity for me to learn as much as possible from not only Tom, but Tash [Bryant, the strategist] and everybody in the crew and all the coaches and just kind of see what I can put towards my campaign and see what I can learn to help myself out."',
+      },
+      {
+        type: "heading",
+        text: "Head first into the pressure cooker",
+      },
+      {
+        type: "paragraph",
+        text: "While Morris sees his eventual future in SailGP, being just 22 years old there's no immediate rush to bust his way into the scene. He loves the high-stakes atmosphere of the league, and wants to experience it for himself once he's got his Olympic career done and dusted. He's targeting LA2028 and then a home Games at Brisbane 2032.",
+      },
+      {
+        type: "paragraph",
+        text: 'Although a lot of sailors from a more conventional racing background struggle to get their heads around the sudden-death environment of competing in SailGP, for Morris it\'s a continuation of what he already knows. "My whole life, all the racing I ever did was short, sharp, high-pressure - and every race matters," he says.',
+      },
+      {
+        type: "paragraph",
+        text: "\"I actually find that SailGP racing is quite relatable to what I've known. I've never done the hour-long slow hit-outs where you do two races a day. I'm always doing six, sometimes seven races a day, super-short, sharp, and everything really matters. And so when I watch this racing, I actually can quite familiarise myself with everything going on.",
+      },
+      {
+        type: "image",
+        src: "https://thefoil.com/media/ExGpdDwYeHh7_I9ao3x1UfnJrLplLpHkKrmD99vRByM/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/02/grae-morris-2.jpeg",
+        alt: "Grae Morris 2",
+      },
+      {
+        type: "heading",
+        text: "High stakes",
+      },
+      {
+        type: "paragraph",
+        text: "\"All I know how to do is get good at this format. It's high pressure, high stakes. No matter how good you were throughout the week, it's all about this end format. And that's honestly all I know and all I know how to make work. I've just learned to kind of be accustomed to it, to desensitise it and to make sure I'm the best I can be at executing the format.\"",
+      },
+      {
+        type: "paragraph",
+        text: 'Where a lot of iQFOiL sailors - particularly those who competed in the previous, more conservative Olympic windsurfing formats - reluctantly and grudgingly accept the brutal medal finals as a necessary evil of modern competition, Morris embraces the jeopardy. "I think these SailGP athletes are super lucky because they get to perform the format about once a month, maybe sometimes more.',
+      },
+      {
+        type: "paragraph",
+        text: "\"They're under the kind of pressure that I'm hunting. They're under it a lot more than I am. I only get the opportunity to go through this maybe four times a year. For the SailGP athletes to go through it once a month, it's awesome. I just want to keep my head inside it and try to learn and experience that pressure more and more, so I can desensitise the pressure for when that time really comes, whether it's in the Worlds or in the next Olympics.\"",
+      },
+      {
+        type: "paragraph",
+        text: "It's an interesting philosophy. Most athletes spend their careers trying to avoid pressure. Morris is actively seeking it out, trying to make himself comfortable with discomfort. Whether it works or not, we'll find out in Los Angeles. And perhaps for a long time after that.",
       },
     ],
     source: {
@@ -669,17 +2104,17 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
       },
       {
         type: "paragraph",
-        text: 'Diego Botin executed what Rice describes as "the move of the season" during Race 3 in Group A, threading through a gap "to leeward of Australia and just ahead of France." Botin reportedly closed his eyes, hoping the daring manoeuvre would succeed. Spain\'s victory propels them to second overall in season standings, tied with Britain. Rice notes they "deserve" this win after facing considerable misfortune throughout the season.',
+        text: "It might have been a very different position in the rankings for Spain if Diego Botín had failed to thread the needle. Los Gallos' move at the start of Race 3 in Group A was the 'move of the season'. With six events still to go, it's hard to imagine a bolder manoeuvre than when Botín went for a gap that no one else saw: to leeward of Australia and just ahead of France also accelerating towards the line. Even Botín admitted to me afterwards that he closed his eyes and hoped for the best. That launch into hyperspace off the line propelled Los Gallos into an early lead which they never relinquished. It was just what they needed to do if they were to stand a chance of breaking out of the 'Group of Death' and into the four-boat final. Another perfectly-judged start put the Spaniards marginally ahead at Mark One and Botín kept Sweden at bay to claim their first event win of 2026. They move into second overall, on equal points with Britain who drop to third in the season rankings. After all the bad luck that has come their way, Los Gallos are the deserving winners from Halifax.",
       },
       {
         type: "paragraph",
-        text: 'Verdict: "The victory Spain has deserved all season"',
+        text: "Verdict: The victory Spain has deserved all season",
       },
       {
         type: "image",
         src: "https://thefoil.com/media/M3Z-3utI8SCDLsXx0ANfolIy36ZFiouomvIlVKQwznk/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/06/jl109215.jpg",
-        alt: "Spain SailGP",
-        caption: "JL109215",
+        alt: "Jason Ludlow / SailGP",
+        caption: "Jason Ludlow / SailGP",
       },
       {
         type: "heading",
@@ -691,17 +2126,17 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
       },
       {
         type: "paragraph",
-        text: "Sebastien Schneiter's team, now sponsored by Explora Journeys, demonstrated strong starting technique throughout the event. Switzerland secured their first podium finish and $140,000 in prize money after overtaking Australia before the finish line.",
+        text: "Cruise ships are famous, notorious even, for departing on time. Get back too late from your boozy lunch in the port or your duty-free shopping, and the boat has left without you. Since picking up title sponsorship from Explora Journeys, the rebranded blue boat has been flying along quite nicely. Sebastien Schneiter was leaving passengers behind on the start line in Halifax. It began on Friday with some excellently executed launches out of the line in practice racing. Would it carry through to the proper racing on the weekend? Yes it did, combined with some really solid manoeuvres in the difficult, marginal foiling conditions of Saturday. The Swiss were looking set to settle for fourth in the four-boat final, but overhauled Australia before the finish to grab their first podium of the season and $140,000 of prize money.",
       },
       {
         type: "paragraph",
-        text: 'Verdict: "Schneiter has found a winning formula at the start and he won\'t tell us what it is"',
+        text: "Verdict: Schneiter has found a winning formula at the start and he won't tell us what it is",
       },
       {
         type: "image",
         src: "https://thefoil.com/media/UnIBRZH_FUOpwLjEow4dWI2VrjtNao8rdZpamGmQTak/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/06/sv3-7170-samo-vidic-for-sailgp.jpg",
-        alt: "Switzerland SailGP",
-        caption: "SV3_7170 Samo Vidic for SailGP",
+        alt: "Samo Vidic / SailGP",
+        caption: "Samo Vidic / SailGP",
       },
       {
         type: "heading",
@@ -713,11 +2148,11 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
       },
       {
         type: "paragraph",
-        text: 'Nathan Outteridge achieved his second podium finish of 2026 following third place in Rio. Rice suggests the time spent "cruising around the world with his young family" since co-helming Emirates Team New Zealand to America\'s Cup victory in October 2024 may explain the slower-than-expected championship form. Sweden excelled with consistent performances and strong manoeuvres.',
+        text: "The best Swedish performance of the season so far and, after third place in Rio, only Nathan Outteridge's second time on the podium in 2026. Not that Artemis SailGP were making any bold claims for themselves at the start of the year, but pundits were expecting Sweden to become instant challengers for the top spots. It hasn't worked out that way. Maybe a year and a half of cruising around the world with his young family - ever since co-helming Emirates Team New Zealand to America's Cup victory in October 2024 - does take a while before even someone of Outteridge's calibre rediscovers championship-winning form. This time - unlike Rio - no complaints about sailing with the 27.5m rig in out-of-range conditions for the biggest wing. Just crack on with the job and do their best. Maybe dominating the weaker Group A flatters to deceive, but decisive manoeuvres like that 'JK' tack immediately after rounding the leeward mark along with a really solid performance in the final all add up to a very good outing for Sweden.",
       },
       {
         type: "paragraph",
-        text: 'Verdict: "Carry on like this and Sweden can still contend for the grand final in November"',
+        text: "Verdict: Carry on like this and Sweden can still contend for the grand final in November",
       },
       {
         type: "heading",
@@ -729,17 +2164,17 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
       },
       {
         type: "paragraph",
-        text: "The Black Foils returned with a new boat and new grinder Stewart Dodson, replacing injured Louis Sinclair. Pete Burling's team demonstrated precision match-racing skills during the Group A battle, though they narrowly missed qualifying for the final against Spain and Denmark.",
+        text: "The Black Foils are back, and looking almost as strong as ever. A new boat and a new grinder with Stewart Dodson coming in for Louis Sinclair who's still recovering from his injuries in that boat-breaking crash from Auckland in February. The Group A battle with Spain for the last spot in the final was one of the greatest bits of SailGP racing of recent times, with that three-way photo-finish between New Zealand, Spain and Denmark the icing on the cake. Who said Pete Burling can't match race? Between Pistol Pete and his team on the Black Foils, this was precision control and coolness under pressure. OK, it didn't quite yield the required result but the Kiwi performance shows they have come back in right where they left off.",
       },
       {
         type: "paragraph",
-        text: 'Verdict: "Black Foils are almost back to their best"',
+        text: "Verdict: Black Foils are almost back to their best",
       },
       {
         type: "image",
-        src: "https://thefoil.com/media/F2fXj452IhNDTSO0twWXa6Dlg3kf1XuhV7_bLB3m3w/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/06/415800-jonathan-nackstrand-for-sailgp.jpg",
-        alt: "New Zealand SailGP",
-        caption: "415800 Jonathan Nackstrand for SailGP",
+        src: "https://thefoil.com/media/F2vFXj452IhNDTSO0twWXa6Dlg3kf1XuhV7_bLB3m3w/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/06/415800-jonathan-nackstrand-for-sailgp.jpg",
+        alt: "Jonathan Nackstrand / SailGP",
+        caption: "Jonathan Nackstrand / SailGP",
       },
       {
         type: "heading",
@@ -751,17 +2186,17 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
       },
       {
         type: "paragraph",
-        text: 'Tom Slingsby\'s team won two races on the challenging Saturday but ultimately placed fourth. Rice observes they made "one small mistake" when Slingsby chose to pursue different wind conditions downwind rather than follow the leading boats, allowing Switzerland to claim third and the accompanying prize money.',
+        text: "Were Australia just lucky or good to take two race wins from the flukiest of fluky Saturdays in Halifax? If it had been any other team we would have said, 'yeah, just lucky...' But how can you when it is the Bonds Flying Roos, again. After three straight victories, Tom Slingsby looked set to make it a perfect sweep of the Americas. Their performances in the 'Group of Death' were exemplary, almost impeccable. Their start in the final was good, but not quite good enough against the faster trigger pulls of Spain and Sweden. A lap later on the turn downwind, Slingsby saw better breeze on the Halifax stadium side of the course but decided to chance his arm on something different down the Dartmouth side. Almost as soon as the two leaders gybed away you could sense Slingsby regretting a decision that was based more on hope than reason. Not only did Australia lose touch with the race for victory but it allowed Switzerland to close the gap and ultimately steal third place from Slingsby. As he said afterwards to missing out on that $140,000 prize money: \"Ouch!\"",
       },
       {
         type: "paragraph",
-        text: 'Verdict: "One small mistake cost them a lot, but the Roos are still the benchmark"',
+        text: "Verdict: One small mistake cost them a lot, but the Roos are still the benchmark",
       },
       {
         type: "image",
         src: "https://thefoil.com/media/QJmtzEMeP6M9MEBvLGAzJQroNkHlL46iLQ3Lb9tnpeo/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/06/jl106596-jason-ludlow-for-sailgp.jpg",
-        alt: "Australia SailGP",
-        caption: "JL106596 Jason Ludlow for SailGP",
+        alt: "Jason Ludlow / SailGP",
+        caption: "Jason Ludlow / SailGP",
       },
       {
         type: "heading",
@@ -773,17 +2208,17 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
       },
       {
         type: "paragraph",
-        text: "Taylor Canfield's crew struggled with Saturday's marginal conditions, drifting into a wind hole while leading before recovering with strong performances on Sunday. Rice describes this as the team's second modest showing this season but maintains no serious concerns exist.",
+        text: "The USA fell victim to the vagaries of Saturday's less-than-satisfactory racing. Taylor Canfield and the team were leading the race ahead of Britain when they drifted into a hole, falling back to fifth at the finish. A last place in the next drifter made qualifying look unlikely indeed, although Canfield and Co. pulled out all the stops on Sunday, foiling to second place in the first race and winning the last race. Like I wrote after New York, not a great performance but nothing to worry about yet. Even with the 'two-at-the-back-at-all-times' rule which was brought in after the New York crash, the Americans appear to have reconfigured their crew set-up to cope with the changes. Lying fourth in the season standings, USA continue to impress.",
       },
       {
         type: "paragraph",
-        text: 'Verdict: "The second wobble of the season, but still nothing to worry about yet"',
+        text: "Verdict: The second wobble of the season, but still nothing to worry about yet",
       },
       {
         type: "image",
         src: "https://thefoil.com/media/2egZmokdIb8pleVFh5Rtes0c6LvjnI20A3pCSQjbru8/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/06/rp3-7516-ricardo-pinto.jpg",
-        alt: "USA SailGP",
-        caption: "RP3_7516 Ricardo Pinto",
+        alt: "Ricardo Pinto / SailGP",
+        caption: "Ricardo Pinto / SailGP",
       },
       {
         type: "heading",
@@ -795,17 +2230,17 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
       },
       {
         type: "paragraph",
-        text: "Giles Scott's team performed well on Sunday in proper foiling conditions with two second-place finishes. Despite disappointing overall results, the home crowd showed enthusiastic support.",
+        text: "The NorthStar gang pulled a wheelie across the finish line of their final fleet race and the crowd went wild. Even if the overall performance was disappointing, the denizens of Halifax were the biggest fans of their team and SailGP generally. Imagine what it would be like if Giles Scott and the team actually win on home waters! As for the racing itself, Saturday was not great, although the 'Group of Death' was always going to be more difficult than Group B. However on Sunday in proper foiling conditions the Canucks cruised two second places, making them top performers alongside Australia with a first and a third.",
       },
       {
         type: "paragraph",
-        text: 'Verdict: "The result doesn\'t show it, but Canada are gradually returning to better form"',
+        text: "Verdict: The result doesn't show it, but Canada are gradually returning to better form",
       },
       {
         type: "image",
         src: "https://thefoil.com/media/o-6fjtxVnpoMDtdm0_m8lGRKQbNowtdKotd2XS5IzBo/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/06/185794-samo-vidic-for-sailgp.jpg",
-        alt: "Canada SailGP",
-        caption: "185794 Samo Vidic for SailGP",
+        alt: "Samo Vidic / SailGP",
+        caption: "Samo Vidic / SailGP",
       },
       {
         type: "heading",
@@ -817,17 +2252,17 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
       },
       {
         type: "paragraph",
-        text: "Quentin Delapierre's DS Automobiles FRA team struggled in the competitive Group A. Rice cites mitigating factors including Manon Audinet's return to strategy following injury and new wing trimmer Moth World Champion Enzo Balanger's second appearance.",
+        text: "France somewhat disappeared in the 'Group of Death'. There were no great moments of flair as we have come to expect from Quentin Delapierre, although this has been a very disruptive season for DS Automobiles FRA. Manon Audinet was back on strategy for the first time since her injury from the Auckland crash, and this was Moth World Champion Enzo Balanger's second outing as wing trimmer. So there are mitigating circumstances for France's middle-of-the-road performance. However, Delapierre needs to turn the tide if France are to renew their ambitions for making it to the grand final in Abu Dhabi.",
       },
       {
         type: "paragraph",
-        text: 'Verdict: "Sub-par performance despite the disruptions to France\'s season"',
+        text: "Verdict: Sub-par performance despite the disruptions to France's season",
       },
       {
         type: "image",
         src: "https://thefoil.com/media/R6MldlH9XyzUriNs0ajHSz06mSGBpDtuJuqTCvFcCVw/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/06/rp2-7769-1-ricardo-pinto.jpg",
-        alt: "France SailGP",
-        caption: "RP2_7769_1 Ricardo Pinto",
+        alt: "Ricardo Pinto / SailGP",
+        caption: "Ricardo Pinto / SailGP",
       },
       {
         type: "heading",
@@ -839,17 +2274,17 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
       },
       {
         type: "paragraph",
-        text: "Emirates GBR experienced misfortune on Saturday when Dylan Fletcher drifted into a wind hole while competing for the lead. A high-speed crash on Sunday caused wingsail damage, preventing them from competing in favorable foiling conditions.",
+        text: "Emirates GBR should have emerged from Saturday in good shape. A second place in their second Group B race behind Artemis was a good way to end the session, but Dylan Fletcher had been unfortunate to slide down a snake in the earlier heat while vying for the lead with USA. Falling into the aforementioned wind hole that also swallowed up Canfield's crew, the British were dumped into last place, much less than they deserved. A good performance on Sunday was well within their grasp until a big rudder wobble and subsequent high-speed crash which led to breaking the wingsail. So Emirates GBR never got to show what they could do in the foiling conditions and an opportunity missed.",
       },
       {
         type: "paragraph",
-        text: 'Verdict: "The British have lost their early-season momentum, but Portsmouth gives them all the motivation they need to get back on track"',
+        text: "Verdict: The British have lost their early-season momentum, but Portsmouth gives them all the motivation they need to get back on track",
       },
       {
         type: "image",
         src: "https://thefoil.com/media/wClCAltPSbrQzTX9I5JpbO1cJoLVjrrQMcEtFWY8k00/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/06/jl206017-jason-ludlow.jpg",
-        alt: "Great Britain SailGP",
-        caption: "JL206017 Jason Ludlow",
+        alt: "Jason Ludlow / SailGP",
+        caption: "Jason Ludlow / SailGP",
       },
       {
         type: "heading",
@@ -861,17 +2296,17 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
       },
       {
         type: "paragraph",
-        text: "Red Bull Italy's primary achievement involved third place in the final fleet race. Rice notes the team managed only to defeat Emirates GBR, who withdrew after equipment failure.",
+        text: "A third place in the final fleet race was the high point of a ho-hum showing by Red Bull Italy. Racing in the easier group, the only team that Phil Robertson and Co. managed to beat was Emirates GBR who exited the competition after blowing up their wing before Sunday's racing got underway.",
       },
       {
         type: "paragraph",
-        text: 'Verdict: "As per New York, yet to meet the expectations of team boss Jimmy Spithill"',
+        text: "Verdict: As per New York, yet to meet the expectations of team boss Jimmy Spithill",
       },
       {
         type: "image",
         src: "https://thefoil.com/media/PQB5rlfqzja5D7YNX5_Luo2loc3g0cHT1rppLmKLQ5o/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/06/sv3-1748-samo-vidic-for-sailgp.jpg",
-        alt: "Italy SailGP",
-        caption: "SV3_1748 Samo Vidic for SailGP",
+        alt: "Samo Vidic / SailGP",
+        caption: "Samo Vidic / SailGP",
       },
       {
         type: "heading",
@@ -883,17 +2318,17 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
       },
       {
         type: "paragraph",
-        text: "The Brazilian team experimented with crew position swaps, moving Martine Grael into strategy and Paul Goodison to the helm. This adjustment produced modest improvements in pre-start positioning, though a leeward mark collision on Sunday hampered overall performance.",
+        text: "Last time my verdict was 'Big rethink required'. Brazil duly did the unthinkable and did a switcharound of the back two, moving Martine Grael into strategy and Paul Goodison on to the wheel. The Brazilians seemed to be more organised in the pre-start, sailing to some better Mark One positions than usual. But then whacking the leeward mark after a tight rounding on Sunday put Brazil out of action. Overall the team were probably right to do the switcharound to allow Grael to get a wider perspective on the racing. Longer term we're likely to see Brazil's golden girl return to the helm.",
       },
       {
         type: "paragraph",
-        text: 'Verdict: "An experiment worth trying"',
+        text: "Verdict: An experiment worth trying",
       },
       {
         type: "image",
         src: "https://thefoil.com/media/TFB16qXhOXSSAsI0YCiecaW-qSxJDL17_Xjx1n8V38M/resize:fit:1200:800/gravity:ce/quality:60/dpr:1/2026/06/rp2-6742-ricardo-pinto-for-sailgp.jpg",
-        alt: "Brazil SailGP",
-        caption: "RP2_6742 Ricardo Pinto for SailGP",
+        alt: "Ricardo Pinto / SailGP",
+        caption: "Ricardo Pinto / SailGP",
       },
       {
         type: "heading",
@@ -905,11 +2340,11 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
       },
       {
         type: "paragraph",
-        text: "Rockwool Racing, acquired by American Magic, continues to underperform. Nicolai Sehested expresses frustration with the team's results and publicly dislikes split fleet formats. Denmark occasionally demonstrates independent decision-making but needs greater tactical engagement.",
+        text: "Since being bought by American Magic, little of that magic has been on display on the water for Rockwool Racing. Nicolai Sehested never tries to sugar-coat things; he's as frustrated as anybody with the team's underperformance. He makes no bones about his dislike for split fleet formats either, although he's probably going to have to suck it up because Halifax points to the more likely future of SailGP competition. Denmark is often seen ploughing its own lonely furrow on the race course, which is not always a bad thing. Sometimes it can free you up to make your own choices and have the space to make the boat sing. But there are times when the Danish need to mix it up more, just as they did when they became the deciding factor in that match race between Spain and New Zealand.",
       },
       {
         type: "paragraph",
-        text: 'Verdict: "Not that far off the pace, but the Danes need to find some Viking spirit"',
+        text: "Verdict: Not that far off the pace, but the Danes need to find some Viking spirit",
       },
     ],
     source: {
@@ -2294,16 +3729,14 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
     slug: "podcast-america-s-cup-is-back-the-full-cagliari-debrief",
     kind: "podcast",
     title: "Podcast: America's Cup is back! The full Cagliari debrief",
+    standfirst:
+      "The America's Cup is finally back, and after eighteen months of SailGP we'd almost forgotten how different it feels. So Neil Cole sits down with Freddie Carr and Lewis Smith – The Foil's new reporter and multimedia editor, just back from Cagliari – to dive into our very first taste of AC38 fleet racing.",
     publishedAt: "28th May 2026 3:00pm",
     heroImage: {
       src: "https://thefoil.com/media/QC63HrRW6EbWcsJUKFTuRGnQi13s8A0ewfrCmh2Y5vc/resize:fill-down:1500:500/gravity:fp:0.3041738136:0.4733671339/quality:60/dpr:1/2026/05/e8tkvl1yBE4.jpg",
-      alt: "America's Cup is back! The full Cagliari debrief",
+      alt: "Podcast: America's Cup is back! The full Cagliari debrief",
     },
     body: [
-      {
-        type: "paragraph",
-        text: "The America's Cup is finally back, and after eighteen months of SailGP we'd almost forgotten how different it feels. So Neil Cole sits down with Freddie Carr and Lewis Smith – The Foil's new reporter and multimedia editor, just back from Cagliari – to dive into our very first taste of AC38 fleet racing.",
-      },
       {
         type: "paragraph",
         text: 'Lewis was on the ground for (nearly) the whole weekend, and shares his hot take: he prefers the AC40s to the AC75s, seeing the smaller boats as more playful and fun to chuck about. He and Freddie dig into how all the racing unfolded, from the chop of day one to the great leveller of flat water on day three, and the autopilot "superpower" that had the Luna Rossa Women & Youth crew outclassing everyone – right up until it all unravelled.',
@@ -2315,6 +3748,14 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
       {
         type: "paragraph",
         text: "We've also got the news of a second prelim in Naples at the end of September, Freddie on the legal cloud hanging over Athena Racing, then it's a switch to SailGP and what's brewing in New York this weekend, where the question remains: who, if anyone, can stop the Aussies?",
+      },
+      {
+        type: "paragraph",
+        text: "00:00:00 Start 00:02:23 Comparing the America's Cup to SailGP 00:11:01 Luna Rossa Women & Youth dominate 00:17:03 Day two tactics and upwind starts 00:24:20 Day three and the dramatic OCS penalty 00:33:10 Match race final: Burling vs Outteridge 00:45:06 AC38 prelim team-by-team vibe check 00:51:42 SailGP calendar and New York preview",
+      },
+      {
+        type: "paragraph",
+        text: "This episode is brought to you by Saily, the eSIM built by the team behind NordVPN. Available across more than 200 destinations, with plans flexible enough for a weekend away or a full season chasing the SailGP circuit – no SIM swap, no roaming bill shock, no wandering foreign airports hunting for Wi-Fi. We use Saily ourselves when travelling to events, like we'll be doing in NYC this weekend. Download Saily from the app store and use code FOIL15 at checkout for 15% off your first purchase.",
       },
     ],
     source: {
@@ -2609,23 +4050,27 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
     kind: "event",
     title: "Mubadala Abu Dhabi Sail Grand Prix 2026 Season Grand Final, presented by Abu Dhabi Sports Council",
     standfirst:
-      "The season culminates in Abu Dhabi with predictable conditions of flat water and fickle breezes, where light-wind racing determines the championship outcome.",
+      "A season's worth of drama, a year of grinding through conditions from Perth's howling Doctor to Halifax's frosty chaos, and it all comes down to... a light-wind lottery in the Gulf. Make of that what you will.",
     heroImage: {
       src: "https://thefoil.com/media/u_3RZoIvGq64-515eZqIMQqFZqGzchgeK_K1ltOQmRo/resize:fill-down:1500:500/gravity:fp:0.5:0.5/quality:60/dpr:1/2025/12/ricardo-pinto-sailgp-5-1.png",
-      alt: "Mubadala Abu Dhabi Sail Grand Prix 2026 Season Grand Final",
+      alt: "Mubadala Abu Dhabi Sail Grand Prix 2026 Season Grand Final, presented by Abu Dhabi Sports Council",
     },
     body: [
       {
         type: "paragraph",
-        text: "The season culminates in Abu Dhabi with predictable conditions of flat water and fickle breezes, where light-wind racing determines the championship outcome.",
+        text: "Abu Dhabi inherited Grand Final duties from San Francisco in Season 5, and the 2026 calendar keeps it there. The conditions are predictable: flat water, fickle breeze, boats spending uncomfortable amounts of time off the foils.",
       },
       {
         type: "paragraph",
-        text: "Abu Dhabi has hosted the Grand Final since Season 5, inheriting duties from San Francisco. Expected conditions include flat water and unpredictable wind patterns, with boats frequently off the foils. While critics argue a championship shouldn't depend on fortunate wind shifts, Season 5 demonstrated competitive merit. Denmark achieved their first event victory, and the final featured sustained lead changes among Great Britain, Australia, and New Zealand before Great Britain secured the title.",
+        text: "Speed demons will grumble that a championship shouldn't hinge on whoever catches the right shift at the right moment. That said, Season 5 made a surprisingly strong case for itself. Denmark shook off their usual mid-fleet results to snatch their first event win, and the winner-takes-all final saw all three boats trading the lead before Great Britain ultimately prevailed over Australia and New Zealand. Edge-of-your-seat stuff, even at walking pace.",
       },
       {
         type: "paragraph",
-        text: "Light-air racing compresses the field and amplifies tactical errors, maintaining overtaking opportunities throughout races. Though less visually dramatic than previous venues, the conditions create volatile racing scenarios. Past Winners: New Zealand (Season 4), Denmark (Season 5).",
+        text: "Light air compresses the fleet, amplifies errors, and keeps overtakes possible deep into the race. It's not the spectacle San Francisco used to provide, but it's volatile in its own way. Whether that's a worthy stage for a title decider depends on what you think sailing should look like.",
+      },
+      {
+        type: "paragraph",
+        text: "Past winners: New Zealand (Season 4), Denmark (Season 5)",
       },
     ],
     eventDate: "28 - 29 Nov 2026",
@@ -2640,7 +4085,7 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
     kind: "event",
     title: "Rockwool Germany Sail Grand Prix | Sassnitz",
     standfirst:
-      "The Season 5 debut venue proved exceptional despite its remote location, featuring flat water and reliable wind conditions where Denmark set a new SailGP speed record of 103.93 km/h.",
+      "Nobody had heard of Sassnitz. A small town on Rügen Island, miles from anywhere, about as far from Manhattan's skyline or the Riviera's superyachts as the circuit gets.",
     heroImage: {
       src: "https://thefoil.com/media/XX6QIScWVaKxTXPixNeZYYS4qKY5vjp5_F7nc5CEq2E/resize:fill-down:1500:500/gravity:fp:0.5:0.5/quality:60/dpr:1/2025/12/ricardo-pinto-sailgp-1-1.png",
       alt: "Rockwool Germany Sail Grand Prix | Sassnitz",
@@ -2648,15 +4093,15 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
     body: [
       {
         type: "paragraph",
-        text: "The Season 5 debut venue proved exceptional despite its remote location. The event featured flat water and reliable wind conditions, with Denmark setting a new SailGP speed record of 103.93 km/h. France won the final after overcoming significant drama during training when their rudder failed and helm Quentin Delapierre was hospitalized.",
+        text: "And yet the Season 5 debut venue turned out to be one of the best events on the calendar. Flat water, reliable breeze, and a tight stadium course that had sailors raving by the end of the weekend. Denmark used the conditions to reach a whopping 103.93 km/h, a new SailGP speed record. Spectators watched from the clifftops with sightlines most venues would kill for.",
       },
       {
         type: "paragraph",
-        text: "A small town on Rügen Island, Sassnitz emerged as \"one of the best events on the calendar.\" Spectators enjoyed clifftop viewing with exceptional sightlines. Beyond the record-breaking speed, the weekend included structural damage to Brazil's boat and France's dramatic overnight rebuild, culminating in their victory over Australia and Great Britain.",
+        text: "Then there was the drama. In two unrelated incidents, training day saw Brazil suffer structural damage and France's rudder fail within twenty seconds of each other. France's Quentin Delapierre ended up in hospital. His crew rebuilt the boat overnight, he was discharged, and days later the French stood on top of the podium having beaten Australia and Great Britain in the Final. Fairytale stuff, and exactly why Sassnitz won't be forgotten in a hurry.",
       },
       {
         type: "paragraph",
-        text: "Past Winners: France (Season 5).",
+        text: "Past winners: France (Season 5)",
       },
       {
         type: "image",
@@ -2666,11 +4111,6 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
       {
         type: "image",
         src: "https://thefoil.com/media/gUlndc801kA1Z-tweul-3LxIh_CtJC3te21BM-8cTjg/resize:fill-down:460:240/gravity:fp:0.3326984127:0.3358586792/quality:60/dpr:1/2026/08/formulawingworlds-iwsa-media-robert-hajduk.jpg",
-        alt: "Rockwool Germany Sail Grand Prix | Sassnitz",
-      },
-      {
-        type: "image",
-        src: "https://thefoil.com/media/3hjjWpZEmRAi9R_bOCS88lWsXMkTy3SQ5Sd6e8m8/resize:fill-down:460:240/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/02/rp2-4109.jpg",
         alt: "Rockwool Germany Sail Grand Prix | Sassnitz",
       },
     ],
@@ -2686,7 +4126,7 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
     kind: "event",
     title: "Rolex Switzerland Sail Grand Prix | Geneva",
     standfirst:
-      "SailGP has raced at some stunning locations, but Geneva might just top the lot. A vast freshwater lake ringed by snow-capped Alps, with the city's elegant waterfront providing a postcard-perfect backdrop.",
+      "SailGP has raced at some stunning locations, but Geneva might just top the lot. A vast freshwater lake ringed by snow-capped Alps, with the city's elegant waterfront providing a postcard-perfect backdrop, it's the kind of venue that makes you wonder why it took until Season 5 for it to appear on the calendar.",
     heroImage: {
       src: "https://thefoil.com/media/JGHXPT1Mc8OEpoT9eNAlSIbi-94ud0Ff6dIegvAcxxM/resize:fill-down:1500:500/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/01/sailgp-geneva-event.png",
       alt: "Rolex Switzerland Sail Grand Prix | Geneva",
@@ -2694,19 +4134,19 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
     body: [
       {
         type: "paragraph",
-        text: "SailGP has raced at some stunning locations, but Geneva might just top the lot. A vast freshwater lake ringed by snow-capped Alps, with the city's elegant waterfront providing a postcard-perfect backdrop.",
+        text: "The debut event in September 2025 delivered exactly what Lake Geneva's reputation promised: light, unstable breeze that tested the fleet's limits. The first day of racing brought 6-8 knots, enough to keep the F50s flying in the tiniest puffs, but on Day 2 that dropped to 5 knots or even less, forcing crews down to just three sailors per boat to keep them foiling. It was fluky, patchy, and wildly unpredictable – leaders lapping the fleet one minute, the entire order flipping the next.",
       },
       {
         type: "paragraph",
-        text: "The venue offers exceptional conditions with its scenic alpine setting. The inaugural 2025 event featured challenging light-air racing, with 6-8 knots on Day 1 and dropping to 5 knots or less on Day 2, requiring minimal crew to maintain foiling performance.",
+        text: "As the final European stop before the season heads to the UAE for its double-header finale, Geneva's light-air lottery could be ideal preparation for what typically awaits in the Middle East. The conditions may not be quite so marginal in 2026, but teams would be wise to expect another proper test of nerve and flight control in minimal breeze.",
       },
       {
         type: "paragraph",
-        text: "As the final European stop before the season moves to the UAE, Geneva's conditions serve as preparation for Middle Eastern racing. While 2026 conditions may prove less marginal, teams should anticipate another test of precision sailing in minimal breeze.",
+        text: "Germany claimed the maiden Geneva event – their first-ever SailGP victory – holding off the formidable Flying Roos in tricky conditions. For home favourites Switzerland, finishing third was solid but tinged with disappointment given the weight of expectation from the thousands of fans lining the shores. Winning in front of that crowd will be high on the agenda when the championship returns.",
       },
       {
         type: "paragraph",
-        text: "Germany won the maiden event, securing their first SailGP victory ahead of Australia, with Switzerland finishing third despite home advantage. The championship returns to Geneva with high expectations for strong local performances. Past Winners: Germany (Season 5).",
+        text: "Past winners: Germany (Season 5)",
       },
     ],
     eventDate: "19 - 20 Sep 2026",
@@ -2721,7 +4161,7 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
     kind: "event",
     title: "Spain Sail Grand Prix | Valencia",
     standfirst:
-      "Valencia is back on sailing's grand stage. Nearly two decades after hosting the America's Cup, the Spanish city returns to top-flight racing with a three-year SailGP commitment running through 2028.",
+      "Valencia is back on sailing's grand stage. Nearly two decades after hosting the America's Cup, the Spanish city returns to top-flight racing with a three-year SailGP commitment running through 2028. For a venue with this much heritage, it feels overdue.",
     heroImage: {
       src: "https://thefoil.com/media/E3m7XLG2Vu4VyAUBq-bE-Vypm0w4zciUOvas0JSOtwc/resize:fill-down:1500:500/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/01/nochesanjuan-valencia-4-1.jpg",
       alt: "Spain Sail Grand Prix | Valencia",
@@ -2729,19 +4169,19 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
     body: [
       {
         type: "paragraph",
-        text: "Valencia is back on sailing's grand stage. Nearly two decades after hosting the America's Cup, the Spanish city returns to top-flight racing with a three-year SailGP commitment running through 2028.",
+        text: "The America's Cup came here in 2007 and 2010 – the first time the Auld Mug had ventured to European waters – and the infrastructure built for those campaigns still stands. The Veles e Vents building and Marina Real transformed the port into a purpose-built sailing hub, and while those events carried their share of financial headaches and controversy (the 2010 multihull match was... divisive), Valencia proved it could deliver world-class racing.",
       },
       {
         type: "paragraph",
-        text: "The venue carries significant heritage, having hosted the America's Cup in 2007 and 2010. Infrastructure including the Veles e Vents building and Marina Real remain operational from those campaigns.",
+        text: "The switch from Cádiz, which hosted four successful seasons, trades Atlantic swell for Mediterranean reliability. September should serve up Valencia's characteristic thermal breezes – the south-westerly Garbí and south-easterly Llebeig – along with low swell and temperatures around 30°C. Flat water and consistent sea breeze is a combination that suits the F50s nicely, though anyone expecting a guaranteed full-power venue should temper expectations. Similar Mediterranean stops have occasionally required light-wind configurations when the thermals don't cooperate.",
       },
       {
         type: "paragraph",
-        text: 'The move from Cádiz to Valencia exchanges Atlantic swell for Mediterranean conditions. September typically features thermal breezes—the Garbí and Llebeig winds—alongside flat water and temperatures around 30°C, though "light-wind configurations" may occasionally be necessary.',
+        text: "Slotting in as event 10 of 13, Valencia arrives at a pivotal point in the season. Championship positions will be crystallising, pressure mounting, and the Spanish Season 4 champions will face the familiar weight of home expectation. Whether they can finally deliver a home victory remains the question – Spain's record on their own water has been curiously underwhelming given their global form.",
       },
       {
         type: "paragraph",
-        text: 'As the 10th event of 13 in the season, the championship standings will be "crystallising, pressure mounting," with Spain facing expectations for a home victory. Historically, Spain\'s performance on home water has proven underwhelming despite strong global results.',
+        text: "Past winners: N/A (new venue)",
       },
     ],
     eventDate: "5 - 6 Sep 2026",
