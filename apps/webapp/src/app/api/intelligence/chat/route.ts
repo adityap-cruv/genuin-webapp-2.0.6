@@ -13,10 +13,47 @@ import {
 // request/response contract stays the same, so the UI is unchanged. Never statically cached.
 export const dynamic = "force-dynamic";
 
+function firstForwardedValue(value: string | null): string | undefined {
+  return value?.split(",")[0]?.trim();
+}
+
+function toHttpOrigin(value: string | undefined): string | undefined {
+  if (!value) return undefined;
+
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:" ? url.origin : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * Resolve the browser-facing origin when this route is reached through a reverse proxy.
+ * `request.nextUrl.origin` can contain the upstream Vercel deployment hostname instead of
+ * the public custom domain, so prefer the browser Origin and standard proxy headers.
+ */
+function getPublicOrigin(request: NextRequest): string {
+  const browserOrigin = toHttpOrigin(request.headers.get("origin") ?? undefined);
+  if (browserOrigin) return browserOrigin;
+
+  const forwardedHost = firstForwardedValue(request.headers.get("x-forwarded-host"));
+  const forwardedProtocol = firstForwardedValue(request.headers.get("x-forwarded-proto")) ?? request.nextUrl.protocol;
+  const forwardedOrigin = toHttpOrigin(
+    forwardedHost ? `${forwardedProtocol.replace(/:$/, "")}://${forwardedHost}` : undefined
+  );
+
+  return forwardedOrigin ?? request.nextUrl.origin;
+}
+
 export async function POST(request: NextRequest) {
-  const body = (await request.json().catch(() => null)) as
-    | { videoId?: unknown; prompt?: unknown; seq?: unknown; context?: unknown; history?: unknown }
-    | null;
+  const body = (await request.json().catch(() => null)) as {
+    videoId?: unknown;
+    prompt?: unknown;
+    seq?: unknown;
+    context?: unknown;
+    history?: unknown;
+  } | null;
 
   const prompt = typeof body?.prompt === "string" ? body.prompt.trim() : "";
   const videoId = typeof body?.videoId === "string" ? body.videoId : "";
@@ -54,9 +91,9 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    // Origin of THIS request (the webapp's own origin) → used to build absolute /article/<slug> links
-    // that work from inside the SDK embed (relative links get swallowed by the embed router).
-    const origin = request.nextUrl.origin;
+    // Use the browser-facing origin to build absolute /article/<slug> links. Relative links are
+    // swallowed by the SDK embed router, while request.nextUrl may expose a reverse-proxy upstream.
+    const origin = getPublicOrigin(request);
     const blocks = await generateChatReply({ prompt, videoId, seq, context, history, origin });
     return NextResponse.json({ blocks });
   } catch (error) {

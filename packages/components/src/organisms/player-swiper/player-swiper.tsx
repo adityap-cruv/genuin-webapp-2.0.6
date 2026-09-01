@@ -291,7 +291,11 @@ export function PlayerList({
   const handleIntelligenceArticleSelect = useCallback<IntelligenceArticleSelectHandler>(
     (selection) => {
       if (!isHomeFeedView) return false;
-      const article = getArticleByHref(selection.href, window.location.origin);
+      const article =
+        getArticleByHref(selection.href, window.location.origin) ??
+        // Resolve legacy/proxied absolute links by their exact known slug. This fallback still
+        // rejects unrecognised article paths because getArticleByHref reads local article data.
+        getArticleByHref(selection.href);
       if (!article) return false;
 
       const activeElement = getDeepActiveElement();
