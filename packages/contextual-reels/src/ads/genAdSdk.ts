@@ -13,6 +13,7 @@ import { EVENT } from "@cxr/analytics/analytics";
 import { hostMacros } from "@cxr/hostMacros";
 import { useEventBus } from "@cxr/instance/InstanceContext";
 import { sampleVisibilityDiagnostic } from "@cxr/monitoring/visibilityDiagnostic";
+import { fireAdElementPixel } from "@cxr/observability/adelement-pixel";
 import { resolveClientIp } from "@cxr/platform/device";
 import { useAnalytics } from "@cxr/providers/AnalyticsProvider";
 import { DEFAULT_UNMUTE_VOLUME } from "@cxr/providers/PlayerProvider";
@@ -606,6 +607,9 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
               provider: completedProvider,
               ad_source: (completedProvider && platforms[completedProvider]) || adSource,
             });
+            // Fired before the GenAd teardown below so the beacon is issued while
+            // the ad instance is still alive — matches the AD_COMPLETED ordering.
+            fireAdElementPixel("complete");
             (window as Window & { GenAd?: { destroy(id: number): void } }).GenAd?.destroy(instanceIdRef.current!);
             instanceIdRef.current = null;
             initInFlightRef.current = false;
@@ -729,6 +733,9 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
                 provider: event?.provider,
                 ad_source: (event?.provider && platforms[event.provider]) || adSource,
               });
+              // Third-party AdElement beacon, fired alongside (not instead of) the
+              // Rudderstack event. Best-effort — never throws into the SDK callback.
+              fireAdElementPixel("start");
             },
             onAdQuartile: (event?: { provider?: AdProviderKind; quartile?: number | string }): void => {
               sendEvent(EVENT.AD_MEDIA_QUARTILE, {
