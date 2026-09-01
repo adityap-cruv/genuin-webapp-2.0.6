@@ -609,7 +609,7 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
             });
             // Fired before the GenAd teardown below so the beacon is issued while
             // the ad instance is still alive — matches the AD_COMPLETED ordering.
-            fireAdElementPixel("complete");
+            fireAdElementPixel("complete_gen");
             (window as Window & { GenAd?: { destroy(id: number): void } }).GenAd?.destroy(instanceIdRef.current!);
             instanceIdRef.current = null;
             initInFlightRef.current = false;
@@ -735,7 +735,7 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
               });
               // Third-party AdElement beacon, fired alongside (not instead of) the
               // Rudderstack event. Best-effort — never throws into the SDK callback.
-              fireAdElementPixel("start");
+              fireAdElementPixel("start_gen");
             },
             onAdQuartile: (event?: { provider?: AdProviderKind; quartile?: number | string }): void => {
               sendEvent(EVENT.AD_MEDIA_QUARTILE, {

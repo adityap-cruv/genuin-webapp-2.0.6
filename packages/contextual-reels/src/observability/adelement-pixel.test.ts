@@ -51,15 +51,15 @@ function stubImage(): { srcs: string[] } {
 
 describe("buildAdElementPixelUrl", () => {
   it("points at the AdElement endpoint", () => {
-    const url = buildAdElementPixelUrl("start", FULL_MACROS);
+    const url = buildAdElementPixelUrl("start_gen", FULL_MACROS);
 
     expect(url.startsWith(`${ADELEMENT_PIXEL_URL}?`)).toBe(true);
     expect(ADELEMENT_PIXEL_URL).toBe("https://b.adelement.com/v");
   });
 
   it.each([
-    ["start", "start"],
-    ["complete", "complete"],
+    ["start_gen", "start_gen"],
+    ["complete_gen", "complete_gen"],
   ] as const)("stamps ev=%s", (event, expected) => {
     const params = new URL(buildAdElementPixelUrl(event, FULL_MACROS)).searchParams;
 
@@ -67,7 +67,7 @@ describe("buildAdElementPixelUrl", () => {
   });
 
   it("sends the fixed w/h/ho params", () => {
-    const params = new URL(buildAdElementPixelUrl("start", FULL_MACROS)).searchParams;
+    const params = new URL(buildAdElementPixelUrl("start_gen", FULL_MACROS)).searchParams;
 
     expect(params.get("w")).toBe("320");
     expect(params.get("h")).toBe("50");
@@ -75,7 +75,7 @@ describe("buildAdElementPixelUrl", () => {
   });
 
   it("maps p/sid/cb from the aid/seller/rid host macros", () => {
-    const params = new URL(buildAdElementPixelUrl("start", FULL_MACROS)).searchParams;
+    const params = new URL(buildAdElementPixelUrl("start_gen", FULL_MACROS)).searchParams;
 
     expect(params.get("p")).toBe("placement-1");
     expect(params.get("sid")).toBe("seller-9");
@@ -83,7 +83,7 @@ describe("buildAdElementPixelUrl", () => {
   });
 
   it("mirrors the ifa macro onto all four IFA aliases", () => {
-    const params = new URL(buildAdElementPixelUrl("start", FULL_MACROS)).searchParams;
+    const params = new URL(buildAdElementPixelUrl("start_gen", FULL_MACROS)).searchParams;
 
     expect(params.get("ifa")).toBe("IFA-123");
     expect(params.get("appidfa")).toBe("IFA-123");
@@ -92,14 +92,14 @@ describe("buildAdElementPixelUrl", () => {
   });
 
   it("mirrors the appb macro onto d", () => {
-    const params = new URL(buildAdElementPixelUrl("start", FULL_MACROS)).searchParams;
+    const params = new URL(buildAdElementPixelUrl("start_gen", FULL_MACROS)).searchParams;
 
     expect(params.get("appb")).toBe("com.test.app");
     expect(params.get("d")).toBe("com.test.app");
   });
 
   it("forwards the privacy, geo, app and custom c* params", () => {
-    const params = new URL(buildAdElementPixelUrl("start", FULL_MACROS)).searchParams;
+    const params = new URL(buildAdElementPixelUrl("start_gen", FULL_MACROS)).searchParams;
 
     expect(params.get("dnt")).toBe("0");
     expect(params.get("gdpr")).toBe("1");
@@ -119,7 +119,7 @@ describe("buildAdElementPixelUrl", () => {
   });
 
   it("URL-encodes macro values rather than emitting them raw", () => {
-    const url = buildAdElementPixelUrl("start", { appn: "My App & Co", appsu: "https://s.example/a?b=c" });
+    const url = buildAdElementPixelUrl("start_gen", { appn: "My App & Co", appsu: "https://s.example/a?b=c" });
 
     expect(url).not.toContain("My App & Co");
     const params = new URL(url).searchParams;
@@ -128,7 +128,7 @@ describe("buildAdElementPixelUrl", () => {
   });
 
   it("omits every param whose host macro is absent, keeping only ev/w/h/ho", () => {
-    const url = buildAdElementPixelUrl("complete", {});
+    const url = buildAdElementPixelUrl("complete_gen", {});
     const params = new URL(url).searchParams;
 
     expect([...params.keys()].sort()).toEqual(["ev", "h", "ho", "w"]);
@@ -137,7 +137,7 @@ describe("buildAdElementPixelUrl", () => {
   });
 
   it("omits only the missing macros when the bag is partial", () => {
-    const params = new URL(buildAdElementPixelUrl("start", { ifa: "IFA-9", country: "IN" })).searchParams;
+    const params = new URL(buildAdElementPixelUrl("start_gen", { ifa: "IFA-9", country: "IN" })).searchParams;
 
     expect(params.get("ifa")).toBe("IFA-9");
     expect(params.get("deviceid")).toBe("IFA-9");
@@ -160,31 +160,31 @@ describe("fireAdElementPixel", () => {
     vi.restoreAllMocks();
   });
 
-  it("fires an Image beacon carrying ev=start", () => {
+  it("fires an Image beacon carrying ev=start_gen", () => {
     const image = stubImage();
 
-    fireAdElementPixel("start", FULL_MACROS);
+    fireAdElementPixel("start_gen", FULL_MACROS);
 
     expect(image.srcs).toHaveLength(1);
-    expect(new URL(image.srcs[0]!).searchParams.get("ev")).toBe("start");
+    expect(new URL(image.srcs[0]!).searchParams.get("ev")).toBe("start_gen");
   });
 
-  it("fires an Image beacon carrying ev=complete", () => {
+  it("fires an Image beacon carrying ev=complete_gen", () => {
     const image = stubImage();
 
-    fireAdElementPixel("complete", FULL_MACROS);
+    fireAdElementPixel("complete_gen", FULL_MACROS);
 
     expect(image.srcs).toHaveLength(1);
-    expect(new URL(image.srcs[0]!).searchParams.get("ev")).toBe("complete");
+    expect(new URL(image.srcs[0]!).searchParams.get("ev")).toBe("complete_gen");
   });
 
   it("is not deduplicated — an ad break may play several ads per session", () => {
     const image = stubImage();
 
-    fireAdElementPixel("start", FULL_MACROS);
-    fireAdElementPixel("complete", FULL_MACROS);
-    fireAdElementPixel("start", FULL_MACROS);
-    fireAdElementPixel("complete", FULL_MACROS);
+    fireAdElementPixel("start_gen", FULL_MACROS);
+    fireAdElementPixel("complete_gen", FULL_MACROS);
+    fireAdElementPixel("start_gen", FULL_MACROS);
+    fireAdElementPixel("complete_gen", FULL_MACROS);
 
     expect(image.srcs).toHaveLength(4);
   });
@@ -193,7 +193,7 @@ describe("fireAdElementPixel", () => {
     // @ts-expect-error -- simulating a locked-down window with no Image constructor
     globalThis.Image = undefined;
 
-    expect(() => fireAdElementPixel("start", FULL_MACROS)).not.toThrow();
+    expect(() => fireAdElementPixel("start_gen", FULL_MACROS)).not.toThrow();
   });
 
   it("swallows a throwing Image constructor so the ad lifecycle is unaffected", () => {
@@ -205,16 +205,16 @@ describe("fireAdElementPixel", () => {
       }
     };
 
-    expect(() => fireAdElementPixel("complete", FULL_MACROS)).not.toThrow();
+    expect(() => fireAdElementPixel("complete_gen", FULL_MACROS)).not.toThrow();
     expect(warn).toHaveBeenCalled();
   });
 
   it("falls back to the hostMacros singleton when no macros are passed", () => {
     const image = stubImage();
 
-    fireAdElementPixel("start");
+    fireAdElementPixel("start_gen");
 
     expect(image.srcs).toHaveLength(1);
-    expect(new URL(image.srcs[0]!).searchParams.get("ev")).toBe("start");
+    expect(new URL(image.srcs[0]!).searchParams.get("ev")).toBe("start_gen");
   });
 });

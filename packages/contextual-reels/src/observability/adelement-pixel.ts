@@ -2,9 +2,9 @@
  * AdElement ad-lifecycle tracking pixels.
  *
  * The AdElement endpoint (`b.adelement.com/v`) distinguishes lifecycle events by
- * a single `ev` query param — `passback`, `start`, `complete` — while every other
- * param stays identical across the three. This module owns that shared param set
- * and fires the `start` / `complete` beacons from the GenAd waterfall's
+ * a single `ev` query param — `passback`, `start_gen`, `complete_gen` — while every
+ * other param stays identical across the three. This module owns that shared param
+ * set and fires the `start_gen` / `complete_gen` beacons from the GenAd waterfall's
  * `onAdStarted` / `onAdCompleted` callbacks.
  *
  * Distinct from {@link PixelReporter} in `pixel-reporter.ts`, which fires Genuin's
@@ -35,8 +35,13 @@ const _env: Record<string, string | undefined> =
  */
 export const ADELEMENT_PIXEL_URL: string = _env.VITE_CXR_ADELEMENT_PIXEL_URL ?? "https://b.adelement.com/v";
 
-/** Lifecycle events this module fires. `passback` is owned by the host embed layer. */
-export type AdElementEvent = "start" | "complete";
+/**
+ * Lifecycle events this module fires. The `_gen` suffix marks these as
+ * Genuin-originated so AdElement can separate CXR's beacons from the same
+ * lifecycle reported by another integration on the shared endpoint.
+ * `passback` is owned by the host embed layer.
+ */
+export type AdElementEvent = "start_gen" | "complete_gen";
 
 /**
  * Pixel param name → host macro name, in the order the AdElement reference URL
@@ -136,8 +141,8 @@ export function buildAdElementPixelUrl(event: AdElementEvent, macros: HostMacros
  * rather than `fetch` so the GET is not subject to CORS — the endpoint returns no
  * body we need to read.
  *
- * Deliberately NOT deduplicated: `start` and `complete` are expected once per ad
- * play, and an ad break can legitimately play several ads per session, so
+ * Deliberately NOT deduplicated: `start_gen` and `complete_gen` are expected once
+ * per ad play, and an ad break can legitimately play several ads per session, so
  * suppressing a repeat would under-count. Callers fire from the GenAd SDK's own
  * per-ad callbacks, which already emit once per ad.
  *
