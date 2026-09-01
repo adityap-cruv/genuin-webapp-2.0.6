@@ -1,26 +1,29 @@
 "use client";
 
 import { cn } from "@genuin/ui/lib/utils";
-import { NavArrowButton } from "@genuin/ui/player-controls";
 import {
   createContext,
   useCallback,
   useContext,
   useEffect,
   useId,
-  useLayoutEffect,
   useMemo,
   useRef,
   useState,
   type ReactNode,
 } from "react";
-import { createPortal } from "react-dom";
 
 import { useBaseContext } from "@genuin/components/context/base";
+import {
+  prepareFeedView,
+  useOpenFeedViewOverlay,
+  usePlacementFeedViewIntent,
+} from "@genuin/components/lib/feed-view/feed-view-overlay";
 import { SectionHeader } from "@genuin/components/molecules/section-header/section-header";
 import { EventCarousel } from "@genuin/components/organisms/event-carousel/event-carousel";
 import {
   useEmit,
+  useLatestEvent,
   useOptionalEventSurface,
   useSurfaceEvent,
 } from "@genuin/components/organisms/event-surface/event-surface-context";
@@ -55,24 +58,6 @@ import type { ArticleData, ComponentType, WidgetData, WidgetNode, WidgetWrapper 
 export const BlockVisibilityContext = createContext<boolean>(true);
 export function useBlockVisibility(): boolean {
   return useContext(BlockVisibilityContext);
-}
-
-export type HomePlayerOverlayRequest = {
-  sourceDomId: string;
-};
-
-type OpenHomePlayerOverlay = (request: HomePlayerOverlayRequest) => void;
-
-const HomePlayerOverlayContext = createContext<OpenHomePlayerOverlay | null>(null);
-
-export function HomePlayerOverlayProvider({
-  onOpen,
-  children,
-}: {
-  onOpen: OpenHomePlayerOverlay;
-  children: ReactNode;
-}) {
-  return <HomePlayerOverlayContext.Provider value={onOpen}>{children}</HomePlayerOverlayContext.Provider>;
 }
 
 /**
@@ -259,6 +244,7 @@ function GenuinPlacement({
   apiKey,
   mobileStyleId,
   mobilePlacementId,
+  videoIds,
   onExpandRequest,
 }: {
   domId: string;
@@ -267,12 +253,13 @@ function GenuinPlacement({
   apiKey: string;
   mobileStyleId?: string;
   mobilePlacementId?: string;
+  /** Video ids registered by the contextual sibling through EventSurface. */
+  videoIds?: string[];
   /** Notifies Home that this existing placement is entering its SDK expand view. */
   onExpandRequest?: () => void;
 }) {
   const hasMobilePlacement = Boolean(mobileStyleId && mobilePlacementId);
   const [viewport, setViewport] = useState<"mobile" | "desktop" | null>(hasMobilePlacement ? null : "desktop");
-  const lastVideoClickRef = useRef(0);
 
   useEffect(() => {
     if (!hasMobilePlacement) {
@@ -290,6 +277,7 @@ function GenuinPlacement({
   const useMobilePlacement = viewport === "mobile" && hasMobilePlacement;
   const activeStyleId = useMobilePlacement ? mobileStyleId! : styleId;
   const activePlacementId = useMobilePlacement ? mobilePlacementId! : placementId;
+  const videoIdsKey = videoIds?.join(",") ?? "";
 
   useEffect(() => {
     if (viewport === null) return;
@@ -304,42 +292,12 @@ function GenuinPlacement({
     return () => {
       cancelled = true;
     };
-  }, [viewport, activeStyleId, activePlacementId]);
+  }, [viewport, activeStyleId, activePlacementId, videoIdsKey]);
 
-  // The SDK owns the clickable video/control UI inside its Shadow DOM. Pair its global
-  // `onVideoClicked` signal with this host's captured video intent so the correct placement opens.
-  useEffect(() => {
-    if (!onExpandRequest || viewport === null) return;
-    let cancelled = false;
-    let unsubscribe: (() => void) | undefined;
-    let retry: number | undefined;
-    let attempts = 0;
-
-    const register = () => {
-      if (cancelled) return;
-      const genuin = (window as GenuinWindow).genuin;
-      if (!genuin?.onInternal) {
-        if (attempts++ < 40) retry = window.setTimeout(register, 200);
-        return;
-      }
-
-      const off = genuin.onInternal("onVideoClicked", () => {
-        if (Date.now() - lastVideoClickRef.current > 1200) return;
-        lastVideoClickRef.current = 0;
-        onExpandRequest();
-      });
-      if (typeof off === "function") unsubscribe = off;
-    };
-
-    loadGenuinSdk()
-      .then(register)
-      .catch(() => undefined);
-    return () => {
-      cancelled = true;
-      if (retry) window.clearTimeout(retry);
-      unsubscribe?.();
-    };
-  }, [domId, onExpandRequest, viewport]);
+  const captureFeedViewIntent = usePlacementFeedViewIntent({
+    onExpandRequest: viewport === null ? undefined : onExpandRequest,
+    waitForSdk: loadGenuinSdk,
+  });
 
   if (viewport === null) {
     return <div style={{ width: "100%", height: "100%" }} />;
@@ -347,287 +305,16 @@ function GenuinPlacement({
 
   return (
     <div
-      key={`${activeStyleId}-${activePlacementId}`}
+      key={`${activeStyleId}-${activePlacementId}-${videoIdsKey}`}
       id={domId}
       className="gen-sdk-class"
       data-style-id={activeStyleId}
       data-placement-id={activePlacementId}
       data-api-key={apiKey}
-      onClickCapture={(event) => {
-        const path = event.nativeEvent.composedPath();
-        const controlLayerIndex = path.findIndex(
-          (target) =>
-            target instanceof Element &&
-            target.classList.contains("gencl:absolute") &&
-            target.classList.contains("gencl:inset-0")
-        );
-        const clickPath = controlLayerIndex < 0 ? path : path.slice(0, controlLayerIndex);
-        const isPlayerControl = clickPath.some(
-          (target) =>
-            target instanceof Element &&
-            (target.matches("button, a, [role='button']") || target.classList.contains("gencl:cursor-pointer"))
-        );
-        lastVideoClickRef.current = isPlayerControl ? 0 : Date.now();
-      }}
+      data-video-ids={videoIdsKey || undefined}
+      onClickCapture={captureFeedViewIntent}
       style={{ width: "100%", height: "100%" }}
     />
-  );
-}
-
-const HOME_FEED_VIEW_ATTRIBUTE = "data-home-feed-view";
-const HOME_FEED_SESSION_ATTRIBUTE = "data-home-feed-session";
-const HOME_FULL_VIEW_EVENT = "genuin:home-feed-full-view";
-const HOME_FEED_VIEW_EVENT = "genuin:home-feed-view";
-// High enough to sit above Home, but below Koah's document-level options dialog
-// (2147483000). Using the maximum z-index hides that dialog behind the player.
-const HOME_FEED_VIEW_Z_INDEX = "1000";
-const HOME_FEED_BACK_Z_INDEX = 1001;
-
-function markHomeFeedView(sourceDomId: string, active: boolean) {
-  const source = document.getElementById(sourceDomId);
-  const embedRoot = source?.shadowRoot?.querySelector<HTMLElement>(".gen-sdk-class");
-  for (const element of [source, embedRoot]) {
-    if (active) element?.setAttribute(HOME_FEED_VIEW_ATTRIBUTE, "true");
-    else element?.removeAttribute(HOME_FEED_VIEW_ATTRIBUTE);
-  }
-}
-
-function markHomeFeedSession(sourceDomId: string, active: boolean) {
-  const source = document.getElementById(sourceDomId);
-  const embedRoot = source?.shadowRoot?.querySelector<HTMLElement>(".gen-sdk-class");
-  for (const element of [source, embedRoot]) {
-    if (active) element?.setAttribute(HOME_FEED_SESSION_ATTRIBUTE, "true");
-    else element?.removeAttribute(HOME_FEED_SESSION_ATTRIBUTE);
-  }
-}
-
-function restoreInlineStyle(element: HTMLElement | null, value: string | null) {
-  if (!element) return;
-  if (value === null) element.removeAttribute("style");
-  else element.setAttribute("style", value);
-}
-
-function setImportantStyles(element: HTMLElement, styles: Record<string, string>) {
-  for (const [property, value] of Object.entries(styles)) {
-    if (
-      element.style.getPropertyValue(property) === value &&
-      element.style.getPropertyPriority(property) === "important"
-    ) {
-      continue;
-    }
-    element.style.setProperty(property, value, "important");
-  }
-}
-
-/**
- * Home only changes the presentation of the SDK's existing expand-view portal. No second SDK
- * placement, player or route is created, so playback, active video and controls keep one owner.
- */
-export function HomePlayerOverlay({
-  request,
-  boundsRef,
-  onClose,
-}: {
-  request: HomePlayerOverlayRequest;
-  boundsRef: React.RefObject<HTMLDivElement | null>;
-  onClose: () => void;
-}) {
-  const [backPosition, setBackPosition] = useState<{ left: number; top: number } | null>(null);
-
-  useLayoutEffect(() => {
-    let frame = 0;
-    let portalObserver: MutationObserver | null = null;
-    let contentObserver: MutationObserver | null = null;
-    let host: HTMLElement | null = null;
-    let portalContainer: HTMLElement | null = null;
-    let feedStageStyle: HTMLStyleElement | null = null;
-    let hostStyle: string | null = null;
-    let portalStyle: string | null = null;
-    let promoted = false;
-    let revealed = false;
-
-    const mountFeedStageStyle = () => {
-      if (!host?.shadowRoot || feedStageStyle) return;
-      feedStageStyle = document.createElement("style");
-      feedStageStyle.dataset.homeFeedView = "true";
-      feedStageStyle.textContent = `
-        [data-portal-container], [data-portal-container] > .gen-sdk-expand-view, #gencl-feed-view {
-          position: absolute !important;
-          inset: 0 !important;
-          width: 100% !important;
-          height: 100% !important;
-          min-height: 0 !important;
-          background-color: #fff !important;
-        }
-        [data-feed-video-column] {
-          height: calc(100% - 48px) !important;
-          margin-block: 24px !important;
-          border-radius: 12px !important;
-          overflow: hidden !important;
-        }
-        [role="navigation"][aria-label="Video navigation"],
-        button[class~="gencl:right-7.5"][class~="gencl:top-6"] {
-          display: none !important;
-        }
-        .swiper-slide-active .gencl\\:group-hover\\:opacity-100.gencl\\:opacity-0 {
-          opacity: 1 !important;
-          pointer-events: auto !important;
-        }
-      `;
-      host.shadowRoot.appendChild(feedStageStyle);
-    };
-
-    const restoreFullView = () => {
-      restoreInlineStyle(host, hostStyle);
-      restoreInlineStyle(portalContainer, portalStyle);
-      feedStageStyle?.remove();
-      feedStageStyle = null;
-      setBackPosition(null);
-    };
-
-    const applyFeedBounds = () => {
-      const bounds = boundsRef.current?.getBoundingClientRect();
-      if (!host || !portalContainer || !bounds || promoted) return;
-      const viewportWidth = window.visualViewport?.width ?? document.documentElement.clientWidth;
-      const viewportHeight = window.visualViewport?.height ?? document.documentElement.clientHeight;
-
-      setImportantStyles(host, {
-        position: "fixed",
-        inset: "auto",
-        top: `${bounds.top}px`,
-        left: `${bounds.left}px`,
-        width: `${Math.min(bounds.width, viewportWidth - bounds.left)}px`,
-        height: `${Math.min(bounds.height, viewportHeight - bounds.top)}px`,
-        overflow: "hidden",
-        "z-index": HOME_FEED_VIEW_Z_INDEX,
-      });
-      if (revealed) {
-        setBackPosition((current) => {
-          const next = { left: bounds.left + 24, top: bounds.top + 24 };
-          return current?.left === next.left && current.top === next.top ? current : next;
-        });
-      }
-    };
-
-    const settleFeedBounds = (remainingFrames = 3) => {
-      applyFeedBounds();
-      if (remainingFrames > 1 && !promoted) {
-        frame = window.requestAnimationFrame(() => settleFeedBounds(remainingFrames - 1));
-      }
-    };
-
-    const attachToSdkPortal = (): boolean => {
-      host = document.querySelector<HTMLElement>('[data-genuin-overlay-host][data-portal-key="expand-view"]');
-      portalContainer = host?.shadowRoot?.querySelector<HTMLElement>("[data-portal-container]") ?? null;
-      if (!host || !portalContainer) return false;
-
-      portalObserver?.disconnect();
-      portalObserver = null;
-
-      hostStyle = host.getAttribute("style");
-      portalStyle = portalContainer.getAttribute("style");
-      setImportantStyles(host, { visibility: "hidden" });
-      mountFeedStageStyle();
-      // Home and the SDK portal commit in separate React roots. Apply immediately for the first
-      // paint; the SDK's EXPAND_VIEW_CHANGED signal below performs the final hand-off after its
-      // RootPortal effects have committed.
-      settleFeedBounds();
-
-      const revealFeed = (): boolean => {
-        if (!host || !portalContainer?.querySelector(".gen-sdk-expand-view")) return false;
-        revealed = true;
-        applyFeedBounds();
-        setImportantStyles(host, { visibility: "visible" });
-        contentObserver?.disconnect();
-        contentObserver = null;
-        return true;
-      };
-      if (!revealFeed()) {
-        contentObserver = new MutationObserver(revealFeed);
-        contentObserver.observe(portalContainer, { childList: true, subtree: true });
-      }
-      return true;
-    };
-
-    const handleFullView = () => {
-      promoted = true;
-      markHomeFeedView(request.sourceDomId, false);
-      restoreFullView();
-      if (host) {
-        setImportantStyles(host, {
-          position: "fixed",
-          inset: "0",
-          width: "100%",
-          height: "100%",
-          overflow: "hidden",
-        });
-      }
-      if (portalContainer) {
-        setImportantStyles(portalContainer, {
-          position: "fixed",
-          inset: "0",
-          width: "100%",
-          height: "100%",
-        });
-      }
-    };
-    const handleFeedView = () => {
-      if (!promoted || !host || !portalContainer) return;
-      restoreFullView();
-      promoted = false;
-      markHomeFeedView(request.sourceDomId, true);
-      mountFeedStageStyle();
-      setImportantStyles(host, { visibility: "visible" });
-      settleFeedBounds();
-    };
-    const handleExpandChange = (raw: unknown) => {
-      const value =
-        typeof raw === "object" && raw !== null && "payload" in raw ? (raw as { payload: unknown }).payload : raw;
-      if (value === true) settleFeedBounds();
-      if (value === false) onClose();
-    };
-
-    markHomeFeedView(request.sourceDomId, true);
-    markHomeFeedSession(request.sourceDomId, true);
-    if (!attachToSdkPortal()) {
-      // The SDK and Home render through separate React roots. Observe portal creation so the
-      // feed bounds land before its first browser paint instead of one animation frame later.
-      portalObserver = new MutationObserver(attachToSdkPortal);
-      portalObserver.observe(document.body, { childList: true, subtree: true });
-    }
-    window.addEventListener("resize", applyFeedBounds);
-    document.addEventListener(HOME_FULL_VIEW_EVENT, handleFullView);
-    document.addEventListener(HOME_FEED_VIEW_EVENT, handleFeedView);
-    const unsubscribe: unknown = (window as GenuinWindow).genuin?.onInternal?.(
-      "onExpandViewChanged",
-      handleExpandChange
-    );
-
-    return () => {
-      window.cancelAnimationFrame(frame);
-      portalObserver?.disconnect();
-      contentObserver?.disconnect();
-      window.removeEventListener("resize", applyFeedBounds);
-      document.removeEventListener(HOME_FULL_VIEW_EVENT, handleFullView);
-      document.removeEventListener(HOME_FEED_VIEW_EVENT, handleFeedView);
-      if (typeof unsubscribe === "function") unsubscribe();
-      restoreFullView();
-      markHomeFeedView(request.sourceDomId, false);
-      markHomeFeedSession(request.sourceDomId, false);
-    };
-  }, [boundsRef, onClose, request.sourceDomId]);
-
-  const handleBack = () => {
-    (window as GenuinWindow).genuin?.collapse?.(request.sourceDomId);
-    onClose();
-  };
-
-  if (!backPosition) return null;
-  return createPortal(
-    <div style={{ position: "fixed", ...backPosition, zIndex: HOME_FEED_BACK_Z_INDEX }}>
-      <NavArrowButton direction="left" size="lg" theme="dark" ariaLabel="Back" onClick={handleBack} />
-    </div>,
-    document.body
   );
 }
 
@@ -700,7 +387,11 @@ function VideoPlaceholder() {
 function PlacementWidget({ node, data }: WidgetRenderProps) {
   const isNear = useBlockVisibility();
   const show = useHasBeenTrue(isNear);
-  const openHomePlayerOverlay = useContext(HomePlayerOverlayContext);
+  const openFeedViewOverlay = useOpenFeedViewOverlay();
+  const registeredItems = useLatestEvent("items:register");
+  const contextualVideoIds = registeredItems?.videoIds;
+  const contextualVideoIdsRef = useRef(contextualVideoIds);
+  contextualVideoIdsRef.current = contextualVideoIds;
   // Unique, selector-safe container id (React's useId contains colons). Owned here so the
   // reverse-flow handler can read the SDK's `data-instance-id` off the same container.
   const domId = `gen-sdk-${useId().replace(/:/g, "")}`;
@@ -715,18 +406,13 @@ function PlacementWidget({ node, data }: WidgetRenderProps) {
   const emitRef = useRef(emit);
   emitRef.current = emit;
 
-  // The manifest already knows which community/group this placement plays, so the broadcast can
-  // carry them. Held in a ref for the same reason as `emit`.
-  const sourceRef = useRef(data.source);
-  sourceRef.current = data.source;
-
   // Which video we last announced — supplies `previousVideoId` and tells a first broadcast
   // (`video:load`) apart from a subsequent one (`video:change`).
   const lastVideoIdRef = useRef<string | null>(null);
 
   // Forward contextual flow: when THIS placement's embed changes its active video, the SDK emits
-  // `player:videoChanged` with its instance id + index. Rebroadcast it on the row's surface so the
-  // linked article/list can follow (filtered by instance id here, by `sourceId` on the far end).
+  // `player:videoChanged` with its real video/community/group identity. Rebroadcast it on the row's
+  // surface so a linked article can join on `video_id`, independent of array order or brand.
   //
   // We RETRY until `window.genuin.onInternal` exists — it can lag the script's `load` event, and if
   // we bail early the listener would never attach until something forced a re-subscribe (e.g. a
@@ -751,24 +437,37 @@ function PlacementWidget({ node, data }: WidgetRenderProps) {
       const off: unknown = genuin.onInternal("player:videoChanged", (raw: unknown) => {
         // The SDK delivers a wrapper `{ type, payload, timestamp, embedId }` (web-sdk core/events.ts)
         // — the real data is under `.payload` (same reason the embed provider reads `props.payload`).
-        const wrapper = raw as { payload?: { instanceId?: string; index?: number } };
-        const event = (wrapper?.payload ?? wrapper) as { instanceId?: string; index?: number };
+        const wrapper = raw as {
+          payload?: {
+            instanceId?: string;
+            videoId?: string;
+            communityId?: string;
+            groupId?: string;
+            index?: number;
+          };
+        };
+        const event = (wrapper?.payload ?? wrapper) as {
+          instanceId?: string;
+          videoId?: string;
+          communityId?: string;
+          groupId?: string;
+          index?: number;
+        };
         const myInstanceId = document.getElementById(domId)?.getAttribute("data-instance-id");
         if (!myInstanceId || event.instanceId !== myInstanceId) return;
         if (typeof event.index !== "number") return;
 
         const index = event.index;
-        const source = sourceRef.current;
-        // The SDK's `player:videoChanged` payload is only `{ instanceId, index }` — it does not
-        // publish the video's own id (see `SDKPlayerVideoChangedPayload`). So identity here is
-        // "the video at position N of this placement", which is stable and unique on the surface
-        // and is what the position-linked consumers actually match on. Swap in the real id the day
-        // the SDK carries one; nothing else has to change.
-        const videoId = `${node.id}#${index}`;
+        // New SDK bundles publish the real id directly. During a rolling SDK deployment, an older
+        // bundle may still publish only the index; because this placement is explicitly scoped to
+        // the response's ordered `data-video-ids`, that index safely resolves to the same real id.
+        const videoId = event.videoId ?? contextualVideoIdsRef.current?.[index];
+        if (!videoId) return;
+        if (lastVideoIdRef.current === videoId) return;
         const payload = {
           videoId,
-          communityId: source?.communityId ?? "",
-          groupId: source?.groupId ?? "",
+          communityId: event.communityId ?? "",
+          groupId: event.groupId ?? "",
           index,
         };
 
@@ -791,16 +490,15 @@ function PlacementWidget({ node, data }: WidgetRenderProps) {
       if (retry) clearTimeout(retry);
       unsubscribe?.();
     };
-  }, [domId, node.id]);
+  }, [domId]);
 
   const handleExpandRequest = useCallback(() => {
     // Mobile keeps the SDK's normal direct-fullscreen path. Desktop Home adds only the
     // intermediate presentation state around that same fullscreen instance.
-    if (!openHomePlayerOverlay || !window.matchMedia("(min-width: 1024px)").matches) return;
-    markHomeFeedView(domId, true);
-    markHomeFeedSession(domId, true);
-    openHomePlayerOverlay({ sourceDomId: domId });
-  }, [domId, openHomePlayerOverlay]);
+    if (!openFeedViewOverlay || !window.matchMedia("(min-width: 1024px)").matches) return;
+    prepareFeedView(domId);
+    openFeedViewOverlay({ sourceDomId: domId });
+  }, [domId, openFeedViewOverlay]);
 
   // Reverse contextual flow: a list panel in this row broadcast a selection — tell THIS
   // placement's running embed to slide to it, scoped by the placement's SDK instance id so only
@@ -809,11 +507,11 @@ function PlacementWidget({ node, data }: WidgetRenderProps) {
   // NOTE: this reacts to any `item:select` on the row's surface. Every row in the manifest holds
   // exactly ONE video placement, so that is unambiguous; a row with two would need the payload to
   // name its target.
-  useSurfaceEvent("item:select", ({ index }) => {
+  useSurfaceEvent("item:select", ({ videoId }) => {
     if (typeof window === "undefined") return;
     const instanceId = document.getElementById(domId)?.getAttribute("data-instance-id");
-    if (!instanceId) return;
-    (window as GenuinWindow).genuin?.emitInternal?.("player:goToIndex", { instanceId, index });
+    if (!instanceId || !videoId) return;
+    (window as GenuinWindow).genuin?.emitInternal?.("player:goToVideo", { instanceId, videoId });
   });
 
   return (
@@ -832,6 +530,7 @@ function PlacementWidget({ node, data }: WidgetRenderProps) {
           mobilePlacementId={
             typeof node.config?.mobilePlacementId === "string" ? node.config.mobilePlacementId : undefined
           }
+          videoIds={contextualVideoIds}
           onExpandRequest={handleExpandRequest}
         />
       ) : (
@@ -919,40 +618,33 @@ function EventCarouselWidget({ node, data }: WidgetRenderProps) {
   );
 }
 
-function HoverLinkCardListWidget({ node, data, dataMap }: WidgetRenderProps) {
+function HoverLinkCardListWidget({ node, data }: WidgetRenderProps) {
   const emit = useEmit();
   const sourceId = node.dependsOn?.widgetId;
 
-  // Pair each editorial link with a live video from the linked widget's community feed, so the
-  // link thumbnails match real videos. (With the video slot now a self-contained SDK placement,
-  // the bus link is best-effort — the placement doesn't publish its active video.)
-  const sourceData = node.dependsOn ? dataMap[node.dependsOn.widgetId] : undefined;
-  const { posts } = useCommunityFeed(sourceData?.source?.communityId ?? "", sourceData?.source?.groupId);
+  // The response owns this relationship. A different brand changes only its response values;
+  // this adapter never guesses from titles, runs a parallel feed query, or uses array position as
+  // video identity.
+  const items = (data.items ?? []).map((item) => ({
+    id: item.id,
+    link: item.link,
+    title: item.title,
+    description: item.description,
+    brand: item.brand,
+    website: item.website,
+    image: item.image,
+    video_id: item.video_id,
+  }));
+  const registeredVideoIds = useMemo(() => (data.items ?? []).map(({ video_id }) => video_id), [data.items]);
 
-  const items = (data.items ?? []).map((item, index) => {
-    const post = posts[index];
-    return {
-      id: item.id,
-      link: item.link,
-      title: item.title,
-      description: item.description,
-      brand: item.brand,
-      website: item.website,
-      image: post?.video?.thumbnail ?? item.image,
-      // Matching key for the index highlight. MUST be stable and always present — the community
-      // feed can be empty/misaligned (leaving the feed's video id null), which silently broke the
-      // forward flow's programmatic highlight. Use the item's own id so index N always resolves.
-      video_id: item.id ?? item.link,
-    };
-  });
+  useEffect(() => {
+    emit("items:register", { videoIds: registeredVideoIds });
+  }, [emit, registeredVideoIds]);
 
-  // Forward flow: follow only the widget this one declared in `dependsOn`, and highlight the item
-  // at the broadcast position. Highlight is by `video_id` (what HoverLinkCardList matches on), so
-  // map the position → that item's id. Before the first broadcast, default to the FIRST item so the
-  // list is mapped to the (index-0) video from page load — display-only, no reverse emit.
+  // Follow only the declared source and select by the SDK's real id. The first response item is a
+  // display-only seed until the SDK publishes its initial active video.
   const activeVideo = useLatestVideoFrom(sourceId);
-  const activeIndex = activeVideo?.index ?? 0;
-  const activeVideoId = items[activeIndex]?.video_id ?? null;
+  const activeVideoId = activeVideo?.videoId ?? items[0]?.video_id ?? null;
 
   // Reverse flow: the user moved the list, so announce the selection. The row's video placement
   // picks it up and slides; the bus does not deliver this back to us.

@@ -17,6 +17,8 @@ export type ControlLayerPropsType = ComponentProps<"div"> & {
   clipVideo?: boolean;
   editCover?: boolean;
   enableExpand?: boolean;
+  /** Overrides the normal expand action for presentations such as the inline-article player. */
+  onExpandClick?: () => void;
   expandViewDetails?: boolean;
   layoutType?: "responsiveness" | BrandType;
   containerWidth?: number;

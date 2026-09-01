@@ -40,7 +40,7 @@ export enum SDKEventName {
   /**
    * Embed → host: the active video changed (user swipe / autoplay advance). Scoped per
    * instance via `payload.instanceId` so a host with many placements can attribute it.
-   * Payload: `{ instanceId, index }`. Drives the forward contextual flow (video → article).
+   * Carries the real video/community/group ids used by contextual surfaces.
    */
   PLAYER_VIDEO_CHANGED = "player:videoChanged",
 }
@@ -255,6 +255,12 @@ export type PlayChangeIHeartContentPayload = {
 export interface SDKPlayerVideoChangedPayload {
   /** SDK instance id of the embed that changed (from the container's `data-instance-id`). */
   instanceId?: string;
+  /** Actual id of the now-active video. */
+  videoId: string;
+  /** Community containing the active video. */
+  communityId: string;
+  /** Group containing the active video. */
+  groupId: string;
   /** 0-based index of the now-active video in the embed's flat feed. */
   index: number;
 }

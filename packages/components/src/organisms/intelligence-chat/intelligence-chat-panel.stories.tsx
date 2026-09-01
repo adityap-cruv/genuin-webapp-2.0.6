@@ -15,7 +15,11 @@ import type {
   IntelligenceResponseBlock,
   IntelligenceTextBlockProps,
 } from "./intelligence-chat.types";
-import { INTELLIGENCE_BLOCK_TYPES, INTELLIGENCE_DEFAULT_REGISTRY } from "./intelligence-default-registry";
+import {
+  createIntelligenceDefaultRegistry,
+  INTELLIGENCE_BLOCK_TYPES,
+  INTELLIGENCE_DEFAULT_REGISTRY,
+} from "./intelligence-default-registry";
 import { defineIntelligenceBlock, mergeIntelligenceRegistries } from "./intelligence-response-registry";
 
 /* -------------------------------------------------------------------------- */
@@ -23,6 +27,7 @@ import { defineIntelligenceBlock, mergeIntelligenceRegistries } from "./intellig
 /* -------------------------------------------------------------------------- */
 
 const PANEL_SIZE = { width: 550, height: 818 };
+const ARTICLE_SELECT_ACTION = fn();
 
 const GIFT_GUIDE_TEXT: IntelligenceTextBlockProps = {
   title: "🎁 Meaningful Holiday Gifts for Friends & Family This Season",
@@ -243,6 +248,23 @@ export const ReferenceResponse: Story = {
     await userEvent.keyboard("{Enter}");
     await expect(args.onSend).toHaveBeenCalledWith("Show me the standings");
     await expect(canvas.getByLabelText("Ask Intelligence")).toHaveValue("");
+  },
+};
+
+/** Runtime card actions are injected by the host, not serialized into response props. */
+export const ArticleSelectionAction: Story = {
+  args: {
+    registry: createIntelligenceDefaultRegistry({ onArticleSelect: ARTICLE_SELECT_ACTION }),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const article = REFERENCE_UP_NEXT_ARTICLES[0]!;
+    const firstArticleLink = canvas.getByRole("link", { name: article.title });
+
+    ARTICLE_SELECT_ACTION.mockClear();
+    await userEvent.click(firstArticleLink);
+    await expect(ARTICLE_SELECT_ACTION).toHaveBeenCalledWith(article);
+    await expect(firstArticleLink).toHaveAttribute("href", article.href);
   },
 };
 

@@ -30,6 +30,8 @@ export function DefaultPlacement({
   isActive,
   onReactionStateChange,
   containerWidth,
+  enableExpand = true,
+  onExpandClick,
   style,
   onClick,
 }: ControlLayerPropsType) {
@@ -176,6 +178,8 @@ export function DefaultPlacement({
               // reach md/lg regardless of tile width.
               size={containerWidth ? resolveControlSize(containerWidth) : "sm"}
               section={postDetails.section}
+              enableExpand={enableExpand}
+              onExpandClick={onExpandClick}
             />
           </div>
         )}

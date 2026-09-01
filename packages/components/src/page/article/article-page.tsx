@@ -1,13 +1,21 @@
 "use client";
 
-import { Image } from "@genuin/ui/components/image";
-import { Heading, Text } from "@genuin/ui/components/typography";
+import { Text } from "@genuin/ui/components/typography";
 import { cn } from "@genuin/ui/lib/utils";
-import { useEffect, useId } from "react";
+import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from "react";
 
+import {
+  FeedViewOverlay,
+  FeedViewOverlayProvider,
+  prepareFeedView,
+  useOpenFeedViewOverlay,
+  usePlacementFeedViewIntent,
+  type FeedViewOverlayRequest,
+} from "@genuin/components/lib/feed-view/feed-view-overlay";
 import { Link } from "@genuin/components/molecules/link";
 
-import type { Article, ArticleBlock } from "./article-data";
+import type { Article } from "./article-data";
+import { ARTICLE_READER_MOTION_CSS, ArticleReaderBody, ArticleReaderHeader } from "./article-reader";
 
 /* -------------------------------------------------------------------------- */
 /* Genuin SDK placements — real backend-configured embeds (`data-placement-id`),   */
@@ -43,7 +51,8 @@ const PLACEMENTS = {
 
 /** Web SDK bundle — QA CDN by default, matching the webapp's `GenuinSdkLoader`. */
 const SDK_SCRIPT_SRC =
-  process.env.NEXT_PUBLIC_GENUIN_SDK_URL ?? "https://media.qa.begenuin.com/sdk/2.0.5/gen_sdk.min.js";
+  (typeof process !== "undefined" && process.env ? process.env.NEXT_PUBLIC_GENUIN_SDK_URL : undefined) ??
+  "https://media.qa.begenuin.com/sdk/2.0.5/gen_sdk.min.js";
 
 type GenuinWindow = Window & { genuin?: { init?: (config: Record<string, unknown>) => unknown } };
 
@@ -90,6 +99,7 @@ function scheduleGenuinInit() {
 function GenuinPlacement({ placement }: { placement: PlacementConfig }) {
   // Unique, selector-safe container id (React's useId contains colons).
   const domId = `gen-sdk-${useId().replace(/:/g, "")}`;
+  const openFeedViewOverlay = useOpenFeedViewOverlay();
 
   useEffect(() => {
     let cancelled = false;
@@ -105,6 +115,19 @@ function GenuinPlacement({ placement }: { placement: PlacementConfig }) {
     };
   }, []);
 
+  const handleExpandRequest = useCallback(() => {
+    // Match Home exactly: desktop opens the bounded Feed View; mobile keeps the SDK's native
+    // direct-fullscreen behavior. Explicit player controls are never intercepted by this path.
+    if (!openFeedViewOverlay || !window.matchMedia("(min-width: 1024px)").matches) return;
+    prepareFeedView(domId);
+    openFeedViewOverlay({ sourceDomId: domId });
+  }, [domId, openFeedViewOverlay]);
+
+  const captureFeedViewIntent = usePlacementFeedViewIntent({
+    onExpandRequest: openFeedViewOverlay ? handleExpandRequest : undefined,
+    waitForSdk: loadGenuinSdk,
+  });
+
   return (
     <div
       id={domId}
@@ -112,6 +135,7 @@ function GenuinPlacement({ placement }: { placement: PlacementConfig }) {
       data-style-id={placement.styleId}
       data-placement-id={placement.placementId}
       data-api-key={placement.apiKey}
+      onClickCapture={captureFeedViewIntent}
       style={{ width: "100%", height: "100%" }}
     />
   );
@@ -164,13 +188,6 @@ function ArticleGridPlacement() {
 /* Article reader                                                              */
 /* -------------------------------------------------------------------------- */
 
-const KIND_LABEL: Record<Article["kind"], string> = {
-  news: "News",
-  interview: "Interview",
-  podcast: "Podcast",
-  event: "Event",
-};
-
 /**
  * Two-column layout driven by a REAL CSS media query, not the `useDeviceDetectMediaQuery` JS
  * hook. `usehooks-ts` `useMediaQuery` returns `false` during SSR (no `window`), so gating the
@@ -183,18 +200,8 @@ const KIND_LABEL: Record<Article["kind"], string> = {
  * matching `BREAKPOINTS.DESKTOP`.
  */
 const ARTICLE_LAYOUT_CSS = `
+${ARTICLE_READER_MOTION_CSS}
 .gen-article-page { scroll-behavior: smooth; }
-.gen-article-reveal {
-  opacity: 0;
-  animation: gen-article-rise 620ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-.gen-article-reveal-delay-1 { animation-delay: 80ms; }
-.gen-article-reveal-delay-2 { animation-delay: 160ms; }
-.gen-article-reveal-delay-3 { animation-delay: 240ms; }
-@keyframes gen-article-rise {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
 .gen-article-cols { margin-top: 24px; display: flex; flex-direction: column; gap: 32px; align-items: stretch; }
 .gen-article-main { min-width: 0; }
 .gen-article-rail { width: 100%; min-width: 0; flex-shrink: 0; }
@@ -210,43 +217,8 @@ const ARTICLE_LAYOUT_CSS = `
 }
 @media (prefers-reduced-motion: reduce) {
   .gen-article-page { scroll-behavior: auto; }
-  .gen-article-reveal { opacity: 1; animation: none; }
 }
 `;
-
-/** One body block — a section heading, a paragraph, or a captioned image. */
-function BodyBlock({ block }: { block: ArticleBlock }) {
-  if (block.type === "heading") {
-    return (
-      <Heading as="h2" level="headline-3" weight="bold" className="gencl:mt-8 gencl:mb-2 gencl:text-secondary-900">
-        {block.text}
-      </Heading>
-    );
-  }
-
-  if (block.type === "image") {
-    return (
-      <figure className="gencl:my-6">
-        <div className="gencl:overflow-hidden gencl:rounded-lg gencl:bg-secondary-100">
-          <Image src={block.src} alt={block.alt ?? ""} handleError className="gencl:w-full gencl:object-cover" />
-        </div>
-        {block.caption ? (
-          <figcaption className="gencl:mt-2">
-            <Text as="span" size="body-3" className="gencl:text-secondary-500">
-              {block.caption}
-            </Text>
-          </figcaption>
-        ) : null}
-      </figure>
-    );
-  }
-
-  return (
-    <Text as="p" size="body-1" className="gencl:my-4 gencl:leading-7 gencl:text-secondary-800">
-      {block.text}
-    </Text>
-  );
-}
 
 /**
  * On-domain article reader built around all three Genuin SDK placements, full-width:
@@ -261,110 +233,67 @@ function BodyBlock({ block }: { block: ArticleBlock }) {
  * The two-column body split is a real CSS `@media` query (see {@link ARTICLE_LAYOUT_CSS}), not a
  * JS media-query hook, so it's correct on the first paint of an SSR refresh (no column flip).
  */
-export function ArticlePage({ article }: { article: Article }) {
-  const isEvent = article.kind === "event";
-  const bylineParts = [article.author, article.publishedAt].filter(Boolean);
+export function ArticlePage({ article, backControl }: { article: Article; backControl?: ReactNode }) {
+  const overlayBoundsRef = useRef<HTMLDivElement>(null);
+  const [playerOverlay, setPlayerOverlay] = useState<FeedViewOverlayRequest | null>(null);
+  const closePlayerOverlay = useCallback(() => setPlayerOverlay(null), []);
 
   return (
-    <div
-      className="gen-article-page"
-      style={{ height: "100%", overflow: "auto", background: "#ffffff" }}>
-      <style>{ARTICLE_LAYOUT_CSS}</style>
-      <div style={{ width: "100%", padding: "32px 20px" }}>
-        <Link
-          href="/home"
-          className={cn(
-            "gencl:inline-flex gencl:items-center gencl:gap-1 gencl:text-secondary-500",
-            "gencl:no-underline gencl:hover:text-secondary-800"
-          )}>
-          <Text as="span" size="body-2" weight="medium">
-            ← Back to home
-          </Text>
-        </Link>
-
-        {/* Full-width headline block, above the hero placement. */}
-        <header className="gen-article-reveal gencl:mt-4">
-          <Text
-            as="p"
-            size="body-3"
-            weight="semibold"
-            className="gencl:mb-2 gencl:uppercase gencl:tracking-wider gencl:text-primary">
-            {KIND_LABEL[article.kind]}
-          </Text>
-
-          <Heading as="h1" level="headline-1" weight="bold" className="gencl:text-secondary-900">
-            {article.title}
-          </Heading>
-
-          {article.standfirst ? (
-            <Text as="p" size="body-0" className="gencl:mt-3 gencl:leading-7 gencl:text-secondary-700">
-              {article.standfirst}
-            </Text>
-          ) : null}
-
-          {isEvent && (article.eventDate || article.location) ? (
-            <div className="gencl:mt-4 gencl:flex gencl:flex-wrap gencl:items-center gencl:gap-x-2 gencl:gap-y-1">
-              {article.eventDate ? (
-                <Text as="span" size="body-1" weight="semibold" className="gencl:text-secondary-900">
-                  {article.eventDate}
+    <FeedViewOverlayProvider onOpen={setPlayerOverlay}>
+      <div
+        ref={overlayBoundsRef}
+        data-slot="article-feed-view-boundary"
+        style={{ position: "relative", height: "100%", overflow: "hidden", background: "#ffffff" }}>
+        <div
+          className="gen-article-page"
+          aria-hidden={playerOverlay ? true : undefined}
+          inert={playerOverlay ? true : undefined}
+          style={{ height: "100%", overflow: playerOverlay ? "hidden" : "auto", background: "#ffffff" }}>
+          <style>{ARTICLE_LAYOUT_CSS}</style>
+          <div style={{ width: "100%", padding: "32px 20px" }}>
+            {backControl ?? (
+              <Link
+                href="/home"
+                className={cn(
+                  "gencl:inline-flex gencl:items-center gencl:gap-1 gencl:text-secondary-500",
+                  "gencl:no-underline gencl:hover:text-secondary-800"
+                )}>
+                <Text as="span" size="body-2" weight="medium">
+                  ← Back to home
                 </Text>
-              ) : null}
-              {article.eventDate && article.location ? (
-                <span aria-hidden className="gencl:text-secondary-400">
-                  |
-                </span>
-              ) : null}
-              {article.location ? (
-                <Text as="span" size="body-1" className="gencl:text-secondary-600">
-                  {article.location}
-                </Text>
-              ) : null}
-            </div>
-          ) : null}
+              </Link>
+            )}
 
-          {bylineParts.length > 0 ? (
-            <Text as="p" size="body-2" className="gencl:mt-4 gencl:text-secondary-500">
-              {bylineParts.join(" • ")}
-            </Text>
-          ) : null}
-        </header>
+            {/* Full-width headline block, above the hero placement. */}
+            <ArticleReaderHeader article={article} className="gencl:mt-4" />
 
-        {/* 1. HERO — a full-width placement is the first media the reader sees. */}
-        <ArticleCarouselPlacement />
+            {/* 1. HERO — a full-width placement is the first media the reader sees. */}
+            <ArticleCarouselPlacement />
 
-        {/* 2. BODY — article text (LEFT) + sticky feed placement (RIGHT rail). Two columns on
-            desktop, stacked on mobile, via CSS so it's correct on the first SSR paint. */}
-        <div className="gen-article-cols">
-          <article className="gen-article-main gen-article-reveal gen-article-reveal-delay-2">
-            <div className="gencl:mb-6 gencl:overflow-hidden gencl:rounded-xl gencl:bg-secondary-100">
-              <Image
-                src={article.heroImage.src}
-                alt={article.heroImage.alt}
-                handleError
-                className="gencl:w-full gencl:object-cover"
-              />
+            {/* 2. BODY — article text (LEFT) + sticky feed placement (RIGHT rail). Two columns on
+                desktop, stacked on mobile, via CSS so it's correct on the first SSR paint. */}
+            <div className="gen-article-cols">
+              <ArticleReaderBody article={article} />
+
+              <aside className="gen-article-rail">
+                <div className="gen-article-rail-sticky gen-article-reveal gen-article-reveal-delay-3">
+                  <ArticleFeedPlacement />
+                </div>
+              </aside>
             </div>
 
-            <div data-slot="article-body">
-              {article.body.map((block, index) => (
-                <BodyBlock key={index} block={block} />
-              ))}
+            {/* 3. FINALE — grid to keep the reader watching. Constrained to the article content
+                column width (see `.gen-article-finale`), not the full container. */}
+            <div className="gen-article-finale">
+              <ArticleGridPlacement />
             </div>
-          </article>
-
-          <aside className="gen-article-rail">
-            <div className="gen-article-rail-sticky gen-article-reveal gen-article-reveal-delay-3">
-              <ArticleFeedPlacement />
-            </div>
-          </aside>
+          </div>
         </div>
 
-        {/* 3. FINALE — grid to keep the reader watching. Constrained to the article content
-            column width (see `.gen-article-finale`), not the full container. */}
-        <div className="gen-article-finale">
-          <ArticleGridPlacement />
-        </div>
+        {playerOverlay ? (
+          <FeedViewOverlay request={playerOverlay} boundsRef={overlayBoundsRef} onClose={closePlayerOverlay} />
+        ) : null}
       </div>
-    </div>
+    </FeedViewOverlayProvider>
   );
 }

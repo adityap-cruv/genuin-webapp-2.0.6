@@ -19,6 +19,10 @@ type EmbedControlsProps = ComponentProps<"div"> & {
   size?: PlayerControlSize;
   section?: PostDetailsType["section"];
   videoId?: string;
+  /** Whether the expand/collapse action is relevant in this presentation. */
+  enableExpand?: boolean;
+  /** Optional presentation-level action used instead of opening a new expand view. */
+  onExpandClick?: () => void;
 };
 
 type EmbedButtonProps = {
@@ -28,6 +32,7 @@ type EmbedButtonProps = {
 type EmbedExpandButtonProps = EmbedButtonProps & {
   section?: PostDetailsType["section"];
   videoId?: string;
+  onExpandClick?: () => void;
 };
 
 /** Mute/unmute toggle button styled for embed control bars. */
@@ -62,7 +67,7 @@ export function EmbedPlayButton({ size = "sm" }: EmbedButtonProps) {
 }
 
 /** Expand/collapse button styled for embed control bars. */
-export function EmbedExpandButton({ size = "sm", section, videoId }: EmbedExpandButtonProps) {
+export function EmbedExpandButton({ size = "sm", section, videoId, onExpandClick }: EmbedExpandButtonProps) {
   const { changeActivePlayerType, updateSelectedSection, embedEventBus } = useEmbedContext();
   const { brand_id } = useBaseContext().brandDetails;
   const [isExpandView, setIsExpandView] = useState(false);
@@ -82,7 +87,13 @@ export function EmbedExpandButton({ size = "sm", section, videoId }: EmbedExpand
     <IconCircleButton
       size={size}
       className="gencl:cursor-pointer"
+      aria-label={onExpandClick ? "Back to Feed View" : isExpandView ? "Collapse" : "Expand"}
       onClick={() => {
+        if (onExpandClick) {
+          onExpandClick();
+          return;
+        }
+
         changeActivePlayerType("expand-view");
         if (section) {
           updateSelectedSection(section);
@@ -110,14 +121,24 @@ export function EmbedExpandButton({ size = "sm", section, videoId }: EmbedExpand
   );
 }
 
-export function EmbedControls({ className, size = "sm", section, videoId, ...restProps }: EmbedControlsProps) {
+export function EmbedControls({
+  className,
+  size = "sm",
+  section,
+  videoId,
+  enableExpand = true,
+  onExpandClick,
+  ...restProps
+}: EmbedControlsProps) {
   const config = useEmbedConfigs();
 
   return (
     <div className={cn("gencl:flex gencl:gap-1", className)} {...restProps}>
       <EmbedMuteButton size={size} />
       <EmbedPlayButton size={size} />
-      {config.expandViewConfig.enable && <EmbedExpandButton size={size} section={section} videoId={videoId} />}
+      {enableExpand && config.expandViewConfig.enable && (
+        <EmbedExpandButton size={size} section={section} videoId={videoId} onExpandClick={onExpandClick} />
+      )}
     </div>
   );
 }

@@ -63,8 +63,7 @@ export function IntelligenceArticleCard({
         onClick={
           onSelect
             ? (event) => {
-                event.preventDefault();
-                onSelect(article);
+                if (onSelect(article) !== false) event.preventDefault();
               }
             : undefined
         }

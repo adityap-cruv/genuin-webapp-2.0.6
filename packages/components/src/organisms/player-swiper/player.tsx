@@ -87,6 +87,10 @@ type PlayerProps = {
   onAdPlaybackEnd?: (index: number) => void;
   /** Feed-session identifier from the first feed API page, forwarded to analytics. */
   pageSession?: string | null;
+  /** Reuse the placement/card overlay while the existing player is shown as an article PiP. */
+  controlLayerVariant?: "default" | "placement";
+  /** Returns the inline-article PiP to its already-open Feed View. */
+  onExpandClick?: () => void;
 };
 
 // TODO: This component is using feed context, which is not ideal. Remove this dep of FeedContext in future.
@@ -109,6 +113,8 @@ export function Player({
   onAdEnded,
   onAdPlaybackEnd,
   onAdFilled,
+  controlLayerVariant = "default",
+  onExpandClick,
 }: PlayerProps) {
   const { showExpandView, toggleExpandView, activeIndex, variant } = useFeedContext();
   const { muted, theme } = useBaseContext();
@@ -301,6 +307,9 @@ export function Player({
           {!(isAdFilled && hideControlsForAd) && (
             <SafeSuspense fallback={null} errorFallback={null}>
               <ControlLayer
+                variant={controlLayerVariant}
+                enableExpand={controlLayerVariant !== "placement" || Boolean(onExpandClick)}
+                {...(onExpandClick ? { onExpandClick, onClick: onExpandClick } : {})}
                 index={index}
                 isActive={isActive}
                 postDetails={post}

@@ -45,6 +45,10 @@ interface NonSectionedContentProps {
   onAdPlaybackEnd: (index: number) => void;
   /** Feed-session identifier from the first feed API page, forwarded to analytics. */
   pageSession?: string | null;
+  /** Presentation used by the existing player's control layer. */
+  controlLayerVariant?: "default" | "placement";
+  /** Overrides the PiP expand icon with a return to the existing Feed View. */
+  onExpandClick?: () => void;
   /**
    * Shimmer shown while a slide's lazy `Player` chunk downloads. Must NOT be null —
    * the Player is the slide's primary content, so a null fallback paints a black box
@@ -76,6 +80,8 @@ export function NonSectionedContent({
   onAdPlaybackEnd,
   pageSession,
   playerFallback,
+  controlLayerVariant,
+  onExpandClick,
 }: NonSectionedContentProps) {
   const { track, EventName } = useAnalytics();
   return (
@@ -159,6 +165,8 @@ export function NonSectionedContent({
                     onAdFilled={onAdFilled}
                     onAdPlaybackEnd={onAdPlaybackEnd}
                     pageSession={pageSession}
+                    controlLayerVariant={controlLayerVariant}
+                    onExpandClick={onExpandClick}
                   />
                 </SafeSuspense>
               ) : post.video.type === "complete" ? (

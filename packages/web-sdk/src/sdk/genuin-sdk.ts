@@ -966,7 +966,7 @@ export class GenuinSDK {
       const { shadowRoot } = host;
       if (!shadowRoot) return;
       shadowRoot.querySelectorAll(selector).forEach((el) => {
-         if (
+        if (
           el instanceof HTMLElement &&
           // A real nested host is explicitly marked, or carries a publisher
           // embed/placement/style data-attr. SDK-internal inner roots have none.
@@ -1030,7 +1030,7 @@ export class GenuinSDK {
         const existingInstanceId = element.getAttribute("data-instance-id");
 
         if (existingInstanceId && this.sdkElements[existingInstanceId]) {
-           // This is the parent container — skip only this one. `continue`, not
+          // This is the parent container — skip only this one. `continue`, not
           // `return`: a `return` aborts the whole loop, leaving any sibling
           // pending containers (incl. the actual nested child) uninitialized.
           continue;
@@ -1606,7 +1606,7 @@ export class GenuinSDK {
    * @returns The initialization status: 'pending', 'loading', or 'done'.
    */
   private getInitializationStatus(element: HTMLElement): InitializationStatus {
-        // Backstop: never treat SDK-rendered internal chrome as a fresh container.
+    // Backstop: never treat SDK-rendered internal chrome as a fresh container.
     // The selector already excludes these, but defaulting them to "done" here
     // means even a stray internal node can never be mounted into.
     if (element.hasAttribute(GENUIN_INTERNAL_ATTR)) {
@@ -1778,7 +1778,8 @@ export class GenuinSDK {
     let targetPlacementId: string | undefined;
 
     // Find by div element ID (use first element if multiple exist)
-    const element = document.getElementById(id);
+    const element =
+      document.getElementById(id) ?? Object.values(this.sdkElements).find((entry) => entry.element.id === id)?.element;
 
     const instanceId = element?.getAttribute("data-instance-id");
     if (element && instanceId) {
@@ -1822,7 +1823,8 @@ export class GenuinSDK {
     let targetPlacementId: string | undefined;
 
     // Find by div element ID (use first element if multiple exist)
-    const element = document.getElementById(id);
+    const element =
+      document.getElementById(id) ?? Object.values(this.sdkElements).find((entry) => entry.element.id === id)?.element;
     if (element) {
       const instanceId = element.getAttribute("data-instance-id");
       if (instanceId && this.sdkElements[instanceId]) {

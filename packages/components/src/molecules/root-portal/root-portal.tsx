@@ -57,13 +57,16 @@ const BRAND_OVERLAY_Z_INDEX: Record<number, string> = {
   // Mike iheart
   1729: "11",
   // Sports Server
-  3275: "12"
+  3275: "12",
 };
 
 const getOverlayZIndexByBrandId = (brandId?: number): string | undefined => {
   if (!brandId) return undefined;
   return BRAND_OVERLAY_Z_INDEX[brandId];
 };
+
+// Expand views can nest into the same keyed host. The child must not remove the host still owned by its parent.
+const portalOwnerCount = new Map<string, number>();
 
 /**
  * The RootPortal component is a React component that renders its children into a portal at the root of the document body.
@@ -105,6 +108,7 @@ export function RootPortal({
       }
     } else {
       if (useShadowDOM) {
+        portalOwnerCount.set(portalKey, (portalOwnerCount.get(portalKey) ?? 0) + 1);
         // Each portalKey gets its own isolated shadow host so that style props
         // (e.g. PipView height:0px vs ExpandView height:812px) never overwrite
         // each other.
@@ -122,7 +126,13 @@ export function RootPortal({
         setContainerElement(portalContainer);
 
         return () => {
-          cleanupOverlayShadowHost(portalKey);
+          const remainingOwners = (portalOwnerCount.get(portalKey) ?? 1) - 1;
+          if (remainingOwners > 0) {
+            portalOwnerCount.set(portalKey, remainingOwners);
+          } else {
+            portalOwnerCount.delete(portalKey);
+            cleanupOverlayShadowHost(portalKey);
+          }
         };
       } else {
         // Default to document.body

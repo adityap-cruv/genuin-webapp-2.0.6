@@ -47,6 +47,10 @@ interface SectionedContentProps {
   onAdPlaybackEnd?: (index: number) => void;
   /** Feed-session identifier from the first feed API page, forwarded to analytics. */
   pageSession?: string | null;
+  /** Presentation used by the existing player's control layer. */
+  controlLayerVariant?: "default" | "placement";
+  /** Overrides the PiP expand icon with a return to the existing Feed View. */
+  onExpandClick?: () => void;
   /** Shimmer for the lazy WatchBoundaryOverlay boundary; never null (see player-swiper). */
   playerFallback: ReactNode;
 }
@@ -77,6 +81,8 @@ export function SectionedContent({
   onAdPlaybackEnd,
   pageSession,
   playerFallback,
+  controlLayerVariant,
+  onExpandClick,
 }: SectionedContentProps) {
   const { track, EventName } = useAnalytics();
 
@@ -182,6 +188,8 @@ export function SectionedContent({
                         onAdFilled={onAdFilled}
                         onAdPlaybackEnd={onAdPlaybackEnd}
                         pageSession={pageSession}
+                        controlLayerVariant={controlLayerVariant}
+                        onExpandClick={onExpandClick}
                       />
                     ) : post.video.type === "complete" ? (
                       <SafeSuspense fallback={playerFallback} errorFallback={null}>

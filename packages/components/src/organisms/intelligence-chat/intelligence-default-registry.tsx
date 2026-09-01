@@ -6,6 +6,7 @@ import { IntelligenceLeaderboardContent } from "@genuin/components/organisms/int
 import type {
   IntelligenceArticle,
   IntelligenceArticleCardLayout,
+  IntelligenceArticleSelectHandler,
   IntelligenceCalendarContentProps,
   IntelligenceLeaderboardContentProps,
 } from "@genuin/components/organisms/intelligence-panel/intelligence-panel.types";
@@ -22,7 +23,6 @@ export type IntelligenceArticlesBlockProps = {
   label?: string;
   /** Card width in px. @default 250 */
   cardWidth?: number;
-  onArticleSelect?: (article: IntelligenceArticle) => void;
 };
 
 function IntelligenceArticlesBlock({
@@ -31,7 +31,7 @@ function IntelligenceArticlesBlock({
   label = "Up Next",
   cardWidth = 250,
   onArticleSelect,
-}: IntelligenceArticlesBlockProps) {
+}: IntelligenceArticlesBlockProps & { onArticleSelect?: IntelligenceArticleSelectHandler }) {
   return (
     <div
       data-slot="intelligence-articles-block"
@@ -61,18 +61,32 @@ export const INTELLIGENCE_BLOCK_TYPES = {
   calendar: "calendar",
 } as const;
 
+/** Runtime actions supplied by the host, never serialized into response blocks. */
+export type IntelligenceDefaultRegistryActions = {
+  onArticleSelect?: IntelligenceArticleSelectHandler;
+};
+
 /**
  * Registry wiring the existing Intelligence components (text, articles,
  * leaderboard, calendar) as chat response blocks. Extend with
  * `mergeIntelligenceRegistries(INTELLIGENCE_DEFAULT_REGISTRY, { myType: MyComponent })`.
  */
-export const INTELLIGENCE_DEFAULT_REGISTRY: IntelligenceResponseRegistry = {
-  [INTELLIGENCE_BLOCK_TYPES.text]: defineIntelligenceBlock(IntelligenceTextBlock),
-  [INTELLIGENCE_BLOCK_TYPES.userText]: defineIntelligenceBlock(IntelligenceUserTextBlock),
-  [INTELLIGENCE_BLOCK_TYPES.articles]:
-    defineIntelligenceBlock<IntelligenceArticlesBlockProps>(IntelligenceArticlesBlock),
-  [INTELLIGENCE_BLOCK_TYPES.leaderboard]:
-    defineIntelligenceBlock<IntelligenceLeaderboardContentProps>(IntelligenceLeaderboardContent),
-  [INTELLIGENCE_BLOCK_TYPES.calendar]:
-    defineIntelligenceBlock<IntelligenceCalendarContentProps>(IntelligenceCalendarContent),
-};
+export function createIntelligenceDefaultRegistry(
+  actions: IntelligenceDefaultRegistryActions = {}
+): IntelligenceResponseRegistry {
+  function ArticlesBlock(props: IntelligenceArticlesBlockProps) {
+    return <IntelligenceArticlesBlock {...props} onArticleSelect={actions.onArticleSelect} />;
+  }
+
+  return {
+    [INTELLIGENCE_BLOCK_TYPES.text]: defineIntelligenceBlock(IntelligenceTextBlock),
+    [INTELLIGENCE_BLOCK_TYPES.userText]: defineIntelligenceBlock(IntelligenceUserTextBlock),
+    [INTELLIGENCE_BLOCK_TYPES.articles]: defineIntelligenceBlock<IntelligenceArticlesBlockProps>(ArticlesBlock),
+    [INTELLIGENCE_BLOCK_TYPES.leaderboard]:
+      defineIntelligenceBlock<IntelligenceLeaderboardContentProps>(IntelligenceLeaderboardContent),
+    [INTELLIGENCE_BLOCK_TYPES.calendar]:
+      defineIntelligenceBlock<IntelligenceCalendarContentProps>(IntelligenceCalendarContent),
+  };
+}
+
+export const INTELLIGENCE_DEFAULT_REGISTRY = createIntelligenceDefaultRegistry();

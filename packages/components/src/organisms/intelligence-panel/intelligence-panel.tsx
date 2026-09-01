@@ -12,6 +12,7 @@ import { IntelligenceArticleCard } from "./intelligence-article-card";
 import { IntelligencePanelShell } from "./intelligence-panel-shell";
 import type {
   IntelligenceArticle,
+  IntelligenceArticleSelectHandler,
   IntelligenceCssLength,
   IntelligenceFeaturedArticleLayout,
   IntelligencePanelProps,
@@ -35,14 +36,13 @@ type FeaturedArticleProps = {
   article: IntelligenceArticle;
   layout: IntelligenceFeaturedArticleLayout;
   readMoreLabel: string;
-  onSelect?: (article: IntelligenceArticle) => void;
+  onSelect?: IntelligenceArticleSelectHandler;
 };
 
 function FeaturedArticle({ article, layout, readMoreLabel, onSelect }: FeaturedArticleProps) {
   const handleSelect = onSelect
     ? (event: React.MouseEvent) => {
-        event.preventDefault();
-        onSelect(article);
+        if (onSelect(article) !== false) event.preventDefault();
       }
     : undefined;
   return (
@@ -80,6 +80,7 @@ function FeaturedArticle({ article, layout, readMoreLabel, onSelect }: FeaturedA
 
         <Link
           href={article.href}
+          onClick={handleSelect}
           className={cn(
             FOCUS_CLASS,
             "gencl:inline-flex gencl:h-6 gencl:min-w-20 gencl:items-center gencl:justify-center",

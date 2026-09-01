@@ -2,6 +2,7 @@
 
 import { Loader } from "@genuin/ui/components/loader";
 import { abbreviateNumber, cn } from "@genuin/ui/lib/utils";
+import { X } from "lucide-react";
 import type { ComponentProps } from "react";
 import { useEffect, useState, useRef, useMemo, useCallback, lazy } from "react";
 import type { Swiper } from "swiper/types";
@@ -14,8 +15,16 @@ import { useDeviceDetection } from "@genuin/components/hooks/use-device-detectio
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { useFocusManagement } from "@genuin/components/hooks/use-focus-management";
 import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
+import {
+  dispatchHomeInlineArticleState,
+  HOME_FEED_VIEW_EVENT,
+  HOME_FULL_VIEW_EVENT,
+} from "@genuin/components/lib/home-feed/events";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import type { OctoPanelHandle } from "@genuin/components/molecules/octo-panel/octo-panel";
+import type { IntelligenceArticleSelectHandler } from "@genuin/components/organisms/intelligence-panel/intelligence-panel.types";
+import { getArticleByHref, type Article } from "@genuin/components/page/article/article-data";
+import { InlineArticleView } from "@genuin/components/page/article/inline-article-view";
 import { type PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
 import {
@@ -30,8 +39,82 @@ import { calculateSlideDimensions } from "./utils";
 
 import "swiper/css";
 
-const HOME_FULL_VIEW_EVENT = "genuin:home-feed-full-view";
-const HOME_FEED_VIEW_EVENT = "genuin:home-feed-view";
+const INLINE_ARTICLE_PLAYER_CSS = `
+  [data-inline-article-open="true"] [data-feed-video-shell] {
+    display: contents !important;
+  }
+  [data-feed-video-frame] {
+    display: contents;
+  }
+  [data-inline-article-open="true"] [data-feed-video-frame] {
+    display: block !important;
+    position: absolute !important;
+    inset: auto 72px 24px auto !important;
+    z-index: 50 !important;
+    width: auto !important;
+    height: min(448px, calc(100% - 112px)) !important;
+    margin: 0 !important;
+    aspect-ratio: 9 / 16 !important;
+    overflow: visible !important;
+    animation: gen-inline-player-enter 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  [data-inline-article-open="true"] [data-feed-video-column] {
+    position: relative !important;
+    inset: auto !important;
+    z-index: auto !important;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    aspect-ratio: 9 / 16 !important;
+    overflow: hidden !important;
+    border: 4px solid #fff !important;
+    border-radius: 16px !important;
+    background: #000 !important;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.28) !important;
+  }
+  [data-inline-article-open="true"] [data-slot="inline-video-close"] {
+    top: 12px !important;
+    right: -48px !important;
+  }
+  [data-inline-article-open="true"][data-inline-video-dismissed="true"] [data-feed-video-column] {
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+  @keyframes gen-inline-player-enter {
+    from { opacity: 0; transform: translate3d(20px, 16px, 0) scale(0.92); }
+    to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+  }
+  @media (max-width: 1199px) {
+    [data-inline-article-open="true"] [data-feed-video-frame] {
+      right: 66px !important;
+      bottom: 18px !important;
+      height: min(408px, calc(100% - 104px)) !important;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-inline-article-open="true"] [data-feed-video-frame] { animation: none; }
+  }
+`;
+
+const ACTIVE_FEED_VIEW_SELECTOR = '[data-home-feed-view="true"]';
+
+/** A child expand opened inside the active Feed View must reuse the same presentation. */
+function isFeedViewPresentation(rootElement: HTMLElement | null | undefined): boolean {
+  if (rootElement?.dataset.homeFeedView === "true") return true;
+  // The session owner may intentionally be promoted to Full View; do not force it back.
+  if (rootElement?.dataset.homeFeedSession === "true") return false;
+  return typeof document !== "undefined" && document.querySelector(ACTIVE_FEED_VIEW_SELECTOR) !== null;
+}
+
+/** `document.activeElement` stops at a shadow host; retain the actual card trigger. */
+function getDeepActiveElement(): Element | null {
+  let activeElement: Element | null = document.activeElement;
+  while (activeElement instanceof HTMLElement && activeElement.shadowRoot?.activeElement) {
+    activeElement = activeElement.shadowRoot.activeElement;
+  }
+  return activeElement;
+}
 
 const CloseButton = lazy(() =>
   import("./player-swiper-buttons").then((m) => ({
@@ -188,12 +271,49 @@ export function PlayerList({
     isDesignSystemV2Linkouts,
   } = useEmbedConfigs();
   const embedDetails = useSafeEmbedContext();
-  const [isHomeFeedView, setIsHomeFeedView] = useState(embedDetails?.rootElement?.dataset.homeFeedView === "true");
+  const [isHomeFeedView, setIsHomeFeedView] = useState(() => isFeedViewPresentation(embedDetails?.rootElement));
+  const [selectedInlineArticle, setSelectedInlineArticle] = useState<Article | null>(null);
+  const [isInlineVideoDismissed, setIsInlineVideoDismissed] = useState(false);
+  const inlineArticleTriggerRef = useRef<HTMLElement | null>(null);
+  const isInlineArticleOpen = selectedInlineArticle !== null;
+  const homeFeedSourceDomId = embedDetails?.rootElement?.id ?? "";
+
+  const closeInlineArticle = useCallback(() => {
+    setSelectedInlineArticle(null);
+    setIsInlineVideoDismissed(false);
+    window.requestAnimationFrame(() => {
+      const trigger = inlineArticleTriggerRef.current;
+      if (trigger?.isConnected) trigger.focus();
+      inlineArticleTriggerRef.current = null;
+    });
+  }, []);
+
+  const handleIntelligenceArticleSelect = useCallback<IntelligenceArticleSelectHandler>(
+    (selection) => {
+      if (!isHomeFeedView) return false;
+      const article = getArticleByHref(selection.href, window.location.origin);
+      if (!article) return false;
+
+      const activeElement = getDeepActiveElement();
+      inlineArticleTriggerRef.current = activeElement instanceof HTMLElement ? activeElement : null;
+      setSelectedInlineArticle(article);
+      setIsInlineVideoDismissed(false);
+      return true;
+    },
+    [isHomeFeedView]
+  );
 
   useEffect(() => {
-    if (!showExpandView) return;
-    setIsHomeFeedView(embedDetails?.rootElement?.dataset.homeFeedView === "true");
-  }, [embedDetails, showExpandView]);
+    const rootElement = embedDetails?.rootElement;
+    if (!rootElement) return;
+
+    const syncFeedViewState = () => setIsHomeFeedView(isFeedViewPresentation(rootElement));
+    syncFeedViewState();
+
+    const observer = new MutationObserver(syncFeedViewState);
+    observer.observe(rootElement, { attributes: true, attributeFilter: ["data-home-feed-view"] });
+    return () => observer.disconnect();
+  }, [embedDetails?.rootElement]);
 
   useEffect(() => {
     const handleFullView = () => setIsHomeFeedView(false);
@@ -205,6 +325,36 @@ export function PlayerList({
       document.removeEventListener(HOME_FEED_VIEW_EVENT, handleFeedView);
     };
   }, []);
+
+  useEffect(() => {
+    if (!homeFeedSourceDomId) return;
+    dispatchHomeInlineArticleState({ sourceDomId: homeFeedSourceDomId, open: isInlineArticleOpen });
+
+    return () => {
+      if (isInlineArticleOpen) {
+        dispatchHomeInlineArticleState({ sourceDomId: homeFeedSourceDomId, open: false });
+      }
+    };
+  }, [homeFeedSourceDomId, isInlineArticleOpen]);
+
+  useEffect(() => {
+    if (!isInlineArticleOpen) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      closeInlineArticle();
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [closeInlineArticle, isInlineArticleOpen]);
+
+  useEffect(() => {
+    if (isInlineArticleOpen && (!isHomeFeedView || !showExpandView)) {
+      setSelectedInlineArticle(null);
+      setIsInlineVideoDismissed(false);
+      inlineArticleTriggerRef.current = null;
+    }
+  }, [isHomeFeedView, isInlineArticleOpen, showExpandView]);
 
   // Comment panel state - only auto-open if Octo is NOT enabled (Octo takes priority)
   const {
@@ -264,6 +414,19 @@ export function PlayerList({
   // runs left the reel container empty for a frame (longer on heavy host pages),
   // which is the transparent gap seen when entering expand view.
   const containerRef = useRef<HTMLDivElement>(null);
+  const dismissInlineVideo = useCallback(() => {
+    const playerColumn = containerRef.current;
+    playerColumn?.querySelectorAll<HTMLMediaElement>("video, audio").forEach((media) => {
+      if (!media.paused) media.pause();
+    });
+    setIsInlineVideoDismissed(true);
+    window.requestAnimationFrame(() => {
+      playerColumn
+        ?.closest<HTMLElement>('[data-inline-article-open="true"]')
+        ?.querySelector<HTMLElement>('[data-slot="inline-intelligence-article"]')
+        ?.focus();
+    });
+  }, []);
   const needsMeasuredDimensions = brandLayoutType === "iheart" && isTablet;
   const [slideDimensions, setSlideDimensions] = useState<{
     slideWidth: number;
@@ -381,9 +544,9 @@ export function PlayerList({
   );
 
   useEffect(() => {
-    const shouldDisable = sheetState === "full-view" || sheetState === "panel-view";
+    const shouldDisable = isInlineArticleOpen || sheetState === "full-view" || sheetState === "panel-view";
     handleSwiperToggle(shouldDisable);
-  }, [sheetState, handleSwiperToggle]);
+  }, [sheetState, handleSwiperToggle, isInlineArticleOpen]);
 
   // Drop overlay posts entirely — we can't just skip a slide with a swiper-in-swiper.
   const filteredPost = useMemo(() => {
@@ -593,8 +756,10 @@ export function PlayerList({
   return (
     <div
       ref={playerListRef}
+      data-inline-article-open={isInlineArticleOpen || undefined}
+      data-inline-video-dismissed={isInlineVideoDismissed || undefined}
       className={cn(
-        "gencl:h-full gencl:w-full gencl:flex gencl:justify-center",
+        "gencl:h-full gencl:w-full gencl:flex gencl:justify-center gencl:relative",
         // brandLayoutType === "iheart" && isDesktop && "gencl:sm:py-8!",
         // brandLayoutType === "iheart" && isTablet && websiteType === "polaris" && "gencl:sm:pt-8!",
         brandLayoutType === "iheart" &&
@@ -602,8 +767,18 @@ export function PlayerList({
           isAdsEnabledInIheart &&
           "gencl:pt-[72px]! gencl:md:pt-8!",
         brandLayoutType !== "iheart" && "gencl:gap-6",
-        isHomeFeedView && isIntelligenceOpen && "gencl:pl-24 gencl:pr-6"
+        isHomeFeedView && isIntelligenceOpen && !isInlineArticleOpen && "gencl:pl-24 gencl:pr-6",
+        isInlineArticleOpen && "gencl:overflow-hidden gencl:gap-0! gencl:p-0!"
       )}>
+      <style>{INLINE_ARTICLE_PLAYER_CSS}</style>
+      {selectedInlineArticle && (
+        <InlineArticleView
+          key={selectedInlineArticle.slug}
+          article={selectedInlineArticle}
+          onBack={closeInlineArticle}
+        />
+      )}
+
       {/* Back button for iheart expand view (not on mobile) */}
       {brandLayoutType === "iheart" && !isMobile && (
         <SafeSuspense fallback={<PositionedLoader className="gencl:absolute gencl:left-8 gencl:z-50 gencl:size-10" />}>
@@ -616,135 +791,163 @@ export function PlayerList({
         </SafeSuspense>
       )}
       <div
+        data-feed-video-shell=""
         className={cn(
           "gencl:flex gencl:justify-center gencl:h-full gencl:w-full gencl:sm:w-fit! gencl:relative",
-          brandLayoutType !== "iheart" && "gencl:gap-6"
+          brandLayoutType !== "iheart" && "gencl:gap-6",
+          isInlineArticleOpen && "gencl:contents"
         )}>
-        <div
-          ref={containerRef}
-          data-feed-video-column=""
-          className={cn("gencl:h-full gencl:aspect-reel gencl:relative", isMobile && "gencl:h-full gencl:w-full")}
-          style={
-            // Only pin an explicit width when we actually measured one (iheart-tablet).
-            // When slideDimensions is the empty sentinel {} (non-measured / reset after a
-            // tablet→desktop transition), emit no inline width so the aspect-reel CSS
-            // governs — writing `${undefined}px` would be an invalid value the browser
-            // ignores, silently leaving a stale width in place.
-            slideDimensions?.slideWidth
-              ? {
-                  width: `${slideDimensions.slideWidth}px`,
-                }
-              : undefined
-          }
-          // role="region"
-          // aria-label="Video player"
-        >
-          {/* Header with back button and centered title */}
-          {shouldShowPlayerHeader && (
-            <SafeSuspense
-              fallback={
-                <PositionedLoader className="gencl:absolute gencl:top-0 gencl:left-0 gencl:right-0 gencl:z-20 gencl:p-4" />
-              }>
-              <PlayerHeader
-                isMobile={isMobile}
-                title={filteredPost[activeIndex]?.video?.attributes?.title ?? ""}
-                onBackClick={changeExpandViewType}
-                showTitle={!(isSectioned && (sectionList?.length ?? 0) > 0)}
-              />
-            </SafeSuspense>
-          )}
+        <div data-feed-video-frame="">
+          <div
+            ref={containerRef}
+            data-feed-video-column=""
+            className={cn("gencl:h-full gencl:aspect-reel gencl:relative", isMobile && "gencl:h-full gencl:w-full")}
+            style={
+              // Only pin an explicit width when we actually measured one (iheart-tablet).
+              // When slideDimensions is the empty sentinel {} (non-measured / reset after a
+              // tablet→desktop transition), emit no inline width so the aspect-reel CSS
+              // governs — writing `${undefined}px` would be an invalid value the browser
+              // ignores, silently leaving a stale width in place.
+              slideDimensions?.slideWidth
+                ? {
+                    width: `${slideDimensions.slideWidth}px`,
+                  }
+                : undefined
+            }
+            // role="region"
+            // aria-label="Video player"
+          >
+            {/* Header with back button and centered title */}
+            {shouldShowPlayerHeader && (
+              <SafeSuspense
+                fallback={
+                  <PositionedLoader className="gencl:absolute gencl:top-0 gencl:left-0 gencl:right-0 gencl:z-20 gencl:p-4" />
+                }>
+                <PlayerHeader
+                  isMobile={isMobile}
+                  title={filteredPost[activeIndex]?.video?.attributes?.title ?? ""}
+                  onBackClick={changeExpandViewType}
+                  showTitle={!(isSectioned && (sectionList?.length ?? 0) > 0)}
+                />
+              </SafeSuspense>
+            )}
 
-          {isSectioned && (
-            <SafeSuspense
-              fallback={
-                <PositionedLoader className="gencl:absolute gencl:top-0 gencl:left-0 gencl:right-0 gencl:z-50 gencl:p-4" />
-              }>
-              <SectionsTabs
-                onSectionSelect={handleSectionSelect}
-                // Clear the back button with left PADDING, not a positional `left-10`
-                // offset. The tablist is `absolute w-full`; shifting it right kept its
-                // width at 100% and pushed the right ~48px (and the last tabs) off-screen
-                // past the viewport edge, so the full list could never be scrolled into
-                // view. Padding keeps the strip in-bounds and scrolls with the content
-                // while starting the first tab clear of the back button (right edge ~44px).
-                leadingInset={shouldShowPlayerHeader && isMobile ? 56 : undefined}
-              />
-            </SafeSuspense>
-          )}
-          {/* While slideDimensions is being measured (iheart-tablet only — every
+            {isSectioned && (
+              <SafeSuspense
+                fallback={
+                  <PositionedLoader className="gencl:absolute gencl:top-0 gencl:left-0 gencl:right-0 gencl:z-50 gencl:p-4" />
+                }>
+                <SectionsTabs
+                  onSectionSelect={handleSectionSelect}
+                  // Clear the back button with left PADDING, not a positional `left-10`
+                  // offset. The tablist is `absolute w-full`; shifting it right kept its
+                  // width at 100% and pushed the right ~48px (and the last tabs) off-screen
+                  // past the viewport edge, so the full list could never be scrolled into
+                  // view. Padding keeps the strip in-bounds and scrolls with the content
+                  // while starting the first tab clear of the back button (right edge ~44px).
+                  leadingInset={shouldShowPlayerHeader && isMobile ? 56 : undefined}
+                />
+              </SafeSuspense>
+            )}
+            {/* While slideDimensions is being measured (iheart-tablet only — every
               other layout is seeded synchronously), show the player shimmer instead
               of nothing, so the reel area never renders empty/black for that frame
               (or longer on a slow host page). */}
-          {!slideDimensions && playerChunkFallback}
-          {slideDimensions && (
-            <div className="gencl:h-full gencl:w-full">
-              {isSectioned ? (
-                // Fallback fills the parent (h-full w-full) so it matches the
-                // fixed slideDimensions geometry — no aspect re-derivation, no
-                // size flash when the real player chunk swaps in.
-                <SafeSuspense fallback={playerChunkFallback}>
-                  <SectionedContent
-                    playerFallback={playerChunkFallback}
-                    sectionList={sectionList ?? []}
-                    embedDetails={embedDetails}
-                    filteredPost={filteredPost}
-                    startIndex={startIndex}
-                    slideDimensions={slideDimensions}
-                    disableSwiper={disableSwiper || isAdFilled}
-                    websiteType={websiteType}
-                    onActiveIndexChange={handleActiveIndexChange}
-                    setEndOfFeedReached={setEndOfFeedReached}
-                    isEndOfFeedReached={isEndOfFeedReached}
-                    onCommunityJoinStatusChange={onCommunityJoinStatusChange}
-                    onGroupJoinStatusChange={onGroupJoinStatusChange}
-                    onGroupSubscriptionChange={onGroupSubscriptionChange}
-                    onReactionStateChange={onReactionStateChange}
-                    onCommentCountChange={onCommentCountChange}
-                    totalVideos={totalVideos}
-                    isSectioned={isSectioned}
-                    isMobile={isMobile}
-                    setHorizontalSwiper={setHorizontalSwiper}
-                    setActiveHorizontalIndex={setActiveHorizontalIndex}
-                    setVerticalSwipers={setVerticalSwipers}
-                    onAdFilled={onAdFilled}
-                    onAdPlaybackEnd={onAdPlaybackEnd}
-                    pageSession={pageSession}
-                  />
-                </SafeSuspense>
-              ) : (
-                <SafeSuspense fallback={playerChunkFallback}>
-                  <NonSectionedContent
-                    playerFallback={playerChunkFallback}
-                    startIndex={startIndex}
-                    slideDimensions={slideDimensions}
-                    disableSwiper={disableSwiper || isAdFilled}
-                    websiteType={websiteType}
-                    setVerticalSwipers={setVerticalSwipers}
-                    onActiveIndexChange={handleActiveIndexChange}
-                    brandLayoutType={brandLayoutType}
-                    isDesktop={isDesktop}
-                    setEndOfFeedReached={setEndOfFeedReached}
-                    isEndOfFeedReached={isEndOfFeedReached}
-                    filteredPost={filteredPost}
-                    onCommunityJoinStatusChange={onCommunityJoinStatusChange}
-                    onGroupJoinStatusChange={onGroupJoinStatusChange}
-                    onGroupSubscriptionChange={onGroupSubscriptionChange}
-                    onReactionStateChange={onReactionStateChange}
-                    onCommentCountChange={onCommentCountChange}
-                    totalVideos={totalVideos}
-                    isSectioned={isSectioned}
-                    onAdFilled={onAdFilled}
-                    onAdPlaybackEnd={onAdPlaybackEnd ?? (() => {})}
-                    pageSession={pageSession}
-                  />
-                </SafeSuspense>
-              )}
-            </div>
+            {!slideDimensions && playerChunkFallback}
+            {slideDimensions && (
+              <div className="gencl:h-full gencl:w-full">
+                {isSectioned ? (
+                  // Fallback fills the parent (h-full w-full) so it matches the
+                  // fixed slideDimensions geometry — no aspect re-derivation, no
+                  // size flash when the real player chunk swaps in.
+                  <SafeSuspense fallback={playerChunkFallback}>
+                    <SectionedContent
+                      playerFallback={playerChunkFallback}
+                      sectionList={sectionList ?? []}
+                      embedDetails={embedDetails}
+                      filteredPost={filteredPost}
+                      startIndex={startIndex}
+                      slideDimensions={slideDimensions}
+                      disableSwiper={disableSwiper || isAdFilled}
+                      websiteType={websiteType}
+                      onActiveIndexChange={handleActiveIndexChange}
+                      setEndOfFeedReached={setEndOfFeedReached}
+                      isEndOfFeedReached={isEndOfFeedReached}
+                      onCommunityJoinStatusChange={onCommunityJoinStatusChange}
+                      onGroupJoinStatusChange={onGroupJoinStatusChange}
+                      onGroupSubscriptionChange={onGroupSubscriptionChange}
+                      onReactionStateChange={onReactionStateChange}
+                      onCommentCountChange={onCommentCountChange}
+                      totalVideos={totalVideos}
+                      isSectioned={isSectioned}
+                      isMobile={isMobile}
+                      setHorizontalSwiper={setHorizontalSwiper}
+                      setActiveHorizontalIndex={setActiveHorizontalIndex}
+                      setVerticalSwipers={setVerticalSwipers}
+                      onAdFilled={onAdFilled}
+                      onAdPlaybackEnd={onAdPlaybackEnd}
+                      pageSession={pageSession}
+                      controlLayerVariant={isInlineArticleOpen ? "placement" : "default"}
+                      onExpandClick={isInlineArticleOpen ? closeInlineArticle : undefined}
+                    />
+                  </SafeSuspense>
+                ) : (
+                  <SafeSuspense fallback={playerChunkFallback}>
+                    <NonSectionedContent
+                      playerFallback={playerChunkFallback}
+                      startIndex={startIndex}
+                      slideDimensions={slideDimensions}
+                      disableSwiper={disableSwiper || isAdFilled}
+                      websiteType={websiteType}
+                      setVerticalSwipers={setVerticalSwipers}
+                      onActiveIndexChange={handleActiveIndexChange}
+                      brandLayoutType={brandLayoutType}
+                      isDesktop={isDesktop}
+                      setEndOfFeedReached={setEndOfFeedReached}
+                      isEndOfFeedReached={isEndOfFeedReached}
+                      filteredPost={filteredPost}
+                      onCommunityJoinStatusChange={onCommunityJoinStatusChange}
+                      onGroupJoinStatusChange={onGroupJoinStatusChange}
+                      onGroupSubscriptionChange={onGroupSubscriptionChange}
+                      onReactionStateChange={onReactionStateChange}
+                      onCommentCountChange={onCommentCountChange}
+                      totalVideos={totalVideos}
+                      isSectioned={isSectioned}
+                      onAdFilled={onAdFilled}
+                      onAdPlaybackEnd={onAdPlaybackEnd ?? (() => {})}
+                      pageSession={pageSession}
+                      controlLayerVariant={isInlineArticleOpen ? "placement" : "default"}
+                      onExpandClick={isInlineArticleOpen ? closeInlineArticle : undefined}
+                    />
+                  </SafeSuspense>
+                )}
+              </div>
+            )}
+          </div>
+
+          {isInlineArticleOpen && !isInlineVideoDismissed && (
+            <button
+              type="button"
+              data-slot="inline-video-close"
+              aria-label="Close floating video"
+              title="Close video"
+              onClick={(event) => {
+                event.stopPropagation();
+                dismissInlineVideo();
+              }}
+              className={cn(
+                "gencl:absolute gencl:z-80 gencl:flex gencl:size-9",
+                "gencl:items-center gencl:justify-center gencl:rounded-full gencl:border gencl:border-white/20",
+                "gencl:bg-black/60 gencl:text-white gencl:backdrop-blur-md gencl:transition-colors gencl:hover:bg-black/80",
+                "gencl:focus-visible:outline-none gencl:focus-visible:ring-2 gencl:focus-visible:ring-white"
+              )}>
+              <X aria-hidden="true" className="gencl:size-5" />
+            </button>
           )}
         </div>
 
         {/* Navigation buttons for iheart expand view positioned relative to player */}
-        {showExpandView && brandLayoutType === "iheart" && isDesktop && !disableSwiper && (
+        {showExpandView && brandLayoutType === "iheart" && isDesktop && !disableSwiper && !isInlineArticleOpen && (
           <SafeSuspense fallback={<PositionedLoader size="lg" className="gencl:relative gencl:pl-10" />}>
             <NavigationButton
               swiper={activeSwiper ?? undefined}
@@ -759,14 +962,14 @@ export function PlayerList({
           </SafeSuspense>
         )}
       </div>
-      {showExpandView && isDesktop && (
+      {showExpandView && isDesktop && !isInlineArticleOpen && (
         <SafeSuspense
           fallback={<PositionedLoader className="gencl:absolute gencl:right-7.5 gencl:top-6 gencl:size-10" />}>
           <CloseButton theme={theme} onCloseClick={toggleExpandView} />
         </SafeSuspense>
       )}
       {/* Navigation buttons for expand view (not on mobile) */}
-      {showExpandView && brandLayoutType !== "iheart" && !isMobile && (
+      {showExpandView && brandLayoutType !== "iheart" && !isMobile && !isInlineArticleOpen && (
         <SafeSuspense
           fallback={
             <PositionedLoader
@@ -783,180 +986,185 @@ export function PlayerList({
           />
         </SafeSuspense>
       )}
-      {!isMobile && brandLayoutType !== "iheart" && filteredPost[activeIndex] && !isAdFilled && (
-        <SafeSuspense fallback={<ActionButtonsSkeleton colors={skeletonColors} />}>
-          <Actions
-            shareUrl={filteredPost[activeIndex]?.video?.shareUrl ?? ""}
-            isReacted={filteredPost[activeIndex]?.video?.isSparked ?? false}
-            contentId={filteredPost[activeIndex]?.video?.id ?? ""}
-            groupSlug={filteredPost[activeIndex]?.group?.slug ?? ""}
-            slug={filteredPost[activeIndex]?.video?.slug ?? ""}
-            videoType={filteredPost[activeIndex]?.video?.videoType ?? VideoTypes.Content}
-            reactionCount={filteredPost[activeIndex]?.video?.sparkCount ?? 0}
-            theme={isHomeFeedView ? "light" : showExpandView ? "dark" : "light"}
-            className={cn("gencl:shrink-0", showExpandView ? "gencl:pb-4" : "gencl:pb-7")}
-            isCommentBoxOpen={isCommentOpen}
-            // V2 only: action-rail linkout button is the entry point to the
-            // right-rail panel (Figma). V1 keeps its legacy in-player overlay.
-            showLinkout={Boolean(
-              isDesignSystemV2Linkouts &&
-                showExpandView &&
-                filteredPost[activeIndex]?.video?.linkouts &&
-                filteredPost[activeIndex]?.video?.linkouts.length > 0
-            )}
-            linkoutThumbnail={filteredPost[activeIndex]?.video?.linkouts?.[0]?.links?.[0]?.image ?? null}
-            isLinkoutsOpen={hasContentType("linkouts")}
-            // Sparkle action: expanded desktop view only — the right rail hosts the panel.
-            showIntelligence={showExpandView && isDesktop}
-            isIntelligenceOpen={isIntelligenceOpen}
-            actionWrapper={{
-              INTELLIGENCE: (defaultNode) => (
-                <span
-                  key={"intelligence-panel-" + filteredPost[activeIndex]?.video?.id}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    const nextState = !isIntelligenceOpen;
-                    if (nextState) {
-                      // One right-rail panel at a time (matches comments ⇄ OCTO).
-                      if (isCommentOpen) setCommentOpen(false);
-                      if (isOctoOpen) setOctoOpen(false);
-                    }
-                    setIntelligenceOpen(nextState);
-                  }}>
-                  {defaultNode}
-                </span>
-              ),
-              LINKOUT: (defaultNode) => (
-                <span
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    const isOpen = hasContentType("linkouts");
-                    if (isOpen) {
-                      closeContentType("linkouts");
-                    } else {
-                      // Match auto-open placement: "outside" on desktop (right rail),
-                      // "inside" on narrower widths where only the in-player overlay hosts it.
-                      openContentType("linkouts", isDesktop ? "outside" : "inside", "expand-view");
-                    }
-                  }}>
-                  {defaultNode}
-                </span>
-              ),
-              COMMENT: (defaultNode) => {
-                if (!showCommentBox) return;
-                //
-                const defaultOpen =
-                  embedDetails?.embedData.autoUserInteractionToPerform === "comment" &&
-                  filteredPost[activeIndex]?.video?.slug === embedDetails.embedData?.startVideoSlug &&
-                  !embedDetails.embedEventBus.getContext().autoInteractionActionDone;
-
-                //     if (defaultOpen) {
-                //       embedDetails.markAutoInteractionActionDone();
-                //     }
-
-                // Simple ui to show for comment trigger
-                function CommentBox({ children }: { children: React.ReactNode }) {
-                  const commentCount = filteredPost[activeIndex]?.video?.commentCount ?? 0;
-                  return (
-                    <>
-                      {children}
-                      <p
-                        className={cn(
-                          "gencl:p-0 gencl:text-center gencl:text-black gencl:text-body-2-medium",
-                          showExpandView && !isHomeFeedView && "gencl:text-white!"
-                        )}
-                        aria-label={`${commentCount} ${commentCount === 1 ? "comment" : "comments"}`}>
-                        {abbreviateNumber(commentCount)}
-                      </p>
-                    </>
-                  );
-                }
-
-                if (!isDesktop && filteredPost[activeIndex] && (isCommentOpen || defaultOpen))
-                  return (
-                    <SafeSuspense
-                      fallback={<PositionedLoader size="md" className="gencl:fixed gencl:inset-0 gencl:z-50" />}>
-                      <CommentsDialog
-                        commentCount={filteredPost[activeIndex]?.video?.commentCount ?? 0}
-                        communityId={filteredPost[activeIndex]?.community?.id ?? ""}
-                        loopId={filteredPost[activeIndex]?.group?.id ?? ""}
-                        videoId={filteredPost[activeIndex]?.video?.id ?? ""}
-                        videoSlug={filteredPost[activeIndex]?.video?.slug ?? ""}
-                        shareUrl={filteredPost[activeIndex]?.video?.shareUrl ?? ""}
-                        videoType={filteredPost[activeIndex]?.video?.videoType ?? VideoTypes.Content}
-                        defaultOpen={isCommentOpen}
-                        key={"feed-comment-box" + filteredPost[activeIndex]?.video?.id}
-                        onCommentCountChange={onCommentCountChange}
-                        onOpenChange={(open) => {
-                          setCommentOpen(open);
-                        }}>
-                        <CommentBox>{defaultNode}</CommentBox>
-                      </CommentsDialog>
-                    </SafeSuspense>
-                  );
-                return (
+      {!isMobile &&
+        brandLayoutType !== "iheart" &&
+        filteredPost[activeIndex] &&
+        !isAdFilled &&
+        !isInlineArticleOpen && (
+          <SafeSuspense fallback={<ActionButtonsSkeleton colors={skeletonColors} />}>
+            <Actions
+              shareUrl={filteredPost[activeIndex]?.video?.shareUrl ?? ""}
+              isReacted={filteredPost[activeIndex]?.video?.isSparked ?? false}
+              contentId={filteredPost[activeIndex]?.video?.id ?? ""}
+              groupSlug={filteredPost[activeIndex]?.group?.slug ?? ""}
+              slug={filteredPost[activeIndex]?.video?.slug ?? ""}
+              videoType={filteredPost[activeIndex]?.video?.videoType ?? VideoTypes.Content}
+              reactionCount={filteredPost[activeIndex]?.video?.sparkCount ?? 0}
+              theme={isHomeFeedView ? "light" : showExpandView ? "dark" : "light"}
+              className={cn("gencl:shrink-0", showExpandView ? "gencl:pb-4" : "gencl:pb-7")}
+              isCommentBoxOpen={isCommentOpen}
+              // V2 only: action-rail linkout button is the entry point to the
+              // right-rail panel (Figma). V1 keeps its legacy in-player overlay.
+              showLinkout={Boolean(
+                isDesignSystemV2Linkouts &&
+                  showExpandView &&
+                  filteredPost[activeIndex]?.video?.linkouts &&
+                  filteredPost[activeIndex]?.video?.linkouts.length > 0
+              )}
+              linkoutThumbnail={filteredPost[activeIndex]?.video?.linkouts?.[0]?.links?.[0]?.image ?? null}
+              isLinkoutsOpen={hasContentType("linkouts")}
+              // Sparkle action: expanded desktop view only — the right rail hosts the panel.
+              showIntelligence={showExpandView && isDesktop}
+              isIntelligenceOpen={isIntelligenceOpen}
+              actionWrapper={{
+                INTELLIGENCE: (defaultNode) => (
                   <span
-                    key={"feed-comment-box" + filteredPost[activeIndex]?.video?.id}
-                    onClick={() => {
-                      if (showExpandView) {
-                        // Close OCTO / Intelligence if open
+                    key={"intelligence-panel-" + filteredPost[activeIndex]?.video?.id}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const nextState = !isIntelligenceOpen;
+                      if (nextState) {
+                        // One right-rail panel at a time (matches comments ⇄ OCTO).
+                        if (isCommentOpen) setCommentOpen(false);
                         if (isOctoOpen) setOctoOpen(false);
-                        if (!isCommentOpen && isIntelligenceOpen) setIntelligenceOpen(false);
-                        // Toggle comments
-                        toggleComment();
                       }
-                    }}>
-                    <CommentBox>{defaultNode}</CommentBox>
-                  </span>
-                );
-              },
-              OCTO: (defaultNode) => {
-                if (!showExpandView) return defaultNode;
-
-                return (
-                  <span
-                    key={"octo-panel-" + filteredPost[activeIndex]?.video?.id}
-                    onClick={(event) => {
-                      event.stopPropagation();
-
-                      const sheetActive = sheetState === "panel-view" || sheetState === "full-view";
-
-                      if (!isDesktop) {
-                        if (!sheetActive && isCommentOpen) {
-                          setCommentOpen(false);
-                        }
-                        openContentType("octo", "inside", "default");
-                        setContentTypeState("octo", "default");
-                        return;
-                      }
-
-                      const nextState = !isOctoOpen;
-                      if (nextState && isCommentOpen) {
-                        setCommentOpen(false);
-                      }
-                      if (nextState && isIntelligenceOpen) {
-                        setIntelligenceOpen(false);
-                      }
-                      setOctoOpen(nextState);
+                      setIntelligenceOpen(nextState);
                     }}>
                     {defaultNode}
                   </span>
+                ),
+                LINKOUT: (defaultNode) => (
+                  <span
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const isOpen = hasContentType("linkouts");
+                      if (isOpen) {
+                        closeContentType("linkouts");
+                      } else {
+                        // Match auto-open placement: "outside" on desktop (right rail),
+                        // "inside" on narrower widths where only the in-player overlay hosts it.
+                        openContentType("linkouts", isDesktop ? "outside" : "inside", "expand-view");
+                      }
+                    }}>
+                    {defaultNode}
+                  </span>
+                ),
+                COMMENT: (defaultNode) => {
+                  if (!showCommentBox) return;
+                  //
+                  const defaultOpen =
+                    embedDetails?.embedData.autoUserInteractionToPerform === "comment" &&
+                    filteredPost[activeIndex]?.video?.slug === embedDetails.embedData?.startVideoSlug &&
+                    !embedDetails.embedEventBus.getContext().autoInteractionActionDone;
+
+                  //     if (defaultOpen) {
+                  //       embedDetails.markAutoInteractionActionDone();
+                  //     }
+
+                  // Simple ui to show for comment trigger
+                  function CommentBox({ children }: { children: React.ReactNode }) {
+                    const commentCount = filteredPost[activeIndex]?.video?.commentCount ?? 0;
+                    return (
+                      <>
+                        {children}
+                        <p
+                          className={cn(
+                            "gencl:p-0 gencl:text-center gencl:text-black gencl:text-body-2-medium",
+                            showExpandView && !isHomeFeedView && "gencl:text-white!"
+                          )}
+                          aria-label={`${commentCount} ${commentCount === 1 ? "comment" : "comments"}`}>
+                          {abbreviateNumber(commentCount)}
+                        </p>
+                      </>
+                    );
+                  }
+
+                  if (!isDesktop && filteredPost[activeIndex] && (isCommentOpen || defaultOpen))
+                    return (
+                      <SafeSuspense
+                        fallback={<PositionedLoader size="md" className="gencl:fixed gencl:inset-0 gencl:z-50" />}>
+                        <CommentsDialog
+                          commentCount={filteredPost[activeIndex]?.video?.commentCount ?? 0}
+                          communityId={filteredPost[activeIndex]?.community?.id ?? ""}
+                          loopId={filteredPost[activeIndex]?.group?.id ?? ""}
+                          videoId={filteredPost[activeIndex]?.video?.id ?? ""}
+                          videoSlug={filteredPost[activeIndex]?.video?.slug ?? ""}
+                          shareUrl={filteredPost[activeIndex]?.video?.shareUrl ?? ""}
+                          videoType={filteredPost[activeIndex]?.video?.videoType ?? VideoTypes.Content}
+                          defaultOpen={isCommentOpen}
+                          key={"feed-comment-box" + filteredPost[activeIndex]?.video?.id}
+                          onCommentCountChange={onCommentCountChange}
+                          onOpenChange={(open) => {
+                            setCommentOpen(open);
+                          }}>
+                          <CommentBox>{defaultNode}</CommentBox>
+                        </CommentsDialog>
+                      </SafeSuspense>
+                    );
+                  return (
+                    <span
+                      key={"feed-comment-box" + filteredPost[activeIndex]?.video?.id}
+                      onClick={() => {
+                        if (showExpandView) {
+                          // Close OCTO / Intelligence if open
+                          if (isOctoOpen) setOctoOpen(false);
+                          if (!isCommentOpen && isIntelligenceOpen) setIntelligenceOpen(false);
+                          // Toggle comments
+                          toggleComment();
+                        }
+                      }}>
+                      <CommentBox>{defaultNode}</CommentBox>
+                    </span>
+                  );
+                },
+                OCTO: (defaultNode) => {
+                  if (!showExpandView) return defaultNode;
+
+                  return (
+                    <span
+                      key={"octo-panel-" + filteredPost[activeIndex]?.video?.id}
+                      onClick={(event) => {
+                        event.stopPropagation();
+
+                        const sheetActive = sheetState === "panel-view" || sheetState === "full-view";
+
+                        if (!isDesktop) {
+                          if (!sheetActive && isCommentOpen) {
+                            setCommentOpen(false);
+                          }
+                          openContentType("octo", "inside", "default");
+                          setContentTypeState("octo", "default");
+                          return;
+                        }
+
+                        const nextState = !isOctoOpen;
+                        if (nextState && isCommentOpen) {
+                          setCommentOpen(false);
+                        }
+                        if (nextState && isIntelligenceOpen) {
+                          setIntelligenceOpen(false);
+                        }
+                        setOctoOpen(nextState);
+                      }}>
+                      {defaultNode}
+                    </span>
+                  );
+                },
+              }}
+              onReactionStateChange={(isReacted: boolean) => {
+                onReactionStateChange?.(
+                  filteredPost[activeIndex]?.video?.id ?? "",
+                  filteredPost[activeIndex]?.video?.slug ?? "",
+                  isReacted
                 );
-              },
-            }}
-            onReactionStateChange={(isReacted: boolean) => {
-              onReactionStateChange?.(
-                filteredPost[activeIndex]?.video?.id ?? "",
-                filteredPost[activeIndex]?.video?.slug ?? "",
-                isReacted
-              );
-            }}
-          />
-        </SafeSuspense>
-      )}
+              }}
+            />
+          </SafeSuspense>
+        )}
       {/* V1 keeps its standalone comments column here; V2 hosts comments inside
           <DesktopRightPanels> below. Rendering both would double the comments. */}
       {!isDesignSystemV2Linkouts &&
+        !isInlineArticleOpen &&
         isCommentOpen &&
         showExpandView &&
         !isAdFilled &&
@@ -984,6 +1192,7 @@ export function PlayerList({
         )}
 
       {isOctoOpen &&
+        !isInlineArticleOpen &&
         showExpandView &&
         !isAdFilled &&
         showCommentBox &&
@@ -1016,9 +1225,12 @@ export function PlayerList({
         brandLayoutType !== "iheart" &&
         isDesktop && (
           <div
+            aria-hidden={isInlineArticleOpen || undefined}
+            inert={isInlineArticleOpen || undefined}
             className={cn(
               "gencl:w-full gencl:h-full gencl:hidden gencl:sm:block! gencl:py-6",
-              isHomeFeedView ? "gencl:min-w-0 gencl:flex-1" : "gencl:max-w-118"
+              isHomeFeedView ? "gencl:min-w-0 gencl:flex-1" : "gencl:max-w-118",
+              isInlineArticleOpen && "gencl:invisible gencl:pointer-events-none"
             )}>
             <SafeSuspense
               errorFallback={null}
@@ -1036,6 +1248,7 @@ export function PlayerList({
                     filteredPost[activeIndex].video?.linkouts?.[0]?.links?.[0]?.description ?? undefined,
                 }}
                 onClose={() => setIntelligenceOpen(false)}
+                onArticleSelect={handleIntelligenceArticleSelect}
                 autoPromptOnMount={isHomeFeedView}
                 fillAvailableWidth={isHomeFeedView}
                 className="gencl:h-full"
@@ -1046,7 +1259,7 @@ export function PlayerList({
 
       {/* Desktop right rail: dynamic linkouts (outside placement) above comments.
           V2 only — v1 keeps its legacy in-player overlay to avoid doubling up. */}
-      {isDesktop && isDesignSystemV2Linkouts && (
+      {isDesktop && isDesignSystemV2Linkouts && !isInlineArticleOpen && (
         <SafeSuspense fallback={null}>
           <DesktopRightPanels
             filteredPost={filteredPost}

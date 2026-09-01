@@ -16,6 +16,7 @@ import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { usePathname } from "@genuin/components/hooks/use-pathname";
 import { useSearchParams } from "@genuin/components/hooks/use-search-params";
+import { HOME_FEED_VIEW_EVENT, HOME_FULL_VIEW_EVENT } from "@genuin/components/lib/home-feed/events";
 
 import { usePlayerContext } from "../../context";
 
@@ -24,8 +25,6 @@ import { AnimatedMuteIcon } from "./control-buttons";
 import { EmbedControls } from "./embed-v2";
 
 const FIXED_PLAYER_CONTROL_SIZE: PlayerControlSize = "md";
-const HOME_FULL_VIEW_EVENT = "genuin:home-feed-full-view";
-const HOME_FEED_VIEW_EVENT = "genuin:home-feed-view";
 const HOME_FEED_SESSION_SELECTOR = '[data-home-feed-session="true"]';
 
 const controlsVariants = cva("gencl:transition-all gencl:z-20 gencl:flex gencl:w-full gencl:justify-between", {

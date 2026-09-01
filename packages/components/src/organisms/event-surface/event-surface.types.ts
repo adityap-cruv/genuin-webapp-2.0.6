@@ -53,6 +53,13 @@ export type EventSurfaceEventMap = {
     previousVideoId: string | null;
   };
   /**
+   * A contextual item panel registers the real video ids present in its response. A sibling SDK
+   * placement can use this list to scope its feed, keeping both sides on the same exact boundary.
+   */
+  "items:register": {
+    videoIds: string[];
+  };
+  /**
    * The user picked an item in a list panel (an article card, a tile, a row).
    * The consuming panel decides what to do with it — typically switch its video.
    */

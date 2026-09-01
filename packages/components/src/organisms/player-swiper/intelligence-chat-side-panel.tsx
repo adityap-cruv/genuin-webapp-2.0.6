@@ -2,7 +2,7 @@
 
 import { KoahAdWidget } from "@genuin/genai-sdk";
 import { cn } from "@genuin/ui/lib/utils";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { IntelligenceChatPanel } from "@genuin/components/organisms/intelligence-chat/intelligence-chat-panel";
 import type {
@@ -12,9 +12,10 @@ import type {
   IntelligenceTextBlockProps,
 } from "@genuin/components/organisms/intelligence-chat/intelligence-chat.types";
 import {
+  createIntelligenceDefaultRegistry,
   INTELLIGENCE_BLOCK_TYPES,
-  INTELLIGENCE_DEFAULT_REGISTRY,
 } from "@genuin/components/organisms/intelligence-chat/intelligence-default-registry";
+import type { IntelligenceArticleSelectHandler } from "@genuin/components/organisms/intelligence-panel/intelligence-panel.types";
 
 // ── Intelligence chat transport (THE INTEGRATION SEAM) ───────────────────────────────────────
 // The panel POSTs the prompt here and renders the IntelligenceResponseBlock[] it returns. Today
@@ -38,8 +39,10 @@ const MOCK_VIDEO_AUTO_PROMPTS = [
   "Why is the topic in this video significant?",
   "What related insights can you share about this video?",
 ] as const;
-const AUTO_PROMPT_COUNTDOWN_SECONDS = 5;
+const AUTO_PROMPT_COUNTDOWN_SECONDS = 3;
 const AUTO_PROMPT_TICK_MS = 1_000;
+
+type KoahAdSlotStatus = "loading" | "filled" | "empty";
 
 function getMockVideoAutoPrompt(videoId: string): string {
   const hash = Array.from(videoId).reduce((value, character) => (value * 31 + character.charCodeAt(0)) >>> 0, 0);
@@ -119,11 +122,15 @@ type IntelligenceChatSidePanelProps = {
   /** Runs the existing video prompt flow when this panel is opened from Feed View. */
   autoPromptOnMount?: boolean;
   /** Lets Feed View ads use the full responsive width of the chat thread. */
+  /** Runtime article action injected into JSON-driven response cards. */
+  onArticleSelect?: IntelligenceArticleSelectHandler;
   fillAvailableWidth?: boolean;
   className?: string;
 };
 
 function IntelligenceKoahAds({ videoId, fillAvailableWidth }: { videoId: string; fillAvailableWidth: boolean }) {
+  const railRef = useRef<HTMLDivElement>(null);
+  const [slotStatuses, setSlotStatuses] = useState<Record<string, KoahAdSlotStatus>>({});
   const slots = [
     {
       id: "primary",
@@ -137,16 +144,81 @@ function IntelligenceKoahAds({ videoId, fillAvailableWidth }: { videoId: string;
     },
   ];
 
+  useEffect(() => {
+    const rail = railRef.current;
+    if (!rail) return;
+
+    const cards = Array.from(rail.querySelectorAll<HTMLElement>('[data-testid="koah-ad-card"]'));
+    const cardsThatStartedLoading = new Set<HTMLElement>();
+
+    const updateStatuses = () => {
+      const nextStatuses: Record<string, KoahAdSlotStatus> = {};
+      for (const card of cards) {
+        const slotId = card.dataset.koahSlotId;
+        if (!slotId) continue;
+        if (card.querySelector('[data-koah="root"]')) {
+          nextStatuses[slotId] = "filled";
+          continue;
+        }
+
+        const loadingContainer = card.querySelector(".adsbykoah");
+        if (loadingContainer) cardsThatStartedLoading.add(card);
+        const isSettled = cardsThatStartedLoading.has(card) && !loadingContainer;
+        nextStatuses[slotId] = isSettled ? "empty" : "loading";
+      }
+
+      setSlotStatuses((current) => {
+        const statusChanged = Object.entries(nextStatuses).some(([slotId, status]) => current[slotId] !== status);
+        return statusChanged ? { ...current, ...nextStatuses } : current;
+      });
+    };
+
+    const observer = new MutationObserver(updateStatuses);
+    observer.observe(rail, { childList: true, subtree: true });
+    updateStatuses();
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [videoId]);
+
   return (
     <div
+      ref={railRef}
       data-testid="koah-ad-rail"
       className="gencl:flex gencl:w-full gencl:snap-x gencl:snap-mandatory gencl:gap-3 gencl:overflow-x-auto gencl:[scrollbar-width:none] gencl:[&::-webkit-scrollbar]:hidden">
       {slots.slice(0, fillAvailableWidth ? 2 : 1).map((slot) => (
         <div
           key={slot.id}
+          data-koah-slot-id={slot.id}
           data-testid="koah-ad-card"
-          className="gencl:shrink-0 gencl:snap-start"
-          style={{ width: fillAvailableWidth ? "min(768px, calc(100% - 112px))" : "100%" }}>
+          className={cn(
+            "gencl:relative gencl:shrink-0 gencl:snap-start",
+            slotStatuses[slot.id] === "empty" && "gencl:hidden"
+          )}
+          style={{
+            width: fillAvailableWidth ? "min(768px, calc(100% - 112px))" : "100%",
+            minHeight: (slotStatuses[slot.id] ?? "loading") === "loading" ? 144 : undefined,
+          }}>
+          {(slotStatuses[slot.id] ?? "loading") === "loading" && (
+            <div
+              data-testid="koah-ad-loading"
+              aria-label="Loading sponsored recommendation"
+              className="gencl:absolute gencl:inset-0 gencl:min-h-36 gencl:animate-pulse gencl:rounded-xl gencl:border gencl:border-secondary-300 gencl:bg-white gencl:p-3">
+              <div className="gencl:flex gencl:items-center gencl:justify-between">
+                <div className="gencl:h-3 gencl:w-24 gencl:rounded gencl:bg-secondary-200" />
+                <div className="gencl:size-3 gencl:rounded gencl:bg-secondary-200" />
+              </div>
+              <div className="gencl:mt-3 gencl:grid gencl:gap-3" style={{ gridTemplateColumns: "96px minmax(0, 1fr)" }}>
+                <div className="gencl:rounded-lg gencl:bg-secondary-200" style={{ minHeight: 92 }} />
+                <div className="gencl:min-w-0 gencl:space-y-2">
+                  <div className="gencl:h-4 gencl:w-4/5 gencl:rounded gencl:bg-secondary-200" />
+                  <div className="gencl:h-3 gencl:w-full gencl:rounded gencl:bg-secondary-100" />
+                  <div className="gencl:h-8 gencl:w-28 gencl:rounded-lg gencl:bg-secondary-200" />
+                </div>
+              </div>
+            </div>
+          )}
           <KoahAdWidget
             standalone
             userMessage={slot.userMessage}
@@ -238,6 +310,7 @@ export function IntelligenceChatSidePanel({
   autoPromptOnMount = false,
   fillAvailableWidth = false,
   className,
+  onArticleSelect,
 }: IntelligenceChatSidePanelProps) {
   const mockVideoAutoPrompt = getMockVideoAutoPrompt(videoId);
   const [messages, setMessages] = useState<readonly IntelligenceChatMessage[]>([]);
@@ -247,6 +320,7 @@ export function IntelligenceChatSidePanel({
       ? { prompt: mockVideoAutoPrompt, remainingSeconds: AUTO_PROMPT_COUNTDOWN_SECONDS }
       : null
   );
+  const registry = useMemo(() => createIntelligenceDefaultRegistry({ onArticleSelect }), [onArticleSelect]);
   const seqRef = useRef(0);
   const autoPromptedVideoRef = useRef<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -359,7 +433,7 @@ export function IntelligenceChatSidePanel({
       `}</style>
       <IntelligenceChatPanel
         data-testid="intelligence-chat-side-panel"
-        registry={INTELLIGENCE_DEFAULT_REGISTRY}
+        registry={registry}
         messages={messages}
         threadHeader={<IntelligenceKoahAds videoId={videoId} fillAvailableWidth={fillAvailableWidth} />}
         autoPromptCountdown={autoPromptCountdown ?? undefined}

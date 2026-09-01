@@ -2,16 +2,15 @@
 
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
 
+import {
+  FeedViewOverlay,
+  FeedViewOverlayProvider,
+  type FeedViewOverlayRequest,
+} from "@genuin/components/lib/feed-view/feed-view-overlay";
 import { ErrorState } from "@genuin/components/molecules/error-state";
 import { EventSurface, EventSurfacePanel } from "@genuin/components/organisms/event-surface/event-surface";
 
-import {
-  BlockVisibilityContext,
-  COMPONENT_REGISTRY,
-  HomePlayerOverlay,
-  HomePlayerOverlayProvider,
-  type HomePlayerOverlayRequest,
-} from "./component-registry";
+import { BlockVisibilityContext, COMPONENT_REGISTRY } from "./component-registry";
 import type {
   ColumnNode,
   HomeDataPage,
@@ -279,7 +278,7 @@ export function HomeDynamic() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const canAppendRef = useRef(false);
-  const [playerOverlay, setPlayerOverlay] = useState<HomePlayerOverlayRequest | null>(null);
+  const [playerOverlay, setPlayerOverlay] = useState<FeedViewOverlayRequest | null>(null);
   const closePlayerOverlay = useCallback(() => setPlayerOverlay(null), []);
 
   const layoutQuery = useHomeLayout();
@@ -324,7 +323,7 @@ export function HomeDynamic() {
   // [hasNextPage,…], which may not change on the loading→loaded transition if the feed query
   // resolved before the layout query). Loading/error render INSIDE the container.
   return (
-    <HomePlayerOverlayProvider onOpen={setPlayerOverlay}>
+    <FeedViewOverlayProvider onOpen={setPlayerOverlay}>
       <div ref={overlayBoundsRef} className="gencl:relative gencl:h-full gencl:overflow-hidden">
         <div
           ref={scrollRef}
@@ -342,9 +341,9 @@ export function HomeDynamic() {
         </div>
 
         {playerOverlay && (
-          <HomePlayerOverlay request={playerOverlay} boundsRef={overlayBoundsRef} onClose={closePlayerOverlay} />
+          <FeedViewOverlay request={playerOverlay} boundsRef={overlayBoundsRef} onClose={closePlayerOverlay} />
         )}
       </div>
-    </HomePlayerOverlayProvider>
+    </FeedViewOverlayProvider>
   );
 }

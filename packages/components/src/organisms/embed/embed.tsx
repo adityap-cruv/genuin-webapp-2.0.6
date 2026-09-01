@@ -320,6 +320,24 @@ export function Embed({
         : videos;
   }, [videos, isDesktop, isSectioned, websiteType, isIheartLayout, isIheartArticlePage]);
 
+  // Forward the real active-video identity to the host. This is emitted here (where the resolved
+  // feed posts are available), rather than from EmbedProvider which only knows the active index.
+  // Contextual hosts can therefore join any response item carrying `video_id`, independent of
+  // brand, ordering or placement pagination.
+  useEffect(() => {
+    const activePost = filteredPost[activeIndex];
+    const videoId = activePost?.video?.id;
+    if (!videoId) return;
+
+    SDKEventEmitter.emit(SDKEventName.PLAYER_VIDEO_CHANGED, {
+      instanceId: rootElement?.getAttribute("data-instance-id") ?? undefined,
+      videoId,
+      communityId: activePost.community?.id ?? "",
+      groupId: activePost.group?.id ?? "",
+      index: activeIndex,
+    });
+  }, [activeIndex, filteredPost, rootElement]);
+
   // Extract video titles from postDetails
   const sectionList = useMemo(() => filteredPost.map((videoData) => videoData.section || null), [filteredPost]);
 

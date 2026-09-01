@@ -31,6 +31,24 @@ const COMMUNITIES = [
 
 // Real The Foil imagery (imgproxy URLs), mirroring the hardcoded home.tsx content.
 const IMG = {
+  weekInRacing31August:
+    "https://thefoil.com/media/mEob3-vvRywjK5WGiYDMwmaHASqp4I5G721zCToGbHI/resize:fill-down:1200:630/g:ce/quality:60/dpr:1/2026/08/ilca-mens-medal-race76900-jordan-roberts-down-under-sail.jpg",
+  rateFleetSassnitz:
+    "https://thefoil.com/media/gMKzLo51XG0f-bdYGtYcg5tK2rAaq94rI6wy0sm5D3M/resize:fill-down:1200:630/g:ce/quality:60/dpr:1/2026/08/rp3-3823.jpg",
+  lunaRossaRudder:
+    "https://thefoil.com/media/HLzTMMiNRo7BBMxBRINZ4GDsNvtbw_N44jsl-aufD-I/resize:fill-down:1200:630/g:ce/quality:60/dpr:1/2026/08/260826-lr-b3-d20-207.jpg",
+  sailgpStickOrTwist:
+    "https://thefoil.com/media/Nke01VR-k1qZL82Rwri60kjT7jiawrqQiiHUclRRRr0/resize:fill-down:1200:630/g:ce/quality:60/dpr:1/2026/08/fd2-2946.jpg",
+  weekInRacing24August:
+    "https://thefoil.com/media/fyOQZBfU_g5YeedI347I43cwARP09ukJ1dRDdN3XF0I/resize:fill-down:850:500/gravity:fp:0.3595744681:0.3743615093/quality:60/dpr:1/2026/08/138a2341-peter-brogger-ilca.jpg",
+  flyingRoosSassnitz:
+    "https://thefoil.com/media/BdlC5UIxTylK26eNkVoAfU388-gOxuqKz8CSsX-Y6Nk/resize:fill-down:690:388/gravity:fp:0.4787472036:0.6386820846/quality:60/dpr:1/2026/08/jl206387.jpg",
+  oceanRaceAtlantic:
+    "https://thefoil.com/media/0IFpwb4HJabWEJukldoszeTslP9-KwJiWsr1dItg4qM/resize:fill-down:460:240/gravity:fp:0.4787792084:0.701049749/quality:60/dpr:1/2026/08/tora1.webp",
+  nathanBerger:
+    "https://thefoil.com/media/6jqFsZkVz92e9pViFIC9cvcOgfOK1JayU4J0n2Ya0i8/resize:fill-down:690:388/gravity:fp:0.5757575758:0.4289940828/quality:60/dpr:1/2026/05/nathan-berger8.jpg",
+  graeMorris:
+    "https://thefoil.com/media/U8j6sq1yq50MNqneZqWV-fKQwvMWiJ23hK4IqlF_wBM/resize:fill-down:690:388/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/02/grae-morris-2.jpeg",
   sailgpNewYork:
     "https://thefoil.com/media/06KbODg1b2NE6ub1rAATrrJyOcvaXwhMBbnZdt-Y5jM/resize:fill-down:532:300/gravity:fp:0.4787792084:0.701049749/quality:60/dpr:1/2026/06/new-york-sailgp-statue-of-liberty-2026.jpg",
   sailgpSimonBruty:
@@ -72,49 +90,276 @@ const IMG = {
 const FOIL_LOGO = "/images/home/the-foil-logo.jpg";
 const MUSTO_LOGO = "/images/home/musto-logo.png";
 
-const PODCAST_DESC =
-  "Click here to listen on Spotify and other platforms. Sailing has never been healthier — on this week's pod, that's exactly the promise we dig into.";
+// Real ids currently returned by the "Latest Video" QA placement. This is mock response data:
+// production brands supply their own `video_id` on each article item through the same contract.
+// The component never contains brand-specific ids or article assignments.
+const LATEST_VIDEO_IDS = [
+  "fbcded82-eaee-463e-b55b-420fab97cecc",
+  "5ad649b6-643f-47b3-92ed-79e838eed35d",
+  "01e2b86a-2e1c-4632-adaf-ad5f9a84fe84",
+  "77b5ecd0-4515-455a-a62b-daa1ac9faa0a",
+  "b25aa012-ef94-4516-9820-2184636e9854",
+  "dd8de87c-ae65-4799-9038-5b67d96e411a",
+  "b71ae2e2-8ac8-4d07-95a2-6ac41b573309",
+  "d88ffffd-105f-49d6-bff3-83bc7feb9792",
+  "6448766f-78b2-4132-ac91-1c44f5f0ad6c",
+  "83498e6b-a6b8-4e9d-a9f9-9071d5b66281",
+  "dcccd164-cea2-418b-93f9-ed76cd9b2fd6",
+  "3760f089-b345-4112-9d0c-969b1ca12da1",
+  "0210081e-2266-4c81-9764-0cd6cc56c18e",
+  "4e99d2bd-cffd-462a-95ed-1a2380deba76",
+  "b211c258-bfa5-4546-828f-fd17f5d75c39",
+  "b528af60-ec77-4c1e-806c-1d8d87bf1149",
+  "f99bcc45-ad7b-4445-9054-17bc92f059bb",
+  "0e4078c7-b0d8-4a6c-8a28-39b719d3fcfc",
+  "ed49f624-1e1e-4128-97f3-fe9ab330bd8a",
+  "c53825e0-23a0-49b3-af81-dcb467837a29",
+] as const;
 
-// ─── Editorial pool — real stories from thefoil.com (2026-08-25) ──────────────────────────────────
+// Mock editorial assignment for the ids above, in the same order. This belongs to the response
+// fixture, not the renderer; production returns the final article + `video_id` association.
+const LATEST_VIDEO_ARTICLE_SLUGS = [
+  "the-week-in-racing-24-august-26",
+  "podcast-can-anyone-beat-new-zealand-to-win-the-38th-america-s-cup",
+  "luca-rizzotti-bought-a-moth-in-2007-and-accidentally-started-a-movement",
+  "podcast-sailgp-vs-america-s-cup-can-they-coexist",
+  "flying-roos-hit-high-five-with-victory-in-sassnitz",
+  "luna-rossa-test-new-rudder-and-take-a-knock",
+  "plans-uncovered-to-reinvent-sailgp-s-race-weekend-news-even-to-the-sailors",
+  "rising-stars-nathan-berger-the-17-year-old-wingfoiler-beating-his-heroes",
+  "podcast-america-s-cup-is-back-the-full-cagliari-debrief",
+  "rate-the-fleet-andy-rice-on-sassnitz-sailgp",
+  "the-questions-that-remain-following-new-york-sailgp",
+  "andy-rice-rates-the-fleet-after-canada-sailgp",
+  "the-week-in-racing-31-august-26",
+  "podcast-ep-8-sydney-sailgp-preview-and-quentin-delapierre-on-safety",
+  "freddie-carr-cowes-week-turns-200-why-britain-s-greatest-regatta-still-means-everything",
+  "the-safest-is-when-you-re-pushing-hard-billy-gooderham-explains-flight-control",
+  "freddie-carr-winging-it-at-half-time-in-sailgp",
+  "like-watching-jet-fighters-dance-on-water-how-luna-rossa-lit-up-the-ac38-opener",
+  "podcast-extra-mozzy-and-freddie-preview-the-ac38-cagliari-prelim",
+  "podcast-it-starts-with-a-dream-glenn-ashby-on-australia-s-ac38-challenge-the-foil-podcast-ep-20",
+] as const;
+
+// ─── Editorial pool — real stories from thefoil.com (2026-09-01) ──────────────────────────────────
 // Page 1 uses the hand-curated content in basePageData(); pages 2+ pull DIFFERENT articles from this
 // pool via varyWidget(), so each infinite-scroll iteration shows fresh editorial. Only titles / hero
 // images / links are used. SEAM: when the real backend lands, varyWidget maps its response instead.
 type PoolArticle = { slug: string; title: string; image: string; desc: string };
 
 const ARTICLE_POOL: PoolArticle[] = [
-  { slug: "the-week-in-racing-24-august-26", title: "The week in racing – 24 August '26", image: "https://thefoil.com/media/fyOQZBfU_g5YeedI347I43cwARP09ukJ1dRDdN3XF0I/resize:fill-down:850:500/gravity:fp:0.3595744681:0.3743615093/quality:60/dpr:1/2026/08/138a2341-peter-brogger-ilca.jpg", desc: "F50s found a new gear in Sassnitz, the America's Cup lawyers are still busy, and two junior world champions emerged." },
-  { slug: "flying-roos-hit-high-five-with-victory-in-sassnitz", title: "Flying Roos hit high five with victory in Sassnitz", image: "https://thefoil.com/media/BdlC5UIxTylK26eNkVoAfU388-gOxuqKz8CSsX-Y6Nk/resize:fill-down:690:388/gravity:fp:0.4787472036:0.6386820846/quality:60/dpr:1/2026/08/jl206387.jpg", desc: "Bonds Flying Roos beat NorthStar Canada, Los Gallos and Black Foils for their fifth SailGP season win." },
-  { slug: "flying-roos-and-black-foils-lead-the-way-in-germany", title: "Flying Roos and Black Foils lead the way in Germany", image: "https://thefoil.com/media/NNb4DtCTPtZShEt-6LdvgHQTi8SPkbNtcR99cIawY40/resize:fill-down:690:388/gravity:fp:0.758974359:0.8208106473/quality:60/dpr:1/2026/08/fd1-0713.jpg", desc: "Leading teams at the Germany Sail Grand Prix day one, with a new SailGP speed record set." },
-  { slug: "black-foils-dominate-practice-day-in-sassnitz", title: "Black Foils dominate practice day in Sassnitz", image: "https://thefoil.com/media/sfEU1EC1ADnEWMSxAFjCV90hscMHSO0NrwQVvnxZrPY/resize:fill-down:690:388/gravity:fp:0.6787096774:0.5812742086/quality:60/dpr:1/2026/08/260821-sailgp-sassnitz-the-foil-ls1-3878.jpg", desc: "New Zealand's Black Foils set the benchmark in a three-race practice session." },
-  { slug: "plans-uncovered-to-reinvent-sailgp-s-race-weekend-news-even-to-the-sailors", title: "Plans uncovered to reinvent SailGP's race weekend", image: "https://thefoil.com/media/4VuyF-wFzDEjovsQXItmgj349qoEU1bP95n2xJbldIM/resize:fill-down:690:388/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/08/jl108682-1.jpg", desc: "SailGP is exploring new format concepts, reconsidering the current race-weekend structure." },
-  { slug: "andy-rice-a-good-worlds-for-gbr-and-a-good-worlds-for-the-470-class", title: "Andy Rice: A good Worlds for GBR, and for the 470 Class", image: "https://thefoil.com/media/CxqVH27Gkk4cj5ZFmExBBvQ76uSmVy-6172HPyItfEE/resize:fill-down:690:388/gravity:fp:0.5010989011:0.3081960898/quality:60/dpr:1/2026/08/55457634027-d7ba2b7d10-o.jpg", desc: "Analysis of the Olympic class future, with a focus on age-related concerns in the 470." },
-  { slug: "full-steam-ahead-and-scrambling-to-keep-our-heads-above-water-grant-simmer-on-australia-s-cup-comeback", title: "'Full steam ahead': Grant Simmer on Australia's Cup comeback", image: "https://thefoil.com/media/Z4trZSW3ehVrVFS3qWOILawnTQl_Pv_9-z_lS_AD6qY/resize:fill-down:690:388/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/06/grant-auacannouncement-imageteamauac.jpg", desc: "The Australia II navigator on the effort behind the current America's Cup comeback." },
-  { slug: "rising-stars-nathan-berger-the-17-year-old-wingfoiler-beating-his-heroes", title: "Rising Stars: Nathan Berger, the 17-year-old wingfoiler", image: "https://thefoil.com/media/6jqFsZkVz92e9pViFIC9cvcOgfOK1JayU4J0n2Ya0i8/resize:fill-down:690:388/gravity:fp:0.5757575758:0.4289940828/quality:60/dpr:1/2026/05/nathan-berger8.jpg", desc: "The first Rising Stars feature profiles a young athlete already competing internationally." },
-  { slug: "luca-rizzotti-bought-a-moth-in-2007-and-accidentally-started-a-movement", title: "Luca Rizzotti bought a Moth and accidentally started a movement", image: "https://thefoil.com/media/E3aCJ86SfKfu9q-SMKv2amCZNdndXRn09tP4ign_y9g/resize:fill-down:690:388/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/03/54620591537-354128013c-k.jpg", desc: "The Italian sailor whose Moth purchase influenced a broader foiling movement." },
-  { slug: "the-safest-is-when-you-re-pushing-hard-billy-gooderham-explains-flight-control", title: "'The safest is when you're pushing hard' – Billy Gooderham on flight control", image: "https://thefoil.com/media/88hujdjXkimh2hjECgSbi8G11dmmrQgPo1mSEJHk3mg/resize:fill-down:690:388/gravity:fp:0.4804597701:0.5023331499/quality:60/dpr:1/2026/02/northstar1.jpeg", desc: "The NorthStar SailGP flight controller on F50 foil-control techniques and safety." },
-  { slug: "podcast-ep-8-sydney-sailgp-preview-and-quentin-delapierre-on-safety", title: "Podcast Ep. 8 – Sydney SailGP preview + Quentin Delapierre", image: "https://thefoil.com/media/OklF53Inp_snGNaLlSc_Z7oc8gG_XysfQ3vfUfQQsOk/resize:fill-down:690:388/gravity:fp:0.4962835906:0.6871458395/quality:60/dpr:1/2026/07/pod26thumb.jpg", desc: "A podcast episode addressing safety concerns following the Auckland collision." },
-  { slug: "the-olympian-windsurfer-with-a-golden-future-far-beyond-la-2028", title: "The Olympian windsurfer with a golden future beyond LA 2028", image: "https://thefoil.com/media/U8j6sq1yq50MNqneZqWV-fKQwvMWiJ23hK4IqlF_wBM/resize:fill-down:690:388/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/02/grae-morris-2.jpeg", desc: "A profile of Australian windsurfer Grae Morris and his prospects beyond the Olympics." },
-  { slug: "podcast-can-anyone-beat-new-zealand-to-win-the-38th-america-s-cup", title: "Podcast: Can anyone beat New Zealand to win the 38th America's Cup?", image: "https://thefoil.com/media/DKNOTHYBJW-95Y9EeOQwx462bvV0HJVYFbaIEkadvhQ/resize:fill-down:690:388/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/07/foil-podcast-ep27.jpg", desc: "Can any of the six challengers really take on and beat Emirates Team New Zealand?" },
-  { slug: "podcast-sailgp-vs-america-s-cup-can-they-coexist", title: "Podcast: SailGP vs America's Cup – can they coexist?", image: "https://thefoil.com/media/OklF53Inp_snGNaLlSc_Z7oc8gG_XysfQ3vfUfQQsOk/resize:fill-down:690:388/gravity:fp:0.4962835906:0.6871458395/quality:60/dpr:1/2026/07/pod26thumb.jpg", desc: "A discussion of the competitive dynamics between the two major sailing formats." },
-  { slug: "podcast-america-s-cup-is-back-the-full-cagliari-debrief", title: "Podcast: America's Cup is back! The full Cagliari debrief", image: "https://thefoil.com/media/dtwoxDuA6lLEBMIsdFmKtcF-fieju814c7HeIuHU0mo/resize:fill-down:532:300/gravity:fp:0.1914893617:0.4600980829/quality:60/dpr:1/2026/05/A8I5xxHXMuY.jpg", desc: "The episode analysing the preliminary America's Cup regatta results in Cagliari." },
-  { slug: "like-watching-jet-fighters-dance-on-water-how-luna-rossa-lit-up-the-ac38-opener", title: "'Like watching jet fighters dance on water': Luna Rossa lights up the AC38 opener", image: "https://thefoil.com/media/dBTTONdJFQWIf2atg27IKK_tQtdgVuHqlJ6eIv7jACU/resize:fill-down:540:295/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/01/nochesanjuan-valencia-4-1.jpg", desc: "Coverage of Luna Rossa's strong performance at the AC38 Cagliari opener." },
-  { slug: "podcast-extra-mozzy-and-freddie-preview-the-ac38-cagliari-prelim", title: "Podcast Extra: Mozzy and Freddie preview the AC38 Cagliari prelim", image: "https://thefoil.com/media/Pdz6pWSetC2coPjMqbNjYUjLhhRZ52S_gxCpmwiGVSk/resize:fill-down:690:388/gravity:fp:0.1914893617:0.4600980829/quality:60/dpr:1/2026/05/A8I5xxHXMuY.jpg", desc: "A bonus episode previewing the AC38 preliminary regatta." },
-  { slug: "podcast-it-starts-with-a-dream-glenn-ashby-on-australia-s-ac38-challenge-the-foil-podcast-ep-20", title: "Podcast: 'It starts with a dream' – Glenn Ashby on Australia's AC38 challenge", image: "https://thefoil.com/media/cEU2dqX2riTz_QNbWdMf2JFR4GUC9CxGFkxKPebEY2I/resize:fill-down:532:300/gravity:fp:0.6278381625:0.3250833809/quality:60/dpr:2/2026/08/black-foils-auckland-2026-brett-phibbs.jpg", desc: "'The time is now,' says Glenn Ashby on Team Australia's newly-minted Cup challenge." },
-  { slug: "freddie-carr-cowes-week-turns-200-why-britain-s-greatest-regatta-still-means-everything", title: "Freddie Carr: Cowes Week turns 200 – why it still means everything", image: "https://thefoil.com/media/D9-BwEUpx2zkordmXhfkesEf3umA15CkbUq_0hVLUFk/resize:fill-down:690:388/gravity:fp:0.3212765957:0.4967784486/quality:60/dpr:1/2026/07/cowes-week-2018.jpg", desc: "Why the historic British regatta still matters in the modern sailing calendar." },
-  { slug: "freddie-carr-winging-it-at-half-time-in-sailgp", title: "Freddie Carr: winging it at half-time in SailGP", image: "https://thefoil.com/media/1iyA3HxN0dBlrtWrFrClGhvEmC088eDTOXoEX2XqirA/resize:fill-down:690:388/gravity:fp:0.3738738739:0.7896640827/quality:60/dpr:1/2026/06/ab305255.jpg", desc: "A mid-season performance analysis of the SailGP teams, backed by the numbers." },
-  { slug: "andy-rice-rates-the-fleet-after-canada-sailgp", title: "Andy Rice rates the fleet after Canada SailGP", image: "https://thefoil.com/media/qKjnrDjyAPpM3cBcH277RkMeUBqSXdeGFzwHNmpN4rY/resize:fill-down:690:388/gravity:fp:0.5127659574:0.5173727167/quality:60/dpr:1/2026/06/sv3-3959-samo-vidic-for-sailgp.jpg", desc: "Post-race analysis, with Los Gallos' strategic move the season's standout moment." },
-  { slug: "after-the-new-york-crash-what-should-sailgp-actually-do-the-foil-community-weighs-in", title: "After the New York crash, what should SailGP actually do?", image: "https://thefoil.com/media/EDze0rwkrUx65k8kq9Lwu9oSHPCEuRO6nTICXHbiUnE/resize:fill-down:690:388/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/06/sb1-9984-simon-bruty-sailgp.jpg", desc: "A community discussion sparked by the collision at the New York SailGP." },
-  { slug: "the-questions-that-remain-following-new-york-sailgp", title: "The questions that remain following New York SailGP", image: "https://thefoil.com/media/Um8anF-sXKcm8j780JjLYBS9DIkHC8GfcXQjrug28Xs/resize:fill-down:690:388/gravity:fp:0.4787792084:0.701049749/quality:60/dpr:1/2026/06/new-york-sailgp-statue-of-liberty-2026.jpg", desc: "From a three-boat collision to a grand final that divided opinion." },
+  {
+    slug: "the-week-in-racing-31-august-26",
+    title: "The week in racing – 31 August '26",
+    image: IMG.weekInRacing31August,
+    desc: "A first Hungarian ILCA 7 world title, a reshaped 52 Super Series fight and a fast Atlantic crossing headline the week.",
+  },
+  {
+    slug: "rate-the-fleet-andy-rice-on-sassnitz-sailgp",
+    title: "Rate the fleet: Andy Rice on Sassnitz SailGP",
+    image: IMG.rateFleetSassnitz,
+    desc: "Andy Rice ranks the fleet after a Germany Sail Grand Prix shaped by split groups, extreme speed and unstable breeze.",
+  },
+  {
+    slug: "luna-rossa-test-new-rudder-and-take-a-knock",
+    title: "Luna Rossa test new rudder – and take a knock",
+    image: IMG.lunaRossaRudder,
+    desc: "A revised rudder supplied useful AC75 data before an afternoon loss of control exposed its limits.",
+  },
+  {
+    slug: "freddie-carr-the-sailgp-teams-that-must-decide-to-stick-or-twist",
+    title: "Freddie Carr: The SailGP teams that must decide to stick or twist",
+    image: IMG.sailgpStickOrTwist,
+    desc: "SailGP teams weigh roster changes against trusting their current athletes as Season 6 reaches its decisive phase.",
+  },
+  {
+    slug: "the-week-in-racing-24-august-26",
+    title: "The week in racing – 24 August '26",
+    image: IMG.weekInRacing24August,
+    desc: "A SailGP speed record, an America's Cup legal dispute and two new youth world champions lead the review.",
+  },
+  {
+    slug: "flying-roos-hit-high-five-with-victory-in-sassnitz",
+    title: "Flying Roos hit high five with victory in Sassnitz",
+    image: IMG.flyingRoosSassnitz,
+    desc: "Australia mastered a weather-disrupted final to claim a fifth SailGP event win and extend their championship lead.",
+  },
+  {
+    slug: "plans-uncovered-to-reinvent-sailgp-s-race-weekend-news-even-to-the-sailors",
+    title: "Plans uncovered to reinvent SailGP's race weekend",
+    image:
+      "https://thefoil.com/media/4VuyF-wFzDEjovsQXItmgj349qoEU1bP95n2xJbldIM/resize:fill-down:690:388/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/08/jl108682-1.jpg",
+    desc: "A fan survey revealed possible group draws, tiered racing and scoring changes for a future SailGP format.",
+  },
+  {
+    slug: "full-steam-ahead-and-scrambling-to-keep-our-heads-above-water-grant-simmer-on-australia-s-cup-comeback",
+    title: "'Full steam ahead': Grant Simmer on Australia's Cup comeback",
+    image:
+      "https://thefoil.com/media/Z4trZSW3ehVrVFS3qWOILawnTQl_Pv_9-z_lS_AD6qY/resize:fill-down:690:388/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/06/grant-auacannouncement-imageteamauac.jpg",
+    desc: "The Australia II navigator on the effort behind the current America's Cup comeback.",
+  },
+  {
+    slug: "rising-stars-nathan-berger-the-17-year-old-wingfoiler-beating-his-heroes",
+    title: "Rising Stars: Nathan Berger, the 17-year-old wingfoiler",
+    image:
+      "https://thefoil.com/media/6jqFsZkVz92e9pViFIC9cvcOgfOK1JayU4J0n2Ya0i8/resize:fill-down:690:388/gravity:fp:0.5757575758:0.4289940828/quality:60/dpr:1/2026/05/nathan-berger8.jpg",
+    desc: "The first Rising Stars feature profiles a young athlete already competing internationally.",
+  },
+  {
+    slug: "luca-rizzotti-bought-a-moth-in-2007-and-accidentally-started-a-movement",
+    title: "Luca Rizzotti bought a Moth and accidentally started a movement",
+    image:
+      "https://thefoil.com/media/E3aCJ86SfKfu9q-SMKv2amCZNdndXRn09tP4ign_y9g/resize:fill-down:690:388/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/03/54620591537-354128013c-k.jpg",
+    desc: "The Italian sailor whose Moth purchase influenced a broader foiling movement.",
+  },
+  {
+    slug: "the-safest-is-when-you-re-pushing-hard-billy-gooderham-explains-flight-control",
+    title: "'The safest is when you're pushing hard' – Billy Gooderham on flight control",
+    image:
+      "https://thefoil.com/media/88hujdjXkimh2hjECgSbi8G11dmmrQgPo1mSEJHk3mg/resize:fill-down:690:388/gravity:fp:0.4804597701:0.5023331499/quality:60/dpr:1/2026/02/northstar1.jpeg",
+    desc: "The NorthStar SailGP flight controller on F50 foil-control techniques and safety.",
+  },
+  {
+    slug: "podcast-ep-8-sydney-sailgp-preview-and-quentin-delapierre-on-safety",
+    title: "Podcast Ep. 8 – Sydney SailGP preview + Quentin Delapierre",
+    image:
+      "https://thefoil.com/media/OklF53Inp_snGNaLlSc_Z7oc8gG_XysfQ3vfUfQQsOk/resize:fill-down:690:388/gravity:fp:0.4962835906:0.6871458395/quality:60/dpr:1/2026/07/pod26thumb.jpg",
+    desc: "A podcast episode addressing safety concerns following the Auckland collision.",
+  },
+  {
+    slug: "the-olympian-windsurfer-with-a-golden-future-far-beyond-la-2028",
+    title: "The Olympian windsurfer with a golden future beyond LA 2028",
+    image:
+      "https://thefoil.com/media/U8j6sq1yq50MNqneZqWV-fKQwvMWiJ23hK4IqlF_wBM/resize:fill-down:690:388/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/02/grae-morris-2.jpeg",
+    desc: "A profile of Australian windsurfer Grae Morris and his prospects beyond the Olympics.",
+  },
+  {
+    slug: "podcast-can-anyone-beat-new-zealand-to-win-the-38th-america-s-cup",
+    title: "Podcast: Can anyone beat New Zealand to win the 38th America's Cup?",
+    image:
+      "https://thefoil.com/media/DKNOTHYBJW-95Y9EeOQwx462bvV0HJVYFbaIEkadvhQ/resize:fill-down:690:388/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/07/foil-podcast-ep27.jpg",
+    desc: "Can any of the six challengers really take on and beat Emirates Team New Zealand?",
+  },
+  {
+    slug: "podcast-sailgp-vs-america-s-cup-can-they-coexist",
+    title: "Podcast: SailGP vs America's Cup – can they coexist?",
+    image:
+      "https://thefoil.com/media/OklF53Inp_snGNaLlSc_Z7oc8gG_XysfQ3vfUfQQsOk/resize:fill-down:690:388/gravity:fp:0.4962835906:0.6871458395/quality:60/dpr:1/2026/07/pod26thumb.jpg",
+    desc: "A discussion of the competitive dynamics between the two major sailing formats.",
+  },
+  {
+    slug: "podcast-america-s-cup-is-back-the-full-cagliari-debrief",
+    title: "Podcast: America's Cup is back! The full Cagliari debrief",
+    image:
+      "https://thefoil.com/media/dtwoxDuA6lLEBMIsdFmKtcF-fieju814c7HeIuHU0mo/resize:fill-down:532:300/gravity:fp:0.1914893617:0.4600980829/quality:60/dpr:1/2026/05/A8I5xxHXMuY.jpg",
+    desc: "The episode analysing the preliminary America's Cup regatta results in Cagliari.",
+  },
+  {
+    slug: "like-watching-jet-fighters-dance-on-water-how-luna-rossa-lit-up-the-ac38-opener",
+    title: "'Like watching jet fighters dance on water': Luna Rossa lights up the AC38 opener",
+    image:
+      "https://thefoil.com/media/dBTTONdJFQWIf2atg27IKK_tQtdgVuHqlJ6eIv7jACU/resize:fill-down:540:295/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/01/nochesanjuan-valencia-4-1.jpg",
+    desc: "Coverage of Luna Rossa's strong performance at the AC38 Cagliari opener.",
+  },
+  {
+    slug: "podcast-extra-mozzy-and-freddie-preview-the-ac38-cagliari-prelim",
+    title: "Podcast Extra: Mozzy and Freddie preview the AC38 Cagliari prelim",
+    image:
+      "https://thefoil.com/media/Pdz6pWSetC2coPjMqbNjYUjLhhRZ52S_gxCpmwiGVSk/resize:fill-down:690:388/gravity:fp:0.1914893617:0.4600980829/quality:60/dpr:1/2026/05/A8I5xxHXMuY.jpg",
+    desc: "A bonus episode previewing the AC38 preliminary regatta.",
+  },
+  {
+    slug: "podcast-it-starts-with-a-dream-glenn-ashby-on-australia-s-ac38-challenge-the-foil-podcast-ep-20",
+    title: "Podcast: 'It starts with a dream' – Glenn Ashby on Australia's AC38 challenge",
+    image:
+      "https://thefoil.com/media/cEU2dqX2riTz_QNbWdMf2JFR4GUC9CxGFkxKPebEY2I/resize:fill-down:532:300/gravity:fp:0.6278381625:0.3250833809/quality:60/dpr:2/2026/08/black-foils-auckland-2026-brett-phibbs.jpg",
+    desc: "'The time is now,' says Glenn Ashby on Team Australia's newly-minted Cup challenge.",
+  },
+  {
+    slug: "freddie-carr-cowes-week-turns-200-why-britain-s-greatest-regatta-still-means-everything",
+    title: "Freddie Carr: Cowes Week turns 200 – why it still means everything",
+    image:
+      "https://thefoil.com/media/D9-BwEUpx2zkordmXhfkesEf3umA15CkbUq_0hVLUFk/resize:fill-down:690:388/gravity:fp:0.3212765957:0.4967784486/quality:60/dpr:1/2026/07/cowes-week-2018.jpg",
+    desc: "Why the historic British regatta still matters in the modern sailing calendar.",
+  },
+  {
+    slug: "freddie-carr-winging-it-at-half-time-in-sailgp",
+    title: "Freddie Carr: winging it at half-time in SailGP",
+    image:
+      "https://thefoil.com/media/1iyA3HxN0dBlrtWrFrClGhvEmC088eDTOXoEX2XqirA/resize:fill-down:690:388/gravity:fp:0.3738738739:0.7896640827/quality:60/dpr:1/2026/06/ab305255.jpg",
+    desc: "A mid-season performance analysis of the SailGP teams, backed by the numbers.",
+  },
+  {
+    slug: "andy-rice-rates-the-fleet-after-canada-sailgp",
+    title: "Andy Rice rates the fleet after Canada SailGP",
+    image:
+      "https://thefoil.com/media/qKjnrDjyAPpM3cBcH277RkMeUBqSXdeGFzwHNmpN4rY/resize:fill-down:690:388/gravity:fp:0.5127659574:0.5173727167/quality:60/dpr:1/2026/06/sv3-3959-samo-vidic-for-sailgp.jpg",
+    desc: "Post-race analysis, with Los Gallos' strategic move the season's standout moment.",
+  },
+  {
+    slug: "after-the-new-york-crash-what-should-sailgp-actually-do-the-foil-community-weighs-in",
+    title: "After the New York crash, what should SailGP actually do?",
+    image:
+      "https://thefoil.com/media/EDze0rwkrUx65k8kq9Lwu9oSHPCEuRO6nTICXHbiUnE/resize:fill-down:690:388/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/06/sb1-9984-simon-bruty-sailgp.jpg",
+    desc: "A community discussion sparked by the collision at the New York SailGP.",
+  },
+  {
+    slug: "the-questions-that-remain-following-new-york-sailgp",
+    title: "The questions that remain following New York SailGP",
+    image:
+      "https://thefoil.com/media/Um8anF-sXKcm8j780JjLYBS9DIkHC8GfcXQjrug28Xs/resize:fill-down:690:388/gravity:fp:0.4787792084:0.701049749/quality:60/dpr:1/2026/06/new-york-sailgp-statue-of-liberty-2026.jpg",
+    desc: "From a three-boat collision to a grand final that divided opinion.",
+  },
 ];
 
 type PoolEvent = { slug: string; heading: string; image: string; startDate: string; endDate: string; location: string };
 
 const EVENT_POOL: PoolEvent[] = [
-  { slug: "the-ocean-race-atlantic", heading: "The Ocean Race Atlantic", image: "https://thefoil.com/media/0IFpwb4HJabWEJukldoszeTslP9-KwJiWsr1dItg4qM/resize:fill-down:460:240/gravity:fp:0.4787792084:0.701049749/quality:60/dpr:1/2026/08/tora1.webp", startDate: "2026-09-01", endDate: "2026-09-01", location: "Atlantic Ocean" },
-  { slug: "spain-sail-grand-prix-valencia", heading: "Spain Sail Grand Prix | Valencia", image: "https://thefoil.com/media/iPBCq3_vvcFn6JcR7RXGUjAUYxDugVCydAXGxRUu5hI/resize:fill-down:460:240/gravity:fp:0.4787792084:0.701049749/quality:60/dpr:1/2026/01/nochesanjuan-valencia-4-1.jpg", startDate: "2026-09-05", endDate: "2026-09-06", location: "Valencia, Spain" },
-  { slug: "rolex-switzerland-sail-grand-prix-geneva", heading: "Rolex Switzerland Sail Grand Prix | Geneva", image: "https://thefoil.com/media/dakrdWO1K6E-9HkB-ty70MpQpJZphrX0yOUwtJVMzW4/resize:fill-down:460:240/gravity:fp:0.4787792084:0.701049749/quality:60/dpr:1/2026/01/sailgp-geneva-event.png", startDate: "2026-09-19", endDate: "2026-09-20", location: "Geneva, Switzerland" },
-  { slug: "emirates-dubai-sail-grand-prix-presented-by-dp-world", heading: "Emirates Dubai Sail Grand Prix", image: "https://thefoil.com/media/Xu7BYqNK4JOlhDFN95CM5vkEx1z5Tz816mIqhhnPdJo/resize:fill-down:460:240/gravity:fp:0.4787792084:0.701049749/quality:60/dpr:1/2025/12/felix-diemer-sailgp-1.png", startDate: "2026-11-21", endDate: "2026-11-22", location: "Dubai, United Arab Emirates" },
-  { slug: "mubadala-abu-dhabi-sail-grand-prix-2026-season-grand-final-presented-by-abu-dhabi-sports-council", heading: "Mubadala Abu Dhabi Sail Grand Prix | Grand Final", image: "https://thefoil.com/media/xjPn5tb1VybfsEuZ4Y9J9RiSHePy3sFR2qDTv3tu7Ic/resize:fill-down:336:258/gravity:ce/quality:60/dpr:1/2025/12/ricardo-pinto-sailgp-1-1.png", startDate: "2026-11-28", endDate: "2026-11-29", location: "Abu Dhabi, United Arab Emirates" },
+  {
+    slug: "the-ocean-race-atlantic",
+    heading: "The Ocean Race Atlantic",
+    image:
+      "https://thefoil.com/media/0IFpwb4HJabWEJukldoszeTslP9-KwJiWsr1dItg4qM/resize:fill-down:460:240/gravity:fp:0.4787792084:0.701049749/quality:60/dpr:1/2026/08/tora1.webp",
+    startDate: "2026-09-01",
+    endDate: "2026-09-01",
+    location: "Atlantic Ocean",
+  },
+  {
+    slug: "spain-sail-grand-prix-valencia",
+    heading: "Spain Sail Grand Prix | Valencia",
+    image:
+      "https://thefoil.com/media/iPBCq3_vvcFn6JcR7RXGUjAUYxDugVCydAXGxRUu5hI/resize:fill-down:460:240/gravity:fp:0.4787792084:0.701049749/quality:60/dpr:1/2026/01/nochesanjuan-valencia-4-1.jpg",
+    startDate: "2026-09-05",
+    endDate: "2026-09-06",
+    location: "Valencia, Spain",
+  },
+  {
+    slug: "rolex-switzerland-sail-grand-prix-geneva",
+    heading: "Rolex Switzerland Sail Grand Prix | Geneva",
+    image:
+      "https://thefoil.com/media/dakrdWO1K6E-9HkB-ty70MpQpJZphrX0yOUwtJVMzW4/resize:fill-down:460:240/gravity:fp:0.4787792084:0.701049749/quality:60/dpr:1/2026/01/sailgp-geneva-event.png",
+    startDate: "2026-09-19",
+    endDate: "2026-09-20",
+    location: "Geneva, Switzerland",
+  },
+  {
+    slug: "emirates-dubai-sail-grand-prix-presented-by-dp-world",
+    heading: "Emirates Dubai Sail Grand Prix",
+    image:
+      "https://thefoil.com/media/Xu7BYqNK4JOlhDFN95CM5vkEx1z5Tz816mIqhhnPdJo/resize:fill-down:460:240/gravity:fp:0.4787792084:0.701049749/quality:60/dpr:1/2025/12/felix-diemer-sailgp-1.png",
+    startDate: "2026-11-21",
+    endDate: "2026-11-22",
+    location: "Dubai, United Arab Emirates",
+  },
+  {
+    slug: "mubadala-abu-dhabi-sail-grand-prix-2026-season-grand-final-presented-by-abu-dhabi-sports-council",
+    heading: "Mubadala Abu Dhabi Sail Grand Prix | Grand Final",
+    image:
+      "https://thefoil.com/media/xjPn5tb1VybfsEuZ4Y9J9RiSHePy3sFR2qDTv3tu7Ic/resize:fill-down:336:258/gravity:ce/quality:60/dpr:1/2025/12/ricardo-pinto-sailgp-1-1.png",
+    startDate: "2026-11-28",
+    endDate: "2026-11-29",
+    location: "Abu Dhabi, United Arab Emirates",
+  },
 ];
 
 /** On-domain `/article/<slug>` when we have a demo page for it; else the real thefoil.com article. */
@@ -140,12 +385,14 @@ function poolArticles(offset: number, count: number, idPrefix: string): ArticleD
   });
 }
 
-/** `count` link cards for the related-links widget. */
-function poolLinks(offset: number, count: number, idPrefix: string): LinkItemData[] {
-  return Array.from({ length: count }, (_, i) => {
-    const article = poolAt(ARTICLE_POOL, offset + i);
+/** Mock contextual links with stable, explicit video-to-article assignments. */
+function contextualLinks(idPrefix: string): LinkItemData[] {
+  return LATEST_VIDEO_IDS.map((video_id, i) => {
+    const articleSlug = LATEST_VIDEO_ARTICLE_SLUGS[i]!;
+    const article = ARTICLE_POOL.find(({ slug }) => slug === articleSlug) ?? poolAt(ARTICLE_POOL, i);
     return {
       id: `${idPrefix}-${i}`,
+      video_id,
       link: poolHref(article.slug, "news"),
       title: article.title,
       description: article.desc,
@@ -201,40 +448,40 @@ function basePageData(): Record<string, WidgetData> {
       upNextLabel: "Up Next",
       featuredArticle: {
         id: "sailgp-news-1",
-        title: "SailGP and America's Cup: can they coexist?",
-        href: "/article/the-questions-that-remain-following-new-york-sailgp",
-        image: { src: IMG.sailgpNewYork, alt: "SailGP and America's Cup" },
+        title: "The week in racing – 31 August '26",
+        href: "/article/the-week-in-racing-31-august-26",
+        image: { src: IMG.weekInRacing31August, alt: "ILCA 7 fleet racing in Dublin Bay" },
       },
       upNextArticles: [
         {
           id: "sailgp-news-2",
-          title: "Inside the Rockwool Germany Sail Grand Prix",
-          href: "/article/rockwool-germany-sail-grand-prix-sassnitz",
-          image: { src: IMG.sailgpSimonBruty, alt: "Rockwool Germany Sail Grand Prix" },
+          title: "Rate the fleet: Andy Rice on Sassnitz SailGP",
+          href: "/article/rate-the-fleet-andy-rice-on-sassnitz-sailgp",
+          image: { src: IMG.rateFleetSassnitz, alt: "SailGP fleet racing at Sassnitz" },
         },
         {
           id: "sailgp-news-3",
-          title: "Spain hit 99 km/h in the fleet's fastest run yet off Sassnitz",
-          href: "/article/emirates-dubai-sail-grand-prix-presented-by-dp-world",
-          image: { src: IMG.sailgpFelixDiemer, alt: "SailGP fastest run" },
+          title: "Luna Rossa test new rudder – and take a knock",
+          href: "/article/luna-rossa-test-new-rudder-and-take-a-knock",
+          image: { src: IMG.lunaRossaRudder, alt: "Luna Rossa testing its AC75 off Cagliari" },
         },
         {
           id: "sailgp-news-4",
-          title: "Season 6 standings: three teams still in the title hunt",
-          href: "/article/rolex-switzerland-sail-grand-prix-geneva",
-          image: { src: IMG.sailgpGeneva, alt: "SailGP season standings" },
+          title: "Freddie Carr: The SailGP teams that must decide to stick or twist",
+          href: "/article/freddie-carr-the-sailgp-teams-that-must-decide-to-stick-or-twist",
+          image: { src: IMG.sailgpStickOrTwist, alt: "SailGP teams racing at Sassnitz" },
         },
         {
           id: "sailgp-news-5",
-          title: "New Zealand vs Australia: the rivalry defining the season",
-          href: "/article/andy-rice-rates-the-fleet-after-canada-sailgp",
-          image: { src: IMG.sailgpSamoVidic, alt: "New Zealand vs Australia" },
+          title: "The week in racing – 24 August '26",
+          href: "/article/the-week-in-racing-24-august-26",
+          image: { src: IMG.weekInRacing24August, alt: "ILCA racing photographed by Peter Brøgger" },
         },
         {
           id: "sailgp-news-6",
-          title: "Grand Final preview: everything on the line in Abu Dhabi",
-          href: "/article/mubadala-abu-dhabi-sail-grand-prix-2026-season-grand-final-presented-by-abu-dhabi-sports-council",
-          image: { src: IMG.sailgpLosAngeles, alt: "SailGP Grand Final" },
+          title: "Flying Roos hit high five with victory in Sassnitz",
+          href: "/article/flying-roos-hit-high-five-with-victory-in-sassnitz",
+          image: { src: IMG.flyingRoosSassnitz, alt: "Flying Roos racing at the Germany Sail Grand Prix" },
         },
       ],
     },
@@ -247,13 +494,13 @@ function basePageData(): Record<string, WidgetData> {
       },
       events: [
         {
-          id: "rockwool-germany-sail-gp-2026",
-          heading: "Rockwool Germany Sail Grand Prix | Sassnitz",
-          image: { src: IMG.sailgpSimonBruty },
-          startDate: "2026-08-22",
-          endDate: "2026-08-23",
-          location: "Sassnitz, Rügen Island, Germany",
-          cta: { label: "Read More", href: "/article/rockwool-germany-sail-grand-prix-sassnitz" },
+          id: "the-ocean-race-atlantic-2026",
+          heading: "The Ocean Race Atlantic",
+          image: { src: IMG.oceanRaceAtlantic },
+          startDate: "2026-09-01",
+          endDate: "2026-09-01",
+          location: "New York to Lorient",
+          cta: { label: "Read More", href: "/article/the-ocean-race-atlantic" },
         },
         {
           id: "spain-sail-gp-2026",
@@ -274,22 +521,25 @@ function basePageData(): Record<string, WidgetData> {
           cta: { label: "Read More", href: "/article/rolex-switzerland-sail-grand-prix-geneva" },
         },
         {
-          id: "france-sail-gp-2026",
-          heading: "France Sail Grand Prix | Saint-Tropez",
-          image: { src: IMG.sailgpSamoVidic },
-          startDate: "2026-09-26",
-          endDate: "2026-09-27",
-          location: "Saint-Tropez, France",
-          cta: { label: "Read More", href: "/article/the-week-in-racing-10-august-26" },
-        },
-        {
           id: "emirates-dubai-sail-gp-2026",
           heading: "Emirates Dubai Sail Grand Prix | Dubai",
           image: { src: IMG.sailgpLosAngeles },
-          startDate: "2026-11-28",
-          endDate: "2026-11-29",
+          startDate: "2026-11-21",
+          endDate: "2026-11-22",
           location: "Dubai, United Arab Emirates",
           cta: { label: "Read More", href: "/article/emirates-dubai-sail-grand-prix-presented-by-dp-world" },
+        },
+        {
+          id: "mubadala-abu-dhabi-sail-gp-2026",
+          heading: "Mubadala Abu Dhabi Sail Grand Prix | Grand Final",
+          image: { src: IMG.ricardo },
+          startDate: "2026-11-28",
+          endDate: "2026-11-29",
+          location: "Abu Dhabi, United Arab Emirates",
+          cta: {
+            label: "Read More",
+            href: "/article/mubadala-abu-dhabi-sail-grand-prix-2026-season-grand-final-presented-by-abu-dhabi-sports-council",
+          },
         },
       ],
     },
@@ -301,62 +551,7 @@ function basePageData(): Record<string, WidgetData> {
     related_links: {
       id: "related-links",
       ctaText: "Read More",
-      items: [
-        {
-          id: "interview-link-1",
-          link: "/article/podcast-sailgp-vs-america-s-cup-can-they-coexist",
-          title: "Podcast: SailGP vs America's Cup — can they coexist?",
-          description: PODCAST_DESC,
-          brand: "The Foil",
-          website: "thefoil.com",
-          image: IMG.ricardo,
-        },
-        {
-          id: "interview-link-2",
-          link: "/article/podcast-can-anyone-beat-new-zealand-to-win-the-38th-america-s-cup",
-          title: "Podcast: Can anyone beat New Zealand to win the 38th America's Cup?",
-          description: PODCAST_DESC,
-          brand: "The Foil",
-          website: "thefoil.com",
-          image: IMG.ricardo,
-        },
-        {
-          id: "interview-link-3",
-          link: "/article/podcast-america-s-cup-is-back-the-full-cagliari-debrief",
-          title: "Podcast: America's Cup is back — the full Cagliari debrief",
-          description: PODCAST_DESC,
-          brand: "The Foil",
-          website: "thefoil.com",
-          image: IMG.ricardo,
-        },
-        {
-          id: "interview-link-4",
-          link: "/article/podcast-extra-mozzy-and-freddie-preview-the-ac38-cagliari-prelim",
-          title: "Podcast extra: Mozzy and Freddie preview the AC38 Cagliari prelim",
-          description: PODCAST_DESC,
-          brand: "The Foil",
-          website: "thefoil.com",
-          image: IMG.ricardo,
-        },
-        {
-          id: "interview-link-5",
-          link: "/article/podcast-the-six-american-sailors-chosen-to-take-back-the-cup",
-          title: "Podcast: The six American sailors chosen to take back the Cup",
-          description: PODCAST_DESC,
-          brand: "The Foil",
-          website: "thefoil.com",
-          image: IMG.ricardo,
-        },
-        {
-          id: "interview-link-6",
-          link: "/article/podcast-ep-8-sydney-sailgp-preview-and-quentin-delapierre-on-safety",
-          title: "Podcast Ep 8: Sydney SailGP preview & Quentin Delapierre on safety",
-          description: PODCAST_DESC,
-          brand: "The Foil",
-          website: "thefoil.com",
-          image: IMG.ricardo,
-        },
-      ],
+      items: contextualLinks("interview-link"),
     },
     latest_interviews: {
       id: "latest-interviews",
@@ -372,27 +567,27 @@ function basePageData(): Record<string, WidgetData> {
         },
         {
           id: "interview-2",
-          title: "The new AC75 class, explained: what changed and why",
-          href: "/article/the-week-in-racing-10-august-26",
-          image: { src: IMG.acAc75, alt: "AC75 class" },
+          title: "Rising Stars: Nathan Berger, the 17-year-old wingfoiler beating his heroes",
+          href: "/article/rising-stars-nathan-berger-the-17-year-old-wingfoiler-beating-his-heroes",
+          image: { src: IMG.nathanBerger, alt: "Wingfoiler Nathan Berger competing on the World Tour" },
         },
         {
           id: "interview-3",
-          title: "Defenders vs challengers: who really has the edge?",
-          href: "/article/spain-sail-grand-prix-valencia",
-          image: { src: IMG.acValencia, alt: "Defenders vs challengers" },
+          title: "Luca Rizzotti bought a Moth in 2007 and accidentally started a movement",
+          href: "/article/luca-rizzotti-bought-a-moth-in-2007-and-accidentally-started-a-movement",
+          image: { src: IMG.offshoreGeneric, alt: "Luca Rizzotti and the Moth sailing movement" },
         },
         {
           id: "interview-4",
-          title: "From Auckland to Barcelona: the Cup finds a new home",
-          href: "/article/the-real-story-behind-the-black-foils-new-sailgp-recruits",
-          image: { src: IMG.acAuckland, alt: "Auckland to Barcelona" },
+          title: "'The safest is when you're pushing hard' – Billy Gooderham explains flight control",
+          href: "/article/the-safest-is-when-you-re-pushing-hard-billy-gooderham-explains-flight-control",
+          image: { src: IMG.offshoreNorthstar, alt: "Billy Gooderham on SailGP flight control" },
         },
         {
           id: "interview-5",
-          title: "Inside the design war that's reshaping the fleet",
-          href: "/article/podcast-extra-mozzy-and-freddie-preview-the-ac38-cagliari-prelim",
-          image: { src: IMG.acDesign, alt: "Design war" },
+          title: "The Olympian windsurfer with a golden future far beyond LA 2028",
+          href: "/article/the-olympian-windsurfer-with-a-golden-future-far-beyond-la-2028",
+          image: { src: IMG.graeMorris, alt: "Australian Olympic windsurfer Grae Morris" },
         },
       ],
     },
@@ -490,7 +685,7 @@ function varyWidget(widget: WidgetData, pageIndex: number): WidgetData {
       : undefined,
     articles: widget.articles ? poolArticles(offset, widget.articles.length, `${idBase}-art`) : undefined,
     events: widget.events ? poolEvents(offset, widget.events.length, `${idBase}-evt`) : undefined,
-    items: widget.items ? poolLinks(offset, widget.items.length, `${idBase}-link`) : undefined,
+    items: widget.items ? contextualLinks(`${idBase}-link`) : undefined,
   };
 }
 

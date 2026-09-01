@@ -227,23 +227,12 @@ export function EmbedProvider({
       }
     };
 
-    // Embed → host forward contextual flow: when the active video changes, tell the host
-    // (scoped to THIS instance) so it can highlight the linked article/list item at that index.
-    const handleActiveIndexForward = (_eventData: unknown, context: EmbedEventContextType) => {
-      const instanceId = container.getAttribute("data-instance-id");
-      SDKEventEmitter.emit(SDKEventName.PLAYER_VIDEO_CHANGED, {
-        instanceId: instanceId ?? undefined,
-        index: context.activeIndex,
-      });
-    };
-
     SDKEventEmitter.on(SDKListenerEventName.UPDATE_CONTEXTUAL_PARAMS, handleUpdateContextualParams);
     SDKEventEmitter.on(SDKListenerEventName.UPDATE_START_VIDEO_SLUG, handleUpdateStartVideoSlug);
     SDKEventEmitter.on(SDKListenerEventName.EXPAND_EMBED, handleExpandEmbed);
     SDKEventEmitter.on(SDKListenerEventName.COLLAPSE_EMBED, handleCollapseEmbed);
     SDKEventEmitter.on(SDKListenerEventName.PLAYER_GO_TO_VIDEO, handleGoToVideo);
     SDKEventEmitter.on(SDKListenerEventName.PLAYER_GO_TO_INDEX, handleGoToIndex);
-    embedEventBus.on("activeIndexChange", handleActiveIndexForward);
 
     return () => {
       SDKEventEmitter.off(SDKListenerEventName.UPDATE_CONTEXTUAL_PARAMS, handleUpdateContextualParams);
@@ -252,7 +241,6 @@ export function EmbedProvider({
       SDKEventEmitter.off(SDKListenerEventName.COLLAPSE_EMBED, handleCollapseEmbed);
       SDKEventEmitter.off(SDKListenerEventName.PLAYER_GO_TO_VIDEO, handleGoToVideo);
       SDKEventEmitter.off(SDKListenerEventName.PLAYER_GO_TO_INDEX, handleGoToIndex);
-      embedEventBus.off("activeIndexChange", handleActiveIndexForward);
     };
   }, [stateEmbedData, isExpandViewDisabled]);
 

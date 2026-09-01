@@ -57,16 +57,16 @@ function truncate(value: string, max: number): string {
 
 // Curated pool of real, resolvable /article/<slug> pieces the assistant can suggest. Ids ARE slugs.
 const RELATED_ARTICLE_SLUGS = [
-  "how-pace-took-line-honours-in-the-2026-round-britain-and-ireland-race-one-chapter-at-a-time",
-  "the-safest-is-when-you-re-pushing-hard-billy-gooderham-explains-flight-control",
-  "the-real-story-behind-the-black-foils-new-sailgp-recruits",
-  "rate-the-fleet-andy-rice-s-verdict-on-sailgp-new-york",
-  "the-questions-that-remain-following-new-york-sailgp",
-  "full-steam-ahead-and-scrambling-to-keep-our-heads-above-water-grant-simmer-on-australia-s-cup-comeback",
-  "freddie-carr-cowes-week-turns-200-why-britain-s-greatest-regatta-still-means-everything",
-  "luca-rizzotti-bought-a-moth-in-2007-and-accidentally-started-a-movement",
-  "podcast-america-s-cup-is-back-the-full-cagliari-debrief",
-  "the-week-in-racing-10-august-26",
+  "the-week-in-racing-31-august-26",
+  "rate-the-fleet-andy-rice-on-sassnitz-sailgp",
+  "luna-rossa-test-new-rudder-and-take-a-knock",
+  "freddie-carr-the-sailgp-teams-that-must-decide-to-stick-or-twist",
+  "the-week-in-racing-24-august-26",
+  "flying-roos-hit-high-five-with-victory-in-sassnitz",
+  "flying-roos-and-black-foils-lead-the-way-in-germany",
+  "black-foils-dominate-practice-day-in-sassnitz",
+  "plans-uncovered-to-reinvent-sailgp-s-race-weekend-news-even-to-the-sailors",
+  "andy-rice-a-good-worlds-for-gbr-and-a-good-worlds-for-the-470-class",
 ];
 
 /** Resolve the slug pool to full article cards (title + hero image + href). */
@@ -119,7 +119,7 @@ function systemPrompt(context: IntelligenceChatContext | undefined, pool: readon
       "(e.g. a greeting or an off-topic aside). Only use ids from the list — never invent one.",
     "",
     "RELATED_ARTICLES:",
-    ...pool.map((article) => `- ${article.id}: ${article.title}`),
+    ...pool.map((article) => `- ${article.id}: ${article.title}`)
   );
   return lines.join("\n");
 }

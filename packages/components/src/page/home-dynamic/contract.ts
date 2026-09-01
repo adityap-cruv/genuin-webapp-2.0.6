@@ -45,7 +45,7 @@ export type WidgetNode = {
    * (e.g. a 2x2 16:9 grid authored at 1000 x 568). Only the RATIO is used. Stacked on mobile the
    * cell is sized by this instead of the row height, so an embed that draws at its own aspect
    * ratio never leaves dead space below itself.
-  */
+   */
   intrinsicSize?: { width: number; height: number };
   /** Optional mobile placement size used below the phone breakpoint. */
   mobileIntrinsicSize?: { width: number; height: number };
@@ -100,6 +100,8 @@ export type EventData = {
 };
 export type LinkItemData = {
   id: string;
+  /** Actual SDK video id this article belongs to. */
+  video_id: string;
   link: string;
   title: string;
   description?: string;

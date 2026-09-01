@@ -56,6 +56,13 @@ export type IntelligenceArticle = {
   image: IntelligenceArticleImage;
 };
 
+/**
+ * Runtime article-selection action. Returning `false` leaves the anchor's
+ * default navigation intact; every other return value marks the selection as
+ * handled by the consumer.
+ */
+export type IntelligenceArticleSelectHandler = (article: IntelligenceArticle) => boolean | void;
+
 /** Supported image placement within a reusable Intelligence article card. */
 export type IntelligenceArticleCardImagePosition = "top" | "bottom";
 
@@ -71,11 +78,10 @@ export interface IntelligenceArticleCardProps
   /** Whether artwork appears before or after the headline. @default "bottom" */
   imagePosition?: IntelligenceArticleCardImagePosition;
   /**
-   * Called when the card is activated. When provided, the card's default link
-   * navigation is prevented so the consumer can react (e.g. drive a paired video)
-   * instead of navigating away.
+   * Called when the card is activated. Return `false` to retain normal link
+   * navigation when the consumer cannot handle this article.
    */
-  onSelect?: (article: IntelligenceArticle) => void;
+  onSelect?: IntelligenceArticleSelectHandler;
 }
 
 type IntelligencePanelSectionProps = Omit<ComponentPropsWithoutRef<"section">, "children">;
@@ -110,10 +116,10 @@ export interface IntelligencePanelProps extends Omit<IntelligencePanelShellProps
   upNextLabel?: string;
   /**
    * Called when the user activates an article (featured headline or an Up Next
-   * card). When provided, the article's default link navigation is prevented so
-   * the consumer can react — e.g. play the matching video on a paired surface.
+   * card). Return `false` when the consumer cannot handle the article and the
+   * anchor should retain its normal navigation.
    */
-  onArticleSelect?: (article: IntelligenceArticle) => void;
+  onArticleSelect?: IntelligenceArticleSelectHandler;
 }
 
 /** Props for the matching loading placeholder. */
