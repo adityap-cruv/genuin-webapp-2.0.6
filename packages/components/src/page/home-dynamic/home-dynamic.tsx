@@ -1,17 +1,17 @@
 "use client";
 
-import {
-  useEffect,
-  useRef,
-  useState,
-  type CSSProperties,
-  type ReactNode,
-  type RefObject,
-} from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
 
 import { ErrorState } from "@genuin/components/molecules/error-state";
+import { EventSurface, EventSurfacePanel } from "@genuin/components/organisms/event-surface/event-surface";
 
-import { BlockVisibilityContext, COMPONENT_REGISTRY, WidgetBusProvider } from "./component-registry";
+import {
+  BlockVisibilityContext,
+  COMPONENT_REGISTRY,
+  HomePlayerOverlay,
+  HomePlayerOverlayProvider,
+  type HomePlayerOverlayRequest,
+} from "./component-registry";
 import type {
   ColumnNode,
   HomeDataPage,
@@ -44,8 +44,12 @@ function WidgetRenderer({ node, dataMap }: { node: WidgetNode; dataMap: DataMap 
   // that ships content or components an older client doesn't know yet).
   if (!data || !Entry) return null;
   const { intrinsicSize, mobileIntrinsicSize } = node;
+  // The cell IS the widget's `EventSurfacePanel`: `node.id` becomes the `sourceId` of everything
+  // this widget emits, which is what lets a dependent filter to its own source (and what makes the
+  // bus skip delivering a panel its own broadcasts).
   return (
-    <div
+    <EventSurfacePanel
+      id={node.id}
       className="gencl:min-h-0 gencl:min-w-0"
       data-fit={intrinsicSize ? "intrinsic" : undefined}
       style={
@@ -59,7 +63,7 @@ function WidgetRenderer({ node, dataMap }: { node: WidgetNode; dataMap: DataMap 
           : undefined
       }>
       <Entry node={node} data={data} dataMap={dataMap} />
-    </div>
+    </EventSurfacePanel>
   );
 }
 
@@ -91,36 +95,29 @@ function NodeRenderer({ node, dataMap }: { node: LayoutNode; dataMap: DataMap })
  * shrinks, the embed does not. A per-breakpoint height has the same problem at each crossing.
  * Columns are `fr`-based and reflow freely; only the height must stay put.
  */
-function RowRenderer({
-  row,
-  dataMap,
-  index,
-}: {
-  row: LayoutRow;
-  dataMap: DataMap;
-  index: number;
-}) {
+function RowRenderer({ row, dataMap, index }: { row: LayoutRow; dataMap: DataMap; index: number }) {
   // A widget that draws at its own ratio (an SDK grid embed) DEFINES its row's height: it fills
   // the width and derives its height from the placement's ratio, so a row track fixed at the
   // authored height leaves dead space under it on narrow screens and is overrun on wide ones.
   // Unlike the carousel/feed embeds this one does re-lay-out on resize, so a width-driven height
   // is safe here. The row's siblings (internally-scrolling panels) simply stretch to match.
-  const isRatioDriven = row.children.some(
-    (child) => child.type === "widget" && child.intrinsicSize !== undefined
-  );
+  const isRatioDriven = row.children.some((child) => child.type === "widget" && child.intrinsicSize !== undefined);
 
   return (
     <div
       className="gen-home-row gencl:w-full"
-      style={{
-        padding: row.padding ?? 24,
-        "--gen-home-delay": `${Math.min(index, 5) * 70}ms`,
-        // Read back by the mobile stylesheet as each stacked cell's minimum height.
-        "--gen-home-cell-h": `${row.height}px`,
-      } as CSSProperties}>
-      <div
+      style={
+        {
+          padding: row.padding ?? 24,
+          "--gen-home-delay": `${Math.min(index, 5) * 70}ms`,
+          // Read back by the mobile stylesheet as each stacked cell's minimum height.
+          "--gen-home-cell-h": `${row.height}px`,
+        } as CSSProperties
+      }>
+      <EventSurface
         className="gen-home-grid"
         data-rows={isRatioDriven ? "ratio" : undefined}
+        ariaLabel={row.id}
         style={{
           display: "grid",
           gridTemplateColumns: row.gridTemplateColumns,
@@ -134,7 +131,7 @@ function RowRenderer({
         {row.children.map((child) => (
           <NodeRenderer key={child.id} node={child} dataMap={dataMap} />
         ))}
-      </div>
+      </EventSurface>
     </div>
   );
 }
@@ -173,10 +170,10 @@ function PageBlock({
   useEffect(() => {
     const element = ref.current;
     if (!element) return;
-    const observer = new IntersectionObserver(
-      (entries) => setIsNear(entries[0]?.isIntersecting ?? false),
-      { root: rootRef.current, rootMargin: "1200px 0px" }
-    );
+    const observer = new IntersectionObserver((entries) => setIsNear(entries[0]?.isIntersecting ?? false), {
+      root: rootRef.current,
+      rootMargin: "1200px 0px",
+    });
     observer.observe(element);
     return () => observer.disconnect();
   }, [rootRef]);
@@ -185,15 +182,14 @@ function PageBlock({
   // manifest for pages/backends that don't send one.
   const effectiveLayout = page.layout ?? layout;
 
-  // Own bus per page so page 1's carousel never drives page 2's panels.
+  // Each ROW owns its own `EventSurface` (see RowRenderer), so a video never drives a panel in
+  // another row — let alone another page block.
   return (
     <div ref={ref}>
       <BlockVisibilityContext.Provider value={isNear}>
-        <WidgetBusProvider>
-          {effectiveLayout.rows.map((row, index) => (
-            <RowRenderer key={row.id} row={row} dataMap={page.data} index={index} />
-          ))}
-        </WidgetBusProvider>
+        {effectiveLayout.rows.map((row, index) => (
+          <RowRenderer key={row.id} row={row} dataMap={page.data} index={index} />
+        ))}
       </BlockVisibilityContext.Provider>
     </div>
   );
@@ -279,9 +275,12 @@ const HOME_MOTION_CSS = `
 `;
 
 export function HomeDynamic() {
+  const overlayBoundsRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const canAppendRef = useRef(false);
+  const [playerOverlay, setPlayerOverlay] = useState<HomePlayerOverlayRequest | null>(null);
+  const closePlayerOverlay = useCallback(() => setPlayerOverlay(null), []);
 
   const layoutQuery = useHomeLayout();
   const feed = useHomeFeed();
@@ -325,19 +324,27 @@ export function HomeDynamic() {
   // [hasNextPage,…], which may not change on the loading→loaded transition if the feed query
   // resolved before the layout query). Loading/error render INSIDE the container.
   return (
-    <div ref={scrollRef} className="gen-home-motion gencl:h-full gencl:overflow-auto">
-      <style>{HOME_MOTION_CSS}</style>
-      {layout &&
-        pages.map((page) => (
-          <PageBlock key={page.metadata.pageSession} page={page} layout={layout} rootRef={scrollRef} />
-        ))}
-      {isError ? (
-        <ErrorState type="ERROR" />
-      ) : isInitialLoading ? (
-        <HomeDynamicSkeleton />
-      ) : null}
-      <div ref={sentinelRef} aria-hidden style={{ height: 1 }} />
-      {isFetchingNextPage && <CenteredMessage>Loading more…</CenteredMessage>}
-    </div>
+    <HomePlayerOverlayProvider onOpen={setPlayerOverlay}>
+      <div ref={overlayBoundsRef} className="gencl:relative gencl:h-full gencl:overflow-hidden">
+        <div
+          ref={scrollRef}
+          aria-hidden={playerOverlay ? true : undefined}
+          inert={playerOverlay ? true : undefined}
+          className={`gen-home-motion gencl:h-full ${playerOverlay ? "gencl:overflow-hidden" : "gencl:overflow-auto"}`}>
+          <style>{HOME_MOTION_CSS}</style>
+          {layout &&
+            pages.map((page) => (
+              <PageBlock key={page.metadata.pageSession} page={page} layout={layout} rootRef={scrollRef} />
+            ))}
+          {isError ? <ErrorState type="ERROR" /> : isInitialLoading ? <HomeDynamicSkeleton /> : null}
+          <div ref={sentinelRef} aria-hidden style={{ height: 1 }} />
+          {isFetchingNextPage && <CenteredMessage>Loading more…</CenteredMessage>}
+        </div>
+
+        {playerOverlay && (
+          <HomePlayerOverlay request={playerOverlay} boundsRef={overlayBoundsRef} onClose={closePlayerOverlay} />
+        )}
+      </div>
+    </HomePlayerOverlayProvider>
   );
 }

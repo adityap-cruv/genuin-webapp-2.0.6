@@ -1,22 +1,34 @@
 "use client";
 
 import { cn } from "@genuin/ui/lib/utils";
+import { NavArrowButton } from "@genuin/ui/player-controls";
 import {
   createContext,
   useCallback,
   useContext,
   useEffect,
   useId,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
   type ReactNode,
 } from "react";
+import { createPortal } from "react-dom";
 
 import { useBaseContext } from "@genuin/components/context/base";
 import { SectionHeader } from "@genuin/components/molecules/section-header/section-header";
 import { EventCarousel } from "@genuin/components/organisms/event-carousel/event-carousel";
-import { HoverLinkCardList } from "@genuin/components/organisms/hover-link-card-list/hover-link-card-list";
+import {
+  useEmit,
+  useOptionalEventSurface,
+  useSurfaceEvent,
+} from "@genuin/components/organisms/event-surface/event-surface-context";
+import type { VideoContext } from "@genuin/components/organisms/event-surface/event-surface.types";
+import {
+  HoverLinkCardList,
+  type ContextualLinkMetaData,
+} from "@genuin/components/organisms/hover-link-card-list/hover-link-card-list";
 import { IntelligenceArticleCard } from "@genuin/components/organisms/intelligence-panel/intelligence-article-card";
 import { IntelligencePanel } from "@genuin/components/organisms/intelligence-panel/intelligence-panel";
 import { IntelligencePanelShell } from "@genuin/components/organisms/intelligence-panel/intelligence-panel-shell";
@@ -45,30 +57,61 @@ export function useBlockVisibility(): boolean {
   return useContext(BlockVisibilityContext);
 }
 
-/**
- * Per-page contextual-link bus (the `dependsOn` wiring). Each page block gets its own provider,
- * so page 1's carousel never drives page 2's panels. One shared "active index" per key links a
- * source and its dependents bidirectionally by position (video at index N ↔ list item N).
- */
-type WidgetBusValue = {
-  getActiveIndex: (key: string) => number | undefined;
-  setActiveIndex: (key: string, index: number) => void;
+export type HomePlayerOverlayRequest = {
+  sourceDomId: string;
 };
-const WidgetBusContext = createContext<WidgetBusValue | null>(null);
-export function WidgetBusProvider({ children }: { children: ReactNode }) {
-  const [active, setActive] = useState<Record<string, number>>({});
-  const getActiveIndex = useCallback((key: string) => active[key], [active]);
-  const setActiveIndex = useCallback((key: string, index: number) => {
-    setActive((prev) => (prev[key] === index ? prev : { ...prev, [key]: index }));
-  }, []);
-  const value = useMemo<WidgetBusValue>(
-    () => ({ getActiveIndex, setActiveIndex }),
-    [getActiveIndex, setActiveIndex]
-  );
-  return <WidgetBusContext.Provider value={value}>{children}</WidgetBusContext.Provider>;
+
+type OpenHomePlayerOverlay = (request: HomePlayerOverlayRequest) => void;
+
+const HomePlayerOverlayContext = createContext<OpenHomePlayerOverlay | null>(null);
+
+export function HomePlayerOverlayProvider({
+  onOpen,
+  children,
+}: {
+  onOpen: OpenHomePlayerOverlay;
+  children: ReactNode;
+}) {
+  return <HomePlayerOverlayContext.Provider value={onOpen}>{children}</HomePlayerOverlayContext.Provider>;
 }
-export function useWidgetBus(): WidgetBusValue | null {
-  return useContext(WidgetBusContext);
+
+/**
+ * The `dependsOn` wiring, read off the row's `EventSurface`.
+ *
+ * Each row is one surface with one bus (see `RowRenderer`), and each widget is an
+ * `EventSurfacePanel` whose `id` is its manifest `node.id`. A video panel broadcasts
+ * `video:load` / `video:change`; a list panel broadcasts `item:select`. Because every record
+ * carries its origin `sourceId`, a dependent can filter to exactly the widget it declared in
+ * `dependsOn.widgetId` — which is what keeps two video↔list pairs in one row from cross-talking.
+ *
+ * `useLatestEvent` deliberately is NOT used here: it latches per event TYPE regardless of origin,
+ * so it would hand a list the other pair's video.
+ */
+function useLatestVideoFrom(sourceId: string | undefined): VideoContext | null {
+  const bus = useOptionalEventSurface();
+  const [video, setVideo] = useState<VideoContext | null>(null);
+
+  useEffect(() => {
+    if (!bus || !sourceId) return;
+
+    // Seed from the latch so a late-mounting list shows the running video immediately, instead of
+    // staying empty until a change that may never come.
+    const seed = bus.latestRecord("video:change") ?? bus.latestRecord("video:load");
+    if (seed && seed.sourceId === sourceId) setVideo(seed.payload as VideoContext);
+
+    const offChange = bus.on("video:change", (payload, record) => {
+      if (record.sourceId === sourceId) setVideo(payload);
+    });
+    const offLoad = bus.on("video:load", (payload, record) => {
+      if (record.sourceId === sourceId) setVideo(payload);
+    });
+    return () => {
+      offChange();
+      offLoad();
+    };
+  }, [bus, sourceId]);
+
+  return video;
 }
 
 /** Presentation tokens for the Intelligence panels (component design tokens, never in the payload). */
@@ -143,11 +186,6 @@ export type WidgetRenderProps = {
   dataMap: Record<string, WidgetData>;
 };
 
-/** Contextual-link key: dependents share their source's key; sources use their own id. */
-function linkKey(node: WidgetNode): string {
-  return node.dependsOn?.widgetId ?? node.id;
-}
-
 function toArticle(article: ArticleData): IntelligenceArticle {
   return {
     id: article.id,
@@ -173,6 +211,8 @@ type GenuinWindow = Window & {
   genuin?: {
     init?: (config: Record<string, unknown>) => unknown;
     emitInternal?: (event: string, payload?: unknown) => void;
+    onInternal?: (event: string, listener: (payload: unknown) => void) => (() => void) | void;
+    collapse?: (id: string) => void;
   };
 };
 
@@ -219,6 +259,7 @@ function GenuinPlacement({
   apiKey,
   mobileStyleId,
   mobilePlacementId,
+  onExpandRequest,
 }: {
   domId: string;
   styleId: string;
@@ -226,9 +267,12 @@ function GenuinPlacement({
   apiKey: string;
   mobileStyleId?: string;
   mobilePlacementId?: string;
+  /** Notifies Home that this existing placement is entering its SDK expand view. */
+  onExpandRequest?: () => void;
 }) {
   const hasMobilePlacement = Boolean(mobileStyleId && mobilePlacementId);
   const [viewport, setViewport] = useState<"mobile" | "desktop" | null>(hasMobilePlacement ? null : "desktop");
+  const lastVideoClickRef = useRef(0);
 
   useEffect(() => {
     if (!hasMobilePlacement) {
@@ -262,6 +306,41 @@ function GenuinPlacement({
     };
   }, [viewport, activeStyleId, activePlacementId]);
 
+  // The SDK owns the clickable video/control UI inside its Shadow DOM. Pair its global
+  // `onVideoClicked` signal with this host's captured video intent so the correct placement opens.
+  useEffect(() => {
+    if (!onExpandRequest || viewport === null) return;
+    let cancelled = false;
+    let unsubscribe: (() => void) | undefined;
+    let retry: number | undefined;
+    let attempts = 0;
+
+    const register = () => {
+      if (cancelled) return;
+      const genuin = (window as GenuinWindow).genuin;
+      if (!genuin?.onInternal) {
+        if (attempts++ < 40) retry = window.setTimeout(register, 200);
+        return;
+      }
+
+      const off = genuin.onInternal("onVideoClicked", () => {
+        if (Date.now() - lastVideoClickRef.current > 1200) return;
+        lastVideoClickRef.current = 0;
+        onExpandRequest();
+      });
+      if (typeof off === "function") unsubscribe = off;
+    };
+
+    loadGenuinSdk()
+      .then(register)
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+      if (retry) window.clearTimeout(retry);
+      unsubscribe?.();
+    };
+  }, [domId, onExpandRequest, viewport]);
+
   if (viewport === null) {
     return <div style={{ width: "100%", height: "100%" }} />;
   }
@@ -274,8 +353,281 @@ function GenuinPlacement({
       data-style-id={activeStyleId}
       data-placement-id={activePlacementId}
       data-api-key={apiKey}
+      onClickCapture={(event) => {
+        const path = event.nativeEvent.composedPath();
+        const controlLayerIndex = path.findIndex(
+          (target) =>
+            target instanceof Element &&
+            target.classList.contains("gencl:absolute") &&
+            target.classList.contains("gencl:inset-0")
+        );
+        const clickPath = controlLayerIndex < 0 ? path : path.slice(0, controlLayerIndex);
+        const isPlayerControl = clickPath.some(
+          (target) =>
+            target instanceof Element &&
+            (target.matches("button, a, [role='button']") || target.classList.contains("gencl:cursor-pointer"))
+        );
+        lastVideoClickRef.current = isPlayerControl ? 0 : Date.now();
+      }}
       style={{ width: "100%", height: "100%" }}
     />
+  );
+}
+
+const HOME_FEED_VIEW_ATTRIBUTE = "data-home-feed-view";
+const HOME_FEED_SESSION_ATTRIBUTE = "data-home-feed-session";
+const HOME_FULL_VIEW_EVENT = "genuin:home-feed-full-view";
+const HOME_FEED_VIEW_EVENT = "genuin:home-feed-view";
+// High enough to sit above Home, but below Koah's document-level options dialog
+// (2147483000). Using the maximum z-index hides that dialog behind the player.
+const HOME_FEED_VIEW_Z_INDEX = "1000";
+const HOME_FEED_BACK_Z_INDEX = 1001;
+
+function markHomeFeedView(sourceDomId: string, active: boolean) {
+  const source = document.getElementById(sourceDomId);
+  const embedRoot = source?.shadowRoot?.querySelector<HTMLElement>(".gen-sdk-class");
+  for (const element of [source, embedRoot]) {
+    if (active) element?.setAttribute(HOME_FEED_VIEW_ATTRIBUTE, "true");
+    else element?.removeAttribute(HOME_FEED_VIEW_ATTRIBUTE);
+  }
+}
+
+function markHomeFeedSession(sourceDomId: string, active: boolean) {
+  const source = document.getElementById(sourceDomId);
+  const embedRoot = source?.shadowRoot?.querySelector<HTMLElement>(".gen-sdk-class");
+  for (const element of [source, embedRoot]) {
+    if (active) element?.setAttribute(HOME_FEED_SESSION_ATTRIBUTE, "true");
+    else element?.removeAttribute(HOME_FEED_SESSION_ATTRIBUTE);
+  }
+}
+
+function restoreInlineStyle(element: HTMLElement | null, value: string | null) {
+  if (!element) return;
+  if (value === null) element.removeAttribute("style");
+  else element.setAttribute("style", value);
+}
+
+function setImportantStyles(element: HTMLElement, styles: Record<string, string>) {
+  for (const [property, value] of Object.entries(styles)) {
+    if (
+      element.style.getPropertyValue(property) === value &&
+      element.style.getPropertyPriority(property) === "important"
+    ) {
+      continue;
+    }
+    element.style.setProperty(property, value, "important");
+  }
+}
+
+/**
+ * Home only changes the presentation of the SDK's existing expand-view portal. No second SDK
+ * placement, player or route is created, so playback, active video and controls keep one owner.
+ */
+export function HomePlayerOverlay({
+  request,
+  boundsRef,
+  onClose,
+}: {
+  request: HomePlayerOverlayRequest;
+  boundsRef: React.RefObject<HTMLDivElement | null>;
+  onClose: () => void;
+}) {
+  const [backPosition, setBackPosition] = useState<{ left: number; top: number } | null>(null);
+
+  useLayoutEffect(() => {
+    let frame = 0;
+    let portalObserver: MutationObserver | null = null;
+    let contentObserver: MutationObserver | null = null;
+    let host: HTMLElement | null = null;
+    let portalContainer: HTMLElement | null = null;
+    let feedStageStyle: HTMLStyleElement | null = null;
+    let hostStyle: string | null = null;
+    let portalStyle: string | null = null;
+    let promoted = false;
+    let revealed = false;
+
+    const mountFeedStageStyle = () => {
+      if (!host?.shadowRoot || feedStageStyle) return;
+      feedStageStyle = document.createElement("style");
+      feedStageStyle.dataset.homeFeedView = "true";
+      feedStageStyle.textContent = `
+        [data-portal-container], [data-portal-container] > .gen-sdk-expand-view, #gencl-feed-view {
+          position: absolute !important;
+          inset: 0 !important;
+          width: 100% !important;
+          height: 100% !important;
+          min-height: 0 !important;
+          background-color: #fff !important;
+        }
+        [data-feed-video-column] {
+          height: calc(100% - 48px) !important;
+          margin-block: 24px !important;
+          border-radius: 12px !important;
+          overflow: hidden !important;
+        }
+        [role="navigation"][aria-label="Video navigation"],
+        button[class~="gencl:right-7.5"][class~="gencl:top-6"] {
+          display: none !important;
+        }
+        .swiper-slide-active .gencl\\:group-hover\\:opacity-100.gencl\\:opacity-0 {
+          opacity: 1 !important;
+          pointer-events: auto !important;
+        }
+      `;
+      host.shadowRoot.appendChild(feedStageStyle);
+    };
+
+    const restoreFullView = () => {
+      restoreInlineStyle(host, hostStyle);
+      restoreInlineStyle(portalContainer, portalStyle);
+      feedStageStyle?.remove();
+      feedStageStyle = null;
+      setBackPosition(null);
+    };
+
+    const applyFeedBounds = () => {
+      const bounds = boundsRef.current?.getBoundingClientRect();
+      if (!host || !portalContainer || !bounds || promoted) return;
+      const viewportWidth = window.visualViewport?.width ?? document.documentElement.clientWidth;
+      const viewportHeight = window.visualViewport?.height ?? document.documentElement.clientHeight;
+
+      setImportantStyles(host, {
+        position: "fixed",
+        inset: "auto",
+        top: `${bounds.top}px`,
+        left: `${bounds.left}px`,
+        width: `${Math.min(bounds.width, viewportWidth - bounds.left)}px`,
+        height: `${Math.min(bounds.height, viewportHeight - bounds.top)}px`,
+        overflow: "hidden",
+        "z-index": HOME_FEED_VIEW_Z_INDEX,
+      });
+      if (revealed) {
+        setBackPosition((current) => {
+          const next = { left: bounds.left + 24, top: bounds.top + 24 };
+          return current?.left === next.left && current.top === next.top ? current : next;
+        });
+      }
+    };
+
+    const settleFeedBounds = (remainingFrames = 3) => {
+      applyFeedBounds();
+      if (remainingFrames > 1 && !promoted) {
+        frame = window.requestAnimationFrame(() => settleFeedBounds(remainingFrames - 1));
+      }
+    };
+
+    const attachToSdkPortal = (): boolean => {
+      host = document.querySelector<HTMLElement>('[data-genuin-overlay-host][data-portal-key="expand-view"]');
+      portalContainer = host?.shadowRoot?.querySelector<HTMLElement>("[data-portal-container]") ?? null;
+      if (!host || !portalContainer) return false;
+
+      portalObserver?.disconnect();
+      portalObserver = null;
+
+      hostStyle = host.getAttribute("style");
+      portalStyle = portalContainer.getAttribute("style");
+      setImportantStyles(host, { visibility: "hidden" });
+      mountFeedStageStyle();
+      // Home and the SDK portal commit in separate React roots. Apply immediately for the first
+      // paint; the SDK's EXPAND_VIEW_CHANGED signal below performs the final hand-off after its
+      // RootPortal effects have committed.
+      settleFeedBounds();
+
+      const revealFeed = (): boolean => {
+        if (!host || !portalContainer?.querySelector(".gen-sdk-expand-view")) return false;
+        revealed = true;
+        applyFeedBounds();
+        setImportantStyles(host, { visibility: "visible" });
+        contentObserver?.disconnect();
+        contentObserver = null;
+        return true;
+      };
+      if (!revealFeed()) {
+        contentObserver = new MutationObserver(revealFeed);
+        contentObserver.observe(portalContainer, { childList: true, subtree: true });
+      }
+      return true;
+    };
+
+    const handleFullView = () => {
+      promoted = true;
+      markHomeFeedView(request.sourceDomId, false);
+      restoreFullView();
+      if (host) {
+        setImportantStyles(host, {
+          position: "fixed",
+          inset: "0",
+          width: "100%",
+          height: "100%",
+          overflow: "hidden",
+        });
+      }
+      if (portalContainer) {
+        setImportantStyles(portalContainer, {
+          position: "fixed",
+          inset: "0",
+          width: "100%",
+          height: "100%",
+        });
+      }
+    };
+    const handleFeedView = () => {
+      if (!promoted || !host || !portalContainer) return;
+      restoreFullView();
+      promoted = false;
+      markHomeFeedView(request.sourceDomId, true);
+      mountFeedStageStyle();
+      setImportantStyles(host, { visibility: "visible" });
+      settleFeedBounds();
+    };
+    const handleExpandChange = (raw: unknown) => {
+      const value =
+        typeof raw === "object" && raw !== null && "payload" in raw ? (raw as { payload: unknown }).payload : raw;
+      if (value === true) settleFeedBounds();
+      if (value === false) onClose();
+    };
+
+    markHomeFeedView(request.sourceDomId, true);
+    markHomeFeedSession(request.sourceDomId, true);
+    if (!attachToSdkPortal()) {
+      // The SDK and Home render through separate React roots. Observe portal creation so the
+      // feed bounds land before its first browser paint instead of one animation frame later.
+      portalObserver = new MutationObserver(attachToSdkPortal);
+      portalObserver.observe(document.body, { childList: true, subtree: true });
+    }
+    window.addEventListener("resize", applyFeedBounds);
+    document.addEventListener(HOME_FULL_VIEW_EVENT, handleFullView);
+    document.addEventListener(HOME_FEED_VIEW_EVENT, handleFeedView);
+    const unsubscribe: unknown = (window as GenuinWindow).genuin?.onInternal?.(
+      "onExpandViewChanged",
+      handleExpandChange
+    );
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      portalObserver?.disconnect();
+      contentObserver?.disconnect();
+      window.removeEventListener("resize", applyFeedBounds);
+      document.removeEventListener(HOME_FULL_VIEW_EVENT, handleFullView);
+      document.removeEventListener(HOME_FEED_VIEW_EVENT, handleFeedView);
+      if (typeof unsubscribe === "function") unsubscribe();
+      restoreFullView();
+      markHomeFeedView(request.sourceDomId, false);
+      markHomeFeedSession(request.sourceDomId, false);
+    };
+  }, [boundsRef, onClose, request.sourceDomId]);
+
+  const handleBack = () => {
+    (window as GenuinWindow).genuin?.collapse?.(request.sourceDomId);
+    onClose();
+  };
+
+  if (!backPosition) return null;
+  return createPortal(
+    <div style={{ position: "fixed", ...backPosition, zIndex: HOME_FEED_BACK_Z_INDEX }}>
+      <NavArrowButton direction="left" size="lg" theme="dark" ariaLabel="Back" onClick={handleBack} />
+    </div>,
+    document.body
   );
 }
 
@@ -316,9 +668,7 @@ function WidgetFrame({
       {frame.showHeader !== false && (
         <SectionHeader imageUrl={logo} imageAlt={imageAlt} heading={heading} subHeading={subHeading} />
       )}
-      {frame.topSpacerPx ? (
-        <div className="gen-home-spacer" aria-hidden style={{ height: frame.topSpacerPx }} />
-      ) : null}
+      {frame.topSpacerPx ? <div className="gen-home-spacer" aria-hidden style={{ height: frame.topSpacerPx }} /> : null}
       <div
         className={cn(
           // `gen-widget-body` is the content box below the header — the mobile stylesheet sizes
@@ -350,23 +700,33 @@ function VideoPlaceholder() {
 function PlacementWidget({ node, data }: WidgetRenderProps) {
   const isNear = useBlockVisibility();
   const show = useHasBeenTrue(isNear);
-  const bus = useWidgetBus();
+  const openHomePlayerOverlay = useContext(HomePlayerOverlayContext);
   // Unique, selector-safe container id (React's useId contains colons). Owned here so the
-  // reverse-flow effect can read the SDK's `data-instance-id` off the same container.
+  // reverse-flow handler can read the SDK's `data-instance-id` off the same container.
   const domId = `gen-sdk-${useId().replace(/:/g, "")}`;
 
   const styleId = typeof node.config?.styleId === "string" ? node.config.styleId : "";
   const placementId = typeof node.config?.placementId === "string" ? node.config.placementId : "";
   const apiKey = typeof node.config?.apiKey === "string" ? node.config.apiKey : "";
 
-  // Latest bus setter in a ref so the SDK listener registers ONCE and never re-subscribes when the
-  // bus value changes (it changes on every setActiveIndex). `setActiveIndex` itself is stable.
-  const setActiveIndexRef = useRef(bus?.setActiveIndex);
-  setActiveIndexRef.current = bus?.setActiveIndex;
+  // `useEmit` is bound to this panel's id (= `node.id`) and its identity never changes, but keep it
+  // in a ref anyway so the SDK listener below registers ONCE and never re-subscribes.
+  const emit = useEmit();
+  const emitRef = useRef(emit);
+  emitRef.current = emit;
+
+  // The manifest already knows which community/group this placement plays, so the broadcast can
+  // carry them. Held in a ref for the same reason as `emit`.
+  const sourceRef = useRef(data.source);
+  sourceRef.current = data.source;
+
+  // Which video we last announced — supplies `previousVideoId` and tells a first broadcast
+  // (`video:load`) apart from a subsequent one (`video:change`).
+  const lastVideoIdRef = useRef<string | null>(null);
 
   // Forward contextual flow: when THIS placement's embed changes its active video, the SDK emits
-  // `player:videoChanged` with its instance id + index. Record that index on the bus so the linked
-  // article/list highlights the item at the same position (filtered by instance id).
+  // `player:videoChanged` with its instance id + index. Rebroadcast it on the row's surface so the
+  // linked article/list can follow (filtered by instance id here, by `sourceId` on the far end).
   //
   // We RETRY until `window.genuin.onInternal` exists — it can lag the script's `load` event, and if
   // we bail early the listener would never attach until something forced a re-subscribe (e.g. a
@@ -395,14 +755,36 @@ function PlacementWidget({ node, data }: WidgetRenderProps) {
         const event = (wrapper?.payload ?? wrapper) as { instanceId?: string; index?: number };
         const myInstanceId = document.getElementById(domId)?.getAttribute("data-instance-id");
         if (!myInstanceId || event.instanceId !== myInstanceId) return;
-        if (typeof event.index === "number") setActiveIndexRef.current?.(node.id, event.index);
+        if (typeof event.index !== "number") return;
+
+        const index = event.index;
+        const source = sourceRef.current;
+        // The SDK's `player:videoChanged` payload is only `{ instanceId, index }` — it does not
+        // publish the video's own id (see `SDKPlayerVideoChangedPayload`). So identity here is
+        // "the video at position N of this placement", which is stable and unique on the surface
+        // and is what the position-linked consumers actually match on. Swap in the real id the day
+        // the SDK carries one; nothing else has to change.
+        const videoId = `${node.id}#${index}`;
+        const payload = {
+          videoId,
+          communityId: source?.communityId ?? "",
+          groupId: source?.groupId ?? "",
+          index,
+        };
+
+        const previousVideoId = lastVideoIdRef.current;
+        lastVideoIdRef.current = videoId;
+        if (previousVideoId === null) emitRef.current("video:load", payload);
+        else emitRef.current("video:change", { ...payload, previousVideoId });
       });
       if (typeof off === "function") unsubscribe = off as () => void;
     };
 
-    loadGenuinSdk().then(register).catch(() => {
-      /* SDK unavailable — no forward flow. */
-    });
+    loadGenuinSdk()
+      .then(register)
+      .catch(() => {
+        /* SDK unavailable — no forward flow. */
+      });
 
     return () => {
       cancelled = true;
@@ -411,19 +793,28 @@ function PlacementWidget({ node, data }: WidgetRenderProps) {
     };
   }, [domId, node.id]);
 
-  // Reverse contextual flow: when a linked article selects an index (written to this widget's
-  // bus key), tell THIS placement's running embed to slide to it — scoped by the placement's
-  // SDK instance id so only this embed reacts.
-  const activeIndex = bus?.getActiveIndex(node.id);
-  useEffect(() => {
-    if (activeIndex == null || typeof window === "undefined") return;
+  const handleExpandRequest = useCallback(() => {
+    // Mobile keeps the SDK's normal direct-fullscreen path. Desktop Home adds only the
+    // intermediate presentation state around that same fullscreen instance.
+    if (!openHomePlayerOverlay || !window.matchMedia("(min-width: 1024px)").matches) return;
+    markHomeFeedView(domId, true);
+    markHomeFeedSession(domId, true);
+    openHomePlayerOverlay({ sourceDomId: domId });
+  }, [domId, openHomePlayerOverlay]);
+
+  // Reverse contextual flow: a list panel in this row broadcast a selection — tell THIS
+  // placement's running embed to slide to it, scoped by the placement's SDK instance id so only
+  // this embed reacts. The bus never delivers a panel its own emits, so this cannot echo.
+  //
+  // NOTE: this reacts to any `item:select` on the row's surface. Every row in the manifest holds
+  // exactly ONE video placement, so that is unambiguous; a row with two would need the payload to
+  // name its target.
+  useSurfaceEvent("item:select", ({ index }) => {
+    if (typeof window === "undefined") return;
     const instanceId = document.getElementById(domId)?.getAttribute("data-instance-id");
     if (!instanceId) return;
-    (window as GenuinWindow).genuin?.emitInternal?.("player:goToIndex", {
-      instanceId,
-      index: activeIndex,
-    });
-  }, [activeIndex, domId]);
+    (window as GenuinWindow).genuin?.emitInternal?.("player:goToIndex", { instanceId, index });
+  });
 
   return (
     <WidgetFrame
@@ -437,12 +828,11 @@ function PlacementWidget({ node, data }: WidgetRenderProps) {
           styleId={styleId}
           placementId={placementId}
           apiKey={apiKey}
-          mobileStyleId={
-            typeof node.config?.mobileStyleId === "string" ? node.config.mobileStyleId : undefined
-          }
+          mobileStyleId={typeof node.config?.mobileStyleId === "string" ? node.config.mobileStyleId : undefined}
           mobilePlacementId={
             typeof node.config?.mobilePlacementId === "string" ? node.config.mobilePlacementId : undefined
           }
+          onExpandRequest={handleExpandRequest}
         />
       ) : (
         <VideoPlaceholder />
@@ -530,8 +920,8 @@ function EventCarouselWidget({ node, data }: WidgetRenderProps) {
 }
 
 function HoverLinkCardListWidget({ node, data, dataMap }: WidgetRenderProps) {
-  const bus = useWidgetBus();
-  const key = linkKey(node);
+  const emit = useEmit();
+  const sourceId = node.dependsOn?.widgetId;
 
   // Pair each editorial link with a live video from the linked widget's community feed, so the
   // link thumbnails match real videos. (With the video slot now a self-contained SDK placement,
@@ -556,13 +946,22 @@ function HoverLinkCardListWidget({ node, data, dataMap }: WidgetRenderProps) {
     };
   });
 
-  // Index relay (matches home.tsx): the placement reports its active position to the bus; we
-  // highlight the item at that index. Highlight is by `video_id` (what HoverLinkCardList matches
-  // on), so map the active index → that item's id. Before the first forward event, default to the
-  // FIRST item so the list is mapped to the (index-0) video from page load — display-only, no
-  // reverse emit (that's driven by the bus, which this default does not write to).
-  const activeIndex = bus?.getActiveIndex(key) ?? 0;
+  // Forward flow: follow only the widget this one declared in `dependsOn`, and highlight the item
+  // at the broadcast position. Highlight is by `video_id` (what HoverLinkCardList matches on), so
+  // map the position → that item's id. Before the first broadcast, default to the FIRST item so the
+  // list is mapped to the (index-0) video from page load — display-only, no reverse emit.
+  const activeVideo = useLatestVideoFrom(sourceId);
+  const activeIndex = activeVideo?.index ?? 0;
   const activeVideoId = items[activeIndex]?.video_id ?? null;
+
+  // Reverse flow: the user moved the list, so announce the selection. The row's video placement
+  // picks it up and slides; the bus does not deliver this back to us.
+  const selectItem = (item: ContextualLinkMetaData, index: number) =>
+    emit("item:select", {
+      itemId: String(item.id ?? item.link),
+      index,
+      videoId: item.video_id ?? null,
+    });
 
   return (
     <WidgetFrame
@@ -580,8 +979,8 @@ function HoverLinkCardListWidget({ node, data, dataMap }: WidgetRenderProps) {
         ctaText={data.ctaText}
         width="100%"
         height="100%"
-        onLinkClick={(_item, index) => bus?.setActiveIndex(key, index)}
-        onActiveItemChange={(_item, index) => bus?.setActiveIndex(key, index)}
+        onLinkClick={selectItem}
+        onActiveItemChange={selectItem}
       />
     </WidgetFrame>
   );

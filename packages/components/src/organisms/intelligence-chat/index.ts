@@ -1,4 +1,5 @@
 export * from "./intelligence-chat-input";
+export * from "./intelligence-auto-prompt-countdown";
 export * from "./intelligence-chat-panel";
 export * from "./intelligence-chat-thread";
 export * from "./intelligence-chat.types";

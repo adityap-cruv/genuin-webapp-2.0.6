@@ -1,7 +1,7 @@
 "use client";
 
 import { Image } from "@genuin/ui/components/image";
-import { Heading, Text } from "@genuin/ui/components/typography";
+import { Text } from "@genuin/ui/components/typography";
 import { cn } from "@genuin/ui/lib/utils";
 
 import { Link } from "@genuin/components/molecules/link";
@@ -53,7 +53,7 @@ export function IntelligenceArticleCard({
       style={{ height: layout.height, ...style }}
       {...props}>
       {label && (
-        <Text as="p" size="body-0" weight="medium" className="gencl:font-normal!">
+        <Text as="p" size="body-1" weight="medium" className="gencl:mb-2">
           {label}
         </Text>
       )}
@@ -76,13 +76,9 @@ export function IntelligenceArticleCard({
         )}>
         {imagePosition === "top" && <ArticleImage article={article} layout={layout} />}
 
-        <Heading
-          as="h3"
-          level="headline-4"
-          weight="bold"
-          className="gencl:line-clamp-2 gencl:text-body-1-bold! gencl:leading-5! gencl:font-bold!">
-          {article.title}
-        </Heading>
+        <Text asChild size="body-1" weight="medium">
+          <h3 className="gencl:line-clamp-2">{article.title}</h3>
+        </Text>
 
         {imagePosition === "bottom" && (
           <div className="gencl:mt-auto">

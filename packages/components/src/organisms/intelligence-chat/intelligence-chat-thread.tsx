@@ -5,6 +5,7 @@ import { cn } from "@genuin/ui/lib/utils";
 import { ChevronDown } from "lucide-react";
 import * as React from "react";
 
+import { IntelligenceAutoPromptCountdown } from "./intelligence-auto-prompt-countdown";
 import type { IntelligenceChatMessage, IntelligenceChatThreadProps } from "./intelligence-chat.types";
 import { IntelligenceResponseRenderer } from "./intelligence-response-registry";
 
@@ -45,19 +46,55 @@ function RespondingIndicator({ label }: { label: string }) {
       role="status"
       aria-live="polite"
       data-slot="intelligence-chat-responding"
-      className="gencl:flex gencl:items-center gencl:gap-2">
-      <span aria-hidden="true" className="gencl:flex gencl:items-center gencl:gap-1">
-        {[0, 1, 2].map((dot) => (
-          <span
-            key={dot}
-            className="gencl:size-1.5 gencl:animate-pulse gencl:rounded-full gencl:bg-secondary-400"
-            style={{ animationDelay: `${dot * 150}ms` }}
-          />
-        ))}
-      </span>
-      <Text as="span" size="body-2" className="gencl:text-secondary-600">
+      className="gencl:mb-3 gencl:flex gencl:w-full gencl:flex-col gencl:gap-1.5">
+      <Text as="span" size="body-2" className="gencl:mb-1 gencl:italic gencl:text-secondary-600">
         {label}
       </Text>
+
+      <div aria-hidden="true" className="gencl:flex gencl:w-full gencl:flex-col gencl:gap-1.5">
+        {["gencl:w-full", "gencl:w-full", "gencl:w-1/2"].map((width, index) => (
+          <span
+            key={index}
+            data-slot="intelligence-chat-thinking-line"
+            data-line={index + 1}
+            className={cn("gencl:h-[15px] gencl:overflow-hidden gencl:rounded-sm", width)}
+          />
+        ))}
+      </div>
+
+      <style>{`
+        @keyframes intelligence-thinking-shimmer {
+          from { transform: translateX(-100%); }
+          to { transform: translateX(100%); }
+        }
+
+        [data-slot="intelligence-chat-thinking-line"] {
+          position: relative;
+          background: linear-gradient(90deg, rgba(147, 149, 255, 0.25) 0%, rgba(22, 133, 253, 0.25) 100%);
+        }
+
+        [data-slot="intelligence-chat-thinking-line"]::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(147, 149, 255, 0.6) 40%,
+            rgba(22, 133, 253, 0.8) 50%,
+            rgba(147, 149, 255, 0.6) 60%,
+            transparent 100%
+          );
+          animation: intelligence-thinking-shimmer 2.5s ease-in-out infinite;
+        }
+
+        [data-slot="intelligence-chat-thinking-line"][data-line="2"]::after { animation-delay: 0.2s; }
+        [data-slot="intelligence-chat-thinking-line"][data-line="3"]::after { animation-delay: 0.4s; }
+
+        @media (prefers-reduced-motion: reduce) {
+          [data-slot="intelligence-chat-thinking-line"]::after { animation: none; }
+        }
+      `}</style>
     </div>
   );
 }
@@ -71,7 +108,16 @@ function RespondingIndicator({ label }: { label: string }) {
  */
 export const IntelligenceChatThread = React.forwardRef<HTMLDivElement, IntelligenceChatThreadProps>(
   function IntelligenceChatThread(
-    { messages, isResponding = false, respondingLabel = "Thinking…", emptyState, className, ...props },
+    {
+      messages,
+      threadHeader,
+      autoPromptCountdown,
+      isResponding = false,
+      respondingLabel = "Thinking…",
+      emptyState,
+      className,
+      ...props
+    },
     ref
   ) {
     const scrollRef = React.useRef<HTMLDivElement>(null);
@@ -99,7 +145,7 @@ export const IntelligenceChatThread = React.forwardRef<HTMLDivElement, Intellige
     React.useEffect(() => {
       if (isAtBottom) scrollToBottom("auto");
       // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally keyed on content changes only
-    }, [lastMessageId, lastMessageBlockCount, isResponding, scrollToBottom]);
+    }, [lastMessageId, lastMessageBlockCount, autoPromptCountdown?.prompt, isResponding, scrollToBottom]);
 
     const showScrollButton = !isAtBottom && messages.length > 0;
 
@@ -117,10 +163,16 @@ export const IntelligenceChatThread = React.forwardRef<HTMLDivElement, Intellige
             "gencl:flex gencl:h-full gencl:flex-col gencl:gap-4 gencl:overflow-y-auto gencl:px-2 gencl:py-4",
             "gencl:[scrollbar-width:none] gencl:[&::-webkit-scrollbar]:hidden"
           )}>
-          {messages.length === 0 && emptyState}
+          {threadHeader && (
+            <div data-slot="intelligence-chat-thread-header" className="gencl:w-full gencl:shrink-0">
+              {threadHeader}
+            </div>
+          )}
+          {messages.length === 0 && !autoPromptCountdown && emptyState}
           {messages.map((message) => (
             <MessageRow key={message.id} message={message} />
           ))}
+          {autoPromptCountdown && <IntelligenceAutoPromptCountdown {...autoPromptCountdown} />}
           {isResponding && <RespondingIndicator label={respondingLabel} />}
         </div>
 

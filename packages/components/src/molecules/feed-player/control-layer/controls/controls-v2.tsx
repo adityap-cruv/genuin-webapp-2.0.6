@@ -9,9 +9,10 @@ import {
 import { cn } from "@genuin/ui/utils";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
-import { memo, useState, type ComponentProps } from "react";
+import { memo, useEffect, useState, type ComponentProps } from "react";
 
 import { useBaseContext } from "@genuin/components/context/base";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { usePathname } from "@genuin/components/hooks/use-pathname";
 import { useSearchParams } from "@genuin/components/hooks/use-search-params";
@@ -23,6 +24,9 @@ import { AnimatedMuteIcon } from "./control-buttons";
 import { EmbedControls } from "./embed-v2";
 
 const FIXED_PLAYER_CONTROL_SIZE: PlayerControlSize = "md";
+const HOME_FULL_VIEW_EVENT = "genuin:home-feed-full-view";
+const HOME_FEED_VIEW_EVENT = "genuin:home-feed-view";
+const HOME_FEED_SESSION_SELECTOR = '[data-home-feed-session="true"]';
 
 const controlsVariants = cva("gencl:transition-all gencl:z-20 gencl:flex gencl:w-full gencl:justify-between", {
   variants: {
@@ -95,6 +99,16 @@ export const Controls = memo(function Controls({
 }) {
   const { isMobile } = useDeviceDetectMediaQuery();
   const { showExpandView, toggleExpandView } = usePlayerContext();
+  const embedDetails = useSafeEmbedContext();
+  // Home's intermediate feed view reuses the expanded player layout, but its control still
+  // represents the next step: promotion into the SDK's existing fullscreen view.
+  const [isIntermediateFeedView, setIsIntermediateFeedView] = useState(
+    embedDetails?.rootElement?.dataset.homeFeedView === "true"
+  );
+  const [isHomeFeedSession] = useState(
+    embedDetails?.rootElement?.dataset.homeFeedSession === "true" ||
+      embedDetails?.rootElement?.dataset.homeFeedView === "true"
+  );
   const { getSearchParams } = useSearchParams();
   const pathname = usePathname();
   const { brandDetails } = useBaseContext();
@@ -114,6 +128,33 @@ export const Controls = memo(function Controls({
 
   // Suppress hint texts while cursor is in the bar so they can't reflow the row mid-interaction.
   const [isBoxHovered, setIsBoxHovered] = useState(false);
+
+  useEffect(() => {
+    if (!isHomeFeedSession) return;
+    const handleFullView = () => setIsIntermediateFeedView(false);
+    const handleFeedView = () => setIsIntermediateFeedView(true);
+    document.addEventListener(HOME_FULL_VIEW_EVENT, handleFullView);
+    document.addEventListener(HOME_FEED_VIEW_EVENT, handleFeedView);
+    return () => {
+      document.removeEventListener(HOME_FULL_VIEW_EVENT, handleFullView);
+      document.removeEventListener(HOME_FEED_VIEW_EVENT, handleFeedView);
+    };
+  }, [isHomeFeedSession]);
+
+  const handleExpandClick = () => {
+    if (showExpandView && isIntermediateFeedView) {
+      setIsIntermediateFeedView(false);
+      document.dispatchEvent(new CustomEvent(HOME_FULL_VIEW_EVENT));
+      return;
+    }
+    if (showExpandView && (isHomeFeedSession || document.querySelector(HOME_FEED_SESSION_SELECTOR) !== null)) {
+      setIsIntermediateFeedView(true);
+      document.dispatchEvent(new CustomEvent(HOME_FEED_VIEW_EVENT));
+      return;
+    }
+    toggleExpandView?.();
+  };
+  const showCollapseControl = showExpandView && !isIntermediateFeedView;
 
   return (
     <div
@@ -165,9 +206,9 @@ export const Controls = memo(function Controls({
               {!isMobile && enableExpand && (
                 <ExpandCollapseButton
                   size={FIXED_PLAYER_CONTROL_SIZE}
-                  onClick={toggleExpandView}
-                  ariaLabel={showExpandView ? "Collapse" : "Expand"}
-                  icon={showExpandView ? <CollapseIcon theme="dark" /> : <ExpandIcon theme="dark" />}
+                  onClick={handleExpandClick}
+                  ariaLabel={showCollapseControl ? "Collapse" : "Expand"}
+                  icon={showCollapseControl ? <CollapseIcon theme="dark" /> : <ExpandIcon theme="dark" />}
                 />
               )}
 
@@ -202,10 +243,7 @@ export const Controls = memo(function Controls({
           ) : (
             <div />
           )}
-          <EmbedControls
-            className={cn(spacing === "liberal" && "gencl:gap-3")}
-            size={FIXED_PLAYER_CONTROL_SIZE}
-          />
+          <EmbedControls className={cn(spacing === "liberal" && "gencl:gap-3")} size={FIXED_PLAYER_CONTROL_SIZE} />
         </div>
       )}
     </div>

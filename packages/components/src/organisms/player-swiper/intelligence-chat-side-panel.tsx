@@ -1,9 +1,12 @@
 "use client";
 
+import { KoahAdWidget } from "@genuin/genai-sdk";
+import { cn } from "@genuin/ui/lib/utils";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { IntelligenceChatPanel } from "@genuin/components/organisms/intelligence-chat/intelligence-chat-panel";
 import type {
+  IntelligenceAutoPromptCountdownState,
   IntelligenceChatMessage,
   IntelligenceResponseBlock,
   IntelligenceTextBlockProps,
@@ -12,8 +15,6 @@ import {
   INTELLIGENCE_BLOCK_TYPES,
   INTELLIGENCE_DEFAULT_REGISTRY,
 } from "@genuin/components/organisms/intelligence-chat/intelligence-default-registry";
-import { KoahAdWidget } from "@genuin/genai-sdk";
-import { cn } from "@genuin/ui/lib/utils";
 
 // ── Intelligence chat transport (THE INTEGRATION SEAM) ───────────────────────────────────────
 // The panel POSTs the prompt here and renders the IntelligenceResponseBlock[] it returns. Today
@@ -22,12 +23,28 @@ import { cn } from "@genuin/ui/lib/utils";
 // body for the real service). The request/response contract below stays identical, so nothing in
 // the UI changes.
 const INTELLIGENCE_CHAT_URL =
-  (import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env
-    ?.VITE_INTELLIGENCE_CHAT_URL ?? "/api/intelligence/chat";
-const KOAH_PUBLISHER_ID = (
-  import.meta as ImportMeta & { env?: Record<string, string | undefined> }
-).env?.VITE_GENAI_KOAH_PUBLISHER_ID;
+  (import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env?.VITE_INTELLIGENCE_CHAT_URL ??
+  "/api/intelligence/chat";
+const KOAH_PUBLISHER_ID = (import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env
+  ?.VITE_GENAI_KOAH_PUBLISHER_ID;
 const USE_KOAH_TEST_MOCK = process.env.NODE_ENV === "development" && !KOAH_PUBLISHER_ID;
+const MOCK_VIDEO_AUTO_PROMPTS = [
+  "Tell me more about this video.",
+  "Give me a quick summary of this video.",
+  "What are the key takeaways from this video?",
+  "What is the main story behind this video?",
+  "Explain the context of what is happening in this video.",
+  "What important details should I notice in this video?",
+  "Why is the topic in this video significant?",
+  "What related insights can you share about this video?",
+] as const;
+const AUTO_PROMPT_COUNTDOWN_SECONDS = 5;
+const AUTO_PROMPT_TICK_MS = 1_000;
+
+function getMockVideoAutoPrompt(videoId: string): string {
+  const hash = Array.from(videoId).reduce((value, character) => (value * 31 + character.charCodeAt(0)) >>> 0, 0);
+  return MOCK_VIDEO_AUTO_PROMPTS[hash % MOCK_VIDEO_AUTO_PROMPTS.length]!;
+}
 
 type KoahTestWindow = Window & {
   koah?: {
@@ -57,6 +74,7 @@ function createKoahTestMock(): NonNullable<KoahTestWindow["koah"]> {
 
       const ad = document.createElement("article");
       ad.setAttribute("data-testid", "koah-test-ad");
+      ad.setAttribute("data-koah", "root");
       ad.style.cssText =
         "box-sizing:border-box;width:100%;border:1px solid #dedede;border-radius:12px;background:#fff;padding:12px;color:#202124;font-family:inherit";
       ad.innerHTML = `
@@ -98,8 +116,48 @@ type IntelligenceChatSidePanelProps = {
   videoContext?: IntelligenceChatVideoContext;
   /** Called when the user activates the panel's close control. */
   onClose: () => void;
+  /** Runs the existing video prompt flow when this panel is opened from Feed View. */
+  autoPromptOnMount?: boolean;
+  /** Lets Feed View ads use the full responsive width of the chat thread. */
+  fillAvailableWidth?: boolean;
   className?: string;
 };
+
+function IntelligenceKoahAds({ videoId, fillAvailableWidth }: { videoId: string; fillAvailableWidth: boolean }) {
+  const slots = [
+    {
+      id: "primary",
+      userMessage: "Show me relevant information about this video",
+      aiResponse: `Video context identifier: ${videoId}`,
+    },
+    {
+      id: "secondary",
+      userMessage: "Show me another relevant recommendation for this video",
+      aiResponse: `Additional video context identifier: ${videoId}`,
+    },
+  ];
+
+  return (
+    <div
+      data-testid="koah-ad-rail"
+      className="gencl:flex gencl:w-full gencl:snap-x gencl:snap-mandatory gencl:gap-3 gencl:overflow-x-auto gencl:[scrollbar-width:none] gencl:[&::-webkit-scrollbar]:hidden">
+      {slots.slice(0, fillAvailableWidth ? 2 : 1).map((slot) => (
+        <div
+          key={slot.id}
+          data-testid="koah-ad-card"
+          className="gencl:shrink-0 gencl:snap-start"
+          style={{ width: fillAvailableWidth ? "min(768px, calc(100% - 112px))" : "100%" }}>
+          <KoahAdWidget
+            standalone
+            userMessage={slot.userMessage}
+            aiResponse={slot.aiResponse}
+            messageId={`intelligence-${videoId}-${slot.id}`}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
 
 function userMessage(id: string, text: string): IntelligenceChatMessage {
   return {
@@ -177,12 +235,20 @@ export function IntelligenceChatSidePanel({
   videoId,
   videoContext,
   onClose,
+  autoPromptOnMount = false,
+  fillAvailableWidth = false,
   className,
 }: IntelligenceChatSidePanelProps) {
+  const mockVideoAutoPrompt = getMockVideoAutoPrompt(videoId);
   const [messages, setMessages] = useState<readonly IntelligenceChatMessage[]>([]);
   const [isResponding, setIsResponding] = useState(false);
-  const [koahTestReady, setKoahTestReady] = useState(!USE_KOAH_TEST_MOCK);
+  const [autoPromptCountdown, setAutoPromptCountdown] = useState<IntelligenceAutoPromptCountdownState | null>(() =>
+    autoPromptOnMount && videoId
+      ? { prompt: mockVideoAutoPrompt, remainingSeconds: AUTO_PROMPT_COUNTDOWN_SECONDS }
+      : null
+  );
   const seqRef = useRef(0);
+  const autoPromptedVideoRef = useRef<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   // Keep the latest context in a ref so handleSend stays stable (deps: [videoId]) yet always sends
   // the current video's context.
@@ -200,14 +266,10 @@ export function IntelligenceChatSidePanel({
     if (!USE_KOAH_TEST_MOCK) return;
 
     const koahWindow = window as KoahTestWindow;
-    if (koahWindow.koah) {
-      setKoahTestReady(true);
-      return;
-    }
+    if (koahWindow.koah) return;
 
     const mock = createKoahTestMock();
     koahWindow.koah = mock;
-    setKoahTestReady(true);
 
     return () => {
       if (koahWindow.koah === mock) delete koahWindow.koah;
@@ -234,7 +296,8 @@ export function IntelligenceChatSidePanel({
         controller.signal
       )
         .then((blocks) => {
-          setMessages((prev) => [...prev, assistantMessage(`${videoId}-a-${seq}`, blocks)]);
+          const messageId = `${videoId}-a-${seq}`;
+          setMessages((prev) => [...prev, assistantMessage(messageId, blocks)]);
         })
         .catch(() => {
           if (controller.signal.aborted) return; // unmounted or superseded — ignore
@@ -247,30 +310,70 @@ export function IntelligenceChatSidePanel({
     [videoId]
   );
 
+  useEffect(() => {
+    if (!autoPromptOnMount || !videoId || autoPromptedVideoRef.current === videoId) {
+      setAutoPromptCountdown(null);
+      return;
+    }
+
+    const deadline = Date.now() + AUTO_PROMPT_COUNTDOWN_SECONDS * AUTO_PROMPT_TICK_MS;
+    let timer: number | undefined;
+
+    const tick = () => {
+      const millisecondsRemaining = deadline - Date.now();
+      const remainingSeconds = Math.max(0, Math.ceil(millisecondsRemaining / AUTO_PROMPT_TICK_MS));
+
+      if (remainingSeconds === 0) {
+        autoPromptedVideoRef.current = videoId;
+        setAutoPromptCountdown(null);
+        handleSend(mockVideoAutoPrompt);
+        return;
+      }
+
+      setAutoPromptCountdown({ prompt: mockVideoAutoPrompt, remainingSeconds });
+      const millisecondsUntilNextSecond = millisecondsRemaining - (remainingSeconds - 1) * AUTO_PROMPT_TICK_MS;
+      timer = window.setTimeout(tick, Math.max(1, millisecondsUntilNextSecond));
+    };
+
+    tick();
+
+    return () => {
+      if (timer !== undefined) window.clearTimeout(timer);
+    };
+  }, [autoPromptOnMount, handleSend, mockVideoAutoPrompt, videoId]);
+
+  const isAutoPrompting = autoPromptCountdown !== null;
+
   return (
-    <div className={cn("gencl:flex gencl:h-full gencl:min-h-0 gencl:flex-col gencl:gap-3", className)}>
-      <div className="gencl:w-full gencl:shrink-0 gencl:overflow-hidden gencl:rounded-xl">
-        {koahTestReady && (
-          <KoahAdWidget
-            standalone
-            userMessage="Show me relevant information about this video"
-            aiResponse={`Video context identifier: ${videoId}`}
-            messageId={`intelligence-${videoId}`}
-          />
-        )}
-      </div>
+    <div
+      data-feed-intelligence-wide={fillAvailableWidth || undefined}
+      className={cn("gencl:flex gencl:h-full gencl:min-h-0 gencl:flex-col", className)}>
+      <style>{`
+        [data-slot="intelligence-chat-panel"] [data-koah="root"] {
+          border-color: var(--gencl-secondary-300, #bec2c7) !important;
+        }
+
+        [data-feed-intelligence-wide="true"] [data-koah="root"] {
+          --koah-format-max-width: 100% !important;
+        }
+      `}</style>
       <IntelligenceChatPanel
         data-testid="intelligence-chat-side-panel"
         registry={INTELLIGENCE_DEFAULT_REGISTRY}
         messages={messages}
+        threadHeader={<IntelligenceKoahAds videoId={videoId} fillAvailableWidth={fillAvailableWidth} />}
+        autoPromptCountdown={autoPromptCountdown ?? undefined}
         isResponding={isResponding}
+        inputDisabled={isAutoPrompting}
         onSend={handleSend}
         onClose={onClose}
         className="gencl:min-h-0 gencl:flex-1"
         emptyState={
-          <p className="gencl:m-auto gencl:max-w-xs gencl:text-center gencl:text-body-1-medium gencl:text-secondary-600">
-            Ask anything about this video.
-          </p>
+          !isAutoPrompting && (
+            <p className="gencl:m-auto gencl:max-w-xs gencl:text-center gencl:text-body-1-medium gencl:text-secondary-600">
+              Ask anything about this video.
+            </p>
+          )
         }
       />
     </div>

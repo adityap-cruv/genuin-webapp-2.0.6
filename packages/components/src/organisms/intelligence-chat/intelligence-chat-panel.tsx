@@ -20,6 +20,8 @@ export const IntelligenceChatPanel = React.forwardRef<HTMLElement, IntelligenceC
   function IntelligenceChatPanel(
     {
       messages,
+      threadHeader,
+      autoPromptCountdown,
       onSend,
       registry,
       isResponding = false,
@@ -48,6 +50,8 @@ export const IntelligenceChatPanel = React.forwardRef<HTMLElement, IntelligenceC
           {...props}>
           <IntelligenceChatThread
             messages={messages}
+            threadHeader={threadHeader}
+            autoPromptCountdown={autoPromptCountdown}
             isResponding={isResponding}
             respondingLabel={respondingLabel}
             emptyState={emptyState}

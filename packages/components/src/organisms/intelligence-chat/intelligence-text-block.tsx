@@ -1,6 +1,6 @@
 "use client";
 
-import { Heading, Text } from "@genuin/ui/components/typography";
+import { Text } from "@genuin/ui/components/typography";
 import { cn } from "@genuin/ui/lib/utils";
 import { ArrowUpRight } from "lucide-react";
 
@@ -8,7 +8,7 @@ import { Link } from "@genuin/components/molecules/link";
 
 import type { IntelligenceTextBlockProps, IntelligenceUserTextBlockProps } from "./intelligence-chat.types";
 
-const BODY_TEXT_CLASS = "gencl:text-body-0-medium gencl:text-secondary-700";
+const BODY_TEXT_CLASS = "gencl:text-body-1-medium gencl:text-secondary-700";
 
 /**
  * Built-in rich-text response: optional title, paragraphs, and numbered
@@ -17,14 +17,10 @@ const BODY_TEXT_CLASS = "gencl:text-body-0-medium gencl:text-secondary-700";
 export function IntelligenceTextBlock({ title, paragraphs, sections }: IntelligenceTextBlockProps) {
   return (
     <div data-slot="intelligence-text-block" className="gencl:flex gencl:w-full gencl:flex-col gencl:gap-4">
-      {title && (
-        <Heading as="h3" level="headline-4" weight="medium" className="gencl:text-secondary-900">
-          {title}
-        </Heading>
-      )}
+      {title && <h3 className="gencl:text-body-1-semi-bold gencl:text-secondary-900">{title}</h3>}
 
       {paragraphs?.map((paragraph, index) => (
-        <Text key={index} as="p" size="body-0" weight="medium" className="gencl:text-secondary-700">
+        <Text key={index} as="p" size="body-1" weight="medium" className="gencl:text-secondary-700">
           {paragraph}
         </Text>
       ))}
@@ -34,13 +30,13 @@ export function IntelligenceTextBlock({ title, paragraphs, sections }: Intellige
           {sections.map((section) => (
             <li
               key={section.heading}
-              className="gencl:ps-1 gencl:text-body-0-medium gencl:text-secondary-900 gencl:marker:font-semibold">
-              <Text as="span" size="body-0" weight="semibold" className="gencl:text-secondary-900">
+              className="gencl:ps-1 gencl:text-body-1-medium gencl:text-secondary-900 gencl:marker:font-semibold">
+              <Text as="span" size="body-1" weight="semibold" className="gencl:text-secondary-900">
                 {section.heading}
               </Text>
               <ul className="gencl:mt-2 gencl:flex gencl:list-disc gencl:flex-col gencl:gap-1 gencl:ps-5 gencl:font-medium">
                 {section.items.map((item, itemIndex) => (
-                  <li key={itemIndex} className={cn(BODY_TEXT_CLASS, "gencl:font-medium gencl:leading-[22px]")}>
+                  <li key={itemIndex} className={cn(BODY_TEXT_CLASS, "gencl:font-medium")}>
                     {item.text}
                     {item.link && (
                       <>
@@ -67,7 +63,7 @@ export function IntelligenceTextBlock({ title, paragraphs, sections }: Intellige
 /** Built-in block for the user's own prompt. */
 export function IntelligenceUserTextBlock({ text }: IntelligenceUserTextBlockProps) {
   return (
-    <Text as="p" size="body-0" weight="medium" className="gencl:whitespace-pre-wrap gencl:text-secondary-900">
+    <Text as="p" size="body-1" weight="medium" className="gencl:whitespace-pre-wrap gencl:text-secondary-900">
       {text}
     </Text>
   );

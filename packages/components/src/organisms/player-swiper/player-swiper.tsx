@@ -30,6 +30,9 @@ import { calculateSlideDimensions } from "./utils";
 
 import "swiper/css";
 
+const HOME_FULL_VIEW_EVENT = "genuin:home-feed-full-view";
+const HOME_FEED_VIEW_EVENT = "genuin:home-feed-view";
+
 const CloseButton = lazy(() =>
   import("./player-swiper-buttons").then((m) => ({
     default: m.CloseButton,
@@ -184,24 +187,51 @@ export function PlayerList({
     layoutConfig: { isIheartArticlePage },
     isDesignSystemV2Linkouts,
   } = useEmbedConfigs();
+  const embedDetails = useSafeEmbedContext();
+  const [isHomeFeedView, setIsHomeFeedView] = useState(embedDetails?.rootElement?.dataset.homeFeedView === "true");
+
+  useEffect(() => {
+    if (!showExpandView) return;
+    setIsHomeFeedView(embedDetails?.rootElement?.dataset.homeFeedView === "true");
+  }, [embedDetails, showExpandView]);
+
+  useEffect(() => {
+    const handleFullView = () => setIsHomeFeedView(false);
+    const handleFeedView = () => setIsHomeFeedView(true);
+    document.addEventListener(HOME_FULL_VIEW_EVENT, handleFullView);
+    document.addEventListener(HOME_FEED_VIEW_EVENT, handleFeedView);
+    return () => {
+      document.removeEventListener(HOME_FULL_VIEW_EVENT, handleFullView);
+      document.removeEventListener(HOME_FEED_VIEW_EVENT, handleFeedView);
+    };
+  }, []);
 
   // Comment panel state - only auto-open if Octo is NOT enabled (Octo takes priority)
   const {
     value: isCommentOpen,
     toggle: toggleComment,
     setValue: setCommentOpen,
-  } = useBoolean(isDesktop && !isIpad && !(showEngagementTools && isOctoToolEnabled));
+  } = useBoolean(!isHomeFeedView && isDesktop && !isIpad && !(showEngagementTools && isOctoToolEnabled));
 
   // OCTO panel state - auto-open on desktop when Octo tool is enabled
   const { value: isOctoOpen, setValue: setOctoOpen } = useBoolean(
-    isDesktop && !isIpad && showEngagementTools && isOctoToolEnabled
+    !isHomeFeedView && isDesktop && !isIpad && showEngagementTools && isOctoToolEnabled
   );
   // Intelligence chat panel state - opened from the action rail's sparkle icon;
   // mutually exclusive with the comments and OCTO right-rail panels.
-  const { value: isIntelligenceOpen, setValue: setIntelligenceOpen } = useBoolean(false);
+  const { value: isIntelligenceOpen, setValue: setIntelligenceOpen } = useBoolean(
+    isHomeFeedView && isDesktop && !isIpad
+  );
+
+  useEffect(() => {
+    if (!isHomeFeedView || !showExpandView || !isDesktop || isIpad) return;
+    setCommentOpen(false);
+    setOctoOpen(false);
+    setIntelligenceOpen(true);
+  }, [isDesktop, isHomeFeedView, isIpad, setCommentOpen, setIntelligenceOpen, setOctoOpen, showExpandView]);
+
   const octoPanelRef = useRef<OctoPanelHandle | null>(null);
   const lastOctoVideoIdRef = useRef<string | null>(null);
-  const embedDetails = useSafeEmbedContext();
   const {
     sheetState,
     openContentType,
@@ -571,7 +601,8 @@ export function PlayerList({
           websiteType === "legacy" &&
           isAdsEnabledInIheart &&
           "gencl:pt-[72px]! gencl:md:pt-8!",
-        brandLayoutType !== "iheart" && "gencl:gap-6"
+        brandLayoutType !== "iheart" && "gencl:gap-6",
+        isHomeFeedView && isIntelligenceOpen && "gencl:pl-24 gencl:pr-6"
       )}>
       {/* Back button for iheart expand view (not on mobile) */}
       {brandLayoutType === "iheart" && !isMobile && (
@@ -591,6 +622,7 @@ export function PlayerList({
         )}>
         <div
           ref={containerRef}
+          data-feed-video-column=""
           className={cn("gencl:h-full gencl:aspect-reel gencl:relative", isMobile && "gencl:h-full gencl:w-full")}
           style={
             // Only pin an explicit width when we actually measured one (iheart-tablet).
@@ -761,7 +793,7 @@ export function PlayerList({
             slug={filteredPost[activeIndex]?.video?.slug ?? ""}
             videoType={filteredPost[activeIndex]?.video?.videoType ?? VideoTypes.Content}
             reactionCount={filteredPost[activeIndex]?.video?.sparkCount ?? 0}
-            theme={showExpandView ? "dark" : "light"}
+            theme={isHomeFeedView ? "light" : showExpandView ? "dark" : "light"}
             className={cn("gencl:shrink-0", showExpandView ? "gencl:pb-4" : "gencl:pb-7")}
             isCommentBoxOpen={isCommentOpen}
             // V2 only: action-rail linkout button is the entry point to the
@@ -831,7 +863,7 @@ export function PlayerList({
                       <p
                         className={cn(
                           "gencl:p-0 gencl:text-center gencl:text-black gencl:text-body-2-medium",
-                          showExpandView && "gencl:text-white!"
+                          showExpandView && !isHomeFeedView && "gencl:text-white!"
                         )}
                         aria-label={`${commentCount} ${commentCount === 1 ? "comment" : "comments"}`}>
                         {abbreviateNumber(commentCount)}
@@ -983,7 +1015,11 @@ export function PlayerList({
         filteredPost[activeIndex] &&
         brandLayoutType !== "iheart" &&
         isDesktop && (
-          <div className="gencl:max-w-118 gencl:w-full gencl:h-full gencl:hidden gencl:sm:block! gencl:py-6">
+          <div
+            className={cn(
+              "gencl:w-full gencl:h-full gencl:hidden gencl:sm:block! gencl:py-6",
+              isHomeFeedView ? "gencl:min-w-0 gencl:flex-1" : "gencl:max-w-118"
+            )}>
             <SafeSuspense
               errorFallback={null}
               fallback={<SidePanelSkeleton theme={theme === "light" ? "light" : "dark"} showPostDetails={false} />}>
@@ -1000,6 +1036,8 @@ export function PlayerList({
                     filteredPost[activeIndex].video?.linkouts?.[0]?.links?.[0]?.description ?? undefined,
                 }}
                 onClose={() => setIntelligenceOpen(false)}
+                autoPromptOnMount={isHomeFeedView}
+                fillAvailableWidth={isHomeFeedView}
                 className="gencl:h-full"
               />
             </SafeSuspense>

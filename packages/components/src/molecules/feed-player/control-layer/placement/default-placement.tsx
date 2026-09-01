@@ -30,7 +30,8 @@ export function DefaultPlacement({
   isActive,
   onReactionStateChange,
   containerWidth,
-  ...restProps
+  style,
+  onClick,
 }: ControlLayerPropsType) {
   const { contentDisplay, responsive, view, engagement, isDesignSystemV2Linkouts } = useEmbedConfigs();
   const { isXs } = responsive;
@@ -155,7 +156,7 @@ export function DefaultPlacement({
   );
 
   return (
-    <div className={cn("gencl:h-full gencl:relative", className)} {...restProps}>
+    <div className={cn("gencl:h-full gencl:relative", className)} style={style} onClick={onClick}>
       <div
         className="gencl:absolute gencl:w-full gencl:flex gencl:justify-between gencl:items-start gencl:gap-2 gencl:text-white gencl:top-0 gencl:p-2 gencl:bg-gradient-to-b gencl:from-black/50 gencl:to-transparent"
         onClick={(e) => e.stopPropagation()}>

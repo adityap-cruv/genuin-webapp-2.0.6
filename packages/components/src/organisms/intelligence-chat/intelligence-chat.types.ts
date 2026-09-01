@@ -33,6 +33,12 @@ export type IntelligenceChatMessage = {
   status?: IntelligenceChatMessageStatus;
 };
 
+/** Transient prompt preview displayed while an automatic send counts down. */
+export type IntelligenceAutoPromptCountdownState = {
+  prompt: string;
+  remainingSeconds: number;
+};
+
 /** Props every registered response component receives in addition to its own. */
 export type IntelligenceResponseBlockContext = {
   /** The block being rendered (id/type), useful for analytics or keys. */
@@ -46,6 +52,7 @@ export type IntelligenceResponseBlockContext = {
  * spread onto it plus a `blockContext` describing where it is rendered.
  */
 // `any` default: registry entries are heterogeneous by design; callers type each entry via `defineIntelligenceBlock`.
+
 export type IntelligenceResponseComponent<TProps = any> = ComponentType<
   TProps & { blockContext: IntelligenceResponseBlockContext }
 >;
@@ -111,6 +118,10 @@ export interface IntelligenceChatInputProps extends Omit<ComponentPropsWithoutRe
 /** Props for the scrollable message thread. */
 export interface IntelligenceChatThreadProps extends Omit<ComponentPropsWithoutRef<"div">, "children"> {
   messages: readonly IntelligenceChatMessage[];
+  /** Optional content rendered before the conversation messages. */
+  threadHeader?: ReactNode;
+  /** Auto-prompt preview shown after the latest committed message. */
+  autoPromptCountdown?: IntelligenceAutoPromptCountdownState;
   /** Shows a pending indicator after the last message. */
   isResponding?: boolean;
   /** Copy for the pending indicator. @default "Thinking…" */
@@ -122,7 +133,10 @@ export interface IntelligenceChatThreadProps extends Omit<ComponentPropsWithoutR
 /** Props for the complete chat-capable Intelligence panel. */
 export interface IntelligenceChatPanelProps
   extends Omit<IntelligencePanelShellProps, "children" | "footer">,
-    Pick<IntelligenceChatThreadProps, "messages" | "isResponding" | "respondingLabel" | "emptyState">,
+    Pick<
+      IntelligenceChatThreadProps,
+      "messages" | "threadHeader" | "autoPromptCountdown" | "isResponding" | "respondingLabel" | "emptyState"
+    >,
     Pick<IntelligenceChatInputProps, "onSend" | "placeholder"> {
   /** Components available to render response blocks. */
   registry: IntelligenceResponseRegistry;

@@ -211,6 +211,7 @@ const meta = {
   },
   argTypes: {
     messages: { control: "object" },
+    autoPromptCountdown: { control: "object" },
     isResponding: { control: "boolean" },
     inputDisabled: { control: "boolean" },
     placeholder: { control: "text" },
@@ -289,6 +290,28 @@ export const Responding: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole("status")).toHaveTextContent("Thinking…");
+    await expect(canvasElement.querySelectorAll('[data-slot="intelligence-chat-thinking-line"]')).toHaveLength(3);
+    await expect(canvas.getByLabelText("Ask Intelligence")).toBeDisabled();
+  },
+};
+
+/** Transient prompt preview shown only while an automatic send counts down. */
+export const AutoPromptCountdown: Story = {
+  args: {
+    messages: [],
+    autoPromptCountdown: {
+      prompt: "Tell me more about this video.",
+      remainingSeconds: 2,
+    },
+    inputDisabled: true,
+    emptyState: null,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const status = canvas.getByRole("status");
+    await expect(status).toHaveTextContent("Tell me more about this video.");
+    await expect(status).toHaveTextContent("Prompting in...");
+    await expect(status).toHaveTextContent("2");
     await expect(canvas.getByLabelText("Ask Intelligence")).toBeDisabled();
   },
 };

@@ -1,9 +1,9 @@
 "use client";
 
-import { Button } from "@genuin/ui/components/button";
+// import { Button } from "@genuin/ui/components/button";
 import { Heading } from "@genuin/ui/components/typography";
 import { cn } from "@genuin/ui/lib/utils";
-import { Maximize2, Sparkle, X } from "lucide-react";
+import { /* Maximize2, */ Sparkle /* , X */ } from "lucide-react";
 import * as React from "react";
 
 import type { IntelligencePanelShellProps } from "./intelligence-panel.types";
@@ -23,17 +23,17 @@ const SCROLL_CONTENT_CLASS = cn(
   "gencl:[scrollbar-width:none] gencl:[&::-webkit-scrollbar]:hidden"
 );
 
-const HEADER_ACTION_CLASS = cn(
-  "gencl:relative gencl:size-4! gencl:rounded-full! gencl:p-0!",
-  "gencl:before:absolute gencl:before:-inset-2 gencl:before:content-['']"
-);
+// const HEADER_ACTION_CLASS = cn(
+//   "gencl:relative gencl:size-4! gencl:rounded-full! gencl:p-0!",
+//   "gencl:before:absolute gencl:before:-inset-2 gencl:before:content-['']"
+// );
 
 type IntelligencePanelHeaderProps = {
   headingId: string;
-  onClose: () => void;
+  onClose?: () => void;
 };
 
-function IntelligencePanelHeader({ headingId, onClose }: IntelligencePanelHeaderProps) {
+function IntelligencePanelHeader({ headingId }: IntelligencePanelHeaderProps) {
   return (
     <header className="gencl:flex gencl:h-9 gencl:shrink-0 gencl:-translate-y-1 gencl:items-center gencl:justify-between gencl:gap-2">
       <div className="gencl:flex gencl:min-w-0 gencl:items-center gencl:gap-2">
@@ -52,7 +52,7 @@ function IntelligencePanelHeader({ headingId, onClose }: IntelligencePanelHeader
         </Heading>
       </div>
 
-      <div className="gencl:flex gencl:shrink-0 gencl:items-center gencl:gap-2">
+      {/* <div className="gencl:flex gencl:shrink-0 gencl:items-center gencl:gap-2">
         <Button
           type="button"
           variant="icon"
@@ -79,7 +79,7 @@ function IntelligencePanelHeader({ headingId, onClose }: IntelligencePanelHeader
           )}>
           <X aria-hidden="true" className="gencl:size-3" />
         </Button>
-      </div>
+      </div> */}
     </header>
   );
 }

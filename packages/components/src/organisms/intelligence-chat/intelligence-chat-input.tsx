@@ -1,5 +1,6 @@
 "use client";
 
+import { Text } from "@genuin/ui/components/typography";
 import { cn } from "@genuin/ui/lib/utils";
 import { ArrowUp, Sparkle } from "lucide-react";
 import * as React from "react";
@@ -58,30 +59,32 @@ export const IntelligenceChatInput = React.forwardRef<HTMLFormElement, Intellige
           )}>
           <span
             aria-hidden="true"
-            className="gencl:flex gencl:size-9 gencl:shrink-0 gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-blue/5">
+            className="gencl:flex gencl:size-9 gencl:shrink-0 gencl:items-center gencl:justify-center gencl:rounded-full">
             <Sparkle strokeWidth={1.75} className="gencl:size-5 gencl:text-blue" />
           </span>
 
-          <textarea
-            id={inputId}
-            ref={textareaRef}
-            rows={1}
-            value={value}
-            disabled={disabled}
-            placeholder={placeholder}
-            onChange={(event) => setValue(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) {
-                event.preventDefault();
-                submit();
-              }
-            }}
-            className={cn(
-              "gencl:my-2 gencl:max-h-25 gencl:min-h-5 gencl:w-full gencl:flex-1 gencl:resize-none gencl:bg-transparent",
-              "gencl:text-body-1-medium gencl:leading-5 gencl:text-secondary-900 gencl:placeholder:text-secondary-600",
-              "gencl:outline-none gencl:disabled:cursor-not-allowed gencl:disabled:opacity-50"
-            )}
-          />
+          <Text asChild size="body-1" weight="medium">
+            <textarea
+              id={inputId}
+              ref={textareaRef}
+              rows={1}
+              value={value}
+              disabled={disabled}
+              placeholder={placeholder}
+              onChange={(event) => setValue(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) {
+                  event.preventDefault();
+                  submit();
+                }
+              }}
+              className={cn(
+                "gencl:my-2 gencl:max-h-25 gencl:min-h-5 gencl:w-full gencl:flex-1 gencl:resize-none gencl:bg-transparent",
+                "gencl:text-secondary-900 gencl:placeholder:text-secondary-600",
+                "gencl:outline-none gencl:disabled:cursor-not-allowed gencl:disabled:opacity-50"
+              )}
+            />
+          </Text>
 
           <button
             type="submit"
