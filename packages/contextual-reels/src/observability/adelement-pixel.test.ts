@@ -150,13 +150,19 @@ describe("buildAdElementPixelUrl", () => {
 
 describe("fireAdElementPixel", () => {
   let originalImage: typeof Image;
+  let originalNodeEnv: string | undefined;
 
   beforeEach(() => {
     originalImage = globalThis.Image;
+    originalNodeEnv = process.env.NODE_ENV;
+    // The beacon is production-only; every test below that expects a request
+    // must therefore run as a production build.
+    process.env.NODE_ENV = "production";
   });
 
   afterEach(() => {
     globalThis.Image = originalImage;
+    process.env.NODE_ENV = originalNodeEnv;
     vi.restoreAllMocks();
   });
 
@@ -216,5 +222,49 @@ describe("fireAdElementPixel", () => {
 
     expect(image.srcs).toHaveLength(1);
     expect(new URL(image.srcs[0]!).searchParams.get("ev")).toBe("start_gen");
+  });
+
+  describe("production-only gate", () => {
+    // QA is the case that matters: Vite sets `import.meta.env.PROD` true for
+    // `build:qa` as well, so gating on that instead of NODE_ENV would leak QA
+    // ad plays into AdElement's live reporting.
+    it.each(["qa", "development", "test", undefined])("sends no request when NODE_ENV is %s", (nodeEnv) => {
+      const image = stubImage();
+      if (nodeEnv === undefined) {
+        delete process.env.NODE_ENV;
+      } else {
+        process.env.NODE_ENV = nodeEnv;
+      }
+
+      fireAdElementPixel("start_gen", FULL_MACROS);
+      fireAdElementPixel("complete_gen", FULL_MACROS);
+
+      expect(image.srcs).toEqual([]);
+    });
+
+    it("sends the request when NODE_ENV is production", () => {
+      const image = stubImage();
+      process.env.NODE_ENV = "production";
+
+      fireAdElementPixel("start_gen", FULL_MACROS);
+
+      expect(image.srcs).toHaveLength(1);
+    });
+
+    it("does not construct an Image at all outside production", () => {
+      let constructed = 0;
+      // @ts-expect-error -- test stub, not a full Image implementation
+      globalThis.Image = class {
+        constructor() {
+          constructed += 1;
+        }
+        set src(_value: string) {}
+      };
+      process.env.NODE_ENV = "qa";
+
+      fireAdElementPixel("start_gen", FULL_MACROS);
+
+      expect(constructed).toBe(0);
+    });
   });
 });

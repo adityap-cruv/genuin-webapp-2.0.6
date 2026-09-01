@@ -31,9 +31,29 @@ const _env: Record<string, string | undefined> =
 
 /**
  * AdElement beacon endpoint. Set VITE_CXR_ADELEMENT_PIXEL_URL to override
- * (e.g. to point QA at a capture endpoint instead of live AdElement).
+ * (e.g. to point a debugging build at a capture endpoint instead of live
+ * AdElement — note the beacon is gated off outside production anyway, see
+ * {@link isProductionBuild}).
  */
 export const ADELEMENT_PIXEL_URL: string = _env.VITE_CXR_ADELEMENT_PIXEL_URL ?? "https://b.adelement.com/v";
+
+/**
+ * True only in a production build (`build:prod`).
+ *
+ * Deliberately reads `process.env.NODE_ENV` — which `vite.config.mjs` inlines
+ * from the `cross-env NODE_ENV=...` each build script sets — and NOT
+ * `import.meta.env.PROD`. Vite sets `PROD` true for ANY `vite build`, so
+ * `build:qa` would satisfy it and leak QA/staging traffic into AdElement's live
+ * reporting. `NODE_ENV` is `"development"` / `"qa"` / `"production"`
+ * respectively, so only the prod build passes. Same check `genAdSdk.ts` uses to
+ * gate the SDK's debug flag.
+ *
+ * Evaluated per call rather than at module load so a test can stub
+ * `process.env.NODE_ENV` without needing a module-registry reset.
+ */
+function isProductionBuild(): boolean {
+  return process.env.NODE_ENV === "production";
+}
 
 /**
  * Lifecycle events this module fires. The `_gen` suffix marks these as
@@ -135,6 +155,11 @@ export function buildAdElementPixelUrl(event: AdElementEvent, macros: HostMacros
 /**
  * Fire one AdElement lifecycle beacon.
  *
+ * **Production builds only.** No request leaves the page in dev, QA, unit tests
+ * or E2E — AdElement's reporting is live ad inventory, so a QA ad play or a test
+ * run must never register as a real impression. See {@link isProductionBuild}
+ * for why this is a `NODE_ENV` check and not `import.meta.env.PROD`.
+ *
  * Best-effort and non-throwing: this is third-party telemetry on the ad success
  * path, so a locked-down window (no `Image` constructor) or a blocked request must
  * never surface as an error into the ad lifecycle that triggered it. Uses `Image`
@@ -151,6 +176,12 @@ export function buildAdElementPixelUrl(event: AdElementEvent, macros: HostMacros
  */
 export function fireAdElementPixel(event: AdElementEvent, macros: HostMacros = defaultHostMacros): void {
   try {
+    // Non-production builds resolve the URL but never request it, so the
+    // debug line below still shows what prod WOULD have sent.
+    if (!isProductionBuild()) {
+      _logger.debug(`skipped AdElement pixel (ev=${event}) — non-production build`);
+      return;
+    }
     if (typeof Image !== "function") return;
     const url = buildAdElementPixelUrl(event, macros);
     new Image().src = url;
