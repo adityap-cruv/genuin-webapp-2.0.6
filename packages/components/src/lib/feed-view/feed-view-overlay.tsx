@@ -15,6 +15,7 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 
+import { SIDEBAR_WIDTH_VAR } from "@genuin/components/lib/constants";
 import {
   HOME_FEED_VIEW_EVENT,
   HOME_FULL_VIEW_EVENT,
@@ -373,7 +374,17 @@ export function FeedViewOverlay({
   // is open. Hide this page-owned action so exactly one Back button is visible across React roots.
   if (!backPosition || isInlineArticleOpen) return null;
   return createPortal(
-    <div data-slot="feed-view-back" style={{ position: "fixed", ...backPosition, zIndex: FEED_BACK_Z_INDEX }}>
+    <div
+      data-slot="feed-view-back"
+      style={{
+        position: "fixed",
+        ...backPosition,
+        // `backPosition` is measured from the stage bounds and is not recomputed while the side bar
+        // is hovered open, so clamp it past the rail's live width — otherwise the button keeps the
+        // collapsed-rail offset and lands on top of the expanded side bar.
+        left: `max(${backPosition.left}px, calc(var(${SIDEBAR_WIDTH_VAR}, 0px) + 24px))`,
+        zIndex: FEED_BACK_Z_INDEX,
+      }}>
       <NavArrowButton direction="left" size="lg" theme="dark" ariaLabel="Back" onClick={handleBack} />
     </div>,
     document.body

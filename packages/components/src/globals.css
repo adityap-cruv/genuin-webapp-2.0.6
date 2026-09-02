@@ -55,3 +55,35 @@ label span.is-required::after {
 .round-crop .cropper-face {
   border-radius: 0 !important;
 }
+/*
+ * Body-level overlays (the expand-view portal) sit beside the app's side bar instead of under it.
+ * They are appended to <body>, so they are not flex siblings the page layout can shrink — they have
+ * to inset themselves. `--gen-sidebar-width` is published by the side bar; on a publisher's embed it
+ * is unset, so the `0px` fallback keeps the overlay full-bleed exactly as before.
+ *
+ * The second block runs inside the overlay's shadow root: its contents are sized to the viewport
+ * (`w-screen`/`h-screen`) and pinned with `position: fixed`, both of which ignore the host and would
+ * spill straight back over the side bar. With no side bar the host still fills the viewport, so
+ * these resolve to the very same box.
+ */
+[data-genuin-overlay-host] {
+  left: var(--gen-sidebar-width, 0px) !important;
+  width: calc(100% - var(--gen-sidebar-width, 0px)) !important;
+}
+
+[data-portal-container] {
+  position: absolute !important;
+  inset: 0 !important;
+}
+
+[data-portal-container] [class*="w-screen"] {
+  width: 100% !important;
+}
+
+[data-portal-container] [class*="h-screen"] {
+  height: 100% !important;
+}
+
+[data-portal-container] [class*="gencl:fixed"] {
+  position: absolute !important;
+}

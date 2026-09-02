@@ -41,6 +41,14 @@ export const URL_TO_PLAY_STORE = "https://play.google.com/store/apps/details?id=
 export const RECENT_COMMUNITIES_KEY = "recentCommunities";
 
 /**
+ * CSS custom property carrying the desktop side bar's current width.
+ * Overlays that render outside the page layout (the expand-view portal is appended to `<body>`)
+ * read it to inset themselves, since flexbox cannot shrink a non-sibling. Unset on a publisher's
+ * page, where there is no side bar, so consumers must always pass a `0px` fallback.
+ **/
+export const SIDEBAR_WIDTH_VAR = "--gen-sidebar-width";
+
+/**
  * Height of the top bar in pixels.
  */
 export const TOP_BAR_HEIGHT = 64;
