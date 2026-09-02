@@ -46,6 +46,11 @@ export type AvatarPropsType = React.ComponentProps<typeof AvatarPrimitive.Root> 
     imageClassName?: string;
     fallbackClassName?: string;
     /**
+     * Overrides the initials derived from `alt`, for callers that need a specific
+     * fallback (a single initial, say) without degrading the image's alt text.
+     */
+    fallback?: string;
+    /**
      * When true, enables zoom functionality on click
      */
     shouldZoom?: boolean;
@@ -59,6 +64,7 @@ const Avatar = React.memo(function Avatar({
   size = "sm",
   imageClassName,
   fallbackClassName,
+  fallback,
   shouldZoom = false,
   ...props
 }: AvatarPropsType) {
@@ -88,7 +94,7 @@ const Avatar = React.memo(function Avatar({
             "gencl:bg-secondary-300 gencl:flex gencl:size-full gencl:items-center gencl:justify-center gencl:rounded-full",
             fallbackClassName
           )}>
-          {getAvatarFallback(alt)}
+          {fallback ?? getAvatarFallback(alt)}
         </AvatarPrimitive.Fallback>
       </AvatarPrimitive.Root>
     );

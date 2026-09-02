@@ -18,6 +18,7 @@ const recentAccordionVariants = cva("gencl:!w-full gencl:py-4 gencl:px-3", {
   variants: {
     variant: {
       default: "gencl:[&_p]:hidden gencl:[&_button]:hidden gencl:[&_button]:xl:flex gencl:[&_p]:xl:block",
+      collapsed: "gencl:[&_p]:hidden gencl:[&_button]:hidden",
       mobile: "",
     },
   },

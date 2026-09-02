@@ -85,6 +85,26 @@ const IMG = {
     "https://thefoil.com/media/1c_B4FpWYUwQxFQPqJ3guvvsujw5XyOK6AecZmtyfKI/resize:fill-down:540:295/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/03/54620591537-354128013c-k.jpg",
   ricardo:
     "https://thefoil.com/media/xjPn5tb1VybfsEuZ4Y9J9RiSHePy3sFR2qDTv3tu7Ic/resize:fill-down:336:258/gravity:ce/quality:60/dpr:1/2025/12/ricardo-pinto-sailgp-1-1.png",
+  eventPerth:
+    "https://thefoil.com/media/vdaagjaY5N6YhzcsIHwAWoDb6jEyslwnfQyN9-nSqVs/resize:fill-down:1200:630/g:ce/quality:60/dpr:1/2025/12/perth-harbour-hero-shutterstock-660544684.png",
+  eventAuckland:
+    "https://thefoil.com/media/OND6DTrjj3M2L5iEzdyEEFGpikhqxIZSeE9rsXvfdtU/resize:fill-down:1200:630/g:ce/quality:60/dpr:1/2025/12/copyright-sailgp.png",
+  eventSydney:
+    "https://thefoil.com/media/Wzd3yS0S_S3R4Zd49uZ7PQMHUwAnME4R3YktMxoObiE/resize:fill-down:1200:630/g:ce/quality:60/dpr:1/2025/12/patrick-hamilton-sailgp.png",
+  eventRio:
+    "https://thefoil.com/media/2zB9aGdxzA8DVlOWsbm5uxfaVTXu1HIKWInEc14b1Ao/resize:fill-down:1200:630/g:ce/quality:60/dpr:1/2025/12/hero-image-shutterstock-2192018835.png",
+  eventBermuda:
+    "https://thefoil.com/media/NMgPnZH9fJLIGKGRSVtxxMOwDo10hloAdksdiY-s2Bs/resize:fill-down:1200:630/g:ce/quality:60/dpr:1/2025/12/bob-martin-sailgp.png",
+  eventNewYork:
+    "https://thefoil.com/media/6ulqMhJ4H5xjxfJfRxkeZtOnEaeOJoh8cCDjDMjt5PQ/resize:fill-down:1200:630/g:ce/quality:60/dpr:1/2025/12/ricardo-pinto-sailgp-3.png",
+  eventHalifax:
+    "https://thefoil.com/media/x-w03TKA1Z5mtrhXF_3H_ZZ7isZ0WeLSy2L439YlO5M/resize:fill-down:1200:630/g:ce/quality:60/dpr:1/2026/06/sailgp-halifax-crop.jpg",
+  eventPortsmouth:
+    "https://thefoil.com/media/u1XF-gUvDLRx7EBzMoJ-_RVf-hbPVl-eTLXT72I56fE/resize:fill-down:1200:630/g:ce/quality:60/dpr:1/2025/12/ricardo-pinto-sailgp-5.png",
+  eventGermany:
+    "https://thefoil.com/media/K3vxlyg9Yat80nsUs8P5OoyhjxP3_tjSnKF1kEcYa-g/resize:fill-down:1200:630/g:ce/quality:60/dpr:1/2025/12/ricardo-pinto-sailgp-1-1.png",
+  eventCagliari:
+    "https://thefoil.com/media/rRr0UlSejCKYrs1mlU2WfnN1GtnCUwi2Gc_1Ra_F4Fc/resize:fill-down:1200:630/g:ce/quality:60/dpr:1/2026/05/gc-7202edit-2048x2048.jpg",
 };
 
 const FOIL_LOGO = "/images/home/the-foil-logo.jpg";
@@ -360,6 +380,86 @@ const EVENT_POOL: PoolEvent[] = [
     endDate: "2026-11-29",
     location: "Abu Dhabi, United Arab Emirates",
   },
+  {
+    slug: "oracle-perth-sail-grand-prix-presented-by-kpmg",
+    heading: "Oracle Perth Sail Grand Prix | KPMG",
+    image: IMG.eventPerth,
+    startDate: "2026-01-17",
+    endDate: "2026-01-18",
+    location: "Perth, Australia",
+  },
+  {
+    slug: "itm-new-zealand-sail-grand-prix-auckland",
+    heading: "ITM New Zealand Sail Grand Prix | Auckland",
+    image: IMG.eventAuckland,
+    startDate: "2026-02-14",
+    endDate: "2026-02-15",
+    location: "Auckland, New Zealand",
+  },
+  {
+    slug: "kpmg-sydney-sail-grand-prix",
+    heading: "KPMG Sydney Sail Grand Prix",
+    image: IMG.eventSydney,
+    startDate: "2026-02-28",
+    endDate: "2026-03-01",
+    location: "Sydney, Australia",
+  },
+  {
+    slug: "enel-rio-sail-grand-prix",
+    heading: "Enel Rio Sail Grand Prix",
+    image: IMG.eventRio,
+    startDate: "2026-04-11",
+    endDate: "2026-04-12",
+    location: "Rio de Janeiro, Brazil",
+  },
+  {
+    slug: "apex-group-bermuda-sail-grand-prix",
+    heading: "Apex Group Bermuda Sail Grand Prix",
+    image: IMG.eventBermuda,
+    startDate: "2026-05-09",
+    endDate: "2026-05-10",
+    location: "Great Sound, Bermuda",
+  },
+  {
+    slug: "mubadala-new-york-sail-grand-prix",
+    heading: "Mubadala New York Sail Grand Prix",
+    image: IMG.eventNewYork,
+    startDate: "2026-05-30",
+    endDate: "2026-05-31",
+    location: "New York, USA",
+  },
+  {
+    slug: "canada-sail-grand-prix-halifax",
+    heading: "Canada Sail Grand Prix | Halifax",
+    image: IMG.eventHalifax,
+    startDate: "2026-06-20",
+    endDate: "2026-06-21",
+    location: "Halifax, Canada",
+  },
+  {
+    slug: "emirates-great-britain-sail-grand-prix-portsmouth",
+    heading: "Emirates Great Britain Sail Grand Prix | Portsmouth",
+    image: IMG.eventPortsmouth,
+    startDate: "2026-07-25",
+    endDate: "2026-07-26",
+    location: "Portsmouth, United Kingdom",
+  },
+  {
+    slug: "rockwool-germany-sail-grand-prix-sassnitz",
+    heading: "Rockwool Germany Sail Grand Prix | Sassnitz",
+    image: IMG.eventGermany,
+    startDate: "2026-08-22",
+    endDate: "2026-08-23",
+    location: "Sassnitz, Germany",
+  },
+  {
+    slug: "ac38-preliminary-regatta-1-ac40s",
+    heading: "America's Cup AC38 Preliminary Regatta | Cagliari",
+    image: IMG.eventCagliari,
+    startDate: "2026-05-22",
+    endDate: "2026-05-22",
+    location: "Cagliari, Italy",
+  },
 ];
 
 /** On-domain `/article/<slug>` when we have a demo page for it; else the real thefoil.com article. */
@@ -539,6 +639,126 @@ function basePageData(): Record<string, WidgetData> {
           cta: {
             label: "Read More",
             href: "/article/mubadala-abu-dhabi-sail-grand-prix-2026-season-grand-final-presented-by-abu-dhabi-sports-council",
+          },
+        },
+        {
+          id: "oracle-perth-sail-gp-2026",
+          heading: "Oracle Perth Sail Grand Prix | KPMG",
+          image: { src: IMG.eventPerth },
+          startDate: "2026-01-17",
+          endDate: "2026-01-18",
+          location: "Perth, Australia",
+          cta: {
+            label: "Read More",
+            href: "https://thefoil.com/events/oracle-perth-sail-grand-prix-presented-by-kpmg/",
+          },
+        },
+        {
+          id: "itm-new-zealand-sail-gp-2026",
+          heading: "ITM New Zealand Sail Grand Prix | Auckland",
+          image: { src: IMG.eventAuckland },
+          startDate: "2026-02-14",
+          endDate: "2026-02-15",
+          location: "Auckland, New Zealand",
+          cta: {
+            label: "Read More",
+            href: "https://thefoil.com/events/itm-new-zealand-sail-grand-prix-auckland/",
+          },
+        },
+        {
+          id: "kpmg-sydney-sail-gp-2026",
+          heading: "KPMG Sydney Sail Grand Prix",
+          image: { src: IMG.eventSydney },
+          startDate: "2026-02-28",
+          endDate: "2026-03-01",
+          location: "Sydney, Australia",
+          cta: {
+            label: "Read More",
+            href: "https://thefoil.com/events/kpmg-sydney-sail-grand-prix/",
+          },
+        },
+        {
+          id: "enel-rio-sail-gp-2026",
+          heading: "Enel Rio Sail Grand Prix",
+          image: { src: IMG.eventRio },
+          startDate: "2026-04-11",
+          endDate: "2026-04-12",
+          location: "Rio de Janeiro, Brazil",
+          cta: {
+            label: "Read More",
+            href: "https://thefoil.com/events/enel-rio-sail-grand-prix/",
+          },
+        },
+        {
+          id: "apex-group-bermuda-sail-gp-2026",
+          heading: "Apex Group Bermuda Sail Grand Prix",
+          image: { src: IMG.eventBermuda },
+          startDate: "2026-05-09",
+          endDate: "2026-05-10",
+          location: "Great Sound, Bermuda",
+          cta: {
+            label: "Read More",
+            href: "https://thefoil.com/events/apex-group-bermuda-sail-grand-prix/",
+          },
+        },
+        {
+          id: "mubadala-new-york-sail-gp-2026",
+          heading: "Mubadala New York Sail Grand Prix",
+          image: { src: IMG.eventNewYork },
+          startDate: "2026-05-30",
+          endDate: "2026-05-31",
+          location: "New York, USA",
+          cta: {
+            label: "Read More",
+            href: "https://thefoil.com/events/mubadala-new-york-sail-grand-prix/",
+          },
+        },
+        {
+          id: "canada-sail-gp-halifax-2026",
+          heading: "Canada Sail Grand Prix | Halifax",
+          image: { src: IMG.eventHalifax },
+          startDate: "2026-06-20",
+          endDate: "2026-06-21",
+          location: "Halifax, Canada",
+          cta: {
+            label: "Read More",
+            href: "https://thefoil.com/events/canada-sail-grand-prix-halifax/",
+          },
+        },
+        {
+          id: "emirates-gb-sail-gp-portsmouth-2026",
+          heading: "Emirates Great Britain Sail Grand Prix | Portsmouth",
+          image: { src: IMG.eventPortsmouth },
+          startDate: "2026-07-25",
+          endDate: "2026-07-26",
+          location: "Portsmouth, United Kingdom",
+          cta: {
+            label: "Read More",
+            href: "https://thefoil.com/events/emirates-great-britain-sail-grand-prix-portsmouth/",
+          },
+        },
+        {
+          id: "rockwool-germany-sail-gp-sassnitz-2026",
+          heading: "Rockwool Germany Sail Grand Prix | Sassnitz",
+          image: { src: IMG.eventGermany },
+          startDate: "2026-08-22",
+          endDate: "2026-08-23",
+          location: "Sassnitz, Germany",
+          cta: {
+            label: "Read More",
+            href: "https://thefoil.com/events/rockwool-germany-sail-grand-prix-sassnitz/",
+          },
+        },
+        {
+          id: "ac38-preliminary-regatta-cagliari-2026",
+          heading: "America's Cup AC38 Preliminary Regatta | Cagliari",
+          image: { src: IMG.eventCagliari },
+          startDate: "2026-05-22",
+          endDate: "2026-05-22",
+          location: "Cagliari, Italy",
+          cta: {
+            label: "Read More",
+            href: "https://thefoil.com/events/ac38-preliminary-regatta-1-ac40s/",
           },
         },
       ],
