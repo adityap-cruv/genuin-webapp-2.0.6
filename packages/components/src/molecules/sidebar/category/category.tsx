@@ -14,6 +14,7 @@ const accordionVariants = cva("gencl:!w-full gencl:py-4 gencl:px-3 gencl:border-
   variants: {
     variant: {
       default: "gencl:hidden gencl:xl:block! gencl:xl:border-b",
+      collapsed: "gencl:flex gencl:flex-col gencl:gap-1",
       mobile: "",
     },
   },
@@ -21,6 +22,14 @@ const accordionVariants = cva("gencl:!w-full gencl:py-4 gencl:px-3 gencl:border-
     variant: "default",
   },
 });
+
+/**
+ * First character of the first word. Spread rather than indexed so a leading emoji
+ * comes back whole instead of as half a surrogate pair.
+ */
+function getFirstInitial(name: string) {
+  return ([...name.trim()][0] ?? "").toUpperCase();
+}
 
 type CategoryProps = Omit<
   React.ComponentProps<typeof Accordion> & VariantProps<typeof accordionVariants>,
@@ -39,6 +48,26 @@ export function Category({ variant, className, onItemClick, ...restProps }: Cate
 
   if (!categories.length) {
     return;
+  }
+
+  // One initial per row the expanded sidebar lists — never the communities nested inside them,
+  // which stay behind their own closed accordion. Hovering the rail reveals the real list.
+  if (variant === "collapsed") {
+    return (
+      <div className={cn(accordionVariants({ variant }), className)}>
+        {categories.map((cat, index) => (
+          <div key={index} title={cat.category} className="gencl:flex gencl:justify-center gencl:py-1">
+            <Avatar
+              isAvatar={false}
+              imageUrl=""
+              alt={cat.category}
+              fallback={getFirstInitial(cat.category)}
+              size="xs"
+            />
+          </div>
+        ))}
+      </div>
+    );
   }
 
   return (

@@ -23,6 +23,7 @@ const sidebarActionsVariants = cva("gencl:px-3 gencl:py-4 gencl:!w-full gencl:bo
   variants: {
     variant: {
       default: "gencl:flex gencl:flex-col gencl:[&_p]:hidden gencl:[&_p]:xl:block",
+      collapsed: "gencl:flex gencl:flex-col gencl:[&_p]:hidden",
       mobile: "gencl:flex gencl:flex-col gencl:[&_p]:block",
     },
   },

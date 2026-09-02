@@ -1,16 +1,19 @@
 "use client";
 
-import { LoginIcon, QRIcon } from "@genuin/ui/icons";
+import { ChevronFirstIcon, LoginIcon, QRIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/utils";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 import type { ComponentProps, ReactNode } from "react";
-import { lazy } from "react";
+import { lazy, useState } from "react";
+import { useLocalStorage } from "usehooks-ts";
 
 import { useAuthContext } from "@genuin/components/context/auth";
 import { useBaseContext } from "@genuin/components/context/base";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useAuthRedirectHandler } from "@genuin/components/hooks/use-auth-redirect-handler";
+import { usePathname } from "@genuin/components/hooks/use-pathname";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { StandardWallLoginGate } from "@genuin/components/molecules/auth-login-gate/auth-login-gate";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { SidebarActions, SideBarBecomeCreator } from "@genuin/components/molecules/sidebar";
@@ -24,17 +27,22 @@ const AuthenticationModal = lazy(() =>
   }))
 );
 
-type SideBarProps = ComponentProps<"aside"> &
-  VariantProps<typeof sidebarVariants> & {
-    onItemClick?: () => void;
-  };
+/** `collapsed` is internal state, not a caller-supplied variant, so it is not offered here. */
+type SideBarProps = ComponentProps<"aside"> & {
+  variant?: "default" | "mobile";
+  onItemClick?: () => void;
+};
+
+const HOME_SIDEBAR_COLLAPSED_KEY = "homeSidebarCollapsed";
 
 const sidebarVariants = cva(
-  "gencl:relative gencl:h-full gencl:bg-white gencl:flex gencl:flex-col gencl:overflow-hidden",
+  "gencl:relative gencl:h-full gencl:bg-white gencl:flex gencl:flex-col gencl:overflow-hidden gencl:transition-[width] gencl:duration-200",
   {
     variants: {
       variant: {
         default: "gencl:border-r gencl:xl:!w-60 gencl:border-secondary-150 gencl:w-16 gencl:shrink-0",
+        // Same icon rail the `default` variant falls back to below `xl`, but pinned at every width.
+        collapsed: "gencl:border-r gencl:border-secondary-150 gencl:w-16 gencl:shrink-0",
         mobile: "gencl:w-full gencl:xl:block!",
       },
     },
@@ -47,25 +55,60 @@ const sidebarVariants = cva(
 export function SideBar({ variant, className, onItemClick, ...restProps }: SideBarProps) {
   const { brandDetails } = useBaseContext();
   const { layoutConfig } = useEmbedConfigs();
+  const pathname = usePathname();
   const showBecomeACreator = brandDetails.show_become_creator ?? true;
 
+  // Only /home is collapsible — every other route keeps the purely responsive rail.
+  // It opens collapsed, and the reader's toggle is persisted from there.
+  const isCollapsible = variant !== "mobile" && pathname === buildPageUrl({ type: "home" });
+  const [isHomeCollapsed, setIsHomeCollapsed] = useLocalStorage(HOME_SIDEBAR_COLLAPSED_KEY, true);
+  // Hovering peeks at the full rail; the toggle below pins that open so it survives the mouse leaving.
+  const [isPeeking, setIsPeeking] = useState(false);
+  const isCollapsed = isCollapsible && isHomeCollapsed && !isPeeking;
+  const resolvedVariant = isCollapsed ? "collapsed" : variant;
+
   return (
-    <aside className={cn(sidebarVariants({ variant }), className)} {...restProps}>
-      <div className="gencl:flex-1 gencl:h-full gencl:overflow-y-auto gencl:pb-16">
+    <aside
+      className={cn(sidebarVariants({ variant: resolvedVariant }), className)}
+      onMouseEnter={isCollapsible ? () => setIsPeeking(true) : undefined}
+      onMouseLeave={isCollapsible ? () => setIsPeeking(false) : undefined}
+      {...restProps}>
+      <div
+        className={cn(
+          "gencl:flex-1 gencl:h-full gencl:overflow-y-auto gencl:pb-16",
+          // Room for the extra toggle row pinned to the bottom.
+          isCollapsible && "gencl:xl:pb-28"
+        )}>
         <SidebarActions
           brandConfiguredTerms={brandDetails.terms_and_condition ?? ""}
           brandConfiguredPrivacy={brandDetails.privacy_policy ?? ""}
-          variant={variant}
+          variant={resolvedVariant}
           onItemClick={onItemClick}
           showSearch={!layoutConfig.showNavigationBar}
         />
-        {!layoutConfig.showNavigationBar && <ProxyComponent variant={variant} />}
-        {showBecomeACreator && <SideBarBecomeCreator variant={variant} />}
-        <Category variant={variant} onItemClick={onItemClick} />
-        <Recent variant={variant} onItemClick={onItemClick} />
+        {!layoutConfig.showNavigationBar && <ProxyComponent variant={resolvedVariant} />}
+        {/* Its own cva is bypassed by hardcoded classes, so the rail hides it via className. */}
+        {showBecomeACreator && (
+          <SideBarBecomeCreator variant={variant} className={cn(isCollapsed && "gencl:hidden! gencl:xl:hidden!")} />
+        )}
+        <Category variant={resolvedVariant} onItemClick={onItemClick} />
+        <Recent variant={resolvedVariant} onItemClick={onItemClick} />
       </div>
-      <div className="gencl:absolute gencl:bottom-0 gencl:left-0 gencl:right-0">
-        <PoweredByGenuin variant={variant} />
+      <div className="gencl:absolute gencl:bottom-0 gencl:left-0 gencl:right-0 gencl:bg-white">
+        {isCollapsible && (
+          <button
+            type="button"
+            data-testid="sidebar-collapse-toggle"
+            // Reflects the pinned preference, not the peek, so a click always matches the icon.
+            aria-expanded={!isHomeCollapsed}
+            aria-label={isHomeCollapsed ? "Keep sidebar expanded" : "Collapse sidebar"}
+            onClick={() => setIsHomeCollapsed((collapsed) => !collapsed)}
+            // Below `xl` the rail cannot expand at all, so the toggle would be a no-op control.
+            className="gencl:hidden gencl:xl:flex gencl:w-full gencl:items-center gencl:justify-center gencl:border-t gencl:border-secondary-150 gencl:p-4 gencl:cursor-pointer gencl:hover:bg-secondary-50">
+            <ChevronFirstIcon className={cn(isHomeCollapsed && "gencl:rotate-180")} />
+          </button>
+        )}
+        {!isCollapsed && <PoweredByGenuin variant={variant} />}
       </div>
     </aside>
   );
@@ -75,6 +118,7 @@ const proxyComponentVariant = cva("gencl:border-b gencl:border-secondary-100 gen
   variants: {
     variant: {
       default: "gencl:flex gencl:flex-col gencl:[&_p]:hidden gencl:[&_p]:xl:block",
+      collapsed: "gencl:flex gencl:flex-col gencl:[&_p]:hidden",
       mobile: "gencl:flex gencl:flex-col gencl:[&_p]:block",
     },
   },
