@@ -84,7 +84,7 @@ const STATIC_TAG_LOADERS: Record<string, () => Promise<StaticTagEntry | undefine
   "6a6892e52ca77d200369fb9e": async () => {
     const [tag, feed] = await Promise.all([
       import("@cxr/providers/static-tag/6a6892e52ca77d200369fb9e.tag.json"),
-      import("@cxr/providers/static-tag/6a6892e52ca77d200369fb9e.feed.json"),
+      import("@cxr/providers/static-tag/320x480-ads-5.feed.json"),
     ]);
     return toEntry(tag.default, feed.default);
   },
@@ -220,18 +220,20 @@ const STATIC_TAG_LOADERS: Record<string, () => Promise<StaticTagEntry | undefine
     ]);
     return toEntry(tag.default, feed.default);
   },
-  // 320x480-ads-only-2 / -3
+  // 320x480-ads-only-2 / -3. Unlike the other sizes, the 320x480 tags serve the
+  // full 5-ad feed (320x480-ads-5.feed.json) rather than the 1-ad brand feed —
+  // the extra ad reels drive the interstitial full-player experience.
   "6a7c47bf86d060bd42fb5c95": async () => {
     const [tag, feed] = await Promise.all([
       import("@cxr/providers/static-tag/6a7c47bf86d060bd42fb5c95.tag.json"),
-      import("@cxr/providers/static-tag/6a39163e92929ebec64d78ab.feed.json"),
+      import("@cxr/providers/static-tag/320x480-ads-5.feed.json"),
     ]);
     return toEntry(tag.default, feed.default);
   },
   "6a7c47d8f3f875e5e06db080": async () => {
     const [tag, feed] = await Promise.all([
       import("@cxr/providers/static-tag/6a7c47d8f3f875e5e06db080.tag.json"),
-      import("@cxr/providers/static-tag/6a39163e92929ebec64d78ab.feed.json"),
+      import("@cxr/providers/static-tag/320x480-ads-5.feed.json"),
     ]);
     return toEntry(tag.default, feed.default);
   },
