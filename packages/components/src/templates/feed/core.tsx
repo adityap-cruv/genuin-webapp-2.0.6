@@ -119,7 +119,7 @@ export const FeedViewCore = memo(function FeedViewCore({
   const { handleSwipeCount, dialogType, shouldShowDialog, closeDialog } = useInterruptionManager();
   const { canGoBack } = useRouter();
   const embedDetails = useSafeEmbedContext();
-  const { theme = "dark", brandDetails, isEmbed } = useBaseContext();
+  const { theme = "dark", brandDetails } = useBaseContext();
 
   const {
     view: { brandLayoutType },
@@ -316,11 +316,7 @@ export const FeedViewCore = memo(function FeedViewCore({
               showExpandView,
             "gencl:sm:pr-4! gencl:pt-0 gencl:sm:pt-4!": !showExpandView,
             // Apply fixed positioning from top for non-iHeart layouts in expand view
-            "gencl:fixed gencl:top-0": !isIHeart && showExpandView && isEmbed,
-            // Inside the webapp shell the expand view must fill its own `<section>`, not the
-            // viewport: a `fixed` box is out of flow, so `left-0`/`w-full` resolve against the
-            // viewport and it cannot give up width when the side bar expands beside it.
-            "gencl:absolute gencl:top-0": !isIHeart && showExpandView && !isEmbed,
+            "gencl:fixed gencl:top-0": !isIHeart && showExpandView,
             // Apply fixed positioning from top 48px, if it's mobile and iheart(brand)
             "gencl:fixed gencl:top-12": isIHeart && !isDesktop,
           },
