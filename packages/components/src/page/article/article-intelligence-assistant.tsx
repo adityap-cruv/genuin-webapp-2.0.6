@@ -34,6 +34,18 @@ const ARTICLE_INTELLIGENCE_CSS = `
       transform 180ms ease;
   }
 
+  /* The collapsed composer uses its shadow as the visual boundary. Keep only its idle edge
+     transparent; expanded conversations retain the input's neutral border. */
+  [data-slot="article-intelligence-assistant"][data-phase="idle"]
+    [data-slot="intelligence-chat-input"] > div {
+    border-color: transparent !important;
+  }
+
+  [data-slot="article-intelligence-assistant"]:not([data-phase="idle"])
+    [data-slot="intelligence-chat-input"] > div:focus-within {
+    border-color: var(--gencl-secondary-150) !important;
+  }
+
   [data-slot="article-intelligence-assistant"][data-phase="answered"]
     [data-slot="intelligence-chat-message"][data-role="assistant"]:last-of-type {
     animation: gen-article-intelligence-answer-enter 280ms ease-out both;
@@ -426,7 +438,7 @@ export function ArticleIntelligenceAssistant({
       tabIndex={-1}
       className={cn(
         "gencl:absolute gencl:bottom-6 gencl:left-1/2 gencl:z-30 gencl:-translate-x-1/2",
-        "gencl:overflow-hidden gencl:rounded-xl gencl:bg-white",
+        "gencl:overflow-hidden gencl:rounded-xl gencl:bg-white gencl:outline-none",
         hidden && "gencl:pointer-events-none gencl:opacity-0"
       )}
       style={{
@@ -470,7 +482,7 @@ export function ArticleIntelligenceAssistant({
             onSend={handleSend}
             onClose={() => undefined}
             respondingLabel="Thinking…"
-            className="gencl:h-full gencl:min-h-0"
+            className="gencl:h-full gencl:min-h-0 gencl:ring-0"
           />
         </>
       ) : (

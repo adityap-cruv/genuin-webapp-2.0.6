@@ -10,11 +10,7 @@
 // Types come from the frontend contract (`@genuin/components/.../contract`) so the dummy and the real
 // backend share ONE source of truth for the shape.
 
-import type {
-  HomeLayoutManifest,
-  LayoutRow,
-  WidgetNode,
-} from "@genuin/components/page/home-dynamic/contract";
+import type { HomeLayoutManifest, LayoutRow, WidgetNode } from "@genuin/components/page/home-dynamic/contract";
 
 // Placement ids MATCH the /home page (`HOME_PLACEMENTS`), so the backend-driven home renders the
 // SAME intelligence-chat-enabled placements. Each slot has its own distinct placement.
@@ -100,10 +96,8 @@ const W_TMOBILE: WidgetNode = {
   component: "video_grid",
   dataKey: "tmobile",
   config: GRID_PLACEMENT,
-  // Mirrors the placement's own `dimensions` (2 columns x 2 rows of 16:9 tiles). Only the RATIO is
-  // used — stacked on mobile the cell is sized by this instead of the row height, so the embed never
-  // leaves dead space below itself.
-  intrinsicSize: { width: 1000, height: 568 },
+  // Three desktop columns of 9:16 tiles, tuned so Intelligence sits just inside the video edge.
+  intrinsicSize: { width: 1000, height: 582 },
   // "Musto Mobile" is a different placement: 1 column x 3 rows of 16:9 tiles at 383 x 664.
   mobileIntrinsicSize: { width: 383, height: 664 },
 };
