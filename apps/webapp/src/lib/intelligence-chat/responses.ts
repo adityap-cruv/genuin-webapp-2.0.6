@@ -23,8 +23,9 @@ const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 // Widely-available default; override with OPENROUTER_MODEL (any model your OpenRouter key can route to).
 const DEFAULT_MODEL = "openai/gpt-4o-mini";
 
-/** Lightweight context about the video the user is chatting on. Sent by the SDK. */
+/** Lightweight context about the content the user is chatting on. */
 export type IntelligenceChatContext = {
+  contentType?: "video" | "article";
   title?: string;
   description?: string;
   community?: string;
@@ -89,21 +90,28 @@ function articlePool(origin?: string): IntelligenceArticle[] {
 
 /** System prompt — role, current video context, and the article pool for grounded suggestions. */
 function systemPrompt(context: IntelligenceChatContext | undefined, pool: readonly IntelligenceArticle[]): string {
-  // Prefer the video's own attributes; fall back to the featured linkout, which is often the only
+  // Prefer the content's own attributes; fall back to the featured linkout, which is often the only
   // populated content for these placement videos.
   const heading = context?.title || context?.linkoutTitle;
   const about = context?.description || context?.linkoutDescription;
+  const isArticle = context?.contentType === "article";
 
-  const lines = [
-    "You are the AI assistant for The Foil, a premium sailing media brand.",
-    "The user is watching a video in the player. Use the video details below to answer their questions, " +
-      "including what the video is about.",
-    "You don't have the raw footage, but you DO have its title and description — treat those as " +
-      "authoritative and answer confidently from them. Do NOT say you can't see the video.",
-  ];
-  if (heading) lines.push(`Video title: "${heading}".`);
-  if (context?.community) lines.push(`Community / topic: ${context.community}.`);
-  if (about) lines.push(`What the video is about: ${truncate(about, 600)}`);
+  const lines = isArticle
+    ? [
+        "You are the AI assistant for The Foil, a premium sailing media brand.",
+        "The user is reading an article. Use the supplied article details to answer their questions about it.",
+        "Treat the article title and excerpt as authoritative and answer confidently from that context.",
+      ]
+    : [
+        "You are the AI assistant for The Foil, a premium sailing media brand.",
+        "The user is watching a video in the player. Use the video details below to answer their questions, " +
+          "including what the video is about.",
+        "You don't have the raw footage, but you DO have its title and description — treat those as " +
+          "authoritative and answer confidently from them. Do NOT say you can't see the video.",
+      ];
+  if (heading) lines.push(`${isArticle ? "Article" : "Video"} title: "${heading}".`);
+  if (context?.community) lines.push(`${isArticle ? "Source" : "Community / topic"}: ${context.community}.`);
+  if (about) lines.push(`${isArticle ? "Article excerpt" : "What the video is about"}: ${truncate(about, 600)}`);
 
   lines.push(
     "",

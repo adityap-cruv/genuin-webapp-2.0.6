@@ -50,8 +50,26 @@ export function IntelligenceArticleCard({
         "gencl:rounded-md gencl:bg-secondary-900 gencl:p-3 gencl:text-white",
         className
       )}
-      style={{ height: layout.height, ...style }}
+      style={{ position: "relative", height: layout.height, ...style }}
       {...props}>
+      {/* Whole-card hit target: the link below stays the real, focusable one (this overlay is
+          hidden from AT and the tab order), so the label and the card's padding open the article
+          too instead of being dead space. The link renders after it and is positioned, so it
+          still paints on top and keeps its own hover treatment. */}
+      <Link
+        href={article.href}
+        onClick={
+          onSelect
+            ? (event) => {
+                if (onSelect(article) !== false) event.preventDefault();
+              }
+            : undefined
+        }
+        aria-hidden="true"
+        tabIndex={-1}
+        style={{ position: "absolute", inset: 0 }}
+      />
+
       {label && (
         <Text as="p" size="body-1" weight="medium" className="gencl:mb-2">
           {label}
@@ -72,7 +90,8 @@ export function IntelligenceArticleCard({
           "gencl:group gencl:flex gencl:min-w-0 gencl:flex-1 gencl:flex-col gencl:rounded-sm",
           "gencl:text-white gencl:no-underline gencl:hover:text-secondary-100",
           imagePosition === "top" && "gencl:gap-3"
-        )}>
+        )}
+        style={{ position: "relative" }}>
         {imagePosition === "top" && <ArticleImage article={article} layout={layout} />}
 
         <Text asChild size="body-1" weight="medium">

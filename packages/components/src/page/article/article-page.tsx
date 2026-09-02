@@ -2,6 +2,8 @@
 
 import { Text } from "@genuin/ui/components/typography";
 import { cn } from "@genuin/ui/lib/utils";
+import { NavArrowButton } from "@genuin/ui/player-controls";
+import { ChevronRight, Sparkle } from "lucide-react";
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from "react";
 
 import {
@@ -14,8 +16,14 @@ import {
 } from "@genuin/components/lib/feed-view/feed-view-overlay";
 import { Link } from "@genuin/components/molecules/link";
 
-import type { Article } from "./article-data";
-import { ARTICLE_READER_MOTION_CSS, ArticleReaderBody, ArticleReaderHeader } from "./article-reader";
+import { type Article, getArticleByHref } from "./article-data";
+import { ArticleIntelligenceAssistant } from "./article-intelligence-assistant";
+import {
+  ARTICLE_READER_MOTION_CSS,
+  ARTICLE_READER_TYPOGRAPHY_CSS,
+  ArticleReaderBody,
+  ArticleReaderHeader,
+} from "./article-reader";
 
 /* -------------------------------------------------------------------------- */
 /* Genuin SDK placements — real backend-configured embeds (`data-placement-id`),   */
@@ -177,7 +185,7 @@ function ArticleCarouselPlacement() {
 function ArticleGridPlacement() {
   return (
     <div
-      className="gen-article-reveal gencl:mt-8 gencl:overflow-hidden gencl:rounded-xl"
+      className="gen-article-reveal gencl:overflow-hidden gencl:rounded-xl"
       style={{ width: "100%", aspectRatio: "1000 / 890" }}>
       <GenuinPlacement placement={PLACEMENTS.grid} />
     </div>
@@ -193,30 +201,66 @@ function ArticleGridPlacement() {
  * hook. `usehooks-ts` `useMediaQuery` returns `false` during SSR (no `window`), so gating the
  * column structure on it made the server render single-column — on a hard refresh the feed
  * dropped to the bottom and only a soft-nav (already-hydrated) showed two columns. A CSS
- * `@media` query is evaluated by the browser identically on the SSR HTML and after hydration,
- * so the layout is correct on first paint every time. Shipped as a literal `<style>` (NOT a
+ * CSS query is evaluated by the browser identically on the SSR HTML and after hydration, so the
+ * layout is correct on first paint every time. It is a `@container` (not `@media`) query so the
+ * reader also lays out correctly inside the narrow inline Feed View panel, where the viewport is
+ * wide but the article's own column is not. Shipped as a literal `<style>` (NOT a
  * `gencl:` utility) because the webapp consumes `@genuin/components` styles as a prebuilt
  * bundle where brand-new utility classes wouldn't be compiled in. Desktop breakpoint = 1024px,
  * matching `BREAKPOINTS.DESKTOP`.
  */
 const ARTICLE_LAYOUT_CSS = `
 ${ARTICLE_READER_MOTION_CSS}
-.gen-article-page { scroll-behavior: smooth; }
-.gen-article-cols { margin-top: 24px; display: flex; flex-direction: column; gap: 32px; align-items: stretch; }
-.gen-article-main { min-width: 0; }
-.gen-article-rail { width: 100%; min-width: 0; flex-shrink: 0; }
-.gen-article-finale { width: 100%; }
-@media (min-width: 1024px) {
-  .gen-article-cols { flex-direction: row; }
-  .gen-article-main { flex: 1 1 0%; }
-  .gen-article-rail { width: 340px; }
-  .gen-article-rail-sticky { position: sticky; top: 16px; }
-  /* Grid finale spans the article content column only (not the 340px rail + 32px gap),
-     left-aligned so it sits exactly within the content's left and right borders. */
-  .gen-article-finale { width: calc(100% - 372px); }
+${ARTICLE_READER_TYPOGRAPHY_CSS}
+/* The scroller is the query container for the whole reader: every breakpoint below reacts to
+   the article's OWN width, so the narrow inline Feed View panel stacks and scales correctly even
+   though the viewport behind it is wide. Pure CSS, so it is right on the first SSR paint. */
+.gen-article-page { scroll-behavior: smooth; container-type: inline-size; container-name: gen-article; }
+/* Centred reading shell — the page background stays full-bleed, the content does not. */
+.gen-article-prose.gen-article-page .gen-article-shell { width: 100%; max-width: 1224px; margin: 0 auto; padding: 24px 20px 96px; }
+.gen-article-prose.gen-article-page .gen-article-breadcrumb { display: flex; align-items: center; min-height: 40px; margin-bottom: 24px; }
+.gen-article-prose.gen-article-page .gen-article-cols { margin-top: 40px; display: flex; flex-direction: column; gap: 32px; align-items: stretch; }
+.gen-article-prose.gen-article-page .gen-article-main { min-width: 0; }
+.gen-article-prose.gen-article-page .gen-article-rail { width: 100%; min-width: 0; flex-shrink: 0; }
+.gen-article-prose.gen-article-page .gen-article-finale { width: 100%; margin-top: 56px; }
+.gen-article-nested-view { animation: gen-article-nested-enter 240ms ease-out both; }
+@keyframes gen-article-nested-enter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.gen-article-progress {
+  position: absolute; top: 0; left: 0; right: 0; height: 3px; z-index: 30;
+  background: transparent; pointer-events: none;
+}
+.gen-article-progress-fill {
+  height: 100%; width: 100%; transform-origin: 0 50%;
+  background: var(--color-primary, #1a1a1a);
+  transition: transform 90ms linear;
+}
+/* Reading comfort comes first: the generous gutters and rhythm kick in well before there is room
+   for the rail, so the inline Feed View panel (roughly 260px narrower than the /article route,
+   because the publisher sidebar takes that width) reads the same as the full page. */
+@container gen-article (min-width: 700px) {
+  .gen-article-prose.gen-article-page .gen-article-shell { padding: 32px 40px 128px; }
+  .gen-article-prose.gen-article-page .gen-article-breadcrumb { margin-bottom: 32px; }
+  .gen-article-prose.gen-article-page .gen-article-cols { margin-top: 48px; gap: 48px; }
+  .gen-article-prose.gen-article-page .gen-article-finale { margin-top: 64px; }
+}
+/* Two columns only once the rail can sit beside a still-readable measure
+   (1080 - 320 rail - 48 gap - 80 gutters = 632px of text). */
+@container gen-article (min-width: 1080px) {
+  .gen-article-prose.gen-article-page .gen-article-cols { flex-direction: row; }
+  .gen-article-prose.gen-article-page .gen-article-main { flex: 1 1 0%; }
+  .gen-article-prose.gen-article-page .gen-article-rail { width: 320px; }
+  .gen-article-prose.gen-article-page .gen-article-rail-sticky { position: sticky; top: 24px; }
+  /* Grid finale spans the article content column only (not the rail + gap), left-aligned so it
+     sits exactly within the content's left and right borders. */
+  .gen-article-prose.gen-article-page .gen-article-finale { width: calc(100% - 368px); }
 }
 @media (prefers-reduced-motion: reduce) {
+  .gen-article-nested-view { animation: none; }
   .gen-article-page { scroll-behavior: auto; }
+  .gen-article-progress-fill { transition: none; }
 }
 `;
 
@@ -230,13 +274,107 @@ ${ARTICLE_READER_MOTION_CSS}
  *  3. FINALE — a full-width GRID placement after the article ("watch more"), to keep the reader
  *              on-site once they finish.
  *
- * The two-column body split is a real CSS `@media` query (see {@link ARTICLE_LAYOUT_CSS}), not a
- * JS media-query hook, so it's correct on the first paint of an SSR refresh (no column flip).
+ * The two-column body split is a real CSS `@container` query (see {@link ARTICLE_LAYOUT_CSS}), not
+ * a JS media-query hook, so it's correct on the first paint of an SSR refresh (no column flip).
  */
+/**
+ * An article opened from this page's Intelligence assistant.
+ *
+ * Presentation is deliberately identical to the Feed View's inline article (`InlineArticleView`):
+ * a full-bleed overlay that hosts a complete `ArticlePage`, entered with the same fade, with the
+ * back control replacing the breadcrumb. The one thing it does NOT bring is the picture-in-picture
+ * video — that belongs to the Feed View's player, and this route was never opened from a feed.
+ *
+ * Nesting is what gives Back its one-step-at-a-time behaviour: each level owns exactly one child.
+ */
+function NestedArticleOverlay({ article, onBack }: { article: Article; onBack: () => void }) {
+  const viewRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      viewRef.current?.querySelector<HTMLButtonElement>('[data-slot="nested-article-back"] button')?.focus();
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
+  return (
+    <section
+      ref={viewRef}
+      data-slot="nested-intelligence-article"
+      className={cn(
+        "gen-article-nested-view",
+        "gencl:absolute gencl:inset-0 gencl:z-40 gencl:overflow-hidden gencl:bg-white gencl:text-secondary-900"
+      )}
+      aria-label={article.title}
+      tabIndex={-1}>
+      <ArticlePage
+        article={article}
+        backControl={
+          <span data-slot="nested-article-back" className="gencl:inline-flex gencl:items-center gencl:gap-3">
+            <NavArrowButton direction="left" size="lg" theme="dark" ariaLabel="Back to Intelligence" onClick={onBack} />
+            <span
+              data-slot="nested-article-intelligence-label"
+              aria-hidden="true"
+              className="gencl:inline-flex gencl:items-center gencl:gap-2 gencl:text-secondary-900">
+              <Sparkle strokeWidth={1.75} className="gencl:size-5 gencl:shrink-0" />
+              <span className="gencl:text-xs gencl:font-medium gencl:leading-4">Intelligence</span>
+            </span>
+          </span>
+        }
+      />
+    </section>
+  );
+}
+
 export function ArticlePage({ article, backControl }: { article: Article; backControl?: ReactNode }) {
   const overlayBoundsRef = useRef<HTMLDivElement>(null);
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  /**
+   * The article opened from this page's Intelligence assistant, presented exactly the way the Feed
+   * View presents one — a full-bleed overlay hosting its own `ArticlePage` — instead of a route
+   * push. Each level owns one child, so Back always steps exactly one article back.
+   */
+  const [nestedArticle, setNestedArticle] = useState<Article | null>(null);
+  const closeNestedArticle = useCallback(() => setNestedArticle(null), []);
+
+  // A slug the local article data does not know about is left to normal link navigation.
+  const openArticleInPlace = useCallback((selection: { href: string }) => {
+    const next =
+      getArticleByHref(selection.href, typeof window === "undefined" ? undefined : window.location.origin) ??
+      getArticleByHref(selection.href);
+    if (!next) return false;
+    setNestedArticle(next);
+    return true;
+  }, []);
   const [playerOverlay, setPlayerOverlay] = useState<FeedViewOverlayRequest | null>(null);
   const closePlayerOverlay = useCallback(() => setPlayerOverlay(null), []);
+  // 0..1 read progress of the article scroller, driving the hairline bar at the top of the page.
+  const [readProgress, setReadProgress] = useState(0);
+
+  useEffect(() => {
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+
+    let frame: number | null = null;
+    const measure = () => {
+      frame = null;
+      const scrollable = scroller.scrollHeight - scroller.clientHeight;
+      setReadProgress(scrollable > 0 ? Math.min(1, Math.max(0, scroller.scrollTop / scrollable)) : 0);
+    };
+    const onScroll = () => {
+      if (frame === null) frame = window.requestAnimationFrame(measure);
+    };
+
+    measure();
+    scroller.addEventListener("scroll", onScroll, { passive: true });
+    const observer = new ResizeObserver(onScroll);
+    observer.observe(scroller);
+    return () => {
+      if (frame !== null) window.cancelAnimationFrame(frame);
+      scroller.removeEventListener("scroll", onScroll);
+      observer.disconnect();
+    };
+  }, []);
 
   return (
     <FeedViewOverlayProvider onOpen={setPlayerOverlay}>
@@ -244,28 +382,48 @@ export function ArticlePage({ article, backControl }: { article: Article; backCo
         ref={overlayBoundsRef}
         data-slot="article-feed-view-boundary"
         style={{ position: "relative", height: "100%", overflow: "hidden", background: "#ffffff" }}>
+        <div className="gen-article-progress" aria-hidden="true">
+          <div className="gen-article-progress-fill" style={{ transform: `scaleX(${readProgress})` }} />
+        </div>
         <div
-          className="gen-article-page"
-          aria-hidden={playerOverlay ? true : undefined}
-          inert={playerOverlay ? true : undefined}
+          ref={scrollerRef}
+          className="gen-article-page gen-article-prose"
+          aria-hidden={playerOverlay || nestedArticle ? true : undefined}
+          inert={playerOverlay || nestedArticle ? true : undefined}
           style={{ height: "100%", overflow: playerOverlay ? "hidden" : "auto", background: "#ffffff" }}>
           <style>{ARTICLE_LAYOUT_CSS}</style>
-          <div style={{ width: "100%", padding: "32px 20px" }}>
-            {backControl ?? (
-              <Link
-                href="/home"
-                className={cn(
-                  "gencl:inline-flex gencl:items-center gencl:gap-1 gencl:text-secondary-500",
-                  "gencl:no-underline gencl:hover:text-secondary-800"
-                )}>
-                <Text as="span" size="body-2" weight="medium">
-                  ← Back to home
-                </Text>
-              </Link>
-            )}
+          <div className="gen-article-shell">
+            <div className="gen-article-breadcrumb">
+              {backControl ?? (
+                <nav aria-label="Breadcrumb" className="gencl:min-w-0">
+                  <ol className="gencl:flex gencl:min-w-0 gencl:items-center gencl:gap-1.5">
+                    <li className="gencl:shrink-0">
+                      <Link
+                        href="/home"
+                        className={cn(
+                          "gencl:text-secondary-500 gencl:no-underline gencl:transition-colors",
+                          "gencl:hover:text-secondary-900 gencl:focus-visible:outline-none gencl:focus-visible:underline"
+                        )}>
+                        <Text as="span" size="body-2" weight="medium">
+                          Home
+                        </Text>
+                      </Link>
+                    </li>
+                    <li aria-hidden="true" className="gencl:flex gencl:shrink-0 gencl:text-secondary-400">
+                      <ChevronRight className="gencl:size-4" strokeWidth={1.75} />
+                    </li>
+                    <li aria-current="page" className="gencl:min-w-0 gencl:text-secondary-700">
+                      <Text as="span" size="body-2" weight="medium" className="gencl:block gencl:truncate">
+                        {article.title}
+                      </Text>
+                    </li>
+                  </ol>
+                </nav>
+              )}
+            </div>
 
             {/* Full-width headline block, above the hero placement. */}
-            <ArticleReaderHeader article={article} className="gencl:mt-4" />
+            <ArticleReaderHeader article={article} />
 
             {/* 1. HERO — a full-width placement is the first media the reader sees. */}
             <ArticleCarouselPlacement />
@@ -289,6 +447,16 @@ export function ArticlePage({ article, backControl }: { article: Article; backCo
             </div>
           </div>
         </div>
+
+        <ArticleIntelligenceAssistant
+          article={article}
+          hidden={Boolean(playerOverlay) || Boolean(nestedArticle)}
+          onArticleSelect={openArticleInPlace}
+        />
+
+        {nestedArticle ? (
+          <NestedArticleOverlay key={nestedArticle.slug} article={nestedArticle} onBack={closeNestedArticle} />
+        ) : null}
 
         {playerOverlay ? (
           <FeedViewOverlay request={playerOverlay} boundsRef={overlayBoundsRef} onClose={closePlayerOverlay} />

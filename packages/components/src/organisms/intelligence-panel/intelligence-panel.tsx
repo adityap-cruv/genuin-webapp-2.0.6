@@ -61,14 +61,29 @@ function FeaturedArticle({ article, layout, readMoreLabel, onSelect }: FeaturedA
         className="gencl:pointer-events-none gencl:absolute gencl:inset-0 gencl:bg-linear-to-t gencl:from-black/85 gencl:via-black/25 gencl:to-transparent"
       />
 
-      <div className="gencl:absolute gencl:inset-x-0 gencl:bottom-0 gencl:flex gencl:flex-col gencl:items-start gencl:gap-2 gencl:p-3">
+      {/* Whole-card hit target. The headline and CTA below stay the real, focusable links (this one
+          is hidden from AT and the tab order); it only makes the artwork and every other pixel of
+          the card open the article, instead of just the two small text targets. */}
+      <Link
+        href={article.href}
+        onClick={handleSelect}
+        aria-hidden="true"
+        tabIndex={-1}
+        style={{ position: "absolute", inset: 0, zIndex: 1 }}
+      />
+
+      <div
+        className="gencl:absolute gencl:inset-x-0 gencl:bottom-0 gencl:flex gencl:flex-col gencl:items-start gencl:gap-2 gencl:p-3"
+        // Empty space beside the headline falls through to the overlay; the links opt back in.
+        style={{ zIndex: 2, pointerEvents: "none" }}>
         <Link
           href={article.href}
           onClick={handleSelect}
           className={cn(
             FOCUS_CLASS,
             "gencl:max-w-3xl gencl:rounded-sm gencl:text-white gencl:no-underline gencl:hover:text-secondary-100"
-          )}>
+          )}
+          style={{ pointerEvents: "auto" }}>
           <Heading
             as="h3"
             level="headline-4"
@@ -88,7 +103,7 @@ function FeaturedArticle({ article, layout, readMoreLabel, onSelect }: FeaturedA
             "gencl:text-black gencl:no-underline",
             "gencl:transition-[filter] gencl:hover:brightness-95"
           )}
-          style={{ clipPath: layout.ctaClipPath }}>
+          style={{ clipPath: layout.ctaClipPath, pointerEvents: "auto" }}>
           <Text as="span" size="body-4" weight="medium" style={{ fontSize: layout.ctaFontSize }}>
             {readMoreLabel}
           </Text>

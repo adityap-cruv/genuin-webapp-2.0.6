@@ -66,6 +66,7 @@ export async function POST(request: NextRequest) {
   >;
   const str = (value: unknown): string | undefined => (typeof value === "string" ? value : undefined);
   const context: IntelligenceChatContext = {
+    contentType: raw.contentType === "article" ? "article" : "video",
     title: str(raw.title),
     description: str(raw.description),
     community: str(raw.community),

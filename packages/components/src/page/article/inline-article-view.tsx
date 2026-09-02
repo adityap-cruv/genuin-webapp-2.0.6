@@ -1,6 +1,7 @@
 "use client";
 
 import { NavArrowButton } from "@genuin/ui/player-controls";
+import { Sparkle } from "lucide-react";
 import { useEffect, useRef } from "react";
 
 import type { Article } from "./article-data";
@@ -45,8 +46,15 @@ export function InlineArticleView({ article, onBack }: { article: Article; onBac
       <ArticlePage
         article={article}
         backControl={
-          <span data-slot="inline-article-back" className="gencl:inline-flex">
+          <span data-slot="inline-article-back" className="gencl:inline-flex gencl:items-center gencl:gap-3">
             <NavArrowButton direction="left" size="lg" theme="dark" ariaLabel="Back to Intelligence" onClick={onBack} />
+            <span
+              data-slot="inline-article-intelligence-label"
+              aria-hidden="true"
+              className="gencl:inline-flex gencl:items-center gencl:gap-2 gencl:text-secondary-900">
+              <Sparkle strokeWidth={1.75} className="gencl:size-5 gencl:shrink-0" />
+              <span className="gencl:text-xs gencl:font-medium gencl:leading-4">Intelligence</span>
+            </span>
           </span>
         }
       />
