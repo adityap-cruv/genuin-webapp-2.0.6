@@ -62,7 +62,12 @@ const SDK_SCRIPT_SRC =
   (typeof process !== "undefined" && process.env ? process.env.NEXT_PUBLIC_GENUIN_SDK_URL : undefined) ??
   "https://media.qa.begenuin.com/sdk/2.0.5/gen_sdk.min.js";
 
-type GenuinWindow = Window & { genuin?: { init?: (config: Record<string, unknown>) => unknown } };
+type GenuinWindow = Window & {
+  genuin?: {
+    init?: (config: Record<string, unknown>) => unknown;
+    onInternal?: (event: string, listener: (payload: unknown) => void) => (() => void) | void;
+  };
+};
 
 let sdkLoadPromise: Promise<void> | null = null;
 
@@ -348,8 +353,44 @@ export function ArticlePage({ article, backControl }: { article: Article; backCo
   }, []);
   const [playerOverlay, setPlayerOverlay] = useState<FeedViewOverlayRequest | null>(null);
   const closePlayerOverlay = useCallback(() => setPlayerOverlay(null), []);
+  const [isSdkExpandViewOpen, setIsSdkExpandViewOpen] = useState(false);
   // 0..1 read progress of the article scroller, driving the hairline bar at the top of the page.
   const [readProgress, setReadProgress] = useState(0);
+
+  useEffect(() => {
+    let cancelled = false;
+    let unsubscribe: (() => void) | undefined;
+    let retry: number | undefined;
+    let attempts = 0;
+
+    const register = () => {
+      if (cancelled) return;
+      const genuin = (window as GenuinWindow).genuin;
+      if (!genuin?.onInternal) {
+        // The SDK global can become ready just after the script's load event.
+        if (attempts++ < 40) retry = window.setTimeout(register, 200);
+        return;
+      }
+
+      const off = genuin.onInternal("onExpandViewChanged", (raw: unknown) => {
+        // Internal SDK events arrive as `{ type, payload, ... }`; accept the direct boolean too
+        // so this remains compatible with older bundles during a rolling SDK deployment.
+        const expanded = typeof raw === "boolean" ? raw : (raw as { payload?: unknown } | null | undefined)?.payload;
+        if (typeof expanded === "boolean") setIsSdkExpandViewOpen(expanded);
+      });
+      if (typeof off === "function") unsubscribe = off;
+    };
+
+    loadGenuinSdk()
+      .then(register)
+      .catch(() => undefined);
+
+    return () => {
+      cancelled = true;
+      if (retry) window.clearTimeout(retry);
+      unsubscribe?.();
+    };
+  }, []);
 
   useEffect(() => {
     const scroller = scrollerRef.current;
@@ -450,7 +491,7 @@ export function ArticlePage({ article, backControl }: { article: Article; backCo
 
         <ArticleIntelligenceAssistant
           article={article}
-          hidden={Boolean(playerOverlay) || Boolean(nestedArticle)}
+          hidden={Boolean(playerOverlay) || Boolean(nestedArticle) || isSdkExpandViewOpen}
           onArticleSelect={openArticleInPlace}
         />
 

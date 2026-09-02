@@ -206,6 +206,10 @@ function CenteredMessage({ children }: { children: ReactNode }) {
 }
 
 const HOME_MOTION_CSS = `
+/* Home's mobile top bar is fixed at z-index 9. Keep the SDK full view above it without
+   changing the shared player or affecting expand views on other pages. */
+[data-genuin-overlay-host][data-portal-key="expand-view"] { z-index: 50 !important; }
+
 .gen-home-motion { scroll-behavior: smooth; }
 .gen-home-row {
   opacity: 0;
