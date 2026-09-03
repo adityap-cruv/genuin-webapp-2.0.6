@@ -171,6 +171,7 @@ export const TAG_STRATEGIES: Record<string, TagStrategyEntry> = {
     gateOnUnmute: true,
     singleHitWaterfall: true,
     servedStatically: true,
+    feedLoopEnabled: false,
   },
   "6a3ba4395df1fee89bf0b2e7": { gateOnUnmute: true },
   "6a3aa8244da8cd92d289cc72": { gateOnUnmute: true },
