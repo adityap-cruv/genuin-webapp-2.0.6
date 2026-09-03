@@ -98,8 +98,8 @@ const W_TMOBILE: WidgetNode = {
   config: GRID_PLACEMENT,
   // Three desktop columns of 9:16 tiles, tuned so Intelligence sits just inside the video edge.
   intrinsicSize: { width: 1000, height: 582 },
-  // "Musto Mobile" is a different placement: 1 column x 3 rows of 16:9 tiles at 383 x 664.
-  mobileIntrinsicSize: { width: 383, height: 664 },
+  // Three stacked 1:1 mobile tiles plus the placement's two 8px gaps at the authored 383px width.
+  mobileIntrinsicSize: { width: 383, height: 1165 },
 };
 const W_RELEVANT_NEWS: WidgetNode = {
   type: "widget",
