@@ -567,28 +567,28 @@ describe("config/getFeedLoopEnabledOverride", () => {
   });
 
   it("reads true/false from the loader script params", () => {
-    setScriptParams("&feedLoopEnabled=true");
+    setScriptParams("&feed_loop=true");
     expect(config.getFeedLoopEnabledOverride()).toBe(true);
-    setScriptParams("&feedLoopEnabled=false");
+    setScriptParams("&feed_loop=false");
     expect(config.getFeedLoopEnabledOverride()).toBe(false);
   });
 
   it("accepts the 1/0 numeric forms", () => {
-    setScriptParams("&feedLoopEnabled=1");
+    setScriptParams("&feed_loop=1");
     expect(config.getFeedLoopEnabledOverride()).toBe(true);
-    setScriptParams("&feedLoopEnabled=0");
+    setScriptParams("&feed_loop=0");
     expect(config.getFeedLoopEnabledOverride()).toBe(false);
   });
 
   it("is case- and whitespace-insensitive", () => {
-    setScriptParams("&feedLoopEnabled=%20FALSE%20");
+    setScriptParams("&feed_loop=%20FALSE%20");
     expect(config.getFeedLoopEnabledOverride()).toBe(false);
   });
 
   it("ignores an unrecognised value rather than coercing it", () => {
-    setScriptParams("&feedLoopEnabled=yes");
+    setScriptParams("&feed_loop=yes");
     expect(config.getFeedLoopEnabledOverride()).toBeUndefined();
-    setScriptParams("&feedLoopEnabled=");
+    setScriptParams("&feed_loop=");
     expect(config.getFeedLoopEnabledOverride()).toBeUndefined();
   });
 
@@ -604,17 +604,17 @@ describe("config/getFeedLoopEnabledOverride", () => {
   });
 
   it("prefers the script param over the data attribute", () => {
-    setScriptParams("&feedLoopEnabled=false");
+    setScriptParams("&feed_loop=false");
     expect(config.getFeedLoopEnabledOverride("true")).toBe(false);
   });
 
   it("falls back to the data attribute when the script param is invalid", () => {
-    setScriptParams("&feedLoopEnabled=maybe");
+    setScriptParams("&feed_loop=maybe");
     expect(config.getFeedLoopEnabledOverride("false")).toBe(false);
   });
 });
 
-describe("config/getNumberOfAdSlotsOverride", () => {
+describe("config/getAdSlotsOverride", () => {
   const setScriptParams = (value: string) => {
     (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__ = value;
   };
@@ -624,51 +624,51 @@ describe("config/getNumberOfAdSlotsOverride", () => {
   });
 
   it("returns undefined when the param is absent", () => {
-    expect(config.getNumberOfAdSlotsOverride()).toBeUndefined();
+    expect(config.getAdSlotsOverride()).toBeUndefined();
   });
 
   it("reads a positive integer from the loader script params", () => {
-    setScriptParams("&numberOfAdSlots=3");
-    expect(config.getNumberOfAdSlotsOverride()).toBe(3);
+    setScriptParams("&ad_slots=3");
+    expect(config.getAdSlotsOverride()).toBe(3);
   });
 
-  it("ignores numberOfAdSlots=0 — the documented no-cap opt-out", () => {
-    setScriptParams("&numberOfAdSlots=0");
-    expect(config.getNumberOfAdSlotsOverride()).toBeUndefined();
+  it("ignores ad_slots=0 — the documented no-cap opt-out", () => {
+    setScriptParams("&ad_slots=0");
+    expect(config.getAdSlotsOverride()).toBeUndefined();
   });
 
   it("ignores a negative or fractional value", () => {
-    setScriptParams("&numberOfAdSlots=-2");
-    expect(config.getNumberOfAdSlotsOverride()).toBeUndefined();
-    setScriptParams("&numberOfAdSlots=2.5");
-    expect(config.getNumberOfAdSlotsOverride()).toBeUndefined();
+    setScriptParams("&ad_slots=-2");
+    expect(config.getAdSlotsOverride()).toBeUndefined();
+    setScriptParams("&ad_slots=2.5");
+    expect(config.getAdSlotsOverride()).toBeUndefined();
   });
 
   it("ignores a non-numeric or empty value", () => {
-    setScriptParams("&numberOfAdSlots=three");
-    expect(config.getNumberOfAdSlotsOverride()).toBeUndefined();
-    setScriptParams("&numberOfAdSlots=");
-    expect(config.getNumberOfAdSlotsOverride()).toBeUndefined();
+    setScriptParams("&ad_slots=three");
+    expect(config.getAdSlotsOverride()).toBeUndefined();
+    setScriptParams("&ad_slots=");
+    expect(config.getAdSlotsOverride()).toBeUndefined();
   });
 
   it("falls back to the data attribute when the script param is absent", () => {
-    expect(config.getNumberOfAdSlotsOverride("4")).toBe(4);
+    expect(config.getAdSlotsOverride("4")).toBe(4);
   });
 
   it("ignores an invalid data attribute", () => {
-    expect(config.getNumberOfAdSlotsOverride("many")).toBeUndefined();
-    expect(config.getNumberOfAdSlotsOverride("0")).toBeUndefined();
-    expect(config.getNumberOfAdSlotsOverride("")).toBeUndefined();
-    expect(config.getNumberOfAdSlotsOverride(null)).toBeUndefined();
+    expect(config.getAdSlotsOverride("many")).toBeUndefined();
+    expect(config.getAdSlotsOverride("0")).toBeUndefined();
+    expect(config.getAdSlotsOverride("")).toBeUndefined();
+    expect(config.getAdSlotsOverride(null)).toBeUndefined();
   });
 
   it("prefers the script param over the data attribute", () => {
-    setScriptParams("&numberOfAdSlots=2");
-    expect(config.getNumberOfAdSlotsOverride("9")).toBe(2);
+    setScriptParams("&ad_slots=2");
+    expect(config.getAdSlotsOverride("9")).toBe(2);
   });
 
   it("falls back to the data attribute when the script param is 0 (ignored)", () => {
-    setScriptParams("&numberOfAdSlots=0");
-    expect(config.getNumberOfAdSlotsOverride("5")).toBe(5);
+    setScriptParams("&ad_slots=0");
+    expect(config.getAdSlotsOverride("5")).toBe(5);
   });
 });

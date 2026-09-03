@@ -70,7 +70,7 @@ vi.mock("../strategies/StrategyProvider", () => ({
     gateOnUnmute: false,
     adsDisabled: false,
     servedStatically: false,
-    numberOfAdSlots: 0,
+    adSlots: 0,
   })),
 }));
 
@@ -552,20 +552,20 @@ describe("FeedProvider", () => {
     mockUseTagDetails.mockReturnValue({ tagId: "tag-1" });
   });
 
-  describe("numberOfAdSlots cap", () => {
-    const strategies = (numberOfAdSlots: number) => ({
+  describe("adSlots cap", () => {
+    const strategies = (adSlots: number) => ({
       adBreakEnabled: false,
       gateOnUnmute: false,
       adsDisabled: false,
       servedStatically: false,
-      numberOfAdSlots,
+      adSlots,
     });
 
     /** Five raw reels in, so every cap case has room on both sides. */
     const FIVE_REELS = [{ type: "reel" }, { type: "reel" }, { type: "reel" }, { type: "reel" }, { type: "reel" }];
 
-    async function renderWithCap(numberOfAdSlots: number, reels: unknown[] = FIVE_REELS): Promise<void> {
-      mockUseStrategy.mockReturnValue(strategies(numberOfAdSlots));
+    async function renderWithCap(adSlots: number, reels: unknown[] = FIVE_REELS): Promise<void> {
+      mockUseStrategy.mockReturnValue(strategies(adSlots));
       mockCreateFeedGenerator.mockReturnValue(vi.fn().mockResolvedValue(reels));
       render();
       await act(async () => {

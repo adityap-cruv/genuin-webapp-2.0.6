@@ -53,19 +53,16 @@ export default function FeedTree({
   onDismiss,
   dataGiv,
   dataFeedLoopEnabled,
-  dataNumberOfAdSlots,
+  dataAdSlots,
 }: {
   onDismiss: () => void;
   dataGiv: string | null;
   dataFeedLoopEnabled: string | null;
-  dataNumberOfAdSlots: string | null;
+  dataAdSlots: string | null;
 }): React.JSX.Element {
   return (
     <FullScreenProvider>
-      <StrategyProvider
-        dataGiv={dataGiv}
-        dataFeedLoopEnabled={dataFeedLoopEnabled}
-        dataNumberOfAdSlots={dataNumberOfAdSlots}>
+      <StrategyProvider dataGiv={dataGiv} dataFeedLoopEnabled={dataFeedLoopEnabled} dataAdSlots={dataAdSlots}>
         <GenAIProvider>
           <PlayerProvider>
             <FeedProvider>

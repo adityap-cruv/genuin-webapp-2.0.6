@@ -211,7 +211,7 @@ describe("FeedTree", () => {
           onDismiss,
           dataGiv: null,
           dataFeedLoopEnabled: null,
-          dataNumberOfAdSlots: null,
+          dataAdSlots: null,
           ...props,
         })
       );
