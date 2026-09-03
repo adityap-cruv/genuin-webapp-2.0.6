@@ -70,6 +70,7 @@ vi.mock("../strategies/StrategyProvider", () => ({
     gateOnUnmute: false,
     adsDisabled: false,
     servedStatically: false,
+    numberOfAdSlots: 0,
   })),
 }));
 
@@ -549,5 +550,60 @@ describe("FeedProvider", () => {
     expect(mockCreateFeedGenerator).toHaveBeenCalled();
 
     mockUseTagDetails.mockReturnValue({ tagId: "tag-1" });
+  });
+
+  describe("numberOfAdSlots cap", () => {
+    const strategies = (numberOfAdSlots: number) => ({
+      adBreakEnabled: false,
+      gateOnUnmute: false,
+      adsDisabled: false,
+      servedStatically: false,
+      numberOfAdSlots,
+    });
+
+    /** Five raw reels in, so every cap case has room on both sides. */
+    const FIVE_REELS = [{ type: "reel" }, { type: "reel" }, { type: "reel" }, { type: "reel" }, { type: "reel" }];
+
+    async function renderWithCap(numberOfAdSlots: number, reels: unknown[] = FIVE_REELS): Promise<void> {
+      mockUseStrategy.mockReturnValue(strategies(numberOfAdSlots));
+      mockCreateFeedGenerator.mockReturnValue(vi.fn().mockResolvedValue(reels));
+      render();
+      await act(async () => {
+        await Promise.resolve();
+      });
+    }
+
+    it("shows every available entry when the cap is 0 (existing behaviour)", async () => {
+      await renderWithCap(0);
+      expect(captured.entries.length).toBe(5);
+    });
+
+    it("trims the feed when the cap is below the available count", async () => {
+      await renderWithCap(2);
+      expect(captured.entries.length).toBe(2);
+    });
+
+    it("keeps a cap of 1 down to a single entry", async () => {
+      await renderWithCap(1);
+      expect(captured.entries.length).toBe(1);
+    });
+
+    it("shows all available entries when the cap exceeds them, without duplicating", async () => {
+      await renderWithCap(10);
+      expect(captured.entries.length).toBe(5);
+      // Ids stay unique — no entry is repeated to reach the requested count.
+      const ids = captured.entries.map((entry) => entry.data.id);
+      expect(new Set(ids).size).toBe(5);
+    });
+
+    it("is a no-op when the cap equals the available count", async () => {
+      await renderWithCap(5);
+      expect(captured.entries.length).toBe(5);
+    });
+
+    it("keeps the leading entries in order when trimming", async () => {
+      await renderWithCap(3);
+      expect(captured.entries.map((entry) => entry.data.id)).toEqual([0, 1, 2]);
+    });
   });
 });

@@ -205,6 +205,12 @@ async function init() {
       // (resolved in StrategyProvider); this is the per-instance fallback, read
       // here where the DOM node is available. Raw string — validated downstream.
       const dataGiv = node.getAttribute("data-giv");
+      // Per-div fallbacks for the two host feed params. The page-global
+      // `feedLoopEnabled` / `numberOfAdSlots` script params win (both resolved in
+      // StrategyProvider); these are the per-instance fallbacks, read here where
+      // the DOM node is available. Raw strings — validated downstream.
+      const dataFeedLoopEnabled = node.getAttribute("data-feed-loop-enabled");
+      const dataNumberOfAdSlots = node.getAttribute("data-number-of-ad-slots");
       // Dashboard preview mode: keep this instance analytics-silent. When set,
       // TAG_INIT (and the whole Rudderstack/geoip bootstrap downstream) is
       // skipped and the widget waits for a `window.cxr.setPreviewConfig` push.
@@ -309,6 +315,8 @@ async function init() {
             instanceId={instanceId}
             preview={preview}
             dataGiv={dataGiv}
+            dataFeedLoopEnabled={dataFeedLoopEnabled}
+            dataNumberOfAdSlots={dataNumberOfAdSlots}
             shadowConfig={shadowConfig.enabled ? shadowConfig : null}
           />
         </SafeSuspense>

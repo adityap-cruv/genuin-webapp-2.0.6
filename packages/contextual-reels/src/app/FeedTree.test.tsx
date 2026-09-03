@@ -206,7 +206,15 @@ describe("FeedTree", () => {
 
   function render(props: Partial<React.ComponentProps<typeof FeedTree>> = {}): void {
     act(() => {
-      root.render(React.createElement(FeedTree, { onDismiss, dataGiv: null, ...props }));
+      root.render(
+        React.createElement(FeedTree, {
+          onDismiss,
+          dataGiv: null,
+          dataFeedLoopEnabled: null,
+          dataNumberOfAdSlots: null,
+          ...props,
+        })
+      );
     });
   }
 

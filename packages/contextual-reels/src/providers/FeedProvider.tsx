@@ -73,7 +73,7 @@ interface FeedProviderProps {
 export function FeedProvider({ children }: FeedProviderProps): ReactNode {
   const { sendEvent, setBaseEventContext, setMandatoryData } = useAnalytics();
   const { tagId } = useTagDetails();
-  const { adBreakEnabled, gateOnUnmute, adsDisabled, servedStatically } = useStrategy();
+  const { adBreakEnabled, gateOnUnmute, adsDisabled, servedStatically, numberOfAdSlots } = useStrategy();
   const { isAdBreakActive } = usePlayer();
   const [entries, setEntries] = useState<FeedEntry[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -152,7 +152,16 @@ export function FeedProvider({ children }: FeedProviderProps): ReactNode {
 
         const normalised = normaliseFeed(reels, tagId, adBreakEnabled, gateOnUnmute, adsDisabled);
 
-        setEntries(normalised);
+        // Host-supplied cap on displayed items (`numberOfAdSlots`). Applied here,
+        // after normalisation, so every downstream consumer — slide count, mount
+        // window, nav bounds, `Feed Completed`, the loop wrap point — sees one
+        // already-trimmed list. `0` means no cap (the pre-existing behaviour), and
+        // `slice` handles a cap above the available count by returning every entry,
+        // so the displayed total is always min(numberOfAdSlots, available) without
+        // ever duplicating an entry to reach the requested count.
+        const capped = numberOfAdSlots > 0 ? normalised.slice(0, numberOfAdSlots) : normalised;
+
+        setEntries(capped);
         setActiveIndex(0);
       } catch {
         if (!cancelled) setFeedFailed(true);

@@ -47,6 +47,18 @@ interface AppProps {
    * in {@link StrategyProvider}.
    */
   dataGiv?: string | null;
+  /**
+   * Raw `data-feed-loop-enabled` attribute for this instance — the per-div
+   * fallback used when the page-global `feedLoopEnabled` script param is absent.
+   * Validated in {@link StrategyProvider}.
+   */
+  dataFeedLoopEnabled?: string | null;
+  /**
+   * Raw `data-number-of-ad-slots` attribute for this instance — the per-div
+   * fallback used when the page-global `numberOfAdSlots` script param is absent.
+   * Validated in {@link StrategyProvider}.
+   */
+  dataNumberOfAdSlots?: string | null;
   /** Active Shadow DOM topology for this widget instance, or null in direct mode. */
   shadowConfig?: ShadowDomConfig | null;
 }
@@ -64,6 +76,8 @@ export default function App({
   instanceId,
   preview = false,
   dataGiv,
+  dataFeedLoopEnabled,
+  dataNumberOfAdSlots,
   shadowConfig = null,
 }: AppProps): React.JSX.Element | null {
   const [dismissed, setDismissed] = useState(false);
@@ -103,7 +117,12 @@ export default function App({
           shadowConfig={shadowConfig}>
           <SafeSuspense fallback={<FeedSkeleton />}>
             <TagDetailsGate>
-              <FeedTree onDismiss={handleDismiss} dataGiv={dataGiv ?? null} />
+              <FeedTree
+                onDismiss={handleDismiss}
+                dataGiv={dataGiv ?? null}
+                dataFeedLoopEnabled={dataFeedLoopEnabled ?? null}
+                dataNumberOfAdSlots={dataNumberOfAdSlots ?? null}
+              />
             </TagDetailsGate>
           </SafeSuspense>
         </TagDetailsProvider>
