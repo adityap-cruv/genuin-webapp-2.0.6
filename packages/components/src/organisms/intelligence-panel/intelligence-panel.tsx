@@ -2,7 +2,7 @@
 
 import { Image } from "@genuin/ui/components/image";
 import { Skeleton } from "@genuin/ui/components/skeleton";
-import { Heading, Text } from "@genuin/ui/components/typography";
+import { Text } from "@genuin/ui/components/typography";
 import { cn } from "@genuin/ui/lib/utils";
 import * as React from "react";
 
@@ -11,10 +11,8 @@ import { Link } from "@genuin/components/molecules/link";
 import { IntelligenceArticleCard } from "./intelligence-article-card";
 import { IntelligencePanelShell } from "./intelligence-panel-shell";
 import type {
-  IntelligenceArticle,
-  IntelligenceArticleSelectHandler,
   IntelligenceCssLength,
-  IntelligenceFeaturedArticleLayout,
+  IntelligenceFeaturedArticleProps,
   IntelligencePanelProps,
   IntelligencePanelSkeletonProps,
 } from "./intelligence-panel.types";
@@ -32,14 +30,15 @@ function getResponsiveGridColumns(minimumCardWidth: IntelligenceCssLength) {
   return `repeat(auto-fit, minmax(min(${toCssLength(minimumCardWidth)}, 100%), 1fr))`;
 }
 
-type FeaturedArticleProps = {
-  article: IntelligenceArticle;
-  layout: IntelligenceFeaturedArticleLayout;
-  readMoreLabel: string;
-  onSelect?: IntelligenceArticleSelectHandler;
-};
-
-function FeaturedArticle({ article, layout, readMoreLabel, onSelect }: FeaturedArticleProps) {
+export function IntelligenceFeaturedArticle({
+  article,
+  layout,
+  readMoreLabel = "Read more",
+  onSelect,
+  className,
+  style,
+  ...props
+}: IntelligenceFeaturedArticleProps) {
   const handleSelect = onSelect
     ? (event: React.MouseEvent) => {
         if (onSelect(article) !== false) event.preventDefault();
@@ -48,13 +47,17 @@ function FeaturedArticle({ article, layout, readMoreLabel, onSelect }: FeaturedA
   return (
     <article
       data-slot="intelligence-featured-article"
-      className="gencl:relative gencl:mt-2 gencl:w-full gencl:overflow-hidden gencl:rounded-md gencl:bg-secondary-200"
-      style={{ height: layout.height, clipPath: layout.clipPath }}>
+      className={cn(
+        "gencl:relative gencl:w-full gencl:max-w-full gencl:overflow-hidden gencl:rounded-md gencl:bg-secondary-200",
+        className
+      )}
+      style={{ width: layout.width, height: layout.height, clipPath: layout.clipPath, ...style }}
+      {...props}>
       <Image
         src={article.image.src}
         alt={article.image.alt}
         handleError
-        className="gencl:absolute gencl:inset-0 gencl:size-full gencl:object-cover gencl:grayscale"
+        className="gencl:absolute gencl:inset-0 gencl:size-full gencl:object-cover"
       />
       <div
         aria-hidden="true"
@@ -83,14 +86,12 @@ function FeaturedArticle({ article, layout, readMoreLabel, onSelect }: FeaturedA
             FOCUS_CLASS,
             "gencl:max-w-3xl gencl:rounded-sm gencl:text-white gencl:no-underline gencl:hover:text-secondary-100"
           )}
-          style={{ pointerEvents: "auto" }}>
-          <Heading
-            as="h3"
-            level="headline-4"
-            weight="bold"
-            className="gencl:line-clamp-2 gencl:text-body-0-semi-bold! gencl:font-bold!">
-            {article.title}
-          </Heading>
+          style={{ color: layout.headingTextColor, pointerEvents: "auto" }}>
+          <Text asChild size="body-0" weight="bold">
+            <h3 className="gencl:line-clamp-2" style={{ fontSize: layout.headingFontSize }}>
+              {article.title}
+            </h3>
+          </Text>
         </Link>
 
         <Link
@@ -103,7 +104,12 @@ function FeaturedArticle({ article, layout, readMoreLabel, onSelect }: FeaturedA
             "gencl:text-black gencl:no-underline",
             "gencl:transition-[filter] gencl:hover:brightness-95"
           )}
-          style={{ clipPath: layout.ctaClipPath, pointerEvents: "auto" }}>
+          style={{
+            clipPath: layout.ctaClipPath,
+            backgroundColor: layout.ctaBackgroundColor,
+            color: layout.ctaTextColor,
+            pointerEvents: "auto",
+          }}>
           <Text as="span" size="body-4" weight="medium" style={{ fontSize: layout.ctaFontSize }}>
             {readMoreLabel}
           </Text>
@@ -140,11 +146,12 @@ export const IntelligencePanel = React.forwardRef<HTMLElement, IntelligencePanel
       onClose={onClose}
       className={className}
       {...props}>
-      <FeaturedArticle
+      <IntelligenceFeaturedArticle
         article={featuredArticle}
         layout={layout.featuredArticle}
         readMoreLabel={readMoreLabel}
         onSelect={onArticleSelect}
+        className="gencl:mt-2"
       />
 
       {upNextArticles.length > 0 && (
@@ -212,7 +219,7 @@ export const IntelligencePanelSkeleton = React.forwardRef<HTMLElement, Intellige
               <div
                 key={index}
                 className="gencl:flex gencl:flex-col gencl:gap-2 gencl:rounded-md gencl:bg-secondary-900 gencl:p-3"
-                style={{ height: layout.articleCard.height }}>
+                style={{ minHeight: layout.articleCard.height }}>
                 <Skeleton className="gencl:h-5 gencl:w-20 gencl:rounded-md" />
                 <Skeleton className="gencl:h-5 gencl:w-full gencl:rounded-md" />
                 <Skeleton className="gencl:h-5 gencl:w-4/5 gencl:rounded-md" />

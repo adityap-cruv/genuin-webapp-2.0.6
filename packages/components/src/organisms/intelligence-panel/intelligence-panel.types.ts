@@ -11,16 +11,35 @@ export type IntelligencePanelSize = {
 
 /** Backend-driven presentation values for the featured article. */
 export type IntelligenceFeaturedArticleLayout = {
+  /** Optional card width. Defaults to the width of its container. */
+  width?: IntelligenceCssLength;
   height: IntelligenceCssLength;
   clipPath: string;
+  /** Optional headline size. Defaults to 16 px. */
+  headingFontSize?: IntelligenceCssLength;
+  /** Optional headline color. Defaults to white. */
+  headingTextColor?: string;
   ctaFontSize: IntelligenceCssLength;
   ctaClipPath: string;
+  /** Optional CTA surface color. Defaults to the current gold surface. */
+  ctaBackgroundColor?: string;
+  /** Optional CTA text color. Defaults to black. */
+  ctaTextColor?: string;
 };
 
 /** Backend-driven presentation values shared by article-card layouts. */
 export type IntelligenceArticleCardLayout = {
+  /** Optional card width. The surrounding layout controls it when omitted. */
+  width?: IntelligenceCssLength;
+  /** Minimum card height. The card grows when its content needs more room. */
   height: IntelligenceCssLength;
   imageAspectRatio: string;
+  /** Optional card surface color. Defaults to the current dark surface. */
+  backgroundColor?: string;
+  /** Optional label and headline color. Defaults to white. */
+  textColor?: string;
+  /** Optional image-first headline size. Defaults to 16 px. */
+  imageFirstTitleFontSize?: IntelligenceCssLength;
 };
 
 /** Backend-driven presentation values for the Up Next grid. */
@@ -62,6 +81,16 @@ export type IntelligenceArticle = {
  * handled by the consumer.
  */
 export type IntelligenceArticleSelectHandler = (article: IntelligenceArticle) => boolean | void;
+
+/** Props for the reusable image-backed featured article card. */
+export interface IntelligenceFeaturedArticleProps
+  extends Omit<ComponentPropsWithoutRef<"article">, "children" | "onSelect"> {
+  article: IntelligenceArticle;
+  layout: IntelligenceFeaturedArticleLayout;
+  /** CTA text. @default "Read more" */
+  readMoreLabel?: string;
+  onSelect?: IntelligenceArticleSelectHandler;
+}
 
 /** Supported image placement within a reusable Intelligence article card. */
 export type IntelligenceArticleCardImagePosition = "top" | "bottom";

@@ -13,10 +13,18 @@ const ARTICLE_LINK_FOCUS_CLASS = cn(
   "gencl:focus-visible:ring-white gencl:focus-visible:ring-offset-2 gencl:focus-visible:ring-offset-black"
 );
 
-function ArticleImage({ article, layout }: Pick<IntelligenceArticleCardProps, "article" | "layout">) {
+function ArticleImage({
+  article,
+  layout,
+  expandToFill = false,
+}: Pick<IntelligenceArticleCardProps, "article" | "layout"> & { expandToFill?: boolean }) {
   return (
     <div
-      className="gencl:relative gencl:w-full gencl:shrink-0 gencl:overflow-hidden gencl:bg-secondary-800"
+      data-slot="intelligence-article-image"
+      className={cn(
+        "gencl:relative gencl:w-full gencl:shrink-0 gencl:overflow-hidden gencl:bg-secondary-800",
+        expandToFill && "gencl:grow"
+      )}
       style={{ aspectRatio: layout.imageAspectRatio }}>
       <Image
         src={article.image.src}
@@ -42,6 +50,8 @@ export function IntelligenceArticleCard({
   style,
   ...props
 }: IntelligenceArticleCardProps) {
+  const isImageFirst = imagePosition === "top";
+
   return (
     <article
       data-slot="intelligence-article-card"
@@ -50,7 +60,14 @@ export function IntelligenceArticleCard({
         "gencl:rounded-md gencl:bg-secondary-900 gencl:p-3 gencl:text-white",
         className
       )}
-      style={{ position: "relative", height: layout.height, ...style }}
+      style={{
+        position: "relative",
+        width: layout.width,
+        minHeight: layout.height,
+        backgroundColor: layout.backgroundColor,
+        color: layout.textColor,
+        ...style,
+      }}
       {...props}>
       {/* Whole-card hit target: the link below stays the real, focusable one (this overlay is
           hidden from AT and the tab order), so the label and the card's padding open the article
@@ -71,7 +88,7 @@ export function IntelligenceArticleCard({
       />
 
       {label && (
-        <Text as="p" size="body-1" weight="medium" className="gencl:mb-2">
+        <Text as="p" size="body-1" weight="medium">
           {label}
         </Text>
       )}
@@ -89,20 +106,16 @@ export function IntelligenceArticleCard({
           ARTICLE_LINK_FOCUS_CLASS,
           "gencl:group gencl:flex gencl:min-w-0 gencl:flex-1 gencl:flex-col gencl:rounded-sm",
           "gencl:text-white gencl:no-underline gencl:hover:text-secondary-100",
-          imagePosition === "top" && "gencl:gap-3"
+          isImageFirst ? "gencl:gap-3" : "gencl:gap-2"
         )}
-        style={{ position: "relative" }}>
-        {imagePosition === "top" && <ArticleImage article={article} layout={layout} />}
+        style={{ position: "relative", color: layout.textColor }}>
+        {isImageFirst && <ArticleImage article={article} layout={layout} />}
 
-        <Text asChild size="body-1" weight="medium">
-          <h3 className="gencl:line-clamp-2">{article.title}</h3>
+        <Text asChild size={isImageFirst ? "body-0" : "body-1"} weight="medium">
+          <h3 style={{ fontSize: isImageFirst ? layout.imageFirstTitleFontSize : undefined }}>{article.title}</h3>
         </Text>
 
-        {imagePosition === "bottom" && (
-          <div className="gencl:mt-auto">
-            <ArticleImage article={article} layout={layout} />
-          </div>
-        )}
+        {!isImageFirst && <ArticleImage article={article} layout={layout} expandToFill />}
       </Link>
     </article>
   );

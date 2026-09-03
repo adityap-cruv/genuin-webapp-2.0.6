@@ -125,8 +125,18 @@ export const NarrowContainer: Story = {
   ),
   play: async ({ canvasElement }) => {
     const grid = canvasElement.querySelector<HTMLElement>('[data-slot="intelligence-up-next-grid"]');
+    const firstCard = canvasElement.querySelector<HTMLElement>('[data-slot="intelligence-up-next-article"]');
+    const firstImage = firstCard?.querySelector<HTMLElement>('[data-slot="intelligence-article-image"]');
+
     await expect(grid).not.toBeNull();
+    await expect(firstCard).not.toBeNull();
+    await expect(firstImage).not.toBeNull();
     await expect(getComputedStyle(grid!).gridTemplateColumns.split(" ")).toHaveLength(1);
+    await expect(firstCard!.getBoundingClientRect().height).toBeGreaterThan(
+      Number(REFERENCE_LAYOUT.articleCard.height)
+    );
+    await expect(firstCard!.scrollHeight).toBe(firstCard!.clientHeight);
+    await expect(firstImage!.getBoundingClientRect().bottom).toBeLessThan(firstCard!.getBoundingClientRect().bottom);
   },
 };
 
@@ -139,14 +149,22 @@ export const BackendConfiguredLayout: Story = {
         height: 480,
       },
       featuredArticle: {
+        width: 320,
         height: 176,
         clipPath: "polygon(8% 0, 100% 0, 100% 100%, 0 100%, 0 14%)",
+        headingFontSize: 18,
+        headingTextColor: "#fef3c7",
         ctaFontSize: 11,
         ctaClipPath: "polygon(0 0, 100% 0, 88% 100%, 0 100%)",
+        ctaBackgroundColor: "#0c4a6e",
+        ctaTextColor: "#f0f9ff",
       },
       articleCard: {
+        width: 160,
         height: 208,
         imageAspectRatio: "16 / 10",
+        backgroundColor: "#e0f2fe",
+        textColor: "#0c4a6e",
       },
       upNextGrid: {
         minimumCardWidth: 160,
@@ -162,12 +180,17 @@ export const BackendConfiguredLayout: Story = {
     const canvas = within(canvasElement);
     const panel = canvasElement.querySelector<HTMLElement>('[data-slot="intelligence-panel"]');
     const featuredArticle = canvasElement.querySelector<HTMLElement>('[data-slot="intelligence-featured-article"]');
+    const featuredHeading = canvas.getByRole("heading", { name: FEATURED_ARTICLE.title });
     const firstCard = canvasElement.querySelector<HTMLElement>('[data-slot="intelligence-up-next-article"]');
+    const firstCardLink = firstCard?.querySelector<HTMLElement>("a:not([aria-hidden='true'])");
     const readMore = canvas.getByRole("link", { name: "Read more" });
 
     await expect(panel).toHaveStyle({ width: "360px", height: "480px" });
-    await expect(featuredArticle).toHaveStyle({ height: "176px" });
-    await expect(firstCard).toHaveStyle({ height: "208px" });
+    await expect(featuredArticle).toHaveStyle({ width: "320px", height: "176px" });
+    await expect(featuredHeading).toHaveStyle({ fontSize: "18px", color: "#fef3c7" });
+    await expect(readMore).toHaveStyle({ backgroundColor: "#0c4a6e", color: "#f0f9ff" });
+    await expect(firstCard).toHaveStyle({ width: "160px", minHeight: "208px", backgroundColor: "#e0f2fe" });
+    await expect(firstCardLink).toHaveStyle({ color: "#0c4a6e" });
     await expect(readMore.firstElementChild).toHaveStyle({ fontSize: "11px" });
   },
 };
