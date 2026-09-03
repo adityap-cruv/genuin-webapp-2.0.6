@@ -110,7 +110,7 @@ function RowRenderer({ row, dataMap, index }: { row: LayoutRow; dataMap: DataMap
           padding: row.padding ?? 24,
           "--gen-home-delay": `${Math.min(index, 5) * 70}ms`,
           // Read back by the mobile stylesheet as each stacked cell's minimum height.
-          "--gen-home-cell-h": `${row.height}px`,
+          "--gen-home-cell-h": `${row.mobileHeight ?? row.height}px`,
         } as CSSProperties
       }>
       <EventSurface

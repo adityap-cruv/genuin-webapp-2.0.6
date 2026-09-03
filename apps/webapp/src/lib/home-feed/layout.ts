@@ -145,6 +145,7 @@ const ROW_TOP_CATS: LayoutRow = {
   id: "row-top-cats",
   gridTemplateColumns: "minmax(0, 1fr)",
   height: 419,
+  mobileHeight: 574,
   padding: 20,
   children: [W_TOP_CATEGORIES],
 };

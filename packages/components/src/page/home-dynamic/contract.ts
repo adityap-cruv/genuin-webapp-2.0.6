@@ -67,6 +67,8 @@ export type LayoutRow = {
   gridTemplateColumns: string;
   /** Row content height in px (the renderer adds the row's own padding around this). */
   height: number;
+  /** Optional stacked-cell height below the desktop breakpoint. Defaults to `height`. */
+  mobileHeight?: number;
   /** Outer padding around the row content (px). Default 24 for older manifests. */
   padding?: number;
   /** Gap between cells (px). Default 16. */
