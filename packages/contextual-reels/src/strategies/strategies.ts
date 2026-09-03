@@ -100,6 +100,18 @@ export interface Strategies {
    */
   feedLoopEnabled: boolean;
   /**
+   * Cap on how many feed entries are displayed. `0` (the default) means no cap —
+   * the feed shows every available entry, the pre-existing behaviour. A positive
+   * value trims the feed to `min(adSlots, availableEntries)`: entries
+   * beyond the cap are dropped, and entries are NEVER duplicated to reach a cap
+   * larger than what the backend returned.
+   *
+   * Applied once at normalisation time (see `FeedProvider`), so every downstream
+   * consumer — slide count, mount window, `Feed Completed`, loop wrap point —
+   * sees the trimmed list and no separate clamping is needed.
+   */
+  adSlots: number;
+  /**
    * Viewport visibility gate: hold the feed render until the widget is actually
    * on screen, pass the impression back if it never gets there, and tear the
    * widget down if it leaves the viewport after rendering. Defaults to `false`.
@@ -164,6 +176,8 @@ export const DEFAULT_STRATEGIES: Strategies = {
   // Exception to "every feature is off": loop is the pre-existing behaviour for
   // every tag, so the safe default is on. Only an explicit per-tag `false` opts out.
   feedLoopEnabled: true,
+  // 0 = no cap: show every available entry (the pre-existing behaviour).
+  adSlots: 0,
   servedStatically: false,
   visibilityGate: false,
   visibilityGateTimeoutMs: 30_000,

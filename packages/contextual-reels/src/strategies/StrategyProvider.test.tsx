@@ -248,3 +248,183 @@ describe("strategies/StrategyProvider GIV override", () => {
     unmount(root, container);
   });
 });
+
+describe("strategies/StrategyProvider feedLoopEnabled override", () => {
+  // The 320×50 ads-only tag has `feedLoopEnabled: false` configured inline.
+  const NO_LOOP_TAG = "6a39163e92929ebec64d78ab";
+
+  afterEach(() => {
+    delete (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__;
+  });
+
+  it("turns looping off from the loader param for a tag that defaults to on", () => {
+    useTagDetailsMock.mockReturnValue({ tagId: UNKNOWN_TAG, brandId: undefined });
+    (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__ = "&feed_loop=false";
+    const handle = {} as { value: Strategies };
+    const { root, container } = mount(
+      <StrategyProvider>
+        <Consumer handle={handle} />
+      </StrategyProvider>
+    );
+
+    expect(handle.value.feedLoopEnabled).toBe(false);
+    unmount(root, container);
+  });
+
+  it("turns looping back on for a tag configured with feedLoopEnabled: false", () => {
+    useTagDetailsMock.mockReturnValue({ tagId: NO_LOOP_TAG, brandId: undefined });
+    (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__ = "&feed_loop=true";
+    const handle = {} as { value: Strategies };
+    const { root, container } = mount(
+      <StrategyProvider>
+        <Consumer handle={handle} />
+      </StrategyProvider>
+    );
+
+    expect(handle.value.feedLoopEnabled).toBe(true);
+    unmount(root, container);
+  });
+
+  it("keeps the resolved value when the param is absent", () => {
+    useTagDetailsMock.mockReturnValue({ tagId: NO_LOOP_TAG, brandId: undefined });
+    const handle = {} as { value: Strategies };
+    const { root, container } = mount(
+      <StrategyProvider>
+        <Consumer handle={handle} />
+      </StrategyProvider>
+    );
+
+    expect(handle.value.feedLoopEnabled).toBe(false);
+    unmount(root, container);
+  });
+
+  it("keeps the resolved value when the param is unrecognised", () => {
+    useTagDetailsMock.mockReturnValue({ tagId: UNKNOWN_TAG, brandId: undefined });
+    (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__ = "&feed_loop=sometimes";
+    const handle = {} as { value: Strategies };
+    const { root, container } = mount(
+      <StrategyProvider>
+        <Consumer handle={handle} />
+      </StrategyProvider>
+    );
+
+    // DEFAULT_STRATEGIES.feedLoopEnabled is true.
+    expect(handle.value.feedLoopEnabled).toBe(true);
+    unmount(root, container);
+  });
+
+  it("falls back to the data-feed-loop prop", () => {
+    useTagDetailsMock.mockReturnValue({ tagId: UNKNOWN_TAG, brandId: undefined });
+    const handle = {} as { value: Strategies };
+    const { root, container } = mount(
+      <StrategyProvider dataFeedLoopEnabled="false">
+        <Consumer handle={handle} />
+      </StrategyProvider>
+    );
+
+    expect(handle.value.feedLoopEnabled).toBe(false);
+    unmount(root, container);
+  });
+
+  it("prefers the script param over the data attribute", () => {
+    useTagDetailsMock.mockReturnValue({ tagId: UNKNOWN_TAG, brandId: undefined });
+    (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__ = "&feed_loop=true";
+    const handle = {} as { value: Strategies };
+    const { root, container } = mount(
+      <StrategyProvider dataFeedLoopEnabled="false">
+        <Consumer handle={handle} />
+      </StrategyProvider>
+    );
+
+    expect(handle.value.feedLoopEnabled).toBe(true);
+    unmount(root, container);
+  });
+});
+
+describe("strategies/StrategyProvider adSlots override", () => {
+  afterEach(() => {
+    delete (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__;
+  });
+
+  it("defaults to 0 (no cap) when the param is absent", () => {
+    useTagDetailsMock.mockReturnValue({ tagId: UNKNOWN_TAG, brandId: undefined });
+    const handle = {} as { value: Strategies };
+    const { root, container } = mount(
+      <StrategyProvider>
+        <Consumer handle={handle} />
+      </StrategyProvider>
+    );
+
+    expect(handle.value.adSlots).toBe(0);
+    unmount(root, container);
+  });
+
+  it("reads a positive cap from the loader param", () => {
+    useTagDetailsMock.mockReturnValue({ tagId: UNKNOWN_TAG, brandId: undefined });
+    (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__ = "&ad_slots=3";
+    const handle = {} as { value: Strategies };
+    const { root, container } = mount(
+      <StrategyProvider>
+        <Consumer handle={handle} />
+      </StrategyProvider>
+    );
+
+    expect(handle.value.adSlots).toBe(3);
+    unmount(root, container);
+  });
+
+  it("keeps the no-cap default when the param is 0", () => {
+    useTagDetailsMock.mockReturnValue({ tagId: UNKNOWN_TAG, brandId: undefined });
+    (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__ = "&ad_slots=0";
+    const handle = {} as { value: Strategies };
+    const { root, container } = mount(
+      <StrategyProvider>
+        <Consumer handle={handle} />
+      </StrategyProvider>
+    );
+
+    expect(handle.value.adSlots).toBe(0);
+    unmount(root, container);
+  });
+
+  it("keeps the no-cap default when the param is invalid", () => {
+    useTagDetailsMock.mockReturnValue({ tagId: UNKNOWN_TAG, brandId: undefined });
+    (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__ = "&ad_slots=lots";
+    const handle = {} as { value: Strategies };
+    const { root, container } = mount(
+      <StrategyProvider>
+        <Consumer handle={handle} />
+      </StrategyProvider>
+    );
+
+    expect(handle.value.adSlots).toBe(0);
+    unmount(root, container);
+  });
+
+  it("falls back to the data-ad-slots prop", () => {
+    useTagDetailsMock.mockReturnValue({ tagId: UNKNOWN_TAG, brandId: undefined });
+    const handle = {} as { value: Strategies };
+    const { root, container } = mount(
+      <StrategyProvider dataAdSlots="2">
+        <Consumer handle={handle} />
+      </StrategyProvider>
+    );
+
+    expect(handle.value.adSlots).toBe(2);
+    unmount(root, container);
+  });
+
+  it("prefers the script param over the data attribute", () => {
+    useTagDetailsMock.mockReturnValue({ tagId: UNKNOWN_TAG, brandId: undefined });
+    (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__ = "&ad_slots=5";
+    const handle = {} as { value: Strategies };
+    const { root, container } = mount(
+      <StrategyProvider dataAdSlots="2">
+        <Consumer handle={handle} />
+      </StrategyProvider>
+    );
+
+    expect(handle.value.adSlots).toBe(5);
+    unmount(root, container);
+  });
+});

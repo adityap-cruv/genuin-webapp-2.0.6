@@ -52,13 +52,17 @@ const Feed = lazy(() => import("../feed/Feed").then((m) => ({ default: m.Feed })
 export default function FeedTree({
   onDismiss,
   dataGiv,
+  dataFeedLoopEnabled,
+  dataAdSlots,
 }: {
   onDismiss: () => void;
   dataGiv: string | null;
+  dataFeedLoopEnabled: string | null;
+  dataAdSlots: string | null;
 }): React.JSX.Element {
   return (
     <FullScreenProvider>
-      <StrategyProvider dataGiv={dataGiv}>
+      <StrategyProvider dataGiv={dataGiv} dataFeedLoopEnabled={dataFeedLoopEnabled} dataAdSlots={dataAdSlots}>
         <GenAIProvider>
           <PlayerProvider>
             <FeedProvider>

@@ -10,11 +10,13 @@
  *   DEFAULT_STRATEGIES → preset → brand → tag inline
  *     → traffic experiment ({@link applyExperiment})
  *     → initial-volume override (`GIV` script param, then `data-giv`)
+ *     → feed-loop override (`feed_loop` script param, then `data-feed-loop`)
+ *     → slot-count override (`ad_slots` script param, then `data-ad-slots`)
  *     → dashboard `enable_ask_question`
  */
 import { createContext, useContext, useMemo, type ReactNode } from "react";
 
-import { getInitVolumeOverride } from "@cxr/config";
+import { getFeedLoopEnabledOverride, getInitVolumeOverride, getAdSlotsOverride } from "@cxr/config";
 import { useTagDetails } from "@cxr/providers/TagDetailsProvider";
 import {
   applyExperiment,
@@ -34,6 +36,18 @@ interface StrategyProviderProps {
    * initial-volume override when the page-global `GIV` script param is absent.
    */
   dataGiv?: string | null;
+  /**
+   * Raw `data-feed-loop` attribute for this instance — the per-div
+   * fallback for the loop override when the page-global `feed_loop` script
+   * param is absent.
+   */
+  dataFeedLoopEnabled?: string | null;
+  /**
+   * Raw `data-ad-slots` attribute for this instance — the per-div
+   * fallback for the displayed-item cap when the page-global `ad_slots`
+   * script param is absent.
+   */
+  dataAdSlots?: string | null;
 }
 
 /**
@@ -49,7 +63,12 @@ interface StrategyProviderProps {
  * </StrategyProvider>
  * ```
  */
-export function StrategyProvider({ children, dataGiv }: StrategyProviderProps): ReactNode {
+export function StrategyProvider({
+  children,
+  dataGiv,
+  dataFeedLoopEnabled,
+  dataAdSlots,
+}: StrategyProviderProps): ReactNode {
   const { tagId, brandId, tagDetails } = useTagDetails();
 
   // Roll the experiment bucket once per mount (per page load): the draw is taken
@@ -71,11 +90,26 @@ export function StrategyProvider({ children, dataGiv }: StrategyProviderProps): 
     const initVolumeOverride = getInitVolumeOverride(dataGiv);
     const withVolume = initVolumeOverride === undefined ? resolved : { ...resolved, initialVolume: initVolumeOverride };
 
+    // Host-supplied loop override wins over the resolved config when present and
+    // valid. Precedence: the page-global `feed_loop` script param first,
+    // then this instance's `data-feed-loop`. An absent/invalid value
+    // leaves the tag's resolved `feedLoopEnabled` (default `true`) untouched.
+    const feedLoopOverride = getFeedLoopEnabledOverride(dataFeedLoopEnabled);
+    const withLoop = feedLoopOverride === undefined ? withVolume : { ...withVolume, feedLoopEnabled: feedLoopOverride };
+
+    // Host-supplied cap on displayed feed items. `undefined` covers both "absent"
+    // and the documented `0` opt-out, so the feed keeps showing every available
+    // item (`adSlots: 0`) in either case. FeedProvider applies the cap.
+    const slotCountOverride = getAdSlotsOverride(dataAdSlots);
+    const withSlotCount = slotCountOverride === undefined ? withLoop : { ...withLoop, adSlots: slotCountOverride };
+
     // Dashboard `enable_ask_question` wins over the strategyConfig allowlist when present
     // (drives live preview toggling); an absent key defers to the allowlist.
     const enableAskQuestion = tagDetails?.config?.enable_ask_question;
-    return typeof enableAskQuestion === "boolean" ? { ...withVolume, genAiEnabled: enableAskQuestion } : withVolume;
-  }, [tagId, brandId, dataGiv, tagDetails?.config?.enable_ask_question]);
+    return typeof enableAskQuestion === "boolean"
+      ? { ...withSlotCount, genAiEnabled: enableAskQuestion }
+      : withSlotCount;
+  }, [tagId, brandId, dataGiv, dataFeedLoopEnabled, dataAdSlots, tagDetails?.config?.enable_ask_question]);
   return <StrategyContext.Provider value={value}>{children}</StrategyContext.Provider>;
 }
 
