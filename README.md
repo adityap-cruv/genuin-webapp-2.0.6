@@ -1,4 +1,4 @@
-## Linting
+## Linting 
 
 See [LINTING.md](./docs/setup/LINTING.md) for details on the monorepo linting and ESLint setup.
 
