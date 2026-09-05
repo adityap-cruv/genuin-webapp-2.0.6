@@ -523,25 +523,33 @@ describe("suppressedEvents", () => {
     expect(suppressed.has("Video Complete")).toBe(true);
   });
 
-  // Every Infolinks ads-only prod tag (all 15, across the 5 sizes) shares the
-  // same suppression policy — they are all `type: "ads"` single-interstitial
-  // units. Asserted here so a sibling that silently loses the list is caught.
+  // Every ads-only prod tag (all 22 — 15 Infolinks + 5 managed-service across the
+  // 5 sizes, plus the 2 size-agnostic Direct IO tags) shares the same suppression
+  // policy: they are all `type: "ads"` single-interstitial units. Asserted here so
+  // a sibling that silently loses the list is caught.
   it.each([
     "6a39163e92929ebec64d78ab", // 320x50
     "6a7c45fcf3f875e5e06dadab",
     "6a7c465586d060bd42fb5ab7",
+    "6a9af76f18beaf88d7614154",
     "6a3915b692929ebec64d785e", // 320x100
     "6a7c46dcf3f875e5e06daef0",
     "6a7c46fef3f875e5e06daf19",
+    "6a9af84893b2d00fe7914d56",
     "6a3916de30e1406c10507518", // 300x250
     "6a7c4727fa1b811d815aa00f",
     "6a7c473df3f875e5e06daf87",
+    "6a9af8c45a0b2b9ea748e66b",
     "6a391708a7d9f8da7f6e56ad", // 300x600
     "6a7c476af3f875e5e06dafc1",
     "6a7c479586d060bd42fb5c3c",
+    "6a9af90f93b2d00fe7914e35",
     "6a6892e52ca77d200369fb9e", // 320x480
     "6a7c47bf86d060bd42fb5c95",
     "6a7c47d8f3f875e5e06db080",
+    "6a9afc455a0b2b9ea748e72b",
+    "6a9ba985ee6dc7773d0c42a6", // Direct IO (not size-scoped)
+    "6a9ba9b8ee6dc7773d0c42f4",
   ])("suppresses the ads-only interstitial noise events for prod tag %s", (tagId) => {
     const suppressed = getSuppressedEvents(tagId);
     // Spot-check one from each category the shared list covers.

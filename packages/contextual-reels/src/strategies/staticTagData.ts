@@ -237,6 +237,76 @@ const STATIC_TAG_LOADERS: Record<string, () => Promise<StaticTagEntry | undefine
     ]);
     return toEntry(tag.default, feed.default);
   },
+
+  // -------------------------------------------------------------------------
+  // Managed-service ads-only tags (brand 3252) — one per size. Same live-traffic
+  // warning as the block above. Unlike the -2/-3 siblings these ship their OWN
+  // feed fixture (identical brand-level Triton slots as the 320x50 anchor), so a
+  // future managed-service-only feed change cannot leak into the Infolinks tags.
+  // -------------------------------------------------------------------------
+  // 320x50-manage-service
+  "6a9af76f18beaf88d7614154": async () => {
+    const [tag, feed] = await Promise.all([
+      import("@cxr/providers/static-tag/6a9af76f18beaf88d7614154.tag.json"),
+      import("@cxr/providers/static-tag/6a9af76f18beaf88d7614154.feed.json"),
+    ]);
+    return toEntry(tag.default, feed.default);
+  },
+  // 320x100-manage-service
+  "6a9af84893b2d00fe7914d56": async () => {
+    const [tag, feed] = await Promise.all([
+      import("@cxr/providers/static-tag/6a9af84893b2d00fe7914d56.tag.json"),
+      import("@cxr/providers/static-tag/6a9af84893b2d00fe7914d56.feed.json"),
+    ]);
+    return toEntry(tag.default, feed.default);
+  },
+  // 300x250-manage-service
+  "6a9af8c45a0b2b9ea748e66b": async () => {
+    const [tag, feed] = await Promise.all([
+      import("@cxr/providers/static-tag/6a9af8c45a0b2b9ea748e66b.tag.json"),
+      import("@cxr/providers/static-tag/6a9af8c45a0b2b9ea748e66b.feed.json"),
+    ]);
+    return toEntry(tag.default, feed.default);
+  },
+  // 300x600-manage-service
+  "6a9af90f93b2d00fe7914e35": async () => {
+    const [tag, feed] = await Promise.all([
+      import("@cxr/providers/static-tag/6a9af90f93b2d00fe7914e35.tag.json"),
+      import("@cxr/providers/static-tag/6a9af90f93b2d00fe7914e35.feed.json"),
+    ]);
+    return toEntry(tag.default, feed.default);
+  },
+  // 320x480-manage-service
+  "6a9afc455a0b2b9ea748e72b": async () => {
+    const [tag, feed] = await Promise.all([
+      import("@cxr/providers/static-tag/6a9afc455a0b2b9ea748e72b.tag.json"),
+      import("@cxr/providers/static-tag/6a9afc455a0b2b9ea748e72b.feed.json"),
+    ]);
+    return toEntry(tag.default, feed.default);
+  },
+
+  // -------------------------------------------------------------------------
+  // Direct IO iHM/Infolinks Audio (Sep) — DMA + National. Not size-scoped: the
+  // name carries the buy, not a banner size (layout comes from the container
+  // px). Own tag + feed fixture each, same brand-level Triton slots. Same
+  // live-traffic warning as the blocks above.
+  // -------------------------------------------------------------------------
+  // Direct IO iHM/Infolinks Audio for Sep - DMA
+  "6a9ba985ee6dc7773d0c42a6": async () => {
+    const [tag, feed] = await Promise.all([
+      import("@cxr/providers/static-tag/6a9ba985ee6dc7773d0c42a6.tag.json"),
+      import("@cxr/providers/static-tag/6a9ba985ee6dc7773d0c42a6.feed.json"),
+    ]);
+    return toEntry(tag.default, feed.default);
+  },
+  // Direct IO iHM/Infolinks Audio for Sep - National
+  "6a9ba9b8ee6dc7773d0c42f4": async () => {
+    const [tag, feed] = await Promise.all([
+      import("@cxr/providers/static-tag/6a9ba9b8ee6dc7773d0c42f4.tag.json"),
+      import("@cxr/providers/static-tag/6a9ba9b8ee6dc7773d0c42f4.feed.json"),
+    ]);
+    return toEntry(tag.default, feed.default);
+  },
 };
 
 /**

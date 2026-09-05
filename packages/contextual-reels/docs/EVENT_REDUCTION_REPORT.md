@@ -102,7 +102,7 @@ The rest earn their place as:
   `VideoLayout` (e.g. a mixed feed), the video events would be pre-suppressed
   rather than silently doubling the ad funnel.
 - **Inventory-wide reuse** — the shared `ADS_ONLY_INTERSTITIAL_SUPPRESSED` list is
-  now attached to all 15 Infolinks ads-only prod tags (brand 3252, across 320×50 /
+  now attached to all 22 ads-only prod tags (brand 3252, across 320×50 /
   320×100 / 300×250 / 300×600 / 320×480) so the whole inventory keeps one suppression
   policy without drift; the video events also cover any tag that later takes the
   video path.
