@@ -24,8 +24,8 @@ import type { Strategies } from "@cxr/strategies/strategies";
  * here. Revenue-funnel + boot + diagnostic events are deliberately NOT listed.
  *
  * Attach via a tag's `suppressedEvents` in {@link TAG_STRATEGIES}. Shared as a
- * named list so the entire ads-only inventory (all 22 prod tags — 15 Infolinks +
- * 5 managed-service across 320×50, 320×100, 300×250, 300×600, 320×480, plus the 2
+ * named list so the entire ads-only inventory (all 23 prod tags — 15 Infolinks +
+ * 5 managed-service across 320×50, 320×100, 300×250, 300×600, 320×480, plus the 3
  * size-agnostic Direct IO tags) applies the exact same policy without drift.
  */
 const ADS_ONLY_INTERSTITIAL_SUPPRESSED: readonly string[] = [
@@ -177,11 +177,11 @@ export const TAG_STRATEGIES: Record<string, TagStrategyEntry> = {
   "6a3aa8244da8cd92d289cc72": { gateOnUnmute: true },
 
   // ===========================================================================
-  // LIVE PRODUCTION ads-only tags (brand 3252) — 22 total.
+  // LIVE PRODUCTION ads-only tags (brand 3252) — 23 total.
   //
   // The full live inventory: the Infolinks size×tag sheet (3 tags per size) plus
   // one managed-service tag per size, across the 5 supported sizes (organized in
-  // size blocks below, managed-service last within each block), plus 2 Direct IO
+  // size blocks below, managed-service last within each block), plus 3 Direct IO
   // tags that are not size-scoped (own block after the sizes). All start
   // audible at 20% on load (unmuted) and are served from static fixtures (see
   // staticTagData.ts) — skips /ad_creative and /feed (/ip_info still fires for
@@ -190,7 +190,7 @@ export const TAG_STRATEGIES: Record<string, TagStrategyEntry> = {
   // size's first (anchor) tag via their loaders in staticTagData.ts, while the
   // managed-service tags each ship their own tag + feed fixture.
   //
-  // All 22 are `type: "ads"` single-interstitial units, so every one drops the
+  // All 23 are `type: "ads"` single-interstitial units, so every one drops the
   // no-signal event vocabulary via `suppressedEvents:
   // ADS_ONLY_INTERSTITIAL_SUPPRESSED` (the shared list is defined once so the
   // whole ads-only inventory stays in sync — no per-tag drift).
@@ -373,6 +373,13 @@ export const TAG_STRATEGIES: Record<string, TagStrategyEntry> = {
     preset: "servedStatically",
     suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
   }, // Direct IO iHM/Infolinks Audio for Sep - National
+  "6a9eaf2dee6dc7773d0c5f87": {
+    initialVolume: 0.2,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // Direct IO iHM/Infolinks Audio for Sep - DMA v1 (reuses DMA feed)
 
   // Demo-only static tags (no DB entry) — served from committed fixtures with a
   // single Triton ad reel each. Same static strategy as the tags above. Sizes

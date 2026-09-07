@@ -109,6 +109,8 @@ describe("getStaticTagData", () => {
   it.each([
     ["6a9ba985ee6dc7773d0c42a6", "Direct IO iHM/Infolinks Audio for Sep - DMA"],
     ["6a9ba9b8ee6dc7773d0c42f4", "Direct IO iHM/Infolinks Audio for Sep - National"],
+    // Second DMA tag — own tag fixture, reuses the first DMA tag's feed fixture.
+    ["6a9eaf2dee6dc7773d0c5f87", "Direct IO iHM/Infolinks Audio for Sep - DMA v1"],
   ])("resolves the Direct IO tag %s from its own fixtures", async (tagId, tagName) => {
     const entry = await getStaticTagData(tagId);
     expect(entry).toBeDefined();

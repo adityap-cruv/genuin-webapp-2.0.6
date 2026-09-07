@@ -286,9 +286,10 @@ const STATIC_TAG_LOADERS: Record<string, () => Promise<StaticTagEntry | undefine
   },
 
   // -------------------------------------------------------------------------
-  // Direct IO iHM/Infolinks Audio (Sep) — DMA + National. Not size-scoped: the
-  // name carries the buy, not a banner size (layout comes from the container
-  // px). Own tag + feed fixture each, same brand-level Triton slots. Same
+  // Direct IO iHM/Infolinks Audio (Sep) — DMA + National (+ a second DMA tag).
+  // Not size-scoped: the name carries the buy, not a banner size (layout comes
+  // from the container px). Own tag fixture each, same brand-level Triton slots;
+  // the second DMA tag reuses the first DMA tag's feed fixture. Same
   // live-traffic warning as the blocks above.
   // -------------------------------------------------------------------------
   // Direct IO iHM/Infolinks Audio for Sep - DMA
@@ -304,6 +305,15 @@ const STATIC_TAG_LOADERS: Record<string, () => Promise<StaticTagEntry | undefine
     const [tag, feed] = await Promise.all([
       import("@cxr/providers/static-tag/6a9ba9b8ee6dc7773d0c42f4.tag.json"),
       import("@cxr/providers/static-tag/6a9ba9b8ee6dc7773d0c42f4.feed.json"),
+    ]);
+    return toEntry(tag.default, feed.default);
+  },
+  // Direct IO iHM/Infolinks Audio for Sep - DMA (second tag; own tag config,
+  // reuses the DMA anchor's feed fixture — identical brand-level Triton slots).
+  "6a9eaf2dee6dc7773d0c5f87": async () => {
+    const [tag, feed] = await Promise.all([
+      import("@cxr/providers/static-tag/6a9eaf2dee6dc7773d0c5f87.tag.json"),
+      import("@cxr/providers/static-tag/6a9ba985ee6dc7773d0c42a6.feed.json"),
     ]);
     return toEntry(tag.default, feed.default);
   },
