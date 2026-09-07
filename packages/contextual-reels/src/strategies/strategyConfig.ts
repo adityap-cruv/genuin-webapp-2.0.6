@@ -379,7 +379,7 @@ export const TAG_STRATEGIES: Record<string, TagStrategyEntry> = {
     feedLoopEnabled: false,
     preset: "servedStatically",
     suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
-  }, // Direct IO iHM/Infolinks Audio for Sep - DMA v1 (reuses DMA feed)
+  }, // Direct IO iHM/Infolinks Audio for Sep - DMA v1 (own tag + feed fixture)
 
   // Demo-only static tags (no DB entry) — served from committed fixtures with a
   // single Triton ad reel each. Same static strategy as the tags above. Sizes

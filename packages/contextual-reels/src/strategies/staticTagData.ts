@@ -286,10 +286,10 @@ const STATIC_TAG_LOADERS: Record<string, () => Promise<StaticTagEntry | undefine
   },
 
   // -------------------------------------------------------------------------
-  // Direct IO iHM/Infolinks Audio (Sep) — DMA + National (+ a second DMA tag).
-  // Not size-scoped: the name carries the buy, not a banner size (layout comes
-  // from the container px). Own tag fixture each, same brand-level Triton slots;
-  // the second DMA tag reuses the first DMA tag's feed fixture. Same
+  // Direct IO iHM/Infolinks Audio (Sep) — DMA + National + DMA v1. Not
+  // size-scoped: the name carries the buy, not a banner size (layout comes from
+  // the container px). Own tag + feed fixture each — the feed's DSP VAST url is
+  // keyed by brand_id/tag_id, so each tag must serve its own id. Same
   // live-traffic warning as the blocks above.
   // -------------------------------------------------------------------------
   // Direct IO iHM/Infolinks Audio for Sep - DMA
@@ -308,12 +308,14 @@ const STATIC_TAG_LOADERS: Record<string, () => Promise<StaticTagEntry | undefine
     ]);
     return toEntry(tag.default, feed.default);
   },
-  // Direct IO iHM/Infolinks Audio for Sep - DMA (second tag; own tag config,
-  // reuses the DMA anchor's feed fixture — identical brand-level Triton slots).
+  // Direct IO iHM/Infolinks Audio for Sep - DMA v1 (second DMA tag). Own tag +
+  // feed fixture: the feed's DSP VAST url is keyed by brand_id/tag_id, so it must
+  // carry THIS tag's id (…/vast/3252/6a9eaf2dee6dc7773d0c5f87), not the first
+  // DMA tag's — otherwise its ad requests would resolve against the wrong tag.
   "6a9eaf2dee6dc7773d0c5f87": async () => {
     const [tag, feed] = await Promise.all([
       import("@cxr/providers/static-tag/6a9eaf2dee6dc7773d0c5f87.tag.json"),
-      import("@cxr/providers/static-tag/6a9ba985ee6dc7773d0c42a6.feed.json"),
+      import("@cxr/providers/static-tag/6a9eaf2dee6dc7773d0c5f87.feed.json"),
     ]);
     return toEntry(tag.default, feed.default);
   },

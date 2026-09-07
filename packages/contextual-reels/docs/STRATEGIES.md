@@ -426,9 +426,10 @@ cannot leak into the Infolinks tags. Each carries
 
 Three further tags sit outside that grid — the September **Direct IO** buy, where the
 name carries the buy rather than a banner size (layout is driven by the container px,
-so nothing in the tag config encodes a size). Like the managed-service tags they ship
-their own tag fixture; the `DMA v1` tag reuses the first `DMA` tag's feed fixture
-(identical brand-level Triton slots), the other two ship their own feed:
+so nothing in the tag config encodes a size). Like the managed-service tags they each
+ship their **own tag + feed fixture** — the feed's DSP VAST `url` is keyed by
+`brand_id/tag_id`, so every tag must serve its own id (`DMA v1` cannot reuse the `DMA`
+feed or its ad requests would resolve against the wrong tag):
 
 | Tag id                     | Name                                               |
 | -------------------------- | -------------------------------------------------- |

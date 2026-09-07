@@ -109,7 +109,8 @@ describe("getStaticTagData", () => {
   it.each([
     ["6a9ba985ee6dc7773d0c42a6", "Direct IO iHM/Infolinks Audio for Sep - DMA"],
     ["6a9ba9b8ee6dc7773d0c42f4", "Direct IO iHM/Infolinks Audio for Sep - National"],
-    // Second DMA tag — own tag fixture, reuses the first DMA tag's feed fixture.
+    // Second DMA tag — own tag AND own feed fixture (the DSP VAST url is keyed by
+    // brand_id/tag_id, so it cannot reuse the first DMA tag's feed).
     ["6a9eaf2dee6dc7773d0c5f87", "Direct IO iHM/Infolinks Audio for Sep - DMA v1"],
   ])("resolves the Direct IO tag %s from its own fixtures", async (tagId, tagName) => {
     const entry = await getStaticTagData(tagId);
@@ -117,6 +118,12 @@ describe("getStaticTagData", () => {
     expect(entry!.tagConfig.tag_id).toBe(tagId);
     expect((entry!.tagConfig as { tag_name?: string }).tag_name).toBe(tagName);
     expect(entry!.feed).toHaveLength(5);
+    // The feed's DSP VAST url must be keyed by THIS tag's id — a feed carrying
+    // another tag's id would resolve its ad requests against the wrong tag.
+    for (const reel of entry!.feed) {
+      const adUrl = (reel as { video_ad?: { url?: string }[] }).video_ad?.[0]?.url ?? "";
+      expect(adUrl).toContain(`/vast/3252/${tagId}?`);
+    }
   });
 
   it("resolves undefined for a non-static tag", async () => {
