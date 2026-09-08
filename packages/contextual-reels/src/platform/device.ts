@@ -121,6 +121,8 @@ export interface NormalisedGeoIp {
   ip: string;
   lat: number | null;
   lng: number | null;
+  region: string;
+  postal: string;
 }
 
 /** Shape of the device-details object the widget snapshots once per page. */
@@ -171,6 +173,8 @@ export function enrichDeviceDetailsWithGeoIp(
     ip: safe.ip ?? safe.query ?? safe.tip ?? "",
     lat: tryFloat(safe.latitude ?? safe.lat ?? locationParts[0]),
     lng: tryFloat(safe.longitude ?? safe.lon ?? safe.lng ?? locationParts[1]),
+    region: safe.region ?? "",
+    postal: safe.postal ?? "",
   };
 
   return {

@@ -231,6 +231,13 @@ describe("services/enrichDeviceDetailsWithGeoIp", () => {
     expect(enrichDeviceDetailsWithGeoIp(baseDevice, { country_en: "USA" }).geoip.country_en).toBe("USA");
   });
 
+  it("reads region and postal, defaulting to empty strings when absent", () => {
+    expect(enrichDeviceDetailsWithGeoIp(baseDevice, { region: "Georgia" }).geoip.region).toBe("Georgia");
+    expect(enrichDeviceDetailsWithGeoIp(baseDevice, { postal: "31901" }).geoip.postal).toBe("31901");
+    expect(enrichDeviceDetailsWithGeoIp(baseDevice, {}).geoip.region).toBe("");
+    expect(enrichDeviceDetailsWithGeoIp(baseDevice, {}).geoip.postal).toBe("");
+  });
+
   it("reads ip via ip -> query -> tip", () => {
     expect(enrichDeviceDetailsWithGeoIp(baseDevice, { ip: "1.1.1.1" }).geoip.ip).toBe("1.1.1.1");
     expect(enrichDeviceDetailsWithGeoIp(baseDevice, { query: "2.2.2.2" }).geoip.ip).toBe("2.2.2.2");
@@ -278,6 +285,8 @@ describe("services/enrichDeviceDetailsWithGeoIp", () => {
       ip: "",
       lat: null,
       lng: null,
+      region: "",
+      postal: "",
     });
   });
 });
