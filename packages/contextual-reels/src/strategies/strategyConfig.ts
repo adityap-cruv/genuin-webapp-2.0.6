@@ -24,9 +24,9 @@ import type { Strategies } from "@cxr/strategies/strategies";
  * here. Revenue-funnel + boot + diagnostic events are deliberately NOT listed.
  *
  * Attach via a tag's `suppressedEvents` in {@link TAG_STRATEGIES}. Shared as a
- * named list so the entire ads-only inventory (all 23 prod tags — 15 Infolinks +
- * 5 managed-service across 320×50, 320×100, 300×250, 300×600, 320×480, plus the 3
- * size-agnostic Direct IO tags) applies the exact same policy without drift.
+ * named list so the entire ads-only inventory (all 29 prod tags — 15 Infolinks +
+ * 5 managed-service across 320×50, 320×100, 300×250, 300×600, 320×480, plus the 9
+ * Direct IO tags across 320×480 / 320×50 / 300×250) applies the same policy without drift.
  */
 const ADS_ONLY_INTERSTITIAL_SUPPRESSED: readonly string[] = [
   // Feed lifecycle — degenerate for a single static fixture entry. A
@@ -177,12 +177,12 @@ export const TAG_STRATEGIES: Record<string, TagStrategyEntry> = {
   "6a3aa8244da8cd92d289cc72": { gateOnUnmute: true },
 
   // ===========================================================================
-  // LIVE PRODUCTION ads-only tags (brand 3252) — 23 total.
+  // LIVE PRODUCTION ads-only tags (brand 3252) — 29 total.
   //
   // The full live inventory: the Infolinks size×tag sheet (3 tags per size) plus
   // one managed-service tag per size, across the 5 supported sizes (organized in
-  // size blocks below, managed-service last within each block), plus 3 Direct IO
-  // tags that are not size-scoped (own block after the sizes). All start
+  // size blocks below, managed-service last within each block), plus 9 Direct IO
+  // tags (a DMA/National/DMA-v1 trio per 320×480, 320×50, 300×250; own block after the sizes). All start
   // audible at 20% on load (unmuted) and are served from static fixtures (see
   // staticTagData.ts) — skips /ad_creative and /feed (/ip_info still fires for
   // geoip + the real client IP on the ad-URL rewrite). Each carries the same
@@ -190,7 +190,7 @@ export const TAG_STRATEGIES: Record<string, TagStrategyEntry> = {
   // size's first (anchor) tag via their loaders in staticTagData.ts, while the
   // managed-service tags each ship their own tag + feed fixture.
   //
-  // All 23 are `type: "ads"` single-interstitial units, so every one drops the
+  // All 29 are `type: "ads"` single-interstitial units, so every one drops the
   // no-signal event vocabulary via `suppressedEvents:
   // ADS_ONLY_INTERSTITIAL_SUPPRESSED` (the shared list is defined once so the
   // whole ads-only inventory stays in sync — no per-tag drift).
@@ -356,9 +356,12 @@ export const TAG_STRATEGIES: Record<string, TagStrategyEntry> = {
     suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
   }, // 320x480-manage-service
 
-  // --- Direct IO iHM/Infolinks Audio (Sep) — not size-scoped ---
-  // The name carries the buy (DMA vs National), not a banner size: layout comes
-  // from the container px, so these two sit outside the size blocks above.
+  // --- Direct IO iHM/Infolinks Audio (Sep) — 9 tags, 3 sizes ---
+  // A DMA / National / DMA v1 trio per size (320x480, 320x50, 300x250). Layout
+  // comes from the container px, so the original 320x480 trio carries size-less
+  // "…Audio for Sep - <buy>" names while the 320x50 + 300x250 trios name the
+  // size. Each ships its OWN tag + feed fixture (the feed DSP url is keyed by
+  // brand_id/tag_id — no feed reuse). Same config as every ads-only tag above.
   "6a9ba985ee6dc7773d0c42a6": {
     initialVolume: 0.2,
     singleHitWaterfall: true,
@@ -380,6 +383,50 @@ export const TAG_STRATEGIES: Record<string, TagStrategyEntry> = {
     preset: "servedStatically",
     suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
   }, // Direct IO iHM/Infolinks Audio for Sep - DMA v1 (own tag + feed fixture)
+  // 320x50 trio
+  "6aa041b7d3c90426b572a451": {
+    initialVolume: 0.2,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // 320x50 - DMA Targeted Campaign
+  "6aa041e20fc5b4b2fe4ed3c8": {
+    initialVolume: 0.2,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // 320x50 - National Campaign
+  "6aa04101d3c90426b572a379": {
+    initialVolume: 0.2,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // 320x50 - DMA Targeted Campaign V1
+  // 300x250 trio
+  "6aa0425bd3c90426b572a571": {
+    initialVolume: 0.2,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // 300x250 - DMA Targeted Campaign
+  "6aa041fbd3c90426b572a4b2": {
+    initialVolume: 0.2,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // 300x250 - National Campaign
+  "6aa04279d3c90426b572a59e": {
+    initialVolume: 0.2,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // 300x250 - DMA Targeted Campaign V1
 
   // Demo-only static tags (no DB entry) — served from committed fixtures with a
   // single Triton ad reel each. Same static strategy as the tags above. Sizes

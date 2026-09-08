@@ -404,7 +404,7 @@ All statically-served tags opt out of looping (`feedLoopEnabled: false`, inline
 alongside `preset: "servedStatically"`), so an ads-only feed rests on its last slot
 instead of replaying. They fall into two groups.
 
-#### Production ads-only tags (brand 3252) — 23 total
+#### Production ads-only tags (brand 3252) — 29 total
 
 The live ads-only inventory: the Infolinks size×tag sheet (**3 tags per size**) plus
 one **managed-service** tag per size, across the 5 supported sizes. All are real DB
@@ -424,18 +424,23 @@ cannot leak into the Infolinks tags. Each carries
 | 300×600 | `6a391708a7d9f8da7f6e56ad` | `6a7c476af3f875e5e06dafc1` | `6a7c479586d060bd42fb5c3c` | `6a9af90f93b2d00fe7914e35` |
 | 320×480 | `6a6892e52ca77d200369fb9e` | `6a7c47bf86d060bd42fb5c95` | `6a7c47d8f3f875e5e06db080` | `6a9afc455a0b2b9ea748e72b` |
 
-Three further tags sit outside that grid — the September **Direct IO** buy, where the
-name carries the buy rather than a banner size (layout is driven by the container px,
-so nothing in the tag config encodes a size). Like the managed-service tags they each
-ship their **own tag + feed fixture** — the feed's DSP VAST `url` is keyed by
-`brand_id/tag_id`, so every tag must serve its own id (`DMA v1` cannot reuse the `DMA`
-feed or its ad requests would resolve against the wrong tag):
+Nine further tags sit outside that grid — the September **Direct IO** buy: a
+**DMA / National / DMA v1** trio for each of three sizes (320×480, 320×50, 300×250).
+Layout is driven by the container px, so the original 320×480 trio carries size-less
+`…Audio for Sep - <buy>` names while the 320×50 + 300×250 trios name the size. Like the
+managed-service tags they each ship their **own tag + feed fixture** — the feed's DSP
+VAST `url` is keyed by `brand_id/tag_id`, so **every tag serves its own id** (no feed
+reuse; another tag's feed would resolve its ad requests against the wrong tag):
 
-| Tag id                     | Name                                               |
-| -------------------------- | -------------------------------------------------- |
-| `6a9ba985ee6dc7773d0c42a6` | `Direct IO iHM/Infolinks Audio for Sep - DMA`      |
-| `6a9ba9b8ee6dc7773d0c42f4` | `Direct IO iHM/Infolinks Audio for Sep - National` |
-| `6a9eaf2dee6dc7773d0c5f87` | `Direct IO iHM/Infolinks Audio for Sep - DMA v1`   |
+| Size    | DMA                        | National                   | DMA v1                     |
+| ------- | -------------------------- | -------------------------- | -------------------------- |
+| 320×480 | `6a9ba985ee6dc7773d0c42a6` | `6a9ba9b8ee6dc7773d0c42f4` | `6a9eaf2dee6dc7773d0c5f87` |
+| 320×50  | `6aa041b7d3c90426b572a451` | `6aa041e20fc5b4b2fe4ed3c8` | `6aa04101d3c90426b572a379` |
+| 300×250 | `6aa0425bd3c90426b572a571` | `6aa041fbd3c90426b572a4b2` | `6aa04279d3c90426b572a59e` |
+
+The 320×480 trio's tag names are `Direct IO iHM/Infolinks Audio for Sep - DMA` /
+`- National` / `- DMA v1`; the 320×50 and 300×250 trios are named
+`<size> - DMA Targeted Campaign` / `- National Campaign` / `- DMA Targeted Campaign V1`.
 
 > ⚠️ **Production tags — never test on local or in automation.** These are live in
 > real traffic; rendering or requesting an ad against any of them inflates that tag's
@@ -444,7 +449,7 @@ feed or its ad requests would resolve against the wrong tag):
 > only network-safe sandbox tag is `6a1fd43b45aec54862ed235d` — see the source comment
 > blocks in `strategyConfig.ts` and `staticTagData.ts`.
 
-All 23 additionally carry `suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED`
+All 29 additionally carry `suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED`
 (see [Suppressed analytics events](#suppressed-analytics-events-suppressedevents)) —
 they are all `type: "ads"` single-interstitial units, so the whole ads-only inventory
 shares one suppression policy via the shared list, no per-tag drift.
@@ -623,7 +628,7 @@ constants, not raw strings, so a typo is a compile error:
 ```
 
 The shared `ADS_ONLY_INTERSTITIAL_SUPPRESSED` list (feed/swipe/embed + video
-churn) is defined once in `strategyConfig.ts` and attached to all 23 ads-only prod
+churn) is defined once in `strategyConfig.ts` and attached to all 29 ads-only prod
 tags, so the whole inventory keeps the exact same policy without drift.
 
 ### Never suppress these
@@ -637,19 +642,21 @@ dropping a diagnostic blinds an open investigation.
 
 ### Currently opted in
 
-All 23 ads-only prod tags (brand 3252) carry `ADS_ONLY_INTERSTITIAL_SUPPRESSED`
-— the full inventory listed in [Production ads-only tags](#production-ads-only-tags-brand-3252--23-total):
+All 29 ads-only prod tags (brand 3252) carry `ADS_ONLY_INTERSTITIAL_SUPPRESSED`
+— the full inventory listed in [Production ads-only tags](#production-ads-only-tags-brand-3252--29-total):
 
-| Tags                                                                        | Size    | List                               |
-| --------------------------------------------------------------------------- | ------- | ---------------------------------- |
-| `6a39163e…78ab`, `6a7c45fc…dadab`, `6a7c4655…5ab7`, `6a9af76f…4154`         | 320×50  | `ADS_ONLY_INTERSTITIAL_SUPPRESSED` |
-| `6a3915b6…785e`, `6a7c46dc…daef0`, `6a7c46fe…daf19`, `6a9af848…4d56`        | 320×100 | `ADS_ONLY_INTERSTITIAL_SUPPRESSED` |
-| `6a3916de…7518`, `6a7c4727…aa00f`, `6a7c473d…daf87`, `6a9af8c4…e66b`        | 300×250 | `ADS_ONLY_INTERSTITIAL_SUPPRESSED` |
-| `6a391708…56ad`, `6a7c476a…dafc1`, `6a7c4795…5c3c`, `6a9af90f…4e35`         | 300×600 | `ADS_ONLY_INTERSTITIAL_SUPPRESSED` |
-| `6a6892e5…fb9e`, `6a7c47bf…5c95`, `6a7c47d8…b080`, `6a9afc45…e72b`          | 320×480 | `ADS_ONLY_INTERSTITIAL_SUPPRESSED` |
-| `6a9ba985…42a6` (DMA), `6a9ba9b8…42f4` (National), `6a9eaf2d…5f87` (DMA v1) | n/a¹    | `ADS_ONLY_INTERSTITIAL_SUPPRESSED` |
+| Tags                                                                     | Size     | List                               |
+| ------------------------------------------------------------------------ | -------- | ---------------------------------- |
+| `6a39163e…78ab`, `6a7c45fc…dadab`, `6a7c4655…5ab7`, `6a9af76f…4154`      | 320×50   | `ADS_ONLY_INTERSTITIAL_SUPPRESSED` |
+| `6a3915b6…785e`, `6a7c46dc…daef0`, `6a7c46fe…daf19`, `6a9af848…4d56`     | 320×100  | `ADS_ONLY_INTERSTITIAL_SUPPRESSED` |
+| `6a3916de…7518`, `6a7c4727…aa00f`, `6a7c473d…daf87`, `6a9af8c4…e66b`     | 300×250  | `ADS_ONLY_INTERSTITIAL_SUPPRESSED` |
+| `6a391708…56ad`, `6a7c476a…dafc1`, `6a7c4795…5c3c`, `6a9af90f…4e35`      | 300×600  | `ADS_ONLY_INTERSTITIAL_SUPPRESSED` |
+| `6a6892e5…fb9e`, `6a7c47bf…5c95`, `6a7c47d8…b080`, `6a9afc45…e72b`       | 320×480  | `ADS_ONLY_INTERSTITIAL_SUPPRESSED` |
+| `6a9ba985…42a6`, `6a9ba9b8…42f4`, `6a9eaf2d…5f87` (Direct IO DMA/Nat/v1) | 320×480¹ | `ADS_ONLY_INTERSTITIAL_SUPPRESSED` |
+| `6aa041b7…a451`, `6aa041e2…d3c8`, `6aa04101…a379` (Direct IO DMA/Nat/v1) | 320×50¹  | `ADS_ONLY_INTERSTITIAL_SUPPRESSED` |
+| `6aa0425b…a571`, `6aa041fb…a4b2`, `6aa04279…a59e` (Direct IO DMA/Nat/v1) | 300×250¹ | `ADS_ONLY_INTERSTITIAL_SUPPRESSED` |
 
-¹ The three Direct IO tags are not size-scoped — layout comes from the container px.
+¹ The nine Direct IO tags encode no size in config — layout comes from the container px; the size shown is the buy's intended slot.
 
 ---
 

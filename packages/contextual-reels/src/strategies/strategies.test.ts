@@ -523,8 +523,8 @@ describe("suppressedEvents", () => {
     expect(suppressed.has("Video Complete")).toBe(true);
   });
 
-  // Every ads-only prod tag (all 23 — 15 Infolinks + 5 managed-service across the
-  // 5 sizes, plus the 3 size-agnostic Direct IO tags) shares the same suppression
+  // Every ads-only prod tag (all 29 — 15 Infolinks + 5 managed-service across the
+  // 5 sizes, plus the 9 Direct IO tags across 320×480 / 320×50 / 300×250) shares the same suppression
   // policy: they are all `type: "ads"` single-interstitial units. Asserted here so
   // a sibling that silently loses the list is caught.
   it.each([
@@ -548,9 +548,15 @@ describe("suppressedEvents", () => {
     "6a7c47bf86d060bd42fb5c95",
     "6a7c47d8f3f875e5e06db080",
     "6a9afc455a0b2b9ea748e72b",
-    "6a9ba985ee6dc7773d0c42a6", // Direct IO (not size-scoped)
+    "6a9ba985ee6dc7773d0c42a6", // Direct IO — 320x480 trio
     "6a9ba9b8ee6dc7773d0c42f4",
     "6a9eaf2dee6dc7773d0c5f87",
+    "6aa041b7d3c90426b572a451", // Direct IO — 320x50 trio
+    "6aa041e20fc5b4b2fe4ed3c8",
+    "6aa04101d3c90426b572a379",
+    "6aa0425bd3c90426b572a571", // Direct IO — 300x250 trio
+    "6aa041fbd3c90426b572a4b2",
+    "6aa04279d3c90426b572a59e",
   ])("suppresses the ads-only interstitial noise events for prod tag %s", (tagId) => {
     const suppressed = getSuppressedEvents(tagId);
     // Spot-check one from each category the shared list covers.

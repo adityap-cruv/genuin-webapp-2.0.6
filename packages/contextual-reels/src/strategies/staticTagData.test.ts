@@ -104,14 +104,22 @@ describe("getStaticTagData", () => {
     expect(entry!.feed).toHaveLength(5);
   });
 
-  // Direct IO tags — not size-scoped (the name is the buy, not a banner size).
-  // Own tag + feed fixture each, like the managed-service tags.
+  // Direct IO tags — 9 across 3 sizes (DMA/National/DMA-v1 per size). Own tag AND
+  // own feed fixture each (the DSP VAST url is keyed by brand_id/tag_id, so a tag
+  // can never reuse another tag's feed — asserted below).
   it.each([
+    // 320x480 (original trio, size-less names)
     ["6a9ba985ee6dc7773d0c42a6", "Direct IO iHM/Infolinks Audio for Sep - DMA"],
     ["6a9ba9b8ee6dc7773d0c42f4", "Direct IO iHM/Infolinks Audio for Sep - National"],
-    // Second DMA tag — own tag AND own feed fixture (the DSP VAST url is keyed by
-    // brand_id/tag_id, so it cannot reuse the first DMA tag's feed).
     ["6a9eaf2dee6dc7773d0c5f87", "Direct IO iHM/Infolinks Audio for Sep - DMA v1"],
+    // 320x50 trio
+    ["6aa041b7d3c90426b572a451", "320x50 - DMA Targeted Campaign"],
+    ["6aa041e20fc5b4b2fe4ed3c8", "320x50 - National Campaign"],
+    ["6aa04101d3c90426b572a379", "320x50 - DMA Targeted Campaign V1"],
+    // 300x250 trio
+    ["6aa0425bd3c90426b572a571", "300x250 - DMA Targeted Campaign"],
+    ["6aa041fbd3c90426b572a4b2", "300x250 - National Campaign"],
+    ["6aa04279d3c90426b572a59e", "300x250 - DMA Targeted Campaign V1"],
   ])("resolves the Direct IO tag %s from its own fixtures", async (tagId, tagName) => {
     const entry = await getStaticTagData(tagId);
     expect(entry).toBeDefined();

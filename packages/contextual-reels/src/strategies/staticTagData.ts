@@ -286,12 +286,17 @@ const STATIC_TAG_LOADERS: Record<string, () => Promise<StaticTagEntry | undefine
   },
 
   // -------------------------------------------------------------------------
-  // Direct IO iHM/Infolinks Audio (Sep) — DMA + National + DMA v1. Not
-  // size-scoped: the name carries the buy, not a banner size (layout comes from
-  // the container px). Own tag + feed fixture each — the feed's DSP VAST url is
-  // keyed by brand_id/tag_id, so each tag must serve its own id. Same
-  // live-traffic warning as the blocks above.
+  // Direct IO iHM/Infolinks Audio (Sep) — 9 tags across 3 sizes, each size a
+  // DMA / National / DMA v1 trio (buy split: DMA & v1 50/50, National 4-way).
+  // The original 320x480 trio has size-less "…Audio for Sep - <buy>" names;
+  // the 320x50 + 300x250 trios below carry the size in the name
+  // ("<size> - <buy> Campaign"). Own tag + feed fixture EACH — the feed's DSP
+  // VAST url is keyed by brand_id/tag_id, so every tag must serve its own id
+  // (no feed reuse: another tag's feed would resolve ad requests against the
+  // wrong tag). Layout still comes from the container px. Same live-traffic
+  // warning as the blocks above.
   // -------------------------------------------------------------------------
+  // --- 320x480 ---
   // Direct IO iHM/Infolinks Audio for Sep - DMA
   "6a9ba985ee6dc7773d0c42a6": async () => {
     const [tag, feed] = await Promise.all([
@@ -316,6 +321,56 @@ const STATIC_TAG_LOADERS: Record<string, () => Promise<StaticTagEntry | undefine
     const [tag, feed] = await Promise.all([
       import("@cxr/providers/static-tag/6a9eaf2dee6dc7773d0c5f87.tag.json"),
       import("@cxr/providers/static-tag/6a9eaf2dee6dc7773d0c5f87.feed.json"),
+    ]);
+    return toEntry(tag.default, feed.default);
+  },
+  // --- 320x50 ---
+  // 320x50 - DMA Targeted Campaign
+  "6aa041b7d3c90426b572a451": async () => {
+    const [tag, feed] = await Promise.all([
+      import("@cxr/providers/static-tag/6aa041b7d3c90426b572a451.tag.json"),
+      import("@cxr/providers/static-tag/6aa041b7d3c90426b572a451.feed.json"),
+    ]);
+    return toEntry(tag.default, feed.default);
+  },
+  // 320x50 - National Campaign
+  "6aa041e20fc5b4b2fe4ed3c8": async () => {
+    const [tag, feed] = await Promise.all([
+      import("@cxr/providers/static-tag/6aa041e20fc5b4b2fe4ed3c8.tag.json"),
+      import("@cxr/providers/static-tag/6aa041e20fc5b4b2fe4ed3c8.feed.json"),
+    ]);
+    return toEntry(tag.default, feed.default);
+  },
+  // 320x50 - DMA Targeted Campaign V1
+  "6aa04101d3c90426b572a379": async () => {
+    const [tag, feed] = await Promise.all([
+      import("@cxr/providers/static-tag/6aa04101d3c90426b572a379.tag.json"),
+      import("@cxr/providers/static-tag/6aa04101d3c90426b572a379.feed.json"),
+    ]);
+    return toEntry(tag.default, feed.default);
+  },
+  // --- 300x250 ---
+  // 300x250 - DMA Targeted Campaign
+  "6aa0425bd3c90426b572a571": async () => {
+    const [tag, feed] = await Promise.all([
+      import("@cxr/providers/static-tag/6aa0425bd3c90426b572a571.tag.json"),
+      import("@cxr/providers/static-tag/6aa0425bd3c90426b572a571.feed.json"),
+    ]);
+    return toEntry(tag.default, feed.default);
+  },
+  // 300x250 - National Campaign
+  "6aa041fbd3c90426b572a4b2": async () => {
+    const [tag, feed] = await Promise.all([
+      import("@cxr/providers/static-tag/6aa041fbd3c90426b572a4b2.tag.json"),
+      import("@cxr/providers/static-tag/6aa041fbd3c90426b572a4b2.feed.json"),
+    ]);
+    return toEntry(tag.default, feed.default);
+  },
+  // 300x250 - DMA Targeted Campaign V1
+  "6aa04279d3c90426b572a59e": async () => {
+    const [tag, feed] = await Promise.all([
+      import("@cxr/providers/static-tag/6aa04279d3c90426b572a59e.tag.json"),
+      import("@cxr/providers/static-tag/6aa04279d3c90426b572a59e.feed.json"),
     ]);
     return toEntry(tag.default, feed.default);
   },
