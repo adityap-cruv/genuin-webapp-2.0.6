@@ -50,8 +50,8 @@ export function Category({ variant, className, onItemClick, ...restProps }: Cate
     return;
   }
 
-  // One initial per row the expanded sidebar lists — never the communities nested inside them,
-  // which stay behind their own closed accordion. Hovering the rail reveals the real list.
+  // Represent each category with its first community's real image. The category initial remains
+  // the accessible fallback when that community has no image or the image cannot be loaded.
   if (variant === "collapsed") {
     return (
       <div className={cn(accordionVariants({ variant }), className)}>
@@ -59,7 +59,7 @@ export function Category({ variant, className, onItemClick, ...restProps }: Cate
           <div key={index} title={cat.category} className="gencl:flex gencl:justify-center gencl:py-1">
             <Avatar
               isAvatar={false}
-              imageUrl=""
+              imageUrl={cat.communities[0]?.dp || ""}
               alt={cat.category}
               fallback={getFirstInitial(cat.category)}
               size="xs"
