@@ -55,6 +55,12 @@ const CommentsDialog = lazy(() =>
   }))
 );
 
+const IntelligenceChatSheet = lazy(() =>
+  import("@genuin/components/organisms/intelligence-chat/intelligence-chat-sheet").then((m) => ({
+    default: m.IntelligenceChatSheet,
+  }))
+);
+
 type BrandLayoutType = "default" | "iheart" | "ted" | "walmart" | "grubhub";
 
 // Utility functions
@@ -458,6 +464,7 @@ const SharedActions = memo(function SharedActions({
 }) {
   const { isDesignSystemV2Linkouts } = useEmbedConfigs();
   const { hasContentType, openContentType, closeContentType } = useSheetState();
+  const { showExpandView } = usePlayerContext();
   const { video, group, community } = postDetails;
   if (!video || !community || !group) return null;
   // Mobile action-rail linkout button: tap toggles the in-player linkout
@@ -504,7 +511,28 @@ const SharedActions = memo(function SharedActions({
         showLinkout={showLinkoutAction}
         linkoutThumbnail={linkoutThumbnail ?? video.linkouts?.[0]?.links?.find((l: any) => l.image)?.image}
         isLinkoutsOpen={hasContentType("linkouts")}
+        showIntelligence={!isDesktop && showExpandView}
+        isIntelligenceOpen={hasContentType("intelligence")}
         actionWrapper={{
+          // Mobile Intelligence: tap toggles the floating chat surface. Opened at
+          // the "default" sheet state on purpose — "panel-view"/"full-view" make
+          // Player.tsx tile the video away (that's the linkout/octo behaviour),
+          // and Intelligence floats *over* the video instead.
+          INTELLIGENCE: (defaultNode) => (
+            <span
+              key="intelligence-action"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (hasContentType("intelligence")) {
+                  closeContentType("intelligence");
+                } else {
+                  closeContentType("linkouts");
+                  openContentType("intelligence", "inside", "default");
+                }
+              }}>
+              {defaultNode}
+            </span>
+          ),
           LINKOUT: (defaultNode) => (
             <span
               key="linkout-action"
@@ -627,7 +655,11 @@ export const ExpandViewDetails = forwardRef<ExpandViewDetailsRef, ExpandViewProp
   const octoSheetRef = useRef<OctoExpandSheetRef>(null);
 
   const isOctoEnabled = engagement.engagementTools.octo;
-  const { getContentTypeState, octoVisible, sheetContentPlacements } = useSheetState();
+  const { getContentTypeState, hasContentType, closeContentType, octoVisible, sheetContentPlacements } =
+    useSheetState();
+  const { showExpandView: isExpandViewOpen } = usePlayerContext();
+  const isIntelligenceOpen = hasContentType("intelligence");
+  const closeIntelligence = useCallback(() => closeContentType("intelligence"), [closeContentType]);
   const octoSheetState = getContentTypeState("octo");
   const linkoutsSheetState = getContentTypeState("linkouts");
   const isActiveOctoSheet = isOctoEnabled && (octoSheetState === "panel-view" || octoSheetState === "full-view");
@@ -774,6 +806,27 @@ export const ExpandViewDetails = forwardRef<ExpandViewDetailsRef, ExpandViewProp
               />
             )}
           </div>
+
+          {/* Mobile Intelligence bottom sheet — same DynamicSheet host as the Octo
+              sheet above, wrapping the same chat panel as the desktop right rail.
+              Lazy: the chunk loads on the first tap of the sparkle action, never
+              on plain feed browsing. */}
+          {!isDesktop && isActive && isExpandViewOpen && brandLayoutType !== "iheart" && isIntelligenceOpen && (
+            <SafeSuspense fallback={null} errorFallback={null}>
+              <IntelligenceChatSheet
+                isOpen={isIntelligenceOpen}
+                videoId={video.id}
+                videoContext={{
+                  title: video.attributes?.title ?? undefined,
+                  description: video.attributes?.description ?? undefined,
+                  community: postDetails.community?.name ?? postDetails.group?.name ?? undefined,
+                  linkoutTitle: video.linkouts?.[0]?.links?.[0]?.title ?? undefined,
+                  linkoutDescription: video.linkouts?.[0]?.links?.[0]?.description ?? undefined,
+                }}
+                onClose={closeIntelligence}
+              />
+            </SafeSuspense>
+          )}
 
           {/* In-player linkout: always on mobile, on desktop only for "inside"
               placement. Desktop "outside" lives in <DesktopRightPanels>; V2 desktop

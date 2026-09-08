@@ -15,7 +15,6 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 
-import { SIDEBAR_WIDTH_VAR } from "@genuin/components/lib/constants";
 import {
   HOME_FEED_VIEW_EVENT,
   HOME_FULL_VIEW_EVENT,
@@ -200,6 +199,7 @@ export function FeedViewOverlay({
     let frame = 0;
     let portalObserver: MutationObserver | null = null;
     let contentObserver: MutationObserver | null = null;
+    let boundsObserver: ResizeObserver | null = null;
     let host: HTMLElement | null = null;
     let portalContainer: HTMLElement | null = null;
     let feedStageStyle: HTMLStyleElement | null = null;
@@ -209,7 +209,7 @@ export function FeedViewOverlay({
     let revealed = false;
 
     const mountFeedStageStyle = () => {
-      if (!host?.shadowRoot || feedStageStyle) return;
+      if (!host || feedStageStyle) return;
       feedStageStyle = document.createElement("style");
       feedStageStyle.dataset.feedView = "true";
       feedStageStyle.textContent = `
@@ -236,7 +236,7 @@ export function FeedViewOverlay({
           pointer-events: auto !important;
         }
       `;
-      host.shadowRoot.appendChild(feedStageStyle);
+      (host.shadowRoot ?? document.head).appendChild(feedStageStyle);
     };
 
     const restoreFullView = () => {
@@ -279,8 +279,12 @@ export function FeedViewOverlay({
     };
 
     const attachToSdkPortal = (): boolean => {
-      host = document.querySelector<HTMLElement>('[data-genuin-overlay-host][data-portal-key="expand-view"]');
-      portalContainer = host?.shadowRoot?.querySelector<HTMLElement>("[data-portal-container]") ?? null;
+      host =
+        document.querySelector<HTMLElement>('[data-genuin-overlay-host][data-portal-key="expand-view"]') ??
+        document.querySelector<HTMLElement>('[data-genuin-light-portal-host][data-portal-key="expand-view"]') ??
+        document.querySelector<HTMLElement>('[data-genuin-root-portal][data-portal-key="expand-view"]') ??
+        document.querySelector<HTMLElement>("body > .gen-sdk-root-portal.gen-sdk-expand-view");
+      portalContainer = host?.shadowRoot?.querySelector<HTMLElement>("[data-portal-container]") ?? host;
       if (!host || !portalContainer) return false;
 
       portalObserver?.disconnect();
@@ -348,6 +352,12 @@ export function FeedViewOverlay({
       portalObserver = new MutationObserver(attachToSdkPortal);
       portalObserver.observe(document.body, { childList: true, subtree: true });
     }
+    if (boundsRef.current && typeof ResizeObserver !== "undefined") {
+      // The Home sidebar changes the section width without firing a window resize. The Home-owned
+      // boundary is therefore the source of truth for its one active SDK portal.
+      boundsObserver = new ResizeObserver(applyFeedBounds);
+      boundsObserver.observe(boundsRef.current);
+    }
     window.addEventListener("resize", applyFeedBounds);
     document.addEventListener(HOME_FULL_VIEW_EVENT, handleFullView);
     document.addEventListener(HOME_FEED_VIEW_EVENT, handleFeedView);
@@ -356,6 +366,7 @@ export function FeedViewOverlay({
       window.cancelAnimationFrame(frame);
       portalObserver?.disconnect();
       contentObserver?.disconnect();
+      boundsObserver?.disconnect();
       window.removeEventListener("resize", applyFeedBounds);
       document.removeEventListener(HOME_FULL_VIEW_EVENT, handleFullView);
       document.removeEventListener(HOME_FEED_VIEW_EVENT, handleFeedView);
@@ -374,17 +385,7 @@ export function FeedViewOverlay({
   // is open. Hide this page-owned action so exactly one Back button is visible across React roots.
   if (!backPosition || isInlineArticleOpen) return null;
   return createPortal(
-    <div
-      data-slot="feed-view-back"
-      style={{
-        position: "fixed",
-        ...backPosition,
-        // `backPosition` is measured from the stage bounds and is not recomputed while the side bar
-        // is hovered open, so clamp it past the rail's live width — otherwise the button keeps the
-        // collapsed-rail offset and lands on top of the expanded side bar.
-        left: `max(${backPosition.left}px, calc(var(${SIDEBAR_WIDTH_VAR}, 0px) + 24px))`,
-        zIndex: FEED_BACK_Z_INDEX,
-      }}>
+    <div data-slot="feed-view-back" style={{ position: "fixed", ...backPosition, zIndex: FEED_BACK_Z_INDEX }}>
       <NavArrowButton direction="left" size="lg" theme="dark" ariaLabel="Back" onClick={handleBack} />
     </div>,
     document.body

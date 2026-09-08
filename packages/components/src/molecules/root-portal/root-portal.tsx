@@ -83,6 +83,9 @@ export function RootPortal({
   trackVisualViewport = false,
 }: RootPortalProps) {
   const { parsedBrandColors, isEmbed, useShadowDOM, brandDetails, theme } = useBaseContext();
+  const brandId = brandDetails.brand_id;
+  const styleRef = React.useRef(style);
+  styleRef.current = style;
 
   // Resolve the shadow-host container *synchronously* during the first render for
   // the embed-overlay case. getOrCreateOverlayShadowHost is idempotent and sync, so
@@ -113,15 +116,15 @@ export function RootPortal({
         // (e.g. PipView height:0px vs ExpandView height:812px) never overwrite
         // each other.
         const { shadowRoot, host } = getOrCreateOverlayShadowHost(portalKey);
-        const brandOverlayZIndex = getOverlayZIndexByBrandId(brandDetails.brand_id);
+        const brandOverlayZIndex = getOverlayZIndexByBrandId(brandId);
         if (brandOverlayZIndex) {
           host.style.zIndex = brandOverlayZIndex;
         }
 
         const portalContainer = shadowRoot.querySelector("[data-portal-container]") as HTMLElement;
-        if (style) {
-          Object.assign(host.style, style);
-          Object.assign(portalContainer.style, style);
+        if (styleRef.current) {
+          Object.assign(host.style, styleRef.current);
+          Object.assign(portalContainer.style, styleRef.current);
         }
         setContainerElement(portalContainer);
 
@@ -135,11 +138,21 @@ export function RootPortal({
           }
         };
       } else {
-        // Default to document.body
-        setContainerElement(document.body);
+        // Light-DOM embeds still get a dedicated keyed host. Mutating `document.body` here used to
+        // make the entire first-party WebApp fixed/inset when a nested placement expanded.
+        const host = document.createElement("div");
+        host.setAttribute("data-genuin-light-portal-host", "true");
+        host.setAttribute("data-portal-container", "true");
+        host.setAttribute("data-portal-key", portalKey);
+        host.classList.add("gen-sdk-root-portal");
+        if (styleRef.current) Object.assign(host.style, styleRef.current);
+        document.body.appendChild(host);
+        setContainerElement(host);
+
+        return () => host.remove();
       }
     }
-  }, [container]);
+  }, [brandId, container, portalKey, useShadowDOM]);
 
   useEffect(() => {
     if (!containerElement) return;
@@ -147,13 +160,13 @@ export function RootPortal({
     containerElement.style.position = "fixed";
     containerElement.style.inset = "0";
     const carlistBrandIds = [2992, 2993, 3080, 3075, 2314, 2557, 2558, 2556];
-    const isCarlistBrand = carlistBrandIds.includes(brandDetails.brand_id);
+    const isCarlistBrand = carlistBrandIds.includes(brandId);
     if (isCarlistBrand) {
       containerElement.style.backgroundColor = "rgba(0, 0, 0, 0.85)";
     } else {
       containerElement?.classList.add(theme === "dark" || theme === undefined ? "gencl:bg-black" : "gencl:bg-white");
     }
-  }, [containerElement, theme]);
+  }, [brandId, containerElement, theme]);
 
   // When enabled, anchor the portal container to the live visual viewport instead
   // of the layout viewport (`inset: 0`). On iOS the keyboard shrinks the visual
@@ -189,12 +202,14 @@ export function RootPortal({
 
   if (typeof window === "undefined") return null;
   // The shadow-overlay path seeds `containerElement` synchronously above, so it
-  // renders on the first client commit (no transparent gap). The document.body /
+  // renders on the first client commit (no transparent gap). Light-DOM and
   // explicit-container paths resolve it in the effect, so they still wait one tick.
   if (!isEmbed || !containerElement) return null;
 
   const elementToRender = (
     <div
+      data-genuin-root-portal="true"
+      data-portal-key={portalKey}
       style={{
         ...parsedBrandColors,
         ...style,

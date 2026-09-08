@@ -100,7 +100,13 @@ function scheduleGenuinInit() {
   if (typeof window === "undefined" || initHandle !== null) return;
   initHandle = window.requestAnimationFrame(() => {
     initHandle = null;
-    (window as GenuinWindow).genuin?.init?.({ configuration: { player_controls: "v2" } });
+    (window as GenuinWindow).genuin?.init?.({
+      // Article placements are nested first-party WebApp roots, just like Home placements.
+      // Keep them in light DOM so global WebApp dialogs are not portalled into the first
+      // placement's shadow root and clipped to that placement's bounds.
+      useShadowDOM: false,
+      configuration: { player_controls: "v2" },
+    });
   });
 }
 

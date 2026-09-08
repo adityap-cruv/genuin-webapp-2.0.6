@@ -3,7 +3,9 @@
 import { cn } from "@genuin/ui/lib/utils";
 import { motion } from "motion/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useMediaQuery } from "usehooks-ts";
 
+import { MEDIA_QUERIES } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { LinkCard, type LinkMetaData } from "@genuin/components/molecules/linkout-new/link-card";
 
 export type ContextualLinkMetaData = LinkMetaData & {
@@ -19,7 +21,7 @@ export type ContextualLinkMetaData = LinkMetaData & {
 export interface HoverLinkCardListProps {
   items: readonly ContextualLinkMetaData[];
   activeVideoId?: string | null;
-  /** Keep the item matching `activeVideoId` visually expanded and scrolled to the top. */
+  /** Keep the item matching `activeVideoId` visually expanded and scrolled to the leading edge. */
   pinActiveItemToTop?: boolean;
   showContainerBorder?: boolean;
   width?: number | string;
@@ -36,15 +38,15 @@ export interface HoverLinkCardListProps {
   onLinkClick?: (item: ContextualLinkMetaData, index: number) => void;
   /**
    * Fired when the USER changes the expanded card by scrolling the list (the card that
-   * lands at the top becomes the expanded one). Not fired for programmatic scrolls
+   * lands at the leading edge becomes the expanded one). Not fired for programmatic scrolls
    * (`activeVideoId` changes, auto-rotate, click) — use it to make the video follow the
    * list, e.g. `onActiveItemChange={(item) => playVideo(item.video_id)}`.
    */
   onActiveItemChange?: (item: ContextualLinkMetaData, index: number) => void;
   /**
    * Step scrolling: each wheel/trackpad gesture moves exactly ONE card (the next card
-   * scrolls to the top and expands) instead of free scrolling; touch scrolling expands
-   * the card nearest the top. Fires `onActiveItemChange` for every step. @default false
+   * scrolls to the leading edge and expands) instead of free scrolling; touch scrolling expands
+   * the nearest card. Fires `onActiveItemChange` for every step. @default false
    */
   stepScroll?: boolean;
 }
@@ -91,6 +93,12 @@ export function HoverLinkCardList({
   onActiveItemChange,
   stepScroll = false,
 }: HoverLinkCardListProps) {
+  // Default to the mobile presentation for SSR, then resolve the viewport before paint. This
+  // keeps the server/client markup stable without making phones briefly render compact cards.
+  const isMobile = useMediaQuery(MEDIA_QUERIES.MOBILE, {
+    defaultValue: true,
+    initializeWithValue: false,
+  });
   const orderedItems = useMemo(() => {
     const entries = items.map((item, sourceIndex) => ({
       item,
@@ -116,40 +124,59 @@ export function HoverLinkCardList({
   const tailSpace = typeof height === "number" ? Math.max(0, height - 80) : 307;
   const isControlledPinned = pinActiveItemToTop && Boolean(activeVideoId);
 
-  const alignItemToTop = useCallback((index: number) => {
+  const alignItemToStart = useCallback((index: number) => {
     const section = sectionRef.current;
-    const item = trackRef.current?.querySelector<HTMLElement>(`[data-item-index="${index}"]`);
-    if (!section || !item) return;
+    const track = trackRef.current;
+    const item = track?.querySelector<HTMLElement>(`[data-item-index="${index}"]`);
+    if (!section || !track || !item) return;
 
-    const sectionTop = section.getBoundingClientRect().top;
-    const itemTop = item.getBoundingClientRect().top;
-    const paddingTop = Number.parseFloat(getComputedStyle(section).paddingTop) || 0;
-    section.scrollTop += itemTop - sectionTop - paddingTop;
+    const isHorizontal = getComputedStyle(track).flexDirection === "row";
+    const sectionRect = section.getBoundingClientRect();
+    const itemRect = item.getBoundingClientRect();
+    const sectionStyle = getComputedStyle(section);
+
+    if (isHorizontal) {
+      const paddingLeft = Number.parseFloat(sectionStyle.paddingLeft) || 0;
+      section.scrollLeft += itemRect.left - sectionRect.left - paddingLeft;
+      return;
+    }
+
+    const paddingTop = Number.parseFloat(sectionStyle.paddingTop) || 0;
+    section.scrollTop += itemRect.top - sectionRect.top - paddingTop;
   }, []);
 
-  const scrollItemToTop = useCallback(
+  const scrollItemToStart = useCallback(
     (index: number, animate = true) => {
       const section = sectionRef.current;
-      const item = trackRef.current?.querySelector<HTMLElement>(`[data-item-index="${index}"]`);
-      if (!section || !item) return;
+      const track = trackRef.current;
+      const item = track?.querySelector<HTMLElement>(`[data-item-index="${index}"]`);
+      if (!section || !track || !item) return;
 
-      const sectionTop = section.getBoundingClientRect().top;
-      const itemTop = item.getBoundingClientRect().top;
-      const paddingTop = Number.parseFloat(getComputedStyle(section).paddingTop) || 0;
-      const maxScrollTop = Math.max(0, section.scrollHeight - section.clientHeight);
-      const rawTarget = itemTop - sectionTop - paddingTop + section.scrollTop;
-      const target = Math.max(0, Math.min(rawTarget, maxScrollTop));
+      const isHorizontal = getComputedStyle(track).flexDirection === "row";
+      const sectionRect = section.getBoundingClientRect();
+      const itemRect = item.getBoundingClientRect();
+      const sectionStyle = getComputedStyle(section);
+      const sectionStart = isHorizontal ? sectionRect.left : sectionRect.top;
+      const itemStart = isHorizontal ? itemRect.left : itemRect.top;
+      const paddingStart = Number.parseFloat(isHorizontal ? sectionStyle.paddingLeft : sectionStyle.paddingTop) || 0;
+      const currentScroll = isHorizontal ? section.scrollLeft : section.scrollTop;
+      const maxScroll = isHorizontal
+        ? Math.max(0, section.scrollWidth - section.clientWidth)
+        : Math.max(0, section.scrollHeight - section.clientHeight);
+      const rawTarget = itemStart - sectionStart - paddingStart + currentScroll;
+      const target = Math.max(0, Math.min(rawTarget, maxScroll));
 
       // Mark the upcoming scroll events as programmatic so `onScroll` doesn't treat
       // them as the user scrolling (which would re-sync the active card mid-animation).
       programmaticScrollUntilRef.current = Date.now() + (animate && !prefersReducedMotion ? 800 : 100);
 
       if (animate && !prefersReducedMotion) {
-        section.scrollTo({ top: target, behavior: "smooth" });
+        section.scrollTo(isHorizontal ? { left: target, behavior: "smooth" } : { top: target, behavior: "smooth" });
         return;
       }
 
-      section.scrollTop = target;
+      if (isHorizontal) section.scrollLeft = target;
+      else section.scrollTop = target;
     },
     [prefersReducedMotion]
   );
@@ -166,11 +193,11 @@ export function HoverLinkCardList({
 
       animationFrameRef.current = window.requestAnimationFrame(() => {
         animationFrameRef.current = window.requestAnimationFrame(() => {
-          scrollItemToTop(index);
+          scrollItemToStart(index);
         });
       });
     },
-    [scrollItemToTop]
+    [scrollItemToStart]
   );
 
   useEffect(() => {
@@ -188,19 +215,24 @@ export function HoverLinkCardList({
     if (nextIndex >= orderedItems.length || isSliding) return;
 
     const section = sectionRef.current;
+    const track = trackRef.current;
     const currentItem = trackRef.current?.querySelector<HTMLElement>(`[data-item-index="${activeIndex}"]`);
     const nextItem = trackRef.current?.querySelector<HTMLElement>(`[data-item-index="${nextIndex}"]`);
-    if (!section || !currentItem || !nextItem) return;
+    if (!section || !track || !currentItem || !nextItem) return;
 
-    const distance = nextItem.getBoundingClientRect().top - currentItem.getBoundingClientRect().top;
+    const isHorizontal = getComputedStyle(track).flexDirection === "row";
+    const currentRect = currentItem.getBoundingClientRect();
+    const nextRect = nextItem.getBoundingClientRect();
+    const distance = isHorizontal ? nextRect.left - currentRect.left : nextRect.top - currentRect.top;
     if (distance <= 0) return;
 
     if (prefersReducedMotion || normalizedDuration === 0) {
       isAutoScrollingRef.current = true;
-      section.scrollTop += distance;
+      if (isHorizontal) section.scrollLeft += distance;
+      else section.scrollTop += distance;
       setActiveIndex(nextIndex);
       animationFrameRef.current = window.requestAnimationFrame(() => {
-        alignItemToTop(nextIndex);
+        alignItemToStart(nextIndex);
         animationFrameRef.current = window.requestAnimationFrame(() => {
           isAutoScrollingRef.current = false;
         });
@@ -210,13 +242,15 @@ export function HoverLinkCardList({
 
     isAutoScrollingRef.current = true;
     setIsSliding(true);
-    const startScrollTop = section.scrollTop;
+    const startScroll = isHorizontal ? section.scrollLeft : section.scrollTop;
     const startTime = performance.now();
 
     const animateScroll = (time: number) => {
       const progress = Math.min(1, (time - startTime) / normalizedDuration);
       const easedProgress = 1 - (1 - progress) ** 3;
-      section.scrollTop = startScrollTop + distance * easedProgress;
+      const nextScroll = startScroll + distance * easedProgress;
+      if (isHorizontal) section.scrollLeft = nextScroll;
+      else section.scrollTop = nextScroll;
 
       if (progress < 1) {
         animationFrameRef.current = window.requestAnimationFrame(animateScroll);
@@ -226,7 +260,7 @@ export function HoverLinkCardList({
       setActiveIndex(nextIndex);
       setIsSliding(false);
       animationFrameRef.current = window.requestAnimationFrame(() => {
-        alignItemToTop(nextIndex);
+        alignItemToStart(nextIndex);
         animationFrameRef.current = window.requestAnimationFrame(() => {
           isAutoScrollingRef.current = false;
         });
@@ -234,7 +268,7 @@ export function HoverLinkCardList({
     };
 
     animationFrameRef.current = window.requestAnimationFrame(animateScroll);
-  }, [activeIndex, alignItemToTop, isSliding, normalizedDuration, orderedItems.length, prefersReducedMotion]);
+  }, [activeIndex, alignItemToStart, isSliding, normalizedDuration, orderedItems.length, prefersReducedMotion]);
 
   useEffect(() => {
     if (!autoRotate || isInteractionPaused || isSliding || activeIndex >= orderedItems.length - 1) return;
@@ -251,30 +285,39 @@ export function HoverLinkCardList({
     []
   );
 
-  const syncActiveCardWithScroll = useCallback((notify = false) => {
-    const section = sectionRef.current;
-    const cardElements = trackRef.current?.querySelectorAll<HTMLElement>("[data-item-index]");
-    if (!section || !cardElements?.length || isAutoScrollingRef.current) return;
+  const syncActiveCardWithScroll = useCallback(
+    (notify = false) => {
+      const section = sectionRef.current;
+      const track = trackRef.current;
+      const cardElements = track?.querySelectorAll<HTMLElement>("[data-item-index]");
+      if (!section || !track || !cardElements?.length || isAutoScrollingRef.current) return;
 
-    const contentTop =
-      section.getBoundingClientRect().top + (Number.parseFloat(getComputedStyle(section).paddingTop) || 0);
-    let closestIndex = activeIndex;
-    let closestDistance = Number.POSITIVE_INFINITY;
+      const isHorizontal = getComputedStyle(track).flexDirection === "row";
+      const sectionRect = section.getBoundingClientRect();
+      const sectionStyle = getComputedStyle(section);
+      const contentStart = isHorizontal
+        ? sectionRect.left + (Number.parseFloat(sectionStyle.paddingLeft) || 0)
+        : sectionRect.top + (Number.parseFloat(sectionStyle.paddingTop) || 0);
+      let closestIndex = activeIndex;
+      let closestDistance = Number.POSITIVE_INFINITY;
 
-    cardElements.forEach((element) => {
-      const distance = Math.abs(element.getBoundingClientRect().top - contentTop);
-      if (distance < closestDistance) {
-        closestDistance = distance;
-        closestIndex = Number(element.dataset.itemIndex);
+      cardElements.forEach((element) => {
+        const elementRect = element.getBoundingClientRect();
+        const distance = Math.abs((isHorizontal ? elementRect.left : elementRect.top) - contentStart);
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestIndex = Number(element.dataset.itemIndex);
+        }
+      });
+
+      setActiveIndex(closestIndex);
+      if (notify && closestIndex !== activeIndex) {
+        const entry = orderedItems[closestIndex];
+        if (entry) onActiveItemChange?.(entry.item, closestIndex);
       }
-    });
-
-    setActiveIndex(closestIndex);
-    if (notify && closestIndex !== activeIndex) {
-      const entry = orderedItems[closestIndex];
-      if (entry) onActiveItemChange?.(entry.item, closestIndex);
-    }
-  }, [activeIndex, orderedItems, onActiveItemChange]);
+    },
+    [activeIndex, orderedItems, onActiveItemChange]
+  );
 
   // Step scrolling — one card per wheel gesture. Registered natively (non-passive) so the
   // default free scroll can be prevented.
@@ -293,7 +336,8 @@ export function HoverLinkCardList({
   const lastStepTsRef = useRef(-Infinity);
   useEffect(() => {
     const section = sectionRef.current;
-    if (!stepScroll || !section) return;
+    const track = trackRef.current;
+    if (!stepScroll || !section || !track) return;
 
     const GESTURE_GAP_MS = 50; // quiet time (between events) that ends a gesture
     const MIN_STEP_INTERVAL_MS = 100; // never two steps closer than this (event time)
@@ -301,9 +345,12 @@ export function HoverLinkCardList({
 
     const onWheel = (event: WheelEvent) => {
       event.preventDefault();
-      if (Math.abs(event.deltaY) < MIN_DELTA) return;
+      const isHorizontal = getComputedStyle(track).flexDirection === "row";
+      const primaryDelta =
+        isHorizontal && Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+      if (Math.abs(primaryDelta) < MIN_DELTA) return;
       const ts = event.timeStamp;
-      const direction = event.deltaY > 0 ? 1 : -1;
+      const direction = primaryDelta > 0 ? 1 : -1;
       const gap = ts - lastWheelTsRef.current;
       const isNewGesture = gap > GESTURE_GAP_MS || direction !== lastWheelDirectionRef.current;
       lastWheelTsRef.current = ts;
@@ -347,7 +394,7 @@ export function HoverLinkCardList({
 
       onLinkClick?.(item, index);
     },
-    [onLinkClick, queueScrollToIndex]
+    [normalizedDuration, onLinkClick, queueScrollToIndex]
   );
 
   if (orderedItems.length === 0) return null;
@@ -357,13 +404,19 @@ export function HoverLinkCardList({
       ref={sectionRef}
       aria-label={ariaLabel}
       className={cn(
-        "gencl:box-border gencl:overflow-y-auto gencl:rounded-xl gencl:bg-white gencl:p-1",
+        // The stacked mobile/tablet home layout is a sideways, snapping card rail.
+        // `lg` and up retain the original vertical list and scrollbar.
+        "gencl:box-border gencl:overflow-x-auto gencl:overflow-y-hidden gencl:snap-x gencl:snap-mandatory",
+        "gencl:overscroll-x-contain gencl:max-lg:[scrollbar-width:none]",
+        "gencl:max-lg:[&::-webkit-scrollbar]:hidden",
+        "gencl:max-lg:h-fit!",
+        "gencl:lg:overflow-x-hidden! gencl:lg:overflow-y-auto! gencl:lg:snap-none! gencl:lg:overscroll-x-auto!",
+        "gencl:rounded-xl gencl:bg-white gencl:p-1",
         showContainerBorder && "gencl:ring-1 gencl:ring-secondary-200 gencl:ring-inset",
         className
       )}
-      // NB: no CSS scroll-snap here even in step mode — the cards change height when they
-      // expand/collapse and a mandatory snap re-snaps on every reflow, which chains into
-      // extra steps. Touch scrolling relies on the nearest-card sync instead.
+      // Horizontal snap is mobile-only; desktop intentionally stays unsnapped because
+      // expanding/collapsing cards changes their vertical positions during step scrolling.
       style={{ width, height, overflowAnchor: "none" }}
       onMouseEnter={() => {
         if (pauseOnHover) setIsInteractionPaused(true);
@@ -381,7 +434,7 @@ export function HoverLinkCardList({
       }}
       onScroll={() => {
         // Ignore our own scrolls (auto-rotate, pin-to-active, click); a real user scroll
-        // expands the card that lands at the top and reports it to the parent.
+        // expands the card that lands at the leading edge and reports it to the parent.
         if (isAutoScrollingRef.current || Date.now() < programmaticScrollUntilRef.current) return;
         if (scrollEndTimerRef.current !== null) window.clearTimeout(scrollEndTimerRef.current);
         scrollEndTimerRef.current = window.setTimeout(() => syncActiveCardWithScroll(true), 120);
@@ -389,13 +442,16 @@ export function HoverLinkCardList({
       <div
         ref={trackRef}
         data-slot="hover-link-card-track"
-        className="gencl:flex gencl:flex-col"
+        className="gencl:flex gencl:flex-row gencl:max-lg:pb-0! gencl:lg:flex-col!"
         style={{
           gap,
           paddingBottom: tailSpace,
         }}>
         {orderedItems.map(({ item, key }, index) => {
           const isActive = activeIndex === index;
+          // Phones keep every card at the same rich size while the user swipes. Wider viewports
+          // retain the existing active-expanded/rest-compact behaviour.
+          const isExpanded = isMobile || isActive;
 
           return (
             <motion.div
@@ -410,7 +466,8 @@ export function HoverLinkCardList({
               data-slot="hover-link-card-item"
               data-item-index={index}
               data-video-id={item.video_id ?? undefined}
-              data-expanded={isActive ? "true" : "false"}
+              data-expanded={isExpanded ? "true" : "false"}
+              className="gencl:w-[calc(100%_-_1.5rem)] gencl:shrink-0 gencl:snap-start gencl:lg:w-auto! gencl:lg:[scroll-snap-align:none]"
               onClick={() => selectCard(item, index)}
               onMouseEnter={() => {
                 if (pauseOnHover && !isSliding && !isControlledPinned) setActiveIndex(index);
@@ -420,10 +477,11 @@ export function HoverLinkCardList({
               }}>
               <LinkCard
                 data={item}
-                sheetState={isActive ? "expand-view" : "default"}
+                sheetState={isExpanded ? "expand-view" : "default"}
                 density="compact"
                 compactThumbnailSize={{ width: 90, height: 90 }}
                 showFullTitle
+                expandedTitleMinHeight={isMobile ? 40 : undefined}
                 theme="light"
                 ctaText={ctaText}
                 ctaLink={item.link}
@@ -433,6 +491,7 @@ export function HoverLinkCardList({
             </motion.div>
           );
         })}
+        <span aria-hidden className="gencl:w-6 gencl:shrink-0 gencl:lg:hidden" />
       </div>
     </section>
   );

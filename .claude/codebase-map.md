@@ -68,6 +68,26 @@ true` and forges `navigator.userActivation` = true on a fresh page, so it always
   (source + `utils/eventBus.test.ts`) but left in place pending team sign-off (removing it also drops
   it from the coverage set).
 
+- **`-translate-x-1/2` on an SDK-rendered ancestor silently moves descendants sideways.** Tailwind v4
+  translate utilities compile to `translate: var(--tw-translate-x) var(--tw-translate-y)` and rely on
+  `@property { inherits: false }` to keep `--tw-translate-x` from cascading. Inside the **web-sdk
+  shadow root** those `@property` registrations don't apply, so the variable becomes an ordinary
+  (inheriting) custom property: any descendant that uses a translate utility of its own picks up the
+  ancestor's `-50%`. Real case — a `fixed left-1/2 -translate-x-1/2` centred surface pushed
+  `IntelligencePanelShell`'s header (`-translate-y-1`) to `left: -155px`, so "Intelligence" vanished
+  off-screen while `getComputedStyle` still reported `visibility: visible`. **Centre with
+  `left-0 right-0 mx-auto`, not `-translate-x-1/2`, anywhere the subtree may render in the SDK
+  shadow DOM.** Verify by stripping `@property` blocks from `dist/index.css` in a test page — the
+  leak reproduces. `page/article/article-intelligence-assistant.tsx` uses `-translate-x-1/2` too;
+  it's masked there because it hides the shell header outright, but the same trap is armed.
+- **Reach for `DynamicSheet` before hand-rolling any bottom sheet.** It already owns portal /
+  absolute / inline positioning, drag + swipe-to-close, overlay, optional nav header, and
+  **content-driven sizing**: `heights: { <state>: "auto" }` makes it measure indicator + header +
+  body + footer and re-measure on every `children` change (`dynamic-sheet.tsx:239-255`), so a sheet
+  grows as content streams in. Omit `navTitle` **and** `showClose` to get no sheet chrome at all
+  (`dynamic-sheet.tsx:566`) when the body already draws its own heading. Production references:
+  `control-layer/expand-view/octo-dynamic-sheet.tsx` + `molecules/octo-panel/octo-sheet-config.ts`.
+
 ## Architecture notes
 
 <!-- Append how non-obvious systems work, with file pointers. Example shape:
@@ -164,6 +184,20 @@ true` and forges `navigator.userActivation` = true on a fresh page, so it always
   width by columns (`grid-view/grid-layout.ts`, `GRID_GAP = 8`), so a 375px-wide 2-col grid gives
   ~179px tiles → no linkout in tiles. Linkout inside the tile also renders only on the **active**
   tile (`control-layer/embed/default-embed.tsx:85`).
+
+- **Intelligence chat lives under `organisms/intelligence-chat/`** — presentational panel +
+  stateful host (`intelligence-chat-side-panel.tsx`, moved here from `organisms/player-swiper/`;
+  team wants domain cohesion, not colocation-by-first-consumer) + mobile bottom sheet
+  (`intelligence-chat-sheet.tsx`, a `DynamicSheet` with `height: "auto"`). Desktop right rail:
+  `player-swiper.tsx` (~:1225, `isDesktop` gated). Mobile: sparkle in the `SharedActions` rail +
+  the sheet rendered from
+  `molecules/feed-player/control-layer/expand-view/expand-view-details.tsx`, opened through the
+  shared sheet bus (`SheetContentType "intelligence"`, `use-sheet-state.ts`) — same pattern as octo.
+  **Open it at the `"default"` sheet state, never `"panel-view"`/`"full-view"`:** `player.tsx:241`
+  tiles the video away for those states (intended for linkout/octo), and Intelligence floats over
+  the video instead.
+  Auto-prompt lives in the side panel (`autoPromptOnMount`, 3s countdown), so any host that
+  mounts it gets auto-prompting for free.
 
 ## File pointers
 

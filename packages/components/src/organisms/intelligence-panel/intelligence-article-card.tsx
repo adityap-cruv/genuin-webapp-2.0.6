@@ -62,6 +62,9 @@ export function IntelligenceArticleCard({
       )}
       style={{
         position: "relative",
+        // Only separates the label from the content below it: the absolutely positioned
+        // hit-target link is out of flow, so it is not a flex item the gap applies to.
+        rowGap: layout.labelGap,
         width: layout.width,
         minHeight: layout.height,
         backgroundColor: layout.backgroundColor,
@@ -94,6 +97,7 @@ export function IntelligenceArticleCard({
       )}
 
       <Link
+        data-slot="intelligence-article-content"
         href={article.href}
         onClick={
           onSelect

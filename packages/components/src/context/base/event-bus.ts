@@ -22,7 +22,7 @@ export type ExpandableWrapperState = SheetState;
 /**
  * Describes which content type the bottom sheet is currently displaying.
  */
-export type SheetContentType = "default" | "octo" | "linkouts" | "comments";
+export type SheetContentType = "default" | "octo" | "linkouts" | "comments" | "intelligence";
 
 /**
  * Where the content type should be rendered relative to the video player.

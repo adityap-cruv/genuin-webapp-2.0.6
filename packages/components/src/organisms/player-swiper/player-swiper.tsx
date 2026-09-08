@@ -186,7 +186,9 @@ const DesktopRightPanels = lazy(() =>
 );
 
 const IntelligenceChatSidePanel = lazy(() =>
-  import("./intelligence-chat-side-panel").then((m) => ({ default: m.IntelligenceChatSidePanel }))
+  import("@genuin/components/organisms/intelligence-chat/intelligence-chat-side-panel").then((m) => ({
+    default: m.IntelligenceChatSidePanel,
+  }))
 );
 
 /**

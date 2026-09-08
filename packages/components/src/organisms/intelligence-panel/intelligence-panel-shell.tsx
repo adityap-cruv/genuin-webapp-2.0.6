@@ -1,9 +1,9 @@
 "use client";
 
-// import { Button } from "@genuin/ui/components/button";
+import { Button } from "@genuin/ui/components/button";
 import { Heading } from "@genuin/ui/components/typography";
 import { cn } from "@genuin/ui/lib/utils";
-import { /* Maximize2, */ Sparkle /* , X */ } from "lucide-react";
+import { Sparkle, X } from "lucide-react";
 import * as React from "react";
 
 import type { IntelligencePanelShellProps } from "./intelligence-panel.types";
@@ -23,17 +23,19 @@ const SCROLL_CONTENT_CLASS = cn(
   "gencl:[scrollbar-width:none] gencl:[&::-webkit-scrollbar]:hidden"
 );
 
-// const HEADER_ACTION_CLASS = cn(
-//   "gencl:relative gencl:size-4! gencl:rounded-full! gencl:p-0!",
-//   "gencl:before:absolute gencl:before:-inset-2 gencl:before:content-['']"
-// );
+// `before:-inset-2` widens the tap target to ~32px without growing the icon.
+const HEADER_ACTION_CLASS = cn(
+  "gencl:relative gencl:size-4! gencl:rounded-full! gencl:p-0!",
+  "gencl:before:absolute gencl:before:-inset-2 gencl:before:content-['']"
+);
 
 type IntelligencePanelHeaderProps = {
   headingId: string;
   onClose?: () => void;
+  showClose?: boolean;
 };
 
-function IntelligencePanelHeader({ headingId }: IntelligencePanelHeaderProps) {
+function IntelligencePanelHeader({ headingId, onClose, showClose = false }: IntelligencePanelHeaderProps) {
   return (
     <header className="gencl:flex gencl:h-9 gencl:shrink-0 gencl:-translate-y-1 gencl:items-center gencl:justify-between gencl:gap-2">
       <div className="gencl:flex gencl:min-w-0 gencl:items-center gencl:gap-2">
@@ -52,34 +54,24 @@ function IntelligencePanelHeader({ headingId }: IntelligencePanelHeaderProps) {
         </Heading>
       </div>
 
-      {/* <div className="gencl:flex gencl:shrink-0 gencl:items-center gencl:gap-2">
-        <Button
-          type="button"
-          variant="icon"
-          theme="secondary"
-          shape="circle"
-          size="xs"
-          disabled
-          aria-label="Expand view unavailable"
-          title="Expand view is not available yet"
-          className={HEADER_ACTION_CLASS}>
-          <Maximize2 aria-hidden="true" className="gencl:size-3" />
-        </Button>
-        <Button
-          type="button"
-          variant="icon"
-          theme="secondary"
-          shape="circle"
-          size="xs"
-          aria-label={`Close ${PANEL_TITLE}`}
-          onClick={onClose}
-          className={cn(
-            HEADER_ACTION_CLASS,
-            "gencl:focus-visible:ring-2 gencl:focus-visible:ring-primary-400 gencl:focus-visible:ring-offset-2"
-          )}>
-          <X aria-hidden="true" className="gencl:size-3" />
-        </Button>
-      </div> */}
+      {showClose && (
+        <div className="gencl:flex gencl:shrink-0 gencl:items-center gencl:gap-2">
+          <Button
+            type="button"
+            variant="icon"
+            theme="secondary"
+            shape="circle"
+            size="xs"
+            aria-label={`Close ${PANEL_TITLE}`}
+            onClick={onClose}
+            className={cn(
+              HEADER_ACTION_CLASS,
+              "gencl:focus-visible:ring-2 gencl:focus-visible:ring-primary-400 gencl:focus-visible:ring-offset-2"
+            )}>
+            <X aria-hidden="true" className="gencl:size-3" />
+          </Button>
+        </div>
+      )}
     </header>
   );
 }
@@ -94,6 +86,8 @@ export const IntelligencePanelShell = React.forwardRef<HTMLElement, Intelligence
       children,
       size = FILL_PARENT_SIZE,
       onClose,
+      showClose = false,
+      scrollContentClassName,
       footer,
       className,
       style,
@@ -112,8 +106,8 @@ export const IntelligencePanelShell = React.forwardRef<HTMLElement, Intelligence
         className={cn(PANEL_CLASS, className)}
         style={{ width: size.width, height: size.height, ...style }}
         {...props}>
-        <IntelligencePanelHeader headingId={headingId} onClose={onClose} />
-        <div data-slot="intelligence-panel-scroll-content" className={SCROLL_CONTENT_CLASS}>
+        <IntelligencePanelHeader headingId={headingId} onClose={onClose} showClose={showClose} />
+        <div data-slot="intelligence-panel-scroll-content" className={cn(SCROLL_CONTENT_CLASS, scrollContentClassName)}>
           {children}
         </div>
         {footer}

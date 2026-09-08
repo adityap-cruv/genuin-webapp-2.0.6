@@ -164,7 +164,11 @@ function toBlocks(content: string, seq: number, pool: readonly IntelligenceArtic
     blocks.push({
       id: `articles-${seq}`,
       type: ARTICLES_BLOCK,
-      props: { articles: related, layout: { imageAspectRatio: "16 / 9", height: "auto" }, label: "Related" },
+      props: {
+        articles: related,
+        layout: { imageAspectRatio: "16 / 9", height: "auto", labelGap: 8 },
+        label: "Related",
+      },
     });
   }
   return blocks;

@@ -119,6 +119,12 @@ type IntelligenceChatSidePanelProps = {
   videoContext?: IntelligenceChatVideoContext;
   /** Called when the user activates the panel's close control. */
   onClose: () => void;
+  /**
+   * Shows a close control in the panel header, opposite the "Intelligence"
+   * heading. Hosts without their own dismiss affordance (the mobile sheet) turn
+   * this on; the desktop rail leaves it off and closes via its sparkle toggle.
+   */
+  showClose?: boolean;
   /** Runs the existing video prompt flow when this panel is opened from Feed View. */
   autoPromptOnMount?: boolean;
   /** Lets Feed View ads use the full responsive width of the chat thread. */
@@ -307,6 +313,7 @@ export function IntelligenceChatSidePanel({
   videoId,
   videoContext,
   onClose,
+  showClose = false,
   autoPromptOnMount = false,
   fillAvailableWidth = false,
   className,
@@ -441,6 +448,7 @@ export function IntelligenceChatSidePanel({
         inputDisabled={isAutoPrompting}
         onSend={handleSend}
         onClose={onClose}
+        showClose={showClose}
         className="gencl:min-h-0 gencl:flex-1"
         emptyState={
           !isAutoPrompting && (

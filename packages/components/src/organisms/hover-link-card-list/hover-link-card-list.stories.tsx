@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, userEvent, within } from "storybook/test";
 
+import { setDeviceMode } from "../../../.storybook/preview";
+
 import { HoverLinkCardList, type HoverLinkCardListProps } from "./hover-link-card-list";
 
 const PODCAST_IMAGE =
@@ -54,7 +56,14 @@ const meta = {
   tags: ["autodocs"],
   parameters: {
     layout: "centered",
+    deviceMode: "desktop",
   },
+  decorators: [
+    (Story, context) => {
+      setDeviceMode(context.parameters.deviceMode === "mobile" ? "mobile" : "desktop");
+      return <Story />;
+    },
+  ],
   args: {
     items: PODCASTS,
     width: 332,
@@ -152,5 +161,33 @@ export const AutomaticClockRotation: Story = {
     pauseOnHover: false,
     rotationIntervalMs: 3000,
     animationDurationMs: 500,
+  },
+};
+
+export const MobileAllExpanded: Story = {
+  args: {
+    width: "100%",
+    autoRotate: false,
+  },
+  parameters: {
+    deviceMode: "mobile",
+    viewport: {
+      defaultViewport: "mobile1",
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const items = canvasElement.querySelectorAll<HTMLElement>('[data-slot="hover-link-card-item"]');
+
+    await expect(items).toHaveLength(PODCASTS.length);
+    await expect(canvasElement.querySelectorAll('[data-expanded="true"]')).toHaveLength(PODCASTS.length);
+
+    const cardHeights = Array.from(items, (item) =>
+      Math.round(within(item).getByRole("button").getBoundingClientRect().height)
+    );
+    await expect(new Set(cardHeights).size).toBe(1);
+
+    PODCASTS.forEach((podcast, index) => {
+      expect(within(items[index]!).getByText(podcast.description!)).toBeInTheDocument();
+    });
   },
 };

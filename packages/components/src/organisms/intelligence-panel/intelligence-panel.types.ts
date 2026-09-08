@@ -40,11 +40,15 @@ export type IntelligenceArticleCardLayout = {
   textColor?: string;
   /** Optional image-first headline size. Defaults to 16 px. */
   imageFirstTitleFontSize?: IntelligenceCssLength;
+  /** Optional space between the card label and its content. Defaults to none. */
+  labelGap?: IntelligenceCssLength;
 };
 
 /** Backend-driven presentation values for the Up Next grid. */
 export type IntelligenceUpNextGridLayout = {
   minimumCardWidth: IntelligenceCssLength;
+  /** Optional card width below `sm`; desktop continues to use `minimumCardWidth`. */
+  mobileCardWidth?: IntelligenceCssLength;
 };
 
 /** Complete layout contract expected from an Intelligence response. */
@@ -127,6 +131,15 @@ export interface IntelligencePanelShellProps extends IntelligencePanelSectionPro
   size?: IntelligencePanelSize;
   /** Called when the user activates the close control. */
   onClose: () => void;
+  /**
+   * Renders a close control at the end of the header row, opposite the
+   * "Intelligence" heading. Off by default so hosts that own their own dismiss
+   * affordance (the desktop rail's sparkle toggle, the article composer's
+   * minimise button) are unchanged. @default false
+   */
+  showClose?: boolean;
+  /** Optional classes applied to the shell's internally scrolling content region. */
+  scrollContentClassName?: string;
   /** Optional content pinned beneath the scroll area (e.g. a chat composer). */
   footer?: ReactNode;
 }

@@ -156,6 +156,7 @@ export function LinkCard({
   density = "regular",
   compactThumbnailSize,
   showFullTitle = false,
+  expandedTitleMinHeight,
 }: {
   data: LinkMetaData;
   sheetState: SheetState;
@@ -185,6 +186,8 @@ export function LinkCard({
   compactThumbnailSize?: { width: number; height: number };
   /** Allow the expanded title to wrap without truncation. */
   showFullTitle?: boolean;
+  /** Reserve title space in expanded cards so sibling cards can keep a consistent height. */
+  expandedTitleMinHeight?: number;
 }) {
   const isDark = theme === "dark";
   const textPrimary = isDark ? "gencl:text-white" : "gencl:text-secondary-900";
@@ -435,13 +438,13 @@ export function LinkCard({
         <div className="gencl:flex gencl:flex-col gencl:gap-2 gencl:w-full gencl:p-2">
           {/* Title */}
           <p
+            data-slot="link-card-expanded-title"
+            style={expandedTitleMinHeight ? { minHeight: expandedTitleMinHeight } : undefined}
             className={cn(
               isCompact
                 ? cn(
                     "gencl:text-[14px] gencl:leading-5 gencl:font-semibold gencl:w-full",
-                    showFullTitle
-                      ? "gencl:whitespace-normal"
-                      : "gencl:h-5 gencl:line-clamp-1 gencl:truncate"
+                    showFullTitle ? "gencl:whitespace-normal" : "gencl:h-5 gencl:line-clamp-1 gencl:truncate"
                   )
                 : "gencl:text-body-1-semi-bold! gencl:line-clamp-1 gencl:truncate gencl:w-full",
               textPrimary

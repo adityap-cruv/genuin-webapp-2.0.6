@@ -33,7 +33,13 @@ import {
   type ContextualLinkMetaData,
 } from "@genuin/components/organisms/hover-link-card-list/hover-link-card-list";
 import { IntelligenceArticleCard } from "@genuin/components/organisms/intelligence-panel/intelligence-article-card";
-import { IntelligencePanel } from "@genuin/components/organisms/intelligence-panel/intelligence-panel";
+import {
+  INTELLIGENCE_RAIL_CLASS,
+  INTELLIGENCE_RAIL_ITEM_CLASS,
+  INTELLIGENCE_RAIL_ITEM_SM_RESET_CLASS,
+  INTELLIGENCE_RAIL_SM_RESET_CLASS,
+  IntelligencePanel,
+} from "@genuin/components/organisms/intelligence-panel/intelligence-panel";
 import { IntelligencePanelShell } from "@genuin/components/organisms/intelligence-panel/intelligence-panel-shell";
 import type {
   IntelligenceArticle,
@@ -109,7 +115,7 @@ const INTELLIGENCE_LAYOUT: IntelligencePanelLayout = {
     ctaClipPath: "polygon(0 0, 100% 0, 100% 45%, 82% 100%, 0 100%)",
   },
   articleCard: { height: 221, imageAspectRatio: "4 / 3" },
-  upNextGrid: { minimumCardWidth: 172 },
+  upNextGrid: { minimumCardWidth: 172, mobileCardWidth: "calc((100% - 24px) / 2)" },
 };
 const INTERVIEW_CARD_LAYOUT = { ...INTELLIGENCE_LAYOUT.articleCard, height: "auto" as const };
 
@@ -233,7 +239,13 @@ function scheduleGenuinInit() {
     initHandle = null;
     // `player_controls: "v2"` matches the hardcoded /home page — keeps the v2 control cluster
     // (mute → play/pause → expand) in both the inline placement and the expanded view.
-    (window as GenuinWindow).genuin?.init?.({ configuration: { player_controls: "v2" } });
+    (window as GenuinWindow).genuin?.init?.({
+      // These placements are nested React roots inside the first-party WebApp. Keeping them in
+      // light DOM prevents their hosts from being mistaken for the WebApp's portal root while the
+      // SDK still owns each placement and its lifecycle independently.
+      useShadowDOM: false,
+      configuration: { player_controls: "v2" },
+    });
   });
 }
 
@@ -575,9 +587,13 @@ function IntelligenceCardListWidget({ node, data }: WidgetRenderProps) {
       <IntelligencePanelShell size={{ width: "100%", height: "100%" }} onClose={() => undefined}>
         <div
           className={cn(
-            "gencl:flex gencl:h-full gencl:min-h-0 gencl:flex-col gencl:gap-2 gencl:overflow-y-auto gencl:pt-2",
-            "gencl:scroll-smooth gencl:snap-y gencl:snap-mandatory gencl:overscroll-contain",
-            "gencl:[scrollbar-width:none] gencl:[&::-webkit-scrollbar]:hidden"
+            // Phones: the shared Intelligence rail. `sm` and up: the original
+            // vertical snap list.
+            INTELLIGENCE_RAIL_CLASS,
+            INTELLIGENCE_RAIL_SM_RESET_CLASS,
+            "gencl:h-full gencl:min-h-0 gencl:sm:pt-2!",
+            "gencl:sm:flex-col! gencl:sm:snap-y!",
+            "gencl:sm:overflow-x-hidden! gencl:sm:overflow-y-auto! gencl:sm:overscroll-contain!"
           )}>
           {articles.map((article) => (
             <IntelligenceArticleCard
@@ -585,7 +601,15 @@ function IntelligenceCardListWidget({ node, data }: WidgetRenderProps) {
               article={toArticle(article)}
               layout={INTERVIEW_CARD_LAYOUT}
               imagePosition="top"
-              className="gencl:shrink-0 gencl:snap-start gencl:snap-always"
+              className={cn(
+                INTELLIGENCE_RAIL_ITEM_CLASS,
+                INTELLIGENCE_RAIL_ITEM_SM_RESET_CLASS,
+                "gencl:w-[90%]! gencl:max-w-none!",
+                "gencl:snap-always",
+                "gencl:max-sm:[&_[data-slot=intelligence-article-content]]:min-h-0",
+                "gencl:max-sm:[&_[data-slot=intelligence-article-image]]:grow",
+                "gencl:max-sm:[&_[data-slot=intelligence-article-image]]:shrink!"
+              )}
             />
           ))}
         </div>

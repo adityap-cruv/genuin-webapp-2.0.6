@@ -51,6 +51,7 @@ function WidgetRenderer({ node, dataMap }: { node: WidgetNode; dataMap: DataMap 
       id={node.id}
       className="gencl:min-h-0 gencl:min-w-0"
       data-fit={intrinsicSize ? "intrinsic" : undefined}
+      data-mobile-height={node.component === "hover_link_card_list" ? "content" : undefined}
       style={
         intrinsicSize
           ? ({
@@ -264,6 +265,12 @@ const HOME_MOTION_CSS = `
      letting them grow to their content turned one row into ~3000px of page. Capped at 70vh so a
      tall row never exceeds most of a phone screen. */
   .gen-home-grid > * { height: min(var(--gen-home-cell-h, 420px), 70vh); }
+  /* The related-links list becomes a horizontal rail on mobile, so its cell should wrap the
+     rail instead of retaining the desktop vertical-list height. */
+  .gen-home-grid > [data-mobile-height="content"] { height: auto; }
+  /* Only the third/relevant-news Intelligence panel uses the compact mobile height.
+     Its widget frame adds a 42px section header and a 12px gap above the 520px panel. */
+  .gen-home-grid > [data-panel-id="relevant_news"] { height: 574px; }
   /* …except a widget that draws at its own ratio — it is sized by the base rule below. */
   .gen-home-grid > [data-fit="intrinsic"] { height: auto; }
   /* Desktop-only alignment spacer (keeps a headerless panel level with its neighbour's header);

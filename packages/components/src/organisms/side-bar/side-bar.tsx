@@ -5,15 +5,15 @@ import { cn } from "@genuin/ui/utils";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 import type { ComponentProps, ReactNode } from "react";
-import { lazy, useEffect, useState } from "react";
+import { lazy, useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
 
 import { useAuthContext } from "@genuin/components/context/auth";
 import { useBaseContext } from "@genuin/components/context/base";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useAuthRedirectHandler } from "@genuin/components/hooks/use-auth-redirect-handler";
-import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-import { SIDEBAR_WIDTH_VAR } from "@genuin/components/lib/constants";
+import { usePathname } from "@genuin/components/hooks/use-pathname";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { StandardWallLoginGate } from "@genuin/components/molecules/auth-login-gate/auth-login-gate";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { SidebarActions, SideBarBecomeCreator } from "@genuin/components/molecules/sidebar";
@@ -33,12 +33,10 @@ type SideBarProps = ComponentProps<"aside"> & {
   onItemClick?: () => void;
 };
 
-const SIDEBAR_COLLAPSED_KEY = "sidebarCollapsed";
+const HOME_SIDEBAR_COLLAPSED_KEY = "homeSidebarCollapsed";
 
 const sidebarVariants = cva(
-  // Sits above the body-level expand-view overlay (measured at `z-index: 1000`) so the rail stays
-  // visible and hoverable even in the frame before that overlay is re-inset to the rail's width.
-  "gencl:relative gencl:z-[1001] gencl:h-full gencl:bg-white gencl:flex gencl:flex-col gencl:overflow-hidden",
+  "gencl:relative gencl:h-full gencl:bg-white gencl:flex gencl:flex-col gencl:overflow-hidden gencl:transition-[width] gencl:duration-200",
   {
     variants: {
       variant: {
@@ -57,54 +55,22 @@ const sidebarVariants = cva(
 export function SideBar({ variant, className, onItemClick, ...restProps }: SideBarProps) {
   const { brandDetails } = useBaseContext();
   const { layoutConfig } = useEmbedConfigs();
-  // `isLargeDesktop` is the same 1280px threshold as the rail's `xl:` classes.
-  const { isLargeDesktop } = useDeviceDetectMediaQuery();
+  const pathname = usePathname();
   const showBecomeACreator = brandDetails.show_become_creator ?? true;
 
-  // Every desktop route is collapsible; the rail opens collapsed and the toggle below pins it open.
-  const isCollapsible = variant !== "mobile";
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useLocalStorage(SIDEBAR_COLLAPSED_KEY, true);
-  // Hovering peeks at the full rail; the toggle pins that open so it survives the mouse leaving.
-  // Below `xl` there is nothing to peek at — the rail is already the widest the sidebar gets.
+  // Home is the only route with the multi-placement/infinite-feed layout that needs a collapsible rail.
+  const isCollapsible = variant !== "mobile" && pathname === buildPageUrl({ type: "home" });
+  const [isHomeCollapsed, setIsHomeCollapsed] = useLocalStorage(HOME_SIDEBAR_COLLAPSED_KEY, true);
+  // Hovering peeks at the full rail; the toggle pins that state after the pointer leaves.
   const [isPeeking, setIsPeeking] = useState(false);
-  const canPeek = isCollapsible && isLargeDesktop;
-  // Peeking widens the `<aside>` itself, so it stays a flex item of `<main>` and the `<section>`
-  // beside it gives up the space — the same reflow the responsive `xl:` rail has always done.
-  const isCollapsed = isCollapsible && isSidebarCollapsed && !(canPeek && isPeeking);
+  const isCollapsed = isCollapsible && isHomeCollapsed && !isPeeking;
   const resolvedVariant = isCollapsed ? "collapsed" : variant;
-
-  // Publish the rail's width so overlays rendered outside this layout (the expand-view portal is
-  // appended to <body>, so it is not a sibling that flexbox can shrink) can inset themselves by it.
-  // Absent — on a publisher's page, where there is no side bar — the fallback keeps them full-bleed.
-  const railWidth = isCollapsed || !isLargeDesktop ? "64px" : "240px";
-  useEffect(() => {
-    if (variant === "mobile") return;
-    document.documentElement.style.setProperty(SIDEBAR_WIDTH_VAR, railWidth);
-
-    // The SDK builds its overlay host in its own bundle and never re-resolves the variable once the
-    // host exists, so pin the geometry on each host directly as well. The observer catches hosts
-    // created later — the expand view only appends one when the reader opens it.
-    const insetOverlayHosts = () => {
-      document.querySelectorAll<HTMLElement>("[data-genuin-overlay-host]").forEach((host) => {
-        host.style.setProperty("left", railWidth, "important");
-        host.style.setProperty("width", `calc(100% - ${railWidth})`, "important");
-      });
-    };
-    insetOverlayHosts();
-    const observer = new MutationObserver(insetOverlayHosts);
-    observer.observe(document.body, { childList: true });
-
-    return () => {
-      observer.disconnect();
-      document.documentElement.style.removeProperty(SIDEBAR_WIDTH_VAR);
-    };
-  }, [railWidth, variant]);
 
   return (
     <aside
       className={cn(sidebarVariants({ variant: resolvedVariant }), className)}
-      onMouseEnter={canPeek ? () => setIsPeeking(true) : undefined}
-      onMouseLeave={canPeek ? () => setIsPeeking(false) : undefined}
+      onMouseEnter={isCollapsible ? () => setIsPeeking(true) : undefined}
+      onMouseLeave={isCollapsible ? () => setIsPeeking(false) : undefined}
       {...restProps}>
       <div
         className={cn(
@@ -133,12 +99,12 @@ export function SideBar({ variant, className, onItemClick, ...restProps }: SideB
             type="button"
             data-testid="sidebar-collapse-toggle"
             // Reflects the pinned preference, not the peek, so a click always matches the icon.
-            aria-expanded={!isSidebarCollapsed}
-            aria-label={isSidebarCollapsed ? "Keep sidebar expanded" : "Collapse sidebar"}
-            onClick={() => setIsSidebarCollapsed((collapsed) => !collapsed)}
+            aria-expanded={!isHomeCollapsed}
+            aria-label={isHomeCollapsed ? "Keep sidebar expanded" : "Collapse sidebar"}
+            onClick={() => setIsHomeCollapsed((collapsed) => !collapsed)}
             // Below `xl` the rail cannot expand at all, so the toggle would be a no-op control.
             className="gencl:hidden gencl:xl:flex gencl:w-full gencl:items-center gencl:justify-center gencl:border-t gencl:border-secondary-150 gencl:p-4 gencl:cursor-pointer gencl:hover:bg-secondary-50">
-            <ChevronFirstIcon className={cn(isSidebarCollapsed && "gencl:rotate-180")} />
+            <ChevronFirstIcon className={cn(isHomeCollapsed && "gencl:rotate-180")} />
           </button>
         )}
         {!isCollapsed && <PoweredByGenuin variant={variant} />}
