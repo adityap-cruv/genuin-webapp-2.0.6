@@ -616,6 +616,7 @@ describe("buildHostMacroBlocks", () => {
       loc: "New York",
       loclat: "40.7",
       loclong: "-73.9",
+      m: "501",
       gdpr: "0",
       gdpr_consent: "",
       us_privacy: "1---",
@@ -630,6 +631,7 @@ describe("buildHostMacroBlocks", () => {
       app_loc: "New York",
       app_lat: "40.7",
       app_long: "-73.9",
+      app_metro: "501",
     });
     expect(blocks.user).toEqual({ ifa: "abc", deviceid: "dev-1", app_store_id: "999" });
     expect(blocks.event).toEqual({ gdpr: "0", us_privacy: "1---", dnt: "0" });

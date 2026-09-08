@@ -232,6 +232,10 @@ export function buildHostMacroBlocks(macros: HostMacros): HostMacroBlocks {
   pick(device, "app_loc", "loc");
   pick(device, "app_lat", "loclat");
   pick(device, "app_long", "loclong");
+  // DMA / metro code (Nielsen DMA, e.g. "505"). Host-provided via the `m`
+  // script param, so it lands with its geo siblings above — NOT in the
+  // IP-based `geoip` block, which never carries host-supplied geo.
+  pick(device, "app_metro", "m");
 
   const user: Record<string, string> = {};
   pick(user, "ifa", "ifa");
