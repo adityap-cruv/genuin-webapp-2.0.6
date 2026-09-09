@@ -259,6 +259,8 @@ export function IHeartListenLiveButton({ className, videoDetails, info }: IHeart
         onClick={handleButtonClick}
         aria-hidden={!isVisible}>
         {!isGoToEpisode &&
+          // todo: added a check for sponsored post to not show play/pause icon as per shushant requirement
+          !isSponsored &&
           (isPlaying ? (
             info.type === "station" ? (
               <IHeartStopIcon theme={isOutlined ? "dark" : "light"} size="md" />
