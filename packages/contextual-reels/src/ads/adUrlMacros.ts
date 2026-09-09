@@ -59,6 +59,31 @@ export const HOST_URL_MACRO_TOKENS: Readonly<Record<string, string>> = {
 };
 
 /**
+ * Substring identifying our own DSP VAST exchange endpoint in a resolved ad URL
+ * (e.g. `https://aapi.begenuin.com/goservices/dsp/vast/<brand>/<tag>`). Matched
+ * as a path so it holds across hosts/environments. Used to gate the geo append.
+ */
+const DSP_VAST_ENDPOINT = "/goservices/dsp/vast/";
+
+/**
+ * Geo request params appended to a DSP-exchange Triton ad URL, mapping the
+ * OpenRTB Geo field name (what the exchange reads) to the host macro carrying
+ * the value. Host-provided geo only — the exchange reads these off the request.
+ *
+ * OpenRTB 2.x Geo semantics: `country` = ISO-3166-1 alpha-3, `region` =
+ * ISO-3166-2 (2-letter US state code), `metro` = Google/Nielsen metro (DMA),
+ * `city` = city name, `lat`/`lon` = coordinates.
+ */
+const DSP_GEO_PARAMS: Readonly<Record<string, string>> = {
+  country: "country",
+  city: "loc",
+  lat: "loclat",
+  lon: "loclong",
+  metro: "m",
+  region: "r",
+};
+
+/**
  * Remove a `<name>=<value>` query param (value = up to the next `&` or end) in
  * any position. The `[?&]` prefix anchors on a real param boundary so a param
  * whose NAME merely ends in `name` (e.g. `skip`/`myip` for `ip`) is never
@@ -129,6 +154,34 @@ function rewriteTritonUrlForApp(url: string, macros: HostMacros): string {
   result += (result.includes("?") ? "&" : "?") + appParams.join("&");
 
   return result;
+}
+
+/**
+ * Append host-provided geo to a DSP-exchange Triton ad URL as OpenRTB-named
+ * request params (see {@link DSP_GEO_PARAMS}), so the exchange can target on it.
+ * Only params whose host macro is present are added; a param already on the URL
+ * is left untouched (never duplicated). Values are URL-encoded, consistent with
+ * the rest of this module.
+ *
+ * Gated by the caller to the in-app Triton path (appb + `tritondigital`) whose
+ * resolved URL hits our {@link DSP_VAST_ENDPOINT} — the same in-app condition as
+ * {@link rewriteTritonUrlForApp}.
+ */
+function appendDspGeoParams(url: string, macros: HostMacros): string {
+  const params: string[] = [];
+  for (const [param, macroName] of Object.entries(DSP_GEO_PARAMS)) {
+    const value = macros[macroName];
+    // hostMacros drops empty/unresolved values, so presence is enough.
+    if (value === undefined) continue;
+    // Never emit a duplicate key — leave any pre-existing param as-is.
+    if (new RegExp(`[?&]${param}=`).test(url)) continue;
+    params.push(`${param}=${encodeURIComponent(value)}`);
+  }
+  if (params.length === 0) return url;
+  // This runs only after rewriteTritonUrlForApp, which always leaves a `?`, so
+  // the `: "?"` side is unreachable in practice — kept as a defensive default.
+  /* v8 ignore next */
+  return url + (url.includes("?") ? "&" : "?") + params.join("&");
 }
 
 /** Opt-in ad-URL rewrites applied only for statically-served tags. */
@@ -253,6 +306,10 @@ export function resolveAdUrlMacros(
  * any app-loaded Triton entry becomes an in-app request, with no per-tag config.
  * Bare-string and non-Triton entries are never rewritten.
  *
+ * For an in-app Triton entry whose resolved URL points at our DSP VAST exchange,
+ * host-provided geo is additionally appended as OpenRTB-named request params
+ * (see {@link appendDspGeoParams}) so the exchange can target on it.
+ *
  * When `options.servedStatically` is set, every resolved URL additionally has its
  * `ua` param replaced with the real `navigator.userAgent` and its `ip` param
  * replaced with `options.clientIp` (or stripped when no IP is available — see
@@ -284,7 +341,14 @@ export function resolveVideoAdMacros(
     for (const key of ["url", "ads_url", "vastUrl"] as const) {
       if (typeof ad[key] === "string") {
         let resolved = resolveAdUrlMacros(ad[key] as string, pageUrl, macros, options);
-        if (isTritonAppRewrite) resolved = rewriteTritonUrlForApp(resolved, macros);
+        if (isTritonAppRewrite) {
+          resolved = rewriteTritonUrlForApp(resolved, macros);
+          // In-app Triton served via our DSP VAST exchange: append host geo as
+          // OpenRTB-named request params the exchange targets on.
+          if (resolved.includes(DSP_VAST_ENDPOINT)) {
+            resolved = appendDspGeoParams(resolved, macros);
+          }
+        }
         patched[key] = resolved;
       }
     }

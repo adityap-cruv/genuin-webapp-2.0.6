@@ -216,6 +216,29 @@ existing `ad_source`/`platform`.
   slot emits — mirroring the existing `unmute_blocked` base-context pattern. No
   per-call-site edits.
 
+### 8. Append host geo to DSP-exchange Triton ad URLs — addendum (2026-09-09)
+
+The host now sends full geo on the loader script params (`country`, `loc`,
+`loclat`, `loclong`, `m` (DMA/metro), `r` (state code)). For in-app Triton ads
+served through our own **DSP VAST exchange** (the `/goservices/dsp/vast/`
+endpoint, e.g. `https://aapi.begenuin.com/goservices/dsp/vast/<brand>/<tag>`),
+forward that geo on the ad request so the exchange can target on it.
+
+- **Where:** `resolveVideoAdMacros`, right after `rewriteTritonUrlForApp`, via
+  `appendDspGeoParams`.
+- **Gate:** the SAME in-app Triton condition as the app rewrite
+  (`Boolean(macros.appb) && platform === "tritondigital"`) AND the resolved URL
+  contains the DSP VAST path (`DSP_VAST_ENDPOINT = "/goservices/dsp/vast/"`,
+  matched as a path so it holds across hosts/environments). Non-DSP Triton (e.g.
+  `streamtheworld.com`) and non-in-app loads are untouched.
+- **Param names (OpenRTB Geo, `DSP_GEO_PARAMS`):** `country`(country),
+  `city`(loc), `lat`(loclat), `lon`(loclong), `metro`(m), `region`(r). Confirmed
+  against OpenRTB 2.x: `country` alpha-3, `region` ISO-3166-2 (US state code),
+  `metro` Google/Nielsen DMA.
+- **Absent / duplicate:** a param whose host macro is absent is skipped; a param
+  already present on the URL is left untouched (never duplicated). Values are
+  URL-encoded.
+
 ## Testing
 
 - `hostMacros` unit tests: empty + unresolved dropping, presence/absence.
