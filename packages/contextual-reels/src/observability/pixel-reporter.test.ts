@@ -323,6 +323,15 @@ describe("PixelReporter", () => {
       expect(noAdsCallback).toHaveBeenCalledTimes(1);
     });
 
+    it("passes the context tagId to window.noAdsCallback", () => {
+      const noAdsCallback = vi.fn();
+      (window as Window & { noAdsCallback?: (tagId?: string) => void }).noAdsCallback = noAdsCallback;
+
+      PixelReporter.getInstance().report("instance-1", "render", "render_error", { tagId: "tag-123" });
+
+      expect(noAdsCallback).toHaveBeenCalledWith("tag-123");
+    });
+
     it("does not throw when window.noAdsCallback is absent", () => {
       expect(() => PixelReporter.getInstance().report("instance-1", "render", "render_error")).not.toThrow();
     });

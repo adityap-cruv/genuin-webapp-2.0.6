@@ -299,15 +299,15 @@ export function fireTagInitPixel(context: TagInitPixelContext = {}): void {
  * mirrors `notifyAdNoFill` in `ads/waterfall.ts` without importing it, so a
  * broken module graph elsewhere can't prevent this from firing.
  */
-function notifyAdPassbackBestEffort(): void {
+function notifyAdPassbackBestEffort(tagId?: string): void {
   try {
     if (typeof window === "undefined") return;
     if (window.parent && window.parent !== window) {
-      window.parent.postMessage({ type: "noAdsCallback" }, "*");
+      window.parent.postMessage({ type: "noAdsCallback", tagId }, "*");
     }
-    const cb = (window as Window & { noAdsCallback?: () => void }).noAdsCallback;
+    const cb = (window as Window & { noAdsCallback?: (tagId?: string) => void }).noAdsCallback;
     if (typeof cb === "function") {
-      cb();
+      cb(tagId);
     }
   } catch (err) {
     console.error("PixelReporter: failed to notify ad passback:", err);
@@ -439,7 +439,7 @@ export class PixelReporter {
 
     // Ad passback fires on EVERY failure stage, independent of whether
     // AdProvider is mounted — this is the pre-mount / no-React-context path.
-    notifyAdPassbackBestEffort();
+    notifyAdPassbackBestEffort(context.tagId);
 
     // Destroy the widget instance on every failure stage too — passback means
     // "this ad slot is dead," so the (possibly broken) widget must actually

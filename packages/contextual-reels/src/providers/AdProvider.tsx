@@ -74,7 +74,7 @@ interface AdProviderProps {
  */
 export function AdProvider({ children }: AdProviderProps): ReactNode {
   const { sendEvent, setAdPassback } = useAnalytics();
-  const { adLayout } = useTagDetails();
+  const { adLayout, tagId } = useTagDetails();
   const bus = useEventBus();
   const instanceId = useInstanceId();
   const { singleHitWaterfall } = useStrategy();
@@ -107,7 +107,7 @@ export function AdProvider({ children }: AdProviderProps): ReactNode {
     (reason?: PassbackReason): void => {
       if (passbackFiredRef.current) return;
       passbackFiredRef.current = true;
-      notifyAdNoFill();
+      notifyAdNoFill(tagId);
       setAdPassback(); // Mark widget as passback for all subsequent events (passback: 1)
       sendEvent(EVENT.AD_PASSBACK, {
         tag_height: tagHeight,
@@ -117,7 +117,7 @@ export function AdProvider({ children }: AdProviderProps): ReactNode {
       bus.emit("genad:destroy", {});
       getInstanceRegistry().get(instanceId)?.destroy?.();
     },
-    [tagHeight, tagWidth, sendEvent, setAdPassback, bus, instanceId]
+    [tagHeight, tagWidth, sendEvent, setAdPassback, bus, instanceId, tagId]
   );
 
   /** Single-hit gate: fire only once every ad slot reported, none filled, last index reached. */
@@ -134,12 +134,15 @@ export function AdProvider({ children }: AdProviderProps): ReactNode {
   }, [firePassback]);
 
   /** Fires notifyAdFill once per widget lifetime — same "already filled" flag single-hit uses. */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const onAdSuccess = useCallback((_provider: AdProviderKind, _slotId?: string): void => {
-    if (anyFilledRef.current) return;
-    anyFilledRef.current = true;
-    notifyAdFill();
-  }, []);
+  const onAdSuccess = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    (_provider: AdProviderKind, _slotId?: string): void => {
+      if (anyFilledRef.current) return;
+      anyFilledRef.current = true;
+      notifyAdFill(tagId);
+    },
+    [tagId]
+  );
 
   /** Single-hit: tally a slot no-fill and check whether the waterfall is exhausted. */
   const recordSingleHitNoFill = useCallback(
