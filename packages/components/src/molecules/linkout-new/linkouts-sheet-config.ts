@@ -21,7 +21,6 @@ export type LinkoutsScenario =
   | "embed-outside-sml"
   | "embed-outside-default"
   | "embed-outside-active"
-  | "embed-outside-expand"
   // Responsive wide-card: single self-contained card that fills its
   // container, adapting via internal size buckets + orientation.
   | "responsive";
@@ -43,6 +42,16 @@ export type LinkoutsConfigParams = {
    * has no other sibling relying on it).
    */
   hostHorizontalInset?: boolean;
+  /**
+   * Linkout is enabled in the tile but DISABLED in expand
+   * (`show_linkout_in_expand`/`showLinksInExpand` is false). When true, dragging
+   * is disabled on the tile reveal (`disableDragAndSwipe`) so it can't be pulled
+   * up into panel/full-view — the states that grow a full panel over the video
+   * (and, with the promote blocked in embed-tile, have nowhere to go). The full
+   * `enabledStates` are kept (they drive the theme cross-fade); only manual drag
+   * is off. Only affects reveal scenarios that have a chip tier.
+   */
+  disableExpand?: boolean;
 };
 
 export interface LinkoutsConfig {
@@ -131,12 +140,11 @@ const OUTSIDE_PANEL_CLASS = "gencl:w-full gencl:rounded-t-none! gencl:rounded-b-
  * The in-player placement reveal, shared by every scenario that runs the timed
  * `chip → default → expand-view` chain: the five width-bucketed `embed-*`
  * overlay tiers plus `expand-mobile` / `expand-desktop-inside`. They differ only
- * in the chip tier (`pl-xs`/`pl-sml` and its pixel height), the initial state
- * (embed tiers start collapsed at the chip; the expand views carry in at
- * `default`), the `panel-view` height (`70vh`, except `embed-active`'s `70%`),
- * and which panel-chrome resolver they use (`revealClassName` vs
- * `expandPanelClassName`). Everything else — the enabled set, the auto-chain, the
- * flags — is identical, so it lives here once instead of copy-pasted per case.
+ * in the chip tier (`pl-xs`/`pl-sml` and its pixel height), the initial state,
+ * the `panel-view` height (`70vh`, except `embed-active`'s `70%`), and which
+ * panel-chrome resolver they use (`revealClassName` vs `expandPanelClassName`).
+ * Everything else — the enabled set, the auto-chain, the flags — is identical,
+ * so it lives here once instead of copy-pasted per case.
  */
 function makePlacementReveal(
   scenario: LinkoutsScenario,
@@ -152,31 +160,43 @@ function makePlacementReveal(
     /** Panel-chrome resolver: `revealClassName` (embed) or `expandPanelClassName` (expand). */
     className: (state: DynamicSheetState) => string;
     theme: "light" | "dark";
+    /**
+     * Lock the reveal at the chip — no auto-advance, no drag to
+     * default/default-active/expand-view/panel-view/full-view. Used for
+     * xsmall tiles (`effectiveVideoWidth < 250`): too narrow for the card
+     * states to render usefully, so the chip is the only state on offer.
+     */
+    chipOnly?: boolean;
   }
 ): LinkoutsConfig {
-  const { chip, chipHeightPx, initialState, panelHeight, className, theme } = opts;
-  const heights: DynamicSheetHeightConfig = {
-    [chip]: `${chipHeightPx}px`,
-    default: "auto",
-    "default-active": "auto",
-    "expand-view": "auto",
-    "panel-view": panelHeight,
-    "full-view": "100%",
-  };
+  const { chip, chipHeightPx, initialState, panelHeight, className, theme, chipOnly } = opts;
+  const heights: DynamicSheetHeightConfig = chipOnly
+    ? { [chip]: `${chipHeightPx}px` }
+    : {
+        [chip]: `${chipHeightPx}px`,
+        default: "auto",
+        "default-active": "auto",
+        "expand-view": "auto",
+        "panel-view": panelHeight,
+        "full-view": "100%",
+      };
   return {
     scenario,
     config: {
       initialState,
-      enabledStates: [chip, "default", "default-active", "expand-view", "panel-view", "full-view"],
+      enabledStates: chipOnly ? [chip] : [chip, "default", "default-active", "expand-view", "panel-view", "full-view"],
       heights,
       // Timed auto-chain: chip → default → expand-view (3s per hop). Each hop is
       // gated by the host (blocked if the target would breach 50% of the frame
       // or truncate the CTA). `default` → `default-active` is a user action
       // (hover/tap) — a branch off `default`, NOT part of the auto-chain.
-      autoAdvance: [
-        { from: chip, to: "default", delayMs: 3000 },
-        { from: "default", to: "expand-view", delayMs: 3000 },
-      ],
+      // Empty when `chipOnly` — the chip never advances.
+      autoAdvance: chipOnly
+        ? []
+        : [
+            { from: chip, to: "default", delayMs: 3000 },
+            { from: "default", to: "expand-view", delayMs: 3000 },
+          ],
       // Linkouts owns its header in non-chip states; the sheet's auto-header
       // stays off so `default` shows no bare X. Engine suppresses the indicator
       // in the chip and reveals it once `default-active` is reached.
@@ -184,6 +204,7 @@ function makePlacementReveal(
       showOverlay: false,
       showIndicator: true,
       showFooter: true,
+      disableDragAndSwipe: chipOnly,
       theme,
     },
     showHeader: true,
@@ -203,6 +224,7 @@ export function getLinkoutsConfig({
   linkoutsState,
   layout,
   hostHorizontalInset,
+  disableExpand,
 }: LinkoutsConfigParams): LinkoutsConfig {
   const revealClassName = (state: DynamicSheetState) => placementRevealClassName(state, hostHorizontalInset);
   const isExpanded = linkoutsState === "full-view" || linkoutsState === "panel-view";
@@ -222,11 +244,12 @@ export function getLinkoutsConfig({
     }
 
     if (view === "embed" && layout === "outside") {
+      // Outside: chip / default / default-active only, no expand-view. Wide
+      // bucket (≥300) reuses `-active`.
       if (effectiveVideoWidth <= 180) return "embed-outside-xs";
       if (effectiveVideoWidth < 250) return "embed-outside-sml";
       if (effectiveVideoWidth < 300) return "embed-outside-default";
-      if (effectiveVideoWidth < 400) return "embed-outside-active";
-      return "embed-outside-expand";
+      return "embed-outside-active";
     }
 
     if (isMobile) return "expand-mobile";
@@ -234,250 +257,268 @@ export function getLinkoutsConfig({
     return "expand-desktop-outside";
   })();
 
-  switch (scenario) {
-    case "expand-mobile":
-      // Continuous flow: the expand view runs the SAME reveal machine as the
-      // tile and INHERITS its state via the global bus. A carried `pl-sml`
-      // continues to `default` (timed), `default` → `default-active` is a user
-      // action (never auto), and manual drag up through expand-view → panel-view
-      // → full-view stays enabled. Heights: default / default-active /
-      // expand-view are `"auto"` (panel hugs measured content — a fixed height
-      // left a gap on sparse payloads); panel-view `70vh`; full-view `100%`.
-      return makePlacementReveal(scenario, {
-        chip: "pl-sml",
-        chipHeightPx: 40,
-        initialState: "default",
-        panelHeight: "70vh",
-        className: expandPanelClassName,
-        theme,
-      });
-
-    case "expand-desktop-inside":
-      // Narrow-desktop overlay (too narrow for the right-rail comments column).
-      // Mirrors `expand-mobile`: same reveal machine, inherits the tile's state
-      // via the global bus. Carried `pl-sml` reveals to `default` (timed);
-      // default → default-active is a user action; manual drag chain enabled.
-      return makePlacementReveal(scenario, {
-        chip: "pl-sml",
-        chipHeightPx: 40,
-        initialState: "default",
-        panelHeight: "70vh",
-        className: expandPanelClassName,
-        theme,
-      });
-
-    case "expand-desktop-outside":
-      return {
-        scenario,
-        config: {
-          initialState: "expand-view",
-          enabledStates: ["expand-view", "full-view"],
-          heights: { "expand-view": "100%", "full-view": "100%" },
-          showClose: false,
-          showOverlay: false,
-          showIndicator: false,
-          showFooter: true,
-          disableDragAndSwipe: true,
-          disableAnimation: true,
-          theme: "light",
-        },
-        showHeader: true,
-        className: () => "",
-        footerClassName: collapsedFooterClassName,
-      };
-
-    // ── Width-bucketed embed scenarios ───────────────────────────
-    // Inside-layout: shared drag chain (chip/default → … → full-view),
-    // with definite panel/full heights so the snap math has real targets.
-    // Outside-layout: single-state, drag disabled.
-
-    case "embed-xs":
-      // Placement reveal, timed: chip (`pl-xs`) → 3s → `default` → 3s →
-      // `expand-view`, each hop 50%-height-gated by the host. `default` →
-      // `default-active` is a user action (hover/tap) branching off `default`.
-      // Same chain as `embed-default`; only the chip state (`pl-xs`) and its
-      // `32px` height differ (this is the narrowest tier). `default` /
-      // `default-active` / `expand-view` use `"auto"`; the per-state
-      // `autoHeightProvider` measures each distinct body so they don't collide
-      // on one snap height.
-      return makePlacementReveal(scenario, {
-        chip: "pl-xs",
-        chipHeightPx: 32,
-        initialState: "pl-xs",
-        panelHeight: "70vh",
-        className: revealClassName,
-        theme,
-      });
-
-    case "embed-sml":
-      // Placement reveal, timed: chip (`pl-sml`) → 3s → `default` → 3s →
-      // `expand-view`, each hop 50%-height-gated by the host. `default` →
-      // `default-active` is a user action (hover/tap) branching off `default`.
-      // Same chain as `embed-default`; only the chip state (`pl-sml`) and its
-      // `40px` height differ from the wider tiers.
-      return makePlacementReveal(scenario, {
-        chip: "pl-sml",
-        chipHeightPx: 40,
-        initialState: "pl-sml",
-        panelHeight: "70vh",
-        className: revealClassName,
-        theme,
-      });
-
-    case "embed-default":
-      // Placement reveal, timed: chip (`pl-sml`) → 3s → `default` → 3s →
-      // `expand-view`, each hop 50%-height-gated by the host. `default` →
-      // `default-active` is a user action (hover/tap) branching off `default`,
-      // NOT part of the auto-chain; the two share a body and differ only in
-      // chrome (header). panel/full stay enabled for manual drag.
-      return makePlacementReveal(scenario, {
-        chip: "pl-sml",
-        chipHeightPx: 40,
-        initialState: "pl-sml",
-        panelHeight: "70vh",
-        className: revealClassName,
-        theme,
-      });
-
-    case "embed-active":
-      // Placement reveal, timed: chip (`pl-sml`) → 3s → `default` → 3s →
-      // `expand-view`, each hop 50%-height-gated. default → default-active is a
-      // user-action branch (not auto). panel-view is `70%` (not 70vh) so combined
-      // with the host's 30% video shrink the two sections tile to exactly
-      // 100% — no black gap.
-      return makePlacementReveal(scenario, {
-        chip: "pl-sml",
-        chipHeightPx: 40,
-        initialState: "pl-sml",
-        // `70%` (not 70vh): with the host's 30% video shrink the two sections
-        // tile to exactly 100%, so there's no black gap.
-        panelHeight: "70%",
-        className: revealClassName,
-        theme,
-      });
-
-    case "embed-expand":
-      // Wide embed (≥400 px). Placement reveal applies here too (per spec: all
-      // in-player views): timed chip (`pl-sml`) → 3s → `default` → 3s →
-      // `expand-view`, each hop 50%-height-gated. default → default-active is a
-      // user-action branch (not auto). The drag chain (expand/panel/full) stays
-      // enabled for manual open (panel-view needs full-view as an upward stop;
-      // `100%` requires a definite-height wrapper).
-      return makePlacementReveal(scenario, {
-        chip: "pl-sml",
-        chipHeightPx: 40,
-        initialState: "pl-sml",
-        panelHeight: "70vh",
-        className: revealClassName,
-        theme,
-      });
-
-    // ── Outside-layout embed scenarios (light theme, no rounding). ──
-
-    case "embed-outside-xs":
-      return {
-        scenario,
-        config: {
-          initialState: "pl-xs",
-          enabledStates: ["pl-xs"],
-          heights: { "pl-xs": "32px" },
-          showClose: false,
-          showOverlay: false,
-          showIndicator: false,
-          showFooter: false,
-          disableDragAndSwipe: true,
-          theme: "light",
-        },
-        showHeader: false,
-        className: () => "gencl:w-full gencl:bg-transparent! gencl:backdrop-blur-none! gencl:rounded-none!",
-        footerClassName: collapsedFooterClassName,
-      };
-
-    case "embed-outside-sml":
-      return {
-        scenario,
-        config: {
+  const built: LinkoutsConfig = ((): LinkoutsConfig => {
+    switch (scenario) {
+      case "expand-mobile":
+        // Continuous flow: the expand view runs the SAME reveal machine as the
+        // tile and, once a tile HAS run for this video, inherits its carried
+        // state via the global bus. But on mobile web `default.tsx` never mounts
+        // the `view="embed"` tile at all (it goes straight to `view="expand"`),
+        // so there's no tile handoff to inherit from — `initialState` below is
+        // the real first-paint state for every mobile video, not just a
+        // before-the-bus-has-an-entry fallback. It must start at the chip like
+        // the embed tiers do (GEN-10508); starting at `default` skipped the chip
+        // outright, and once the bus is stale from that skip, a subsequent
+        // video reuses whatever this or the auto-chain left behind instead of
+        // ever showing the chip. `default` → `default-active` is a user action
+        // (never auto), and manual drag up through expand-view → panel-view →
+        // full-view stays enabled. Heights: default / default-active /
+        // expand-view are `"auto"` (panel hugs measured content — a fixed height
+        // left a gap on sparse payloads); panel-view `70vh`; full-view `100%`.
+        return makePlacementReveal(scenario, {
+          chip: "pl-sml",
+          chipHeightPx: 40,
           initialState: "pl-sml",
-          enabledStates: ["pl-sml"],
-          heights: { "pl-sml": "40px" },
-          showClose: false,
-          showOverlay: false,
-          showIndicator: false,
-          showFooter: false,
-          disableDragAndSwipe: true,
-          theme: "light",
-        },
-        showHeader: false,
-        className: () => "gencl:w-full gencl:bg-transparent! gencl:backdrop-blur-none! gencl:rounded-none!",
-        footerClassName: collapsedFooterClassName,
-      };
+          panelHeight: "70vh",
+          className: expandPanelClassName,
+          theme,
+        });
 
-    case "embed-outside-default":
-    case "embed-outside-active":
-      // Outside-layout, same start-simple-then-auto-expand pattern; drag
-      // disabled. `default-active` is enabled so a host that pushes it
-      // externally lands on a valid snap target — otherwise the panel is
-      // measured without the header and clips the inline CTA.
-      return {
-        scenario,
-        config: {
-          initialState: "default",
-          enabledStates: ["default", "default-active", "expand-view"],
-          heights: { default: "auto", "default-active": "auto", "expand-view": "auto" },
-          autoAdvance: [{ from: "default", to: "expand-view", delayMs: 3000 }],
-          showClose: false,
-          showOverlay: false,
-          showIndicator: false,
-          showFooter: true,
-          disableDragAndSwipe: true,
-          theme: "light",
-        },
-        showHeader: true,
-        className: () => OUTSIDE_PANEL_CLASS,
-        footerClassName: collapsedFooterClassName,
-      };
-
-    case "embed-outside-expand":
-      return {
-        scenario,
-        config: {
+      case "expand-desktop-inside":
+        // Narrow-desktop overlay (too narrow for the right-rail comments column).
+        // Mirrors `expand-mobile`: same reveal machine, inherits the tile's state
+        // via the global bus. Carried `pl-sml`/`default` state wins as usual (see
+        // `linkouts-dynamic.tsx`'s `hasExplicitLinkoutsState` check) — `initialState`
+        // below only applies on true first mount, before the bus has any "linkouts"
+        // entry, and lands there straight on `expand-view` (desktop default) instead
+        // of `default`.
+        return makePlacementReveal(scenario, {
+          chip: "pl-sml",
+          chipHeightPx: 40,
           initialState: "expand-view",
-          enabledStates: ["expand-view"],
-          heights: { "expand-view": "auto" },
-          showClose: false,
-          showOverlay: false,
-          showIndicator: false,
-          showFooter: true,
-          disableDragAndSwipe: true,
-          theme: "light",
-        },
-        // Outside expand renders the header band above the rich body;
-        // `linkouts-dynamic.tsx` fills `header` for non-default states.
-        showHeader: true,
-        className: () => OUTSIDE_PANEL_CLASS,
-        footerClassName: collapsedFooterClassName,
-      };
+          panelHeight: "70vh",
+          className: expandPanelClassName,
+          theme,
+        });
 
-    case "responsive":
-      // Single state, fills the host. Internal layout lives in <LinkCard>'s
-      // `isResponsive` branch; this just wires the state machine and
-      // suppresses all sheet chrome.
+      case "expand-desktop-outside":
+        return {
+          scenario,
+          config: {
+            initialState: "expand-view",
+            enabledStates: ["expand-view", "full-view"],
+            heights: { "expand-view": "100%", "full-view": "100%" },
+            showClose: false,
+            showOverlay: false,
+            showIndicator: false,
+            showFooter: true,
+            disableDragAndSwipe: true,
+            disableAnimation: true,
+            theme: "light",
+          },
+          showHeader: true,
+          className: () => "",
+          footerClassName: collapsedFooterClassName,
+        };
+
+      // ── Width-bucketed embed scenarios ───────────────────────────
+      // Inside-layout: shared drag chain (chip/default → … → full-view),
+      // with definite panel/full heights so the snap math has real targets.
+      // Outside-layout: single-state, drag disabled.
+
+      case "embed-xs":
+        // Placement reveal, timed: chip (`pl-xs`) → 3s → `default` → 3s →
+        // `expand-view`, each hop 50%-height-gated by the host. `default` →
+        // `default-active` is a user action (hover/tap) branching off `default`.
+        // Same chain as `embed-default`; only the chip state (`pl-xs`) and its
+        // `32px` height differ (this is the narrowest tier). `default` /
+        // `default-active` / `expand-view` use `"auto"`; the per-state
+        // `autoHeightProvider` measures each distinct body so they don't collide
+        // on one snap height. `embed-xs` is itself always ≤180 px, so this tier
+        // is always `chipOnly` — kept as a width check (not a literal `true`) so
+        // it stays governed by the same 250 px xsmall threshold as `embed-sml`.
+        return makePlacementReveal(scenario, {
+          chip: "pl-xs",
+          chipHeightPx: 32,
+          initialState: "pl-xs",
+          panelHeight: "70vh",
+          className: revealClassName,
+          theme,
+          chipOnly: effectiveVideoWidth < 250,
+        });
+
+      case "embed-sml":
+        // Placement reveal, timed: chip (`pl-sml`) → 3s → `default` → 3s →
+        // `expand-view`, each hop 50%-height-gated by the host. `default` →
+        // `default-active` is a user action (hover/tap) branching off `default`.
+        // Same chain as `embed-default`; only the chip state (`pl-sml`) and its
+        // `40px` height differ from the wider tiers. `embed-sml` spans 180-250 px
+        // — entirely inside the <250 xsmall threshold — so this tier, too, is
+        // always `chipOnly`.
+        return makePlacementReveal(scenario, {
+          chip: "pl-sml",
+          chipHeightPx: 40,
+          initialState: "pl-sml",
+          panelHeight: "70vh",
+          className: revealClassName,
+          theme,
+          chipOnly: effectiveVideoWidth < 250,
+        });
+
+      case "embed-default":
+        // Placement reveal, timed: chip (`pl-sml`) → 3s → `default` → 3s →
+        // `expand-view`, each hop 50%-height-gated by the host. `default` →
+        // `default-active` is a user action (hover/tap) branching off `default`,
+        // NOT part of the auto-chain; the two share a body and differ only in
+        // chrome (header). panel/full stay enabled for manual drag.
+        return makePlacementReveal(scenario, {
+          chip: "pl-sml",
+          chipHeightPx: 40,
+          initialState: "pl-sml",
+          panelHeight: "70vh",
+          className: revealClassName,
+          theme,
+        });
+
+      case "embed-active":
+        // Placement reveal, timed: chip (`pl-sml`) → 3s → `default` → 3s →
+        // `expand-view`, each hop 50%-height-gated. default → default-active is a
+        // user-action branch (not auto). panel-view is `70%` (not 70vh) so combined
+        // with the host's 30% video shrink the two sections tile to exactly
+        // 100% — no black gap.
+        return makePlacementReveal(scenario, {
+          chip: "pl-sml",
+          chipHeightPx: 40,
+          initialState: "pl-sml",
+          // `70%` (not 70vh): with the host's 30% video shrink the two sections
+          // tile to exactly 100%, so there's no black gap.
+          panelHeight: "70%",
+          className: revealClassName,
+          theme,
+        });
+
+      case "embed-expand":
+        // Wide embed (≥400 px). Placement reveal applies here too (per spec: all
+        // in-player views): timed chip (`pl-sml`) → 3s → `default` → 3s →
+        // `expand-view`, each hop 50%-height-gated. default → default-active is a
+        // user-action branch (not auto). The drag chain (expand/panel/full) stays
+        // enabled for manual open (panel-view needs full-view as an upward stop;
+        // `100%` requires a definite-height wrapper).
+        return makePlacementReveal(scenario, {
+          chip: "pl-sml",
+          chipHeightPx: 40,
+          initialState: "pl-sml",
+          panelHeight: "70vh",
+          className: revealClassName,
+          theme,
+        });
+
+      // ── Outside-layout embed scenarios (light theme, no rounding). ──
+
+      case "embed-outside-xs":
+        return {
+          scenario,
+          config: {
+            initialState: "pl-xs",
+            enabledStates: ["pl-xs"],
+            heights: { "pl-xs": "32px" },
+            showClose: false,
+            showOverlay: false,
+            showIndicator: false,
+            showFooter: false,
+            disableDragAndSwipe: true,
+            theme: "light",
+          },
+          showHeader: false,
+          className: () => "gencl:w-full gencl:bg-transparent! gencl:backdrop-blur-none! gencl:rounded-none!",
+          footerClassName: collapsedFooterClassName,
+        };
+
+      case "embed-outside-sml":
+        return {
+          scenario,
+          config: {
+            initialState: "pl-sml",
+            enabledStates: ["pl-sml"],
+            heights: { "pl-sml": "40px" },
+            showClose: false,
+            showOverlay: false,
+            showIndicator: false,
+            showFooter: false,
+            disableDragAndSwipe: true,
+            theme: "light",
+          },
+          showHeader: false,
+          className: () => "gencl:w-full gencl:bg-transparent! gencl:backdrop-blur-none! gencl:rounded-none!",
+          footerClassName: collapsedFooterClassName,
+        };
+
+      case "embed-outside-default":
+      case "embed-outside-active":
+        // Outside: no expand-view, no auto-advance. Rests at `default`; user tap
+        // advances to `default-active` (enabled so the tap has a valid target).
+        // Drag disabled.
+        return {
+          scenario,
+          config: {
+            initialState: "default",
+            enabledStates: ["default", "default-active"],
+            heights: { default: "auto", "default-active": "auto" },
+            showClose: false,
+            showOverlay: false,
+            showIndicator: false,
+            showFooter: true,
+            disableDragAndSwipe: true,
+            theme: "light",
+          },
+          showHeader: true,
+          className: () => OUTSIDE_PANEL_CLASS,
+          footerClassName: collapsedFooterClassName,
+        };
+
+      case "responsive":
+        // Single state, fills the host. Internal layout lives in <LinkCard>'s
+        // `isResponsive` branch; this just wires the state machine and
+        // suppresses all sheet chrome.
+        return {
+          scenario,
+          config: {
+            initialState: "responsive",
+            enabledStates: ["responsive"],
+            heights: { responsive: "100%" },
+            showClose: false,
+            showOverlay: false,
+            showIndicator: false,
+            showFooter: false,
+            disableDragAndSwipe: true,
+            theme: "light",
+          },
+          showHeader: false,
+          className: () => "gencl:w-full gencl:h-full gencl:rounded-none!",
+          footerClassName: () => "",
+        };
+    }
+  })();
+
+  // Linkout disabled in expand: disable dragging so the reveal can't be pulled
+  // up into panel/full-view (which grows a full panel over the video and, before
+  // the promote block, opened the disabled mobile expand). We keep the full
+  // `enabledStates` untouched — they drive the sheet's dark→light theme
+  // cross-fade, so removing panel/full turned the resting card's surface white
+  // and made its white text invisible. The timed auto-reveal (chip → default →
+  // default-active/expand-view) still runs; only manual drag is off. Scoped to
+  // reveal scenarios that have a chip tier; single-state desktop/outside
+  // scenarios already set `disableDragAndSwipe`.
+  if (disableExpand) {
+    const states = built.config.enabledStates ?? [];
+    const hasChip = states.some((state) => state === "pl-xs" || state === "pl-sml");
+    if (hasChip && !built.config.disableDragAndSwipe) {
       return {
-        scenario,
-        config: {
-          initialState: "responsive",
-          enabledStates: ["responsive"],
-          heights: { responsive: "100%" },
-          showClose: false,
-          showOverlay: false,
-          showIndicator: false,
-          showFooter: false,
-          disableDragAndSwipe: true,
-          theme: "light",
-        },
-        showHeader: false,
-        className: () => "gencl:w-full gencl:h-full gencl:rounded-none!",
-        footerClassName: () => "",
+        ...built,
+        config: { ...built.config, disableDragAndSwipe: true },
       };
+    }
   }
+
+  return built;
 }

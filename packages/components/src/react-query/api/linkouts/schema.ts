@@ -11,6 +11,9 @@ const linkSchema = z.object({
   description: z.string().nullish(),
   brand: z.string().nullish(),
   website: z.string().nullish(),
+  // Per-link CTA button text. Backend only ever sends `cta_text` here, never
+  // on the group-level `linkoutSchema` below (confirmed via live API capture).
+  cta_text: z.string().nullish(),
   originalPrice: z.string().nullish(),
   currentPrice: z.string().nullish(),
   rating: z.string().nullish(),

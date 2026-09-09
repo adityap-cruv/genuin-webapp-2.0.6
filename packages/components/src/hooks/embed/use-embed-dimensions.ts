@@ -125,12 +125,10 @@ export function useEmbedDimensions() {
 
     const headerHeight = getHeaderHeight();
     const statsHeight = config.engagement.showSocialInteractionData && config.responsive.canShowEngagement ? 40 : 0;
-    const linkoutHeight =
-      config.links.showLinkOutside && config.responsive.canShowEngagement
-        ? config.responsive.effectiveVideoWidth > 300
-          ? 154
-          : 38
-        : 0;
+    // Outside linkout `minHeight` collapse-floor: chip height (40) never exceeds
+    // any state, so the sheet's `"auto"` heights drive the real height with no
+    // reserved slack. Not gated on `canShowEngagement` (that gates stats).
+    const linkoutHeight = config.links.showLinkOutside ? 40 : 0;
 
     // Prefer observed dimensions (ResizeObserver), fall back to config dimensions
     // (publisher-set), only use defaults if neither exist. Never let defaults
@@ -168,7 +166,6 @@ export function useEmbedDimensions() {
   }, [
     config.engagement.showSocialInteractionData,
     config.responsive.canShowEngagement,
-    config.responsive.effectiveVideoWidth,
     config.links.showLinkOutside,
     config.dimensions.containerHeight,
     config.dimensions.containerWidth,

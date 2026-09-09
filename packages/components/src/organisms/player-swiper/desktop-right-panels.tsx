@@ -5,11 +5,10 @@ import { cn } from "@genuin/ui/lib/utils";
 import { lazy } from "react";
 
 import type { VideoTypes } from "@genuin/components/context";
-import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
 import { CommentInputBox } from "@genuin/components/molecules/comments/comment-input";
 import { CommentsList } from "@genuin/components/molecules/comments/comments-list";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
-import { LinkoutLoadingIndicator } from "@genuin/components/organisms/linkouts/linkout-loading-indicator";
+import { hasLinkouts } from "@genuin/components/molecules/linkout-new/linkout-utils";
 import { setQueryDataForNewComment } from "@genuin/components/react-query/api/comments";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
@@ -42,10 +41,6 @@ export function DesktopRightPanels({
   onCommentClose,
   handleSwiperToggle,
 }: DesktopRightPanelsProps) {
-  // Carried reveal state, so the cold-chunk loading skeleton matches the card
-  // the user left the tile in (see LinkoutLoadingIndicator).
-  const { getContentTypeState } = useSheetState();
-  const carriedLinkoutState = getContentTypeState("linkouts");
   const activePost = filteredPost[activeIndex];
   if (!activePost) return null;
 
@@ -74,18 +69,22 @@ export function DesktopRightPanels({
               : "gencl:h-full gencl:opacity-100"
             : "gencl:flex-none gencl:h-0 gencl:opacity-0 gencl:pointer-events-none"
         )}>
-        <SafeSuspense fallback={<LinkoutLoadingIndicator state={carriedLinkoutState} />} errorFallback={null}>
-          <Linkouts
-            linkouts={activePost.video?.linkouts ?? []}
-            linkoutId={activePost.video?.linkoutId ?? null}
-            isActive
-            showImmediately
-            variant="dynamic"
-            view="expand"
-            videoDetails={activePost.video}
-            totalVideos={totalVideos}
-          />
-        </SafeSuspense>
+        {/* Non-empty only: `[]` (no/CMS-disabled linkout) would still mount the
+            lazy <Linkouts> chunk and flash its skeleton fallback on slow networks. */}
+        {hasLinkouts(activePost.video) && (
+          <SafeSuspense fallback={null} errorFallback={null}>
+            <Linkouts
+              linkouts={activePost.video.linkouts}
+              linkoutId={activePost.video?.linkoutId ?? null}
+              isActive
+              showImmediately
+              variant="dynamic"
+              view="expand"
+              videoDetails={activePost.video}
+              totalVideos={totalVideos}
+            />
+          </SafeSuspense>
+        )}
       </div>
 
       <div

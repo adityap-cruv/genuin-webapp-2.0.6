@@ -7,6 +7,7 @@ import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config
 import { SDKEventEmitter, SDKEventName } from "@genuin/components/lib/sdk-event-emitter";
 import { addIheartCtaCampaign } from "@genuin/components/lib/utils/iheart-url";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
+import { hasLinkouts } from "@genuin/components/molecules/linkout-new/linkout-utils";
 import { buildLinkoutsAnalyticsData } from "@genuin/components/organisms/linkouts/build-linkouts-analytics-data";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
@@ -129,7 +130,7 @@ export const ClipPlayerCTA = ({ postDetails, isActive }: ClipPlayerCTAProps) => 
   // Sponsored posts have linkouts but no station/podcast slug — let them through.
   // Label comes straight from linkouts[0].cta_text (Linkouts derives it).
   if (!isSponsored && !postDetails.video?.attributes?.slug) return;
-  if (!postDetails.video?.linkouts) return;
+  if (!hasLinkouts(postDetails.video)) return;
 
   return (
     <SafeSuspense fallback={null} errorFallback={null}>

@@ -74,8 +74,19 @@ export const MobilePlayerOverlay: FC<{ colors: SkeletonColors }> = ({ colors }) 
 
 // Sub-component for vertical action buttons (desktop). Exported so the
 // player-swiper Actions Suspense boundary can show the same shimmer.
-export const ActionButtonsSkeleton: FC<{ colors: SkeletonColors }> = ({ colors }) => (
-  <div className="gencl:flex gencl:gap-4 gencl:flex-col gencl:justify-end gencl:w-13 gencl:pb-4">
+//
+// `showExpandView` mirrors the real `<Actions>` component's own
+// expand-vs-split padding (`pb-4` / `pb-7` — see actions.tsx's caller in
+// player-swiper.tsx) so the skeleton doesn't shift once the real rail mounts.
+export const ActionButtonsSkeleton: FC<{ colors: SkeletonColors; showExpandView?: boolean }> = ({
+  colors,
+  showExpandView,
+}) => (
+  <div
+    className={cn(
+      "gencl:flex gencl:gap-4 gencl:flex-col gencl:justify-end gencl:w-12",
+      showExpandView ? "gencl:pb-4" : "gencl:pb-7"
+    )}>
     {Array.from({ length: 5 }).map((_, index) => (
       <Skeleton key={index} className={cn("gencl:size-12 gencl:rounded-full gencl:shrink-0", colors.secondary)} />
     ))}

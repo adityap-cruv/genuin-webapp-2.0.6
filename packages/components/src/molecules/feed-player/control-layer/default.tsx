@@ -13,6 +13,7 @@ import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
 import { shouldPromoteToPlayerExpand } from "@genuin/components/molecules/linkout-new/linkout-expand-promotion";
+import { hasLinkouts } from "@genuin/components/molecules/linkout-new/linkout-utils";
 import { PlaybackSpeedCapsule } from "@genuin/components/molecules/playback-speed/speed-capsule";
 import { DynamicReactionIcon, ReactionButton } from "@genuin/components/molecules/reaction-button";
 
@@ -75,34 +76,34 @@ export function Default({
   } = usePlayerContext();
   const { hideGestureOverlay } = useGestureOverlayManager();
   const { isMobile, isTablet, isIpad } = useDeviceDetection();
-  // Viewport-based mobile signal (≤640px). The UA-based `isMobile`/`isTablet`
-  // above miss DevTools responsive mode / a narrow desktop window (desktop UA +
-  // mobile viewport), so the expand branch below fell through to the in-player
-  // `view="embed"` overlay instead of `ExpandViewDetails` (`view="expand"`) —
-  // the whole linkout expand-mobile reveal machine (incl. the CTA-truncation
-  // gate) then never engaged and card titles rendered cut off. The rest of the
-  // linkout pipeline (scenario/placement/gates) already keys off this viewport
-  // hook, so aligning the branch here removes the mismatch. `Default` is the
-  // webapp-only control layer (never inside `EmbedProvider`), so a mobile-width
-  // viewport here always means a real/emulated mobile user.
+  // Viewport-based mobile signal (≤640px). UA-based isMobile/isTablet miss
+  // DevTools responsive mode / narrow desktop windows, so the expand branch fell
+  // through to the embed overlay and card titles rendered cut off. Rest of the
+  // linkout pipeline already keys off this hook.
   const { isMobile: isViewportMobile } = useDeviceDetectMediaQuery();
   const embedConfig = useEmbedConfigs();
   const { user } = useAuthContext();
   const brandLayoutType = embedConfig.view.brandLayoutType;
   const { isDesignSystemV2Linkouts } = embedConfig;
-  const { sheetState, getContentTypeState, setContentTypeState } = useSheetState();
-  const isSheetOpen = sheetState === "panel-view" || sheetState === "full-view";
+  const { sheetState, sheetContentPlacements, getContentTypeState, setContentTypeState } = useSheetState();
+  // Gates the in-player reflow (shrink video, hide controls + scrubber) for a
+  // linkout grown to panel/full. Only when tiled OVER the video ("inside"); the
+  // desktop right-rail ("outside") must keep controls. Mirrors player.tsx.
+  const isLinkoutTiledInside = sheetContentPlacements["linkouts"] === "inside";
+  const isSheetOpen = isLinkoutTiledInside && (sheetState === "panel-view" || sheetState === "full-view");
 
-  // Tile view has no room to grow a panel/full-view linkout sheet in place —
-  // promote the whole player into its expand view instead, same intent as
-  // the web-sdk tile (`embed-tile.tsx`). On desktop this lands the linkout in
-  // the right-rail side panel (`DesktopRightPanels`) instead of an in-tile
-  // drag sheet; see `player-swiper.tsx`'s `openContentType("linkouts", ...)`
-  // effect for that routing. V2-only: `isDesignSystemV2Linkouts` is what the
-  // panel/full-view states even come from (`linkouts-dynamic.tsx`) — V1 cards
-  // (including iHeart's, which stays on V1) never reach those states, so this
-  // naturally excludes iHeart without hardcoding a brand check.
+  // Tile view can't grow a panel/full sheet in place — promote the player into
+  // expand view instead (matches web-sdk embed-tile.tsx). V2-only: panel/full
+  // states only exist under V2, so V1 (incl. iHeart) is excluded without a
+  // brand check.
   const linkoutsSheetState = getContentTypeState("linkouts");
+  // Drag-sheet states (panel/full) are meaningless in the expand layout; both the
+  // promote and exit paths reset them to expand-view. See GEN-10509.
+  const capPanelFullToExpand = useCallback(() => {
+    if (linkoutsSheetState === "panel-view" || linkoutsSheetState === "full-view") {
+      setContentTypeState("linkouts", "expand-view");
+    }
+  }, [linkoutsSheetState, setContentTypeState]);
   // Previous linkout state kept in state (not a value-ref, per repo convention).
   // `shouldPromoteToPlayerExpand` needs the prior state to tell a user drag
   // (`default-active` → `expand-view`) apart from the timed auto-advance
@@ -114,17 +115,9 @@ export function Default({
     setPrevLinkoutsSheetState(linkoutsSheetState); // record for the next transition
     if (!isDesignSystemV2Linkouts || !isActive || showExpandView) return;
     if (shouldPromoteToPlayerExpand(prev, linkoutsSheetState)) {
-      // Cap panel-view/full-view down to expand-view before promoting — same
-      // cap `expand-view-loader.tsx` (SDK) applies on exit, and for the same
-      // reason: the tile's drag-sheet reading (`panel-view`/`full-view`) has
-      // no meaning once we're in the side-panel/full expand layout, and
-      // `player.tsx`'s video-height calc reads that stale state directly
-      // (`calc(100% - var(--gn-linkout-h, 100%))` for full-view) — left
-      // uncapped, the video collapses to ~0 height the instant expand-view
-      // mounts, since the new layout never publishes `--gn-linkout-h`.
-      if (linkoutsSheetState === "panel-view" || linkoutsSheetState === "full-view") {
-        setContentTypeState("linkouts", "expand-view");
-      }
+      // Cap before promoting: player.tsx's height calc reads the stale full-view
+      // state and collapses the video to ~0. Matches SDK expand-view-loader.tsx.
+      capPanelFullToExpand();
       toggleExpandView?.();
     }
   }, [
@@ -134,8 +127,21 @@ export function Default({
     showExpandView,
     toggleExpandView,
     isDesignSystemV2Linkouts,
-    setContentTypeState,
+    capPanelFullToExpand,
   ]);
+
+  // Exit-cap (GEN-10509): when expand view collapses, a linkout left at
+  // panel/full-view stays stuck (openContentType preserves it) and keeps the
+  // header/controls hidden. Cap it back to expand-view — the fresh-tile resting
+  // state. V2 only.
+  const [prevShowExpandView, setPrevShowExpandView] = useState(showExpandView);
+  useEffect(() => {
+    if (prevShowExpandView === showExpandView) return; // no expand transition
+    const wasExpanded = prevShowExpandView;
+    setPrevShowExpandView(showExpandView);
+    if (!wasExpanded || showExpandView || !isDesignSystemV2Linkouts) return; // only expand → collapse
+    capPanelFullToExpand();
+  }, [showExpandView, prevShowExpandView, isDesignSystemV2Linkouts, capPanelFullToExpand]);
 
   // Ref to programmatically trigger reaction button click
   const reactionButtonRef = useRef<HTMLButtonElement>(null);
@@ -239,11 +245,22 @@ export function Default({
   // `rootElement` off the EmbedContext) is always stuck at `resolveControlSize(0)` =
   // "xs" here. Use the local `containerWidth` prop directly instead, matching the fix
   // already applied to default-placement.tsx / ad.tsx / *-embed.tsx.
-  const effectiveControlSize = embedConfig.isDesignSystemV2
+  const rawControlSize = embedConfig.isDesignSystemV2
     ? containerWidth
       ? resolveControlSize(containerWidth)
       : "lg"
     : "lg";
+  // GEN-10468: Expand View's own container is taller than a feed tile, so a
+  // 9:16 video routinely renders past 600px wide on desktop — pushing the
+  // corner mute/volume cluster into "lg" (48px / 160px slider) even though
+  // Figma's Expand View spec calls for "md" (32px / 120px slider). Cap only
+  // in Expand View; the tile scale itself is already Figma-verified across
+  // all 5 buckets.
+  const effectiveControlSize = showExpandView && rawControlSize === "lg" ? "md" : rawControlSize;
+  // GEN-10465: the center play/pause icon always reads at least `lg` — it
+  // doesn't shrink to `xs`/`sm`/`md` at narrow tile widths like the corner
+  // control cluster does.
+  const playingStateSize = "xl";
 
   switch (brandLayoutType) {
     case "iheart":
@@ -297,7 +314,7 @@ export function Default({
           )}
           <PlayingState
             showOnlyPlayAction={true}
-            size={effectiveControlSize}
+            size={playingStateSize}
             className={cn(
               "gencl:absolute gencl:left-1/2 gencl:top-1/2 gencl:flex gencl:items-center",
               "gencl:justify-center gencl:h-16 gencl:w-16",
@@ -464,7 +481,9 @@ export function Default({
                   onClickEditCover={() => editCoverImage?.(video.source)}
                 />
 
-                {video.linkouts && (
+                {/* Non-empty only: `[]` is truthy, so a bare `video.linkouts &&`
+                    mounts the lazy <Linkouts> chunk for no-linkout videos. */}
+                {hasLinkouts(video) && (
                   <SafeSuspense fallback={null} errorFallback={null}>
                     <Linkouts
                       isActive={isActive}
@@ -494,7 +513,7 @@ export function Default({
              * This is the player's state whether it is playing or paused or buffering.
              */}
             <PlayingState
-              size={effectiveControlSize}
+              size={playingStateSize}
               className={cn(
                 "gencl:absolute gencl:left-1/2 gencl:top-1/2 gencl:flex gencl:items-center",
                 "gencl:justify-center gencl:h-16 gencl:w-16",

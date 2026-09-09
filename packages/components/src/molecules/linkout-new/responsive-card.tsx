@@ -1,9 +1,10 @@
 "use client";
 
 import { Image } from "@genuin/ui/components/image";
+import { LinkIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
 import { cva } from "class-variance-authority";
-import { ChevronRight, Download, ExternalLink, Heart, Star } from "lucide-react";
+import { ChevronRight, Download, Heart, Star } from "lucide-react";
 import { useRef } from "react";
 
 import type { LinkMetaData } from "./link-card";
@@ -550,7 +551,7 @@ export function ResponsiveLinkCard({
                 />
               ) : (
                 <span className="gencl:absolute gencl:inset-0 gencl:flex gencl:items-center gencl:justify-center">
-                  <ExternalLink className="gencl:size-6 gencl:text-secondary-400" />
+                  <LinkIcon className="gencl:size-6 gencl:stroke-secondary-400" />
                 </span>
               )}
             </div>

@@ -15,7 +15,7 @@ import type {
 } from "@genuin/components/molecules/feed-player/gen-ad-container/gen-ad.types";
 import type { LinkData } from "@genuin/components/react-query/api/linkouts/schema";
 
-import { LinkCard, type LinkMetaData } from "./link-card";
+import { LinkCard, hasRichLinkMetadata, type LinkMetaData } from "./link-card";
 import type { FlexRatio } from "./responsive-card";
 
 import "swiper/css";
@@ -31,6 +31,16 @@ const GenAdContainer = lazy(() =>
 /** Stable no-op for `<GenAdContainer>`'s required `moveToNextVideo` — the
  *  linkout slot has no "next video". */
 const noop = (): void => {};
+
+/** The state to hand the card body: same as the reveal state everywhere
+ *  except `expand-view` on a sparse link, which downgrades to the compact
+ *  `default-active` layout. Height for `expand-view` is configured `"auto"`
+ *  here (see `linkouts-sheet-config.ts`), so the shorter body doesn't leave
+ *  blank space — only the card's own layout changes, not the sheet's height,
+ *  header, footer, or drag behavior (those stay keyed to the real `linkoutsState`). */
+function cardSheetStateFor(state: SheetState, rawLink: LinkData | undefined): SheetState {
+  return state === "expand-view" && !(rawLink && hasRichLinkMetadata(rawLink)) ? "default-active" : state;
+}
 
 // ─── AutoCycleView ─────────────────────────────────────────────────────────────
 // One LinkCard at a time, for the chip + resting states (pl-xs / pl-sml /
@@ -361,6 +371,7 @@ export function LinkoutItem({
   // rules diverge from the auto-measure well (bare LinkCard); rendering
   // LinkCard directly here matches the well so there's no bottom gap.
   const only = linksWithMetadata.length === 1 ? linksWithMetadata[0] : undefined;
+  const onlyRaw = links.length === 1 ? links[0] : undefined;
   if (only) {
     return (
       <div
@@ -368,7 +379,7 @@ export function LinkoutItem({
         className={isFullHeightSheet ? "gencl:h-full gencl:w-full" : undefined}>
         <LinkCard
           data={only}
-          sheetState={linkoutsState}
+          sheetState={cardSheetStateFor(linkoutsState, onlyRaw)}
           theme={theme}
           onClick={() => onLinkClick?.(only.link, only.title ?? only.link)}
           ctaText={ctaText}
@@ -412,7 +423,7 @@ export function LinkoutItem({
             style={isFullHeightSheet ? { height: "100%" } : undefined}>
             <LinkCard
               data={data}
-              sheetState={linkoutsState}
+              sheetState={cardSheetStateFor(linkoutsState, links[idx])}
               theme={theme}
               onClick={() => onLinkClick?.(data.link, data.title ?? data.link)}
               ctaText={ctaText}

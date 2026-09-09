@@ -228,17 +228,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       video_url: videoUrl,
       video_type: videoType,
     }),
-    [
-      videoId,
-      totalVideos,
-      videoDescription,
-      sectionTitle,
-      sectionSubtitle,
-      sectionId,
-      podcastId,
-      stationId,
-      videoType,
-    ]
+    [videoId, totalVideos, videoDescription, sectionTitle, sectionSubtitle, sectionId, podcastId, stationId, videoType]
   );
 
   const [pausedBySystem, setPausedBySystem] = useState(baseEventBus.getContext().systemPaused);
@@ -446,6 +436,19 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         return;
       }
 
+      // If a linkout/octo sheet is grown to panel/full in the EXPAND view, do NOT
+      // auto-play — the sheet pause (SheetStatePlaybackController) must stick.
+      // Without this, this effect's `play(false)` re-flips `feedPlayerShouldPlay`
+      // to true and the video plays behind the open panel. Read live from the bus
+      // (same pattern as the systemPaused check above); mirrors the controller's
+      // pause condition so tile transitions are unaffected.
+      const sheetStates = baseEventBus.getContext().sheetContentStates;
+      const isSheetPanelOrFull = (state?: string) => state === "panel-view" || state === "full-view";
+      if (showExpandView && (isSheetPanelOrFull(sheetStates?.linkouts) || isSheetPanelOrFull(sheetStates?.octo))) {
+        setFeedPlayerShouldPlay(false);
+        return;
+      }
+
       // Check if explicit unmute is set to false - if so, don't unmute
       if (playerConfig.unmuteVideo) {
         unmute(false);
@@ -508,6 +511,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     globalPlayState,
     videoId,
     pausedBySystem,
+    showExpandView,
   ]);
 
   // specifically for iheart to maintain the -n sec player replay.

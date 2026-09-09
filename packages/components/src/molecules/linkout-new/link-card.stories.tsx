@@ -39,6 +39,19 @@ const RICH_DATA = {
   address: LINKOUT_FIGMA_FULL.address,
 };
 
+// Broken thumbnail: `image` is a dead URL. The `onError` path in LinkCardThumb
+// falls back to the chain-link glyph, same as a missing image.
+const BROKEN_THUMB_DATA = {
+  ...RICH_DATA,
+  image: "https://media.qa.begenuin.com/does-not-exist-broken-thumbnail.png",
+};
+
+// Thumbnail missing: no `image` → chain-link glyph.
+const CHAIN_FALLBACK_DATA = {
+  ...RICH_DATA,
+  image: undefined,
+};
+
 // Width matches the smallest embed-180 case so the chip's `w-full`
 // behaviour is visible (not boxed at 246 px).
 function HostFrame({
@@ -164,6 +177,44 @@ export const FullView: Story = {
   render: () => (
     <HostFrame height={780} background="#f4f5f6">
       <LinkCard data={RICH_DATA} sheetState="full-view" theme="light" />
+    </HostFrame>
+  ),
+};
+
+// ─── Thumbnail fallback tiers ──────────────────────────────────────────────────
+
+export const ExpandBrokenThumbFallback: Story = {
+  name: "Expand View — broken thumbnail (onError → chain)",
+  render: () => (
+    <HostFrame height={260}>
+      <LinkCard data={BROKEN_THUMB_DATA} sheetState="expand-view" theme="dark" />
+    </HostFrame>
+  ),
+};
+
+export const ExpandChainFallback: Story = {
+  name: "Expand View — chain fallback (no thumbnail)",
+  render: () => (
+    <HostFrame height={260}>
+      <LinkCard data={CHAIN_FALLBACK_DATA} sheetState="expand-view" theme="dark" />
+    </HostFrame>
+  ),
+};
+
+export const DefaultBrokenThumbFallback: Story = {
+  name: "Default — broken thumbnail (onError → chain)",
+  render: () => (
+    <HostFrame height={120}>
+      <LinkCard data={BROKEN_THUMB_DATA} sheetState="default" theme="dark" />
+    </HostFrame>
+  ),
+};
+
+export const PlacementSMLBrokenThumbFallback: Story = {
+  name: "Placement SML — broken thumbnail (onError → chain)",
+  render: () => (
+    <HostFrame height={120}>
+      <LinkCard data={BROKEN_THUMB_DATA} sheetState="pl-sml" theme="dark" />
     </HostFrame>
   ),
 };

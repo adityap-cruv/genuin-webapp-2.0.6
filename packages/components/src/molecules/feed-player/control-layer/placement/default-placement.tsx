@@ -7,6 +7,7 @@ import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
+import { hasLinkouts } from "@genuin/components/molecules/linkout-new/linkout-utils";
 
 import { DynamicReactionIcon } from "../../../reaction-button";
 import { Stats } from "../../../stats";
@@ -33,7 +34,7 @@ export function DefaultPlacement({
   containerWidth,
   ...restProps
 }: ControlLayerPropsType) {
-  const { contentDisplay, responsive, view, engagement, isDesignSystemV2Linkouts } = useEmbedConfigs();
+  const { contentDisplay, responsive, view, engagement, links, isDesignSystemV2Linkouts } = useEmbedConfigs();
   const { isXs } = responsive;
   const newUI = useNewPlayerControls();
   const { isMobile } = useDeviceDetectMediaQuery();
@@ -50,7 +51,8 @@ export function DefaultPlacement({
   const linkoutSection = useMemo(
     () => (
       <>
-        {contentDisplay.showVideoLinkouts && postDetails.video?.linkouts && (
+        {/* Outside wins: below-player host owns the linkout, suppress overlay. */}
+        {!links.showLinkOutside && contentDisplay.showVideoLinkouts && hasLinkouts(postDetails.video) && (
           <SafeSuspense fallback={null} errorFallback={null}>
             <Linkouts
               view="embed"
@@ -71,7 +73,7 @@ export function DefaultPlacement({
         )}
       </>
     ),
-    [contentDisplay.showVideoLinkouts, isActive, postDetails.video?.linkouts, isDesignSystemV2Linkouts]
+    [links.showLinkOutside, contentDisplay.showVideoLinkouts, isActive, postDetails.video, isDesignSystemV2Linkouts]
   );
 
   const socialInteraction = useMemo(() => {

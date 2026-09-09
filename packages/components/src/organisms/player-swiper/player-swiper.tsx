@@ -9,6 +9,8 @@ import type { Swiper } from "swiper/types";
 import { useBoolean } from "usehooks-ts";
 
 import { useAnalytics, VideoTypes } from "@genuin/components/context";
+import { useBaseContext } from "@genuin/components/context/base/context";
+import type { SheetState } from "@genuin/components/context/base/event-bus";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
@@ -16,6 +18,7 @@ import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-d
 import { useFocusManagement } from "@genuin/components/hooks/use-focus-management";
 import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
+import { markLinkoutEngaged } from "@genuin/components/molecules/linkout-new/linkout-engagement-marker";
 import type { OctoPanelHandle } from "@genuin/components/molecules/octo-panel/octo-panel";
 import { type PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
@@ -181,6 +184,7 @@ export function PlayerList({
     layoutConfig: { isIheartArticlePage },
     isDesignSystemV2Linkouts,
     isDesignSystemV2,
+    links,
   } = useEmbedConfigs();
 
   // Comment panel state - only auto-open if Octo is NOT enabled (Octo takes priority)
@@ -206,6 +210,7 @@ export function PlayerList({
     getContentTypeState,
     sheetContentPlacements,
   } = useSheetState();
+  const { baseEventBus } = useBaseContext();
   const [isEndOfFeedReached, setEndOfFeedReached] = useState<boolean>(false);
   // Colors for the lazy-chunk Suspense fallbacks below. The expand view renders
   // on a dark surface by default, matching the FeedSkeleton default theme.
@@ -345,10 +350,12 @@ export function PlayerList({
     [isSectioned, horizontalSwiper, activeSwiper]
   );
 
-  useEffect(() => {
-    const shouldDisable = sheetState === "full-view" || sheetState === "panel-view";
-    handleSwiperToggle(shouldDisable);
-  }, [sheetState, handleSwiperToggle]);
+  // A linkout/octo grown to panel/full-view must lock feed navigation. This
+  // flag feeds the swiper's DECLARATIVE `disableSwiper` prop below (which drives
+  // `enabled`/`allowTouchMove` on both the horizontal and vertical swipers), so
+  // a re-render can't clobber it — unlike the old imperative `activeSwiper.disable()`,
+  // which left `allowTouchMove` true and got undone by SwiperImplementation's prop re-sync.
+  const isSheetPanelOrFull = sheetState === "panel-view" || sheetState === "full-view";
 
   // Drop overlay posts entirely — we can't just skip a slide with a swiper-in-swiper.
   const filteredPost = useMemo(() => {
@@ -498,12 +505,37 @@ export function PlayerList({
       // V1 keeps "inside" on desktop too. Otherwise the V1 linkout flips to "outside"
       // with no renderer and disappears whenever the desktop comments panel is shown.
       // Idempotent, so re-firing on `isAdFilled → false` safely reopens after an ad.
-      openContentType("linkouts", isDesktop && isDesignSystemV2Linkouts ? "outside" : "inside", "expand-view");
-    } else {
+      // Open state: the mobile in-player expand runs the chip → default →
+      // expand-view reveal (scenario `expand-mobile`, chip `pl-sml`), so it must
+      // OPEN at that chip and let `linkouts-dynamic`'s timed auto-advance carry
+      // it forward — opening directly at `expand-view` here (the old behavior)
+      // slammed the shared bus to `expand-view`, which then won over the
+      // scenario's chip `initialState` and skipped the reveal entirely
+      // (GEN-10508). Desktop has no in-player reveal chain — the right-rail
+      // "outside" panel and the narrow "inside" expand both open at
+      // `expand-view` as before.
+      const linkoutOpenState: SheetState = isMobile ? "pl-sml" : "expand-view";
+      openContentType("linkouts", isDesktop && isDesignSystemV2Linkouts ? "outside" : "inside", linkoutOpenState);
+    } else if (!showExpandView) {
+      // Only auto-close in the FEED. During the player expand view the linkout
+      // sheet is owned by the expand host (expand-view-details /
+      // desktop-right-panels) and closed by its own X button, so this feed
+      // cleanup must stay out. Two reasons it's harmful in expand:
+      //   1. On expand-ENTER this feed-level effect briefly sees a STALE
+      //      `activeIndex` (0, before the swiper syncs to the real active
+      //      video — same initialSlide-before-sync race handled in
+      //      expand-view.tsx), so `filteredPost[0]` is a DIFFERENT, linkout-
+      //      less video and this would wrongly wipe the carried reveal state
+      //      the expand view is about to inherit (tile→expand continuity bug).
+      //   2. Closing via the X button must STAY closed — auto-managing it here
+      //      would reopen it at the chip.
       closeContentType("linkouts");
     }
     // `showExpandView` dep re-fires on collapse: adjacent sheets' `resetSheet()`
     // wipes all active content types, so re-open restores the linkout entry.
+    // `hasContentType` intentionally NOT a dep: this effect must NOT re-run when
+    // the linkout open/closed set changes, or a user X-button close would
+    // immediately re-fire the open branch and reopen the linkout at the chip.
   }, [
     showExpandView,
     activeIndex,
@@ -653,7 +685,7 @@ export function PlayerList({
                     filteredPost={filteredPost}
                     startIndex={startIndex}
                     slideDimensions={slideDimensions}
-                    disableSwiper={disableSwiper || isAdFilled}
+                    disableSwiper={disableSwiper || isAdFilled || isSheetPanelOrFull}
                     websiteType={websiteType}
                     onActiveIndexChange={handleActiveIndexChange}
                     setEndOfFeedReached={setEndOfFeedReached}
@@ -680,7 +712,7 @@ export function PlayerList({
                     playerFallback={playerChunkFallback}
                     startIndex={startIndex}
                     slideDimensions={slideDimensions}
-                    disableSwiper={disableSwiper || isAdFilled}
+                    disableSwiper={disableSwiper || isAdFilled || isSheetPanelOrFull}
                     websiteType={websiteType}
                     setVerticalSwipers={setVerticalSwipers}
                     onActiveIndexChange={handleActiveIndexChange}
@@ -751,7 +783,7 @@ export function PlayerList({
         </SafeSuspense>
       )}
       {!isMobile && brandLayoutType !== "iheart" && filteredPost[activeIndex] && !isAdFilled && (
-        <SafeSuspense fallback={<ActionButtonsSkeleton colors={skeletonColors} />}>
+        <SafeSuspense fallback={<ActionButtonsSkeleton colors={skeletonColors} showExpandView={showExpandView} />}>
           <Actions
             shareUrl={filteredPost[activeIndex]?.video?.shareUrl ?? ""}
             isReacted={filteredPost[activeIndex]?.video?.isSparked ?? false}
@@ -766,7 +798,8 @@ export function PlayerList({
             // V2 only: action-rail linkout button is the entry point to the
             // right-rail panel (Figma). V1 keeps its legacy in-player overlay.
             showLinkout={Boolean(
-              isDesignSystemV2Linkouts &&
+              links.showLinksInExpand &&
+                isDesignSystemV2Linkouts &&
                 showExpandView &&
                 filteredPost[activeIndex]?.video?.linkouts &&
                 filteredPost[activeIndex]?.video?.linkouts.length > 0
@@ -782,6 +815,9 @@ export function PlayerList({
                     if (isOpen) {
                       closeContentType("linkouts");
                     } else {
+                      // Explicit open = engagement → skip the reveal delay for this
+                      // video (mark BEFORE openContentType so the same emit reveals it).
+                      markLinkoutEngaged(baseEventBus, activeVideoId);
                       // Match auto-open placement: "outside" on desktop (right rail),
                       // "inside" on narrower widths where only the in-player overlay hosts it.
                       openContentType("linkouts", isDesktop ? "outside" : "inside", "expand-view");
@@ -961,7 +997,8 @@ export function PlayerList({
             totalVideos={totalVideos}
             brandLayoutType={brandLayoutType}
             isLinkoutsPanelVisible={Boolean(
-              sheetContentPlacements["linkouts"] === "outside" &&
+              links.showLinksInExpand &&
+                sheetContentPlacements["linkouts"] === "outside" &&
                 showExpandView &&
                 filteredPost[activeIndex] &&
                 !isAdFilled

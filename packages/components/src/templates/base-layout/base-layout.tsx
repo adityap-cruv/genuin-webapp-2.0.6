@@ -46,7 +46,8 @@ export function BaseLayout({
   const { searchParams, getSearchParams } = useSearchParams();
   const { layoutConfig } = useEmbedConfigs();
   const { getContentTypeState } = useSheetState();
-  const isLinkoutFullView = getContentTypeState("linkouts") === "full-view";
+  const linkoutState = getContentTypeState("linkouts");
+  const isLinkoutExpanded = linkoutState === "panel-view" || linkoutState === "full-view";
 
   // Update shouldUseDarkTheme when searchParams or pathname changes
   const [shouldUseDarkTheme, setShouldUseDarkTheme] = useState(false);
@@ -72,9 +73,9 @@ export function BaseLayout({
   return (
     <>
       {!(isAdPlaying && isMobile) &&
-        !(isLinkoutFullView && isMobile) &&
+        !(isLinkoutExpanded && isMobile) &&
         (layoutConfig.showNavigationBar || layoutConfig.showBackAndCloseButton) && (
-          <TopBar theme={shouldUseDarkTheme && isMobile ? "dark" : "light"} style={{ zIndex: 9 }} variant={variant} />
+          <TopBar theme={shouldUseDarkTheme && isMobile ? "dark" : "light"} style={{ zIndex: 60 }} variant={variant} />
         )}
       <main
         className={cn(

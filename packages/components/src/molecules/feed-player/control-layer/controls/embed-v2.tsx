@@ -68,7 +68,7 @@ export function EmbedExpandButton({ size = "sm", section, videoId }: EmbedExpand
   const [isExpandView, setIsExpandView] = useState(false);
 
   useEffect(() => {
-    function handleActivePlayerTypeChange(_eventData: any, context: EmbedEventContextType) {
+    function handleActivePlayerTypeChange(_eventData: unknown, context: EmbedEventContextType) {
       setIsExpandView(context.activePlayerType === "expand-view");
     }
 
@@ -95,7 +95,11 @@ export function EmbedExpandButton({ size = "sm", section, videoId }: EmbedExpand
 
           const isBrandPeacock = brand_id === 3182;
           if (isBrandPeacock) {
-            const nativeVideoHandler = (window as any).webkit?.messageHandlers?.openNativeVideo;
+            const nativeVideoHandler = (
+              window as Window & {
+                webkit?: { messageHandlers?: { openNativeVideo?: { postMessage: (message: unknown) => void } } };
+              }
+            ).webkit?.messageHandlers?.openNativeVideo;
             if (nativeVideoHandler) {
               nativeVideoHandler.postMessage({
                 source: "carousel",

@@ -44,7 +44,9 @@ export function Ad({ className, adType, containerWidth, ...restProps }: AdProps)
     [embedConfig.isDesignSystemV2, containerWidth]
   );
   //  TODO: hardcoded because Figma design and real size conflict.
-  const effectiveControlSize = embedConfig.view.brandLayoutType === "iheart" ? "md" : playerControlSize;
+  const brandControlSize = embedConfig.view.brandLayoutType === "iheart" ? "md" : playerControlSize;
+  // GEN-10468: Expand View width often crosses "lg" threshold, but Figma spec wants "md" here.
+  const effectiveControlSize = showExpandView && brandControlSize === "lg" ? "md" : brandControlSize;
 
   return (
     <div

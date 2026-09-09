@@ -460,7 +460,17 @@ export function useEmbedConfigs() {
   const linkConfig = useMemo(
     () => ({
       showLinks: customization?.links?.is_show_links ?? false,
-      showLinksInExpand: embedData?.show_linkout_in_expand ?? true,
+      // Expand-view linkout enable, resolved by config type because the two
+      // config shapes expose DIFFERENT flags:
+      //  - PLACEMENT has a dedicated expand flag: `expand_view.enable_linkout`
+      //    (→ `show_linkout_in_expand`). Use it so tile and expand are truly
+      //    independent (e.g. an "expand-only" placement). Default ON when omitted.
+      //  - EMBED has NO expand flag at all (no `expand_view` block) — its only
+      //    linkout flag is `is_show_links`. So expand mirrors the tile enable:
+      //    linkout on → shows in both tile and expand; off → neither.
+      showLinksInExpand: embedData?.placement_id
+        ? (embedData?.show_linkout_in_expand ?? true)
+        : (customization?.links?.is_show_links ?? false),
       linkPosition: customization?.links?.position ?? "outside",
       showLinkOutside: customization?.links?.is_show_links && customization?.links?.position === "outside",
       showLinkInside: customization?.links?.is_show_links && customization?.links?.position === "overlay",
@@ -629,6 +639,13 @@ export function useEmbedConfigs() {
       return 9 / 16; // default portrait
     };
 
+    // Header height for the current view — 0 when no header renders (see
+    // `getHeaderHeight`). Computed once here so both the effective-video-width
+    // math and the exposed `headerHeight` share a single source. The linkout
+    // 50%-height gate subtracts this to measure against the real video frame,
+    // not the container (which includes the feed/carousel header).
+    const headerHeight = getHeaderHeight();
+
     // Calculate effective video width based on embed style
     const getEffectiveVideoWidth = () => {
       switch (currentStyle) {
@@ -638,8 +655,7 @@ export function useEmbedConfigs() {
         case "carousel":
         case "feed": {
           // Video height = container height minus header
-          const headerH = getHeaderHeight();
-          const availableH = Math.max(containerHeight - headerH, 0);
+          const availableH = Math.max(containerHeight - headerHeight, 0);
           const aspectRatioValue = parseAspectRatio();
           const widthFromAspectRatio = availableH * aspectRatioValue;
           return widthFromAspectRatio > 0 ? Math.min(containerWidth, widthFromAspectRatio) : containerWidth;
@@ -673,6 +689,7 @@ export function useEmbedConfigs() {
       breakpoints,
       containerWidth,
       containerHeight,
+      headerHeight,
       effectiveVideoWidth,
       isXs: effectiveVideoWidth <= breakpoints.xs,
       isSm: effectiveVideoWidth <= breakpoints.sm,

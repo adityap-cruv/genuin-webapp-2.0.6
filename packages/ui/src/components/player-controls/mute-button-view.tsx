@@ -154,10 +154,12 @@ export function MuteButtonView({
   const showTapText = muted && !stopText && textVisible;
   const showPill = showVolumeSlider || showTapText;
 
-  // Slider track width scales with the button size token.
-  const sliderWidth = VOLUME_SLIDER_WIDTH[sizeProp];
-  // Slider expanded width = speaker circle + gap + input + spacer(16) + paddingRight(12)
-  const expandedWidth = token.outer + 4 + sliderWidth + 16 + 12;
+  // `VOLUME_SLIDER_WIDTH` is the FULL pill width per size (S 120 · M 150 ·
+  // L 180 · XL 210), NOT just the track. The speaker + gap +
+  // track + padding all live INSIDE it, so the expanded pill IS this width. (The
+  // old formula re-added the speaker + spacer + padding on top → md rendered 184
+  // instead of 120.) The track `<input>` below flex-fills whatever remains.
+  const expandedWidth = VOLUME_SLIDER_WIDTH[sizeProp];
 
   return (
     <div
@@ -231,10 +233,12 @@ export function MuteButtonView({
             value={volume}
             onChange={handleVolumeChange}
             onClick={(e) => e.stopPropagation()}
-            style={{ accentColor: "white", width: sliderWidth }}
-            className="gencl:volume-slider gencl:relative gencl:h-1 gencl:cursor-pointer gencl:rounded-full"
+            style={{ accentColor: "white" }}
+            // Flex-fills the pill's remaining width (see `expandedWidth`) — the
+            // track is the leftover after speaker + gap + right padding, matching
+            // Figma's seeker per size rather than a fixed width.
+            className="gencl:volume-slider gencl:relative gencl:h-1 gencl:w-full gencl:flex-1 gencl:cursor-pointer gencl:rounded-full"
           />
-          <div className="gencl:h-full gencl:w-4 gencl:flex-shrink-0" />
         </div>
       )}
 

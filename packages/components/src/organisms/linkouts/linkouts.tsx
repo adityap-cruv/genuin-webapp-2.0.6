@@ -6,12 +6,10 @@ import type { ComponentProps } from "react";
 import { useEffect, useState, useMemo, lazy } from "react";
 
 import { useAnalytics } from "@genuin/components/context/analytics/context";
-import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
 import { useShowLinkouts } from "@genuin/components/hooks/use-show-linkouts";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import type { LinkoutSlotContent } from "@genuin/components/molecules/linkout-new/types";
 import { buildLinkoutsAnalyticsData } from "@genuin/components/organisms/linkouts/build-linkouts-analytics-data";
-import { LinkoutLoadingIndicator } from "@genuin/components/organisms/linkouts/linkout-loading-indicator";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { useGetLinkouts } from "@genuin/components/react-query/api/linkouts/get-linkouts";
 import type { LinkoutsType } from "@genuin/components/react-query/api/linkouts/schema";
@@ -123,7 +121,7 @@ export function Linkouts({
   hostHorizontalInset,
   ...restProps
 }: LinkoutsProps) {
-  const { showLinkouts } = useShowLinkouts({ linkoutId, isActive });
+  const { showLinkouts } = useShowLinkouts({ linkoutId, isActive, videoId: videoDetails?.id });
   const {
     data: fetchedLinkouts,
     isLoading,
@@ -133,12 +131,6 @@ export function Linkouts({
     staleTime: 1000 * 60,
   });
   const { track, EventName } = useAnalytics();
-  // Carried linkout reveal state (chip / default / expand-view / …), read off
-  // the shared bus so the loading skeleton mirrors the exact card the user left
-  // the tile in — the reveal state carries tile→expand. Only consumed for the
-  // dynamic-expand skeleton below.
-  const { getContentTypeState } = useSheetState();
-  const carriedLinkoutState = getContentTypeState("linkouts");
   const trackingKey = `${linkoutId ?? 0}:${positionIndex ?? 0}`;
   const [isVisible, setIsVisible] = useState(showImmediately);
   const [shouldRender, setShouldRender] = useState(showImmediately || showLinkouts);
@@ -243,27 +235,15 @@ export function Linkouts({
     return sortedLinks.length === 1 ? "single" : "multi";
   }, [variantProp, sortedLinks.length]);
 
-  // In the expand view the linkout slot must not read as empty while the
-  // linkout is still resolving. The outer `<Linkouts>` chunk is normally
-  // pre-warmed by the tile, so its Suspense boundary never suspends; the
-  // visible gap is this component's own pre-paint window below (`isLoading`
-  // fetch, or the `!shouldRender` appear-delay). Bridge that window with a
-  // shape-neutral placeholder — but only for the dynamic expand variant, so
-  // the tile/embed overlays keep their existing (placeholder-free) behaviour.
-  const isDynamicExpand = view === "expand" && resolvedVariant === "dynamic";
-
   // ─── Guard rails ──────────────────────────────────────────────────────────
-  if (isLoading)
-    return isDynamicExpand ? (
-      <LinkoutLoadingIndicator state={carriedLinkoutState} />
-    ) : (
-      <div className="gencl:p-4 animate-pulse">Loading…</div>
-    );
+  // No loading placeholder: data ships inline and the reveal delay intentionally
+  // withholds the linkout, so the slot stays empty until the real card paints.
+  if (isLoading) return null;
   if (isError || !linkouts || linkouts.length === 0) return null;
-  // Genuinely nothing to render (no links and no CTA) → stay empty, no placeholder.
+  // Genuinely nothing to render (no links and no CTA) → stay empty.
   if (!linkoutData || (!linkoutData.links?.length && !linkoutData.cta_text)) return null;
-  // Content exists but hasn't painted yet (appear-delay / first mount): placeholder in expand.
-  if (!shouldRender) return isDynamicExpand ? <LinkoutLoadingIndicator state={carriedLinkoutState} /> : null;
+  // Content exists but hasn't painted yet (appear-delay / first mount): stay empty.
+  if (!shouldRender) return null;
 
   const animationClasses = showImmediately
     ? "gencl:w-full"
@@ -284,9 +264,7 @@ export function Linkouts({
   switch (resolvedVariant) {
     case "dynamic":
       return (
-        <SafeSuspense
-          fallback={isDynamicExpand ? <LinkoutLoadingIndicator state={carriedLinkoutState} /> : null}
-          errorFallback={null}>
+        <SafeSuspense fallback={null} errorFallback={null}>
           <DynamicLinkouts
             links={sortedLinks}
             ctaText={effectiveCTAText}

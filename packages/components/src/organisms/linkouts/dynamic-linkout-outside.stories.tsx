@@ -33,17 +33,16 @@ const SAMPLE_LINKS = LINKOUT_FIGMA_CAROUSEL;
 type OutsideHarnessProps = {
   /** Forwarded to `<DynamicLinkouts>`'s `effectiveVideoWidth` and used as
    *  the host frame width. The width is what the scenario picker uses to
-   *  resolve `embed-outside-{xs,sml,default,active,expand}` per
-   *  `linkouts-sheet-config.ts:111-115`:
+   *  resolve `embed-outside-{xs,sml,default,active}` per
+   *  `linkouts-sheet-config.ts`:
    *  ≤180 → `embed-outside-xs`, <250 → `-sml`, <300 → `-default`,
-   *  <400 → `-active`, ≥400 → `-expand`.
+   *  ≥300 → `-active`. Outside has NO expand-view (owner directive).
    *  @default 360 (lands in `embed-outside-active`) */
   width?: number;
-  /** Story-controlled initial state. Outside layout supports the same
-   *  per-width-bucket states as inside — chip stories pass `pl-xs` /
-   *  `pl-sml`, panel-style stories pass `default` / `default-active` /
-   *  `expand-view`. */
-  initialState?: "default" | "default-active" | "expand-view" | "pl-xs" | "pl-sml";
+  /** Story-controlled initial state. Outside layout supports chip
+   *  (`pl-xs` / `pl-sml`) plus the `default` / `default-active` card
+   *  states — no `expand-view`. */
+  initialState?: "default" | "default-active" | "pl-xs" | "pl-sml";
   /** Forward every field on the fixture (description, brand, prices,
    *  rating, likes, downloads, phone, address) to `<DynamicLinkouts>`.
    *  Default `false` keeps the existing minimal projection. */
@@ -206,8 +205,8 @@ export const DefaultOutside: Story = {
       description: {
         story:
           "Default state — picker selects `embed-outside-default` (250–299 px). Compact light-theme " +
-          "panel sitting flush below the video frame, with rounded bottom corners. " +
-          "**Auto-advances to `expand-view` after 3 s** per scenario parity with the embed flow.",
+          "panel sitting flush below the video frame, with rounded bottom corners. Rests at `default`; " +
+          "advances to `default-active` only on user tap (no auto-advance, no expand-view for outside).",
       },
     },
   },
@@ -224,28 +223,9 @@ export const DefaultActiveOutside: Story = {
     docs: {
       description: {
         story:
-          "Default-active state — picker selects `embed-outside-active` (300–399 px). Light-theme panel " +
-          "with the rich linkout card (thumbnail + title + CTA pill). **Auto-advances to `expand-view` " +
-          "after 3 s** per scenario parity.",
-      },
-    },
-  },
-};
-
-export const ExpandViewOutside: Story = {
-  name: "Expand View",
-  args: {
-    width: 420,
-    initialState: "expand-view",
-    richData: true,
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Expand-view state — picker selects `embed-outside-expand` (≥400 px). Rich light-theme panel " +
-          "with full metadata (description, brand, prices, rating, likes, downloads, phone, address) and " +
-          "the dark `Sign Up Now` CTA pill from Figma `10075:76988`.",
+          "Default-active state — picker selects `embed-outside-active` (≥300 px). Light-theme panel " +
+          "with the rich linkout card (thumbnail + title + CTA pill). Reached on user tap; outside never " +
+          "grows into expand-view.",
       },
     },
   },
@@ -267,16 +247,15 @@ const DYNAMIC_PRESETS = [
   { w: 420, h: 600 },
 ] as const;
 
-type DynamicVariant = "pl-xs" | "pl-sml" | "default" | "default-active" | "expand-view";
+type DynamicVariant = "pl-xs" | "pl-sml" | "default" | "default-active";
 
-const VARIANT_ORDER: DynamicVariant[] = ["pl-xs", "pl-sml", "default", "default-active", "expand-view"];
+const VARIANT_ORDER: DynamicVariant[] = ["pl-xs", "pl-sml", "default", "default-active"];
 
 function widthBucketState(width: number): DynamicVariant {
   if (width <= 180) return "pl-xs";
   if (width < 250) return "pl-sml";
   if (width < 300) return "default";
-  if (width < 400) return "default-active";
-  return "expand-view";
+  return "default-active";
 }
 
 // Width passed to `<DynamicLinkouts>` so the scenario picker lands on
@@ -293,9 +272,7 @@ function variantScenarioWidth(v: DynamicVariant): number {
     case "default":
       return 270; // < 300 → embed-outside-default
     case "default-active":
-      return 360; // < 400 → embed-outside-active
-    case "expand-view":
-      return 450; // ≥ 400 → embed-outside-expand
+      return 360; // ≥ 300 → embed-outside-active
   }
 }
 
@@ -476,8 +453,7 @@ export const DynamicViewOutside: Story = {
 - ≤ 180 px → \`pl-xs\` (chip, text-only)
 - 181–249 px → \`pl-sml\` (chip with thumbnail)
 - 250–299 px → \`default\` (compact light-theme panel)
-- 300–399 px → \`default-active\` (light-theme panel + header)
-- ≥ 400 px → \`expand-view\` (rich light-theme card)
+- ≥ 300 px → \`default-active\` (light-theme panel + header)
 
 A dimensions + variant readout sits below the frame so you can see exactly which bucket the picker landed in. Mirrors the embed view's Dynamic View story.
         `,

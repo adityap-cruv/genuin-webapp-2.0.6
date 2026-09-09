@@ -39,7 +39,7 @@ const FeedPlayer = lazy(() =>
  * Pauses the video when the octo OR linkouts sheet is in full-view / panel-view,
  * and resumes ONLY the pause it caused itself.
  */
-function SheetStatePlaybackController({ isActive }: { isActive: boolean }) {
+function SheetStatePlaybackController({ isActive, isInExpandView }: { isActive: boolean; isInExpandView: boolean }) {
   const { pause, play, buttonAction } = usePlayerContext();
   const { getContentTypeState, sheetState } = useSheetState();
   // True only while THIS controller is the one holding the video paused. Gates
@@ -52,7 +52,11 @@ function SheetStatePlaybackController({ isActive }: { isActive: boolean }) {
     if (!isActive) return;
 
     const isPanelOrFull = (state: string) => state === "panel-view" || state === "full-view";
-    const shouldPause = isPanelOrFull(getContentTypeState("octo")) || isPanelOrFull(getContentTypeState("linkouts"));
+    // Only pause when the sheet is panel/full in the EXPAND view: that's where
+    // the sheet displaces the video. In the tile a linkout dragged to panel is a
+    // transient that promotes into expand — pausing there froze the tile video.
+    const shouldPause =
+      isInExpandView && (isPanelOrFull(getContentTypeState("octo")) || isPanelOrFull(getContentTypeState("linkouts")));
 
     if (shouldPause) {
       if (!pausedBySheet) {
@@ -64,7 +68,7 @@ function SheetStatePlaybackController({ isActive }: { isActive: boolean }) {
       // Skip resume if the user paused manually while the panel was open.
       if (buttonAction !== "PAUSE") play(false);
     }
-  }, [sheetState, isActive, pause, play, getContentTypeState, buttonAction, pausedBySheet]);
+  }, [sheetState, isActive, isInExpandView, pause, play, getContentTypeState, buttonAction, pausedBySheet]);
 
   return null;
 }
@@ -137,9 +141,17 @@ export function Player({
   const { isMobile } = useDeviceDetectMediaQuery();
 
   const showIheartBar = showIheartIframe && isActive;
-  const { sheetState } = useSheetState();
+  const { sheetState, sheetContentPlacements } = useSheetState();
   const { isDesktop } = useDeviceDetectMediaQuery();
   const isNonDesktop = !isDesktop; // Mobile + Tablet (< 1024px)
+
+  // The panel/full video-shrink only makes sense when a linkout is actually
+  // TILED OVER the video (placement "inside"). On desktop the linkout lives in
+  // the right rail ("outside") and never publishes `--gn-linkout-h` to the
+  // player frame, so the panel-view branch would fall back to 70% and collapse
+  // the video to ~30%. Gate every shrink branch on the linkout being tiled in.
+  const isLinkoutTiledInside = sheetContentPlacements["linkouts"] === "inside";
+  const shouldTrackLinkoutSheet = isLinkoutTiledInside && isActive;
 
   // Detect accessibility mode based on browser accessibility preferences
   const isAccessibilityMode = useMemo(() => detectAccessibilityMode(), []);
@@ -213,7 +225,7 @@ export function Player({
         onAdStarted={onAdStarted}
         onAdEnded={onAdEnded}
         videoType={post.video?.videoType ?? VideoTypes.Content}>
-        <SheetStatePlaybackController isActive={isActive} />
+        <SheetStatePlaybackController isActive={isActive} isInExpandView={showExpandView} />
         <div
           // Common ancestor of the video and the control layer; the linkout
           // publishes its live area height here (`--gn-linkout-area-h`) so the
@@ -227,7 +239,8 @@ export function Player({
             {
               "gencl:sm:rounded!": brandLayoutType === "iheart",
             },
-            (showIheartBar || (isActive && (sheetState === "panel-view" || sheetState === "full-view"))) &&
+            (showIheartBar ||
+              (shouldTrackLinkoutSheet && (sheetState === "panel-view" || sheetState === "full-view"))) &&
               "gencl:flex gencl:flex-col"
           )}
           // tabIndex={showExpandView ? 0 : -1}
@@ -243,17 +256,18 @@ export function Player({
                   // height (`--gn-linkout-h`) so dragging the card down grows the
                   // video continuously. Fallbacks give 30% / 0% before the var is
                   // first published.
-                  isActive && sheetState === "panel-view"
+                  shouldTrackLinkoutSheet && sheetState === "panel-view"
                   ? "calc(100% - var(--gn-linkout-h, 70%))"
-                  : isActive && sheetState === "full-view"
+                  : shouldTrackLinkoutSheet && sheetState === "full-view"
                     ? "calc(100% - var(--gn-linkout-h, 100%))"
                     : // `expand-view` (overlay): full at rest, shrinking as the
                       // sheet is dragged up toward panel (overshoot above the
                       // expand snap; 0 at rest = full video).
-                      isActive && sheetState === "expand-view"
+                      shouldTrackLinkoutSheet && sheetState === "expand-view"
                       ? "calc(100% - var(--gn-linkout-overshoot-h, 0px))"
                       : "100%",
-              flexShrink: isActive && (sheetState === "panel-view" || sheetState === "full-view") ? 0 : undefined,
+              flexShrink:
+                shouldTrackLinkoutSheet && (sheetState === "panel-view" || sheetState === "full-view") ? 0 : undefined,
               // Track the linkout drag instantly (duration 0) while it's being
               // dragged; keep the 300ms ease for the release/commit settle.
               transitionDuration: "calc((1 - var(--gn-sheet-dragging, 0)) * 300ms)",
@@ -281,7 +295,7 @@ export function Player({
                 videoType={post.video?.videoType ?? VideoTypes.Content}
                 className={cn(
                   "gencl:h-full! gencl:w-full",
-                  sheetState === "panel-view" || sheetState === "full-view"
+                  shouldTrackLinkoutSheet && (sheetState === "panel-view" || sheetState === "full-view")
                     ? "gencl:object-contain! gencl:bg-contain!"
                     : videoCrop
                       ? "gencl:object-cover gencl:bg-cover!"

@@ -6,17 +6,20 @@
  */
 
 import { Image } from "@genuin/ui/components/image";
+import { LinkIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
 import { cva } from "class-variance-authority";
-import { ChevronRight, ExternalLink } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { useLayoutEffect, useRef, useState } from "react";
+
+import { useImageLoadStatus } from "./use-image-load-status";
 
 // ── LinkCardThumb ────────────────────────────────────────────────
 //
 // Square thumbnail with rounded corners; the caller sets the outer
-// dimensions via `className` / `style`. When `src` is missing it either
-// renders `null` (default — the row reflows) or, with `fallback`, a
-// generic chain-link (`ExternalLink`) placeholder so every card view
+// dimensions via `className` / `style`. When `src` is missing OR the image
+// fails to load it either renders `null` (default — the row reflows) or, with
+// `fallback`, a generic chain-link (`LinkIcon`) placeholder so every card view
 // shows the same "linkout" glyph the chip already uses.
 
 // `gencl:block` is non-optional: the `<span>` wrapper is inline by default,
@@ -45,8 +48,8 @@ export interface LinkCardThumbProps {
   /** Outer dimensions / flex behavior — caller decides. */
   className?: string;
   style?: React.CSSProperties;
-  /** When set and `src` is missing, render a generic linkout (chain-link)
-   *  placeholder instead of `null`. Matches the chip's no-image treatment. */
+  /** When set and `src` is missing/broken, render a generic linkout
+   *  (chain-link) placeholder instead of `null`. Matches the chip's treatment. */
   fallback?: boolean;
   /** Placeholder colors follow the card theme. */
   theme?: "light" | "dark";
@@ -61,24 +64,24 @@ export function LinkCardThumb({
   fallback = false,
   theme = "dark",
 }: LinkCardThumbProps) {
-  if (!src) {
-    // No image and no fallback requested → render nothing so the row reflows.
+  // Preload off-DOM so a dead `src` resolves to the chain glyph instead of
+  // committing a broken-image box. Only `error` falls back — `pending` still
+  // renders the real thumbnail so there's no chain-glyph flash before it loads.
+  const srcStatus = useImageLoadStatus(src);
+
+  if (!src || srcStatus === "error") {
+    // No/broken image and no fallback requested → render nothing so the row reflows.
     if (!fallback) return null;
-    // Generic linkout glyph on a tinted square — same treatment as the chip
-    // (pl-sml) and responsive card, so all views agree when a link has no image.
     const isDark = theme === "dark";
-    const placeholderBg = isDark ? "gencl:bg-secondary-800" : "gencl:bg-secondary-100";
-    const placeholderIcon = isDark ? "gencl:text-white/60" : "gencl:text-secondary-400";
+    // Figma "Thumbnail fallback" (node 9621:92218): a bare 20×20 chain glyph on
+    // a TRANSPARENT ground — no colored box. FIXED 20×20 in every state so it
+    // stays a consistent mark rather than blowing up on the big panel/full
+    // slide. Theme-aware stroke so it reads on both the dark card body and the
+    // white panel.
+    const placeholderIcon = isDark ? "gencl:stroke-white" : "gencl:stroke-secondary-900";
     return (
-      <span
-        className={cn(
-          thumbWrap({ radius }),
-          "gencl:flex gencl:items-center gencl:justify-center",
-          placeholderBg,
-          className
-        )}
-        style={style}>
-        <ExternalLink className={cn("gencl:size-6", placeholderIcon)} />
+      <span className="gencl:flex gencl:items-center gencl:justify-center gencl:shrink-0 gencl:size-5">
+        <LinkIcon className={cn("gencl:size-5", placeholderIcon)} />
       </span>
     );
   }
@@ -112,11 +115,6 @@ const inlineCta = cva(
       theme: "dark",
     },
   }
-);
-
-const inlineCtaLabel = cn(
-  "gencl:flex-1 gencl:min-w-0 gencl:overflow-hidden gencl:text-ellipsis",
-  "gencl:whitespace-nowrap gencl:text-body-1-semi-bold!"
 );
 
 const inlineCtaArrow = "gencl:size-6 gencl:shrink-0";
@@ -162,13 +160,67 @@ export function LinkCardInlineCta({ href, label, theme = "dark", className, onCl
         }
       }}
       className={cn(inlineCta({ theme }), className)}>
-      {/* Marker for the off-screen well (linkout-expand-height-well.tsx) to detect
-          ellipsis truncation via scrollWidth vs clientWidth. No effect on live render. */}
-      <span data-cta-label className={inlineCtaLabel}>
-        {label}
-      </span>
+      {/* CTA label marquees when it overflows instead of ellipsis-truncating, so
+          a long label never shrinks/demotes the linkout state (GEN-10465). Plain
+          single-line span when it fits. */}
+      <MarqueeText text={label} className="gencl:flex-1 gencl:min-w-0 gencl:text-body-1-semi-bold!" />
       <ChevronRight className={cn(inlineCtaArrow, iconStrokeClass)} />
     </div>
+  );
+}
+
+// ── LinkCardTitle ────────────────────────────────────────────────
+//
+// Clickable linkout title. Navigates to the link's URL on click/Enter so the
+// TITLE — not just the CTA — is a live link, matching production where both are
+// clickable (GEN-10510). Uses the same swipe-safe `role="link"` + synchronous
+// `window.open` pattern as `LinkCardInlineCta` (a native `<a href>` steals
+// horizontal touchmove and blocks the sheet/carousel swipe); `onClick` still
+// fires the caller's analytics. Kept as a `<p>` so callers' typography and the
+// `default` card's body-height measurement are unaffected.
+
+export interface LinkCardTitleProps {
+  /** Destination URL — the link's own `link`. */
+  href: string;
+  /** Title text (falls back to the URL upstream). */
+  text: string;
+  /** Typography / clamp classes from the calling state. */
+  className?: string;
+  /** Analytics-only callback (navigation is handled here via `window.open`). */
+  onClick?: () => void;
+}
+
+export function LinkCardTitle({ href, text, className, onClick }: LinkCardTitleProps) {
+  const navigate = () => {
+    onClick?.();
+    if (typeof window !== "undefined") {
+      window.open(href, "_blank", "noopener,noreferrer");
+    }
+  };
+  return (
+    <p
+      role="link"
+      tabIndex={0}
+      aria-label={text}
+      draggable={false}
+      style={{ touchAction: "pan-y", userSelect: "none" }}
+      // Stop pointerdown bubbling so the sheet's pointer capture doesn't swallow
+      // the click before it reaches this handler (same as the chip anchors/CTA).
+      onPointerDown={(e) => e.stopPropagation()}
+      onClick={(e) => {
+        e.stopPropagation();
+        navigate();
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          e.stopPropagation();
+          navigate();
+        }
+      }}
+      className={cn("gencl:cursor-pointer", className)}>
+      {text}
+    </p>
   );
 }
 

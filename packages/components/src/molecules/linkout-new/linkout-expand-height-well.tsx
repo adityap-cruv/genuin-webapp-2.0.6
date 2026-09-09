@@ -12,30 +12,27 @@ import { GATED_REVEAL_STATES, type GatedRevealState } from "./linkout-expand-gat
 export type LinkoutWellMeasurement = {
   /** Tallest link's BODY height per gated state (chrome not included). */
   bodyPxByState: Record<GatedRevealState, number>;
-  /** Whether ANY link's CTA label would render truncated (ellipsis-cut) at that state. */
-  ctaTruncatedByState: Record<GatedRevealState, boolean>;
 };
 
 /**
- * Off-screen measurement well for the reveal gates (50%-height + CTA-text-
- * truncation).
+ * Off-screen measurement well for the 50%-height reveal gate.
  *
  * `snap-sheet` only measures the *active* state, so a would-be `default` /
- * `default-active` / `expand-view` height (and CTA fit) is unknown until it's
- * visited (which would flash on screen). This renders every link's card in
- * each gated state hidden, at the real panel width, and reports back, PER
- * STATE: the TALLEST body height, and whether ANY link's CTA label would
- * truncate — so the host can decide whether promoting into a given state
- * fits *before* the transition happens.
+ * `default-active` / `expand-view` height is unknown until it's visited (which
+ * would flash on screen). This renders every link's card in each gated state
+ * hidden, at the real panel width, and reports back the TALLEST body height PER
+ * STATE — so the host can decide whether promoting into a given state fits
+ * *before* the transition happens. (A long CTA label no longer gates anything:
+ * it marquees in place instead of demoting the state; GEN-10465.)
  *
  * Hidden but laid out (`visibility: hidden`, not `display: none`) so the cards
  * measure real heights/widths; `aria-hidden` + `pointer-events: none` keep it inert.
  *
  * Measurement uses a callback-ref-into-state + a one-shot read (re-run once
  * `document.fonts.ready` settles for late font swap) — deliberately no
- * `ResizeObserver` and no `useRef`, per repo convention. Height and CTA-text
- * width here are both driven by fixed thumb sizes + text layout, so fonts
- * settling is the only late reflow that matters; images don't change either.
+ * `ResizeObserver` and no `useRef`, per repo convention. Height here is driven
+ * by fixed thumb sizes + text layout, so fonts settling is the only late reflow
+ * that matters; images don't change either.
  */
 export function LinkoutExpandHeightWell({
   links,
@@ -51,9 +48,9 @@ export function LinkoutExpandHeightWell({
   /**
    * Page-level CTA label, forwarded to each measured card so its CTA reads
    * EXACTLY what the live card shows (`ctaText || link.title || "Learn more"`,
-   * resolved inside `LinkCard`). Without it the well would fall back to the
-   * long title and mis-measure truncation for linkouts that have a short
-   * explicit CTA (e.g. "Buy Now") beside a long title.
+   * resolved inside `LinkCard`) — keeps the measured card faithful to the live
+   * one. The CTA pill is fixed-height, so the label text doesn't change the
+   * measured height; this is purely for card fidelity.
    */
   ctaText?: string;
   onMeasure: (measurement: LinkoutWellMeasurement) => void;
@@ -98,22 +95,12 @@ export function LinkoutExpandHeightWell({
         "default-active": 0,
         "expand-view": 0,
       };
-      const ctaTruncatedByState: Record<GatedRevealState, boolean> = {
-        default: false,
-        "default-active": false,
-        "expand-view": false,
-      };
       node.querySelectorAll<HTMLElement>("[data-well-card]").forEach((card) => {
         const state = card.dataset.wellState as GatedRevealState | undefined;
         if (!state || !(state in bodyPxByState)) return;
         bodyPxByState[state] = Math.max(bodyPxByState[state], card.offsetHeight);
-        // Standard ellipsis-truncation check: an overflow-hidden/nowrap label
-        // is truncated iff its content overflows its box. +1 absorbs sub-pixel
-        // rounding so a text that exactly fits isn't flagged as truncated.
-        const ctaLabel = card.querySelector<HTMLElement>("[data-cta-label]");
-        if (ctaLabel && ctaLabel.scrollWidth > ctaLabel.clientWidth + 1) ctaTruncatedByState[state] = true;
       });
-      onMeasure({ bodyPxByState, ctaTruncatedByState });
+      onMeasure({ bodyPxByState });
     };
     measure();
     // Re-measure once fonts settle (font swap changes wrapped text height). No
@@ -141,7 +128,9 @@ export function LinkoutExpandHeightWell({
       {GATED_REVEAL_STATES.map((state) =>
         linksWithMetadata.map((data, idx) => (
           <div data-well-card data-well-state={state} key={`${state}-${data.link ?? idx}`}>
-            <LinkCard data={data} sheetState={state} theme={theme} ctaText={ctaText} />
+            {/* Per-link `cta_text` (Button text on the Add Link form) overrides the
+                page-level `ctaText`, matching `resolveCtaText` in `linkouts-dynamic.tsx`. */}
+            <LinkCard data={data} sheetState={state} theme={theme} ctaText={links[idx]?.cta_text || ctaText} />
           </div>
         ))
       )}

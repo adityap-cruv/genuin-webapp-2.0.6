@@ -62,11 +62,11 @@ export const SPONSORED_TAG_SIZE = {
 
 /** Volume-slider track width per token. Height follows `token.outer`; xs falls back to sm. */
 export const VOLUME_SLIDER_WIDTH: Record<PlayerControlSize, number> = {
-  xs: 113,
-  sm: 113,
-  md: 120,
-  lg: 160,
-  xl: 188,
+  xs: 120,
+  sm: 120,
+  md: 150,
+  lg: 180,
+  xl: 210,
 };
 
 /**

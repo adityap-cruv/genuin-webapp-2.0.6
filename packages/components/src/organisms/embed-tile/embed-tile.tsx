@@ -25,6 +25,7 @@ import { PlayerProvider, usePlayerContext } from "@genuin/components/molecules/f
 import { EmbedMuteButton } from "@genuin/components/molecules/feed-player/control-layer/controls/embed";
 import { isSponsoredVideo } from "@genuin/components/molecules/feed-player/control-layer/controls/sponsored-tag";
 import { shouldPromoteToPlayerExpand } from "@genuin/components/molecules/linkout-new/linkout-expand-promotion";
+import { hasLinkouts } from "@genuin/components/molecules/linkout-new/linkout-utils";
 import { DynamicReactionIcon } from "@genuin/components/molecules/reaction-button";
 import { Stats } from "@genuin/components/molecules/stats";
 import type { LinkoutsProps } from "@genuin/components/organisms/linkouts/linkouts";
@@ -286,11 +287,25 @@ function EmbedPlayer({ postDetails, isActive = false, index, itemSize }: EmbedPl
       prevLinkoutsSheetStateRef.current = linkoutsSheetState;
       return;
     }
-    if (shouldPromoteToPlayerExpand(prevLinkoutsSheetStateRef.current, linkoutsSheetState)) {
+    // When linkouts are disabled in expand (`show_linkout_in_expand` false), a
+    // tile linkout must NOT promote into the player expand view — there's nothing
+    // to show there, and promoting rendered a shrunk video over an empty panel.
+    if (
+      config.links.showLinksInExpand &&
+      shouldPromoteToPlayerExpand(prevLinkoutsSheetStateRef.current, linkoutsSheetState)
+    ) {
       if (!maybeRedirectInsteadOfExpand()) changeActivePlayerType("expand-view", index);
     }
     prevLinkoutsSheetStateRef.current = linkoutsSheetState;
-  }, [linkoutsSheetState, isActive, changeActivePlayerType, index, embedDetails, maybeRedirectInsteadOfExpand]);
+  }, [
+    linkoutsSheetState,
+    isActive,
+    changeActivePlayerType,
+    index,
+    embedDetails,
+    maybeRedirectInsteadOfExpand,
+    config.links.showLinksInExpand,
+  ]);
 
   // Carousel re-open: when the active video changes to one that has a
   // linkout, ensure "linkouts" is in `activeSheetContentTypes`. Gated on
@@ -300,7 +315,7 @@ function EmbedPlayer({ postDetails, isActive = false, index, itemSize }: EmbedPl
   // undone by this same effect.
   const hasLinkoutData =
     (postDetails.video?.linkoutId !== null && postDetails.video?.linkoutId !== undefined) ||
-    (Array.isArray(postDetails.video?.linkouts) && (postDetails.video?.linkouts?.length ?? 0) > 0);
+    hasLinkouts(postDetails.video);
   const lastOpenedForVideoIdRef = useRef<string | null>(null);
   const currentVideoId = postDetails.video?.id ?? null;
   useEffect(() => {
@@ -603,11 +618,14 @@ function OutsideComponents({ postDetails }: { postDetails: PostDetailsType }) {
 
   return (
     <>
-      {showLinkout && postDetails.video?.linkouts && (
+      {showLinkout && hasLinkouts(postDetails.video) && (
         <div
-          className="gencl:w-full gencl:flex gencl:items-center"
+          // Block, top-aligned so the card sits flush under the video (Figma).
+          // `flex items-center` floated a white gap above it; `minHeight` is just
+          // a collapse-floor.
+          className="gencl:w-full"
           style={{
-            height: `${linkoutHeight}px`,
+            minHeight: `${linkoutHeight}px`,
           }}>
           <SafeSuspense fallback={null} errorFallback={null}>
             <Linkouts

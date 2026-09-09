@@ -13,11 +13,13 @@ import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
+import { markLinkoutEngaged } from "@genuin/components/molecules/linkout-new/linkout-engagement-marker";
 import {
   LinkoutItem,
   LinkoutCarouselDots,
   LinkoutNavButtons,
 } from "@genuin/components/molecules/linkout-new/linkout-item";
+import { lastResetVideoIdByBus } from "@genuin/components/molecules/linkout-new/linkout-reset-marker";
 import { getLinkoutsConfig } from "@genuin/components/molecules/linkout-new/linkouts-sheet-config";
 import type { FlexRatio } from "@genuin/components/molecules/linkout-new/responsive-card";
 import { LinkoutCTA } from "@genuin/components/molecules/linkouts/linkout-cta";
@@ -26,10 +28,8 @@ import { userSlideNext, userSlidePrev } from "@genuin/components/organisms/playe
 import type { LinkData } from "@genuin/components/react-query/api/linkouts/schema";
 
 import { findBannerConfigForSize, pickBannerAdSize, type BannerAdSize } from "./banner-ad-picker";
-import { LinkCard } from "./link-card";
-import { computeCtaFitGate } from "./linkout-cta-fit-gate";
+import { LinkCard, hasRichLinkMetadata, type LinkMetaData } from "./link-card";
 import {
-  combineRevealGates,
   computeRevealGate,
   gateRevealStates,
   GATED_REVEAL_STATES,
@@ -52,14 +52,6 @@ const LazySnapSheet = lazy(() =>
 // Drag-reachable states, ascending. `default` / `default-active` are
 // auto-advance intro states (non-drag); chip / responsive are single-snap.
 const DRAG_STATES: SheetState[] = ["expand-view", "panel-view", "full-view"];
-
-// Last video id we ran the reveal-reset for, keyed to the (stable, per-SDK-
-// instance) base event bus. A component ref can't hold this: the carousel tile
-// REMOUNTS when the expand view closes, so a ref resets to null and the same
-// video reads as "new" → the reveal restarts at the chip on every exit. Keying
-// to the bus survives the remount, so returning to the same video keeps its
-// state. WeakMap (not a plain module var) avoids leaking across SDK instances.
-const lastResetVideoIdByBus = new WeakMap<object, string>();
 
 // Continuous theme cross-fade colours, mixed against `--gn-sheet-progress`
 // (0 = expand/dark surface → white text; 1 = panel/light surface → dark text).
@@ -138,23 +130,6 @@ function DragPillTapTarget({ onTap, style }: { onTap: () => void; style?: CSSPro
         aria-hidden
       />
     </div>
-  );
-}
-
-/** True when the link has any optional field the rich `expand-view` card
- *  surfaces; lets sparse links fall back to the compact `default-active`. */
-function hasRichLinkMetadata(link: LinkData): boolean {
-  return Boolean(
-    link.description ||
-      link.brand ||
-      link.website ||
-      link.originalPrice ||
-      link.currentPrice ||
-      link.rating ||
-      link.likes ||
-      link.downloads ||
-      link.phone ||
-      link.address
   );
 }
 
@@ -257,7 +232,7 @@ export function DynamicLinkouts({
   const { track, EventName } = useAnalytics();
   // Stable, per-SDK-instance bus — used only as the WeakMap key that persists
   // the reveal-reset marker across the tile's expand-close remount.
-  const { baseEventBus } = useBaseContext();
+  const { baseEventBus, brandDetails } = useBaseContext();
   const {
     hasContentType,
     getContentTypeState,
@@ -270,12 +245,26 @@ export function DynamicLinkouts({
 
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
   const {
-    responsive: { effectiveVideoWidth: contextVideoWidth, containerHeight: contextFrameHeightPx },
+    responsive: {
+      effectiveVideoWidth: contextVideoWidth,
+      containerHeight: contextFrameHeightPx,
+      headerHeight: contextHeaderHeight,
+    },
     dimensions: { aspectRatio: contextAspectRatio },
+    links: linksConfig,
   } = useEmbedConfigs();
   const effectiveVideoWidth = effectiveVideoWidthProp ?? contextVideoWidth;
   const aspectRatio = aspectRatioProp ?? contextAspectRatio;
-  const frameHeightPx = containerHeightProp ?? contextFrameHeightPx;
+  // Linkout enabled in the tile but off in expand: drop panel/full drag targets
+  // from the tile reveal so it can't grow a full panel over the video (see
+  // getLinkoutsConfig; the embed-tile promote is blocked for this config too).
+  const disableExpand = !linksConfig.showLinksInExpand;
+  // 50%-gate denominator = the real VIDEO frame, so the header (feed/carousel
+  // title bar above the video) must not count. The context container height
+  // includes it; subtract the shared `headerHeight` (0 when no header renders,
+  // so this is a no-op when absent). The explicit `containerHeightProp` (webapp,
+  // which has no embed header context) is trusted as the frame height as-is.
+  const frameHeightPx = containerHeightProp ?? Math.max(0, contextFrameHeightPx - (contextHeaderHeight ?? 0));
   const rawLinkoutsState = getContentTypeState("linkouts");
   const linkoutPlacement = sheetContentPlacements["linkouts"];
   // Memoize so `config` references stay stable; a fresh object each render
@@ -297,8 +286,19 @@ export function DynamicLinkouts({
         linkoutsState: rawLinkoutsState,
         layout,
         hostHorizontalInset,
+        disableExpand,
       }),
-    [view, isMobile, effectiveVideoWidth, aspectRatio, linkoutPlacement, rawLinkoutsState, layout, hostHorizontalInset]
+    [
+      view,
+      isMobile,
+      effectiveVideoWidth,
+      aspectRatio,
+      linkoutPlacement,
+      rawLinkoutsState,
+      layout,
+      hostHorizontalInset,
+      disableExpand,
+    ]
   );
   // DynamicSheet only fires `onStateChange` on transitions, never pushing its
   // `initialState` on mount — so before anything is set the event bus has no
@@ -359,7 +359,13 @@ export function DynamicLinkouts({
   // targets mid-drag — in expand-view the parent is small, so `full` reads
   // short and an upward drag overshoots it straight to full. The full-screen
   // overlay frame is the viewport, which is stable; pass it for `%` there.
-  const [viewportH, setViewportH] = useState(0);
+  // Seed synchronously from `window.innerHeight` (not `0`) so `sheetContainerHeight`
+  // below is a real px reference on the FIRST render. If it started at 0, the
+  // panel/full `%` snaps resolved to 0 at mount, then the post-measure re-render
+  // tweened the sheet 0→height — a visible collapse-then-grow jitter as the real
+  // sheet replaced the loading skeleton. `DynamicLinkouts` is a lazy client-only
+  // chunk (never SSR'd), so reading `window` in the initializer is hydration-safe.
+  const [viewportH, setViewportH] = useState(() => (typeof window !== "undefined" ? window.innerHeight : 0));
   useEffect(() => {
     const measure = () => setViewportH(window.innerHeight);
     measure();
@@ -401,12 +407,10 @@ export function DynamicLinkouts({
   const gateApplies = isEmbedReveal || isExpandMobile;
 
   // Numerator: tallest link's BODY height per gated state, from the off-screen
-  // well. Denominator: the video frame height (`containerHeight`), reused from
-  // embed config's container ResizeObserver — no new observer added here.
+  // well. Denominator: the video frame height (`frameHeightPx` = container
+  // height minus the header, computed above), reused from embed config's
+  // container ResizeObserver — no new observer added here.
   const [revealBodyByState, setRevealBodyByState] = useState<Partial<Record<GatedRevealState, number>>>({});
-  // Whether ANY link's CTA label would render truncated at that state, from the
-  // same off-screen well (see linkout-cta-fit-gate.ts).
-  const [ctaTruncatedByState, setCtaTruncatedByState] = useState<Partial<Record<GatedRevealState, boolean>>>({});
   const handleRevealMeasure = useCallback((measurement: LinkoutWellMeasurement) => {
     setRevealBodyByState((prev) => {
       const changed = (Object.keys(measurement.bodyPxByState) as GatedRevealState[]).some(
@@ -414,30 +418,20 @@ export function DynamicLinkouts({
       );
       return changed ? measurement.bodyPxByState : prev;
     });
-    setCtaTruncatedByState((prev) => {
-      const changed = (Object.keys(measurement.ctaTruncatedByState) as GatedRevealState[]).some(
-        (s) => (prev[s] ?? false) !== measurement.ctaTruncatedByState[s]
-      );
-      return changed ? measurement.ctaTruncatedByState : prev;
-    });
   }, []);
 
-  // Pure gate math (see linkout-expand-gate.ts + linkout-cta-fit-gate.ts). A
-  // state is allowed only if it BOTH stays under 50% of the frame AND doesn't
-  // truncate the CTA label — combined into one `RevealFits` map so every existing
-  // consumer below (auto-advance check, demotion effect, `gateRevealStates`)
-  // enforces both gates without knowing there are two. Fail-open until the well
-  // and the frame have measured, so the reveal is never blocked on first paint.
-  // Memoized so its identity is stable across renders that don't change the
-  // inputs — the auto-advance effect depends on it, and a fresh object each
-  // render would reset the 3s timer on every re-render (video-time ticks, drag
-  // progress, …).
-  const revealFits = useMemo(() => {
-    const heightFits = computeRevealGate({ gateApplies, bodyPxByState: revealBodyByState, frameHeightPx });
-    if (!gateApplies) return heightFits; // ungated: fail-open, same as computeRevealGate alone.
-    // A state fits only if it clears BOTH gates (AND-merge).
-    return combineRevealGates(heightFits, computeCtaFitGate(ctaTruncatedByState));
-  }, [gateApplies, revealBodyByState, ctaTruncatedByState, frameHeightPx]);
+  // Pure gate math (see linkout-expand-gate.ts). A state is allowed only if it
+  // stays under 50% of the frame. (CTA truncation no longer gates anything —
+  // a long CTA now marquees in place instead of demoting the state; GEN-10465.)
+  // Fail-open until the well and the frame have measured, so the reveal is never
+  // blocked on first paint. Memoized so its identity is stable across renders
+  // that don't change the inputs — the auto-advance effect depends on it, and a
+  // fresh object each render would reset the 3s timer on every re-render
+  // (video-time ticks, drag progress, …).
+  const revealFits = useMemo(
+    () => computeRevealGate({ gateApplies, bodyPxByState: revealBodyByState, frameHeightPx }),
+    [gateApplies, revealBodyByState, frameHeightPx]
+  );
   // The set the reveal/drag paths reason about. Drops any gated card state that
   // breaches 50%; chips + panel/full pass through untouched. Memoized for the
   // same identity-stability reason (feeds the demotion effect + snap math).
@@ -459,12 +453,13 @@ export function DynamicLinkouts({
       .slice(0, idx)
       .reverse()
       .find((s) => effectiveEnabledStates.includes(s));
-    // When no lower GATED state fits (e.g. `default`'s CTA truncates at idx 0), drop
-    // to the reveal's chip (`pl-*`) rather than `initialState`. For the tile reveal
-    // `initialState` IS the chip, so this is a no-op there; for expand scenarios
-    // `initialState` is `default`, so falling back to it would be a no-op and leave
-    // the CTA truncated — the chip is the real "never truncate" floor. Chips are
-    // never gated, so a chip in `effectiveEnabledStates` always fits.
+    // When no lower GATED state fits (e.g. even `default` at idx 0 breaches 50%
+    // of a very short frame), drop to the reveal's chip (`pl-*`) rather than
+    // `initialState`. For the tile reveal `initialState` IS the chip, so this is a
+    // no-op there; for expand scenarios `initialState` is `default`, so falling
+    // back to it would be a no-op and leave a too-tall state — the chip is the
+    // real floor. Chips are never gated, so a chip in `effectiveEnabledStates`
+    // always fits.
     const chip = effectiveEnabledStates.find((s) => s.startsWith("pl-"));
     setContentTypeState("linkouts", lower ?? chip ?? baseConfig.initialState ?? "default");
   }, [gateApplies, revealFits, linkoutsState, effectiveEnabledStates, baseConfig.initialState, setContentTypeState]);
@@ -503,12 +498,20 @@ export function DynamicLinkouts({
   // to the tile) — that restart was the "expand → back → pl-sml" bug. So key
   // the reset to `videoId` via the shared state machine, not `isActive`.
   //
-  // Tile-only (`isEmbedReveal`): the expand instance mounts fresh with an empty
-  // ref, so a view-agnostic reset there would misread the carried state as a
-  // new video and clobber it. Expand always CARRIES; only the carousel tile
-  // restarts the reveal. (`isEmbedReveal` is defined up with the reveal gate.)
+  // Fires for the tile reveal (`isEmbedReveal`) AND the mobile expand
+  // (`isExpandMobile`). The tile is the reveal host on desktop + websdk; on
+  // MOBILE WEBAPP no tile ever mounts (`default.tsx` goes straight to the
+  // `view="expand"` `ExpandViewDetails`), so without `isExpandMobile` the
+  // per-video restart never ran there — a new video inherited the previous
+  // one's carried state off the shared bus instead of starting at the chip.
+  // Both hosts start their reveal at the chip (`expand-mobile.initialState` is
+  // `pl-sml`), so restarting them identically keeps webapp + websdk in lockstep.
+  // The bus-keyed marker map (below) de-dupes when a tile AND an expand instance
+  // co-exist for the same video (desktop/websdk), so neither clobbers the other.
+  // DESKTOP expand (`expand-desktop-inside/outside`) is intentionally excluded —
+  // it carries the tile's state / is a fixed panel, never restarts.
   useEffect(() => {
-    if (!isActive || isBannerAdMode || !isEmbedReveal || !videoId) return;
+    if (!isActive || isBannerAdMode || !(isEmbedReveal || isExpandMobile) || !videoId) return;
     // Read the marker from the bus-keyed map, NOT a ref: the tile remounts on
     // expand-close, so a ref would forget we already revealed this video and
     // restart the chip. The map survives the remount → returning to the same
@@ -527,6 +530,14 @@ export function DynamicLinkouts({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isActive, videoId]);
+
+  // Panel/full-view are drag-only, so landing there = the user opened it. Mark
+  // engaged so the linkout skips the reveal delay on re-activation.
+  useEffect(() => {
+    if (linkoutsState === "panel-view" || linkoutsState === "full-view") {
+      markLinkoutEngaged(baseEventBus, videoId);
+    }
+  }, [linkoutsState, baseEventBus, videoId]);
 
   // Time-based auto-advance (e.g. SS1 chip → SS2 `default`), formerly owned by
   // the dynamic-sheet. SnapSheet is pure-controlled, so the host drives it.
@@ -583,10 +594,12 @@ export function DynamicLinkouts({
     setContentTypeState("linkouts", next.state);
   };
 
-  // 8 px header padding across active states; desktop "outside" bumps to
-  // `sm:p-3!` for the wider expand layout.
+  // Compact header padding (Figma 9621:94871): 8px left/right, 4px top/bottom.
+  // Desktop "outside" bumps to `sm:p-3!` for the wider expand layout.
   const headerPaddingClass =
-    view === "expand" && isDesktop && sheetContentPlacements["linkouts"] === "outside" ? "gencl:sm:p-3!" : "gencl:p-2";
+    view === "expand" && isDesktop && sheetContentPlacements["linkouts"] === "outside"
+      ? "gencl:sm:p-3!"
+      : "gencl:px-2 gencl:py-1";
 
   const handleSheetClose = () => {
     switch (scenario) {
@@ -618,11 +631,22 @@ export function DynamicLinkouts({
     });
   };
 
+  // Per-link `cta_text` overrides the group-level `ctaText` prop when present
+  // (group is never populated in practice — confirmed via live API capture).
+  const resolveCtaText = (link?: LinkData) => link?.cta_text || ctaText || link?.title || "Learn more";
+  // A link's own URL always wins — the group `ctaLink` (old single-CTA flows:
+  // iHeart's KFI injection, `add-linkout` organism) only applies when a link
+  // has no URL of its own, so it can never hijack a per-link item's own destination.
+  const resolveCtaLink = (link?: LinkData) => link?.link || ctaLink || "";
+
   const handleCTAClick = () => {
+    // CTA click = engagement → skip the reveal delay on re-activation.
+    markLinkoutEngaged(baseEventBus, videoId);
+    const current = links[currentLinkIdx];
     track(EventName.LINKOUTS_CTA_CLICKED, {
       ...analyticsEventData,
-      cta_link: ctaLink,
-      cta_text: ctaText,
+      cta_link: resolveCtaLink(current),
+      cta_text: resolveCtaText(current),
     });
   };
 
@@ -634,6 +658,9 @@ export function DynamicLinkouts({
   // State only affects favicon, title typography, and close-button presence.
   const renderHeaderForState = (state: SheetState) => {
     const isDefault = isDefaultStateOf(state);
+    // Outside card is the white light surface: fixed dark header instead of the
+    // overlay's `SHEET_FG_MIX` / white glyph (illegible on white).
+    const isOutside = layout === "outside";
     // Panel/full-view: Figma places the drag grabber on its own centred bar
     // ABOVE the title/close row. Other active states keep it inline in the row.
     const isPanelOrFull = isPanelOrFullStateOf(state);
@@ -656,33 +683,25 @@ export function DynamicLinkouts({
       <div
         className={cn(
           "gencl:w-full gencl:flex gencl:gap-2 gencl:justify-between gencl:items-center gencl:rounded-lg gencl:z-[99999]",
-          headerPaddingClass
+          headerPaddingClass,
+          // Outside: fixed muted-dark; overlay: drag cross-fade mix (below).
+          isOutside && "gencl:text-secondary-700"
         )}
-        // Foreground colour continuously mixed against the drag progress (the
-        // title inherits it). Var-driven, so no CSS transition (that would lag).
-        style={{ color: SHEET_FG_MIX }}
+        style={isOutside ? undefined : { color: SHEET_FG_MIX }}
         onClick={(e) => e.stopPropagation()}>
         <div className="gencl:flex gencl:gap-1 gencl:items-center gencl:flex-1 gencl:min-w-0">
-          {/* Favicon — 14×14 image (LinkIcon fallback). Shown for the
-              active states; hidden in `default` (title-only header). */}
-          {!isDefault &&
-            (links[currentLinkIdx]?.image ? (
-              <span className="gencl:relative gencl:size-[14px] gencl:shrink-0 gencl:rounded-[4px] gencl:overflow-hidden gencl:bg-white">
-                <img
-                  src={links[currentLinkIdx]?.image ?? undefined}
-                  alt=""
-                  className="gencl:absolute gencl:inset-0 gencl:size-full gencl:object-cover"
-                />
-              </span>
-            ) : (
-              // No image — chain-link icon (no white box); stroke tracks
-              // the theme so it shows on both surfaces.
-              <LinkIcon
-                className="gencl:size-[14px] gencl:shrink-0"
-                // Stroke continuously mixed against the drag progress (matches text).
-                style={{ stroke: SHEET_FG_MIX }}
-              />
-            ))}
+          {/* 14×14 chain-link glyph — the linkout mark for active-state headers
+              (hidden in `default`, title-only). Fixed white stroke instead of
+              the FG_MIX text color, which trended too dark to read over the
+              video/scrim here. */}
+          {!isDefault && (
+            <LinkIcon
+              className={cn(
+                "gencl:size-[12px] gencl:shrink-0",
+                isOutside ? "gencl:stroke-secondary-700" : "gencl:stroke-white"
+              )}
+            />
+          )}
           <p
             className={cn(
               "gencl:line-clamp-1 gencl:truncate gencl:flex-1 gencl:min-w-0",
@@ -690,7 +709,7 @@ export function DynamicLinkouts({
               // small Body-3 title (prominent typography lives in the body).
               isDefault
                 ? "gencl:text-[14px]! gencl:leading-[20px]! gencl:font-semibold!"
-                : "gencl:text-[10px]! gencl:leading-[14px]! gencl:font-medium!"
+                : "gencl:text-[8px]! gencl:leading-[12px]! gencl:font-medium!"
             )}>
             {links[currentLinkIdx]?.title || links[currentLinkIdx]?.link}
           </p>
@@ -699,9 +718,9 @@ export function DynamicLinkouts({
             standalone pill, suppressed via `showIndicator: false`). Panel/full
             render the grabber ABOVE the row instead (see below), per Figma. */}
         {!isPanelOrFull && dragPill}
-        {/* Close button. Wrapped in a flex-1 group so it sits right-aligned
-            and the drag pill stays visually centred against the title. */}
-        {!isDefault && (
+        {/* Close button, right-aligned. Never on the outside card (header stays,
+            only the `×` goes). */}
+        {!isDefault && layout !== "outside" && (
           <div className="gencl:flex gencl:flex-1 gencl:justify-end gencl:min-w-0">
             <button
               type="button"
@@ -721,7 +740,7 @@ export function DynamicLinkouts({
                 handleSheetClose();
               }}
               className={cn(
-                "swiper-no-swiping gencl:flex gencl:items-center gencl:justify-center gencl:shrink-0 gencl:size-4 gencl:rounded-full gencl:cursor-pointer gencl:border-0 gencl:backdrop-blur-sm gencl:transition-colors gencl:duration-300",
+                "swiper-no-swiping gencl:flex gencl:items-center gencl:justify-center gencl:shrink-0 gencl:size-3 gencl:rounded-full gencl:cursor-pointer gencl:border-0 gencl:backdrop-blur-sm gencl:transition-colors gencl:duration-300",
                 baseConfig.theme === "light" ? "gencl:bg-secondary-50" : "gencl:bg-secondary-900/50"
               )}>
               <XIcon theme={baseConfig.theme === "light" ? "light" : "dark"} size="xxs" />
@@ -813,10 +832,8 @@ export function DynamicLinkouts({
       <>
         <LinkoutCTA
           className={padding}
-          ctaText={ctaText || links[currentLinkIdx]?.title || "Learn more"}
-          // `||` not `??`: an empty-string ctaLink must fall back to the current link, otherwise
-          // `<LinkoutCTA>`'s anchor renders with an empty href and the CTA navigates nowhere.
-          ctaLink={ctaLink || links[currentLinkIdx]?.link || ""}
+          ctaText={resolveCtaText(links[currentLinkIdx])}
+          ctaLink={resolveCtaLink(links[currentLinkIdx])}
           handleCTAClick={handleCTAClick}
         />
         {/* Panel/full-view: dots inside the footer (white surface).
@@ -872,29 +889,19 @@ export function DynamicLinkouts({
               className="gencl:w-full">
               {links.map((link, idx) => {
                 const linkTitle = link.title || link.link;
-                const slideCtaText = ctaText || linkTitle || "Learn more";
-                const slideCtaLink = ctaLink ?? link.link;
+                const slideCtaText = resolveCtaText(link);
+                const slideCtaLink = resolveCtaLink(link);
                 return (
                   <SwiperSlide key={link.link ?? `link-${idx}`} className="gencl:h-auto">
                     <div
                       className="gencl:bg-white gencl:rounded-lg gencl:overflow-hidden gencl:flex gencl:flex-col"
                       onClick={(e) => e.stopPropagation()}>
-                      {/* Top nav — favicon (LinkIcon fallback) + URL + close,
-                          per-slide so the chrome reflects the active card. */}
-                      <div className="gencl:flex gencl:items-center gencl:gap-2 gencl:p-2 gencl:border-b gencl:border-secondary-100">
+                      {/* Top nav — chain-link glyph + URL + close, per-slide so
+                          the chrome reflects the active card. */}
+                      <div className="gencl:flex gencl:items-center gencl:gap-2 gencl:px-2 gencl:py-1 gencl:border-b gencl:border-secondary-100">
                         <div className="gencl:flex gencl:flex-1 gencl:items-center gencl:gap-1 gencl:min-w-0">
-                          {link.image ? (
-                            <span className="gencl:relative gencl:size-[14px] gencl:shrink-0 gencl:rounded-[4px] gencl:overflow-hidden gencl:bg-white">
-                              <img
-                                src={link.image ?? undefined}
-                                alt=""
-                                className="gencl:absolute gencl:inset-0 gencl:size-full gencl:object-cover"
-                              />
-                            </span>
-                          ) : (
-                            <LinkIcon className="gencl:size-[14px] gencl:shrink-0 gencl:stroke-secondary-900" />
-                          )}
-                          <p className="gencl:line-clamp-1 gencl:truncate gencl:flex-1 gencl:min-w-0 gencl:text-[10px]! gencl:leading-[14px]! gencl:font-medium! gencl:text-secondary-900">
+                          <LinkIcon className="gencl:size-[12px] gencl:shrink-0 gencl:stroke-secondary-900" />
+                          <p className="gencl:line-clamp-1 gencl:truncate gencl:flex-1 gencl:min-w-0 gencl:text-[8px]! gencl:leading-[12px]! gencl:font-medium! gencl:text-secondary-900">
                             {linkTitle}
                           </p>
                         </div>
@@ -905,17 +912,29 @@ export function DynamicLinkouts({
                             e.stopPropagation();
                             handleSheetClose();
                           }}
-                          className="gencl:flex gencl:items-center gencl:justify-center gencl:shrink-0 gencl:size-4 gencl:rounded-full gencl:cursor-pointer gencl:border-0 gencl:backdrop-blur-sm gencl:bg-secondary-50">
+                          className="gencl:flex gencl:items-center gencl:justify-center gencl:shrink-0 gencl:size-3 gencl:rounded-full gencl:cursor-pointer gencl:border-0 gencl:backdrop-blur-sm gencl:bg-secondary-50">
                           <XIcon theme="light" size="xxs" />
                         </button>
                       </div>
                       {/* Body — reuse LinkCard: rich metadata → `expand-view`,
                           otherwise the compact `default-active` so a sparse
                           card doesn't leave a half-empty rich body. No outer
-                          padding — LinkCard owns its own 8 px inset. */}
+                          padding — LinkCard owns its own 8 px inset.
+                          Enrich brand/website from `brandDetails` + normalize the
+                          image exactly like the tile's `linksWithMetadata`
+                          (`linkout-item.tsx`), so the `expand-view` MetaRow shows
+                          the "<brand> • <website>" line here too, matching the
+                          tile — the raw `link` alone leaves it blank. */}
                       <LinkCard
-                        data={link as LinkData}
-                        sheetState={hasRichLinkMetadata(link as LinkData) ? "expand-view" : "default-active"}
+                        data={
+                          {
+                            ...link,
+                            image: link.image?.trim() || undefined,
+                            brand: link.brand ?? brandDetails.name,
+                            website: link.website ?? brandDetails.website,
+                          } as LinkMetaData
+                        }
+                        sheetState={hasRichLinkMetadata(link) ? "expand-view" : "default-active"}
                         theme="light"
                         onClick={() => handleLinkItemClick(link.link, linkTitle || link.link)}
                         ctaText={slideCtaText}
@@ -967,15 +986,17 @@ export function DynamicLinkouts({
   // top of their own `py-1` — a doubled gap. The dots are a flex item in this
   // `flex-col` wrapper, so a negative bottom margin pushes them down past the
   // flex line into the host's padding, absorbing the duplicate 8 px.
-  const siblingDotsVisible = view === "embed" && showDots && !isPanelOrFullState && !isResponsiveState;
+  // The `-4` margin absorbs the overlay host's 8px inset; outside has none, so
+  // exclude it or the dots get pulled into the row below.
+  const siblingDotsVisible =
+    view === "embed" && layout !== "outside" && showDots && !isPanelOrFullState && !isResponsiveState;
   return (
     <div ref={linkoutContainerRef} data-slot="dynamic-linkouts" style={wrapperStyle}>
-      {/* Off-screen well feeding both reveal gates (50%-height + CTA-text-
-          truncation): measures the tallest link's body height AND whether any
-          link's CTA label would truncate, PER gated state (default /
-          default-active / expand-view), so each reveal hop can decide whether
-          entering that state fits before it happens. Mounted wherever the gate
-          applies (tile reveal on mobile+desktop, mobile expand). */}
+      {/* Off-screen well feeding the 50%-height reveal gate: measures the tallest
+          link's body height PER gated state (default / default-active /
+          expand-view), so each reveal hop can decide whether entering that state
+          fits before it happens. Mounted wherever the gate applies (tile reveal
+          on mobile+desktop, mobile expand). */}
       {gateApplies && links.length > 0 && linkoutContainerSize.w > 0 && (
         <LinkoutExpandHeightWell
           links={links}
@@ -1010,7 +1031,9 @@ export function DynamicLinkouts({
           // the expand view and leaves the linkout in `default`. No-ops outside
           // the `default` state / non-embed views.
           onClick={(e) => advanceDefaultToActive(() => e.stopPropagation())}
-          onMouseEnter={() => advanceDefaultToActive()}>
+          // Outside is tap-only: hover-advance would grow the card and push the
+          // body down. Overlay keeps the hover accelerator.
+          onMouseEnter={layout === "outside" ? undefined : () => advanceDefaultToActive()}>
           {sheetOpen && (
             <LazySnapSheet
               // Fresh instance when the slot flips between link and banner-ad.
@@ -1063,8 +1086,8 @@ export function DynamicLinkouts({
                   swiperRef={swiperRef}
                   activeIdx={currentLinkIdx}
                   onActiveIndexChange={setCurrentLinkIdx}
-                  ctaText={ctaText || links[currentLinkIdx]?.title || "Learn more"}
-                  ctaLink={ctaLink || links[currentLinkIdx]?.link}
+                  ctaText={resolveCtaText(links[currentLinkIdx])}
+                  ctaLink={resolveCtaLink(links[currentLinkIdx])}
                   onCtaClick={handleCTAClick}
                   responsiveState={responsiveState}
                   showResponsiveGrid={showResponsiveGrid}
@@ -1098,7 +1121,8 @@ export function DynamicLinkouts({
               in-player expand panel (no margin, ever — expandPanelClassName)
               or the host already applies its own inset (hostHorizontalInset) —
               see linkouts-sheet-config.ts. */}
-          {sheetOpen && linkoutsState === "default" && !isBannerAdMode && (
+          {/* No `×` on the outside card (chrome-less per Figma). */}
+          {sheetOpen && linkoutsState === "default" && !isBannerAdMode && layout !== "outside" && (
             <button
               type="button"
               aria-label="Close"
@@ -1127,38 +1151,43 @@ export function DynamicLinkouts({
           4 px above (card → dots) and 4 px below (dots → scrubber) instead
           of stacking on top of the panel with 0 gap (see
           `siblingDotsVisible`). */}
-        {showDots && !isPanelOrFullState && !isResponsiveState && (
-          <div className="gencl:w-full" style={siblingDotsVisible ? { marginTop: 4, marginBottom: -4 } : undefined}>
-            {useDesktopNav ? (
-              // Desktop: arrow + dots + arrow inline. Mobile dots-only is the
-              // fallback branch below.
-              <div className="gencl:flex gencl:items-center gencl:justify-center gencl:gap-2 gencl:w-full gencl:py-1">
-                <LinkoutNavButtons
-                  theme={baseConfig.theme}
-                  onPrev={() => {
-                    if (swiperRef.current) {
-                      swiperRef.current.slidePrev();
-                    } else {
-                      setCurrentLinkIdx((i) => (i <= 0 ? links.length - 1 : i - 1));
-                    }
-                  }}
-                  onNext={() => {
-                    if (swiperRef.current) {
-                      swiperRef.current.slideNext();
-                    } else {
-                      setCurrentLinkIdx((i) => (i >= links.length - 1 ? 0 : i + 1));
-                    }
-                  }}
-                  isPrevDisabled={false}
-                  isNextDisabled={false}
-                  middleSlot={dotsBlock}
-                />
-              </div>
-            ) : (
-              dotsBlock
-            )}
-          </div>
-        )}
+        {sheetOpen &&
+          showDots &&
+          !isPanelOrFullState &&
+          !isResponsiveState &&
+          // Outside chip (bar) carries no dots; the cards still show them.
+          !(layout === "outside" && isChipStateOf(linkoutsState)) && (
+            <div className="gencl:w-full" style={siblingDotsVisible ? { marginTop: 4, marginBottom: -4 } : undefined}>
+              {useDesktopNav ? (
+                // Desktop: arrow + dots + arrow inline. Mobile dots-only is the
+                // fallback branch below.
+                <div className="gencl:flex gencl:items-center gencl:justify-center gencl:gap-2 gencl:w-full gencl:py-1">
+                  <LinkoutNavButtons
+                    theme={baseConfig.theme}
+                    onPrev={() => {
+                      if (swiperRef.current) {
+                        swiperRef.current.slidePrev();
+                      } else {
+                        setCurrentLinkIdx((i) => (i <= 0 ? links.length - 1 : i - 1));
+                      }
+                    }}
+                    onNext={() => {
+                      if (swiperRef.current) {
+                        swiperRef.current.slideNext();
+                      } else {
+                        setCurrentLinkIdx((i) => (i >= links.length - 1 ? 0 : i + 1));
+                      }
+                    }}
+                    isPrevDisabled={false}
+                    isNextDisabled={false}
+                    middleSlot={dotsBlock}
+                  />
+                </div>
+              ) : (
+                dotsBlock
+              )}
+            </div>
+          )}
       </SafeSuspense>
     </div>
   );

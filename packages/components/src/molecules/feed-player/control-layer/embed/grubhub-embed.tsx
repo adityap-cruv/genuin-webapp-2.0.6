@@ -4,6 +4,7 @@ import { type FC, lazy } from "react";
 
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
+import { hasLinkouts } from "@genuin/components/molecules/linkout-new/linkout-utils";
 
 import type { ControlLayerPropsType } from "../control-layer.types";
 
@@ -31,7 +32,7 @@ export const GrubhubEmbed: FC<ControlLayerPropsType> = ({ postDetails, className
       )}
 
       <div className="gencl:absolute gencl:bottom-0 gencl:p-2 gencl:space-y-2 gencl:w-full">
-        {config.links.showLinkInside && isActive && video.linkouts && (
+        {config.links.showLinkInside && isActive && hasLinkouts(video) && (
           <SafeSuspense fallback={null} errorFallback={null}>
             <Linkouts
               view="embed"
