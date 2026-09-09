@@ -121,8 +121,8 @@ host macros into the semantically correct block:
 
 - `device_details`: `app_name`(appn), `app_version`(appv), `app_bundle`(appb),
   and host geo as its **own** fields (`app_country`, `app_loc`, `app_lat`,
-  `app_long`, `app_metro`(m — Nielsen DMA code)) — **not** merged into the IP
-  `geoip` block.
+  `app_long`, `app_metro`(m — Nielsen DMA code), `app_region`(r — state code,
+  e.g. `MI`)) — **not** merged into the IP `geoip` block.
 - `user_details`: `ifa`, `deviceid`, `appsi`.
 - `event_details` consent sub-block: `gdpr`, `gdpr_consent`, `us_privacy`, `dnt`.
 - **DEFERRED — field names:** exact target field names to be confirmed with

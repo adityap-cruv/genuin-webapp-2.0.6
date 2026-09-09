@@ -236,6 +236,10 @@ export function buildHostMacroBlocks(macros: HostMacros): HostMacroBlocks {
   // script param, so it lands with its geo siblings above — NOT in the
   // IP-based `geoip` block, which never carries host-supplied geo.
   pick(device, "app_metro", "m");
+  // Region / state code (host-provided via `r`, e.g. "MI"). A state
+  // abbreviation, distinct from the IP-based `geoip.region` full name; kept
+  // here with the other host geo, never merged into `geoip`.
+  pick(device, "app_region", "r");
 
   const user: Record<string, string> = {};
   pick(user, "ifa", "ifa");
