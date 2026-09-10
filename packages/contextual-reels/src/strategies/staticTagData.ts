@@ -286,11 +286,12 @@ const STATIC_TAG_LOADERS: Record<string, () => Promise<StaticTagEntry | undefine
   },
 
   // -------------------------------------------------------------------------
-  // Direct IO iHM/Infolinks Audio (Sep) — 9 tags across 3 sizes, each size a
-  // DMA / National / DMA v1 trio (buy split: DMA & v1 50/50, National 4-way).
-  // The original 320x480 trio has size-less "…Audio for Sep - <buy>" names;
-  // the 320x50 + 300x250 trios below carry the size in the name
-  // ("<size> - <buy> Campaign"). Own tag + feed fixture EACH — the feed's DSP
+  // Direct IO iHM/Infolinks Audio (Sep) — 12 tags across 3 sizes, each size a
+  // DMA / National / National v1 / DMA v1 quad (buy split: DMA & DMA-v1 50/50,
+  // National & National-v1 4-way). The original 320x480 DMA/National/DMA-v1 have
+  // size-less "…Audio for Sep - <buy>" names; every later tag (the size's
+  // National v1, plus the whole 320x50 + 300x250 quads) carries the size in the
+  // name ("<size> - <buy> Campaign"). Own tag + feed fixture EACH — the feed's DSP
   // VAST url is keyed by brand_id/tag_id, so every tag must serve its own id
   // (no feed reuse: another tag's feed would resolve ad requests against the
   // wrong tag). Layout still comes from the container px. Same live-traffic
@@ -310,6 +311,14 @@ const STATIC_TAG_LOADERS: Record<string, () => Promise<StaticTagEntry | undefine
     const [tag, feed] = await Promise.all([
       import("@cxr/providers/static-tag/6a9ba9b8ee6dc7773d0c42f4.tag.json"),
       import("@cxr/providers/static-tag/6a9ba9b8ee6dc7773d0c42f4.feed.json"),
+    ]);
+    return toEntry(tag.default, feed.default);
+  },
+  // 320x480 - National Campaign V1
+  "6aa25bc1d3c90426b5732535": async () => {
+    const [tag, feed] = await Promise.all([
+      import("@cxr/providers/static-tag/6aa25bc1d3c90426b5732535.tag.json"),
+      import("@cxr/providers/static-tag/6aa25bc1d3c90426b5732535.feed.json"),
     ]);
     return toEntry(tag.default, feed.default);
   },
@@ -341,6 +350,14 @@ const STATIC_TAG_LOADERS: Record<string, () => Promise<StaticTagEntry | undefine
     ]);
     return toEntry(tag.default, feed.default);
   },
+  // 320x50 - National Campaign V1
+  "6aa25b631b3a25f3c479ef7c": async () => {
+    const [tag, feed] = await Promise.all([
+      import("@cxr/providers/static-tag/6aa25b631b3a25f3c479ef7c.tag.json"),
+      import("@cxr/providers/static-tag/6aa25b631b3a25f3c479ef7c.feed.json"),
+    ]);
+    return toEntry(tag.default, feed.default);
+  },
   // 320x50 - DMA Targeted Campaign V1
   "6aa04101d3c90426b572a379": async () => {
     const [tag, feed] = await Promise.all([
@@ -363,6 +380,14 @@ const STATIC_TAG_LOADERS: Record<string, () => Promise<StaticTagEntry | undefine
     const [tag, feed] = await Promise.all([
       import("@cxr/providers/static-tag/6aa041fbd3c90426b572a4b2.tag.json"),
       import("@cxr/providers/static-tag/6aa041fbd3c90426b572a4b2.feed.json"),
+    ]);
+    return toEntry(tag.default, feed.default);
+  },
+  // 300x250 - National Campaign V1
+  "6aa25af31b3a25f3c479ee35": async () => {
+    const [tag, feed] = await Promise.all([
+      import("@cxr/providers/static-tag/6aa25af31b3a25f3c479ee35.tag.json"),
+      import("@cxr/providers/static-tag/6aa25af31b3a25f3c479ee35.feed.json"),
     ]);
     return toEntry(tag.default, feed.default);
   },
