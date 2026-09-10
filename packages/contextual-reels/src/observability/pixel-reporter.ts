@@ -14,10 +14,14 @@ export type PixelErrorType = "initialization_error" | "render_error" | "runtime_
 export const PAGE_LEVEL_KEY = "__page__";
 
 /**
- * Hardcoded base — never depends on config/env resolution succeeding.
- * Path shape: `<base>/<brand_id>/<tag_id>/px-script-error`.
+ * Hardcoded base — never depends on config/env resolution succeeding, so it
+ * cannot read the value from env: this is the last resort for when
+ * `import.meta.env` itself is unreadable. Because it duplicates the prod
+ * `VITE_CXR_PIXEL_URL` value, it MUST stay on the same host — the drift guard in
+ * `pixel-reporter.test.ts` fails if it diverges (it once silently shipped as
+ * `api` while env was `aapi`). Path shape: `<base>/<brand_id>/<tag_id>/px-script-error`.
  */
-const FALLBACK_PIXEL_BASE_URL = "https://api.begenuin.com/goservices/dsp/pixel";
+export const FALLBACK_PIXEL_BASE_URL = "https://aapi.begenuin.com/goservices/dsp/pixel";
 
 /**
  * Resolve the pixel base URL without depending on `@cxr/config` (or anything
