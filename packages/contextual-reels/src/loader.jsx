@@ -60,8 +60,11 @@
   // `bid` so analysis can see WHAT params the partner passed, not just THAT the
   // loader was reached — no cleaning/whitelisting here, the raw source params
   // are the signal. The capture above is wrapped in its own try/catch so it can
-  // never keep this beacon from firing. tagId is unresolved here, so the path
-  // still uses the "1" id placeholder (the server rejects "0").
+  // never keep this beacon from firing. brand_id is still "1" (only known after
+  // the tag fetch, which hasn't run yet), but tag_id is now resolved from the
+  // widget config via `resolveLoaderTagId()` — falling back to "1" only when
+  // neither the loader-src `tagId` param nor a single `.gen-ext[data-tag-id]` is
+  // available (the server rejects "0").
   //
   // Fired via `new Image()` GET, NOT `navigator.sendBeacon`: the pixel endpoint
   // is GET-only (POST → 405), and sendBeacon always POSTs — worse, it reports
@@ -76,7 +79,9 @@
   try {
     if (PIXEL_URL && PIXEL_URL.indexOf("__CR_") === -1 && typeof Image === "function") {
       var buildId = BUILD_ID && BUILD_ID.indexOf("__CR_") === -1 ? BUILD_ID : "0";
-      var pxLoUrl = PIXEL_URL + "/1/1/px-lo?bid=" + encodeURIComponent(buildId);
+      var pxLoTagId = resolveLoaderTagId();
+      var pxLoUrl =
+        PIXEL_URL + "/1/" + encodeURIComponent(pxLoTagId) + "/px-lo?bid=" + encodeURIComponent(buildId);
       if (scriptQuery) pxLoUrl += "&" + scriptQuery;
       new Image().src = pxLoUrl;
       try {
@@ -153,17 +158,40 @@
     }
   }
 
+  // Resolve the widget's tag id at loader time, mirroring index.jsx's primary
+  // order (`getHostMacro("tagId") ?? node.getAttribute("data-tag-id")`): the
+  // loader-src `tagId` query param wins, then a best-effort read of a single
+  // `.gen-ext[data-tag-id]` node. Falls back to "1" (the server rejects "0").
+  // The `data-tag-id` read is intentionally gated to exactly ONE `.gen-ext`:
+  // with multiple widgets there is no single correct tag id for a page-level
+  // beacon, and the node may not be in the DOM yet when the loader runs from
+  // <head> — either way, best-effort, never throwing.
+  function resolveLoaderTagId() {
+    var fromMacro = readHostMacroBestEffort("tagId");
+    if (fromMacro) return fromMacro;
+    try {
+      var nodes = document.querySelectorAll(".gen-ext[data-tag-id]");
+      if (nodes.length === 1) {
+        var attr = nodes[0].getAttribute("data-tag-id");
+        if (attr && attr.trim()) return attr.trim();
+      }
+    } catch {
+      // DOM unreadable (locked-down WebView, detached context) — fall through.
+    }
+    return "1";
+  }
+
   // Cap on the `reason` query param so one long error message can't blow up
   // the pixel URL — mirrors MAX_REASON_LENGTH in observability/pixel-reporter.ts.
   var MAX_REASON_LENGTH = 200;
 
-  // No `.gen-ext` node has been read at this point (that's index.jsx's job) —
-  // sdk_load failures happen before any widget instance is known. brand_id is
-  // never resolvable here (only known after a successful tag fetch); tag_id
-  // falls back to the `tagId` host macro when the host provided one, else "1"
-  // (the server rejects "0" as an id path segment).
+  // sdk_load failures happen before any widget instance is mounted. brand_id is
+  // never resolvable here (only known after a successful tag fetch); tag_id is
+  // resolved via `resolveLoaderTagId()` (loader-src `tagId` param, then a single
+  // `.gen-ext[data-tag-id]`), falling back to "1" (the server rejects "0" as an
+  // id path segment).
   function buildSdkLoadPixelUrl(err) {
-    var tagId = readHostMacroBestEffort("tagId") || "1";
+    var tagId = resolveLoaderTagId();
     var path = PIXEL_URL + "/1/" + encodeURIComponent(tagId) + "/px-script-error";
 
     var params = new URLSearchParams();

@@ -18,7 +18,7 @@ import { DATA_ATTR_SHADOW_DOM_OPT_IN } from "@cxr/shadow-dom-config";
 import { getSharedGeoIp } from "@cxr/services/api";
 import { getVisitIdPromise } from "@cxr/services/feed";
 import { getHostMacro } from "@cxr/hostMacros";
-import { PixelReporter, fireTagInitPixel } from "@cxr/observability/pixel-reporter";
+import { PixelReporter } from "@cxr/observability/pixel-reporter";
 
 // New TypeScript App with provider stack + native feed engine.
 const App = lazy(() => import("./app/App"));
@@ -233,12 +233,13 @@ async function init() {
             },
             { deviceDetails: enrichDeviceDetailsWithGeoIp(getDeviceDetailsSnapshot(), geoip), userId, windowLink }
           );
-          // Pixel-side mirror of TAG_INIT: fire px-ti from the same site so the
-          // pixel funnel matches the Rudderstack tag_init. brand_id isn't
-          // resolved yet here (the tag fetch runs downstream), so it falls back
-          // to "1" in the path, per the pixel spec. Best-effort — never blocks
-          // analytics dispatch.
-          fireTagInitPixel({ tagId, passback: 0 });
+          // Pixel-side mirror of TAG_INIT (px-ti). Disabled for now to reduce
+          // load on the pixel endpoint — the Rudderstack TAG_INIT event above
+          // still fires, so the funnel keeps its primary signal; only the pixel
+          // beacon is paused. Re-enable by uncommenting (also re-add the
+          // `fireTagInitPixel` import from @cxr/observability/pixel-reporter).
+          // TODO(cxr): re-enable once the pixel endpoint can absorb the volume.
+          // fireTagInitPixel({ tagId, passback: 0 });
         });
       }
 
