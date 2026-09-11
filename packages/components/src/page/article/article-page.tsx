@@ -425,13 +425,18 @@ export function ArticlePage({ article, backControl }: { article: Article; backCo
 
   return (
     <FeedViewOverlayProvider onOpen={setPlayerOverlay}>
+      {isSdkExpandViewOpen ? (
+        <style>{`.genuin-become-creator-centerout { visibility: hidden !important; }`}</style>
+      ) : null}
       <div
         ref={overlayBoundsRef}
         data-slot="article-feed-view-boundary"
         style={{ position: "relative", height: "100%", overflow: "hidden", background: "#ffffff" }}>
-        <div className="gen-article-progress" aria-hidden="true">
-          <div className="gen-article-progress-fill" style={{ transform: `scaleX(${readProgress})` }} />
-        </div>
+        {!playerOverlay && !nestedArticle && !isSdkExpandViewOpen ? (
+          <div className="gen-article-progress" aria-hidden="true">
+            <div className="gen-article-progress-fill" style={{ transform: `scaleX(${readProgress})` }} />
+          </div>
+        ) : null}
         <div
           ref={scrollerRef}
           className="gen-article-page gen-article-prose"
