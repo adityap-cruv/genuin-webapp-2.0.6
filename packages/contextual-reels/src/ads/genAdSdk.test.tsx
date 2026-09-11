@@ -702,7 +702,7 @@ describe("ads/useGenAdInstance", () => {
     unmount(root, container);
   });
 
-  it("ad:unmuteRequest (matching containerId, muted) sets volume to 0.1 before unmuting, synchronously", async () => {
+  it("ad:unmuteRequest (matching containerId, muted) sets volume to 0.01 before unmuting, synchronously", async () => {
     const { root, container, result } = mountHook({ ...baseProps, isMuted: true });
     await act(async () => {
       await Promise.resolve();
@@ -717,7 +717,7 @@ describe("ads/useGenAdInstance", () => {
       testBus.emit("ad:unmuteRequest", { containerId: result.containerId });
     });
 
-    expect(genAdSetVolumeByContainer).toHaveBeenCalledWith("gen-ad-slot-test-instance-1", 0.1);
+    expect(genAdSetVolumeByContainer).toHaveBeenCalledWith("gen-ad-slot-test-instance-1", 0.01);
     expect(genAdMuteByContainer).toHaveBeenCalledWith("gen-ad-slot-test-instance-1", false);
 
     // Volume must be set before the unmute call to stay in the gesture chain.

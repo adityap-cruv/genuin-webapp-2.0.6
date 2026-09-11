@@ -34,7 +34,7 @@ const MUTE_PASSBACK_TAG = "69b298e3d6a6ad57e7b9a464";
 // 320x50 ads-only tag — one of the entries that still enables singleHitWaterfall.
 const SINGLE_HIT_TAG = "6a39163e92929ebec64d78ab";
 const UNKNOWN_TAG = "aaaabbbbccccdddd11112222";
-// Configured with initialVolume: 0.1 (see strategyConfig.ts).
+// Configured with initialVolume: 0.01 (see strategyConfig.ts).
 const INITIAL_VOLUME_TAG = "6a2fefd87ce338c3a5afc605";
 // Tags with the 2% mute-passback-suppression experiment (see TAG_EXPERIMENTS).
 const EXPERIMENT_TAG = "6a032e34054c8fcb08582510";
@@ -194,7 +194,7 @@ describe("strategies/resolveStrategies — cascade", () => {
   });
 
   it("applies a tag's configured initialVolume", () => {
-    expect(resolveStrategies(INITIAL_VOLUME_TAG).initialVolume).toBe(0.1);
+    expect(resolveStrategies(INITIAL_VOLUME_TAG).initialVolume).toBe(0.01);
   });
 });
 
@@ -338,7 +338,7 @@ describe("strategies — backward-compatible predicates", () => {
   });
 
   it("getInitialVolume mirrors the resolver (0 by default)", () => {
-    expect(getInitialVolume(INITIAL_VOLUME_TAG)).toBe(0.1);
+    expect(getInitialVolume(INITIAL_VOLUME_TAG)).toBe(0.01);
     expect(getInitialVolume(UNKNOWN_TAG)).toBe(0);
     expect(getInitialVolume("")).toBe(0);
   });
@@ -393,7 +393,7 @@ describe("servedStatically flag", () => {
 
   it("preserves the tags' other existing overrides", () => {
     const s = resolveStrategies("6a39163e92929ebec64d78ab");
-    expect(s.initialVolume).toBe(0.1);
+    expect(s.initialVolume).toBe(0.01);
     expect(s.singleHitWaterfall).toBe(true);
   });
 });
@@ -421,14 +421,14 @@ describe("feedLoopEnabled flag", () => {
     const s = resolveStrategies("6a6892e52ca77d200369fb9e");
     expect(s.servedStatically).toBe(true);
     expect(s.singleHitWaterfall).toBe(true);
-    expect(s.initialVolume).toBe(0.1);
+    expect(s.initialVolume).toBe(0.01);
   });
 
   it("keeps the opted-out tags' other overrides intact", () => {
     const s = resolveStrategies("6a39163e92929ebec64d78ab");
     expect(s.servedStatically).toBe(true);
     expect(s.singleHitWaterfall).toBe(true);
-    expect(s.initialVolume).toBe(0.1);
+    expect(s.initialVolume).toBe(0.01);
   });
 
   it("is turned off by the noLoop preset bundle", async () => {
@@ -594,7 +594,7 @@ describe("suppressedEvents", () => {
     const s = resolveStrategies(STATIC_320x50);
     expect(s.servedStatically).toBe(true);
     expect(s.singleHitWaterfall).toBe(true);
-    expect(s.initialVolume).toBe(0.1);
+    expect(s.initialVolume).toBe(0.01);
     expect(s.feedLoopEnabled).toBe(false);
   });
 });
