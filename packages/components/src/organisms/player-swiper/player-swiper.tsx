@@ -101,10 +101,14 @@ const ACTIVE_FEED_VIEW_SELECTOR = '[data-home-feed-view="true"]';
 
 /** A child expand opened inside the active Feed View must reuse the same presentation. */
 function isFeedViewPresentation(rootElement: HTMLElement | null | undefined): boolean {
+  // First-party page feeds (/latest, /popular, /video) do not have an SDK
+  // placement root. They must never inherit another placement's document-level
+  // Feed View marker, including one that is briefly present during navigation.
+  if (!rootElement) return false;
   if (rootElement?.dataset.homeFeedView === "true") return true;
   // The session owner may intentionally be promoted to Full View; do not force it back.
   if (rootElement?.dataset.homeFeedSession === "true") return false;
-  return typeof document !== "undefined" && document.querySelector(ACTIVE_FEED_VIEW_SELECTOR) !== null;
+  return document.querySelector(ACTIVE_FEED_VIEW_SELECTOR) !== null;
 }
 
 /** `document.activeElement` stops at a shadow host; retain the actual card trigger. */
@@ -311,7 +315,10 @@ export function PlayerList({
 
   useEffect(() => {
     const rootElement = embedDetails?.rootElement;
-    if (!rootElement) return;
+    if (!rootElement) {
+      setIsHomeFeedView(false);
+      return;
+    }
 
     const syncFeedViewState = () => setIsHomeFeedView(isFeedViewPresentation(rootElement));
     syncFeedViewState();
@@ -322,6 +329,10 @@ export function PlayerList({
   }, [embedDetails?.rootElement]);
 
   useEffect(() => {
+    // These document events bridge Home's page root to its SDK placement root.
+    // A regular WebApp feed has no placement root and must ignore them.
+    if (!embedDetails?.rootElement) return;
+
     const handleFullView = () => setIsHomeFeedView(false);
     const handleFeedView = () => setIsHomeFeedView(true);
     document.addEventListener(HOME_FULL_VIEW_EVENT, handleFullView);
@@ -330,7 +341,7 @@ export function PlayerList({
       document.removeEventListener(HOME_FULL_VIEW_EVENT, handleFullView);
       document.removeEventListener(HOME_FEED_VIEW_EVENT, handleFeedView);
     };
-  }, []);
+  }, [embedDetails?.rootElement]);
 
   useEffect(() => {
     if (!homeFeedSourceDomId) return;

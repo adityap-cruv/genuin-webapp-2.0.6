@@ -109,7 +109,29 @@ const IMG = {
 
 const FOIL_LOGO = "/images/home/the-foil-logo.jpg";
 const MUSTO_LOGO = "/images/home/musto-logo.png";
-
+const SPONSORS = [
+  {
+    id: "musto",
+    heading: "Musto",
+    subHeading: "Sponsored · Performance sailing kit",
+    logo: MUSTO_LOGO,
+    ctaText: "Order Now",
+  },
+  {
+    id: "royal-caribbean",
+    heading: "Royal Caribbean",
+    subHeading: "Sponsored",
+    logo: "https://media.qa.begenuin.com/uploads/brands/logo/brandProfileLogo_1770716288302.png",
+    ctaText: "Learn More",
+  },
+  {
+    id: "cordelia-cruises",
+    heading: "Cordelia Cruises",
+    subHeading: "Sponsored",
+    logo: "https://media.qa.begenuin.com/uploads/brands/logo/brandProfileLogo_1755752476954.png",
+    ctaText: "Learn More",
+  },
+] as const;
 // Real ids currently returned by the "Latest Video" QA placement. This is mock response data:
 // production brands supply their own `video_id` on each article item through the same contract.
 // The component never contains brand-specific ids or article assignments.
@@ -820,7 +842,6 @@ function basePageData(): Record<string, WidgetData> {
     tmobile: {
       id: "tmobile",
       header: { heading: "Musto", subHeading: "Sponsored · Performance sailing kit", logo: MUSTO_LOGO },
-      source: { feedType: "HOME", communityId: COMMUNITIES[4]! },
       sponsored: true,
       ctaText: "Order Now",
     },
@@ -887,6 +908,16 @@ function rotateCommunity(communityId: string, n: number): string {
  */
 function varyWidget(widget: WidgetData, pageIndex: number): WidgetData {
   if (pageIndex === 0) return widget;
+
+  if (widget.id === "tmobile") {
+    const sponsor = SPONSORS[pageIndex % SPONSORS.length]!;
+    return {
+      ...widget,
+      id: `sponsor-${sponsor.id}-p${pageIndex + 1}`,
+      header: { heading: sponsor.heading, subHeading: sponsor.subHeading, logo: sponsor.logo },
+      ctaText: sponsor.ctaText,
+    };
+  }
   const suffix = `-p${pageIndex + 1}`;
   const idBase = `${widget.id}${suffix}`;
   // Per-page, per-widget offset into the pool: each page steps forward; each widget starts at its own

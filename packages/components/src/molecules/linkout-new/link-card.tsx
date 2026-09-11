@@ -151,6 +151,7 @@ export function LinkCard({
   showResponsiveGrid = false,
   forceOrientation,
   ctaClassName,
+  descriptionClassName,
   forceFlexRatio,
   hideThumb,
   density = "regular",
@@ -174,8 +175,10 @@ export function LinkCard({
   showResponsiveGrid?: boolean;
   /** Pin `<ResponsiveLinkCard>`'s orientation (responsive branch only). */
   forceOrientation?: "portrait" | "landscape";
-  /** Extra classes merged onto the responsive card's CTA pill. */
+  /** Extra classes merged onto the card's CTA pill. */
   ctaClassName?: string;
+  /** Extra classes merged onto expanded/detail description text. */
+  descriptionClassName?: string;
   /** Override the responsive card's thumb/details flex ratio. */
   forceFlexRatio?: FlexRatio;
   /** Skip the responsive card's thumb area (host composites its own preview). */
@@ -482,7 +485,8 @@ export function LinkCard({
                       isCompact
                         ? "gencl:h-7 gencl:text-[10px] gencl:leading-3.5 gencl:font-medium gencl:w-full gencl:line-clamp-2"
                         : "gencl:text-body-3-medium! gencl:w-full gencl:line-clamp-3",
-                      textSecondary
+                      textSecondary,
+                      descriptionClassName
                     )}>
                     {data.description}
                   </p>
@@ -507,7 +511,7 @@ export function LinkCard({
                   label={ctaLabel}
                   theme={isDark ? "dark" : "light"}
                   onClick={onCtaClick}
-                  className="gencl:w-full gencl:mt-auto"
+                  className={cn("gencl:w-full gencl:mt-auto", ctaClassName)}
                 />
               )}
             </div>
@@ -520,7 +524,7 @@ export function LinkCard({
               label={ctaLabel}
               theme={isDark ? "dark" : "light"}
               onClick={onCtaClick}
-              className="gencl:w-full"
+              className={cn("gencl:w-full", ctaClassName)}
             />
           )}
         </div>
@@ -548,7 +552,9 @@ export function LinkCard({
               {displayTitle}
             </p>
             {data.description && (
-              <p className={cn("gencl:text-body-1-medium! gencl:w-full", textSecondary)}>{data.description}</p>
+              <p className={cn("gencl:text-body-1-medium! gencl:w-full", textSecondary, descriptionClassName)}>
+                {data.description}
+              </p>
             )}
           </div>
 

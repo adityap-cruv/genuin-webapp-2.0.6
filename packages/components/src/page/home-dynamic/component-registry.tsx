@@ -45,12 +45,13 @@ import type {
   IntelligenceArticle,
   IntelligencePanelLayout,
 } from "@genuin/components/organisms/intelligence-panel/intelligence-panel.types";
+import { useCategory } from "@genuin/components/react-query/api/category/category";
 import { useFeed } from "@genuin/components/react-query/api/feed";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
 import type { FeedData } from "@genuin/components/templates/feed/feed.type";
 
-import type { ArticleData, ComponentType, WidgetData, WidgetNode, WidgetWrapper } from "./contract";
+import type { ArticleData, ComponentType, FeedSource, WidgetData, WidgetNode, WidgetWrapper } from "./contract";
 
 // ─── Per-page contexts + shared hooks/tokens ────────────────────────────────────────────
 // Consolidated here (from the former block-visibility / widget-bus / intelligence-layout /
@@ -117,7 +118,13 @@ const INTELLIGENCE_LAYOUT: IntelligencePanelLayout = {
   articleCard: { height: 221, imageAspectRatio: "4 / 3" },
   upNextGrid: { minimumCardWidth: 172, mobileCardWidth: "calc((100% - 24px) / 2)" },
 };
-const INTERVIEW_CARD_LAYOUT = { ...INTELLIGENCE_LAYOUT.articleCard, height: "auto" as const };
+const INTERVIEW_CARD_LAYOUT = {
+  ...INTELLIGENCE_LAYOUT.articleCard,
+  height: "auto" as const,
+  // Editorial artwork is delivered in a wide format. Keep this list aligned with the
+  // reference card without changing its existing vertical one-card snap behavior.
+  imageAspectRatio: "16 / 9",
+};
 
 const SECTION_LOGO = "/images/home/the-foil-logo.jpg";
 
@@ -134,14 +141,21 @@ export type CommunityFeed = {
  * One community's (or group's) feed — the same brand-scoped `useFeed("HOME", …)` request the
  * existing home page makes. Returns `FeedData`, the flat `posts` and the community name/avatar.
  */
-export function useCommunityFeed(communityId: string, groupId?: string): CommunityFeed {
+export function useCommunityFeed(communityId?: string, groupId?: string): CommunityFeed {
   const { isInIframe, brandDetails } = useBaseContext();
+  const { data: categoryData } = useCategory();
   const options = useMemo(
     () => ({
       isInIframe,
       brandId: brandDetails.brand_id ?? undefined,
-      communityIds: [communityId],
+      communityIds: communityId ? [communityId] : [],
       ...(groupId ? { groupIds: [groupId] } : {}),
+      enabled: Boolean(communityId),
+      // A community avatar is page metadata, so reuse it across infinite-scroll blocks instead
+      // of refetching the same community feed whenever another block mounts.
+      staleTime: 5 * 60 * 1000,
+      gcTime: 30 * 60 * 1000,
+      refetchOnMount: false,
     }),
     [isInIframe, brandDetails.brand_id, communityId, groupId]
   );
@@ -161,11 +175,17 @@ export function useCommunityFeed(communityId: string, groupId?: string): Communi
     [posts, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage, data, options]
   );
   const first = posts[0];
+  // The feed can briefly retain an older community avatar after an edit. Categories power the
+  // sidebar and return the current community metadata, so use that same source for Home headers.
+  const categoryCommunity = categoryData?.categories
+    .flatMap((category) => category.communities)
+    .find((community) => community.community_id === communityId);
+
   return {
     feedData,
     posts,
-    communityName: first?.community?.name ?? "",
-    communityImage: first?.community?.profileImage ?? SECTION_LOGO,
+    communityName: categoryCommunity?.community_name || first?.community?.name || "",
+    communityImage: categoryCommunity?.dp || first?.community?.profileImage || SECTION_LOGO,
     groupName: groupId ? (first?.group?.name ?? undefined) : undefined,
     isLoading,
   };
@@ -350,6 +370,7 @@ function WidgetFrame({
   heading,
   subHeading,
   logo,
+  source,
   imageAlt,
   wrapper,
   children,
@@ -357,15 +378,33 @@ function WidgetFrame({
   heading?: string;
   subHeading?: string;
   logo?: string;
+  source?: FeedSource;
   imageAlt?: string;
   wrapper?: WidgetWrapper;
   children: ReactNode;
 }) {
   const frame = wrapper ?? {};
+  // The response currently uses The Foil mark as a placeholder for community-backed widgets.
+  // Resolve those placeholders from the community feed, while preserving an explicitly authored
+  // brand/sponsor logo (for example Musto). Missing community artwork falls back to The Foil.
+  const shouldResolveCommunityIdentity = Boolean(source?.communityId) && (!logo || logo === SECTION_LOGO);
+  const { communityImage, communityName, groupName } = useCommunityFeed(
+    shouldResolveCommunityIdentity ? source?.communityId : undefined,
+    shouldResolveCommunityIdentity ? source?.groupId : undefined
+  );
+  const resolvedLogo = shouldResolveCommunityIdentity ? communityImage : logo;
+  const resolvedHeading = shouldResolveCommunityIdentity ? groupName || communityName || heading : heading;
+  const resolvedImageAlt = shouldResolveCommunityIdentity ? communityName || imageAlt : imageAlt;
+
   return (
     <div className="gencl:flex gencl:h-full gencl:min-h-0 gencl:min-w-0 gencl:flex-col gencl:gap-3">
       {frame.showHeader !== false && (
-        <SectionHeader imageUrl={logo} imageAlt={imageAlt} heading={heading} subHeading={subHeading} />
+        <SectionHeader
+          imageUrl={resolvedLogo}
+          imageAlt={resolvedImageAlt}
+          heading={resolvedHeading}
+          subHeading={subHeading}
+        />
       )}
       {frame.topSpacerPx ? <div className="gen-home-spacer" aria-hidden style={{ height: frame.topSpacerPx }} /> : null}
       <div
@@ -531,6 +570,7 @@ function PlacementWidget({ node, data }: WidgetRenderProps) {
       heading={data.header?.heading}
       subHeading={data.header?.subHeading}
       logo={data.header?.logo}
+      source={data.source}
       wrapper={node.wrapper}>
       {show && styleId && placementId ? (
         <GenuinPlacement
@@ -560,6 +600,7 @@ function IntelligencePanelWidget({ node, data }: WidgetRenderProps) {
       heading={data.header?.heading}
       subHeading={data.header?.subHeading}
       logo={data.header?.logo}
+      source={data.source}
       wrapper={node.wrapper}>
       {featured ? (
         <IntelligencePanel
@@ -583,6 +624,7 @@ function IntelligenceCardListWidget({ node, data }: WidgetRenderProps) {
       heading={data.header?.heading}
       subHeading={data.header?.subHeading}
       logo={data.header?.logo}
+      source={data.source}
       wrapper={node.wrapper}>
       <IntelligencePanelShell size={{ width: "100%", height: "100%" }} onClose={() => undefined}>
         <div
@@ -607,6 +649,8 @@ function IntelligenceCardListWidget({ node, data }: WidgetRenderProps) {
                 "gencl:w-[90%]! gencl:max-w-none!",
                 "gencl:snap-always",
                 "gencl:max-sm:[&_[data-slot=intelligence-article-content]]:min-h-0",
+                // Phones use the taller, edge-to-edge artwork treatment from the reference.
+                // Keep `object-cover` from the shared card so the area fills without grey bands.
                 "gencl:max-sm:[&_[data-slot=intelligence-article-image]]:grow",
                 "gencl:max-sm:[&_[data-slot=intelligence-article-image]]:shrink!"
               )}
@@ -634,6 +678,7 @@ function EventCarouselWidget({ node, data }: WidgetRenderProps) {
       heading={data.header?.heading}
       subHeading={data.header?.subHeading}
       logo={data.header?.logo}
+      source={data.source}
       wrapper={node.wrapper}>
       {/* No onCtaClick: the event CTA's href is now an on-domain `/article/<slug>` link
           (from the BFF), so the LinkCard renders it as a same-tab anchor — matching home.tsx. */}
@@ -684,6 +729,7 @@ function HoverLinkCardListWidget({ node, data }: WidgetRenderProps) {
       heading={data.header?.heading}
       subHeading={data.header?.subHeading}
       logo={data.header?.logo}
+      source={data.source}
       wrapper={node.wrapper}>
       <HoverLinkCardList
         items={items}

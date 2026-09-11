@@ -184,6 +184,15 @@ export function FeedViewOverlay({
 }) {
   const [backPosition, setBackPosition] = useState<{ left: number; top: number } | null>(null);
   const [isInlineArticleOpen, setIsInlineArticleOpen] = useState(false);
+  const collapseRequestedRef = useRef(false);
+
+  const collapseSdkView = useCallback(() => {
+    if (collapseRequestedRef.current) return;
+    const collapse = (window as GenuinWindow).genuin?.collapse;
+    if (!collapse) return;
+    collapseRequestedRef.current = true;
+    collapse(request.sourceDomId);
+  }, [request.sourceDomId]);
 
   useEffect(() => {
     const handleInlineArticleState = (event: Event) => {
@@ -197,6 +206,7 @@ export function FeedViewOverlay({
 
   useLayoutEffect(() => {
     let frame = 0;
+    let collapseOnTeardown = false;
     let portalObserver: MutationObserver | null = null;
     let contentObserver: MutationObserver | null = null;
     let boundsObserver: ResizeObserver | null = null;
@@ -207,6 +217,14 @@ export function FeedViewOverlay({
     let portalStyle: string | null = null;
     let promoted = false;
     let revealed = false;
+
+    collapseRequestedRef.current = false;
+    // React Strict Mode immediately runs a setup/cleanup probe in development. Arm the SDK
+    // collapse after that probe so a real route unmount closes the expand view without making
+    // the probe close a Feed View that has only just opened.
+    const collapseArm = window.setTimeout(() => {
+      collapseOnTeardown = true;
+    }, 0);
 
     const mountFeedStageStyle = () => {
       if (!host || feedStageStyle) return;
@@ -363,6 +381,7 @@ export function FeedViewOverlay({
     document.addEventListener(HOME_FEED_VIEW_EVENT, handleFeedView);
 
     return () => {
+      window.clearTimeout(collapseArm);
       window.cancelAnimationFrame(frame);
       portalObserver?.disconnect();
       contentObserver?.disconnect();
@@ -371,13 +390,20 @@ export function FeedViewOverlay({
       document.removeEventListener(HOME_FULL_VIEW_EVENT, handleFullView);
       document.removeEventListener(HOME_FEED_VIEW_EVENT, handleFeedView);
       restoreFullView();
+      if (collapseOnTeardown && !collapseRequestedRef.current) {
+        // The SDK expand portal is owned by a separate React root, so unmounting the Article/Home
+        // page does not unmount it. Hide it for the hand-off and explicitly collapse its source;
+        // otherwise it survives the route change and restores itself full-screen over /home.
+        if (host) setImportantStyles(host, { visibility: "hidden", "pointer-events": "none" });
+        collapseSdkView();
+      }
       markFeedView(request.sourceDomId, false);
       markFeedViewSession(request.sourceDomId, false);
     };
-  }, [boundsRef, onClose, request.sourceDomId]);
+  }, [boundsRef, collapseSdkView, onClose, request.sourceDomId]);
 
   const handleBack = () => {
-    (window as GenuinWindow).genuin?.collapse?.(request.sourceDomId);
+    collapseSdkView();
     onClose();
   };
 

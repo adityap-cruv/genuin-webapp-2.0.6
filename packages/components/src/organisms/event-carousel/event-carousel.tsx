@@ -73,6 +73,11 @@ function EventCard({ event, cardWidth, cardHeight, imageWidth, imageHeight, onCt
         theme="light"
         ctaText={event.cta.label}
         ctaLink={event.cta.href}
+        descriptionClassName="gencl:h-8! gencl:text-body-2-medium! gencl:leading-4!"
+        ctaClassName={cn(
+          "gencl:h-9! gencl:gap-1.5 gencl:pl-2.5 gencl:pr-1.5",
+          "gencl:[&>span]:text-body-2-semi-bold! gencl:[&>svg]:size-5!"
+        )}
         onCtaClick={() => onCtaClick?.(event)}
       />
     </article>

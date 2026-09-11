@@ -25,7 +25,6 @@ import { AnimatedMuteIcon } from "./control-buttons";
 import { EmbedControls } from "./embed-v2";
 
 const FIXED_PLAYER_CONTROL_SIZE: PlayerControlSize = "md";
-const HOME_FEED_SESSION_SELECTOR = '[data-home-feed-session="true"]';
 
 const controlsVariants = cva("gencl:transition-all gencl:z-20 gencl:flex gencl:w-full gencl:justify-between", {
   variants: {
@@ -146,7 +145,10 @@ export const Controls = memo(function Controls({
       document.dispatchEvent(new CustomEvent(HOME_FULL_VIEW_EVENT));
       return;
     }
-    if (showExpandView && (isHomeFeedSession || document.querySelector(HOME_FEED_SESSION_SELECTOR) !== null)) {
+    // Only the player that owns the Home placement session may return to the
+    // bounded Feed View. A document-wide session lookup can capture unrelated
+    // /latest, /popular, or /video players during a route hand-off.
+    if (showExpandView && isHomeFeedSession) {
       setIsIntermediateFeedView(true);
       document.dispatchEvent(new CustomEvent(HOME_FEED_VIEW_EVENT));
       return;

@@ -30,13 +30,29 @@ const TOP_CATEGORIES_CAROUSEL_PLACEMENT = {
   placementId: "6a8713aa1b5332711228b24b",
   apiKey: PLACEMENT_API_KEY,
 };
-const GRID_PLACEMENT = {
-  styleId: "6a8d7df90ab638a100b16f74",
-  placementId: "6a8d7df90ab638a100b16f73",
-  mobileStyleId: "6a8d98dfceb52d9183e7e2e6",
-  mobilePlacementId: "6a8d98dfceb52d9183e7e2e5",
-  apiKey: PLACEMENT_API_KEY,
-};
+const GRID_PLACEMENTS = [
+  {
+    styleId: "6a8d7df90ab638a100b16f74",
+    placementId: "6a8d7df90ab638a100b16f73",
+    mobileStyleId: "6a8d98dfceb52d9183e7e2e6",
+    mobilePlacementId: "6a8d98dfceb52d9183e7e2e5",
+    apiKey: PLACEMENT_API_KEY,
+  },
+  {
+    styleId: "6aa3fe388bc64b3c7fc2cae5",
+    placementId: "6aa3fe388bc64b3c7fc2cae4",
+    mobileStyleId: "6aa3fe40d64b5ab580a4f4bf",
+    mobilePlacementId: "6aa3fe40d64b5ab580a4f4be",
+    apiKey: PLACEMENT_API_KEY,
+  },
+  {
+    styleId: "6aa3fe478bc64b3c7fc2cb0c",
+    placementId: "6aa3fe478bc64b3c7fc2cb0b",
+    mobileStyleId: "6aa3fe4e8bc64b3c7fc2cb2a",
+    mobilePlacementId: "6aa3fe4e8bc64b3c7fc2cb29",
+    apiKey: PLACEMENT_API_KEY,
+  },
+];
 
 // ─── Widgets (reused across layout variants; each dataKey exists in every feed page) ──────────────
 const W_SALEGP_DESK: WidgetNode = {
@@ -95,7 +111,7 @@ const W_TMOBILE: WidgetNode = {
   id: "tmobile",
   component: "video_grid",
   dataKey: "tmobile",
-  config: GRID_PLACEMENT,
+  config: GRID_PLACEMENTS[0],
   // Three desktop columns of 9:16 tiles, tuned so Intelligence sits just inside the video edge.
   intrinsicSize: { width: 1000, height: 582 },
   // Three stacked 1:1 mobile tiles plus the placement's two 8px gaps at the authored 383px width.
@@ -200,5 +216,16 @@ export function getHomeLayout(): HomeLayoutManifest {
  */
 export function getHomeLayoutForPage(pageIndex: number): HomeLayoutManifest {
   const count = VARIANTS.length;
-  return VARIANTS[((pageIndex % count) + count) % count]!;
+  const variant = VARIANTS[((pageIndex % count) + count) % count]!;
+  return {
+    ...variant,
+    rows: variant.rows.map((row) => ({
+      ...row,
+      children: row.children.map((node) =>
+        node.type === "widget" && node.dataKey === "tmobile"
+          ? { ...node, config: GRID_PLACEMENTS[pageIndex % GRID_PLACEMENTS.length] }
+          : node
+      ),
+    })),
+  };
 }
