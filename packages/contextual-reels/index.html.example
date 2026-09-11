@@ -306,6 +306,10 @@
                   <input type="checkbox" name="size" value="300x600" />
                   300 × 600
                 </label>
+                <label class="size-card">
+                  <input type="checkbox" name="size" value="1024x768" />
+                  1024 × 768
+                </label>
               </div>
             </fieldset>
           </div>
@@ -340,6 +344,7 @@
         "320x480": "Mobile Tall",
         "300x250": "Desktop Medium",
         "300x600": "Desktop Tall",
+        "1024x768": "Tablet",
       };
       const DEFAULT_TAG_ID = TAG_PRESETS.ad;
       const DEFAULT_SIZES = ["320x100"];
