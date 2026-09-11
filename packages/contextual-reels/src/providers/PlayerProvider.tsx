@@ -18,7 +18,7 @@ import { useStrategy } from "@cxr/strategies/StrategyProvider";
  * Volume applied when the user unmutes from silence (control-layer tap, expand,
  * mute-toggle). Starts low so the first burst of sound is gentle.
  */
-export const DEFAULT_UNMUTE_VOLUME = 0.2;
+export const DEFAULT_UNMUTE_VOLUME = 0.1;
 
 /** Context value exposed via usePlayer. */
 export interface PlayerContextValue {

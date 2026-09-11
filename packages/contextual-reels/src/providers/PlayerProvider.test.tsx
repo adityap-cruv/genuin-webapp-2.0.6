@@ -9,7 +9,10 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
 const { setBaseEventContextMock, useTagDetailsMock } = vi.hoisted(() => ({
   setBaseEventContextMock: vi.fn(),
-  useTagDetailsMock: vi.fn(() => ({ tagId: undefined as string | undefined, brandId: undefined as number | undefined })),
+  useTagDetailsMock: vi.fn(() => ({
+    tagId: undefined as string | undefined,
+    brandId: undefined as number | undefined,
+  })),
 }));
 vi.mock("@cxr/providers/AnalyticsProvider", () => ({
   useAnalytics: () => ({ sendEvent: vi.fn(), setBrandId: vi.fn(), setBaseEventContext: setBaseEventContextMock }),
@@ -148,7 +151,7 @@ describe("PlayerProvider", () => {
   });
 
   it("seeds initial volume from the active tag's strategy", () => {
-    // Tag 6a2fefd87ce338c3a5afc605 is configured with initialVolume: 0.2.
+    // Tag 6a2fefd87ce338c3a5afc605 is configured with initialVolume: 0.1.
     // StrategyProvider reads the tagId from useTagDetails(), so drive it there.
     useTagDetailsMock.mockReturnValue({ tagId: "6a2fefd87ce338c3a5afc605", brandId: undefined });
     const tree = React.createElement(
@@ -163,12 +166,12 @@ describe("PlayerProvider", () => {
     act(() => {
       root.render(tree);
     });
-    expect(captured.volume).toBe(0.2);
+    expect(captured.volume).toBe(0.1);
   });
 
   it("restores a manual unmute to the tag's initialVolume (GIV override)", () => {
     // GIV drives initialVolume everywhere, incl. the level a later
-    // unmute restores to — 0.6 here, distinct from DEFAULT_UNMUTE_VOLUME (0.2).
+    // unmute restores to — 0.6 here, distinct from DEFAULT_UNMUTE_VOLUME (0.1).
     useTagDetailsMock.mockReturnValue({ tagId: "aaaabbbbccccdddd11112222", brandId: undefined });
     (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__ = "&GIV=0.6";
     const tree = React.createElement(
@@ -185,7 +188,7 @@ describe("PlayerProvider", () => {
     });
     // Starts audible at the override level.
     expect(captured.volume).toBe(0.6);
-    // Mute to silence, then unmute — restores to the override level, not 0.2.
+    // Mute to silence, then unmute — restores to the override level, not the default (0.1).
     act(() => captured.setMuted(true));
     expect(captured.volume).toBe(0);
     act(() => captured.setMuted(false));

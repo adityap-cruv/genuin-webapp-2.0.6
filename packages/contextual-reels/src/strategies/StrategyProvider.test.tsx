@@ -179,7 +179,7 @@ describe("strategies/StrategyProvider GIV override", () => {
   });
 
   it("wins over a tag's configured initialVolume", () => {
-    // The dev slot tag has initialVolume: 0.2 configured.
+    // The dev slot tag has initialVolume: 0.1 configured.
     useTagDetailsMock.mockReturnValue({ tagId: "697c46aa9f432b1a2055e803", brandId: undefined });
     (window as { __CXR_SCRIPT_PARAMS__?: string }).__CXR_SCRIPT_PARAMS__ = "&GIV=0.9";
     const handle = {} as { value: Strategies };
@@ -189,7 +189,7 @@ describe("strategies/StrategyProvider GIV override", () => {
       </StrategyProvider>
     );
 
-    // Tag config sets initialVolume: 0.2; the param wins.
+    // Tag config sets initialVolume: 0.1; the param wins.
     expect(handle.value.initialVolume).toBe(0.9);
     unmount(root, container);
   });
@@ -204,7 +204,7 @@ describe("strategies/StrategyProvider GIV override", () => {
       </StrategyProvider>
     );
 
-    expect(handle.value.initialVolume).toBe(0.2);
+    expect(handle.value.initialVolume).toBe(0.1);
     unmount(root, container);
   });
 
@@ -244,7 +244,7 @@ describe("strategies/StrategyProvider GIV override", () => {
       </StrategyProvider>
     );
 
-    expect(handle.value.initialVolume).toBe(0.2);
+    expect(handle.value.initialVolume).toBe(0.1);
     unmount(root, container);
   });
 });

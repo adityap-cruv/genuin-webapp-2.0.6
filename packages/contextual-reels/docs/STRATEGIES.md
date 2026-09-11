@@ -76,7 +76,7 @@ App  →  <StrategyProvider tagId>  →  resolveStrategies(tagId)  →  Strategi
 | `adsDisabled`             | `boolean`  | `false`    | Hard kill switch — no ads ever shown. Drops standalone ad slides and strips the organic ad break. Overrides `adBreakEnabled`.                                                                                                                                                                                                                                                                        |
 | `mutePassback`            | `boolean`  | `false`    | On first `player:play`, start a timer; if still muted when it fires, trigger an ad passback (`onAdFail`). Distinct from `gateOnUnmute` — this passes the slot back rather than just suppressing the request.                                                                                                                                                                                         |
 | `mutePassbackDelayMs`     | `number`   | `5000`     | Delay before the `mutePassback` timer fires, measured from the first `player:play`. Ignored unless `mutePassback` is on.                                                                                                                                                                                                                                                                             |
-| `initialVolume`           | `number`   | `0`        | Volume (0..1) the feed starts at on first load. `0` plays unmuted-but-silent and shows the unmute prompt; set per-tag (e.g. `0.2`) to start audible. A browser autoplay block snaps it back to 0.                                                                                                                                                                                                    |
+| `initialVolume`           | `number`   | `0`        | Volume (0..1) the feed starts at on first load. `0` plays unmuted-but-silent and shows the unmute prompt; set per-tag (e.g. `0.1`) to start audible. A browser autoplay block snaps it back to 0.                                                                                                                                                                                                    |
 | `servedStatically`        | `boolean`  | `false`    | Serve the tag's config + feed from committed per-tag fixtures — skip `/ad_creative` and `/feed`. `/ip_info` is still fetched (geoip stays on analytics). The ad URL is rewritten client-side (real `ua`, `[PAGE_URL]`, real client `ip` from geoip). See [Statically-served tags](#statically-served-tags).                                                                                          |
 | `feedLoopEnabled`         | `boolean`  | **`true`** | Whether the feed wraps from the last slide back to the first. See [Finite feeds](#finite-feeds-feedloopenabled).                                                                                                                                                                                                                                                                                     |
 | `visibilityGate`          | `boolean`  | `false`    | Hold feed render until the unit is on screen; passback `unit_hidden` if it stays hidden past `visibilityGateTimeoutMs`; tear down on a later hide (only if `destroyOnHide`). Off = today's unconditional render. **Measurement is decoupled — `unit_visible` is stamped on every tag regardless of this flag** (see [Visibility gate](#visibility-gate-visibilitygate)).                             |
@@ -392,7 +392,7 @@ stop. Attach the `noLoop` preset, or set the key inline:
 // strategyConfig.ts → TAG_STRATEGIES
 "<tagId>": { preset: "noLoop" },
 // or alongside other keys:
-"<tagId>": { initialVolume: 0.2, singleHitWaterfall: true, feedLoopEnabled: false },
+"<tagId>": { initialVolume: 0.1, singleHitWaterfall: true, feedLoopEnabled: false },
 ```
 
 A tag can carry only **one** preset, so a tag that already uses another bundle (e.g.
@@ -414,7 +414,7 @@ Infolinks tags per size **reuse the 320×50 anchor's brand-level Triton ad feed*
 identical across the brand (see the fixture recipe). The managed-service tags ship
 their **own** `.feed.json` (same slots today), so a managed-service-only feed change
 cannot leak into the Infolinks tags. Each carries
-`{ initialVolume: 0.2, singleHitWaterfall: true, feedLoopEnabled: false, preset: "servedStatically" }`.
+`{ initialVolume: 0.1, singleHitWaterfall: true, feedLoopEnabled: false, preset: "servedStatically" }`.
 
 | Size    | Anchor (original)          | Sibling 2                  | Sibling 3                  | Manage-service             |
 | ------- | -------------------------- | -------------------------- | -------------------------- | -------------------------- |
