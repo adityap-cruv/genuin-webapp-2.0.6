@@ -521,6 +521,9 @@ describe("suppressedEvents", () => {
     expect(suppressed.has("Video Started")).toBe(true);
     expect(suppressed.has("Video Play Started")).toBe(true);
     expect(suppressed.has("Video Complete")).toBe(true);
+    // Audio + visibility diagnostics — retired now that their investigation concluded.
+    expect(suppressed.has("Audio Diagnostic")).toBe(true);
+    expect(suppressed.has("Visibility Diagnostic")).toBe(true);
   });
 
   // Every ads-only prod tag (all 32 — 15 Infolinks + 5 managed-service across the
@@ -572,7 +575,7 @@ describe("suppressedEvents", () => {
     expect(suppressed.has("Ad Impression")).toBe(false);
   });
 
-  it("never suppresses revenue-funnel, boot, or diagnostic events", () => {
+  it("never suppresses revenue-funnel or boot events", () => {
     const suppressed = getSuppressedEvents(STATIC_320x50);
     for (const keep of [
       "Tag Init",
@@ -582,8 +585,6 @@ describe("suppressedEvents", () => {
       "Ad Completed",
       "Ad Passback",
       "Infolinks Impression",
-      "Audio Diagnostic",
-      "Visibility Diagnostic",
     ]) {
       expect(suppressed.has(keep)).toBe(false);
     }

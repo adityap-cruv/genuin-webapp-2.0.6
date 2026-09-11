@@ -1741,7 +1741,8 @@ describe("ads/useGenAdInstance", () => {
 // web layer muted the ad or the native audio session silenced a correctly
 // unmuted element. Instrumentation only — see docs/AUDIO_DIAGNOSTIC_PLAN.md.
 
-describe("useGenAdInstance — audio diagnostic beacon", () => {
+// SKIPPED 2026-09-11: audio/visibility diagnostic samplers disabled in genAdSdk.ts. See the re-enable note there.
+describe.skip("useGenAdInstance — audio diagnostic beacon", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     testBus = new CxrEventBus();

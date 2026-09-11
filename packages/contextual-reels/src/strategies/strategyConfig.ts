@@ -21,7 +21,10 @@ import type { Strategies } from "@cxr/strategies/strategies";
  * high-frequency per-tick video churn that the L3 hidden-audio player would
  * otherwise emit off the ad creative. The ad-level funnel is covered separately
  * (`Ad Media Quartile` from the GenAd SDK), so the video quartiles are redundant
- * here. Revenue-funnel + boot + diagnostic events are deliberately NOT listed.
+ * here. Also retires the audio + visibility diagnostic events now that their
+ * investigation has concluded (see docs/AUDIO_DIAGNOSTIC_PLAN.md /
+ * VISIBILITY_DIAGNOSTIC_PLAN.md). Revenue-funnel + boot events are deliberately
+ * NOT listed.
  *
  * Attach via a tag's `suppressedEvents` in {@link TAG_STRATEGIES}. Shared as a
  * named list so the entire ads-only inventory (all 32 prod tags — 15 Infolinks +
@@ -77,6 +80,12 @@ const ADS_ONLY_INTERSTITIAL_SUPPRESSED: readonly string[] = [
   EVENT.VIDEO_STARTED,
   EVENT.VIDEO_PLAY_STARTED,
   EVENT.VIDEO_COMPLETED,
+  // Diagnostics — RETIRED. The audio + visibility snapshots fired one-per-fill on
+  // the audible-start ads-only tags to localize the "volume up but no sound"
+  // report and find which viewability signal detects a natively-hidden webview.
+  // That investigation has concluded, so stop emitting them off live inventory.
+  EVENT.AUDIO_DIAGNOSTIC,
+  EVENT.VISIBILITY_DIAGNOSTIC,
 ];
 
 /**

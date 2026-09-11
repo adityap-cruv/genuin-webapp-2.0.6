@@ -6,13 +6,13 @@
 import { useEffect, useRef, useState } from "react";
 
 import { resolvePageUrl, resolveVideoAdMacros } from "@cxr/ads/adUrlMacros";
-import { sampleAudioDiagnostic } from "@cxr/ads/audioDiagnostic";
+// import { sampleAudioDiagnostic } from "@cxr/ads/audioDiagnostic";
 import { normalizeBannerConfig, normalizeNativeConfig, normalizeVideoConfig } from "@cxr/ads/normalizers";
 import type { AdProviderKind } from "@cxr/ads/normalizers";
 import { EVENT } from "@cxr/analytics/analytics";
 import { hostMacros } from "@cxr/hostMacros";
 import { useEventBus } from "@cxr/instance/InstanceContext";
-import { sampleVisibilityDiagnostic } from "@cxr/monitoring/visibilityDiagnostic";
+// import { sampleVisibilityDiagnostic } from "@cxr/monitoring/visibilityDiagnostic";
 import { fireAdElementPixel } from "@cxr/observability/adelement-pixel";
 import { resolveClientIp } from "@cxr/platform/device";
 import { useAnalytics } from "@cxr/providers/AnalyticsProvider";
@@ -21,9 +21,9 @@ import { useTagDetails } from "@cxr/providers/TagDetailsProvider";
 import { getSharedGeoIp } from "@cxr/services/api";
 import { resyncShadowStyles } from "@cxr/shadow-dom";
 import { useStrategy } from "@cxr/strategies/StrategyProvider";
-import { didServeDebugDeviceFeed } from "@cxr/strategies/debugDevices";
+// import { didServeDebugDeviceFeed } from "@cxr/strategies/debugDevices"; // DIAGNOSTICS DISABLED 2026-09-11 — see genAdSdk.ts diagnostic block
 import { isStaticTag } from "@cxr/strategies/staticTagData";
-import type { GenAdBlockedDetails } from "@cxr/types/window";
+// import type { GenAdBlockedDetails } from "@cxr/types/window";
 import { createLogger } from "@cxr/utils/logger";
 
 const _logger = createLogger("cxr/gen-ad-sdk");
@@ -43,28 +43,28 @@ const GEN_AD_BASE_URL: string = _env.VITE_CXR_GEN_AD_BASE_URL ?? "https://media.
 /** Cached promise — null until the first call to `loadGenAdSdk`. */
 let genAdLoadPromise: Promise<void> | null = null;
 
-/**
- * Upper bound on a diagnostic string copied out of the GenAd SDK.
- *
- * Error messages are browser- or third-party-authored (IMA's `getMessage()` can
- * embed a whole VAST URL) and unbounded. These land on an analytics event fired
- * once per blocked impression, so a long message is paid for on every event.
- */
-const MAX_DIAGNOSTIC_STRING_LENGTH = 300;
+// /**
+//  * Upper bound on a diagnostic string copied out of the GenAd SDK.
+//  *
+//  * Error messages are browser- or third-party-authored (IMA's `getMessage()` can
+//  * embed a whole VAST URL) and unbounded. These land on an analytics event fired
+//  * once per blocked impression, so a long message is paid for on every event.
+//  */
+// const MAX_DIAGNOSTIC_STRING_LENGTH = 300;
 
-/**
- * Coerces an SDK-supplied diagnostic value to a bounded string, or `null`.
- *
- * GenAd loads from a rolling CDN channel (`ad-sdk/1.0.0`) that we cannot pin, so
- * its declared callback types are not a runtime guarantee — a future build could
- * send a number, an `Error`, or nothing at all. Anything non-string becomes
- * `null` rather than being coerced to `"[object Object]"`, keeping the analytics
- * column honest: `null` means "not reported", never "reported as garbage".
- */
-function asDiagnosticString(value: unknown): string | null {
-  if (typeof value !== "string" || value === "") return null;
-  return value.length > MAX_DIAGNOSTIC_STRING_LENGTH ? value.slice(0, MAX_DIAGNOSTIC_STRING_LENGTH) : value;
-}
+// /**
+//  * Coerces an SDK-supplied diagnostic value to a bounded string, or `null`.
+//  *
+//  * GenAd loads from a rolling CDN channel (`ad-sdk/1.0.0`) that we cannot pin, so
+//  * its declared callback types are not a runtime guarantee — a future build could
+//  * send a number, an `Error`, or nothing at all. Anything non-string becomes
+//  * `null` rather than being coerced to `"[object Object]"`, keeping the analytics
+//  * column honest: `null` means "not reported", never "reported as garbage".
+//  */
+// function asDiagnosticString(value: unknown): string | null {
+//   if (typeof value !== "string" || value === "") return null;
+//   return value.length > MAX_DIAGNOSTIC_STRING_LENGTH ? value.slice(0, MAX_DIAGNOSTIC_STRING_LENGTH) : value;
+// }
 
 /**
  * Load the GenAd in-feed SDK (CSS + JS).
@@ -341,20 +341,20 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
   const instanceIdRef = useRef<number | null>(null);
   const initInFlightRef = useRef(false);
 
-  // Last `onAdBlocked` reason from the SDK (e.g. "unmuted_autoplay_restricted"),
-  // stamped onto the audio-diagnostic beacon. Diagnostic only — the mute/volume
-  // state side is already handled by `unmute_blocked` via onVolumeChange.
-  const adBlockedReasonRef = useRef<string | null>(null);
+  // // Last `onAdBlocked` reason from the SDK (e.g. "unmuted_autoplay_restricted"),
+  // // stamped onto the audio-diagnostic beacon. Diagnostic only — the mute/volume
+  // // state side is already handled by `unmute_blocked` via onVolumeChange.
+  // const adBlockedReasonRef = useRef<string | null>(null);
 
-  // The underlying rejection behind that reason (GenAd >= 1.24.0, optional).
-  // GenAd's guard rail reports EVERY play() rejection as "unmuted_autoplay_restricted",
-  // but only NotAllowedError is a real autoplay block — an AbortError is not. Field
-  // data showed audible-start ads muting even in sessions that already had a user
-  // gesture, which a genuine block cannot explain, so capture the real error name to
-  // size that false-positive rate before GenAd's fallback is narrowed.
-  const adBlockedErrorNameRef = useRef<string | null>(null);
-  const adBlockedErrorMessageRef = useRef<string | null>(null);
-  const adBlockedSourceRef = useRef<string | null>(null);
+  // // The underlying rejection behind that reason (GenAd >= 1.24.0, optional).
+  // // GenAd's guard rail reports EVERY play() rejection as "unmuted_autoplay_restricted",
+  // // but only NotAllowedError is a real autoplay block — an AbortError is not. Field
+  // // data showed audible-start ads muting even in sessions that already had a user
+  // // gesture, which a genuine block cannot explain, so capture the real error name to
+  // // size that false-positive rate before GenAd's fallback is narrowed.
+  // const adBlockedErrorNameRef = useRef<string | null>(null);
+  // const adBlockedErrorMessageRef = useRef<string | null>(null);
+  // const adBlockedSourceRef = useRef<string | null>(null);
 
   // Live mirror of `isMuted`. The init effect deps are intentionally narrow
   // ([isActive, requestArmed]) so a re-mute never tears the ad down, which means
@@ -472,79 +472,79 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
         // system-driven force-mute (browser autoplay policy) via onVolumeChange.
         if (wantsAudibleAdStart) {
           setBaseEventContext({ unmute_blocked: false });
-          adBlockedReasonRef.current = null;
-          adBlockedErrorNameRef.current = null;
-          adBlockedErrorMessageRef.current = null;
-          adBlockedSourceRef.current = null;
+          // adBlockedReasonRef.current = null;
+          // adBlockedErrorNameRef.current = null;
+          // adBlockedErrorMessageRef.current = null;
+          // adBlockedSourceRef.current = null;
         }
 
-        /**
-         * Samples the SDK's media element and emits one diagnostic beacon.
-         *
-         * The element is created asynchronously by the SDK, so this yields a
-         * macrotask before querying and no-ops if nothing ever mounts (banner /
-         * native fills have no media at all).
-         */
-        const emitAudioDiagnostic = (extra: Record<string, unknown>): void => {
-          setTimeout(() => {
-            if (cancelled) return;
-            const slot = containerRef?.current;
-            if (!slot) return;
+        // /**
+        //  * Samples the SDK's media element and emits one diagnostic beacon.
+        //  *
+        //  * The element is created asynchronously by the SDK, so this yields a
+        //  * macrotask before querying and no-ops if nothing ever mounts (banner /
+        //  * native fills have no media at all).
+        //  */
+        // const emitAudioDiagnostic = (extra: Record<string, unknown>): void => {
+        //   setTimeout(() => {
+        //     if (cancelled) return;
+        //     const slot = containerRef?.current;
+        //     if (!slot) return;
 
-            // Visibility diagnostic: needs only the container and fires for
-            // EVERY fill (media or not) — a natively-hidden unit is exactly what
-            // this beacon exists to catch, and IO v1 (`unit_visible`) cannot see
-            // it. Carries the same `forced_fill` so debug-device synthetic fills
-            // are filterable and audio+visibility correlate per impression.
-            void sampleVisibilityDiagnostic(slot, {
-              wants_audible_ad_start: true,
-              forced_fill: didServeDebugDeviceFeed(tagId),
-            })
-              .then((snapshot) => {
-                if (cancelled || !snapshot) return;
-                sendEvent(EVENT.VISIBILITY_DIAGNOSTIC, snapshot);
-              })
-              .catch(() => undefined);
+        //     // Visibility diagnostic: needs only the container and fires for
+        //     // EVERY fill (media or not) — a natively-hidden unit is exactly what
+        //     // this beacon exists to catch, and IO v1 (`unit_visible`) cannot see
+        //     // it. Carries the same `forced_fill` so debug-device synthetic fills
+        //     // are filterable and audio+visibility correlate per impression.
+        //     void sampleVisibilityDiagnostic(slot, {
+        //       wants_audible_ad_start: true,
+        //       forced_fill: didServeDebugDeviceFeed(tagId),
+        //     })
+        //       .then((snapshot) => {
+        //         if (cancelled || !snapshot) return;
+        //         sendEvent(EVENT.VISIBILITY_DIAGNOSTIC, snapshot);
+        //       })
+        //       .catch(() => undefined);
 
-            // Hand over the CONTAINER, not a pre-picked element: the audio-ad
-            // layout renders a decorative content video before the real audio
-            // transport, and only once decoding starts can the sampler tell them
-            // apart. Picking here would lock onto the decoy.
-            if (!slot.querySelector("video, audio")) return;
+        //     // Hand over the CONTAINER, not a pre-picked element: the audio-ad
+        //     // layout renders a decorative content video before the real audio
+        //     // transport, and only once decoding starts can the sampler tell them
+        //     // apart. Picking here would lock onto the decoy.
+        //     if (!slot.querySelector("video, audio")) return;
 
-            void sampleAudioDiagnostic(slot, {
-              ...extra,
-              wants_audible_ad_start: true,
-              configured_volume: initialVolume,
-              // Synthetic fill from a debug device's committed VAST feed, not a
-              // won auction. Field queries MUST exclude these — the debug handsets
-              // are device-targeted and would otherwise skew the audibility rate
-              // we quote to Infolinks. Reads what was actually served, not mere
-              // eligibility: a missing/malformed fixture falls back to the real
-              // feed, and flagging that genuine fill would drop it from every
-              // rate query (all of which filter `not forced_fill`).
-              forced_fill: didServeDebugDeviceFeed(tagId),
-              ad_blocked_reason: adBlockedReasonRef.current,
-              // `null` here means either "no block" or "GenAd older than 1.24.0";
-              // read alongside `ad_blocked_reason` to tell those apart.
-              ad_blocked_error_name: adBlockedErrorNameRef.current,
-              ad_blocked_error_message: adBlockedErrorMessageRef.current,
-              ad_blocked_source: adBlockedSourceRef.current,
-            })
-              .then((snapshot) => {
-                // A slot torn down mid-sample must not report — its element is
-                // already detached, so the reading would be meaningless. A null
-                // snapshot means the sampler hit an internal error and chose to
-                // report nothing rather than throw; skip it.
-                if (cancelled || !snapshot) return;
-                sendEvent(EVENT.AUDIO_DIAGNOSTIC, snapshot);
-              })
-              // Belt-and-braces: the sampler already resolves null instead of
-              // throwing, but a diagnostic must never surface as an unhandled
-              // rejection in a publisher's page.
-              .catch(() => undefined);
-          }, 0);
-        };
+        //     void sampleAudioDiagnostic(slot, {
+        //       ...extra,
+        //       wants_audible_ad_start: true,
+        //       configured_volume: initialVolume,
+        //       // Synthetic fill from a debug device's committed VAST feed, not a
+        //       // won auction. Field queries MUST exclude these — the debug handsets
+        //       // are device-targeted and would otherwise skew the audibility rate
+        //       // we quote to Infolinks. Reads what was actually served, not mere
+        //       // eligibility: a missing/malformed fixture falls back to the real
+        //       // feed, and flagging that genuine fill would drop it from every
+        //       // rate query (all of which filter `not forced_fill`).
+        //       forced_fill: didServeDebugDeviceFeed(tagId),
+        //       ad_blocked_reason: adBlockedReasonRef.current,
+        //       // `null` here means either "no block" or "GenAd older than 1.24.0";
+        //       // read alongside `ad_blocked_reason` to tell those apart.
+        //       ad_blocked_error_name: adBlockedErrorNameRef.current,
+        //       ad_blocked_error_message: adBlockedErrorMessageRef.current,
+        //       ad_blocked_source: adBlockedSourceRef.current,
+        //     })
+        //       .then((snapshot) => {
+        //         // A slot torn down mid-sample must not report — its element is
+        //         // already detached, so the reading would be meaningless. A null
+        //         // snapshot means the sampler hit an internal error and chose to
+        //         // report nothing rather than throw; skip it.
+        //         if (cancelled || !snapshot) return;
+        //         sendEvent(EVENT.AUDIO_DIAGNOSTIC, snapshot);
+        //       })
+        //       // Belt-and-braces: the sampler already resolves null instead of
+        //       // throwing, but a diagnostic must never surface as an unhandled
+        //       // rejection in a publisher's page.
+        //       .catch(() => undefined);
+        //   }, 0);
+        // };
 
         const initOptions = {
           containerId,
@@ -572,33 +572,47 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
             };
             sendEvent(EVENT.AD_RESPONSE_RECEIVED, adEventDetails);
 
-            // Audible-start tags only: sample the live media element so we can
-            // tell "the web layer muted it" from "the OS silenced a correctly
-            // unmuted element" (iOS AVAudioSession). GenAd renders a real
-            // <video> into our container — no iframe — and containerRef is the
-            // node inside our shadow root, so an element-scoped query reaches
-            // it. The audio-ad path's element is `display: none`, so never
-            // filter on visibility or size here.
-            if (wantsAudibleAdStart) {
-              emitAudioDiagnostic({
-                provider: resolvedProvider,
-                ad_source: platforms[resolvedProvider] || undefined,
-              });
-            }
+            // ── Audio + visibility diagnostics DISABLED (2026-09-11) ──────────
+            // Samplers commented out to stop wasted work; the events were also
+            // added to ADS_ONLY_INTERSTITIAL_SUPPRESSED in strategyConfig.ts.
+            // TO RE-ENABLE logging app-level audio/visibility diagnostics:
+            //   1. Uncomment every block marked with this date in this file
+            //      (imports, MAX_DIAGNOSTIC_STRING_LENGTH, asDiagnosticString,
+            //      the adBlocked* refs + resets, emitAudioDiagnostic, this call
+            //      site, and the onAdBlocked handler).
+            //   2. Remove EVENT.AUDIO_DIAGNOSTIC + EVENT.VISIBILITY_DIAGNOSTIC
+            //      from ADS_ONLY_INTERSTITIAL_SUPPRESSED in
+            //      src/strategies/strategyConfig.ts (and restore the keep-list
+            //      entries in src/strategies/strategies.test.ts).
+            //   3. Un-skip the "audio diagnostic beacon" describe block in
+            //      src/ads/genAdSdk.test.tsx (describe.skip → describe).
+            // // Audible-start tags only: sample the live media element so we can
+            // // tell "the web layer muted it" from "the OS silenced a correctly
+            // // unmuted element" (iOS AVAudioSession). GenAd renders a real
+            // // <video> into our container — no iframe — and containerRef is the
+            // // node inside our shadow root, so an element-scoped query reaches
+            // // it. The audio-ad path's element is `display: none`, so never
+            // // filter on visibility or size here.
+            // if (wantsAudibleAdStart) {
+            //   emitAudioDiagnostic({
+            //     provider: resolvedProvider,
+            //     ad_source: platforms[resolvedProvider] || undefined,
+            //   });
+            // }
           },
-          // Diagnostic only: the SDK auto-mutes and retries on an autoplay
-          // block. Recorded for the beacon; the state side is already covered by
-          // `unmute_blocked` (onVolumeChange, reason: "system").
-          onAdBlocked: (blockedReason: string, blockedDetails?: GenAdBlockedDetails): void => {
-            adBlockedReasonRef.current = blockedReason;
-            // Optional second arg — absent on GenAd < 1.24.0, so guard rather
-            // than destructure. GenAd ships from a rolling CDN channel we cannot
-            // pin, so the declared types are a contract we don't control at
-            // runtime: coerce instead of trusting them.
-            adBlockedErrorNameRef.current = asDiagnosticString(blockedDetails?.errorName);
-            adBlockedErrorMessageRef.current = asDiagnosticString(blockedDetails?.errorMessage);
-            adBlockedSourceRef.current = asDiagnosticString(blockedDetails?.source);
-          },
+          // // Diagnostic only: the SDK auto-mutes and retries on an autoplay
+          // // block. Recorded for the beacon; the state side is already covered by
+          // // `unmute_blocked` (onVolumeChange, reason: "system").
+          // onAdBlocked: (blockedReason: string, blockedDetails?: GenAdBlockedDetails): void => {
+          //   adBlockedReasonRef.current = blockedReason;
+          //   // Optional second arg — absent on GenAd < 1.24.0, so guard rather
+          //   // than destructure. GenAd ships from a rolling CDN channel we cannot
+          //   // pin, so the declared types are a contract we don't control at
+          //   // runtime: coerce instead of trusting them.
+          //   adBlockedErrorNameRef.current = asDiagnosticString(blockedDetails?.errorName);
+          //   adBlockedErrorMessageRef.current = asDiagnosticString(blockedDetails?.errorMessage);
+          //   adBlockedSourceRef.current = asDiagnosticString(blockedDetails?.source);
+          // },
           onAdCompleted: (completedProvider?: AdProviderKind): void => {
             // A torn-down run's late completion must not destroy a later run's
             // instance or reset shared init state.
