@@ -158,8 +158,14 @@ async function getHeaders() {
       /**
        * Apply these headers to all routes in the application
        * The '(.*)' pattern matches any path in the application
+       *
+       * Excluded: the Octo Canvas paths proxied by the rewrites in
+       * `next.config.mjs` (see OCTO_CANVAS_PATHS). Octo ships its own app and
+       * talks to its own origin, so this app's Content-Security-Policy would
+       * block its scripts and API calls.
        */
-      source: "/((?!api/auth).*)",
+      source:
+        "/((?!api/auth|(?:dashboard|new|login|docs|connect-runner|runners|system-prompts|cli/pair)(?:/|$)|(?:projects|vibe|devices|tasks|assets)/).*)",
       headers: [
         /**
          * X-Frame-Options Header

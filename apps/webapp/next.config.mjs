@@ -6,6 +6,42 @@ import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+/**
+ * Paths owned by the Octo Canvas app, served under this app's address.
+ *
+ * The `/octo` route hands a brand user to Octo, which sends them back to
+ * `<brand host>/dashboard`. This app answers that host, so without these
+ * rewrites the user gets this app's 404 instead of Octo Canvas.
+ *
+ * `/settings` is deliberately missing: this app owns that path.
+ * Octo's API and WebSocket traffic does NOT pass through here — build Octo's web
+ * app with `VITE_ORCHESTRATOR_BASE_URL` set to its own origin so it talks to Octo
+ * directly. Vercel cannot forward WebSockets, which Octo's IDE needs.
+ */
+const OCTO_CANVAS_PATHS = [
+  "/dashboard",
+  "/new",
+  "/login",
+  "/docs",
+  "/connect-runner",
+  "/runners",
+  "/system-prompts",
+  "/cli/pair",
+  "/projects/:path*",
+  "/vibe/:path*",
+  "/devices/:path*",
+  "/tasks/:path*",
+  "/assets/:path*",
+];
+
+/** Rewrites for OCTO_CANVAS_PATHS; empty (feature off) when no Octo origin is configured. */
+function octoCanvasRewrites() {
+  const configured = (process.env.OCTO_CANVAS_BASE_URL || process.env.OCTO_ORCHESTRATOR_BASE_URL || "").trim();
+  if (!configured) return [];
+  const { origin } = new URL(configured);
+  return OCTO_CANVAS_PATHS.map((source) => ({ source, destination: `${origin}${source}` }));
+}
+
 const nextConfig = {
   transpilePackages: ["@genuin/components", "@genuin/ui"],
 
@@ -76,6 +112,8 @@ const nextConfig = {
           source: "/next2/_next/image/:path*",
           destination: "/_next/image/:path*",
         },
+        // Octo Canvas pages and assets (see OCTO_CANVAS_PATHS above)
+        ...octoCanvasRewrites(),
       ],
     };
   },
