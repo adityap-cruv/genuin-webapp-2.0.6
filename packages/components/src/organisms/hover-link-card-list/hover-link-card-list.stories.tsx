@@ -110,23 +110,30 @@ export const Default: Story = {
     const expandedCtaIcon = expandedCta.querySelector<SVGElement>("svg")!;
     const compactTitle = within(items[1]).getByText(PODCASTS[1].title!);
     const compactImage = items[1].querySelector<HTMLImageElement>("img")!;
+    const compactCta = within(items[1]).getByRole("link", { name: "Read More" });
+    const compactCtaLabel = within(compactCta).getByText("Read More");
+    const compactCtaIcon = compactCta.querySelector<SVGElement>("svg")!;
 
     await expect(getComputedStyle(expandedTitle).fontSize).toBe("14px");
     await expect(getComputedStyle(expandedTitle).fontWeight).toBe("600");
     await expect(getComputedStyle(expandedTitle).whiteSpace).toBe("normal");
     await expect(expandedImage.getBoundingClientRect().width).toBe(90);
     await expect(expandedImage.getBoundingClientRect().height).toBe(90);
-    await expect(getComputedStyle(expandedDescription).fontSize).toBe("10px");
+    await expect(getComputedStyle(expandedDescription).fontSize).toBe("12px");
     await expect(getComputedStyle(expandedDescription).fontWeight).toBe("500");
-    await expect(expandedCta.getBoundingClientRect().height).toBe(40);
-    await expect(getComputedStyle(expandedCtaLabel).fontSize).toBe("14px");
+    await expect(expandedCta.getBoundingClientRect().height).toBe(36);
+    await expect(getComputedStyle(expandedCtaLabel).fontSize).toBe("12px");
     await expect(getComputedStyle(expandedCtaLabel).fontWeight).toBe("600");
-    await expect(expandedCtaIcon.getBoundingClientRect().width).toBe(24);
-    await expect(expandedCtaIcon.getBoundingClientRect().height).toBe(24);
+    await expect(expandedCtaIcon.getBoundingClientRect().width).toBe(20);
+    await expect(expandedCtaIcon.getBoundingClientRect().height).toBe(20);
     await expect(getComputedStyle(compactTitle).fontSize).toBe("14px");
     await expect(getComputedStyle(compactTitle).fontWeight).toBe("600");
     await expect(compactImage.getBoundingClientRect().width).toBe(64);
     await expect(compactImage.getBoundingClientRect().height).toBe(64);
+    await expect(compactCta.getBoundingClientRect().height).toBe(36);
+    await expect(getComputedStyle(compactCtaLabel).fontSize).toBe("12px");
+    await expect(compactCtaIcon.getBoundingClientRect().width).toBe(20);
+    await expect(compactCtaIcon.getBoundingClientRect().height).toBe(20);
   },
 };
 

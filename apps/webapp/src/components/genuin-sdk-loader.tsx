@@ -9,7 +9,7 @@ import { type SdkParams } from "@lib/utils/parse-sdk-params";
  * media.begenuin.com CDN, every other env uses the media.qa.begenuin.com CDN. Override
  * with NEXT_PUBLIC_GENUIN_SDK_URL (e.g. a local /public-served bundle).
  */
-const SDK_VERSION = "2.0.5";
+const SDK_VERSION = "2.0.6";
 const isProd = process.env.NEXT_PUBLIC_CURRENT_ENV === "prod";
 const GENUIN_SDK_URL =
   process.env.NEXT_PUBLIC_GENUIN_SDK_URL ??

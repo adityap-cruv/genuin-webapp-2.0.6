@@ -467,7 +467,13 @@ export function HoverLinkCardList({
               data-item-index={index}
               data-video-id={item.video_id ?? undefined}
               data-expanded={isExpanded ? "true" : "false"}
-              className="gencl:w-[calc(100%_-_1.5rem)] gencl:shrink-0 gencl:snap-start gencl:lg:w-auto! gencl:lg:[scroll-snap-align:none]"
+              className={cn(
+                "gencl:w-[calc(100%_-_1.5rem)] gencl:shrink-0 gencl:snap-start gencl:lg:w-auto! gencl:lg:[scroll-snap-align:none]",
+                "gencl:[&_a]:h-9! gencl:[&_a]:gap-1.5 gencl:[&_a]:pl-2.5 gencl:[&_a]:pr-1.5",
+                "gencl:[&_a>span]:text-body-2-semi-bold! gencl:[&_a>svg]:size-5!",
+                "gencl:[&_[role=link]]:h-9! gencl:[&_[role=link]]:gap-1.5 gencl:[&_[role=link]]:pl-2.5 gencl:[&_[role=link]]:pr-1.5",
+                "gencl:[&_[role=link]>span]:text-body-2-semi-bold! gencl:[&_[role=link]>svg]:size-5!"
+              )}
               onClick={() => selectCard(item, index)}
               onMouseEnter={() => {
                 if (pauseOnHover && !isSliding && !isControlledPinned) setActiveIndex(index);
@@ -485,6 +491,7 @@ export function HoverLinkCardList({
                 theme="light"
                 ctaText={ctaText}
                 ctaLink={item.link}
+                descriptionClassName="gencl:h-8! gencl:text-body-2-medium! gencl:leading-4!"
                 onClick={() => selectCard(item, index)}
                 onCtaClick={() => selectCard(item, index)}
               />

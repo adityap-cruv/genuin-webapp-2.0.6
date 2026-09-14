@@ -103,6 +103,14 @@ export type ConfigurationType = {
    * Ignored when `design_system` is already "v2".
    */
   player_controls?: "v1" | "v2";
+  /**
+   * Overrides the embed/placement's backend redirection switch for this SDK
+   * instance. This is useful for first-party pages that mount SDK placements
+   * but still need the same in-player navigation as the native webapp feeds.
+   */
+  is_enable_redirection?: boolean;
+  /** Per-destination overrides used when redirection is enabled. */
+  enable_redirection_tools?: Partial<RedirectionTools>;
 };
 
 export type ContextualParamsType = {

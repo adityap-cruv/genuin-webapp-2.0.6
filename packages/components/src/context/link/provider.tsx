@@ -26,8 +26,9 @@ export interface LinkProviderProps {
 export function LinkProvider({ children, LinkComponent, isNextJS = false, usePathname, useRouter }: LinkProviderProps) {
   const embedDetails = useSafeEmbedContext();
   const { brandDetails } = useBaseContext();
-  // if embed then custom routing.
-  const isCustomRouting = !!embedDetails;
+  // First-party SDK placements explicitly enable redirection so their links
+  // use the host page, matching native Popular/Latest/Explore navigation.
+  const isCustomRouting = !!embedDetails && embedDetails.embedData?.configuration?.is_enable_redirection !== true;
 
   /**
    * Creates an external link URL.

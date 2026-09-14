@@ -264,7 +264,12 @@ function scheduleGenuinInit() {
       // light DOM prevents their hosts from being mistaken for the WebApp's portal root while the
       // SDK still owns each placement and its lifecycle independently.
       useShadowDOM: false,
-      configuration: { player_controls: "v2" },
+      configuration: {
+        player_controls: "v2",
+        // Home SDK placements should navigate like native Popular/Latest/Explore feeds.
+        is_enable_redirection: true,
+        enable_redirection_tools: { community: true, group: true, user: true },
+      },
     });
   });
 }

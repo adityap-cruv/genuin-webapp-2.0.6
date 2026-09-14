@@ -26,9 +26,6 @@ import type { IntelligenceArticleSelectHandler } from "@genuin/components/organi
 const INTELLIGENCE_CHAT_URL =
   (import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env?.VITE_INTELLIGENCE_CHAT_URL ??
   "/api/intelligence/chat";
-const KOAH_PUBLISHER_ID = (import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env
-  ?.VITE_GENAI_KOAH_PUBLISHER_ID;
-const USE_KOAH_TEST_MOCK = process.env.NODE_ENV === "development" && !KOAH_PUBLISHER_ID;
 const MOCK_VIDEO_AUTO_PROMPTS = [
   "Tell me more about this video.",
   "Give me a quick summary of this video.",
@@ -41,62 +38,16 @@ const MOCK_VIDEO_AUTO_PROMPTS = [
 ] as const;
 const AUTO_PROMPT_COUNTDOWN_SECONDS = 3;
 const AUTO_PROMPT_TICK_MS = 1_000;
-
-type KoahAdSlotStatus = "loading" | "filled" | "empty";
+const GENERIC_KOAH_AD_REQUESTS = [
+  "Show me a sponsored recommendation",
+  "Show me another sponsored recommendation",
+  "Show me one more sponsored recommendation",
+] as const;
+const GENERIC_KOAH_AI_RESPONSE = "Here are some recommendations you may find useful.";
 
 function getMockVideoAutoPrompt(videoId: string): string {
   const hash = Array.from(videoId).reduce((value, character) => (value * 31 + character.charCodeAt(0)) >>> 0, 0);
   return MOCK_VIDEO_AUTO_PROMPTS[hash % MOCK_VIDEO_AUTO_PROMPTS.length]!;
-}
-
-type KoahTestWindow = Window & {
-  koah?: {
-    process: (
-      userMessage: string,
-      aiResponse: string,
-      adType: "suffix" | "prefix" | "followup" | "inline",
-      options?: {
-        target?: HTMLElement;
-        signal?: AbortSignal;
-        onFill?: () => void;
-        onNoFill?: () => void;
-      }
-    ) => Promise<boolean>;
-  };
-};
-
-function createKoahTestMock(): NonNullable<KoahTestWindow["koah"]> {
-  return {
-    async process(_userMessage, _aiResponse, _adType, options) {
-      await new Promise((resolve) => window.setTimeout(resolve, 250));
-      if (options?.signal?.aborted) throw new DOMException("Aborted", "AbortError");
-      if (!options?.target) {
-        options?.onNoFill?.();
-        return false;
-      }
-
-      const ad = document.createElement("article");
-      ad.setAttribute("data-testid", "koah-test-ad");
-      ad.setAttribute("data-koah", "root");
-      ad.style.cssText =
-        "box-sizing:border-box;width:100%;border:1px solid #dedede;border-radius:12px;background:#fff;padding:12px;color:#202124;font-family:inherit";
-      ad.innerHTML = `
-        <div style="display:flex;align-items:center;justify-content:space-between;font-size:11px;color:#60646c">
-          <span>Sponsored | Koah test creative</span><span aria-hidden="true">x</span>
-        </div>
-        <div style="display:grid;grid-template-columns:96px minmax(0,1fr);gap:12px;margin-top:10px">
-          <div style="display:flex;min-height:92px;align-items:center;justify-content:center;border-radius:9px;background:linear-gradient(135deg,#ffd36b,#ff6b35);font-size:13px;font-weight:700;color:#202124">TEST AD</div>
-          <div style="min-width:0">
-            <div style="font-size:17px;line-height:21px;font-weight:700">Discover something useful for your next adventure</div>
-            <div style="margin-top:5px;font-size:12px;line-height:16px;color:#60646c">Development-only Koah data for validating the expanded Intelligence layout.</div>
-            <div style="margin-top:10px;border-radius:8px;background:#202124;padding:8px 10px;font-size:13px;font-weight:600;color:#fff">Explore now &gt;</div>
-          </div>
-        </div>`;
-      options.target.replaceChildren(ad);
-      options.onFill?.();
-      return true;
-    },
-  };
 }
 
 /** Lightweight context about the active video, sent to the backend so replies can reference it. */
@@ -127,113 +78,65 @@ type IntelligenceChatSidePanelProps = {
   showClose?: boolean;
   /** Runs the existing video prompt flow when this panel is opened from Feed View. */
   autoPromptOnMount?: boolean;
-  /** Lets Feed View ads use the full responsive width of the chat thread. */
+  /** Controls whether Koah renders as one ad or as a horizontally scrollable Feed View rail. */
+  koahAdLayout?: "single" | "horizontal";
   /** Runtime article action injected into JSON-driven response cards. */
   onArticleSelect?: IntelligenceArticleSelectHandler;
-  fillAvailableWidth?: boolean;
   className?: string;
 };
 
-function IntelligenceKoahAds({ videoId, fillAvailableWidth }: { videoId: string; fillAvailableWidth: boolean }) {
-  const railRef = useRef<HTMLDivElement>(null);
-  const [slotStatuses, setSlotStatuses] = useState<Record<string, KoahAdSlotStatus>>({});
-  const slots = [
-    {
-      id: "primary",
-      userMessage: "Show me relevant information about this video",
-      aiResponse: `Video context identifier: ${videoId}`,
-    },
-    {
-      id: "secondary",
-      userMessage: "Show me another relevant recommendation for this video",
-      aiResponse: `Additional video context identifier: ${videoId}`,
-    },
-  ];
-
-  useEffect(() => {
-    const rail = railRef.current;
-    if (!rail) return;
-
-    const cards = Array.from(rail.querySelectorAll<HTMLElement>('[data-testid="koah-ad-card"]'));
-    const cardsThatStartedLoading = new Set<HTMLElement>();
-
-    const updateStatuses = () => {
-      const nextStatuses: Record<string, KoahAdSlotStatus> = {};
-      for (const card of cards) {
-        const slotId = card.dataset.koahSlotId;
-        if (!slotId) continue;
-        if (card.querySelector('[data-koah="root"]')) {
-          nextStatuses[slotId] = "filled";
-          continue;
-        }
-
-        const loadingContainer = card.querySelector(".adsbykoah");
-        if (loadingContainer) cardsThatStartedLoading.add(card);
-        const isSettled = cardsThatStartedLoading.has(card) && !loadingContainer;
-        nextStatuses[slotId] = isSettled ? "empty" : "loading";
-      }
-
-      setSlotStatuses((current) => {
-        const statusChanged = Object.entries(nextStatuses).some(([slotId, status]) => current[slotId] !== status);
-        return statusChanged ? { ...current, ...nextStatuses } : current;
-      });
-    };
-
-    const observer = new MutationObserver(updateStatuses);
-    observer.observe(rail, { childList: true, subtree: true });
-    updateStatuses();
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [videoId]);
+function IntelligenceKoahAds({
+  videoId,
+  layout,
+}: {
+  videoId: string;
+  layout: NonNullable<IntelligenceChatSidePanelProps["koahAdLayout"]>;
+}) {
+  if (layout === "single") {
+    return (
+      <KoahAdWidget
+        standalone
+        userMessage={GENERIC_KOAH_AD_REQUESTS[0]}
+        aiResponse={GENERIC_KOAH_AI_RESPONSE}
+        messageId={`intelligence-${videoId}`}
+      />
+    );
+  }
 
   return (
-    <div
-      ref={railRef}
-      data-testid="koah-ad-rail"
-      className="gencl:flex gencl:w-full gencl:snap-x gencl:snap-mandatory gencl:gap-3 gencl:overflow-x-auto gencl:[scrollbar-width:none] gencl:[&::-webkit-scrollbar]:hidden">
-      {slots.slice(0, fillAvailableWidth ? 2 : 1).map((slot) => (
-        <div
-          key={slot.id}
-          data-koah-slot-id={slot.id}
-          data-testid="koah-ad-card"
-          className={cn(
-            "gencl:relative gencl:shrink-0 gencl:snap-start",
-            slotStatuses[slot.id] === "empty" && "gencl:hidden"
-          )}
-          style={{
-            width: fillAvailableWidth ? "min(768px, calc(100% - 112px))" : "100%",
-            minHeight: (slotStatuses[slot.id] ?? "loading") === "loading" ? 144 : undefined,
-          }}>
-          {(slotStatuses[slot.id] ?? "loading") === "loading" && (
-            <div
-              data-testid="koah-ad-loading"
-              aria-label="Loading sponsored recommendation"
-              className="gencl:absolute gencl:inset-0 gencl:min-h-36 gencl:animate-pulse gencl:rounded-xl gencl:border gencl:border-secondary-300 gencl:bg-white gencl:p-3">
-              <div className="gencl:flex gencl:items-center gencl:justify-between">
-                <div className="gencl:h-3 gencl:w-24 gencl:rounded gencl:bg-secondary-200" />
-                <div className="gencl:size-3 gencl:rounded gencl:bg-secondary-200" />
-              </div>
-              <div className="gencl:mt-3 gencl:grid gencl:gap-3" style={{ gridTemplateColumns: "96px minmax(0, 1fr)" }}>
-                <div className="gencl:rounded-lg gencl:bg-secondary-200" style={{ minHeight: 92 }} />
-                <div className="gencl:min-w-0 gencl:space-y-2">
-                  <div className="gencl:h-4 gencl:w-4/5 gencl:rounded gencl:bg-secondary-200" />
-                  <div className="gencl:h-3 gencl:w-full gencl:rounded gencl:bg-secondary-100" />
-                  <div className="gencl:h-8 gencl:w-28 gencl:rounded-lg gencl:bg-secondary-200" />
-                </div>
-              </div>
-            </div>
-          )}
-          <KoahAdWidget
-            standalone
-            userMessage={slot.userMessage}
-            aiResponse={slot.aiResponse}
-            messageId={`intelligence-${videoId}-${slot.id}`}
-          />
-        </div>
-      ))}
-    </div>
+    <>
+      <style>{`
+        [data-koah-feed-rail] .adsbykoah {
+          display: contents !important;
+        }
+
+        [data-koah-feed-rail] [data-koah="root"] {
+          --koah-format-max-width: 100% !important;
+          flex: none !important;
+          margin-inline: 0 !important;
+          max-width: 100% !important;
+          scroll-snap-align: start;
+        }
+      `}</style>
+      <div
+        data-koah-feed-rail
+        data-testid="intelligence-koah-ad-rail"
+        role="region"
+        aria-label="Sponsored recommendations"
+        tabIndex={0}
+        className="gencl:flex gencl:w-full gencl:snap-x gencl:snap-mandatory gencl:gap-3 gencl:overflow-x-auto gencl:[scrollbar-width:none] gencl:[&::-webkit-scrollbar]:hidden">
+        {GENERIC_KOAH_AD_REQUESTS.map((userMessage, index) => (
+          <div key={userMessage} data-testid="intelligence-koah-ad-slot" className="gencl:contents">
+            <KoahAdWidget
+              standalone
+              userMessage={userMessage}
+              aiResponse={GENERIC_KOAH_AI_RESPONSE}
+              messageId={`intelligence-${videoId}-feed-${index + 1}`}
+            />
+          </div>
+        ))}
+      </div>
+    </>
   );
 }
 
@@ -315,7 +218,7 @@ export function IntelligenceChatSidePanel({
   onClose,
   showClose = false,
   autoPromptOnMount = false,
-  fillAvailableWidth = false,
+  koahAdLayout = "single",
   className,
   onArticleSelect,
 }: IntelligenceChatSidePanelProps) {
@@ -342,20 +245,6 @@ export function IntelligenceChatSidePanel({
   useEffect(() => {
     messagesRef.current = messages;
   }, [messages]);
-
-  useEffect(() => {
-    if (!USE_KOAH_TEST_MOCK) return;
-
-    const koahWindow = window as KoahTestWindow;
-    if (koahWindow.koah) return;
-
-    const mock = createKoahTestMock();
-    koahWindow.koah = mock;
-
-    return () => {
-      if (koahWindow.koah === mock) delete koahWindow.koah;
-    };
-  }, []);
 
   // Abort any in-flight request if the panel unmounts (close / video change).
   useEffect(() => {
@@ -426,23 +315,12 @@ export function IntelligenceChatSidePanel({
   const isAutoPrompting = autoPromptCountdown !== null;
 
   return (
-    <div
-      data-feed-intelligence-wide={fillAvailableWidth || undefined}
-      className={cn("gencl:flex gencl:h-full gencl:min-h-0 gencl:flex-col", className)}>
-      <style>{`
-        [data-slot="intelligence-chat-panel"] [data-koah="root"] {
-          border-color: var(--gencl-secondary-300, #bec2c7) !important;
-        }
-
-        [data-feed-intelligence-wide="true"] [data-koah="root"] {
-          --koah-format-max-width: 100% !important;
-        }
-      `}</style>
+    <div className={cn("gencl:flex gencl:h-full gencl:min-h-0 gencl:flex-col", className)}>
       <IntelligenceChatPanel
         data-testid="intelligence-chat-side-panel"
         registry={registry}
         messages={messages}
-        threadHeader={<IntelligenceKoahAds videoId={videoId} fillAvailableWidth={fillAvailableWidth} />}
+        threadHeader={<IntelligenceKoahAds videoId={videoId} layout={koahAdLayout} />}
         autoPromptCountdown={autoPromptCountdown ?? undefined}
         isResponding={isResponding}
         inputDisabled={isAutoPrompting}

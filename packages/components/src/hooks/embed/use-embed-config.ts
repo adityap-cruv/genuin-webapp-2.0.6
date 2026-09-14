@@ -391,7 +391,11 @@ export function useEmbedConfigs() {
     }
 
     // Generalized redirection tools logic
-    const isEnableRedirection = !!customization?.is_enable_redirection;
+    // First-party hosts can opt a placement into normal WebApp routes without
+    // changing that placement's shared backend configuration.
+    const redirectionEnabledOverride = embedData?.configuration?.is_enable_redirection;
+    const redirectionToolsOverride = embedData?.configuration?.enable_redirection_tools;
+    const isEnableRedirection = redirectionEnabledOverride ?? !!customization?.is_enable_redirection;
 
     // Define the keys for redirection tools
     const redirectionToolKeys = ["community", "group", "user"];
@@ -409,8 +413,11 @@ export function useEmbedConfigs() {
     let redirectionTools;
     if (isEmbed) {
       if (isEnableRedirection) {
-        // Use customized redirection tools if provided, otherwise enable all
-        redirectionTools = customization?.enable_redirection_tools ?? getRedirectionTools(true);
+        // Instance configuration wins over placement customization. Merge with
+        // disabled defaults so a partial override never enables an omitted tool.
+        redirectionTools = redirectionToolsOverride
+          ? { ...getRedirectionTools(false), ...redirectionToolsOverride }
+          : (customization?.enable_redirection_tools ?? getRedirectionTools(true));
       } else {
         // All redirection tools disabled
         redirectionTools = getRedirectionTools(false);
@@ -431,7 +438,7 @@ export function useEmbedConfigs() {
       redirectionTools,
       openAllLinksInNewTab: false,
     };
-  }, [customization, isEmbed, brandDetails.camera_enabled]);
+  }, [customization, embedData?.configuration, isEmbed, brandDetails.camera_enabled]);
 
   // ============================================================
   // Link Configuration

@@ -60,7 +60,7 @@ const PLACEMENTS = {
 /** Web SDK bundle — QA CDN by default, matching the webapp's `GenuinSdkLoader`. */
 const SDK_SCRIPT_SRC =
   (typeof process !== "undefined" && process.env ? process.env.NEXT_PUBLIC_GENUIN_SDK_URL : undefined) ??
-  "https://media.qa.begenuin.com/sdk/2.0.5/gen_sdk.min.js";
+  "https://media.qa.begenuin.com/sdk/2.0.6/gen_sdk.min.js";
 
 type GenuinWindow = Window & {
   genuin?: {
@@ -105,7 +105,13 @@ function scheduleGenuinInit() {
       // Keep them in light DOM so global WebApp dialogs are not portalled into the first
       // placement's shadow root and clipped to that placement's bounds.
       useShadowDOM: false,
-      configuration: { player_controls: "v2" },
+      configuration: {
+        player_controls: "v2",
+        // Article is also a first-party host, so its placement expand views
+        // should expose the same detail-page navigation as native feeds.
+        is_enable_redirection: true,
+        enable_redirection_tools: { community: true, group: true, user: true },
+      },
     });
   });
 }
@@ -425,9 +431,6 @@ export function ArticlePage({ article, backControl }: { article: Article; backCo
 
   return (
     <FeedViewOverlayProvider onOpen={setPlayerOverlay}>
-      {isSdkExpandViewOpen ? (
-        <style>{`.genuin-become-creator-centerout { visibility: hidden !important; }`}</style>
-      ) : null}
       <div
         ref={overlayBoundsRef}
         data-slot="article-feed-view-boundary"

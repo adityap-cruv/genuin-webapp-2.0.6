@@ -124,9 +124,9 @@ export function usePlacementFeedViewIntent({
 // select Feed View + Intelligence while the page host owns only the portal bounds and Back action.
 const FEED_VIEW_ATTRIBUTE = "data-home-feed-view";
 const FEED_SESSION_ATTRIBUTE = "data-home-feed-session";
-// High enough to sit above the page, but below Koah's document-level options dialog (2147483000).
-const FEED_VIEW_Z_INDEX = "1000";
-const FEED_BACK_Z_INDEX = 1001;
+// Keep the bounded player above page content but below standard document-level dialogs (`z-50`).
+const FEED_VIEW_Z_INDEX = "40";
+const FEED_BACK_Z_INDEX = 41;
 
 function markPlacementAttribute(sourceDomId: string, attribute: string, active: boolean) {
   const source = document.getElementById(sourceDomId);
@@ -184,6 +184,7 @@ export function FeedViewOverlay({
 }) {
   const [backPosition, setBackPosition] = useState<{ left: number; top: number } | null>(null);
   const [isInlineArticleOpen, setIsInlineArticleOpen] = useState(false);
+  const [isSdkDetailPageOpen, setIsSdkDetailPageOpen] = useState(false);
   const collapseRequestedRef = useRef(false);
 
   const collapseSdkView = useCallback(() => {
@@ -204,11 +205,26 @@ export function FeedViewOverlay({
     return () => document.removeEventListener(HOME_INLINE_ARTICLE_STATE_EVENT, handleInlineArticleState);
   }, [request.sourceDomId]);
 
+  useEffect(() => {
+    const genuin = (window as GenuinWindow).genuin;
+    if (!genuin?.onInternal) return;
+
+    const off = genuin.onInternal("onExpandViewChanged", (raw: unknown) => {
+      const expanded = typeof raw === "boolean" ? raw : (raw as { payload?: unknown } | null | undefined)?.payload;
+      if (expanded === false) {
+        collapseRequestedRef.current = true;
+        onClose();
+      }
+    });
+    return typeof off === "function" ? off : undefined;
+  }, [onClose]);
+
   useLayoutEffect(() => {
     let frame = 0;
     let collapseOnTeardown = false;
     let portalObserver: MutationObserver | null = null;
     let contentObserver: MutationObserver | null = null;
+    let detailPageObserver: MutationObserver | null = null;
     let boundsObserver: ResizeObserver | null = null;
     let host: HTMLElement | null = null;
     let portalContainer: HTMLElement | null = null;
@@ -312,6 +328,14 @@ export function FeedViewOverlay({
       portalStyle = portalContainer.getAttribute("style");
       setImportantStyles(host, { visibility: "hidden" });
       mountFeedStageStyle();
+
+      const syncDetailPageState = () => {
+        setIsSdkDetailPageOpen(Boolean(portalContainer?.querySelector(".playback-speed-class")));
+      };
+      syncDetailPageState();
+      detailPageObserver = new MutationObserver(syncDetailPageState);
+      detailPageObserver.observe(portalContainer, { childList: true, subtree: true });
+
       // The page and SDK portal commit in separate React roots. Apply immediately for first paint;
       // the SDK's expand-change signal performs the final hand-off after RootPortal effects commit.
       settleFeedBounds();
@@ -385,6 +409,7 @@ export function FeedViewOverlay({
       window.cancelAnimationFrame(frame);
       portalObserver?.disconnect();
       contentObserver?.disconnect();
+      detailPageObserver?.disconnect();
       boundsObserver?.disconnect();
       window.removeEventListener("resize", applyFeedBounds);
       document.removeEventListener(HOME_FULL_VIEW_EVENT, handleFullView);
@@ -407,9 +432,9 @@ export function FeedViewOverlay({
     onClose();
   };
 
-  // The canonical ArticlePage renders its own injected Back control while an Intelligence article
-  // is open. Hide this page-owned action so exactly one Back button is visible across React roots.
-  if (!backPosition || isInlineArticleOpen) return null;
+  // Inline articles and SDK detail routes render their own Back control. Hide the page-owned
+  // action in those states so exactly one Back button is visible across React roots.
+  if (!backPosition || isInlineArticleOpen || isSdkDetailPageOpen) return null;
   return createPortal(
     <div data-slot="feed-view-back" style={{ position: "fixed", ...backPosition, zIndex: FEED_BACK_Z_INDEX }}>
       <NavArrowButton direction="left" size="lg" theme="dark" ariaLabel="Back" onClick={handleBack} />
