@@ -216,7 +216,7 @@ function toArticle(article: ArticleData): IntelligenceArticle {
  * infinite scroll are picked up safely. Each container needs a unique id.
  */
 const SDK_SCRIPT_SRC =
-  process.env.NEXT_PUBLIC_GENUIN_SDK_URL ?? "https://media.qa.begenuin.com/sdk/2.0.6/gen_sdk.min.js";
+  process.env.NEXT_PUBLIC_GENUIN_SDK_URL ?? "https://media.qa.begenuin.com/sdk/2.0.5/gen_sdk.min.js";
 
 type GenuinWindow = Window & {
   genuin?: {

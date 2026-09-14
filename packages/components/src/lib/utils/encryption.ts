@@ -25,7 +25,7 @@ export async function encryptText(text?: string, appendString?: boolean): Promis
   // Lazy-load crypto-es modules
   const { AES, enc } = await getCryptoModules();
 
-  const textToEncrypt = appendString ? text + "Cwv5$uV%" : text;
+  const textToEncrypt = appendString ? text + NEXT_PUBLIC_SECRET_STRING : text;
 
   const encrypted = AES.encrypt(textToEncrypt, enc.Utf8.parse(NEXT_PUBLIC_AES_KEY), {
     iv: enc.Utf8.parse(NEXT_PUBLIC_AES_IV),

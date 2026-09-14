@@ -60,7 +60,7 @@ const PLACEMENTS = {
 /** Web SDK bundle — QA CDN by default, matching the webapp's `GenuinSdkLoader`. */
 const SDK_SCRIPT_SRC =
   (typeof process !== "undefined" && process.env ? process.env.NEXT_PUBLIC_GENUIN_SDK_URL : undefined) ??
-  "https://media.qa.begenuin.com/sdk/2.0.6/gen_sdk.min.js";
+  "https://media.qa.begenuin.com/sdk/2.0.5/gen_sdk.min.js";
 
 type GenuinWindow = Window & {
   genuin?: {
