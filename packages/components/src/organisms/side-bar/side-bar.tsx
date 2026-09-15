@@ -35,30 +35,15 @@ type SideBarProps = ComponentProps<"aside"> & {
 
 const HOME_SIDEBAR_COLLAPSED_KEY = "homeSidebarCollapsed";
 
-const sidebarFrameVariants = cva(
-  "gencl:relative gencl:h-full gencl:transition-[width] gencl:duration-300 gencl:ease-[cubic-bezier(0.22,1,0.36,1)]",
+const sidebarVariants = cva(
+  "gencl:relative gencl:h-full gencl:bg-white gencl:flex gencl:flex-col gencl:overflow-hidden gencl:transition-[width] gencl:duration-300 gencl:ease-[cubic-bezier(0.22,1,0.36,1)]",
   {
     variants: {
       variant: {
-        default: "gencl:xl:!w-60 gencl:w-16 gencl:shrink-0",
-        collapsed: "gencl:w-16 gencl:shrink-0",
+        default: "gencl:border-r gencl:xl:!w-60 gencl:border-secondary-150 gencl:w-16 gencl:shrink-0",
+        // Same icon rail the `default` variant falls back to below `xl`, but pinned at every width.
+        collapsed: "gencl:border-r gencl:border-secondary-150 gencl:w-16 gencl:shrink-0",
         mobile: "gencl:w-full gencl:xl:block!",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-    },
-  }
-);
-
-const sidebarPanelVariants = cva(
-  "gencl:absolute gencl:inset-y-0 gencl:left-0 gencl:z-20 gencl:h-full gencl:bg-white gencl:flex gencl:flex-col gencl:overflow-hidden gencl:border-r gencl:border-secondary-150 gencl:transition-[width,box-shadow] gencl:duration-300 gencl:ease-[cubic-bezier(0.22,1,0.36,1)]",
-  {
-    variants: {
-      variant: {
-        default: "gencl:w-16 gencl:xl:!w-60",
-        collapsed: "gencl:w-16",
-        mobile: "gencl:w-full",
       },
     },
     defaultVariants: {
@@ -80,58 +65,49 @@ export function SideBar({ variant, className, onItemClick, ...restProps }: SideB
   const [isPeeking, setIsPeeking] = useState(false);
   const isCollapsed = isCollapsible && isHomeCollapsed && !isPeeking;
   const resolvedVariant = isCollapsed ? "collapsed" : variant;
-  // A hover peek expands only the visual panel. Keeping the flex frame at 64 px avoids
-  // reflowing the entire Home feed while the pointer enters or leaves the navigation rail.
-  const frameVariant = isCollapsible && isHomeCollapsed ? "collapsed" : variant;
-  const showPeekShadow = isCollapsible && isHomeCollapsed && isPeeking;
 
   return (
     <aside
-      className={cn(sidebarFrameVariants({ variant: frameVariant }), className)}
+      className={cn(sidebarVariants({ variant: resolvedVariant }), className)}
       onMouseEnter={isCollapsible ? () => setIsPeeking(true) : undefined}
       onMouseLeave={isCollapsible ? () => setIsPeeking(false) : undefined}
       {...restProps}>
-      <div className={cn(sidebarPanelVariants({ variant: resolvedVariant }), showPeekShadow && "gencl:shadow-xl")}>
-        <div
-          className={cn(
-            "gencl:flex-1 gencl:h-full gencl:overflow-y-auto gencl:pb-16",
-            // Room for the extra toggle row pinned to the bottom.
-            isCollapsible && "gencl:xl:pb-28"
-          )}>
-          <SidebarActions
-            brandConfiguredTerms={brandDetails.terms_and_condition ?? ""}
-            brandConfiguredPrivacy={brandDetails.privacy_policy ?? ""}
-            variant={resolvedVariant}
-            onItemClick={onItemClick}
-            showSearch={!layoutConfig.showNavigationBar}
-          />
-          {!layoutConfig.showNavigationBar && <ProxyComponent variant={resolvedVariant} />}
-          {/* Its own cva is bypassed by hardcoded classes, so the rail hides it via className. */}
-          {showBecomeACreator && (
-            <SideBarBecomeCreator
-              variant={variant}
-              className={cn(isCollapsed && "gencl:hidden! gencl:xl:hidden!")}
-            />
-          )}
-          <Category variant={resolvedVariant} onItemClick={onItemClick} />
-          <Recent variant={resolvedVariant} onItemClick={onItemClick} />
-        </div>
-        <div className="gencl:absolute gencl:bottom-0 gencl:left-0 gencl:right-0 gencl:bg-white">
-          {isCollapsible && (
-            <button
-              type="button"
-              data-testid="sidebar-collapse-toggle"
-              // Reflects the pinned preference, not the peek, so a click always matches the icon.
-              aria-expanded={!isHomeCollapsed}
-              aria-label={isHomeCollapsed ? "Keep sidebar expanded" : "Collapse sidebar"}
-              onClick={() => setIsHomeCollapsed((collapsed) => !collapsed)}
-              // Below `xl` the rail cannot expand at all, so the toggle would be a no-op control.
-              className="gencl:hidden gencl:xl:flex gencl:w-full gencl:items-center gencl:justify-center gencl:border-t gencl:border-secondary-150 gencl:p-4 gencl:cursor-pointer gencl:hover:bg-secondary-50">
-              <ChevronFirstIcon className={cn(isHomeCollapsed && "gencl:rotate-180")} />
-            </button>
-          )}
-          {!isCollapsed && <PoweredByGenuin variant={variant} />}
-        </div>
+      <div
+        className={cn(
+          "gencl:flex-1 gencl:h-full gencl:overflow-y-auto gencl:pb-16",
+          // Room for the extra toggle row pinned to the bottom.
+          isCollapsible && "gencl:xl:pb-28"
+        )}>
+        <SidebarActions
+          brandConfiguredTerms={brandDetails.terms_and_condition ?? ""}
+          brandConfiguredPrivacy={brandDetails.privacy_policy ?? ""}
+          variant={resolvedVariant}
+          onItemClick={onItemClick}
+          showSearch={!layoutConfig.showNavigationBar}
+        />
+        {!layoutConfig.showNavigationBar && <ProxyComponent variant={resolvedVariant} />}
+        {/* Its own cva is bypassed by hardcoded classes, so the rail hides it via className. */}
+        {showBecomeACreator && (
+          <SideBarBecomeCreator variant={variant} className={cn(isCollapsed && "gencl:hidden! gencl:xl:hidden!")} />
+        )}
+        <Category variant={resolvedVariant} onItemClick={onItemClick} />
+        <Recent variant={resolvedVariant} onItemClick={onItemClick} />
+      </div>
+      <div className="gencl:absolute gencl:bottom-0 gencl:left-0 gencl:right-0 gencl:bg-white">
+        {isCollapsible && (
+          <button
+            type="button"
+            data-testid="sidebar-collapse-toggle"
+            // Reflects the pinned preference, not the peek, so a click always matches the icon.
+            aria-expanded={!isHomeCollapsed}
+            aria-label={isHomeCollapsed ? "Keep sidebar expanded" : "Collapse sidebar"}
+            onClick={() => setIsHomeCollapsed((collapsed) => !collapsed)}
+            // Below `xl` the rail cannot expand at all, so the toggle would be a no-op control.
+            className="gencl:hidden gencl:xl:flex gencl:w-full gencl:items-center gencl:justify-center gencl:border-t gencl:border-secondary-150 gencl:p-4 gencl:cursor-pointer gencl:hover:bg-secondary-50">
+            <ChevronFirstIcon className={cn(isHomeCollapsed && "gencl:rotate-180")} />
+          </button>
+        )}
+        {!isCollapsed && <PoweredByGenuin variant={variant} />}
       </div>
     </aside>
   );
