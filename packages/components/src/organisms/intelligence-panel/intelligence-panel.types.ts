@@ -148,7 +148,7 @@ export interface IntelligencePanelShellProps extends IntelligencePanelSectionPro
 export interface IntelligencePanelProps extends Omit<IntelligencePanelShellProps, "children" | "size"> {
   /** Primary article rendered in the hero region. */
   featuredArticle: IntelligenceArticle;
-  /** Articles rendered in the responsive Up Next grid. */
+  /** Articles rendered in the responsive Up Next grid. An unpaired final article is omitted. */
   upNextArticles: readonly IntelligenceArticle[];
   /** Presentation values supplied alongside the article response. */
   layout: IntelligencePanelLayout;

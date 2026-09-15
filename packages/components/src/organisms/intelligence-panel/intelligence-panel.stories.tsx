@@ -211,6 +211,25 @@ export const EmptyUpNext: Story = {
   },
 };
 
+/** An odd response omits its orphan final card so the two-column grid ends on a complete row. */
+export const OddUpNextCount: Story = {
+  args: {
+    upNextArticles: REFERENCE_UP_NEXT_ARTICLES.slice(0, 3),
+  },
+  render: (args) => (
+    <StoryFrame>
+      <IntelligencePanel {...args} />
+    </StoryFrame>
+  ),
+  play: async ({ canvasElement }) => {
+    const cards = canvasElement.querySelectorAll('[data-slot="intelligence-up-next-article"]');
+
+    await expect(cards).toHaveLength(2);
+    await expect(cards[0]).toHaveTextContent(REFERENCE_UP_NEXT_ARTICLES[0]!.title);
+    await expect(cards[1]).toHaveTextContent(REFERENCE_UP_NEXT_ARTICLES[1]!.title);
+  },
+};
+
 export const LongTitleAndMissingImage: Story = {
   args: {
     upNextArticles: [

@@ -101,6 +101,11 @@ function getResponsiveGridColumns(minimumCardWidth: IntelligenceCssLength): stri
   return `repeat(auto-fit, minmax(min(${toCssLength(minimumCardWidth)}, 100%), 1fr))`;
 }
 
+/** Keep the two-column surface free of an orphan card in its final row. */
+function getCompleteCardPairs<T>(items: readonly T[]): readonly T[] {
+  return items.length % 2 === 0 ? items : items.slice(0, -1);
+}
+
 export function IntelligenceFeaturedArticle({
   article,
   layout,
@@ -210,6 +215,8 @@ export const IntelligencePanel = React.forwardRef<HTMLElement, IntelligencePanel
   },
   ref
 ) {
+  const pairedUpNextArticles = getCompleteCardPairs(upNextArticles);
+
   return (
     <IntelligencePanelShell
       ref={ref}
@@ -227,12 +234,12 @@ export const IntelligencePanel = React.forwardRef<HTMLElement, IntelligencePanel
         className="gencl:mt-2 gencl:shrink-0"
       />
 
-      {upNextArticles.length > 0 && (
+      {pairedUpNextArticles.length > 0 && (
         <div
           data-slot="intelligence-up-next-grid"
           className={UP_NEXT_CONTAINER_CLASS}
           style={{ gridTemplateColumns: getResponsiveGridColumns(layout.upNextGrid.minimumCardWidth) }}>
-          {upNextArticles.map((article) => (
+          {pairedUpNextArticles.map((article) => (
             <IntelligenceArticleCard
               key={article.id}
               data-slot="intelligence-up-next-article"
@@ -266,6 +273,7 @@ export const IntelligencePanelSkeleton = React.forwardRef<HTMLElement, Intellige
     ref
   ) {
     const normalizedCardCount = Math.max(0, Math.floor(cardCount));
+    const pairedCardCount = normalizedCardCount - (normalizedCardCount % 2);
 
     return (
       <IntelligencePanelShell
@@ -289,13 +297,13 @@ export const IntelligencePanelSkeleton = React.forwardRef<HTMLElement, Intellige
           </div>
         </div>
 
-        {normalizedCardCount > 0 && (
+        {pairedCardCount > 0 && (
           <div
             aria-hidden="true"
             data-slot="intelligence-up-next-skeleton-grid"
             className={UP_NEXT_CONTAINER_CLASS}
             style={{ gridTemplateColumns: getResponsiveGridColumns(layout.upNextGrid.minimumCardWidth) }}>
-            {Array.from({ length: normalizedCardCount }, (_, index) => (
+            {Array.from({ length: pairedCardCount }, (_, index) => (
               <div
                 key={index}
                 className={cn(

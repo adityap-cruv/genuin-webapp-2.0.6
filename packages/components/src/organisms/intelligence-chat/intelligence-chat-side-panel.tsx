@@ -38,12 +38,6 @@ const MOCK_VIDEO_AUTO_PROMPTS = [
 ] as const;
 const AUTO_PROMPT_COUNTDOWN_SECONDS = 3;
 const AUTO_PROMPT_TICK_MS = 1_000;
-const GENERIC_KOAH_AD_REQUESTS = [
-  "Show me a sponsored recommendation",
-  "Show me another sponsored recommendation",
-  "Show me one more sponsored recommendation",
-] as const;
-const GENERIC_KOAH_AI_RESPONSE = "Here are some recommendations you may find useful.";
 
 function getMockVideoAutoPrompt(videoId: string): string {
   const hash = Array.from(videoId).reduce((value, character) => (value * 31 + character.charCodeAt(0)) >>> 0, 0);
@@ -87,17 +81,25 @@ type IntelligenceChatSidePanelProps = {
 
 function IntelligenceKoahAds({
   videoId,
+  videoContext,
   layout,
 }: {
   videoId: string;
+  videoContext?: IntelligenceChatVideoContext;
   layout: NonNullable<IntelligenceChatSidePanelProps["koahAdLayout"]>;
 }) {
+  const title = videoContext?.title?.trim();
+  const description = videoContext?.description?.trim();
+  const fallback = `Video ${videoId}`;
+  const userMessage = title || fallback;
+  const aiResponse = description || fallback;
+
   if (layout === "single") {
     return (
       <KoahAdWidget
         standalone
-        userMessage={GENERIC_KOAH_AD_REQUESTS[0]}
-        aiResponse={GENERIC_KOAH_AI_RESPONSE}
+        userMessage={userMessage}
+        aiResponse={aiResponse}
         messageId={`intelligence-${videoId}`}
       />
     );
@@ -125,13 +127,13 @@ function IntelligenceKoahAds({
         aria-label="Sponsored recommendations"
         tabIndex={0}
         className="gencl:flex gencl:w-full gencl:snap-x gencl:snap-mandatory gencl:gap-3 gencl:overflow-x-auto gencl:[scrollbar-width:none] gencl:[&::-webkit-scrollbar]:hidden">
-        {GENERIC_KOAH_AD_REQUESTS.map((userMessage, index) => (
-          <div key={userMessage} data-testid="intelligence-koah-ad-slot" className="gencl:contents">
+        {[1, 2, 3].map((slotNumber) => (
+          <div key={slotNumber} data-testid="intelligence-koah-ad-slot" className="gencl:contents">
             <KoahAdWidget
               standalone
               userMessage={userMessage}
-              aiResponse={GENERIC_KOAH_AI_RESPONSE}
-              messageId={`intelligence-${videoId}-feed-${index + 1}`}
+              aiResponse={aiResponse}
+              messageId={`intelligence-${videoId}-feed-${slotNumber}`}
             />
           </div>
         ))}
@@ -320,7 +322,7 @@ export function IntelligenceChatSidePanel({
         data-testid="intelligence-chat-side-panel"
         registry={registry}
         messages={messages}
-        threadHeader={<IntelligenceKoahAds videoId={videoId} layout={koahAdLayout} />}
+        threadHeader={<IntelligenceKoahAds videoId={videoId} videoContext={videoContext} layout={koahAdLayout} />}
         autoPromptCountdown={autoPromptCountdown ?? undefined}
         isResponding={isResponding}
         inputDisabled={isAutoPrompting}

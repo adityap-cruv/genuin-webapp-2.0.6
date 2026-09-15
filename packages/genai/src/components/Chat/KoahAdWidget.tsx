@@ -53,17 +53,18 @@ const KoahAdWidgetRuntime = ({
     const containerRef = useRef<HTMLDivElement>(null);
     const [adServed, setAdServed] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const processedRef = useRef(false);
+    const processedMessageRef = useRef<string | null>(null);
     const processingStartTime = useRef<number>(0);
 
     const processAd = useCallback(
         async (currentAiResponse: string) => {
-            if (!window.koah || !containerRef.current || !userMessage || processedRef.current) {
+            if (!window.koah || !containerRef.current || !userMessage) {
                 setIsLoading(false);
                 return;
             }
+            if (processedMessageRef.current === messageId) return;
 
-            processedRef.current = true;
+            processedMessageRef.current = messageId;
             processingStartTime.current = Date.now();
 
             // Track: Ad processing started
@@ -74,17 +75,17 @@ const KoahAdWidgetRuntime = ({
             });
 
             try {
-                const served = await window.koah.process(userMessage, currentAiResponse, 'suffix', {
-                    target: containerRef.current,
-                    messageId: `koah-${messageId}`,
+                let settled = false;
+                const callbacks = {
                     onFill: () => {
+                        if (settled) return;
+                        settled = true;
                         if (containerRef.current) {
                             injectKoahStyles(containerRef.current);
                         }
                         setAdServed(true);
                         setIsLoading(false);
 
-                        // Track: Ad served successfully
                         const processingTime = Date.now() - processingStartTime.current;
                         analytics?.trackKoahAdServed({
                             message_id: messageId,
@@ -94,10 +95,10 @@ const KoahAdWidgetRuntime = ({
                         });
                     },
                     onNoFill: () => {
+                        if (settled) return;
+                        settled = true;
                         setAdServed(false);
                         setIsLoading(false);
-
-                        // Track: No ad available
                         analytics?.trackKoahAdNoFill({
                             message_id: messageId,
                             user_message: userMessage,
@@ -105,20 +106,14 @@ const KoahAdWidgetRuntime = ({
                             session_id: currentSessionId || undefined,
                         });
                     },
+                };
+                const served = await window.koah.process(userMessage, currentAiResponse, 'suffix', {
+                    target: containerRef.current,
+                    messageId: `koah-${messageId}`,
+                    ...callbacks,
                 });
 
-                if (!served) {
-                    setAdServed(false);
-                    setIsLoading(false);
-
-                    // Track: No ad served (returned false)
-                    analytics?.trackKoahAdNoFill({
-                        message_id: messageId,
-                        user_message: userMessage,
-                        reason: 'koah.process returned false',
-                        session_id: currentSessionId || undefined,
-                    });
-                }
+                if (!served) callbacks.onNoFill();
             } catch (error) {
                 console.error('[KoahAdWidget] Failed to process ad', error);
                 setAdServed(false);
@@ -166,9 +161,10 @@ const KoahAdWidgetRuntime = ({
 
     useEffect(() => {
         // Reset state when messageId changes
-        processedRef.current = false;
-        setAdServed(false);
-        setIsLoading(true);
+        if (processedMessageRef.current !== messageId) {
+            setAdServed(false);
+            setIsLoading(true);
+        }
 
         if (!isWebSdkView || !userMessage) {
             setIsLoading(false);
