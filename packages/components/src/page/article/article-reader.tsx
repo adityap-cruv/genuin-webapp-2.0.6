@@ -5,21 +5,26 @@ import { cn } from "@genuin/ui/lib/utils";
 
 import type { Article, ArticleBlock } from "./article-data";
 
-/** Shared reader entrance motion; both route and inline compositions opt into it. */
+/**
+ * Shared reader entrance motion; both route and inline compositions opt into it.
+ *
+ * Transform-only on purpose: animating from `opacity: 0` hid the headline/dek (the LCP element)
+ * until the animation finished, which Chrome counts as a ~3s LCP render delay. A composited
+ * translate keeps the entrance without delaying first contentful/largest paint.
+ */
 export const ARTICLE_READER_MOTION_CSS = `
 .gen-article-reveal {
-  opacity: 0;
-  animation: gen-article-rise 620ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: gen-article-rise 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
-.gen-article-reveal-delay-1 { animation-delay: 80ms; }
-.gen-article-reveal-delay-2 { animation-delay: 160ms; }
-.gen-article-reveal-delay-3 { animation-delay: 240ms; }
+.gen-article-reveal-delay-1 { animation-delay: 60ms; }
+.gen-article-reveal-delay-2 { animation-delay: 120ms; }
+.gen-article-reveal-delay-3 { animation-delay: 180ms; }
 @keyframes gen-article-rise {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { transform: translateY(12px); }
+  to { transform: translateY(0); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .gen-article-reveal { opacity: 1; animation: none; }
+  .gen-article-reveal { animation: none; }
 }
 `;
 
