@@ -1267,7 +1267,7 @@ export function PlayerList({
                 onClose={() => setIntelligenceOpen(false)}
                 onArticleSelect={handleIntelligenceArticleSelect}
                 autoPromptOnMount={isHomeFeedView}
-                koahAdLayout={isHomeFeedView ? "horizontal" : "single"}
+                koahAdLayout="single"
                 className="gencl:h-full"
               />
             </SafeSuspense>
