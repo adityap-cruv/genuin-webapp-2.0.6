@@ -144,8 +144,8 @@ function GenuinPlacement({ placement }: { placement: PlacementConfig }) {
     // Match Home exactly: desktop opens the bounded Feed View; mobile keeps the SDK's native
     // direct-fullscreen behavior. Explicit player controls are never intercepted by this path.
     if (!openFeedViewOverlay || !window.matchMedia("(min-width: 1024px)").matches) return;
-    prepareFeedView(domId);
-    openFeedViewOverlay({ sourceDomId: domId });
+    const existingExpandHosts = prepareFeedView(domId);
+    openFeedViewOverlay({ sourceDomId: domId, existingExpandHosts });
   }, [domId, openFeedViewOverlay]);
 
   const captureFeedViewIntent = usePlacementFeedViewIntent({

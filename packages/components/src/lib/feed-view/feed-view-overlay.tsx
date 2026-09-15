@@ -25,6 +25,15 @@ import {
 /** Identifies the SDK placement whose existing expand portal becomes the bounded Feed View. */
 export type FeedViewOverlayRequest = {
   sourceDomId: string;
+  /**
+   * Expand-view hosts that already existed when this placement was clicked.
+   *
+   * Article placements can be mounted inside an existing Home Feed View. In that case the
+   * document contains the parent player's expand host before the article carousel creates its
+   * own. Keeping this snapshot lets the overlay attach to the new host instead of accidentally
+   * resizing the parent player.
+   */
+  existingExpandHosts: HTMLElement[];
 };
 
 type OpenFeedViewOverlay = (request: FeedViewOverlayRequest) => void;
@@ -128,6 +137,16 @@ const FEED_SESSION_ATTRIBUTE = "data-home-feed-session";
 const FEED_VIEW_Z_INDEX = "40";
 const FEED_BACK_Z_INDEX = 41;
 
+const EXPAND_HOST_SELECTOR = [
+  '[data-genuin-overlay-host][data-portal-key="expand-view"]',
+  '[data-genuin-light-portal-host][data-portal-key="expand-view"]',
+  'body > .gen-sdk-root-portal.gen-sdk-expand-view',
+].join(",");
+
+function getExpandHosts(): HTMLElement[] {
+  return Array.from(document.querySelectorAll<HTMLElement>(EXPAND_HOST_SELECTOR));
+}
+
 function markPlacementAttribute(sourceDomId: string, attribute: string, active: boolean) {
   const source = document.getElementById(sourceDomId);
   const embedRoot = source?.shadowRoot?.querySelector<HTMLElement>(".gen-sdk-class");
@@ -146,9 +165,13 @@ export function markFeedViewSession(sourceDomId: string, active: boolean) {
 }
 
 /** Marks the placement synchronously before the SDK's expand portal commits in another React root. */
-export function prepareFeedView(sourceDomId: string) {
+export function prepareFeedView(sourceDomId: string): HTMLElement[] {
+  // Capture this before changing the placement to expand-view. The SDK commits its portal in a
+  // separate React root after the click, so any subsequently-added host belongs to this request.
+  const existingExpandHosts = getExpandHosts();
   markFeedView(sourceDomId, true);
   markFeedViewSession(sourceDomId, true);
+  return existingExpandHosts;
 }
 
 function restoreInlineStyle(element: HTMLElement | null, value: string | null) {
@@ -186,6 +209,7 @@ export function FeedViewOverlay({
   const [isInlineArticleOpen, setIsInlineArticleOpen] = useState(false);
   const [isSdkDetailPageOpen, setIsSdkDetailPageOpen] = useState(false);
   const collapseRequestedRef = useRef(false);
+  const attachedHostRef = useRef<HTMLElement | null>(null);
 
   const collapseSdkView = useCallback(() => {
     if (collapseRequestedRef.current) return;
@@ -208,15 +232,28 @@ export function FeedViewOverlay({
   useEffect(() => {
     const genuin = (window as GenuinWindow).genuin;
     if (!genuin?.onInternal) return;
+    let closeFrame: number | null = null;
 
-    const off = genuin.onInternal("onExpandViewChanged", (raw: unknown) => {
+    // The runtime returns an unsubscribe callback; the legacy global declaration still says void.
+    const off: unknown = genuin.onInternal("onExpandViewChanged", (raw: unknown) => {
       const expanded = typeof raw === "boolean" ? raw : (raw as { payload?: unknown } | null | undefined)?.payload;
       if (expanded === false) {
-        collapseRequestedRef.current = true;
-        onClose();
+        // The SDK event is global, so closing a child carousel also notifies the parent Home
+        // Feed View. Wait for portal teardown and close only the overlay whose own host vanished.
+        const attachedHost = attachedHostRef.current;
+        if (closeFrame !== null) window.cancelAnimationFrame(closeFrame);
+        closeFrame = window.requestAnimationFrame(() => {
+          closeFrame = null;
+          if (!attachedHost || attachedHost.isConnected) return;
+          collapseRequestedRef.current = true;
+          onClose();
+        });
       }
     });
-    return typeof off === "function" ? off : undefined;
+    return () => {
+      if (closeFrame !== null) window.cancelAnimationFrame(closeFrame);
+      if (typeof off === "function") (off as () => void)();
+    };
   }, [onClose]);
 
   useLayoutEffect(() => {
@@ -313,13 +350,15 @@ export function FeedViewOverlay({
     };
 
     const attachToSdkPortal = (): boolean => {
-      host =
-        document.querySelector<HTMLElement>('[data-genuin-overlay-host][data-portal-key="expand-view"]') ??
-        document.querySelector<HTMLElement>('[data-genuin-light-portal-host][data-portal-key="expand-view"]') ??
-        document.querySelector<HTMLElement>('[data-genuin-root-portal][data-portal-key="expand-view"]') ??
-        document.querySelector<HTMLElement>("body > .gen-sdk-root-portal.gen-sdk-expand-view");
+      // Multiple placements may legitimately have expand roots at the same time: the Home player
+      // remains mounted while its inline article opens a carousel video. querySelector() used to
+      // select that older parent root, shrinking it into the new overlay and leaving the clicked
+      // carousel player hidden behind the article. Select only a host created after this request.
+      const existingHosts = new Set(request.existingExpandHosts);
+      host = getExpandHosts().find((candidate) => !existingHosts.has(candidate)) ?? null;
       portalContainer = host?.shadowRoot?.querySelector<HTMLElement>("[data-portal-container]") ?? host;
       if (!host || !portalContainer) return false;
+      attachedHostRef.current = host;
 
       portalObserver?.disconnect();
       portalObserver = null;
@@ -424,8 +463,9 @@ export function FeedViewOverlay({
       }
       markFeedView(request.sourceDomId, false);
       markFeedViewSession(request.sourceDomId, false);
+      attachedHostRef.current = null;
     };
-  }, [boundsRef, collapseSdkView, onClose, request.sourceDomId]);
+  }, [boundsRef, collapseSdkView, onClose, request.existingExpandHosts, request.sourceDomId]);
 
   const handleBack = () => {
     collapseSdkView();

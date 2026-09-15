@@ -552,8 +552,8 @@ function PlacementWidget({ node, data }: WidgetRenderProps) {
     // Mobile keeps the SDK's normal direct-fullscreen path. Desktop Home adds only the
     // intermediate presentation state around that same fullscreen instance.
     if (!openFeedViewOverlay || !window.matchMedia("(min-width: 1024px)").matches) return;
-    prepareFeedView(domId);
-    openFeedViewOverlay({ sourceDomId: domId });
+    const existingExpandHosts = prepareFeedView(domId);
+    openFeedViewOverlay({ sourceDomId: domId, existingExpandHosts });
   }, [domId, openFeedViewOverlay]);
 
   // Reverse contextual flow: a list panel in this row broadcast a selection — tell THIS
