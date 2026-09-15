@@ -515,15 +515,24 @@ export function useEmbedConfigs() {
   // Modal configs
   //==================================================================
   const modalConfig = useMemo(() => {
+    // First-party placements (Home/Article) opt into host navigation at init; they should ask
+    // for login in a dialog like native feeds instead of opening the video page in a new tab.
+    const isFirstPartyPlacement = embedContextData.embedData?.configuration?.is_enable_redirection === true;
     return {
       hideModal:
-        embedContextData.embedData?.style === "carousel" ||
-        embedContextData.embedData?.style === "feed" ||
-        embedContextData.embedData?.style === "grid" ||
-        embedContextData.embedData?.style === "expand_only" ||
-        embedContextData.embedData?.expandOnLoad === true,
+        !isFirstPartyPlacement &&
+        (embedContextData.embedData?.style === "carousel" ||
+          embedContextData.embedData?.style === "feed" ||
+          embedContextData.embedData?.style === "grid" ||
+          embedContextData.embedData?.style === "expand_only" ||
+          embedContextData.embedData?.expandOnLoad === true),
     };
-  }, [embedContextData.embedData?.style, embedContextData.embedData?.card_layout_id]);
+  }, [
+    embedContextData.embedData?.style,
+    embedContextData.embedData?.card_layout_id,
+    embedContextData.embedData?.expandOnLoad,
+    embedContextData.embedData?.configuration?.is_enable_redirection,
+  ]);
 
   //==================================================================
   // Responsive breakpoints configuration
