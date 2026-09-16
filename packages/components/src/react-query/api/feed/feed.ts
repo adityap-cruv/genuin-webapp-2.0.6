@@ -310,6 +310,7 @@ async function fetchFeed(
           community_ids: options.communityIds,
         }),
         ...(options?.groupIds?.length && { loop_ids: options.groupIds }),
+        ...(options?.brandContext && { brand_context: options.brandContext }),
         ...(pageParam?.lastVideoCount !== undefined && { last_video_count: pageParam.lastVideoCount }),
       };
       break;
