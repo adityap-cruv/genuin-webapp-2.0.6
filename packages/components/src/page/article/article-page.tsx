@@ -14,8 +14,12 @@ import {
   usePlacementFeedViewIntent,
   type FeedViewOverlayRequest,
 } from "@genuin/components/lib/feed-view/feed-view-overlay";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { Link } from "@genuin/components/molecules/link";
+import { CommunityCard } from "@genuin/components/organisms/community-card";
+import { GroupCard } from "@genuin/components/organisms/group-card";
 
+import { toCommunityCardInfo, toGroupCardProps } from "./article-community";
 import { type Article, getArticleByHref } from "./article-data";
 import { ArticleIntelligenceAssistant } from "./article-intelligence-assistant";
 import {
@@ -174,6 +178,46 @@ function ArticleFeedPlacement() {
       style={{ width: "100%", height: 640 }}>
       <GenuinPlacement placement={PLACEMENTS.feed} />
     </div>
+  );
+}
+
+/**
+ * Where the article was published: the community it is attached to and the group it
+ * was filed under, rendered with the same `CommunityCard` / `GroupCard` the rest of
+ * the app uses (the `suggestion` variant — compact, whole-card clickable, no
+ * duplicate join CTA, since the header pills already carry join/subscribe).
+ */
+function ArticleOriginRail({ article }: { article: Article }) {
+  const { community, group } = article;
+  if (!community) return null;
+
+  return (
+    <section
+      aria-label="Published in"
+      className="gencl:overflow-hidden gencl:rounded-xl gencl:border gencl:border-secondary-150 gencl:bg-white">
+      <div className="gencl:border-b gencl:border-secondary-150 gencl:px-3 gencl:py-3">
+        <Text as="span" size="body-2" weight="semibold" className="gencl:text-secondary-600">
+          Published in
+        </Text>
+      </div>
+
+      <CommunityCard
+        community={toCommunityCardInfo(community)}
+        variant="suggestion"
+        url={buildPageUrl({ type: "community", slug: community.slug })}
+      />
+
+      {group ? (
+        <>
+          <div className="gencl:mx-3 gencl:border-t gencl:border-secondary-100" />
+          <GroupCard
+            {...toGroupCardProps(group, community)}
+            variant="suggestion"
+            url={buildPageUrl({ type: "group", slug: group.slug })}
+          />
+        </>
+      ) : null}
+    </section>
   );
 }
 
@@ -489,7 +533,9 @@ export function ArticlePage({ article, backControl }: { article: Article; backCo
               <ArticleReaderBody article={article} />
 
               <aside className="gen-article-rail">
-                <div className="gen-article-rail-sticky gen-article-reveal gen-article-reveal-delay-3">
+                <div className="gen-article-rail-sticky gen-article-reveal gen-article-reveal-delay-3 gencl:flex gencl:flex-col gencl:gap-6">
+                  <ArticleOriginRail article={article} />
+
                   <ArticleFeedPlacement />
                 </div>
               </aside>

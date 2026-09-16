@@ -3,6 +3,8 @@
 import { Image } from "@genuin/ui/components/image";
 import { cn } from "@genuin/ui/lib/utils";
 
+import { Pills } from "@genuin/components/molecules/feed-player/pills/pills";
+
 import type { Article, ArticleBlock } from "./article-data";
 
 /**
@@ -194,6 +196,17 @@ function ArticleBodyBlock({ block }: { block: ArticleBlock }) {
   return <p className="gen-article-p">{block.text}</p>;
 }
 
+/** The community / group pills under the byline, from the article's own attribution. */
+function ArticleHeaderPills({ article }: { article: Article }) {
+  if (!article.community) return null;
+
+  return (
+    <div className="gencl:mt-4 gencl:flex gencl:items-center gencl:gap-2">
+      <Pills communityDetails={article.community} groupDetails={article.group} isHoverable variant="light" />
+    </div>
+  );
+}
+
 /** Canonical article headline and metadata, independent of route/navigation chrome. */
 export function ArticleReaderHeader({ article, className }: { article: Article; className?: string }) {
   const isEvent = article.kind === "event";
@@ -229,6 +242,9 @@ export function ArticleReaderHeader({ article, className }: { article: Article; 
           {article.publishedAt ? <span>{article.publishedAt}</span> : null}
         </div>
       ) : null}
+
+      {/* Community & group pills — same affordance as the feed player's. */}
+      <ArticleHeaderPills article={article} />
     </header>
   );
 }

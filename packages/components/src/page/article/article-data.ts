@@ -4,6 +4,9 @@
 // from here. The content is an auto-generated snapshot from thefoil.com; getArticleBySlug
 // is the single seam to later swap the static snapshot for the real publisher DB.
 
+import { getArticleOrigin } from "./article-community";
+import type { ArticleCommunity, ArticleGroup } from "./article-community";
+
 /**
  * Data model for on-domain article pages.
  *
@@ -57,6 +60,14 @@ export type Article = {
   /** Event-only: the venue / city shown in the event header. */
   location?: string;
   source: ArticleSource;
+  /**
+   * Community this article is attached to. Filled in by {@link getArticleBySlug},
+   * so it arrives with the article response itself — exactly where the real article
+   * API will put it.
+   */
+  community?: ArticleCommunity;
+  /** Group within that community this article is attached to. */
+  group?: ArticleGroup;
 };
 
 /** Slug → article lookup, the shape of the static snapshot in `article-content.ts`. */
@@ -4202,7 +4213,15 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
  * consumer keeps working unchanged.
  */
 export function getArticleBySlug(slug: string): Article | undefined {
-  return ARTICLE_CONTENT[slug];
+  const article = ARTICLE_CONTENT[slug];
+  if (!article) return undefined;
+  // Which community / group this article is attached to — see `article-community.ts`.
+  const origin = getArticleOrigin(article.slug, article.kind);
+  return {
+    ...article,
+    community: article.community ?? origin.community,
+    group: article.group ?? origin.group,
+  };
 }
 
 /**
