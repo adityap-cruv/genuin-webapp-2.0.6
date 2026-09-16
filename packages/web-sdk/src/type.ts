@@ -6,7 +6,18 @@ import type {
   ConfigurationType,
 } from "@genuin/components/context/embed/embed.types";
 export type { ConfigurationType };
+import type { AuthUser } from "@genuin/components/types/auth";
 import type { BrandDetailsConfigType } from "@genuin/components/types/brand";
+
+/**
+ * Full authenticated session handed from a host (e.g. the WebApp) to the SDK
+ * so it can render authenticated without an auth/login API call.
+ */
+export type SessionHandoff = {
+  user: AuthUser;
+  accessToken: string;
+  refreshToken?: string;
+};
 
 type AuthUserParams = {
   name?: string | null;

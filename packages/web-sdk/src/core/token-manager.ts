@@ -2,6 +2,7 @@ import internalStorage from "@genuin/components/lib/utils/internal-storage-manag
 import type { AuthUser } from "@genuin/components/types/auth";
 
 import { USER_DATA_KEY } from "@/constants";
+import type { SessionHandoff } from "@/type";
 import { getKsCbRequestStatus } from "@/utils/auth";
 
 import { APIService } from "./api";
@@ -248,6 +249,23 @@ export class TokenManager {
 
   getCachedUser() {
     return this.cachedUser;
+  }
+
+  /**
+   * Seed the SDK with a full session handed from a host (e.g. the WebApp), so the
+   * SDK renders authenticated with no auth API call. Sets the in-memory cache and
+   * persists to storage. autoLoginToken is set to the access token so a later
+   * init({ token }) with the same token also cache-hits.
+   */
+  setSession({ user, accessToken, refreshToken }: SessionHandoff): void {
+    const authUser: AuthUser = {
+      ...user,
+      accessToken,
+      refreshToken,
+      autoLoginToken: accessToken,
+    };
+    this.cachedUser = authUser;
+    this.setUserData(authUser);
   }
 
   /**

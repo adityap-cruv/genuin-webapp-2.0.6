@@ -5,15 +5,25 @@ import Script from "next/script";
 import { type SdkParams } from "@lib/utils/parse-sdk-params";
 
 /**
- * Web SDK script URL. Resolves by environment (NEXT_PUBLIC_CURRENT_ENV): prod uses the
- * media.begenuin.com CDN, every other env uses the media.qa.begenuin.com CDN. Override
- * with NEXT_PUBLIC_GENUIN_SDK_URL (e.g. a local /public-served bundle).
+ * Web SDK script URL. Resolves by environment (NEXT_PUBLIC_CURRENT_ENV):
+ * - local: the web-sdk dev server (`serve:dev` runs `vite build --watch` + serves dist on :3000
+ *   with CORS), so local SDK changes are picked up without publishing to the CDN.
+ * - prod: the media.begenuin.com CDN. every other env: the media.qa.begenuin.com CDN.
+ * Override any of the above with NEXT_PUBLIC_GENUIN_SDK_URL.
  */
-const SDK_VERSION = "2.0.5";
-const isProd = process.env.NEXT_PUBLIC_CURRENT_ENV === "prod";
+const SDK_VERSION = "2.0.6";
+const currentEnv = process.env.NEXT_PUBLIC_CURRENT_ENV;
+const isProd = currentEnv === "prod";
+const isLocal = currentEnv === "local";
+/**
+ * Local web-sdk dev server. Run `pnpm serve:dev` in packages/web-sdk — it runs
+ * `vite build --watch` + `serve dist -l 0.0.0.0:3000 --cors`, serving the dist contents
+ * at the root with CORS (so the loader's dynamically-imported chunks load cross-origin).
+ */
+const LOCAL_SDK_URL = "http://localhost:3000/gen_sdk.js";
 const GENUIN_SDK_URL =
   process.env.NEXT_PUBLIC_GENUIN_SDK_URL ??
-  `https://media${isProd ? "" : ".qa"}.begenuin.com/sdk/${SDK_VERSION}/gen_sdk.min.js`;
+  (isLocal ? LOCAL_SDK_URL : `https://media${isProd ? "" : ".qa"}.begenuin.com/sdk/${SDK_VERSION}/gen_sdk.min.js`);
 
 type GenuinSdkLoaderProps = {
   apiKey: string;

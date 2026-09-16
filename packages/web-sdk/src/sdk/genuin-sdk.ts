@@ -18,6 +18,7 @@ import type {
   ConfigByUser,
   InitializationStatus,
   SDKElementsType,
+  SessionHandoff,
   SingleEmbedDataConfig,
   UpdateConfigByUserType,
 } from "@/type";
@@ -311,6 +312,24 @@ export class GenuinSDK {
     await this._performUpdate(config);
   }
 
+  /**
+   * Seed the SDK with a full authenticated session from the host (e.g. the WebApp).
+   * Renders authenticated with NO auth API call. Safe to call before init: it queues
+   * itself and runs once init completes.
+   */
+  setUser(session: SessionHandoff): void {
+    if (!session?.user || !this.isValidToken(session?.accessToken)) {
+      return;
+    }
+    // if sdk is not initialized then queue the setUser call.
+    if (!this.isInitialized) {
+      this.callbackQueueManager.enqueue(() => this.setUser(session), session);
+      return;
+    }
+    this.tokenManager.setSession(session);
+    this.eventManager.emit(SDKEventType.SDK_AUTHENTICATE_USER, this.tokenManager.getCachedUser());
+  }
+
   private async _performUpdate(config?: UpdateConfigByUserType) {
     // In case of token comes authenticateUser, this function will authenticate user in all the embeds.
     if (this.isValidToken(config?.token)) {
@@ -447,15 +466,23 @@ export class GenuinSDK {
       let user: AuthUser | undefined | null = this.tokenManager.getCachedUser();
 
       if (this.isValidToken(config.token)) {
+        // Token wins over any cached user. getCurrentUser still skips /sso/autologin
+        // when the stored autoLoginToken matches this token.
         user =
           (await this.authenticateUser({
             token: config.token,
             userParams: config.params,
           })) ?? undefined;
       } else {
-        // Remove user data from local storage if no token is provided
-        this.tokenManager.removeUserData();
-        user = null;
+        // No token: fall back to a cached/seeded user (e.g. from setUser()).
+        // Only clear storage when there is genuinely no cached user.
+        const cachedUser = this.tokenManager.getCachedUser() ?? this.tokenManager.getUserData();
+        if (cachedUser) {
+          user = cachedUser;
+        } else {
+          this.tokenManager.removeUserData();
+          user = null;
+        }
       }
 
       // Handle pending actions from localStorage

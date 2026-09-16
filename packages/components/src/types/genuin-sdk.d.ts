@@ -14,6 +14,17 @@ interface GenuinSDK {
   update: (config: any) => void;
 
   /**
+   * Seeds the SDK with a host-provided authenticated session so it renders
+   * authenticated without an auth/login API call.
+   */
+  setUser?: (session: { user: unknown; accessToken: string; refreshToken?: string }) => void;
+
+  /**
+   * Clears the current user / logs out of the SDK.
+   */
+  logout?: () => void;
+
+  /**
    * Emits an event to the SDK event system
    */
   emit: (eventName: string, payload: any) => void;

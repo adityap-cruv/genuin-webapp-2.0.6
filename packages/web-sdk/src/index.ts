@@ -31,7 +31,7 @@ export { EmbedStyle } from "./types/embed";
 
 // Import for browser global setup
 import { Genuin } from "./sdk";
-import type { ConfigByUser, UpdateConfigByUserType } from "./type";
+import type { ConfigByUser, SessionHandoff, UpdateConfigByUserType } from "./type";
 
 // Extend the global Window interface for TypeScript
 declare global {
@@ -43,6 +43,8 @@ declare global {
       off?: typeof Genuin.off;
       init?: (config: ConfigByUser) => ReturnType<typeof Genuin.newInit>;
       update?: (config: UpdateConfigByUserType) => ReturnType<typeof Genuin.newUpdate>;
+      /** Seed the SDK with a host-provided authenticated session (no auth API call). */
+      setUser?: (session: SessionHandoff) => void;
       expand?: typeof Genuin.expand;
       collapse?: typeof Genuin.collapse;
       // Widened to `string` so that cross-package callers (e.g. sdk-event-emitter
@@ -84,6 +86,7 @@ if (typeof window !== "undefined") {
     destroy: Genuin.destroy.bind(Genuin),
     expand: Genuin.expand.bind(Genuin),
     collapse: Genuin.collapse.bind(Genuin),
+    setUser: Genuin.setUser.bind(Genuin),
   };
 }
 
