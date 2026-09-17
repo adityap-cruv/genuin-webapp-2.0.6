@@ -11,6 +11,7 @@ import { useAuthContext } from "@genuin/components/context/auth";
 import { useBaseContext } from "@genuin/components/context/base";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 import { usePathname } from "@genuin/components/hooks/use-pathname";
+import { useFloatingVideoLink } from "@genuin/components/lib/floating-video/use-floating-video-link";
 import { NEXT_PUBLIC_HOST_URL } from "@genuin/components/lib/utils/env";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import type { PageType } from "@genuin/components/lib/utils/pages";
@@ -53,6 +54,10 @@ export function SidebarActions({
   const { user } = useAuthContext();
   const { camera_enabled, create_post_enabled } = useBaseContext().brandDetails;
   const { isMobile } = useDeviceDetection();
+  // Leaving the sidebar while a video is expanded takes that video along as the floating card,
+  // exactly as a Community or Group pill does. Declines itself when nothing is playing in Feed
+  // View, so every other visit to these links is unchanged.
+  const handleNavigate = useFloatingVideoLink("sidebar");
 
   return (
     <div className={cn(className, sidebarActionsVariants({ variant }))} {...restProps}>
@@ -72,15 +77,16 @@ export function SidebarActions({
         }
 
         const Icon = links.type !== "profile" ? links.icon : undefined;
+        const href = buildPageUrl({ type: links.type as PageType, slug: user?.nickname });
 
         return (
           <Link
             key={index}
-            href={buildPageUrl({
-              type: links.type as PageType,
-              slug: user?.nickname,
-            })}
-            onClick={onItemClick}>
+            href={href}
+            onClick={(event) => {
+              handleNavigate(href, event);
+              onItemClick?.();
+            }}>
             <SidebarActionItem
               type={links.type as PageType}
               icon={"icon" in links ? links.icon : undefined}
@@ -89,13 +95,7 @@ export function SidebarActions({
               // notificationCount={
               //   links.type === "notification" ? notificationCount : undefined
               // }
-              isActive={
-                pathname ===
-                buildPageUrl({
-                  type: links.type as PageType,
-                  slug: user?.nickname,
-                })
-              }
+              isActive={pathname === href}
             />
           </Link>
         );

@@ -14,6 +14,7 @@ import {
   usePlacementFeedViewIntent,
   type FeedViewOverlayRequest,
 } from "@genuin/components/lib/feed-view/feed-view-overlay";
+import { useFloatingVideoRestoreTarget } from "@genuin/components/lib/floating-video/use-floating-video-restore-target";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { Link } from "@genuin/components/molecules/link";
 import { CommunityCard } from "@genuin/components/organisms/community-card";
@@ -144,17 +145,27 @@ function GenuinPlacement({ placement }: { placement: PlacementConfig }) {
     };
   }, []);
 
-  const handleExpandRequest = useCallback(() => {
-    // Match Home exactly: desktop opens the bounded Feed View; mobile keeps the SDK's native
-    // direct-fullscreen behavior. Explicit player controls are never intercepted by this path.
-    if (!openFeedViewOverlay || !window.matchMedia("(min-width: 1024px)").matches) return;
-    const existingExpandHosts = prepareFeedView(domId);
-    openFeedViewOverlay({ sourceDomId: domId, existingExpandHosts });
+  const handleExpandRequest = useCallback((options?: { excludeHost?: HTMLElement | null }) => {
+      // Match Home exactly: desktop opens the bounded Feed View; mobile keeps the SDK's native
+      // direct-fullscreen behavior. Explicit player controls are never intercepted by this path.
+      if (!openFeedViewOverlay || !window.matchMedia("(min-width: 1024px)").matches) return;
+      // `excludeHost` is the retained floating player being handed back: dropping it from the
+      // snapshot tells the overlay to adopt that host instead of waiting for a fresh one.
+      const existingExpandHosts = prepareFeedView(domId).filter((host) => host !== options?.excludeHost);
+      openFeedViewOverlay({ sourceDomId: domId, existingExpandHosts });
   }, [domId, openFeedViewOverlay]);
 
   const captureFeedViewIntent = usePlacementFeedViewIntent({
     onExpandRequest: openFeedViewOverlay ? handleExpandRequest : undefined,
     waitForSdk: loadGenuinSdk,
+  });
+
+  // An article placement can be a hand-off source too, so it must be able to take the video
+  // back when the floating card is sent home.
+  useFloatingVideoRestoreTarget({
+    domId,
+    placementId: placement.placementId,
+    onPrepareFeedView: handleExpandRequest,
   });
 
   return (

@@ -2,7 +2,7 @@
 import { HoverCard, HoverCardTrigger, HoverCardContent } from "@genuin/ui/hover-card";
 import { GroupIcon } from "@genuin/ui/icons";
 import { cva } from "class-variance-authority";
-import type { ComponentProps } from "react";
+import type { ComponentProps, MouseEvent } from "react";
 import { useState, useEffect, useRef } from "react";
 
 import { useBaseContext } from "@genuin/components/context";
@@ -43,6 +43,11 @@ type GroupPillProps = {
   onGroupJoinStatusChange: ComponentProps<typeof JoinGroupButton>["onGroupJoinStatusChange"];
   onGroupSubscriptionChange?: ComponentProps<typeof GroupSubscriptionButton>["onSubscriptionChange"];
   hideGroupSubscriptionButton?: boolean;
+  /**
+   * Called when the pill itself is about to navigate to the group page. See
+   * {@link CommunityPill}'s `onNavigate` — the subscribe button never triggers it.
+   */
+  onNavigate?: (href: string, event: MouseEvent<HTMLElement>) => void;
 };
 
 export function GroupPill({
@@ -55,6 +60,7 @@ export function GroupPill({
   onGroupSubscriptionChange,
   className,
   hideGroupSubscriptionButton = false,
+  onNavigate,
 }: GroupPillProps) {
   const { authenticationStatus } = useAuthContext();
   const { useShadowDOM } = useBaseContext();
@@ -89,8 +95,10 @@ export function GroupPill({
     groupDetails?.description ? groupDetails.description + " | " : ""
   } • Join ${groupDetails.name} to talk about it`;
 
+  const groupHref = buildPageUrl({ type: "group", slug: groupDetails.slug });
+
   const pill = (
-    <Link href={buildPageUrl({ type: "group", slug: groupDetails.slug })}>
+    <Link href={groupHref} onClick={onNavigate ? (event) => onNavigate(groupHref, event) : undefined}>
       <div className={groupPillVariants({ variant, className })}>
         <div className="gencl:flex gencl:gap-1 gencl:items-center gencl:line-clamp-1 gencl:break-all">
           <div className="gencl:rounded-full gencl:bg-secondary-600 gencl:p-1">

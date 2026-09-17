@@ -15,6 +15,10 @@ import { useDeviceDetection } from "@genuin/components/hooks/use-device-detectio
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { useFocusManagement } from "@genuin/components/hooks/use-focus-management";
 import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
+import { isFeedViewPresentation } from "@genuin/components/lib/feed-view/presentation";
+import { useFloatingVideoExit } from "@genuin/components/lib/floating-video/use-floating-video-exit";
+import { useFloatingVideoPromoter } from "@genuin/components/lib/floating-video/use-floating-video-promoter";
+import { useFloatingVideoSessionId } from "@genuin/components/lib/floating-video/use-floating-video-session";
 import {
   dispatchHomeInlineArticleState,
   HOME_FEED_VIEW_EVENT,
@@ -96,20 +100,6 @@ const INLINE_ARTICLE_PLAYER_CSS = `
     [data-inline-article-open="true"] [data-feed-video-frame] { animation: none; }
   }
 `;
-
-const ACTIVE_FEED_VIEW_SELECTOR = '[data-home-feed-view="true"]';
-
-/** A child expand opened inside the active Feed View must reuse the same presentation. */
-function isFeedViewPresentation(rootElement: HTMLElement | null | undefined): boolean {
-  // First-party page feeds (/latest, /popular, /video) do not have an SDK
-  // placement root. They must never inherit another placement's document-level
-  // Feed View marker, including one that is briefly present during navigation.
-  if (!rootElement) return false;
-  if (rootElement?.dataset.homeFeedView === "true") return true;
-  // The session owner may intentionally be promoted to Full View; do not force it back.
-  if (rootElement?.dataset.homeFeedSession === "true") return false;
-  return document.querySelector(ACTIVE_FEED_VIEW_SELECTOR) !== null;
-}
 
 /** `document.activeElement` stops at a shadow host; retain the actual card trigger. */
 function getDeepActiveElement(): Element | null {
@@ -282,7 +272,19 @@ export function PlayerList({
   const [isInlineVideoDismissed, setIsInlineVideoDismissed] = useState(false);
   const inlineArticleTriggerRef = useRef<HTMLElement | null>(null);
   const isInlineArticleOpen = selectedInlineArticle !== null;
+
   const homeFeedSourceDomId = embedDetails?.rootElement?.id ?? "";
+  // A Community/Group pill hand-off presents this player exactly as an inline article does:
+  // the same bottom-right card, the same compact control layer, the same close affordance.
+  // Sharing the state is what makes them one behaviour rather than two look-alikes.
+  // Answers "take this video with you" from any navigating surface — pills inside this player,
+  // the app's sidebar, anything added later.
+  useFloatingVideoPromoter({ posts, activeIndex });
+  const floatingSessionId = useFloatingVideoSessionId(homeFeedSourceDomId);
+  const isFloatingHandoff = floatingSessionId !== null;
+  /** True whenever this player is presented as the small floating card, for any reason. */
+  const isVideoFloating = isInlineArticleOpen || isFloatingHandoff;
+
 
   const closeInlineArticle = useCallback(() => {
     setSelectedInlineArticle(null);
@@ -293,6 +295,16 @@ export function PlayerList({
       inlineArticleTriggerRef.current = null;
     });
   }, []);
+
+  // How the card stops being a card. Which of the two undos applies is the hand-off's
+  // business, not the player's.
+  const { restoreFullSize, endHandOff } = useFloatingVideoExit({
+    sessionId: floatingSessionId,
+    isInlineArticleOpen,
+    onCloseInlineArticle: closeInlineArticle,
+  });
+  const endHandOffRef = useRef(endHandOff);
+  endHandOffRef.current = endHandOff;
 
   const handleIntelligenceArticleSelect = useCallback<IntelligenceArticleSelectHandler>(
     (selection) => {
@@ -437,6 +449,7 @@ export function PlayerList({
       if (!media.paused) media.pause();
     });
     setIsInlineVideoDismissed(true);
+    endHandOffRef.current();
     window.requestAnimationFrame(() => {
       playerColumn
         ?.closest<HTMLElement>('[data-inline-article-open="true"]')
@@ -561,9 +574,9 @@ export function PlayerList({
   );
 
   useEffect(() => {
-    const shouldDisable = isInlineArticleOpen || sheetState === "full-view" || sheetState === "panel-view";
+    const shouldDisable = isVideoFloating || sheetState === "full-view" || sheetState === "panel-view";
     handleSwiperToggle(shouldDisable);
-  }, [sheetState, handleSwiperToggle, isInlineArticleOpen]);
+  }, [sheetState, handleSwiperToggle, isVideoFloating]);
 
   // Drop overlay posts entirely — we can't just skip a slide with a swiper-in-swiper.
   const filteredPost = useMemo(() => {
@@ -773,7 +786,7 @@ export function PlayerList({
   return (
     <div
       ref={playerListRef}
-      data-inline-article-open={isInlineArticleOpen || undefined}
+      data-inline-article-open={isVideoFloating || undefined}
       data-inline-video-dismissed={isInlineVideoDismissed || undefined}
       className={cn(
         "gencl:h-full gencl:w-full gencl:flex gencl:justify-center gencl:relative",
@@ -784,8 +797,8 @@ export function PlayerList({
           isAdsEnabledInIheart &&
           "gencl:pt-[72px]! gencl:md:pt-8!",
         brandLayoutType !== "iheart" && "gencl:gap-6",
-        isHomeFeedView && isIntelligenceOpen && !isInlineArticleOpen && "gencl:pl-24 gencl:pr-6",
-        isInlineArticleOpen && "gencl:overflow-hidden gencl:gap-0! gencl:p-0!"
+        isHomeFeedView && isIntelligenceOpen && !isVideoFloating && "gencl:pl-24 gencl:pr-6",
+        isVideoFloating && "gencl:overflow-hidden gencl:gap-0! gencl:p-0!"
       )}>
       <style>{INLINE_ARTICLE_PLAYER_CSS}</style>
       {selectedInlineArticle && (
@@ -812,7 +825,7 @@ export function PlayerList({
         className={cn(
           "gencl:flex gencl:justify-center gencl:h-full gencl:w-full gencl:sm:w-fit! gencl:relative",
           brandLayoutType !== "iheart" && "gencl:gap-6",
-          isInlineArticleOpen && "gencl:contents"
+          isVideoFloating && "gencl:contents"
         )}>
         <div data-feed-video-frame="">
           <div
@@ -904,8 +917,8 @@ export function PlayerList({
                       onAdFilled={onAdFilled}
                       onAdPlaybackEnd={onAdPlaybackEnd}
                       pageSession={pageSession}
-                      controlLayerVariant={isInlineArticleOpen ? "placement" : "default"}
-                      onExpandClick={isInlineArticleOpen ? closeInlineArticle : undefined}
+                      controlLayerVariant={isVideoFloating ? "placement" : "default"}
+                      onExpandClick={isVideoFloating ? restoreFullSize : undefined}
                     />
                   </SafeSuspense>
                 ) : (
@@ -933,8 +946,8 @@ export function PlayerList({
                       onAdFilled={onAdFilled}
                       onAdPlaybackEnd={onAdPlaybackEnd ?? (() => {})}
                       pageSession={pageSession}
-                      controlLayerVariant={isInlineArticleOpen ? "placement" : "default"}
-                      onExpandClick={isInlineArticleOpen ? closeInlineArticle : undefined}
+                      controlLayerVariant={isVideoFloating ? "placement" : "default"}
+                      onExpandClick={isVideoFloating ? restoreFullSize : undefined}
                     />
                   </SafeSuspense>
                 )}
@@ -942,7 +955,7 @@ export function PlayerList({
             )}
           </div>
 
-          {isInlineArticleOpen && !isInlineVideoDismissed && (
+          {isVideoFloating && !isInlineVideoDismissed && (
             <button
               type="button"
               data-slot="inline-video-close"
@@ -964,7 +977,7 @@ export function PlayerList({
         </div>
 
         {/* Navigation buttons for iheart expand view positioned relative to player */}
-        {showExpandView && brandLayoutType === "iheart" && isDesktop && !disableSwiper && !isInlineArticleOpen && (
+        {showExpandView && brandLayoutType === "iheart" && isDesktop && !disableSwiper && !isVideoFloating && (
           <SafeSuspense fallback={<PositionedLoader size="lg" className="gencl:relative gencl:pl-10" />}>
             <NavigationButton
               swiper={activeSwiper ?? undefined}
@@ -979,14 +992,14 @@ export function PlayerList({
           </SafeSuspense>
         )}
       </div>
-      {showExpandView && isDesktop && !isInlineArticleOpen && (
+      {showExpandView && isDesktop && !isVideoFloating && (
         <SafeSuspense
           fallback={<PositionedLoader className="gencl:absolute gencl:right-7.5 gencl:top-6 gencl:size-10" />}>
           <CloseButton theme={theme} onCloseClick={toggleExpandView} />
         </SafeSuspense>
       )}
       {/* Navigation buttons for expand view (not on mobile) */}
-      {showExpandView && brandLayoutType !== "iheart" && !isMobile && !isInlineArticleOpen && (
+      {showExpandView && brandLayoutType !== "iheart" && !isMobile && !isVideoFloating && (
         <SafeSuspense
           fallback={
             <PositionedLoader
@@ -1007,7 +1020,7 @@ export function PlayerList({
         brandLayoutType !== "iheart" &&
         filteredPost[activeIndex] &&
         !isAdFilled &&
-        !isInlineArticleOpen && (
+        !isVideoFloating && (
           <SafeSuspense fallback={<ActionButtonsSkeleton colors={skeletonColors} />}>
             <Actions
               shareUrl={filteredPost[activeIndex]?.video?.shareUrl ?? ""}
@@ -1181,7 +1194,7 @@ export function PlayerList({
       {/* V1 keeps its standalone comments column here; V2 hosts comments inside
           <DesktopRightPanels> below. Rendering both would double the comments. */}
       {!isDesignSystemV2Linkouts &&
-        !isInlineArticleOpen &&
+        !isVideoFloating &&
         isCommentOpen &&
         showExpandView &&
         !isAdFilled &&
@@ -1209,7 +1222,7 @@ export function PlayerList({
         )}
 
       {isOctoOpen &&
-        !isInlineArticleOpen &&
+        !isVideoFloating &&
         showExpandView &&
         !isAdFilled &&
         showCommentBox &&
@@ -1242,12 +1255,12 @@ export function PlayerList({
         brandLayoutType !== "iheart" &&
         isDesktop && (
           <div
-            aria-hidden={isInlineArticleOpen || undefined}
-            inert={isInlineArticleOpen || undefined}
+            aria-hidden={isVideoFloating || undefined}
+            inert={isVideoFloating || undefined}
             className={cn(
               "gencl:w-full gencl:h-full gencl:hidden gencl:sm:block! gencl:py-6",
               isHomeFeedView ? "gencl:min-w-0 gencl:flex-1" : "gencl:max-w-118",
-              isInlineArticleOpen && "gencl:invisible gencl:pointer-events-none"
+              isVideoFloating && "gencl:invisible gencl:pointer-events-none"
             )}>
             <SafeSuspense
               errorFallback={null}
@@ -1276,7 +1289,7 @@ export function PlayerList({
 
       {/* Desktop right rail: dynamic linkouts (outside placement) above comments.
           V2 only — v1 keeps its legacy in-player overlay to avoid doubling up. */}
-      {isDesktop && isDesignSystemV2Linkouts && !isInlineArticleOpen && (
+      {isDesktop && isDesignSystemV2Linkouts && !isVideoFloating && (
         <SafeSuspense fallback={null}>
           <DesktopRightPanels
             filteredPost={filteredPost}

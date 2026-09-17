@@ -19,6 +19,9 @@ import {
   useOpenFeedViewOverlay,
   usePlacementFeedViewIntent,
 } from "@genuin/components/lib/feed-view/feed-view-overlay";
+import { useFloatingVideoRestoreTarget } from "@genuin/components/lib/floating-video/use-floating-video-restore-target";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { Link } from "@genuin/components/molecules/link";
 import { SectionHeader } from "@genuin/components/molecules/section-header/section-header";
 import { EventCarousel } from "@genuin/components/organisms/event-carousel/event-carousel";
 import {
@@ -133,7 +136,11 @@ export type CommunityFeed = {
   posts: PostDetailsType[];
   communityName: string;
   communityImage: string;
+  /** Slug of the widget's community — powers the section header's link to the community page. */
+  communitySlug?: string;
   groupName?: string;
+  /** Slug of the widget's group, when the widget is group-scoped. */
+  groupSlug?: string;
   isLoading: boolean;
 };
 
@@ -186,7 +193,9 @@ export function useCommunityFeed(communityId?: string, groupId?: string): Commun
     posts,
     communityName: categoryCommunity?.community_name || first?.community?.name || "",
     communityImage: categoryCommunity?.dp || first?.community?.profileImage || SECTION_LOGO,
+    communitySlug: categoryCommunity?.slug || first?.community?.slug || undefined,
     groupName: groupId ? (first?.group?.name ?? undefined) : undefined,
+    groupSlug: groupId ? (first?.group?.slug ?? undefined) : undefined,
     isLoading,
   };
 }
@@ -224,6 +233,7 @@ type GenuinWindow = Window & {
     emitInternal?: (event: string, payload?: unknown) => void;
     onInternal?: (event: string, listener: (payload: unknown) => void) => (() => void) | void;
     collapse?: (id: string) => void;
+    expand?: (id: string) => void;
   };
 };
 
@@ -393,24 +403,48 @@ function WidgetFrame({
   // Resolve those placeholders from the community feed, while preserving an explicitly authored
   // brand/sponsor logo (for example Musto). Missing community artwork falls back to The Foil.
   const shouldResolveCommunityIdentity = Boolean(source?.communityId) && (!logo || logo === SECTION_LOGO);
-  const { communityImage, communityName, groupName } = useCommunityFeed(
+  const { communityImage, communityName, communitySlug, groupName, groupSlug } = useCommunityFeed(
     shouldResolveCommunityIdentity ? source?.communityId : undefined,
     shouldResolveCommunityIdentity ? source?.groupId : undefined
   );
   const resolvedLogo = shouldResolveCommunityIdentity ? communityImage : logo;
   const resolvedHeading = shouldResolveCommunityIdentity ? groupName || communityName || heading : heading;
   const resolvedImageAlt = shouldResolveCommunityIdentity ? communityName || imageAlt : imageAlt;
+  // The header names a real community/group, so it should take the reader there — mirroring the
+  // player's community/group pills. Group-scoped widgets win, matching the heading precedence
+  // above. Sponsor headers (an authored logo and no `source`) stay unlinked.
+  const headerHref = !shouldResolveCommunityIdentity
+    ? undefined
+    : groupSlug
+      ? buildPageUrl({ type: "group", slug: groupSlug })
+      : communitySlug
+        ? buildPageUrl({ type: "community", slug: communitySlug })
+        : undefined;
 
   return (
     <div className="gencl:flex gencl:h-full gencl:min-h-0 gencl:min-w-0 gencl:flex-col gencl:gap-3">
-      {frame.showHeader !== false && (
-        <SectionHeader
-          imageUrl={resolvedLogo}
-          imageAlt={resolvedImageAlt}
-          heading={resolvedHeading}
-          subHeading={subHeading}
-        />
-      )}
+      {frame.showHeader !== false &&
+        (headerHref ? (
+          <Link
+            href={headerHref}
+            className="gencl:w-full gencl:min-w-0"
+            data-testid="widget-header-link"
+            aria-label={`Go to ${resolvedHeading || communityName}`}>
+            <SectionHeader
+              imageUrl={resolvedLogo}
+              imageAlt={resolvedImageAlt}
+              heading={resolvedHeading}
+              subHeading={subHeading}
+            />
+          </Link>
+        ) : (
+          <SectionHeader
+            imageUrl={resolvedLogo}
+            imageAlt={resolvedImageAlt}
+            heading={resolvedHeading}
+            subHeading={subHeading}
+          />
+        ))}
       {frame.topSpacerPx ? <div className="gen-home-spacer" aria-hidden style={{ height: frame.topSpacerPx }} /> : null}
       <div
         className={cn(
@@ -548,13 +582,23 @@ function PlacementWidget({ node, data }: WidgetRenderProps) {
     };
   }, [domId]);
 
-  const handleExpandRequest = useCallback(() => {
-    // Mobile keeps the SDK's normal direct-fullscreen path. Desktop Home adds only the
-    // intermediate presentation state around that same fullscreen instance.
-    if (!openFeedViewOverlay || !window.matchMedia("(min-width: 1024px)").matches) return;
-    const existingExpandHosts = prepareFeedView(domId);
-    openFeedViewOverlay({ sourceDomId: domId, existingExpandHosts });
+  const handleExpandRequest = useCallback((options?: { excludeHost?: HTMLElement | null }) => {
+      // Mobile keeps the SDK's normal direct-fullscreen path. Desktop Home adds only the
+      // intermediate presentation state around that same fullscreen instance.
+      if (!openFeedViewOverlay || !window.matchMedia("(min-width: 1024px)").matches) return;
+      // `excludeHost` is the retained floating player being handed back: dropping it from the
+      // snapshot tells the overlay to adopt that host instead of waiting for a fresh one.
+      const existingExpandHosts = prepareFeedView(domId).filter((host) => host !== options?.excludeHost);
+      openFeedViewOverlay({ sourceDomId: domId, existingExpandHosts });
   }, [domId, openFeedViewOverlay]);
+
+  // Coming back from a floating card's expand control.
+  useFloatingVideoRestoreTarget({
+    domId,
+    placementId,
+    enabled: show,
+    onPrepareFeedView: handleExpandRequest,
+  });
 
   // Reverse contextual flow: a list panel in this row broadcast a selection — tell THIS
   // placement's running embed to slide to it, scoped by the placement's SDK instance id so only

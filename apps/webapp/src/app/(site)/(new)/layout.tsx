@@ -5,6 +5,7 @@ import { Inter } from "next/font/google";
 import { cookies, headers } from "next/headers";
 import { type Session } from "next-auth";
 
+import { FloatingVideoBridge } from "@components/floating-video-bridge";
 import { GenuinSdkLoader } from "@components/genuin-sdk-loader";
 import SiteProviders from "@components/providers/site-providers";
 import { getEmbedConfig } from "@lib/api/config";
@@ -109,7 +110,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           height: "100%",
         }}>
         <SiteProviders config={config} session={userSession}>
-          <VideoElementProvider>{children}</VideoElementProvider>
+          <VideoElementProvider>
+            <FloatingVideoBridge />
+            {children}
+          </VideoElementProvider>
         </SiteProviders>
         {sdkParams && config.api_key && <GenuinSdkLoader apiKey={config.api_key} params={sdkParams} />}
       </body>

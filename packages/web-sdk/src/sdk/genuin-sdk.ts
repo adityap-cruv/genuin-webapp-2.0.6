@@ -36,6 +36,7 @@ import {
 import { getRandomNumber, parsePlacementToEmbedData } from "../utils";
 
 import { loadErrorView, renderEmbedSkeleton as loadLoadingView } from "./dom-utils";
+import { startFloatingVideoLease } from "./floating-video-lease";
 import { loadExpandView } from "./react-utils";
 import { resolveBrandContextFromUrl } from "./sdk-utils";
 import { ensureViewportMeta } from "./viewport-meta";
@@ -84,6 +85,8 @@ export class GenuinSDK {
   private sdkInitTime: number;
   private embedDetailsManager: EmbedDetailsManager;
   private sdkElements: SDKElementsType = {};
+  /** Unsubscribes the floating-video hand-off listener; set up in the constructor. */
+  private stopFloatingVideoLease?: () => void;
   private callbackQueueManager: CallbackQueueManager;
   private placementManager: PlacementManager;
   private videoManager = FeedContextManager;
@@ -267,6 +270,18 @@ export class GenuinSDK {
     // Set up event listener for clearing pending actions
     this.eventManager.on(SDKEventType.SDK_CLEAR_LOGIN_ACTION, () => {
       clearPendingAction();
+    });
+
+    // Release any React root deliberately retained for a floating-video hand-off once its
+    // session ends. Without this, navigating away from a page that promoted a video would
+    // leave an orphaned root (and its <video>) alive for the rest of the tab's life.
+    this.stopFloatingVideoLease = startFloatingVideoLease({
+      resolve: (sourceInstanceId, sourceDomId) =>
+        this.sdkElements[sourceInstanceId] ??
+        Object.values(this.sdkElements).find((entry) => entry.element.id === sourceDomId),
+      forget: (sourceInstanceId) => {
+        delete this.sdkElements[sourceInstanceId];
+      },
     });
   }
 
@@ -1904,6 +1919,9 @@ export class GenuinSDK {
     // Tear down the iHeart analytics bridge.
     this.stopIHeartBridge?.();
     this.stopIHeartBridge = undefined;
+
+    this.stopFloatingVideoLease?.();
+    this.stopFloatingVideoLease = undefined;
 
     // Clear all listeners and state
     this.eventManager.removeAllListeners();

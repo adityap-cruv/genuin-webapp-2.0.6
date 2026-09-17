@@ -12,6 +12,7 @@ import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import useViewportHeight from "@genuin/components/hooks/use-screen-height";
 import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
+import { useFloatingVideoLink } from "@genuin/components/lib/floating-video/use-floating-video-link";
 import { getBaseUrl } from "@genuin/components/lib/utils";
 import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
 import { addIheartCtaCampaign, isCurrentPageIheartSubdomain } from "@genuin/components/lib/utils/iheart-url";
@@ -684,6 +685,11 @@ export const ExpandViewDetails = forwardRef<ExpandViewDetailsRef, ExpandViewProp
   }, []);
 
   const { video } = postDetails;
+  // A Community/Group pill click hands the playing video to the floating card so it survives
+  // the route change. Declines itself unless a player is eligible, so pills outside Feed View
+  // stay plain links.
+  const handlePillNavigate = useFloatingVideoLink("pill");
+
   if (!video) return null;
 
   return (
@@ -922,6 +928,7 @@ export const ExpandViewDetails = forwardRef<ExpandViewDetailsRef, ExpandViewProp
             hideGroupSubscriptionButton={hideGroupSubscriptionButton}
             hideGroupPill={hideGroupPill}
             hideCommunityPill={hideCommunityPill}
+            onPillNavigate={(_trigger, href, event) => handlePillNavigate(href, event)}
           />
         </div>
       )}

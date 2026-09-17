@@ -11,6 +11,7 @@ import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-d
 import { usePrevious } from "@genuin/components/hooks/use-previous";
 import useViewportHeight from "@genuin/components/hooks/use-screen-height";
 import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
+import { useFloatingVideoSessionId } from "@genuin/components/lib/floating-video/use-floating-video-session";
 import { SDKEventEmitter, SDKEventName, SDKListenerEventName } from "@genuin/components/lib/sdk-event-emitter";
 import { isMiddlewareOverlayEnabled } from "@genuin/components/lib/utils";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
@@ -94,7 +95,12 @@ export function EmbedExpandView({
   totalVideos,
   fetchNextPage,
 }: EmbedExpandViewProps) {
-  const { changeActiveIndex, embedEventBus, goBackToPreviousPlayerType, embedData } = useEmbedContext();
+  const { changeActiveIndex, embedEventBus, goBackToPreviousPlayerType, embedData, rootElement } = useEmbedContext();
+  // Once this player has been handed off to the floating card it is no longer a modal overlay,
+  // it is a small card on somebody else's page. Holding the body scroll lock would leave that
+  // destination route unscrollable — `react-remove-scroll` also preventDefaults wheel events,
+  // so releasing it has to mean disabling the component, not just clearing its attribute.
+  const isFloatingHandoff = useFloatingVideoSessionId(rootElement?.id) !== null;
   // Derive the starting slide SYNCHRONOUSLY on mount. The swiper reads `initialSlide`
   // exactly once when it first mounts, so the correct index must be present on the
   // very first commit. Computing it in an effect (which runs after the first paint)
@@ -483,7 +489,7 @@ export function EmbedExpandView({
   );
 
   return (
-    <RemoveScroll>
+    <RemoveScroll enabled={!isFloatingHandoff}>
       <RootPortal
         portalKey="expand-view"
         className={cn(

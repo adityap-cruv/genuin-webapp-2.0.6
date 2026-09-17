@@ -15,6 +15,7 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 
+import { beginFloatingVideoPresentation } from "@genuin/components/lib/floating-video/floating-video-presenter";
 import {
   HOME_FEED_VIEW_EVENT,
   HOME_FULL_VIEW_EVENT,
@@ -453,16 +454,36 @@ export function FeedViewOverlay({
       window.removeEventListener("resize", applyFeedBounds);
       document.removeEventListener(HOME_FULL_VIEW_EVENT, handleFullView);
       document.removeEventListener(HOME_FEED_VIEW_EVENT, handleFeedView);
+      // Restore first: the floating card is positioned against a full-viewport player root,
+      // exactly as it is for an inline article, so the bounded Feed View geometry and its
+      // stage stylesheet have to come off before the hand-off takes over.
       restoreFullView();
+      let handedOffToFloating = false;
       if (collapseOnTeardown && !collapseRequestedRef.current) {
-        // The SDK expand portal is owned by a separate React root, so unmounting the Article/Home
-        // page does not unmount it. Hide it for the hand-off and explicitly collapse its source;
-        // otherwise it survives the route change and restores itself full-screen over /home.
-        if (host) setImportantStyles(host, { visibility: "hidden", "pointer-events": "none" });
-        collapseSdkView();
+        // An intentional floating hand-off is the one case where this placement must outlive
+        // the route change. Re-frame the very same expand view as the bottom-right floating
+        // card instead of collapsing it: the player is never switched or re-created, so the
+        // video keeps playing straight through the navigation.
+        //
+        // This runs at teardown rather than at click time on purpose. Re-framing early would
+        // shrink the video into a corner of the page the user is still looking at, and only
+        // then navigate.
+        handedOffToFloating = host ? beginFloatingVideoPresentation(host) : false;
+        if (!handedOffToFloating) {
+          // The SDK expand portal is owned by a separate React root, so unmounting the Article/Home
+          // page does not unmount it. Hide it for the hand-off and explicitly collapse its source;
+          // otherwise it survives the route change and restores itself full-screen over /home.
+          if (host) setImportantStyles(host, { visibility: "hidden", "pointer-events": "none" });
+          collapseSdkView();
+        }
       }
-      markFeedView(request.sourceDomId, false);
-      markFeedViewSession(request.sourceDomId, false);
+      if (!handedOffToFloating) {
+        // Leave the markers alone during a hand-off. Clearing them makes the retained root
+        // fall back to its full expand layout (side panels, comment rail) mid-navigation —
+        // invisible inside the card, but an expensive relayout of a tree nobody is watching.
+        markFeedView(request.sourceDomId, false);
+        markFeedViewSession(request.sourceDomId, false);
+      }
       attachedHostRef.current = null;
     };
   }, [boundsRef, collapseSdkView, onClose, request.existingExpandHosts, request.sourceDomId]);

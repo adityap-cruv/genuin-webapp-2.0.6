@@ -2,7 +2,7 @@
 import { Avatar } from "@genuin/ui/avatar";
 import { HoverCard, HoverCardTrigger, HoverCardContent } from "@genuin/ui/hover-card";
 import { cva } from "class-variance-authority";
-import type { ComponentProps } from "react";
+import type { ComponentProps, MouseEvent } from "react";
 import { useEffect, useState } from "react";
 
 import { useAuthContext } from "@genuin/components/context/auth";
@@ -41,6 +41,14 @@ type CommunityPillProps = {
   className?: string;
   onCommunityJoinStatusChange?: ComponentProps<typeof JoinCommunityButton>["onCommunityJoinStatusChange"];
   hideCommunityJoinButton?: boolean;
+  /**
+   * Called when the pill itself is about to navigate to the community page.
+   *
+   * Nested controls (the join button) stop propagation, so this never fires for them.
+   * Consumers decide what a navigation means — the Home Feed View uses it to hand the
+   * playing video over to the floating player.
+   */
+  onNavigate?: (href: string, event: MouseEvent<HTMLElement>) => void;
 };
 
 export function CommunityPill({
@@ -51,6 +59,7 @@ export function CommunityPill({
   onCommunityJoinStatusChange,
   className,
   hideCommunityJoinButton = false,
+  onNavigate,
 }: CommunityPillProps) {
   const { authenticationStatus } = useAuthContext();
   const embedDetails = useSafeEmbedContext();
@@ -81,8 +90,10 @@ export function CommunityPill({
 
   if (!communityDetails) return null;
 
+  const communityHref = buildPageUrl({ type: "community", slug: communityDetails.slug });
+
   const pill = (
-    <Link href={buildPageUrl({ type: "community", slug: communityDetails.slug })}>
+    <Link href={communityHref} onClick={onNavigate ? (event) => onNavigate(communityHref, event) : undefined}>
       <div className={communityPillVariants({ variant, className })}>
         <div className="gencl:flex gencl:gap-1 gencl:items-center gencl:line-clamp-1 gencl:break-all">
           <Avatar
