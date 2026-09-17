@@ -126,8 +126,25 @@ export function usePlacementFeedViewIntent({
         (target.matches("button, a, [role='button']") || target.classList.contains("gencl:cursor-pointer"))
     );
 
+    // The expand control is a player control, so the rule above would drop it — but on an
+    // inline placement "expand" should mean Feed View, not the SDK's raw fullscreen. Mark the
+    // placement here, synchronously, because the SDK commits its portal right after this click
+    // and the marker is what decides how that portal is presented.
+    //
+    // Only reachable from the inline placement: once Feed View is open its controls live in a
+    // portal outside this container, so expanding from *inside* Feed View still gives the real
+    // full view.
+    const isExpandControl = clickPath.some(
+      (target) => target instanceof Element && /expand|full ?screen/i.test(target.getAttribute("aria-label") ?? "")
+    );
+    if (isExpandControl) {
+      lastVideoClickRef.current = 0;
+      onExpandRequest?.();
+      return;
+    }
+
     lastVideoClickRef.current = isPlayerControl ? 0 : Date.now();
-  }, []);
+  }, [onExpandRequest]);
 }
 
 // These legacy attribute names are a stable cross-root SDK contract. PlayerList reads them to

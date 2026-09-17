@@ -128,9 +128,27 @@ export function BaseContextProvider({
   // TODO: move this states to event based states.
   const [muted, setMuted] = useState(true);
   const [volume, setVolume] = useState(100);
+  /**
+   * Identity for cross-embed audio coordination (see below). An SDK placement is identified by
+   * the `data-instance-id` the SDK stamps on its root; a first-party WebApp feed (/latest,
+   * /popular, /video, the native Home feeds) has no SDK root at all, so it falls back to a
+   * locally minted id.
+   *
+   * The fallback is not cosmetic — it is what makes first-party feeds participate. Receivers
+   * drop any MUTE_CHANGE carrying a blank `instanceId`, so while this was null every "I became
+   * audible" broadcast from a WebApp feed was discarded: unmuting the /latest feed left a
+   * floating SDK player (or any placement on the page) audible alongside it. Coordination in
+   * the other direction always worked, which is why the desync only showed up on the
+   * first-party routes.
+   *
+   * Lazy `useState` rather than `useMemo` so the id is genuinely stable for the life of the
+   * provider, and random rather than `useId` because separate React roots each restart their
+   * `useId` counter and would collide — a collision reads as "my own broadcast" and is ignored.
+   */
+  const [localInstanceId] = useState(() => `gen-local-${Math.random().toString(36).slice(2, 10)}`);
   const instanceId = useMemo(() => {
-    return embedDetails?.rootElement?.getAttribute("data-instance-id");
-  }, [embedDetails]);
+    return embedDetails?.rootElement?.getAttribute("data-instance-id") || localInstanceId;
+  }, [embedDetails, localInstanceId]);
   const { isIOS } = useDeviceDetection();
 
   // Per-embed play state. Uses baseEventBus (per-embed, created via useMemo) rather
@@ -175,7 +193,8 @@ export function BaseContextProvider({
   // MUTE_CHANGE { muted: false, instanceId }. Other playing+audible embeds
   // receive the signal and mute themselves.
   //
-  // Each embed identified by instanceId (data-instance-id from the root element).
+  // Each embed is identified by instanceId (the SDK root's data-instance-id, or a locally
+  // minted id for a first-party WebApp feed — see the instanceId memo above).
   //
   // Three parts:
   //   [1] isPlaying state (above)       — per-embed play flag via baseEventBus
@@ -217,7 +236,7 @@ export function BaseContextProvider({
         {
           muted: !muted,
           volume: baseEventBus.getContext().volume,
-          instanceId: instanceId ?? "",
+          instanceId,
         },
         { debounceTime: 300 }
       );
@@ -474,7 +493,7 @@ export function BaseContextProvider({
           {
             muted: false,
             volume: baseEventBus.getContext().volume,
-            instanceId: instanceId ?? "",
+            instanceId,
           },
           { debounceTime: 300 }
         );
