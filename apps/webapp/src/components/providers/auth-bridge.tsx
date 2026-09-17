@@ -1,6 +1,6 @@
 "use client";
 import { AuthProvider } from "@genuin/components/context/auth";
-import type { ksCbRequestStatusType } from "@genuin/components/types/roles";
+import { parseKsCbRequestStatus } from "@genuin/components/types/roles";
 import { signIn, useSession, signOut } from "next-auth/react";
 import React, { useEffect } from "react";
 
@@ -11,19 +11,11 @@ type SiteLayoutProps = {
   children: React.ReactNode;
 };
 
-function mapKsCbStatus(status: number | string): ksCbRequestStatusType {
-  if (status === 1 || status === "Pending") return "Pending";
-  if (status === 2 || status === "Requested") return "Requested";
-  // in ksCbRequestStatusType, there is no "Pending" status, so we are mapping it to "Requested" status.
-  if (status === "Success") return "Success";
-  return "Accepted";
-}
-
 export function AuthBridge({ children }: SiteLayoutProps) {
   const { data: authUser, update } = useSession();
 
   const mappedUser = authUser?.user
-    ? { ...authUser.user, ksCbRequestStatus: mapKsCbStatus(authUser.user.ksCbRequestStatus) }
+    ? { ...authUser.user, ksCbRequestStatus: parseKsCbRequestStatus(authUser.user.ksCbRequestStatus) }
     : null;
 
   // Hand the authenticated session to any embedded WebSDK so it renders
