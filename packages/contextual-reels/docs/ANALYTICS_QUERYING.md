@@ -113,6 +113,7 @@ If a filter returns zero rows, check this transform before concluding the events
 | `passback`                  | Int    | `1` = passback fired (revenue-critical)                                                      |
 | `event_record_screen`       | String | e.g. `embed`                                                                                 |
 | `dnt`, `gdpr`, `us_privacy` | String | Consent macros, `"0"` / `"1"`                                                                |
+| `ad_group_id`               | String | Infolinks ad-group id (host macro `c8`). Present only when the host sends it.                |
 
 ### `event_details_*` — `audio_diagnostic` only
 

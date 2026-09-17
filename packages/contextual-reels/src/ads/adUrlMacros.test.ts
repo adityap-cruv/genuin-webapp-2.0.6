@@ -400,11 +400,11 @@ describe("resolveVideoAdMacros — Triton in-app rewrite", () => {
   });
 });
 
-// ─── resolveVideoAdMacros — DSP exchange geo params ───────────────────────────
+// ─── resolveVideoAdMacros — DSP exchange request params ───────────────────────
 
-describe("resolveVideoAdMacros — DSP geo append", () => {
+describe("resolveVideoAdMacros — DSP request params append", () => {
   // In-app (appb present) + Triton + a DSP VAST exchange URL is the gate. Host
-  // geo is appended as OpenRTB-named params (country/city/lat/lon/metro/region).
+  // geo (country/city/lat/lon/metro/region) + ad_group_id (c8) are appended.
   const GEO_MACROS = {
     appb: "com.novanews.localnews.en",
     country: "USA",
@@ -413,10 +413,11 @@ describe("resolveVideoAdMacros — DSP geo append", () => {
     loclong: "-83.1895",
     m: "505",
     r: "MI",
+    c8: "ag-42",
   };
   const dspUrl = "https://aapi.begenuin.com/goservices/dsp/vast/3252/6aa04279d3c90426b572a59e";
 
-  it("appends OpenRTB-named geo params for an in-app Triton DSP url", () => {
+  it("appends OpenRTB geo + ad_group_id for an in-app Triton DSP url", () => {
     const result = resolveVideoAdMacros({ url: dspUrl, platform: "tritondigital" }, "https://page.com", GEO_MACROS) as {
       url: string;
     };
@@ -427,6 +428,7 @@ describe("resolveVideoAdMacros — DSP geo append", () => {
     expect(u.searchParams.get("lon")).toBe("-83.1895");
     expect(u.searchParams.get("metro")).toBe("505");
     expect(u.searchParams.get("region")).toBe("MI");
+    expect(u.searchParams.get("ad_group_id")).toBe("ag-42");
     // The in-app Triton rewrite still ran alongside the geo append.
     expect(u.searchParams.get("bundle-id")).toBe("com.novanews.localnews.en");
   });
@@ -440,8 +442,8 @@ describe("resolveVideoAdMacros — DSP geo append", () => {
     expect(new URL(result.url).searchParams.get("city")).toBe("New York");
   });
 
-  it("omits a geo param whose host macro is absent", () => {
-    const noRegionOrMetro = {
+  it("omits a param whose host macro is absent (region/metro/ad_group_id)", () => {
+    const noRegionMetroOrGroup = {
       appb: GEO_MACROS.appb,
       country: GEO_MACROS.country,
       loc: GEO_MACROS.loc,
@@ -451,11 +453,12 @@ describe("resolveVideoAdMacros — DSP geo append", () => {
     const result = resolveVideoAdMacros(
       { url: dspUrl, platform: "tritondigital" },
       "https://page.com",
-      noRegionOrMetro
+      noRegionMetroOrGroup
     ) as { url: string };
     const u = new URL(result.url);
     expect(u.searchParams.has("region")).toBe(false);
     expect(u.searchParams.has("metro")).toBe(false);
+    expect(u.searchParams.has("ad_group_id")).toBe(false);
     expect(u.searchParams.get("country")).toBe("USA");
   });
 

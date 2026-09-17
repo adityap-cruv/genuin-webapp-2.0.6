@@ -124,7 +124,8 @@ host macros into the semantically correct block:
   `app_long`, `app_metro`(m — Nielsen DMA code), `app_region`(r — state code,
   e.g. `MI`)) — **not** merged into the IP `geoip` block.
 - `user_details`: `ifa`, `deviceid`, `appsi`.
-- `event_details` consent sub-block: `gdpr`, `gdpr_consent`, `us_privacy`, `dnt`.
+- `event_details` consent sub-block: `gdpr`, `gdpr_consent`, `us_privacy`, `dnt`;
+  plus `ad_group_id` (Infolinks ad-group id, host macro `c8`).
 - **DEFERRED — field names:** exact target field names to be confirmed with
   analytics consumers. Build the merge seam generically now.
 
@@ -218,11 +219,12 @@ existing `ad_source`/`platform`.
 
 ### 8. Append host geo to DSP-exchange Triton ad URLs — addendum (2026-09-09)
 
-The host now sends full geo on the loader script params (`country`, `loc`,
-`loclat`, `loclong`, `m` (DMA/metro), `r` (state code)). For in-app Triton ads
-served through our own **DSP VAST exchange** (the `/goservices/dsp/vast/`
-endpoint, e.g. `https://aapi.begenuin.com/goservices/dsp/vast/<brand>/<tag>`),
-forward that geo on the ad request so the exchange can target on it.
+The host sends full geo on the loader script params (`country`, `loc`,
+`loclat`, `loclong`, `m` (DMA/metro), `r` (state code)) plus `c8` (Infolinks
+ad-group id). For in-app Triton ads served through our own **DSP VAST exchange**
+(the `/goservices/dsp/vast/` endpoint, e.g.
+`https://aapi.begenuin.com/goservices/dsp/vast/<brand>/<tag>`), forward that geo
+and the ad-group id on the ad request so the exchange can target / report on it.
 
 - **Where:** `resolveVideoAdMacros`, right after `rewriteTritonUrlForApp`, via
   `appendDspGeoParams`.
@@ -231,10 +233,11 @@ forward that geo on the ad request so the exchange can target on it.
   contains the DSP VAST path (`DSP_VAST_ENDPOINT = "/goservices/dsp/vast/"`,
   matched as a path so it holds across hosts/environments). Non-DSP Triton (e.g.
   `streamtheworld.com`) and non-in-app loads are untouched.
-- **Param names (OpenRTB Geo, `DSP_GEO_PARAMS`):** `country`(country),
-  `city`(loc), `lat`(loclat), `lon`(loclong), `metro`(m), `region`(r). Confirmed
-  against OpenRTB 2.x: `country` alpha-3, `region` ISO-3166-2 (US state code),
-  `metro` Google/Nielsen DMA.
+- **Param names (`DSP_REQUEST_PARAMS`):** geo uses OpenRTB 2.x Geo names —
+  `country`(country, alpha-3), `city`(loc), `lat`(loclat), `lon`(loclong),
+  `metro`(m, Google/Nielsen DMA), `region`(r, ISO-3166-2 US state code); plus
+  `ad_group_id`(c8) — Infolinks' ad-group id, no OpenRTB field exists for it
+  (added 2026-09-17, same in-app DSP gate).
 - **Absent / duplicate:** a param whose host macro is absent is skipped; a param
   already present on the URL is left untouched (never duplicated). Values are
   URL-encoded.
