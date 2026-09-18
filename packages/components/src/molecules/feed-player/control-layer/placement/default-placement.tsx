@@ -7,12 +7,14 @@ import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
+import { hasLinkouts } from "@genuin/components/molecules/linkout-new/linkout-utils";
 
 import { DynamicReactionIcon } from "../../../reaction-button";
 import { Stats } from "../../../stats";
 import type { ControlLayerPropsType } from "../control-layer.types";
 import { EmbedControls } from "../controls/embed";
 import { OctoExpandSheet } from "../octo/octo-expand-sheet";
+import { useNewPlayerControls } from "../use-new-player-controls";
 
 import { PlacementMetadata } from "./placement-metadata";
 
@@ -35,8 +37,9 @@ export function DefaultPlacement({
   style,
   onClick,
 }: ControlLayerPropsType) {
-  const { contentDisplay, responsive, view, engagement, isDesignSystemV2Linkouts } = useEmbedConfigs();
+  const { contentDisplay, responsive, view, engagement, links, isDesignSystemV2Linkouts } = useEmbedConfigs();
   const { isXs } = responsive;
+  const newUI = useNewPlayerControls();
   const { isMobile } = useDeviceDetectMediaQuery();
   const isOctoEnabled = engagement.engagementTools.octo && view.isFeed;
   const { octoVisible } = useSheetState();
@@ -51,7 +54,8 @@ export function DefaultPlacement({
   const linkoutSection = useMemo(
     () => (
       <>
-        {contentDisplay.showVideoLinkouts && postDetails.video?.linkouts && (
+        {/* Outside wins: below-player host owns the linkout, suppress overlay. */}
+        {!links.showLinkOutside && contentDisplay.showVideoLinkouts && hasLinkouts(postDetails.video) && (
           <SafeSuspense fallback={null} errorFallback={null}>
             <Linkouts
               view="embed"
@@ -62,12 +66,17 @@ export function DefaultPlacement({
               linkouts={postDetails.video?.linkouts}
               linkoutId={postDetails.video?.linkoutId}
               videoDetails={postDetails.video}
+              // The bottom-layout wrapper (below) already applies an 8 px
+              // horizontal `p-2` inset shared with description/stats siblings
+              // that have no inset of their own — the panel must not add its
+              // own `mx-2` on top, or it double-insets vs those siblings.
+              hostHorizontalInset
             />
           </SafeSuspense>
         )}
       </>
     ),
-    [contentDisplay.showVideoLinkouts, isActive, postDetails.video?.linkouts, isDesignSystemV2Linkouts]
+    [links.showLinkOutside, contentDisplay.showVideoLinkouts, isActive, postDetails.video, isDesignSystemV2Linkouts]
   );
 
   const socialInteraction = useMemo(() => {
@@ -141,7 +150,12 @@ export function DefaultPlacement({
             contentDisplay.sectionDetailsPosition === "overlay_on_bottom" && noOfClips,
             contentDisplay.sectionDetailsPosition === "overlay_on_bottom" && sectionDetails,
             contentDisplay.videoDetailsPosition === "overlay_on_bottom" && videoDetails,
-            contentDisplay.videoDetailsPosition === "overlay_on_bottom" && !isOctoEnabled && linkoutSection,
+            // The linkout is a bottom-pinned sheet: it always belongs in the
+            // bottom overlay, independent of where the video-DETAILS text sits.
+            // (Previously gated on `videoDetailsPosition === "overlay_on_bottom"`,
+            // which silently dropped the linkout whenever details were on top —
+            // the embed path has no such coupling.)
+            !isOctoEnabled && linkoutSection,
             contentDisplay.socialInteractionCountsPosition === "overlay_on_bottom" && socialInteraction,
           ].filter(Boolean),
     }),
@@ -176,7 +190,7 @@ export function DefaultPlacement({
               // Same source as the nav arrows and other player controls — a single
               // tile's own width, not the old isXs/isSm ceiling that could never
               // reach md/lg regardless of tile width.
-              size={containerWidth ? resolveControlSize(containerWidth) : "sm"}
+              size={containerWidth && newUI ? resolveControlSize(containerWidth) : "sm"}
               section={postDetails.section}
               enableExpand={enableExpand}
               onExpandClick={onExpandClick}

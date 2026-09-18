@@ -1,7 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { getInstanceRegistry } from "@cxr/instance/registry/InstanceRegistry";
-import { PAGE_LEVEL_KEY, PixelReporter, fireTagInitPixel } from "@cxr/observability/pixel-reporter";
+import {
+  FALLBACK_PIXEL_BASE_URL,
+  PAGE_LEVEL_KEY,
+  PixelReporter,
+  fireTagInitPixel,
+} from "@cxr/observability/pixel-reporter";
 
 describe("PixelReporter", () => {
   let originalImage: typeof Image;
@@ -323,6 +328,15 @@ describe("PixelReporter", () => {
       expect(noAdsCallback).toHaveBeenCalledTimes(1);
     });
 
+    it("passes the context tagId to window.noAdsCallback", () => {
+      const noAdsCallback = vi.fn();
+      (window as Window & { noAdsCallback?: (tagId?: string) => void }).noAdsCallback = noAdsCallback;
+
+      PixelReporter.getInstance().report("instance-1", "render", "render_error", { tagId: "tag-123" });
+
+      expect(noAdsCallback).toHaveBeenCalledWith("tag-123");
+    });
+
     it("does not throw when window.noAdsCallback is absent", () => {
       expect(() => PixelReporter.getInstance().report("instance-1", "render", "render_error")).not.toThrow();
     });
@@ -468,5 +482,17 @@ describe("PixelReporter", () => {
       expect(() => fireTagInitPixel({ tagId: "tag-abc" })).not.toThrow();
       expect(capturedSrc).toBe("");
     });
+  });
+});
+
+// Drift guard: the pixel reporter is deliberately env-independent (it must fire
+// even if config/import.meta.env is broken), so it hardcodes a fallback base that
+// DUPLICATES the prod `VITE_CXR_PIXEL_URL` host. That duplicate once silently
+// shipped as `api` while env was `aapi`; this fails if it diverges again. A
+// behavioural test can't force the fallback branch — Vite inlines import.meta.env
+// as a frozen literal that `vi.stubEnv` can't override — so pin the literal.
+describe("FALLBACK_PIXEL_BASE_URL drift guard", () => {
+  it("stays pinned to the prod (aapi) pixel host", () => {
+    expect(FALLBACK_PIXEL_BASE_URL).toBe("https://aapi.begenuin.com/goservices/dsp/pixel");
   });
 });

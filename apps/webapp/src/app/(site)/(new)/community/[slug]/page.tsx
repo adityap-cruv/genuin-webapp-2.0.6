@@ -1,6 +1,7 @@
 import { type Metadata } from "next";
 
 import { getOgUrl } from "@/lib/utils";
+import { VideoLinks } from "@components/common/video-links";
 import { fetchMetadata } from "@lib/api/meta-data";
 import { PATH_NAME } from "@lib/utils/constants/path";
 
@@ -15,7 +16,13 @@ export default async function CommunityPage({ params, searchParams }: Props) {
   const resolvedParams = await params;
   const resolvedSearchParams = await searchParams;
   const isFeed = resolvedSearchParams.feed === "1";
-  return <CommunityClientPage slug={resolvedParams.slug} isFeed={isFeed} />;
+  return (
+    <>
+      <CommunityClientPage slug={resolvedParams.slug} isFeed={isFeed} />
+      {/* Crawlable links to this community's videos, streamed off the critical path. One feed call. */}
+      <VideoLinks currentSlug="" communitySlug={resolvedParams.slug} />
+    </>
+  );
 }
 
 interface CommunityDataType {

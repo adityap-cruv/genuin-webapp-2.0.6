@@ -15,7 +15,7 @@ import type {
 } from "@genuin/components/molecules/feed-player/gen-ad-container/gen-ad.types";
 import type { LinkData } from "@genuin/components/react-query/api/linkouts/schema";
 
-import { LinkCard, type LinkMetaData } from "./link-card";
+import { LinkCard, hasRichLinkMetadata, type LinkMetaData } from "./link-card";
 import type { FlexRatio } from "./responsive-card";
 
 import "swiper/css";
@@ -32,6 +32,16 @@ const GenAdContainer = lazy(() =>
  *  linkout slot has no "next video". */
 const noop = (): void => {};
 
+/** The state to hand the card body: same as the reveal state everywhere
+ *  except `expand-view` on a sparse link, which downgrades to the compact
+ *  `default-active` layout. Height for `expand-view` is configured `"auto"`
+ *  here (see `linkouts-sheet-config.ts`), so the shorter body doesn't leave
+ *  blank space — only the card's own layout changes, not the sheet's height,
+ *  header, footer, or drag behavior (those stay keyed to the real `linkoutsState`). */
+function cardSheetStateFor(state: SheetState, rawLink: LinkData | undefined): SheetState {
+  return state === "expand-view" && !(rawLink && hasRichLinkMetadata(rawLink)) ? "default-active" : state;
+}
+
 // ─── AutoCycleView ─────────────────────────────────────────────────────────────
 // One LinkCard at a time, for the chip + resting states (pl-xs / pl-sml /
 // default). Name is historical — navigation is parent-controlled via `activeIdx`.
@@ -45,6 +55,7 @@ function AutoCycleView({
   ctaText,
   ctaLink,
   onCtaClick,
+  onTitleMarqueeDuration,
 }: {
   links: LinkMetaData[];
   sheetState: SheetState;
@@ -55,6 +66,8 @@ function AutoCycleView({
   ctaText?: string;
   ctaLink?: string;
   onCtaClick?: (e: React.MouseEvent) => void;
+  /** Forwarded to `<LinkCard>` — chip title marquee duration, see there. */
+  onTitleMarqueeDuration?: (durationMs: number | null) => void;
 }) {
   const current = links[activeIdx];
   if (!current) return null;
@@ -68,6 +81,7 @@ function AutoCycleView({
       ctaText={ctaText}
       ctaLink={ctaLink}
       onCtaClick={onCtaClick}
+      onTitleMarqueeDuration={onTitleMarqueeDuration}
     />
   );
 }
@@ -151,7 +165,7 @@ export function LinkoutCarouselDots({
   return (
     <div
       className={cn(
-        "gencl:flex gencl:gap-2 gencl:items-center gencl:justify-center gencl:py-1",
+        "gencl:flex gencl:gap-2 gencl:items-center gencl:justify-center gencl:py-2",
         widthMode === "fixed-334" ? "gencl:w-[334px] gencl:mx-auto" : "gencl:w-full"
       )}>
       {Array.from({ length: total }).map((_, idx) => (
@@ -195,6 +209,7 @@ export function LinkoutItem({
   hideThumb,
   slidesPerView,
   spaceBetween,
+  onTitleMarqueeDuration,
 }: {
   links: LinkData[];
   linkoutsState: SheetState;
@@ -238,6 +253,9 @@ export function LinkoutItem({
   /** Swiper override (used by the expand-desktop-outside peek layout). */
   slidesPerView?: number | "auto";
   spaceBetween?: number;
+  /** Chip-only (`pl-xs`/`pl-sml`): forwarded to `<AutoCycleView>` →
+   *  `<LinkCard>`'s title marquee, see there. */
+  onTitleMarqueeDuration?: (durationMs: number | null) => void;
 }) {
   const { brandDetails } = useBaseContext();
   const generatedAdSlotId = useId();
@@ -287,7 +305,10 @@ export function LinkoutItem({
   const linksWithMetadata: LinkMetaData[] = links.map((l) => ({
     link: l.link,
     title: l.title,
-    image: l.image ?? brandDetails.logo,
+    // Normalize the API's `""` (no thumbnail) to `undefined` so `<LinkCardThumb
+    // fallback>` renders the generic linkout glyph — NOT the brand logo — for
+    // every view, matching the chip's no-image treatment.
+    image: l.image?.trim() || undefined,
     // Per-link brand/website override the brandDetails fallback when present.
     brand: l.brand ?? brandDetails.name,
     website: l.website ?? brandDetails.website,
@@ -314,6 +335,7 @@ export function LinkoutItem({
         ctaText={ctaText}
         ctaLink={ctaLink}
         onCtaClick={onCtaClick}
+        onTitleMarqueeDuration={onTitleMarqueeDuration}
       />
     );
   }
@@ -349,6 +371,7 @@ export function LinkoutItem({
   // rules diverge from the auto-measure well (bare LinkCard); rendering
   // LinkCard directly here matches the well so there's no bottom gap.
   const only = linksWithMetadata.length === 1 ? linksWithMetadata[0] : undefined;
+  const onlyRaw = links.length === 1 ? links[0] : undefined;
   if (only) {
     return (
       <div
@@ -356,7 +379,7 @@ export function LinkoutItem({
         className={isFullHeightSheet ? "gencl:h-full gencl:w-full" : undefined}>
         <LinkCard
           data={only}
-          sheetState={linkoutsState}
+          sheetState={cardSheetStateFor(linkoutsState, onlyRaw)}
           theme={theme}
           onClick={() => onLinkClick?.(only.link, only.title ?? only.link)}
           ctaText={ctaText}
@@ -400,7 +423,7 @@ export function LinkoutItem({
             style={isFullHeightSheet ? { height: "100%" } : undefined}>
             <LinkCard
               data={data}
-              sheetState={linkoutsState}
+              sheetState={cardSheetStateFor(linkoutsState, links[idx])}
               theme={theme}
               onClick={() => onLinkClick?.(data.link, data.title ?? data.link)}
               ctaText={ctaText}

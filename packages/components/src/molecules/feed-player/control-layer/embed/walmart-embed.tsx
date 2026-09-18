@@ -4,6 +4,7 @@ import { type FC } from "react";
 
 import type { ControlLayerPropsType } from "../control-layer.types";
 import { EmbedControls } from "../controls/embed";
+import { useNewPlayerControls } from "../use-new-player-controls";
 
 export const WalmartEmbed: FC<ControlLayerPropsType> = ({
   postDetails,
@@ -12,6 +13,7 @@ export const WalmartEmbed: FC<ControlLayerPropsType> = ({
   containerWidth,
   ...restProps
 }) => {
+  const newUI = useNewPlayerControls();
   return (
     <div
       className={cn("gencl:flex gencl:h-full gencl:flex-col gencl:justify-between gencl:relative", className)}
@@ -20,7 +22,7 @@ export const WalmartEmbed: FC<ControlLayerPropsType> = ({
         <EmbedControls
           onClick={(e) => e.stopPropagation()}
           className={cn("gencl:gap-2 gencl:z-20 gencl:absolute gencl:right-0 gencl:p-2")}
-          size={containerWidth ? resolveControlSize(containerWidth) : "xs"}
+          size={containerWidth && newUI ? resolveControlSize(containerWidth) : "xs"}
         />
       ) : (
         <></>

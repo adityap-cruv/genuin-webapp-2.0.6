@@ -69,7 +69,11 @@ export interface Strategies {
   compactBackgroundColor: string | undefined;
   /**
    * Whether the active slide autoplays on mount/activation. Defaults to `false`.
-   * Also gates the GenAd request (see {@link useGenAdInstance}).
+   *
+   * Governs ORGANIC VIDEO slides only — it does not gate the GenAd request. A
+   * `type: "ads"` slide renders via `AdLayout`, which requests independently of
+   * this flag (see the note in `feed/layouts/AdLayout.tsx`). It also selects the
+   * arm point for the mute-passback timer (`useMutePassbackGuard`).
    */
   autoplayEnabled: boolean;
   /**
@@ -89,10 +93,24 @@ export interface Strategies {
    * the last slide becomes a hard stop, so `autoAdvance`/`goNext` on the final
    * entry is a no-op and the widget rests there instead of returning to slide 0.
    *
-   * Only affects navigation. It does not change ad requests — `singleHitWaterfall`
-   * already prevents a looped-back slot from re-requesting.
+   * Only affects navigation; it does not change ad requests. Note that
+   * {@link singleHitWaterfall} does NOT prevent a looped-back slot from
+   * re-requesting either — it only defers the no-fill passback (see
+   * `AdProvider.onAdFail`). A looped feed genuinely re-requests per slot.
    */
   feedLoopEnabled: boolean;
+  /**
+   * Cap on how many feed entries are displayed. `0` (the default) means no cap —
+   * the feed shows every available entry, the pre-existing behaviour. A positive
+   * value trims the feed to `min(adSlots, availableEntries)`: entries
+   * beyond the cap are dropped, and entries are NEVER duplicated to reach a cap
+   * larger than what the backend returned.
+   *
+   * Applied once at normalisation time (see `FeedProvider`), so every downstream
+   * consumer — slide count, mount window, `Feed Completed`, loop wrap point —
+   * sees the trimmed list and no separate clamping is needed.
+   */
+  adSlots: number;
   /**
    * Viewport visibility gate: hold the feed render until the widget is actually
    * on screen, pass the impression back if it never gets there, and tear the
@@ -158,6 +176,8 @@ export const DEFAULT_STRATEGIES: Strategies = {
   // Exception to "every feature is off": loop is the pre-existing behaviour for
   // every tag, so the safe default is on. Only an explicit per-tag `false` opts out.
   feedLoopEnabled: true,
+  // 0 = no cap: show every available entry (the pre-existing behaviour).
+  adSlots: 0,
   servedStatically: false,
   visibilityGate: false,
   visibilityGateTimeoutMs: 30_000,

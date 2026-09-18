@@ -54,12 +54,17 @@ export function EmbedItem({
 }: EmbedItemProps) {
   const { updateActiveIndex, goToNextVideo, activeIndex } = useEmbedManagerContext();
   const config = useEmbedConfigs();
-  const { isPlaying, baseContextManager } = useBaseContext();
+  const { isPlaying, baseContextManager, baseEventBus } = useBaseContext();
   const { embedEventBus, updateSelectedSection, embedData } = useEmbedContext();
   const isKfiNoAdvancePlacement =
     !!embedData?.placement_id && KFI_NO_AUTO_ADVANCE_PLACEMENT_IDS.includes(embedData.placement_id);
   const { isTablet, isMobile } = useDeviceDetection();
   const [isHovering, setIsHovering] = useState(false);
+  // Reused for BOTH viewport-visibility and window-focus: local state re-renders on change,
+  // avoiding the stale-read race against the shared singleton tracker. Holds `in-view AND focused`.
+  const [isInView, setIsInView] = useState<boolean>(
+    baseContextManager.getPlayPauseTracker().isInView && baseContextManager.getPlayPauseTracker().isFocused
+  );
 
   // Parent loaded → warm the expand-view chunk chain in idle time. Gated to the first
   // tile: every tile opens the same expand-view chunks, so warming once is enough (the
@@ -105,7 +110,25 @@ export function EmbedItem({
   }, [config]);
 
   useEffect(() => {
-    const handleActivePlayerTypeChange = (_eventData: unknown, context: EmbedEventContextType) => {
+    // Viewport visibility. AND with live focus so `isInView` reflects both guards.
+    const handleInViewChange = (eventData: any, context: EmbedEventContextType) => {
+      setIsInView(context.containerInView && baseEventBus.getContext().userIsFocused);
+    };
+    // Window/tab focus. AND with live viewport visibility. Reuses the same `isInView` state.
+    const handleFocusChange = () => {
+      setIsInView(baseEventBus.getContext().userIsFocused && embedEventBus.getContext().containerInView);
+    };
+
+    embedEventBus.on("containerInViewChange", handleInViewChange);
+    baseEventBus.on("userFocusChange", handleFocusChange);
+    return () => {
+      embedEventBus.off("containerInViewChange", handleInViewChange);
+      baseEventBus.off("userFocusChange", handleFocusChange);
+    };
+  }, [embedEventBus, baseEventBus]);
+
+  useEffect(() => {
+    const handleActivePlayerTypeChange = (_eventData: any, context: EmbedEventContextType) => {
       if (context.activePlayerType === "embed") {
         setEmbedIsActive(true);
       } else {
@@ -202,7 +225,8 @@ export function EmbedItem({
       isSponsored ||
       isOctoVisible ||
       !isPlaying ||
-      isAdPlaying
+      isAdPlaying ||
+      !isInView
     ) {
       return;
     }
@@ -234,11 +258,7 @@ export function EmbedItem({
       // `isAdPlaying` covers the case where an IMA ad break started after the timer
       // was scheduled (content video isn't necessarily paused on iOS Safari).
       const playPauseTracker = baseContextManager.getPlayPauseTracker();
-      const shouldeMoveToNextVideo =
-        playPauseTracker.isPlaying &&
-        playPauseTracker.isFocused &&
-        playPauseTracker.isInView &&
-        !playPauseTracker.isAdPlaying;
+      const shouldeMoveToNextVideo = playPauseTracker.isPlaying && !playPauseTracker.isAdPlaying;
       if (shouldeMoveToNextVideo) goToNextVideo();
     }, moveToNextTime * 1000);
 
@@ -261,6 +281,7 @@ export function EmbedItem({
     isOctoVisible,
     isAdPlaying,
     isKfiNoAdvancePlacement,
+    isInView,
   ]);
 
   return (

@@ -1,0 +1,64 @@
+{
+  "code": "200",
+  "message": "Feed is loaded.",
+  "data": {
+    "reels": [
+      {
+        "type": "ads",
+        "video_ad": [
+          {
+            "ads_url": "https://cmod-na.live.streamtheworld.com/ondemand/ars?ua=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36&ttag=brand_id:3252&type=midroll&delivery-method=download&site-url=[PAGE_URL]&dist=[PAGE_URL]&stid=1446814&ip=3.215.55.178",
+            "cpm": 5,
+            "platform": "tritondigital",
+            "url": "https://cmod-na.live.streamtheworld.com/ondemand/ars?ua=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36&ttag=brand_id:3252&type=midroll&delivery-method=download&site-url=[PAGE_URL]&dist=[PAGE_URL]&stid=1446814&ip=3.215.55.178"
+          }
+        ]
+      },
+      {
+        "type": "ads",
+        "video_ad": [
+          {
+            "ads_url": "https://cmod-na.live.streamtheworld.com/ondemand/ars?ua=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36&ttag=brand_id:3252&type=midroll&delivery-method=download&site-url=[PAGE_URL]&dist=[PAGE_URL]&stid=1446814&ip=3.215.55.178",
+            "cpm": 5,
+            "platform": "tritondigital",
+            "url": "https://cmod-na.live.streamtheworld.com/ondemand/ars?ua=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36&ttag=brand_id:3252&type=midroll&delivery-method=download&site-url=[PAGE_URL]&dist=[PAGE_URL]&stid=1446814&ip=3.215.55.178"
+          }
+        ]
+      },
+      {
+        "type": "ads",
+        "video_ad": [
+          {
+            "ads_url": "https://cmod-na.live.streamtheworld.com/ondemand/ars?ua=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36&ttag=brand_id:3252&type=midroll&delivery-method=download&site-url=[PAGE_URL]&dist=[PAGE_URL]&stid=1446814&ip=3.215.55.178",
+            "cpm": 5,
+            "platform": "tritondigital",
+            "url": "https://cmod-na.live.streamtheworld.com/ondemand/ars?ua=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36&ttag=brand_id:3252&type=midroll&delivery-method=download&site-url=[PAGE_URL]&dist=[PAGE_URL]&stid=1446814&ip=3.215.55.178"
+          }
+        ]
+      },
+      {
+        "type": "ads",
+        "video_ad": [
+          {
+            "ads_url": "https://cmod-na.live.streamtheworld.com/ondemand/ars?ua=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36&ttag=brand_id:3252&type=midroll&delivery-method=download&site-url=[PAGE_URL]&dist=[PAGE_URL]&stid=1446814&ip=3.215.55.178",
+            "cpm": 5,
+            "platform": "tritondigital",
+            "url": "https://cmod-na.live.streamtheworld.com/ondemand/ars?ua=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36&ttag=brand_id:3252&type=midroll&delivery-method=download&site-url=[PAGE_URL]&dist=[PAGE_URL]&stid=1446814&ip=3.215.55.178"
+          }
+        ]
+      },
+      {
+        "type": "ads",
+        "video_ad": [
+          {
+            "ads_url": "https://cmod-na.live.streamtheworld.com/ondemand/ars?ua=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36&ttag=brand_id:3252&type=midroll&delivery-method=download&site-url=[PAGE_URL]&dist=[PAGE_URL]&stid=1446814&ip=3.215.55.178",
+            "cpm": 5,
+            "platform": "tritondigital",
+            "url": "https://cmod-na.live.streamtheworld.com/ondemand/ars?ua=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36&ttag=brand_id:3252&type=midroll&delivery-method=download&site-url=[PAGE_URL]&dist=[PAGE_URL]&stid=1446814&ip=3.215.55.178"
+          }
+        ]
+      }
+    ],
+    "visit_id": "d9gd1cm3rmi84t17em0g"
+  }
+}

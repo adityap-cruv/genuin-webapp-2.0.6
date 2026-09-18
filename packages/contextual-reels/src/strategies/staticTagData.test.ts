@@ -88,6 +88,55 @@ describe("getStaticTagData", () => {
     expect(entry!.feed.length).toBeGreaterThan(0);
   });
 
+  // Managed-service prod tags (brand 3252) — one per size. Unlike the siblings
+  // above these ship their OWN feed fixture, so assert the reel count too.
+  it.each([
+    ["6a9af76f18beaf88d7614154", "320x50-manage-service"],
+    ["6a9af84893b2d00fe7914d56", "320x100-manage-service"],
+    ["6a9af8c45a0b2b9ea748e66b", "300x250-manage-service"],
+    ["6a9af90f93b2d00fe7914e35", "300x600-manage-service"],
+    ["6a9afc455a0b2b9ea748e72b", "320x480-manage-service"],
+  ])("resolves the managed-service tag %s from its own fixtures", async (tagId, tagName) => {
+    const entry = await getStaticTagData(tagId);
+    expect(entry).toBeDefined();
+    expect(entry!.tagConfig.tag_id).toBe(tagId);
+    expect((entry!.tagConfig as { tag_name?: string }).tag_name).toBe(tagName);
+    expect(entry!.feed).toHaveLength(5);
+  });
+
+  // Direct IO tags — 12 across 3 sizes (DMA/National/National-v1/DMA-v1 per size).
+  // Own tag AND own feed fixture each (the DSP VAST url is keyed by brand_id/tag_id,
+  // so a tag can never reuse another tag's feed — asserted below).
+  it.each([
+    // 320x480 (original DMA/National/DMA-v1 have size-less names)
+    ["6a9ba985ee6dc7773d0c42a6", "Direct IO iHM/Infolinks Audio for Sep - DMA"],
+    ["6a9ba9b8ee6dc7773d0c42f4", "Direct IO iHM/Infolinks Audio for Sep - National"],
+    ["6aa25bc1d3c90426b5732535", "320x480 - National Campaign V1"],
+    ["6a9eaf2dee6dc7773d0c5f87", "Direct IO iHM/Infolinks Audio for Sep - DMA v1"],
+    // 320x50 quad
+    ["6aa041b7d3c90426b572a451", "320x50 - DMA Targeted Campaign"],
+    ["6aa041e20fc5b4b2fe4ed3c8", "320x50 - National Campaign"],
+    ["6aa25b631b3a25f3c479ef7c", "320x50 - National Campaign V1"],
+    ["6aa04101d3c90426b572a379", "320x50 - DMA Targeted Campaign V1"],
+    // 300x250 quad
+    ["6aa0425bd3c90426b572a571", "300x250 - DMA Targeted Campaign"],
+    ["6aa041fbd3c90426b572a4b2", "300x250 - National Campaign"],
+    ["6aa25af31b3a25f3c479ee35", "300x250 - National Campaign V1"],
+    ["6aa04279d3c90426b572a59e", "300x250 - DMA Targeted Campaign V1"],
+  ])("resolves the Direct IO tag %s from its own fixtures", async (tagId, tagName) => {
+    const entry = await getStaticTagData(tagId);
+    expect(entry).toBeDefined();
+    expect(entry!.tagConfig.tag_id).toBe(tagId);
+    expect((entry!.tagConfig as { tag_name?: string }).tag_name).toBe(tagName);
+    expect(entry!.feed).toHaveLength(5);
+    // The feed's DSP VAST url must be keyed by THIS tag's id — a feed carrying
+    // another tag's id would resolve its ad requests against the wrong tag.
+    for (const reel of entry!.feed) {
+      const adUrl = (reel as { video_ad?: { url?: string }[] }).video_ad?.[0]?.url ?? "";
+      expect(adUrl).toContain(`/vast/3252/${tagId}?`);
+    }
+  });
+
   it("resolves undefined for a non-static tag", async () => {
     expect(await getStaticTagData("not-a-static-tag")).toBeUndefined();
   });

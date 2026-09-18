@@ -10,8 +10,7 @@ import { EVENT, sendEventLogFromGlobals } from "@cxr/analytics/analytics";
 import { enrichDeviceDetailsWithGeoIp, getDeviceDetailsSnapshot } from "@cxr/platform/device";
 import { userId } from "@cxr/userId";
 import { windowLink } from "@cxr/platform/topWindow";
-import { resolveAdLayout, resolveStackedLayout } from "@cxr/config";
-import { setupStackedRows } from "@cxr/utils/infolinks";
+import { resolveSlotMount } from "@cxr/app/resolveSlotMount";
 import { buildPublicApi, installMessageBridge } from "@cxr/publicApi";
 import { getInstanceRegistry } from "@cxr/instance/registry/InstanceRegistry";
 import { setupCxrShadowDOM } from "@cxr/shadow-dom";
@@ -19,7 +18,7 @@ import { DATA_ATTR_SHADOW_DOM_OPT_IN } from "@cxr/shadow-dom-config";
 import { getSharedGeoIp } from "@cxr/services/api";
 import { getVisitIdPromise } from "@cxr/services/feed";
 import { getHostMacro } from "@cxr/hostMacros";
-import { PixelReporter, fireTagInitPixel } from "@cxr/observability/pixel-reporter";
+import { PixelReporter } from "@cxr/observability/pixel-reporter";
 
 // New TypeScript App with provider stack + native feed engine.
 const App = lazy(() => import("./app/App"));
@@ -206,6 +205,12 @@ async function init() {
       // (resolved in StrategyProvider); this is the per-instance fallback, read
       // here where the DOM node is available. Raw string — validated downstream.
       const dataGiv = node.getAttribute("data-giv");
+      // Per-div fallbacks for the two host feed params. The page-global
+      // `feed_loop` / `ad_slots` script params win (both resolved in
+      // StrategyProvider); these are the per-instance fallbacks, read here where
+      // the DOM node is available. Raw strings — validated downstream.
+      const dataFeedLoopEnabled = node.getAttribute("data-feed-loop");
+      const dataAdSlots = node.getAttribute("data-ad-slots");
       // Dashboard preview mode: keep this instance analytics-silent. When set,
       // TAG_INIT (and the whole Rudderstack/geoip bootstrap downstream) is
       // skipped and the widget waits for a `window.cxr.setPreviewConfig` push.
@@ -228,12 +233,13 @@ async function init() {
             },
             { deviceDetails: enrichDeviceDetailsWithGeoIp(getDeviceDetailsSnapshot(), geoip), userId, windowLink }
           );
-          // Pixel-side mirror of TAG_INIT: fire px-ti from the same site so the
-          // pixel funnel matches the Rudderstack tag_init. brand_id isn't
-          // resolved yet here (the tag fetch runs downstream), so it falls back
-          // to "1" in the path, per the pixel spec. Best-effort — never blocks
-          // analytics dispatch.
-          fireTagInitPixel({ tagId, passback: 0 });
+          // Pixel-side mirror of TAG_INIT (px-ti). Disabled for now to reduce
+          // load on the pixel endpoint — the Rudderstack TAG_INIT event above
+          // still fires, so the funnel keeps its primary signal; only the pixel
+          // beacon is paused. Re-enable by uncommenting (also re-add the
+          // `fireTagInitPixel` import from @cxr/observability/pixel-reporter).
+          // TODO(cxr): re-enable once the pixel endpoint can absorb the volume.
+          // fireTagInitPixel({ tagId, passback: 0 });
         });
       }
 
@@ -243,22 +249,9 @@ async function init() {
       }
 
       // Resolve the slot layout up front so we can decide whether this is the
-      // stacked 320×100 variant before mounting.
-      //
-      // offsetWidth/Height report the element's own layout box and are immune to
-      // ancestor CSS transforms. getBoundingClientRect() reports the post-transform
-      // box, which some hosts inflate: Infolinks wraps our slot in
-      // `transform: scale(...)` containers, so a 320×100 slot measures as ~344×204
-      // there. resolveAdLayout requires an exact size match, so the inflated numbers
-      // resolve to Unknown and the stacked variant fails to activate even when
-      // gen_variant=stacked and the tag id both match.
-      const resolvedLayout = resolveAdLayout(node.offsetWidth, node.offsetHeight);
-
-      // Stacked variant: split the slot into two equal halves — our widget mounts
-      // into the top row (as the config's `ourLayout`); Infolinks fills the bottom.
-      const stackedConfig = resolveStackedLayout(tagId, resolvedLayout);
-      const mountHost = stackedConfig ? setupStackedRows(node, stackedConfig) : node;
-      const adLayout = stackedConfig ? stackedConfig.ourLayout : resolvedLayout;
+      // stacked 320×100 variant before mounting. See resolveSlotMount for why
+      // the measurement uses offsetWidth/Height rather than the bounding rect.
+      const { mountHost, adLayout } = resolveSlotMount(node, tagId);
 
       // Enable Shadow DOM by default for style isolation.
       const DEFAULT_SHADOW_DOM_SUPPORT = true;
@@ -323,6 +316,8 @@ async function init() {
             instanceId={instanceId}
             preview={preview}
             dataGiv={dataGiv}
+            dataFeedLoopEnabled={dataFeedLoopEnabled}
+            dataAdSlots={dataAdSlots}
             shadowConfig={shadowConfig.enabled ? shadowConfig : null}
           />
         </SafeSuspense>

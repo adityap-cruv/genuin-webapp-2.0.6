@@ -9,6 +9,7 @@ import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { usePathname } from "@genuin/components/hooks/use-pathname";
 import { useSearchParams } from "@genuin/components/hooks/use-search-params";
+import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { SideBar } from "@genuin/components/organisms/side-bar";
 import { TopBar } from "@genuin/components/organisms/top-bar";
@@ -50,9 +51,13 @@ export function BaseLayout({
   const pathname = usePathname();
   const { searchParams, getSearchParams } = useSearchParams();
   const { layoutConfig } = useEmbedConfigs();
+  const { getContentTypeState } = useSheetState();
+  const linkoutState = getContentTypeState("linkouts");
+  const isLinkoutExpanded = linkoutState === "panel-view" || linkoutState === "full-view";
 
   // Update shouldUseDarkTheme when searchParams or pathname changes
   const [shouldUseDarkTheme, setShouldUseDarkTheme] = useState(false);
+  const [isAdPlaying, setIsAdPlaying] = useState(false);
   // The SDK's expand view is a full-screen player with its own chrome; the site bar must not
   // sit on top of it on mobile, where there is no room for both.
   const [isExpandViewOpen, setIsExpandViewOpen] = useState(false);
@@ -68,6 +73,14 @@ export function BaseLayout({
 
     setShouldUseDarkTheme(isDarkTheme);
   }, [pathname, searchParams]);
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsAdPlaying(document.documentElement.classList.contains("gen-ad-playing"));
+    });
+    observer.observe(document.documentElement, { attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -112,13 +125,15 @@ export function BaseLayout({
 
   return (
     <>
-      {/* The bar stays put through ads: an ad plays inside its placement, not over the whole
-          viewport, so hiding site chrome for it only cost the reader their navigation and left
-          the 64px strip that pages pad for the fixed bar (mobile `.gen-home-motion`) standing
-          empty. A mobile expand view is the opposite case — it owns the whole screen. */}
-      {!(isExpandViewOpen && isMobile) && (layoutConfig.showNavigationBar || layoutConfig.showBackAndCloseButton) && (
-        <TopBar theme={shouldUseDarkTheme && isMobile ? "dark" : "light"} style={{ zIndex: 9 }} variant={variant} />
-      )}
+      {/* Mobile has room for either the site bar or a full-bleed player surface, never both.
+          An ad or an expanded linkout takes the viewport (2.0.6), and so does a mobile expand
+          view — that last one is why `isExpandViewOpen` is tracked here at all. */}
+      {!(isAdPlaying && isMobile) &&
+        !(isLinkoutExpanded && isMobile) &&
+        !(isExpandViewOpen && isMobile) &&
+        (layoutConfig.showNavigationBar || layoutConfig.showBackAndCloseButton) && (
+          <TopBar theme={shouldUseDarkTheme && isMobile ? "dark" : "light"} style={{ zIndex: 60 }} variant={variant} />
+        )}
       <main
         className={cn(
           "gencl:sm:flex gencl:overflow-clip gencl:relative gencl:bg-white",

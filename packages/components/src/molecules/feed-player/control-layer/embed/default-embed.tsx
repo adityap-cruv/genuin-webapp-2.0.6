@@ -6,6 +6,7 @@ import { type FC, lazy, useRef } from "react";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
+import { hasLinkouts } from "@genuin/components/molecules/linkout-new/linkout-utils";
 import { Stats } from "@genuin/components/molecules/stats";
 
 import type { ControlLayerPropsType } from "../control-layer.types";
@@ -82,20 +83,24 @@ export const DefaultEmbed: FC<ControlLayerPropsType> = ({
             : "gencl:bottom-0 gencl:py-2 gencl:space-y-2"
         )}
         style={config.isDesignSystemV2 && isCompactSheetState ? { paddingBottom: 8 } : undefined}>
-        {isActive && video.linkouts && (
-          <SafeSuspense fallback={null} errorFallback={null}>
-            <Linkouts
-              view="embed"
-              {...(config.isDesignSystemV2Linkouts ? { variant: "dynamic" as const } : {})}
-              layout="overlay"
-              isActive={isActive}
-              showImmediately
-              linkouts={video.linkouts}
-              linkoutId={video.linkoutId}
-              videoDetails={video}
-            />
-          </SafeSuspense>
-        )}
+        {/* Outside wins: below-player host owns the linkout, suppress overlay. */}
+        {!config.links.showLinkOutside &&
+          isActive &&
+          (config.contentDisplay.showVideoLinkouts || config.links.showLinks) &&
+          hasLinkouts(video) && (
+            <SafeSuspense fallback={null} errorFallback={null}>
+              <Linkouts
+                view="embed"
+                {...(config.isDesignSystemV2Linkouts ? { variant: "dynamic" as const } : {})}
+                layout="overlay"
+                isActive={isActive}
+                showImmediately
+                linkouts={video.linkouts}
+                linkoutId={video.linkoutId}
+                videoDetails={video}
+              />
+            </SafeSuspense>
+          )}
         {config.community.showViewCount && !isActive && (
           <Stats
             className="gencl:gap-1!"

@@ -400,6 +400,130 @@ describe("resolveVideoAdMacros — Triton in-app rewrite", () => {
   });
 });
 
+// ─── resolveVideoAdMacros — DSP exchange request params ───────────────────────
+
+describe("resolveVideoAdMacros — DSP request params append", () => {
+  // In-app (appb present) + Triton + a DSP VAST exchange URL is the gate. Host
+  // geo (country/city/lat/lon/metro/region) + ad_group_id (c8) are appended.
+  const GEO_MACROS = {
+    appb: "com.novanews.localnews.en",
+    country: "USA",
+    loc: "Detroit",
+    loclat: "42.3888",
+    loclong: "-83.1895",
+    m: "505",
+    r: "MI",
+    c8: "ag-42",
+  };
+  const dspUrl = "https://aapi.begenuin.com/goservices/dsp/vast/3252/6aa04279d3c90426b572a59e";
+
+  it("appends OpenRTB geo + ad_group_id for an in-app Triton DSP url", () => {
+    const result = resolveVideoAdMacros({ url: dspUrl, platform: "tritondigital" }, "https://page.com", GEO_MACROS) as {
+      url: string;
+    };
+    const u = new URL(result.url);
+    expect(u.searchParams.get("country")).toBe("USA");
+    expect(u.searchParams.get("city")).toBe("Detroit");
+    expect(u.searchParams.get("lat")).toBe("42.3888");
+    expect(u.searchParams.get("lon")).toBe("-83.1895");
+    expect(u.searchParams.get("metro")).toBe("505");
+    expect(u.searchParams.get("region")).toBe("MI");
+    expect(u.searchParams.get("ad_group_id")).toBe("ag-42");
+    // The in-app Triton rewrite still ran alongside the geo append.
+    expect(u.searchParams.get("bundle-id")).toBe("com.novanews.localnews.en");
+  });
+
+  it("URL-encodes geo values (multi-word city)", () => {
+    const result = resolveVideoAdMacros({ url: dspUrl, platform: "tritondigital" }, "https://page.com", {
+      ...GEO_MACROS,
+      loc: "New York",
+    }) as { url: string };
+    expect(result.url).toContain("city=New%20York");
+    expect(new URL(result.url).searchParams.get("city")).toBe("New York");
+  });
+
+  it("omits a param whose host macro is absent (region/metro/ad_group_id)", () => {
+    const noRegionMetroOrGroup = {
+      appb: GEO_MACROS.appb,
+      country: GEO_MACROS.country,
+      loc: GEO_MACROS.loc,
+      loclat: GEO_MACROS.loclat,
+      loclong: GEO_MACROS.loclong,
+    };
+    const result = resolveVideoAdMacros(
+      { url: dspUrl, platform: "tritondigital" },
+      "https://page.com",
+      noRegionMetroOrGroup
+    ) as { url: string };
+    const u = new URL(result.url);
+    expect(u.searchParams.has("region")).toBe(false);
+    expect(u.searchParams.has("metro")).toBe(false);
+    expect(u.searchParams.has("ad_group_id")).toBe(false);
+    expect(u.searchParams.get("country")).toBe("USA");
+  });
+
+  it("never duplicates a geo param already present on the url", () => {
+    const result = resolveVideoAdMacros(
+      { url: `${dspUrl}?country=CA`, platform: "tritondigital" },
+      "https://page.com",
+      GEO_MACROS
+    ) as { url: string };
+    // Pre-existing country is left untouched; no second country appended.
+    expect(result.url.match(/[?&]country=/g)?.length).toBe(1);
+    expect(new URL(result.url).searchParams.get("country")).toBe("CA");
+    // Other geo params still appended.
+    expect(new URL(result.url).searchParams.get("region")).toBe("MI");
+  });
+
+  it("leaves the url geo-free when no host geo macros are present", () => {
+    const result = resolveVideoAdMacros(
+      { url: dspUrl, platform: "tritondigital" },
+      "https://page.com",
+      { appb: "com.x.y" } // in-app Triton, but no geo macros
+    ) as { url: string };
+    const u = new URL(result.url);
+    expect(u.searchParams.has("country")).toBe(false);
+    expect(u.searchParams.has("city")).toBe(false);
+    // The in-app rewrite still applied.
+    expect(u.searchParams.get("bundle-id")).toBe("com.x.y");
+  });
+
+  it("does NOT append geo for a non-DSP Triton url (streamtheworld)", () => {
+    const result = resolveVideoAdMacros(
+      { url: "https://cmod-na.live.streamtheworld.com/ondemand/ars?stid=1", platform: "tritondigital" },
+      "https://page.com",
+      GEO_MACROS
+    ) as { url: string };
+    const u = new URL(result.url);
+    expect(u.searchParams.has("country")).toBe(false);
+    expect(u.searchParams.has("region")).toBe(false);
+  });
+
+  it("does NOT append geo for a DSP url when not in-app (no appb)", () => {
+    const geoWithoutBundle = {
+      country: GEO_MACROS.country,
+      loc: GEO_MACROS.loc,
+      loclat: GEO_MACROS.loclat,
+      loclong: GEO_MACROS.loclong,
+      m: GEO_MACROS.m,
+      r: GEO_MACROS.r,
+    };
+    const result = resolveVideoAdMacros(
+      { url: dspUrl, platform: "tritondigital" },
+      "https://page.com",
+      geoWithoutBundle
+    ) as { url: string };
+    expect(new URL(result.url).searchParams.has("country")).toBe(false);
+  });
+
+  it("does NOT append geo for a DSP url whose platform is not tritondigital", () => {
+    const result = resolveVideoAdMacros({ url: dspUrl, platform: "infy" }, "https://page.com", GEO_MACROS) as {
+      url: string;
+    };
+    expect(new URL(result.url).searchParams.has("country")).toBe(false);
+  });
+});
+
 // ─── resolveVideoAdMacros — servedStatically rewrite ──────────────────────────────
 
 describe("resolveVideoAdMacros — servedStatically rewrite", () => {

@@ -7,12 +7,13 @@ import type { VariantProps } from "class-variance-authority";
 import { useMemo, memo, useEffect, useState, type ComponentProps, useCallback, useRef, lazy, forwardRef } from "react";
 
 import { VideoTypes } from "@genuin/components/context";
+import { useBaseContext } from "@genuin/components/context/base/context";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
-import { isFeedViewPresentation } from "@genuin/components/lib/feed-view/presentation";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import useViewportHeight from "@genuin/components/hooks/use-screen-height";
 import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
+import { isFeedViewPresentation } from "@genuin/components/lib/feed-view/presentation";
 import { useFloatingVideoLink } from "@genuin/components/lib/floating-video/use-floating-video-link";
 import { getBaseUrl } from "@genuin/components/lib/utils";
 import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
@@ -21,6 +22,8 @@ import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { Pills } from "@genuin/components/molecules/feed-player/pills";
 import { Link } from "@genuin/components/molecules/link";
+import { markLinkoutEngaged } from "@genuin/components/molecules/linkout-new/linkout-engagement-marker";
+import { hasLinkouts as videoHasLinkouts } from "@genuin/components/molecules/linkout-new/linkout-utils";
 import { ProfileLink } from "@genuin/components/molecules/profile-link";
 import { ReadMore } from "@genuin/components/molecules/read-more";
 import type { ReadMoreTextType } from "@genuin/components/molecules/read-more/read-more.types";
@@ -73,6 +76,13 @@ const brandHidesCommunityFeatures = (type: BrandLayoutType): boolean => type ===
 type ExpandViewProps = ComponentProps<"div"> & {
   postDetails: PostDetailsType;
   isActive: boolean;
+  /** Player container width/height, forwarded to the in-expand `<Linkouts>` as
+   * `effectiveVideoWidth`/`containerHeight`. Only the webapp host (`default.tsx`)
+   * passes these — it has no `EmbedProvider`, so `useEmbedConfigs().responsive`
+   * reads 0 and the reveal gates would fail open. In embed these stay undefined
+   * and `DynamicLinkouts` falls back to context. */
+  containerWidth?: number;
+  containerHeight?: number;
 } & ExpandViewCallbacks &
   VariantProps<typeof controlLayerVariant>;
 
@@ -107,6 +117,11 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
     view: { websiteType, brandLayoutType: embedBrandLayoutType },
     video: { videoAutoplay },
   } = useEmbedConfigs();
+  // Expand view honors its OWN backend flag: `expand_view.enable_linkout` →
+  // `show_linkout_in_expand` → `showLinksInExpand`. It is independent of the tile
+  // enable flags (`show_linkouts`/`is_show_links`), so an "expand-only" config
+  // (tile off, expand on) shows here. No leak: `showLinksInExpand` now defaults
+  // to false when the backend omits the flag (see use-embed-config).
   const showLinkoutInExpand = embedConfig.links.showLinksInExpand;
 
   const videoLayoutId = embedConfig.view.isPlacementView
@@ -464,8 +479,9 @@ const SharedActions = memo(function SharedActions({
   onOctoOpen?: () => void;
   isDesktop: boolean;
 }) {
-  const { isDesignSystemV2Linkouts } = useEmbedConfigs();
+  const { isDesignSystemV2Linkouts, links } = useEmbedConfigs();
   const { hasContentType, openContentType, closeContentType } = useSheetState();
+  const { baseEventBus } = useBaseContext();
   const { showExpandView } = usePlayerContext();
   const sharedActionsEmbed = useSafeEmbedContext();
   // TEMPORARY: mirrors the desktop rail in `player-swiper` — Intelligence is Home Feed View
@@ -473,10 +489,17 @@ const SharedActions = memo(function SharedActions({
   const isHomeFeedView = isFeedViewPresentation(sharedActionsEmbed?.rootElement);
   const { video, group, community } = postDetails;
   if (!video || !community || !group) return null;
+  // A video has a renderable linkout only when the backend sends a NON-EMPTY
+  // array. `[]` (no/CMS-disabled linkout) is still a truthy value, so a bare
+  // `video.linkouts &&` check passes it — mounting the lazily-imported
+  // <Linkouts> chunk and flashing its Suspense skeleton while the JS downloads
+  // (visible for seconds on throttled 4G) before it resolves to nothing. Gate
+  // on length so empty-linkout videos never mount the block at all.
+  const hasLinkouts = videoHasLinkouts(video);
   // Mobile action-rail linkout button: tap toggles the in-player linkout
-  // (placement="inside" — mobile has no right rail).
-  const showLinkoutAction =
-    isDesignSystemV2Linkouts && Array.isArray(video.linkouts) && (video.linkouts?.length ?? 0) > 0;
+  // (placement="inside" — mobile has no right rail). Gated on the expand flag it
+  // opens (`showLinksInExpand`) so the button never appears with nothing to show.
+  const showLinkoutAction = links.showLinksInExpand && isDesignSystemV2Linkouts && hasLinkouts;
 
   // Handle iHeart brand controls
   if (brandLayoutType === "iheart") {
@@ -547,6 +570,9 @@ const SharedActions = memo(function SharedActions({
                 if (hasContentType("linkouts")) {
                   closeContentType("linkouts");
                 } else {
+                  // Explicit open = engagement → skip the reveal delay for this
+                  // video (mark BEFORE openContentType so the same emit reveals it).
+                  markLinkoutEngaged(baseEventBus, video.id);
                   openContentType("linkouts", "inside", "expand-view");
                 }
               }}>
@@ -633,6 +659,8 @@ export const ExpandViewDetails = forwardRef<ExpandViewDetailsRef, ExpandViewProp
     onCommunityJoinStatusChange,
     onReactionStateChange,
     onCommentCountChange,
+    containerWidth,
+    containerHeight,
     ...restProps
   }: ExpandViewProps,
   ref
@@ -673,7 +701,12 @@ export const ExpandViewDetails = forwardRef<ExpandViewDetailsRef, ExpandViewProp
   // full-width (Figma). Below we drop this root's absolute/padding/backdrop so it
   // flows under the shrunken video. Gate on the linkout-specific state (not the
   // global "most expanded") so an unrelated panel sheet doesn't swap the layout.
-  const isLinkoutPanelOpen = linkoutsSheetState === "panel-view" || linkoutsSheetState === "full-view";
+  // Also require the linkout to be TILED OVER the video ("inside"): on desktop it
+  // lives in the right rail ("outside"), where the video never shrinks (see
+  // player.tsx), so this full-width reflow must NOT hide the profile/pills.
+  const isLinkoutTiledInside = sheetContentPlacements["linkouts"] === "inside";
+  const isLinkoutPanelOpen =
+    isLinkoutTiledInside && (linkoutsSheetState === "panel-view" || linkoutsSheetState === "full-view");
   const isOctoVisible = octoVisible;
   const isSwipeBlocked =
     octoVisible &&
@@ -701,10 +734,11 @@ export const ExpandViewDetails = forwardRef<ExpandViewDetailsRef, ExpandViewProp
     <div
       data-expand-view="true"
       className={cn(
-        "gencl:gap-2 gencl:w-full gencl:z-20 gencl:right-0 gencl:focus:outline-none",
-        // Floating-card states: absolute bottom + padding + gradient.
-        // Panel/full linkout: in flow (no absolute/padding/backdrop) to fill freed space.
-        !isLinkoutPanelOpen && "gencl:absolute gencl:bottom-0 gencl:p-4",
+        "gencl:w-full gencl:z-20 gencl:right-0 gencl:focus:outline-none",
+        // Floating-card states: absolute bottom + padding + gradient. `gap-2`
+        // lives here (not the base) so it can't add a stray 8px gap in panel/
+        // full, where this div becomes `flex flex-col` and the gap would apply.
+        !isLinkoutPanelOpen && "gencl:absolute gencl:bottom-0 gencl:p-4 gencl:gap-2",
         isLinkoutPanelOpen && "gencl:flex-1 gencl:min-h-0 gencl:flex gencl:flex-col",
         !isLinkoutPanelOpen &&
           brandLayoutType !== "iheart" &&
@@ -725,7 +759,10 @@ export const ExpandViewDetails = forwardRef<ExpandViewDetailsRef, ExpandViewProp
             // `flex-1 min-w-0`: fill the row up to the actions rail so content
             // (linkout, description) sits a single `gap-4` (16px) from the rail
             // rather than a fixed 5/6 that `justify-between` then spreads ~48px.
-            "gencl:flex gencl:flex-col gencl:gap-4 gencl:sm:gap-2 gencl:flex-1 gencl:min-w-0 gencl:transition-all",
+            // 8 px gap on both mobile and desktop — was `gap-4 sm:gap-2` (16px
+            // below the `sm` breakpoint), which gave narrow/mobile viewports the
+            // BIGGER gap between title and description. Uniform now.
+            "gencl:flex gencl:flex-col gencl:gap-2 gencl:flex-1 gencl:min-w-0 gencl:transition-all",
             brandLayoutType === "ted" || (brandLayoutType === "iheart" && "gencl:gap-3"),
             // Panel/full linkout: full width + fill height so the sheet renders
             // edge-to-edge (Figma).
@@ -736,7 +773,7 @@ export const ExpandViewDetails = forwardRef<ExpandViewDetailsRef, ExpandViewProp
           {/**
            * If the brand is US Weekly, we do not show the user profile in expand view.
            */}
-          {!brand.isUsWeekly && (
+          {!brand.isUsWeekly && !isLinkoutPanelOpen && (
             <AdaptiveUserProfile
               postDetails={postDetails}
               type={brandLayoutType}
@@ -818,6 +855,19 @@ export const ExpandViewDetails = forwardRef<ExpandViewDetailsRef, ExpandViewProp
             )}
           </div>
 
+          {/* Hide description when the linkout fills the slot (panel/full-view). */}
+          {!isLinkoutPanelOpen && (
+            <AdaptiveDescription
+              video={video}
+              type={brandLayoutType}
+              {...(brandLayoutType === "iheart" && {
+                isExpanded,
+                onExpand,
+              })}
+              layoutType={brandLayoutType}
+            />
+          )}
+
           {/* Mobile Intelligence bottom sheet — same DynamicSheet host as the Octo
               sheet above, wrapping the same chat panel as the desktop right rail.
               Lazy: the chunk loads on the first tap of the sparkle action, never
@@ -845,7 +895,10 @@ export const ExpandViewDetails = forwardRef<ExpandViewDetailsRef, ExpandViewProp
           {showLinkoutInExpand &&
             brandLayoutType !== "iheart" &&
             !isOctoVisible &&
-            video.linkouts &&
+            // Non-empty only: `[]` (no/CMS-disabled linkout) is truthy, so a bare
+            // `video.linkouts &&` mounts the lazy <Linkouts> chunk and flashes its
+            // Suspense skeleton on slow networks before resolving to nothing.
+            videoHasLinkouts(video) &&
             sheetContentPlacements["linkouts"] !== "outside" &&
             !(isDesignSystemV2Linkouts && isDesktop) && (
               // Wrapper gives the dynamic `<Linkouts>` (no className slot of its own)
@@ -872,23 +925,15 @@ export const ExpandViewDetails = forwardRef<ExpandViewDetailsRef, ExpandViewProp
                     totalVideos={totalVideos}
                     positionIndex={positionIndex}
                     autoplay={videoAutoplay}
+                    // Webapp host has no `EmbedProvider`, so `useEmbedConfigs().responsive`
+                    // reads 0 and the reveal gates fail open. Override with the real player
+                    // tile size (undefined in embed → falls back to context).
+                    effectiveVideoWidth={containerWidth}
+                    containerHeight={containerHeight}
                   />
                 </SafeSuspense>
               </div>
             )}
-
-          {/* Hide description when the linkout fills the slot (panel/full-view). */}
-          {!isLinkoutPanelOpen && (
-            <AdaptiveDescription
-              video={video}
-              type={brandLayoutType}
-              {...(brandLayoutType === "iheart" && {
-                isExpanded,
-                onExpand,
-              })}
-              layoutType={brandLayoutType}
-            />
-          )}
         </div>
 
         {octoSheetState !== "panel-view" && octoSheetState !== "full-view" && !isLinkoutPanelOpen && (

@@ -28,11 +28,13 @@ import type * as StrategyConfigModule from "@cxr/strategies/strategyConfig";
 
 // IDs migrated into TAG_STRATEGIES (see strategyConfig.ts).
 const AD_BREAK_TAG = "6a391232d73aa25887ac2af3";
-// Single-hit + mute-passback both ride on this tag (see strategyConfig.ts).
-const SINGLE_HIT_TAG = "69b298e3d6a6ad57e7b9a464";
+// Mute-passback + gate-on-unmute ride on this tag. It carried singleHitWaterfall
+// too until #515 turned it off, so single-hit assertions use SINGLE_HIT_TAG below.
 const MUTE_PASSBACK_TAG = "69b298e3d6a6ad57e7b9a464";
+// 320x50 ads-only tag — one of the entries that still enables singleHitWaterfall.
+const SINGLE_HIT_TAG = "6a39163e92929ebec64d78ab";
 const UNKNOWN_TAG = "aaaabbbbccccdddd11112222";
-// Configured with initialVolume: 0.2 (see strategyConfig.ts).
+// Configured with initialVolume: 0.01 (see strategyConfig.ts).
 const INITIAL_VOLUME_TAG = "6a2fefd87ce338c3a5afc605";
 // Tags with the 2% mute-passback-suppression experiment (see TAG_EXPERIMENTS).
 const EXPERIMENT_TAG = "6a032e34054c8fcb08582510";
@@ -192,7 +194,7 @@ describe("strategies/resolveStrategies — cascade", () => {
   });
 
   it("applies a tag's configured initialVolume", () => {
-    expect(resolveStrategies(INITIAL_VOLUME_TAG).initialVolume).toBe(0.2);
+    expect(resolveStrategies(INITIAL_VOLUME_TAG).initialVolume).toBe(0.01);
   });
 });
 
@@ -336,7 +338,7 @@ describe("strategies — backward-compatible predicates", () => {
   });
 
   it("getInitialVolume mirrors the resolver (0 by default)", () => {
-    expect(getInitialVolume(INITIAL_VOLUME_TAG)).toBe(0.2);
+    expect(getInitialVolume(INITIAL_VOLUME_TAG)).toBe(0.01);
     expect(getInitialVolume(UNKNOWN_TAG)).toBe(0);
     expect(getInitialVolume("")).toBe(0);
   });
@@ -391,7 +393,7 @@ describe("servedStatically flag", () => {
 
   it("preserves the tags' other existing overrides", () => {
     const s = resolveStrategies("6a39163e92929ebec64d78ab");
-    expect(s.initialVolume).toBe(0.2);
+    expect(s.initialVolume).toBe(0.01);
     expect(s.singleHitWaterfall).toBe(true);
   });
 });
@@ -406,7 +408,7 @@ describe("feedLoopEnabled flag", () => {
   });
 
   it("resolves true for configured tags that did not opt out", () => {
-    expect(resolveStrategies(SINGLE_HIT_TAG).feedLoopEnabled).toBe(true);
+    expect(resolveStrategies(MUTE_PASSBACK_TAG).feedLoopEnabled).toBe(true);
   });
 
   it("resolves false for the static AD-only tags that opted out inline", () => {
@@ -419,14 +421,14 @@ describe("feedLoopEnabled flag", () => {
     const s = resolveStrategies("6a6892e52ca77d200369fb9e");
     expect(s.servedStatically).toBe(true);
     expect(s.singleHitWaterfall).toBe(true);
-    expect(s.initialVolume).toBe(0.2);
+    expect(s.initialVolume).toBe(0.01);
   });
 
   it("keeps the opted-out tags' other overrides intact", () => {
     const s = resolveStrategies("6a39163e92929ebec64d78ab");
     expect(s.servedStatically).toBe(true);
     expect(s.singleHitWaterfall).toBe(true);
-    expect(s.initialVolume).toBe(0.2);
+    expect(s.initialVolume).toBe(0.01);
   });
 
   it("is turned off by the noLoop preset bundle", async () => {
@@ -440,7 +442,7 @@ describe("feedLoopEnabled flag", () => {
 
   it("exposes a predicate that mirrors the resolver", () => {
     expect(isFeedLoopEnabled("unknown-loop-tag")).toBe(true);
-    expect(isFeedLoopEnabled(SINGLE_HIT_TAG)).toBe(true);
+    expect(isFeedLoopEnabled(MUTE_PASSBACK_TAG)).toBe(true);
   });
 });
 
@@ -458,7 +460,7 @@ describe("visibilityGate flag", () => {
   });
 
   it("resolves off for every currently configured tag (nothing opted in yet)", () => {
-    expect(resolveStrategies(SINGLE_HIT_TAG).visibilityGate).toBe(false);
+    expect(resolveStrategies(MUTE_PASSBACK_TAG).visibilityGate).toBe(false);
     expect(resolveStrategies("6a39163e92929ebec64d78ab").visibilityGate).toBe(false);
   });
 
@@ -482,7 +484,7 @@ describe("destroyOnHide flag", () => {
   });
 
   it("resolves off for every currently configured tag (nothing opted in yet)", () => {
-    expect(resolveStrategies(SINGLE_HIT_TAG).destroyOnHide).toBe(false);
+    expect(resolveStrategies(MUTE_PASSBACK_TAG).destroyOnHide).toBe(false);
   });
 });
 
@@ -499,7 +501,7 @@ describe("suppressedEvents", () => {
   });
 
   it("resolves empty for a configured tag that did not opt in", () => {
-    expect(resolveStrategies(SINGLE_HIT_TAG).suppressedEvents).toEqual([]);
+    expect(resolveStrategies(MUTE_PASSBACK_TAG).suppressedEvents).toEqual([]);
   });
 
   it("lists the ads-only interstitial noise events for the 320x50 tag", () => {
@@ -519,27 +521,48 @@ describe("suppressedEvents", () => {
     expect(suppressed.has("Video Started")).toBe(true);
     expect(suppressed.has("Video Play Started")).toBe(true);
     expect(suppressed.has("Video Complete")).toBe(true);
+    // Audio + visibility diagnostics — retired now that their investigation concluded.
+    expect(suppressed.has("Audio Diagnostic")).toBe(true);
+    expect(suppressed.has("Visibility Diagnostic")).toBe(true);
   });
 
-  // Every Infolinks ads-only prod tag (all 15, across the 5 sizes) shares the
-  // same suppression policy — they are all `type: "ads"` single-interstitial
-  // units. Asserted here so a sibling that silently loses the list is caught.
+  // Every ads-only prod tag (all 32 — 15 Infolinks + 5 managed-service across the
+  // 5 sizes, plus the 12 Direct IO tags across 320×480 / 320×50 / 300×250) shares the same suppression
+  // policy: they are all `type: "ads"` single-interstitial units. Asserted here so
+  // a sibling that silently loses the list is caught.
   it.each([
     "6a39163e92929ebec64d78ab", // 320x50
     "6a7c45fcf3f875e5e06dadab",
     "6a7c465586d060bd42fb5ab7",
+    "6a9af76f18beaf88d7614154",
     "6a3915b692929ebec64d785e", // 320x100
     "6a7c46dcf3f875e5e06daef0",
     "6a7c46fef3f875e5e06daf19",
+    "6a9af84893b2d00fe7914d56",
     "6a3916de30e1406c10507518", // 300x250
     "6a7c4727fa1b811d815aa00f",
     "6a7c473df3f875e5e06daf87",
+    "6a9af8c45a0b2b9ea748e66b",
     "6a391708a7d9f8da7f6e56ad", // 300x600
     "6a7c476af3f875e5e06dafc1",
     "6a7c479586d060bd42fb5c3c",
+    "6a9af90f93b2d00fe7914e35",
     "6a6892e52ca77d200369fb9e", // 320x480
     "6a7c47bf86d060bd42fb5c95",
     "6a7c47d8f3f875e5e06db080",
+    "6a9afc455a0b2b9ea748e72b",
+    "6a9ba985ee6dc7773d0c42a6", // Direct IO — 320x480 quad
+    "6a9ba9b8ee6dc7773d0c42f4",
+    "6aa25bc1d3c90426b5732535",
+    "6a9eaf2dee6dc7773d0c5f87",
+    "6aa041b7d3c90426b572a451", // Direct IO — 320x50 quad
+    "6aa041e20fc5b4b2fe4ed3c8",
+    "6aa25b631b3a25f3c479ef7c",
+    "6aa04101d3c90426b572a379",
+    "6aa0425bd3c90426b572a571", // Direct IO — 300x250 quad
+    "6aa041fbd3c90426b572a4b2",
+    "6aa25af31b3a25f3c479ee35",
+    "6aa04279d3c90426b572a59e",
   ])("suppresses the ads-only interstitial noise events for prod tag %s", (tagId) => {
     const suppressed = getSuppressedEvents(tagId);
     // Spot-check one from each category the shared list covers.
@@ -552,7 +575,7 @@ describe("suppressedEvents", () => {
     expect(suppressed.has("Ad Impression")).toBe(false);
   });
 
-  it("never suppresses revenue-funnel, boot, or diagnostic events", () => {
+  it("never suppresses revenue-funnel or boot events", () => {
     const suppressed = getSuppressedEvents(STATIC_320x50);
     for (const keep of [
       "Tag Init",
@@ -562,8 +585,6 @@ describe("suppressedEvents", () => {
       "Ad Completed",
       "Ad Passback",
       "Infolinks Impression",
-      "Audio Diagnostic",
-      "Visibility Diagnostic",
     ]) {
       expect(suppressed.has(keep)).toBe(false);
     }
@@ -573,7 +594,7 @@ describe("suppressedEvents", () => {
     const s = resolveStrategies(STATIC_320x50);
     expect(s.servedStatically).toBe(true);
     expect(s.singleHitWaterfall).toBe(true);
-    expect(s.initialVolume).toBe(0.2);
+    expect(s.initialVolume).toBe(0.01);
     expect(s.feedLoopEnabled).toBe(false);
   });
 });

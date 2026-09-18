@@ -14,10 +14,14 @@ export type PixelErrorType = "initialization_error" | "render_error" | "runtime_
 export const PAGE_LEVEL_KEY = "__page__";
 
 /**
- * Hardcoded base — never depends on config/env resolution succeeding.
- * Path shape: `<base>/<brand_id>/<tag_id>/px-script-error`.
+ * Hardcoded base — never depends on config/env resolution succeeding, so it
+ * cannot read the value from env: this is the last resort for when
+ * `import.meta.env` itself is unreadable. Because it duplicates the prod
+ * `VITE_CXR_PIXEL_URL` value, it MUST stay on the same host — the drift guard in
+ * `pixel-reporter.test.ts` fails if it diverges (it once silently shipped as
+ * `api` while env was `aapi`). Path shape: `<base>/<brand_id>/<tag_id>/px-script-error`.
  */
-const FALLBACK_PIXEL_BASE_URL = "https://api.begenuin.com/goservices/dsp/pixel";
+export const FALLBACK_PIXEL_BASE_URL = "https://aapi.begenuin.com/goservices/dsp/pixel";
 
 /**
  * Resolve the pixel base URL without depending on `@cxr/config` (or anything
@@ -299,15 +303,15 @@ export function fireTagInitPixel(context: TagInitPixelContext = {}): void {
  * mirrors `notifyAdNoFill` in `ads/waterfall.ts` without importing it, so a
  * broken module graph elsewhere can't prevent this from firing.
  */
-function notifyAdPassbackBestEffort(): void {
+function notifyAdPassbackBestEffort(tagId?: string): void {
   try {
     if (typeof window === "undefined") return;
     if (window.parent && window.parent !== window) {
-      window.parent.postMessage({ type: "noAdsCallback" }, "*");
+      window.parent.postMessage({ type: "noAdsCallback", tagId }, "*");
     }
-    const cb = (window as Window & { noAdsCallback?: () => void }).noAdsCallback;
+    const cb = (window as Window & { noAdsCallback?: (tagId?: string) => void }).noAdsCallback;
     if (typeof cb === "function") {
-      cb();
+      cb(tagId);
     }
   } catch (err) {
     console.error("PixelReporter: failed to notify ad passback:", err);
@@ -439,7 +443,7 @@ export class PixelReporter {
 
     // Ad passback fires on EVERY failure stage, independent of whether
     // AdProvider is mounted — this is the pre-mount / no-React-context path.
-    notifyAdPassbackBestEffort();
+    notifyAdPassbackBestEffort(context.tagId);
 
     // Destroy the widget instance on every failure stage too — passback means
     // "this ad slot is dead," so the (possibly broken) widget must actually

@@ -21,12 +21,15 @@ import type { Strategies } from "@cxr/strategies/strategies";
  * high-frequency per-tick video churn that the L3 hidden-audio player would
  * otherwise emit off the ad creative. The ad-level funnel is covered separately
  * (`Ad Media Quartile` from the GenAd SDK), so the video quartiles are redundant
- * here. Revenue-funnel + boot + diagnostic events are deliberately NOT listed.
+ * here. Also retires the audio + visibility diagnostic events now that their
+ * investigation has concluded (see docs/AUDIO_DIAGNOSTIC_PLAN.md /
+ * VISIBILITY_DIAGNOSTIC_PLAN.md). Revenue-funnel + boot events are deliberately
+ * NOT listed.
  *
  * Attach via a tag's `suppressedEvents` in {@link TAG_STRATEGIES}. Shared as a
- * named list so the entire ads-only Infolinks inventory (all 15 prod tags across
- * 320×50, 320×100, 300×250, 300×600, 320×480) applies the exact same policy
- * without drift.
+ * named list so the entire ads-only inventory (all 32 prod tags — 15 Infolinks +
+ * 5 managed-service across 320×50, 320×100, 300×250, 300×600, 320×480, plus the 12
+ * Direct IO tags across 320×480 / 320×50 / 300×250) applies the same policy without drift.
  */
 const ADS_ONLY_INTERSTITIAL_SUPPRESSED: readonly string[] = [
   // Feed lifecycle — degenerate for a single static fixture entry. A
@@ -77,6 +80,12 @@ const ADS_ONLY_INTERSTITIAL_SUPPRESSED: readonly string[] = [
   EVENT.VIDEO_STARTED,
   EVENT.VIDEO_PLAY_STARTED,
   EVENT.VIDEO_COMPLETED,
+  // Diagnostics — RETIRED. The audio + visibility snapshots fired one-per-fill on
+  // the audible-start ads-only tags to localize the "volume up but no sound"
+  // report and find which viewability signal detects a natively-hidden webview.
+  // That investigation has concluded, so stop emitting them off live inventory.
+  EVENT.AUDIO_DIAGNOSTIC,
+  EVENT.VISIBILITY_DIAGNOSTIC,
 ];
 
 /**
@@ -163,30 +172,34 @@ export const TAG_EXPERIMENTS: Record<string, TagExperiment> = {
  *   GENAI_ENABLED_TAG_IDS was empty → no entries.
  */
 export const TAG_STRATEGIES: Record<string, TagStrategyEntry> = {
-  // Dev slot (index.html): start audible at 20%; other defaults unchanged.
+  // Dev slot (index.html): start audible at 1%; other defaults unchanged.
   // THIS IS FOR QA TESTING ONLY — DO NOT COPY TO PROD TAGS.
-  "697c46aa9f432b1a2055e803": { initialVolume: 0.2 },
+  "697c46aa9f432b1a2055e803": { initialVolume: 0.01 },
   "6a3aa78ba0daccfd439648b8": {
-    initialVolume: 0.2,
+    initialVolume: 0.01,
     gateOnUnmute: true,
     singleHitWaterfall: true,
     servedStatically: true,
+    feedLoopEnabled: false,
   },
   "6a3ba4395df1fee89bf0b2e7": { gateOnUnmute: true },
   "6a3aa8244da8cd92d289cc72": { gateOnUnmute: true },
 
   // ===========================================================================
-  // LIVE PRODUCTION Infolinks ads-only tags (brand 3252) — 15 total.
+  // LIVE PRODUCTION ads-only tags (brand 3252) — 32 total.
   //
-  // The full live inventory from the Infolinks size×tag sheet: 3 tags per size
-  // across the 5 supported sizes (organized in size blocks below). All start
-  // audible at 20% on load (unmuted) and are served from static fixtures (see
+  // The full live inventory: the Infolinks size×tag sheet (3 tags per size) plus
+  // one managed-service tag per size, across the 5 supported sizes (organized in
+  // size blocks below, managed-service last within each block), plus 12 Direct IO
+  // tags (a DMA/National/National-v1/DMA-v1 quad per 320×480, 320×50, 300×250; own block after the sizes). All start
+  // audible at 1% on load (unmuted) and are served from static fixtures (see
   // staticTagData.ts) — skips /ad_creative and /feed (/ip_info still fires for
   // geoip + the real client IP on the ad-URL rewrite). Each carries the same
   // config; the -2/-3 siblings reuse the brand-level Triton ad feed of their
-  // size's first (anchor) tag via their loaders in staticTagData.ts.
+  // size's first (anchor) tag via their loaders in staticTagData.ts, while the
+  // managed-service tags each ship their own tag + feed fixture.
   //
-  // All 15 are `type: "ads"` single-interstitial units, so every one drops the
+  // All 32 are `type: "ads"` single-interstitial units, so every one drops the
   // no-signal event vocabulary via `suppressedEvents:
   // ADS_ONLY_INTERSTITIAL_SUPPRESSED` (the shared list is defined once so the
   // whole ads-only inventory stays in sync — no per-tag drift).
@@ -204,160 +217,289 @@ export const TAG_STRATEGIES: Record<string, TagStrategyEntry> = {
 
   // --- 320x50 ---
   "6a39163e92929ebec64d78ab": {
-    initialVolume: 0.2,
+    initialVolume: 0.01,
     singleHitWaterfall: true,
     feedLoopEnabled: false,
     preset: "servedStatically",
     suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
   }, // 320x50-ads-only
   "6a7c45fcf3f875e5e06dadab": {
-    initialVolume: 0.2,
+    initialVolume: 0.01,
     singleHitWaterfall: true,
     feedLoopEnabled: false,
     preset: "servedStatically",
     suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
   }, // 320x50-ads-only-2
   "6a7c465586d060bd42fb5ab7": {
-    initialVolume: 0.2,
+    initialVolume: 0.01,
     singleHitWaterfall: true,
     feedLoopEnabled: false,
     preset: "servedStatically",
     suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
   }, // 320x50-ads-only-3
+  "6a9af76f18beaf88d7614154": {
+    initialVolume: 0.01,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // 320x50-manage-service
 
   // --- 320x100 ---
   "6a3915b692929ebec64d785e": {
-    initialVolume: 0.2,
+    initialVolume: 0.01,
     singleHitWaterfall: true,
     feedLoopEnabled: false,
     preset: "servedStatically",
     suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
   }, // 320x100-ads-only
   "6a7c46dcf3f875e5e06daef0": {
-    initialVolume: 0.2,
+    initialVolume: 0.01,
     singleHitWaterfall: true,
     feedLoopEnabled: false,
     preset: "servedStatically",
     suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
   }, // 320x100-ads-only-2
   "6a7c46fef3f875e5e06daf19": {
-    initialVolume: 0.2,
+    initialVolume: 0.01,
     singleHitWaterfall: true,
     feedLoopEnabled: false,
     preset: "servedStatically",
     suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
   }, // 320x100-ads-only-3
+  "6a9af84893b2d00fe7914d56": {
+    initialVolume: 0.01,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // 320x100-manage-service
 
   // --- 300x250 ---
   "6a3916de30e1406c10507518": {
-    initialVolume: 0.2,
+    initialVolume: 0.01,
     singleHitWaterfall: true,
     feedLoopEnabled: false,
     preset: "servedStatically",
     suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
   }, // 300x250-ads-only
   "6a7c4727fa1b811d815aa00f": {
-    initialVolume: 0.2,
+    initialVolume: 0.01,
     singleHitWaterfall: true,
     feedLoopEnabled: false,
     preset: "servedStatically",
     suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
   }, // 300x250-ads-only-2
   "6a7c473df3f875e5e06daf87": {
-    initialVolume: 0.2,
+    initialVolume: 0.01,
     singleHitWaterfall: true,
     feedLoopEnabled: false,
     preset: "servedStatically",
     suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
   }, // 300x250-ads-only-3
+  "6a9af8c45a0b2b9ea748e66b": {
+    initialVolume: 0.01,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // 300x250-manage-service
 
   // --- 300x600 ---
   "6a391708a7d9f8da7f6e56ad": {
-    initialVolume: 0.2,
+    initialVolume: 0.01,
     singleHitWaterfall: true,
     feedLoopEnabled: false,
     preset: "servedStatically",
     suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
   }, // 300x600-ads-only
   "6a7c476af3f875e5e06dafc1": {
-    initialVolume: 0.2,
+    initialVolume: 0.01,
     singleHitWaterfall: true,
     feedLoopEnabled: false,
     preset: "servedStatically",
     suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
   }, // 300x600-ads-only-2
   "6a7c479586d060bd42fb5c3c": {
-    initialVolume: 0.2,
+    initialVolume: 0.01,
     singleHitWaterfall: true,
     feedLoopEnabled: false,
     preset: "servedStatically",
     suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
   }, // 300x600-ads-only-3
+  "6a9af90f93b2d00fe7914e35": {
+    initialVolume: 0.01,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // 300x600-manage-service
 
   // --- 320x480 (AD_LAYOUT.L5) — rendered on L1's full player, not a banner ---
   "6a6892e52ca77d200369fb9e": {
-    initialVolume: 0.2,
+    initialVolume: 0.01,
     singleHitWaterfall: true,
     feedLoopEnabled: false,
     preset: "servedStatically",
     suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
   }, // 320x480-ads-only
   "6a7c47bf86d060bd42fb5c95": {
-    initialVolume: 0.2,
+    initialVolume: 0.01,
     singleHitWaterfall: true,
     feedLoopEnabled: false,
     preset: "servedStatically",
     suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
   }, // 320x480-ads-only-2
   "6a7c47d8f3f875e5e06db080": {
-    initialVolume: 0.2,
+    initialVolume: 0.01,
     singleHitWaterfall: true,
     feedLoopEnabled: false,
     preset: "servedStatically",
     suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
   }, // 320x480-ads-only-3
+  "6a9afc455a0b2b9ea748e72b": {
+    initialVolume: 0.01,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // 320x480-manage-service
+
+  // --- Direct IO iHM/Infolinks Audio (Sep) — 12 tags, 3 sizes ---
+  // A DMA / National / National v1 / DMA v1 quad per size (320x480, 320x50,
+  // 300x250). Layout comes from the container px, so the original 320x480
+  // DMA/National/DMA-v1 carry size-less "…Audio for Sep - <buy>" names while
+  // every later tag names the size. Each ships its OWN tag + feed fixture (the
+  // feed DSP url is keyed by brand_id/tag_id — no feed reuse). Same config as
+  // every ads-only tag above.
+  "6a9ba985ee6dc7773d0c42a6": {
+    initialVolume: 0.01,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // Direct IO iHM/Infolinks Audio for Sep - DMA
+  "6a9ba9b8ee6dc7773d0c42f4": {
+    initialVolume: 0.01,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // Direct IO iHM/Infolinks Audio for Sep - National
+  "6aa25bc1d3c90426b5732535": {
+    initialVolume: 0.01,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // 320x480 - National Campaign V1
+  "6a9eaf2dee6dc7773d0c5f87": {
+    initialVolume: 0.01,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // Direct IO iHM/Infolinks Audio for Sep - DMA v1 (own tag + feed fixture)
+  // 320x50 trio
+  "6aa041b7d3c90426b572a451": {
+    initialVolume: 0.01,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // 320x50 - DMA Targeted Campaign
+  "6aa041e20fc5b4b2fe4ed3c8": {
+    initialVolume: 0.01,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // 320x50 - National Campaign
+  "6aa25b631b3a25f3c479ef7c": {
+    initialVolume: 0.01,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // 320x50 - National Campaign V1
+  "6aa04101d3c90426b572a379": {
+    initialVolume: 0.01,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // 320x50 - DMA Targeted Campaign V1
+  // 300x250 trio
+  "6aa0425bd3c90426b572a571": {
+    initialVolume: 0.01,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // 300x250 - DMA Targeted Campaign
+  "6aa041fbd3c90426b572a4b2": {
+    initialVolume: 0.01,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // 300x250 - National Campaign
+  "6aa25af31b3a25f3c479ee35": {
+    initialVolume: 0.01,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // 300x250 - National Campaign V1
+  "6aa04279d3c90426b572a59e": {
+    initialVolume: 0.01,
+    singleHitWaterfall: true,
+    feedLoopEnabled: false,
+    preset: "servedStatically",
+    suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED,
+  }, // 300x250 - DMA Targeted Campaign V1
 
   // Demo-only static tags (no DB entry) — served from committed fixtures with a
   // single Triton ad reel each. Same static strategy as the tags above. Sizes
   // per the demo size×tag-id sheet; layout is driven by container px, so the
   // tag config just carries the descriptive tag_name.
   "6a3aa78ba0daccfd439648b81": {
-    initialVolume: 0.2,
+    initialVolume: 0.01,
     singleHitWaterfall: true,
     feedLoopEnabled: false,
     preset: "servedStatically",
   }, // 320x50
   "6a3aa78ba0daccfd439648b82": {
-    initialVolume: 0.2,
+    initialVolume: 0.01,
     singleHitWaterfall: true,
     feedLoopEnabled: false,
     preset: "servedStatically",
   }, // 320x100
   "6a3aa78ba0daccfd439648b83": {
-    initialVolume: 0.2,
+    initialVolume: 0.01,
     singleHitWaterfall: true,
     feedLoopEnabled: false,
     preset: "servedStatically",
   }, // 300x250
   "6a3aa78ba0daccfd439648b84": {
-    initialVolume: 0.2,
+    initialVolume: 0.01,
     singleHitWaterfall: true,
     feedLoopEnabled: false,
     preset: "servedStatically",
   }, // 300x600
   "6a3aa78ba0daccfd439648b85": {
-    initialVolume: 0.2,
+    initialVolume: 0.01,
     singleHitWaterfall: true,
     feedLoopEnabled: false,
     preset: "servedStatically",
   }, // 320x480
   // Audible-start tags too, but served from the live exchange rather than fixtures.
-  // The 20% volume is the advertiser requirement, not a test override — these
+  // The 1% volume is the advertiser requirement, not a test override — these
   // intentionally bypass the mute gate and start unmuted. Do not "fix" by muting.
-  "6a1fd43b45aec54862ed235d": { initialVolume: 0.2, singleHitWaterfall: true }, // 320x50
-  "6a3aa86e4da8cd92d289ccda": { initialVolume: 0.2, singleHitWaterfall: true }, // 320x50 QA
+  "6a1fd43b45aec54862ed235d": { initialVolume: 0.01, singleHitWaterfall: true }, // 320x50
+  "6a3aa86e4da8cd92d289ccda": { initialVolume: 0.01, singleHitWaterfall: true }, // 320x50 QA
 
-  "6a2fefd87ce338c3a5afc605": { singleHitWaterfall: true, initialVolume: 0.2 },
+  "6a2fefd87ce338c3a5afc605": { singleHitWaterfall: true, initialVolume: 0.01 },
   "6a391232d73aa25887ac2af3": { adBreakEnabled: true, gateOnUnmute: true },
   "69b298e3d6a6ad57e7b9a464": { singleHitWaterfall: false, mutePassback: true, gateOnUnmute: true },
   "69b298f4d6a6ad57e7b9a499": {

@@ -373,6 +373,8 @@ describe("providers/AnalyticsProvider", () => {
       ip: "",
       lat: null,
       lng: null,
+      region: "",
+      postal: "",
     });
     unmount(root, container);
   });

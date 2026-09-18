@@ -69,12 +69,12 @@ No host macro name collides with an existing loader param (`gen_variant`,
 `purl`) or with any resolved value. The only semantic overlap is geo, resolved
 below.
 
-| Existing resolution | Host macro | Reconciliation |
-| --- | --- | --- |
-| `getScriptParam` bag (`gen_variant`, `purl`) | all macros | Additive; distinct names. No conflict. |
+| Existing resolution                                   | Host macro                            | Reconciliation                                                                    |
+| ----------------------------------------------------- | ------------------------------------- | --------------------------------------------------------------------------------- |
+| `getScriptParam` bag (`gen_variant`, `purl`)          | all macros                            | Additive; distinct names. No conflict.                                            |
 | `device_details.geoip` from `getIpInfo()` (IP lookup) | `country`, `loc`, `loclat`, `loclong` | **Keep separate.** Host geo goes to its own analytics fields; IP geoip untouched. |
-| `[PAGE_URL]` via `resolvePageUrl()` | `appsu`, `appb` | No change to `[PAGE_URL]`; host macros only add new tokens. |
-| `userId` (first-party id), `x-user-id` | `ifa`, `deviceid` | Distinct identifiers; keep both, no override. |
+| `[PAGE_URL]` via `resolvePageUrl()`                   | `appsu`, `appb`                       | No change to `[PAGE_URL]`; host macros only add new tokens.                       |
+| `userId` (first-party id), `x-user-id`                | `ifa`, `deviceid`                     | Distinct identifiers; keep both, no override.                                     |
 
 **Geo decision:** host geo (`country`/`loc`/`loclat`/`loclong`) and CXR's
 IP-based `device_details.geoip` are kept **side by side** — host geo lands in
@@ -88,7 +88,9 @@ override, no lost data, lowest risk. `getIpInfo()` still runs on every embed.
 A module singleton, parsed once from `window.__CXR_SCRIPT_PARAMS__`:
 
 ```ts
-export interface HostMacros { readonly [key: string]: string }
+export interface HostMacros {
+  readonly [key: string]: string;
+}
 
 /** Captured once. Empty ('appv=') and unresolved braced literals
  *  ('appv={appv}') are dropped so downstream payloads stay clean. */
@@ -119,9 +121,11 @@ host macros into the semantically correct block:
 
 - `device_details`: `app_name`(appn), `app_version`(appv), `app_bundle`(appb),
   and host geo as its **own** fields (`app_country`, `app_loc`, `app_lat`,
-  `app_long`) — **not** merged into the IP `geoip` block.
+  `app_long`, `app_metro`(m — Nielsen DMA code), `app_region`(r — state code,
+  e.g. `MI`)) — **not** merged into the IP `geoip` block.
 - `user_details`: `ifa`, `deviceid`, `appsi`.
-- `event_details` consent sub-block: `gdpr`, `gdpr_consent`, `us_privacy`, `dnt`.
+- `event_details` consent sub-block: `gdpr`, `gdpr_consent`, `us_privacy`, `dnt`;
+  plus `ad_group_id` (Infolinks ad-group id, host macro `c8`).
 - **DEFERRED — field names:** exact target field names to be confirmed with
   analytics consumers. Build the merge seam generically now.
 
@@ -151,13 +155,13 @@ override) — `site-url=[PAGE_URL]` keeps getting the real page/referrer.
 
 **5c. App identity flows through dedicated Triton app tokens.** Per the Triton
 spec, in-app inventory uses `bundle-id` (required for apps), `store-id`, and
-`store-url` (URL-encoded) *instead of* `site-url`. We add these to
+`store-url` (URL-encoded) _instead of_ `site-url`. We add these to
 `HOST_URL_MACRO_TOKENS` so that when the backend's ad-URL template carries the
 tokens, CXR fills them from the loader macros:
 
-- `[APP_BUNDLE]` → `appb`   (Triton `bundle-id`)
-- `[STORE_ID]`   → `appsi`  (Triton `store-id`)
-- `[STORE_URL]`  → `appsu`  (Triton `store-url`; auto URL-encoded by the resolver)
+- `[APP_BUNDLE]` → `appb` (Triton `bundle-id`)
+- `[STORE_ID]` → `appsi` (Triton `store-id`)
+- `[STORE_URL]` → `appsu` (Triton `store-url`; auto URL-encoded by the resolver)
 
 The static `REEL_AD_BREAK_TRITON_URL` stand-in in `feedTransforms.ts` is NOT
 hand-edited — the backend owns the eventual ad-URL shape (it will add
@@ -212,6 +216,31 @@ existing `ad_source`/`platform`.
   video ad is resolved (before `GenAd.init`), so it rides on every event this
   slot emits — mirroring the existing `unmute_blocked` base-context pattern. No
   per-call-site edits.
+
+### 8. Append host geo to DSP-exchange Triton ad URLs — addendum (2026-09-09)
+
+The host sends full geo on the loader script params (`country`, `loc`,
+`loclat`, `loclong`, `m` (DMA/metro), `r` (state code)) plus `c8` (Infolinks
+ad-group id). For in-app Triton ads served through our own **DSP VAST exchange**
+(the `/goservices/dsp/vast/` endpoint, e.g.
+`https://aapi.begenuin.com/goservices/dsp/vast/<brand>/<tag>`), forward that geo
+and the ad-group id on the ad request so the exchange can target / report on it.
+
+- **Where:** `resolveVideoAdMacros`, right after `rewriteTritonUrlForApp`, via
+  `appendDspGeoParams`.
+- **Gate:** the SAME in-app Triton condition as the app rewrite
+  (`Boolean(macros.appb) && platform === "tritondigital"`) AND the resolved URL
+  contains the DSP VAST path (`DSP_VAST_ENDPOINT = "/goservices/dsp/vast/"`,
+  matched as a path so it holds across hosts/environments). Non-DSP Triton (e.g.
+  `streamtheworld.com`) and non-in-app loads are untouched.
+- **Param names (`DSP_REQUEST_PARAMS`):** geo uses OpenRTB 2.x Geo names —
+  `country`(country, alpha-3), `city`(loc), `lat`(loclat), `lon`(loclong),
+  `metro`(m, Google/Nielsen DMA), `region`(r, ISO-3166-2 US state code); plus
+  `ad_group_id`(c8) — Infolinks' ad-group id, no OpenRTB field exists for it
+  (added 2026-09-17, same in-app DSP gate).
+- **Absent / duplicate:** a param whose host macro is absent is skipped; a param
+  already present on the URL is left untouched (never duplicated). Values are
+  URL-encoded.
 
 ## Testing
 

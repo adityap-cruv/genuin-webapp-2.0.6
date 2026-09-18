@@ -84,7 +84,57 @@ fi
 echo "✅ Bundle size check passed"
 echo ""
 
-# add test cases before this 
+# add test cases before this
+
+# ---------------------------------------------------------------------------
+# Contextual Reels (CXR)
+#
+# Gated here (~25 s): lint (src + tests) · unit tests + per-file coverage gates.
+#
+# Deliberately MANUAL — each needs a built dist/ and/or hits the real QA
+# exchange, so none of them belongs on every push:
+#   pnpm --filter @genuin/contextual-reels test:e2e        (needs `build` first)
+#   pnpm --filter @genuin/contextual-reels budget:all      (~19 min, real ad requests)
+#   pnpm --filter @genuin/contextual-reels fixtures:check  (~5 s, live QA read)
+#
+# CI runs only the label-gated E2E job (e2e-cxr.yml) — label a PR `run-e2e-all`.
+#
+# Escape hatch: SKIP_CXR_CHECKS=1 git push
+# Catalogue + measured times: packages/contextual-reels/docs/TESTING.md
+# ---------------------------------------------------------------------------
+if [ "$SKIP_CXR_CHECKS" = "1" ]; then
+  echo "⏭️  Skipping Contextual Reels checks (SKIP_CXR_CHECKS=1)"
+  echo ""
+else
+  echo "🎬 Linting Contextual Reels..."
+  pnpm --filter @genuin/contextual-reels lint
+  CXR_LINT_STATUS=$?
+  if [ $CXR_LINT_STATUS -ne 0 ]; then
+    echo ""
+    echo "❌ Contextual Reels lint failed!"
+    echo "❌ Push rejected. Fix the lint errors and try again."
+    exit 1
+  fi
+  echo "✅ Contextual Reels lint passed"
+  echo ""
+
+  # Coverage, not plain `test`: the per-file thresholds in vitest.config.ts are
+  # the actual gate, and they only run under --coverage.
+  echo "🧪 Running Contextual Reels tests + coverage gates..."
+  pnpm --filter @genuin/contextual-reels test:coverage
+  CXR_TEST_STATUS=$?
+  if [ $CXR_TEST_STATUS -ne 0 ]; then
+    echo ""
+    echo "❌ Contextual Reels tests or coverage thresholds failed!"
+    echo "❌ Push rejected. A failing test also short-circuits the coverage check —"
+    echo "❌ fix the failures first, then re-read the threshold report."
+    exit 1
+  fi
+  echo "✅ Contextual Reels tests + coverage passed"
+  echo ""
+
+fi
+
 # Lighthouse Performance Testing commented for now as it is very flaky and causing issues with pushes. Will re-enable once we have a more stable setup.
 echo "🔦 Running Lighthouse performance checks..."
 # pnpm lighthouse

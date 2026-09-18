@@ -232,6 +232,14 @@ export function buildHostMacroBlocks(macros: HostMacros): HostMacroBlocks {
   pick(device, "app_loc", "loc");
   pick(device, "app_lat", "loclat");
   pick(device, "app_long", "loclong");
+  // DMA / metro code (Nielsen DMA, e.g. "505"). Host-provided via the `m`
+  // script param, so it lands with its geo siblings above — NOT in the
+  // IP-based `geoip` block, which never carries host-supplied geo.
+  pick(device, "app_metro", "m");
+  // Region / state code (host-provided via `r`, e.g. "MI"). A state
+  // abbreviation, distinct from the IP-based `geoip.region` full name; kept
+  // here with the other host geo, never merged into `geoip`.
+  pick(device, "app_region", "r");
 
   const user: Record<string, string> = {};
   pick(user, "ifa", "ifa");
@@ -243,6 +251,9 @@ export function buildHostMacroBlocks(macros: HostMacros): HostMacroBlocks {
   pick(event, "gdpr_consent", "gdpr_consent");
   pick(event, "us_privacy", "us_privacy");
   pick(event, "dnt", "dnt");
+  // Infolinks ad-group id (host macro `c8`), so ad-group performance is
+  // queryable per event.
+  pick(event, "ad_group_id", "c8");
 
   return { device, user, event };
 }

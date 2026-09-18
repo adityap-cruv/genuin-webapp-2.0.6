@@ -29,6 +29,13 @@ describe("ads/waterfall — notifyAdFill", () => {
     expect(cb).toHaveBeenCalledTimes(1);
   });
 
+  it("passes the tagId to window.adFillCallback when supplied", () => {
+    const cb = vi.fn();
+    (window as Window & { adFillCallback: (tagId?: string) => void }).adFillCallback = cb;
+    notifyAdFill("tag-123");
+    expect(cb).toHaveBeenCalledWith("tag-123");
+  });
+
   it("does not throw when window.adFillCallback is not set", () => {
     expect(() => notifyAdFill()).not.toThrow();
   });
@@ -52,9 +59,9 @@ describe("ads/waterfall — notifyAdFill", () => {
       configurable: true,
     });
 
-    notifyAdFill();
+    notifyAdFill("tag-123");
 
-    expect(parentPostMessage).toHaveBeenCalledWith({ type: "adFillCallback" }, "*");
+    expect(parentPostMessage).toHaveBeenCalledWith({ type: "adFillCallback", tagId: "tag-123" }, "*");
 
     Object.defineProperty(window, "parent", {
       value: originalParent,
@@ -85,6 +92,13 @@ describe("ads/waterfall — notifyAdNoFill", () => {
     expect(cb).toHaveBeenCalledTimes(1);
   });
 
+  it("passes the tagId to window.noAdsCallback when supplied", () => {
+    const cb = vi.fn();
+    (window as Window & { noAdsCallback: (tagId?: string) => void }).noAdsCallback = cb;
+    notifyAdNoFill("tag-123");
+    expect(cb).toHaveBeenCalledWith("tag-123");
+  });
+
   it("does not throw when window.noAdsCallback is not set", () => {
     expect(() => notifyAdNoFill()).not.toThrow();
   });
@@ -108,9 +122,9 @@ describe("ads/waterfall — notifyAdNoFill", () => {
       configurable: true,
     });
 
-    notifyAdNoFill();
+    notifyAdNoFill("tag-123");
 
-    expect(parentPostMessage).toHaveBeenCalledWith({ type: "noAdsCallback" }, "*");
+    expect(parentPostMessage).toHaveBeenCalledWith({ type: "noAdsCallback", tagId: "tag-123" }, "*");
 
     Object.defineProperty(window, "parent", {
       value: originalParent,

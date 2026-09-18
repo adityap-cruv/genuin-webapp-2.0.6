@@ -86,6 +86,17 @@ export type LinkoutsProps = {
    * host an IAB banner ad instead of a link card.
    */
   dynamicContent?: LinkoutSlotContent;
+  /** Forwarded to `<DynamicLinkouts>`'s `effectiveVideoWidth` override — pass the
+   *  real player tile width for hosts without an `EmbedProvider` (e.g. webapp). */
+  effectiveVideoWidth?: number;
+  /** Forwarded to `<DynamicLinkouts>`'s `containerHeight` override — same webapp
+   *  caveat, feeds the 50% reveal-gate denominator. */
+  containerHeight?: number;
+  /** Forwarded to `<DynamicLinkouts>`'s `hostHorizontalInset` — set when the
+   *  caller's wrapper already applies the horizontal inset for its other,
+   *  non-self-inset siblings (e.g. description text), so the panel doesn't
+   *  double it with its own `mx-2`. */
+  hostHorizontalInset?: boolean;
 } & ComponentProps<"div"> &
   VariantProps<typeof linkOutVariant>;
 
@@ -105,9 +116,12 @@ export function Linkouts({
   handleCTAClick,
   onSwiperToggle,
   dynamicContent,
+  effectiveVideoWidth,
+  containerHeight,
+  hostHorizontalInset,
   ...restProps
 }: LinkoutsProps) {
-  const { showLinkouts } = useShowLinkouts({ linkoutId, isActive });
+  const { showLinkouts } = useShowLinkouts({ linkoutId, isActive, videoId: videoDetails?.id });
   const {
     data: fetchedLinkouts,
     isLoading,
@@ -222,10 +236,14 @@ export function Linkouts({
   }, [variantProp, sortedLinks.length]);
 
   // ─── Guard rails ──────────────────────────────────────────────────────────
-  if (isLoading) return <div className="gencl:p-4 animate-pulse">Loading…</div>;
+  // No loading placeholder: data ships inline and the reveal delay intentionally
+  // withholds the linkout, so the slot stays empty until the real card paints.
+  if (isLoading) return null;
   if (isError || !linkouts || linkouts.length === 0) return null;
-  if (!shouldRender) return null;
+  // Genuinely nothing to render (no links and no CTA) → stay empty.
   if (!linkoutData || (!linkoutData.links?.length && !linkoutData.cta_text)) return null;
+  // Content exists but hasn't painted yet (appear-delay / first mount): stay empty.
+  if (!shouldRender) return null;
 
   const animationClasses = showImmediately
     ? "gencl:w-full"
@@ -257,6 +275,10 @@ export function Linkouts({
             analyticsEventData={analyticsEventData}
             onSwiperToggle={onSwiperToggle}
             content={dynamicContent}
+            videoId={videoDetails?.id}
+            effectiveVideoWidth={effectiveVideoWidth}
+            containerHeight={containerHeight}
+            hostHorizontalInset={hostHorizontalInset}
           />
         </SafeSuspense>
       );

@@ -1,5 +1,7 @@
 import type { ComponentProps } from "react";
 
+import { DARK_OVERLAY_20, DARK_OVERLAY_40 } from "./player-control-size";
+
 /** Chevron pointing direction for navigation arrows. */
 export type NavChevronDirection = "up" | "down" | "left" | "right";
 
@@ -46,10 +48,13 @@ export function NavChevron({ direction, color = "white", ...props }: NavChevronP
 }
 
 /**
- * Solid double-circle fill + glyph colours for the nav arrows, keyed to theme.
- * Restores the legacy palette so the buttons stay visible on dark backdrops.
+ * Double-circle fill + glyph colours for the nav arrows. Per Figma (node
+ * 16128-196014) both circles use the Dark Overlay tokens (outer 20% / inner
+ * 40%) with a white chevron — both themes share these values (design is the
+ * same on light/dark video). The group-level outer ring that wraps a pair of
+ * nav buttons (see `NavigationButtonsV2`) reuses `DARK_OVERLAY_20` directly.
  */
 export const NAV_BUTTON_COLORS = {
-  light: { outer: "#717277", inner: "#27292D", glyph: "#FFFFFF" },
-  dark: { outer: "#A9AFB2", inner: "#F6F8F9", glyph: "#27292D" },
+  light: { outer: DARK_OVERLAY_20, inner: DARK_OVERLAY_40, glyph: "#FFFFFF" },
+  dark: { outer: DARK_OVERLAY_20, inner: DARK_OVERLAY_40, glyph: "#FFFFFF" },
 } as const;

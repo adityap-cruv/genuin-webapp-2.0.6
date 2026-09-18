@@ -117,7 +117,7 @@ export function resolveAdLayout(width = 0, height = 0): AdLayoutId {
 // A stacked slot is split into two equal halves: our widget on top and an
 // Infolinks in-place unit below. Two tags opt in today:
 //   - 320×100 (L4): top 320×50 (our L3) + bottom 320×50 Infolinks.
-//   - 300×600 (L1): top 300×300 (our L2) + bottom 300×300 Infolinks.
+//   - 300×600 (L1): top 300×300 (our L1) + bottom 300×300 Infolinks.
 // Activation requires the `gen_variant=stacked` URL param (this frame or the top
 // frame) plus a matching tag id — relaxed to any matching slot size on
 // localhost so either layout can be tested without the production tag id.
@@ -301,6 +301,117 @@ function parseGivValue(raw: string | null | undefined): number | undefined {
  */
 export function getInitVolumeOverride(dataGiv?: string | null): number | undefined {
   return parseGivValue(getScriptParam(GIV_PARAM)) ?? parseGivValue(dataGiv);
+}
+
+/**
+ * Loader script param that overrides the feed's loop behaviour — whether the
+ * feed wraps from the last slide back to the first. Accepts `true`/`false`
+ * (also `1`/`0`); anything else is ignored so the tag's resolved
+ * `feedLoopEnabled` strategy stands. Read from our own <script src> query (like
+ * {@link GIV_PARAM}) so it survives a cross-origin `srcdoc` iframe.
+ *   <script src=".../gen_ext.min.js?feed_loop=false"></script>
+ */
+export const FEED_LOOP_ENABLED_PARAM = "feed_loop";
+
+/**
+ * Per-div attribute form of {@link FEED_LOOP_ENABLED_PARAM}. Mirrors
+ * {@link GIV_DATA_ATTR}: when the page-global script param is absent, each
+ * `.gen-ext` element can carry its own loop override here. The script param
+ * (when present and valid) always wins.
+ *   <div class="gen-ext" data-tag-id="..." data-feed-loop="false">
+ */
+export const FEED_LOOP_ENABLED_DATA_ATTR = "data-feed-loop";
+
+/**
+ * Validate a raw loop-enabled value (from the {@link FEED_LOOP_ENABLED_PARAM}
+ * script param or the {@link FEED_LOOP_ENABLED_DATA_ATTR} attribute) to a
+ * boolean, or `undefined` when it is missing/empty/unrecognised.
+ *
+ * Only the exact tokens `true`/`false` and `1`/`0` are accepted (case- and
+ * whitespace-insensitive). An unrecognised value is deliberately ignored rather
+ * than coerced — a typo must not silently flip a tag's loop behaviour.
+ */
+function parseFeedLoopValue(raw: string | null | undefined): boolean | undefined {
+  if (raw === undefined || raw === null) return undefined;
+  const value = raw.trim().toLowerCase();
+  if (value === "true" || value === "1") return true;
+  if (value === "false" || value === "0") return false;
+  return undefined;
+}
+
+/**
+ * Resolve the feed-loop override, or `undefined` when neither source supplies a
+ * valid value (callers then fall back to the tag's resolved `feedLoopEnabled`).
+ *
+ * Precedence mirrors {@link getInitVolumeOverride}: the page-global
+ * {@link FEED_LOOP_ENABLED_PARAM} script param wins; the per-div
+ * {@link FEED_LOOP_ENABLED_DATA_ATTR} value (passed as `dataFeedLoopEnabled`) is
+ * the fallback. An invalid script param does not suppress a valid attribute.
+ *
+ * @param dataFeedLoopEnabled Raw `data-feed-loop` value for this instance, if any.
+ * @returns `true`/`false` to override, or `undefined` to defer to strategy config.
+ */
+export function getFeedLoopEnabledOverride(dataFeedLoopEnabled?: string | null): boolean | undefined {
+  return parseFeedLoopValue(getScriptParam(FEED_LOOP_ENABLED_PARAM)) ?? parseFeedLoopValue(dataFeedLoopEnabled);
+}
+
+/**
+ * Loader script param that caps how many feed items are displayed. A
+ * non-negative integer; the feed renders `min(adSlots, availableItems)`
+ * entries.
+ *
+ * `0` is the "no cap" sentinel — it is ignored entirely and the feed keeps its
+ * existing behaviour (every available item). A value larger than the number of
+ * available items shows all of them; items are never duplicated to reach the
+ * requested count. Read from our own <script src> query (like {@link GIV_PARAM})
+ * so it survives a cross-origin `srcdoc` iframe.
+ *   <script src=".../gen_ext.min.js?ad_slots=3"></script>
+ */
+export const AD_SLOTS_PARAM = "ad_slots";
+
+/**
+ * Per-div attribute form of {@link AD_SLOTS_PARAM}. Mirrors
+ * {@link GIV_DATA_ATTR}: when the page-global script param is absent, each
+ * `.gen-ext` element can carry its own slot cap here. The script param (when
+ * present and valid) always wins.
+ *   <div class="gen-ext" data-tag-id="..." data-ad-slots="3">
+ */
+export const AD_SLOTS_DATA_ATTR = "data-ad-slots";
+
+/**
+ * Validate a raw slot-count value (from the {@link AD_SLOTS_PARAM}
+ * script param or the {@link AD_SLOTS_DATA_ATTR} attribute) to a
+ * positive integer, or `undefined` when it is missing/empty/non-numeric/
+ * negative/fractional — or exactly `0`.
+ *
+ * `0` is deliberately rejected rather than treated as "show nothing": it is the
+ * documented opt-out sentinel, so callers fall back to the existing uncapped
+ * behaviour. Fractional values are rejected too — a slot count is a whole number,
+ * and silently truncating one hides a host-side mistake.
+ */
+function parseAdSlotsValue(raw: string | null | undefined): number | undefined {
+  if (raw === undefined || raw === null || raw.trim() === "") return undefined;
+  const value = Number(raw);
+  if (!Number.isInteger(value) || value <= 0) return undefined;
+  return value;
+}
+
+/**
+ * Resolve the displayed-item cap, or `undefined` when neither source supplies a
+ * valid value — including the `0` opt-out (callers then show every available
+ * item, the pre-existing behaviour).
+ *
+ * Precedence mirrors {@link getInitVolumeOverride}: the page-global
+ * {@link AD_SLOTS_PARAM} script param wins; the per-div
+ * {@link AD_SLOTS_DATA_ATTR} value (passed as `dataAdSlots`)
+ * is the fallback. An invalid or `0` script param does not suppress a valid
+ * attribute.
+ *
+ * @param dataAdSlots Raw `data-ad-slots` value for this instance, if any.
+ * @returns A positive integer cap, or `undefined` to show every available item.
+ */
+export function getAdSlotsOverride(dataAdSlots?: string | null): number | undefined {
+  return parseAdSlotsValue(getScriptParam(AD_SLOTS_PARAM)) ?? parseAdSlotsValue(dataAdSlots);
 }
 
 /**

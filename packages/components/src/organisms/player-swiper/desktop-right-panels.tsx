@@ -8,6 +8,7 @@ import type { VideoTypes } from "@genuin/components/context";
 import { CommentInputBox } from "@genuin/components/molecules/comments/comment-input";
 import { CommentsList } from "@genuin/components/molecules/comments/comments-list";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
+import { hasLinkouts } from "@genuin/components/molecules/linkout-new/linkout-utils";
 import { setQueryDataForNewComment } from "@genuin/components/react-query/api/comments";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
@@ -59,22 +60,31 @@ export function DesktopRightPanels({
           "gencl:w-full gencl:min-w-0 gencl:hidden gencl:sm:block! gencl:overflow-hidden gencl:transition-all gencl:duration-300 gencl:ease-in-out",
           isLinkoutsPanelVisible
             ? isCommentsPanelVisible
-              ? "gencl:flex-none gencl:opacity-100"
+              ? // Both panels share the rail: linkout shrink-wraps its card so
+                // the `flex-1` comments panel gets the remaining height. `h-fit`
+                // is load-bearing on WebKit — the linkout's inner `height:100%`
+                // wrapper otherwise fills the flex line (Safari) instead of
+                // collapsing to content (Chrome), starving comments to 0px.
+                "gencl:flex-none gencl:h-fit gencl:opacity-100"
               : "gencl:h-full gencl:opacity-100"
             : "gencl:flex-none gencl:h-0 gencl:opacity-0 gencl:pointer-events-none"
         )}>
-        <SafeSuspense fallback={null} errorFallback={null}>
-          <Linkouts
-            linkouts={activePost.video?.linkouts ?? []}
-            linkoutId={activePost.video?.linkoutId ?? null}
-            isActive
-            showImmediately
-            variant="dynamic"
-            view="expand"
-            videoDetails={activePost.video}
-            totalVideos={totalVideos}
-          />
-        </SafeSuspense>
+        {/* Non-empty only: `[]` (no/CMS-disabled linkout) would still mount the
+            lazy <Linkouts> chunk and flash its skeleton fallback on slow networks. */}
+        {hasLinkouts(activePost.video) && (
+          <SafeSuspense fallback={null} errorFallback={null}>
+            <Linkouts
+              linkouts={activePost.video.linkouts}
+              linkoutId={activePost.video?.linkoutId ?? null}
+              isActive
+              showImmediately
+              variant="dynamic"
+              view="expand"
+              videoDetails={activePost.video}
+              totalVideos={totalVideos}
+            />
+          </SafeSuspense>
+        )}
       </div>
 
       <div

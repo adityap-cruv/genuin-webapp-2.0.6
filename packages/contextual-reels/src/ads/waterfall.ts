@@ -13,20 +13,23 @@ const _logger = createLogger("cxr/waterfall");
 /**
  * Notify the embedding page that an ad filled successfully.
  *
- * Posts `{ type: 'adFillCallback' }` to the parent frame (when in an iframe)
- * and invokes `window.adFillCallback()` when present.
+ * Posts `{ type: 'adFillCallback', tagId }` to the parent frame (when in an
+ * iframe) and invokes `window.adFillCallback(tagId)` when present, so a host
+ * embedding multiple tags can tell which one filled.
  *
  * Callback errors are caught and logged — they must never propagate.
+ *
+ * @param tagId The configured tag id for this widget, when known.
  */
-export function notifyAdFill(): void {
+export function notifyAdFill(tagId?: string): void {
   if (window.parent && window.parent !== window) {
-    window.parent.postMessage({ type: "adFillCallback" }, "*");
+    window.parent.postMessage({ type: "adFillCallback", tagId }, "*");
   }
 
-  const cb = (window as Window & { adFillCallback?: () => void }).adFillCallback;
+  const cb = (window as Window & { adFillCallback?: (tagId?: string) => void }).adFillCallback;
   try {
     if (typeof cb === "function") {
-      cb();
+      cb(tagId);
     }
   } catch (error) {
     _logger.error("Error while calling window.adFillCallback:", error);
@@ -36,20 +39,23 @@ export function notifyAdFill(): void {
 /**
  * Notify the embedding page that the ad waterfall found no ads to fill.
  *
- * Posts `{ type: 'noAdsCallback' }` to the parent frame (when in an iframe)
- * and invokes `window.noAdsCallback()` when present.
+ * Posts `{ type: 'noAdsCallback', tagId }` to the parent frame (when in an
+ * iframe) and invokes `window.noAdsCallback(tagId)` when present, so a host
+ * embedding multiple tags can tell which one passed back.
  *
  * Callback errors are caught and logged — they must never propagate.
+ *
+ * @param tagId The configured tag id for this widget, when known.
  */
-export function notifyAdNoFill(): void {
+export function notifyAdNoFill(tagId?: string): void {
   if (window.parent && window.parent !== window) {
-    window.parent.postMessage({ type: "noAdsCallback" }, "*");
+    window.parent.postMessage({ type: "noAdsCallback", tagId }, "*");
   }
 
-  const cb = (window as Window & { noAdsCallback?: () => void }).noAdsCallback;
+  const cb = (window as Window & { noAdsCallback?: (tagId?: string) => void }).noAdsCallback;
   try {
     if (typeof cb === "function") {
-      cb();
+      cb(tagId);
     }
   } catch (error) {
     _logger.error("Error while calling window.noAdsCallback:", error);

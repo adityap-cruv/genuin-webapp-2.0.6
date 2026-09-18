@@ -3,15 +3,14 @@ import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config
 
 /**
  * Returns `true` when the new (Design System V2) player controls are enabled.
+ * Native webapp defaults to v2; SDK embeds default to v1 and opt in via the
+ * `design_system=v2` URL param.
  *
- * Two independent opt-ins:
- * - `configuration.player_controls === "v2"` — the controls on their own.
- * - `isDesignSystemV2` — the whole v2 rollout (dynamic linkouts, sponsored
- *   treatment, width-derived control sizing), which includes the controls.
- *
- * The first exists because those are separable: an embed can want the v2
- * control cluster without the rest of the design system, which is still being
- * rolled out per-placement. Defaults to `false` (old UI).
+ * A second, narrower opt-in exists: `configuration.player_controls === "v2"`
+ * turns on the control cluster alone, without the rest of the v2 rollout
+ * (dynamic linkouts, sponsored treatment, width-derived control sizing). Those
+ * are separable — a placement can want the controls while the design system is
+ * still rolling out.
  */
 export function useNewPlayerControls(): boolean {
   const { isDesignSystemV2 } = useEmbedConfigs();

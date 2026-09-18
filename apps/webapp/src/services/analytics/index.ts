@@ -7,15 +7,16 @@ import { handleWalletBalance } from "../wallet-handler";
 
 import { rudderStackTrack } from "./useRudderAnalytics";
 
-export type PropertiesType = Record<string, string | number | undefined>;
+export type PropertiesType = Record<string, string | number | undefined | Record<string, string>>;
 
 type AnalyticsTrackType = {
   eventName: string;
   properties: PropertiesType;
+  onSent?: () => void;
 };
 
 export const Analytics = {
-  track: async ({ eventName, properties }: AnalyticsTrackType): Promise<void> => {
+  track: async ({ eventName, properties, onSent }: AnalyticsTrackType): Promise<void> => {
     const { user, brandId, config } = useGenuinOptions.getState();
     let channel = !config ? "genuin web" : "white label";
     let embedId;
@@ -45,7 +46,7 @@ export const Analytics = {
 
     Object.assign(properties, defaultProperties);
 
-    await rudderStackTrack(eventName, properties);
+    await rudderStackTrack(eventName, properties, onSent);
   },
   pushVideoWatch(videoId: string) {
     void axiosInstance.put("/api/v3/video_view", {

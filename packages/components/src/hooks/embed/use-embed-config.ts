@@ -122,30 +122,51 @@ export function useEmbedConfigs() {
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
   const { searchParams } = useSearchParams();
 
-  // Tracks whether the v2 design system experience is enabled, via any of:
-  // the `design_system=v2` URL param (webapp testing), the
-  // `configuration.design_system` field on the embed/placement API response
-  // (per-embed opt-in for web-sdk consumers), or the `designSystemV2` id
-  // allowlist above (id-scoped rollout, no param or backend change needed).
+  // Tracks whether the v2 design system experience is enabled. v2 is now the
+  // DEFAULT for BOTH the native webapp and web-sdk embeds. The rules, in order:
+  //  1. iHeart layout stays on v1 (controls + linkouts) so the default-v2 flip
+  //     never touches general iHeart embeds — UNLESS the placement/embed id is in
+  //     the `designSystemV2` allowlist below (the z100 demo placements were
+  //     deliberately given v2 CONTROLS while keeping v1 linkouts).
+  //  2. Any brand can force v1 via the `design_system=v1` URL param (testing /
+  //     rollback) or `configuration.design_system==="v1"` on the embed/placement
+  //     API response (per-embed opt-out for web-sdk consumers).
   // Recomputed whenever the search string or embed data changes.
+  const currentBrandLayout = brandLayoutType ?? "default";
   const designSystemPlacementId = embedData?.placement_id;
   const designSystemEmbedId = embedData?.embed_id;
-  const isDesignSystemV2 = useMemo(
-    () =>
-      new URLSearchParams(searchParams).get("design_system") === "v2" ||
-      embedData?.configuration?.design_system === "v2" ||
-      matchesFeature(BRAND_FEATURE_IDS.designSystemV2, {
+  const isDesignSystemV2 = useMemo(() => {
+    if (
+      new URLSearchParams(searchParams).get("design_system") === "v1" ||
+      embedData?.configuration?.design_system === "v1"
+    ) {
+      return false;
+    }
+    // iHeart is v1 by default, but the id allowlist can promote specific
+    // (demo) iHeart placements back to v2 controls.
+    if (currentBrandLayout === "iheart") {
+      return matchesFeature(BRAND_FEATURE_IDS.designSystemV2, {
         placement_id: designSystemPlacementId,
         embed_id: designSystemEmbedId,
-      }),
-    [searchParams, embedData?.configuration?.design_system, designSystemPlacementId, designSystemEmbedId]
-  );
+      });
+    }
+    return true;
+  }, [
+    currentBrandLayout,
+    searchParams,
+    embedData?.configuration?.design_system,
+    designSystemPlacementId,
+    designSystemEmbedId,
+  ]);
 
-  // iHeart keeps the v1 linkout experience: its right rail has no comments panel,
-  // so the v2 outside-placement layout leaves a mostly empty desktop column.
-  // TODO(dharmil): to ship v2 linkouts for iHeart too, delete this flag and point
-  // every `isDesignSystemV2Linkouts` consumer back at `isDesignSystemV2`.
-  const isDesignSystemV2Linkouts = isDesignSystemV2 && (brandLayoutType ?? "default") !== "iheart";
+  // ted keeps the v1 linkout experience while still getting the v2 player
+  // controls: the linkout layout is pinned to v1 by request, but everything else
+  // (controls, sizing, thresholds) follows `isDesignSystemV2`. iHeart also keeps
+  // v1 linkouts even when the id allowlist promotes it to v2 controls (its v2
+  // right rail is near-empty → dead zone).
+  // TODO(dharmil): to ship v2 linkouts for ted, drop it from this exclusion and
+  // point every `isDesignSystemV2Linkouts` consumer back at `isDesignSystemV2`.
+  const isDesignSystemV2Linkouts = isDesignSystemV2 && currentBrandLayout !== "iheart" && currentBrandLayout !== "ted";
 
   const isAdsEnabledInIheart = useMemo(() => {
     return rootElement?.getAttribute("data-ads-enabled") === "true";
@@ -446,7 +467,17 @@ export function useEmbedConfigs() {
   const linkConfig = useMemo(
     () => ({
       showLinks: customization?.links?.is_show_links ?? false,
-      showLinksInExpand: embedData?.show_linkout_in_expand ?? true,
+      // Expand-view linkout enable, resolved by config type because the two
+      // config shapes expose DIFFERENT flags:
+      //  - PLACEMENT has a dedicated expand flag: `expand_view.enable_linkout`
+      //    (→ `show_linkout_in_expand`). Use it so tile and expand are truly
+      //    independent (e.g. an "expand-only" placement). Default ON when omitted.
+      //  - EMBED has NO expand flag at all (no `expand_view` block) — its only
+      //    linkout flag is `is_show_links`. So expand mirrors the tile enable:
+      //    linkout on → shows in both tile and expand; off → neither.
+      showLinksInExpand: embedData?.placement_id
+        ? (embedData?.show_linkout_in_expand ?? true)
+        : (customization?.links?.is_show_links ?? false),
       linkPosition: customization?.links?.position ?? "outside",
       showLinkOutside: customization?.links?.is_show_links && customization?.links?.position === "outside",
       showLinkInside: customization?.links?.is_show_links && customization?.links?.position === "overlay",
@@ -624,6 +655,13 @@ export function useEmbedConfigs() {
       return 9 / 16; // default portrait
     };
 
+    // Header height for the current view — 0 when no header renders (see
+    // `getHeaderHeight`). Computed once here so both the effective-video-width
+    // math and the exposed `headerHeight` share a single source. The linkout
+    // 50%-height gate subtracts this to measure against the real video frame,
+    // not the container (which includes the feed/carousel header).
+    const headerHeight = getHeaderHeight();
+
     // Calculate effective video width based on embed style
     const getEffectiveVideoWidth = () => {
       switch (currentStyle) {
@@ -633,8 +671,7 @@ export function useEmbedConfigs() {
         case "carousel":
         case "feed": {
           // Video height = container height minus header
-          const headerH = getHeaderHeight();
-          const availableH = Math.max(containerHeight - headerH, 0);
+          const availableH = Math.max(containerHeight - headerHeight, 0);
           const aspectRatioValue = parseAspectRatio();
           const widthFromAspectRatio = availableH * aspectRatioValue;
           return widthFromAspectRatio > 0 ? Math.min(containerWidth, widthFromAspectRatio) : containerWidth;
@@ -668,6 +705,7 @@ export function useEmbedConfigs() {
       breakpoints,
       containerWidth,
       containerHeight,
+      headerHeight,
       effectiveVideoWidth,
       isXs: effectiveVideoWidth <= breakpoints.xs,
       isSm: effectiveVideoWidth <= breakpoints.sm,
@@ -777,9 +815,9 @@ export function useEmbedConfigs() {
     brand,
     embedSwiperConfigs,
     /**
-     * True when the embed URL contains `design_system=v2`. Gates the v2
-     * design system experience (e.g. dynamic linkouts, v2 player controls)
-     * across the app.
+     * True when the v2 design system experience is active (dynamic linkouts,
+     * v2 player controls, etc.). Native webapp defaults to v2; SDK embeds
+     * default to v1 and opt in via `?design_system=v2`.
      */
     isDesignSystemV2,
     /**

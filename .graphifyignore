@@ -1,0 +1,37 @@
+# Additive graphify excludes (node_modules/build are already auto-pruned).
+# Trim monorepo noise so the graph stays focused on real source.
+
+# Legacy webapp is kept for reference only — exclude from the graph to
+# avoid confusing/stale cross-references.
+apps/legacy-webapp/
+
+dist/
+build/
+.next/
+.turbo/
+coverage/
+storybook-static/
+**/*.d.ts
+**/*.stories.tsx
+**/*.stories.ts
+
+# package.json / lockfiles otherwise become hundreds of npm-dependency-name
+# nodes (react, tailwindcss, a whole "devDependencies" community) that drown out
+# real code structure in the graph. Workspace + alias resolution comes from
+# pnpm-workspace.yaml and per-package tsconfig `paths`, NOT from these files, so
+# excluding them keeps every cross-package edge intact. (Verified: components→ui,
+# web-sdk→components, webapp→components all still resolve after this exclusion.)
+**/package.json
+**/package-lock.json
+**/pnpm-lock.yaml
+**/yarn.lock
+
+# Markdown docs (upgrade/migration guides, REPO_CONTEXT.md, the .claude skill
+# docs, etc.) add thousands of doc/concept nodes whose generic headings HIJACK
+# natural-language queries: verified that `graphify query "how does authentication
+# work"` matched a heading in docs/upgrades/UPGRADE_TESTING_CHECKLIST.md and
+# returned a useless checklist, while a code-only graph resolved the same query to
+# the real auth code (authentication-modal.tsx, api/auth.ts, useAuthContext). Keep
+# the graph code-focused so the LLM-facing `query`/`explain`/`affected` stay useful.
+# (Remove this rule if you specifically want docs indexed as a knowledge layer.)
+**/*.md

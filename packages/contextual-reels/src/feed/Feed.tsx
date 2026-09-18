@@ -104,7 +104,15 @@ export function Feed({ entries, variant }: FeedProps): React.JSX.Element | null 
             : "gencl:relative gencl:h-full gencl:w-full"
         }
         style={isFullScreen ? { width: FULLSCREEN_VIDEO_WIDTH, background: "#000" } : undefined}>
-        <div ref={viewportRef} data-testid="feed-container" className="gencl:h-full gencl:w-full gencl:overflow-hidden">
+        <div
+          ref={viewportRef}
+          data-testid="feed-container"
+          // Active feed position, for tests and for host-side debugging. The rendered
+          // slide layouts are only a mount WINDOW around the active index
+          // (see computeSlideMountWindow), so counting DOM nodes cannot tell you where
+          // in the feed you are — this attribute is the only true signal.
+          data-cxr-active-index={activeIndex}
+          className="gencl:h-full gencl:w-full gencl:overflow-hidden">
           <div data-testid="reel-list" className="gencl:flex gencl:flex-col gencl:h-full">
             {entries.map((entry, idx) => {
               const isMounted = mountedIndices.has(idx);

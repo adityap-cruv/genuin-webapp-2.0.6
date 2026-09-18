@@ -27,6 +27,12 @@
 // still run one at a time: throttling emulates slow hardware by capping this
 // process's CPU budget, and concurrent browsers would contend for real CPU and
 // invalidate each other's throttled measurement.
+// This is a Node CLI, but the repo's root ESLint config (which is what the
+// pre-commit hook resolves, since lint-staged runs eslint from the repo root)
+// supplies browser globals only — so `process` reads as undefined and `no-undef`
+// fires on every use. Declared here rather than in the package-local config,
+// which that hook path never loads.
+/* global process */
 import { spawn } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import { resolve, dirname } from "node:path";
@@ -154,7 +160,29 @@ function score(report) {
   return { grade, frac, errBreach, warnBreach, total };
 }
 
+/**
+ * Format a millisecond duration as `1h 04m 12s` / `4m 12s` / `12.3s`.
+ *
+ * @param {number} ms Elapsed milliseconds.
+ * @returns {string} Human-readable duration.
+ */
+function fmtDuration(ms) {
+  const totalSeconds = ms / 1000;
+  if (totalSeconds < 60) return `${totalSeconds.toFixed(1)}s`;
+  const roundedSeconds = Math.round(totalSeconds);
+  const hours = Math.floor(roundedSeconds / 3600);
+  const minutes = Math.floor((roundedSeconds % 3600) / 60);
+  const seconds = roundedSeconds % 60;
+  if (hours > 0) return `${hours}h ${String(minutes).padStart(2, "0")}m ${String(seconds).padStart(2, "0")}s`;
+  return `${minutes}m ${String(seconds).padStart(2, "0")}s`;
+}
+
 async function main() {
+  // Wall clock for the whole matrix, reported at the end. The run is dominated by
+  // fixed observation windows (see budgets.json `observeMs`), so this is mostly a
+  // function of cell count ÷ concurrency rather than of machine speed — useful for
+  // sizing a nightly job.
+  const startedAt = Date.now();
   const args = parseArgs(process.argv);
   const runs = Number(args.runs || 3);
   const throttle = args.throttle;
@@ -265,6 +293,12 @@ async function main() {
   // Interacted cells are measured and reported (informational note above) but
   // never fail the run — HAI itself does not gate on post-interaction cost.
   const anyBreach = rows.some((r) => r.interaction.id === "non-interacted" && r.sc.errBreach);
+
+  const elapsedMs = Date.now() - startedAt;
+  console.log(
+    `${C.dim}Total time ${C.reset}${C.bold}${fmtDuration(elapsedMs)}${C.reset}${C.dim} · ${cells.length} cells · ${fmtDuration(elapsedMs / cells.length)}/cell avg · concurrency ${concurrency}${C.reset}`
+  );
+
   console.log("");
   if (anyBreach && !reportOnly) {
     console.log(`${C.red}${C.bold}BUDGET BREACH — one or more variations exceed Chrome HAI limits.${C.reset}`);

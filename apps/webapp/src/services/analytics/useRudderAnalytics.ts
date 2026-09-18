@@ -4,11 +4,15 @@ import type { RudderAnalytics } from "@rudderstack/analytics-js";
 import { getIpAddress } from "@/lib/api/config";
 import { useGenuinOptions } from "@lib/stores/genuin-options";
 
-export async function rudderStackTrack(eventName: string, properties: Record<string, string | number | undefined>) {
+export async function rudderStackTrack(
+  eventName: string,
+  properties: Record<string, string | number | undefined | Record<string, string>>,
+  callback?: () => void
+) {
   const x = window.rudderanalytics as RudderAnalytics | undefined | null;
   const brandId = useGenuinOptions.getState().brandId;
   if (properties && brandId) (properties as any).brand_id = brandId;
-  x?.track(eventName, properties);
+  x?.track(eventName, properties, callback);
 }
 
 export async function rudderStackIdentify() {

@@ -21,40 +21,45 @@ const iconVariant = cva("", {
 // Define the Props type for the ExpandIcon component
 type ExpandIconPropsType = ComponentProps<"svg"> & VariantProps<typeof iconVariant>;
 
-export function ExpandIcon({ theme, size, className, ...restProps }: ExpandIconPropsType) {
+// Corner-bracket expand glyph — STROKED, not filled. The design system sizes the
+// bracket line by a per-size, NON-SCALING token (`PLAYER_CONTROL_SIZE.stroke`:
+// 0.75 / 1 / 1.25 / 2 / 3.75 px), which `IconCircleButton` sets as
+// `style.strokeWidth`. `vectorEffect="non-scaling-stroke"` keeps that width as
+// literal device px at every glyph size, matching Figma exactly — a filled glyph
+// can't (its thickness is baked in and scales with the icon). `strokeWidth` here
+// (default 2) is only the fallback for non-button callers; the button's inline
+// style wins. Round caps + joins per the current Figma glyph (node 18124:317760).
+export function ExpandIcon({ theme, size, className, strokeWidth = 2, ...restProps }: ExpandIconPropsType) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"
-      viewBox="0 0 24 24"
+      viewBox="0 0 8 8"
       fill="none"
+      strokeWidth={strokeWidth}
       className={cn(iconVariant({ theme, size }), className)}
       {...restProps}>
       <path
-        d="M3.99854 9V5.25C3.99854 4.55965 4.55819 4 5.24854 4H8.99854"
-        strokeWidth="2"
+        d="M1.333 3V1.75C1.333 1.52 1.52 1.333 1.75 1.333H3"
         strokeLinecap="round"
         strokeLinejoin="round"
         vectorEffect="non-scaling-stroke"
       />
       <path
-        d="M14.9985 4H18.7485C19.4389 4 19.9985 4.55965 19.9985 5.25V9"
-        strokeWidth="2"
+        d="M5 1.333H6.25C6.48 1.333 6.667 1.52 6.667 1.75V3"
         strokeLinecap="round"
         strokeLinejoin="round"
         vectorEffect="non-scaling-stroke"
       />
       <path
-        d="M19.9985 15V18.75C19.9985 19.4404 19.4389 20 18.7485 20H14.9985"
-        strokeWidth="2"
+        d="M6.667 5V6.25C6.667 6.48 6.48 6.667 6.25 6.667H5"
         strokeLinecap="round"
         strokeLinejoin="round"
         vectorEffect="non-scaling-stroke"
       />
       <path
-        d="M8.99854 20H5.24854C4.55819 20 3.99854 19.4404 3.99854 18.75V15"
-        strokeWidth="2"
+        d="M3 6.667H1.75C1.52 6.667 1.333 6.48 1.333 6.25V5"
         strokeLinecap="round"
         strokeLinejoin="round"
         vectorEffect="non-scaling-stroke"

@@ -1,5 +1,4 @@
 import type { EmbedDataType } from "@genuin/components/context/embed/embed.types";
-import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
 import { AppErrorBoundary } from "@genuin/components/molecules/error/app-error-boundary";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
@@ -9,9 +8,6 @@ import {
 } from "@genuin/components/molecules/root-portal/shadow-root/shadow-dom.utils";
 import type { AuthUser } from "@genuin/components/types/auth";
 import type { BrandDetailsConfigType } from "@genuin/components/types/brand";
-import { cn } from "@genuin/ui";
-import { Loader } from "@genuin/ui/components/loader";
-import { Skeleton } from "@genuin/ui/components/skeleton";
 import type { ToasterProps } from "@genuin/ui/components/toaster";
 import { Suspense, lazy, useEffect, useMemo, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
@@ -24,7 +20,6 @@ import { metrics } from "../utils/metrics";
 import { generateExpandViewSkeletonHTML } from "../utils/skeleton-html";
 
 import type { EmbedRootProps } from "./embed-root";
-
 
 // Lazy load Toaster for better code splitting
 const LazyToasterInner = lazy(() =>
@@ -117,40 +112,32 @@ let toasterRoot: Root | null = null;
  * React-based skeleton component (loaded after providers are available)
  * Used as Suspense fallback after providers are loaded
  */
-function EmbedSkeleton({ container, theme }: { container: HTMLElement; theme?: "dark" | "light" }) {
-  const bgClass = theme === "dark" ? "gencl:bg-secondary-900" : "gencl:bg-secondary-200";
-  const shimmerBgClass = theme === "dark" ? "gencl:bg-secondary-800" : "gencl:bg-secondary-100";
-  const { isDesktop } = useDeviceDetectMediaQuery();
-  const websiteType = container.getAttribute("data-website-type");
+function EmbedSkeleton({ theme }: { container: HTMLElement; theme?: "dark" | "light" }) {
+  const bgColor = theme === "dark" ? "#1a1a1a" : "#e5e5e5";
+  const shimmerHighlight = theme === "dark" ? "#333333" : "#ffffff";
 
   return (
-    <div className={`gencl:relative gencl:h-full gencl:w-full gencl:rounded-md ${isDesktop && bgClass}`}>
-      {websiteType ? (
-        <div
-          style={{
-            height: !isDesktop ? "100%" : "calc(100% - 68px)",
-          }}
-          className={cn(
-            "gencl:w-full gencl:flex gencl:overflow-auto gencl:gap-2",
-            !isDesktop && websiteType === "polaris" && "gencl:flex-col"
-          )}>
-          {Array.from({ length: 6 }).map((_, idx) => (
-            <Skeleton
-              key={idx}
-              className={cn(
-                "gencl:aspect-square gencl:flex-shrink-0 gencl:rounded-md",
-                !isDesktop && websiteType === "polaris" ? "gencl:w-full" : "gencl:h-full",
-                shimmerBgClass
-              )}
-            />
-          ))}
-        </div>
-      ) : (
-        <div className="gencl:flex gencl:items-center gencl:justify-center gencl:h-full gencl:w-full">
-          <Loader size="md" />
-        </div>
-      )}
-    </div>
+    <>
+      <style>{`
+        @keyframes shimmer {
+          0% {
+            background-position: -200% 0;
+          }
+          100% {
+            background-position: 200% 0;
+          }
+        }
+      `}</style>
+      <div
+        className="gencl:relative gencl:h-full gencl:w-full gencl:rounded-md gencl:overflow-hidden"
+        style={{
+          background: bgColor,
+          backgroundImage: `linear-gradient(90deg, ${bgColor} 0%, ${shimmerHighlight} 50%, ${bgColor} 100%)`,
+          backgroundSize: "200% 100%",
+          animation: "shimmer 1.5s ease-in-out infinite",
+        }}
+      />
+    </>
   );
 }
 

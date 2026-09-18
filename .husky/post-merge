@@ -1,1 +1,6 @@
+#!/usr/bin/env sh
 pnpm i
+
+# Rebuild the graphify graph after a merge / `git pull` (or nudge if the CLI isn't
+# installed). Optional/graceful — see scripts/graphify-hook.sh; never blocks.
+sh "$(dirname -- "$0")/../scripts/graphify-hook.sh" merge

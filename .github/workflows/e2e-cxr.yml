@@ -1,0 +1,121 @@
+name: E2E Tests — Contextual Reels
+
+# Fires real QA ad requests against the live GenAd exchange + Bunny CDN
+# (see packages/contextual-reels/docs/cxr-decisions/004-e2e-real-genad.md).
+# Opt-in via the `run-e2e-all` label so it never runs on PRs that don't
+# touch the widget's mount/layout/ad-integration path.
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, labeled, synchronize]
+
+concurrency:
+  group: e2e-cxr-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (contains(github.event.pull_request.labels.*.name, 'run-e2e-all') &&
+       contains(github.event.pull_request.labels.*.name, 'pkg:contextual-reels'))
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      # Skips the monorepo-wide postinstall hook that eagerly downloads all 4
+      # Playwright engines (Chromium/Firefox/WebKit/FFmpeg) — this job needs only
+      # Chromium and WebKit, installed explicitly by the dedicated step below.
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+
+      - name: Create contextual-reels env file
+        run: echo "$CXR_ENV_DEVELOPMENT" > packages/contextual-reels/.env.development
+        env:
+          CXR_ENV_DEVELOPMENT: ${{ secrets.CXR_ENV_DEVELOPMENT }}
+
+      - name: Create gen-ai env file
+        run: echo "$GEN_AI_ENV" > packages/genai/.env.development
+        env:
+          GEN_AI_ENV: ${{ secrets.GEN_AI_ENV }}
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+
+      # Turbo's local filesystem cache. There is no remote cache configured, so
+      # this is what lets a second run on the branch replay the genai-sdk build
+      # (roughly half the build step) instead of recompiling it.
+      - name: Cache turbo build output
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: turbo-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            turbo-${{ runner.os }}-
+
+      # Apt system libraries aren't cacheable, but the browser binary is — skip
+      # the browser download on a cache hit and only fetch the (small) apt libs.
+      # WebKit as well as Chromium: the `webkit` project runs the 8 `@routing`
+      # cases (layout resolution + bundle bootstrap, no media or ad fill needed).
+      # ~20 s of test time for the widget's only non-Chromium signal.
+      - name: Install Playwright browsers (cache miss only)
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: pnpm --filter @genuin/contextual-reels exec playwright install --with-deps chromium webkit
+
+      - name: Install Playwright system deps (cache hit)
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: pnpm --filter @genuin/contextual-reels exec playwright install-deps chromium webkit
+
+      # `pnpm build` skips prebuild (pnpm 8 doesn't run pre/post scripts), so it
+      # neither cleans dist/ nor builds the genai-sdk dependency — build via turbo
+      # instead. See docs/TESTING.md#7-bundle-build--pnpm-build.
+      - name: Build contextual-reels
+        run: pnpm turbo build --filter=@genuin/contextual-reels
+        env:
+          NODE_ENV: development
+
+      # workers: 1 is pinned in playwright.config.ts under CI=true; override to 2.
+      # Measured on the previous 41-test suite (~192 s); 3 workers was rejected then.
+      # The suite is now 50 tests and two raise their own timeout to 120 s to wait on
+      # a real ad completing, so re-measure before changing this.
+      #
+      # 3 was measured on this runner and rejected: 182s vs 192s at 2 (a 5% gain)
+      # while a video-feed spec failed outright in both projects. Only partly
+      # I/O-bound — video decode is real CPU work, so a 2-vCPU runner does not
+      # absorb a third worker. Do not raise this without re-measuring here;
+      # docs/TESTING.md's 4-worker figure is from an 8-core laptop.
+      #
+      # Do not shard across jobs either: setup is paid per shard, billing doubles.
+      - name: Run E2E tests
+        run: pnpm --filter @genuin/contextual-reels test:e2e --workers=2
+        env:
+          CI: true
+
+      - name: Upload test report
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxr-playwright-report
+          path: packages/contextual-reels/playwright-report/
+          retention-days: 7

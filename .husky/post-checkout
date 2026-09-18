@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+# Rebuild the graphify graph after a branch checkout (or nudge if the CLI isn't
+# installed). post-checkout args: $1=prev $2=new $3=branch-flag (1=branch, 0=file).
+[ "$3" = "1" ] || exit 0
+sh "$(dirname -- "$0")/../scripts/graphify-hook.sh" checkout

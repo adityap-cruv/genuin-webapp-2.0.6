@@ -1103,6 +1103,18 @@ export class GenuinSDK {
       // Propagate the resolved flag so downstream consumers see the same value.
       extractedData.useShadowDOM = useShadowDOM;
 
+      // Lock container dimensions before showing skeleton to prevent width/height
+      // jumps when skeleton items (with flex-shrink: 0 + aspect-ratio) load.
+      // Only lock if container already has non-zero dimensions (layout-dependent).
+      const currentWidth = element.clientWidth;
+      const currentHeight = element.clientHeight;
+      if (currentWidth > 0 && !element.style.width) {
+        element.style.width = `${currentWidth}px`;
+      }
+      if (currentHeight > 0 && !element.style.height) {
+        element.style.height = `${currentHeight}px`;
+      }
+
       // Show loading skeleton immediately (inside shadow root when enabled)
       loadLoadingView(shadowTarget, extractedData.theme);
 

@@ -76,7 +76,7 @@ App  →  <StrategyProvider tagId>  →  resolveStrategies(tagId)  →  Strategi
 | `adsDisabled`             | `boolean`  | `false`    | Hard kill switch — no ads ever shown. Drops standalone ad slides and strips the organic ad break. Overrides `adBreakEnabled`.                                                                                                                                                                                                                                                                        |
 | `mutePassback`            | `boolean`  | `false`    | On first `player:play`, start a timer; if still muted when it fires, trigger an ad passback (`onAdFail`). Distinct from `gateOnUnmute` — this passes the slot back rather than just suppressing the request.                                                                                                                                                                                         |
 | `mutePassbackDelayMs`     | `number`   | `5000`     | Delay before the `mutePassback` timer fires, measured from the first `player:play`. Ignored unless `mutePassback` is on.                                                                                                                                                                                                                                                                             |
-| `initialVolume`           | `number`   | `0`        | Volume (0..1) the feed starts at on first load. `0` plays unmuted-but-silent and shows the unmute prompt; set per-tag (e.g. `0.2`) to start audible. A browser autoplay block snaps it back to 0.                                                                                                                                                                                                    |
+| `initialVolume`           | `number`   | `0`        | Volume (0..1) the feed starts at on first load. `0` plays unmuted-but-silent and shows the unmute prompt; set per-tag (e.g. `0.01`) to start audible. A browser autoplay block snaps it back to 0.                                                                                                                                                                                                   |
 | `servedStatically`        | `boolean`  | `false`    | Serve the tag's config + feed from committed per-tag fixtures — skip `/ad_creative` and `/feed`. `/ip_info` is still fetched (geoip stays on analytics). The ad URL is rewritten client-side (real `ua`, `[PAGE_URL]`, real client `ip` from geoip). See [Statically-served tags](#statically-served-tags).                                                                                          |
 | `feedLoopEnabled`         | `boolean`  | **`true`** | Whether the feed wraps from the last slide back to the first. See [Finite feeds](#finite-feeds-feedloopenabled).                                                                                                                                                                                                                                                                                     |
 | `visibilityGate`          | `boolean`  | `false`    | Hold feed render until the unit is on screen; passback `unit_hidden` if it stays hidden past `visibilityGateTimeoutMs`; tear down on a later hide (only if `destroyOnHide`). Off = today's unconditional render. **Measurement is decoupled — `unit_visible` is stamped on every tag regardless of this flag** (see [Visibility gate](#visibility-gate-visibilitygate)).                             |
@@ -392,7 +392,7 @@ stop. Attach the `noLoop` preset, or set the key inline:
 // strategyConfig.ts → TAG_STRATEGIES
 "<tagId>": { preset: "noLoop" },
 // or alongside other keys:
-"<tagId>": { initialVolume: 0.2, singleHitWaterfall: true, feedLoopEnabled: false },
+"<tagId>": { initialVolume: 0.01, singleHitWaterfall: true, feedLoopEnabled: false },
 ```
 
 A tag can carry only **one** preset, so a tag that already uses another bundle (e.g.
@@ -404,22 +404,44 @@ All statically-served tags opt out of looping (`feedLoopEnabled: false`, inline
 alongside `preset: "servedStatically"`), so an ads-only feed rests on its last slot
 instead of replaying. They fall into two groups.
 
-#### Infolinks production tags (brand 3252) — 15 total
+#### Production ads-only tags (brand 3252) — 32 total
 
-The live Infolinks ads-only inventory, from the size×tag sheet: **3 tags per size**
-across the 5 supported sizes. All are real DB tags in live traffic — each serves its
-own `/ad_creative` config fixture but **reuses the 320×50 anchor's brand-level Triton
-ad feed** (`6a39163e92929ebec64d78ab.feed.json`); the `ads_url` is brand-level, so the
-slots are identical across the brand (see the fixture recipe). Each carries
-`{ initialVolume: 0.2, singleHitWaterfall: true, feedLoopEnabled: false, preset: "servedStatically" }`.
+The live ads-only inventory: the Infolinks size×tag sheet (**3 tags per size**) plus
+one **managed-service** tag per size, across the 5 supported sizes. All are real DB
+tags in live traffic — each serves its own `/ad_creative` config fixture. The three
+Infolinks tags per size **reuse the 320×50 anchor's brand-level Triton ad feed**
+(`6a39163e92929ebec64d78ab.feed.json`); the `ads_url` is brand-level, so the slots are
+identical across the brand (see the fixture recipe). The managed-service tags ship
+their **own** `.feed.json` (same slots today), so a managed-service-only feed change
+cannot leak into the Infolinks tags. Each carries
+`{ initialVolume: 0.01, singleHitWaterfall: true, feedLoopEnabled: false, preset: "servedStatically" }`.
 
-| Size    | Anchor (original)          | Sibling 2                  | Sibling 3                  |
-| ------- | -------------------------- | -------------------------- | -------------------------- |
-| 320×50  | `6a39163e92929ebec64d78ab` | `6a7c45fcf3f875e5e06dadab` | `6a7c465586d060bd42fb5ab7` |
-| 320×100 | `6a3915b692929ebec64d785e` | `6a7c46dcf3f875e5e06daef0` | `6a7c46fef3f875e5e06daf19` |
-| 300×250 | `6a3916de30e1406c10507518` | `6a7c4727fa1b811d815aa00f` | `6a7c473df3f875e5e06daf87` |
-| 300×600 | `6a391708a7d9f8da7f6e56ad` | `6a7c476af3f875e5e06dafc1` | `6a7c479586d060bd42fb5c3c` |
-| 320×480 | `6a6892e52ca77d200369fb9e` | `6a7c47bf86d060bd42fb5c95` | `6a7c47d8f3f875e5e06db080` |
+| Size    | Anchor (original)          | Sibling 2                  | Sibling 3                  | Manage-service             |
+| ------- | -------------------------- | -------------------------- | -------------------------- | -------------------------- |
+| 320×50  | `6a39163e92929ebec64d78ab` | `6a7c45fcf3f875e5e06dadab` | `6a7c465586d060bd42fb5ab7` | `6a9af76f18beaf88d7614154` |
+| 320×100 | `6a3915b692929ebec64d785e` | `6a7c46dcf3f875e5e06daef0` | `6a7c46fef3f875e5e06daf19` | `6a9af84893b2d00fe7914d56` |
+| 300×250 | `6a3916de30e1406c10507518` | `6a7c4727fa1b811d815aa00f` | `6a7c473df3f875e5e06daf87` | `6a9af8c45a0b2b9ea748e66b` |
+| 300×600 | `6a391708a7d9f8da7f6e56ad` | `6a7c476af3f875e5e06dafc1` | `6a7c479586d060bd42fb5c3c` | `6a9af90f93b2d00fe7914e35` |
+| 320×480 | `6a6892e52ca77d200369fb9e` | `6a7c47bf86d060bd42fb5c95` | `6a7c47d8f3f875e5e06db080` | `6a9afc455a0b2b9ea748e72b` |
+
+Twelve further tags sit outside that grid — the September **Direct IO** buy: a
+**DMA / National / National v1 / DMA v1** quad for each of three sizes (320×480, 320×50,
+300×250). Layout is driven by the container px, so the original 320×480 DMA/National/DMA-v1
+carry size-less `…Audio for Sep - <buy>` names while every later tag names the size. Like
+the managed-service tags they each ship their **own tag + feed fixture** — the feed's DSP
+VAST `url` is keyed by `brand_id/tag_id`, so **every tag serves its own id** (no feed
+reuse; another tag's feed would resolve its ad requests against the wrong tag):
+
+| Size    | DMA                        | National                   | National v1                | DMA v1                     |
+| ------- | -------------------------- | -------------------------- | -------------------------- | -------------------------- |
+| 320×480 | `6a9ba985ee6dc7773d0c42a6` | `6a9ba9b8ee6dc7773d0c42f4` | `6aa25bc1d3c90426b5732535` | `6a9eaf2dee6dc7773d0c5f87` |
+| 320×50  | `6aa041b7d3c90426b572a451` | `6aa041e20fc5b4b2fe4ed3c8` | `6aa25b631b3a25f3c479ef7c` | `6aa04101d3c90426b572a379` |
+| 300×250 | `6aa0425bd3c90426b572a571` | `6aa041fbd3c90426b572a4b2` | `6aa25af31b3a25f3c479ee35` | `6aa04279d3c90426b572a59e` |
+
+The 320×480 DMA/National/DMA-v1 tag names are `Direct IO iHM/Infolinks Audio for Sep - DMA` /
+`- National` / `- DMA v1`; every other tag (the 320×480 National v1, and the full 320×50 +
+300×250 quads) is named `<size> - DMA Targeted Campaign` / `- National Campaign` /
+`- National Campaign V1` / `- DMA Targeted Campaign V1`.
 
 > ⚠️ **Production tags — never test on local or in automation.** These are live in
 > real traffic; rendering or requesting an ad against any of them inflates that tag's
@@ -428,7 +450,7 @@ slots are identical across the brand (see the fixture recipe). Each carries
 > only network-safe sandbox tag is `6a1fd43b45aec54862ed235d` — see the source comment
 > blocks in `strategyConfig.ts` and `staticTagData.ts`.
 
-All 15 additionally carry `suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED`
+All 32 additionally carry `suppressedEvents: ADS_ONLY_INTERSTITIAL_SUPPRESSED`
 (see [Suppressed analytics events](#suppressed-analytics-events-suppressedevents)) —
 they are all `type: "ads"` single-interstitial units, so the whole ads-only inventory
 shares one suppression policy via the shared list, no per-tag drift.
@@ -607,8 +629,8 @@ constants, not raw strings, so a typo is a compile error:
 ```
 
 The shared `ADS_ONLY_INTERSTITIAL_SUPPRESSED` list (feed/swipe/embed + video
-churn) is defined once in `strategyConfig.ts` and attached to all 15 Infolinks
-ads-only prod tags, so the whole inventory keeps the exact same policy without drift.
+churn) is defined once in `strategyConfig.ts` and attached to all 32 ads-only prod
+tags, so the whole inventory keeps the exact same policy without drift.
 
 ### Never suppress these
 
@@ -621,16 +643,21 @@ dropping a diagnostic blinds an open investigation.
 
 ### Currently opted in
 
-All 15 Infolinks ads-only prod tags (brand 3252) carry `ADS_ONLY_INTERSTITIAL_SUPPRESSED`
-— the full inventory listed in [Infolinks production tags](#infolinks-production-tags-brand-3252--15-total):
+All 32 ads-only prod tags (brand 3252) carry `ADS_ONLY_INTERSTITIAL_SUPPRESSED`
+— the full inventory listed in [Production ads-only tags](#production-ads-only-tags-brand-3252--32-total):
 
-| Tags                                                | Size    | List                               |
-| --------------------------------------------------- | ------- | ---------------------------------- |
-| `6a39163e…78ab`, `6a7c45fc…dadab`, `6a7c4655…5ab7`  | 320×50  | `ADS_ONLY_INTERSTITIAL_SUPPRESSED` |
-| `6a3915b6…785e`, `6a7c46dc…daef0`, `6a7c46fe…daf19` | 320×100 | `ADS_ONLY_INTERSTITIAL_SUPPRESSED` |
-| `6a3916de…7518`, `6a7c4727…aa00f`, `6a7c473d…daf87` | 300×250 | `ADS_ONLY_INTERSTITIAL_SUPPRESSED` |
-| `6a391708…56ad`, `6a7c476a…dafc1`, `6a7c4795…5c3c`  | 300×600 | `ADS_ONLY_INTERSTITIAL_SUPPRESSED` |
-| `6a6892e5…fb9e`, `6a7c47bf…5c95`, `6a7c47d8…b080`   | 320×480 | `ADS_ONLY_INTERSTITIAL_SUPPRESSED` |
+| Tags                                                                                                 | Size     | List                               |
+| ---------------------------------------------------------------------------------------------------- | -------- | ---------------------------------- |
+| `6a39163e…78ab`, `6a7c45fc…dadab`, `6a7c4655…5ab7`, `6a9af76f…4154`                                  | 320×50   | `ADS_ONLY_INTERSTITIAL_SUPPRESSED` |
+| `6a3915b6…785e`, `6a7c46dc…daef0`, `6a7c46fe…daf19`, `6a9af848…4d56`                                 | 320×100  | `ADS_ONLY_INTERSTITIAL_SUPPRESSED` |
+| `6a3916de…7518`, `6a7c4727…aa00f`, `6a7c473d…daf87`, `6a9af8c4…e66b`                                 | 300×250  | `ADS_ONLY_INTERSTITIAL_SUPPRESSED` |
+| `6a391708…56ad`, `6a7c476a…dafc1`, `6a7c4795…5c3c`, `6a9af90f…4e35`                                  | 300×600  | `ADS_ONLY_INTERSTITIAL_SUPPRESSED` |
+| `6a6892e5…fb9e`, `6a7c47bf…5c95`, `6a7c47d8…b080`, `6a9afc45…e72b`                                   | 320×480  | `ADS_ONLY_INTERSTITIAL_SUPPRESSED` |
+| `6a9ba985…42a6`, `6a9ba9b8…42f4`, `6aa25bc1…2535`, `6a9eaf2d…5f87` (Direct IO DMA/Nat/Nat-v1/DMA-v1) | 320×480¹ | `ADS_ONLY_INTERSTITIAL_SUPPRESSED` |
+| `6aa041b7…a451`, `6aa041e2…d3c8`, `6aa25b63…ef7c`, `6aa04101…a379` (Direct IO DMA/Nat/Nat-v1/DMA-v1) | 320×50¹  | `ADS_ONLY_INTERSTITIAL_SUPPRESSED` |
+| `6aa0425b…a571`, `6aa041fb…a4b2`, `6aa25af3…ee35`, `6aa04279…a59e` (Direct IO DMA/Nat/Nat-v1/DMA-v1) | 300×250¹ | `ADS_ONLY_INTERSTITIAL_SUPPRESSED` |
+
+¹ The twelve Direct IO tags encode no size in config — layout comes from the container px; the size shown is the buy's intended slot.
 
 ---
 

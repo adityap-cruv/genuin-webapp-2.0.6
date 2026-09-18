@@ -8,6 +8,7 @@ import { ReadMore } from "@genuin/components/molecules/read-more";
 
 import type { ControlLayerPropsType } from "../control-layer.types";
 import { EmbedControls } from "../controls/embed";
+import { useNewPlayerControls } from "../use-new-player-controls";
 
 export const TedEmbed: FC<ControlLayerPropsType> = ({
   postDetails,
@@ -17,6 +18,7 @@ export const TedEmbed: FC<ControlLayerPropsType> = ({
   ...restProps
 }) => {
   const { containerHeight } = useEmbedDimensions();
+  const newUI = useNewPlayerControls();
 
   const { video, community } = postDetails;
   if (!video || !community) return null;
@@ -29,7 +31,7 @@ export const TedEmbed: FC<ControlLayerPropsType> = ({
           onClick={(e) => e.stopPropagation()}>
           <EmbedControls
             className={cn("gencl:gap-3")}
-            size={containerWidth ? resolveControlSize(containerWidth) : "xs"}
+            size={containerWidth && newUI ? resolveControlSize(containerWidth) : "xs"}
           />
         </div>
       )}

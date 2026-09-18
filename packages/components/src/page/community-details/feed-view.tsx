@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 
+import { ErrorState } from "@genuin/components/molecules/error-state";
 import { useGetCommunityFeed } from "@genuin/components/react-query/api/community/feed";
 import { getQueryKeyForCommunityFeed } from "@genuin/components/react-query/keys/community";
 import { FeedView } from "@genuin/components/templates/feed";
@@ -11,6 +12,10 @@ export function CommunityFeedView({ communitySlug }: { communitySlug: string }) 
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useGetCommunityFeed(communitySlug, "");
 
   const feed = useMemo(() => data?.pages.flatMap((page) => page.feed) ?? [], [data]);
+
+  if (feed.length === 0 && !isLoading && !isFetchingNextPage) {
+    return <ErrorState type="NO_CONTENT" />;
+  }
 
   return (
     <FeedView

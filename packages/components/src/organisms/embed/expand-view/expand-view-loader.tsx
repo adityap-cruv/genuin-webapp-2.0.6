@@ -64,16 +64,18 @@ export function ExpandViewLoader({
     };
   }, [embedEventBus, isExpandMode]);
 
-  // When transitioning into expand view, snapshot the carousel's linkout sheet
-  // state (e.g. `expand-view`) and reset it to `default` so the expand player
-  // opens with the video at full size. On exit, restore the snapshot so the
-  // carousel resumes the state the user left it in.
+  // Continuous flow: the expand view INHERITS the tile's linkout state so the
+  // user resumes exactly where the tile left off — `default` → `default`,
+  // `default-active` → `default-active`, and a drag-promoted `panel-view` /
+  // `full-view` (the carousel's promote-to-expand triggers in embed-tile.tsx)
+  // opens the expand linkout already at that state. `default` / `default-active`
+  // keep the video full-size, so carrying them through preserves the old
+  // "open at full video" intent without flattening the state.
   //
-  // The snapshot is capped at `expand-view` because `panel-view`/`full-view`
-  // are the "promote to fullscreen" triggers in the carousel (handled in
-  // embed-tile.tsx). Restoring `panel-view`/`full-view` here would immediately
-  // re-fire that trigger and bounce the user straight back into expand view —
-  // so we collapse those down to `expand-view`, which is the biggest valid
+  // We still snapshot for exit-restore. The snapshot caps `panel-view` /
+  // `full-view` down to `expand-view` because restoring those to the carousel
+  // tile would immediately re-fire the promote trigger and bounce the user
+  // straight back into expand view — `expand-view` is the biggest valid
   // carousel-tile state.
   const { getContentTypeState, setContentTypeState } = useSheetState();
   const snapshotRef = useRef<SheetState | null>(null);
@@ -82,11 +84,9 @@ export function ExpandViewLoader({
     const wasExpand = prevIsExpandModeRef.current;
     if (!wasExpand && isExpandMode) {
       const current = getContentTypeState("linkouts");
-      // Cap at `expand-view`: see comment above.
+      // Cap at `expand-view`: see comment above. No entry reset — the tile
+      // state carries straight into expand.
       snapshotRef.current = current === "panel-view" || current === "full-view" ? "expand-view" : current;
-      if (current !== "default") {
-        setContentTypeState("linkouts", "default");
-      }
     } else if (wasExpand && !isExpandMode) {
       if (snapshotRef.current && snapshotRef.current !== "default") {
         setContentTypeState("linkouts", snapshotRef.current);

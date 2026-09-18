@@ -89,9 +89,11 @@ load (`singleHitWaterfall` strategy — see
 impressions when the MutationObserver re-mounts a container. `AdProvider.tsx` tracks
 per-slot no-fills in `noFillSlotsRef` and defers `Ad Passback` until every ad/
 `video-with-ad` slot has reported no-fill **and** the feed has reached its last entry
-(`firePassbackIfExhausted`). `notifyAdFill`/`notifyAdNoFill` in `waterfall.ts` are
-themselves tag-agnostic — they just postMessage the parent frame / call
-`window.adFillCallback`/`window.noAdsCallback`; the single-hit gate lives in `AdProvider`.
+(`firePassbackIfExhausted`). `notifyAdFill`/`notifyAdNoFill` in `waterfall.ts` take an
+optional `tagId` and forward it both as `postMessage({ type, tagId })` to the parent frame
+and as the first argument to `window.adFillCallback(tagId)` / `window.noAdsCallback(tagId)`,
+so a host embedding multiple tags can tell which one filled or passed back; the single-hit
+gate lives in `AdProvider`, which supplies the `tagId` from `useTagDetails()`.
 
 ## How to Add a New GenAd Provider
 

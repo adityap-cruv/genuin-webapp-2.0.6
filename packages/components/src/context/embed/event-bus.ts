@@ -122,7 +122,7 @@ export const createEmbedEventBus = (context?: EmbedEventContextType) =>
     isSectioned: false,
     selectedSection: null,
     autoInteractionActionDone: false,
-    containerInView: true,
+    containerInView: false,
     skipTimeOffsetOnce: false,
     disableSwiper: false,
     followStatuses: [],

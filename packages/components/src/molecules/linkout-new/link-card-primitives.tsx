@@ -6,12 +6,15 @@
  */
 
 import { Image } from "@genuin/ui/components/image";
+import { LinkIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
 import { cva } from "class-variance-authority";
 import { ChevronRight } from "lucide-react";
 import { useLayoutEffect, useRef, useState } from "react";
 
 import { Link } from "@genuin/components/molecules/link";
+
+import { useImageLoadStatus } from "./use-image-load-status";
 
 /**
  * A linkout href is "external" when it names a host/protocol (thefoil.com,
@@ -25,9 +28,10 @@ function isExternalHref(href: string): boolean {
 // ── LinkCardThumb ────────────────────────────────────────────────
 //
 // Square thumbnail with rounded corners; the caller sets the outer
-// dimensions via `className` / `style`. Returns `null` when `src` is
-// missing so the row reflows (the LinkIcon in the sheet header keeps
-// the link's visual identity).
+// dimensions via `className` / `style`. When `src` is missing OR the image
+// fails to load it either renders `null` (default — the row reflows) or, with
+// `fallback`, a generic chain-link (`LinkIcon`) placeholder so every card view
+// shows the same "linkout" glyph the chip already uses.
 
 // `gencl:block` is non-optional: the `<span>` wrapper is inline by default,
 // so without it the span's line box stays 0×0 inside non-flex/grid parents
@@ -55,12 +59,43 @@ export interface LinkCardThumbProps {
   /** Outer dimensions / flex behavior — caller decides. */
   className?: string;
   style?: React.CSSProperties;
+  /** When set and `src` is missing/broken, render a generic linkout
+   *  (chain-link) placeholder instead of `null`. Matches the chip's treatment. */
+  fallback?: boolean;
+  /** Placeholder colors follow the card theme. */
+  theme?: "light" | "dark";
 }
 
-export function LinkCardThumb({ src, alt = "", radius = "md", className, style }: LinkCardThumbProps) {
-  // No image → render nothing so the row reflows; the LinkIcon in the
-  // sheet header keeps the link's visual identity.
-  if (!src) return null;
+export function LinkCardThumb({
+  src,
+  alt = "",
+  radius = "md",
+  className,
+  style,
+  fallback = false,
+  theme = "dark",
+}: LinkCardThumbProps) {
+  // Preload off-DOM so a dead `src` resolves to the chain glyph instead of
+  // committing a broken-image box. Only `error` falls back — `pending` still
+  // renders the real thumbnail so there's no chain-glyph flash before it loads.
+  const srcStatus = useImageLoadStatus(src);
+
+  if (!src || srcStatus === "error") {
+    // No/broken image and no fallback requested → render nothing so the row reflows.
+    if (!fallback) return null;
+    const isDark = theme === "dark";
+    // Figma "Thumbnail fallback" (node 9621:92218): a bare 20×20 chain glyph on
+    // a TRANSPARENT ground — no colored box. FIXED 20×20 in every state so it
+    // stays a consistent mark rather than blowing up on the big panel/full
+    // slide. Theme-aware stroke so it reads on both the dark card body and the
+    // white panel.
+    const placeholderIcon = isDark ? "gencl:stroke-white" : "gencl:stroke-secondary-900";
+    return (
+      <span className="gencl:flex gencl:items-center gencl:justify-center gencl:shrink-0 gencl:size-5">
+        <LinkIcon className={cn("gencl:size-5", placeholderIcon)} />
+      </span>
+    );
+  }
   return (
     <span className={cn(thumbWrap({ radius }), className)} style={style}>
       <Image src={src} alt={alt} className="gencl:absolute gencl:inset-0 gencl:size-full gencl:object-cover" />
@@ -93,11 +128,6 @@ const inlineCta = cva(
   }
 );
 
-const inlineCtaLabel = cn(
-  "gencl:flex-1 gencl:min-w-0 gencl:overflow-hidden gencl:text-ellipsis",
-  "gencl:whitespace-nowrap gencl:text-body-1-semi-bold!"
-);
-
 const inlineCtaArrow = "gencl:size-6 gencl:shrink-0";
 
 export interface LinkCardInlineCtaProps {
@@ -114,7 +144,10 @@ export function LinkCardInlineCta({ href, label, theme = "dark", className, onCl
   const iconStrokeClass = "gencl:stroke-white";
   const content = (
     <>
-      <span className={inlineCtaLabel}>{label}</span>
+      {/* CTA label marquees when it overflows instead of ellipsis-truncating, so
+          a long label never shrinks/demotes the linkout state (GEN-10465). Plain
+          single-line span when it fits. */}
+      <MarqueeText text={label} className="gencl:flex-1 gencl:min-w-0 gencl:text-body-1-semi-bold!" />
       <ChevronRight className={cn(inlineCtaArrow, iconStrokeClass)} />
     </>
   );
@@ -177,6 +210,61 @@ export function LinkCardInlineCta({ href, label, theme = "dark", className, onCl
   );
 }
 
+// ── LinkCardTitle ────────────────────────────────────────────────
+//
+// Clickable linkout title. Navigates to the link's URL on click/Enter so the
+// TITLE — not just the CTA — is a live link, matching production where both are
+// clickable (GEN-10510). Uses the same swipe-safe `role="link"` + synchronous
+// `window.open` pattern as `LinkCardInlineCta` (a native `<a href>` steals
+// horizontal touchmove and blocks the sheet/carousel swipe); `onClick` still
+// fires the caller's analytics. Kept as a `<p>` so callers' typography and the
+// `default` card's body-height measurement are unaffected.
+
+export interface LinkCardTitleProps {
+  /** Destination URL — the link's own `link`. */
+  href: string;
+  /** Title text (falls back to the URL upstream). */
+  text: string;
+  /** Typography / clamp classes from the calling state. */
+  className?: string;
+  /** Analytics-only callback (navigation is handled here via `window.open`). */
+  onClick?: () => void;
+}
+
+export function LinkCardTitle({ href, text, className, onClick }: LinkCardTitleProps) {
+  const navigate = () => {
+    onClick?.();
+    if (typeof window !== "undefined") {
+      window.open(href, "_blank", "noopener,noreferrer");
+    }
+  };
+  return (
+    <p
+      role="link"
+      tabIndex={0}
+      aria-label={text}
+      draggable={false}
+      style={{ touchAction: "pan-y", userSelect: "none" }}
+      // Stop pointerdown bubbling so the sheet's pointer capture doesn't swallow
+      // the click before it reaches this handler (same as the chip anchors/CTA).
+      onPointerDown={(e) => e.stopPropagation()}
+      onClick={(e) => {
+        e.stopPropagation();
+        navigate();
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          e.stopPropagation();
+          navigate();
+        }
+      }}
+      className={cn("gencl:cursor-pointer", className)}>
+      {text}
+    </p>
+  );
+}
+
 // ── MarqueeText ──────────────────────────────────────────────────
 //
 // Single-line text that auto-scrolls when it overflows its container
@@ -191,6 +279,13 @@ export interface MarqueeTextProps {
   gapPx?: number;
   /** Scroll speed in px/s. */
   pxPerSecond?: number;
+  /**
+   * Reports one full scroll pass's duration in ms once measured (`null` when
+   * the text fits and isn't scrolling). Lets a caller with a fixed timer —
+   * e.g. the chip's auto-advance-to-`default` — wait for at least one full
+   * pass before tearing the chip down. See `[[project_linkout_marquee_reset_debug]]`.
+   */
+  onScrollDurationChange?: (durationMs: number | null) => void;
 }
 
 /**
@@ -198,7 +293,13 @@ export interface MarqueeTextProps {
  * Measures via ResizeObserver so the marquee turns on / off as the
  * container width changes (e.g. chip resizes in storybook).
  */
-export function MarqueeText({ text, className, gapPx = 32, pxPerSecond = 50 }: MarqueeTextProps) {
+export function MarqueeText({
+  text,
+  className,
+  gapPx = 32,
+  pxPerSecond = 50,
+  onScrollDurationChange,
+}: MarqueeTextProps) {
   const containerRef = useRef<HTMLSpanElement>(null);
   const textRef = useRef<HTMLSpanElement>(null);
   const [needsScroll, setNeedsScroll] = useState(false);
@@ -216,7 +317,11 @@ export function MarqueeText({ text, className, gapPx = 32, pxPerSecond = 50 }: M
       const overflowing = textW > containerW + 1;
       setNeedsScroll(overflowing);
       if (overflowing) {
-        setDuration(Math.max(3, (textW + gapPx) / pxPerSecond));
+        const next = Math.max(3, (textW + gapPx) / pxPerSecond);
+        setDuration(next);
+        onScrollDurationChange?.(next * 1000);
+      } else {
+        onScrollDurationChange?.(null);
       }
     };
     recompute();
@@ -224,6 +329,9 @@ export function MarqueeText({ text, className, gapPx = 32, pxPerSecond = 50 }: M
     ro.observe(container);
     ro.observe(t);
     return () => ro.disconnect();
+    // `onScrollDurationChange` intentionally excluded — callers pass an inline
+    // setter; including it would re-run (and re-report) on every parent render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [text, gapPx, pxPerSecond]);
 
   return (

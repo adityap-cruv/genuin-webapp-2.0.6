@@ -680,7 +680,15 @@ export const FeedPlayer = memo(function FeedPlayer({
             }}
             onAdCompleted={() => {
               setIsAdFilled(false);
+              onAdStateChange?.(false);
               onAdPlaybackEnd?.();
+              updateAdInfo(false, {
+                adId: null,
+                url: null,
+                title: null,
+                totalAds: 0,
+                currentAdIndex: 0,
+              });
             }}
             onAdSkipped={() => {
               // Release the slot on skip so the VideoPlayer remounts and the

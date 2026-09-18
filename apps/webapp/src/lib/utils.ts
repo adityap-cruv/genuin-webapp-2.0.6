@@ -748,15 +748,20 @@ export function mapMemberJoinStatus(role?: number | null): GroupUserStatusType {
 }
 
 export function getOgUrl(path: string, domain?: string, subdomain?: string) {
-  let url = process.env.NEXT_PUBLIC_HOST_URL;
+  // Default to the per-environment apex host (begenuin.com in prod).
+  let url = process.env.NEXT_PUBLIC_HOST_URL ?? "https://begenuin.com";
 
   // Override url if whitelabel domain is provided
   if (domain) {
     url = `https://${domain}`;
   }
 
-  // Override url if whitelabel subdomain is provided
-  if (subdomain) {
+  // Override url if whitelabel subdomain is provided. `app` is excluded on
+  // purpose: app.begenuin.com is a redirect-only host (301 → the apex), so it
+  // must never appear in canonical / og:url / share URLs — otherwise the
+  // canonical points at a URL that redirects away and Google won't honor it.
+  // Falling through here keeps the apex host resolved above.
+  if (subdomain && subdomain !== "app") {
     url = `https://${subdomain}${process.env.NEXT_PUBLIC_CURRENT_ENV === "local" || process.env.NEXT_PUBLIC_CURRENT_ENV === "qa" ? ".qa" : ""}.begenuin.com`;
   }
 

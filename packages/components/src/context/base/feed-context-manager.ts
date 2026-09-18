@@ -80,7 +80,7 @@ export class FeedContextManager {
   private static instance: FeedContextManager | undefined;
   private playPauseTracker: PlayPauseTracker = {
     isFocused: true,
-    isInView: true,
+    isInView: false,
     isPlaying: false,
     isAdPlaying: false,
     isAdSkippable: false,

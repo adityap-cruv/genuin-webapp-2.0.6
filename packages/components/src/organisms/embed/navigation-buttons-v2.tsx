@@ -1,9 +1,12 @@
-import { NavArrowButton, type NavChevronDirection, type PlayerControlSize } from "@genuin/ui/player-controls";
+import {
+  DARK_OVERLAY_20,
+  NavArrowButton,
+  type NavChevronDirection,
+  type PlayerControlSize,
+} from "@genuin/ui/player-controls";
 import type { CSSProperties } from "react";
 
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
-
-const FIXED_NAV_CONTROL_SIZE: PlayerControlSize = "md";
 
 type EmbedVariant = "grid" | "carousel" | "feed" | "dynamic" | "standard_wall" | "expand_only" | undefined;
 type ButtonClickHandler = (e: React.MouseEvent<HTMLButtonElement>) => void;
@@ -14,18 +17,18 @@ interface NavigationButtonsV2Props {
   onNext: ButtonClickHandler;
   isPrevDisabled?: boolean;
   isNextDisabled?: boolean;
-  /** Retained for call-site compatibility; V2 navigation renders at a fixed small size. */
+  /** Double-circle size token. @default "lg" */
   size?: PlayerControlSize;
   /** Colour theme for the solid double-circle fill. @default "dark" */
   theme?: "light" | "dark";
 }
 
 /**
- * Design System V2 embed navigation arrows (double-circle `IconCircleButton`).
+ * Design System V2 embed navigation arrows (ring + double-circle `IconCircleButton`).
  * Carousel renders left/right; every other variant renders the vertical up/down
- * pair. iHeart is handled by the legacy buttons, not here. Solid fill + glyph
- * colours mirror the legacy V1 palette so the arrows stay visible on dark
- * backdrops. Navigation uses a fixed size across placements.
+ * pair. iHeart is handled by the legacy buttons, not here. Fill colours come
+ * from `NAV_BUTTON_COLORS` (Dark Overlay tokens per Figma). Defaults to `lg`
+ * but the caller can override per view via `size`.
  */
 export function NavigationButtonsV2({
   embedVariant,
@@ -33,7 +36,7 @@ export function NavigationButtonsV2({
   onNext,
   isPrevDisabled = false,
   isNextDisabled = false,
-  size: _requestedSize = FIXED_NAV_CONTROL_SIZE,
+  size = "lg",
   theme = "dark",
 }: NavigationButtonsV2Props) {
   const { isIOS, isMac } = useDeviceDetection();
@@ -56,7 +59,7 @@ export function NavigationButtonsV2({
       direction={direction}
       disabled={disabled}
       onClick={onClick}
-      size={FIXED_NAV_CONTROL_SIZE}
+      size={size}
       theme={theme}
       style={safariOptimizationStyles}
       stopPropagation={false}
@@ -68,20 +71,20 @@ export function NavigationButtonsV2({
     return (
       <div className="gencl:absolute gencl:z-20 gencl:inset-y-0 gencl:left-0 gencl:right-0 gencl:pointer-events-none">
         <div className="gencl:h-full gencl:w-full gencl:flex gencl:justify-between gencl:items-center">
-          <div className="gencl:ml-2 gencl:pointer-events-auto">
-            {navButton("left", isPrevDisabled, onPrev)}
-          </div>
-          <div className="gencl:mr-2 gencl:pointer-events-auto">
-            {navButton("right", isNextDisabled, onNext)}
-          </div>
+          <div className="gencl:ml-2 gencl:pointer-events-auto">{navButton("left", isPrevDisabled, onPrev)}</div>
+          <div className="gencl:mr-2 gencl:pointer-events-auto">{navButton("right", isNextDisabled, onNext)}</div>
         </div>
       </div>
     );
   }
 
-  // Feed / grid layout - vertical buttons on right side
+  // Feed / grid layout - vertical buttons on right side, sharing one outer
+  // ring pill (Figma node 16128-196014) that fills the concave gap between
+  // the two stacked circles instead of leaving a pinched waist between them.
   return (
-    <div className="gencl:absolute gencl:z-20 gencl:right-2 gencl:top-1/2 gencl:transform gencl:-translate-y-1/2 gencl:flex gencl:flex-col gencl:gap-2">
+    <div
+      className="gencl:absolute gencl:z-20 gencl:right-2 gencl:top-1/2 gencl:transform gencl:-translate-y-1/2 gencl:flex gencl:flex-col gencl:gap-1 gencl:rounded-full"
+      style={{ background: DARK_OVERLAY_20 }}>
       {navButton("up", isPrevDisabled, onPrev)}
       {navButton("down", isNextDisabled, onNext)}
     </div>

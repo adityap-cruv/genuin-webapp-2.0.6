@@ -181,8 +181,10 @@ export function VideoControlLayer({
   const isBanner = adLayout === AD_LAYOUT.L2 || adLayout === AD_LAYOUT.L1 || adLayout === AD_LAYOUT.L5;
   const expandOnTap = isBanner && !isFullScreen && expandEnabled;
 
-  // 300x250 mounts Octo as a full-size overlay over the playing video; there the
-  // banner chrome is hidden so only the bare video (still tap-to-expand) shows.
+  // 300x250 mounts Octo as a full-size overlay over the playing video, so the
+  // player chrome it would collide with is dropped — DefaultControlLayer gates
+  // BOTH the TopBar and the BottomBar on this flag, leaving the sheet over a bare
+  // (still tap-to-expand) video. Locked by SZ-9 in tests/e2e/controls.sizes.spec.ts.
   const hideChrome = adLayout === AD_LAYOUT.L2 && !isFullScreen && octoAllowed;
 
   return (

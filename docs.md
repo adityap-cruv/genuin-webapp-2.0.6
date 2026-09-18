@@ -11,21 +11,22 @@ When looking for a doc, start here. When adding a new doc, register it here.
 
 ## Where to put new docs
 
-| What you're writing                              | Where it goes                                |
-| ------------------------------------------------ | -------------------------------------------- |
-| Environment / tooling prerequisites              | `docs/setup/`                                |
-| Repo structure, monorepo decisions, path guides  | `docs/architecture/`                         |
-| Technology migration guide (framework, CSS, etc) | `docs/migrations/`                           |
-| Upgrade status, deployment procedures, QA        | `docs/upgrades/`                             |
-| SDK bundle, chunk, lazy-loading analysis         | `packages/web-sdk/docs/performance/`         |
-| SDK infrastructure (CDN, CSS versioning, deps)   | `packages/web-sdk/docs/infrastructure/`      |
-| SDK migration (build tools, validators)          | `packages/web-sdk/docs/migrations/`          |
-| Historical SDK reorganization records            | `packages/web-sdk/docs/history/`             |
-| Components-package feature plans (linkouts etc.) | `packages/components/docs/<feature-folder>/` |
-| CXR widget system docs / ADRs                    | `packages/contextual-reels/docs/`            |
-| Component-package QA test fixtures (XML, MP4 …)  | `packages/<name>/.storybook/qa-fixtures/`    |
-| Per-package usage instructions                   | `packages/<name>/README.md`                  |
-| Per-app usage instructions                       | `apps/<name>/README.md`                      |
+| What you're writing                               | Where it goes                                |
+| ------------------------------------------------- | -------------------------------------------- |
+| Environment / tooling prerequisites               | `docs/setup/`                                |
+| Repo structure, monorepo decisions, path guides   | `docs/architecture/`                         |
+| Technology migration guide (framework, CSS, etc)  | `docs/migrations/`                           |
+| Upgrade status, deployment procedures, QA         | `docs/upgrades/`                             |
+| Search / generative-engine optimization (SEO/GEO) | `docs/seo/`                                  |
+| SDK bundle, chunk, lazy-loading analysis          | `packages/web-sdk/docs/performance/`         |
+| SDK infrastructure (CDN, CSS versioning, deps)    | `packages/web-sdk/docs/infrastructure/`      |
+| SDK migration (build tools, validators)           | `packages/web-sdk/docs/migrations/`          |
+| Historical SDK reorganization records             | `packages/web-sdk/docs/history/`             |
+| Components-package feature plans (linkouts etc.)  | `packages/components/docs/<feature-folder>/` |
+| CXR widget system docs / ADRs                     | `packages/contextual-reels/docs/`            |
+| Component-package QA test fixtures (XML, MP4 …)   | `packages/<name>/.storybook/qa-fixtures/`    |
+| Per-package usage instructions                    | `packages/<name>/README.md`                  |
+| Per-app usage instructions                        | `apps/<name>/README.md`                      |
 
 ---
 
@@ -50,6 +51,7 @@ Environment prerequisites, tooling, and dependency management.
 | [docs/setup/LINTING.md](docs/setup/LINTING.md)                             | ESLint and Prettier configuration                                          |
 | [docs/setup/TSCONFIG.md](docs/setup/TSCONFIG.md)                           | TypeScript configuration — shared presets, per-package setup, path aliases |
 | [docs/setup/DEPENDENCY_MANAGEMENT.md](docs/setup/DEPENDENCY_MANAGEMENT.md) | Dependency management strategy                                             |
+| [docs/setup/GRAPHIFY.md](docs/setup/GRAPHIFY.md)                           | Graphify code knowledge-graph — prerequisites, build, and usage            |
 
 ### Architecture
 
@@ -88,6 +90,16 @@ Operational docs for the upgrade lifecycle: tracking, deployment, and QA.
 | [docs/upgrades/UPGRADE_DEPLOYMENT_GUIDE.md](docs/upgrades/UPGRADE_DEPLOYMENT_GUIDE.md)   | Safe deployment procedures             |
 | [docs/upgrades/UPGRADE_TESTING_CHECKLIST.md](docs/upgrades/UPGRADE_TESTING_CHECKLIST.md) | Post-upgrade testing checklist         |
 | [docs/upgrades/QA_PRIORITIZED_FILES.md](docs/upgrades/QA_PRIORITIZED_FILES.md)           | QA branch prioritized file list        |
+
+---
+
+### SEO / GEO
+
+Search and generative-engine optimization for video watch-pages.
+
+| File                                           | Purpose                                                                    |
+| ---------------------------------------------- | -------------------------------------------------------------------------- |
+| [docs/seo/video-geo.md](docs/seo/video-geo.md) | Video SEO/GEO: field map, canonicalization, status, and backend follow-ups |
 
 ---
 
@@ -145,6 +157,10 @@ Feature plans for the `molecules/linkout-new` family — scenario configs, ad sl
 | [packages/contextual-reels/docs/CONTRIBUTING.md](packages/contextual-reels/docs/CONTRIBUTING.md)                                               | CXR TDD, coverage gates, invariants, partner contracts, how-tos                                                                                                                                                        |
 | [packages/contextual-reels/docs/STRATEGIES.md](packages/contextual-reels/docs/STRATEGIES.md)                                                   | Per-tag strategy system — toggles, the 3-layer cascade, recipes, statically-served tags, debug-device VAST feeds, per-tag analytics event suppression + ads-only event surface                                         |
 | [packages/contextual-reels/docs/EVENT_REDUCTION_REPORT.md](packages/contextual-reels/docs/EVENT_REDUCTION_REPORT.md)                           | Before/after analytics-volume report for the 320×50 ads-only tag — per-load event counts + % reduction from `suppressedEvents` (14 → 12, 14.3%)                                                                        |
+| [packages/contextual-reels/docs/TESTING.md](packages/contextual-reels/docs/TESTING.md)                                                         | CXR test catalogue — every test category (typecheck, lint, unit, coverage gates, fixture contract, mock self-tests, E2E desktop/mobile, ad resource budget), its purpose, when to run it, and measured execution times |
+| [packages/contextual-reels/docs/QA_FIXTURE_REQUESTS.md](packages/contextual-reels/docs/QA_FIXTURE_REQUESTS.md)                                 | Ad-ops handoff — the two QA fixtures that unblock four documented E2E gaps (long clip for the ad break, a forceable no-fill), plus a probable live `TAG_EXPERIMENTS` config bug on `6a3aa8244da8cd92d289cc72`          |
+| [packages/contextual-reels/docs/TEST_SETUP.md](packages/contextual-reels/docs/TEST_SETUP.md)                                                   | CXR testing framework end-to-end — architecture, environments, test types, flows, structure, execution, dependencies, test data, reporting, best practices; onboarding entry point                                     |
+| [packages/contextual-reels/docs/LIGHTHOUSE.md](packages/contextual-reels/docs/LIGHTHOUSE.md)                                                   | CXR Lighthouse baseline (2026-08-17, dev build, averaged across the full 9-cell `CXR_TAGS × CXR_SIZES` matrix) — `pnpm lighthouse` gates on regression vs. the committed baseline; manual, like `pnpm budget`          |
 | [packages/contextual-reels/tests/e2e/README.md](packages/contextual-reels/tests/e2e/README.md)                                                 | Control-icon E2E suite — harness, fixtures, real-vs-mocked, scenarios                                                                                                                                                  |
 | [packages/contextual-reels/src/ads/README.md](packages/contextual-reels/src/ads/README.md)                                                     | GenAd SDK boundary — waterfall, single-hit passback, Infolinks Impression                                                                                                                                              |
 | [packages/contextual-reels/src/player/README.md](packages/contextual-reels/src/player/README.md)                                               | Player lifecycle (HLS/IMA) reference                                                                                                                                                                                   |

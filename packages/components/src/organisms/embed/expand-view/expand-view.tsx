@@ -8,11 +8,9 @@ import { useBaseContext } from "@genuin/components/context/base";
 import { useEmbedContext } from "@genuin/components/context/embed";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-import { usePrevious } from "@genuin/components/hooks/use-previous";
 import useViewportHeight from "@genuin/components/hooks/use-screen-height";
-import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
 import { useFloatingVideoSessionId } from "@genuin/components/lib/floating-video/use-floating-video-session";
-import { SDKEventEmitter, SDKEventName, SDKListenerEventName } from "@genuin/components/lib/sdk-event-emitter";
+import { SDKEventEmitter, SDKEventName } from "@genuin/components/lib/sdk-event-emitter";
 import { isMiddlewareOverlayEnabled } from "@genuin/components/lib/utils";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { RootPortal } from "@genuin/components/molecules/root-portal";
@@ -124,15 +122,12 @@ export function EmbedExpandView({
       redirectionTools: { community, group, user },
     },
     view: { brandLayoutType, websiteType, isPlacementView },
-    responsive: { effectiveVideoWidth },
     expandViewConfig: { defaultAudioUnmute },
   } = useEmbedConfigs();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
   const viewportHeight = useViewportHeight();
   const { updateScreen } = useAnalytics();
-  const previousMuteState = usePrevious(muted);
   const isSectioned = embedEventBus.getContext().isSectioned;
-  const { openContentType, setContentTypeState } = useSheetState();
   const isIHeart = brandLayoutType === "iheart";
   const shouldShowMiddlewareOverlay = isMiddlewareOverlayEnabled({
     videoLayoutId: embedData?.placement_video_layout_id,
@@ -145,14 +140,11 @@ export function EmbedExpandView({
     }));
   }, [embedData?.brand_context]);
 
-  // Derive the linkout sheet state from the embed container width.
-  const linkoutSheetState = effectiveVideoWidth < 300 ? "default" : "expand-view";
-
-  // Resets linkout placement to inside and restores width-based sheet state.
-  const resetLinkoutState = () => {
-    openContentType("linkouts", "inside");
-    setContentTypeState("linkouts", linkoutSheetState as "default" | "expand-view");
-  };
+  // Linkout state carry across the expand↔tile boundary is owned SOLELY by
+  // `EmbedExpandViewLoader`'s snapshot/restore effect — it fires on every exit
+  // path (in-component close AND the top-bar back button, which never reaches
+  // this component), so duplicating it here would double-write and, worse, read
+  // stale state from this component's mount-frozen `handleCloseExpandView`.
 
   // Function to handle closing expand view - restores mute state and goes back
   const handleCloseExpandView = useCallback((isEscapeKey?: boolean) => {
@@ -187,7 +179,6 @@ export function EmbedExpandView({
     if (isEndOfFeed) {
       changeActiveIndex(Math.max(activeIndex - 1, 0));
       embedEventBus.emit("centerActiveSlide", {});
-      resetLinkoutState();
       goBackToPreviousPlayerType();
       return;
     }
@@ -198,7 +189,6 @@ export function EmbedExpandView({
     const isBeforeEndOfFeed = nextVideo?.video?.type === "complete";
     if (isClosedViaBackButton || isBeforeEndOfFeed) {
       embedEventBus.emit("centerActiveSlide", {});
-      resetLinkoutState();
       goBackToPreviousPlayerType();
       return;
     }
@@ -215,7 +205,6 @@ export function EmbedExpandView({
       changeActiveIndex(activeIndex + 1);
     }
     embedEventBus.emit("centerActiveSlide", {});
-    resetLinkoutState();
     goBackToPreviousPlayerType();
   }, []);
 

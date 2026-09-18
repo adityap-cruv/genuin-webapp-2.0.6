@@ -6,6 +6,7 @@ import { useAxiosInstance } from "@genuin/components/context/axios";
 import { axiosInstance as globalAxiosInstance } from "@genuin/components/context/axios/context";
 import type { ConfigurationType, EmbedDataType } from "@genuin/components/context/embed/embed.types";
 import { getDeviceId } from "@genuin/components/lib/utils/device-id";
+import { useIpInfo } from "@genuin/components/react-query/api/authentication/ip-info";
 import { queryClient } from "@genuin/components/react-query/client";
 import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
 import { API_PATHS } from "@genuin/components/react-query/paths";
@@ -16,6 +17,7 @@ import { fetchVideoDetails } from "../video";
 
 import { parseFeed } from "./parser";
 import type { AdsPostDetailsType } from "./schema";
+import { buildTargetingSync, type Targeting } from "./targeting";
 // Mapper for FeedType to corresponding numbers
 const feedTypeToNumber: Record<FeedType, number> = {
   HOME: 1,
@@ -33,31 +35,30 @@ const feedTypeToNumber: Record<FeedType, number> = {
 const MCC_BRAND_ID = [3099, 3296, 3180, 2477, 3312];
 
 /**
- * Feed ranking algorithm sent as `ds_algo` on the placement/sections request.
- * `default` — backend's standard ranking. `new_first_watched_last` — surface unseen
- * items first and push already-watched ones to the end.
+ * Feed ranking algorithm sent as `algo` on the placement/sections request. Set via the
+ * `?algo=dynamic_section` URL param.
  */
-type DsAlgo = "default" | "new_first_watched_last";
+type DsAlgo = "dynamic_section";
 
 /**
- * Per-placement-id override for `ds_algo`. The field is only added to the
+ * Per-placement-id override for `algo`. The field is only added to the
  * placement/sections request body for placement IDs present in this map — placements
- * not listed here send no `ds_algo` at all. Keyed by placement id.
+ * not listed here send no `algo` at all. Keyed by placement id.
  */
 const DS_ALGO_BY_PLACEMENT: Record<string, DsAlgo> = {};
 
 /**
- * Resolve the `ds_algo` value to send for a placement feed request.
+ * Resolve the `algo` value to send for a placement feed request.
  *
- * Precedence: the `?gen_algo=ds` URL param forces `"default"` for all placements on the page;
- * otherwise fall back to the per-placement {@link DS_ALGO_BY_PLACEMENT} map. Returns `undefined`
- * (field omitted) when there is no placement id or no match — so non-placement feeds are untouched.
+ * Precedence: the `?algo=dynamic_section` URL param forces `"dynamic_section"` for every feed
+ * request on the page (placement or not); otherwise fall back to the per-placement
+ * {@link DS_ALGO_BY_PLACEMENT} map, which requires a placement id. Returns `undefined` (field
+ * omitted) when neither applies.
  */
 function resolveDsAlgo(placementId?: string): DsAlgo | undefined {
-  if (!placementId) return undefined;
-  const genAlgo = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("gen_algo") : null;
-  if (genAlgo === "ds") return "default";
-  return DS_ALGO_BY_PLACEMENT[placementId];
+  const genAlgo = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("algo") : null;
+  if (genAlgo === "dynamic_section") return "dynamic_section";
+  return placementId ? DS_ALGO_BY_PLACEMENT[placementId] : undefined;
 }
 
 // TODO: Suggestion unify this api with all the apis for feed in profile/group/community. So that
@@ -76,7 +77,8 @@ async function fetchFeed(
     lastVideoCount?: number;
   },
   options?: UseFeedOptionsType,
-  axiosInstance?: AxiosInstance
+  axiosInstance?: AxiosInstance,
+  ipInfo?: Targeting["location"]
 ) {
   const requestAxiosInstance = axiosInstance ?? globalAxiosInstance;
 
@@ -86,7 +88,7 @@ async function fetchFeed(
   const brandId: number =
     options?.brandId ?? parseInt(String(requestAxiosInstance.defaults.headers["x-brand-id"] ?? "0"), 10);
 
-  // ds_algo: page-level ?gen_algo=ds override, else the per-placement map. Omitted otherwise.
+  // algo: page-level ?algo=dynamic_section override, else the per-placement map. Omitted otherwise.
   const dsAlgo = resolveDsAlgo(options?.placementId);
 
   // Non-MCC brands: treat empty sponsorship_id array as no sponsorship filter
@@ -262,7 +264,7 @@ async function fetchFeed(
       requestBody = {
         ...(deviceId && { device_id: deviceId }),
         ...(options?.placementId && { placement_id: options.placementId }),
-        ...(dsAlgo && { ds_algo: dsAlgo }),
+        ...(dsAlgo && { algo: dsAlgo }),
         ...(options?.sponsorship_id && { sponsorship_id: options.sponsorship_id }),
         ...(options?.styleId && { style_id: options.styleId }),
         ...(pageParam?.pageSession && { page_session: pageParam.pageSession }),
@@ -299,7 +301,7 @@ async function fetchFeed(
         ...(deviceId && { device_id: deviceId }),
         ...(options?.embedId && { embed_id: options.embedId }),
         ...(options?.placementId && { placement_id: options.placementId }),
-        ...(dsAlgo && { ds_algo: dsAlgo }),
+        ...(dsAlgo && { algo: dsAlgo }),
         ...(options?.sponsorship_id && { sponsorship_id: options.sponsorship_id }),
         ...(options?.styleId && { style_id: options.styleId }),
         ...(pageParam?.lastVideoId && { last_video_id: pageParam.lastVideoId }),
@@ -308,6 +310,7 @@ async function fetchFeed(
           community_ids: options.communityIds,
         }),
         ...(options?.groupIds?.length && { loop_ids: options.groupIds }),
+        ...(options?.brandContext && { brand_context: options.brandContext }),
         ...(pageParam?.lastVideoCount !== undefined && { last_video_count: pageParam.lastVideoCount }),
       };
       break;
@@ -340,12 +343,21 @@ async function fetchFeed(
   const FORCE_TYPE_3_PLACEMENT_ID = "6a3c5b0dcb0f2cc8d56a2b0d";
   const placementOverride = options?.placementId === FORCE_TYPE_3_PLACEMENT_ID ? { type: 3 } : {};
 
+  // Ad/feed targeting: sync metadata (meta keywords + page url) built here.
+  // Geo-ip `location` is resolved at the useFeed hook level via useIpInfo
+  // (gated so the feed request waits for it) and passed in as `ipInfo` —
+  // merged into the final targeting object below.
+  const metadata = buildTargetingSync();
+  const targeting: Targeting | undefined =
+    metadata || ipInfo ? { ...metadata, ...(ipInfo && { location: ipInfo }) } : undefined;
+
   return await requestAxiosInstance
     .post(url, {
       ...requestBody,
       ...contextualFeedParamsBody,
       ...configurationDataBody,
       ...placementOverride,
+      ...(targeting && { targeting }),
     })
     .then((res) => {
       // if (res.status !== 200) {
@@ -432,9 +444,13 @@ type UseFeedOptionsType = {
 export type FeedPage = Awaited<ReturnType<typeof fetchFeed>>;
 
 /**
- * Default empty feed page structure used when no feed data is available
+ * Default empty feed page structure used when no feed data is available.
+ *
+ * Exported so server components can build a `FeedPage` (e.g. to seed
+ * `HydrationBoundary` for `/video/[slug]`) with the exact same structural
+ * shape `createFeedQueryFn` produces on the client — see `video/[slug]/page.tsx`.
  */
-const createEmptyFeedPage = (): FeedPage => ({
+export const createEmptyFeedPage = (): FeedPage => ({
   feed: [],
   hasSection: false,
   pageSession: null,
@@ -589,7 +605,8 @@ async function createFeedQueryFn(
   feedType: FeedType,
   pageParam: { pageSession?: string; lastVideoId?: string; lastVideoCount?: number } | undefined,
   options?: UseFeedOptionsType,
-  axiosInstance?: AxiosInstance
+  axiosInstance?: AxiosInstance,
+  ipInfo?: Targeting["location"]
 ): Promise<FeedPage> {
   const startVideoSlug = options?.startVideoSlug;
   const hasVideoIds = options?.videoIds && options.videoIds.length > 0;
@@ -602,7 +619,7 @@ async function createFeedQueryFn(
   // Scenario 3: Regular feed - fetch from API
   let feedData = options?.isSingleVideo
     ? createEmptyFeedPage()
-    : await fetchFeed(feedType, pageParam, options, axiosInstance);
+    : await fetchFeed(feedType, pageParam, options, axiosInstance, ipInfo);
 
   // For the first page with a startVideoSlug, ensure the video is included
   const isFirstPage = !pageParam;
@@ -667,11 +684,18 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
   const queryKey = getQueryKeyForFeed(feedType, options);
 
   const axiosInstance = useAxiosInstance();
+  // Shares useIpInfo's cache key, so this dedupes with analytics/other useFeed
+  // instances on the page — only the first ever call actually fetches.
+  const { data: ipInfo, isLoading: isIpInfoLoading } = useIpInfo();
 
-  return useInfiniteQuery({
+  const query = useInfiniteQuery({
     queryKey,
-    queryFn: ({ pageParam }) => createFeedQueryFn(feedType, pageParam, options, axiosInstance),
-    enabled: options?.enabled !== false,
+    queryFn: ({ pageParam }) => createFeedQueryFn(feedType, pageParam, options, axiosInstance, ipInfo),
+    // Gated on geo-ip settling (success OR failure — isLoading clears either
+    // way) so the feed request always waits for `targeting.location` to be
+    // resolved one way or another before firing, matching the guarantee the
+    // previous non-hook implementation had.
+    enabled: options?.enabled !== false && !isIpInfoLoading,
     initialPageParam: undefined as undefined | { pageSession?: string; lastVideoId?: string; lastVideoCount?: number },
     getNextPageParam: (lastPage, _allPages, lastPageParam) => {
       if (lastPage.endOfFeed) return undefined;
@@ -700,6 +724,14 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
     refetchIntervalInBackground: options?.refetchIntervalInBackground,
     placeholderData: options?.placeholderData && !options?.startVideoSlug ? options.placeholderData : undefined,
   });
+
+  // Keep useFeed in the loading state while geo-ip is still resolving. The
+  // query itself reports isLoading=false while disabled (enabled gated on
+  // !isIpInfoLoading), so surface the upstream loading state explicitly.
+  return {
+    ...query,
+    isLoading: query.isLoading || isIpInfoLoading,
+  };
 };
 
 type QueryData = ReturnType<typeof useFeed>["data"];
