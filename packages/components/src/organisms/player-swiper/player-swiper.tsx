@@ -1044,7 +1044,10 @@ export function PlayerList({
               linkoutThumbnail={filteredPost[activeIndex]?.video?.linkouts?.[0]?.links?.[0]?.image ?? null}
               isLinkoutsOpen={hasContentType("linkouts")}
               // Sparkle action: expanded desktop view only — the right rail hosts the panel.
-              showIntelligence={showExpandView && isDesktop}
+              // TEMPORARY: Home Feed View only. The page feeds (/latest, /popular, /explore)
+              // keep their existing chrome until Intelligence is signed off there — drop the
+              // `isHomeFeedView &&` to bring the sparkle back for them.
+              showIntelligence={showExpandView && isDesktop && isHomeFeedView}
               isIntelligenceOpen={isIntelligenceOpen}
               actionWrapper={{
                 INTELLIGENCE: (defaultNode) => (

@@ -8,6 +8,7 @@ import { useMemo, memo, useEffect, useState, type ComponentProps, useCallback, u
 
 import { VideoTypes } from "@genuin/components/context";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { isFeedViewPresentation } from "@genuin/components/lib/feed-view/presentation";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import useViewportHeight from "@genuin/components/hooks/use-screen-height";
@@ -466,6 +467,10 @@ const SharedActions = memo(function SharedActions({
   const { isDesignSystemV2Linkouts } = useEmbedConfigs();
   const { hasContentType, openContentType, closeContentType } = useSheetState();
   const { showExpandView } = usePlayerContext();
+  const sharedActionsEmbed = useSafeEmbedContext();
+  // TEMPORARY: mirrors the desktop rail in `player-swiper` — Intelligence is Home Feed View
+  // only for now, so the page feeds (/latest, /popular, /explore) show no sparkle.
+  const isHomeFeedView = isFeedViewPresentation(sharedActionsEmbed?.rootElement);
   const { video, group, community } = postDetails;
   if (!video || !community || !group) return null;
   // Mobile action-rail linkout button: tap toggles the in-player linkout
@@ -512,7 +517,7 @@ const SharedActions = memo(function SharedActions({
         showLinkout={showLinkoutAction}
         linkoutThumbnail={linkoutThumbnail ?? video.linkouts?.[0]?.links?.find((l: any) => l.image)?.image}
         isLinkoutsOpen={hasContentType("linkouts")}
-        showIntelligence={!isDesktop && showExpandView}
+        showIntelligence={!isDesktop && showExpandView && isHomeFeedView}
         isIntelligenceOpen={hasContentType("intelligence")}
         actionWrapper={{
           // Mobile Intelligence: tap toggles the floating chat surface. Opened at
