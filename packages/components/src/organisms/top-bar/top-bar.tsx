@@ -8,6 +8,7 @@ import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { useHideOnScrollDown } from "@genuin/components/hooks/use-hide-on-scroll-down";
+import { usePathname } from "@genuin/components/hooks/use-pathname";
 import { useRouter } from "@genuin/components/hooks/use-router";
 import { BrandLogo } from "@genuin/components/molecules/brand";
 import { BrandSlogan } from "@genuin/components/molecules/brand";
@@ -39,11 +40,15 @@ type TopBarProps = React.ComponentProps<"div"> & {} & VariantProps<typeof topbar
 
 export function TopBar({ className, variant, theme, ...restProps }: TopBarProps) {
   const { isMobile } = useDeviceDetectMediaQuery();
+  const pathname = usePathname();
   // Auto-hide is only for the MOBILE bar, which is the only case where the bar is fixed over the
   // content (the `dark` theme above). Anywhere else the bar sits in normal flow, so sliding it
   // away would leave a hole — hence desktop and the light bar keep their current behaviour.
   const canAutoHide = isMobile && theme === "dark";
-  const isScrolledAway = useHideOnScrollDown({ enabled: canAutoHide });
+  // `resetKey`: this bar survives client-side navigation, so without it a page left mid-scroll
+  // hands its hidden state to the next one — tapping an article from a scrolled Home opened the
+  // reader with no header until the reader itself was scrolled.
+  const isScrolledAway = useHideOnScrollDown({ enabled: canAutoHide, resetKey: pathname });
   const autoHideClass = canAutoHide
     ? cn(
         "gencl:transition-transform gencl:duration-300 gencl:ease-out gencl:will-change-transform",
@@ -75,6 +80,7 @@ export function TopBar({ className, variant, theme, ...restProps }: TopBarProps)
     const buttonShape = isMobile ? "circle" : "square";
     return (
       <div
+        data-slot="top-bar"
         className={cn(
           className,
           topbarVariants({ theme, variant }),
@@ -103,7 +109,7 @@ export function TopBar({ className, variant, theme, ...restProps }: TopBarProps)
 
   if (layoutConfig.showNavigationBar) {
     return (
-      <div className={cn(className, topbarVariants({ theme, variant }), autoHideClass)} {...restProps}>
+      <div data-slot="top-bar" className={cn(className, topbarVariants({ theme, variant }), autoHideClass)} {...restProps}>
         {navBarItems}
       </div>
     );

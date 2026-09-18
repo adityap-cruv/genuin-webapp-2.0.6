@@ -102,6 +102,14 @@ export function BaseLayout({
     };
   }, []);
 
+  // An expand view belongs to the page that opened it. Navigating away unmounts the placement,
+  // so the closing `false` never arrives and the flag stays stuck `true` — which hid the mobile
+  // top bar for the rest of the session (open a Feed View on Home, tap through to an article,
+  // and the article had no header). Clearing it on every route change is the reset.
+  useEffect(() => {
+    setIsExpandViewOpen(false);
+  }, [pathname]);
+
   return (
     <>
       {/* The bar stays put through ads: an ad plays inside its placement, not over the whole

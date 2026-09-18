@@ -14,6 +14,13 @@ type HideOnScrollDownOptions = {
   hideAfter?: number;
   /** Movement below this (in px) is treated as jitter/momentum noise and ignored. */
   threshold?: number;
+  /**
+   * Changing this value reveals the header again and forgets the previous scroll position.
+   * Pass the current route: the header outlives a client-side navigation (it lives in the
+   * layout, not the page), so a page left mid-scroll would otherwise hand its "hidden" state
+   * to the next page, which opens at the top with no header until something scrolls.
+   */
+  resetKey?: string;
 };
 
 /**
@@ -35,10 +42,18 @@ export function useHideOnScrollDown({
   enabled = true,
   hideAfter = 80,
   threshold = 4,
+  resetKey,
 }: HideOnScrollDownOptions = {}): boolean {
   const [isHidden, setIsHidden] = useState(false);
   const lastTargetRef = useRef<EventTarget | null>(null);
   const lastTopRef = useRef(0);
+
+  // A new page starts at the top, and with its header showing.
+  useEffect(() => {
+    setIsHidden(false);
+    lastTargetRef.current = null;
+    lastTopRef.current = 0;
+  }, [resetKey]);
 
   useEffect(() => {
     if (!enabled) {
