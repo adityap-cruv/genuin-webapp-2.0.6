@@ -18,6 +18,9 @@ export type ContextualLinkMetaData = LinkMetaData & {
   video_id?: string | null;
 };
 
+/** Horizontal travel (px) a touch must cover before a swipe commits to the next card. */
+const SWIPE_COMMIT_THRESHOLD_PX = 24;
+
 export interface HoverLinkCardListProps {
   items: readonly ContextualLinkMetaData[];
   activeVideoId?: string | null;
@@ -99,6 +102,13 @@ export function HoverLinkCardList({
     defaultValue: true,
     initializeWithValue: false,
   });
+  // Below the desktop breakpoint the list is a horizontal card rail (see the `max-lg` classes on
+  // the scroller); at and above it, it is the original vertical list.
+  const isDesktopViewport = useMediaQuery(MEDIA_QUERIES.DESKTOP, {
+    defaultValue: false,
+    initializeWithValue: false,
+  });
+  const isRail = !isDesktopViewport;
   const orderedItems = useMemo(() => {
     const entries = items.map((item, sourceIndex) => ({
       item,
@@ -123,6 +133,87 @@ export function HoverLinkCardList({
   const normalizedDuration = Math.max(0, animationDurationMs);
   const tailSpace = typeof height === "number" ? Math.max(0, height - 80) : 307;
   const isControlledPinned = pinActiveItemToTop && Boolean(activeVideoId);
+
+  /**
+   * One swipe = one card, on touch.
+   *
+   * CSS scroll snapping cannot express this on its own: `snap-mandatory` only picks the nearest
+   * snap point AFTER the browser's fling momentum has run out, so a quick flick still travels
+   * several cards, and `scroll-snap-stop: always` is honoured inconsistently across mobile
+   * engines. So the rail takes the gesture itself: `touch-action: pan-y` hands horizontal
+   * panning (and therefore momentum) to us while leaving vertical page scroll to the browser,
+   * the finger drags the rail at most one card either way, and the release commits to exactly
+   * one step. Wheel and trackpad users are untouched — they never fire these events and keep
+   * the CSS snapping.
+   */
+  useEffect(() => {
+    const section = sectionRef.current;
+    const track = trackRef.current;
+    if (!isRail || !section || !track) return;
+
+    /** Distance between two card starts — the one and only travel a swipe may commit to. */
+    const measureStep = () => {
+      const first = track.querySelector<HTMLElement>('[data-item-index="0"]');
+      const second = track.querySelector<HTMLElement>('[data-item-index="1"]');
+      if (first && second) {
+        const stride = Math.abs(second.offsetLeft - first.offsetLeft);
+        if (stride > 0) return stride;
+      }
+      return first?.offsetWidth ?? section.clientWidth;
+    };
+
+    let startX = 0;
+    let startScrollLeft = 0;
+    let step = 0;
+    let isDragging = false;
+
+    const endDrag = () => {
+      isDragging = false;
+      // Restore the class-driven snapping for any non-touch scrolling that follows.
+      section.style.scrollSnapType = "";
+    };
+
+    const handleTouchStart = (event: TouchEvent) => {
+      if (event.touches.length !== 1) return;
+      isDragging = true;
+      startX = event.touches[0]!.clientX;
+      startScrollLeft = section.scrollLeft;
+      step = measureStep();
+      // Mandatory snapping would re-snap every `scrollLeft` we write while the finger moves.
+      section.style.scrollSnapType = "none";
+    };
+
+    const handleTouchMove = (event: TouchEvent) => {
+      if (!isDragging) return;
+      const deltaX = event.touches[0]!.clientX - startX;
+      // Follow the finger, but never past the neighbouring card — the rail cannot run away.
+      const travel = Math.max(-step, Math.min(step, -deltaX));
+      section.scrollLeft = startScrollLeft + travel;
+    };
+
+    const handleTouchEnd = (event: TouchEvent) => {
+      if (!isDragging) return;
+      const deltaX = (event.changedTouches[0]?.clientX ?? startX) - startX;
+      const direction = Math.abs(deltaX) >= SWIPE_COMMIT_THRESHOLD_PX ? (deltaX < 0 ? 1 : -1) : 0;
+      const maxScrollLeft = Math.max(0, section.scrollWidth - section.clientWidth);
+      const target = Math.max(0, Math.min(maxScrollLeft, startScrollLeft + direction * step));
+      endDrag();
+      section.scrollTo({ left: target, behavior: "smooth" });
+    };
+
+    section.addEventListener("touchstart", handleTouchStart, { passive: true });
+    section.addEventListener("touchmove", handleTouchMove, { passive: true });
+    section.addEventListener("touchend", handleTouchEnd, { passive: true });
+    section.addEventListener("touchcancel", endDrag, { passive: true });
+
+    return () => {
+      section.removeEventListener("touchstart", handleTouchStart);
+      section.removeEventListener("touchmove", handleTouchMove);
+      section.removeEventListener("touchend", handleTouchEnd);
+      section.removeEventListener("touchcancel", endDrag);
+      section.style.scrollSnapType = "";
+    };
+  }, [isRail, orderedItems.length]);
 
   const alignItemToStart = useCallback((index: number) => {
     const section = sectionRef.current;
@@ -181,6 +272,36 @@ export function HoverLinkCardList({
     [prefersReducedMotion]
   );
 
+  /**
+   * Which card sits at the leading edge for a given expanded card.
+   *
+   * Step scrolling keeps the PREVIOUS card parked above the expanded one, collapsed: with the
+   * expanded card pinned to the edge there was nothing above it, so the list read as one-way and
+   * readers never discovered they could step back. The first card is its own leading card, so the
+   * list opens exactly as authored — expanded, flush with the top — and only starts travelling
+   * from the second step onwards. Free (non-step) scrolling and the phone rail are unchanged.
+   */
+  const leadingIndexFor = useCallback(
+    (index: number) => {
+      const track = trackRef.current;
+      if (!stepScroll || !track) return index;
+      const isHorizontal = getComputedStyle(track).flexDirection === "row";
+      return isHorizontal ? index : Math.max(0, index - 1);
+    },
+    [stepScroll]
+  );
+
+  /** Inverse of `leadingIndexFor`: the card that should be expanded for a given leading card. */
+  const expandedIndexForLeading = useCallback(
+    (leadingIndex: number) => {
+      const track = trackRef.current;
+      if (!stepScroll || !track) return leadingIndex;
+      const isHorizontal = getComputedStyle(track).flexDirection === "row";
+      return isHorizontal ? leadingIndex : Math.min(orderedItems.length - 1, leadingIndex + 1);
+    },
+    [orderedItems.length, stepScroll]
+  );
+
   const queueScrollToIndex = useCallback(
     (index: number) => {
       // Arm the guard NOW: the expanding/collapsing cards reflow the list before the
@@ -207,8 +328,8 @@ export function HoverLinkCardList({
     if (matchedIndex < 0) return;
 
     setActiveIndex(matchedIndex);
-    queueScrollToIndex(matchedIndex);
-  }, [activeVideoId, orderedItems, queueScrollToIndex]);
+    queueScrollToIndex(leadingIndexFor(matchedIndex));
+  }, [activeVideoId, leadingIndexFor, orderedItems, queueScrollToIndex]);
 
   const startAdvance = useCallback(() => {
     const nextIndex = activeIndex + 1;
@@ -216,9 +337,18 @@ export function HoverLinkCardList({
 
     const section = sectionRef.current;
     const track = trackRef.current;
-    const currentItem = trackRef.current?.querySelector<HTMLElement>(`[data-item-index="${activeIndex}"]`);
-    const nextItem = trackRef.current?.querySelector<HTMLElement>(`[data-item-index="${nextIndex}"]`);
+    const leadingIndex = leadingIndexFor(activeIndex);
+    const nextLeadingIndex = leadingIndexFor(nextIndex);
+    const currentItem = trackRef.current?.querySelector<HTMLElement>(`[data-item-index="${leadingIndex}"]`);
+    const nextItem = trackRef.current?.querySelector<HTMLElement>(`[data-item-index="${nextLeadingIndex}"]`);
     if (!section || !track || !currentItem || !nextItem) return;
+
+    // First step of a stepped list: the leading card does not change, only the expansion moves
+    // down one. Nothing to animate.
+    if (nextLeadingIndex === leadingIndex) {
+      setActiveIndex(nextIndex);
+      return;
+    }
 
     const isHorizontal = getComputedStyle(track).flexDirection === "row";
     const currentRect = currentItem.getBoundingClientRect();
@@ -232,7 +362,7 @@ export function HoverLinkCardList({
       else section.scrollTop += distance;
       setActiveIndex(nextIndex);
       animationFrameRef.current = window.requestAnimationFrame(() => {
-        alignItemToStart(nextIndex);
+        alignItemToStart(nextLeadingIndex);
         animationFrameRef.current = window.requestAnimationFrame(() => {
           isAutoScrollingRef.current = false;
         });
@@ -260,7 +390,7 @@ export function HoverLinkCardList({
       setActiveIndex(nextIndex);
       setIsSliding(false);
       animationFrameRef.current = window.requestAnimationFrame(() => {
-        alignItemToStart(nextIndex);
+        alignItemToStart(nextLeadingIndex);
         animationFrameRef.current = window.requestAnimationFrame(() => {
           isAutoScrollingRef.current = false;
         });
@@ -268,7 +398,15 @@ export function HoverLinkCardList({
     };
 
     animationFrameRef.current = window.requestAnimationFrame(animateScroll);
-  }, [activeIndex, alignItemToStart, isSliding, normalizedDuration, orderedItems.length, prefersReducedMotion]);
+  }, [
+    activeIndex,
+    alignItemToStart,
+    isSliding,
+    leadingIndexFor,
+    normalizedDuration,
+    orderedItems.length,
+    prefersReducedMotion,
+  ]);
 
   useEffect(() => {
     if (!autoRotate || isInteractionPaused || isSliding || activeIndex >= orderedItems.length - 1) return;
@@ -310,13 +448,20 @@ export function HoverLinkCardList({
         }
       });
 
-      setActiveIndex(closestIndex);
-      if (notify && closestIndex !== activeIndex) {
-        const entry = orderedItems[closestIndex];
-        if (entry) onActiveItemChange?.(entry.item, closestIndex);
+      // `closestIndex` is the card at the LEADING edge, which under step scrolling is the
+      // collapsed one above the expanded card. Keep the current selection when it already
+      // explains that position — at the top of the list both "card 0 expanded" and "card 0
+      // collapsed, card 1 expanded" park the same card at the edge.
+      const nextActiveIndex =
+        leadingIndexFor(activeIndex) === closestIndex ? activeIndex : expandedIndexForLeading(closestIndex);
+
+      setActiveIndex(nextActiveIndex);
+      if (notify && nextActiveIndex !== activeIndex) {
+        const entry = orderedItems[nextActiveIndex];
+        if (entry) onActiveItemChange?.(entry.item, nextActiveIndex);
       }
     },
-    [activeIndex, orderedItems, onActiveItemChange]
+    [activeIndex, expandedIndexForLeading, leadingIndexFor, orderedItems, onActiveItemChange]
   );
 
   // Step scrolling — one card per wheel gesture. Registered natively (non-passive) so the
@@ -366,14 +511,14 @@ export function HoverLinkCardList({
       intendedIndexRef.current = nextIndex;
       setIsInteractionPaused(true);
       setActiveIndex(nextIndex);
-      queueScrollToIndex(nextIndex);
+      queueScrollToIndex(leadingIndexFor(nextIndex));
       const entry = orderedItems[nextIndex];
       if (entry) onActiveItemChange?.(entry.item, nextIndex);
     };
 
     section.addEventListener("wheel", onWheel, { passive: false });
     return () => section.removeEventListener("wheel", onWheel);
-  }, [stepScroll, orderedItems, queueScrollToIndex, onActiveItemChange]);
+  }, [stepScroll, leadingIndexFor, orderedItems, queueScrollToIndex, onActiveItemChange]);
 
   const selectCard = useCallback(
     (item: ContextualLinkMetaData, index: number) => {
@@ -385,7 +530,7 @@ export function HoverLinkCardList({
       const pageScrollY = window.scrollY || window.pageYOffset;
 
       setActiveIndex(index);
-      queueScrollToIndex(index);
+      queueScrollToIndex(leadingIndexFor(index));
 
       // Restore page scroll shortly after the list's scroll animation
       // completes. Use normalizedDuration as a guide; add a small buffer.
@@ -394,7 +539,7 @@ export function HoverLinkCardList({
 
       onLinkClick?.(item, index);
     },
-    [normalizedDuration, onLinkClick, queueScrollToIndex]
+    [leadingIndexFor, normalizedDuration, onLinkClick, queueScrollToIndex]
   );
 
   if (orderedItems.length === 0) return null;
@@ -417,7 +562,9 @@ export function HoverLinkCardList({
       )}
       // Horizontal snap is mobile-only; desktop intentionally stays unsnapped because
       // expanding/collapsing cards changes their vertical positions during step scrolling.
-      style={{ width, height, overflowAnchor: "none" }}
+      // `pan-y` on the rail: the browser keeps vertical page scrolling, while horizontal panning
+      // (and its momentum) belongs to the one-card-per-swipe handler above.
+      style={{ width, height, overflowAnchor: "none", touchAction: isRail ? "pan-y" : undefined }}
       onMouseEnter={() => {
         if (pauseOnHover) setIsInteractionPaused(true);
       }}

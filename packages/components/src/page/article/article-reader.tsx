@@ -92,11 +92,14 @@ export const ARTICLE_READER_TYPOGRAPHY_CSS = `
   margin-top: 1rem;
   max-width: var(--gen-article-measure);
 }
+/* Narrow: the author and the date stack, and the separator goes with them. A wrapping flex row
+   left the bullet stranded at the end of the author's line — a separator only means something
+   between two things ON THE SAME LINE. The row (with the bullet) returns once both fit. */
 .gen-article-prose.gen-article-page .gen-article-byline {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
   margin-top: 1.75rem;
   padding-top: 1.25rem;
   padding-bottom: 1.25rem;
@@ -107,7 +110,7 @@ export const ARTICLE_READER_TYPOGRAPHY_CSS = `
   color: var(--gen-article-ink-soft);
 }
 .gen-article-prose.gen-article-page .gen-article-byline-author { font-weight: 600; color: var(--gen-article-ink); }
-.gen-article-prose.gen-article-page .gen-article-byline-dot { color: rgba(0, 0, 0, 0.25); }
+.gen-article-prose.gen-article-page .gen-article-byline-dot { display: none; color: rgba(0, 0, 0, 0.25); }
 .gen-article-prose.gen-article-page .gen-article-event-meta {
   margin-top: 1.25rem;
   display: flex;
@@ -156,6 +159,14 @@ export const ARTICLE_READER_TYPOGRAPHY_CSS = `
 .gen-article-prose.gen-article-page .gen-article-hero { margin-bottom: 2.5rem; }
 .gen-article-prose.gen-article-page a { color: inherit; text-underline-offset: 3px; }
 
+@container gen-article (min-width: 560px) {
+  .gen-article-prose.gen-article-page .gen-article-byline {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .gen-article-prose.gen-article-page .gen-article-byline-dot { display: inline; }
+}
 @container gen-article (min-width: 700px) {
   /* Images breathe past the text measure without leaving the column. */
   .gen-article-prose.gen-article-page .gen-article-figure,
@@ -196,7 +207,7 @@ function ArticleBodyBlock({ block }: { block: ArticleBlock }) {
   return <p className="gen-article-p">{block.text}</p>;
 }
 
-/** The community / group pills under the byline, from the article's own attribution. */
+/** The community / group pills above the byline, from the article's own attribution. */
 function ArticleHeaderPills({ article }: { article: Article }) {
   if (!article.community) return null;
 
@@ -231,6 +242,9 @@ export function ArticleReaderHeader({ article, className }: { article: Article; 
         </div>
       ) : null}
 
+      {/* Community & group pills — same affordance as the feed player's. */}
+      <ArticleHeaderPills article={article} />
+
       {article.author || article.publishedAt ? (
         <div className="gen-article-byline">
           {article.author ? <span className="gen-article-byline-author">{article.author}</span> : null}
@@ -242,9 +256,6 @@ export function ArticleReaderHeader({ article, className }: { article: Article; 
           {article.publishedAt ? <span>{article.publishedAt}</span> : null}
         </div>
       ) : null}
-
-      {/* Community & group pills — same affordance as the feed player's. */}
-      <ArticleHeaderPills article={article} />
     </header>
   );
 }

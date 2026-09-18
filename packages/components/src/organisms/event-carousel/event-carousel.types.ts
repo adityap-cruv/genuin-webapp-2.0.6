@@ -23,5 +23,7 @@ export interface EventCarouselProps extends Omit<ComponentPropsWithoutRef<"secti
   imageHeight?: number;
   gap?: number;
   ariaLabel?: string;
+  /** Show the left/right scroll arrows when the track overflows. @default true */
+  showNavigation?: boolean;
   onCtaClick?: (event: EventCarouselItem) => void;
 }

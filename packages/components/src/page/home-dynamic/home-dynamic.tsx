@@ -338,6 +338,8 @@ export function HomeDynamic() {
       <div ref={overlayBoundsRef} className="gencl:relative gencl:h-full gencl:overflow-hidden">
         <div
           ref={scrollRef}
+          // This is the page's scroller, so it is what the auto-hiding site header follows.
+          data-page-scroller=""
           aria-hidden={playerOverlay ? true : undefined}
           inert={playerOverlay ? true : undefined}
           className={`gen-home-motion gencl:h-full ${playerOverlay ? "gencl:overflow-hidden" : "gencl:overflow-auto"}`}>

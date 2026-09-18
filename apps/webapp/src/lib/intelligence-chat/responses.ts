@@ -167,7 +167,8 @@ function toBlocks(content: string, seq: number, pool: readonly IntelligenceArtic
       props: {
         articles: related,
         layout: { imageAspectRatio: "16 / 9", height: "auto", labelGap: 8 },
-        label: "Related",
+        // Empty on purpose: the cards speak for themselves in a chat reply, so no eyebrow label.
+        label: "",
       },
     });
   }

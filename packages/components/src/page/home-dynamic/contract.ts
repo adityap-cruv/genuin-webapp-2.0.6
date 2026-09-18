@@ -87,7 +87,17 @@ export type HomeLayoutManifest = {
 
 export type FeedType = "HOME";
 
-export type HeaderData = { heading?: string; subHeading?: string; logo?: string };
+export type HeaderData = {
+  heading?: string;
+  subHeading?: string;
+  logo?: string;
+  /**
+   * Brand nickname behind a sponsor header, e.g. `musto` → `/brand/musto`. Sponsor widgets have
+   * no `source` (they are neither a community nor a group), so this is what makes their header
+   * clickable. Omit it and the header stays inert, as before.
+   */
+  brandSlug?: string;
+};
 export type FeedSource = { feedType: FeedType; communityId: string; groupId?: string };
 export type ImageData = { src: string; alt?: string };
 export type ArticleData = { id: string; title: string; href: string; image: ImageData };

@@ -7,6 +7,7 @@ import { useCallback } from "react";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { useHideOnScrollDown } from "@genuin/components/hooks/use-hide-on-scroll-down";
 import { useRouter } from "@genuin/components/hooks/use-router";
 import { BrandLogo } from "@genuin/components/molecules/brand";
 import { BrandSlogan } from "@genuin/components/molecules/brand";
@@ -38,6 +39,17 @@ type TopBarProps = React.ComponentProps<"div"> & {} & VariantProps<typeof topbar
 
 export function TopBar({ className, variant, theme, ...restProps }: TopBarProps) {
   const { isMobile } = useDeviceDetectMediaQuery();
+  // Auto-hide is only for the MOBILE bar, which is the only case where the bar is fixed over the
+  // content (the `dark` theme above). Anywhere else the bar sits in normal flow, so sliding it
+  // away would leave a hole — hence desktop and the light bar keep their current behaviour.
+  const canAutoHide = isMobile && theme === "dark";
+  const isScrolledAway = useHideOnScrollDown({ enabled: canAutoHide });
+  const autoHideClass = canAutoHide
+    ? cn(
+        "gencl:transition-transform gencl:duration-300 gencl:ease-out gencl:will-change-transform",
+        isScrolledAway && "gencl:-translate-y-full"
+      )
+    : undefined;
   const { layoutConfig } = useEmbedConfigs();
   const embedDetails = useSafeEmbedContext();
   const router = useRouter();
@@ -66,6 +78,7 @@ export function TopBar({ className, variant, theme, ...restProps }: TopBarProps)
         className={cn(
           className,
           topbarVariants({ theme, variant }),
+          autoHideClass,
           layoutConfig.showNavigationBar ? "gencl:gap-3" : "gencl:justify-start gencl:gap-3"
         )}
         {...restProps}>
@@ -90,7 +103,7 @@ export function TopBar({ className, variant, theme, ...restProps }: TopBarProps)
 
   if (layoutConfig.showNavigationBar) {
     return (
-      <div className={cn(className, topbarVariants({ theme, variant }))} {...restProps}>
+      <div className={cn(className, topbarVariants({ theme, variant }), autoHideClass)} {...restProps}>
         {navBarItems}
       </div>
     );

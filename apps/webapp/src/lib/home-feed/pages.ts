@@ -109,9 +109,12 @@ const IMG = {
 
 const FOIL_LOGO = "/images/home/the-foil-logo.jpg";
 const MUSTO_LOGO = "/images/home/musto-logo.png";
+// `brandSlug` is the brand's nickname on the platform: the sponsor header links to
+// `/brand/<brandSlug>`. A sponsor without one keeps an inert header.
 const SPONSORS = [
   {
     id: "musto",
+    brandSlug: "musto",
     heading: "Musto",
     subHeading: "Sponsored · Performance sailing kit",
     logo: MUSTO_LOGO,
@@ -119,6 +122,7 @@ const SPONSORS = [
   },
   {
     id: "royal-caribbean",
+    brandSlug: "royalcaribbean",
     heading: "Royal Caribbean",
     subHeading: "Sponsored",
     logo: "https://media.qa.begenuin.com/uploads/brands/logo/brandProfileLogo_1770716288302.png",
@@ -126,6 +130,7 @@ const SPONSORS = [
   },
   {
     id: "cordelia-cruises",
+    brandSlug: "cordeliacruises",
     heading: "Cordelia Cruises",
     subHeading: "Sponsored",
     logo: "https://media.qa.begenuin.com/uploads/brands/logo/brandProfileLogo_1755752476954.png",
@@ -841,7 +846,12 @@ function basePageData(): Record<string, WidgetData> {
     },
     tmobile: {
       id: "tmobile",
-      header: { heading: "Musto", subHeading: "Sponsored · Performance sailing kit", logo: MUSTO_LOGO },
+      header: {
+        heading: "Musto",
+        subHeading: "Sponsored · Performance sailing kit",
+        logo: MUSTO_LOGO,
+        brandSlug: "musto",
+      },
       sponsored: true,
       ctaText: "Order Now",
     },
@@ -914,7 +924,12 @@ function varyWidget(widget: WidgetData, pageIndex: number): WidgetData {
     return {
       ...widget,
       id: `sponsor-${sponsor.id}-p${pageIndex + 1}`,
-      header: { heading: sponsor.heading, subHeading: sponsor.subHeading, logo: sponsor.logo },
+      header: {
+        heading: sponsor.heading,
+        subHeading: sponsor.subHeading,
+        logo: sponsor.logo,
+        brandSlug: sponsor.brandSlug,
+      },
       ctaText: sponsor.ctaText,
     };
   }

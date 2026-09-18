@@ -33,11 +33,16 @@ type IntelligencePanelHeaderProps = {
   headingId: string;
   onClose?: () => void;
   showClose?: boolean;
+  className?: string;
 };
 
-function IntelligencePanelHeader({ headingId, onClose, showClose = false }: IntelligencePanelHeaderProps) {
+function IntelligencePanelHeader({ headingId, onClose, showClose = false, className }: IntelligencePanelHeaderProps) {
   return (
-    <header className="gencl:flex gencl:h-9 gencl:shrink-0 gencl:-translate-y-1 gencl:items-center gencl:justify-between gencl:gap-2">
+    <header
+      className={cn(
+        "gencl:flex gencl:h-9 gencl:shrink-0 gencl:-translate-y-1 gencl:items-center gencl:justify-between gencl:gap-2",
+        className
+      )}>
       <div className="gencl:flex gencl:min-w-0 gencl:items-center gencl:gap-2">
         <Sparkle
           aria-hidden="true"
@@ -87,6 +92,7 @@ export const IntelligencePanelShell = React.forwardRef<HTMLElement, Intelligence
       size = FILL_PARENT_SIZE,
       onClose,
       showClose = false,
+      scrollHeader = false,
       scrollContentClassName,
       footer,
       className,
@@ -106,8 +112,20 @@ export const IntelligencePanelShell = React.forwardRef<HTMLElement, Intelligence
         className={cn(PANEL_CLASS, className)}
         style={{ width: size.width, height: size.height, ...style }}
         {...props}>
-        <IntelligencePanelHeader headingId={headingId} onClose={onClose} showClose={showClose} />
+        {scrollHeader ? null : (
+          <IntelligencePanelHeader headingId={headingId} onClose={onClose} showClose={showClose} />
+        )}
         <div data-slot="intelligence-panel-scroll-content" className={cn(SCROLL_CONTENT_CLASS, scrollContentClassName)}>
+          {scrollHeader ? (
+            // A snap point of its own: without one, a mandatory snap container would slide the
+            // header out from under the reader the moment the scroll settled.
+            <IntelligencePanelHeader
+              headingId={headingId}
+              onClose={onClose}
+              showClose={showClose}
+              className="gencl:snap-start"
+            />
+          ) : null}
           {children}
         </div>
         {footer}

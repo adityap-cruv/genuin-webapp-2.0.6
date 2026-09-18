@@ -292,6 +292,7 @@ function GenuinPlacement({
   mobileStyleId,
   mobilePlacementId,
   videoIds,
+  reinitOnResize = false,
   onExpandRequest,
 }: {
   domId: string;
@@ -302,6 +303,14 @@ function GenuinPlacement({
   mobilePlacementId?: string;
   /** Video ids registered by the contextual sibling through EventSurface. */
   videoIds?: string[];
+  /**
+   * Re-initialise the embed after its container settles at a materially different width. The SDK
+   * measures its container at `init()` only, so page zoom (or a window resize) leaves the drawn
+   * tiles at the old size while the cell around them follows the new one — the sponsor grid then
+   * overflowed its box. Only ratio-driven cells need this; everywhere else the cell height is
+   * fixed and a re-init would restart playback for nothing. @default false
+   */
+  reinitOnResize?: boolean;
   /** Notifies Home that this existing placement is entering its SDK expand view. */
   onExpandRequest?: () => void;
 }) {
@@ -326,6 +335,37 @@ function GenuinPlacement({
   const activePlacementId = useMobilePlacement ? mobilePlacementId! : placementId;
   const videoIdsKey = videoIds?.join(",") ?? "";
 
+  // Bumped when the container settles at a materially different width; it is part of the host
+  // div's `key`, so React swaps in a fresh container and the effect below re-inits the embed at
+  // the new size — the same remount path the placement already uses for a `videoIds` change.
+  const hostFrameRef = useRef<HTMLDivElement>(null);
+  const [layoutGeneration, setLayoutGeneration] = useState(0);
+
+  useEffect(() => {
+    const frame = hostFrameRef.current;
+    if (!reinitOnResize || !frame) return;
+
+    let measuredWidth = frame.getBoundingClientRect().width;
+    let settleTimer: number | undefined;
+    const observer = new ResizeObserver((entries) => {
+      const width = entries[0]?.contentRect.width ?? 0;
+      // Ignore the first measurement and sub-2% jitter (scrollbars, rounding): only a real
+      // zoom/resize should cost the viewer a re-init.
+      if (!width || !measuredWidth || Math.abs(width - measuredWidth) / measuredWidth < 0.02) return;
+      window.clearTimeout(settleTimer);
+      settleTimer = window.setTimeout(() => {
+        measuredWidth = width;
+        setLayoutGeneration((generation) => generation + 1);
+      }, 300);
+    });
+
+    observer.observe(frame);
+    return () => {
+      observer.disconnect();
+      window.clearTimeout(settleTimer);
+    };
+  }, [reinitOnResize]);
+
   useEffect(() => {
     if (viewport === null) return;
     let cancelled = false;
@@ -339,7 +379,7 @@ function GenuinPlacement({
     return () => {
       cancelled = true;
     };
-  }, [viewport, activeStyleId, activePlacementId, videoIdsKey]);
+  }, [viewport, activeStyleId, activePlacementId, videoIdsKey, layoutGeneration]);
 
   const captureFeedViewIntent = usePlacementFeedViewIntent({
     onExpandRequest: viewport === null ? undefined : onExpandRequest,
@@ -347,21 +387,25 @@ function GenuinPlacement({
   });
 
   if (viewport === null) {
-    return <div style={{ width: "100%", height: "100%" }} />;
+    return <div ref={hostFrameRef} style={{ width: "100%", height: "100%" }} />;
   }
 
+  // The outer frame is what the ResizeObserver watches: it survives the re-init that swaps the
+  // keyed host below.
   return (
-    <div
-      key={`${activeStyleId}-${activePlacementId}-${videoIdsKey}`}
-      id={domId}
-      className="gen-sdk-class"
-      data-style-id={activeStyleId}
-      data-placement-id={activePlacementId}
-      data-api-key={apiKey}
-      data-video-ids={videoIdsKey || undefined}
-      onClickCapture={captureFeedViewIntent}
-      style={{ width: "100%", height: "100%" }}
-    />
+    <div ref={hostFrameRef} style={{ width: "100%", height: "100%" }}>
+      <div
+        key={`${activeStyleId}-${activePlacementId}-${videoIdsKey}-${layoutGeneration}`}
+        id={domId}
+        className="gen-sdk-class"
+        data-style-id={activeStyleId}
+        data-placement-id={activePlacementId}
+        data-api-key={apiKey}
+        data-video-ids={videoIdsKey || undefined}
+        onClickCapture={captureFeedViewIntent}
+        style={{ width: "100%", height: "100%" }}
+      />
+    </div>
   );
 }
 
@@ -386,6 +430,7 @@ function WidgetFrame({
   subHeading,
   logo,
   source,
+  brandSlug,
   imageAlt,
   wrapper,
   children,
@@ -394,6 +439,8 @@ function WidgetFrame({
   subHeading?: string;
   logo?: string;
   source?: FeedSource;
+  /** Sponsor headers carry a brand nickname instead of a `source`; it links to `/brand/<slug>`. */
+  brandSlug?: string;
   imageAlt?: string;
   wrapper?: WidgetWrapper;
   children: ReactNode;
@@ -413,8 +460,12 @@ function WidgetFrame({
   // The header names a real community/group, so it should take the reader there — mirroring the
   // player's community/group pills. Group-scoped widgets win, matching the heading precedence
   // above. Sponsor headers (an authored logo and no `source`) stay unlinked.
+  // A sponsor header is neither a community nor a group, so it never resolved an identity and
+  // stayed inert. Its brand page is the destination readers expect from that logo and name.
   const headerHref = !shouldResolveCommunityIdentity
-    ? undefined
+    ? brandSlug
+      ? buildPageUrl({ type: "brand", slug: brandSlug })
+      : undefined
     : groupSlug
       ? buildPageUrl({ type: "group", slug: groupSlug })
       : communitySlug
@@ -429,7 +480,7 @@ function WidgetFrame({
             href={headerHref}
             className="gencl:w-full gencl:min-w-0"
             data-testid="widget-header-link"
-            aria-label={`Go to ${resolvedHeading || communityName}`}>
+            aria-label={`Go to ${resolvedHeading || communityName || heading}`}>
             <SectionHeader
               imageUrl={resolvedLogo}
               imageAlt={resolvedImageAlt}
@@ -620,6 +671,7 @@ function PlacementWidget({ node, data }: WidgetRenderProps) {
       subHeading={data.header?.subHeading}
       logo={data.header?.logo}
       source={data.source}
+      brandSlug={data.header?.brandSlug}
       wrapper={node.wrapper}>
       {show && styleId && placementId ? (
         <GenuinPlacement
@@ -632,6 +684,10 @@ function PlacementWidget({ node, data }: WidgetRenderProps) {
             typeof node.config?.mobilePlacementId === "string" ? node.config.mobilePlacementId : undefined
           }
           videoIds={contextualVideoIds}
+          // A cell whose height comes from the widget's own ratio grows/shrinks with the page
+          // width (zoom included), so its embed has to be re-measured; fixed-height cells never
+          // move and keep their uninterrupted playback.
+          reinitOnResize={node.intrinsicSize !== undefined}
           onExpandRequest={handleExpandRequest}
         />
       ) : (
@@ -650,12 +706,17 @@ function IntelligencePanelWidget({ node, data }: WidgetRenderProps) {
       subHeading={data.header?.subHeading}
       logo={data.header?.logo}
       source={data.source}
+      brandSlug={data.header?.brandSlug}
       wrapper={node.wrapper}>
       {featured ? (
         <IntelligencePanel
           featuredArticle={toArticle(featured)}
           upNextArticles={(data.upNextArticles ?? []).map(toArticle)}
           layout={INTELLIGENCE_LAYOUT}
+          // On home the panel is a column in a fixed-height row: a pinned header ate a strip of
+          // that box on every scroll. Let it scroll away so the articles get the full width and
+          // height of the card.
+          scrollHeader
           readMoreLabel={data.readMoreLabel}
           upNextLabel={data.upNextLabel}
           onClose={() => undefined}
@@ -674,17 +735,30 @@ function IntelligenceCardListWidget({ node, data }: WidgetRenderProps) {
       subHeading={data.header?.subHeading}
       logo={data.header?.logo}
       source={data.source}
+      brandSlug={data.header?.brandSlug}
       wrapper={node.wrapper}>
-      <IntelligencePanelShell size={{ width: "100%", height: "100%" }} onClose={() => undefined}>
+      <IntelligencePanelShell
+        size={{ width: "100%", height: "100%" }}
+        onClose={() => undefined}
+        scrollHeader
+        scrollContentClassName={cn(
+          // Phones: header on top, rail takes the rest — nothing scrolls vertically.
+          "gencl:flex gencl:h-full gencl:flex-col gencl:sm:block!",
+          // `sm` and up the shell is the scroller, so the same card-by-card snap as before now
+          // carries the "Intelligence" header up with the first card instead of pinning it.
+          "gencl:sm:snap-y gencl:sm:snap-mandatory"
+        )}>
         <div
           className={cn(
             // Phones: the shared Intelligence rail. `sm` and up: the original
             // vertical snap list.
             INTELLIGENCE_RAIL_CLASS,
             INTELLIGENCE_RAIL_SM_RESET_CLASS,
-            "gencl:h-full gencl:min-h-0 gencl:sm:pt-2!",
-            "gencl:sm:flex-col! gencl:sm:snap-y!",
-            "gencl:sm:overflow-x-hidden! gencl:sm:overflow-y-auto! gencl:sm:overscroll-contain!"
+            "gencl:min-h-0 gencl:flex-1 gencl:sm:pt-2!",
+            "gencl:sm:flex-col!",
+            // From `sm` up the SHELL owns the vertical scroll (see `scrollContentClassName`); a
+            // scroller here instead would pin the header above a second scrollbox.
+            "gencl:sm:h-auto! gencl:sm:overflow-visible!"
           )}>
           {articles.map((article) => (
             <IntelligenceArticleCard
@@ -728,6 +802,7 @@ function EventCarouselWidget({ node, data }: WidgetRenderProps) {
       subHeading={data.header?.subHeading}
       logo={data.header?.logo}
       source={data.source}
+      brandSlug={data.header?.brandSlug}
       wrapper={node.wrapper}>
       {/* No onCtaClick: the event CTA's href is now an on-domain `/article/<slug>` link
           (from the BFF), so the LinkCard renders it as a same-tab anchor — matching home.tsx. */}
@@ -779,6 +854,7 @@ function HoverLinkCardListWidget({ node, data }: WidgetRenderProps) {
       subHeading={data.header?.subHeading}
       logo={data.header?.logo}
       source={data.source}
+      brandSlug={data.header?.brandSlug}
       wrapper={node.wrapper}>
       <HoverLinkCardList
         items={items}

@@ -18,9 +18,8 @@ import { useFloatingVideoRestoreTarget } from "@genuin/components/lib/floating-v
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { Link } from "@genuin/components/molecules/link";
 import { CommunityCard } from "@genuin/components/organisms/community-card";
-import { GroupCard } from "@genuin/components/organisms/group-card";
 
-import { toCommunityCardInfo, toGroupCardProps } from "./article-community";
+import { toCommunityCardInfo } from "./article-community";
 import { type Article, getArticleByHref } from "./article-data";
 import { ArticleIntelligenceAssistant } from "./article-intelligence-assistant";
 import {
@@ -193,13 +192,15 @@ function ArticleFeedPlacement() {
 }
 
 /**
- * Where the article was published: the community it is attached to and the group it
- * was filed under, rendered with the same `CommunityCard` / `GroupCard` the rest of
- * the app uses (the `suggestion` variant — compact, whole-card clickable, no
- * duplicate join CTA, since the header pills already carry join/subscribe).
+ * Where the article was published: the community it is attached to, rendered with the same
+ * `CommunityCard` the rest of the app uses (the `suggestion` variant — compact, whole-card
+ * clickable, no duplicate join CTA, since the header pills already carry join/subscribe).
+ *
+ * Community only. The group is deliberately left out here: the rail answers "which community
+ * is this from", and the header pills already carry the group for anyone who wants it.
  */
 function ArticleOriginRail({ article }: { article: Article }) {
-  const { community, group } = article;
+  const { community } = article;
   if (!community) return null;
 
   return (
@@ -217,17 +218,6 @@ function ArticleOriginRail({ article }: { article: Article }) {
         variant="suggestion"
         url={buildPageUrl({ type: "community", slug: community.slug })}
       />
-
-      {group ? (
-        <>
-          <div className="gencl:mx-3 gencl:border-t gencl:border-secondary-100" />
-          <GroupCard
-            {...toGroupCardProps(group, community)}
-            variant="suggestion"
-            url={buildPageUrl({ type: "group", slug: group.slug })}
-          />
-        </>
-      ) : null}
     </section>
   );
 }
@@ -242,6 +232,12 @@ function ArticleCarouselPlacement() {
     </div>
   );
 }
+
+/**
+ * Container width (px) at which the reader becomes a desktop layout — the same threshold as the
+ * two-column `@container gen-article (min-width: 1080px)` rule in {@link ARTICLE_LAYOUT_CSS}.
+ */
+const ARTICLE_DESKTOP_MIN_WIDTH = 1080;
 
 /**
  * Finale placement: a full-width "grid" placement after the article. Unlike the feed/carousel
@@ -329,6 +325,13 @@ ${ARTICLE_READER_TYPOGRAPHY_CSS}
      sits exactly within the content's left and right borders. */
   .gen-article-prose.gen-article-page .gen-article-finale { width: calc(100% - 368px); }
 }
+/* Mobile: the site bar is FIXED over this scroller (the dark TopBar this route now shares with
+   Home), so the reader pads itself by the bar's 64px — exactly what .gen-home-motion does on
+   Home. Only the standalone route does this; the inline/nested article overlays have no site
+   bar above them. */
+@media (max-width: 639px) {
+  .gen-article-page[data-standalone="true"] { padding-top: 64px; }
+}
 @media (prefers-reduced-motion: reduce) {
   .gen-article-nested-view { animation: none; }
   .gen-article-page { scroll-behavior: auto; }
@@ -408,6 +411,13 @@ export function ArticlePage({ article, backControl }: { article: Article; backCo
    */
   const [nestedArticle, setNestedArticle] = useState<Article | null>(null);
   const closeNestedArticle = useCallback(() => setNestedArticle(null), []);
+  /**
+   * The grid finale is a desktop-only placement. It is gated on the reader's own measured width
+   * (not a viewport media query) so it also stays out of the narrow inline Feed View panel, and
+   * it is NOT rendered at all rather than hidden with CSS — a mounted `.gen-sdk-class` container
+   * would still have the SDK fetch and mount a grid of videos nobody can see.
+   */
+  const [isDesktopLayout, setIsDesktopLayout] = useState(false);
 
   // A slug the local article data does not know about is left to normal link navigation.
   const openArticleInPlace = useCallback((selection: { href: string }) => {
@@ -463,6 +473,17 @@ export function ArticlePage({ article, backControl }: { article: Article; backCo
     const scroller = scrollerRef.current;
     if (!scroller) return;
 
+    const syncLayout = () => setIsDesktopLayout(scroller.clientWidth >= ARTICLE_DESKTOP_MIN_WIDTH);
+    syncLayout();
+    const observer = new ResizeObserver(syncLayout);
+    observer.observe(scroller);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+
     let frame: number | null = null;
     const measure = () => {
       frame = null;
@@ -498,6 +519,11 @@ export function ArticlePage({ article, backControl }: { article: Article; backCo
         <div
           ref={scrollerRef}
           className="gen-article-page gen-article-prose"
+          // This is the page's scroller, so it is what the auto-hiding site header follows.
+          data-page-scroller=""
+          // A `backControl` means this article is hosted inside an overlay (inline Feed View /
+          // nested Intelligence article), where no site bar sits above it.
+          data-standalone={backControl ? undefined : "true"}
           aria-hidden={playerOverlay || nestedArticle ? true : undefined}
           inert={playerOverlay || nestedArticle ? true : undefined}
           style={{ height: "100%", overflow: playerOverlay ? "hidden" : "auto", background: "#ffffff" }}>
@@ -545,18 +571,22 @@ export function ArticlePage({ article, backControl }: { article: Article; backCo
 
               <aside className="gen-article-rail">
                 <div className="gen-article-rail-sticky gen-article-reveal gen-article-reveal-delay-3 gencl:flex gencl:flex-col gencl:gap-6">
-                  <ArticleOriginRail article={article} />
-
                   <ArticleFeedPlacement />
+
+                  <ArticleOriginRail article={article} />
                 </div>
               </aside>
             </div>
 
-            {/* 3. FINALE — grid to keep the reader watching. Constrained to the article content
-                column width (see `.gen-article-finale`), not the full container. */}
-            <div className="gen-article-finale">
-              <ArticleGridPlacement />
-            </div>
+            {/* 3. FINALE — grid to keep the reader watching. Desktop only: stacked into one
+                narrow column it is a wall of tiles far below the fold, so mobile ends on the
+                article instead. Constrained to the article content column width (see
+                `.gen-article-finale`), not the full container. */}
+            {isDesktopLayout ? (
+              <div className="gen-article-finale">
+                <ArticleGridPlacement />
+              </div>
+            ) : null}
           </div>
         </div>
 

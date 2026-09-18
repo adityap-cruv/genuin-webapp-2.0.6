@@ -17,6 +17,12 @@ type BaseLayoutProps = ComponentProps<"section"> & {
   showToaster?: boolean;
 };
 
+type GenuinWindow = Window & {
+  genuin?: {
+    onInternal?: (event: string, listener: (payload: unknown) => void) => (() => void) | void;
+  };
+};
+
 const _baseLayoutVariant = cva("", {
   variants: {
     variant: {
@@ -47,11 +53,16 @@ export function BaseLayout({
 
   // Update shouldUseDarkTheme when searchParams or pathname changes
   const [shouldUseDarkTheme, setShouldUseDarkTheme] = useState(false);
-  const [isAdPlaying, setIsAdPlaying] = useState(false);
+  // The SDK's expand view is a full-screen player with its own chrome; the site bar must not
+  // sit on top of it on mobile, where there is no room for both.
+  const [isExpandViewOpen, setIsExpandViewOpen] = useState(false);
 
   useEffect(() => {
     const isDarkTheme =
       topBarDarkVariantRoutes.includes(pathname) ||
+      // The article reader gets the SAME bar as Home/Popular/Latest. `/article/<slug>` is a
+      // dynamic path, so it is matched by prefix rather than listed above.
+      pathname.startsWith("/article") ||
       (pathname.includes("/community") && getSearchParams("feed") === "1") ||
       pathname.includes("/video");
 
@@ -59,16 +70,45 @@ export function BaseLayout({
   }, [pathname, searchParams]);
 
   useEffect(() => {
-    const observer = new MutationObserver(() => {
-      setIsAdPlaying(document.documentElement.classList.contains("gen-ad-playing"));
-    });
-    observer.observe(document.documentElement, { attributeFilter: ["class"] });
-    return () => observer.disconnect();
+    let cancelled = false;
+    let unsubscribe: (() => void) | undefined;
+    let retry: number | undefined;
+    let attempts = 0;
+
+    const register = () => {
+      if (cancelled) return;
+      const genuin = (window as GenuinWindow).genuin;
+      if (!genuin?.onInternal) {
+        // Placements mount after this layout, so the SDK global can appear well after mount.
+        if (attempts++ < 40) retry = window.setTimeout(register, 200);
+        return;
+      }
+
+      // Internal SDK events arrive as `{ type, payload, ... }`; accept the bare boolean too so
+      // this keeps working against older bundles during a rolling SDK deployment.
+      const off: unknown = genuin.onInternal("onExpandViewChanged", (raw: unknown) => {
+        const expanded = typeof raw === "boolean" ? raw : (raw as { payload?: unknown } | null | undefined)?.payload;
+        if (typeof expanded === "boolean") setIsExpandViewOpen(expanded);
+      });
+      if (typeof off === "function") unsubscribe = off as () => void;
+    };
+
+    register();
+
+    return () => {
+      cancelled = true;
+      if (retry) window.clearTimeout(retry);
+      unsubscribe?.();
+    };
   }, []);
 
   return (
     <>
-      {!(isAdPlaying && isMobile) && (layoutConfig.showNavigationBar || layoutConfig.showBackAndCloseButton) && (
+      {/* The bar stays put through ads: an ad plays inside its placement, not over the whole
+          viewport, so hiding site chrome for it only cost the reader their navigation and left
+          the 64px strip that pages pad for the fixed bar (mobile `.gen-home-motion`) standing
+          empty. A mobile expand view is the opposite case — it owns the whole screen. */}
+      {!(isExpandViewOpen && isMobile) && (layoutConfig.showNavigationBar || layoutConfig.showBackAndCloseButton) && (
         <TopBar theme={shouldUseDarkTheme && isMobile ? "dark" : "light"} style={{ zIndex: 9 }} variant={variant} />
       )}
       <main

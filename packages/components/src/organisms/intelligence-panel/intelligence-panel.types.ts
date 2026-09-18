@@ -138,6 +138,13 @@ export interface IntelligencePanelShellProps extends IntelligencePanelSectionPro
    * minimise button) are unchanged. @default false
    */
   showClose?: boolean;
+  /**
+   * Moves the "Intelligence" header inside the scrolling region, so it travels up with the
+   * content and hands the whole panel box to the article instead of holding a permanent strip.
+   * Off by default: surfaces that use the header as a fixed frame (the chat sheet, the article
+   * rail) are unchanged. @default false
+   */
+  scrollHeader?: boolean;
   /** Optional classes applied to the shell's internally scrolling content region. */
   scrollContentClassName?: string;
   /** Optional content pinned beneath the scroll area (e.g. a chat composer). */
