@@ -894,7 +894,7 @@ export function DynamicLinkouts({
                 return (
                   <SwiperSlide key={link.link ?? `link-${idx}`} className="gencl:h-auto">
                     <div
-                      className="gencl:bg-white gencl:rounded-lg gencl:overflow-hidden gencl:flex gencl:flex-col"
+                      className="gencl:bg-white gencl:rounded-lg gencl:border gencl:border-secondary-150 gencl:overflow-hidden gencl:flex gencl:flex-col"
                       onClick={(e) => e.stopPropagation()}>
                       {/* Top nav — chain-link glyph + URL + close, per-slide so
                           the chrome reflects the active card. */}

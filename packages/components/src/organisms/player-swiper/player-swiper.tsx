@@ -291,7 +291,6 @@ export function PlayerList({
   /** True whenever this player is presented as the small floating card, for any reason. */
   const isVideoFloating = isInlineArticleOpen || isFloatingHandoff;
 
-
   const closeInlineArticle = useCallback(() => {
     setSelectedInlineArticle(null);
     setIsInlineVideoDismissed(false);
@@ -1057,188 +1056,184 @@ export function PlayerList({
           />
         </SafeSuspense>
       )}
-      {!isMobile &&
-        brandLayoutType !== "iheart" &&
-        filteredPost[activeIndex] &&
-        !isAdFilled &&
-        !isVideoFloating && (
-          <SafeSuspense fallback={<ActionButtonsSkeleton colors={skeletonColors} showExpandView={showExpandView} />}>
-            <Actions
-              shareUrl={filteredPost[activeIndex]?.video?.shareUrl ?? ""}
-              isReacted={filteredPost[activeIndex]?.video?.isSparked ?? false}
-              contentId={filteredPost[activeIndex]?.video?.id ?? ""}
-              groupSlug={filteredPost[activeIndex]?.group?.slug ?? ""}
-              slug={filteredPost[activeIndex]?.video?.slug ?? ""}
-              videoType={filteredPost[activeIndex]?.video?.videoType ?? VideoTypes.Content}
-              reactionCount={filteredPost[activeIndex]?.video?.sparkCount ?? 0}
-              theme={isHomeFeedView ? "light" : showExpandView ? "dark" : "light"}
-              className={cn("gencl:shrink-0", showExpandView ? "gencl:pb-4" : "gencl:pb-7")}
-              isCommentBoxOpen={isCommentOpen}
-              // V2 only: action-rail linkout button is the entry point to the
-              // right-rail panel (Figma). V1 keeps its legacy in-player overlay.
-              showLinkout={Boolean(
-                isDesignSystemV2Linkouts &&
-                  links.showLinksInExpand &&
-                  showExpandView &&
-                  filteredPost[activeIndex]?.video?.linkouts &&
-                  filteredPost[activeIndex]?.video?.linkouts.length > 0
-              )}
-              linkoutThumbnail={filteredPost[activeIndex]?.video?.linkouts?.[0]?.links?.[0]?.image ?? null}
-              isLinkoutsOpen={hasContentType("linkouts")}
-              // Sparkle action: expanded desktop view only — the right rail hosts the panel.
-              // TEMPORARY: Home Feed View only. The page feeds (/latest, /popular, /explore)
-              // keep their existing chrome until Intelligence is signed off there — drop the
-              // `isHomeFeedView &&` to bring the sparkle back for them.
-              showIntelligence={showExpandView && isDesktop && isHomeFeedView}
-              isIntelligenceOpen={isIntelligenceOpen}
-              actionWrapper={{
-                INTELLIGENCE: (defaultNode) => (
-                  <span
-                    key={"intelligence-panel-" + filteredPost[activeIndex]?.video?.id}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      const nextState = !isIntelligenceOpen;
-                      if (nextState) {
-                        // One right-rail panel at a time (matches comments ⇄ OCTO).
-                        if (isCommentOpen) setCommentOpen(false);
-                        if (isOctoOpen) setOctoOpen(false);
-                      }
-                      setIntelligenceOpen(nextState);
-                    }}>
-                    {defaultNode}
-                  </span>
-                ),
-                LINKOUT: (defaultNode) => (
-                  <span
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      const isOpen = hasContentType("linkouts");
-                      if (isOpen) {
-                        closeContentType("linkouts");
-                      } else {
-                        // Explicit open = engagement → skip the reveal delay for this
-                        // video (mark BEFORE openContentType so the same emit reveals it).
-                        markLinkoutEngaged(baseEventBus, activeVideoId);
-                        // Match auto-open placement: "outside" on desktop (right rail),
-                        // "inside" on narrower widths where only the in-player overlay hosts it.
-                        openContentType("linkouts", isDesktop ? "outside" : "inside", "expand-view");
-                      }
-                    }}>
-                    {defaultNode}
-                  </span>
-                ),
-                COMMENT: (defaultNode) => {
-                  if (!showCommentBox) return;
-                  //
-                  const defaultOpen =
-                    embedDetails?.embedData.autoUserInteractionToPerform === "comment" &&
-                    filteredPost[activeIndex]?.video?.slug === embedDetails.embedData?.startVideoSlug &&
-                    !embedDetails.embedEventBus.getContext().autoInteractionActionDone;
+      {!isMobile && brandLayoutType !== "iheart" && filteredPost[activeIndex] && !isAdFilled && !isVideoFloating && (
+        <SafeSuspense fallback={<ActionButtonsSkeleton colors={skeletonColors} showExpandView={showExpandView} />}>
+          <Actions
+            shareUrl={filteredPost[activeIndex]?.video?.shareUrl ?? ""}
+            isReacted={filteredPost[activeIndex]?.video?.isSparked ?? false}
+            contentId={filteredPost[activeIndex]?.video?.id ?? ""}
+            groupSlug={filteredPost[activeIndex]?.group?.slug ?? ""}
+            slug={filteredPost[activeIndex]?.video?.slug ?? ""}
+            videoType={filteredPost[activeIndex]?.video?.videoType ?? VideoTypes.Content}
+            reactionCount={filteredPost[activeIndex]?.video?.sparkCount ?? 0}
+            theme={isHomeFeedView ? "light" : showExpandView ? "dark" : "light"}
+            className={cn("gencl:shrink-0", showExpandView ? "gencl:pb-4" : "gencl:pb-7")}
+            isCommentBoxOpen={isCommentOpen}
+            // V2 only: action-rail linkout button is the entry point to the
+            // right-rail panel (Figma). V1 keeps its legacy in-player overlay.
+            showLinkout={Boolean(
+              isDesignSystemV2Linkouts &&
+                links.showLinksInExpand &&
+                showExpandView &&
+                filteredPost[activeIndex]?.video?.linkouts &&
+                filteredPost[activeIndex]?.video?.linkouts.length > 0
+            )}
+            linkoutThumbnail={filteredPost[activeIndex]?.video?.linkouts?.[0]?.links?.[0]?.image ?? null}
+            isLinkoutsOpen={hasContentType("linkouts")}
+            // Sparkle action: expanded desktop view only — the right rail hosts the panel.
+            // TEMPORARY: Home Feed View only. The page feeds (/latest, /popular, /explore)
+            // keep their existing chrome until Intelligence is signed off there — drop the
+            // `isHomeFeedView &&` to bring the sparkle back for them.
+            showIntelligence={showExpandView && isDesktop && isHomeFeedView}
+            isIntelligenceOpen={isIntelligenceOpen}
+            actionWrapper={{
+              INTELLIGENCE: (defaultNode) => (
+                <span
+                  key={"intelligence-panel-" + filteredPost[activeIndex]?.video?.id}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const nextState = !isIntelligenceOpen;
+                    if (nextState) {
+                      // One right-rail panel at a time (matches comments ⇄ OCTO).
+                      if (isCommentOpen) setCommentOpen(false);
+                      if (isOctoOpen) setOctoOpen(false);
+                    }
+                    setIntelligenceOpen(nextState);
+                  }}>
+                  {defaultNode}
+                </span>
+              ),
+              LINKOUT: (defaultNode) => (
+                <span
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const isOpen = hasContentType("linkouts");
+                    if (isOpen) {
+                      closeContentType("linkouts");
+                    } else {
+                      // Explicit open = engagement → skip the reveal delay for this
+                      // video (mark BEFORE openContentType so the same emit reveals it).
+                      markLinkoutEngaged(baseEventBus, activeVideoId);
+                      // Match auto-open placement: "outside" on desktop (right rail),
+                      // "inside" on narrower widths where only the in-player overlay hosts it.
+                      openContentType("linkouts", isDesktop ? "outside" : "inside", "expand-view");
+                    }
+                  }}>
+                  {defaultNode}
+                </span>
+              ),
+              COMMENT: (defaultNode) => {
+                if (!showCommentBox) return;
+                //
+                const defaultOpen =
+                  embedDetails?.embedData.autoUserInteractionToPerform === "comment" &&
+                  filteredPost[activeIndex]?.video?.slug === embedDetails.embedData?.startVideoSlug &&
+                  !embedDetails.embedEventBus.getContext().autoInteractionActionDone;
 
-                  //     if (defaultOpen) {
-                  //       embedDetails.markAutoInteractionActionDone();
-                  //     }
+                //     if (defaultOpen) {
+                //       embedDetails.markAutoInteractionActionDone();
+                //     }
 
-                  // Simple ui to show for comment trigger
-                  function CommentBox({ children }: { children: React.ReactNode }) {
-                    const commentCount = filteredPost[activeIndex]?.video?.commentCount ?? 0;
-                    return (
-                      <>
-                        {children}
-                        <p
-                          className={cn(
-                            "gencl:p-0 gencl:text-center gencl:text-black gencl:text-body-2-medium",
-                            showExpandView && !isHomeFeedView && "gencl:text-white!"
-                          )}
-                          aria-label={`${commentCount} ${commentCount === 1 ? "comment" : "comments"}`}>
-                          {abbreviateNumber(commentCount)}
-                        </p>
-                      </>
-                    );
-                  }
-
-                  if (!isDesktop && filteredPost[activeIndex] && (isCommentOpen || defaultOpen))
-                    return (
-                      <SafeSuspense
-                        fallback={<PositionedLoader size="md" className="gencl:fixed gencl:inset-0 gencl:z-50" />}>
-                        <CommentsDialog
-                          commentCount={filteredPost[activeIndex]?.video?.commentCount ?? 0}
-                          communityId={filteredPost[activeIndex]?.community?.id ?? ""}
-                          loopId={filteredPost[activeIndex]?.group?.id ?? ""}
-                          videoId={filteredPost[activeIndex]?.video?.id ?? ""}
-                          videoSlug={filteredPost[activeIndex]?.video?.slug ?? ""}
-                          shareUrl={filteredPost[activeIndex]?.video?.shareUrl ?? ""}
-                          videoType={filteredPost[activeIndex]?.video?.videoType ?? VideoTypes.Content}
-                          defaultOpen={isCommentOpen}
-                          key={"feed-comment-box" + filteredPost[activeIndex]?.video?.id}
-                          onCommentCountChange={onCommentCountChange}
-                          onOpenChange={(open) => {
-                            setCommentOpen(open);
-                          }}>
-                          <CommentBox>{defaultNode}</CommentBox>
-                        </CommentsDialog>
-                      </SafeSuspense>
-                    );
+                // Simple ui to show for comment trigger
+                function CommentBox({ children }: { children: React.ReactNode }) {
+                  const commentCount = filteredPost[activeIndex]?.video?.commentCount ?? 0;
                   return (
-                    <span
-                      key={"feed-comment-box" + filteredPost[activeIndex]?.video?.id}
-                      onClick={() => {
-                        if (showExpandView) {
-                          // Close OCTO / Intelligence if open
-                          if (isOctoOpen) setOctoOpen(false);
-                          if (!isCommentOpen && isIntelligenceOpen) setIntelligenceOpen(false);
-                          // Toggle comments
-                          toggleComment();
-                        }
-                      }}>
-                      <CommentBox>{defaultNode}</CommentBox>
-                    </span>
+                    <>
+                      {children}
+                      <p
+                        className={cn(
+                          "gencl:p-0 gencl:text-center gencl:text-black gencl:text-body-2-medium",
+                          showExpandView && !isHomeFeedView && "gencl:text-white!"
+                        )}
+                        aria-label={`${commentCount} ${commentCount === 1 ? "comment" : "comments"}`}>
+                        {abbreviateNumber(commentCount)}
+                      </p>
+                    </>
                   );
-                },
-                OCTO: (defaultNode) => {
-                  if (!showExpandView) return defaultNode;
+                }
 
+                if (!isDesktop && filteredPost[activeIndex] && (isCommentOpen || defaultOpen))
                   return (
-                    <span
-                      key={"octo-panel-" + filteredPost[activeIndex]?.video?.id}
-                      onClick={(event) => {
-                        event.stopPropagation();
+                    <SafeSuspense
+                      fallback={<PositionedLoader size="md" className="gencl:fixed gencl:inset-0 gencl:z-50" />}>
+                      <CommentsDialog
+                        commentCount={filteredPost[activeIndex]?.video?.commentCount ?? 0}
+                        communityId={filteredPost[activeIndex]?.community?.id ?? ""}
+                        loopId={filteredPost[activeIndex]?.group?.id ?? ""}
+                        videoId={filteredPost[activeIndex]?.video?.id ?? ""}
+                        videoSlug={filteredPost[activeIndex]?.video?.slug ?? ""}
+                        shareUrl={filteredPost[activeIndex]?.video?.shareUrl ?? ""}
+                        videoType={filteredPost[activeIndex]?.video?.videoType ?? VideoTypes.Content}
+                        defaultOpen={isCommentOpen}
+                        key={"feed-comment-box" + filteredPost[activeIndex]?.video?.id}
+                        onCommentCountChange={onCommentCountChange}
+                        onOpenChange={(open) => {
+                          setCommentOpen(open);
+                        }}>
+                        <CommentBox>{defaultNode}</CommentBox>
+                      </CommentsDialog>
+                    </SafeSuspense>
+                  );
+                return (
+                  <span
+                    key={"feed-comment-box" + filteredPost[activeIndex]?.video?.id}
+                    onClick={() => {
+                      if (showExpandView) {
+                        // Close OCTO / Intelligence if open
+                        if (isOctoOpen) setOctoOpen(false);
+                        if (!isCommentOpen && isIntelligenceOpen) setIntelligenceOpen(false);
+                        // Toggle comments
+                        toggleComment();
+                      }
+                    }}>
+                    <CommentBox>{defaultNode}</CommentBox>
+                  </span>
+                );
+              },
+              OCTO: (defaultNode) => {
+                if (!showExpandView) return defaultNode;
 
-                        const sheetActive = sheetState === "panel-view" || sheetState === "full-view";
+                return (
+                  <span
+                    key={"octo-panel-" + filteredPost[activeIndex]?.video?.id}
+                    onClick={(event) => {
+                      event.stopPropagation();
 
-                        if (!isDesktop) {
-                          if (!sheetActive && isCommentOpen) {
-                            setCommentOpen(false);
-                          }
-                          openContentType("octo", "inside", "default");
-                          setContentTypeState("octo", "default");
-                          return;
-                        }
+                      const sheetActive = sheetState === "panel-view" || sheetState === "full-view";
 
-                        const nextState = !isOctoOpen;
-                        if (nextState && isCommentOpen) {
+                      if (!isDesktop) {
+                        if (!sheetActive && isCommentOpen) {
                           setCommentOpen(false);
                         }
-                        if (nextState && isIntelligenceOpen) {
-                          setIntelligenceOpen(false);
-                        }
-                        setOctoOpen(nextState);
-                      }}>
-                      {defaultNode}
-                    </span>
-                  );
-                },
-              }}
-              onReactionStateChange={(isReacted: boolean) => {
-                onReactionStateChange?.(
-                  filteredPost[activeIndex]?.video?.id ?? "",
-                  filteredPost[activeIndex]?.video?.slug ?? "",
-                  isReacted
+                        openContentType("octo", "inside", "default");
+                        setContentTypeState("octo", "default");
+                        return;
+                      }
+
+                      const nextState = !isOctoOpen;
+                      if (nextState && isCommentOpen) {
+                        setCommentOpen(false);
+                      }
+                      if (nextState && isIntelligenceOpen) {
+                        setIntelligenceOpen(false);
+                      }
+                      setOctoOpen(nextState);
+                    }}>
+                    {defaultNode}
+                  </span>
                 );
-              }}
-            />
-          </SafeSuspense>
-        )}
+              },
+            }}
+            onReactionStateChange={(isReacted: boolean) => {
+              onReactionStateChange?.(
+                filteredPost[activeIndex]?.video?.id ?? "",
+                filteredPost[activeIndex]?.video?.slug ?? "",
+                isReacted
+              );
+            }}
+          />
+        </SafeSuspense>
+      )}
       {/* V1 keeps its standalone comments column here; V2 hosts comments inside
           <DesktopRightPanels> below. Rendering both would double the comments. */}
       {!isDesignSystemV2Linkouts &&
@@ -1346,6 +1341,7 @@ export function PlayerList({
             brandLayoutType={brandLayoutType}
             isLinkoutsPanelVisible={Boolean(
               links.showLinksInExpand &&
+                !isIntelligenceOpen &&
                 sheetContentPlacements["linkouts"] === "outside" &&
                 showExpandView &&
                 filteredPost[activeIndex] &&

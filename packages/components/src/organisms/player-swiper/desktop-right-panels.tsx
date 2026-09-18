@@ -115,6 +115,7 @@ export function DesktopRightPanels({
                 theme: "light",
               }}
               onDragging={handleSwiperToggle}
+              className="gencl:border gencl:border-secondary-200 gencl:rounded-2xl!"
               footer={
                 <CommentInputBox
                   communityId={activePost.community?.id ?? ""}
