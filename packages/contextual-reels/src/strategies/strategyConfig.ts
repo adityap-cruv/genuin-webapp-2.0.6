@@ -518,3 +518,43 @@ export const TAG_STRATEGIES: Record<string, TagStrategyEntry> = {
     gateOnUnmute: true,
   },
 };
+
+/**
+ * TEMPORARY (server-load relief) — tags for which the client-side `ip_info`
+ * (geoip) fetch is skipped entirely.
+ *
+ * These are the 12 Direct IO iHM/Infolinks Audio (Sep) tags. Their DMA/National
+ * geo targeting is carried to the exchange by explicit host macros
+ * (`m`/`country`/`r`/`loclat`/`loclong`), NOT by geoip, so skipping the fetch
+ * does not change ad targeting. The trade-offs are deliberate and accepted:
+ *   - analytics events for these tags carry no `geoip` block (country/lat/long);
+ *   - the ad-URL `ip=` param is stripped — these are `servedStatically` tags,
+ *     the only ones whose URL is IP-rewritten (see adUrlMacros) — while the
+ *     explicit geo macros the exchange targets on are untouched.
+ *
+ * `getSharedGeoIp` is a per-page shared singleton, so BOTH call sites
+ * (AnalyticsProvider, genAdSdk) must skip for the request to be eliminated.
+ * Remove this set + its two call-site guards to restore geoip for these tags.
+ */
+export const GEOIP_DISABLED_TAG_IDS: ReadonlySet<string> = new Set([
+  "6a9ba985ee6dc7773d0c42a6", // Direct IO iHM/Infolinks Audio for Sep - DMA
+  "6a9ba9b8ee6dc7773d0c42f4", // Direct IO iHM/Infolinks Audio for Sep - National
+  "6aa25bc1d3c90426b5732535", // 320x480 - National Campaign V1
+  "6a9eaf2dee6dc7773d0c5f87", // Direct IO iHM/Infolinks Audio for Sep - DMA v1
+  "6aa041b7d3c90426b572a451", // 320x50 - DMA Targeted Campaign
+  "6aa041e20fc5b4b2fe4ed3c8", // 320x50 - National Campaign
+  "6aa25b631b3a25f3c479ef7c", // 320x50 - National Campaign V1
+  "6aa04101d3c90426b572a379", // 320x50 - DMA Targeted Campaign V1
+  "6aa0425bd3c90426b572a571", // 300x250 - DMA Targeted Campaign
+  "6aa041fbd3c90426b572a4b2", // 300x250 - National Campaign
+  "6aa25af31b3a25f3c479ee35", // 300x250 - National Campaign V1
+  "6aa04279d3c90426b572a59e", // 300x250 - DMA Targeted Campaign V1
+]);
+
+/**
+ * Whether the client-side `ip_info` (geoip) fetch should be skipped for `tagId`.
+ * TEMPORARY — see {@link GEOIP_DISABLED_TAG_IDS}.
+ */
+export function isGeoIpDisabled(tagId: string | null | undefined): boolean {
+  return tagId != null && GEOIP_DISABLED_TAG_IDS.has(tagId);
+}

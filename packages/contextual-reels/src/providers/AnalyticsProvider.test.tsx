@@ -298,6 +298,35 @@ describe("providers/AnalyticsProvider", () => {
     unmount(root, container);
   });
 
+  it("skips the geoip fetch for a GEOIP_DISABLED tag but still flushes events", async () => {
+    // TEMPORARY (server-load relief): these tags never call ip_info. The buffer
+    // must still flush — the disabled branch marks geoip unavailable so it is
+    // never left waiting on a fetch that will not happen. No settleGeoip() here.
+    let readyCb: (() => void) | undefined;
+    readyMock.mockImplementation((cb: () => void) => {
+      readyCb = cb;
+    });
+    setRudder();
+    const handle: ConsumerHandle = { send: () => undefined };
+    const { root, container } = mount(
+      <AnalyticsProvider tagId="6a9ba985ee6dc7773d0c42a6" preview={false}>
+        <Consumer name="Ad Impression" handle={handle} />
+      </AnalyticsProvider>
+    );
+    act(() => handle.send());
+    act(() => readyCb?.());
+    await act(async () => {
+      for (let i = 0; i < 5; i++) await Promise.resolve();
+    });
+
+    // The fetch was never made, yet ready + visit_id + the synchronous
+    // markUnavailable("geoip") still unblock the flush.
+    expect(getSharedGeoIpMock).not.toHaveBeenCalled();
+    expect(trackMock).toHaveBeenCalledTimes(1);
+    expect(trackMock.mock.calls[0]?.[0]).toBe("Ad Impression");
+    unmount(root, container);
+  });
+
   it("stamps the resolved geoip onto every flushed event", async () => {
     getSharedGeoIpMock.mockReset().mockResolvedValue({ city: "BLR", country_code: "IN" });
     let readyCb: (() => void) | undefined;

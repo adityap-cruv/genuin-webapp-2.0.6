@@ -1421,6 +1421,43 @@ describe("ads/useGenAdInstance", () => {
     unmount(root, container);
   });
 
+  it("skips the geoip fetch and strips the ip param for a GEOIP_DISABLED static tag", async () => {
+    const uaSpy = vi.spyOn(navigator, "userAgent", "get").mockReturnValue("RealUA/9 (Test)");
+    // A registered static tag that is ALSO in GEOIP_DISABLED_TAG_IDS
+    // (server-load relief). The shared geoip resolves a real ip, but the branch
+    // must never read it — clientIp stays undefined → ip is stripped, proving
+    // the fetch result was not consumed.
+    strategyMock.value = { initialVolume: 0, servedStatically: true };
+    tagDetailsMock.value = { shadowConfig: null, tagId: "6a9ba985ee6dc7773d0c42a6" };
+    geoipMock.value = { ip: "203.0.113.7" };
+
+    const { root, container } = mountHook({
+      ...baseProps,
+      isActive: true,
+      videoAd: "https://ads.example.com/vast?ua=Mozilla%2FFake&ip=1.2.3.4&x=1",
+    });
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    const stamped = setBaseEventContextMock.mock.calls
+      .map(([arg]) => arg)
+      .find((arg) => arg && typeof arg === "object" && "ad_url" in arg) as { ad_url: string };
+    // ua still rewritten (static rewrite still runs), but the ip is stripped and
+    // the geoip ip is NEVER substituted in.
+    expect(stamped.ad_url).toContain(`ua=${encodeURIComponent("RealUA/9 (Test)")}`);
+    expect(stamped.ad_url).not.toContain("ip=");
+    expect(stamped.ad_url).not.toContain("203.0.113.7");
+    expect(stamped.ad_url).not.toContain("1.2.3.4");
+    expect(stamped.ad_url).toContain("x=1");
+
+    uaSpy.mockRestore();
+    geoipMock.value = null;
+    unmount(root, container);
+  });
+
   it("does NOT rewrite the ad URL for a flagged-but-unregistered tag (half-static → live URL untouched)", async () => {
     const uaSpy = vi.spyOn(navigator, "userAgent", "get").mockReturnValue("RealUA/9 (Test)");
     // Flag set, but tagId absent from STATIC_TAG_IDS: this tag falls back to the

@@ -23,6 +23,7 @@ import { resyncShadowStyles } from "@cxr/shadow-dom";
 import { useStrategy } from "@cxr/strategies/StrategyProvider";
 // import { didServeDebugDeviceFeed } from "@cxr/strategies/debugDevices"; // DIAGNOSTICS DISABLED 2026-09-11 — see genAdSdk.ts diagnostic block
 import { isStaticTag } from "@cxr/strategies/staticTagData";
+import { isGeoIpDisabled } from "@cxr/strategies/strategyConfig";
 // import type { GenAdBlockedDetails } from "@cxr/types/window";
 import { createLogger } from "@cxr/utils/logger";
 
@@ -804,8 +805,11 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
         // cache (same fetch analytics uses — no extra request). Never blocks: if it
         // hasn't resolved yet, `getSharedGeoIp` resolves fast and never rejects; a
         // null result leaves clientIp undefined → adUrlMacros strips ip instead.
+        // TEMPORARY (server-load relief): geoip-disabled tags skip the fetch too
+        // (GEOIP_DISABLED_TAG_IDS) — clientIp stays undefined → ip stripped; the
+        // exchange still gets the explicit geo macros (m/country/…).
         let clientIp: string | undefined;
-        if (isServedStatically) {
+        if (isServedStatically && !isGeoIpDisabled(tagId)) {
           const geoip = await getSharedGeoIp().catch(() => null);
           // The await above yields the event loop: the slot may have torn down or
           // re-armed while geoip was in flight. Re-check before init so we never

@@ -36,6 +36,7 @@ import { enrichDeviceDetailsWithGeoIp, getDeviceDetailsSnapshot, type DeviceDeta
 import { windowLink as DEFAULT_WINDOW_LINK } from "@cxr/platform/topWindow";
 import { getSharedGeoIp } from "@cxr/services/api";
 import { getSuppressedEvents } from "@cxr/strategies/strategies";
+import { isGeoIpDisabled } from "@cxr/strategies/strategyConfig";
 import { userId as DEFAULT_USER_ID } from "@cxr/userId";
 import { createLogger } from "@cxr/utils/logger";
 
@@ -148,6 +149,10 @@ export function AnalyticsProvider({ children, tagId, preview = false }: Analytic
   // events are dropped in `sendEvent` before they ever reach the buffer, so no
   // downstream stamping (passback/geoip/visit_id) is spent on them.
   const suppressedEvents = useMemo(() => getSuppressedEvents(tagId ?? ""), [tagId]);
+  // TEMPORARY (server-load relief): whether to skip the shared `ip_info` fetch
+  // for this tag. Stable per mount (tagId does not change), so safe to key the
+  // bootstrap effect on it. See `GEOIP_DISABLED_TAG_IDS` in strategyConfig.
+  const geoIpDisabled = useMemo(() => isGeoIpDisabled(tagId ?? ""), [tagId]);
 
   const setBrandId = useCallback((brandId: number | undefined): void => {
     brandIdRef.current = brandId;
@@ -211,23 +216,31 @@ export function AnalyticsProvider({ children, tagId, preview = false }: Analytic
     // device details and signal the buffer. Fetched for every tag — including
     // statically-served ones, which still need geoip on analytics and a real IP
     // for the ad-URL rewrite (see genAdSdk / adUrlMacros).
-    getSharedGeoIp()
-      .then((geoip) => {
-        deviceRef.current = enrichDeviceDetailsWithGeoIp(deviceRef.current, geoip);
-        bufferRef.current.setMandatoryData({
-          geoip: {
-            country: (geoip as Record<string, unknown>).country as string | undefined,
-            lat: (geoip as Record<string, unknown>).latitude as number | undefined,
-            long: (geoip as Record<string, unknown>).longitude as number | undefined,
-          },
+    if (geoIpDisabled) {
+      // TEMPORARY (server-load relief): skip the ip_info fetch for these tags.
+      // `geoip` is a mandatory buffer gate, so mark it unavailable — skipping
+      // the fetch WITHOUT this would leave the buffer waiting on geoip forever
+      // and never flush a single event.
+      bufferRef.current.markUnavailable("geoip");
+    } else {
+      getSharedGeoIp()
+        .then((geoip) => {
+          deviceRef.current = enrichDeviceDetailsWithGeoIp(deviceRef.current, geoip);
+          bufferRef.current.setMandatoryData({
+            geoip: {
+              country: (geoip as Record<string, unknown>).country as string | undefined,
+              lat: (geoip as Record<string, unknown>).latitude as number | undefined,
+              long: (geoip as Record<string, unknown>).longitude as number | undefined,
+            },
+          });
+        })
+        .catch((err) => {
+          // Non-blocking: mark geoip unavailable so buffer can proceed
+          console.error("Failed to fetch geoip:", err);
+          bufferRef.current.markUnavailable("geoip");
         });
-      })
-      .catch((err) => {
-        // Non-blocking: mark geoip unavailable so buffer can proceed
-        console.error("Failed to fetch geoip:", err);
-        bufferRef.current.markUnavailable("geoip");
-      });
-  }, [preview]);
+    }
+  }, [preview, geoIpDisabled]);
 
   const value = useMemo<AnalyticsContextValue>(
     () => ({
