@@ -853,6 +853,10 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
         const resolvedVideoAd = resolveVideoAdMacros(videoAd, resolvePageUrl(), hostMacros, {
           servedStatically: isServedStatically,
           clientIp,
+          // Correlate our own DSP exchange requests with Rudderstack analytics.
+          // Best-effort: undefined before the feed batch stamps a visit_id → the
+          // resolver appends nothing (and it is scoped to our exchange URLs only).
+          visitId: getVisitId(),
         });
         // Log the resolved primary ad URL on every ad event this slot emits.
         // Setting it into the base event context (rather than each call site)
