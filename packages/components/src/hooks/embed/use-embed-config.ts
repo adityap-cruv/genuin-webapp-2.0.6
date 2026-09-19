@@ -85,13 +85,40 @@ const BRAND_FEATURE_IDS = {
     embedIds: new Set<string>([]),
   },
   // Forces the video (and its poster/thumbnail) to render with
-  // `object-fit: contain` instead of the default `cover` crop, for the listed
-  // placements/embeds. Overrides `customization.video_crop` from the API.
-  videoContain: {
+  // `object-fit: cover` (video_crop=true) instead of the API's value, for the
+  // listed placements/embeds. Overrides `customization.video_crop` from the API
+  // — needed when a placement's CMS config returns `video_crop:false` but it
+  // should render full-bleed to match a reference layout.
+  videoCover: {
     placementIds: new Set<string>(["6901f63d25d5dab8f6b84b4f"]),
     embedIds: new Set<string>([]),
   },
 };
+
+// ============================================================
+// Aspect-ratio overrides (id-scoped)
+// Overrides the API's `aspect_ratio` for the listed placements/embeds so the
+// tile/slide geometry matches a desired reference layout. The value is an
+// aspect-ratio string ("W:H") applied to `config.dimensions.aspectRatio`, which
+// every geometry consumer (slide width via getSlidesPerView, responsive
+// breakpoints, skeleton) reads from.
+// ============================================================
+const ASPECT_RATIO_OVERRIDES: {
+  placementIds: Map<string, string>;
+  embedIds: Map<string, string>;
+} = {
+  // 6901f63d: CMS returns 1:1, but it must match the 9:16 reference placement.
+  placementIds: new Map<string, string>([["6901f63d25d5dab8f6b84b4f", "9:16"]]),
+  embedIds: new Map<string, string>(),
+};
+
+function resolveAspectRatioOverride(embedData: EmbedDataSlice): string | undefined {
+  if (!embedData) return undefined;
+  return (
+    (embedData.placement_id ? ASPECT_RATIO_OVERRIDES.placementIds.get(embedData.placement_id) : undefined) ??
+    (embedData.embed_id ? ASPECT_RATIO_OVERRIDES.embedIds.get(embedData.embed_id) : undefined)
+  );
+}
 
 type EmbedDataSlice =
   | {
@@ -186,9 +213,11 @@ export function useEmbedConfigs() {
     () => ({
       containerHeight: customization?.dimensions?.height,
       containerWidth: customization?.dimensions?.width,
-      aspectRatio: embedData?.aspect_ratio, // Add aspect ratio support from embedData
+      // `ASPECT_RATIO_OVERRIDES` id-allowlist wins over the API's aspect_ratio so
+      // the tile/slide geometry matches a reference layout for those placements.
+      aspectRatio: resolveAspectRatioOverride(embedData) ?? embedData?.aspect_ratio,
     }),
-    [customization?.dimensions, embedData?.aspect_ratio]
+    [customization?.dimensions, embedData?.aspect_ratio, embedData?.placement_id, embedData?.embed_id]
   );
 
   // ============================================================
@@ -292,10 +321,10 @@ export function useEmbedConfigs() {
         (!!customization?.is_show_social_interaction_data ||
           (customization?.links?.is_show_links && customization?.links?.position === "outside")) &&
         brandLayoutType !== "iheart",
-      // `videoContain` id-allowlist forces object-fit: contain (videoCrop=false),
+      // `videoCover` id-allowlist forces object-fit: cover (videoCrop=true),
       // overriding the API's video_crop for the listed placements/embeds.
-      videoCrop: matchesFeature(BRAND_FEATURE_IDS.videoContain, embedData)
-        ? false
+      videoCrop: matchesFeature(BRAND_FEATURE_IDS.videoCover, embedData)
+        ? true
         : customization
           ? customization?.video_crop
           : true,
