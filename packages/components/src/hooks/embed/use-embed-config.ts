@@ -84,6 +84,13 @@ const BRAND_FEATURE_IDS = {
     ]),
     embedIds: new Set<string>([]),
   },
+  // Forces the video (and its poster/thumbnail) to render with
+  // `object-fit: contain` instead of the default `cover` crop, for the listed
+  // placements/embeds. Overrides `customization.video_crop` from the API.
+  videoContain: {
+    placementIds: new Set<string>(["6901f63d25d5dab8f6b84b4f"]),
+    embedIds: new Set<string>([]),
+  },
 };
 
 type EmbedDataSlice =
@@ -285,7 +292,13 @@ export function useEmbedConfigs() {
         (!!customization?.is_show_social_interaction_data ||
           (customization?.links?.is_show_links && customization?.links?.position === "outside")) &&
         brandLayoutType !== "iheart",
-      videoCrop: customization ? customization?.video_crop : true,
+      // `videoContain` id-allowlist forces object-fit: contain (videoCrop=false),
+      // overriding the API's video_crop for the listed placements/embeds.
+      videoCrop: matchesFeature(BRAND_FEATURE_IDS.videoContain, embedData)
+        ? false
+        : customization
+          ? customization?.video_crop
+          : true,
       autoScrollToNextSlide: customization?.enable_auto_scroll ?? false,
       resumePlaybackFrom: brandDetails.web_configs.resume_playback_from,
       previewSeconds: embedData?.media_play?.video_preview_seconds ?? 0,
@@ -295,7 +308,7 @@ export function useEmbedConfigs() {
       videoShouldPreview:
         embedData?.media_play?.video_preview_seconds !== undefined && embedData.media_play.video_preview_seconds > 0,
     }),
-    [customization, brandDetails.brand_id, embedData?.style]
+    [customization, brandDetails.brand_id, embedData?.style, embedData?.placement_id, embedData?.embed_id]
   );
 
   // ============================================================
