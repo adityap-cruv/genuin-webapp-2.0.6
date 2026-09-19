@@ -14,6 +14,7 @@ import { hostMacros } from "@cxr/hostMacros";
 import { useEventBus } from "@cxr/instance/InstanceContext";
 // import { sampleVisibilityDiagnostic } from "@cxr/monitoring/visibilityDiagnostic";
 import { fireAdElementPixel } from "@cxr/observability/adelement-pixel";
+import { fireDspPixel } from "@cxr/observability/dsp-pixel";
 import { resolveClientIp } from "@cxr/platform/device";
 import { useAnalytics } from "@cxr/providers/AnalyticsProvider";
 import { DEFAULT_UNMUTE_VOLUME } from "@cxr/providers/PlayerProvider";
@@ -21,9 +22,10 @@ import { useTagDetails } from "@cxr/providers/TagDetailsProvider";
 import { getSharedGeoIp } from "@cxr/services/api";
 import { resyncShadowStyles } from "@cxr/shadow-dom";
 import { useStrategy } from "@cxr/strategies/StrategyProvider";
+import { isDebugDeviceFeed } from "@cxr/strategies/debugDevices";
 // import { didServeDebugDeviceFeed } from "@cxr/strategies/debugDevices"; // DIAGNOSTICS DISABLED 2026-09-11 — see genAdSdk.ts diagnostic block
 import { isStaticTag } from "@cxr/strategies/staticTagData";
-import { isGeoIpDisabled } from "@cxr/strategies/strategyConfig";
+import { isDspPixelEnabled, isGeoIpDisabled } from "@cxr/strategies/strategyConfig";
 // import type { GenAdBlockedDetails } from "@cxr/types/window";
 import { createLogger } from "@cxr/utils/logger";
 
@@ -305,8 +307,8 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
   } = options;
 
   const bus = useEventBus();
-  const { sendEvent, setBaseEventContext } = useAnalytics();
-  const { shadowConfig, tagId } = useTagDetails();
+  const { sendEvent, setBaseEventContext, preview, getVisitId } = useAnalytics();
+  const { shadowConfig, tagId, brandId } = useTagDetails();
   const shadowDom = shadowConfig != null;
 
   // Tags configured with `initialVolume > 0` want the ad to load audible. When
@@ -625,6 +627,14 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
             // Fired before the GenAd teardown below so the beacon is issued while
             // the ad instance is still alive — matches the AD_COMPLETED ordering.
             fireAdElementPixel("complete_gen");
+            if (isDspPixelEnabled(tagId) && !preview && !isDebugDeviceFeed(tagId)) {
+              fireDspPixel("complete", {
+                tagId,
+                brandId,
+                visitId: getVisitId(),
+                provider: completedProvider,
+              });
+            }
             (window as Window & { GenAd?: { destroy(id: number): void } }).GenAd?.destroy(instanceIdRef.current!);
             instanceIdRef.current = null;
             initInFlightRef.current = false;
@@ -723,6 +733,16 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
                 media_file_url: event?.mediaFileUrl,
               };
               sendEvent(EVENT.AD_IMPRESSION, adEventDetails);
+              if (isDspPixelEnabled(tagId) && !preview && !cancelled && !isDebugDeviceFeed(tagId)) {
+                fireDspPixel("ad_render", {
+                  tagId,
+                  brandId,
+                  visitId: getVisitId(),
+                  provider: event?.provider,
+                  creativeId: event?.creativeId,
+                  advertiserDomain: event?.advertiserDomain,
+                });
+              }
             },
             // TEMPORARILY DISABLED: the `Ad Impression Pixel Fired` analytics
             // event is suppressed for now. The handler stays wired (as a no-op)
@@ -751,6 +771,14 @@ export function useGenAdInstance(options: UseGenAdInstanceOptions): UseGenAdInst
               // Third-party AdElement beacon, fired alongside (not instead of) the
               // Rudderstack event. Best-effort — never throws into the SDK callback.
               fireAdElementPixel("start_gen");
+              if (isDspPixelEnabled(tagId) && !preview && !cancelled && !isDebugDeviceFeed(tagId)) {
+                fireDspPixel("start", {
+                  tagId,
+                  brandId,
+                  visitId: getVisitId(),
+                  provider: event?.provider,
+                });
+              }
             },
             onAdQuartile: (event?: { provider?: AdProviderKind; quartile?: number | string }): void => {
               sendEvent(EVENT.AD_MEDIA_QUARTILE, {

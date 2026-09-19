@@ -153,6 +153,33 @@ describe("providers/AnalyticsProvider", () => {
     unmount(root, container);
   });
 
+  it("exposes preview on the context (defaults false, true when the prop is set)", () => {
+    const seen: boolean[] = [];
+    function PreviewConsumer(): ReactElement {
+      const { preview } = useAnalytics();
+      seen.push(preview);
+      return <span>preview-consumer</span>;
+    }
+
+    // Default: no prop → preview is false.
+    const defaultMount = mount(
+      <AnalyticsProvider>
+        <PreviewConsumer />
+      </AnalyticsProvider>
+    );
+    expect(seen[0]).toBe(false);
+    unmount(defaultMount.root, defaultMount.container);
+
+    // preview={true} → context reports true.
+    const previewMount = mount(
+      <AnalyticsProvider preview>
+        <PreviewConsumer />
+      </AnalyticsProvider>
+    );
+    expect(seen[1]).toBe(true);
+    unmount(previewMount.root, previewMount.container);
+  });
+
   it("does not throw when getSharedGeoIp resolves null (upstream fetch failed)", async () => {
     // getSharedGeoIp never rejects (see services/api.ts) — a failed geoip
     // fetch surfaces here as a resolved `null`, not a rejection.
@@ -670,6 +697,31 @@ describe("providers/AnalyticsProvider", () => {
     // This is the documented, load-bearing behavior setAdPassback relies on.
     expect(firstDetails.passback).toBe(1);
     expect(secondDetails.passback).toBe(1);
+    unmount(root, container);
+  });
+
+  it("getVisitId is undefined initially and returns this instance's visit_id after it is stamped", () => {
+    const seen: Array<string | undefined> = [];
+    let setBase: ((partial: Record<string, unknown>) => void) | undefined;
+    let read: (() => string | undefined) | undefined;
+    function VisitIdConsumer(): ReactElement {
+      const { setBaseEventContext, getVisitId } = useAnalytics();
+      setBase = setBaseEventContext;
+      read = getVisitId;
+      return <span>visit-id-consumer</span>;
+    }
+    const { root, container } = mount(
+      <AnalyticsProvider>
+        <VisitIdConsumer />
+      </AnalyticsProvider>
+    );
+    // Instance-scoped: undefined before the feed batch stamps it.
+    seen.push(read?.());
+    act(() => setBase?.({ visit_id: "visit-instance-1" }));
+    seen.push(read?.());
+
+    expect(seen[0]).toBeUndefined();
+    expect(seen[1]).toBe("visit-instance-1");
     unmount(root, container);
   });
 

@@ -15,15 +15,26 @@ import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from "vite
 
 import { useGenAdInstance, type UseGenAdInstanceOptions } from "@cxr/ads/genAdSdk";
 import { CxrEventBus } from "@cxr/instance/coordination/CxrEventBus";
+import { fireDspPixel } from "@cxr/observability/dsp-pixel";
 import type { ShadowDomConfig } from "@cxr/shadow-dom-config";
+import { isDebugDeviceFeed } from "@cxr/strategies/debugDevices";
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
 const sendEventMock = vi.fn();
 const setBaseEventContextMock = vi.fn();
+// Mutable holder so a test can flip dashboard preview mode on the mocked
+// analytics context. Reset to false in the DSP block's afterEach so other tests
+// keep the default (analytics-enabled) behaviour.
+const analyticsMock = { preview: false };
 
 vi.mock("../providers/AnalyticsProvider", () => ({
-  useAnalytics: () => ({ sendEvent: sendEventMock, setBaseEventContext: setBaseEventContextMock }),
+  useAnalytics: () => ({
+    sendEvent: sendEventMock,
+    setBaseEventContext: setBaseEventContextMock,
+    preview: analyticsMock.preview,
+    getVisitId: () => "visit-xyz",
+  }),
 }));
 
 let testBus: CxrEventBus;
@@ -34,12 +45,27 @@ vi.mock("../instance/InstanceContext", () => ({
 
 // shadowConfig defaults to null (direct/non-shadow mode); the shadow-DOM-init
 // tests below override `.value` to exercise the shadow-mode branches.
-const tagDetailsMock: { value: { shadowConfig: ShadowDomConfig | null; tagId?: string } } = {
+const tagDetailsMock: { value: { shadowConfig: ShadowDomConfig | null; tagId?: string; brandId?: number } } = {
   value: { shadowConfig: null },
 };
 
 vi.mock("../providers/TagDetailsProvider", () => ({
   useTagDetails: () => tagDetailsMock.value,
+}));
+
+// DSP tracking pixels — mocked so the ad-lifecycle callbacks can be asserted
+// without firing a real Image beacon (the real module is production-gated).
+// `isDspPixelEnabled` stays real (from strategyConfig) so the tagId gate branch
+// is genuinely exercised.
+vi.mock("../observability/dsp-pixel", () => ({
+  fireDspPixel: vi.fn(),
+}));
+
+// Debug-device eligibility — mocked so a test can force a synthetic-fill device.
+// Defaults false so every existing DSP-firing test still fires normally; the
+// dedicated test flips it true to exercise the `!isDebugDeviceFeed` false branch.
+vi.mock("../strategies/debugDevices", () => ({
+  isDebugDeviceFeed: vi.fn(() => false),
 }));
 
 // Controllable `initialVolume` — tests override `.value` to exercise the
@@ -937,6 +963,199 @@ describe("ads/useGenAdInstance", () => {
     expect(sendEventMock).toHaveBeenCalledWith("Ad Started", expect.objectContaining({ provider: "video" }));
     expect(sendEventMock).toHaveBeenCalledWith("Ad Rendered", expect.objectContaining({ provider: "video" }));
     unmount(root, container);
+  });
+
+  describe("DSP tracking pixels (allow-listed tags)", () => {
+    // One of the 15 tags in DSP_PIXEL_TAG_IDS — the gate (real isDspPixelEnabled)
+    // must resolve true for these callbacks to fire the beacon.
+    const DSP_TAG_ID = "6a39163e92929ebec64d78ab";
+
+    afterEach(() => {
+      // Restore the shared mock so later tests keep the default (no tagId).
+      tagDetailsMock.value = { shadowConfig: null };
+      // Reset preview so a preview-mode test doesn't leak into other suites.
+      analyticsMock.preview = false;
+      // Restore the default debug-device eligibility (false) — a test may have
+      // forced it true, and clearAllMocks does not reset mockReturnValue.
+      vi.mocked(isDebugDeviceFeed).mockReturnValue(false);
+    });
+
+    it("fires the ad_render DSP pixel on onAdImpression with SDK creative metadata", async () => {
+      tagDetailsMock.value = { shadowConfig: null, tagId: DSP_TAG_ID, brandId: 7 };
+
+      const { root, container } = mountHook({ ...baseProps, isActive: true });
+      await act(async () => {
+        await Promise.resolve();
+        await Promise.resolve();
+      });
+
+      const events = lastInitOptions.events as {
+        onAdImpression: (e?: { provider?: string; advertiserDomain?: string; creativeId?: string }) => void;
+      };
+      await act(async () => {
+        events.onAdImpression({ provider: "video", advertiserDomain: "adv.example", creativeId: "cr-1" });
+      });
+
+      expect(fireDspPixel).toHaveBeenCalledWith(
+        "ad_render",
+        expect.objectContaining({
+          tagId: DSP_TAG_ID,
+          brandId: 7,
+          visitId: "visit-xyz",
+          provider: "video",
+          advertiserDomain: "adv.example",
+          creativeId: "cr-1",
+        })
+      );
+      unmount(root, container);
+    });
+
+    it("fires the start DSP pixel on onAdStarted", async () => {
+      tagDetailsMock.value = { shadowConfig: null, tagId: DSP_TAG_ID, brandId: 7 };
+
+      const { root, container } = mountHook({ ...baseProps, isActive: true });
+      await act(async () => {
+        await Promise.resolve();
+        await Promise.resolve();
+      });
+
+      const events = lastInitOptions.events as { onAdStarted: (e?: { provider?: string }) => void };
+      await act(async () => {
+        events.onAdStarted({ provider: "video" });
+      });
+
+      expect(fireDspPixel).toHaveBeenCalledWith(
+        "start",
+        expect.objectContaining({ tagId: DSP_TAG_ID, brandId: 7, provider: "video" })
+      );
+      unmount(root, container);
+    });
+
+    it("fires the complete DSP pixel on onAdCompleted", async () => {
+      tagDetailsMock.value = { shadowConfig: null, tagId: DSP_TAG_ID, brandId: 7 };
+
+      const { root, container } = mountHook({ ...baseProps, isActive: true, platforms: { video: "aniview" } });
+      await act(async () => {
+        await Promise.resolve();
+        await Promise.resolve();
+      });
+
+      await act(async () => {
+        (lastInitOptions.onAdCompleted as (p?: string) => void)("video");
+      });
+
+      expect(fireDspPixel).toHaveBeenCalledWith(
+        "complete",
+        expect.objectContaining({ tagId: DSP_TAG_ID, brandId: 7, provider: "video" })
+      );
+      unmount(root, container);
+    });
+
+    it("does not fire any DSP pixel in preview mode", async () => {
+      // Dashboard preview is analytics-silent — the out-of-band DSP pixels must
+      // be suppressed too, even for an allow-listed tag.
+      tagDetailsMock.value = { shadowConfig: null, tagId: DSP_TAG_ID, brandId: 7 };
+      analyticsMock.preview = true;
+
+      const { root, container } = mountHook({ ...baseProps, isActive: true, platforms: { video: "aniview" } });
+      await act(async () => {
+        await Promise.resolve();
+        await Promise.resolve();
+      });
+
+      const events = lastInitOptions.events as {
+        onAdImpression: (e?: { provider?: string }) => void;
+        onAdStarted: (e?: { provider?: string }) => void;
+      };
+      await act(async () => {
+        events.onAdImpression({ provider: "video" });
+        events.onAdStarted({ provider: "video" });
+        (lastInitOptions.onAdCompleted as (p?: string) => void)("video");
+      });
+
+      expect(fireDspPixel).not.toHaveBeenCalled();
+      unmount(root, container);
+    });
+
+    it("does not fire ad_render/start once the ad run is cancelled", async () => {
+      tagDetailsMock.value = { shadowConfig: null, tagId: DSP_TAG_ID, brandId: 7 };
+
+      const { root, container } = mountHook({ ...baseProps, isActive: true });
+      await act(async () => {
+        await Promise.resolve();
+        await Promise.resolve();
+      });
+
+      const events = lastInitOptions.events as {
+        onAdImpression: (e?: { provider?: string }) => void;
+        onAdStarted: (e?: { provider?: string }) => void;
+      };
+
+      // Cancel the run: onWaterfallFail sets the same `cancelled` flag the DSP
+      // guards read, without tearing down the React tree (deterministic).
+      await act(async () => {
+        (lastInitOptions.onWaterfallFail as (p: string) => void)("video");
+      });
+
+      // A callback queued just before teardown must not fire a DSP pixel.
+      await act(async () => {
+        events.onAdImpression({ provider: "video" });
+        events.onAdStarted({ provider: "video" });
+      });
+
+      expect(fireDspPixel).not.toHaveBeenCalled();
+      unmount(root, container);
+    });
+
+    it("does not fire any DSP pixel for a synthetic debug-device fill", async () => {
+      // A registered test handset on a DEBUG_FEED tag gets a synthetic VAST fill,
+      // not a real auction — its DSP pixels must be suppressed even though the tag
+      // is allow-listed and analytics is enabled.
+      tagDetailsMock.value = { shadowConfig: null, tagId: DSP_TAG_ID, brandId: 7 };
+      vi.mocked(isDebugDeviceFeed).mockReturnValue(true);
+
+      const { root, container } = mountHook({ ...baseProps, isActive: true, platforms: { video: "aniview" } });
+      await act(async () => {
+        await Promise.resolve();
+        await Promise.resolve();
+      });
+
+      const events = lastInitOptions.events as {
+        onAdImpression: (e?: { provider?: string }) => void;
+        onAdStarted: (e?: { provider?: string }) => void;
+      };
+      await act(async () => {
+        events.onAdImpression({ provider: "video" });
+        events.onAdStarted({ provider: "video" });
+        (lastInitOptions.onAdCompleted as (p?: string) => void)("video");
+      });
+
+      expect(fireDspPixel).not.toHaveBeenCalled();
+      unmount(root, container);
+    });
+
+    it("does not fire any DSP pixel for a tag that is not allow-listed", async () => {
+      tagDetailsMock.value = { shadowConfig: null, tagId: "6a2fefd87ce338c3a5afc605", brandId: 7 };
+
+      const { root, container } = mountHook({ ...baseProps, isActive: true });
+      await act(async () => {
+        await Promise.resolve();
+        await Promise.resolve();
+      });
+
+      const events = lastInitOptions.events as {
+        onAdImpression: (e?: { provider?: string }) => void;
+        onAdStarted: (e?: { provider?: string }) => void;
+      };
+      await act(async () => {
+        events.onAdImpression({ provider: "video" });
+        events.onAdStarted({ provider: "video" });
+        (lastInitOptions.onAdCompleted as (p?: string) => void)("video");
+      });
+
+      expect(fireDspPixel).not.toHaveBeenCalled();
+      unmount(root, container);
+    });
   });
 
   it("fires Ad Media Quartile, Ad Skipped and Ad Clicked from the SDK events block", async () => {

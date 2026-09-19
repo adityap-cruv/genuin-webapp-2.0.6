@@ -47,6 +47,12 @@ export interface AnalyticsContextValue {
   /** Emit an analytics event. Buffered until Rudderstack is ready. */
   sendEvent: (eventName: string, eventDetails?: Record<string, unknown>) => void;
   /**
+   * Dashboard preview mode — true means this instance emits zero analytics.
+   * Lets consumers gate their own out-of-band telemetry (e.g. DSP tracking
+   * pixels) that doesn't route through `sendEvent`.
+   */
+  preview: boolean;
+  /**
    * Register the active tag's numeric `brand_id` so it is injected into every
    * subsequent event's `event_details.brand_id`. Resolved asynchronously after
    * the tag config loads — call once `tagDetails` is available.
@@ -80,6 +86,8 @@ export interface AnalyticsContextValue {
    * Mark ad as passback (failed to load). Sets passback: 1 on all subsequent events.
    */
   setAdPassback: () => void;
+  /** Read THIS instance's current visit_id (from the base event payload), or undefined before the feed batch has stamped it. Instance-scoped — unlike the page-global feed snapshot. */
+  getVisitId: () => string | undefined;
 }
 
 const AnalyticsContext = createContext<AnalyticsContextValue | undefined>(undefined);
@@ -165,6 +173,8 @@ export function AnalyticsProvider({ children, tagId, preview = false }: Analytic
   const setLiveEventContext = useCallback((partial: Record<string, unknown>): void => {
     liveContextRef.current = { ...liveContextRef.current, ...partial };
   }, []);
+
+  const getVisitId = useCallback((): string | undefined => basePayloadRef.current.visit_id as string | undefined, []);
 
   const setMandatoryData = useCallback((data: Partial<MandatoryEventPayload>): void => {
     bufferRef.current.setMandatoryData(data);
@@ -275,11 +285,13 @@ export function AnalyticsProvider({ children, tagId, preview = false }: Analytic
           };
         });
       },
+      preview,
       setBrandId,
       setBaseEventContext,
       setLiveEventContext,
       setMandatoryData,
       setAdPassback,
+      getVisitId,
     }),
     [
       tagId,
@@ -290,6 +302,7 @@ export function AnalyticsProvider({ children, tagId, preview = false }: Analytic
       setLiveEventContext,
       setMandatoryData,
       setAdPassback,
+      getVisitId,
     ]
   );
 
