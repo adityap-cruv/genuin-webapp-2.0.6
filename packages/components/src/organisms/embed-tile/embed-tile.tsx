@@ -471,7 +471,7 @@ function EmbedPlayer({ postDetails, isActive = false, index, itemSize }: EmbedPl
                   ? "gencl:bg-contain! gencl:object-contain! gencl:h-full! gencl:w-full!"
                   : videoCrop
                     ? "gencl:object-cover gencl:h-full! gencl:w-full gencl:bg-cover"
-                    : "gencl:h-full! gencl:bg-contain!"
+                    : "gencl:object-contain! gencl:h-full! gencl:w-full gencl:bg-contain!"
               }
               layoutType={layoutType}
               aria-hidden="true"
