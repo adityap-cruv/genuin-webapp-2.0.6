@@ -3,13 +3,17 @@ import { Toaster } from "@genuin/ui";
 import { cn } from "@genuin/ui/utils";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
-import { useEffect, useState, type ComponentProps } from "react";
+import { useEffect, useRef, useState, type ComponentProps } from "react";
 
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { usePathname } from "@genuin/components/hooks/use-pathname";
 import { useSearchParams } from "@genuin/components/hooks/use-search-params";
 import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
+import {
+  HOME_INLINE_ARTICLE_STATE_EVENT,
+  type HomeInlineArticleStateDetail,
+} from "@genuin/components/lib/home-feed/events";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { SideBar } from "@genuin/components/organisms/side-bar";
 import { TopBar } from "@genuin/components/organisms/top-bar";
@@ -20,6 +24,7 @@ type BaseLayoutProps = ComponentProps<"section"> & {
 
 type GenuinWindow = Window & {
   genuin?: {
+    collapse?: (sourceDomId: string) => void;
     onInternal?: (event: string, listener: (payload: unknown) => void) => (() => void) | void;
   };
 };
@@ -51,16 +56,31 @@ export function BaseLayout({
   const pathname = usePathname();
   const { searchParams, getSearchParams } = useSearchParams();
   const { layoutConfig } = useEmbedConfigs();
-  const { getContentTypeState } = useSheetState();
+  const { closeContentType, getContentTypeState } = useSheetState();
   const linkoutState = getContentTypeState("linkouts");
   const isLinkoutExpanded = linkoutState === "panel-view" || linkoutState === "full-view";
 
   // Update shouldUseDarkTheme when searchParams or pathname changes
   const [shouldUseDarkTheme, setShouldUseDarkTheme] = useState(false);
-  const [isAdPlaying, setIsAdPlaying] = useState(false);
   // The SDK's expand view is a full-screen player with its own chrome; the site bar must not
   // sit on top of it on mobile, where there is no room for both.
   const [isExpandViewOpen, setIsExpandViewOpen] = useState(false);
+  const [mobileArticleSource, setMobileArticleSource] = useState<string | null>(null);
+  const previousPathnameRef = useRef(pathname);
+  const isRouteChanging = previousPathnameRef.current !== pathname;
+
+  useEffect(() => {
+    if (variant === "embed-expand-view") return;
+    const onArticleState = (event: Event) => {
+      const { detail } = event as CustomEvent<HomeInlineArticleStateDetail>;
+      if (!detail.mobile) return;
+      setMobileArticleSource((source) =>
+        detail.open ? detail.sourceDomId : source === detail.sourceDomId ? null : source
+      );
+    };
+    document.addEventListener(HOME_INLINE_ARTICLE_STATE_EVENT, onArticleState);
+    return () => document.removeEventListener(HOME_INLINE_ARTICLE_STATE_EVENT, onArticleState);
+  }, [variant]);
 
   useEffect(() => {
     const isDarkTheme =
@@ -72,15 +92,7 @@ export function BaseLayout({
       pathname.includes("/video");
 
     setShouldUseDarkTheme(isDarkTheme);
-  }, [pathname, searchParams]);
-
-  useEffect(() => {
-    const observer = new MutationObserver(() => {
-      setIsAdPlaying(document.documentElement.classList.contains("gen-ad-playing"));
-    });
-    observer.observe(document.documentElement, { attributeFilter: ["class"] });
-    return () => observer.disconnect();
-  }, []);
+  }, [getSearchParams, pathname, searchParams]);
 
   useEffect(() => {
     let cancelled = false;
@@ -120,19 +132,32 @@ export function BaseLayout({
   // top bar for the rest of the session (open a Feed View on Home, tap through to an article,
   // and the article had no header). Clearing it on every route change is the reset.
   useEffect(() => {
-    setIsExpandViewOpen(false);
-  }, [pathname]);
+    // The BaseContext survives client-side navigation, while the placement that owned the
+    // linkout sheet may unmount before it can emit its close event. Clear only that stale
+    // content type when the route actually changes; keeping the initial state intact lets the
+    // Home player open its first linkout normally.
+    if (previousPathnameRef.current !== pathname) {
+      // Sidebar navigation must dismiss the retained SDK overlay, not leave it over the next page.
+      if (mobileArticleSource) (window as GenuinWindow).genuin?.collapse?.(mobileArticleSource);
+      setMobileArticleSource(null);
+      setIsExpandViewOpen(false);
+      closeContentType("linkouts");
+      previousPathnameRef.current = pathname;
+    }
+  }, [closeContentType, mobileArticleSource, pathname]);
 
   return (
     <>
       {/* Mobile has room for either the site bar or a full-bleed player surface, never both.
-          An ad or an expanded linkout takes the viewport (2.0.6), and so does a mobile expand
-          view — that last one is why `isExpandViewOpen` is tracked here at all. */}
-      {!(isAdPlaying && isMobile) &&
-        !(isLinkoutExpanded && isMobile) &&
-        !(isExpandViewOpen && isMobile) &&
+          Expanded linkouts and mobile expand view own the viewport; ads continue underneath
+          the site chrome so the header does not disappear or leave a blank strip. */}
+      {!(isMobile && !isRouteChanging && !mobileArticleSource && (isLinkoutExpanded || isExpandViewOpen)) &&
         (layoutConfig.showNavigationBar || layoutConfig.showBackAndCloseButton) && (
-          <TopBar theme={shouldUseDarkTheme && isMobile ? "dark" : "light"} style={{ zIndex: 60 }} variant={variant} />
+          <TopBar
+            theme={shouldUseDarkTheme && isMobile ? "dark" : "light"}
+            style={{ zIndex: mobileArticleSource ? 50 : isMobile ? 40 : 60 }}
+            variant={variant}
+          />
         )}
       <main
         className={cn(

@@ -117,6 +117,7 @@ export const Default: Story = {
     await expect(getComputedStyle(expandedTitle).fontSize).toBe("14px");
     await expect(getComputedStyle(expandedTitle).fontWeight).toBe("600");
     await expect(getComputedStyle(expandedTitle).whiteSpace).toBe("normal");
+    await expect(getComputedStyle(expandedTitle).paddingLeft).toBe("0px");
     await expect(expandedImage.getBoundingClientRect().width).toBe(90);
     await expect(expandedImage.getBoundingClientRect().height).toBe(90);
     await expect(getComputedStyle(expandedDescription).fontSize).toBe("12px");
@@ -128,6 +129,10 @@ export const Default: Story = {
     await expect(expandedCtaIcon.getBoundingClientRect().height).toBe(20);
     await expect(getComputedStyle(compactTitle).fontSize).toBe("14px");
     await expect(getComputedStyle(compactTitle).fontWeight).toBe("600");
+    await expect(getComputedStyle(compactTitle).whiteSpace).toBe("nowrap");
+    await expect(getComputedStyle(compactTitle).textOverflow).toBe("ellipsis");
+    await expect(compactTitle.getBoundingClientRect().height).toBe(20);
+    await expect(getComputedStyle(compactTitle).paddingLeft).toBe("0px");
     await expect(compactImage.getBoundingClientRect().width).toBe(64);
     await expect(compactImage.getBoundingClientRect().height).toBe(64);
     await expect(compactCta.getBoundingClientRect().height).toBe(36);
@@ -196,5 +201,30 @@ export const MobileAllExpanded: Story = {
     PODCASTS.forEach((podcast, index) => {
       expect(within(items[index]!).getByText(podcast.description!)).toBeInTheDocument();
     });
+
+    const rail = canvasElement.querySelector<HTMLElement>('section[aria-label="Sailing podcasts"]')!;
+    const start = rail.scrollLeft;
+    const step = items[1]!.offsetLeft - items[0]!.offsetLeft;
+    const touch = (type: string, x: number) => {
+      const point = new Touch({ identifier: 1, target: rail, clientX: x, clientY: 100 });
+      rail.dispatchEvent(
+        new TouchEvent(type, { bubbles: true, touches: type === "touchend" ? [] : [point], changedTouches: [point] })
+      );
+    };
+    touch("touchstart", 250);
+    touch("touchmove", 190);
+    let previous = rail.scrollLeft;
+    await expect(previous).toBeGreaterThan(start);
+    touch("touchend", 190);
+    const deadline = performance.now() + 700;
+    while (performance.now() < deadline) {
+      await new Promise(requestAnimationFrame);
+      const current = rail.scrollLeft;
+      // Re-enabling snap before settling used to jump backwards here.
+      await expect(current).toBeGreaterThanOrEqual(previous - 1);
+      previous = current;
+    }
+    await expect(Math.abs(rail.scrollLeft - (start + step))).toBeLessThanOrEqual(1);
+    await expect(rail.style.scrollSnapType).toBe("");
   },
 };

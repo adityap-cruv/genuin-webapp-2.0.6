@@ -484,9 +484,11 @@ const SharedActions = memo(function SharedActions({
   const { baseEventBus } = useBaseContext();
   const { showExpandView } = usePlayerContext();
   const sharedActionsEmbed = useSafeEmbedContext();
-  // TEMPORARY: mirrors the desktop rail in `player-swiper` — Intelligence is Home Feed View
-  // only for now, so the page feeds (/latest, /popular, /explore) show no sparkle.
-  const isHomeFeedView = isFeedViewPresentation(sharedActionsEmbed?.rootElement);
+  // Home placements opt in independently of presentation: mobile opens directly in
+  // fullscreen, without the desktop Home Feed View marker.
+  const isIntelligenceEnabled =
+    sharedActionsEmbed?.rootElement?.dataset.intelligenceEnabled === "true" ||
+    isFeedViewPresentation(sharedActionsEmbed?.rootElement);
   const { video, group, community } = postDetails;
   if (!video || !community || !group) return null;
   // A video has a renderable linkout only when the backend sends a NON-EMPTY
@@ -540,7 +542,7 @@ const SharedActions = memo(function SharedActions({
         showLinkout={showLinkoutAction}
         linkoutThumbnail={linkoutThumbnail ?? video.linkouts?.[0]?.links?.find((l: any) => l.image)?.image}
         isLinkoutsOpen={hasContentType("linkouts")}
-        showIntelligence={!isDesktop && showExpandView && isHomeFeedView}
+        showIntelligence={!isDesktop && showExpandView && isIntelligenceEnabled}
         isIntelligenceOpen={hasContentType("intelligence")}
         actionWrapper={{
           // Mobile Intelligence: tap toggles the floating chat surface. Opened at

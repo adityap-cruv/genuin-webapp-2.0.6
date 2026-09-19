@@ -21,6 +21,30 @@ export type ContextualLinkMetaData = LinkMetaData & {
 /** Horizontal travel (px) a touch must cover before a swipe commits to the next card. */
 const SWIPE_COMMIT_THRESHOLD_PX = 24;
 
+// This list keeps its compact rows independently of the SDK sheet's two-line cards.
+const LIST_CARD_CSS = `
+  [data-slot="hover-link-card-item"][data-expanded="false"] p[role="link"] {
+    display: block !important;
+    height: 20px;
+    font-size: 14px !important;
+    line-height: 20px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  [data-slot="hover-link-card-item"][data-expanded="false"] > div > span {
+    width: 64px !important;
+    height: 64px !important;
+  }
+  [data-slot="hover-link-card-item"][data-expanded="false"] > div > div {
+    justify-content: flex-start !important;
+  }
+  [data-slot="hover-link-card-item"][data-expanded="false"] > div > div > div,
+  [data-slot="hover-link-card-item"] [data-slot="link-card-expanded-title"] + div > div {
+    gap: 4px !important;
+  }
+`;
+
 export interface HoverLinkCardListProps {
   items: readonly ContextualLinkMetaData[];
   activeVideoId?: string | null;
@@ -134,6 +158,27 @@ export function HoverLinkCardList({
   const tailSpace = typeof height === "number" ? Math.max(0, height - 80) : 307;
   const isControlledPinned = pinActiveItemToTop && Boolean(activeVideoId);
 
+  // Off-screen cards can have longer titles. Size the phone viewport to the current
+  // card's content, not the tallest item in the flex row, while keeping full titles.
+  useEffect(() => {
+    const section = sectionRef.current;
+    const content = trackRef.current?.querySelector<HTMLElement>(`[data-item-index="${activeIndex}"] > div`);
+    if (!isMobile || !section || !content) return;
+
+    const updateHeight = () => {
+      const styles = getComputedStyle(section);
+      const padding = parseFloat(styles.paddingTop) + parseFloat(styles.paddingBottom);
+      section.style.setProperty("--hover-link-rail-height", `${content.getBoundingClientRect().height + padding}px`);
+    };
+    updateHeight();
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(content);
+    return () => {
+      observer.disconnect();
+      section.style.removeProperty("--hover-link-rail-height");
+    };
+  }, [activeIndex, isMobile, orderedItems]);
+
   /**
    * One swipe = one card, on touch.
    *
@@ -166,15 +211,20 @@ export function HoverLinkCardList({
     let startScrollLeft = 0;
     let step = 0;
     let isDragging = false;
+    let settleFrame: number | null = null;
 
     const endDrag = () => {
       isDragging = false;
+      if (settleFrame !== null) window.cancelAnimationFrame(settleFrame);
+      settleFrame = null;
       // Restore the class-driven snapping for any non-touch scrolling that follows.
       section.style.scrollSnapType = "";
     };
 
     const handleTouchStart = (event: TouchEvent) => {
       if (event.touches.length !== 1) return;
+      if (settleFrame !== null) window.cancelAnimationFrame(settleFrame);
+      settleFrame = null;
       isDragging = true;
       startX = event.touches[0]!.clientX;
       startScrollLeft = section.scrollLeft;
@@ -197,8 +247,19 @@ export function HoverLinkCardList({
       const direction = Math.abs(deltaX) >= SWIPE_COMMIT_THRESHOLD_PX ? (deltaX < 0 ? 1 : -1) : 0;
       const maxScrollLeft = Math.max(0, section.scrollWidth - section.clientWidth);
       const target = Math.max(0, Math.min(maxScrollLeft, startScrollLeft + direction * step));
-      endDrag();
-      section.scrollTo({ left: target, behavior: "smooth" });
+      isDragging = false;
+      // Keep snapping off through the settle animation; restoring it first snaps
+      // a short drag backwards before the next-card animation even starts.
+      const from = section.scrollLeft;
+      const startedAt = performance.now();
+      const duration = prefersReducedMotion ? 0 : normalizedDuration;
+      const settle = (time: number) => {
+        const progress = duration === 0 ? 1 : Math.min(1, (time - startedAt) / duration);
+        section.scrollLeft = from + (target - from) * (1 - (1 - progress) ** 3);
+        if (progress < 1) settleFrame = window.requestAnimationFrame(settle);
+        else endDrag();
+      };
+      settleFrame = window.requestAnimationFrame(settle);
     };
 
     section.addEventListener("touchstart", handleTouchStart, { passive: true });
@@ -211,9 +272,9 @@ export function HoverLinkCardList({
       section.removeEventListener("touchmove", handleTouchMove);
       section.removeEventListener("touchend", handleTouchEnd);
       section.removeEventListener("touchcancel", endDrag);
-      section.style.scrollSnapType = "";
+      endDrag();
     };
-  }, [isRail, orderedItems.length]);
+  }, [isRail, normalizedDuration, orderedItems.length, prefersReducedMotion]);
 
   const alignItemToStart = useCallback((index: number) => {
     const section = sectionRef.current;
@@ -554,7 +615,7 @@ export function HoverLinkCardList({
         "gencl:box-border gencl:overflow-x-auto gencl:overflow-y-hidden gencl:snap-x gencl:snap-mandatory",
         "gencl:overscroll-x-contain gencl:max-lg:[scrollbar-width:none]",
         "gencl:max-lg:[&::-webkit-scrollbar]:hidden",
-        "gencl:max-lg:h-fit!",
+        "gencl:max-lg:h-[var(--hover-link-rail-height,auto)]!",
         "gencl:lg:overflow-x-hidden! gencl:lg:overflow-y-auto! gencl:lg:snap-none! gencl:lg:overscroll-x-auto!",
         "gencl:rounded-xl gencl:bg-white gencl:p-1",
         showContainerBorder && "gencl:ring-1 gencl:ring-secondary-200 gencl:ring-inset",
@@ -586,6 +647,7 @@ export function HoverLinkCardList({
         if (scrollEndTimerRef.current !== null) window.clearTimeout(scrollEndTimerRef.current);
         scrollEndTimerRef.current = window.setTimeout(() => syncActiveCardWithScroll(true), 120);
       }}>
+      <style>{LIST_CARD_CSS}</style>
       <div
         ref={trackRef}
         data-slot="hover-link-card-track"
@@ -618,8 +680,8 @@ export function HoverLinkCardList({
                 "gencl:w-[calc(100%_-_1.5rem)] gencl:shrink-0 gencl:snap-start gencl:lg:w-auto! gencl:lg:[scroll-snap-align:none]",
                 "gencl:[&_a]:h-9! gencl:[&_a]:gap-1.5 gencl:[&_a]:pl-2.5 gencl:[&_a]:pr-1.5",
                 "gencl:[&_a>span]:text-body-2-semi-bold! gencl:[&_a>svg]:size-5!",
-                "gencl:[&_[role=link]]:h-9! gencl:[&_[role=link]]:gap-1.5 gencl:[&_[role=link]]:pl-2.5 gencl:[&_[role=link]]:pr-1.5",
-                "gencl:[&_[role=link]>span]:text-body-2-semi-bold! gencl:[&_[role=link]>svg]:size-5!"
+                "gencl:[&_div[role=link]]:h-9! gencl:[&_div[role=link]]:gap-1.5 gencl:[&_div[role=link]]:pl-2.5 gencl:[&_div[role=link]]:pr-1.5",
+                "gencl:[&_div[role=link]>span]:text-body-2-semi-bold! gencl:[&_div[role=link]>svg]:size-5!"
               )}
               onClick={() => selectCard(item, index)}
               onMouseEnter={() => {

@@ -400,6 +400,7 @@ function GenuinPlacement({
         className="gen-sdk-class"
         data-style-id={activeStyleId}
         data-placement-id={activePlacementId}
+        data-intelligence-enabled="true"
         data-api-key={apiKey}
         data-video-ids={videoIdsKey || undefined}
         onClickCapture={captureFeedViewIntent}
@@ -633,7 +634,8 @@ function PlacementWidget({ node, data }: WidgetRenderProps) {
     };
   }, [domId]);
 
-  const handleExpandRequest = useCallback((options?: { excludeHost?: HTMLElement | null }) => {
+  const handleExpandRequest = useCallback(
+    (options?: { excludeHost?: HTMLElement | null }) => {
       // Mobile keeps the SDK's normal direct-fullscreen path. Desktop Home adds only the
       // intermediate presentation state around that same fullscreen instance.
       if (!openFeedViewOverlay || !window.matchMedia("(min-width: 1024px)").matches) return;
@@ -641,7 +643,9 @@ function PlacementWidget({ node, data }: WidgetRenderProps) {
       // snapshot tells the overlay to adopt that host instead of waiting for a fresh one.
       const existingExpandHosts = prepareFeedView(domId).filter((host) => host !== options?.excludeHost);
       openFeedViewOverlay({ sourceDomId: domId, existingExpandHosts });
-  }, [domId, openFeedViewOverlay]);
+    },
+    [domId, openFeedViewOverlay]
+  );
 
   // Coming back from a floating card's expand control.
   useFloatingVideoRestoreTarget({

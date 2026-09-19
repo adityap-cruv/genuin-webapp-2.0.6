@@ -12,6 +12,8 @@ export const HOME_INLINE_ARTICLE_STATE_EVENT = "genuin:home-feed-inline-article-
 export type HomeInlineArticleStateDetail = {
   sourceDomId: string;
   open: boolean;
+  /** Mobile inline reader uses the site's existing header above the player. */
+  mobile?: boolean;
 };
 
 export function dispatchHomeInlineArticleState(detail: HomeInlineArticleStateDetail): void {

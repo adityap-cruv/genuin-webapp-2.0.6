@@ -50,6 +50,7 @@ function WidgetRenderer({ node, dataMap }: { node: WidgetNode; dataMap: DataMap 
     <EventSurfacePanel
       id={node.id}
       className="gencl:min-h-0 gencl:min-w-0"
+      data-component={node.component}
       data-fit={intrinsicSize ? "intrinsic" : undefined}
       data-mobile-height={node.component === "hover_link_card_list" ? "content" : undefined}
       style={
@@ -268,9 +269,9 @@ const HOME_MOTION_CSS = `
   /* The related-links list becomes a horizontal rail on mobile, so its cell should wrap the
      rail instead of retaining the desktop vertical-list height. */
   .gen-home-grid > [data-mobile-height="content"] { height: auto; }
-  /* Only the third/relevant-news Intelligence panel uses the compact mobile height.
-     Its widget frame adds a 42px section header and a 12px gap above the 520px panel. */
-  .gen-home-grid > [data-panel-id="relevant_news"] { height: 574px; }
+  /* Both news panels need room for the featured article and the Up Next rail, even on
+     short phones. The frame adds a 42px section header and a 12px gap to the 520px panel. */
+  .gen-home-grid > [data-component="intelligence_panel"] { height: 574px; }
   /* …except a widget that draws at its own ratio — it is sized by the base rule below. */
   .gen-home-grid > [data-fit="intrinsic"] { height: auto; }
   /* Desktop-only alignment spacer (keeps a headerless panel level with its neighbour's header);

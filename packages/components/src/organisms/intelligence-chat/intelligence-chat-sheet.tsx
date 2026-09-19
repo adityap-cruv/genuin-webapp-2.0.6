@@ -5,10 +5,14 @@ import { DynamicSheetOverlay } from "@genuin/ui/dynamic-sheet";
 import { dialogManager } from "@genuin/ui/lib/dialog-manager";
 import { getRootContainer } from "@genuin/ui/lib/shadow-dom.utils";
 import { cn } from "@genuin/ui/lib/utils";
-import { lazy, useCallback, useEffect, useState } from "react";
+import { lazy, useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
+import { useBaseContext } from "@genuin/components/context/base";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { dispatchHomeInlineArticleState } from "@genuin/components/lib/home-feed/events";
 import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
+import { usePlayerContext } from "@genuin/components/molecules/feed-player/context";
 import {
   IntelligenceChatSidePanel,
   type IntelligenceChatVideoContext,
@@ -36,8 +40,16 @@ const InlineArticleView = lazy(() =>
  * measured height inside the sheet's cap, so the sheet still grows with the answer.
  */
 const INTELLIGENCE_SHEET_CSS = `
+  /* The mobile sheet already provides the frame; omit the desktop panel's inset ring. */
+  [data-slot="intelligence-sheet-body"] [data-slot="intelligence-chat-panel"] {
+    box-shadow: none !important;
+  }
   [data-slot="intelligence-sheet-body"] [data-slot="intelligence-panel-scroll-content"] {
     max-height: 45vh;
+  }
+  /* Header spacing must scroll with the article, just like the standalone reader. */
+  .gen-mobile-intelligence-article .gen-article-prose.gen-article-page {
+    padding-top: 64px;
   }
 `;
 
@@ -69,6 +81,11 @@ type IntelligenceChatSheetProps = {
  * close control that sits opposite it, and the video stays visible behind.
  */
 export function IntelligenceChatSheet({ isOpen, videoId, videoContext, onClose }: IntelligenceChatSheetProps) {
+  const { baseEventBus } = useBaseContext();
+  const embed = useSafeEmbedContext();
+  const { pauseBySystem, play, feedPlayerShouldPlay } = usePlayerContext();
+  const restorePlaybackRef = useRef<(() => void) | null>(null);
+  const sourceDomId = embed?.rootElement?.id ?? "";
   // Register as an open dialog for as long as the sheet is up. This is the exact
   // mechanism the comments dialog relies on to stop the feed from swiping under
   // it: `swiper-implementation.tsx` subscribes to the registry and calls
@@ -87,17 +104,41 @@ export function IntelligenceChatSheet({ isOpen, videoId, videoContext, onClose }
   // and on a phone the article needs the whole screen anyway).
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const isArticleOpen = selectedArticle !== null;
-  const closeArticle = useCallback(() => setSelectedArticle(null), []);
+  const closeArticle = useCallback(() => {
+    setSelectedArticle(null);
+    restorePlaybackRef.current?.();
+    restorePlaybackRef.current = null;
+  }, []);
+
+  useEffect(() => {
+    if (!isArticleOpen || !sourceDomId) return;
+    dispatchHomeInlineArticleState({ sourceDomId, open: true, mobile: true });
+    return () => dispatchHomeInlineArticleState({ sourceDomId, open: false, mobile: true });
+  }, [isArticleOpen, sourceDomId]);
 
   // Same resolution as `player-swiper`'s desktop handler: a href the local article
   // data knows about opens in place; anything else falls through to normal link
   // navigation (returning `false` leaves the card's default intact).
-  const handleArticleSelect = useCallback<IntelligenceArticleSelectHandler>((selection) => {
-    const article = getArticleByHref(selection.href, window.location.origin) ?? getArticleByHref(selection.href);
-    if (!article) return false;
-    setSelectedArticle(article);
-    return true;
-  }, []);
+  const handleArticleSelect = useCallback<IntelligenceArticleSelectHandler>(
+    (selection) => {
+      const article = getArticleByHref(selection.href, window.location.origin) ?? getArticleByHref(selection.href);
+      if (!article) return false;
+      // Restore only on Back, never when navigation unmounts this player.
+      const { systemPaused, globalPlayingState } = baseEventBus.getContext();
+      restorePlaybackRef.current = () => {
+        baseEventBus.emit("systemPauseStateChange", undefined, (context) => ({
+          ...context,
+          systemPaused,
+          globalPlayingState,
+        }));
+        if (feedPlayerShouldPlay) play(false);
+      };
+      pauseBySystem();
+      setSelectedArticle(article);
+      return true;
+    },
+    [baseEventBus, feedPlayerShouldPlay, pauseBySystem, play]
+  );
 
   // Escape steps back to the conversation, not out of the sheet entirely.
   useEffect(() => {
@@ -184,14 +225,13 @@ export function IntelligenceChatSheet({ isOpen, videoId, videoContext, onClose }
       </div>
 
       {selectedArticle && (
-        <SafeSuspense fallback={null} errorFallback={null}>
-          {/* Full-screen on purpose: with no PIP video to sit beside, the article
-              gets the whole viewport. `fixed` gives the view's own `inset-0` a
-              containing block, and z-60 puts it above the sheet (z-50). */}
-          <div className="gencl:fixed gencl:inset-0 gencl:z-60 gencl:overflow-hidden">
+        // Full viewport above the source player (z-30), below the existing header
+        // and navigation (z-50). Only the scroller's content reserves header space.
+        <div className="gen-mobile-intelligence-article gencl:fixed gencl:inset-0 gencl:z-40 gencl:overflow-hidden gencl:bg-white">
+          <SafeSuspense fallback={null} errorFallback={null}>
             <InlineArticleView key={selectedArticle.slug} article={selectedArticle} onBack={closeArticle} />
-          </div>
-        </SafeSuspense>
+          </SafeSuspense>
+        </div>
       )}
     </div>
   );
