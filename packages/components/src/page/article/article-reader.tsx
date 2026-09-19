@@ -1,9 +1,27 @@
 "use client";
 
 import { Image } from "@genuin/ui/components/image";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@genuin/ui/hover-card";
 import { cn } from "@genuin/ui/lib/utils";
+import { useMemo, useState, type ReactNode } from "react";
+import { useMediaQuery } from "usehooks-ts";
 
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { CommunityHoverCard } from "@genuin/components/molecules/feed-player/pills/community-hover-card";
+import { GroupHoverCard } from "@genuin/components/molecules/feed-player/pills/group-hover-card";
 import { Pills } from "@genuin/components/molecules/feed-player/pills/pills";
+import { Link } from "@genuin/components/molecules/link";
+import { useCategory } from "@genuin/components/react-query/api/category/category";
+import {
+  setQueryDataForCommunityRoleChange,
+  useGetCommunityDetails,
+} from "@genuin/components/react-query/api/community/details/details";
+import {
+  setQueryDataForJoinGroupInGroupDetails,
+  setQueryDataForSubscribeGroupInGroupDetails,
+  useGetGroupDetails,
+} from "@genuin/components/react-query/api/group/details/details";
+import { getTrendingGroups as useTrendingGroups } from "@genuin/components/react-query/api/group/trending/trending";
 
 import type { Article, ArticleBlock } from "./article-data";
 
@@ -158,6 +176,7 @@ export const ARTICLE_READER_TYPOGRAPHY_CSS = `
 }
 .gen-article-prose.gen-article-page .gen-article-hero { margin-bottom: 2.5rem; }
 .gen-article-prose.gen-article-page a { color: inherit; text-underline-offset: 3px; }
+.gen-article-prose.gen-article-page .gen-article-keyword { text-decoration: underline; text-underline-offset: 3px; }
 
 @container gen-article (min-width: 560px) {
   .gen-article-prose.gen-article-page .gen-article-byline {
@@ -188,9 +207,9 @@ const KIND_LABEL: Record<Article["kind"], string> = {
  * own editorial type scale (see {@link ARTICLE_READER_TYPOGRAPHY_CSS}), and inside the Web SDK the
  * atoms' utilities are compiled `!important`, which no amount of specificity can override.
  */
-function ArticleBodyBlock({ block }: { block: ArticleBlock }) {
+function ArticleBodyBlock({ block, children }: { block: ArticleBlock; children?: ReactNode }) {
   if (block.type === "heading") {
-    return <h2 className="gen-article-h2">{block.text}</h2>;
+    return <h2 className="gen-article-h2">{children ?? block.text}</h2>;
   }
 
   if (block.type === "image") {
@@ -204,7 +223,7 @@ function ArticleBodyBlock({ block }: { block: ArticleBlock }) {
     );
   }
 
-  return <p className="gen-article-p">{block.text}</p>;
+  return <p className="gen-article-p">{children ?? block.text}</p>;
 }
 
 /** The community / group pills above the byline, from the article's own attribution. */
@@ -262,6 +281,128 @@ export function ArticleReaderHeader({ article, className }: { article: Article; 
 
 /** Canonical article hero and body, shared without mounting any SDK placements. */
 export function ArticleReaderBody({ article, className }: { article: Article; className?: string }) {
+  const { data: categories } = useCategory();
+  const { data: groups } = useTrendingGroups();
+  const [active, setActive] = useState<{ key: string; kind: "community" | "group"; slug: string } | null>(null);
+  const canHover = useMediaQuery("(hover: hover) and (pointer: fine)", { initializeWithValue: false });
+  const { data: community } = useGetCommunityDetails(
+    active?.kind === "community" ? active.slug : "",
+    active?.kind === "community"
+  );
+  const { data: group } = useGetGroupDetails(active?.kind === "group" ? active.slug : "", active?.kind === "group");
+
+  const keywords = useMemo(() => {
+    type Target = { kind: "community" | "group"; slug: string };
+    const names = new Map<string, Target | null>();
+    const add = (name: string | null | undefined, target: Target) => {
+      const normalized = (name ?? "").trim().replace(/\s+/gu, " ").toLowerCase();
+      if (!normalized || !target.slug) return;
+      const previous = names.get(normalized);
+      // Shared names are ambiguous; don't link to an arbitrary community/group.
+      names.set(
+        normalized,
+        previous === null || (previous && (previous.kind !== target.kind || previous.slug !== target.slug))
+          ? null
+          : target
+      );
+    };
+    categories?.categories.forEach((category) =>
+      category.communities.forEach((item) => add(item.community_name, { kind: "community", slug: item.slug }))
+    );
+    groups?.groups?.forEach((item: { slug: string; group: { group_name: string } }) =>
+      add(item.group.group_name, { kind: "group", slug: item.slug })
+    );
+    const alternatives = [...names]
+      .filter(([, target]) => target)
+      .map(([name]) => name)
+      .sort((a, b) => b.length - a.length)
+      .map((name) => name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/ /g, "\\s+"));
+    return {
+      names,
+      pattern: alternatives.length
+        ? new RegExp(`(?<![\\p{L}\\p{N}\\p{M}_])(${alternatives.join("|")})(?![\\p{L}\\p{N}\\p{M}_])`, "giu")
+        : null,
+    };
+  }, [categories, groups]);
+
+  const preview =
+    active?.kind === "community" && community ? (
+      <CommunityHoverCard
+        communityDetails={{
+          id: community.community_id,
+          slug: community.slug,
+          name: community.name,
+          handle: community.handle,
+          profileImage: community.dp_s ?? community.dp_m ?? community.dp,
+          isPrivate: community.type === "PRIVATE",
+          shareUrl: community.share_url,
+          userRole: community.logged_in_user_role,
+          membersCount: community.no_of_members,
+          groupsCount: community.no_of_loops,
+          postsCount: community.no_of_videos,
+          brand: community.brand && {
+            id: community.brand.brand_id,
+            name: community.brand.name,
+            logo: community.brand.logo,
+            webLogo: community.brand.brand_web_logo,
+            slug: community.brand.brand_slug,
+            userLogo: community.brand.brand_user_logo,
+            handle: community.brand.brand_handle,
+          },
+        }}
+        onCommunityJoinStatusChange={(role) => setQueryDataForCommunityRoleChange(community.slug, role)}
+      />
+    ) : active?.kind === "group" && group ? (
+      <GroupHoverCard
+        groupDetails={{ ...group, description: group.description ?? "", isSubscribed: group.isSubscriber }}
+        communityDetails={{
+          name: group.community.name,
+          slug: group.community.slug,
+          profileImage: group.community.dpM ?? group.community.dp,
+        }}
+        onGroupJoinStatusChange={(role) => setQueryDataForJoinGroupInGroupDetails(group.slug, role)}
+        onGroupSubscriptionChange={(subscribed) => setQueryDataForSubscribeGroupInGroupDetails(group.slug, subscribed)}
+      />
+    ) : null;
+
+  const renderText = (text: string, blockIndex: number) => {
+    const linkedEntities = new Set<string>();
+    return !keywords.pattern
+      ? text
+      : text.split(keywords.pattern).map((part, index) => {
+          const entity = index % 2 ? keywords.names.get(part.trim().replace(/\s+/gu, " ").toLowerCase()) : null;
+          if (!entity) return part;
+          const entityKey = `${entity.kind}:${entity.slug}`;
+          if (linkedEntities.has(entityKey)) return part;
+          linkedEntities.add(entityKey);
+          const key = `${article.slug}:${blockIndex}:${index}`;
+          const link = (
+            <Link
+              key={key}
+              className="gen-article-keyword"
+              href={buildPageUrl({ type: entity.kind, slug: encodeURIComponent(entity.slug) })}>
+              {part}
+            </Link>
+          );
+          if (!canHover) return link;
+          return (
+            <HoverCard
+              key={key}
+              open={active?.key === key}
+              openDelay={300}
+              closeDelay={200}
+              onOpenChange={(open) =>
+                setActive((current) => (open ? { key, ...entity } : current?.key === key ? null : current))
+              }>
+              <HoverCardTrigger asChild>{link}</HoverCardTrigger>
+              <HoverCardContent align="start" className="gencl:max-w-md! gencl:min-w-80">
+                {active?.key === key && preview}
+              </HoverCardContent>
+            </HoverCard>
+          );
+        });
+  };
+
   return (
     <article className={cn("gen-article-main gen-article-reveal gen-article-reveal-delay-2", className)}>
       <div className="gen-article-hero gen-article-media">
@@ -275,7 +416,9 @@ export function ArticleReaderBody({ article, className }: { article: Article; cl
 
       <div data-slot="article-body" className="gen-article-body">
         {article.body.map((block, index) => (
-          <ArticleBodyBlock key={index} block={block} />
+          <ArticleBodyBlock key={index} block={block}>
+            {block.type !== "image" ? renderText(block.text, index) : null}
+          </ArticleBodyBlock>
         ))}
       </div>
     </article>

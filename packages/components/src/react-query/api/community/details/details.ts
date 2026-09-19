@@ -34,12 +34,13 @@ async function fetchCommunityDetails(slug: string, axiosInstance: AxiosInstance)
  * @param slug - The slug of the community for which details are being fetched.
  * @returns A query object containing the community details.
  */
-export function useGetCommunityDetails(slug: string) {
+export function useGetCommunityDetails(slug: string, enabled = true) {
   const axiosInstance = useAxiosInstance();
 
   return useQuery({
     queryKey: getQueryKeyForCommunityDetails(slug),
     queryFn: async (_context) => await fetchCommunityDetails(slug, axiosInstance),
+    enabled,
   });
 }
 

@@ -29,12 +29,13 @@ export async function fetchLoopDetails(axiosInstance: AxiosInstance, slug?: stri
  * @param slug - The unique identifier for the group.
  * @returns An object containing the query key and query function.
  */
-export function useGetGroupDetails(slug: string) {
+export function useGetGroupDetails(slug: string, enabled = true) {
   const axiosInstance = useAxiosInstance();
 
   return useQuery({
     queryKey: getQueryKeyForLoopDetails(slug),
     queryFn: () => fetchLoopDetails(axiosInstance, slug, undefined),
+    enabled,
   });
 }
 

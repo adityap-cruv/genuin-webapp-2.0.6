@@ -11,7 +11,7 @@ import type { PostDetailsType } from "@genuin/components/react-query/api/feed/sc
 
 type GroupHoverCardProps = {
   groupDetails: PostDetailsType["group"];
-  communityDetails: PostDetailsType["community"];
+  communityDetails: Pick<NonNullable<PostDetailsType["community"]>, "name" | "slug" | "profileImage"> | undefined;
   videoId?: string;
   onGroupJoinStatusChange?: ComponentProps<typeof JoinGroupButton>["onGroupJoinStatusChange"];
   onGroupSubscriptionChange?: ComponentProps<typeof GroupSubscriptionButton>["onSubscriptionChange"];
