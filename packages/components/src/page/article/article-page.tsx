@@ -5,6 +5,7 @@ import { cn } from "@genuin/ui/lib/utils";
 import { NavArrowButton } from "@genuin/ui/player-controls";
 import { ChevronRight, Sparkle } from "lucide-react";
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { useIsClient, useMediaQuery } from "usehooks-ts";
 
 import {
   FeedViewOverlay,
@@ -39,9 +40,8 @@ import {
 type PlacementConfig = { placementId: string; styleId: string; apiKey: string };
 
 /**
- * The three real Genuin placements woven into every article (QA env). Each renders its
- * own layout server-side from its `styleId`: a wide carousel (lead), a vertical feed
- * (right rail) and a grid (in-body). Swap these ids to re-target to other placements.
+ * Article placements (QA env): a lead carousel, a desktop rail feed, a mobile
+ * bottom carousel, and a desktop grid. Each style configures its own SDK layout.
  */
 const PLACEMENTS = {
   carousel: {
@@ -52,6 +52,11 @@ const PLACEMENTS = {
   feed: {
     placementId: "6a884fdbd9efa1218d9a3e61",
     styleId: "6a884fdbd9efa1218d9a3e62",
+    apiKey: "018b5a9408d982482ee586511456679c1cc1f4bc4adc5dc2",
+  },
+  mobileCarousel: {
+    placementId: "6aafcd7bf123363b41c61d21",
+    styleId: "6aafcd7bf123363b41c61d22",
     apiKey: "018b5a9408d982482ee586511456679c1cc1f4bc4adc5dc2",
   },
   grid: {
@@ -144,7 +149,8 @@ function GenuinPlacement({ placement, initialHeight }: { placement: PlacementCon
     };
   }, []);
 
-  const handleExpandRequest = useCallback((options?: { excludeHost?: HTMLElement | null }) => {
+  const handleExpandRequest = useCallback(
+    (options?: { excludeHost?: HTMLElement | null }) => {
       // Match Home exactly: desktop opens the bounded Feed View; mobile keeps the SDK's native
       // direct-fullscreen behavior. Explicit player controls are never intercepted by this path.
       if (!openFeedViewOverlay || !window.matchMedia("(min-width: 1024px)").matches) return;
@@ -152,7 +158,9 @@ function GenuinPlacement({ placement, initialHeight }: { placement: PlacementCon
       // snapshot tells the overlay to adopt that host instead of waiting for a fresh one.
       const existingExpandHosts = prepareFeedView(domId).filter((host) => host !== options?.excludeHost);
       openFeedViewOverlay({ sourceDomId: domId, existingExpandHosts });
-  }, [domId, openFeedViewOverlay]);
+    },
+    [domId, openFeedViewOverlay]
+  );
 
   const captureFeedViewIntent = usePlacementFeedViewIntent({
     onExpandRequest: openFeedViewOverlay ? handleExpandRequest : undefined,
@@ -181,13 +189,18 @@ function GenuinPlacement({ placement, initialHeight }: { placement: PlacementCon
   );
 }
 
-/** Right-rail placement: the vertical "feed" placement (the page wraps it sticky). */
-function ArticleFeedPlacement() {
+/** Desktop rail feed / mobile bottom carousel, capped at its configured 400px width. */
+function ArticleRailPlacement() {
+  const isClient = useIsClient();
+  const isMobile = useMediaQuery("(max-width: 767px)", { initializeWithValue: false });
+  const placement = isMobile ? PLACEMENTS.mobileCarousel : PLACEMENTS.feed;
+
   return (
     <div
       className="gen-article-reveal gen-article-reveal-delay-3 gencl:overflow-hidden gencl:rounded-xl"
-      style={{ width: "100%", height: 640 }}>
-      <GenuinPlacement placement={PLACEMENTS.feed} />
+      style={{ width: "100%", maxWidth: isMobile ? 400 : undefined, height: 640 }}>
+      {/* Wait for the viewport before initializing; changing placements needs a fresh SDK host. */}
+      {isClient ? <GenuinPlacement key={placement.placementId} placement={placement} /> : null}
     </div>
   );
 }
@@ -247,9 +260,7 @@ const ARTICLE_DESKTOP_MIN_WIDTH = 1080;
  */
 function ArticleGridPlacement() {
   return (
-    <div
-      className="gen-article-reveal gencl:overflow-hidden gencl:rounded-xl"
-      style={{ width: "100%" }}>
+    <div className="gen-article-reveal gencl:overflow-hidden gencl:rounded-xl" style={{ width: "100%" }}>
       <GenuinPlacement placement={PLACEMENTS.grid} initialHeight={480} />
     </div>
   );
@@ -578,7 +589,7 @@ export function ArticlePage({
 
               <aside className="gen-article-rail">
                 <div className="gen-article-rail-sticky gen-article-reveal gen-article-reveal-delay-3 gencl:flex gencl:flex-col gencl:gap-6">
-                  <ArticleFeedPlacement />
+                  <ArticleRailPlacement />
 
                   <ArticleOriginRail article={article} />
                 </div>
