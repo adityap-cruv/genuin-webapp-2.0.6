@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { createPortal } from "react-dom";
 
 import { useBaseContext } from "@genuin/components/context/base";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 
 import { cleanupOverlayShadowHost, getOrCreateOverlayShadowHost } from "./shadow-root/shadow-dom.utils";
 
@@ -85,6 +86,7 @@ export function RootPortal({
   trackVisualViewport = false,
 }: RootPortalProps) {
   const { parsedBrandColors, isEmbed, useShadowDOM, brandDetails, theme } = useBaseContext();
+  const embed = useSafeEmbedContext();
   const brandId = brandDetails.brand_id;
   const styleRef = React.useRef(style);
   styleRef.current = style;
@@ -211,6 +213,7 @@ export function RootPortal({
   const elementToRender = (
     <div
       data-genuin-root-portal="true"
+      data-genuin-source-dom-id={embed?.rootElement?.id}
       data-portal-key={portalKey}
       style={{
         ...parsedBrandColors,

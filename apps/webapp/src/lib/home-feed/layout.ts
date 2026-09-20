@@ -160,8 +160,9 @@ const ROW_FEED_LINKS: LayoutRow = {
 const ROW_TOP_CATS: LayoutRow = {
   id: "row-top-cats",
   gridTemplateColumns: "minmax(0, 1fr)",
-  height: 419,
-  mobileHeight: 574,
+  // 560px placement + 42px section header + 12px gap.
+  height: 614,
+  mobileHeight: 614,
   padding: 20,
   children: [W_TOP_CATEGORIES],
 };

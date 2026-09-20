@@ -139,6 +139,89 @@ test.describe('Feature: Floating video hand-off', () => {
     expect(state.floating).toBe(false)
   })
 
+  test('Scenario: An Intelligence article PiP returns to its original route and inline article', async ({ page }) => {
+    const visitedPaths: string[] = []
+    page.on('framenavigated', frame => {
+      if (frame === page.mainFrame()) visitedPaths.push(new URL(frame.url()).pathname)
+    })
+    await openFeedView(page, HOME)
+    const homeHost = page.locator('[data-genuin-light-portal-host][data-portal-key="expand-view"]').last()
+    await homeHost.locator('.swiper-slide-active video').first().evaluate(video => {
+      video.setAttribute('data-original-article-pip', 'true')
+    })
+    await homeHost.locator('[data-slot="intelligence-article-content"]').first().click({ timeout: 60_000 })
+    const article = page.locator('[data-slot="inline-intelligence-article"]').last()
+    await expect(article).toBeVisible()
+    await article.evaluate(element => element.setAttribute('data-original-inline-article', 'true'))
+    const articleSlug = await article.locator('[data-slot="article-feed-view-boundary"]').first()
+      .getAttribute('data-floating-video-article-slug')
+    expect(articleSlug).toBeTruthy()
+    const tile = article.locator('.gen-sdk-class video').first()
+    await tile.waitFor({ state: 'attached', timeout: 60_000 })
+    await tile.scrollIntoViewIfNeeded()
+    await tile.click({ force: true })
+    await expect(page.locator('[data-slot="feed-view-back"]')).toHaveCount(1)
+
+    await page.locator('a[href="/popular"]').first().click()
+    await page.waitForURL('**/popular')
+    const pip = page.locator('[data-genuin-floating-video="true"]')
+    await expect(pip).toHaveCount(1)
+    const frame = pip.locator('[data-feed-video-frame]').first()
+    await expect(frame).toBeVisible()
+    expect(await frame.evaluate(element => element.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true }))).toBe(true)
+    // Retained article/carousel descendants can explicitly set visibility: visible.
+    // They must not paint over the destination while their original players stay mounted.
+    const expectRetainedArticleHidden = async () => {
+      const retained = page.locator('[data-genuin-article-context-suspended="true"]')
+      await expect(retained).toHaveCount(1)
+      expect(await retained.evaluate(host => Array.from(host.querySelectorAll('*'))
+        .filter(element => element.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true }))
+        .map(element => element.tagName))).toEqual([])
+    }
+    await expectRetainedArticleHidden()
+    const box = await frame.boundingBox()
+    if (!box) throw new Error('PiP card has no layout box')
+    await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2)
+    await expect(pip).toHaveCount(1)
+    await expect(page).toHaveURL(/\/popular$/)
+
+    // An inactive slide's media events used to dismiss the entire floating session.
+    await pip.evaluate(host => {
+      const video = document.createElement('video')
+      host.append(video)
+      video.dispatchEvent(new Event('ended'))
+      video.dispatchEvent(new Event('error'))
+      video.remove()
+    })
+    await expect(pip).toHaveCount(1)
+    await pip.locator('[aria-label="Back to Feed View"]').click()
+    await page.waitForURL(`**${HOME}`)
+    await expect(pip).toHaveCount(0)
+    // Repeat the trip to exercise retention after the same player has been adopted once.
+    await page.locator('a[href="/popular"]').first().click()
+    await page.waitForURL('**/popular')
+    await expect(pip).toHaveCount(1)
+    await expectRetainedArticleHidden()
+    await pip.locator('[aria-label="Back to Feed View"]').click()
+    await page.waitForURL(`**${HOME}`)
+    await expect(pip).toHaveCount(0)
+    const historyLength = await page.evaluate(() => window.history.length)
+    await page.locator('[data-slot="feed-view-back"] button').click()
+    await expect(page.locator('[data-slot="feed-view-back"]')).toHaveCount(0)
+    await expect(page.locator('[data-slot="inline-intelligence-article"]')).toBeVisible()
+    await expect(page.locator('[data-original-inline-article="true"]')).toBeVisible()
+    await expect(page.locator('[data-original-article-pip="true"]')).toBeVisible()
+    expect(await page.locator('[data-original-article-pip="true"]').evaluate(element =>
+      element.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true }))).toBe(true)
+    await expect(page.locator(`[data-slot="inline-intelligence-article"] [data-slot="article-feed-view-boundary"][data-floating-video-article-slug="${articleSlug}"]`)).toBeVisible()
+    await expect(page).toHaveURL(/\/home$/)
+    expect(await page.evaluate(() => window.history.length)).toBe(historyLength)
+    expect(visitedPaths.some(path => path.startsWith('/article/'))).toBe(false)
+    await page.locator('[data-slot="inline-article-back"] button').click()
+    await expect(page.locator('[data-slot="inline-intelligence-article"]')).toHaveCount(0)
+    await expect(page).toHaveURL(/\/home$/)
+  })
+
   test('Scenario: A pill’s join control never hands the video off', async ({ page }) => {
     await openFeedView(page, HOME)
 

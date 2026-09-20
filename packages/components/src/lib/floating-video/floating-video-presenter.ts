@@ -1,4 +1,6 @@
-import { announceFloatingVideoPresented, clearFloatingVideo, onFloatingVideoClear } from "./events";
+import { getExpandViewSourceId } from "@genuin/components/lib/feed-view/presentation";
+
+import { announceFloatingVideoPresented, onFloatingVideoClear } from "./events";
 import { isPlacementParked } from "./placement-retention";
 import { getFloatingVideoSession } from "./session-store";
 import type { FloatingVideoSession } from "./types";
@@ -68,10 +70,7 @@ type FloatingVideoPresentation = {
 };
 
 /** Re-frames `host` as the floating card for `session`. Returns a teardown handle. */
-export function presentFloatingVideo(
-  host: HTMLElement,
-  session: FloatingVideoSession
-): FloatingVideoPresentation {
+export function presentFloatingVideo(host: HTMLElement, session: FloatingVideoSession): FloatingVideoPresentation {
   // FeedViewOverlay pins the host with inline `!important` styles while it is the bounded Feed
   // View. Inline `!important` outranks a stylesheet `!important`, so those have to go first.
   host.removeAttribute("style");
@@ -95,21 +94,14 @@ export function presentFloatingVideo(
     document.head.appendChild(style);
   }
 
-  // A finished or broken video has nothing left to float. Capture phase because media events
-  // do not bubble, and scoped to this host so an unrelated player never ends the session.
-  const handleMediaEvent = (event: Event) => {
-    if (!(event.target instanceof HTMLMediaElement)) return;
-    clearFloatingVideo(session.sessionId, event.type === "error" ? "video-error" : "video-ended");
-  };
-  host.addEventListener("ended", handleMediaEvent, true);
-  host.addEventListener("error", handleMediaEvent, true);
+  // Playback completion/errors belong to the player, not the navigation session.
+  // Keep the card available for replay, recovery, or an explicit close. This host
+  // also contains preloaded slides whose media events must never dismiss PiP.
 
   announceFloatingVideoPresented(session.sessionId);
 
   return {
     teardown: (adopted = false) => {
-      host.removeEventListener("ended", handleMediaEvent, true);
-      host.removeEventListener("error", handleMediaEvent, true);
       host.removeAttribute(FLOATING_ATTRIBUTE);
       document.getElementById(STYLE_ID)?.remove();
       // Adopted: this host is about to be pinned as the full-size Feed View, so leave the
@@ -139,12 +131,14 @@ type GenuinWindow = Window & { genuin?: { collapse?: (id: string) => void } };
  * The session names its own placement rather than being matched against the caller's dom id.
  * Those two legitimately diverge: once a card has been handed back, the visible Feed View is
  * the *retained* root, so the next hand-off comes from that placement while the page is still
- * passing the dom id of the freshly mounted one. Only one Feed View is open at a time, so the
- * open session is unambiguously the one being framed.
+ * passing the dom id of the freshly mounted one. Match the portal's actual SDK owner instead:
+ * nested article players can leave more than one Feed View mounted during navigation.
  */
 export function beginFloatingVideoPresentation(host: HTMLElement): boolean {
   const session = getFloatingVideoSession();
   if (!session) return false;
+  const sourceId = getExpandViewSourceId(host);
+  if (sourceId && sourceId !== session.sourceDomId) return false;
 
   const { teardown } = presentFloatingVideo(host, session);
 

@@ -57,6 +57,8 @@ export function useFloatingVideoExit({
       sourceDomId: session?.sourceDomId ?? "",
       sourcePlacementId: session?.sourcePlacementId ?? "",
       sourcePathname: session?.sourcePathname ?? "/",
+      sourceArticleSlug: session?.sourceArticleSlug,
+      sourceParentDomIds: session?.sourceParentDomIds,
     });
   }, []);
 

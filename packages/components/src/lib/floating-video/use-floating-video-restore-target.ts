@@ -50,7 +50,9 @@ export function useFloatingVideoRestoreTarget({
 
     // Claim once, then hold it: this effect re-runs while the placement settles, and a request
     // consumed by an earlier run would be gone by the time the card can be adopted.
-    claimedRef.current ??= consumePendingFloatingVideoRestore({ domId, placementId });
+    const articleSlug = document.getElementById(domId)?.closest<HTMLElement>("[data-floating-video-article-slug]")
+      ?.dataset.floatingVideoArticleSlug;
+    claimedRef.current ??= consumePendingFloatingVideoRestore({ domId, placementId, articleSlug });
     const restore = claimedRef.current;
     if (!restore) return;
 

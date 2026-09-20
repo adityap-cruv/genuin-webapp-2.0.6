@@ -2,7 +2,11 @@
 import { useEffect, useRef } from "react";
 
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
-import { isFeedViewPresentation } from "@genuin/components/lib/feed-view/presentation";
+import {
+  getActiveExpandViewSourceId,
+  getParentExpandViewSourceIds,
+  isFeedViewPresentation,
+} from "@genuin/components/lib/feed-view/presentation";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 import {
@@ -58,6 +62,10 @@ export function useFloatingVideoPromoter({ posts, activeIndex }: FloatingVideoPr
       // Re-checked per click, not per render: the same placement moves between Feed View and
       // Full View while mounted.
       if (!isFeedViewPresentation(rootElement)) return;
+      // A retained parent still has its Feed View marker while an article video
+      // is on top. Only that foreground player may accept the navigation.
+      const activeSourceId = getActiveExpandViewSourceId();
+      if (activeSourceId !== rootElement.id) return;
 
       const targetPathname = resolveInternalPathname(intent.targetHref);
       if (!targetPathname) return;
@@ -68,6 +76,12 @@ export function useFloatingVideoPromoter({ posts, activeIndex }: FloatingVideoPr
       const video = postsRef.current[activeIndexRef.current]?.video;
       if (!video?.id) return;
 
+      // Article identity is presentation state, separate from the browser route.
+      // Keep it on the retained placement after its article ancestor unmounts.
+      const sourceArticleSlug = rootElement.closest<HTMLElement>("[data-floating-video-article-slug]")?.dataset
+        .floatingVideoArticleSlug;
+      if (sourceArticleSlug) rootElement.dataset.floatingVideoArticleSlug = sourceArticleSlug;
+
       promoteFloatingVideo({
         sessionId: createFloatingVideoSessionId(),
         sourceInstanceId: rootElement.getAttribute("data-instance-id") ?? "",
@@ -77,6 +91,8 @@ export function useFloatingVideoPromoter({ posts, activeIndex }: FloatingVideoPr
         targetHref: intent.targetHref,
         targetPathname,
         sourcePathname: window.location.pathname,
+        sourceArticleSlug,
+        sourceParentDomIds: getParentExpandViewSourceIds(rootElement),
         trigger: intent.trigger,
       });
 

@@ -334,7 +334,7 @@ export function Player({
               <ControlLayer
                 variant={controlLayerVariant}
                 enableExpand={controlLayerVariant !== "placement" || Boolean(onExpandClick)}
-                {...(onExpandClick ? { onExpandClick, onClick: onExpandClick } : {})}
+                onExpandClick={onExpandClick}
                 index={index}
                 isActive={isActive}
                 postDetails={post}

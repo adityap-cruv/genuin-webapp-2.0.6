@@ -38,6 +38,7 @@ export function retainPlacementContainer(container: HTMLElement): PlacementReten
   const width = container.offsetWidth;
   const height = container.offsetHeight;
   const originalStyle = container.getAttribute("style");
+  let released = false;
 
   const attach = () => {
     container.setAttribute(PARKED_ATTRIBUTE, "true");
@@ -57,12 +58,13 @@ export function retainPlacementContainer(container: HTMLElement): PlacementReten
 
   return {
     park: () => {
-      if (typeof document === "undefined") return;
+      if (typeof document === "undefined" || released) return;
       // The hand-off is announced while the source route is committing its unmount; React
       // detaches the DOM after that commit. Reading `isConnected` in the same tick would
       // always say "still here" and park nothing, so wait for it to actually leave.
       let frames = 0;
       const parkWhenDetached = () => {
+        if (released) return;
         if (container.getAttribute(PARKED_ATTRIBUTE) === "true") return;
         if (container.isConnected) {
           // A handful of frames covers the unmount commit. Beyond that the page kept its
@@ -75,6 +77,7 @@ export function retainPlacementContainer(container: HTMLElement): PlacementReten
       requestAnimationFrame(parkWhenDetached);
     },
     release: () => {
+      released = true;
       if (container.getAttribute(PARKED_ATTRIBUTE) !== "true") return;
       container.removeAttribute(PARKED_ATTRIBUTE);
       if (originalStyle === null) container.removeAttribute("style");

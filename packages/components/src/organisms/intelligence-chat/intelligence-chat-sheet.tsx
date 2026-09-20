@@ -86,35 +86,38 @@ export function IntelligenceChatSheet({ isOpen, videoId, videoContext, onClose }
   const { pauseBySystem, play, feedPlayerShouldPlay } = usePlayerContext();
   const restorePlaybackRef = useRef<(() => void) | null>(null);
   const sourceDomId = embed?.rootElement?.id ?? "";
-  // Register as an open dialog for as long as the sheet is up. This is the exact
+  const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
+  const isArticleOpen = selectedArticle !== null;
+  const [isArticleVideoOpen, setIsArticleVideoOpen] = useState(false);
+  // Release the dialog lock while a nested article video owns the screen.
+  // Otherwise register as long as the sheet is up. This is the exact
   // mechanism the comments dialog relies on to stop the feed from swiping under
   // it: `swiper-implementation.tsx` subscribes to the registry and calls
   // `disable()` on the swiper while anything is registered. Keeping it here means
   // the player needs no knowledge of this sheet. It also suppresses the idle
   // auth modal (`use-interruption-manager.tsx`) mid-conversation, same as a dialog.
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || isArticleVideoOpen) return;
     dialogManager.registerDialog(INTELLIGENCE_SHEET_DIALOG_ID);
     return () => dialogManager.unregisterDialog(INTELLIGENCE_SHEET_DIALOG_ID);
-  }, [isOpen]);
+  }, [isOpen, isArticleVideoOpen]);
 
   // The article opened from a response card, presented in place instead of as a
   // route push — the same `InlineArticleView` the desktop rail opens, minus the
   // picture-in-picture video (that belongs to the desktop player's own layout,
   // and on a phone the article needs the whole screen anyway).
-  const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
-  const isArticleOpen = selectedArticle !== null;
   const closeArticle = useCallback(() => {
     setSelectedArticle(null);
+    setIsArticleVideoOpen(false);
     restorePlaybackRef.current?.();
     restorePlaybackRef.current = null;
   }, []);
 
   useEffect(() => {
     if (!isArticleOpen || !sourceDomId) return;
-    dispatchHomeInlineArticleState({ sourceDomId, open: true, mobile: true });
+    dispatchHomeInlineArticleState({ sourceDomId, open: !isArticleVideoOpen, mobile: true });
     return () => dispatchHomeInlineArticleState({ sourceDomId, open: false, mobile: true });
-  }, [isArticleOpen, sourceDomId]);
+  }, [isArticleOpen, isArticleVideoOpen, sourceDomId]);
 
   // Same resolution as `player-swiper`'s desktop handler: a href the local article
   // data knows about opens in place; anything else falls through to normal link
@@ -142,7 +145,7 @@ export function IntelligenceChatSheet({ isOpen, videoId, videoContext, onClose }
 
   // Escape steps back to the conversation, not out of the sheet entirely.
   useEffect(() => {
-    if (!isArticleOpen) return;
+    if (!isArticleOpen || isArticleVideoOpen) return;
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
       event.stopPropagation();
@@ -150,12 +153,15 @@ export function IntelligenceChatSheet({ isOpen, videoId, videoContext, onClose }
     };
     document.addEventListener("keydown", handleKeyDown, true);
     return () => document.removeEventListener("keydown", handleKeyDown, true);
-  }, [closeArticle, isArticleOpen]);
+  }, [closeArticle, isArticleOpen, isArticleVideoOpen]);
 
   // Close the article whenever the sheet itself closes, so reopening the sparkle
   // always lands on the conversation.
   useEffect(() => {
-    if (!isOpen) setSelectedArticle(null);
+    if (!isOpen) {
+      setSelectedArticle(null);
+      setIsArticleVideoOpen(false);
+    }
   }, [isOpen]);
 
   const surface = (
@@ -225,11 +231,25 @@ export function IntelligenceChatSheet({ isOpen, videoId, videoContext, onClose }
       </div>
 
       {selectedArticle && (
-        // Full viewport above the source player (z-30), below the existing header
-        // and navigation (z-50). Only the scroller's content reserves header space.
-        <div className="gen-mobile-intelligence-article gencl:fixed gencl:inset-0 gencl:z-40 gencl:overflow-hidden gencl:bg-white">
+        // Match the fixed SDK portal hosts' base stacking level. DOM order puts
+        // this article above its source player and the next player above the article,
+        // so its loader is visible without waiting for the expand event. Header stays z-50.
+        <div
+          aria-hidden={isArticleVideoOpen || undefined}
+          inert={isArticleVideoOpen || undefined}
+          className={cn(
+            "gen-mobile-intelligence-article gencl:fixed gencl:inset-0 gencl:z-0 gencl:overflow-hidden gencl:bg-white",
+            // The nested SDK player portals to the body. Keep the reader mounted
+            // for Back, but let that player own visibility, touches and scroll.
+            isArticleVideoOpen && "gencl:invisible gencl:pointer-events-none"
+          )}>
           <SafeSuspense fallback={null} errorFallback={null}>
-            <InlineArticleView key={selectedArticle.slug} article={selectedArticle} onBack={closeArticle} />
+            <InlineArticleView
+              key={selectedArticle.slug}
+              article={selectedArticle}
+              onBack={closeArticle}
+              onPlayerExpandChange={setIsArticleVideoOpen}
+            />
           </SafeSuspense>
         </div>
       )}

@@ -32,7 +32,14 @@ export function useFloatingVideoAudioGuard(): void {
       const handlePlay = (event: Event) => {
         const started = event.target;
         if (!(started instanceof HTMLMediaElement)) return;
-        if (started.closest(FLOATING_HOST_SELECTOR)) {
+        const floatingHost = started.closest<HTMLElement>(FLOATING_HOST_SELECTOR);
+        if (floatingHost) {
+          // A page's full view owns playback while its retained PiP is hidden.
+          if (floatingHost.style.display === "none") {
+            started.muted = true;
+            started.pause();
+            return;
+          }
           // The floating player resuming silences everything else.
           for (const media of document.querySelectorAll<HTMLMediaElement>("video, audio")) {
             if (media === started || media.paused || media.muted) continue;

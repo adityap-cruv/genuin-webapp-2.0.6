@@ -67,6 +67,10 @@ export type FloatingVideoSession = {
   targetPathname: string;
   /** Where the video was playing full size, so the card can navigate back to it. */
   sourcePathname: string;
+  /** Inline article to reveal behind the restored player, without changing routes. */
+  sourceArticleSlug?: string;
+  /** Outermost first: retained players that own the article and its original PiP. */
+  sourceParentDomIds?: string[];
   trigger: FloatingVideoTrigger;
 };
 
@@ -92,5 +96,6 @@ export type FloatingVideoRestoreRequest = {
   sourceDomId: string;
   sourcePlacementId: string;
   sourcePathname: string;
+  sourceArticleSlug?: string;
+  sourceParentDomIds?: string[];
 };
-

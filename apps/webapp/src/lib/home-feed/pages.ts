@@ -361,6 +361,18 @@ const ARTICLE_POOL: PoolArticle[] = [
 
 type PoolEvent = { slug: string; heading: string; image: string; startDate: string; endDate: string; location: string };
 
+// Rotate the event rail's editorial copy alongside its cards on each scroll page.
+const EVENT_HEADERS = [
+  { heading: "Upcoming races: leading edge in action", subHeading: "What's next?" },
+  { heading: "Around the sailing circuit", subHeading: "Explore the race calendar" },
+  { heading: "Race destinations in focus", subHeading: "Discover where the fleets compete" },
+  { heading: "On the starting line", subHeading: "Your guide to the racing action" },
+  { heading: "Sailing's world stage", subHeading: "Explore events around the globe" },
+  { heading: "From coast to coast", subHeading: "Follow the fleet across the calendar" },
+  { heading: "Inside the race calendar", subHeading: "Dates, destinations and event details" },
+  { heading: "Where the action happens", subHeading: "Get to know the venues and races" },
+] as const;
+
 const EVENT_POOL: PoolEvent[] = [
   {
     slug: "the-ocean-race-atlantic",
@@ -615,8 +627,7 @@ function basePageData(): Record<string, WidgetData> {
     upcoming_races: {
       id: "upcoming-races",
       header: {
-        heading: "Upcoming races: leading edge in action",
-        subHeading: "What's next?",
+        ...EVENT_HEADERS[0],
         logo: FOIL_LOGO,
       },
       events: [
@@ -942,6 +953,7 @@ function varyWidget(widget: WidgetData, pageIndex: number): WidgetData {
   return {
     ...widget,
     id: idBase,
+    header: widget.id === "upcoming-races" ? { ...widget.header, ...poolAt(EVENT_HEADERS, pageIndex) } : widget.header,
     source: widget.source
       ? { ...widget.source, communityId: rotateCommunity(widget.source.communityId, pageIndex) }
       : undefined,

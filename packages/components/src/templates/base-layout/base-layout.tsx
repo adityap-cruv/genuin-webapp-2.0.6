@@ -10,6 +10,7 @@ import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-d
 import { usePathname } from "@genuin/components/hooks/use-pathname";
 import { useSearchParams } from "@genuin/components/hooks/use-search-params";
 import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
+import { getActiveExpandViewSourceId } from "@genuin/components/lib/feed-view/presentation";
 import {
   HOME_INLINE_ARTICLE_STATE_EVENT,
   type HomeInlineArticleStateDetail,
@@ -77,6 +78,10 @@ export function BaseLayout({
       setMobileArticleSource((source) =>
         detail.open ? detail.sourceDomId : source === detail.sourceDomId ? null : source
       );
+      // A nested article player's collapse emits `false` even while the original
+      // Home player stays expanded. When leaving the reader, restore the header
+      // state from the surviving player instead of that last global SDK event.
+      if (!detail.open) setIsExpandViewOpen(Boolean(getActiveExpandViewSourceId()));
     };
     document.addEventListener(HOME_INLINE_ARTICLE_STATE_EVENT, onArticleState);
     return () => document.removeEventListener(HOME_INLINE_ARTICLE_STATE_EVENT, onArticleState);
@@ -172,6 +177,7 @@ export function BaseLayout({
         suppressHydrationWarning>
         {!isMobile && layoutConfig.showSideBar && <SideBar className="gencl:sm:block! gencl:hidden" />}
         <section
+          data-slot={variant === "embed-expand-view" ? undefined : "site-content"}
           className={cn(
             // min-w-0 lets this flex item shrink to the available width instead of growing
             // to its content's intrinsic size; without it, horizontally-scrolling children

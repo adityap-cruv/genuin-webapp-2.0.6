@@ -80,7 +80,7 @@ export function HomeDynamicSkeleton() {
       </div>
 
       <div className="gencl:p-4 gencl:lg:p-5">
-        <Skeleton className="gencl:aspect-video gencl:w-full gencl:rounded-lg gencl:lg:h-[419px] gencl:lg:aspect-auto" />
+        <Skeleton className="gencl:aspect-video gencl:w-full gencl:rounded-lg gencl:lg:h-[614px] gencl:lg:aspect-auto" />
       </div>
     </div>
   );

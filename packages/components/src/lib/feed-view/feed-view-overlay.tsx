@@ -15,7 +15,17 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 
+import { clearFloatingVideo, onFloatingVideoClear } from "@genuin/components/lib/floating-video/events";
 import { beginFloatingVideoPresentation } from "@genuin/components/lib/floating-video/floating-video-presenter";
+import {
+  ARTICLE_CONTEXT_SUSPEND_EVENT,
+  claimArticleContext,
+  suspendArticleContext,
+} from "@genuin/components/lib/floating-video/retained-article-context";
+import {
+  consumePendingFloatingVideoRestore,
+  getFloatingVideoSession,
+} from "@genuin/components/lib/floating-video/session-store";
 import {
   HOME_FEED_VIEW_EVENT,
   HOME_FULL_VIEW_EVENT,
@@ -48,6 +58,37 @@ export function FeedViewOverlayProvider({
   onOpen: OpenFeedViewOverlay | null;
   children: ReactNode;
 }) {
+  useEffect(() => {
+    if (!onOpen || !window.matchMedia("(min-width: 1024px)").matches) return;
+    const session = getFloatingVideoSession();
+    if (!session || session.sourcePathname !== window.location.pathname) return;
+    const articleContext = claimArticleContext();
+    if (articleContext) {
+      onOpen({
+        sourceDomId: articleContext.sourceDomId,
+        existingExpandHosts: prepareFeedView(articleContext.sourceDomId).filter((host) => host !== articleContext.host),
+      });
+      clearFloatingVideo(articleContext.sessionId, "adopted");
+      return;
+    }
+    // The article context must mount first; a generic page overlay cannot own its Back action.
+    if (session.sourceArticleSlug) return;
+    const retained = document.querySelector<HTMLElement>('[data-genuin-floating-video="true"]');
+    if (!retained) return;
+    // Placement-level restore runs first. An inline article's placement may no
+    // longer exist on this route, so the page host adopts its retained player.
+    const restore = consumePendingFloatingVideoRestore({
+      domId: session.sourceDomId,
+      placementId: session.sourcePlacementId,
+    });
+    if (!restore) return;
+    onOpen({
+      sourceDomId: restore.sourceDomId,
+      existingExpandHosts: prepareFeedView(restore.sourceDomId).filter((host) => host !== retained),
+    });
+    clearFloatingVideo(restore.sessionId, "adopted");
+  }, [onOpen]);
+
   return <FeedViewOverlayContext.Provider value={onOpen}>{children}</FeedViewOverlayContext.Provider>;
 }
 
@@ -111,40 +152,43 @@ export function usePlacementFeedViewIntent({
     };
   }, [onExpandRequest, waitForSdk]);
 
-  return useCallback((event) => {
-    const path = event.nativeEvent.composedPath();
-    const controlLayerIndex = path.findIndex(
-      (target) =>
-        target instanceof Element &&
-        target.classList.contains("gencl:absolute") &&
-        target.classList.contains("gencl:inset-0")
-    );
-    const clickPath = controlLayerIndex < 0 ? path : path.slice(0, controlLayerIndex);
-    const isPlayerControl = clickPath.some(
-      (target) =>
-        target instanceof Element &&
-        (target.matches("button, a, [role='button']") || target.classList.contains("gencl:cursor-pointer"))
-    );
+  return useCallback(
+    (event) => {
+      const path = event.nativeEvent.composedPath();
+      const controlLayerIndex = path.findIndex(
+        (target) =>
+          target instanceof Element &&
+          target.classList.contains("gencl:absolute") &&
+          target.classList.contains("gencl:inset-0")
+      );
+      const clickPath = controlLayerIndex < 0 ? path : path.slice(0, controlLayerIndex);
+      const isPlayerControl = clickPath.some(
+        (target) =>
+          target instanceof Element &&
+          (target.matches("button, a, [role='button']") || target.classList.contains("gencl:cursor-pointer"))
+      );
 
-    // The expand control is a player control, so the rule above would drop it — but on an
-    // inline placement "expand" should mean Feed View, not the SDK's raw fullscreen. Mark the
-    // placement here, synchronously, because the SDK commits its portal right after this click
-    // and the marker is what decides how that portal is presented.
-    //
-    // Only reachable from the inline placement: once Feed View is open its controls live in a
-    // portal outside this container, so expanding from *inside* Feed View still gives the real
-    // full view.
-    const isExpandControl = clickPath.some(
-      (target) => target instanceof Element && /expand|full ?screen/i.test(target.getAttribute("aria-label") ?? "")
-    );
-    if (isExpandControl) {
-      lastVideoClickRef.current = 0;
-      onExpandRequest?.();
-      return;
-    }
+      // The expand control is a player control, so the rule above would drop it — but on an
+      // inline placement "expand" should mean Feed View, not the SDK's raw fullscreen. Mark the
+      // placement here, synchronously, because the SDK commits its portal right after this click
+      // and the marker is what decides how that portal is presented.
+      //
+      // Only reachable from the inline placement: once Feed View is open its controls live in a
+      // portal outside this container, so expanding from *inside* Feed View still gives the real
+      // full view.
+      const isExpandControl = clickPath.some(
+        (target) => target instanceof Element && /expand|full ?screen/i.test(target.getAttribute("aria-label") ?? "")
+      );
+      if (isExpandControl) {
+        lastVideoClickRef.current = 0;
+        onExpandRequest?.();
+        return;
+      }
 
-    lastVideoClickRef.current = isPlayerControl ? 0 : Date.now();
-  }, [onExpandRequest]);
+      lastVideoClickRef.current = isPlayerControl ? 0 : Date.now();
+    },
+    [onExpandRequest]
+  );
 }
 
 // These legacy attribute names are a stable cross-root SDK contract. PlayerList reads them to
@@ -158,7 +202,7 @@ const FEED_BACK_Z_INDEX = 41;
 const EXPAND_HOST_SELECTOR = [
   '[data-genuin-overlay-host][data-portal-key="expand-view"]',
   '[data-genuin-light-portal-host][data-portal-key="expand-view"]',
-  'body > .gen-sdk-root-portal.gen-sdk-expand-view',
+  "body > .gen-sdk-root-portal.gen-sdk-expand-view",
 ].join(",");
 
 function getExpandHosts(): HTMLElement[] {
@@ -288,6 +332,7 @@ export function FeedViewOverlay({
     let portalStyle: string | null = null;
     let promoted = false;
     let revealed = false;
+    let suspended = false;
 
     collapseRequestedRef.current = false;
     // React Strict Mode immediately runs a setup/cleanup probe in development. Arm the SDK
@@ -338,7 +383,7 @@ export function FeedViewOverlay({
 
     const applyFeedBounds = () => {
       const bounds = boundsRef.current?.getBoundingClientRect();
-      if (!host || !portalContainer || !bounds || promoted) return;
+      if (!host || !portalContainer || !bounds || promoted || suspended) return;
       const viewportWidth = window.visualViewport?.width ?? document.documentElement.clientWidth;
       const viewportHeight = window.visualViewport?.height ?? document.documentElement.clientHeight;
 
@@ -377,6 +422,7 @@ export function FeedViewOverlay({
       portalContainer = host?.shadowRoot?.querySelector<HTMLElement>("[data-portal-container]") ?? host;
       if (!host || !portalContainer) return false;
       attachedHostRef.current = host;
+      setIsInlineArticleOpen(Boolean(portalContainer.querySelector('[data-slot="inline-intelligence-article"]')));
 
       portalObserver?.disconnect();
       portalObserver = null;
@@ -414,6 +460,7 @@ export function FeedViewOverlay({
     };
 
     const handleFullView = () => {
+      if (suspended) return;
       promoted = true;
       markFeedView(request.sourceDomId, false);
       restoreFullView();
@@ -437,6 +484,7 @@ export function FeedViewOverlay({
     };
 
     const handleFeedView = () => {
+      if (suspended) return;
       if (!promoted || !host || !portalContainer) return;
       restoreFullView();
       promoted = false;
@@ -445,6 +493,21 @@ export function FeedViewOverlay({
       setImportantStyles(host, { visibility: "visible" });
       settleFeedBounds();
     };
+
+    const suspendContext = (event: Event) => {
+      const { sourceDomIds } = (event as CustomEvent<{ sourceDomIds: string[] }>).detail;
+      if (!sourceDomIds.includes(request.sourceDomId)) return;
+      suspended = true;
+      restoreFullView();
+    };
+    document.addEventListener(ARTICLE_CONTEXT_SUSPEND_EVENT, suspendContext);
+    const offFloatingClear = onFloatingVideoClear(({ reason }) => {
+      if (!suspended || reason !== "adopted") return;
+      suspended = false;
+      mountFeedStageStyle();
+      if (host) setImportantStyles(host, { visibility: "visible" });
+      settleFeedBounds();
+    });
 
     prepareFeedView(request.sourceDomId);
     if (!attachToSdkPortal()) {
@@ -471,6 +534,8 @@ export function FeedViewOverlay({
       window.removeEventListener("resize", applyFeedBounds);
       document.removeEventListener(HOME_FULL_VIEW_EVENT, handleFullView);
       document.removeEventListener(HOME_FEED_VIEW_EVENT, handleFeedView);
+      document.removeEventListener(ARTICLE_CONTEXT_SUSPEND_EVENT, suspendContext);
+      offFloatingClear();
       // Restore first: the floating card is positioned against a full-viewport player root,
       // exactly as it is for an inline article, so the bounded Feed View geometry and its
       // stage stylesheet have to come off before the hand-off takes over.
@@ -485,7 +550,7 @@ export function FeedViewOverlay({
         // This runs at teardown rather than at click time on purpose. Re-framing early would
         // shrink the video into a corner of the page the user is still looking at, and only
         // then navigate.
-        handedOffToFloating = host ? beginFloatingVideoPresentation(host) : false;
+        handedOffToFloating = host ? suspendArticleContext(host) || beginFloatingVideoPresentation(host) : false;
         if (!handedOffToFloating) {
           // The SDK expand portal is owned by a separate React root, so unmounting the Article/Home
           // page does not unmount it. Hide it for the hand-off and explicitly collapse its source;

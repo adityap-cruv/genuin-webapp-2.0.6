@@ -1,11 +1,18 @@
 "use client";
 
 import { onFloatingVideoPromote, onFloatingVideoRestore } from "@genuin/components/lib/floating-video/events";
-import { registerFloatingVideoHost, setPendingFloatingVideoRestore } from "@genuin/components/lib/floating-video/session-store";
+import {
+  registerFloatingVideoHost,
+  setPendingFloatingVideoRestore,
+} from "@genuin/components/lib/floating-video/session-store";
+import type { FloatingVideoRestoreRequest } from "@genuin/components/lib/floating-video/types";
 import { useFloatingVideoAudioGuard } from "@genuin/components/lib/floating-video/use-floating-video-audio-guard";
 import { useFloatingVideoRouteLifecycle } from "@genuin/components/lib/floating-video/use-floating-video-route-lifecycle";
+import { getArticleBySlug } from "@genuin/components/page/article/article-data";
+import { InlineArticleView } from "@genuin/components/page/article/inline-article-view";
 import { usePathname, useRouter } from "next/navigation";
-import { startTransition, useEffect } from "react";
+import { startTransition, useCallback, useEffect, useLayoutEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 /**
  * Host half of the floating-video hand-off.
@@ -21,11 +28,20 @@ import { startTransition, useEffect } from "react";
  * 3. **End the session.** It is created on one route and has to be cleaned up on another, so
  *    nothing that unmounts with a page can own it.
  *
- * Renders nothing.
+ * Reopens inline article context on the source route when the video came from Intelligence.
  */
 export function FloatingVideoBridge() {
   const pathname = usePathname();
   const router = useRouter();
+  const [inlineRestore, setInlineRestore] = useState<{
+    request: FloatingVideoRestoreRequest;
+    pathname: string;
+  } | null>(null);
+  const closeInlineRestore = useCallback(() => setInlineRestore(null), []);
+
+  useEffect(() => {
+    setInlineRestore((current) => (current?.pathname === pathname ? current : null));
+  }, [pathname]);
 
   useFloatingVideoRouteLifecycle(pathname);
   useFloatingVideoAudioGuard();
@@ -42,6 +58,18 @@ export function FloatingVideoBridge() {
     const unregister = registerFloatingVideoHost();
     const offPromote = onFloatingVideoPromote((request) => navigate(request.targetHref));
     const offRestore = onFloatingVideoRestore((request) => {
+      // An article opened inside Intelligence is an overlay, not an article-route
+      // navigation. Rebuild that context on the source page; its placement takes
+      // back the retained player, and Back reveals the inline article underneath.
+      if (
+        request.sourceArticleSlug &&
+        !request.sourceParentDomIds?.length &&
+        request.sourcePathname !== `/article/${request.sourceArticleSlug}` &&
+        getArticleBySlug(request.sourceArticleSlug) &&
+        window.matchMedia("(min-width: 1024px)").matches
+      ) {
+        setInlineRestore({ request, pathname: request.sourcePathname });
+      }
       // Park the request and navigate, but leave the session running. The card keeps playing
       // over the source route while its placement remounts; the placement ends the session
       // itself, at the moment it has the video full size again. Ending it here instead would
@@ -56,5 +84,26 @@ export function FloatingVideoBridge() {
     };
   }, [router]);
 
-  return null;
+  if (!inlineRestore || inlineRestore.pathname !== pathname) return null;
+
+  return (
+    <RestoredInlineArticle
+      key={inlineRestore.request.sessionId}
+      request={inlineRestore.request}
+      onBack={closeInlineRestore}
+    />
+  );
+}
+
+function RestoredInlineArticle({ request, onBack }: { request: FloatingVideoRestoreRequest; onBack: () => void }) {
+  const [container, setContainer] = useState<HTMLElement | null>(null);
+  // Resolve after the source route commits: before then this is the destination's
+  // content node, which the router is about to detach.
+  useLayoutEffect(() => {
+    setContainer(document.querySelector<HTMLElement>('[data-slot="site-content"]'));
+  }, []);
+  const article = request.sourceArticleSlug ? getArticleBySlug(request.sourceArticleSlug) : null;
+  if (!container || !article) return null;
+
+  return createPortal(<InlineArticleView article={article} onBack={onBack} />, container);
 }

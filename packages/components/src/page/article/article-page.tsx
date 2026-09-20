@@ -125,7 +125,7 @@ function scheduleGenuinInit() {
  * placement's `data-*` config and fills its parent; the SDK mounts the embed into it
  * on `init()`. Already-initialised containers are skipped, so re-`init()` is safe.
  */
-function GenuinPlacement({ placement }: { placement: PlacementConfig }) {
+function GenuinPlacement({ placement, initialHeight }: { placement: PlacementConfig; initialHeight?: number }) {
   // Unique, selector-safe container id (React's useId contains colons).
   const domId = `gen-sdk-${useId().replace(/:/g, "")}`;
   const openFeedViewOverlay = useOpenFeedViewOverlay();
@@ -173,9 +173,10 @@ function GenuinPlacement({ placement }: { placement: PlacementConfig }) {
       className="gen-sdk-class"
       data-style-id={placement.styleId}
       data-placement-id={placement.placementId}
+      data-intelligence-enabled="true"
       data-api-key={placement.apiKey}
       onClickCapture={captureFeedViewIntent}
-      style={{ width: "100%", height: "100%" }}
+      style={{ width: "100%", height: initialHeight ?? "100%" }}
     />
   );
 }
@@ -240,22 +241,16 @@ function ArticleCarouselPlacement() {
 const ARTICLE_DESKTOP_MIN_WIDTH = 1080;
 
 /**
- * Finale placement: a full-width "grid" placement after the article. Unlike the feed/carousel
- * (which scroll by design), the grid must show ALL its tiles at once with NO internal scrollbar.
- *
- * The SDK renders the grid inside a shadow root / iframe and sizes its scroll viewport to the
- * container height AT `init()` time — so the container must have the placement's configured
- * ratio on the first render. The placement is configured as 1000 × 890 with 3:4 tiles in a
- * 3-column × 2-row grid: two rows of 3:4 thirds need ~0.89 x the width, and the rest covers the
- * grid's gaps. The 3:4 tiles are deliberately taller than the 16:9 sources — the resulting
- * letterboxing is accepted in exchange for a larger tile.
+ * Seed the grid host at 480px for SDK initialization, then let its resize events
+ * set the content height. The wrapper follows the host so portrait tiles and all
+ * configured rows remain visible when the placement's aspect ratio changes.
  */
 function ArticleGridPlacement() {
   return (
     <div
       className="gen-article-reveal gencl:overflow-hidden gencl:rounded-xl"
-      style={{ width: "100%", aspectRatio: "1000 / 890" }}>
-      <GenuinPlacement placement={PLACEMENTS.grid} />
+      style={{ width: "100%" }}>
+      <GenuinPlacement placement={PLACEMENTS.grid} initialHeight={480} />
     </div>
   );
 }
@@ -401,7 +396,15 @@ function NestedArticleOverlay({ article, onBack }: { article: Article; onBack: (
   );
 }
 
-export function ArticlePage({ article, backControl }: { article: Article; backControl?: ReactNode }) {
+export function ArticlePage({
+  article,
+  backControl,
+  onPlayerExpandChange,
+}: {
+  article: Article;
+  backControl?: ReactNode;
+  onPlayerExpandChange?: (expanded: boolean) => void;
+}) {
   const overlayBoundsRef = useRef<HTMLDivElement>(null);
   const scrollerRef = useRef<HTMLDivElement>(null);
   /**
@@ -453,7 +456,10 @@ export function ArticlePage({ article, backControl }: { article: Article; backCo
         // Internal SDK events arrive as `{ type, payload, ... }`; accept the direct boolean too
         // so this remains compatible with older bundles during a rolling SDK deployment.
         const expanded = typeof raw === "boolean" ? raw : (raw as { payload?: unknown } | null | undefined)?.payload;
-        if (typeof expanded === "boolean") setIsSdkExpandViewOpen(expanded);
+        if (typeof expanded === "boolean") {
+          setIsSdkExpandViewOpen(expanded);
+          onPlayerExpandChange?.(expanded);
+        }
       });
       if (typeof off === "function") unsubscribe = off;
     };
@@ -467,7 +473,7 @@ export function ArticlePage({ article, backControl }: { article: Article; backCo
       if (retry) window.clearTimeout(retry);
       unsubscribe?.();
     };
-  }, []);
+  }, [onPlayerExpandChange]);
 
   useEffect(() => {
     const scroller = scrollerRef.current;
@@ -510,6 +516,7 @@ export function ArticlePage({ article, backControl }: { article: Article; backCo
       <div
         ref={overlayBoundsRef}
         data-slot="article-feed-view-boundary"
+        data-floating-video-article-slug={article.slug}
         style={{ position: "relative", height: "100%", overflow: "hidden", background: "#ffffff" }}>
         {!playerOverlay && !nestedArticle && !isSdkExpandViewOpen ? (
           <div className="gen-article-progress" aria-hidden="true">

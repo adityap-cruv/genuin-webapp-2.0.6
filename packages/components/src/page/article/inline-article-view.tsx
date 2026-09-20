@@ -25,7 +25,15 @@ const INLINE_ARTICLE_CSS = `
  * Only the route-specific Back link is replaced; the article page itself remains
  * the single source of truth for layout, content and SDK placements.
  */
-export function InlineArticleView({ article, onBack }: { article: Article; onBack: () => void }) {
+export function InlineArticleView({
+  article,
+  onBack,
+  onPlayerExpandChange,
+}: {
+  article: Article;
+  onBack: () => void;
+  onPlayerExpandChange?: (expanded: boolean) => void;
+}) {
   const viewRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -45,6 +53,7 @@ export function InlineArticleView({ article, onBack }: { article: Article; onBac
       <style>{INLINE_ARTICLE_CSS}</style>
       <ArticlePage
         article={article}
+        onPlayerExpandChange={onPlayerExpandChange}
         backControl={
           <span data-slot="inline-article-back" className="gencl:inline-flex gencl:items-center gencl:gap-3">
             <NavArrowButton direction="left" size="lg" theme="dark" ariaLabel="Back to Intelligence" onClick={onBack} />

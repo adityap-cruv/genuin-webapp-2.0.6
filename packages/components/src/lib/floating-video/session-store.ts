@@ -19,7 +19,8 @@ type FloatingVideoWindow = Window & {
   __genuinFloatingVideoRestore?: FloatingVideoRestoreRequest | null;
 };
 
-const store = (): FloatingVideoWindow | null => (typeof window === "undefined" ? null : (window as FloatingVideoWindow));
+const store = (): FloatingVideoWindow | null =>
+  typeof window === "undefined" ? null : (window as FloatingVideoWindow);
 
 // ─── Active session ──────────────────────────────────────────────────────────────────
 
@@ -32,7 +33,6 @@ export function setFloatingVideoSession(session: FloatingVideoSession | null): v
   const target = store();
   if (target) target.__genuinFloatingVideoSession = session;
 }
-
 
 export function createFloatingVideoSessionId(): string {
   return `fv-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
@@ -86,10 +86,12 @@ export function hasPendingFloatingVideoRestore(): boolean {
 export function consumePendingFloatingVideoRestore(placement: {
   domId: string;
   placementId?: string;
+  articleSlug?: string;
 }): FloatingVideoRestoreRequest | null {
   const target = store();
   const pending = target?.__genuinFloatingVideoRestore;
   if (!target || !pending) return null;
+  if (pending.sourceArticleSlug && pending.sourceArticleSlug !== placement.articleSlug) return null;
   const matches = pending.sourcePlacementId
     ? pending.sourcePlacementId === placement.placementId
     : pending.sourceDomId === placement.domId;

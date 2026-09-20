@@ -381,7 +381,7 @@ export function Default({
               showCloseButton={showCloseButton}
               enableExpand={enableExpand}
               className={cn(
-                isMobile || isTablet || isIpad
+                isMobile || isTablet || isIpad || isViewportMobile
                   ? `${!isSectioned && showExpandView && "gencl:top-0"}`
                   : "gencl:group-hover:opacity-100 gencl:group-hover:pointer-events-auto gencl:opacity-0 gencl:pointer-events-none gencl:transition-opacity gencl:duration-300",
                 isSponsored && !isMobile && !embedConfig.isDesignSystemV2 && "gencl:left-0 gencl:w-[calc(100%-134px)]",

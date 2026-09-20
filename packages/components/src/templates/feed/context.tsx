@@ -105,6 +105,47 @@ export function FeedContextProvider({
   }, [toggleExpandViewInternal]);
 
   useEffect(() => {
+    // A page's full view temporarily takes over from the retained SDK PiP.
+    // Never apply this to the SDK player itself or end its floating session.
+    if (!showExpandView || embedDetails) return;
+    const floating = document.querySelector<HTMLElement>('[data-genuin-floating-video="true"]');
+    if (!floating) return;
+    const display = floating.style.getPropertyValue("display");
+    const priority = floating.style.getPropertyPriority("display");
+    const mediaRoot = floating.shadowRoot ?? floating;
+    const previousMedia = new Map<HTMLMediaElement, { muted: boolean; playing: boolean }>();
+    const silence = (media: HTMLMediaElement) => {
+      if (!previousMedia.has(media)) {
+        previousMedia.set(media, { muted: media.muted, playing: !media.paused && !media.ended });
+      }
+      if (!media.muted) media.muted = true;
+      if (!media.paused) media.pause();
+    };
+    const keepSilent = (event: Event) => {
+      if (event.target instanceof HTMLMediaElement) silence(event.target);
+    };
+    floating.style.setProperty("display", "none", "important");
+    // Media events don't cross shadow roots. Listen inside the SDK portal as well
+    // so autoplay or a player re-render cannot unmute the hidden PiP.
+    mediaRoot.addEventListener("play", keepSilent, true);
+    mediaRoot.addEventListener("volumechange", keepSilent, true);
+    mediaRoot.querySelectorAll<HTMLMediaElement>("video, audio").forEach(silence);
+
+    return () => {
+      mediaRoot.removeEventListener("play", keepSilent, true);
+      mediaRoot.removeEventListener("volumechange", keepSilent, true);
+      if (display) floating.style.setProperty("display", display, priority);
+      else floating.style.removeProperty("display");
+      if (!floating.isConnected || !floating.matches('[data-genuin-floating-video="true"]')) return;
+      previousMedia.forEach((previous, media) => {
+        if (!media.isConnected) return;
+        media.muted = previous.muted;
+        if (previous.playing && !media.ended) void media.play().catch(() => undefined);
+      });
+    };
+  }, [showExpandView, embedDetails]);
+
+  useEffect(() => {
     // Track when the expand view is opened or closed
     const isEmbed: boolean = embedDetails ? !!embedDetails.embedData.embed_id : false;
     if (showExpandView) {
