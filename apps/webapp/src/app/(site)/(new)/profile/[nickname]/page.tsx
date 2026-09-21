@@ -6,6 +6,8 @@ import { checkWhiteLabelEnabled, getOgUrl } from "@/lib/utils";
 import { fetchMetadata } from "@lib/api/meta-data";
 import { PATH_NAME } from "@lib/utils/constants/path";
 
+export const dynamic = "force-dynamic";
+
 interface CompProps {
   params: Promise<{
     nickname: string;

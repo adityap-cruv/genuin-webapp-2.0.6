@@ -29,7 +29,7 @@ const inter = Inter({
 // Metadata API for Next.js 15
 export const metadata: Metadata = {
   description: "A video community platform",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_HOST_URL ?? "https://begenuin.com"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_HOST_URL?.trim() || "https://begenuin.com"),
 };
 
 export const viewport: Viewport = {

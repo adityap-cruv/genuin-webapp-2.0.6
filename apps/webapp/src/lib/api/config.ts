@@ -3,7 +3,8 @@ import { type ConfigType } from "@lib/stores/genuin-options";
 import { toHttpUrl } from "../utils/common/url";
 
 export async function getEmbedConfig(params: Record<string, string>) {
-  const url = new URL(toHttpUrl(process.env.NEXT_PUBLIC_GO_API_URL) + "/brand/details");
+  const baseUrl = process.env.NEXT_PUBLIC_GO_API_URL?.trim() || "https://api.begenuin.com";
+  const url = new URL(toHttpUrl(baseUrl) + "/brand/details");
   Object.keys(params).forEach((key) => {
     const value = params[key];
     if (value !== undefined) {

@@ -133,7 +133,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
   // Ensure image URL is absolute for better SEO
   const imageUrl = videoDetails?.preview_image?.startsWith("http")
     ? videoDetails.preview_image
-    : `${process.env.NEXT_PUBLIC_HOST_URL}${videoDetails?.preview_image}`;
+    : `${process.env.NEXT_PUBLIC_HOST_URL?.trim() || "https://begenuin.com"}${videoDetails?.preview_image}`;
 
   // Prefer the concise, feed-derived title (seoData) over meta_data's raw title,
   // which is the full caption; derive a headline from it as a last resort.
@@ -164,7 +164,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
   }
 
   return {
-    metadataBase: new URL(process.env.NEXT_PUBLIC_HOST_URL || "https://begenuin.com"),
+    metadataBase: new URL(process.env.NEXT_PUBLIC_HOST_URL?.trim() || "https://begenuin.com"),
     title,
     description,
     alternates: { canonical: canonicalUrl },

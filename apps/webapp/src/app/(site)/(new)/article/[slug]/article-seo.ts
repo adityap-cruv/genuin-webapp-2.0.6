@@ -67,7 +67,7 @@ export function getArticleDescription(article: Article): string | undefined {
 export function getArticleCanonical(slug: string, host: string | null): string {
   const base = host
     ? `${host.startsWith("localhost") ? "http" : "https"}://${host}`
-    : (process.env.NEXT_PUBLIC_HOST_URL ?? "https://begenuin.com");
+    : (process.env.NEXT_PUBLIC_HOST_URL?.trim() || "https://begenuin.com");
   return `${base.replace(/\/$/, "")}/article/${encodeURIComponent(slug)}`;
 }
 

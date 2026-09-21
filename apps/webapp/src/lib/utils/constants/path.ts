@@ -28,8 +28,8 @@ export const PATH_NAME = {
   yahoo: () => "https://finance.yahoo.com/news/genuin-unveils-social-paradigm-empowering-140027873.html",
   businessinsider: () =>
     "https://markets.businessinsider.com/news/stocks/genuin-is-reinventing-social-connections-with-a-communityfirst-approach-1032839987",
-  terms: `${process.env.NEXT_PUBLIC_HOST_URL}/terms`,
-  privacy: `${process.env.NEXT_PUBLIC_HOST_URL}/privacy`,
+  terms: `${process.env.NEXT_PUBLIC_HOST_URL?.trim() || "https://begenuin.com"}/terms`,
+  privacy: `${process.env.NEXT_PUBLIC_HOST_URL?.trim() || "https://begenuin.com"}/privacy`,
   mediaNetwork: "/media-network",
   dlk: () => `/dlk`,
 };

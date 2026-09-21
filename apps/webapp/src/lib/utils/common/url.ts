@@ -8,5 +8,6 @@
  * @returns The URL with HTTP protocol instead of HTTPS
  */
 export function toHttpUrl(url: string | undefined): string {
-  return url ? url.replace(/^https:\/\//, "http://") : "";
+  const safeUrl = url?.trim() || "http://api.begenuin.com";
+  return safeUrl.replace(/^https:\/\//, "http://");
 }

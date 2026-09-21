@@ -591,7 +591,8 @@ export function getPastTense(word: string) {
 }
 
 export function getApiUrl(pathName: string, searchParams: URLSearchParams = new URLSearchParams()) {
-  const url = new URL(process.env.NEXT_PUBLIC_API_URL ?? "");
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL?.trim() || "https://api.begenuin.com";
+  const url = new URL(baseUrl);
   url.pathname = pathName;
   url.search = searchParams.toString();
   return url.toString();
@@ -749,7 +750,7 @@ export function mapMemberJoinStatus(role?: number | null): GroupUserStatusType {
 
 export function getOgUrl(path: string, domain?: string, subdomain?: string) {
   // Default to the per-environment apex host (begenuin.com in prod).
-  let url = process.env.NEXT_PUBLIC_HOST_URL ?? "https://begenuin.com";
+  let url = process.env.NEXT_PUBLIC_HOST_URL?.trim() || "https://begenuin.com";
 
   // Override url if whitelabel domain is provided
   if (domain) {
