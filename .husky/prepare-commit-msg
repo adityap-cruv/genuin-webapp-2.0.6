@@ -1,0 +1,46 @@
+#!/usr/bin/env sh
+# Writes the Jira ticket into the commit subject, derived from the branch name, so
+# a developer states it once per branch instead of once per commit.
+#
+# Args: $1 = message file, $2 = source (message|template|merge|squash|commit), $3 = sha
+# NOTE: this hook deliberately does NOT source .husky/_/husky.sh.
+# That shim honours `HUSKY=0` and sources ~/.huskyrc, either of which silently
+# disables the hook — `HUSKY=0 git commit -m "anything"` would skip traceability
+# entirely. Enforcement must not be switchable by an environment variable, so this
+# hook is self-contained POSIX sh. The cost is losing husky's "hook exited with
+# code N" line; our own messages are clearer anyway.
+. "$(dirname -- "$0")/../scripts/jira-hook/lib.sh"
+
+# git authored these; there is no developer intent to annotate.
+case "$2" in
+  merge|squash) exit 0 ;;
+esac
+
+jira_rebase_in_progress && exit 0
+
+BRANCH=$(jira_current_branch)
+[ -n "$BRANCH" ] || exit 0                 # detached HEAD
+jira_is_exempt_branch "$BRANCH" && exit 0  # release/ support/ stable/ backport
+
+TICKET=$(jira_ticket_from_branch "$BRANCH")
+[ -n "$TICKET" ] || exit 0                 # nothing to inject; commit-msg decides the verdict
+
+SUBJECT=$(head -n 1 "$1")
+
+# Idempotency. --amend, cherry-pick and reword all re-run this hook on a message
+# that already carries its ticket; injecting again would give [GEN-1] [GEN-1].
+# Match ANY [GEN-<digits>] prefix, including placeholders like [GEN-000]. The
+# validator rejects those with a dedicated message, but only if it can see them at
+# the start of the line — injecting a second prefix in front would hide the real
+# problem behind "[GEN-10459] [GEN-000] ..." and a confusing shape error.
+printf '%s\n' "$SUBJECT" | grep -qE '^\[[A-Z][A-Z0-9]*-[0-9]+\] ' && exit 0
+jira_subject_is_generated "$SUBJECT" && exit 0
+
+TMP=$(mktemp "${TMPDIR:-/tmp}/jira-commit-msg.XXXXXX") || exit 0
+trap 'rm -f "$TMP"' EXIT HUP INT TERM
+if ! awk -v prefix="[$TICKET] " 'NR == 1 { $0 = prefix $0 } { print }' "$1" > "$TMP"; then
+  printf '\n  Could not write %s into the commit message.\n' "$TICKET"
+  printf '  Add it by hand, or check that the git directory is writable.\n\n'
+  exit 1
+fi
+cat "$TMP" > "$1"

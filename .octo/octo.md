@@ -353,3 +353,9 @@ matching skill before doing the work it covers.
   static/behavioral/llm checks, report a weighted score, then clean up; mandatory
   pre-PR gate — always run before publishing or creating any pull request).
 - **Process:** `grill-me` (lock down vague requirements), `prd-writer` (write a PRD).
+
+## Commits & branches
+
+See [`AGENTS.md`](../AGENTS.md#commits--branches). Branches are
+`<type>/GEN-<ticket>/<slug>`; commit subjects are `[GEN-<n>] <type>(<scope>): <subject>`.
+Never invent a `GEN` number; never bypass the hooks.

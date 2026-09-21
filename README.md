@@ -208,8 +208,11 @@ For more detailed information on the dependency management strategy and its impl
    ```
 
 2. **Making Changes**
-   - Create feature branches from `main`
-   - Follow conventional commits
+   - Branch from the active release train, not `main` — e.g.
+     `origin/release/genuin-sdk/2.0.6`
+   - Name the branch `<type>/GEN-<ticket>/<slug>` (see
+     [Commits & branches](#commits--branches))
+   - Follow conventional commits — this is enforced by a git hook
    - Run tests before pushing
 
 3. **Building for Production**
@@ -217,12 +220,99 @@ For more detailed information on the dependency management strategy and its impl
    pnpm build
    ```
 
+## Commits & branches
+
+Every change is traceable to a Jira ticket in the `GEN` project. Git hooks enforce
+this locally — you will be blocked, not warned.
+
+### Branch names
+
+```
+<type>/GEN-<ticket>/<slug>
+
+feature/GEN-10459/cxr-c8-ad-group-id
+bugfix/GEN-10461/webp-fallback
+chore/GEN-10463/bump-turbo
+```
+
+| Type      | Use for                       |
+| --------- | ----------------------------- |
+| `feature` | New behaviour                 |
+| `bugfix`  | Fixing something broken       |
+| `hotfix`  | Urgent production fix         |
+| `chore`   | Tooling, dependencies, config |
+| `docs`    | Documentation only            |
+
+`release/*`, `support/*` and `stable/*` are named for a version and carry no ticket.
+`backport/*` branches made by the backport tooling are exempt too, since their commits
+already carry the original ticket.
+`feat/`, `fix/`, `cxr/` and `security/` are **not** valid — use the full names above.
+
+### Commit messages
+
+State the ticket **once**, in the branch name. A hook writes it into every commit:
+
+```
+$ git checkout -b feature/GEN-10459/cxr-c8-ad-group-id
+$ git commit -m "feat(cxr): accommodate Infolinks c8"
+
+  ...is recorded as:
+  [GEN-10459] feat(cxr): accommodate Infolinks c8
+```
+
+Do not type `[GEN-10459]` yourself — you will end up with it twice.
+
+The part you write follows [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+<type>(<scope>): <subject>
+```
+
+- **type** — `feat` `fix` `docs` `style` `refactor` `perf` `test` `build` `ci` `chore` `revert`
+- **scope** — optional, lower-case, e.g. `cxr` `feed` `embed` `ui` `deps`
+- **subject** — imperative, no trailing period, whole line under 100 characters
+
+### Pull request titles
+
+Write the title as `[GEN-<n>] <type>(<scope>): <summary>`. It matters when your PR has more than one
+commit, because the squash-merge commit then takes the PR title. GitHub's default title for such a PR
+comes from the branch name with hyphens turned into spaces, which breaks the ticket
+(`GEN-10459` → `GEN 10459`). A single-commit PR keeps its commit's subject, so it is already right.
+
+### Existing branches
+
+Branches that existed before this landed are **grandfathered** — they are listed in
+`scripts/jira-hook/grandfathered.txt` and need no ticket. Message rules still apply
+to them, since those need no rename. Branches created from now on need a ticket.
+
+### If you get blocked
+
+The hook prints the exact fix. Almost always it is a rename, which is free and does
+not touch your staged changes:
+
+```
+git branch -m feature/GEN-10459/my-slug
+```
+
+Two cases where a rename is not that simple:
+
+- **The branch is checked out in another worktree.** `git branch -m` refuses. Switch
+  that worktree off the branch first, or remove it.
+- **The branch is already pushed, with an open PR.** Renaming locally orphans the
+  remote branch. Push the new name, repoint the PR, then delete the old remote
+  branch — do not just rename and force things.
+
+If you have no ticket, make one. That is the point of this — not the branch name.
+
+**Do not use `--no-verify`.** It skips lint-staged, type checks and the production
+builds along with this check, so it costs far more safety than it saves.
+
 ## Contributing
 
-1. Create a feature branch
+1. Create a branch named `<type>/GEN-<ticket>/<slug>` off the active release train
 2. Make your changes
 3. Run tests and linting
-4. Submit a pull request
+4. Submit a pull request, filling in the Jira field in the template
 
 ## License
 
