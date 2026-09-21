@@ -11,7 +11,13 @@ const tsconfigRootDir = new URL(".", import.meta.url).pathname;
 export default [
   ...sharedConfig,
   {
-    ignores: ["src/app/.well-known/**", "config/**", "scripts/**"],
+    ignores: [
+      "src/app/.well-known/**",
+      "config/**",
+      "scripts/**",
+      "**/*.test.ts",
+      "**/*.test.tsx",
+    ],
   },
   {
     settings: {
