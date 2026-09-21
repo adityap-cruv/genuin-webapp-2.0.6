@@ -1,6 +1,6 @@
 import type { IntelligenceResponseBlock } from "@genuin/components/organisms/intelligence-chat/intelligence-chat.types";
 import type { IntelligenceArticle } from "@genuin/components/organisms/intelligence-panel/intelligence-panel.types";
-import { articleHref, getArticleBySlug } from "@genuin/components/page/article/article-data";
+import { articleHref, getAllArticleSlugs, getArticleBySlug } from "@genuin/components/page/article/article-data";
 
 /**
  * "Intelligence chat" backend for the expanded-player chat panel — powered by OpenRouter.
@@ -56,19 +56,8 @@ function truncate(value: string, max: number): string {
   return clean.length > max ? `${clean.slice(0, max - 1).trimEnd()}…` : clean;
 }
 
-// Curated pool of real, resolvable /article/<slug> pieces the assistant can suggest. Ids ARE slugs.
-const RELATED_ARTICLE_SLUGS = [
-  "the-week-in-racing-31-august-26",
-  "rate-the-fleet-andy-rice-on-sassnitz-sailgp",
-  "luna-rossa-test-new-rudder-and-take-a-knock",
-  "freddie-carr-the-sailgp-teams-that-must-decide-to-stick-or-twist",
-  "the-week-in-racing-24-august-26",
-  "flying-roos-hit-high-five-with-victory-in-sassnitz",
-  "flying-roos-and-black-foils-lead-the-way-in-germany",
-  "black-foils-dominate-practice-day-in-sassnitz",
-  "plans-uncovered-to-reinvent-sailgp-s-race-weekend-news-even-to-the-sailors",
-  "andy-rice-a-good-worlds-for-gbr-and-a-good-worlds-for-the-470-class",
-];
+// All related cards come from the imported 3938 iHeart article catalog.
+const RELATED_ARTICLE_SLUGS = getAllArticleSlugs();
 
 /** Resolve the slug pool to full article cards (title + hero image + href). */
 function articlePool(origin?: string): IntelligenceArticle[] {
@@ -98,12 +87,12 @@ function systemPrompt(context: IntelligenceChatContext | undefined, pool: readon
 
   const lines = isArticle
     ? [
-        "You are the AI assistant for The Foil, a premium sailing media brand.",
+        "You are the AI assistant for iHeart, a music and culture media brand.",
         "The user is reading an article. Use the supplied article details to answer their questions about it.",
         "Treat the article title and excerpt as authoritative and answer confidently from that context.",
       ]
     : [
-        "You are the AI assistant for The Foil, a premium sailing media brand.",
+        "You are the AI assistant for iHeart, a music and culture media brand.",
         "The user is watching a video in the player. Use the video details below to answer their questions, " +
           "including what the video is about.",
         "You don't have the raw footage, but you DO have its title and description — treat those as " +
@@ -118,13 +107,8 @@ function systemPrompt(context: IntelligenceChatContext | undefined, pool: readon
     "Respond with a JSON object of EXACTLY this shape:",
     '{ "answer": string, "relatedArticleIds": string[] }',
     "- answer: your reply in PLAIN TEXT — 2 to 4 short paragraphs, no markdown, no headings, no bullets.",
-    "- relatedArticleIds: 1 to 3 ids from RELATED_ARTICLES to suggest as further reading, most relevant " +
-      "first. Match on TOPIC and THEME, not exact wording — every article is about sailing, so almost " +
-      "any sailing-related question has a good match (e.g. questions about schedules, upcoming races, " +
-      "events, results, standings, teams, sailors or technique all map to the relevant previews, " +
-      "reports, analysis or profiles in the list). Include at least one whenever anything in the list " +
-      "is even loosely related; only return [] if the question is clearly not about sailing at all " +
-      "(e.g. a greeting or an off-topic aside). Only use ids from the list — never invent one.",
+      "- relatedArticleIds: 1 to 3 ids from RELATED_ARTICLES to suggest as further reading, most relevant " +
+      "first. Match on topic and theme, and only use ids from the list — never invent one.",
     "",
     "RELATED_ARTICLES:",
     ...pool.map((article) => `- ${article.id}: ${article.title}`)
@@ -198,7 +182,7 @@ export async function generateChatReply(input: GenerateInput): Promise<Intellige
     headers: {
       Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
-      "X-Title": "The Foil Intelligence",
+      "X-Title": "iHeart Intelligence",
     },
     body: JSON.stringify({
       model,

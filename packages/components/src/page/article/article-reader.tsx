@@ -421,6 +421,21 @@ export function ArticleReaderBody({ article, className }: { article: Article; cl
           </ArticleBodyBlock>
         ))}
       </div>
+
+      {article.embeddedMedia?.length ? (
+        <aside className="gen-article-embedded-media" aria-label="Embedded media">
+          <h2 className="gen-article-h2">Related media</h2>
+          <ul>
+            {article.embeddedMedia.map((media) => (
+              <li key={media.url}>
+                <a href={media.url} target="_blank" rel="noreferrer">
+                  View on Instagram
+                </a>
+              </li>
+            ))}
+          </ul>
+        </aside>
+      ) : null}
     </article>
   );
 }
