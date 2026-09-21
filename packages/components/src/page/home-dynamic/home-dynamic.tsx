@@ -1,6 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+  type RefObject,
+} from "react";
 
 import {
   FeedViewOverlay,
@@ -10,7 +19,7 @@ import {
 import { ErrorState } from "@genuin/components/molecules/error-state";
 import { EventSurface, EventSurfacePanel } from "@genuin/components/organisms/event-surface/event-surface";
 
-import { BlockVisibilityContext, COMPONENT_REGISTRY } from "./component-registry";
+import { COMPONENT_REGISTRY, HomeScrollRootContext } from "./component-registry";
 import type {
   ColumnNode,
   HomeDataPage,
@@ -39,9 +48,37 @@ type DataMap = Record<string, WidgetData>;
 function WidgetRenderer({ node, dataMap }: { node: WidgetNode; dataMap: DataMap }) {
   const data = dataMap[node.dataKey];
   const Entry = COMPONENT_REGISTRY[node.component];
+  const panelRef = useRef<HTMLDivElement>(null);
+  const rootRef = useContext(HomeScrollRootContext);
+  const [isNear, setIsNear] = useState(false);
+
+  useEffect(() => {
+    const panel = panelRef.current;
+    if (!panel) return;
+
+    const observer = new IntersectionObserver(([entry]) => setIsNear(entry?.isIntersecting ?? false), {
+      root: rootRef?.current ?? null,
+      rootMargin: "600px 0px",
+    });
+    observer.observe(panel);
+    return () => observer.disconnect();
+  }, [rootRef]);
+
   // Skip gracefully on missing data / unknown component (forward-compatible with a backend
   // that ships content or components an older client doesn't know yet).
-  if (!data || !Entry) return null;
+  if (!Entry) return null;
+  if (!data) {
+    return (
+      <EventSurfacePanel
+        id={node.id}
+        className="gencl:min-h-0 gencl:min-w-0 gencl:animate-pulse gencl:rounded-xl gencl:bg-secondary-100"
+        data-component={node.component}
+        aria-busy="true"
+        aria-label="Loading content"
+      />
+    );
+  }
+
   const { intrinsicSize, mobileIntrinsicSize } = node;
   // The cell IS the widget's `EventSurfacePanel`: `node.id` becomes the `sourceId` of everything
   // this widget emits, which is what lets a dependent filter to its own source (and what makes the
@@ -49,6 +86,7 @@ function WidgetRenderer({ node, dataMap }: { node: WidgetNode; dataMap: DataMap 
   return (
     <EventSurfacePanel
       id={node.id}
+      ref={panelRef}
       className="gencl:min-h-0 gencl:min-w-0"
       data-component={node.component}
       data-fit={intrinsicSize ? "intrinsic" : undefined}
@@ -63,7 +101,7 @@ function WidgetRenderer({ node, dataMap }: { node: WidgetNode; dataMap: DataMap 
             } as CSSProperties)
           : undefined
       }>
-      <Entry node={node} data={data} dataMap={dataMap} />
+      <Entry node={node} data={data} dataMap={dataMap} isNear={isNear} />
     </EventSurfacePanel>
   );
 }
@@ -149,9 +187,8 @@ function RowRenderer({ row, dataMap, index }: { row: LayoutRow; dataMap: DataMap
  * Every page block stays MOUNTED for the life of the page — its layout, news/link panels and
  * scroll position never re-mount, so scrolling back up is instant with no stutter. To keep the
  * VIDEO players from piling up (they'd exhaust the browser's media limits → lag + black tiles),
- * each block tracks whether it's near the viewport and the video widgets render a real player
- * only when near, and a lightweight poster when far. So live players stay bounded to ~one
- * screen — like `/home` — while everything else stays put.
+ * each video widget tracks its own distance from the viewport and renders a real player only when
+ * near, while everything else stays put.
  */
 
 function PageBlock({
@@ -163,22 +200,6 @@ function PageBlock({
   layout: HomeLayoutManifest;
   rootRef: RefObject<HTMLDivElement | null>;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  // Start `true` so a freshly-appended block (which is always near the bottom the user just
-  // reached) shows its players immediately; the observer flips it off once it scrolls away.
-  const [isNear, setIsNear] = useState(true);
-
-  useEffect(() => {
-    const element = ref.current;
-    if (!element) return;
-    const observer = new IntersectionObserver((entries) => setIsNear(entries[0]?.isIntersecting ?? false), {
-      root: rootRef.current,
-      rootMargin: "1200px 0px",
-    });
-    observer.observe(element);
-    return () => observer.disconnect();
-  }, [rootRef]);
-
   // Prefer the page's OWN layout (backend-driven per-iteration variation); fall back to the shared
   // manifest for pages/backends that don't send one.
   const effectiveLayout = page.layout ?? layout;
@@ -186,12 +207,12 @@ function PageBlock({
   // Each ROW owns its own `EventSurface` (see RowRenderer), so a video never drives a panel in
   // another row — let alone another page block.
   return (
-    <div ref={ref}>
-      <BlockVisibilityContext.Provider value={isNear}>
+    <div>
+      <HomeScrollRootContext.Provider value={rootRef}>
         {effectiveLayout.rows.map((row, index) => (
           <RowRenderer key={row.id} row={row} dataMap={page.data} index={index} />
         ))}
-      </BlockVisibilityContext.Provider>
+      </HomeScrollRootContext.Provider>
     </div>
   );
 }

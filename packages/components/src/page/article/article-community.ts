@@ -63,6 +63,7 @@ function community(
   handle: string,
   name: string,
   profileImage: string,
+  banner: string,
   description: string,
   counts: { members: number; groups: number; posts: number },
   shareUrl: string
@@ -74,7 +75,7 @@ function community(
     name,
     profileImage,
     description,
-    banner: "",
+    banner,
     isPrivate: false,
     shareUrl,
     userRole: "UNJOINED",
@@ -113,8 +114,9 @@ export const ARTICLE_COMMUNITIES = {
     "sailgptoken4229",
     "SailGP",
     "https://media.qa.begenuin.com/uploads/profile_images/community/m/8bedf23e-bb08-4b73-8341-8c468d503331_1789125335882.png",
+    "https://media.qa.begenuin.com/uploads/community/banner/b82c86c5-40d5-4950-bc0f-417ba1c2c061_1788872959187.png",
     "SailGP racing, teams, events, technology and behind-the-scenes coverage from The Foil.",
-    { members: 1, groups: 7, posts: 13 },
+    { members: 2, groups: 7, posts: 13 },
     "https://testfoil.qa.begenuin.com/community/sailgp"
   ),
   americasCup: community(
@@ -123,6 +125,7 @@ export const ARTICLE_COMMUNITIES = {
     "americascup",
     "America's Cup",
     "https://media.qa.begenuin.com/uploads/profile_images/community/m/a4ad4c70-86bb-408c-ac1e-8931f05a7bb7_1789193246774.png",
+    "https://media.qa.begenuin.com/uploads/community/banner/19544b7c-4c04-4b79-9fc6-2b98012dfb90_1788872944500.png",
     "Recurring site series with related articles, events, teams, or videos.",
     { members: 1, groups: 4, posts: 42 },
     "https://testfoil.qa.begenuin.com/community/americas-cup"
@@ -133,6 +136,7 @@ export const ARTICLE_COMMUNITIES = {
     "olympics",
     "Olympics",
     "https://media.qa.begenuin.com/uploads/profile_images/community/m/204af728-ce21-42d3-857a-5d45424e2c2a_1788872925782.png",
+    "https://media.qa.begenuin.com/uploads/community/banner/eb180132-8637-4a6e-9038-ec7a9cb9ee95_1788872928699.png",
     "Recurring site series with related articles, events, teams, or videos.",
     { members: 1, groups: 5, posts: 9 },
     "https://testfoil.qa.begenuin.com/community/olympics"
@@ -143,6 +147,7 @@ export const ARTICLE_COMMUNITIES = {
     "othersailing",
     "Other Sailing",
     "https://media.qa.begenuin.com/uploads/profile_images/community/m/cf9f3113-ba50-4cbb-9136-c886c557b45c_1788872888575.png",
+    "https://media.qa.begenuin.com/uploads/community/banner/4b6495cc-4dfb-4e65-8dee-2ccab9571970_1788872891689.png",
     "Recurring site series with related articles, events, teams, or videos.",
     { members: 1, groups: 2, posts: 11 },
     "https://testfoil.qa.begenuin.com/community/other-sailing"
@@ -153,6 +158,7 @@ export const ARTICLE_COMMUNITIES = {
     "classic600milers",
     "Classic 600-Milers",
     "https://media.qa.begenuin.com/uploads/profile_images/community/m/83629217-b547-47e4-8215-bbdfbd3aa211_1788872874179.png",
+    "https://media.qa.begenuin.com/uploads/community/banner/195b6990-4c6a-4a80-b126-3e7d1953609d_1788872877097.png",
     "Recurring site series with related articles, events, teams, or videos.",
     { members: 1, groups: 2, posts: 8 },
     "https://testfoil.qa.begenuin.com/community/classic-600-milers"
@@ -163,8 +169,9 @@ export const ARTICLE_COMMUNITIES = {
     "news",
     "News",
     "https://media.qa.begenuin.com/uploads/profile_images/community/m/7cf53151-e3c9-41cc-9b50-7538403dac10_1788872333712.png",
+    "https://media.qa.begenuin.com/uploads/community/banner/7a92279d-8645-47f4-9098-8bc605bab99f_1788872340496.png",
     "Recurring site series with related articles, events, teams, or videos.",
-    { members: 1, groups: 1, posts: 3 },
+    { members: 2, groups: 1, posts: 3 },
     "https://testfoil.qa.begenuin.com/community/news"
   ),
   offshoreLegends: community(
@@ -173,6 +180,7 @@ export const ARTICLE_COMMUNITIES = {
     "offshorelegendsenlargeme",
     "🌎 Offshore Legends",
     "https://media.qa.begenuin.com/uploads/profile_images/community/m/3068c079-c35d-4c1a-bbfa-b62f29bdce76_1788872969871.png",
+    "https://media.qa.begenuin.com/uploads/community/banner/b91ddd08-6644-47c1-babc-cc1b3b1e5bc8_1788872972993.png",
     "⛵ Follow the toughest races on Earth and learn from elite offshore sailors. Objective: Connect fans and competitors around endurance sailing.",
     { members: 2, groups: 1, posts: 49 },
     "https://testfoil.qa.begenuin.com/community/offshore-legends"
@@ -186,7 +194,7 @@ export const ARTICLE_GROUPS = {
     "season-6",
     "Season 6",
     "Recurring editorial topic within the SailGP community.",
-    { members: 1, posts: 5, views: 0 },
+    { members: 1, posts: 5, views: 7 },
     "https://testfoil.qa.begenuin.com/group/season-6?community=24029d3896000e6d"
   ),
   sailgpOpinion: group(

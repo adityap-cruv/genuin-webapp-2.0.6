@@ -10,7 +10,9 @@ import {
   useMemo,
   useRef,
   useState,
+  useLayoutEffect,
   type ReactNode,
+  type RefObject,
 } from "react";
 
 import { useBaseContext } from "@genuin/components/context/base";
@@ -60,15 +62,8 @@ import type { ArticleData, ComponentType, FeedSource, WidgetData, WidgetNode, Wi
 // Consolidated here (from the former block-visibility / widget-bus / intelligence-layout /
 // use-community-feed files) so the dynamic-home engine is a few cohesive files, not many tiny ones.
 
-/**
- * Whether the current page block is near the viewport. Video widgets read this to render a live
- * player only when near, and a lightweight poster when far — so off-screen blocks don't hold
- * `<video>`/HLS resources. Defaults to `true` so a widget without a provider still plays.
- */
-export const BlockVisibilityContext = createContext<boolean>(true);
-export function useBlockVisibility(): boolean {
-  return useContext(BlockVisibilityContext);
-}
+/** The Home scroller used as the root for per-widget viewport observers. */
+export const HomeScrollRootContext = createContext<RefObject<HTMLDivElement | null> | null>(null);
 
 /**
  * The `dependsOn` wiring, read off the row's `EventSurface`.
@@ -204,6 +199,8 @@ export type WidgetRenderProps = {
   node: WidgetNode;
   data: WidgetData;
   dataMap: Record<string, WidgetData>;
+  /** True when this widget's own panel is near the Home scroller viewport. */
+  isNear: boolean;
 };
 
 function toArticle(article: ArticleData): IntelligenceArticle {
@@ -229,7 +226,7 @@ const SDK_SCRIPT_SRC =
 
 type GenuinWindow = Window & {
   genuin?: {
-    init?: (config: Record<string, unknown>) => unknown;
+    init?: (config: Record<string, unknown>) => unknown | Promise<unknown>;
     emitInternal?: (event: string, payload?: unknown) => void;
     onInternal?: (event: string, listener: (payload: unknown) => void) => (() => void) | void;
     collapse?: (id: string) => void;
@@ -244,43 +241,86 @@ function loadGenuinSdk(): Promise<void> {
   if ((window as GenuinWindow).genuin?.init) return Promise.resolve();
   if (sdkLoadPromise) return sdkLoadPromise;
 
-  sdkLoadPromise = new Promise<void>((resolve, reject) => {
+  const loadPromise = new Promise<void>((resolve, reject) => {
     const existing = document.querySelector<HTMLScriptElement>(`script[src="${SDK_SCRIPT_SRC}"]`);
-    if (existing) {
-      existing.addEventListener("load", () => resolve());
-      existing.addEventListener("error", () => reject(new Error("Genuin SDK failed to load")));
-      return;
+    const script = existing ?? document.createElement("script");
+    let finished = false;
+    let pollTimer: number | undefined;
+    let attempts = 0;
+
+    const finish = (error?: Error) => {
+      if (finished) return;
+      finished = true;
+      if (pollTimer !== undefined) window.clearTimeout(pollTimer);
+      if (error) reject(error);
+      else resolve();
+    };
+
+    const checkReady = () => {
+      if ((window as GenuinWindow).genuin?.init) {
+        finish();
+        return;
+      }
+      // A script can already be present and have fired its load event before this caller
+      // subscribes. Polling closes that race while the event listener handles the normal path.
+      if (attempts++ >= 100) {
+        finish(new Error("Genuin SDK did not expose its init API"));
+        return;
+      }
+      pollTimer = window.setTimeout(checkReady, 100);
+    };
+
+    script.addEventListener("load", checkReady, { once: true });
+    script.addEventListener("error", () => finish(new Error("Genuin SDK failed to load")), { once: true });
+    checkReady();
+
+    if (!existing) {
+      script.src = SDK_SCRIPT_SRC;
+      script.async = true;
+      document.body.appendChild(script);
     }
-    const script = document.createElement("script");
-    script.src = SDK_SCRIPT_SRC;
-    script.async = true;
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error("Genuin SDK failed to load"));
-    document.body.appendChild(script);
+  });
+  sdkLoadPromise = loadPromise.catch((error: unknown) => {
+    // Allow a later placement to retry after a transient CDN/script failure.
+    sdkLoadPromise = null;
+    throw error;
   });
   return sdkLoadPromise;
 }
 
 // Batch init: many placements mounting in one frame trigger a single DOM scan.
 let initHandle: number | null = null;
+let sdkInitQueue: Promise<void> = Promise.resolve();
 function scheduleGenuinInit() {
   if (typeof window === "undefined" || initHandle !== null) return;
   initHandle = window.requestAnimationFrame(() => {
     initHandle = null;
     // `player_controls: "v2"` matches the hardcoded /home page — keeps the v2 control cluster
     // (mute → play/pause → expand) in both the inline placement and the expanded view.
-    (window as GenuinWindow).genuin?.init?.({
-      // These placements are nested React roots inside the first-party WebApp. Keeping them in
-      // light DOM prevents their hosts from being mistaken for the WebApp's portal root while the
-      // SDK still owns each placement and its lifecycle independently.
-      useShadowDOM: false,
-      configuration: {
-        player_controls: "v2",
-        // Home SDK placements should navigate like native Popular/Latest/Explore feeds.
-        is_enable_redirection: true,
-        enable_redirection_tools: { community: true, group: true, user: true },
-      },
-    });
+    const genuin = (window as GenuinWindow).genuin;
+    const init = genuin?.init;
+    if (!init) return;
+
+    // The SDK init is async and scans all current hosts. Serialize rescans so a placement
+    // appended while another scan is still fetching data cannot be lost to a concurrent init.
+    sdkInitQueue = sdkInitQueue
+      .catch(() => undefined)
+      .then(() =>
+        Promise.resolve(
+          init.call(genuin, {
+            // These placements are nested React roots inside the first-party WebApp. Keeping them in
+            // light DOM prevents their hosts from being mistaken for the WebApp's portal root while the
+            // SDK still owns each placement and its lifecycle independently.
+            useShadowDOM: false,
+            configuration: {
+              player_controls: "v2",
+              // Home SDK placements should navigate like native Popular/Latest/Explore feeds.
+              is_enable_redirection: true,
+              enable_redirection_tools: { community: true, group: true, user: true },
+            },
+          })
+        ).then(() => undefined)
+      );
   });
 }
 
@@ -339,7 +379,20 @@ function GenuinPlacement({
   // div's `key`, so React swaps in a fresh container and the effect below re-inits the embed at
   // the new size — the same remount path the placement already uses for a `videoIds` change.
   const hostFrameRef = useRef<HTMLDivElement>(null);
+  const sdkHostRef = useRef<HTMLDivElement>(null);
+  const [hasSdkContent, setHasSdkContent] = useState(false);
   const [layoutGeneration, setLayoutGeneration] = useState(0);
+
+  useLayoutEffect(() => {
+    const host = sdkHostRef.current;
+    if (!host) return;
+
+    const syncContentState = () => setHasSdkContent(host.childElementCount > 0);
+    syncContentState();
+    const observer = new MutationObserver(syncContentState);
+    observer.observe(host, { attributes: true, childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, [activeStyleId, activePlacementId, videoIdsKey, layoutGeneration, viewport]);
 
   useEffect(() => {
     const frame = hostFrameRef.current;
@@ -374,7 +427,7 @@ function GenuinPlacement({
         if (!cancelled) scheduleGenuinInit();
       })
       .catch(() => {
-        /* SDK unavailable — the container just stays empty. */
+        /* SDK unavailable — the visible loading surface remains instead of showing a blank box. */
       });
     return () => {
       cancelled = true;
@@ -387,15 +440,20 @@ function GenuinPlacement({
   });
 
   if (viewport === null) {
-    return <div ref={hostFrameRef} style={{ width: "100%", height: "100%" }} />;
+    return (
+      <div ref={hostFrameRef} style={{ position: "relative", width: "100%", height: "100%" }}>
+        <VideoPlaceholder />
+      </div>
+    );
   }
 
   // The outer frame is what the ResizeObserver watches: it survives the re-init that swaps the
   // keyed host below.
   return (
-    <div ref={hostFrameRef} style={{ width: "100%", height: "100%" }}>
+    <div ref={hostFrameRef} style={{ position: "relative", width: "100%", height: "100%" }}>
       <div
         key={`${activeStyleId}-${activePlacementId}-${videoIdsKey}-${layoutGeneration}`}
+        ref={sdkHostRef}
         id={domId}
         className="gen-sdk-class"
         data-style-id={activeStyleId}
@@ -406,6 +464,7 @@ function GenuinPlacement({
         onClickCapture={captureFeedViewIntent}
         style={{ width: "100%", height: "100%" }}
       />
+      {!hasSdkContent && <VideoPlaceholder overlay />}
     </div>
   );
 }
@@ -514,8 +573,29 @@ function WidgetFrame({
 }
 
 /** Placeholder shown before a placement's block first nears the viewport (no embed yet). */
-function VideoPlaceholder() {
-  return <div className="gencl:h-full gencl:w-full gencl:bg-secondary-900" aria-hidden />;
+function VideoPlaceholder({ overlay = false }: { overlay?: boolean } = {}) {
+  return (
+    <div
+      className={cn(
+        "gencl:animate-pulse gencl:bg-secondary-900",
+        overlay
+          ? "gencl:pointer-events-none gencl:absolute gencl:inset-0"
+          : "gencl:relative gencl:h-full gencl:min-h-0 gencl:w-full"
+      )}
+      aria-label="Loading video"
+      role="status"
+    />
+  );
+}
+
+function EmptyWidgetState() {
+  return (
+    <div
+      className="gencl:flex gencl:h-full gencl:min-h-24 gencl:items-center gencl:justify-center gencl:rounded-xl gencl:bg-secondary-50 gencl:px-4 gencl:text-center gencl:text-sm gencl:text-secondary-500"
+      role="status">
+      Content is not available right now.
+    </div>
+  );
 }
 
 // ─── Widget entries ──────────────────────────────────────────────────────────────────
@@ -526,8 +606,7 @@ function VideoPlaceholder() {
  * once its block first nears the viewport and then stays mounted (embeds self-pause off-screen,
  * and the SDK has no per-element teardown).
  */
-function PlacementWidget({ node, data }: WidgetRenderProps) {
-  const isNear = useBlockVisibility();
+function PlacementWidget({ node, data, isNear }: WidgetRenderProps) {
   const show = useHasBeenTrue(isNear);
   const openFeedViewOverlay = useOpenFeedViewOverlay();
   const registeredItems = useLatestEvent("items:register");
@@ -725,7 +804,9 @@ function IntelligencePanelWidget({ node, data }: WidgetRenderProps) {
           upNextLabel={data.upNextLabel}
           onClose={() => undefined}
         />
-      ) : null}
+      ) : (
+        <EmptyWidgetState />
+      )}
     </WidgetFrame>
   );
 }
@@ -741,59 +822,63 @@ function IntelligenceCardListWidget({ node, data }: WidgetRenderProps) {
       source={data.source}
       brandSlug={data.header?.brandSlug}
       wrapper={node.wrapper}>
-      <IntelligencePanelShell
-        size={{ width: "100%", height: "100%" }}
-        onClose={() => undefined}
-        scrollHeader
-        scrollContentClassName={cn(
-          // Phones: header on top, rail takes the rest — nothing scrolls vertically.
-          "gencl:flex gencl:h-full gencl:flex-col gencl:sm:block!",
-          // `sm` and up the shell is the scroller, so the Intelligence header travels with the
-          // cards instead of staying pinned above them.
-          "gencl:sm:snap-y gencl:sm:snap-mandatory"
-        )}>
-        <div
-          className={cn(
-            // Phones: the shared Intelligence rail. `sm` and up: the original
-            // vertical snap list.
-            INTELLIGENCE_RAIL_CLASS,
-            INTELLIGENCE_RAIL_SM_RESET_CLASS,
-            "gencl:min-h-0 gencl:flex-1 gencl:sm:pt-2!",
-            "gencl:sm:flex-col!",
-            // From `sm` up the shell owns the vertical scroll; a scroller here would create a
-            // nested scrollbox and separate the Intelligence header from the cards.
-            "gencl:sm:h-full! gencl:sm:overflow-visible!"
+      {articles.length === 0 ? (
+        <EmptyWidgetState />
+      ) : (
+        <IntelligencePanelShell
+          size={{ width: "100%", height: "100%" }}
+          onClose={() => undefined}
+          scrollHeader
+          scrollContentClassName={cn(
+            // Phones: header on top, rail takes the rest — nothing scrolls vertically.
+            "gencl:flex gencl:h-full gencl:flex-col gencl:sm:block!",
+            // `sm` and up the shell is the scroller, so the Intelligence header travels with the
+            // cards instead of staying pinned above them.
+            "gencl:sm:snap-y gencl:sm:snap-mandatory"
           )}>
-          {articles.map((article) => (
-            <IntelligenceArticleCard
-              key={article.id}
-              article={toArticle(article)}
-              layout={INTERVIEW_CARD_LAYOUT}
-              imagePosition="top"
-              className={cn(
-                INTELLIGENCE_RAIL_ITEM_CLASS,
-                INTELLIGENCE_RAIL_ITEM_SM_RESET_CLASS,
-                "gencl:w-[90%]! gencl:max-w-none!",
-                "gencl:snap-always",
-                "gencl:[&_[data-slot=intelligence-article-content]]:min-h-0",
-                // Reserve the scrolling header plus the list spacing so the initial view keeps a
-                // small next-card preview; after the header scrolls away, the active card still
-                // owns most of the viewport.
-                "gencl:sm:h-[calc(100%-4.25rem)]!",
-                // Phones use the taller, edge-to-edge artwork treatment from the reference.
-                // Keep `object-cover` from the shared card so the area fills without grey bands.
-                "gencl:max-sm:[&_[data-slot=intelligence-article-image]]:grow",
-                "gencl:max-sm:[&_[data-slot=intelligence-article-image]]:shrink!",
-                // Above phone sizes the artwork takes whatever remains after the full headline;
-                // it may crop or shrink, but can never push the text out of the active card.
-                "gencl:sm:[&_[data-slot=intelligence-article-image]]:min-h-0",
-                "gencl:sm:[&_[data-slot=intelligence-article-image]]:grow",
-                "gencl:sm:[&_[data-slot=intelligence-article-image]]:shrink!"
-              )}
-            />
-          ))}
-        </div>
-      </IntelligencePanelShell>
+          <div
+            className={cn(
+              // Phones: the shared Intelligence rail. `sm` and up: the original
+              // vertical snap list.
+              INTELLIGENCE_RAIL_CLASS,
+              INTELLIGENCE_RAIL_SM_RESET_CLASS,
+              "gencl:min-h-0 gencl:flex-1 gencl:sm:pt-2!",
+              "gencl:sm:flex-col!",
+              // From `sm` up the shell owns the vertical scroll; a scroller here would create a
+              // nested scrollbox and separate the Intelligence header from the cards.
+              "gencl:sm:h-full! gencl:sm:overflow-visible!"
+            )}>
+            {articles.map((article) => (
+              <IntelligenceArticleCard
+                key={article.id}
+                article={toArticle(article)}
+                layout={INTERVIEW_CARD_LAYOUT}
+                imagePosition="top"
+                className={cn(
+                  INTELLIGENCE_RAIL_ITEM_CLASS,
+                  INTELLIGENCE_RAIL_ITEM_SM_RESET_CLASS,
+                  "gencl:w-[90%]! gencl:max-w-none!",
+                  "gencl:snap-always",
+                  "gencl:[&_[data-slot=intelligence-article-content]]:min-h-0",
+                  // Reserve the scrolling header plus the list spacing so the initial view keeps a
+                  // small next-card preview; after the header scrolls away, the active card still
+                  // owns most of the viewport.
+                  "gencl:sm:h-[calc(100%-4.25rem)]!",
+                  // Phones use the taller, edge-to-edge artwork treatment from the reference.
+                  // Keep `object-cover` from the shared card so the area fills without grey bands.
+                  "gencl:max-sm:[&_[data-slot=intelligence-article-image]]:grow",
+                  "gencl:max-sm:[&_[data-slot=intelligence-article-image]]:shrink!",
+                  // Above phone sizes the artwork takes whatever remains after the full headline;
+                  // it may crop or shrink, but can never push the text out of the active card.
+                  "gencl:sm:[&_[data-slot=intelligence-article-image]]:min-h-0",
+                  "gencl:sm:[&_[data-slot=intelligence-article-image]]:grow",
+                  "gencl:sm:[&_[data-slot=intelligence-article-image]]:shrink!"
+                )}
+              />
+            ))}
+          </div>
+        </IntelligencePanelShell>
+      )}
     </WidgetFrame>
   );
 }

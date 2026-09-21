@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@genuin/ui/lib/utils";
-import { useEffect, useMemo, useRef, type CSSProperties } from "react";
+import { forwardRef, useEffect, useMemo, useRef, type CSSProperties } from "react";
 
 import { EventBus } from "./event-bus";
 import type { EventRecord } from "./event-queue";
@@ -166,18 +166,10 @@ export function EventSurface({
  * unique within a surface — two panels sharing one would swallow each other's
  * events.
  */
-export function EventSurfacePanel({
-  id,
-  colSpan,
-  rowSpan,
-  area,
-  colStart,
-  rowStart,
-  className,
-  style,
-  children,
-  ...restProps
-}: EventSurfacePanelProps) {
+export const EventSurfacePanel = forwardRef<HTMLDivElement, EventSurfacePanelProps>(function EventSurfacePanel(
+  { id, colSpan, rowSpan, area, colStart, rowStart, className, style, children, ...restProps },
+  ref
+) {
   const panelStyle = useMemo<CSSProperties>(() => {
     return {
       gridArea: area,
@@ -202,6 +194,7 @@ export function EventSurfacePanel({
   return (
     <PanelIdProvider value={id}>
       <div
+        ref={ref}
         data-slot="event-surface-panel"
         data-panel-id={id}
         className={cn(styles.panel, className)}
@@ -211,4 +204,4 @@ export function EventSurfacePanel({
       </div>
     </PanelIdProvider>
   );
-}
+});
