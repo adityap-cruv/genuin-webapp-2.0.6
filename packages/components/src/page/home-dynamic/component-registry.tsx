@@ -748,8 +748,8 @@ function IntelligenceCardListWidget({ node, data }: WidgetRenderProps) {
         scrollContentClassName={cn(
           // Phones: header on top, rail takes the rest — nothing scrolls vertically.
           "gencl:flex gencl:h-full gencl:flex-col gencl:sm:block!",
-          // `sm` and up the shell is the scroller, so the same card-by-card snap as before now
-          // carries the "Intelligence" header up with the first card instead of pinning it.
+          // `sm` and up the shell is the scroller, so the Intelligence header travels with the
+          // cards instead of staying pinned above them.
           "gencl:sm:snap-y gencl:sm:snap-mandatory"
         )}>
         <div
@@ -760,9 +760,9 @@ function IntelligenceCardListWidget({ node, data }: WidgetRenderProps) {
             INTELLIGENCE_RAIL_SM_RESET_CLASS,
             "gencl:min-h-0 gencl:flex-1 gencl:sm:pt-2!",
             "gencl:sm:flex-col!",
-            // From `sm` up the SHELL owns the vertical scroll (see `scrollContentClassName`); a
-            // scroller here instead would pin the header above a second scrollbox.
-            "gencl:sm:h-auto! gencl:sm:overflow-visible!"
+            // From `sm` up the shell owns the vertical scroll; a scroller here would create a
+            // nested scrollbox and separate the Intelligence header from the cards.
+            "gencl:sm:h-full! gencl:sm:overflow-visible!"
           )}>
           {articles.map((article) => (
             <IntelligenceArticleCard
@@ -775,11 +775,20 @@ function IntelligenceCardListWidget({ node, data }: WidgetRenderProps) {
                 INTELLIGENCE_RAIL_ITEM_SM_RESET_CLASS,
                 "gencl:w-[90%]! gencl:max-w-none!",
                 "gencl:snap-always",
-                "gencl:max-sm:[&_[data-slot=intelligence-article-content]]:min-h-0",
+                "gencl:[&_[data-slot=intelligence-article-content]]:min-h-0",
+                // Reserve the scrolling header plus the list spacing so the initial view keeps a
+                // small next-card preview; after the header scrolls away, the active card still
+                // owns most of the viewport.
+                "gencl:sm:h-[calc(100%-4.25rem)]!",
                 // Phones use the taller, edge-to-edge artwork treatment from the reference.
                 // Keep `object-cover` from the shared card so the area fills without grey bands.
                 "gencl:max-sm:[&_[data-slot=intelligence-article-image]]:grow",
-                "gencl:max-sm:[&_[data-slot=intelligence-article-image]]:shrink!"
+                "gencl:max-sm:[&_[data-slot=intelligence-article-image]]:shrink!",
+                // Above phone sizes the artwork takes whatever remains after the full headline;
+                // it may crop or shrink, but can never push the text out of the active card.
+                "gencl:sm:[&_[data-slot=intelligence-article-image]]:min-h-0",
+                "gencl:sm:[&_[data-slot=intelligence-article-image]]:grow",
+                "gencl:sm:[&_[data-slot=intelligence-article-image]]:shrink!"
               )}
             />
           ))}

@@ -1,5 +1,6 @@
 "use client";
 
+import { Text } from "@genuin/ui/components/typography";
 import { cn } from "@genuin/ui/lib/utils";
 import { ChevronDown, Sparkle } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -437,6 +438,7 @@ export function ArticleIntelligenceAssistant({
       inert={hidden || undefined}
       tabIndex={-1}
       className={cn(
+        "gencl:font-[family-name:Inter,system-ui,sans-serif] gencl:tracking-normal gencl:[&_*]:[font-family:inherit] gencl:[&_*]:tracking-normal",
         "gencl:absolute gencl:bottom-6 gencl:left-1/2 gencl:z-30 gencl:-translate-x-1/2",
         "gencl:overflow-hidden gencl:rounded-xl gencl:bg-white gencl:outline-none",
         hidden && "gencl:pointer-events-none gencl:opacity-0"
@@ -458,7 +460,9 @@ export function ArticleIntelligenceAssistant({
               "gencl:flex gencl:h-8 gencl:items-center gencl:gap-2 gencl:text-secondary-900"
             )}>
             <Sparkle aria-hidden="true" strokeWidth={1.75} className="gencl:size-5 gencl:shrink-0" />
-            <span className="gencl:text-xs gencl:font-medium gencl:leading-4">Intelligence</span>
+            <Text as="span" size="body-2" weight="medium">
+              Intelligence
+            </Text>
           </div>
           <button
             type="button"

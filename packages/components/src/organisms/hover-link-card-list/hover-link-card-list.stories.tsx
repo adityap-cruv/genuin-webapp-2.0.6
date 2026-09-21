@@ -90,7 +90,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement, args }) => {
     const list = canvasElement.querySelector<HTMLElement>('section[aria-label="Sailing podcasts"]');
     const items = canvasElement.querySelectorAll<HTMLElement>('[data-slot="hover-link-card-item"]');
 
@@ -139,6 +139,12 @@ export const Default: Story = {
     await expect(getComputedStyle(compactCtaLabel).fontSize).toBe("12px");
     await expect(compactCtaIcon.getBoundingClientRect().width).toBe(20);
     await expect(compactCtaIcon.getBoundingClientRect().height).toBe(20);
+
+    const preventNavigation = (event: Event) => event.preventDefault();
+    canvasElement.addEventListener("click", preventNavigation, true);
+    await userEvent.click(expandedImage);
+    canvasElement.removeEventListener("click", preventNavigation, true);
+    await expect(args.onLinkClick).toHaveBeenCalledWith(PODCASTS[0], 0);
   },
 };
 

@@ -20,6 +20,8 @@ export type ContextualLinkMetaData = LinkMetaData & {
 
 /** Horizontal travel (px) a touch must cover before a swipe commits to the next card. */
 const SWIPE_COMMIT_THRESHOLD_PX = 24;
+/** Movement large enough to treat a touch as a drag instead of a card click. */
+const CARD_CLICK_DRAG_THRESHOLD_PX = 8;
 
 // This list keeps its compact rows independently of the SDK sheet's two-line cards.
 const LIST_CARD_CSS = `
@@ -112,7 +114,7 @@ export function HoverLinkCardList({
   autoRotate = true,
   pauseOnHover = true,
   rotationIntervalMs = 3000,
-  animationDurationMs = 500,
+  animationDurationMs = 200,
   ariaLabel = "Related links",
   showContainerBorder = true,
   className,
@@ -151,10 +153,12 @@ export function HoverLinkCardList({
   const animationFrameRef = useRef<number | null>(null);
   const scrollEndTimerRef = useRef<number | null>(null);
   const isAutoScrollingRef = useRef(false);
-  /** Timestamp until which `scroll` events are ours (smooth `scrollTo`), not the user's. */
+  const suppressCardClickUntilRef = useRef(0);
+  /** Timestamp until which `scroll` events belong to our animation, not the user. */
   const programmaticScrollUntilRef = useRef(0);
   const prefersReducedMotion = usePrefersReducedMotion();
   const normalizedDuration = Math.max(0, animationDurationMs);
+  const shouldAnimate = !prefersReducedMotion && normalizedDuration > 0;
   const tailSpace = typeof height === "number" ? Math.max(0, height - 80) : 307;
   const isControlledPinned = pinActiveItemToTop && Boolean(activeVideoId);
 
@@ -236,6 +240,9 @@ export function HoverLinkCardList({
     const handleTouchMove = (event: TouchEvent) => {
       if (!isDragging) return;
       const deltaX = event.touches[0]!.clientX - startX;
+      if (Math.abs(deltaX) >= CARD_CLICK_DRAG_THRESHOLD_PX) {
+        suppressCardClickUntilRef.current = Date.now() + 500;
+      }
       // Follow the finger, but never past the neighbouring card — the rail cannot run away.
       const travel = Math.max(-step, Math.min(step, -deltaX));
       section.scrollLeft = startScrollLeft + travel;
@@ -244,6 +251,9 @@ export function HoverLinkCardList({
     const handleTouchEnd = (event: TouchEvent) => {
       if (!isDragging) return;
       const deltaX = (event.changedTouches[0]?.clientX ?? startX) - startX;
+      if (Math.abs(deltaX) >= CARD_CLICK_DRAG_THRESHOLD_PX) {
+        suppressCardClickUntilRef.current = Date.now() + 500;
+      }
       const direction = Math.abs(deltaX) >= SWIPE_COMMIT_THRESHOLD_PX ? (deltaX < 0 ? 1 : -1) : 0;
       const maxScrollLeft = Math.max(0, section.scrollWidth - section.clientWidth);
       const target = Math.max(0, Math.min(maxScrollLeft, startScrollLeft + direction * step));
@@ -305,32 +315,44 @@ export function HoverLinkCardList({
       if (!section || !track || !item) return;
 
       const isHorizontal = getComputedStyle(track).flexDirection === "row";
-      const sectionRect = section.getBoundingClientRect();
-      const itemRect = item.getBoundingClientRect();
-      const sectionStyle = getComputedStyle(section);
-      const sectionStart = isHorizontal ? sectionRect.left : sectionRect.top;
-      const itemStart = isHorizontal ? itemRect.left : itemRect.top;
-      const paddingStart = Number.parseFloat(isHorizontal ? sectionStyle.paddingLeft : sectionStyle.paddingTop) || 0;
       const currentScroll = isHorizontal ? section.scrollLeft : section.scrollTop;
       const maxScroll = isHorizontal
         ? Math.max(0, section.scrollWidth - section.clientWidth)
         : Math.max(0, section.scrollHeight - section.clientHeight);
-      const rawTarget = itemStart - sectionStart - paddingStart + currentScroll;
+      // Offset coordinates reflect the final layout even while Motion is visually animating the
+      // old card positions with transforms. Rect coordinates would include those transforms and
+      // make the scroll stop short whenever one card expands while another collapses.
+      const rawTarget = isHorizontal ? item.offsetLeft - track.offsetLeft : item.offsetTop - track.offsetTop;
       const target = Math.max(0, Math.min(rawTarget, maxScroll));
 
       // Mark the upcoming scroll events as programmatic so `onScroll` doesn't treat
       // them as the user scrolling (which would re-sync the active card mid-animation).
-      programmaticScrollUntilRef.current = Date.now() + (animate && !prefersReducedMotion ? 800 : 100);
+      programmaticScrollUntilRef.current = Date.now() + (animate && shouldAnimate ? normalizedDuration + 300 : 100);
 
-      if (animate && !prefersReducedMotion) {
-        section.scrollTo(isHorizontal ? { left: target, behavior: "smooth" } : { top: target, behavior: "smooth" });
+      if (animate && shouldAnimate) {
+        const startedAt = performance.now();
+        const distance = target - currentScroll;
+        const animateScroll = (time: number) => {
+          const progress = normalizedDuration === 0 ? 1 : Math.min(1, (time - startedAt) / normalizedDuration);
+          const easedProgress = 1 - (1 - progress) ** 3;
+          const nextScroll = currentScroll + distance * easedProgress;
+          if (isHorizontal) section.scrollLeft = nextScroll;
+          else section.scrollTop = nextScroll;
+
+          if (progress < 1) {
+            animationFrameRef.current = window.requestAnimationFrame(animateScroll);
+          } else {
+            animationFrameRef.current = null;
+          }
+        };
+        animationFrameRef.current = window.requestAnimationFrame(animateScroll);
         return;
       }
 
       if (isHorizontal) section.scrollLeft = target;
       else section.scrollTop = target;
     },
-    [prefersReducedMotion]
+    [normalizedDuration, shouldAnimate]
   );
 
   /**
@@ -603,11 +625,21 @@ export function HoverLinkCardList({
     [leadingIndexFor, normalizedDuration, onLinkClick, queueScrollToIndex]
   );
 
+  const activateCardCta = useCallback((clickEvent: React.MouseEvent<HTMLElement>) => {
+    if (Date.now() < suppressCardClickUntilRef.current) return;
+
+    const target = clickEvent.target as HTMLElement;
+    if (target.closest('[data-slot="link-card-cta"]')) return;
+
+    clickEvent.currentTarget.querySelector<HTMLElement>('[data-slot="link-card-cta"]')?.click();
+  }, []);
+
   if (orderedItems.length === 0) return null;
 
   return (
-    <section
+    <motion.section
       ref={sectionRef}
+      layoutScroll
       aria-label={ariaLabel}
       className={cn(
         // The stacked mobile/tablet home layout is a sideways, snapping card rail.
@@ -664,10 +696,10 @@ export function HoverLinkCardList({
 
           return (
             <motion.div
-              layout={false}
+              layout={shouldAnimate}
               transition={{
                 layout: {
-                  duration: normalizedDuration / 1000,
+                  duration: shouldAnimate ? normalizedDuration / 1000 : 0,
                   ease: [0.22, 1, 0.36, 1],
                 },
               }}
@@ -677,13 +709,13 @@ export function HoverLinkCardList({
               data-video-id={item.video_id ?? undefined}
               data-expanded={isExpanded ? "true" : "false"}
               className={cn(
-                "gencl:w-[calc(100%_-_1.5rem)] gencl:shrink-0 gencl:snap-start gencl:lg:w-auto! gencl:lg:[scroll-snap-align:none]",
+                "gencl:w-[calc(100%_-_1.5rem)] gencl:shrink-0 gencl:cursor-pointer gencl:snap-start gencl:lg:w-auto! gencl:lg:[scroll-snap-align:none]",
                 "gencl:[&_a]:h-9! gencl:[&_a]:gap-1.5 gencl:[&_a]:pl-2.5 gencl:[&_a]:pr-1.5",
                 "gencl:[&_a>span]:text-body-2-semi-bold! gencl:[&_a>svg]:size-5!",
                 "gencl:[&_div[role=link]]:h-9! gencl:[&_div[role=link]]:gap-1.5 gencl:[&_div[role=link]]:pl-2.5 gencl:[&_div[role=link]]:pr-1.5",
                 "gencl:[&_div[role=link]>span]:text-body-2-semi-bold! gencl:[&_div[role=link]>svg]:size-5!"
               )}
-              onClick={() => selectCard(item, index)}
+              onClick={activateCardCta}
               onMouseEnter={() => {
                 if (pauseOnHover && !isSliding && !isControlledPinned) setActiveIndex(index);
               }}
@@ -709,6 +741,6 @@ export function HoverLinkCardList({
         })}
         <span aria-hidden className="gencl:w-6 gencl:shrink-0 gencl:lg:hidden" />
       </div>
-    </section>
+    </motion.section>
   );
 }

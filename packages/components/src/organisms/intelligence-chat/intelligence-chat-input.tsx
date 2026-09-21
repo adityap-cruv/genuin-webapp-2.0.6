@@ -47,7 +47,11 @@ export const IntelligenceChatInput = React.forwardRef<HTMLFormElement, Intellige
           event.preventDefault();
           submit();
         }}
-        className={cn("gencl:shrink-0 gencl:border-t gencl:border-secondary-150 gencl:pt-2", className)}
+        className={cn(
+          "gencl:font-[family-name:Inter,system-ui,sans-serif] gencl:tracking-normal gencl:[&_*]:[font-family:inherit] gencl:[&_*]:tracking-normal",
+          "gencl:shrink-0 gencl:pt-2",
+          className
+        )}
         {...props}>
         <label htmlFor={inputId} className="gencl:sr-only">
           Ask Intelligence

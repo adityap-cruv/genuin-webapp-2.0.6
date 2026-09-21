@@ -1,5 +1,7 @@
 "use client";
 
+import { Text } from "@genuin/ui/components/typography";
+
 import type { IntelligenceAutoPromptCountdownState } from "./intelligence-chat.types";
 
 /**
@@ -15,9 +17,13 @@ export function IntelligenceAutoPromptCountdown({ prompt, remainingSeconds }: In
       data-slot="intelligence-auto-prompt-countdown"
       className="gencl:flex gencl:w-full gencl:justify-end">
       <div className="gencl:flex gencl:w-full gencl:flex-col gencl:items-end gencl:gap-2">
-        <div className="gencl:max-w-[90%] gencl:rounded-3xl gencl:rounded-br-none gencl:bg-secondary-50 gencl:px-4 gencl:py-3 gencl:text-body-1-medium gencl:text-secondary-900">
+        <Text
+          as="div"
+          size="body-1"
+          weight="medium"
+          className="gencl:max-w-[90%] gencl:rounded-3xl gencl:rounded-br-none gencl:bg-secondary-50 gencl:px-4 gencl:py-3 gencl:text-secondary-900">
           {prompt}
-        </div>
+        </Text>
 
         <div aria-hidden="true" className="gencl:flex gencl:items-center gencl:gap-1.5 gencl:px-1">
           <span className="gencl:flex gencl:size-4 gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-blue">
@@ -25,7 +31,9 @@ export function IntelligenceAutoPromptCountdown({ prompt, remainingSeconds }: In
               {remainingSeconds}
             </span>
           </span>
-          <span className="gencl:text-[10px] gencl:text-secondary-500">Prompting in...</span>
+          <Text as="span" size="body-3" weight="medium" className="gencl:text-secondary-500">
+            Prompting in...
+          </Text>
         </div>
 
         <span className="gencl:sr-only">Auto prompt will send in {remainingSeconds} seconds.</span>

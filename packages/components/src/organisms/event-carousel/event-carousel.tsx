@@ -54,11 +54,19 @@ type EventCardProps = {
 function EventCard({ event, cardWidth, cardHeight, imageWidth, imageHeight, onCtaClick }: EventCardProps) {
   const description = `${formatEventDateRange(event.start_date, event.end_date)} | ${event.location}`;
 
+  const activateCta = (clickEvent: React.MouseEvent<HTMLElement>) => {
+    const target = clickEvent.target as HTMLElement;
+    if (target.closest('[data-slot="link-card-cta"]')) return;
+
+    clickEvent.currentTarget.querySelector<HTMLElement>('[data-slot="link-card-cta"]')?.click();
+  };
+
   return (
     <article
       data-slot="event-card"
+      onClick={activateCta}
       className={cn(
-        "gencl:box-border gencl:flex-none gencl:overflow-hidden gencl:rounded-lg",
+        "gencl:box-border gencl:flex-none gencl:cursor-pointer gencl:overflow-hidden gencl:rounded-lg",
         "gencl:bg-white gencl:text-black gencl:ring-1 gencl:ring-secondary-200 gencl:ring-inset"
       )}
       style={{ width: cardWidth, height: cardHeight }}>

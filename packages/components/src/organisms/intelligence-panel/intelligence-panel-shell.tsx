@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@genuin/ui/components/button";
-import { Heading } from "@genuin/ui/components/typography";
+import { Text } from "@genuin/ui/components/typography";
 import { cn } from "@genuin/ui/lib/utils";
 import { Sparkle, X } from "lucide-react";
 import * as React from "react";
@@ -13,6 +13,7 @@ const PANEL_TITLE = "Intelligence";
 const FILL_PARENT_SIZE = { width: "100%", height: "100%" } as const;
 
 const PANEL_CLASS = cn(
+  "gencl:font-[family-name:Inter,system-ui,sans-serif] gencl:tracking-normal gencl:[&_*]:[font-family:inherit] gencl:[&_*]:tracking-normal",
   "gencl:@container gencl:flex gencl:max-h-full gencl:min-h-0 gencl:max-w-full gencl:flex-col",
   "gencl:overflow-hidden gencl:rounded-xl gencl:bg-white gencl:p-2 gencl:text-black",
   "gencl:ring-1 gencl:ring-secondary-200 gencl:ring-inset"
@@ -49,14 +50,9 @@ function IntelligencePanelHeader({ headingId, onClose, showClose = false, classN
           strokeWidth={1.75}
           className="gencl:size-4 gencl:shrink-0 gencl:text-secondary-900"
         />
-        <Heading
-          id={headingId}
-          as="h2"
-          level="headline-4"
-          className="gencl:w-fit gencl:truncate gencl:font-medium! gencl:text-secondary-900"
-          style={{ fontSize: "12px", lineHeight: "16px" }}>
-          <span style={{ fontSize: "12px", lineHeight: "16px" }}>{PANEL_TITLE}</span>
-        </Heading>
+        <Text asChild size="body-2" weight="medium" className="gencl:w-fit gencl:truncate gencl:text-secondary-900">
+          <h2 id={headingId}>{PANEL_TITLE}</h2>
+        </Text>
       </div>
 
       {showClose && (

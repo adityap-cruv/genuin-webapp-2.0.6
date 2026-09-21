@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect, fn, within } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 
 import { EventCarousel } from "./event-carousel";
 import type { EventCarouselItem } from "./event-carousel.types";
@@ -65,7 +65,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const RepeatedCards: Story = {
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
     const cards = canvasElement.querySelectorAll('[data-slot="event-card"]');
     const track = canvasElement.querySelector<HTMLElement>('[data-slot="event-carousel-track"]');
@@ -101,6 +101,12 @@ export const RepeatedCards: Story = {
     await expect(getComputedStyle(ctaText).fontWeight).toBe("600");
     await expect(ctaIcon.getBoundingClientRect().width).toBe(24);
     await expect(ctaIcon.getBoundingClientRect().height).toBe(24);
+
+    const preventNavigation = (event: Event) => event.preventDefault();
+    canvasElement.addEventListener("click", preventNavigation, true);
+    await userEvent.click(image);
+    canvasElement.removeEventListener("click", preventNavigation, true);
+    await expect(args.onCtaClick).toHaveBeenCalledWith(REPEATED_EVENTS[0]);
   },
 };
 

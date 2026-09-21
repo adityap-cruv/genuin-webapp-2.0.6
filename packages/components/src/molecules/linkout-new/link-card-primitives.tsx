@@ -161,6 +161,7 @@ export function LinkCardInlineCta({ href, label, theme = "dark", className, onCl
   if (!isExternalHref(href)) {
     return (
       <Link
+        data-slot="link-card-cta"
         href={href}
         aria-label={label}
         draggable={false}
@@ -178,6 +179,7 @@ export function LinkCardInlineCta({ href, label, theme = "dark", className, onCl
 
   return (
     <div
+      data-slot="link-card-cta"
       role="link"
       tabIndex={0}
       aria-label={label}
