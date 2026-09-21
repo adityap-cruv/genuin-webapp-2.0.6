@@ -41,11 +41,28 @@ import { type StepsType, useAuthenticationModalStore } from "./store";
 
 type Props = DialogProps & { showClose?: boolean };
 
+/**
+ * Params appended to the return URL by the SSO provider (Google/Apple/brand) on redirect back.
+ * `provider` is ours (set on the `state` URL before redirecting out); the rest come from the
+ * OAuth/OIDC response and must all be stripped so the user lands on a clean URL after login.
+ */
+const SSO_CALLBACK_PARAMS = [
+  "code",
+  "provider",
+  "state",
+  "scope",
+  "authuser",
+  "prompt",
+  "hd",
+  "iss",
+  "session_state",
+  "id_token",
+] as const;
+
 function removeQueryParams() {
   const url = new URL(window.location.href);
-  url.searchParams.delete("code");
-  url.searchParams.delete("provider");
-  window.history.replaceState({}, "", url.href);
+  SSO_CALLBACK_PARAMS.forEach((param) => url.searchParams.delete(param));
+  window.history.replaceState({}, "", url.pathname + url.search + url.hash);
 }
 
 export function Modal({ children, showClose, ...props }: Props) {
