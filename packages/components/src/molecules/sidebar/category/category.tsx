@@ -81,7 +81,7 @@ export function Category({ variant, className, onItemClick, ...restProps }: Cate
           <div className="gencl:text-body-1-bold">Categories</div>
         </AccordionTrigger>
         <AccordionContent className="gencl:pb-0">
-          <Accordion collapsible type="single" className="gencl:w-full">
+          <Accordion collapsible type="single" defaultValue="category-0" className="gencl:w-full">
             {categories.map((cat, index) => (
               <AccordionItem key={index} value={`category-${index}`}>
                 <AccordionTrigger className="gencl:justify-between gencl:items-center gencl:px-3 gencl:py-2 gencl:!flex">

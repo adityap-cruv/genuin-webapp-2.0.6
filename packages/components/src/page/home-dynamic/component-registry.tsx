@@ -51,8 +51,11 @@ import type {
   IntelligencePanelLayout,
 } from "@genuin/components/organisms/intelligence-panel/intelligence-panel.types";
 import { useCategory } from "@genuin/components/react-query/api/category/category";
+import { getTrendingCommunities } from "@genuin/components/react-query/api/community/trending";
 import { useFeed } from "@genuin/components/react-query/api/feed";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+import { getTrendingGroups } from "@genuin/components/react-query/api/group/trending";
+import { useGetProfileCommunities } from "@genuin/components/react-query/api/profile/posts/posts";
 import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
 import type { FeedData } from "@genuin/components/templates/feed/feed.type";
 
@@ -112,6 +115,8 @@ const INTELLIGENCE_LAYOUT: IntelligencePanelLayout = {
     clipPath: "polygon(5% 0, 100% 0, 100% 100%, 0 100%, 0 10%)",
     ctaFontSize: 9,
     ctaClipPath: "polygon(0 0, 100% 0, 100% 45%, 82% 100%, 0 100%)",
+    ctaBackgroundColor: "var(--gencl-color-primary, #c6002b)",
+    ctaTextColor: "#ffffff",
   },
   articleCard: { height: 221, imageAspectRatio: "4 / 3" },
   upNextGrid: { minimumCardWidth: 172, mobileCardWidth: "calc((100% - 24px) / 2)" },
@@ -146,6 +151,11 @@ export type CommunityFeed = {
 export function useCommunityFeed(communityId?: string, groupId?: string): CommunityFeed {
   const { isInIframe, brandDetails } = useBaseContext();
   const { data: categoryData } = useCategory();
+  const { data: trendingCommData } = getTrendingCommunities();
+  const { data: trendingGroupData } = getTrendingGroups();
+  const brandIdStr = brandDetails?.brand_id ? String(brandDetails.brand_id) : "";
+  const { data: profileCommData } = useGetProfileCommunities(brandIdStr, true, Boolean(brandIdStr));
+
   const options = useMemo(
     () => ({
       isInIframe,
@@ -176,21 +186,89 @@ export function useCommunityFeed(communityId?: string, groupId?: string): Commun
     }),
     [posts, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage, data, options]
   );
+
+  // Match community from trending communities
+  const trendingCommunitiesList = (trendingCommData as { communities?: Array<Record<string, any>> } | undefined)
+    ?.communities;
+  const trendingCommunity = trendingCommunitiesList?.find(
+    (c) => c.community_id === communityId || c.slug === communityId
+  );
+
+  // Match community from brand profile communities
+  const profileCommunities = profileCommData?.pages?.flatMap((p) => p.communities) ?? [];
+  const profileCommunity = profileCommunities.find(
+    (c) => c.id === communityId || c.slug === communityId
+  );
+
+  // Match group from trending groups
+  const trendingGroupsList = (trendingGroupData as { groups?: Array<Record<string, any>> } | undefined)?.groups;
+  const trendingGroup = trendingGroupsList?.find(
+    (g) => g.group?.group_id === groupId || g.chat_id === groupId || g.slug === groupId
+  );
+
+  // Match loop from brand profile communities
+  const allProfileLoops = profileCommunities.flatMap((c) =>
+    (c.loops ?? []).map((l) => ({
+      ...l,
+      parentCommunityName: c.name,
+      parentCommunitySlug: c.slug,
+      parentCommunityDp: c.profileImage,
+    }))
+  );
+  const profileLoop = allProfileLoops.find(
+    (l) => l.id === groupId || l.slug === groupId
+  );
+
   const first = posts[0];
-  // The feed can briefly retain an older community avatar after an edit. Categories power the
-  // sidebar and return the current community metadata, so use that same source for Home headers.
   const categoryCommunity = categoryData?.categories
     .flatMap((category) => category.communities)
     .find((community) => community.community_id === communityId);
 
+  const resolvedCommunityName =
+    trendingCommunity?.name ||
+    profileCommunity?.name ||
+    categoryCommunity?.community_name ||
+    first?.community?.name ||
+    "";
+
+  const resolvedCommunityImage =
+    trendingCommunity?.dp_l ||
+    trendingCommunity?.dp ||
+    profileCommunity?.profileImage ||
+    categoryCommunity?.dp ||
+    first?.community?.profileImage ||
+    "";
+
+  const resolvedCommunitySlug =
+    trendingCommunity?.slug ||
+    profileCommunity?.slug ||
+    categoryCommunity?.slug ||
+    first?.community?.slug ||
+    undefined;
+
+  const resolvedGroupName =
+    trendingGroup?.group?.group_name ||
+    profileLoop?.name ||
+    (groupId ? first?.group?.name : undefined);
+
+  const resolvedGroupSlug =
+    trendingGroup?.slug ||
+    profileLoop?.slug ||
+    (groupId ? first?.group?.slug : undefined);
+
+  const groupImage =
+    trendingGroup?.group?.dp ||
+    profileLoop?.parentCommunityDp ||
+    "";
+
   return {
     feedData,
     posts,
-    communityName: categoryCommunity?.community_name || first?.community?.name || "",
-    communityImage: categoryCommunity?.dp || first?.community?.profileImage || SECTION_LOGO,
-    communitySlug: categoryCommunity?.slug || first?.community?.slug || undefined,
-    groupName: groupId ? (first?.group?.name ?? undefined) : undefined,
-    groupSlug: groupId ? (first?.group?.slug ?? undefined) : undefined,
+    communityName: resolvedCommunityName,
+    communityImage: (groupId && groupImage ? groupImage : resolvedCommunityImage) || SECTION_LOGO,
+    communitySlug: resolvedCommunitySlug || profileLoop?.parentCommunitySlug,
+    groupName: resolvedGroupName,
+    groupSlug: resolvedGroupSlug,
     isLoading,
   };
 }
@@ -491,6 +569,8 @@ function WidgetFrame({
   logo,
   source,
   brandSlug,
+  communitySlug: explicitCommunitySlug,
+  groupSlug: explicitGroupSlug,
   imageAlt,
   wrapper,
   children,
@@ -501,35 +581,37 @@ function WidgetFrame({
   source?: FeedSource;
   /** Sponsor headers carry a brand nickname instead of a `source`; it links to `/brand/<slug>`. */
   brandSlug?: string;
+  communitySlug?: string;
+  groupSlug?: string;
   imageAlt?: string;
   wrapper?: WidgetWrapper;
   children: ReactNode;
 }) {
   const frame = wrapper ?? {};
-  // The response currently uses The Foil mark as a placeholder for community-backed widgets.
-  // Resolve those placeholders from the community feed, while preserving an explicitly authored
-  // brand/sponsor logo (for example Musto). Missing community artwork falls back to The Foil.
-  const shouldResolveCommunityIdentity = Boolean(source?.communityId) && (!logo || logo === SECTION_LOGO);
+  // Resolve community/group identity dynamically when source specifies communityId or groupId.
+  const shouldResolveCommunityIdentity = Boolean(source?.communityId || source?.groupId);
   const { communityImage, communityName, communitySlug, groupName, groupSlug } = useCommunityFeed(
     shouldResolveCommunityIdentity ? source?.communityId : undefined,
     shouldResolveCommunityIdentity ? source?.groupId : undefined
   );
-  const resolvedLogo = shouldResolveCommunityIdentity ? communityImage : logo;
-  const resolvedHeading = shouldResolveCommunityIdentity ? groupName || communityName || heading : heading;
-  const resolvedImageAlt = shouldResolveCommunityIdentity ? communityName || imageAlt : imageAlt;
-  // The header names a real community/group, so it should take the reader there — mirroring the
-  // player's community/group pills. Group-scoped widgets win, matching the heading precedence
-  // above. Sponsor headers (an authored logo and no `source`) stay unlinked.
-  // A sponsor header is neither a community nor a group, so it never resolved an identity and
-  // stayed inert. Its brand page is the destination readers expect from that logo and name.
-  const headerHref = !shouldResolveCommunityIdentity
-    ? brandSlug
-      ? buildPageUrl({ type: "brand", slug: brandSlug })
-      : undefined
-    : groupSlug
-      ? buildPageUrl({ type: "group", slug: groupSlug })
-      : communitySlug
-        ? buildPageUrl({ type: "community", slug: communitySlug })
+  const resolvedLogo =
+    (shouldResolveCommunityIdentity && communityImage && communityImage !== SECTION_LOGO
+      ? communityImage
+      : "") || logo;
+  const resolvedHeading =
+    (shouldResolveCommunityIdentity ? groupName || communityName : "") || heading;
+  const resolvedImageAlt =
+    (shouldResolveCommunityIdentity ? groupName || communityName : "") || imageAlt || resolvedHeading;
+
+  const activeGroupSlug = groupSlug || explicitGroupSlug;
+  const activeCommunitySlug = communitySlug || explicitCommunitySlug;
+
+  const headerHref = activeGroupSlug
+    ? buildPageUrl({ type: "group", slug: activeGroupSlug })
+    : activeCommunitySlug
+      ? buildPageUrl({ type: "community", slug: activeCommunitySlug })
+      : !shouldResolveCommunityIdentity && brandSlug
+        ? buildPageUrl({ type: "brand", slug: brandSlug })
         : undefined;
 
   return (
@@ -755,6 +837,8 @@ function PlacementWidget({ node, data, isNear }: WidgetRenderProps) {
       logo={data.header?.logo}
       source={data.source}
       brandSlug={data.header?.brandSlug}
+      communitySlug={data.header?.communitySlug}
+      groupSlug={data.header?.groupSlug}
       wrapper={node.wrapper}>
       {show && styleId && placementId ? (
         <GenuinPlacement
@@ -790,6 +874,8 @@ function IntelligencePanelWidget({ node, data }: WidgetRenderProps) {
       logo={data.header?.logo}
       source={data.source}
       brandSlug={data.header?.brandSlug}
+      communitySlug={data.header?.communitySlug}
+      groupSlug={data.header?.groupSlug}
       wrapper={node.wrapper}>
       {featured ? (
         <IntelligencePanel
@@ -821,6 +907,8 @@ function IntelligenceCardListWidget({ node, data }: WidgetRenderProps) {
       logo={data.header?.logo}
       source={data.source}
       brandSlug={data.header?.brandSlug}
+      communitySlug={data.header?.communitySlug}
+      groupSlug={data.header?.groupSlug}
       wrapper={node.wrapper}>
       {articles.length === 0 ? (
         <EmptyWidgetState />
@@ -901,6 +989,8 @@ function EventCarouselWidget({ node, data }: WidgetRenderProps) {
       logo={data.header?.logo}
       source={data.source}
       brandSlug={data.header?.brandSlug}
+      communitySlug={data.header?.communitySlug}
+      groupSlug={data.header?.groupSlug}
       wrapper={node.wrapper}>
       {/* No onCtaClick: the event CTA's href is now an on-domain `/article/<slug>` link
           (from the BFF), so the LinkCard renders it as a same-tab anchor — matching home.tsx. */}
@@ -953,6 +1043,8 @@ function HoverLinkCardListWidget({ node, data }: WidgetRenderProps) {
       logo={data.header?.logo}
       source={data.source}
       brandSlug={data.header?.brandSlug}
+      communitySlug={data.header?.communitySlug}
+      groupSlug={data.header?.groupSlug}
       wrapper={node.wrapper}>
       <HoverLinkCardList
         items={items}

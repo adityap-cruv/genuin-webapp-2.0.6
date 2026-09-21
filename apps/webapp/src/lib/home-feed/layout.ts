@@ -12,45 +12,40 @@
 
 import type { HomeLayoutManifest, LayoutRow, WidgetNode } from "@genuin/components/page/home-dynamic/contract";
 
-// Placement ids MATCH the /home page (`HOME_PLACEMENTS`), so the backend-driven home renders the
-// SAME intelligence-chat-enabled placements. Each slot has its own distinct placement.
-const PLACEMENT_API_KEY = "018b5a9408d982482ee586511456679c1cc1f4bc4adc5dc2";
+// Brand 3938 home placements. The widget structure below is unchanged; only the
+// placement configuration is switched to the iHeart placements.
+const IHEART_API_KEY = "70bf4b161ab46df37d453bfa413ea1859257392922402afc";
+const GRID_API_KEY = "018b5a9408d982482ee586511456679c1cc1f4bc4adc5dc2";
+
+// 1st section: iHeart
 const DESK_CAROUSEL_PLACEMENT = {
-  styleId: "6a86fefe1b5332711228a548",
-  placementId: "6a86fefe1b5332711228a547",
-  apiKey: PLACEMENT_API_KEY,
+  styleId: "6ab125464311139454e178bd",
+  placementId: "6ab125464311139454e178bc",
+  apiKey: IHEART_API_KEY,
 };
+
+// 3rd section: feed view placement (first sub-section: iHeart Video)
 const LATEST_FEED_PLACEMENT = {
-  styleId: "6a8712d44fc9bb6b22ea8c7b",
-  placementId: "6a8712d44fc9bb6b22ea8c7a",
-  apiKey: PLACEMENT_API_KEY,
+  styleId: "6ab125485468e3445269e1da",
+  placementId: "6ab125485468e3445269e1d9",
+  apiKey: IHEART_API_KEY,
 };
+
+// 4th section: iHeart categories
 const TOP_CATEGORIES_CAROUSEL_PLACEMENT = {
-  styleId: "6a8713aa1b5332711228b24c",
-  placementId: "6a8713aa1b5332711228b24b",
-  apiKey: PLACEMENT_API_KEY,
+  styleId: "6ab125494311139454e178c8",
+  placementId: "6ab125494311139454e178c7",
+  apiKey: IHEART_API_KEY,
 };
+
+// 5th section: grid view placement
 const GRID_PLACEMENTS = [
   {
     styleId: "6a8d7df90ab638a100b16f74",
     placementId: "6a8d7df90ab638a100b16f73",
     mobileStyleId: "6a8d98dfceb52d9183e7e2e6",
     mobilePlacementId: "6a8d98dfceb52d9183e7e2e5",
-    apiKey: PLACEMENT_API_KEY,
-  },
-  {
-    styleId: "6aa3fe388bc64b3c7fc2cae5",
-    placementId: "6aa3fe388bc64b3c7fc2cae4",
-    mobileStyleId: "6aa3fe40d64b5ab580a4f4bf",
-    mobilePlacementId: "6aa3fe40d64b5ab580a4f4be",
-    apiKey: PLACEMENT_API_KEY,
-  },
-  {
-    styleId: "6aa3fe478bc64b3c7fc2cb0c",
-    placementId: "6aa3fe478bc64b3c7fc2cb0b",
-    mobileStyleId: "6aa3fe4e8bc64b3c7fc2cb2a",
-    mobilePlacementId: "6aa3fe4e8bc64b3c7fc2cb29",
-    apiKey: PLACEMENT_API_KEY,
+    apiKey: GRID_API_KEY,
   },
 ];
 

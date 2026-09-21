@@ -97,6 +97,10 @@ export type HeaderData = {
    * clickable. Omit it and the header stays inert, as before.
    */
   brandSlug?: string;
+  /** Community slug to link the section header directly to `/community/<slug>`. */
+  communitySlug?: string;
+  /** Group slug to link the section header directly to `/group/<slug>`. */
+  groupSlug?: string;
 };
 export type FeedSource = { feedType: FeedType; communityId: string; groupId?: string };
 export type ImageData = { src: string; alt?: string };

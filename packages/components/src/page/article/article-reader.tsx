@@ -16,6 +16,7 @@ import {
   setQueryDataForCommunityRoleChange,
   useGetCommunityDetails,
 } from "@genuin/components/react-query/api/community/details/details";
+import { getTrendingCommunities } from "@genuin/components/react-query/api/community/trending";
 import {
   setQueryDataForJoinGroupInGroupDetails,
   setQueryDataForSubscribeGroupInGroupDetails,
@@ -232,7 +233,21 @@ function ArticleHeaderPills({ article }: { article: Article }) {
 
   return (
     <div className="gencl:mt-4 gencl:flex gencl:items-center gencl:gap-2">
-      <Pills communityDetails={article.community} groupDetails={article.group} isHoverable variant="light" />
+      <Pills
+        communityDetails={article.community}
+        groupDetails={article.group}
+        isHoverable
+        variant="light"
+        onCommunityJoinStatusChange={(role) =>
+          article.community && setQueryDataForCommunityRoleChange(article.community.slug, role)
+        }
+        onGroupJoinStatusChange={(role) =>
+          article.group && setQueryDataForJoinGroupInGroupDetails(article.group.slug, role)
+        }
+        onGroupSubscriptionChange={(subscribed) =>
+          article.group && setQueryDataForSubscribeGroupInGroupDetails(article.group.slug, subscribed)
+        }
+      />
     </div>
   );
 }
@@ -282,6 +297,7 @@ export function ArticleReaderHeader({ article, className }: { article: Article; 
 /** Canonical article hero and body, shared without mounting any SDK placements. */
 export function ArticleReaderBody({ article, className }: { article: Article; className?: string }) {
   const { data: categories } = useCategory();
+  const { data: trendingCommunities } = getTrendingCommunities();
   const { data: groups } = useTrendingGroups();
   const [active, setActive] = useState<{ key: string; kind: "community" | "group"; slug: string } | null>(null);
   const canHover = useMediaQuery("(hover: hover) and (pointer: fine)", { initializeWithValue: false });
@@ -309,6 +325,11 @@ export function ArticleReaderBody({ article, className }: { article: Article; cl
     categories?.categories.forEach((category) =>
       category.communities.forEach((item) => add(item.community_name, { kind: "community", slug: item.slug }))
     );
+    (
+      trendingCommunities as
+        | { communities?: Array<{ name?: string; community_name?: string; slug: string }> }
+        | undefined
+    )?.communities?.forEach((item) => add(item.community_name ?? item.name, { kind: "community", slug: item.slug }));
     groups?.groups?.forEach((item: { slug: string; group: { group_name: string } }) =>
       add(item.group.group_name, { kind: "group", slug: item.slug })
     );

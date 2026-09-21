@@ -4,7 +4,7 @@ import { Text } from "@genuin/ui/components/typography";
 import { cn } from "@genuin/ui/lib/utils";
 import { NavArrowButton } from "@genuin/ui/player-controls";
 import { ChevronRight, Sparkle } from "lucide-react";
-import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
 import { useIsClient, useMediaQuery } from "usehooks-ts";
 
 import {
@@ -19,8 +19,19 @@ import { useFloatingVideoRestoreTarget } from "@genuin/components/lib/floating-v
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { Link } from "@genuin/components/molecules/link";
 import { CommunityCard } from "@genuin/components/organisms/community-card";
+import { GroupCard } from "@genuin/components/organisms/group-card";
+import { useGetCommunityDetails } from "@genuin/components/react-query/api/community/details/details";
+import {
+  setQueryDataForJoinGroupInGroupDetails,
+  useGetGroupDetails,
+} from "@genuin/components/react-query/api/group/details/details";
 
-import { toCommunityCardInfo } from "./article-community";
+import {
+  toCommunityCardInfo,
+  toGroupCardProps,
+  type ArticleCommunity,
+  type ArticleGroup,
+} from "./article-community";
 import { type Article, getArticleByHref } from "./article-data";
 import { ArticleIntelligenceAssistant } from "./article-intelligence-assistant";
 import {
@@ -45,24 +56,24 @@ type PlacementConfig = { placementId: string; styleId: string; apiKey: string };
  */
 const PLACEMENTS = {
   carousel: {
-    placementId: "6a7c724e9a800f68344db4a1",
-    styleId: "6a7c724e9a800f68344db4a2",
-    apiKey: "018b5a9408d982482ee586511456679c1cc1f4bc4adc5dc2",
+    placementId: "6ab1254c5468e3445269e1f6",
+    styleId: "6ab1254c5468e3445269e1f7",
+    apiKey: "70bf4b161ab46df37d453bfa413ea1859257392922402afc",
   },
   feed: {
-    placementId: "6a884fdbd9efa1218d9a3e61",
-    styleId: "6a884fdbd9efa1218d9a3e62",
-    apiKey: "018b5a9408d982482ee586511456679c1cc1f4bc4adc5dc2",
+    placementId: "6ab1254a4311139454e178db",
+    styleId: "6ab1254a4311139454e178dc",
+    apiKey: "70bf4b161ab46df37d453bfa413ea1859257392922402afc",
   },
   mobileCarousel: {
-    placementId: "6aafcd7bf123363b41c61d21",
-    styleId: "6aafcd7bf123363b41c61d22",
-    apiKey: "018b5a9408d982482ee586511456679c1cc1f4bc4adc5dc2",
+    placementId: "6ab1254a4311139454e178db",
+    styleId: "6ab1254a4311139454e178dc",
+    apiKey: "70bf4b161ab46df37d453bfa413ea1859257392922402afc",
   },
   grid: {
-    placementId: "6a897c07cfdd53cec79af6a9",
-    styleId: "6a897c07cfdd53cec79af6aa",
-    apiKey: "018b5a9408d982482ee586511456679c1cc1f4bc4adc5dc2",
+    placementId: "6ab1254e4311139454e178fd",
+    styleId: "6ab1254e4311139454e178fe",
+    apiKey: "70bf4b161ab46df37d453bfa413ea1859257392922402afc",
   },
 } as const satisfies Record<string, PlacementConfig>;
 
@@ -206,15 +217,13 @@ function ArticleRailPlacement() {
 }
 
 /**
- * Where the article was published: the community it is attached to, rendered with the same
- * `CommunityCard` the rest of the app uses (the `suggestion` variant — compact, whole-card
- * clickable, no duplicate join CTA, since the header pills already carry join/subscribe).
- *
- * Community only. The group is deliberately left out here: the rail answers "which community
- * is this from", and the header pills already carry the group for anyone who wants it.
+ * Where the article was published: the community it is attached to and the group it
+ * was filed under, rendered with the same `CommunityCard` / `GroupCard` the rest of
+ * the app uses (the `suggestion` variant — compact, whole-card clickable, no duplicate
+ * join CTA, since the header pills already carry join/subscribe).
  */
 function ArticleOriginRail({ article }: { article: Article }) {
-  const { community } = article;
+  const { community, group } = article;
   if (!community) return null;
 
   return (
@@ -232,6 +241,18 @@ function ArticleOriginRail({ article }: { article: Article }) {
         variant="suggestion"
         url={buildPageUrl({ type: "community", slug: community.slug })}
       />
+
+      {group ? (
+        <>
+          <div className="gencl:mx-3 gencl:border-t gencl:border-secondary-100" />
+          <GroupCard
+            {...toGroupCardProps(group, community)}
+            variant="suggestion"
+            url={buildPageUrl({ type: "group", slug: group.slug })}
+            onGroupJoinStatusChange={(newRole) => setQueryDataForJoinGroupInGroupDetails(group.slug, newRole)}
+          />
+        </>
+      ) : null}
     </section>
   );
 }
@@ -407,8 +428,61 @@ function NestedArticleOverlay({ article, onBack }: { article: Article; onBack: (
   );
 }
 
+function useDynamicArticleOrigin(article: Article): { community?: ArticleCommunity; group?: ArticleGroup } {
+  const communitySlug = article.community?.slug;
+  const groupSlug = article.group?.slug;
+  const { data: communityDetails } = useGetCommunityDetails(communitySlug ?? "", Boolean(communitySlug));
+  const { data: groupDetails } = useGetGroupDetails(groupSlug ?? "", Boolean(groupSlug));
+
+  return useMemo(() => {
+    if (!article.community && !communityDetails) {
+      return { community: undefined, group: undefined };
+    }
+    const community: ArticleCommunity | undefined = article.community
+      ? {
+          ...article.community,
+          name: communityDetails?.name || article.community.name,
+          handle: communityDetails?.handle || article.community.handle,
+          profileImage:
+            communityDetails?.dp_s ||
+            communityDetails?.dp_m ||
+            communityDetails?.dp ||
+            article.community.profileImage,
+          banner: communityDetails?.banner || article.community.banner,
+          description: communityDetails?.description ?? article.community.description,
+          isPrivate: communityDetails ? communityDetails.type === "PRIVATE" : article.community.isPrivate,
+          shareUrl: communityDetails?.share_url || article.community.shareUrl,
+          userRole:
+            (communityDetails?.logged_in_user_role as ArticleCommunity["userRole"]) ?? article.community.userRole,
+          membersCount: communityDetails?.no_of_members ?? article.community.membersCount,
+          groupsCount: communityDetails?.no_of_loops ?? article.community.groupsCount,
+          postsCount: communityDetails?.no_of_videos ?? article.community.postsCount,
+        }
+      : undefined;
+
+    const group: ArticleGroup | undefined = article.group
+      ? {
+          ...article.group,
+          name: groupDetails?.name || article.group.name,
+          description: groupDetails?.description ?? article.group.description,
+          isSubscribed: groupDetails?.isSubscriber ?? article.group.isSubscribed,
+          isPrivate: groupDetails ? groupDetails.isPrivate : article.group.isPrivate,
+          role: groupDetails?.role ?? article.group.role,
+          shareUrl: groupDetails?.shareUrl || article.group.shareUrl,
+          stats: {
+            members: groupDetails?.noOfMembers ?? article.group.stats.members,
+            posts: groupDetails?.noOfVideos ?? article.group.stats.posts,
+            views: groupDetails?.noOfViews ?? article.group.stats.views,
+          },
+        }
+      : undefined;
+
+    return { community, group };
+  }, [article.community, article.group, communityDetails, groupDetails]);
+}
+
 export function ArticlePage({
-  article,
+  article: initialArticle,
   backControl,
   onPlayerExpandChange,
 }: {
@@ -416,6 +490,15 @@ export function ArticlePage({
   backControl?: ReactNode;
   onPlayerExpandChange?: (expanded: boolean) => void;
 }) {
+  const dynamicOrigin = useDynamicArticleOrigin(initialArticle);
+  const article = useMemo(
+    () => ({
+      ...initialArticle,
+      community: dynamicOrigin.community ?? initialArticle.community,
+      group: dynamicOrigin.group ?? initialArticle.group,
+    }),
+    [initialArticle, dynamicOrigin]
+  );
   const overlayBoundsRef = useRef<HTMLDivElement>(null);
   const scrollerRef = useRef<HTMLDivElement>(null);
   /**

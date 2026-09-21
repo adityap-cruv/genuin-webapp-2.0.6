@@ -1,7 +1,7 @@
 // Server-safe article model and accessors for on-domain /article/<slug> pages.
 // The 3938 iHeart snapshot is generated in iheart-article-content.generated.ts.
 
-import type { ArticleCommunity, ArticleGroup } from "./article-community";
+import { getArticleOrigin, type ArticleCommunity, type ArticleGroup } from "./article-community";
 import { IHEART_ARTICLE_CONTENT } from "./iheart-article-content.generated";
 
 export type ArticleBlock =
@@ -37,7 +37,14 @@ export type ArticleContentMap = Record<string, Article>;
 export const ARTICLE_CONTENT: ArticleContentMap = IHEART_ARTICLE_CONTENT;
 
 export function getArticleBySlug(slug: string): Article | undefined {
-  return ARTICLE_CONTENT[slug];
+  const article = ARTICLE_CONTENT[slug];
+  if (!article) return undefined;
+  const origin = getArticleOrigin(article.slug, article.kind);
+  return {
+    ...article,
+    community: article.community ?? origin.community,
+    group: article.group ?? origin.group,
+  };
 }
 
 export function getArticleByHref(href: string, expectedOrigin?: string): Article | undefined {

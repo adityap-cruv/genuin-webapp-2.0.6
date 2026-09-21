@@ -176,14 +176,14 @@ export function IntelligenceFeaturedArticle({
           className={cn(
             FOCUS_CLASS,
             "gencl:inline-flex gencl:h-6 gencl:min-w-20 gencl:items-center gencl:justify-center",
-            "gencl:bg-[#d4ad00] gencl:px-2 gencl:pr-4",
-            "gencl:text-black gencl:no-underline",
+            "gencl:bg-primary gencl:px-2 gencl:pr-4",
+            "gencl:text-white gencl:no-underline",
             "gencl:transition-[filter] gencl:hover:brightness-95"
           )}
           style={{
             clipPath: layout.ctaClipPath,
-            backgroundColor: layout.ctaBackgroundColor,
-            color: layout.ctaTextColor,
+            backgroundColor: layout.ctaBackgroundColor ?? "var(--gencl-color-primary, #c6002b)",
+            color: layout.ctaTextColor ?? "#ffffff",
             pointerEvents: "auto",
           }}>
           <Text as="span" size="body-4" weight="medium" style={{ fontSize: layout.ctaFontSize }}>

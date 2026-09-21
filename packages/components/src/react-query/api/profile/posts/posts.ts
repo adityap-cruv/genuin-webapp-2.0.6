@@ -109,7 +109,7 @@ async function fetchProfileCommunities({
  * @param forBrand - A boolean indicating whether to fetch communities for a brand or a user profile.
  * @returns
  */
-export function useGetProfileCommunities(profileId: string, forBrand = false) {
+export function useGetProfileCommunities(profileId: string, forBrand = false, enabled = true) {
   const axiosInstance = useAxiosInstance();
 
   return useInfiniteQuery({
@@ -127,6 +127,7 @@ export function useGetProfileCommunities(profileId: string, forBrand = false) {
       if (lastPage.end) return null;
       return lastPage.nextPageParam;
     },
+    enabled: Boolean(profileId) && enabled,
   });
 }
 type OldQueryData = Awaited<ReturnType<typeof useGetProfileCommunities>>["data"];

@@ -29,8 +29,8 @@ export function getQueryKeyForGuidelines(brandId: number): QueryKey {
  * // Use with useQuery:
  * const { data } = useQuery(queryKey, fetchCategories);
  */
-export function getQueryKeyForCategories(): QueryKey {
-  return [...baseQueryKey, "categories"];
+export function getQueryKeyForCategories(brandId?: number): QueryKey {
+  return brandId ? [...baseQueryKey, "categories", brandId] : [...baseQueryKey, "categories"];
 }
 
 /**

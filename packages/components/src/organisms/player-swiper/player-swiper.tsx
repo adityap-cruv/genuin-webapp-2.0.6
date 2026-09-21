@@ -1297,7 +1297,6 @@ export function PlayerList({
         showExpandView &&
         !isAdFilled &&
         filteredPost[activeIndex] &&
-        brandLayoutType !== "iheart" &&
         isDesktop && (
           <div
             aria-hidden={isVideoFloating || undefined}
