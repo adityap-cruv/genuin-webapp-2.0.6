@@ -274,6 +274,10 @@ export function PlayerList({
   } = useEmbedConfigs();
   const embedDetails = useSafeEmbedContext();
   const [isHomeFeedView, setIsHomeFeedView] = useState(() => isFeedViewPresentation(embedDetails?.rootElement));
+  // Home and Article placements explicitly opt in to Intelligence. Keep that capability when a
+  // bounded Feed View is promoted to Full View (`isHomeFeedView` becomes false at that point),
+  // while ordinary page feeds such as /latest, /popular and /explore remain opted out.
+  const isIntelligenceEnabled = embedDetails?.rootElement?.dataset.intelligenceEnabled === "true" || isHomeFeedView;
   const [selectedInlineArticle, setSelectedInlineArticle] = useState<Article | null>(null);
   const [isInlineVideoDismissed, setIsInlineVideoDismissed] = useState(false);
   const inlineArticleTriggerRef = useRef<HTMLElement | null>(null);
@@ -1080,11 +1084,9 @@ export function PlayerList({
             )}
             linkoutThumbnail={filteredPost[activeIndex]?.video?.linkouts?.[0]?.links?.[0]?.image ?? null}
             isLinkoutsOpen={hasContentType("linkouts")}
-            // Sparkle action: expanded desktop view only — the right rail hosts the panel.
-            // TEMPORARY: Home Feed View only. The page feeds (/latest, /popular, /explore)
-            // keep their existing chrome until Intelligence is signed off there — drop the
-            // `isHomeFeedView &&` to bring the sparkle back for them.
-            showIntelligence={showExpandView && isDesktop && isHomeFeedView}
+            // Desktop Intelligence is limited to explicitly enabled Home/Article placements.
+            // First-party page feeds (/latest, /popular, /explore) remain hidden until signed off.
+            showIntelligence={showExpandView && isDesktop && isIntelligenceEnabled}
             isIntelligenceOpen={isIntelligenceOpen}
             actionWrapper={{
               INTELLIGENCE: (defaultNode) => (
