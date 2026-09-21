@@ -15,7 +15,6 @@ import type { HomeLayoutManifest, LayoutRow, WidgetNode } from "@genuin/componen
 // Brand 3938 home placements. The widget structure below is unchanged; only the
 // placement configuration is switched to the iHeart placements.
 const IHEART_API_KEY = "70bf4b161ab46df37d453bfa413ea1859257392922402afc";
-const GRID_API_KEY = "018b5a9408d982482ee586511456679c1cc1f4bc4adc5dc2";
 
 // 1st section: iHeart
 const DESK_CAROUSEL_PLACEMENT = {
@@ -38,14 +37,21 @@ const TOP_CATEGORIES_CAROUSEL_PLACEMENT = {
   apiKey: IHEART_API_KEY,
 };
 
-// 5th section: grid view placement
+// 5th section: grid view placement (sponsors: U.S. Ski & Capital One)
 const GRID_PLACEMENTS = [
   {
-    styleId: "6a8d7df90ab638a100b16f74",
-    placementId: "6a8d7df90ab638a100b16f73",
-    mobileStyleId: "6a8d98dfceb52d9183e7e2e6",
-    mobilePlacementId: "6a8d98dfceb52d9183e7e2e5",
-    apiKey: GRID_API_KEY,
+    styleId: "6ab157b8d8e21711abc4bba2",
+    placementId: "6ab157b8d8e21711abc4bba3",
+    mobileStyleId: "6ab157b9d8e21711abc4bba4",
+    mobilePlacementId: "6ab157b9d8e21711abc4bba5",
+    apiKey: IHEART_API_KEY,
+  },
+  {
+    styleId: "6ab157bbd8e21711abc4bba7",
+    placementId: "6ab157bbd8e21711abc4bba8",
+    mobileStyleId: "6ab157bbd8e21711abc4bba9",
+    mobilePlacementId: "6ab157bbd8e21711abc4bbaa",
+    apiKey: IHEART_API_KEY,
   },
 ];
 

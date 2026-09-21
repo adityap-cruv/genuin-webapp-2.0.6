@@ -31,6 +31,7 @@ import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { markLinkoutEngaged } from "@genuin/components/molecules/linkout-new/linkout-engagement-marker";
 import type { OctoPanelHandle } from "@genuin/components/molecules/octo-panel/octo-panel";
 import type { IntelligenceArticleSelectHandler } from "@genuin/components/organisms/intelligence-panel/intelligence-panel.types";
+import { fetchVideoSuggestedPrompts } from "../intelligence-chat/intelligence-chat-side-panel";
 import { getArticleByHref, type Article } from "@genuin/components/page/article/article-data";
 import { InlineArticleView } from "@genuin/components/page/article/inline-article-view";
 import { type PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
@@ -634,6 +635,26 @@ export function PlayerList({
 
     lastOctoVideoIdRef.current = activeVideoId;
   }, [activeVideoId, isOctoOpen]);
+
+  useEffect(() => {
+    if (!activeVideoId || !isHomeFeedView) return;
+    const currentVideo = filteredPost[activeIndex]?.video;
+    if (currentVideo?.id) {
+      fetchVideoSuggestedPrompts(
+        currentVideo.id,
+        currentVideo.attributes?.title ?? undefined,
+        currentVideo.attributes?.description ?? undefined
+      );
+    }
+    const nextVideo = filteredPost[activeIndex + 1]?.video;
+    if (nextVideo?.id) {
+      fetchVideoSuggestedPrompts(
+        nextVideo.id,
+        nextVideo.attributes?.title ?? undefined,
+        nextVideo.attributes?.description ?? undefined
+      );
+    }
+  }, [activeVideoId, activeIndex, filteredPost, isHomeFeedView]);
 
   const shouldAutoOpenOcto = !isDesktop && showEngagementTools && isOctoToolEnabled;
   const shouldShowPlayerHeader = brandLayoutType === "iheart" && !isEndOfFeedReached && !isAdFilled;

@@ -44,6 +44,53 @@ function getMockVideoAutoPrompt(videoId: string): string {
   return MOCK_VIDEO_AUTO_PROMPTS[hash % MOCK_VIDEO_AUTO_PROMPTS.length]!;
 }
 
+function getInitialAutoPrompt(videoId: string, title?: string): string {
+  if (title?.trim()) {
+    return `Tell me more about ${title.trim()}.`;
+  }
+  return getMockVideoAutoPrompt(videoId);
+}
+
+const CLIENT_PROMPT_CACHE = new Map<string, string[]>();
+const IN_FLIGHT_CACHE = new Map<string, Promise<string[]>>();
+
+export async function fetchVideoSuggestedPrompts(
+  videoId: string,
+  title?: string,
+  description?: string,
+  signal?: AbortSignal
+): Promise<string[]> {
+  if (!videoId) return [];
+  const cached = CLIENT_PROMPT_CACHE.get(videoId);
+  if (cached && cached.length > 0) return cached;
+
+  const inFlight = IN_FLIGHT_CACHE.get(videoId);
+  if (inFlight) return inFlight;
+
+  const promise = (async () => {
+    try {
+      const params = new URLSearchParams({ videoId });
+      if (title) params.set("title", title);
+      if (description) params.set("description", description);
+      const res = await fetch(`${INTELLIGENCE_CHAT_URL}?${params.toString()}`, { signal });
+      if (!res.ok) return [];
+      const data = (await res.json()) as { prompts?: string[] };
+      const prompts = data.prompts ?? [];
+      if (prompts.length > 0) {
+        CLIENT_PROMPT_CACHE.set(videoId, prompts);
+      }
+      return prompts;
+    } catch {
+      return [];
+    } finally {
+      IN_FLIGHT_CACHE.delete(videoId);
+    }
+  })();
+
+  IN_FLIGHT_CACHE.set(videoId, promise);
+  return promise;
+}
+
 /** Lightweight context about the active video, sent to the backend so replies can reference it. */
 export type IntelligenceChatVideoContext = {
   title?: string;
@@ -51,6 +98,7 @@ export type IntelligenceChatVideoContext = {
   community?: string;
   linkoutTitle?: string;
   linkoutDescription?: string;
+  suggestedPrompts?: string[];
 };
 
 type IntelligenceChatSidePanelProps = {
@@ -62,6 +110,8 @@ type IntelligenceChatSidePanelProps = {
    * backend derives this from `videoId`, so it can safely ignore it.
    */
   videoContext?: IntelligenceChatVideoContext;
+  /** Optional pre-fetched suggested prompts for this video (e.g. from OpenSearch). */
+  suggestedPrompts?: string[];
   /** Called when the user activates the panel's close control. */
   onClose: () => void;
   /**
@@ -217,6 +267,7 @@ function errorResponse(seq: number): IntelligenceResponseBlock[] {
 export function IntelligenceChatSidePanel({
   videoId,
   videoContext,
+  suggestedPrompts: propsSuggestedPrompts,
   onClose,
   showClose = false,
   autoPromptOnMount = false,
@@ -224,14 +275,82 @@ export function IntelligenceChatSidePanel({
   className,
   onArticleSelect,
 }: IntelligenceChatSidePanelProps) {
-  const mockVideoAutoPrompt = getMockVideoAutoPrompt(videoId);
+  const initialKnownPrompt =
+    propsSuggestedPrompts?.[0] ??
+    videoContext?.suggestedPrompts?.[0] ??
+    (videoId ? CLIENT_PROMPT_CACHE.get(videoId)?.[0] : undefined);
+
+  const [autoPromptText, setAutoPromptText] = useState<string>(
+    () => initialKnownPrompt ?? ""
+  );
+  const autoPromptTextRef = useRef(autoPromptText);
+  useEffect(() => {
+    autoPromptTextRef.current = autoPromptText;
+  }, [autoPromptText]);
+
+  const [promptReady, setPromptReady] = useState<boolean>(() => Boolean(initialKnownPrompt));
   const [messages, setMessages] = useState<readonly IntelligenceChatMessage[]>([]);
   const [isResponding, setIsResponding] = useState(false);
   const [autoPromptCountdown, setAutoPromptCountdown] = useState<IntelligenceAutoPromptCountdownState | null>(() =>
-    autoPromptOnMount && videoId
-      ? { prompt: mockVideoAutoPrompt, remainingSeconds: AUTO_PROMPT_COUNTDOWN_SECONDS }
+    autoPromptOnMount && videoId && initialKnownPrompt
+      ? {
+          prompt: initialKnownPrompt,
+          remainingSeconds: AUTO_PROMPT_COUNTDOWN_SECONDS,
+        }
       : null
   );
+
+  useEffect(() => {
+    if (!videoId) return;
+
+    const provided =
+      propsSuggestedPrompts?.[0] ??
+      videoContext?.suggestedPrompts?.[0] ??
+      CLIENT_PROMPT_CACHE.get(videoId)?.[0];
+
+    if (provided) {
+      setAutoPromptText(provided);
+      setPromptReady(true);
+      return;
+    }
+
+    const controller = new AbortController();
+    let isSettled = false;
+
+    // Safety timeout: if OpenSearch/API takes > 1500ms, fallback to contextual/mock prompt so user isn't blocked forever
+    const timeoutId = window.setTimeout(() => {
+      if (!isSettled) {
+        const fallback = getInitialAutoPrompt(videoId, videoContext?.title);
+        setAutoPromptText(fallback);
+        setPromptReady(true);
+      }
+    }, 1500);
+
+    fetchVideoSuggestedPrompts(videoId, videoContext?.title, videoContext?.description, controller.signal)
+      .then((prompts) => {
+        if (controller.signal.aborted) return;
+        isSettled = true;
+        window.clearTimeout(timeoutId);
+        const selected = prompts[0] || getInitialAutoPrompt(videoId, videoContext?.title);
+        if (selected) {
+          setAutoPromptText(selected);
+        }
+        setPromptReady(true);
+      })
+      .catch(() => {
+        isSettled = true;
+        window.clearTimeout(timeoutId);
+        const fallback = getInitialAutoPrompt(videoId, videoContext?.title);
+        setAutoPromptText(fallback);
+        setPromptReady(true);
+      });
+
+    return () => {
+      isSettled = true;
+      window.clearTimeout(timeoutId);
+      controller.abort();
+    };
+  }, [videoId, propsSuggestedPrompts, videoContext?.suggestedPrompts, videoContext?.title, videoContext?.description]);
   const registry = useMemo(() => createIntelligenceDefaultRegistry({ onArticleSelect }), [onArticleSelect]);
   const seqRef = useRef(0);
   const autoPromptedVideoRef = useRef<string | null>(null);
@@ -283,8 +402,14 @@ export function IntelligenceChatSidePanel({
   );
 
   useEffect(() => {
-    if (!autoPromptOnMount || !videoId || autoPromptedVideoRef.current === videoId) {
-      setAutoPromptCountdown(null);
+    if (
+      !autoPromptOnMount ||
+      !videoId ||
+      !promptReady ||
+      !autoPromptTextRef.current ||
+      autoPromptedVideoRef.current === videoId
+    ) {
+      if (!promptReady || !autoPromptTextRef.current) setAutoPromptCountdown(null);
       return;
     }
 
@@ -298,11 +423,11 @@ export function IntelligenceChatSidePanel({
       if (remainingSeconds === 0) {
         autoPromptedVideoRef.current = videoId;
         setAutoPromptCountdown(null);
-        handleSend(mockVideoAutoPrompt);
+        handleSend(autoPromptTextRef.current);
         return;
       }
 
-      setAutoPromptCountdown({ prompt: mockVideoAutoPrompt, remainingSeconds });
+      setAutoPromptCountdown({ prompt: autoPromptTextRef.current, remainingSeconds });
       const millisecondsUntilNextSecond = millisecondsRemaining - (remainingSeconds - 1) * AUTO_PROMPT_TICK_MS;
       timer = window.setTimeout(tick, Math.max(1, millisecondsUntilNextSecond));
     };
@@ -312,7 +437,7 @@ export function IntelligenceChatSidePanel({
     return () => {
       if (timer !== undefined) window.clearTimeout(timer);
     };
-  }, [autoPromptOnMount, handleSend, mockVideoAutoPrompt, videoId]);
+  }, [autoPromptOnMount, handleSend, promptReady, videoId]);
 
   const isAutoPrompting = autoPromptCountdown !== null;
 

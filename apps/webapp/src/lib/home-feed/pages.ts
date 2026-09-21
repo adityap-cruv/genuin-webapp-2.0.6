@@ -142,6 +142,25 @@ const BRAND_COMMUNITIES = {
   },
 } as const;
 
+const SPONSORS = [
+  {
+    id: "usski",
+    brandSlug: "usski",
+    heading: "U.S. Ski",
+    subHeading: "Sponsored",
+    logo: "https://media.qa.begenuin.com/uploads/brands/logo/U.S.Ski_favicon_1789993902.png",
+    ctaText: "Learn More",
+  },
+  {
+    id: "capitalone",
+    brandSlug: "capitalone",
+    heading: "Capital One",
+    subHeading: "Sponsored",
+    logo: "https://media.qa.begenuin.com/uploads/brands/logo/Capital_One_favicon_1789994759.png",
+    ctaText: "Learn More",
+  },
+] as const;
+
 function baseData(pageIndex: number): Record<string, WidgetData> {
   const featured = articleData(pageIndex);
   // Intelligence panels show one featured story plus four up-next stories (five total),
@@ -156,7 +175,7 @@ function baseData(pageIndex: number): Record<string, WidgetData> {
   const cNfl = BRAND_COMMUNITIES.nfl;
   const gArtistInterviews = BRAND_COMMUNITIES.artistInterviewsGroup;
   const cArtistRadio = BRAND_COMMUNITIES.artistRadio;
-  const gSportsHighlights = BRAND_COMMUNITIES.sportsHighlightsGroup;
+  const sponsor = SPONSORS[pageIndex % SPONSORS.length]!;
 
   return {
     salegp_desk: {
@@ -241,17 +260,15 @@ function baseData(pageIndex: number): Record<string, WidgetData> {
       ctaText: "Read More",
     },
     tmobile: {
-      id: "tmobile",
+      id: pageIndex === 0 ? "tmobile" : `sponsor-${sponsor.id}-p${pageIndex + 1}`,
       header: {
-        heading: gSportsHighlights.name,
-        subHeading: "More Stories",
-        logo: gSportsHighlights.dp,
-        communitySlug: gSportsHighlights.communitySlug,
-        groupSlug: gSportsHighlights.slug,
+        heading: sponsor.heading,
+        subHeading: sponsor.subHeading,
+        logo: sponsor.logo,
+        brandSlug: sponsor.brandSlug,
       },
-      source: { feedType: "HOME", communityId: gSportsHighlights.communityId, groupId: gSportsHighlights.groupId },
-      sponsored: false,
-      ctaText: "Read More",
+      sponsored: true,
+      ctaText: sponsor.ctaText,
     },
     relevant_news: {
       id: "relevant_news",
