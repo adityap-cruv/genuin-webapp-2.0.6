@@ -252,6 +252,7 @@ export async function RedirectHandler({
         host.includes("127.0.0.1") ||
         host.startsWith("192.168.") ||
         host.endsWith(".vercel.app") ||
+        host.toLowerCase() === "iheartvip.octocanvas.com" ||
         (secFetchDest === "iframe" && referer && referer.includes(bccUrl))
       ) {
         return children;

@@ -117,6 +117,12 @@ export async function middleware(request: NextRequest) {
   const host = request.headers.get("host");
   if (!host) return NextResponse.next({ request });
 
+  const isIheartVipHost = host.toLowerCase() === "iheartvip.octocanvas.com";
+  // Clear old auth-wall bookmarks now that this hostname does not use that gate.
+  if (isIheartVipHost && request.nextUrl.pathname === "/auth-wall") {
+    return NextResponse.redirect("https://iheartvip.octocanvas.com/");
+  }
+
   // Redirect Google search traffic from /home to begenuin.com
   if (request.nextUrl.pathname === "/home") {
     const referer = request.headers.get("referer") || request.headers.get("referrer");
@@ -143,6 +149,14 @@ export async function middleware(request: NextRequest) {
   // Handle subdomain routing
   const subdomainResponse = await handleSubdomainRouting(request, host);
   if (subdomainResponse) return subdomainResponse;
+
+  // Serve Home at the custom domain root while keeping "/" in the address bar.
+  if (isIheartVipHost && request.nextUrl.pathname === "/") {
+    const destination = request.nextUrl.clone();
+    destination.pathname = "/home";
+    request.headers.set("x-path-params", "/home");
+    return NextResponse.rewrite(destination, { request: { headers: request.headers } });
+  }
 
   return NextResponse.next({ request });
 }
