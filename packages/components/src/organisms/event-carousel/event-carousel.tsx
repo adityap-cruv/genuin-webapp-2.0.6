@@ -59,12 +59,14 @@ function EventCard({ event, cardWidth, cardHeight, imageWidth, imageHeight, onCt
     if (target.closest('[data-slot="link-card-cta"]')) return;
 
     clickEvent.currentTarget.querySelector<HTMLElement>('[data-slot="link-card-cta"]')?.click();
+    clickEvent.preventDefault();
+    clickEvent.stopPropagation();
   };
 
   return (
     <article
       data-slot="event-card"
-      onClick={activateCta}
+      onClickCapture={activateCta}
       className={cn(
         "gencl:box-border gencl:flex-none gencl:cursor-pointer gencl:overflow-hidden gencl:rounded-lg",
         "gencl:bg-white gencl:text-black gencl:ring-1 gencl:ring-secondary-200 gencl:ring-inset"

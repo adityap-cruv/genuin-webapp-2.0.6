@@ -626,12 +626,18 @@ export function HoverLinkCardList({
   );
 
   const activateCardCta = useCallback((clickEvent: React.MouseEvent<HTMLElement>) => {
-    if (Date.now() < suppressCardClickUntilRef.current) return;
+    if (Date.now() < suppressCardClickUntilRef.current) {
+      clickEvent.preventDefault();
+      clickEvent.stopPropagation();
+      return;
+    }
 
     const target = clickEvent.target as HTMLElement;
     if (target.closest('[data-slot="link-card-cta"]')) return;
 
     clickEvent.currentTarget.querySelector<HTMLElement>('[data-slot="link-card-cta"]')?.click();
+    clickEvent.preventDefault();
+    clickEvent.stopPropagation();
   }, []);
 
   if (orderedItems.length === 0) return null;
@@ -715,7 +721,7 @@ export function HoverLinkCardList({
                 "gencl:[&_div[role=link]]:h-9! gencl:[&_div[role=link]]:gap-1.5 gencl:[&_div[role=link]]:pl-2.5 gencl:[&_div[role=link]]:pr-1.5",
                 "gencl:[&_div[role=link]>span]:text-body-2-semi-bold! gencl:[&_div[role=link]>svg]:size-5!"
               )}
-              onClick={activateCardCta}
+              onClickCapture={activateCardCta}
               onMouseEnter={() => {
                 if (pauseOnHover && !isSliding && !isControlledPinned) setActiveIndex(index);
               }}

@@ -140,11 +140,16 @@ export const Default: Story = {
     await expect(compactCtaIcon.getBoundingClientRect().width).toBe(20);
     await expect(compactCtaIcon.getBoundingClientRect().height).toBe(20);
 
+    const ctaActivated = fn();
+    expandedCta.addEventListener("click", ctaActivated);
     const preventNavigation = (event: Event) => event.preventDefault();
     canvasElement.addEventListener("click", preventNavigation, true);
     await userEvent.click(expandedImage);
     canvasElement.removeEventListener("click", preventNavigation, true);
+    expandedCta.removeEventListener("click", ctaActivated);
+    await expect(ctaActivated).toHaveBeenCalledTimes(1);
     await expect(args.onLinkClick).toHaveBeenCalledWith(PODCASTS[0], 0);
+    await expect(args.onLinkClick).toHaveBeenCalledTimes(1);
   },
 };
 

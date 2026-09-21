@@ -107,6 +107,7 @@ export const RepeatedCards: Story = {
     await userEvent.click(image);
     canvasElement.removeEventListener("click", preventNavigation, true);
     await expect(args.onCtaClick).toHaveBeenCalledWith(REPEATED_EVENTS[0]);
+    await expect(args.onCtaClick).toHaveBeenCalledTimes(1);
   },
 };
 
