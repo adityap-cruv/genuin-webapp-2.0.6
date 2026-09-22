@@ -37,6 +37,7 @@ import {
   HoverLinkCardList,
   type ContextualLinkMetaData,
 } from "@genuin/components/organisms/hover-link-card-list/hover-link-card-list";
+import { IHeartAudioCarousel } from "@genuin/components/organisms/iheart-audio-carousel/iheart-audio-carousel";
 import { IntelligenceArticleCard } from "@genuin/components/organisms/intelligence-panel/intelligence-article-card";
 import {
   INTELLIGENCE_RAIL_CLASS,
@@ -999,6 +1000,22 @@ function EventCarouselWidget({ node, data }: WidgetRenderProps) {
   );
 }
 
+function IHeartAudioCarouselWidget({ node, data }: WidgetRenderProps) {
+  return (
+    <WidgetFrame
+      heading={data.header?.heading}
+      subHeading={data.header?.subHeading}
+      logo={data.header?.logo}
+      source={data.source}
+      brandSlug={data.header?.brandSlug}
+      communitySlug={data.header?.communitySlug}
+      groupSlug={data.header?.groupSlug}
+      wrapper={node.wrapper}>
+      <IHeartAudioCarousel stations={data.iheartStations ?? []} ariaLabel={data.header?.heading ?? "Audio stations"} />
+    </WidgetFrame>
+  );
+}
+
 function HoverLinkCardListWidget({ node, data }: WidgetRenderProps) {
   const emit = useEmit();
   const sourceId = node.dependsOn?.widgetId;
@@ -1071,5 +1088,6 @@ export const COMPONENT_REGISTRY: Record<ComponentType, (props: WidgetRenderProps
   intelligence_panel: IntelligencePanelWidget,
   intelligence_card_list: IntelligenceCardListWidget,
   event_carousel: EventCarouselWidget,
+  iheart_audio_carousel: IHeartAudioCarouselWidget,
   hover_link_card_list: HoverLinkCardListWidget,
 };

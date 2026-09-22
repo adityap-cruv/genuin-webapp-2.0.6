@@ -150,14 +150,6 @@ export async function middleware(request: NextRequest) {
   const subdomainResponse = await handleSubdomainRouting(request, host);
   if (subdomainResponse) return subdomainResponse;
 
-  // Serve Home at the custom domain root while keeping "/" in the address bar.
-  if (isIheartVipHost && request.nextUrl.pathname === "/") {
-    const destination = request.nextUrl.clone();
-    destination.pathname = "/home";
-    request.headers.set("x-path-params", "/home");
-    return NextResponse.rewrite(destination, { request: { headers: request.headers } });
-  }
-
   return NextResponse.next({ request });
 }
 

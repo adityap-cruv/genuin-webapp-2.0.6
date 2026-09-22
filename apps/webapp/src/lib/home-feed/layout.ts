@@ -74,7 +74,7 @@ const W_LATEST_NEWS: WidgetNode = {
 const W_UPCOMING_RACES: WidgetNode = {
   type: "widget",
   id: "upcoming_races",
-  component: "event_carousel",
+  component: "iheart_audio_carousel",
   dataKey: "upcoming_races",
 };
 const W_LATEST_VIDEOS: WidgetNode = {

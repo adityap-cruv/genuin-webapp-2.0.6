@@ -16,6 +16,7 @@ export type ComponentType =
   | "intelligence_panel"
   | "intelligence_card_list"
   | "event_carousel"
+  | "iheart_audio_carousel"
   | "hover_link_card_list";
 
 export type DependsOn = { widgetId: string; event: string; param: string };
@@ -126,6 +127,21 @@ export type LinkItemData = {
   image?: string;
 };
 
+export type IHeartEmbedAttributes = {
+  type: "station" | "podcast";
+  station_id?: string | null;
+  podcast_id?: string | null;
+};
+
+export type IHeartAudioStationData = {
+  id: string;
+  brand?: string;
+  heading: string;
+  subheading?: string;
+  image: ImageData;
+  audioAttributes: IHeartEmbedAttributes;
+};
+
 export type WidgetData = {
   id: string;
   header?: HeaderData;
@@ -138,6 +154,7 @@ export type WidgetData = {
   upNextLabel?: string;
   articles?: ArticleData[];
   events?: EventData[];
+  iheartStations?: IHeartAudioStationData[];
   items?: LinkItemData[];
 };
 
