@@ -251,6 +251,9 @@ export function buildHostMacroBlocks(macros: HostMacros): HostMacroBlocks {
   pick(event, "gdpr_consent", "gdpr_consent");
   pick(event, "us_privacy", "us_privacy");
   pick(event, "dnt", "dnt");
+  // Infolinks ad-group id (host macro `c8`), so ad-group performance is
+  // queryable per event.
+  pick(event, "ad_group_id", "c8");
 
   return { device, user, event };
 }

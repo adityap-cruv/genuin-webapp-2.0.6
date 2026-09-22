@@ -131,6 +131,188 @@
       "name": "The Sacramento Bee",
       "domain": "sacbee.com",
       "is_confidential": 0
+    },
+    {
+      "seller_id": "3219",
+      "seller_type": "PUBLISHER",
+      "name": "Woman's World",
+      "domain": "womansworld.com",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "3386",
+      "seller_type": "PUBLISHER",
+      "name": "The State",
+      "domain": "thestate.com",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "3389",
+      "seller_type": "PUBLISHER",
+      "name": "The News&Observer",
+      "domain": "newsobserver.com",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "3281",
+      "seller_type": "PUBLISHER",
+      "name": "Charlotte Observer",
+      "domain": "charlotteobserver.com",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "3376",
+      "seller_type": "PUBLISHER",
+      "name": "Lexington Herald-Leader",
+      "domain": "kentucky.com",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "3275",
+      "seller_type": "PUBLISHER",
+      "name": "Sport Server",
+      "domain": "sportserver.com",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "3358",
+      "seller_type": "PUBLISHER",
+      "name": "Soap Opera Digest",
+      "domain": "soapoperadigest.com",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "3418",
+      "seller_type": "PUBLISHER",
+      "name": "The Olympian",
+      "domain": "theolympian.com",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "3434",
+      "seller_type": "PUBLISHER",
+      "name": "Idaho Statesman",
+      "domain": "idahostatesman.com",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "3443",
+      "seller_type": "PUBLISHER",
+      "name": "The Fresno Bee",
+      "domain": "fresnobee.com",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "3444",
+      "seller_type": "PUBLISHER",
+      "name": "The Tribune",
+      "domain": "sanluisobispo.com",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "3433",
+      "seller_type": "PUBLISHER",
+      "name": "The Wichita Eagle",
+      "domain": "kansas.com",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "3468",
+      "seller_type": "PUBLISHER",
+      "name": "Centre Daily Times",
+      "domain": "centredaily.com",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "3469",
+      "seller_type": "PUBLISHER",
+      "name": "The Island Packet",
+      "domain": "islandpacket.com",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "3471",
+      "seller_type": "PUBLISHER",
+      "name": "Belleville News-Democrat",
+      "domain": "bnd.com",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "3472",
+      "seller_type": "PUBLISHER",
+      "name": "Tri-City Herald",
+      "domain": "tri-cityherald.com",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "3473",
+      "seller_type": "PUBLISHER",
+      "name": "Bradenton Herald",
+      "domain": "bradenton.com",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "3474",
+      "seller_type": "PUBLISHER",
+      "name": "Sun Herald",
+      "domain": "sunherald.com",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "3483",
+      "seller_type": "PUBLISHER",
+      "name": "The Modesto Bee",
+      "domain": "modbee.com",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "3484",
+      "seller_type": "PUBLISHER",
+      "name": "The Bellingham Herald",
+      "domain": "bellinghamherald.com",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "3490",
+      "seller_type": "PUBLISHER",
+      "name": "The Herald",
+      "domain": "heraldonline.com",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "3491",
+      "seller_type": "PUBLISHER",
+      "name": "Mahoning Matters",
+      "domain": "mahoningmatters.com",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "3492",
+      "seller_type": "PUBLISHER",
+      "name": "The Sun News",
+      "domain": "myrtlebeachonline.com",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "3493",
+      "seller_type": "PUBLISHER",
+      "name": "Merced Sun-Star",
+      "domain": "mercedsunstar.com",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "3503",
+      "seller_type": "PUBLISHER",
+      "name": "El Nuevo Herald",
+      "domain": "elnuevoherald.com",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "3504",
+      "seller_type": "PUBLISHER",
+      "name": "McClatchyDC",
+      "domain": "mcclatchydc.com",
+      "is_confidential": 0
     }
   ]
 }

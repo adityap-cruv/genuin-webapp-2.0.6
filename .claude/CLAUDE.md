@@ -34,17 +34,17 @@ Specialist agents live in `.claude/agents/` and are dispatched by Claude Code's 
 based on their `description`. Domain skills live in `.claude/skills/` and are auto-discovered via the
 Skill tool. They are tools, **not mandatory steps** — reach for them when a task genuinely benefits.
 
-| When it helps | Agent / Skill |
-| ------------- | ------------- |
-| A focused implementation plan before a big change | `planner` agent |
-| Building a non-trivial feature across files | `implementer` agent |
-| Finding the root cause of a stubborn bug | `debugger` agent + `debug` skill |
-| Reviewing a meaningful diff | `code-reviewer` / `typescript-reviewer` agent |
-| Package placement / monorepo / system design | `architect` agent |
-| Security review of auth/input/secrets | `security-auditor` agent + `security-audit` skill |
-| Playwright / E2E tests | `e2e-tester` agent + `e2e-testing` skill |
-| Writing a PRD / spec | `prd-writer` agent + `prd-writer` skill |
-| Building React components / frontend UI | `frontend-patterns` skill |
+| When it helps                                       | Agent / Skill                                                      |
+| --------------------------------------------------- | ------------------------------------------------------------------ |
+| A focused implementation plan before a big change   | `planner` agent                                                    |
+| Building a non-trivial feature across files         | `implementer` agent                                                |
+| Finding the root cause of a stubborn bug            | `debugger` agent + `debug` skill                                   |
+| Reviewing a meaningful diff                         | `code-reviewer` / `typescript-reviewer` agent                      |
+| Package placement / monorepo / system design        | `architect` agent                                                  |
+| Security review of auth/input/secrets               | `security-auditor` agent + `security-audit` skill                  |
+| Playwright / E2E tests                              | `e2e-tester` agent + `e2e-testing` skill                           |
+| Writing a PRD / spec                                | `prd-writer` agent + `prd-writer` skill                            |
+| Building React components / frontend UI             | `frontend-patterns` skill                                          |
 | Performance / accessibility / refactor / unit tests | `performance` / `accessibility` / `refactor` / `test-runner` skill |
 
 Full catalog of skills + agents with trigger phrases: [.claude/README.md](README.md).
@@ -54,7 +54,7 @@ Full catalog of skills + agents with trigger phrases: [.claude/README.md](README
 For a substantial, multi-step task (a feature, a cross-file refactor — anything you'd plan before
 coding), run the agents **in sequence**, each handing off to the next:
 
-1. **`grill-me` skill** — *if the request is vague* → lock down requirements first.
+1. **`grill-me` skill** — _if the request is vague_ → lock down requirements first.
 2. **`planner` agent** — produce a file-by-file plan. Present it; get a nod for anything risky.
 3. **`implementer` agent** — build it (types → implementation → tests), following the plan.
 4. **`code-reviewer` / `typescript-reviewer` agent** — review the diff before declaring done.
@@ -63,8 +63,8 @@ coding), run the agents **in sequence**, each handing off to the next:
 Jump straight to the step that fits — and **a one-line fix needs none of this; do it inline.** The
 chain is for work big enough that the hand-offs save rework, not for every prompt (token economy).
 
-Use `superpowers:brainstorming` before the plan when the *solution* is open-ended; use `grill-me`
-when the solution is clear but the *requirements* aren't.
+Use `superpowers:brainstorming` before the plan when the _solution_ is open-ended; use `grill-me`
+when the solution is clear but the _requirements_ aren't.
 
 ---
 
@@ -242,6 +242,17 @@ The rules above are the working conventions. A few additional governance and qua
 ---
 
 If any section is unclear or incomplete, please ask for clarification or suggest improvements.
+
 # graphify
+
 - **graphify** (`.claude/skills/graphify/SKILL.md`) - any input to knowledge graph. Trigger: `/graphify`
-When the user types `/graphify`, use the installed graphify skill or instructions before doing anything else.
+  When the user types `/graphify`, use the installed graphify skill or instructions before doing anything else.
+
+## Commits & branches
+
+Branch and commit conventions are enforced by git hooks and documented in
+[`AGENTS.md`](../AGENTS.md#commits--branches) — the canonical file for all AI tools.
+
+Short version: branches are `<type>/GEN-<ticket>/<slug>`, commit subjects are
+`[GEN-<n>] <type>(<scope>): <subject>` with the `[GEN-<n>]` injected automatically.
+**Never invent a `GEN` number, and never use `--no-verify`.**

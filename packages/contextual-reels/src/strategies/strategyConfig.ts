@@ -518,3 +518,81 @@ export const TAG_STRATEGIES: Record<string, TagStrategyEntry> = {
     gateOnUnmute: true,
   },
 };
+
+/**
+ * TEMPORARY (server-load relief) — tags for which the client-side `ip_info`
+ * (geoip) fetch is skipped entirely.
+ *
+ * These are the 12 Direct IO iHM/Infolinks Audio (Sep) tags. Their DMA/National
+ * geo targeting is carried to the exchange by explicit host macros
+ * (`m`/`country`/`r`/`loclat`/`loclong`), NOT by geoip, so skipping the fetch
+ * does not change ad targeting. The trade-offs are deliberate and accepted:
+ *   - analytics events for these tags carry no `geoip` block (country/lat/long);
+ *   - the ad-URL `ip=` param is stripped — these are `servedStatically` tags,
+ *     the only ones whose URL is IP-rewritten (see adUrlMacros) — while the
+ *     explicit geo macros the exchange targets on are untouched.
+ *
+ * `getSharedGeoIp` is a per-page shared singleton, so BOTH call sites
+ * (AnalyticsProvider, genAdSdk) must skip for the request to be eliminated.
+ * Remove this set + its two call-site guards to restore geoip for these tags.
+ */
+export const GEOIP_DISABLED_TAG_IDS: ReadonlySet<string> = new Set([
+  "6a9ba985ee6dc7773d0c42a6", // Direct IO iHM/Infolinks Audio for Sep - DMA
+  "6a9ba9b8ee6dc7773d0c42f4", // Direct IO iHM/Infolinks Audio for Sep - National
+  "6aa25bc1d3c90426b5732535", // 320x480 - National Campaign V1
+  "6a9eaf2dee6dc7773d0c5f87", // Direct IO iHM/Infolinks Audio for Sep - DMA v1
+  "6aa041b7d3c90426b572a451", // 320x50 - DMA Targeted Campaign
+  "6aa041e20fc5b4b2fe4ed3c8", // 320x50 - National Campaign
+  "6aa25b631b3a25f3c479ef7c", // 320x50 - National Campaign V1
+  "6aa04101d3c90426b572a379", // 320x50 - DMA Targeted Campaign V1
+  "6aa0425bd3c90426b572a571", // 300x250 - DMA Targeted Campaign
+  "6aa041fbd3c90426b572a4b2", // 300x250 - National Campaign
+  "6aa25af31b3a25f3c479ee35", // 300x250 - National Campaign V1
+  "6aa04279d3c90426b572a59e", // 300x250 - DMA Targeted Campaign V1
+]);
+
+/**
+ * Whether the client-side `ip_info` (geoip) fetch should be skipped for `tagId`.
+ * TEMPORARY — see {@link GEOIP_DISABLED_TAG_IDS}.
+ */
+export function isGeoIpDisabled(tagId: string | null | undefined): boolean {
+  return tagId != null && GEOIP_DISABLED_TAG_IDS.has(tagId);
+}
+
+/**
+ * Tags that fire client-side DSP lifecycle tracking pixels.
+ *
+ * For these tags CXR emits three best-effort `Image()` beacons —
+ * `ad_render` / `start` / `complete` — to Genuin's own aapi DSP pixel endpoint
+ * (`/goservices/dsp/pixel/{brand_id}/{tag_id}/{event}`), fired ALONGSIDE (never
+ * instead of) the existing Rudderstack `AD_*` analytics events from the same
+ * GenAd SDK callbacks. The pixels are additive telemetry: they carry the ad's
+ * `visit_id`, host-macro app context and SDK creative metadata, and are gated to
+ * production builds only (see `observability/dsp-pixel.ts`). Every other tag is
+ * untouched — no beacon is fired.
+ */
+export const DSP_PIXEL_TAG_IDS: ReadonlySet<string> = new Set([
+  "6a39163e92929ebec64d78ab",
+  "6a7c45fcf3f875e5e06dadab",
+  "6a7c465586d060bd42fb5ab7",
+  "6a3915b692929ebec64d785e",
+  "6a7c46dcf3f875e5e06daef0",
+  "6a7c46fef3f875e5e06daf19",
+  "6a3916de30e1406c10507518",
+  "6a7c4727fa1b811d815aa00f",
+  "6a7c473df3f875e5e06daf87",
+  "6a391708a7d9f8da7f6e56ad",
+  "6a7c476af3f875e5e06dafc1",
+  "6a7c479586d060bd42fb5c3c",
+  "6a6892e52ca77d200369fb9e",
+  "6a7c47bf86d060bd42fb5c95",
+  "6a7c47d8f3f875e5e06db080",
+]);
+
+/**
+ * Whether the client-side DSP lifecycle tracking pixels should be fired for
+ * `tagId`. See {@link DSP_PIXEL_TAG_IDS}.
+ */
+export function isDspPixelEnabled(tagId: string | null | undefined): boolean {
+  return tagId != null && DSP_PIXEL_TAG_IDS.has(tagId);
+}

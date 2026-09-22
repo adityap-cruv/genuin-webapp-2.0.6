@@ -66,21 +66,23 @@ export const HOST_URL_MACRO_TOKENS: Readonly<Record<string, string>> = {
 const DSP_VAST_ENDPOINT = "/goservices/dsp/vast/";
 
 /**
- * Geo request params appended to a DSP-exchange Triton ad URL, mapping the
- * OpenRTB Geo field name (what the exchange reads) to the host macro carrying
- * the value. Host-provided geo only — the exchange reads these off the request.
+ * Host-provided request params appended to a DSP-exchange Triton ad URL, mapping
+ * the exchange's param name to the host macro carrying the value. The exchange
+ * reads these off the request to target / report on.
  *
- * OpenRTB 2.x Geo semantics: `country` = ISO-3166-1 alpha-3, `region` =
+ * Geo uses OpenRTB 2.x Geo names: `country` = ISO-3166-1 alpha-3, `region` =
  * ISO-3166-2 (2-letter US state code), `metro` = Google/Nielsen metro (DMA),
- * `city` = city name, `lat`/`lon` = coordinates.
+ * `city` = city name, `lat`/`lon` = coordinates. `ad_group_id` is Infolinks'
+ * ad-group id (host macro `c8`); no OpenRTB field exists for it.
  */
-const DSP_GEO_PARAMS: Readonly<Record<string, string>> = {
+const DSP_REQUEST_PARAMS: Readonly<Record<string, string>> = {
   country: "country",
   city: "loc",
   lat: "loclat",
   lon: "loclong",
   metro: "m",
   region: "r",
+  ad_group_id: "c8",
 };
 
 /**
@@ -157,19 +159,19 @@ function rewriteTritonUrlForApp(url: string, macros: HostMacros): string {
 }
 
 /**
- * Append host-provided geo to a DSP-exchange Triton ad URL as OpenRTB-named
- * request params (see {@link DSP_GEO_PARAMS}), so the exchange can target on it.
- * Only params whose host macro is present are added; a param already on the URL
- * is left untouched (never duplicated). Values are URL-encoded, consistent with
- * the rest of this module.
+ * Append host-provided request params (geo + ad-group id) to a DSP-exchange
+ * Triton ad URL (see {@link DSP_REQUEST_PARAMS}), so the exchange can target /
+ * report on them. Only params whose host macro is present are added; a param
+ * already on the URL is left untouched (never duplicated). Values are
+ * URL-encoded, consistent with the rest of this module.
  *
  * Gated by the caller to the in-app Triton path (appb + `tritondigital`) whose
  * resolved URL hits our {@link DSP_VAST_ENDPOINT} — the same in-app condition as
  * {@link rewriteTritonUrlForApp}.
  */
-function appendDspGeoParams(url: string, macros: HostMacros): string {
+function appendDspRequestParams(url: string, macros: HostMacros): string {
   const params: string[] = [];
-  for (const [param, macroName] of Object.entries(DSP_GEO_PARAMS)) {
+  for (const [param, macroName] of Object.entries(DSP_REQUEST_PARAMS)) {
     const value = macros[macroName];
     // hostMacros drops empty/unresolved values, so presence is enough.
     if (value === undefined) continue;
@@ -181,6 +183,37 @@ function appendDspGeoParams(url: string, macros: HostMacros): string {
   // This runs only after rewriteTritonUrlForApp, which always leaves a `?`, so
   // the `: "?"` side is unreachable in practice — kept as a defensive default.
   /* v8 ignore next */
+  return url + (url.includes("?") ? "&" : "?") + params.join("&");
+}
+
+/**
+ * Param names our visit_id is appended under. The exchange backend has NOT yet
+ * confirmed which name it reads, so we send every likely spelling (snake_case +
+ * kebab-case, each as `ad_*`/`visit_*`) carrying the same value and let it pick —
+ * an unread param is ignored, so this is forward-safe. TEMPORARY breadth: once
+ * the backend confirms and absorbs one, delete the others from this list.
+ */
+const EXCHANGE_VISIT_PARAM_NAMES = ["ad_id", "visit_id", "ad-id", "visit-id"] as const;
+
+/**
+ * Append our Rudderstack `visit_id` to a request aimed at our own DSP VAST
+ * exchange, under every name in {@link EXCHANGE_VISIT_PARAM_NAMES} (all carrying
+ * the same value) so whichever spelling the backend reads is present.
+ *
+ * Gated by the caller to URLs hitting {@link DSP_VAST_ENDPOINT} (our exchange),
+ * so our visit id is never leaked onto a third-party ad server's URL. A param
+ * already present is left untouched (never duplicated), and the value is
+ * URL-encoded — consistent with the rest of this module.
+ */
+function appendExchangeVisitParams(url: string, visitId: string): string {
+  const encoded = encodeURIComponent(visitId);
+  const params: string[] = [];
+  for (const name of EXCHANGE_VISIT_PARAM_NAMES) {
+    // Never emit a duplicate key — leave any pre-existing param as-is.
+    if (new RegExp(`[?&]${escapeRegExp(name)}=`).test(url)) continue;
+    params.push(`${name}=${encoded}`);
+  }
+  if (params.length === 0) return url;
   return url + (url.includes("?") ? "&" : "?") + params.join("&");
 }
 
@@ -199,6 +232,17 @@ export interface AdUrlOptions {
    * instead so no stale/fake IP is sent.
    */
   clientIp?: string;
+  /**
+   * Our Rudderstack `visit_id` for the current ad. When present AND the resolved
+   * URL targets our DSP VAST exchange ({@link DSP_VAST_ENDPOINT}), it is appended
+   * under every name in {@link EXCHANGE_VISIT_PARAM_NAMES} (same value) so the
+   * exchange can correlate the request with our analytics whichever spelling it
+   * reads. Best-effort: omitted/undefined (the
+   * feed batch hasn't stamped a visit_id yet) appends nothing and never blocks
+   * the ad request. Scoped to our own exchange so it never leaks to a third-party
+   * ad server. See {@link appendExchangeVisitParams}.
+   */
+  visitId?: string;
 }
 
 /**
@@ -284,6 +328,12 @@ export function resolveAdUrlMacros(
   if (options?.servedStatically) {
     result = applyStaticAdRewrites(result, options.clientIp);
   }
+  // Append our visit_id (as `ad_id` + `visit_id`) only for our own DSP exchange,
+  // so it is never leaked onto a third-party ad server's URL. The endpoint is a
+  // path segment, untouched by every rewrite above, so this gate is stable.
+  if (options?.visitId && result.includes(DSP_VAST_ENDPOINT)) {
+    result = appendExchangeVisitParams(result, options.visitId);
+  }
   return result;
 }
 
@@ -307,8 +357,8 @@ export function resolveAdUrlMacros(
  * Bare-string and non-Triton entries are never rewritten.
  *
  * For an in-app Triton entry whose resolved URL points at our DSP VAST exchange,
- * host-provided geo is additionally appended as OpenRTB-named request params
- * (see {@link appendDspGeoParams}) so the exchange can target on it.
+ * host-provided geo + ad-group id are additionally appended as request params
+ * (see {@link appendDspRequestParams}) so the exchange can target / report on them.
  *
  * When `options.servedStatically` is set, every resolved URL additionally has its
  * `ua` param replaced with the real `navigator.userAgent` and its `ip` param
@@ -343,10 +393,10 @@ export function resolveVideoAdMacros(
         let resolved = resolveAdUrlMacros(ad[key] as string, pageUrl, macros, options);
         if (isTritonAppRewrite) {
           resolved = rewriteTritonUrlForApp(resolved, macros);
-          // In-app Triton served via our DSP VAST exchange: append host geo as
-          // OpenRTB-named request params the exchange targets on.
+          // In-app Triton served via our DSP VAST exchange: append host geo +
+          // ad-group id as request params the exchange targets / reports on.
           if (resolved.includes(DSP_VAST_ENDPOINT)) {
-            resolved = appendDspGeoParams(resolved, macros);
+            resolved = appendDspRequestParams(resolved, macros);
           }
         }
         patched[key] = resolved;

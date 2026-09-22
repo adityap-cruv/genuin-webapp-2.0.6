@@ -622,6 +622,7 @@ describe("buildHostMacroBlocks", () => {
       gdpr_consent: "",
       us_privacy: "1---",
       dnt: "0",
+      c8: "ag-42",
     };
     const blocks = buildHostMacroBlocks(macros);
     expect(blocks.device).toEqual({
@@ -636,7 +637,7 @@ describe("buildHostMacroBlocks", () => {
       app_region: "NY",
     });
     expect(blocks.user).toEqual({ ifa: "abc", deviceid: "dev-1", app_store_id: "999" });
-    expect(blocks.event).toEqual({ gdpr: "0", us_privacy: "1---", dnt: "0" });
+    expect(blocks.event).toEqual({ gdpr: "0", us_privacy: "1---", dnt: "0", ad_group_id: "ag-42" });
   });
 
   it("omits keys whose macro is absent", () => {

@@ -112,19 +112,18 @@ export function buildGenAdConfigFromAdTagObject(
   }
 
   // disabling for usweekly for now since prebid is causing some issues with ad loading and we don't have a way to test it on staging
-  // if (brandId === 2476) {
-  //   config.prebid = {
-  //     bidders: [
-  //       { bidder: "pubmatic", params: { publisherId: "167328", adSlot: "7384620" } },
-  //       { bidder: "magnite", params: { accountId: 27260, siteId: 619193, zoneId: 4013157 } },
-  //     ],
-  //     rollout: 1.0,
-  //     prebidOptions: {
-  //       prebidConfig: { debug: false },
-  //     },
-  //   };
-  //   config.waterfallOrder = ["prebid", ...(config.waterfallOrder ?? [])];
-  // }
+  if (brandId === 2476) {
+    // { bidder: "magnite", params: { accountId: 27260, siteId: 619193, zoneId: 4013157 } },
+    config.prebid = {
+      bidders: [{ bidder: "pubmatic", params: { publisherId: "167328", adSlot: "7384620" } }],
+      rollout: 1.0,
+      prebidOptions: {
+        prebidConfig: { debug: false },
+      },
+    };
+    const existingOrder = config.waterfallOrder ?? [];
+    config.waterfallOrder = [existingOrder[0], "prebid", ...existingOrder.slice(1)].filter(Boolean) as string[];
+  }
 
   return config;
 }

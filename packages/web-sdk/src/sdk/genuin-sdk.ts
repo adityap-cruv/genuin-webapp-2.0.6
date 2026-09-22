@@ -459,6 +459,19 @@ export class GenuinSDK {
         embedDetails.style = config.embedStyle;
       }
 
+      // TEMP: the host client sizes this placement's container at 390px, but it
+      // should render at 500px. Pin the height from our side until the host
+      // updates their embed markup. Remove once the host sets the correct height.
+      const CONTAINER_HEIGHT_OVERRIDE_PX: Record<string, number> = {
+        "6901f63d25d5dab8f6b84b4f": 500,
+      };
+      const forcedHeightPx = embedDetails.placement_id
+        ? CONTAINER_HEIGHT_OVERRIDE_PX[embedDetails.placement_id]
+        : undefined;
+      if (forcedHeightPx) {
+        element.style.height = `${forcedHeightPx}px`;
+      }
+
       // set the brand-details and embed-details to the sdkElements for future reference.
       config.brandDetails = brandDetails;
 

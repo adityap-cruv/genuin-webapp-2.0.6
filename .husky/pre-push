@@ -1,31 +1,105 @@
 #!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+if [ -z "$husky_skip_init" ]; then
+  # Branch gate. Deliberately FIRST — it is a regex on a string, so it fails in
+  # milliseconds rather than after the two production builds below, and it runs
+  # before husky's shim so HUSKY=0 cannot skip it.
+  #
+  # We read the ref list from STDIN, which is what git actually hands this hook:
+  #   <local ref> <local sha> <remote ref> <remote sha>
+  # Gating on the CHECKED-OUT branch instead would miss
+  # `git push origin HEAD:refs/heads/whatever`, pushing a different branch, and
+  # --all/--mirror, and would skip the gate entirely on a detached HEAD.
+  . "$(dirname -- "$0")/../scripts/jira-hook/lib.sh"
+  JIRA_ZERO=0000000000000000000000000000000000000000
+  JIRA_REJECTED=""
+  while read -r _lref _lsha JIRA_RREF _rsha; do
+    [ -n "$JIRA_RREF" ] || continue
+    [ "$_lsha" = "$JIRA_ZERO" ] && continue            # branch deletion
+    case "$JIRA_RREF" in refs/heads/*) JIRA_B=${JIRA_RREF#refs/heads/} ;; *) continue ;; esac
+    jira_is_exempt_branch "$JIRA_B" && continue
+    jira_is_trunk_branch "$JIRA_B" && continue
+    jira_is_grandfathered "$JIRA_B" && continue
+    jira_branch_is_valid "$JIRA_B" && continue
+    JIRA_REJECTED="$JIRA_REJECTED $JIRA_B"
+  done
+  if [ -n "$JIRA_REJECTED" ]; then
+    printf '\n❌ Push rejected: these branches cannot be traced to a Jira ticket.\n\n'
+    for JIRA_B in $JIRA_REJECTED; do
+      printf '    %s\n' "$JIRA_B"
+      jira_hint_rename "$JIRA_B"
+    done
+    printf '\n    expected: <type>/GEN-<ticket>/<slug>\n'
+    printf '    types:    feature | bugfix | hotfix | chore | docs\n'
+    printf '\n  Details: README.md#commits--branches\n\n'
+    exit 1
+  fi
+fi
+
+# Guarded: .husky/_ is gitignored, so a fresh `git worktree add` has no husky.sh
+# until pnpm install runs. Unguarded, that failed with a bare
+# "No such file or directory" and no explanation.
+[ -f "$(dirname -- "$0")/_/husky.sh" ] && . "$(dirname -- "$0")/_/husky.sh"
 
 # Exit immediately when Ctrl+C is pressed
 trap 'echo ""; echo "❌ Aborted by user"; exit 130' INT
 
 set +e
 
+
 echo "🔨 Running pre-push checks..."
 echo ""
 
-# Check if Web App .env file exists
-echo "📋 Checking Web App environment file..."
-if [ ! -f ".env" ]; then
-  echo "❌ Error: .env file not found!"
-  echo "📋 Please create .env file at repo root"
+# ---------------------------------------------------------------------------
+# Environment preflight
+#
+# These files are gitignored, so a fresh clone or `git worktree add` has none of
+# them. Every one below is load-bearing for the checks further down:
+#
+#   .env                               apps/webapp build
+#   packages/web-sdk/.env.common       fatal in web-sdk validateEnv
+#   packages/web-sdk/.env.development  typecheck -> ^build (dev)
+#   packages/web-sdk/.env.production   build:prod
+#   packages/genai/.env.development    typecheck -> ^build (dev)
+#   packages/genai/.env.production     build:prod -> genai build:prod
+#
+# Only two of these used to be checked here. The rest failed deep inside turbo as
+# "Failed: @genuin/genai-sdk#build" followed by "❌ Type check failed!" — which
+# names the wrong cause entirely and sends people hunting for type errors that do
+# not exist. Check them all, up front, and report every missing one at once.
+# ---------------------------------------------------------------------------
+echo "📋 Checking environment files..."
+REQUIRED_ENV_FILES="
+.env
+packages/web-sdk/.env.common
+packages/web-sdk/.env.development
+packages/web-sdk/.env.production
+packages/genai/.env.development
+packages/genai/.env.production
+"
+MISSING_ENV=0
+for ENV_FILE in $REQUIRED_ENV_FILES; do
+  [ -f "$ENV_FILE" ] && continue
+  if [ "$MISSING_ENV" -eq 0 ]; then
+    echo ""
+    echo "❌ Push rejected: required environment files are missing."
+    echo ""
+    MISSING_ENV=1
+  fi
+  echo "   missing: $ENV_FILE"
+  if [ -f "$ENV_FILE.example" ]; then
+    echo "            cp $ENV_FILE.example $ENV_FILE"
+  else
+    echo "            no .example for this one — copy it from another worktree,"
+    echo "            or ask your team lead for the values."
+  fi
+done
+if [ "$MISSING_ENV" -ne 0 ]; then
+  echo ""
+  echo "   Then fill in any placeholder values before pushing."
+  echo ""
   exit 1
 fi
-echo "✅ Web App .env file exists"
-
-# Check if SDK .env file exists
-echo "📋 Checking SDK environment file..."
-if [ ! -f "packages/web-sdk/.env.development" ]; then
-  echo "❌ Error: packages/web-sdk/.env.development file not found!"
-  echo "📋 Please create .env file at packages/web-sdk/.env.development"
-  exit 1
-fi
-echo "✅ SDK .env file exists"
+echo "✅ Environment files present"
 
 echo ""
 echo "🔍 Running type checks..."

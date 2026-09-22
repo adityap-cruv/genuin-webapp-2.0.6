@@ -24,7 +24,7 @@
     "modules:clear": "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
     "components": "npx concurrently -k \"pnpm --filter @genuin/ui storybook\" \"pnpm --filter @genuin/genai-sdk storybook\" \"pnpm --filter @genuin/components storybook\" \"pnpm  --filter @genuin/ui dev:styles\" \"pnpm --filter @genuin/components dev:styles\"",
     "format": "prettier --write \"**/*.{ts,tsx,js,mjs,json,md}\"",
-    "prepare": "husky install",
+    "prepare": "husky install && git config commit.template .gitmessage || true",
     "use-correct-node": "nvm install && nvm use",
     "upgrade-node": "nvm install 20.12.0 && nvm alias default 20.12.0 && nvm use 20.12.0",
     "deps:check": "syncpack list-mismatches",
@@ -69,6 +69,8 @@
   },
   "devDependencies": {
     "@alloc/quick-lru": "^5.2.0",
+    "@commitlint/cli": "^19.6.0",
+    "@commitlint/config-conventional": "^19.6.0",
     "@genuin/eslint-config": "workspace:*",
     "@genuin/typescript-config": "workspace:*",
     "@next/eslint-plugin-next": "^15.3.3",
