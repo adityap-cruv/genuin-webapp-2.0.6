@@ -92,14 +92,6 @@ const BRAND_COMMUNITIES = {
     slug: "iheartradio-music-festival",
     dp: "https://media.qa.begenuin.com/uploads/profile_images/community/194bdd15-d169-4289-861f-1876a6b5f366_1790000469537.png",
   },
-  festivalGroup: {
-    communityId: "29bee151-fa36-47c5-9919-612291cc1531",
-    groupId: "3d6a9b91-b6c6-4982-996b-2db298904b71",
-    name: "Festival Performances & Highlights",
-    slug: "festival-performances-highlights",
-    communitySlug: "iheartradio-music-festival",
-    dp: "https://media.qa.begenuin.com/uploads/profile_images/community/194bdd15-d169-4289-861f-1876a6b5f366_1790000469537.png",
-  },
   sportsRadio: {
     id: "2b552203-cb4e-4414-b3ab-0e0a1b7f0cbe",
     name: "Sports Radio",
@@ -118,27 +110,11 @@ const BRAND_COMMUNITIES = {
     slug: "nfl",
     dp: "https://media.qa.begenuin.com/uploads/profile_images/community/a843dd98-d9f6-40b8-98d9-1a5e06166e8f_1789997416942.png",
   },
-  artistInterviewsGroup: {
-    communityId: "5db6106b-f6f3-4f4d-a2f9-b0ef369fda61",
-    groupId: "5fd072b5-61c1-4972-b91f-109df50f34fb",
-    name: "Artist Interviews & Performances",
-    slug: "artist-interviews-performances",
-    communitySlug: "artist-radio-stations",
-    dp: "https://media.qa.begenuin.com/uploads/profile_images/community/b490cfc4-2f72-458d-a436-d8636ce67bca_1789997406886.png",
-  },
   artistRadio: {
     id: "0b32c042-a27e-4c77-b36a-7c0f5064b551",
     name: "Artist Radio",
     slug: "artist-radio",
     dp: "https://media.qa.begenuin.com/uploads/profile_images/community/958aedc0-ef89-4af8-abf8-1998865d4ba0_1789997401054.png",
-  },
-  sportsHighlightsGroup: {
-    communityId: "2b552203-cb4e-4414-b3ab-0e0a1b7f0cbe",
-    groupId: "15266401-fc39-44cd-a91b-a86a88a14756",
-    name: "Sports Highlights & Talk",
-    slug: "sports-highlights-talk",
-    communitySlug: "sports-radio",
-    dp: "https://media.qa.begenuin.com/uploads/profile_images/community/647e5676-0f52-4a9f-9428-c3c6154f14d1_1789997419187.png",
   },
 } as const;
 
@@ -169,11 +145,9 @@ function baseData(pageIndex: number): Record<string, WidgetData> {
   const articles = [0, 1, 2, 3, 4].map((offset) => articleData(pageIndex + offset));
 
   const cFestival = BRAND_COMMUNITIES.festival;
-  const gFestival = BRAND_COMMUNITIES.festivalGroup;
   const cSports = BRAND_COMMUNITIES.sportsRadio;
   const cArtistStations = BRAND_COMMUNITIES.artistRadioStations;
   const cNfl = BRAND_COMMUNITIES.nfl;
-  const gArtistInterviews = BRAND_COMMUNITIES.artistInterviewsGroup;
   const cArtistRadio = BRAND_COMMUNITIES.artistRadio;
   const sponsor = SPONSORS[pageIndex % SPONSORS.length]!;
 
@@ -192,13 +166,12 @@ function baseData(pageIndex: number): Record<string, WidgetData> {
     latest_news: {
       id: "latest_news",
       header: {
-        heading: gFestival.name,
+        heading: cArtistStations.name,
         subHeading: "Latest Articles",
-        logo: gFestival.dp,
-        communitySlug: gFestival.communitySlug,
-        groupSlug: gFestival.slug,
+        logo: cArtistStations.dp,
+        communitySlug: cArtistStations.slug,
       },
-      source: { feedType: "HOME", communityId: gFestival.communityId, groupId: gFestival.groupId },
+      source: { feedType: "HOME", communityId: cArtistStations.id },
       featuredArticle: featured,
       upNextArticles: upNext,
       readMoreLabel: "Read more",
@@ -218,12 +191,12 @@ function baseData(pageIndex: number): Record<string, WidgetData> {
     latest_videos: {
       id: "latest_videos",
       header: {
-        heading: cArtistStations.name,
+        heading: cFestival.name,
         subHeading: "Latest Highlights",
-        logo: cArtistStations.dp,
-        communitySlug: cArtistStations.slug,
+        logo: cFestival.dp,
+        communitySlug: cFestival.slug,
       },
-      source: { feedType: "HOME", communityId: cArtistStations.id },
+      source: { feedType: "HOME", communityId: cFestival.id },
     },
     related_links: {
       id: "related_links",
@@ -239,24 +212,23 @@ function baseData(pageIndex: number): Record<string, WidgetData> {
     latest_interviews: {
       id: "latest_interviews",
       header: {
-        heading: gArtistInterviews.name,
+        heading: cArtistRadio.name,
         subHeading: "Featured Stories",
-        logo: gArtistInterviews.dp,
-        communitySlug: gArtistInterviews.communitySlug,
-        groupSlug: gArtistInterviews.slug,
+        logo: cArtistRadio.dp,
+        communitySlug: cArtistRadio.slug,
       },
-      source: { feedType: "HOME", communityId: gArtistInterviews.communityId, groupId: gArtistInterviews.groupId },
+      source: { feedType: "HOME", communityId: cArtistRadio.id },
       articles,
     },
     top_categories: {
       id: "top_categories",
       header: {
-        heading: cArtistRadio.name,
+        heading: cSports.name,
         subHeading: "Music, news and culture",
-        logo: cArtistRadio.dp,
-        communitySlug: cArtistRadio.slug,
+        logo: cSports.dp,
+        communitySlug: cSports.slug,
       },
-      source: { feedType: "HOME", communityId: cArtistRadio.id },
+      source: { feedType: "HOME", communityId: cSports.id },
       ctaText: "Read More",
     },
     tmobile: {
