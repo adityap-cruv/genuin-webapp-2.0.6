@@ -22,6 +22,10 @@ export type ContextualLinkMetaData = LinkMetaData & {
 const SWIPE_COMMIT_THRESHOLD_PX = 24;
 /** Movement large enough to treat a touch as a drag instead of a card click. */
 const CARD_CLICK_DRAG_THRESHOLD_PX = 8;
+/** A trackpad's momentum can leave large gaps between wheel events; keep it one gesture. */
+const WHEEL_GESTURE_GAP_MS = 180;
+/** Prevent a delayed momentum event from becoming a second card transition. */
+const WHEEL_STEP_COOLDOWN_MS = 240;
 
 // This list keeps its compact rows independently of the SDK sheet's two-line cards.
 const LIST_CARD_CSS = `
@@ -567,8 +571,6 @@ export function HoverLinkCardList({
     const track = trackRef.current;
     if (!stepScroll || !section || !track) return;
 
-    const GESTURE_GAP_MS = 50; // quiet time (between events) that ends a gesture
-    const MIN_STEP_INTERVAL_MS = 100; // never two steps closer than this (event time)
     const MIN_DELTA = 4; // ignore sub-pixel jitter only — the FIRST real event steps immediately
 
     const onWheel = (event: WheelEvent) => {
@@ -580,11 +582,11 @@ export function HoverLinkCardList({
       const ts = event.timeStamp;
       const direction = primaryDelta > 0 ? 1 : -1;
       const gap = ts - lastWheelTsRef.current;
-      const isNewGesture = gap > GESTURE_GAP_MS || direction !== lastWheelDirectionRef.current;
+      const isNewGesture = gap > WHEEL_GESTURE_GAP_MS || direction !== lastWheelDirectionRef.current;
       lastWheelTsRef.current = ts;
       lastWheelDirectionRef.current = direction;
       if (!isNewGesture) return; // inertia / continuation of the gesture that already stepped
-      if (ts - lastStepTsRef.current < MIN_STEP_INTERVAL_MS) return;
+      if (ts - lastStepTsRef.current < WHEEL_STEP_COOLDOWN_MS) return;
 
       // Base the step on the index we last INTENDED (updated synchronously) — under jank
       // React may not have re-rendered yet and `activeIndex` would be stale.
