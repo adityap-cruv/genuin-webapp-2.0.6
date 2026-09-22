@@ -24,7 +24,7 @@ import {
 } from "@genuin/components/react-query/api/group/details/details";
 import { getTrendingGroups as useTrendingGroups } from "@genuin/components/react-query/api/group/trending/trending";
 
-import type { Article, ArticleBlock } from "./article-data";
+import { formatArticlePublishedAt, type Article, type ArticleBlock } from "./article-data";
 
 /**
  * Shared reader entrance motion; both route and inline compositions opt into it.
@@ -287,7 +287,7 @@ export function ArticleReaderHeader({ article, className }: { article: Article; 
               •
             </span>
           ) : null}
-          {article.publishedAt ? <span>{article.publishedAt}</span> : null}
+          {article.publishedAt ? <span>{formatArticlePublishedAt(article.publishedAt)}</span> : null}
         </div>
       ) : null}
     </header>

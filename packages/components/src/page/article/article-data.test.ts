@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { getAllArticleSlugs, getArticleBySlug } from "./article-data";
+import { formatArticlePublishedAt, getAllArticleSlugs, getArticleBySlug } from "./article-data";
 
 describe("iHeart article snapshot", () => {
   it("exposes the 31 unique brand-3938 articles and no Foil sources", () => {
@@ -35,5 +35,10 @@ describe("iHeart article snapshot", () => {
     expect(article?.title).toBe("Benson Boone Reveals Why He Recently Became A Drake Fan");
     expect(article?.author).toBe("Tony M. Centeno");
     expect(article?.publishedAt).toBe("2026-09-20T16:13:00+00:00");
+  });
+
+  it("formats imported ISO timestamps without changing existing editorial dates", () => {
+    expect(formatArticlePublishedAt("2026-09-19T12:00:00+00:00")).toBe("September 19, 2026 at 12:00 PM");
+    expect(formatArticlePublishedAt("31st August 2026 8:09pm")).toBe("31st August 2026 8:09pm");
   });
 });

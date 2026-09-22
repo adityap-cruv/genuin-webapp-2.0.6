@@ -66,3 +66,23 @@ export function getAllArticleSlugs(): string[] {
 export function articleHref(slug: string): string {
   return `/article/${slug}`;
 }
+
+/** Display imported ISO timestamps as stable, reader-friendly dates. */
+export function formatArticlePublishedAt(publishedAt: string): string {
+  // TestFoil's existing snapshot already has editorially formatted dates. Preserve those strings
+  // and convert only the machine-readable timestamps supplied by the iHeart import.
+  if (!/^\d{4}-\d{2}-\d{2}T/.test(publishedAt)) return publishedAt;
+
+  const date = new Date(publishedAt);
+  if (Number.isNaN(date.getTime())) return publishedAt;
+
+  return new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+    timeZone: "UTC",
+  }).format(date);
+}
