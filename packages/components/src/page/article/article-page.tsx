@@ -19,19 +19,10 @@ import { useFloatingVideoRestoreTarget } from "@genuin/components/lib/floating-v
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { Link } from "@genuin/components/molecules/link";
 import { CommunityCard } from "@genuin/components/organisms/community-card";
-import { GroupCard } from "@genuin/components/organisms/group-card";
 import { useGetCommunityDetails } from "@genuin/components/react-query/api/community/details/details";
-import {
-  setQueryDataForJoinGroupInGroupDetails,
-  useGetGroupDetails,
-} from "@genuin/components/react-query/api/group/details/details";
+import { useGetGroupDetails } from "@genuin/components/react-query/api/group/details/details";
 
-import {
-  toCommunityCardInfo,
-  toGroupCardProps,
-  type ArticleCommunity,
-  type ArticleGroup,
-} from "./article-community";
+import { toCommunityCardInfo, type ArticleCommunity, type ArticleGroup } from "./article-community";
 import { type Article, getArticleByHref } from "./article-data";
 import { ArticleIntelligenceAssistant } from "./article-intelligence-assistant";
 import {
@@ -217,13 +208,12 @@ function ArticleRailPlacement() {
 }
 
 /**
- * Where the article was published: the community it is attached to and the group it
- * was filed under, rendered with the same `CommunityCard` / `GroupCard` the rest of
- * the app uses (the `suggestion` variant — compact, whole-card clickable, no duplicate
- * join CTA, since the header pills already carry join/subscribe).
+ * Where the article was published, rendered with the same compact `CommunityCard`
+ * used across the app. The group association remains available in the article data and
+ * header pills; this rail stays community-only, matching the TestFoil presentation.
  */
 function ArticleOriginRail({ article }: { article: Article }) {
-  const { community, group } = article;
+  const { community } = article;
   if (!community) return null;
 
   return (
@@ -241,18 +231,6 @@ function ArticleOriginRail({ article }: { article: Article }) {
         variant="suggestion"
         url={buildPageUrl({ type: "community", slug: community.slug })}
       />
-
-      {group ? (
-        <>
-          <div className="gencl:mx-3 gencl:border-t gencl:border-secondary-100" />
-          <GroupCard
-            {...toGroupCardProps(group, community)}
-            variant="suggestion"
-            url={buildPageUrl({ type: "group", slug: group.slug })}
-            onGroupJoinStatusChange={(newRole) => setQueryDataForJoinGroupInGroupDetails(group.slug, newRole)}
-          />
-        </>
-      ) : null}
     </section>
   );
 }
@@ -444,10 +422,7 @@ function useDynamicArticleOrigin(article: Article): { community?: ArticleCommuni
           name: communityDetails?.name || article.community.name,
           handle: communityDetails?.handle || article.community.handle,
           profileImage:
-            communityDetails?.dp_s ||
-            communityDetails?.dp_m ||
-            communityDetails?.dp ||
-            article.community.profileImage,
+            communityDetails?.dp_s || communityDetails?.dp_m || communityDetails?.dp || article.community.profileImage,
           banner: communityDetails?.banner || article.community.banner,
           description: communityDetails?.description ?? article.community.description,
           isPrivate: communityDetails ? communityDetails.type === "PRIVATE" : article.community.isPrivate,
