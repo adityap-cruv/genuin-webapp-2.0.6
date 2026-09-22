@@ -31,7 +31,6 @@ import { SafeSuspense } from "@genuin/components/molecules/error/safe-suspense";
 import { markLinkoutEngaged } from "@genuin/components/molecules/linkout-new/linkout-engagement-marker";
 import type { OctoPanelHandle } from "@genuin/components/molecules/octo-panel/octo-panel";
 import type { IntelligenceArticleSelectHandler } from "@genuin/components/organisms/intelligence-panel/intelligence-panel.types";
-import { fetchVideoSuggestedPrompts } from "../intelligence-chat/intelligence-chat-side-panel";
 import { getArticleByHref, type Article } from "@genuin/components/page/article/article-data";
 import { InlineArticleView } from "@genuin/components/page/article/inline-article-view";
 import { type PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
@@ -42,6 +41,8 @@ import {
   PlayerSkeleton,
   SidePanelSkeleton,
 } from "@genuin/components/templates/feed/feed-skeleton";
+
+import { fetchVideoSuggestedPrompts } from "../intelligence-chat/suggested-prompts";
 
 import type { Player } from "./player";
 import { calculateSlideDimensions } from "./utils";
