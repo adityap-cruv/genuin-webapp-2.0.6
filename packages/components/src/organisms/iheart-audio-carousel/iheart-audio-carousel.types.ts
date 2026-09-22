@@ -1,11 +1,5 @@
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 
-export type IHeartAudioAttributes = {
-  type: "station" | "podcast";
-  station_id?: string | null;
-  podcast_id?: string | null;
-};
-
 export type IHeartAudioCarouselItem = {
   id: string;
   brand?: string;
@@ -17,7 +11,8 @@ export type IHeartAudioCarouselItem = {
   };
   waveform?: readonly number[];
   durationLabel?: string;
-  audioAttributes: IHeartAudioAttributes;
+  /** A finite recording URL. Live station streams are not supported here. */
+  audioSrc: string;
 };
 
 export interface IHeartAudioCarouselProps extends Omit<ComponentPropsWithoutRef<"section">, "children"> {

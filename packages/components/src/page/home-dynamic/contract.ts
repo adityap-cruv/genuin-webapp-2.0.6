@@ -127,19 +127,14 @@ export type LinkItemData = {
   image?: string;
 };
 
-export type IHeartEmbedAttributes = {
-  type: "station" | "podcast";
-  station_id?: string | null;
-  podcast_id?: string | null;
-};
-
 export type IHeartAudioStationData = {
   id: string;
   brand?: string;
   heading: string;
   subheading?: string;
   image: ImageData;
-  audioAttributes: IHeartEmbedAttributes;
+  /** A finite, locally hosted recording. Live station streams are not supported here. */
+  audioSrc: string;
 };
 
 export type WidgetData = {

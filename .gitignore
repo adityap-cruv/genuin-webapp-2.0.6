@@ -10,6 +10,9 @@ coverage
 
 # next.js
 .next/
+
+# iHeart audio is served from S3; do not commit local recordings.
+/apps/webapp/public/audio/
 out/
 build
 dist

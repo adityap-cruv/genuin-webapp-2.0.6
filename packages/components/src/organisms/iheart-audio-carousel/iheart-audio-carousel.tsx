@@ -4,9 +4,7 @@ import { Image } from "@genuin/ui/components/image";
 import { Text } from "@genuin/ui/components/typography";
 import { cn } from "@genuin/ui/lib/utils";
 import { Pause, Play } from "lucide-react";
-import { useState } from "react";
-
-import { IHeartEmbedBar } from "@genuin/components/organisms/player-swiper/iheart/iheart-embed-bar";
+import { useRef, useState } from "react";
 
 import type { IHeartAudioCarouselItem, IHeartAudioCarouselProps } from "./iheart-audio-carousel.types";
 
@@ -297,8 +295,8 @@ function StationCard({
  * Horizontally scrollable row of compact audio station cards.
  *
  * Mirrors {@link EventCarousel}'s track, snapping, and sizing contract, but each
- * card's affordance is inline playback rather than a link-out. The selected card
- * owns the single active iHeart iframe.
+ * card's affordance is inline playback rather than a link-out. All cards share a
+ * single native audio element, and each item supplies a finite recording URL.
  */
 export function IHeartAudioCarousel({
   stations,
@@ -314,9 +312,26 @@ export function IHeartAudioCarousel({
   ...props
 }: IHeartAudioCarouselProps) {
   const [playingStationId, setPlayingStationId] = useState<string | null>(null);
-  const activeStation = stations.find((station) => station.id === playingStationId);
+  const audioRef = useRef<HTMLAudioElement>(null);
   const handlePlayToggle = (station: IHeartAudioCarouselItem, willPlay: boolean) => {
-    setPlayingStationId(willPlay ? station.id : null);
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (!willPlay) {
+      audio.pause();
+      audio.removeAttribute("src");
+      audio.load();
+      setPlayingStationId(null);
+      return;
+    }
+
+    // Reuse one player so only one recording can play at a time. This call stays
+    // in the click handler, preserving the browser's user-gesture permission.
+    audio.pause();
+    audio.src = station.audioSrc;
+    audio.load();
+    setPlayingStationId(station.id);
+    void audio.play().catch(() => setPlayingStationId(null));
   };
   if (stations.length === 0) return null;
 
@@ -343,14 +358,15 @@ export function IHeartAudioCarousel({
           </div>
         ))}
       </div>
-      {activeStation ? (
-        <div
-          className="gencl:pointer-events-none gencl:fixed gencl:-left-[100vw] gencl:top-0 gencl:w-screen gencl:opacity-0"
-          data-slot="iheart-audio-player"
-          aria-hidden="true">
-          <IHeartEmbedBar key={activeStation.id} attributes={activeStation.audioAttributes} autoPlay />
-        </div>
-      ) : null}
+      <audio
+        ref={audioRef}
+        data-slot="iheart-audio-player"
+        aria-hidden="true"
+        className="gencl:pointer-events-none gencl:fixed gencl:-left-[100vw] gencl:top-0 gencl:h-px gencl:w-px gencl:opacity-0"
+        preload="none"
+        onEnded={() => setPlayingStationId(null)}
+        onError={() => setPlayingStationId(null)}
+      />
     </section>
   );
 }

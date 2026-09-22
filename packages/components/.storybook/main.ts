@@ -26,7 +26,9 @@ const config: StorybookConfig = {
   // requests via `/ad-tags/vast-*.xml` and `/videos/*` at this Storybook
   // origin. Dev-only, never shipped. See:
   // packages/components/docs/linkouts/SAMPLE_AD_TAGS.md
-  staticDirs: ["./qa-fixtures"],
+  staticDirs: [
+    "./qa-fixtures",
+  ],
   addons: [
     getAbsolutePath("@storybook/addon-onboarding"),
     getAbsolutePath("@chromatic-com/storybook"),
