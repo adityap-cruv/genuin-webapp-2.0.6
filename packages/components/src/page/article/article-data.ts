@@ -4202,6 +4202,289 @@ export const ARTICLE_CONTENT: ArticleContentMap = {
       url: "https://thefoil.com/series/sailgp/events/spain-sail-grand-prix-valencia/",
     },
   },
+  "oracle-perth-sail-grand-prix-presented-by-kpmg": {
+    slug: "oracle-perth-sail-grand-prix-presented-by-kpmg",
+    kind: "event",
+    title: "Oracle Perth Sail Grand Prix | KPMG",
+    standfirst: "SailGP opens its season in Western Australia on the sparkling waters of Perth.",
+    heroImage: {
+      src: "https://thefoil.com/media/dtwoxDuA6lLEBMIsdFmKtcF-fieju814c7HeIuHU0mo/resize:fill-down:532:300/gravity:fp:0.1914893617:0.4600980829/quality:60/dpr:1/2026/05/A8I5xxHXMuY.jpg",
+      alt: "Oracle Perth Sail Grand Prix | KPMG",
+    },
+    body: [
+      {
+        type: "paragraph",
+        text: "SailGP opens its season in Western Australia on the sparkling waters of Perth. Teams take to the Swan River for blistering high-speed racing under the famous Fremantle Doctor breezes.",
+      },
+    ],
+    eventDate: "17 - 18 Jan 2026",
+    location: "Perth, Australia",
+    source: {
+      name: "The Foil",
+      url: "https://thefoil.com/events/oracle-perth-sail-grand-prix-presented-by-kpmg/",
+    },
+  },
+  "itm-new-zealand-sail-grand-prix-auckland": {
+    slug: "itm-new-zealand-sail-grand-prix-auckland",
+    kind: "event",
+    title: "ITM New Zealand Sail Grand Prix | Auckland",
+    standfirst: "The Black Foils race in front of an enthusiastic home crowd in Auckland harbor.",
+    heroImage: {
+      src: "https://thefoil.com/media/cEU2dqX2riTz_QNbWdMf2JFR4GUC9CxGFkxKPebEY2I/resize:fill-down:532:300/gravity:fp:0.6278381625:0.3250833809/quality:60/dpr:2/2026/08/black-foils-auckland-2026-brett-phibbs.jpg",
+      alt: "ITM New Zealand Sail Grand Prix | Auckland",
+    },
+    body: [
+      {
+        type: "paragraph",
+        text: "The Black Foils race in front of an enthusiastic home crowd in Auckland harbor. With high tactical demands and changing tides, the City of Sails tests every team's handling.",
+      },
+    ],
+    eventDate: "14 - 15 Feb 2026",
+    location: "Auckland, New Zealand",
+    source: {
+      name: "The Foil",
+      url: "https://thefoil.com/events/itm-new-zealand-sail-grand-prix-auckland/",
+    },
+  },
+  "kpmg-sydney-sail-grand-prix": {
+    slug: "kpmg-sydney-sail-grand-prix",
+    kind: "event",
+    title: "KPMG Sydney Sail Grand Prix",
+    standfirst: "Iconic Sydney Harbour provides high-stakes racing against the Sydney Opera House backdrop.",
+    heroImage: {
+      src: "https://thefoil.com/media/D9-BwEUpx2zkordmXhfkesEf3umA15CkbUq_0hVLUFk/resize:fill-down:690:388/gravity:fp:0.3212765957:0.4967784486/quality:60/dpr:1/2026/07/cowes-week-2018.jpg",
+      alt: "KPMG Sydney Sail Grand Prix",
+    },
+    body: [
+      {
+        type: "paragraph",
+        text: "Iconic Sydney Harbour provides high-stakes racing against the Sydney Opera House backdrop. The natural amphitheater gives spectators front-row seats to the world's fastest catamarans.",
+      },
+    ],
+    eventDate: "28 Feb - 1 Mar 2026",
+    location: "Sydney, Australia",
+    source: {
+      name: "The Foil",
+      url: "https://thefoil.com/events/kpmg-sydney-sail-grand-prix/",
+    },
+  },
+  "enel-rio-sail-grand-prix": {
+    slug: "enel-rio-sail-grand-prix",
+    kind: "event",
+    title: "Enel Rio Sail Grand Prix",
+    standfirst: "SailGP makes its historic South American debut under the gaze of Christ the Redeemer.",
+    heroImage: {
+      src: "https://thefoil.com/media/1iyA3HxN0dBlrtWrFrClGhvEmC088eDTOXoEX2XqirA/resize:fill-down:690:388/gravity:fp:0.3738738739:0.7896640827/quality:60/dpr:1/2026/06/ab305255.jpg",
+      alt: "Enel Rio Sail Grand Prix",
+    },
+    body: [
+      {
+        type: "paragraph",
+        text: "SailGP makes its historic South American debut under the gaze of Christ the Redeemer in Guanabara Bay. A landmark event on the global calendar with electric local energy.",
+      },
+    ],
+    eventDate: "11 - 12 Apr 2026",
+    location: "Rio de Janeiro, Brazil",
+    source: {
+      name: "The Foil",
+      url: "https://thefoil.com/events/enel-rio-sail-grand-prix/",
+    },
+  },
+  "apex-group-bermuda-sail-grand-prix": {
+    slug: "apex-group-bermuda-sail-grand-prix",
+    kind: "event",
+    title: "Apex Group Bermuda Sail Grand Prix",
+    standfirst: "The Great Sound delivers prime foiling conditions and fast-paced tactical battles.",
+    heroImage: {
+      src: "https://thefoil.com/media/qKjnrDjyAPpM3cBcH277RkMeUBqSXdeGFzwHNmpN4rY/resize:fill-down:690:388/gravity:fp:0.5127659574:0.5173727167/quality:60/dpr:1/2026/06/sv3-3959-samo-vidic-for-sailgp.jpg",
+      alt: "Apex Group Bermuda Sail Grand Prix",
+    },
+    body: [
+      {
+        type: "paragraph",
+        text: "The Great Sound delivers prime foiling conditions and fast-paced tactical battles. Turquoise waters and steady winds offer ideal testing grounds for the F50 fleet.",
+      },
+    ],
+    eventDate: "9 - 10 May 2026",
+    location: "Great Sound, Bermuda",
+    source: {
+      name: "The Foil",
+      url: "https://thefoil.com/events/apex-group-bermuda-sail-grand-prix/",
+    },
+  },
+  "mubadala-new-york-sail-grand-prix": {
+    slug: "mubadala-new-york-sail-grand-prix",
+    kind: "event",
+    title: "Mubadala New York Sail Grand Prix",
+    standfirst: "F50 catamarans race past the Manhattan skyline and Statue of Liberty on the Hudson River.",
+    heroImage: {
+      src: "https://thefoil.com/media/Um8anF-sXKcm8j780JjLYBS9DIkHC8GfcXQjrug28Xs/resize:fill-down:690:388/gravity:fp:0.4787792084:0.701049749/quality:60/dpr:1/2026/06/new-york-sailgp-statue-of-liberty-2026.jpg",
+      alt: "Mubadala New York Sail Grand Prix",
+    },
+    body: [
+      {
+        type: "paragraph",
+        text: "F50 catamarans race past the Manhattan skyline and Statue of Liberty on the Hudson River. Gusty urban winds and strong tidal currents create unpredictable racing drama.",
+      },
+    ],
+    eventDate: "30 - 31 May 2026",
+    location: "New York, USA",
+    source: {
+      name: "The Foil",
+      url: "https://thefoil.com/events/mubadala-new-york-sail-grand-prix/",
+    },
+  },
+  "canada-sail-grand-prix-halifax": {
+    slug: "canada-sail-grand-prix-halifax",
+    kind: "event",
+    title: "Canada Sail Grand Prix | Halifax",
+    standfirst: "Passionate Canadian crowds pack the Halifax waterfront for intense harbor racing.",
+    heroImage: {
+      src: "https://thefoil.com/media/EDze0rwkrUx65k8kq9Lwu9oSHPCEuRO6nTICXHbiUnE/resize:fill-down:690:388/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/06/sb1-9984-simon-bruty-sailgp.jpg",
+      alt: "Canada Sail Grand Prix | Halifax",
+    },
+    body: [
+      {
+        type: "paragraph",
+        text: "Passionate Canadian crowds pack the Halifax waterfront for intense harbor racing. Halifax Harbour provides a tight arena where split-second calls dictate winners.",
+      },
+    ],
+    eventDate: "20 - 21 Jun 2026",
+    location: "Halifax, Canada",
+    source: {
+      name: "The Foil",
+      url: "https://thefoil.com/events/canada-sail-grand-prix-halifax/",
+    },
+  },
+  "emirates-great-britain-sail-grand-prix-portsmouth": {
+    slug: "emirates-great-britain-sail-grand-prix-portsmouth",
+    kind: "event",
+    title: "Emirates Great Britain Sail Grand Prix | Portsmouth",
+    standfirst: "The British fleet competes on home Solent waters off the Southsea seafront in Portsmouth.",
+    heroImage: {
+      src: "https://thefoil.com/media/rRr0UlSejCKYrs1mlU2WfnN1GtnCUwi2Gc_1Ra_F4Fc/resize:fill-down:1200:630/g:ce/quality:60/dpr:1/2026/05/gc-7202edit-2048x2048.jpg",
+      alt: "Emirates Great Britain Sail Grand Prix | Portsmouth",
+    },
+    body: [
+      {
+        type: "paragraph",
+        text: "The British fleet competes on home Solent waters off the Southsea seafront in Portsmouth. Historic naval traditions meet cutting-edge hydrofoil racing.",
+      },
+    ],
+    eventDate: "25 - 26 Jul 2026",
+    location: "Portsmouth, United Kingdom",
+    source: {
+      name: "The Foil",
+      url: "https://thefoil.com/events/emirates-great-britain-sail-grand-prix-portsmouth/",
+    },
+  },
+  "ac38-preliminary-regatta-1-ac40s": {
+    slug: "ac38-preliminary-regatta-1-ac40s",
+    kind: "event",
+    title: "America's Cup AC38 Preliminary Regatta | Cagliari",
+    standfirst: "AC40 one-design fleet and match racing kicks off the 38th America's Cup cycle in Sardinia.",
+    heroImage: {
+      src: "https://thefoil.com/media/dBTTONdJFQWIf2atg27IKK_tQtdgVuHqlJ6eIv7jACU/resize:fill-down:540:295/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/01/nochesanjuan-valencia-4-1.jpg",
+      alt: "America's Cup AC38 Preliminary Regatta | Cagliari",
+    },
+    body: [
+      {
+        type: "paragraph",
+        text: "AC40 one-design fleet and match racing kicks off the 38th America's Cup cycle in Sardinia. The world's top sailing syndicates square off in identical one-design AC40s.",
+      },
+    ],
+    eventDate: "22 May 2026",
+    location: "Cagliari, Italy",
+    source: {
+      name: "The Foil",
+      url: "https://thefoil.com/events/ac38-preliminary-regatta-1-ac40s/",
+    },
+  },
+  "freddie-carr-winging-it-at-half-time-in-sailgp": {
+    slug: "freddie-carr-winging-it-at-half-time-in-sailgp",
+    kind: "news",
+    title: "Freddie Carr: winging it at half-time in SailGP",
+    standfirst:
+      "A mid-season performance analysis of the SailGP teams, backed by the numbers.",
+    author: "Freddie Carr",
+    publishedAt: "12th August 2026 10:00am",
+    heroImage: {
+      src: "https://thefoil.com/media/1iyA3HxN0dBlrtWrFrClGhvEmC088eDTOXoEX2XqirA/resize:fill-down:690:388/gravity:fp:0.3738738739:0.7896640827/quality:60/dpr:1/2026/06/ab305255.jpg",
+      alt: "Freddie Carr: winging it at half-time in SailGP",
+    },
+    body: [
+      {
+        type: "paragraph",
+        text: "With Season 6 at its midway mark, the numbers paint a revealing picture of who is genuinely contending and who is merely treading water. From start-line statistics to foiling percentages, the data shows why Australia and New Zealand continue to set the benchmark while other teams scramble for consistency.",
+      },
+      {
+        type: "paragraph",
+        text: "Wing trimmer efficiency and flight control precision remain the decisive battlegrounds. Teams that have invested in simulator time and stable crew combinations are reaping rewards in marginal foiling conditions, where races are won or lost off the foils.",
+      },
+      {
+        type: "paragraph",
+        text: "Looking ahead to the European swing, the margins between the top four teams will only tighten. Expect tactical aggression to increase as the Grand Final in Abu Dhabi looms closer.",
+      },
+    ],
+    source: {
+      name: "The Foil",
+      url: "https://thefoil.com/news/freddie-carr-winging-it-at-half-time-in-sailgp/",
+    },
+  },
+  "like-watching-jet-fighters-dance-on-water-how-luna-rossa-lit-up-the-ac38-opener": {
+    slug: "like-watching-jet-fighters-dance-on-water-how-luna-rossa-lit-up-the-ac38-opener",
+    kind: "news",
+    title: "'Like watching jet fighters dance on water': Luna Rossa lights up the AC38 opener",
+    standfirst:
+      "Coverage of Luna Rossa's strong performance at the AC38 Cagliari opener.",
+    author: "Mark Chisnell",
+    publishedAt: "24th May 2026 2:15pm",
+    heroImage: {
+      src: "https://thefoil.com/media/dBTTONdJFQWIf2atg27IKK_tQtdgVuHqlJ6eIv7jACU/resize:fill-down:540:295/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/01/nochesanjuan-valencia-4-1.jpg",
+      alt: "'Like watching jet fighters dance on water': Luna Rossa lights up the AC38 opener",
+    },
+    body: [
+      {
+        type: "paragraph",
+        text: "Luna Rossa Prada Pirelli delivered a sailing masterclass on the opening day of the AC38 Preliminary Regatta in Cagliari. Flying above the crystalline waters of the Gulf of Angels in identical AC40s, the Italian crew displayed unmatched boat handling and razor-sharp match-racing instincts.",
+      },
+      {
+        type: "paragraph",
+        text: "Spectators lined the Cagliari waterfront as the fleet engaged in close-quarters duels reaching speeds exceeding 40 knots. The spectacle drew comparisons to aerobatics on water, setting a breathtaking tone for the 38th America's Cup cycle.",
+      },
+    ],
+    source: {
+      name: "The Foil",
+      url: "https://thefoil.com/news/like-watching-jet-fighters-dance-on-water-how-luna-rossa-lit-up-the-ac38-opener/",
+    },
+  },
+  "after-the-new-york-crash-what-should-sailgp-actually-do-the-foil-community-weighs-in": {
+    slug: "after-the-new-york-crash-what-should-sailgp-actually-do-the-foil-community-weighs-in",
+    kind: "news",
+    title: "After the New York crash, what should SailGP actually do?",
+    standfirst:
+      "A community discussion sparked by the collision at the New York SailGP.",
+    author: "Lewis Smith, Multimedia Editor",
+    publishedAt: "2nd June 2026 4:30pm",
+    heroImage: {
+      src: "https://thefoil.com/media/EDze0rwkrUx65k8kq9Lwu9oSHPCEuRO6nTICXHbiUnE/resize:fill-down:690:388/gravity:fp:0.5:0.5/quality:60/dpr:1/2026/06/sb1-9984-simon-bruty-sailgp.jpg",
+      alt: "After the New York crash, what should SailGP actually do?",
+    },
+    body: [
+      {
+        type: "paragraph",
+        text: "The three-boat collision in New York has ignited passionate debate across the sailing community. With carbon fiber splintered and penalty points handed down, questions about safety boundaries on tight urban courses have taken center stage.",
+      },
+      {
+        type: "paragraph",
+        text: "Fans and competitors alike have voiced opinions ranging from rule adjustments at mark roundings to wider course boundaries. As SailGP continues to prioritize close, stadium-style racing, finding the equilibrium between high-octane entertainment and athlete safety remains the critical challenge.",
+      },
+    ],
+    source: {
+      name: "The Foil",
+      url: "https://thefoil.com/news/after-the-new-york-crash-what-should-sailgp-actually-do-the-foil-community-weighs-in/",
+    },
+  },
 };
 
 /**

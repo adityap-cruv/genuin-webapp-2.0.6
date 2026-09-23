@@ -68,7 +68,7 @@ function EventCard({ event, cardWidth, cardHeight, imageWidth, imageHeight, onCt
       data-slot="event-card"
       onClickCapture={activateCta}
       className={cn(
-        "gencl:box-border gencl:flex-none gencl:cursor-pointer gencl:overflow-hidden gencl:rounded-lg",
+        "gencl:box-border gencl:flex-none gencl:cursor-grab gencl:overflow-hidden gencl:rounded-lg",
         "gencl:bg-white gencl:text-black gencl:ring-1 gencl:ring-secondary-200 gencl:ring-inset"
       )}
       style={{ width: cardWidth, height: cardHeight }}>
@@ -116,6 +116,124 @@ export function EventCarousel({
   const trackRef = useRef<HTMLDivElement>(null);
   const [scrollState, setScrollState] = useState({ canScrollLeft: false, canScrollRight: false });
 
+  // Mouse drag-to-scroll state
+  const isDownRef = useRef(false);
+  const startXRef = useRef(0);
+  const scrollLeftRef = useRef(0);
+  const hasDraggedRef = useRef(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const cleanupDragRef = useRef<(() => void) | null>(null);
+
+  // Velocity tracking for smooth momentum on release
+  const lastXRef = useRef(0);
+  const lastTimeRef = useRef(0);
+  const velocityRef = useRef(0);
+  const momentumRafRef = useRef<number | null>(null);
+
+  const stopMomentum = useCallback(() => {
+    if (momentumRafRef.current !== null) {
+      cancelAnimationFrame(momentumRafRef.current);
+      momentumRafRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      stopMomentum();
+      if (cleanupDragRef.current) {
+        cleanupDragRef.current();
+        cleanupDragRef.current = null;
+      }
+    };
+  }, [stopMomentum]);
+
+  const handleMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.button !== 0) return;
+    const track = trackRef.current;
+    if (!track) return;
+
+    stopMomentum();
+
+    isDownRef.current = true;
+    startXRef.current = e.pageX;
+    scrollLeftRef.current = track.scrollLeft;
+    hasDraggedRef.current = false;
+
+    lastXRef.current = e.pageX;
+    lastTimeRef.current = performance.now();
+    velocityRef.current = 0;
+
+    const onMouseMove = (moveEvent: MouseEvent) => {
+      if (!isDownRef.current) return;
+      const walk = moveEvent.pageX - startXRef.current;
+
+      if (!hasDraggedRef.current && Math.abs(walk) > 4) {
+        hasDraggedRef.current = true;
+        setIsDragging(true);
+      }
+
+      if (hasDraggedRef.current) {
+        moveEvent.preventDefault();
+        track.scrollLeft = scrollLeftRef.current - walk;
+
+        const now = performance.now();
+        const dt = now - lastTimeRef.current;
+        if (dt > 10) {
+          velocityRef.current = (moveEvent.pageX - lastXRef.current) / dt;
+          lastXRef.current = moveEvent.pageX;
+          lastTimeRef.current = now;
+        }
+      }
+    };
+
+    const onMouseUp = () => {
+      isDownRef.current = false;
+      setIsDragging(false);
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
+      cleanupDragRef.current = null;
+
+      window.requestAnimationFrame(() => {
+        hasDraggedRef.current = false;
+      });
+
+      // Smooth momentum glide if released with velocity (swipe/flick)
+      const now = performance.now();
+      const dt = now - lastTimeRef.current;
+      if (dt < 100 && Math.abs(velocityRef.current) > 0.1) {
+        let currentVelocity = velocityRef.current;
+        const friction = 0.92;
+
+        const glide = () => {
+          if (!trackRef.current || Math.abs(currentVelocity) < 0.05) {
+            momentumRafRef.current = null;
+            return;
+          }
+          trackRef.current.scrollLeft -= currentVelocity * 16;
+          currentVelocity *= friction;
+          momentumRafRef.current = requestAnimationFrame(glide);
+        };
+
+        momentumRafRef.current = requestAnimationFrame(glide);
+      }
+    };
+
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onMouseUp);
+
+    cleanupDragRef.current = () => {
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
+    };
+  }, [stopMomentum]);
+
+  const handleClickCapture = useCallback((e: React.MouseEvent) => {
+    if (hasDraggedRef.current) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }, []);
+
   const syncScrollState = useCallback(() => {
     const track = trackRef.current;
     if (!track) return;
@@ -141,12 +259,13 @@ export function EventCarousel({
     (direction: 1 | -1) => {
       const track = trackRef.current;
       if (!track) return;
+      stopMomentum();
       const step = cardWidth + gap;
       // Advance by as many whole cards as currently fit, never less than one.
       const cardsPerPage = Math.max(1, Math.floor(track.clientWidth / step));
       track.scrollBy({ left: direction * cardsPerPage * step, behavior: "smooth" });
     },
-    [cardWidth, gap]
+    [cardWidth, gap, stopMomentum]
   );
 
   if (events.length === 0) return null;
@@ -159,10 +278,18 @@ export function EventCarousel({
         ref={trackRef}
         data-slot="event-carousel-track"
         onScroll={syncScrollState}
-        className="gencl:flex gencl:w-full gencl:overflow-x-auto gencl:pb-2 gencl:[scrollbar-width:none] gencl:[&::-webkit-scrollbar]:hidden"
-        style={{ gap, scrollSnapType: "x mandatory" }}>
+        onMouseDown={handleMouseDown}
+        onClickCapture={handleClickCapture}
+        onDragStart={(e) => e.preventDefault()}
+        className={cn(
+          "gencl:flex gencl:w-full gencl:overflow-x-auto gencl:pb-2 gencl:[scrollbar-width:none] gencl:[&::-webkit-scrollbar]:hidden",
+          isDragging
+            ? "gencl:cursor-grabbing gencl:select-none gencl:[&_*]:cursor-grabbing! gencl:[&_*]:select-none!"
+            : "gencl:cursor-grab"
+        )}
+        style={{ gap }}>
         {events.map((event) => (
-          <div key={event.id} style={{ scrollSnapAlign: "start" }}>
+          <div key={event.id}>
             <EventCard
               event={event}
               cardWidth={cardWidth}

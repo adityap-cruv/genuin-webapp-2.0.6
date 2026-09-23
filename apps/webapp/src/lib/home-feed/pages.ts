@@ -501,9 +501,9 @@ const EVENT_POOL: PoolEvent[] = [
   },
 ];
 
-/** On-domain `/article/<slug>` when we have a demo page for it; else the real thefoil.com article. */
-function poolHref(slug: string, base: "news" | "events"): string {
-  return getArticleBySlug(slug) ? `/article/${slug}` : `https://thefoil.com/${base}/${slug}/`;
+/** On-domain `/article/<slug>` for all articles. */
+function poolHref(slug: string, _base: "news" | "events"): string {
+  return `/article/${slug}`;
 }
 
 /** Wrap an index into a pool array (handles negatives). */
@@ -688,7 +688,7 @@ function basePageData(): Record<string, WidgetData> {
           location: "Perth, Australia",
           cta: {
             label: "Read More",
-            href: "https://thefoil.com/events/oracle-perth-sail-grand-prix-presented-by-kpmg/",
+            href: "/article/oracle-perth-sail-grand-prix-presented-by-kpmg",
           },
         },
         {
@@ -700,7 +700,7 @@ function basePageData(): Record<string, WidgetData> {
           location: "Auckland, New Zealand",
           cta: {
             label: "Read More",
-            href: "https://thefoil.com/events/itm-new-zealand-sail-grand-prix-auckland/",
+            href: "/article/itm-new-zealand-sail-grand-prix-auckland",
           },
         },
         {
@@ -712,7 +712,7 @@ function basePageData(): Record<string, WidgetData> {
           location: "Sydney, Australia",
           cta: {
             label: "Read More",
-            href: "https://thefoil.com/events/kpmg-sydney-sail-grand-prix/",
+            href: "/article/kpmg-sydney-sail-grand-prix",
           },
         },
         {
@@ -724,7 +724,7 @@ function basePageData(): Record<string, WidgetData> {
           location: "Rio de Janeiro, Brazil",
           cta: {
             label: "Read More",
-            href: "https://thefoil.com/events/enel-rio-sail-grand-prix/",
+            href: "/article/enel-rio-sail-grand-prix",
           },
         },
         {
@@ -736,7 +736,7 @@ function basePageData(): Record<string, WidgetData> {
           location: "Great Sound, Bermuda",
           cta: {
             label: "Read More",
-            href: "https://thefoil.com/events/apex-group-bermuda-sail-grand-prix/",
+            href: "/article/apex-group-bermuda-sail-grand-prix",
           },
         },
         {
@@ -748,7 +748,7 @@ function basePageData(): Record<string, WidgetData> {
           location: "New York, USA",
           cta: {
             label: "Read More",
-            href: "https://thefoil.com/events/mubadala-new-york-sail-grand-prix/",
+            href: "/article/mubadala-new-york-sail-grand-prix",
           },
         },
         {
@@ -760,7 +760,7 @@ function basePageData(): Record<string, WidgetData> {
           location: "Halifax, Canada",
           cta: {
             label: "Read More",
-            href: "https://thefoil.com/events/canada-sail-grand-prix-halifax/",
+            href: "/article/canada-sail-grand-prix-halifax",
           },
         },
         {
@@ -772,7 +772,7 @@ function basePageData(): Record<string, WidgetData> {
           location: "Portsmouth, United Kingdom",
           cta: {
             label: "Read More",
-            href: "https://thefoil.com/events/emirates-great-britain-sail-grand-prix-portsmouth/",
+            href: "/article/emirates-great-britain-sail-grand-prix-portsmouth",
           },
         },
         {
@@ -784,7 +784,7 @@ function basePageData(): Record<string, WidgetData> {
           location: "Sassnitz, Germany",
           cta: {
             label: "Read More",
-            href: "https://thefoil.com/events/rockwool-germany-sail-grand-prix-sassnitz/",
+            href: "/article/rockwool-germany-sail-grand-prix-sassnitz",
           },
         },
         {
@@ -796,7 +796,7 @@ function basePageData(): Record<string, WidgetData> {
           location: "Cagliari, Italy",
           cta: {
             label: "Read More",
-            href: "https://thefoil.com/events/ac38-preliminary-regatta-1-ac40s/",
+            href: "/article/ac38-preliminary-regatta-1-ac40s",
           },
         },
       ],

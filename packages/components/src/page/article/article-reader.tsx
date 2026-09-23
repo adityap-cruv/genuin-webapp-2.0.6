@@ -304,18 +304,6 @@ export function ArticleReaderHeader({ article, className }: { article: Article; 
 
       {article.standfirst ? <p className="gen-article-dek">{article.standfirst}</p> : null}
 
-      {isEvent && (article.eventDate || article.location) ? (
-        <div className="gen-article-event-meta">
-          {article.eventDate ? <span className="gen-article-event-date">{article.eventDate}</span> : null}
-          {article.eventDate && article.location ? (
-            <span aria-hidden className="gen-article-byline-dot">
-              •
-            </span>
-          ) : null}
-          {article.location ? <span>{article.location}</span> : null}
-        </div>
-      ) : null}
-
       {/* Community & group pills — same affordance as the feed player's. */}
       <ArticleHeaderPills article={article} />
 
@@ -328,6 +316,16 @@ export function ArticleReaderHeader({ article, className }: { article: Article; 
             </span>
           ) : null}
           {article.publishedAt ? <span>{article.publishedAt}</span> : null}
+        </div>
+      ) : isEvent && (article.eventDate || article.location) ? (
+        <div className="gen-article-byline">
+          {article.eventDate ? <span className="gen-article-byline-author">{article.eventDate}</span> : null}
+          {article.eventDate && article.location ? (
+            <span aria-hidden className="gen-article-byline-dot">
+              •
+            </span>
+          ) : null}
+          {article.location ? <span>{article.location}</span> : null}
         </div>
       ) : null}
     </header>

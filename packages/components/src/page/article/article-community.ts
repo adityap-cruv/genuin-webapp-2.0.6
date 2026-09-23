@@ -311,8 +311,20 @@ const ARTICLE_ORIGIN_BY_SLUG: Record<string, [CommunityKey, GroupKey]> = {
   "rockwool-germany-sail-grand-prix-sassnitz": ["sailgp", "sailgpSeason6"],
   "rolex-switzerland-sail-grand-prix-geneva": ["sailgp", "sailgpSeason6"],
   "spain-sail-grand-prix-valencia": ["sailgp", "sailgpSeason6"],
+  "oracle-perth-sail-grand-prix-presented-by-kpmg": ["sailgp", "sailgpSeason6"],
+  "itm-new-zealand-sail-grand-prix-auckland": ["sailgp", "sailgpSeason6"],
+  "kpmg-sydney-sail-grand-prix": ["sailgp", "sailgpSeason6"],
+  "enel-rio-sail-grand-prix": ["sailgp", "sailgpSeason6"],
+  "apex-group-bermuda-sail-grand-prix": ["sailgp", "sailgpSeason6"],
+  "mubadala-new-york-sail-grand-prix": ["sailgp", "sailgpSeason6"],
+  "canada-sail-grand-prix-halifax": ["sailgp", "sailgpSeason6"],
+  "emirates-great-britain-sail-grand-prix-portsmouth": ["sailgp", "sailgpSeason6"],
+  "freddie-carr-winging-it-at-half-time-in-sailgp": ["sailgp", "sailgpOpinion"],
+  "after-the-new-york-crash-what-should-sailgp-actually-do-the-foil-community-weighs-in": ["sailgp", "sailgpOpinion"],
 
   // America's Cup.
+  "ac38-preliminary-regatta-1-ac40s": ["americasCup", "cupMatchRacing"],
+  "like-watching-jet-fighters-dance-on-water-how-luna-rossa-lit-up-the-ac38-opener": ["americasCup", "cupMatchRacing"],
   "luna-rossa-test-new-rudder-and-take-a-knock": ["americasCup", "cupMatchRacing"],
   "full-steam-ahead-and-scrambling-to-keep-our-heads-above-water-grant-simmer-on-australia-s-cup-comeback": [
     "americasCup",
