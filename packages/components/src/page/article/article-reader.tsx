@@ -22,6 +22,8 @@ import {
   useGetGroupDetails,
 } from "@genuin/components/react-query/api/group/details/details";
 import { getTrendingGroups as useTrendingGroups } from "@genuin/components/react-query/api/group/trending/trending";
+import type { CommunityUserRole } from "@genuin/components/types/post";
+import type { GroupUserStatusType } from "@genuin/components/types/roles";
 
 import type { Article, ArticleBlock } from "./article-data";
 
@@ -228,11 +230,64 @@ function ArticleBodyBlock({ block, children }: { block: ArticleBlock; children?:
 
 /** The community / group pills above the byline, from the article's own attribution. */
 function ArticleHeaderPills({ article }: { article: Article }) {
-  if (!article.community) return null;
+  const { data: communityDetails } = useGetCommunityDetails(
+    article.community?.slug ?? "",
+    Boolean(article.community?.slug)
+  );
+  const { data: groupDetails } = useGetGroupDetails(article.group?.slug ?? "", Boolean(article.group?.slug));
+
+  const [communityRoleOverride, setCommunityRoleOverride] = useState<CommunityUserRole | null>(null);
+  const [groupSubscriptionOverride, setGroupSubscriptionOverride] = useState<boolean | null>(null);
+  const [groupRoleOverride, setGroupRoleOverride] = useState<GroupUserStatusType | null>(null);
+
+  const mergedCommunity = useMemo(() => {
+    if (!article.community) return undefined;
+    return {
+      ...article.community,
+      userRole: communityRoleOverride ?? communityDetails?.logged_in_user_role ?? article.community.userRole,
+      membersCount: communityDetails?.no_of_members ?? article.community.membersCount,
+      groupsCount: communityDetails?.no_of_loops ?? article.community.groupsCount,
+      postsCount: communityDetails?.no_of_videos ?? article.community.postsCount,
+    };
+  }, [article.community, communityDetails, communityRoleOverride]);
+
+  const mergedGroup = useMemo(() => {
+    if (!article.group) return undefined;
+    return {
+      ...article.group,
+      isSubscribed: groupSubscriptionOverride ?? groupDetails?.isSubscriber ?? article.group.isSubscribed,
+      role: groupRoleOverride ?? groupDetails?.role ?? article.group.role,
+    };
+  }, [article.group, groupDetails, groupSubscriptionOverride, groupRoleOverride]);
+
+  if (!mergedCommunity) return null;
 
   return (
     <div className="gencl:mt-4 gencl:flex gencl:items-center gencl:gap-2">
-      <Pills communityDetails={article.community} groupDetails={article.group} isHoverable variant="light" />
+      <Pills
+        communityDetails={mergedCommunity}
+        groupDetails={mergedGroup}
+        isHoverable
+        variant="light"
+        onCommunityJoinStatusChange={(newRole) => {
+          setCommunityRoleOverride(newRole);
+          if (article.community?.slug) {
+            setQueryDataForCommunityRoleChange(article.community.slug, newRole);
+          }
+        }}
+        onGroupSubscriptionChange={(isSubscribed) => {
+          setGroupSubscriptionOverride(isSubscribed);
+          if (article.group?.slug) {
+            setQueryDataForSubscribeGroupInGroupDetails(article.group.slug, isSubscribed);
+          }
+        }}
+        onGroupJoinStatusChange={(newRole) => {
+          setGroupRoleOverride(newRole);
+          if (article.group?.slug) {
+            setQueryDataForJoinGroupInGroupDetails(article.group.slug, newRole);
+          }
+        }}
+      />
     </div>
   );
 }

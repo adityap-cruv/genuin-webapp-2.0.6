@@ -4,7 +4,7 @@ import { Text } from "@genuin/ui/components/typography";
 import { cn } from "@genuin/ui/lib/utils";
 import { NavArrowButton } from "@genuin/ui/player-controls";
 import { ChevronRight, Sparkle } from "lucide-react";
-import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
 import { useIsClient, useMediaQuery } from "usehooks-ts";
 
 import {
@@ -19,6 +19,7 @@ import { useFloatingVideoRestoreTarget } from "@genuin/components/lib/floating-v
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { Link } from "@genuin/components/molecules/link";
 import { CommunityCard } from "@genuin/components/organisms/community-card";
+import { useGetCommunityDetails } from "@genuin/components/react-query/api/community/details/details";
 
 import { toCommunityCardInfo } from "./article-community";
 import { type Article, getArticleByHref } from "./article-data";
@@ -215,7 +216,23 @@ function ArticleRailPlacement() {
  */
 function ArticleOriginRail({ article }: { article: Article }) {
   const { community } = article;
-  if (!community) return null;
+  const { data: communityDetails } = useGetCommunityDetails(community?.slug ?? "", Boolean(community?.slug));
+
+  const cardInfo = useMemo(() => {
+    if (!community) return undefined;
+    const base = toCommunityCardInfo(community);
+    if (!communityDetails) return base;
+    return {
+      ...base,
+      stats: {
+        members: communityDetails.no_of_members ?? base.stats.members,
+        groups: communityDetails.no_of_loops ?? base.stats.groups,
+        posts: communityDetails.no_of_videos ?? base.stats.posts,
+      },
+    };
+  }, [community, communityDetails]);
+
+  if (!cardInfo || !community) return null;
 
   return (
     <section
@@ -228,7 +245,7 @@ function ArticleOriginRail({ article }: { article: Article }) {
       </div>
 
       <CommunityCard
-        community={toCommunityCardInfo(community)}
+        community={cardInfo}
         variant="suggestion"
         url={buildPageUrl({ type: "community", slug: community.slug })}
       />
