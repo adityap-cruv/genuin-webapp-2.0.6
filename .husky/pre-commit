@@ -1,5 +1,8 @@
 #!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+# Guarded: .husky/_ is gitignored, so a fresh `git worktree add` has no husky.sh
+# until pnpm install runs. Unguarded, that failed with a bare
+# "No such file or directory" and no explanation.
+[ -f "$(dirname -- "$0")/_/husky.sh" ] && . "$(dirname -- "$0")/_/husky.sh"
 
 # Single root lint-staged pass. ESLint 9 flat config auto-resolves the nearest
 # eslint.config.* for each staged file (per-package config, or the root

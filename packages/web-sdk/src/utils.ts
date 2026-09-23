@@ -47,6 +47,24 @@ export function parseUserData(userData: any, accessToken: string, refreshToken?:
  * @param data - PlacementDataResponse containing placement configuration
  * @returns EmbedDataType with all available data mapped
  */
+/**
+ * Placements whose `media_play` is overridden to match a reference layout:
+ * force autoplay, drop hover-preview, and enable 3s auto-advance. The override
+ * lives on `embedData.media_play` — not just the render-config hook — because
+ * `getShouldAutoplay` in the base context reads `media_play.enable_autoplay`
+ * directly to seed the iHeart `globalPlayingState` gate, and `moveToNextTime`
+ * (auto-advance) reads `media_play.auto_advance_playback`. Object-fit/aspect-ratio
+ * for the same placements is handled separately in `useEmbedConfigs`
+ * (BRAND_FEATURE_IDS).
+ */
+const AUTOPLAY_OVERRIDE_PLACEMENT_IDS = new Set<string>(["6901f63d25d5dab8f6b84b4f"]);
+/** media_play field values applied to the placements above (mirrors reference 6a3c5b0d). */
+const MEDIA_PLAY_REFERENCE_OVERRIDE = {
+  enable_autoplay: true,
+  video_preview_seconds: -1,
+  auto_advance_playback: 3,
+} as const;
+
 export function parsePlacementToEmbedData(
   data: PlacementDataResponse,
   styleId: string,
@@ -55,6 +73,13 @@ export function parsePlacementToEmbedData(
   const webConfig = data.environments?.web;
   const configureView = webConfig?.configure_view;
   const expandView = webConfig?.expand_view;
+
+  // Apply per-placement autoplay override before mapping so every downstream
+  // consumer (base-context autoplay gate + render config) sees the same values.
+  const mediaPlay =
+    configureView?.media_play && AUTOPLAY_OVERRIDE_PLACEMENT_IDS.has(data._id)
+      ? { ...configureView.media_play, ...MEDIA_PLAY_REFERENCE_OVERRIDE }
+      : configureView?.media_play;
 
   return {
     // Direct mapping from PlacementDataResponse
@@ -121,7 +146,7 @@ export function parsePlacementToEmbedData(
       carousel_style: configureView?.carousel_style ?? "default",
 
       // Media play settings
-      autoplay: configureView?.media_play?.enable_autoplay ?? false,
+      autoplay: mediaPlay?.enable_autoplay ?? false,
 
       // Display preferences
       feed_display_pref: "default",
@@ -205,7 +230,7 @@ export function parsePlacementToEmbedData(
           row: configureView?.grid_layout?.row,
         }
       : undefined,
-    media_play: configureView?.media_play,
+    media_play: mediaPlay,
 
     // Implementation guide settings
     implementation_guide: webConfig?.implementation_guide

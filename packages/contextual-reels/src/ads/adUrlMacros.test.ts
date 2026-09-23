@@ -524,6 +524,88 @@ describe("resolveVideoAdMacros — DSP request params append", () => {
   });
 });
 
+// ─── resolveVideoAdMacros — DSP exchange visit_id append ──────────────────────
+
+describe("resolveVideoAdMacros — visit_id append (ad_id/visit_id + ad-id/visit-id)", () => {
+  const dspUrl = "https://aapi.begenuin.com/goservices/dsp/vast/3252/6aa04279d3c90426b572a59e";
+  const thirdPartyUrl = "https://ads.thirdparty.com/vast?p=1";
+  const VISIT = "visit-abc-123";
+  // Every spelling we send until the backend confirms which it reads.
+  const ALL_NAMES = ["ad_id", "visit_id", "ad-id", "visit-id"] as const;
+
+  it("appends every param-name spelling (same value) for a DSP exchange url — web path, any platform", () => {
+    const result = resolveVideoAdMacros(
+      { url: dspUrl, platform: "infy" },
+      "https://page.com",
+      {},
+      { visitId: VISIT }
+    ) as {
+      url: string;
+    };
+    const u = new URL(result.url);
+    for (const name of ALL_NAMES) expect(u.searchParams.get(name)).toBe(VISIT);
+  });
+
+  it("appends to a DSP url that already has a query string (uses & separator)", () => {
+    const result = resolveAdUrlMacros(`${dspUrl}?tag=1`, "https://page.com", {}, { visitId: VISIT });
+    expect(result).toContain("?tag=1&");
+    const u = new URL(result);
+    expect(u.searchParams.get("ad_id")).toBe(VISIT);
+    expect(u.searchParams.get("visit_id")).toBe(VISIT);
+  });
+
+  it("appends to a bare-string DSP url with no query string (uses ? separator)", () => {
+    const result = resolveVideoAdMacros(dspUrl, "https://page.com", {}, { visitId: VISIT }) as string;
+    expect(result.startsWith(`${dspUrl}?`)).toBe(true);
+    expect(new URL(result).searchParams.get("visit_id")).toBe(VISIT);
+  });
+
+  it("URL-encodes the visit id", () => {
+    const result = resolveAdUrlMacros(dspUrl, "https://page.com", {}, { visitId: "a b/c" });
+    expect(result).toContain("ad_id=a%20b%2Fc");
+    expect(new URL(result).searchParams.get("visit_id")).toBe("a b/c");
+  });
+
+  it("appends alongside the in-app Triton geo params (both coexist)", () => {
+    const result = resolveVideoAdMacros(
+      { url: dspUrl, platform: "tritondigital" },
+      "https://page.com",
+      { appb: "com.x.y", country: "USA" },
+      { visitId: VISIT }
+    ) as { url: string };
+    const u = new URL(result.url);
+    expect(u.searchParams.get("ad_id")).toBe(VISIT);
+    expect(u.searchParams.get("country")).toBe("USA");
+    expect(u.searchParams.get("bundle-id")).toBe("com.x.y");
+  });
+
+  it("does NOT append to a third-party (non-exchange) url even with a visit id", () => {
+    const result = resolveAdUrlMacros(thirdPartyUrl, "https://page.com", {}, { visitId: VISIT });
+    expect(result).toBe(thirdPartyUrl);
+  });
+
+  it("appends nothing when no visit id is supplied", () => {
+    expect(resolveAdUrlMacros(dspUrl, "https://page.com", {})).toBe(dspUrl);
+    expect(resolveAdUrlMacros(dspUrl, "https://page.com", {}, {})).toBe(dspUrl);
+  });
+
+  it("never duplicates a name already present, but fills the missing ones", () => {
+    const result = resolveAdUrlMacros(`${dspUrl}?ad_id=existing`, "https://page.com", {}, { visitId: VISIT });
+    // Pre-existing ad_id is left untouched — not duplicated.
+    expect(result.match(/[?&]ad_id=/g)?.length).toBe(1);
+    expect(new URL(result).searchParams.get("ad_id")).toBe("existing");
+    // Every other spelling is still appended.
+    for (const name of ["visit_id", "ad-id", "visit-id"] as const) {
+      expect(new URL(result).searchParams.get(name)).toBe(VISIT);
+    }
+  });
+
+  it("leaves the url unchanged when every name is already present", () => {
+    const url = `${dspUrl}?ad_id=x&visit_id=y&ad-id=z&visit-id=w`;
+    expect(resolveAdUrlMacros(url, "https://page.com", {}, { visitId: VISIT })).toBe(url);
+  });
+});
+
 // ─── resolveVideoAdMacros — servedStatically rewrite ──────────────────────────────
 
 describe("resolveVideoAdMacros — servedStatically rewrite", () => {

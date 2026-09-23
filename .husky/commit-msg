@@ -1,0 +1,111 @@
+#!/usr/bin/env sh
+# Validates the commit message. Two rules, waived independently:
+#   - the ticket rule needs a branch RENAME, so grandfathered and release/support
+#     branches are excused from it;
+#   - every other rule is message hygiene needing no rename, so it applies everywhere.
+#
+# NOTE: this hook deliberately does NOT source .husky/_/husky.sh. That shim honours
+# `HUSKY=0` and sources ~/.huskyrc, either of which silently disables the hook.
+# Enforcement must not be switchable by an environment variable.
+. "$(dirname -- "$0")/../scripts/jira-hook/lib.sh"
+
+SUBJECT=$(head -n 1 "$1")
+jira_subject_is_generated "$SUBJECT" && exit 0   # merge / revert / fixup / squash
+
+BRANCH=$(jira_current_branch)
+TICKET_REQUIRED=1
+
+# During a rebase we still check message HYGIENE — `git rebase -i` + reword was a
+# complete, flagless bypass of every rule — but we do not demand a ticket, because
+# replaying grandfathered history must not fail.
+if jira_rebase_in_progress; then
+  TICKET_REQUIRED=0
+elif [ -z "$BRANCH" ]; then
+  TICKET_REQUIRED=0                                   # detached HEAD
+elif jira_is_exempt_branch "$BRANCH"; then
+  TICKET_REQUIRED=0                                   # release/*, support/*
+elif jira_is_trunk_branch "$BRANCH"; then
+  TICKET_REQUIRED=0
+  printf '\n  Heads up: you are committing directly to %s.\n' "$BRANCH"
+  printf '  No ticket is required here, but most work belongs on a branch.\n\n'
+elif jira_is_grandfathered "$BRANCH"; then
+  TICKET_REQUIRED=0
+  printf '\n  This branch predates ticket enforcement, so no ticket is required here.\n'
+  printf '  New branches need one: feature/GEN-<ticket>/<slug>\n\n'
+elif ! jira_branch_is_valid "$BRANCH"; then
+  printf '\n  Commit blocked: this branch cannot be traced to a Jira ticket.\n\n'
+  printf '    branch:   %s\n' "$BRANCH"
+  printf '    expected: <type>/GEN-<ticket>/<slug>\n'
+  printf '    types:    feature | bugfix | hotfix | chore | docs\n\n'
+  printf '  Rename it (your staged changes are untouched):\n\n'
+  jira_hint_rename "$BRANCH"
+  printf '\n  Already pushed, or checked out in another worktree? Renaming is not\n'
+  printf '  enough — see README.md#commits--branches before you do it.\n'
+  printf '\n  Then commit again.\n\n'
+  exit 1
+fi
+
+# An editor message left empty is how you CANCEL a commit. We have already written the
+# ticket into line 1, so git no longer sees it as empty and never reaches its own
+# "Aborting commit due to empty commit message" path. Restore that behaviour.
+STRIPPED=$(printf '%s\n' "$SUBJECT" | sed -E "s#^\[${JIRA_TICKET_RE}\][[:space:]]*##")
+if [ -z "$STRIPPED" ]; then
+  printf '\nAborting commit due to empty commit message.\n\n'
+  exit 1
+fi
+
+# Placeholder tickets. Checked explicitly and ALWAYS — including on grandfathered
+# branches, which is exactly where this repo's historical GEN-000 abuse lives.
+case "$SUBJECT" in
+  '[GEN-0'*)
+    printf '\n  Commit blocked: that is a placeholder, not a ticket.\n\n'
+    printf '    you wrote:  %s\n\n' "$SUBJECT"
+    printf '  GEN-000 and GEN-0000 already exist in this history. They are why the old\n'
+    printf '  convention stopped meaning anything. Use a real ticket.\n\n'
+    exit 1 ;;
+esac
+
+# Shape pre-check. When the header does not parse at all every capture group is null
+# and commitlint blames "subject may not be empty", which points at the wrong thing.
+if ! printf '%s\n' "$SUBJECT" | grep -qE "^(\[${JIRA_TICKET_RE}\] )?[a-zA-Z]+(\([^)]*\))?!?: .+"; then
+  printf '\n  Commit blocked: this is not a Conventional Commit.\n\n'
+  printf '    you wrote:  %s\n\n' "$SUBJECT"
+  printf '    expected:   <type>(<scope>): <subject>\n'
+  printf '    types:      feat fix docs style refactor perf test build ci chore revert\n\n'
+  printf '  For example:\n\n'
+  printf '    feat(cxr): lower unmuted-autoplay volume\n'
+  printf '    chore(deps): bump turbo to 2.9.6\n\n'
+  if [ "$TICKET_REQUIRED" = "1" ]; then
+    printf '  The [GEN-<n>] prefix is added for you — do not type it.\n\n'
+  fi
+  printf '  Details: README.md#commits--branches\n\n'
+  exit 1
+fi
+
+# The message must name the same ticket as the branch. Without this the system
+# enforces syntax rather than traceability: any well-formed GEN-<n> would pass.
+# Cherry-pick and revert legitimately carry the original ticket forward.
+if [ "$TICKET_REQUIRED" = "1" ] && ! jira_git_is_composing; then
+  BRANCH_TICKET=$(jira_ticket_from_branch "$BRANCH")
+  MSG_TICKET=$(printf '%s\n' "$SUBJECT" | sed -nE "s#^\[(${JIRA_TICKET_RE})\] .*#\1#p")
+  if [ -n "$BRANCH_TICKET" ] && [ -n "$MSG_TICKET" ] && [ "$BRANCH_TICKET" != "$MSG_TICKET" ]; then
+    printf '\n  Commit blocked: the ticket does not match the branch.\n\n'
+    printf '    branch says:   %s\n' "$BRANCH_TICKET"
+    printf '    message says:  %s\n\n' "$MSG_TICKET"
+    printf '  Drop the ticket from your message and let the hook fill it in, or move\n'
+    printf '  this work to a branch for %s.\n\n' "$MSG_TICKET"
+    exit 1
+  fi
+fi
+
+# Call the binary directly; npx re-reads .npmrc and prints a wall of warnings.
+COMMITLINT="$(jira_repo_root)/node_modules/.bin/commitlint"
+if [ ! -x "$COMMITLINT" ]; then
+  # Fail loudly. Waving commits through here would silently disable type-enum,
+  # scope-case, header-max-length and the ticket rule with no indication at all.
+  printf '\n  Commit blocked: commitlint is not installed.\n\n'
+  printf '  Run `pnpm install` in this worktree, then commit again.\n'
+  printf '  (A fresh `git worktree add` has no node_modules until you do.)\n\n'
+  exit 1
+fi
+JIRA_TICKET_REQUIRED="$TICKET_REQUIRED" "$COMMITLINT" --edit "$1"

@@ -1,4 +1,5 @@
 import type { AuthUser } from "@genuin/components/types/auth";
+import { parseKsCbRequestStatus } from "@genuin/components/types/roles";
 
 /**
  * This function parses the user data returned from the API.
@@ -8,8 +9,6 @@ import type { AuthUser } from "@genuin/components/types/auth";
  * @param refreshToken - The refresh token for the user.
  * @returns The parsed user object.
  */
-
-const KsCbStatus = ["Pending", "Requested", "Success"] as const;
 
 export function parseUserData(data: any, accessToken: string, refreshToken: string, autoLoginToken?: string): AuthUser {
   return {
@@ -24,7 +23,7 @@ export function parseUserData(data: any, accessToken: string, refreshToken: stri
     bio: data.bio,
     name: data.name,
     accessToken,
-    ksCbRequestStatus: KsCbStatus[(data.ks_cb_request_status - 1) as number] ?? "Pending",
+    ksCbRequestStatus: parseKsCbRequestStatus(data.ks_cb_request_status),
     isBrandSystemUser: data.is_brand_system_user,
     brandId: data.brand_id,
     brandSlug: data?.brand?.brand_slug ? data?.brand?.brand_slug : null,

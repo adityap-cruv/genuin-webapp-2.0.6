@@ -186,6 +186,37 @@ function appendDspRequestParams(url: string, macros: HostMacros): string {
   return url + (url.includes("?") ? "&" : "?") + params.join("&");
 }
 
+/**
+ * Param names our visit_id is appended under. The exchange backend has NOT yet
+ * confirmed which name it reads, so we send every likely spelling (snake_case +
+ * kebab-case, each as `ad_*`/`visit_*`) carrying the same value and let it pick —
+ * an unread param is ignored, so this is forward-safe. TEMPORARY breadth: once
+ * the backend confirms and absorbs one, delete the others from this list.
+ */
+const EXCHANGE_VISIT_PARAM_NAMES = ["ad_id", "visit_id", "ad-id", "visit-id"] as const;
+
+/**
+ * Append our Rudderstack `visit_id` to a request aimed at our own DSP VAST
+ * exchange, under every name in {@link EXCHANGE_VISIT_PARAM_NAMES} (all carrying
+ * the same value) so whichever spelling the backend reads is present.
+ *
+ * Gated by the caller to URLs hitting {@link DSP_VAST_ENDPOINT} (our exchange),
+ * so our visit id is never leaked onto a third-party ad server's URL. A param
+ * already present is left untouched (never duplicated), and the value is
+ * URL-encoded — consistent with the rest of this module.
+ */
+function appendExchangeVisitParams(url: string, visitId: string): string {
+  const encoded = encodeURIComponent(visitId);
+  const params: string[] = [];
+  for (const name of EXCHANGE_VISIT_PARAM_NAMES) {
+    // Never emit a duplicate key — leave any pre-existing param as-is.
+    if (new RegExp(`[?&]${escapeRegExp(name)}=`).test(url)) continue;
+    params.push(`${name}=${encoded}`);
+  }
+  if (params.length === 0) return url;
+  return url + (url.includes("?") ? "&" : "?") + params.join("&");
+}
+
 /** Opt-in ad-URL rewrites applied only for statically-served tags. */
 export interface AdUrlOptions {
   /**
@@ -201,6 +232,17 @@ export interface AdUrlOptions {
    * instead so no stale/fake IP is sent.
    */
   clientIp?: string;
+  /**
+   * Our Rudderstack `visit_id` for the current ad. When present AND the resolved
+   * URL targets our DSP VAST exchange ({@link DSP_VAST_ENDPOINT}), it is appended
+   * under every name in {@link EXCHANGE_VISIT_PARAM_NAMES} (same value) so the
+   * exchange can correlate the request with our analytics whichever spelling it
+   * reads. Best-effort: omitted/undefined (the
+   * feed batch hasn't stamped a visit_id yet) appends nothing and never blocks
+   * the ad request. Scoped to our own exchange so it never leaks to a third-party
+   * ad server. See {@link appendExchangeVisitParams}.
+   */
+  visitId?: string;
 }
 
 /**
@@ -285,6 +327,12 @@ export function resolveAdUrlMacros(
   result = resolveHostMacroTokens(result, macros);
   if (options?.servedStatically) {
     result = applyStaticAdRewrites(result, options.clientIp);
+  }
+  // Append our visit_id (as `ad_id` + `visit_id`) only for our own DSP exchange,
+  // so it is never leaked onto a third-party ad server's URL. The endpoint is a
+  // path segment, untouched by every rewrite above, so this gate is stable.
+  if (options?.visitId && result.includes(DSP_VAST_ENDPOINT)) {
+    result = appendExchangeVisitParams(result, options.visitId);
   }
   return result;
 }

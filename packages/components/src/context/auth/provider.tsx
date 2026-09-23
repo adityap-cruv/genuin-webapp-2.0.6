@@ -70,6 +70,24 @@ function updateLocalStorageUserData(updates: Partial<AuthUser>) {
 }
 
 /**
+ * Params appended to the return URL by the SSO provider (Google/Apple/brand) on redirect back.
+ * `provider` is ours (set on the `state` URL before redirecting out); the rest come from the
+ * OAuth/OIDC response and must all be stripped so the user lands on a clean URL after login.
+ */
+const SSO_CALLBACK_PARAMS = [
+  "code",
+  "provider",
+  "state",
+  "scope",
+  "authuser",
+  "prompt",
+  "hd",
+  "iss",
+  "session_state",
+  "id_token",
+] as const;
+
+/**
  * AuthProvider manages authentication state and provides it to child components via context.
  * It handles sign-in, sign-out, user updates, and token management.
  */
@@ -91,10 +109,13 @@ export function AuthProvider({ children, user, onSignIn, onSignOut, onUpdateUser
       if (!user) throw new Error("User data not found in SSO response");
 
       await signIn(user);
-      // Remove the 'code' and 'provider' search params after successful login
-      removeSearchParams(["code", "provider"]);
+      // Remove every SSO callback param after successful login so the user lands on a clean URL.
+      removeSearchParams([...SSO_CALLBACK_PARAMS]);
     },
     onError: (e) => {
+      // Strip the callback params on failure too: the `code` is already spent, so leaving it in the
+      // URL would re-trigger the exchange effect on every searchParams change (retry loop).
+      removeSearchParams([...SSO_CALLBACK_PARAMS]);
       Toast.Error({ message: "Not able to login. Please try again." });
     },
   });

@@ -257,6 +257,16 @@
     });
   }
 
+  /**
+   * Seed the SDK with a host-provided authenticated session (no auth API call)
+   */
+  function setUser(session) {
+    return loadSDK().then((sdk) => {
+      const GenuinClass = getSDKClass(sdk);
+      return GenuinClass.setUser(session);
+    });
+  }
+
   // Queue for early initialization calls
   const initQueue = [];
   let queueProcessed = false;
@@ -298,6 +308,10 @@
           .catch(reject);
       } else if (method === "logout") {
         logout(...args)
+          .then(resolve)
+          .catch(reject);
+      } else if (method === "setUser") {
+        setUser(...args)
           .then(resolve)
           .catch(reject);
       }
@@ -411,6 +425,17 @@
 
       return new Promise((resolve, reject) => {
         initQueue.push({ method: "logout", args, resolve, reject });
+        setTimeout(processInitQueue, 0);
+      });
+    },
+
+    setUser: function (...args) {
+      if (queueProcessed) {
+        return setUser(...args);
+      }
+
+      return new Promise((resolve, reject) => {
+        initQueue.push({ method: "setUser", args, resolve, reject });
         setTimeout(processInitQueue, 0);
       });
     },

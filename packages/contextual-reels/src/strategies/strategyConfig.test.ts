@@ -7,7 +7,15 @@
 import { describe, it, expect } from "vitest";
 
 import { DEFAULT_STRATEGIES } from "@cxr/strategies/strategies";
-import { BRAND_STRATEGIES, STRATEGY_PRESETS, TAG_STRATEGIES } from "@cxr/strategies/strategyConfig";
+import {
+  BRAND_STRATEGIES,
+  DSP_PIXEL_TAG_IDS,
+  GEOIP_DISABLED_TAG_IDS,
+  isDspPixelEnabled,
+  isGeoIpDisabled,
+  STRATEGY_PRESETS,
+  TAG_STRATEGIES,
+} from "@cxr/strategies/strategyConfig";
 
 const STRATEGY_KEYS = Object.keys(DEFAULT_STRATEGIES);
 
@@ -52,5 +60,46 @@ describe("strategies/strategyConfig — registries", () => {
 
   it("brand 3252 sets the pink compact-backdrop color", () => {
     expect(BRAND_STRATEGIES[3252]?.compactBackgroundColor).toBe("#EC298C");
+  });
+});
+
+describe("strategies/strategyConfig — geoip disable (TEMPORARY, server-load relief)", () => {
+  it("lists the 12 Direct IO iHM/Infolinks Audio (Sep) tags", () => {
+    expect(GEOIP_DISABLED_TAG_IDS.size).toBe(12);
+  });
+
+  it("every geoip-disabled tag is a defined TAG_STRATEGIES entry", () => {
+    for (const id of GEOIP_DISABLED_TAG_IDS) {
+      expect(TAG_STRATEGIES[id]).toBeDefined();
+    }
+  });
+
+  it("isGeoIpDisabled is true for a listed tag, false for an unlisted one", () => {
+    expect(isGeoIpDisabled("6a9ba985ee6dc7773d0c42a6")).toBe(true);
+    expect(isGeoIpDisabled("6a2fefd87ce338c3a5afc605")).toBe(false);
+  });
+
+  it("isGeoIpDisabled is false for null/undefined/empty tag ids", () => {
+    expect(isGeoIpDisabled(null)).toBe(false);
+    expect(isGeoIpDisabled(undefined)).toBe(false);
+    expect(isGeoIpDisabled("")).toBe(false);
+  });
+});
+
+describe("strategies/strategyConfig — DSP tracking pixels", () => {
+  it("lists the 15 DSP-pixel tags", () => {
+    expect(DSP_PIXEL_TAG_IDS.size).toBe(15);
+  });
+
+  it("isDspPixelEnabled is true for a listed tag, false for an unlisted one", () => {
+    expect(isDspPixelEnabled("6a39163e92929ebec64d78ab")).toBe(true);
+    expect(isDspPixelEnabled("6a7c47d8f3f875e5e06db080")).toBe(true);
+    expect(isDspPixelEnabled("6a2fefd87ce338c3a5afc605")).toBe(false);
+  });
+
+  it("isDspPixelEnabled is false for null/undefined/empty tag ids", () => {
+    expect(isDspPixelEnabled(null)).toBe(false);
+    expect(isDspPixelEnabled(undefined)).toBe(false);
+    expect(isDspPixelEnabled("")).toBe(false);
   });
 });

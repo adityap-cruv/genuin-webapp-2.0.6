@@ -104,7 +104,12 @@ const HOSTS = {
     return {
       scripts: roots,
       connect: roots,
-      frames: roots,
+      // The Google IMA SDK frames its ad container from imasdk.googleapis.com and, on some
+      // load paths, over plain http:// — which https://*.googleapis.com does NOT cover (scheme
+      // mismatch). Without this, "Framing 'http://imasdk.googleapis.com/' violates frame-src"
+      // blocks the ad iframe and video ads never render (no fill, no VAST request). Allow the
+      // whole googleapis.com wildcard over http as well so any IMA/GPT frame scheme is covered.
+      frames: [...roots, "http://*.googleapis.com"],
       images: roots,
       // Video/audio creatives can additionally come from Google's video CDN.
       media: [...roots, "https://*.googlevideo.com"],
@@ -119,6 +124,10 @@ const HOSTS = {
     "https://cmod-na.live.streamtheworld.com",
     "https://od-spy.live.streamtheworld.com",
     "https://gov.aniview.com",
+    // Triton Digital / StreamTheWorld player script + creatives/tracking; subdomains
+    // rotate (playerservices, cmod-na, od-spy, …) so allow the wildcard. Also referenced
+    // in script-src below.
+    "https://*.streamtheworld.com",
   ],
 };
 
@@ -205,8 +214,11 @@ async function getHeaders() {
                     "https://cdn.jsdelivr.net",
                     "https://*.begenuin.com",
                     "https://*.preview.qa.begenuin.com",
+                    "https://*.octocanvas.com",
                     "https://*.vercel-insights.com",
                     ...HOSTS.googleAds.scripts,
+                    // Triton Digital / StreamTheWorld audio-ad player script.
+                    "https://*.streamtheworld.com",
                     ...(isDev
                       ? ["'unsafe-inline'", "'unsafe-eval'", "http://localhost:*", "ws://localhost:*"]
                       : ["'unsafe-inline'", "'unsafe-eval'"]),
@@ -220,25 +232,20 @@ async function getHeaders() {
                     ...(isDev ? ["http://localhost:*", "ws://localhost:*"] : []),
                   ].join(" "),
 
-                  // images
-                  [
-                    "img-src 'self' data: blob:",
-                    HOSTS.media,
-                    HOSTS.bunnyCDN,
-                    "https://vz-eee5e913-a30.b-cdn.net",
-                    "https://*.picsum.photos https://picsum.photos",
-                    ...HOSTS.googleAds.images,
-                  ].join(" "),
+                  // images: allow any HTTPS source. Ad delivery loads cookie-matching / ID-sync
+                  // pixels from a large, constantly-rotating set of partner domains (StreamTheWorld,
+                  // SiteScout, Tapad, and many more), making an enumerated allowlist unmaintainable.
+                  // Images cannot execute script, and default-src already permits https:, so this is
+                  // a low-risk relaxation that avoids recurring CSP breakage for tracking pixels.
+                  "img-src 'self' data: blob: https:",
 
-                  // media (video/audio)
-                  [
-                    "media-src 'self' data: blob:",
-                    HOSTS.media,
-                    HOSTS.ssai,
-                    HOSTS.bunnyCDN,
-                    "https://vz-eee5e913-a30.b-cdn.net",
-                    ...HOSTS.googleAds.media,
-                  ].join(" "),
+                  // media (video/audio): allow any HTTPS source. Video/audio ad creatives are
+                  // served from a large, constantly-rotating set of partner CDNs (The Trade Desk
+                  // adsrvr.org, StreamTheWorld, and many DSPs), making an enumerated allowlist
+                  // unmaintainable. Media cannot execute script, and default-src already permits
+                  // https:, so this is a low-risk relaxation that avoids recurring CSP breakage
+                  // for ad creatives — mirroring the img-src policy above.
+                  "media-src 'self' data: blob: https:",
 
                   `font-src 'self' data: blob: ${HOSTS.media} ${HOSTS.bunnyCDN} https://*.gstatic.com`,
 

@@ -1,6 +1,40 @@
 #!/usr/bin/env sh
 pnpm i
 
+# One-time notice so the team meets this rule on a `git pull`, not on a blocked
+# commit. The marker lives in the COMMON git dir, so it shows once per clone rather
+# than once per worktree.
+. "$(dirname -- "$0")/../scripts/jira-hook/lib.sh"
+# Guard on the DIRECTORY, not the assembled path: the concatenation is non-empty even
+# when rev-parse prints nothing, so the old check passed, the write to / failed, and
+# the notice would have reprinted on every merge forever.
+JIRA_COMMON_DIR=$(git rev-parse --git-common-dir 2>/dev/null) || JIRA_COMMON_DIR=""
+JIRA_MARKER=""
+[ -n "$JIRA_COMMON_DIR" ] && [ -d "$JIRA_COMMON_DIR" ] \
+  && JIRA_MARKER="$JIRA_COMMON_DIR/.jira-hook-announced-v1"
+if [ -n "$JIRA_MARKER" ] && [ ! -f "$JIRA_MARKER" ]; then
+  cat <<'NOTICE'
+
+  ─────────────────────────────────────────────────────────────
+   NEW: every change is now tied to a Jira ticket
+
+     Branches   feature/GEN-1234/short-slug
+                types: feature | bugfix | hotfix | chore | docs
+
+     Commits    [GEN-1234] feat(cxr): what changed
+                the [GEN-1234] is added automatically from the
+                branch name — do not type it yourself
+
+     Your existing branches are grandfathered; they keep working
+     untouched. Branches you create from now on need a ticket.
+
+     Full details: README.md#commits--branches
+  ─────────────────────────────────────────────────────────────
+
+NOTICE
+  : > "$JIRA_MARKER" 2>/dev/null || true
+fi
+
 # Rebuild the graphify graph after a merge / `git pull` (or nudge if the CLI isn't
 # installed). Optional/graceful — see scripts/graphify-hook.sh; never blocks.
 sh "$(dirname -- "$0")/../scripts/graphify-hook.sh" merge

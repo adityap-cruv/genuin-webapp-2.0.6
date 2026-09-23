@@ -220,6 +220,10 @@ class AnalyticsServiceSingleton {
               );
             }
 
+            // Gated pilot: enable Beacon transport only for usmagazine (brand id 2476).
+            // Every other brand keeps the default XHR transport unchanged.
+            const isBeaconBrand = brandDetails?.brand_id === 2476;
+
             this.rudderAnalyticsInstance.load(
               RUDDERSTACK_WRITE_KEY,
               RUDDERSTACK_DATAPLANE_URL,
@@ -240,7 +244,10 @@ class AnalyticsServiceSingleton {
                     authToken: { type: "localStorage" }, // Optional: For auth token
                   },
                 },
-                plugins: ["DeviceModeDestinations"],
+                // BeaconQueue + XhrQueue are both loaded so the runtime `useBeacon`
+                // flag can select the transport per brand; XhrQueue must stay because
+                // every non-pilot brand still delivers over XHR.
+                plugins: ["BeaconQueue", "XhrQueue", "DeviceModeDestinations"],
                 integrations: {
                   All: false, // Disables all third-party integrations
                   "Google Analytics": false,
@@ -252,6 +259,18 @@ class AnalyticsServiceSingleton {
                     flushInterval: 10000,
                   },
                 },
+                // Beacon transport, gated to brand 2476 only. `flushQueueInterval`
+                // (NOT `flushInterval`, which is the XHR batch field above) is the
+                // correct beacon field name.
+                useBeacon: isBeaconBrand,
+                ...(isBeaconBrand
+                  ? {
+                      beaconQueueOptions: {
+                        maxItems: 30, // rollout value (RudderStack default is 10)
+                        flushQueueInterval: 10000, // 10s rollout value (default 600000 = 10min)
+                      },
+                    }
+                  : {}),
               }
               // Optional: add load options if any, e.g. { configUrl: "YOUR_CONFIG_URL" }
             );

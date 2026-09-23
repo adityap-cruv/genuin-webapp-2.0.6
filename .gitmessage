@@ -1,0 +1,17 @@
+
+# [GEN-<n>] <type>(<scope>): <subject>
+#
+# The [GEN-<n>] prefix is filled in from your branch name automatically.
+# Leave it out — type only the part from <type> onwards.
+#
+#   type    feat fix docs style refactor perf test build ci chore revert
+#   scope   lower-case, optional. e.g. cxr feed embed ui web-sdk deps
+#   subject imperative mood, no trailing period, whole line under 100 chars
+#
+# Examples
+#   feat(cxr): lower unmuted-autoplay volume 10% to 1%
+#   fix(feed): forward brand_context in FEED_V1 request body
+#   chore(deps): bump turbo to 2.9.6
+#
+# Branches   <type>/GEN-<n>/<slug>   e.g. feature/GEN-10459/cxr-c8-ad-group-id
+# Details    README.md#commits--branches

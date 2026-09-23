@@ -4,6 +4,7 @@ import type { AxiosInstance } from "axios";
 import { useAxiosInstance } from "@genuin/components/context/axios";
 import { queryClient } from "@genuin/components/react-query/client";
 import { getQueryKeyForksCbStatus } from "@genuin/components/react-query/keys/become-creator";
+import { parseKsCbRequestStatus } from "@genuin/components/types/roles";
 import type { ksCbRequestStatusType } from "@genuin/components/types/roles";
 
 import { API_PATHS } from "../../paths";
@@ -32,7 +33,7 @@ export async function fetchKsCbRequestStatus(axiosInstance: AxiosInstance): Prom
 
 export function parseBecomeCreatorStatus(status: number | undefined): ksCbRequestStatusType | undefined {
   if (status === undefined || status === null) return undefined;
-  return status === 1 ? "Pending" : status === 2 ? "Requested" : "Accepted";
+  return parseKsCbRequestStatus(status, "becomeCreator");
 }
 
 export function useKsCbStatus({ id }: { id: string }) {
