@@ -31,7 +31,15 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     (c) => c.name === "vibe_session" || c.name.startsWith("vibe_session_"),
   );
   if (!hasCanvasCookie) {
-    const homeUrl = new URL("/home", request.url);
+    // Use x-forwarded-host (set by Vercel/proxies) so the redirect goes to
+    // the actual custom domain (e.g. prototype.testfoil.qa.begenuin.com)
+    // and not the internal Vercel deployment URL (*.vercel.app).
+    const host =
+      request.headers.get("x-forwarded-host") ??
+      request.headers.get("host") ??
+      new URL(request.url).host;
+    const proto = request.headers.get("x-forwarded-proto") ?? "https";
+    const homeUrl = new URL("/home", `${proto}://${host}`);
     const response = NextResponse.redirect(homeUrl, 302);
     response.headers.set("Cache-Control", "no-store");
     return response;
