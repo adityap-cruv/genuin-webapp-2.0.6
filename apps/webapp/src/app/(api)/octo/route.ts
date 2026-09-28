@@ -11,12 +11,6 @@ function getOctoOrchestratorBaseUrl(): string {
   return new URL(value).origin;
 }
 
-function loginRedirect(request: NextRequest): NextResponse {
-  const url = new URL("/auth-wall", request.url);
-  url.searchParams.set("returnUrl", "/octo");
-  return NextResponse.redirect(url);
-}
-
 function parseConfigParams(value: string | undefined): Record<string, string> | null {
   if (!value) return null;
   try {
@@ -32,9 +26,15 @@ function parseConfigParams(value: string | undefined): Record<string, string> | 
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const cookieStore = await cookies();
-  const hasAuthWallCookie = Boolean(cookieStore.get("gn_bx_acc")?.value);
-  if (!hasAuthWallCookie) {
-    return loginRedirect(request);
+  const allCookies = cookieStore.getAll();
+  const hasCanvasCookie = allCookies.some(
+    (c) => c.name === "vibe_session" || c.name.startsWith("vibe_session_"),
+  );
+  if (!hasCanvasCookie) {
+    const homeUrl = new URL("/home", request.url);
+    const response = NextResponse.redirect(homeUrl, 302);
+    response.headers.set("Cache-Control", "no-store");
+    return response;
   }
 
   const configParams = parseConfigParams(cookieStore.get("config_params")?.value);
