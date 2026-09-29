@@ -326,9 +326,6 @@ ${ARTICLE_READER_TYPOGRAPHY_CSS}
   .gen-article-prose.gen-article-page .gen-article-main { flex: 1 1 0%; }
   .gen-article-prose.gen-article-page .gen-article-rail { width: 320px; }
   .gen-article-prose.gen-article-page .gen-article-rail-sticky { position: sticky; top: 24px; }
-  /* Grid finale spans the article content column only (not the rail + gap), left-aligned so it
-     sits exactly within the content's left and right borders. */
-  .gen-article-prose.gen-article-page .gen-article-finale { width: calc(100% - 368px); }
 }
 /* Mobile: the site bar is FIXED over this scroller (the dark TopBar this route now shares with
    Home), so the reader pads itself by the bar's 64px — exactly what .gen-home-motion does on
@@ -655,10 +652,9 @@ export function ArticlePage({
               </aside>
             </div>
 
-            {/* 3. FINALE — grid to keep the reader watching. Desktop only: stacked into one
-                narrow column it is a wall of tiles far below the fold, so mobile ends on the
-                article instead. Constrained to the article content column width (see
-                `.gen-article-finale`), not the full container. */}
+            {/* 3. FINALE — full-shell grid to keep the reader watching. Desktop only: stacked
+                into one narrow column it is a wall of tiles far below the fold, so mobile ends
+                on the article instead. */}
             {isDesktopLayout ? (
               <div className="gen-article-finale">
                 <ArticleGridPlacement />

@@ -203,7 +203,10 @@ export function EmbedSwiper({
         mousewheel={{
           enabled: allowGestureScroll,
           forceToAxis: true,
-          releaseOnEdges: true,
+          // A feed owns vertical wheel gestures while the pointer is over it. Releasing at the
+          // first/last video scrolls the host page during the same gesture that navigates the feed.
+          // Horizontal carousels keep their existing edge-release behavior.
+          releaseOnEdges: !forFeed,
           thresholdDelta: isWindows ? SWIPER_CONFIG.MOUSE_THRESHOLD.WINDOWS : SWIPER_CONFIG.MOUSE_THRESHOLD.DEFAULT,
           thresholdTime: SWIPER_CONFIG.THRESHOLD_TIME,
           sensitivity: isWindows ? SWIPER_CONFIG.MOUSE_SENSITIVITY.WINDOWS : SWIPER_CONFIG.MOUSE_SENSITIVITY.DEFAULT,

@@ -154,6 +154,46 @@ export const ARTICLE_READER_TYPOGRAPHY_CSS = `
   margin: 0 0 1.6rem;
 }
 .gen-article-prose.gen-article-page .gen-article-body > .gen-article-p:first-child { margin-top: 0; }
+.gen-article-prose.gen-article-page .gen-article-embedded-media {
+  max-width: var(--gen-article-measure);
+}
+.gen-article-prose.gen-article-page .gen-article-related-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr));
+  gap: 0.75rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.gen-article-prose.gen-article-page .gen-article-related-item { min-width: 0; }
+.gen-article-prose.gen-article-page .gen-article-related-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-width: 0;
+  padding: 0.875rem 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  background: #fff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.4;
+  text-decoration: none;
+  transition: border-color 160ms ease, background-color 160ms ease;
+}
+.gen-article-prose.gen-article-page .gen-article-related-link:hover {
+  border-color: rgba(0, 0, 0, 0.24);
+  background: #fafafa;
+}
+.gen-article-prose.gen-article-page .gen-article-related-link:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+.gen-article-prose.gen-article-page .gen-article-related-arrow {
+  flex-shrink: 0;
+  color: var(--gen-article-ink-soft);
+}
 .gen-article-prose.gen-article-page .gen-article-h2 {
   font-size: 1.5rem;
   font-size: clamp(1.375rem, 1.18rem + 1.1cqi, 1.75rem);
@@ -475,6 +515,7 @@ export function ArticleReaderBody({ article, className }: { article: Article; cl
           );
         });
   };
+  const embeddedMedia = article.embeddedMedia ?? [];
 
   return (
     <article className={cn("gen-article-main gen-article-reveal gen-article-reveal-delay-2", className)}>
@@ -495,14 +536,22 @@ export function ArticleReaderBody({ article, className }: { article: Article; cl
         ))}
       </div>
 
-      {article.embeddedMedia?.length ? (
-        <aside className="gen-article-embedded-media" aria-label="Embedded media">
+      {embeddedMedia.length ? (
+        <aside className="gen-article-embedded-media" aria-label="Related media">
           <h2 className="gen-article-h2">Related media</h2>
-          <ul>
-            {article.embeddedMedia.map((media) => (
-              <li key={media.url}>
-                <a href={media.url} target="_blank" rel="noreferrer">
-                  View on Instagram
+          <ul className="gen-article-related-list">
+            {embeddedMedia.map((media, index) => (
+              <li key={media.url} className="gen-article-related-item">
+                <a
+                  className="gen-article-related-link"
+                  href={media.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={`View Instagram post ${index + 1} of ${embeddedMedia.length}`}>
+                  <span>Instagram post {index + 1}</span>
+                  <span aria-hidden className="gen-article-related-arrow">
+                    ↗
+                  </span>
                 </a>
               </li>
             ))}
