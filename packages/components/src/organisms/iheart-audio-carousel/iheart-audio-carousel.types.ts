@@ -24,5 +24,6 @@ export interface IHeartAudioCarouselProps extends Omit<ComponentPropsWithoutRef<
   waveformBarCount?: number;
   gap?: number;
   ariaLabel?: string;
+  showNavigation?: boolean;
   badge?: ReactNode;
 }

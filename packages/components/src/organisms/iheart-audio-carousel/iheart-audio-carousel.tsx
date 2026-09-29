@@ -3,8 +3,9 @@
 import { Image } from "@genuin/ui/components/image";
 import { Text } from "@genuin/ui/components/typography";
 import { cn } from "@genuin/ui/lib/utils";
+import { NavArrowButton } from "@genuin/ui/player-controls";
 import { Pause, Play } from "lucide-react";
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
 
 import type { IHeartAudioCarouselItem, IHeartAudioCarouselProps } from "./iheart-audio-carousel.types";
 
@@ -53,6 +54,7 @@ const BAR_GAP = 3;
  * band cleanly. iHeart uses 3.5px against a 60px button — 6% — which is what this mirrors.
  */
 const CONTROL_INSET = 4;
+const SCROLL_EPSILON = 2;
 
 /**
  * Transport geometry, in proportion to the play button. The ratios come from the reference
@@ -307,12 +309,151 @@ export function IHeartAudioCarousel({
   waveformBarCount,
   gap = 8,
   ariaLabel = "Stations",
+  showNavigation = true,
   badge = <IHeartMark />,
   className,
   ...props
 }: IHeartAudioCarouselProps) {
   const [playingStationId, setPlayingStationId] = useState<string | null>(null);
+  const [scrollState, setScrollState] = useState({ canScrollLeft: false, canScrollRight: false });
   const audioRef = useRef<HTMLAudioElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const isDownRef = useRef(false);
+  const startXRef = useRef(0);
+  const scrollLeftRef = useRef(0);
+  const hasDraggedRef = useRef(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const cleanupDragRef = useRef<(() => void) | null>(null);
+  const lastXRef = useRef(0);
+  const lastTimeRef = useRef(0);
+  const velocityRef = useRef(0);
+  const momentumRafRef = useRef<number | null>(null);
+
+  const stopMomentum = useCallback(() => {
+    if (momentumRafRef.current !== null) {
+      cancelAnimationFrame(momentumRafRef.current);
+      momentumRafRef.current = null;
+    }
+  }, []);
+
+  const syncScrollState = useCallback(() => {
+    const track = trackRef.current;
+    if (!track) return;
+    const maxScrollLeft = track.scrollWidth - track.clientWidth;
+    setScrollState({
+      canScrollLeft: track.scrollLeft > SCROLL_EPSILON,
+      canScrollRight: track.scrollLeft < maxScrollLeft - SCROLL_EPSILON,
+    });
+  }, []);
+
+  useEffect(() => {
+    syncScrollState();
+    const track = trackRef.current;
+    if (!track || typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(syncScrollState);
+    observer.observe(track);
+    return () => observer.disconnect();
+  }, [syncScrollState, stations.length, cardWidth, gap]);
+
+  useEffect(() => {
+    return () => {
+      stopMomentum();
+      cleanupDragRef.current?.();
+    };
+  }, [stopMomentum]);
+
+  const handleMouseDown = useCallback(
+    (event: ReactMouseEvent<HTMLDivElement>) => {
+      if (event.button !== 0) return;
+      const track = trackRef.current;
+      if (!track) return;
+
+      stopMomentum();
+      isDownRef.current = true;
+      startXRef.current = event.pageX;
+      scrollLeftRef.current = track.scrollLeft;
+      hasDraggedRef.current = false;
+      lastXRef.current = event.pageX;
+      lastTimeRef.current = performance.now();
+      velocityRef.current = 0;
+
+      const onMouseMove = (moveEvent: MouseEvent) => {
+        if (!isDownRef.current) return;
+        const walk = moveEvent.pageX - startXRef.current;
+
+        if (!hasDraggedRef.current && Math.abs(walk) > 4) {
+          hasDraggedRef.current = true;
+          setIsDragging(true);
+        }
+
+        if (hasDraggedRef.current) {
+          moveEvent.preventDefault();
+          track.scrollLeft = scrollLeftRef.current - walk;
+
+          const now = performance.now();
+          const elapsed = now - lastTimeRef.current;
+          if (elapsed > 10) {
+            velocityRef.current = (moveEvent.pageX - lastXRef.current) / elapsed;
+            lastXRef.current = moveEvent.pageX;
+            lastTimeRef.current = now;
+          }
+        }
+      };
+
+      const onMouseUp = () => {
+        isDownRef.current = false;
+        setIsDragging(false);
+        cleanupDragRef.current?.();
+        cleanupDragRef.current = null;
+
+        window.requestAnimationFrame(() => {
+          hasDraggedRef.current = false;
+        });
+
+        if (!hasDraggedRef.current || performance.now() - lastTimeRef.current >= 100) return;
+        if (Math.abs(velocityRef.current) <= 0.1) return;
+
+        let currentVelocity = velocityRef.current;
+        const glide = () => {
+          if (!trackRef.current || Math.abs(currentVelocity) < 0.05) {
+            momentumRafRef.current = null;
+            return;
+          }
+          trackRef.current.scrollLeft -= currentVelocity * 16;
+          currentVelocity *= 0.92;
+          momentumRafRef.current = requestAnimationFrame(glide);
+        };
+        momentumRafRef.current = requestAnimationFrame(glide);
+      };
+
+      window.addEventListener("mousemove", onMouseMove);
+      window.addEventListener("mouseup", onMouseUp);
+      cleanupDragRef.current = () => {
+        window.removeEventListener("mousemove", onMouseMove);
+        window.removeEventListener("mouseup", onMouseUp);
+      };
+    },
+    [stopMomentum]
+  );
+
+  const handleClickCapture = useCallback((event: ReactMouseEvent) => {
+    if (!hasDraggedRef.current) return;
+    event.preventDefault();
+    event.stopPropagation();
+  }, []);
+
+  const scrollByPage = useCallback(
+    (direction: 1 | -1) => {
+      const track = trackRef.current;
+      if (!track) return;
+      stopMomentum();
+      const step = cardWidth + gap;
+      const cardsPerPage = Math.max(1, Math.floor(track.clientWidth / step));
+      track.scrollBy({ left: direction * cardsPerPage * step, behavior: "smooth" });
+    },
+    [cardWidth, gap, stopMomentum]
+  );
+
   const handlePlayToggle = (station: IHeartAudioCarouselItem, willPlay: boolean) => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -334,16 +475,27 @@ export function IHeartAudioCarousel({
     void audio.play().catch(() => setPlayingStationId(null));
   };
   if (stations.length === 0) return null;
+  const hasNavigation = showNavigation && (scrollState.canScrollLeft || scrollState.canScrollRight);
 
   return (
-    <section aria-label={ariaLabel} className={cn("gencl:w-full", className)} {...props}>
+    <section aria-label={ariaLabel} className={cn("gencl:relative gencl:w-full", className)} {...props}>
       <style>{WAVEFORM_CSS}</style>
       <div
+        ref={trackRef}
         data-slot="iheart-audio-carousel-track"
-        className="gencl:flex gencl:w-full gencl:overflow-x-auto gencl:pb-2 gencl:[scrollbar-width:none] gencl:[&::-webkit-scrollbar]:hidden"
-        style={{ gap, scrollSnapType: "x mandatory" }}>
+        onScroll={syncScrollState}
+        onMouseDown={handleMouseDown}
+        onClickCapture={handleClickCapture}
+        onDragStart={(event) => event.preventDefault()}
+        className={cn(
+          "gencl:flex gencl:w-full gencl:overflow-x-auto gencl:pb-2 gencl:[scrollbar-width:none] gencl:[&::-webkit-scrollbar]:hidden",
+          isDragging
+            ? "gencl:cursor-grabbing gencl:select-none gencl:[&_*]:cursor-grabbing! gencl:[&_*]:select-none!"
+            : "gencl:cursor-grab"
+        )}
+        style={{ gap }}>
         {stations.map((station) => (
-          <div key={station.id} style={{ scrollSnapAlign: "start" }}>
+          <div key={station.id}>
             <StationCard
               station={station}
               isPlaying={station.id === playingStationId}
@@ -358,6 +510,30 @@ export function IHeartAudioCarousel({
           </div>
         ))}
       </div>
+      {hasNavigation ? (
+        <>
+          <NavArrowButton
+            direction="left"
+            theme="dark"
+            size="md"
+            testId="iheart-audio-carousel-prev"
+            ariaLabel="Previous stations"
+            disabled={!scrollState.canScrollLeft}
+            onClick={() => scrollByPage(-1)}
+            className="gencl:absolute gencl:left-2 gencl:top-1/2 gencl:z-10 gencl:-translate-y-1/2"
+          />
+          <NavArrowButton
+            direction="right"
+            theme="dark"
+            size="md"
+            testId="iheart-audio-carousel-next"
+            ariaLabel="Next stations"
+            disabled={!scrollState.canScrollRight}
+            onClick={() => scrollByPage(1)}
+            className="gencl:absolute gencl:right-2 gencl:top-1/2 gencl:z-10 gencl:-translate-y-1/2"
+          />
+        </>
+      ) : null}
       <audio
         ref={audioRef}
         data-slot="iheart-audio-player"
