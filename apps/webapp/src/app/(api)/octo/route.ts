@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { type NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 import { getEmbedConfig } from "@lib/api/config";
 
@@ -9,12 +9,6 @@ function getOctoOrchestratorBaseUrl(): string {
   const value = process.env.OCTO_ORCHESTRATOR_BASE_URL?.trim();
   if (!value) throw new Error("OCTO_ORCHESTRATOR_BASE_URL is not configured");
   return new URL(value).origin;
-}
-
-function loginRedirect(request: NextRequest): NextResponse {
-  const url = new URL("/auth-wall", request.url);
-  url.searchParams.set("returnUrl", "/octo");
-  return NextResponse.redirect(url);
 }
 
 function parseConfigParams(value: string | undefined): Record<string, string> | null {
@@ -30,11 +24,20 @@ function parseConfigParams(value: string | undefined): Record<string, string> | 
   }
 }
 
-export async function GET(request: NextRequest): Promise<NextResponse> {
+export async function GET(): Promise<NextResponse> {
   const cookieStore = await cookies();
-  const hasAuthWallCookie = Boolean(cookieStore.get("gn_bx_acc")?.value);
-  if (!hasAuthWallCookie) {
-    return loginRedirect(request);
+  const allCookies = cookieStore.getAll();
+  const hasCanvasCookie = allCookies.some(
+    (cookie) => cookie.name === "vibe_session" || cookie.name.startsWith("vibe_session_")
+  );
+  if (!hasCanvasCookie) {
+    return new NextResponse(null, {
+      status: 302,
+      headers: {
+        Location: "/home",
+        "Cache-Control": "no-store",
+      },
+    });
   }
 
   const configParams = parseConfigParams(cookieStore.get("config_params")?.value);
