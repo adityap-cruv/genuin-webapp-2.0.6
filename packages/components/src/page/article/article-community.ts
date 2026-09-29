@@ -1,4 +1,5 @@
 import type { GroupUserStatusType } from "@genuin/components/types/roles";
+
 import type { CommunityInfoType } from "../../organisms/community-card/community-card.types";
 
 export type ArticleCommunity = {
@@ -40,9 +41,9 @@ export const ARTICLE_COMMUNITIES = {
     isPrivate: false,
     shareUrl: "https://qa.begenuin.com/community/iheartradio-music-festival",
     userRole: "UNJOINED",
-    membersCount: 1,
-    groupsCount: 1,
-    postsCount: 20,
+    membersCount: 0,
+    groupsCount: 0,
+    postsCount: 0,
     description: "The official community for the iHeartRadio Music Festival.",
     banner:
       "https://media.qa.begenuin.com/uploads/community/banner/cb4a1431-61e9-46f5-8f36-60fb0b689e5a_1789997419244.png",
@@ -57,9 +58,9 @@ export const ARTICLE_COMMUNITIES = {
     isPrivate: false,
     shareUrl: "https://qa.begenuin.com/community/artist-radio-stations",
     userRole: "UNJOINED",
-    membersCount: 1,
-    groupsCount: 1,
-    postsCount: 20,
+    membersCount: 0,
+    groupsCount: 0,
+    postsCount: 0,
     description: "Explore artist-curated radio stations, exclusive interviews, and tracks.",
     banner:
       "https://media.qa.begenuin.com/uploads/community/banner/992b9b1d-e0b1-469d-9047-c4495b32f1ae_1789997407151.png",
@@ -74,9 +75,9 @@ export const ARTICLE_COMMUNITIES = {
     isPrivate: false,
     shareUrl: "https://qa.begenuin.com/community/sports-radio",
     userRole: "UNJOINED",
-    membersCount: 1,
-    groupsCount: 1,
-    postsCount: 20,
+    membersCount: 0,
+    groupsCount: 0,
+    postsCount: 0,
     description: "The home of live sports talk, game coverage, and sports commentary.",
     banner:
       "https://media.qa.begenuin.com/uploads/community/banner/cb4a1431-61e9-46f5-8f36-60fb0b689e5a_1789997419244.png",
@@ -91,9 +92,9 @@ export const ARTICLE_COMMUNITIES = {
     isPrivate: false,
     shareUrl: "https://qa.begenuin.com/community/nfl",
     userRole: "UNJOINED",
-    membersCount: 1,
-    groupsCount: 1,
-    postsCount: 20,
+    membersCount: 0,
+    groupsCount: 0,
+    postsCount: 0,
     description: "NFL game action, news, and analysis across the league.",
     banner:
       "https://media.qa.begenuin.com/uploads/community/banner/68f7541f-3949-42d3-9503-add165de6a22_1789997416971.png",
@@ -108,9 +109,9 @@ export const ARTICLE_COMMUNITIES = {
     isPrivate: false,
     shareUrl: "https://qa.begenuin.com/community/artist-radio",
     userRole: "UNJOINED",
-    membersCount: 1,
-    groupsCount: 1,
-    postsCount: 20,
+    membersCount: 0,
+    groupsCount: 0,
+    postsCount: 0,
     description: "Featured artists, playlists, and behind-the-scenes music content.",
     banner:
       "https://media.qa.begenuin.com/uploads/community/banner/aa76aee6-ec91-4ff7-95e8-e35d5a69eea0_1789997401601.png",
@@ -119,7 +120,7 @@ export const ARTICLE_COMMUNITIES = {
 
 export const ARTICLE_GROUPS = {
   festivalPerformances: {
-    id: "3d6a9b91-b6c6-4982-996b-2db298904b71",
+    id: "988e7957-1c8a-4b56-975f-0030c925a995",
     name: "Festival Performances & Highlights",
     slug: "festival-performances-highlights",
     description: "Performances, backstage moments, and highlights from the iHeartRadio Music Festival.",
@@ -128,10 +129,10 @@ export const ARTICLE_GROUPS = {
     role: "UNJOINED",
     shareUrl:
       "https://qa.begenuin.com/group/festival-performances-highlights?community=29bee151-fa36-47c5-9919-612291cc1531",
-    stats: { members: 1, posts: 20, views: 0 },
+    stats: { members: 0, posts: 0, views: 0 },
   },
   artistInterviews: {
-    id: "5fd072b5-61c1-4972-b91f-109df50f34fb",
+    id: "36e0e008-204d-49fb-95fd-3173bd9326b4",
     name: "Artist Interviews & Performances",
     slug: "artist-interviews-performances",
     description: "Interviews, studio sessions, and live performances across artist stations.",
@@ -140,19 +141,18 @@ export const ARTICLE_GROUPS = {
     role: "UNJOINED",
     shareUrl:
       "https://qa.begenuin.com/group/artist-interviews-performances?community=5db6106b-f6f3-4f4d-a2f9-b0ef369fda61",
-    stats: { members: 1, posts: 20, views: 0 },
+    stats: { members: 0, posts: 0, views: 0 },
   },
   sportsHighlights: {
-    id: "15266401-fc39-44cd-a91b-a86a88a14756",
+    id: "a820c82d-a03f-4d2d-a805-552845ca454f",
     name: "Sports Highlights & Talk",
     slug: "sports-highlights-talk",
     description: "Breaking sports coverage, talk shows, and game highlights.",
     isSubscribed: false,
     isPrivate: false,
     role: "UNJOINED",
-    shareUrl:
-      "https://qa.begenuin.com/group/sports-highlights-talk?community=2b552203-cb4e-4414-b3ab-0e0a1b7f0cbe",
-    stats: { members: 1, posts: 20, views: 0 },
+    shareUrl: "https://qa.begenuin.com/group/sports-highlights-talk?community=2b552203-cb4e-4414-b3ab-0e0a1b7f0cbe",
+    stats: { members: 0, posts: 0, views: 0 },
   },
 } satisfies Record<string, ArticleGroup>;
 
@@ -171,14 +171,8 @@ const ARTICLE_ORIGIN_BY_SLUG: Record<string, [CommunityKey, GroupKey]> = {
     "artistRadioStations",
     "artistInterviews",
   ],
-  "2026-09-19-watch-zara-larsson-reveals-who-shes-calling-after-midnight": [
-    "artistRadioStations",
-    "artistInterviews",
-  ],
-  "2026-09-20-benson-boone-reveals-why-he-recently-became-a-drake-fan": [
-    "artistRadioStations",
-    "artistInterviews",
-  ],
+  "2026-09-19-watch-zara-larsson-reveals-who-shes-calling-after-midnight": ["artistRadioStations", "artistInterviews"],
+  "2026-09-20-benson-boone-reveals-why-he-recently-became-a-drake-fan": ["artistRadioStations", "artistInterviews"],
   "2026-09-20-major-lazer-says-they-plan-to-shock-the-system-with-upcoming-album": [
     "artistRadioStations",
     "artistInterviews",
@@ -189,10 +183,7 @@ const ARTICLE_ORIGIN_BY_SLUG: Record<string, [CommunityKey, GroupKey]> = {
     "festival",
     "festivalPerformances",
   ],
-  "2026-09-18-inside-bts-iheartradio-music-festival-takeover-see-the-photos": [
-    "festival",
-    "festivalPerformances",
-  ],
+  "2026-09-18-inside-bts-iheartradio-music-festival-takeover-see-the-photos": ["festival", "festivalPerformances"],
   "2026-09-18-see-the-photos-every-stunning-red-carpet-look-at-the-2026-iheartradio-music-festival": [
     "festival",
     "festivalPerformances",
@@ -267,7 +258,8 @@ const ARTICLE_ORIGIN_BY_SLUG: Record<string, [CommunityKey, GroupKey]> = {
 export function getArticleOrigin(slug: string, kind?: string): { community: ArticleCommunity; group: ArticleGroup } {
   const entry = ARTICLE_ORIGIN_BY_SLUG[slug];
   if (entry) return { community: ARTICLE_COMMUNITIES[entry[0]], group: ARTICLE_GROUPS[entry[1]] };
-  if (kind === "interview") return { community: ARTICLE_COMMUNITIES.artistRadioStations, group: ARTICLE_GROUPS.artistInterviews };
+  if (kind === "interview")
+    return { community: ARTICLE_COMMUNITIES.artistRadioStations, group: ARTICLE_GROUPS.artistInterviews };
   if (kind === "event") return { community: ARTICLE_COMMUNITIES.festival, group: ARTICLE_GROUPS.festivalPerformances };
   return { community: ARTICLE_COMMUNITIES.festival, group: ARTICLE_GROUPS.festivalPerformances };
 }

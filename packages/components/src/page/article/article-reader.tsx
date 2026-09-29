@@ -23,6 +23,8 @@ import {
   useGetGroupDetails,
 } from "@genuin/components/react-query/api/group/details/details";
 import { getTrendingGroups as useTrendingGroups } from "@genuin/components/react-query/api/group/trending/trending";
+import type { CommunityUserRole } from "@genuin/components/types/post";
+import type { GroupUserStatusType } from "@genuin/components/types/roles";
 
 import { formatArticlePublishedAt, type Article, type ArticleBlock } from "./article-data";
 
@@ -229,24 +231,74 @@ function ArticleBodyBlock({ block, children }: { block: ArticleBlock; children?:
 
 /** The community / group pills above the byline, from the article's own attribution. */
 function ArticleHeaderPills({ article }: { article: Article }) {
-  if (!article.community) return null;
+  const { data: communityDetails } = useGetCommunityDetails(
+    article.community?.slug ?? "",
+    Boolean(article.community?.slug)
+  );
+  const { data: groupDetails } = useGetGroupDetails(article.group?.slug ?? "", Boolean(article.group?.slug));
+  const [communityRoleOverride, setCommunityRoleOverride] = useState<{
+    slug: string;
+    role: CommunityUserRole;
+  } | null>(null);
+  const [groupSubscriptionOverride, setGroupSubscriptionOverride] = useState<{
+    slug: string;
+    subscribed: boolean;
+  } | null>(null);
+  const [groupRoleOverride, setGroupRoleOverride] = useState<{
+    slug: string;
+    role: GroupUserStatusType;
+  } | null>(null);
+
+  const community = article.community
+    ? {
+        ...article.community,
+        userRole:
+          (communityRoleOverride?.slug === article.community.slug ? communityRoleOverride.role : null) ??
+          communityDetails?.logged_in_user_role ??
+          article.community.userRole,
+        membersCount: communityDetails?.no_of_members ?? article.community.membersCount,
+        groupsCount: communityDetails?.no_of_loops ?? article.community.groupsCount,
+        postsCount: communityDetails?.no_of_videos ?? article.community.postsCount,
+      }
+    : undefined;
+  const group = article.group
+    ? {
+        ...article.group,
+        id: groupDetails?.id ?? article.group.id,
+        isSubscribed:
+          (groupSubscriptionOverride?.slug === article.group.slug ? groupSubscriptionOverride.subscribed : null) ??
+          groupDetails?.isSubscriber ??
+          article.group.isSubscribed,
+        role:
+          (groupRoleOverride?.slug === article.group.slug ? groupRoleOverride.role : null) ??
+          groupDetails?.role ??
+          article.group.role,
+      }
+    : undefined;
+
+  if (!community) return null;
 
   return (
     <div className="gencl:mt-4 gencl:flex gencl:items-center gencl:gap-2">
       <Pills
-        communityDetails={article.community}
-        groupDetails={article.group}
+        communityDetails={community}
+        groupDetails={group}
         isHoverable
         variant="light"
-        onCommunityJoinStatusChange={(role) =>
-          article.community && setQueryDataForCommunityRoleChange(article.community.slug, role)
-        }
-        onGroupJoinStatusChange={(role) =>
-          article.group && setQueryDataForJoinGroupInGroupDetails(article.group.slug, role)
-        }
-        onGroupSubscriptionChange={(subscribed) =>
-          article.group && setQueryDataForSubscribeGroupInGroupDetails(article.group.slug, subscribed)
-        }
+        onCommunityJoinStatusChange={(role) => {
+          setCommunityRoleOverride({ slug: community.slug, role });
+          setQueryDataForCommunityRoleChange(community.slug, role);
+        }}
+        onGroupJoinStatusChange={(role) => {
+          if (!group) return;
+          setGroupRoleOverride({ slug: group.slug, role });
+          setQueryDataForJoinGroupInGroupDetails(group.slug, role);
+        }}
+        onGroupSubscriptionChange={(subscribed) => {
+          if (!group) return;
+          setGroupSubscriptionOverride({ slug: group.slug, subscribed });
+          setQueryDataForSubscribeGroupInGroupDetails(group.slug, subscribed);
+        }}
       />
     </div>
   );

@@ -438,6 +438,7 @@ function useDynamicArticleOrigin(article: Article): { community?: ArticleCommuni
     const group: ArticleGroup | undefined = article.group
       ? {
           ...article.group,
+          id: groupDetails?.id ?? article.group.id,
           name: groupDetails?.name || article.group.name,
           description: groupDetails?.description ?? article.group.description,
           isSubscribed: groupDetails?.isSubscriber ?? article.group.isSubscribed,
